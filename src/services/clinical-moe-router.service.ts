@@ -11,6 +11,15 @@ export interface IExpertSubnet {
   estimatedFlopsGiga: number;
 }
 
+export interface IGeminiThinkingConfig {
+  /** Token budget for internal reasoning steps (-1 = dynamic auto, 0 = off, 1024-16384 for deep synthesis) */
+  thinkingBudget: number;
+  /** Whether to stream or include thought process in generation output */
+  includeThoughts: boolean;
+  /** Human-readable tier name for clinical telemetry HUDs */
+  reasoningTier: 'Fast (Low Latency)' | 'Standard (Balanced)' | 'Deep Clinical Synthesis (High Acuity)';
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,6 +28,69 @@ export class ClinicalMoERouterService {
   readonly activeLens = signal<AnalysisLens>('Summary Overview');
   readonly hasAcousticTelemetry = signal<boolean>(false);
   readonly hasDICOMVolume = signal<boolean>(false);
+  readonly customThinkingBudget = signal<number | null>(null);
+
+  /**
+   * Gemini 2.5 Thinking Model Reasoning Budget Configuration.
+   * Dynamically assigns reasoning token budgets based on active clinical lens acuity.
+   * @see https://github.com/google-gemini/cookbook — Thinking Models & Reasoning Budgets
+   */
+  readonly currentThinkingConfig = computed<IGeminiThinkingConfig>(() => {
+    const custom = this.customThinkingBudget();
+    const lens = this.activeLens();
+
+    if (custom !== null) {
+      let tier: 'Fast (Low Latency)' | 'Standard (Balanced)' | 'Deep Clinical Synthesis (High Acuity)' = 'Standard (Balanced)';
+      if (custom <= 1024) tier = 'Fast (Low Latency)';
+      else if (custom >= 8192) tier = 'Deep Clinical Synthesis (High Acuity)';
+
+      return {
+        thinkingBudget: custom,
+        includeThoughts: true,
+        reasoningTier: tier
+      };
+    }
+
+    switch (lens) {
+      case 'Summary Overview':
+      case 'Patient Education':
+      case 'Console Debugging & Integrity':
+        return {
+          thinkingBudget: 1024,
+          includeThoughts: true,
+          reasoningTier: 'Fast (Low Latency)'
+        };
+
+      case 'Teledentistry & Systemic Health':
+      case 'RSNA Knee Abnormality':
+      case 'PhysioNet Telemetry':
+      case 'Treatment Matrix':
+      case 'Maternal & Postpartum':
+      case 'Pre-Conception & Family Health':
+        return {
+          thinkingBudget: 8192,
+          includeThoughts: true,
+          reasoningTier: 'Deep Clinical Synthesis (High Acuity)'
+        };
+
+      case 'Functional Protocols':
+      case 'Nutrition':
+      case 'Monitoring & Follow-up':
+      case 'Precision Nutrients':
+      case 'Grow-Thyself Education':
+      case 'Epigenetic Longevity':
+      case 'Chronobiology Matrix':
+      case 'Functional Medicine Matrix':
+      case 'Seven Generations Stewardship':
+      case 'Performance Optimization & Web Vitals':
+      default:
+        return {
+          thinkingBudget: 4096,
+          includeThoughts: true,
+          reasoningTier: 'Standard (Balanced)'
+        };
+    }
+  });
 
   // Sparse Activation Map: Route to expert sub-networks only when needed (Pathways MoE Paradigm)
   readonly activeExpertCluster = computed<IExpertSubnet[]>(() => {
@@ -96,4 +168,9 @@ export class ClinicalMoERouterService {
   public setDICOMVolumeState(active: boolean): void {
     this.hasDICOMVolume.set(active);
   }
+
+  public setCustomThinkingBudget(budget: number | null): void {
+    this.customThinkingBudget.set(budget);
+  }
 }
+
