@@ -1,0 +1,16 @@
+name: "Pocket Gull CodeQL Filtering"
+
+# Exclude non-production code, tests, build scripts, and documentation workspaces from security scanning
+paths-ignore:
+  - '**/*.spec.ts'
+  - 'tests/**'
+  - 'e2e/**'
+  - 'scripts/**'
+  - 'docs/**'
+  - 'companion-apps/**'
+  - 'contests/**'
+  - 'sandbox/**'
+  - 'run-playwright.cjs'
+  - 'vitest.config.ts'
+  - 'playwright.config.ts'
+  - 'tailwind.config.js'
