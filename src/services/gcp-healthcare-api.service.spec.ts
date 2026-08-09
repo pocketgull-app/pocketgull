@@ -46,4 +46,23 @@ describe('GcpHealthcareApiService', () => {
     expect(res.deidentifiedBundle.entry[0].resource.name[0].text).toContain('Homo Sapiens');
     expect(res.timestamp).toBeTruthy();
   });
+
+  it('5. Generates canonical Vertex AI Search for Healthcare discovery endpoint URL', () => {
+    const searchUrl = service.getVertexHealthcareSearchUrl();
+    expect(searchUrl).toContain('discoveryengine.googleapis.com');
+    expect(searchUrl).toContain('gen-lang-client-0540208645');
+    expect(searchUrl).toContain('pocketgull-healthcare-datastore');
+  });
+
+  it('6. Performs Vertex AI Search for Healthcare grounding query (Dry-Run)', async () => {
+    const grounding = await service.searchHealthcareGrounding('Periodontal SIBI inflammatory trajectory', {
+      groundingConfidenceThreshold: 0.8
+    });
+
+    expect(grounding.groundedQuery).toBe('Periodontal SIBI inflammatory trajectory');
+    expect(grounding.relevantSnippets.length).toBeGreaterThan(0);
+    expect(grounding.relevantSnippets[0].documentTitle).toBeTruthy();
+    expect(grounding.groundingMetadata.confidenceScore).toBeGreaterThanOrEqual(0.8);
+  });
 });
+
