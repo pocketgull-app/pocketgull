@@ -28,7 +28,13 @@ export class PdfExportStrategyService {
     } catch {
       // Fallback manual tag stripping
     }
-    return text.replace(/<[^>]*>/g, '');
+    let previous: string;
+    let current = text;
+    do {
+      previous = current;
+      current = current.replace(/<[^>]*>/g, '');
+    } while (current !== previous);
+    return current;
   }
 
   /**
