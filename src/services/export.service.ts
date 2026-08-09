@@ -15,6 +15,10 @@ import { ResearchLecturesService } from './research-lectures.service';
 
 import { FhirExportStrategyService } from './export/fhir-export-strategy.service';
 import { HtmlExportStrategyService } from './export/html-export-strategy.service';
+import { PdfExportStrategyService } from './export/pdf-export-strategy.service';
+import { NativeJsonExportStrategyService } from './export/native-json-export-strategy.service';
+import { CsvExportStrategyService } from './export/csv-export-strategy.service';
+import { Hl7v2ExportStrategyService } from './export/hl7v2-export-strategy.service';
 
 /** Shape of the native JSON export file. */
 export interface INativePatientExport {
@@ -99,18 +103,37 @@ export class ExportService {
       return new SecureStorageService();
     }
   })();
-  private fhirStrategy = (() => {
+  public fhirStrategy = (() => {
     try {
       return inject(FhirExportStrategyService, { optional: true }) || new FhirExportStrategyService();
     } catch (e) {
       return new FhirExportStrategyService();
     }
   })();
+
+  public exportFHIR(patient?: IPatient): Record<string, any> {
+    const targetPatient = patient || ({ id: 'patient-001', name: 'Homo Sapiens (De-identified Patient Archetype)' } as IPatient);
+    return this.fhirStrategy.generateFhirBundle(targetPatient);
+  }
   private htmlStrategy = (() => {
     try {
       return inject(HtmlExportStrategyService, { optional: true }) || new HtmlExportStrategyService();
     } catch (e) {
       return new HtmlExportStrategyService();
+    }
+  })();
+  private csvStrategy = (() => {
+    try {
+      return inject(CsvExportStrategyService, { optional: true }) || new CsvExportStrategyService();
+    } catch (e) {
+      return new CsvExportStrategyService();
+    }
+  })();
+  private hl7v2Strategy = (() => {
+    try {
+      return inject(Hl7v2ExportStrategyService, { optional: true }) || new Hl7v2ExportStrategyService();
+    } catch (e) {
+      return new Hl7v2ExportStrategyService();
     }
   })();
   private actuarialService = (() => {
@@ -613,6 +636,18 @@ export class ExportService {
     patientName: string = 'Patient'
   ): Promise<void> {
     return this.downloadAsPdf(data, patientName);
+  }
+
+  exportCsvReport(patientData: Partial<IPatient>, filename?: string): void {
+    const csvContent = this.csvStrategy.generatePatientCsv(patientData);
+    const fname = filename || `pocketgull-telemetry-${patientData.id || 'p001'}-${Date.now()}.csv`;
+    this.csvStrategy.downloadCsvFile(fname, csvContent);
+  }
+
+  exportHl7v2Report(patientData: Partial<IPatient>, filename?: string): void {
+    const hl7Content = this.hl7v2Strategy.generateHl7v2Message(patientData);
+    const fname = filename || `pocketgull-oru-r01-${patientData.id || 'p001'}-${Date.now()}.hl7`;
+    this.hl7v2Strategy.downloadHl7File(fname, hl7Content);
   }
 
   private sanitizeObject(obj: unknown): unknown {

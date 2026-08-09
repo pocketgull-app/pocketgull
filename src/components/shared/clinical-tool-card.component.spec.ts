@@ -2,6 +2,7 @@ import '@angular/compiler';
 import { describe, it, expect } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { ClinicalToolCardComponent, IClinicalToolItem } from './clinical-tool-card.component';
+import { ResearchLecturesService } from '../../services/research-lectures.service';
 
 describe('ClinicalToolCardComponent', () => {
 
@@ -16,7 +17,11 @@ describe('ClinicalToolCardComponent', () => {
   };
 
   const createCard = () => {
-    const injector = Injector.create({ providers: [] });
+    const injector = Injector.create({
+      providers: [
+        { provide: ResearchLecturesService, useValue: {} }
+      ]
+    });
     const component = runInInjectionContext(injector, () => new ClinicalToolCardComponent());
     (component as any).tool = () => mockTool;
     return component;

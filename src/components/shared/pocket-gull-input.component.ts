@@ -252,7 +252,7 @@ export class PocketGullInputComponent implements AfterViewInit {
     this.valueChange.emit(val);
   }
 
-  inputClasses(): string {
+  inputClasses = computed(() => {
     return [
       'input-base',
       this.error() ? 'input-error' : '',
@@ -260,7 +260,7 @@ export class PocketGullInputComponent implements AfterViewInit {
       this.variant() === 'minimal' ? 'variant-minimal' : '',
       this.breathing() ? 'animate-box-breathing' : ''
     ].join(' ');
-  }
+  });
 
   focus() {
     setTimeout(() => {

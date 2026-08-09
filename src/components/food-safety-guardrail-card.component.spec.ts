@@ -22,7 +22,7 @@ describe('FoodSafetyGuardrailCardComponent', () => {
       providers: [
         { provide: PatientStateService, useValue: mockPatientState },
         { provide: ThemeService, useValue: mockThemeService },
-        { provide: ActuarialLongevityService, useClass: ActuarialLongevityService }
+        { provide: ActuarialLongevityService, useValue: {} }
       ]
     });
 

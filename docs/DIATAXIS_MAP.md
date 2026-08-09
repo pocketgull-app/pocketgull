@@ -78,6 +78,13 @@ _Broader context and conceptual justifications._
 | Eurostars Proposal Blueprint | [docs/eurostars_proposal_blueprint.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/eurostars_proposal_blueprint.md) | Complete |
 | COCOMO II Typeface Valuation | [docs/COCOMO_II_TYPEFACE_VALUATION.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/COCOMO_II_TYPEFACE_VALUATION.md) | Complete |
 | Accessibility (SIGCHI) | [docs/ACCESSIBILITY_SIGCHI.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/ACCESSIBILITY_SIGCHI.md) | Complete |
+| Systems Architecture (SIGARCH) | [docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md) | Complete |
+| Clinical Knowledge Mining (SIGBIO/SIGKDD) | [docs/SIGBIO_SIGKDD_CLINICAL_KNOWLEDGE_MINING.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGBIO_SIGKDD_CLINICAL_KNOWLEDGE_MINING.md) | Complete (new) |
+| WebGPU & Biophysical Shaders (SIGGRAPH) | [docs/SIGGRAPH_WEBGPU_BIOPHYSICAL_RENDERING.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGGRAPH_WEBGPU_BIOPHYSICAL_RENDERING.md) | Complete (new) |
+| Audio Streaming & Biomarkers (SIGCOMM/SPS) | [docs/SIGCOMM_SPS_STREAMING_AUDIO_BIOMARKERS.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGCOMM_SPS_STREAMING_AUDIO_BIOMARKERS.md) | Complete (new) |
+| Zero-Trust & Cryptographic Privacy (SIGSAC/SIGSEC) | [docs/SIGSAC_HIPAA_ZERO_TRUST_PRIVACY.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGSAC_HIPAA_ZERO_TRUST_PRIVACY.md) | Complete (new) |
+| Formally Verified State Architecture (SIGSOFT/SIGPLAN) | [docs/SIGSOFT_SIGPLAN_REACTIVE_STATE_ARCHITECTURE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGSOFT_SIGPLAN_REACTIVE_STATE_ARCHITECTURE.md) | Complete (new) |
+| Energetics & Green Computing (IEEE PES) | [docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md) | Complete (new) |
 | Discovery Backlog | [QUESTIONS.md](file:///c:/Users/philg/Pocketgull/pocketgull/QUESTIONS.md) | Complete (new) |
 
 ---

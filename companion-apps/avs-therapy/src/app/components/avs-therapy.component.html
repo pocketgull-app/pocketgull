@@ -1,0 +1,94 @@
+<div id="tour-avs-therapy" class="w-full bg-white dark:bg-[#0c0604] border border-gray-200 dark:border-zinc-800/80 rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:border-orange-500/30">
+
+  <app-avs-header
+    [isActive]="isActive()"
+    [viewMode]="viewMode()"
+    (viewModeChange)="viewMode.set($event)">
+  </app-avs-header>
+
+  <!-- Main Panel Body -->
+  <div class="p-6 space-y-6">
+
+    <app-avs-visualizer
+      [isActive]="isActive()"
+      [pulseIntervalMs]="pulseIntervalMs()"
+      [currentWaveFrequencyName]="currentWaveFrequencyName()"
+      [currentBaseFrequency]="currentBaseFrequency()"
+      [targetBrainwaveFrequencyHz]="targetBrainwaveFrequencyHz()"
+      [colorTemp]="colorTemp()">
+    </app-avs-visualizer>
+
+    @if (viewMode() === 'clinician') {
+      <app-clinician-console
+        [targetHr]="targetHr()"
+        [currentHr]="patientState.vitals().hr"
+        [targetBreathingRate]="targetBreathingRate()"
+        [targetWave]="targetWave()"
+        [selectedWaveDescription]="selectedWaveDescription()"
+        (targetHrChange)="onHrSliderChange($event)"
+        (targetBreathingRateChange)="onBreathingSliderChange($event)"
+        (targetWaveChange)="selectWaveProfile($event)">
+      </app-clinician-console>
+
+      <app-circadian-dashboard
+        [targetBrainwaveFrequencyHz]="targetBrainwaveFrequencyHz()"
+        [colorTemp]="colorTemp()"
+        (frequencyChange)="onFrequencySliderChange($event)"
+        (colorTempChange)="selectColorTemp($event)">
+      </app-circadian-dashboard>
+
+      <app-co-regulation-panel
+        [protocolMode]="protocolMode()"
+        [avsProtocol]="patientState.avsProtocol()"
+        [athleticSession]="athleticService.session()"
+        [reasonForVisit]="patientState.reasonForVisit()"
+        [occupation]="patientState.occupation()"
+        [dietaryProtocol]="patientState.dietaryProtocol()"
+        [athleticSport]="athleticSport()"
+        [athleticState]="athleticState()"
+        [isGenerating]="patientState.isGeneratingAvsProtocol()"
+        [voicePacingEnabled]="voicePacingEnabled()"
+        (protocolModeChange)="protocolMode.set($event)"
+        (reasonForVisitChange)="patientState.reasonForVisit.set($event)"
+        (occupationChange)="patientState.occupation.set($event)"
+        (dietaryProtocolChange)="patientState.dietaryProtocol.set($event)"
+        (athleticSportChange)="athleticSport.set($event)"
+        (athleticStateChange)="athleticState.set($event)"
+        (generate)="protocolMode() === 'clinical' ? generateCoRegProtocol() : generateAthleticProtocol()"
+        (apply)="protocolMode() === 'clinical' ? applyProtocolToSession() : applyAthleticProtocol()">
+      </app-co-regulation-panel>
+
+      <app-session-controls
+        [isActive]="isActive()"
+        [voiceEnabled]="voiceEnabled()"
+        [voicePacingEnabled]="voicePacingEnabled()"
+        [vibrationEnabled]="vibrationEnabled()"
+        [hasVibrator]="hasVibrator"
+        (toggleSession)="toggleSession()"
+        (toggleVoice)="toggleVoice()"
+        (toggleVoicePacing)="toggleVoicePacing()"
+        (toggleVibration)="toggleVibration()">
+      </app-session-controls>
+
+      <!-- Therapeutic Safety Guidelines -->
+      <div class="text-[9px] text-gray-400 dark:text-zinc-500/80 leading-relaxed italic border-t border-gray-100 dark:border-zinc-900/50 pt-3">
+        AVS Clinical Disclaimer: Do not utilize audio-visual entrainment therapies if the patient has a known history of epilepsy or photosensitive seizures. Headphones are strictly required for binaural beat neural stimulation.
+      </div>
+
+      <app-lifestyle-adjunct-panel
+        [adjunct]="lifestyleAdj.adjunct()"
+        (generate)="generateAdjuncts()">
+      </app-lifestyle-adjunct-panel>
+
+    } <!-- End Clinician View -->
+
+    @if (viewMode() === 'patient') {
+      <app-patient-waiting
+        [isActive]="isActive()"
+        (toggleSession)="toggleSession()">
+      </app-patient-waiting>
+    }
+
+  </div>
+
+</div>

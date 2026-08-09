@@ -12,6 +12,7 @@ try {
   }
 } catch {}
 
+import '@angular/compiler';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { BootstrapContext, bootstrapApplication, provideClientHydration } from '@angular/platform-browser';
 import { AppComponent } from './app.component';

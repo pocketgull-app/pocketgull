@@ -18,7 +18,11 @@ Pocket Gull is an open-source clinical technology project operating under a **Be
 
 ---
 
-## 3. Access Continuity & Bus Factor
-- **Repository Continuity**: Key credentials, deployment configurations, and project metadata are stored in standard Google Cloud (`gen-lang-client-0540208645`) and GitHub administrative settings.
-- **Emergency Access**: Designated emergency backup maintainer access keys are maintained to ensure minimal interruption (< 1 week) in the event of maintainer unavailability.
-- **Bus Factor**: The project enforces automated CI/CD pipelines, full SHA dependency pinning, and comprehensive documentation (`README.md`, `SECURITY.md`, `GOVERNANCE.md`) allowing any qualified engineer to build, test, and deploy the application.
+## 4. Clinical Ethics & Digital Hippocratic Oath
+All maintenance, feature additions, and model integrations must strictly adhere to **The Digital Hippocratic Oath for Clinical AI** documented in [docs/digital-hippocratic-oath.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/digital-hippocratic-oath.md). The 6 core pledges encompass:
+1. *Primum Non Nocere* (Human-in-the-Loop CDS)
+2. Epistemic Humility (Popperian $H_0$ Null-Hypothesis Testing & Cochrane RoB 2)
+3. Absolute Patient Data Sovereignty & Anti-Surveillance
+4. Prevention Over Reaction (Oral-Systemic SIBI Cross-Talk)
+5. Economic Safeguards & Scale-to-Zero Cloud Protection
+6. Compassionate Communication & Multi-Level Reading Translation

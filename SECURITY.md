@@ -93,6 +93,13 @@ To align with HIPAA compliance and secure clinical engineering, we integrate Git
 - **Continuous Container Scanning**: Dependabot alerts are utilized for early static workspace package warnings. However, the source of truth for runtime safety is **GCP Artifact Registry Container Analysis**, which performs continuous automated CVE scanning on the compiled container layers.
 - **Unified Compliance Dashboard**: For production deployments, CodeQL static analysis alerts are connected to **GCP Security Command Center (SCC)** via security source integrations, presenting a unified dashboard for infrastructure, cloud compliance, and source code health.
 
+### 6. Anti-Surveillance Data Sovereignty Architecture
+To protect patients and clinicians from invasive telemetry, dragnet background tracking, and unauthorized data harvesting, Pocket Gull strictly enforces anti-surveillance engineering principles:
+- **Default to Edge Computation**: All real-time telemetry calculations, biophysical equations, and clinical symptom classifications run locally on the client device via WebAssembly (WASM), WebGPU, or client-side Web Workers (`OfflineEdgeAiService`). External API requests are reserved for explicit, high-level AI consults.
+- **Strict Prohibition of Third-Party Trackers**: Pocket Gull contains zero third-party analytics pixels, fingerprinting scripts, or passive telemetry pingers (Google Analytics, Segment, Mixpanel, Meta Pixel).
+- **Explicit Opt-In Telemetry**: All network operations require deliberate, user-initiated actions. Passive continuous background harvesting of location, micro-phone audio, or user keystrokes is strictly prohibited.
+- **Ephemeral Lifecycle & 1-Click State Purging**: All active clinical state is stored in ephemeral Angular Signals and transient local storage. Clinicians can purge all in-memory patient signals and transient caches on demand via the 1-click **"Purge Transient State"** control or WebMCP tool (`purge_transient_patient_state`).
+
 ---
 
 ## Clinical Engineering & Risk Management Guidelines

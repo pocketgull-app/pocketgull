@@ -56,6 +56,7 @@ import { PocketgullTypefaceSiteComponent } from './components/pocketgull-typefac
 import { PocketgullIconComponent } from './components/pocketgull-icon.component';
 import { DocsStudyComponent } from './components/docs-study.component';
 import { NavigationShellService } from './services/navigation-shell.service';
+import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badge.component';
 
 @Component({
   selector: 'app-root',
@@ -85,7 +86,8 @@ import { NavigationShellService } from './services/navigation-shell.service';
     CompanionSyncModalComponent,
     GlossaryModalComponent,
     ClinicalCdsDisclaimerBannerComponent,
-    DocsStudyComponent
+    DocsStudyComponent,
+    PathwaysMoeBadgeComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -528,7 +530,10 @@ import { NavigationShellService } from './services/navigation-shell.service';
               <span>🧘</span>
               <span class="hidden md:inline">Grounding</span>
             </button>
-            
+
+            <!-- Pathways MoE Telemetry HUD -->
+            <app-pathways-moe-badge />
+
             <!-- Tour Guide Toggle -->
             <button (click)="tour.forceStart()" 
                     aria-label="Start Tour Guide"

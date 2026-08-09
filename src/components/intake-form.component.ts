@@ -276,31 +276,48 @@ interface INoteTimelineItem extends IBodyPartIssue {
                     <div class="space-y-3 pt-2 border-t border-slate-200/60 dark:border-zinc-800">
                       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Tongue Body Color (Wang Zhen)</label>
-                          <select [value]="state.tcmIntake().tongueColor" (change)="updateTcmField('tongueColor', $event)" class="w-full text-xs font-semibold p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-zinc-100">
+                          <label id="tcm-tongue-color-label" for="tcm-tongue-color-select" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Tongue Body Color (Wang Zhen)</label>
+                          <select id="tcm-tongue-color-select"
+                                  [attr.aria-describedby]="'tcm-tongue-color-hint'"
+                                  [attr.aria-invalid]="false"
+                                  [value]="state.tcmIntake().tongueColor" 
+                                  (change)="updateTcmField('tongueColor', $event)" 
+                                  class="w-full text-xs font-semibold p-2 min-h-[44px] bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-emerald-500">
                             <option value="pink">Pink (Normal / Healthy)</option>
                             <option value="pale">Pale (Qi / Blood Deficiency)</option>
                             <option value="red">Red (Heat / Fire Pattern)</option>
                             <option value="scarlet">Scarlet (Extreme Heat / Yin Deficiency)</option>
                             <option value="purple">Purple (Blood Stagnation)</option>
                           </select>
+                          <span id="tcm-tongue-color-hint" class="sr-only">Select TCM tongue body color pattern</span>
                         </div>
                         <div>
-                          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Tongue Coating (Jihva)</label>
-                          <select [value]="state.tcmIntake().tongueCoating" (change)="updateTcmField('tongueCoating', $event)" class="w-full text-xs font-semibold p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-zinc-100">
+                          <label id="tcm-tongue-coating-label" for="tcm-tongue-coating-select" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Tongue Coating (Jihva)</label>
+                          <select id="tcm-tongue-coating-select"
+                                  [attr.aria-describedby]="'tcm-tongue-coating-hint'"
+                                  [attr.aria-invalid]="false"
+                                  [value]="state.tcmIntake().tongueCoating" 
+                                  (change)="updateTcmField('tongueCoating', $event)" 
+                                  class="w-full text-xs font-semibold p-2 min-h-[44px] bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-emerald-500">
                             <option value="thin-white">Thin White (Normal Baseline)</option>
                             <option value="thick-white">Thick White (Cold-Damp Retention)</option>
                             <option value="yellow-dry">Yellow Dry (Full Heat)</option>
                             <option value="yellow-greasy">Yellow Greasy (Damp-Heat)</option>
                             <option value="peeled">Peeled / Geographic (Yin Exhaustion)</option>
                           </select>
+                          <span id="tcm-tongue-coating-hint" class="sr-only">Select TCM tongue coating thickness and moisture</span>
                         </div>
                       </div>
 
                       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Radial Pulse Quality (Qie Zhen)</label>
-                          <select [value]="state.tcmIntake().pulseQuality" (change)="updateTcmField('pulseQuality', $event)" class="w-full text-xs font-semibold p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-zinc-100">
+                          <label id="tcm-pulse-quality-label" for="tcm-pulse-quality-select" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Radial Pulse Quality (Qie Zhen)</label>
+                          <select id="tcm-pulse-quality-select"
+                                  [attr.aria-describedby]="'tcm-pulse-quality-hint'"
+                                  [attr.aria-invalid]="false"
+                                  [value]="state.tcmIntake().pulseQuality" 
+                                  (change)="updateTcmField('pulseQuality', $event)" 
+                                  class="w-full text-xs font-semibold p-2 min-h-[44px] bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-emerald-500">
                             <option value="normal">Balanced Smooth Pulse</option>
                             <option value="wiry">Wiry / Xian (Liver Qi Stagnation / Pain)</option>
                             <option value="slippery">Slippery / Hua (Phlegm-Damp / Food Stagnation)</option>
@@ -308,15 +325,22 @@ interface INoteTimelineItem extends IBodyPartIssue {
                             <option value="floating-rapid">Floating Rapid / Fu Shu (Exterior Wind Heat)</option>
                             <option value="choppy">Choppy / Se (Blood Stasis / Fluid Loss)</option>
                           </select>
+                          <span id="tcm-pulse-quality-hint" class="sr-only">Select radial artery pulse palpation quality</span>
                         </div>
                         <div>
-                          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Shi Wen Thermal Preference</label>
-                          <select [value]="state.tcmIntake().thermalPreference" (change)="updateTcmField('thermalPreference', $event)" class="w-full text-xs font-semibold p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-zinc-100">
+                          <label id="tcm-thermal-label" for="tcm-thermal-select" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Shi Wen Thermal Preference</label>
+                          <select id="tcm-thermal-select"
+                                  [attr.aria-describedby]="'tcm-thermal-hint'"
+                                  [attr.aria-invalid]="false"
+                                  [value]="state.tcmIntake().thermalPreference" 
+                                  (change)="updateTcmField('thermalPreference', $event)" 
+                                  class="w-full text-xs font-semibold p-2 min-h-[44px] bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-emerald-500">
                             <option value="neutral">Neutral Thermal Equilibrium</option>
                             <option value="aversion-cold">Aversion to Cold (Yang Xu)</option>
                             <option value="aversion-heat">Aversion to Heat (Full Heat)</option>
                             <option value="afternoon-tidal-heat">Afternoon Tidal Heat (Yin Xu)</option>
                           </select>
+                          <span id="tcm-thermal-hint" class="sr-only">Select patient thermal sensation preference</span>
                         </div>
                       </div>
                     </div>
@@ -329,44 +353,78 @@ interface INoteTimelineItem extends IBodyPartIssue {
                         <div class="space-y-2">
                           <div>
                             <div class="flex justify-between text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
-                              <span>🌬️ Vata (Air/Ether) Aggravation</span>
+                              <label id="ayur-vata-label" for="ayur-vata-range">🌬️ Vata (Air/Ether) Aggravation</label>
                               <span>{{ state.ayurvedicIntake().vikritiVata }}/10</span>
                             </div>
-                            <input type="range" min="0" max="10" [value]="state.ayurvedicIntake().vikritiVata" (input)="updateAyurvedicField('vikritiVata', $event)" class="w-full accent-cyan-500 cursor-pointer">
+                            <input id="ayur-vata-range"
+                                   type="range" min="0" max="10" 
+                                   [attr.aria-describedby]="'ayur-vata-hint'"
+                                   [attr.aria-invalid]="false"
+                                   [value]="state.ayurvedicIntake().vikritiVata" 
+                                   (input)="updateAyurvedicField('vikritiVata', $event)" 
+                                   class="w-full h-8 accent-cyan-500 cursor-pointer min-h-[44px]">
+                            <span id="ayur-vata-hint" class="sr-only">Adjust Vata dosha aggravation score from 0 to 10</span>
                           </div>
                           <div>
                             <div class="flex justify-between text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
-                              <span>🔥 Pitta (Fire/Water) Aggravation</span>
+                              <label id="ayur-pitta-label" for="ayur-pitta-range">🔥 Pitta (Fire/Water) Aggravation</label>
                               <span>{{ state.ayurvedicIntake().vikritiPitta }}/10</span>
                             </div>
-                            <input type="range" min="0" max="10" [value]="state.ayurvedicIntake().vikritiPitta" (input)="updateAyurvedicField('vikritiPitta', $event)" class="w-full accent-amber-500 cursor-pointer">
+                            <input id="ayur-pitta-range"
+                                   type="range" min="0" max="10" 
+                                   [attr.aria-describedby]="'ayur-pitta-hint'"
+                                   [attr.aria-invalid]="false"
+                                   [value]="state.ayurvedicIntake().vikritiPitta" 
+                                   (input)="updateAyurvedicField('vikritiPitta', $event)" 
+                                   class="w-full h-8 accent-amber-500 cursor-pointer min-h-[44px]">
+                            <span id="ayur-pitta-hint" class="sr-only">Adjust Pitta dosha aggravation score from 0 to 10</span>
                           </div>
                           <div>
                             <div class="flex justify-between text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
-                              <span>🌿 Kapha (Earth/Water) Aggravation</span>
+                              <label id="ayur-kapha-label" for="ayur-kapha-range">🌿 Kapha (Earth/Water) Aggravation</label>
                               <span>{{ state.ayurvedicIntake().vikritiKapha }}/10</span>
                             </div>
-                            <input type="range" min="0" max="10" [value]="state.ayurvedicIntake().vikritiKapha" (input)="updateAyurvedicField('vikritiKapha', $event)" class="w-full accent-emerald-500 cursor-pointer">
+                            <input id="ayur-kapha-range"
+                                   type="range" min="0" max="10" 
+                                   [attr.aria-describedby]="'ayur-kapha-hint'"
+                                   [attr.aria-invalid]="false"
+                                   [value]="state.ayurvedicIntake().vikritiKapha" 
+                                   (input)="updateAyurvedicField('vikritiKapha', $event)" 
+                                   class="w-full h-8 accent-emerald-500 cursor-pointer min-h-[44px]">
+                            <span id="ayur-kapha-hint" class="sr-only">Adjust Kapha dosha aggravation score from 0 to 10</span>
                           </div>
                         </div>
                       </div>
 
                       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Agni Digestive Fire Status</label>
-                          <select [value]="state.ayurvedicIntake().agniType" (change)="updateAyurvedicField('agniType', $event)" class="w-full text-xs font-semibold p-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-zinc-100">
+                          <label id="ayur-agni-label" for="ayur-agni-select" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Agni Digestive Fire Status</label>
+                          <select id="ayur-agni-select"
+                                  [attr.aria-describedby]="'ayur-agni-hint'"
+                                  [attr.aria-invalid]="false"
+                                  [value]="state.ayurvedicIntake().agniType" 
+                                  (change)="updateAyurvedicField('agniType', $event)" 
+                                  class="w-full text-xs font-semibold p-2 min-h-[44px] bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500">
                             <option value="samagni">Samagni (Balanced Fire)</option>
                             <option value="vishamagni">Vishamagni (Vata Irregular / Variable)</option>
                             <option value="tikshnagni">Tikshnagni (Pitta Hyper / Acidic Fire)</option>
                             <option value="mandagni">Mandagni (Kapha Sluggish / Slow Fire)</option>
                           </select>
+                          <span id="ayur-agni-hint" class="sr-only">Select Ayurvedic Agni digestive metabolism type</span>
                         </div>
                         <div>
-                          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Ama Metabolic Toxicity Score</label>
+                          <label id="ayur-ama-label" for="ayur-ama-range" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block mb-1">Ama Metabolic Toxicity Score</label>
                           <div class="flex items-center gap-2">
-                            <input type="range" min="0" max="10" [value]="state.ayurvedicIntake().amaScore" (input)="updateAyurvedicField('amaScore', $event)" class="w-full accent-rose-500 cursor-pointer">
+                            <input id="ayur-ama-range"
+                                   type="range" min="0" max="10" 
+                                   [attr.aria-describedby]="'ayur-ama-hint'"
+                                   [attr.aria-invalid]="false"
+                                   [value]="state.ayurvedicIntake().amaScore" 
+                                   (input)="updateAyurvedicField('amaScore', $event)" 
+                                   class="w-full h-8 accent-rose-500 cursor-pointer min-h-[44px]">
                             <span class="text-xs font-bold text-rose-600 dark:text-rose-400 w-8">{{ state.ayurvedicIntake().amaScore }}/10</span>
                           </div>
+                          <span id="ayur-ama-hint" class="sr-only">Adjust Ama metabolic toxicity score from 0 to 10</span>
                         </div>
                       </div>
                     </div>

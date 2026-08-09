@@ -1,5 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
+import { TeledentistryService } from './teledentistry.service';
 
 export interface IPeriodontalSystemicRisk {
   sibiScore: number; // Systemic Inflammatory Burden Index (0 - 100)
@@ -19,16 +20,13 @@ export interface IPeriodontalSystemicRisk {
 })
 export class PeriodontalSystemicBridgeService {
   private patientState = inject(PatientStateService);
+  private teledentistry = inject(TeledentistryService);
 
-  readonly hsCrpMgL = signal<number>(2.4); // High Sensitivity C-Reactive Protein (Normal <1.0 mg/L)
-  readonly deepPocketSites = signal<number>(4); // Teeth with PPD >= 4mm
-  readonly bleedingOnProbingPercent = signal<number>(25); // % BOP sites
+  readonly hsCrpMgL = computed<number>(() => this.teledentistry.hsCRP());
+  readonly deepPocketSites = computed<number>(() => this.teledentistry.deepPocketsCount());
+  readonly bleedingOnProbingPercent = computed<number>(() => this.teledentistry.bleedingPercentage());
 
-  readonly sibiScore = computed<number>(() => {
-    // SIBI = (Deep Pockets * 6) + (BOP % * 0.8) + (hs-CRP * 12)
-    const raw = (this.deepPocketSites() * 6) + (this.bleedingOnProbingPercent() * 0.8) + (this.hsCrpMgL() * 12);
-    return Math.min(100, Math.round(raw));
-  });
+  readonly sibiScore = computed<number>(() => this.teledentistry.sibiScore());
 
   readonly systemicRiskAnalysis = computed<IPeriodontalSystemicRisk>(() => {
     const sibi = this.sibiScore();

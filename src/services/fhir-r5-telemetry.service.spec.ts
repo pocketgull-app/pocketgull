@@ -17,13 +17,14 @@ describe('FhirR5TelemetryService Adaptive Alert Suppression (Wachter Doctrine)',
 
     injector = Injector.create({
       providers: [
-        { provide: FhirR5TelemetryService, useClass: FhirR5TelemetryService },
         { provide: PatientStateService, useValue: mockPatientState },
         { provide: PLATFORM_ID, useValue: 'browser' }
       ]
     });
 
-    service = runInInjectionContext(injector, () => injector.get(FhirR5TelemetryService));
+    runInInjectionContext(injector, () => {
+      service = new FhirR5TelemetryService();
+    });
   });
 
   it('should comply with HL7 FHIR R5 SubscriptionTopic specification and return normal state for normal vitals', () => {

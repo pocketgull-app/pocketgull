@@ -17,8 +17,11 @@ describe('YogaAsana3dCoachComponent', () => {
     };
 
     injector = createEnvironmentInjector([
-      YogaAsanaCoachingService,
-      BioHapticFeedbackService,
+      { provide: YogaAsanaCoachingService, useValue: { curatedAsanaLibrary: [
+        { name: 'Cobra Pose', sanskritName: 'Bhujangasana', instructions: ['Lie on stomach', 'Lift chest'] },
+        { name: 'Pigeon Pose', sanskritName: 'Kapotasana', instructions: ['Bring knee forward'] }
+      ] } },
+      { provide: BioHapticFeedbackService, useValue: { triggerHapticPulse: vi.fn() } },
       { provide: DictationService, useValue: mockDictation }
     ], undefined as any);
 

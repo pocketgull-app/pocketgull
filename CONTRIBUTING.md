@@ -8,10 +8,13 @@ Because Pocket Gull is used in high-stakes clinical decision support and emergen
 
 ## 📜 Code of Conduct & Core Principles
 
-1. **Standalone Components**: All Angular UI components MUST be standalone. NgModules are prohibited.
-2. **Signals State Management**: Always favor Angular Signals (`computed`, `signal`, `effect`) over RxJS observables for component state.
-3. **No Unsanitized PHI Logging**: Never commit raw user inputs or un-sanitized string interpolations in log statements (strictly follow CodeQL log injection prevention rules using `%s` / `%d` format specifiers).
-4. **Shift-Left Security**: All pull requests must pass `npm run sentinel:audit`, `npm run lint`, and Vitest test suites.
+We adhere strictly to our [Code of Conduct](file:///c:/Users/philg/Pocketgull/pocketgull/CODE_OF_CONDUCT.md), which embraces **Geek Feminism** principles:
+- **Welcoming Environment & Anti-Gatekeeping**: We welcome contributors of all backgrounds, gender identities, neurodivergences, and experience levels. Technical gatekeeping, elitist testing, and condescension are strictly prohibited.
+- **Valuing Non-Code Labor**: Clinical research, medical accuracy review, documentation, UI accessibility auditing, translation, and community stewardship are first-class contributions equal to code commits.
+- **Standalone Components**: All Angular UI components MUST be standalone. NgModules are prohibited.
+- **Signals State Management**: Always favor Angular Signals (`computed`, `signal`, `effect`) over RxJS observables for component state.
+- **No Unsanitized PHI Logging**: Never commit raw user inputs or un-sanitized string interpolations in log statements (strictly follow CodeQL log injection prevention rules using `%s` / `%d` format specifiers).
+- **Shift-Left Security & Accessibility**: All pull requests must pass `npm run sentinel:audit`, `npm run lint`, accessibility checks, and Vitest test suites.
 
 ---
 

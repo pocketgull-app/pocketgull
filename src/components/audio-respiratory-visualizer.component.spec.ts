@@ -17,7 +17,7 @@ describe('AudioRespiratoryVisualizerComponent', () => {
 
     injector = createEnvironmentInjector([
       { provide: PatientStateService, useValue: mockPatientState },
-      AudioRespiratoryAnalyzerService
+      { provide: AudioRespiratoryAnalyzerService, useFactory: () => new AudioRespiratoryAnalyzerService() }
     ], undefined as any);
 
     runInInjectionContext(injector, () => {

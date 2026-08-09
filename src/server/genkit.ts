@@ -495,3 +495,65 @@ Return all results structured into the response schema.`;
     return JSON.parse(response.text);
   }
 );
+
+// 8. Analyze Medical Wound & Dermatology Flow (Multimodal Clinical Vision)
+export const analyzeMedicalWoundDermatologyFlow = ai.defineFlow(
+  {
+    name: 'analyzeMedicalWoundDermatologyFlow',
+    inputSchema: z.object({
+      base64Image: z.string(),
+      anatomicalSite: z.string().optional(),
+      patientSymptoms: z.string().optional()
+    }),
+    outputSchema: z.object({
+      primaryObservation: z.string(),
+      woundClassification: z.enum(['Erythema', 'Ulceration', 'Laceration', 'Burn', 'Surgical Wound', 'Dermatological Rash', 'Intact Skin', 'Other']),
+      severityTier: z.enum(['Mild', 'Moderate', 'Severe', 'Critical Red Flag']),
+      surfaceAreaMmEstimate: z.string().optional(),
+      exudateDescription: z.string().optional(),
+      erythemaMarginCm: z.number().optional(),
+      recommendedClinicalAction: z.string()
+    })
+  },
+  async ({ base64Image, anatomicalSite, patientSymptoms }) => {
+    let mimeType = 'image/jpeg';
+    const match = base64Image.match(/^data:([^;]+);base64,/);
+    if (match) mimeType = match[1];
+    const base64Data = base64Image.replace(/^data:[^;]+;base64,/, '');
+
+    const prompt = `You are an expert clinical dermatologist and wound care specialist. Analyze the provided clinical photograph.
+Perform a systematic visual assessment:
+1. Identify primary lesion / wound characteristics (erythema, ulceration, border regularity, exudate).
+2. Classify severity tier and estimate affected surface area margin.
+3. Recommend standard-of-care clinical actions (e.g. debridement, culture, urgent surgical consult, topical barrier).
+${anatomicalSite ? 'Anatomical Site: ' + anatomicalSite : ''}
+${patientSymptoms ? 'Reported Symptoms: ' + patientSymptoms : ''}`;
+
+    const response = await ai.generate({
+      model: 'googleai/gemini-3.5-flash',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { text: prompt },
+            { media: { contentType: mimeType, url: `data:${mimeType};base64,${base64Data}` } }
+          ]
+        }
+      ],
+      config: {
+        temperature: 0.1,
+        responseMimeType: 'application/json',
+        // Clinical CDS Imaging Safety Policy: See SECURITY.md §2 (All categories OFF for medical imaging)
+        safetySettings: [
+          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'OFF' },
+          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'OFF' },
+          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'OFF' },
+          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'OFF' }
+        ]
+      }
+    });
+
+    return JSON.parse(response.text);
+  }
+);
+

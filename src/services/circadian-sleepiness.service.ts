@@ -15,6 +15,21 @@ export interface IKssDescriptor {
   emoji: string;
 }
 
+/**
+ * PASS (Pennsylvania Sleepiness Scale / Penn PVT Index) — 7-tier psychomotor vigilance scale.
+ * Developed by Dr. David F. Dinges et al., University of Pennsylvania Division of Sleep & Chronobiology.
+ * 1 = Peak Vigilance (RT < 200ms), 7 = Critical Microsleep Phase (Lapses > 3000ms).
+ */
+export type PassScore = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+export interface IPassDescriptor {
+  score: PassScore;
+  label: string;
+  pvtLapseRisk: string;
+  detail: string;
+  emoji: string;
+}
+
 /** Circadian phase based on clock time. */
 export type CircadianPhase =
   | 'early-morning'    // 05:00–08:00 — alertness building, cortisol surge
@@ -79,8 +94,21 @@ export class CircadianSleepinessService {
     { score: 9, emoji: '💤', label: 'Very Sleepy / Fighting Sleep', detail: 'Severe impairment. Not safe for complex clinical decisions.' },
   ];
 
+  // ── PASS Definitions (University of Pennsylvania School of Medicine PVT Instrument) ──
+  readonly PASS_ITEMS: IPassDescriptor[] = [
+    { score: 1, emoji: '⚡', label: 'PASS 1 — Peak Vigilance', pvtLapseRisk: 'RT < 200ms | 0 Lapses', detail: 'Optimal psychomotor speed. Peak clinical decision capacity.' },
+    { score: 2, emoji: '✨', label: 'PASS 2 — Optimal Readiness', pvtLapseRisk: 'RT 200–240ms | < 1 Lapse', detail: 'Sustained focus, minimal fatigue onset.' },
+    { score: 3, emoji: '🟢', label: 'PASS 3 — Moderate Focus', pvtLapseRisk: 'RT 240–280ms | 1–2 Lapses', detail: 'Slight reaction slowing. Normal shift operational state.' },
+    { score: 4, emoji: '🟡', label: 'PASS 4 — Mild Impairment', pvtLapseRisk: 'RT 280–350ms | 2–3 Lapses', detail: 'Sub-second microsleep vulnerability detected. Caution advised.' },
+    { score: 5, emoji: '🟠', label: 'PASS 5 — Significant Fatigue', pvtLapseRisk: 'RT 350–500ms | 3–5 Lapses', detail: 'Noticeable vigilance lapses. Auto-acronym expansion & enlarged hitboxes active.' },
+    { score: 6, emoji: '🔴', label: 'PASS 6 — Severe Impairment', pvtLapseRisk: 'RT > 500ms | 6+ Lapses', detail: 'High error probability. Enforce dual-clinician confirmation on high-risk orders.' },
+    { score: 7, emoji: '💤', label: 'PASS 7 — Critical Microsleep', pvtLapseRisk: 'Lapses > 3000ms', detail: 'Severe psychomotor deficit. Mandatory 10-minute AVS theta reset required.' }
+  ];
+
   // ── Reactive state ─────────────────────────────────────────────────────────
+  readonly activeScaleMode = signal<'karolinska' | 'pennsylvania'>('karolinska');
   readonly clinicianKss = signal<KssScore | null>(null);
+  readonly clinicianPass = signal<PassScore | null>(null);
   readonly patientKss   = signal<KssScore | null>(null);
   readonly dismissed    = signal<boolean>(false);
   readonly now          = signal<Date>(new Date());

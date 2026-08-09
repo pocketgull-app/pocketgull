@@ -18,7 +18,9 @@ export class ThemeService {
   public textSizeScale = signal<'standard' | 'large' | 'extra-large'>('standard');
   public isDyslexiaFontEnabled = signal<boolean>(false);
   public isHighContrastEnabled = signal<boolean>(false);
-  private platformId = inject(PLATFORM_ID);
+  private platformId = (() => {
+    try { return inject(PLATFORM_ID); } catch (e) { return 'browser'; }
+  })();
   private storage = (() => {
     try { return inject(SecureStorageService); } catch (e) { return new SecureStorageService(); }
   })();

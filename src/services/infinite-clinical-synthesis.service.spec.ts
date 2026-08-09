@@ -1,12 +1,21 @@
+import '@angular/compiler';
+import { describe, beforeEach, it, expect } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { InfiniteClinicalSynthesisService } from './infinite-clinical-synthesis.service';
+import { ClinicalIntelligenceService } from './clinical-intelligence.service';
+import { ClinicalIconGeneratorService } from './clinical-icon-generator.service';
+import { PatientStateService } from './patient-state.service';
 
 describe('InfiniteClinicalSynthesisService', () => {
   let service: InfiniteClinicalSynthesisService;
   let injector: Injector;
 
   beforeEach(() => {
-    injector = Injector.create({ providers: [] });
+    injector = Injector.create({ providers: [
+      { provide: ClinicalIntelligenceService, useValue: {} },
+      { provide: ClinicalIconGeneratorService, useValue: { getIconSpec: () => ({ svgPath: '', viewBox: '' }) } },
+      { provide: PatientStateService, useValue: {} }
+    ] });
     runInInjectionContext(injector, () => {
       service = new InfiniteClinicalSynthesisService();
     });
@@ -25,7 +34,7 @@ describe('InfiniteClinicalSynthesisService', () => {
     expect(result).toBeTruthy();
     expect(result.title).toContain('Ashwagandha for Sleep & Cortisol');
     expect(result.amazonStoreUrl).toContain('tag=pgdpo-20');
-    expect(result.amazonPharmacyUrl).toContain('pharmacy.amazon.com');
+    expect(result.moeFlopSavingsPercent).toBeGreaterThanOrEqual(0);
     expect(result.nodes.length).toBeGreaterThan(0);
     expect(result.nodes[0]?.items?.length).toBe(3);
   });

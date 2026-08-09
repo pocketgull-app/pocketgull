@@ -11,34 +11,106 @@ This interactive reference maps Pocket Gull's complete Git release history, comp
 
 ---
 
-## Git Release Milestone History (SEMVER Roadmap)
+## Version Evolution Timeline
+
+### Foundation Series (v0.x)
+
+| Version | Milestone | Key Deliverables |
+| :--- | :--- | :--- |
+| `v0.1.0` | **Initial Release** | Gemini Live Agent Challenge submission |
+| `v0.2.0` | **SSR Architecture** | Server-Side Rendering, Smartwatch Optimization, Printable Stationery |
+| `v0.3.0` | **Context-Aware AI** | 3D Medical Viewer, DICOM Scans Library, Contextual Chat |
+| `v0.4.0` | **Genkit Integration** | Core Medical Services, Genkit AI Flows, SSR Architecture |
+| `v0.5.0` | **Origami Branding** | Seagull Branding, `pocketgull.app` Domain Launch, Print Preview |
+| `v0.6.0` | **Monorepo & 3D** | Monorepo Env Fallback, Three.js Upgrades, OHIF Viewer |
+| `v0.7.0` | **Circadian UI** | Circadian Theming, KSS Sleep Gateway, Philips Hue Sync |
+| `v0.8.0` | **Hemi-Sync Audio** | Binaural Audio Engine, Athletic AVS Protocols, Real-Time DSP |
+| `v0.9.0` | **Multilingual** | Multilingual Care Plans, Orthomolecular Linus Pauling Profile |
+| `v0.10.0` | **Delegation & Gesture** | Secure Delegation Access Codes, Gesture Unlock, Animal Comfort |
+
+### Stable Release Series (v1.x)
+
+| Version | Milestone | Key Deliverables |
+| :--- | :--- | :--- |
+| `v1.0.0‑rc1` | **Security & PQC** | Post-Quantum Cryptography, Enterprise Connectors |
+| `v1.0.0‑rc2` | **Emergency Mode** | Client Barge-In, Good Samaritan Care, Draw-to-Unlock |
+| `v1.0.0‑rc3` | **DNS & Enterprise** | Porkbun Automation, EHR Blueprints, Security Hardening |
+| `v1.0.0‑rc4` | **Vertex AI Live** | Vertex AI Enterprise Migration, Bidirectional WebSocket Proxy |
+| `v1.0.0‑rc5` | **Docs & Build** | Documentation Sync, Build Hardening, Security Patch |
+| `v1.0.0‑rc6` | **CodeQL Full Remediation** | Rate Limiting, Safety Filters, Taint Chain Breakage |
+| `v1.0.0‑rc7` | **Companion Apps** | Flutter Lint Hardening, Mocked Widget Test Suite |
+| `v1.0.0‑rc8` | **Dynamic Mocks** | Dynamic Mock Assessments, Fallback Roster Sync |
+| `v1.0.0‑rc9` | **3D Search** | Anatomical Search, Viewport-Contextual CMP Telemetry |
+| `v1.0.0‑rc10` | **PhysioNet Lens** | Electrophysiology Waveforms, 7s Origami Unfolding Animation |
+| `v1.0.0‑rc11` | **Multi-Paradigm** | Multi-paradigm Data Model Enhancements |
+| `v1.0.0‑rc12` | **Chrono Planner** | 7-Day Meal Planner, Micro-Climate Relocation, KSS Expansion |
+| `v1.1.0` | **AIGA & Storm Shield** | AIGA Models, Storm Shield, Health Trajectory Storybook |
+| `v1.2.0` | **10 Instruments** | Standardized Clinical Assessments, Dynamic 3D Viewport Sync |
+| `v1.3.1` | **Scale Resolution** | Scale Bottleneck Resolution, Security Hardening |
+| `v1.4.0` | **Telemetry Pipeline** | Refactored Architecture, Telemetry Data Pipeline |
+| `v1.5.0` | **Monorepo Boundaries** | Package Boundary Gates, Security Auditing |
+| `v1.7.0` | **Container Security** | 5 CVE Fixes, GCP Data Agent Proxy, Flutter Web, Java 21 |
+| `v1.9.2` | **Type Safety** | Type Safety Hardening, Test Suite Stabilization |
+| `v1.10.0` | **Accessibility (a11y)** | Clinical Inclusiveness & Accessibility (DEI) Suite |
+| `v1.14.1` | **OpenSSF Scorecard** | OpenSSF Scorecard Compliance, Refactored Layout Components |
+| `v1.15.0` | **Infrastructure** | Package Boundary Gates, Monorepo Infrastructure Cleanup |
+
+---
+
+## Git Release Milestone Evolution (Gantt)
 
 ```mermaid
 gantt
-    title Pocket Gull Release Milestone Evolution (v1.0.0-rc1 -> v1.2.0)
+    title Pocket Gull Release Milestone Evolution (v0.1.0 → v1.15.0)
     dateFormat  YYYY-MM-DD
-    axisFormat  %b %d
+    axisFormat  %b '%y
 
-    section Core Architecture
-    v1.0.0-rc1 (Angular Standalone & Signals)       :done, rc1, 2026-05-01, 2026-05-05
-    v1.0.0-rc2 (Three.js Anatomy & Procedural Spine):done, rc2, 2026-05-06, 2026-05-12
+    section Foundation (v0.x)
+    v0.1.0 Gemini Agent Challenge          :done, v01, 2026-03-01, 2026-03-14
+    v0.2.0 SSR & Smartwatch                :done, v02, 2026-03-15, 2026-03-28
+    v0.3.0 3D Viewer & AI Chat             :done, v03, 2026-03-29, 2026-04-08
+    v0.4.0 Genkit & Core Services          :done, v04, 2026-04-09, 2026-04-18
+    v0.5.0 Branding & Domain Launch        :done, v05, 2026-04-19, 2026-04-25
+    v0.6.0 Monorepo & Three.js             :done, v06, 2026-04-26, 2026-04-30
 
-    section AI & Multi-Agent ADK
-    v1.0.0-rc3 (Google GenAI & Multi-Lens Prompts)  :done, rc3, 2026-05-13, 2026-05-20
-    v1.0.0-rc4 (FHIR R4 Serialization & Base64)     :done, rc4, 2026-05-21, 2026-05-28
-    v1.0.0-rc5 (Good Samaritan Offline CPR Mode)    :done, rc5, 2026-05-29, 2026-06-05
+    section Circadian & Audio (v0.7–0.10)
+    v0.7.0 Circadian UI & KSS             :done, v07, 2026-05-01, 2026-05-04
+    v0.8.0 Hemi-Sync Audio & AVS          :done, v08, 2026-05-05, 2026-05-10
+    v0.9.0 Multilingual & Orthomolecular   :done, v09, 2026-05-11, 2026-05-16
+    v0.10.0 Delegation & Gesture           :done, v010, 2026-05-17, 2026-05-20
 
-    section Hardening & Security
-    v1.0.0-rc6 (CodeQL Remediation & Safety Filters):done, rc6, 2026-06-06, 2026-06-14
-    v1.0.0-rc7 (Companion Apps & Mocked Test Suite) :done, rc7, 2026-06-15, 2026-06-28
-    v1.0.0-rc8 (Dynamic Mock Data & Task Bracketing):done, rc8, 2026-07-01, 2026-07-16
+    section Release Candidates (rc1–rc6)
+    v1.0.0-rc1 Security & PQC Crypto      :done, rc1, 2026-05-21, 2026-05-26
+    v1.0.0-rc2 Emergency & Good Samaritan  :done, rc2, 2026-05-27, 2026-06-01
+    v1.0.0-rc3 DNS & Enterprise EHR        :done, rc3, 2026-06-02, 2026-06-08
+    v1.0.0-rc4 Vertex AI Live Proxy        :done, rc4, 2026-06-09, 2026-06-14
+    v1.0.0-rc5 Docs & Build Hardening      :done, rc5, 2026-06-15, 2026-06-20
+    v1.0.0-rc6 CodeQL Full Remediation     :done, rc6, 2026-06-21, 2026-06-28
 
-    section Telemetry & Models
-    v1.0.0-rc10 (PhysioNet Lens & Origami Unfolding):done, rc10, 2026-07-21, 2026-07-21
-    v1.1.0 (AIGA Models, Storm Shield & Passport)   :done, v11, 2026-07-21, 2026-07-22
+    section Release Candidates (rc7–rc12)
+    v1.0.0-rc7 Flutter Companion Apps      :done, rc7, 2026-06-29, 2026-07-05
+    v1.0.0-rc8 Dynamic Mock Data           :done, rc8, 2026-07-06, 2026-07-12
+    v1.0.0-rc9 3D Anatomical Search        :done, rc9, 2026-07-13, 2026-07-16
+    v1.0.0-rc10 PhysioNet & Origami        :done, rc10, 2026-07-17, 2026-07-20
+    v1.0.0-rc11 Multi-Paradigm Models      :done, rc11, 2026-07-21, 2026-07-21
+    v1.0.0-rc12 Chrono Meal Planner        :done, rc12, 2026-07-22, 2026-07-23
 
-    section Multimodal Instruments & Paradigms
-    v1.2.0 (10 Instruments, 3D Sync & Rice Paper)   :active, v12, 2026-07-22, 2d
+    section Stable Releases (v1.1–v1.15)
+    v1.1.0 AIGA & Storm Shield             :done, v11, 2026-07-24, 2026-07-26
+    v1.2.0 Clinical Instruments            :done, v12, 2026-07-27, 2026-07-28
+    v1.3.1 Scale Resolution                :done, v13, 2026-07-29, 2026-07-30
+    v1.4.0 Telemetry Pipeline              :done, v14, 2026-07-31, 2026-08-01
+    v1.5.0 Monorepo Boundaries             :done, v15, 2026-08-02, 2026-08-02
+    v1.7.0 Container Security              :done, v17, 2026-08-03, 2026-08-04
+    v1.9.2 Type Safety                     :done, v19, 2026-08-05, 2026-08-05
+    v1.10.0 Accessibility Suite            :done, v110, 2026-08-06, 2026-08-06
+    v1.14.1 OpenSSF Scorecard              :done, v114, 2026-08-07, 2026-08-07
+    v1.15.0 Infrastructure Cleanup         :active, v115, 2026-08-08, 1d
+
+    section Future (Q4 2026)
+    v2.0.0 FHIR R5 & Enterprise           :crit, v20, 2026-09-01, 2026-10-15
+    v2.1.0 Google Maps Good Samaritan     :v21, 2026-10-16, 2026-11-15
+    v3.0.0 Multi-Tenant SaaS              :v30, 2026-12-01, 2027-02-01
 ```
 
 ---
@@ -47,34 +119,38 @@ gantt
 
 ```mermaid
 graph TD
-    UI[App Component<br/>app.component.ts] -->|Signals| State[PatientState Service<br/>patient-state.service.ts]
+    UI["App Component<br/>app.component.ts"] -->|Signals| State["PatientState Service<br/>patient-state.service.ts"]
 
-    subgraph StateManagement [State Management Layer]
-        State --> Vitals[Vitals Signal Store]
-        State --> Symptoms[Symptoms & Issues]
-        State --> Conditions[FHIR Active Conditions]
+    subgraph StateManagement ["State Management Layer"]
+        State --> Vitals["Vitals Signal Store"]
+        State --> Symptoms["Symptoms & Issues"]
+        State --> Conditions["FHIR Active Conditions"]
+        State --> Occupation["Occupational Profile"]
     end
 
-    subgraph TelemetryLayer [Clinical Telemetry & Wearable Ingestion]
-        BLE[BLE Wearables Service<br/>ble-wearables.service.ts] --> State
-        FHIR5[FHIR R5 Telemetry Service<br/>fhir-r5-telemetry.service.ts] --> State
-        Physio[PhysioNet Waveform Lens<br/>📡 PhysioNet Waveforms] --> State
+    subgraph TelemetryLayer ["Clinical Telemetry & Wearable Ingestion"]
+        BLE["BLE Wearables Service<br/>ble-wearables.service.ts"] --> State
+        FHIR5["FHIR R5 Telemetry Service<br/>fhir-r5-telemetry.service.ts"] --> State
+        Physio["PhysioNet Waveform Lens<br/>📡 PhysioNet Waveforms"] --> State
+        Fitbit["Fitbit Health API<br/>fitbit.ts OAuth Router"] --> State
     end
 
-    subgraph Visual3D [3D Visualization & Kinetic Canvas]
-        Body3D[Body 3D Viewer<br/>body-3d-viewer.component.ts] --- |Camera Focus| State
-        Zamecznik[Zamecznik Calibrator<br/>zamecznik-canvas.component.ts] --- |Box Breathing 4-4-4-4| State
+    subgraph Visual3D ["3D Visualization & Kinetic Canvas"]
+        Body3D["Body 3D Viewer<br/>body-3d-viewer.component.ts"] ---|Camera Focus| State
+        Zamecznik["Zamecznik Calibrator<br/>zamecznik-canvas.component.ts"] ---|Box Breathing 4-4-4-4| State
     end
 
-    subgraph AIEngine [Google GenAI & ADK Multi-Agent Core]
-        Intelligence[Clinical Intelligence Service<br/>clinical-intelligence.service.ts]
-        ADK[ADK Live Consult Service<br/>adk-live.service.ts]
-        Prompts[Clinical Prompts<br/>clinical-prompts.ts]
+    subgraph AIEngine ["Google GenAI & ADK Multi-Agent Core"]
+        Intelligence["Clinical Intelligence Service<br/>clinical-intelligence.service.ts"]
+        ADK["ADK Live Consult Service<br/>adk-live.service.ts"]
+        Prompts["Clinical Prompts<br/>clinical-prompts.ts"]
+        WebLLM["WebLLM Local Inference<br/>webllm.provider.ts"]
     end
 
     State --> Intelligence
     Intelligence --> ADK
-    ADK -->|Gemini 2.5 Flash| Prompts
+    ADK -->|"Gemini 2.5 Flash"| Prompts
+    Intelligence --> WebLLM
 ```
 
 ---
@@ -87,8 +163,41 @@ graph TD
 | **📡 PhysioNet Telemetry** | `qtcFridericia` | Fridericia Corrected QT | `380 – 440` | `ms` |
 | **📡 PhysioNet Telemetry** | `stSegmentDev` | ST Elevation / Depression | `-0.05 – +0.05` | `mV` |
 | **📡 PhysioNet Telemetry** | `hrvLfHfRatio` | Sympathovagal Balance | `0.8 – 1.5` | `ratio` |
-| **🧪 CMP Lab Panel** | `troponinI` | High-Sensitivity Cardiac Troponin | `&lt; 0.04` | `ng/mL` |
+| **📡 PhysioNet Telemetry** | `rmssd` | Parasympathetic Vagal Tone (HRV) | `20 – 75` | `ms` |
+| **🧪 CMP Lab Panel** | `troponinI` | High-Sensitivity Cardiac Troponin | `< 0.04` | `ng/mL` |
 | **🧪 CMP Lab Panel** | `eGfr` | Glomerular Filtration Rate | `> 90` | `mL/min/1.73m²` |
 | **🧪 CMP Lab Panel** | `altAstRatio` | Hepatic Transaminases | `0.8 – 1.2` | `ratio` |
+| **🧪 CMP Lab Panel** | `hba1c` | Glycated Hemoglobin | `< 5.7` | `%` |
 | **🫁 Somatic Box Breathing** | `boxCycleDuration` | Square Breathing (4-4-4-4) | `16.0` | `seconds` |
 | **🚨 Good Samaritan CPR** | `cprCompressionRate` | AHA BLS CPR Metronome | `110 – 120` | `BPM` |
+| **📊 Clinical Assessments** | `phq9Score` | PHQ-9 Depression Screening | `0 – 4` | `points` |
+| **📊 Clinical Assessments** | `gad7Score` | GAD-7 Anxiety Assessment | `0 – 4` | `points` |
+| **📊 Clinical Assessments** | `kssScore` | Karolinska Sleepiness Scale | `1 – 5` | `level` |
+
+---
+
+## Product Roadmap & Future Paradigm Integrations
+
+### 🚀 Q3 – Q4 2026: Real-Time Multimodal Expansion
+
+- [x] **LOINC Assessment Suite**: Standardized clinical scoring (GAD-7, PHQ-9, Y-BOCS, KSS, ISI, C-SSRS)
+- [x] **OpenSSF Security 10/10**: SHA-pinned GitHub Actions, automated CodeQL SAST, Dependabot automation
+- [x] **Expanded Multi-Lens Paradigms**: Functional Medicine & Chronobiology metrics in `app-analysis-report`
+- [x] **Full Multimodal WebRTC Audio Stream**: Sub-200ms latency Gemini 2.5 Live session streaming
+- [ ] **Google Maps Good Samaritan Integration**: Nearby AED, ER, and pharmacy geolocation for emergency bypass mode
+- [ ] **DICOM AI Annotations**: Gemini Vision-powered radiology annotation overlays
+
+### 🔮 H1 2027: Enterprise & FHIR R5 Telemetry
+
+- [x] **FHIR R5 Resource Store Synchronization**: Bi-directional sync with Google Cloud Healthcare API
+- [x] **Wearable Sensor Fusion**: Real-time PPG / ECG waveform processing via BLE Web Bluetooth API
+- [x] **Offline PWA Capabilities**: Edge-cached clinical intelligence using WebAssembly & Transformers.js
+- [ ] **Multi-Tenant SaaS Architecture**: Organization-scoped patient registries with row-level security
+- [ ] **HL7v2 / X12 Gateway**: Legacy EHR integration adapter for hospital information systems
+- [ ] **Clinical Decision Support Hooks**: CDS Hooks 2.0 integration for EHR-embedded recommendations
+
+### 🏛️ H2 2027: Research & Regulatory
+
+- [ ] **FDA 21 CFR Part 11 Compliance**: Electronic signatures and audit trail for regulatory submission
+- [ ] **IRB Protocol Builder**: Automated Institutional Review Board protocol generation from care plans
+- [ ] **AlphaFold Protein Explorer**: Structural biology lens for pharmacogenomic drug-target visualization

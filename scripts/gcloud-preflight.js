@@ -15,9 +15,17 @@ try {
     console.warn(`⚠️ [Warning] Active project is "${project}". Standard deployment target is "gen-lang-client-0540208645".`);
   }
 
-  // 3. Cloud Run Service URL check
+  // 3. Cloud Run Service URL & Scaling Bounds check
   const serviceUrl = execSync('gcloud run services describe pocket-gull --project gen-lang-client-0540208645 --region us-central1 --format="value(status.url)"', { encoding: 'utf-8' }).trim();
   console.log(`✅ [Cloud Run] Active URL: ${serviceUrl}`);
+
+  try {
+    const minInstances = execSync('gcloud run services describe pocket-gull --project gen-lang-client-0540208645 --region us-central1 --format="value(spec.template.metadata.annotations[\'autoscaling.knative.dev/minScale\'])"', { encoding: 'utf-8' }).trim();
+    const maxInstances = execSync('gcloud run services describe pocket-gull --project gen-lang-client-0540208645 --region us-central1 --format="value(spec.template.metadata.annotations[\'autoscaling.knative.dev/maxScale\'])"', { encoding: 'utf-8' }).trim();
+    console.log(`✅ [Cost Guardrails] Cloud Run minScale: ${minInstances || '0'}, maxScale: ${maxInstances || 'uncapped'}`);
+  } catch (e) {
+    console.log('ℹ️ [Cost Guardrails] Cloud Run scaling annotations ready for deploy enforcement.');
+  }
 
   console.log('\n✨ [Preflight Complete] gcloud deployment environment is 100% healthy and ready.');
 } catch (e) {

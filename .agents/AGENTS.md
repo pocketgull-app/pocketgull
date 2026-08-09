@@ -120,4 +120,31 @@
 - **Strict Pre-Commit Self-Healing**: Husky pre-commit hooks (`lint-staged`, commit-msg 72-char limit, Sentinel security guard) are mandatory. If a pre-commit check fails, read the un-truncated log output, fix the root cause, and re-commit. Never bypass hooks with `--no-verify`.
 - **Token Budget & Research Subagent Isolation**: Offload heavy codebase surveys, log extractions, or multi-file research to background subagents (`research` or `self`). Allow the primary session to maintain clean focus on implementation and verification.
 
+## Data Science & ML Competition Engineering Standards
+1. **Leak-Free Cross-Validation Anchoring (`GroupKFold`)**: In medical imaging datasets where patients have multiple series/scans, group splits strictly by `patient_id` using `GroupKFold(n_splits=5)` to prevent patient-feature leakage between train and validation splits.
+2. **Empirical Pipeline Verification (Numerical Proof First)**: Never claim an architecture edit or post-processing pipeline works based on intuition alone. Record Out-of-Fold (OOF) metric progression at every stage.
+3. **Experiment Tracking & Model Hashing (`MLflow` / `W&B` / `git` SHA)**: Log seed, git commit SHA, exact hyperparameters, and OOF target scores for every run. Save weights named by OOF score (e.g. `convnext_large_fold0_auc0.942.pt`).
+4. **Asymmetric Loss (ASL) for Specificity & Class Imbalance**: Use Asymmetric Loss with $\gamma_- = 4.0, \gamma_+ = 1.0, \text{clip} = 0.05$ for sparse multi-label targets to focus gradient updates on hard positive abnormalities.
+5. **Anatomical Co-Occurrence Prior Calibration**: Build an empirical target co-occurrence matrix $M_{ij} = \mathbb{P}(\text{Target}_j \mid \text{Target}_i)$ and calibrate predicted probabilities using Bayesian prior smoothing.
+6. **Diversity Ensembling & 2nd-Level Meta-Stacking**: Train 2nd-level Gradient Boosted Trees (LightGBM/XGBoost) on Out-of-Fold predictions from diverse backbones (ConvNeXt + Swin + mDeBERTa).
+7. **Nelder-Mead Target-Specific Threshold Optimization**: Use Nelder-Mead optimization to tune target decision thresholds $\tau_1, \tau_2, \dots, \tau_K$ on OOF predictions rather than using default $0.50$.
+8. **Sub-Second Efficiency Latency Optimization**: For competition efficiency tracks, sample 8 central key slices, export PyTorch models to ONNX Runtime with FP16, and use multi-threaded asynchronous DICOM I/O pools.
+9. **Semantic Versioning (`SemVer v1.0.0`) & Clean Identifiers**: Protect competitive edge by using clean, standardized public version tags without exposing internal proprietary recipe names on public leaderboards.
+10. **Continuous Automated Verification (`vitest` / `pytest`)**: Write automated unit tests covering preprocessors, matrix math formulas, and DICOM tensor transformations across edge cases (empty text reports, missing headers, NaNs).
+## Anti-Surveillance & Ephemeral Data Sovereignty Standards
+- **Default to Edge Computation**: All real-time telemetry calculations, biophysical equations, and clinical symptom classifications MUST run locally on the client device via WebAssembly (WASM), WebGPU, or client-side Web Workers (`OfflineEdgeAiService`). External API calls are reserved for explicit, user-initiated AI consults.
+- **Prohibition of Third-Party Trackers**: Zero third-party analytics pixels, fingerprinting scripts, or passive telemetry pingers (Google Analytics, Segment, Mixpanel, Meta Pixel) are permitted.
+- **Explicit Opt-In Telemetry**: All network operations require deliberate, user-initiated actions. Passive background harvesting of location, mic audio, or user keystrokes is strictly prohibited.
+- **1-Click Ephemeral State Purging**: All active clinical state MUST be stored in ephemeral Angular Signals and transient local storage, with 1-click state purging capabilities (`purgeTransientPatientState`).
+
+## Skeptical Epistemology & Falsifiability Standards
+- **Popperian Null-Hypothesis ($H_0$) Testing**: Every clinical or biophysical metric evaluation MUST compute $p$-values against population baseline means (`SkepticalEpistemologyService`). Any observation where $p \ge 0.05$ MUST trigger an explicit `skepticalWarningNotice` disclosing that the finding cannot reject the null hypothesis.
+- **Cochrane Risk of Bias (RoB 2)**: All literature references and clinical citations MUST incorporate explicit Cochrane Risk of Bias assessments across randomization, intervention deviation, missing data, and measurement bias.
+- **Evidence Hierarchy Demarcation**: Clinical recommendations MUST be explicitly tagged with evidence tiers (`Level A (RCTs)`, `Level B (Cohort)`, or `Level C (Expert Consensus / Plausibility)`) to prevent uncritical acceptance or science-washing.
+- **Socratic Evidence Literacy**: Analysis reports MUST embed interactive Socratic challenges to test user critical reasoning, correlation vs. causation discernment, and publication bias awareness.
+
+## WebMCP Tool & Browser Agent Governance
+- **Explicit Tool Contracts**: Every browser tool exposed to AI model contexts MUST be registered via `WebMcpRegistrationService`, declare strict JSON Schema inputs, and provide an explicit `AbortController` cancellation signal.
+- **Mandatory Spec Coverage**: Any addition or modification to registered WebMCP tools MUST include corresponding unit tests in `webmcp-registration.service.spec.ts` verifying registration, execution, and error handling.
+
 

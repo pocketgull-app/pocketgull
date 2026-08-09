@@ -1,3 +1,4 @@
+import '@angular/compiler';
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
@@ -8,8 +9,9 @@ const __dirname = dirname(__filename);
 export default defineConfig({
     test: {
         globals: true,
+        environment: 'jsdom',
         root: __dirname,
-        setupFiles: ['./tests/setup.ts'],
+        setupFiles: [`${__dirname}/tests/setup.ts`],
         include: [
             'src/**/*.spec.ts',
             'tests/**/*.spec.ts'

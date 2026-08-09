@@ -2,13 +2,21 @@ import '@angular/compiler';
 import { describe, it, expect } from 'vitest';
 import { Injector, runInInjectionContext, PLATFORM_ID } from '@angular/core';
 import { DictationService } from './dictation.service';
+import { PatientStateService } from './patient-state.service';
+import { PatientManagementService } from './patient-management.service';
+import { PetAuditoryService } from './pet-auditory.service';
+import { AmbientLightingService } from './ambient-lighting.service';
 
 describe('DictationService & Voice Simulation Suite', () => {
 
   const createService = () => {
     const injector = Injector.create({
       providers: [
-        { provide: PLATFORM_ID, useValue: 'browser' }
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: PatientStateService, useValue: {} },
+        { provide: PatientManagementService, useValue: {} },
+        { provide: PetAuditoryService, useValue: {} },
+        { provide: AmbientLightingService, useValue: {} }
       ]
     });
     return runInInjectionContext(injector, () => new DictationService());

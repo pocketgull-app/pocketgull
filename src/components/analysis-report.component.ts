@@ -3,7 +3,7 @@ import { CommonModule, TitleCasePipe } from '@angular/common';
 import { ClinicalIntelligenceService, ITranscriptEntry, AnalysisLens } from '../services/clinical-intelligence.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
-import { HistoryEntry } from '../services/patient.types';
+import { HistoryEntry, IPatient, IPatientVitals } from '../services/patient.types';
 import { MarkdownService } from '../services/markdown.service';
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
 import { ParadigmLyricsService } from '../services/paradigm-lyrics.service';
@@ -29,7 +29,7 @@ import { MedicalDecoderService } from '../services/medical-decoder.service';
 import { RevealDirective } from '../directives/reveal.directive';
 import { NodeAgentDialogComponent, INodeAgentDialogData } from './node-agent-dialog.component';
 import { ClinicalAssessmentsSuiteComponent } from './clinical-assessments-suite.component';
-import { AssessmentsLensTabComponent } from './analysis-report/assessments-lens-tab.component';
+import { ANALYSIS_LENS_TAB_COMPONENTS } from './analysis-report';
 import { ClinicalMenuComponent } from './clinical-menu.component';
 import { KssCognitiveShieldComponent } from './kss-cognitive-shield.component';
 import { CarePlanPrintPreviewComponent } from './care-plan-print-preview.component';
@@ -37,6 +37,7 @@ import { MoodConsciousnessMatrixComponent } from './mood-consciousness-matrix.co
 import { UkRioPubmedSourcingComponent } from './uk-rio-pubmed-sourcing.component';
 import { DietaryAllergyShieldComponent } from './dietary-allergy-shield.component';
 import { LensInsightSparkShieldComponent } from './lens-insight-spark-shield.component';
+import { LensRsnaKneeComponent } from './lens-rsna-knee.component';
 import { ParadigmClinicalDashboardComponent } from './paradigm-clinical-dashboard.component';
 import { GeolocationalHealthRelocationComponent } from './geolocational-health-relocation.component';
 import { ClinicalActLensMapperService } from '../services/clinical-act-lens-mapper.service';
@@ -69,15 +70,6 @@ import { BionicReadingService } from '../services/bionic-reading.service';
 import { SkepticalEpistemologyService } from '../services/skeptical-epistemology.service';
 import { FhirIntegrationService } from '../services/fhir-integration.service';
 import { SocraticChallengeCardComponent } from './socratic-challenge-card.component';
-
-import { TeledentistrySystemicLensComponent } from './analysis-report/teledentistry-systemic-lens.component';
-import { ChronobiologyMatrixLensTabComponent } from './analysis-report/chronobiology-matrix-lens-tab.component';
-import { FunctionalMedicineMatrixLensTabComponent } from './analysis-report/functional-medicine-matrix-lens-tab.component';
-import { MaternalPostpartumLensTabComponent } from './analysis-report/maternal-postpartum-lens-tab.component';
-import { SevenGenerationsStewardshipLensTabComponent } from './analysis-report/seven-generations-stewardship-lens-tab.component';
-import { SocraticEpistemologyLensTabComponent } from './analysis-report/socratic-epistemology-lens-tab.component';
-import { NutritionalBypassLensTabComponent } from './analysis-report/nutritional-bypass-lens-tab.component';
-import { EmtHandoffLensTabComponent } from './analysis-report/emt-handoff-lens-tab.component';
 import { LocalGemmaStudioComponent } from './local-gemma-studio.component';
 import { TriParadigmSwarmCardComponent } from './tri-paradigm-swarm-card.component';
 import { PharmacogenomicsCardComponent } from './pharmacogenomics-card.component';
@@ -88,18 +80,12 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
   standalone: true,
   imports: [
     CommonModule,
+    ...ANALYSIS_LENS_TAB_COMPONENTS,
     LocalGemmaStudioComponent,
     TriParadigmSwarmCardComponent,
     PharmacogenomicsCardComponent,
     BiometricSensorFusionCardComponent,
-    TeledentistrySystemicLensComponent,
-    ChronobiologyMatrixLensTabComponent,
-    FunctionalMedicineMatrixLensTabComponent,
-    MaternalPostpartumLensTabComponent,
-    SevenGenerationsStewardshipLensTabComponent,
-    SocraticEpistemologyLensTabComponent,
-    NutritionalBypassLensTabComponent,
-    EmtHandoffLensTabComponent,
+    LensRsnaKneeComponent,
     ClinicalSleepTwinDashboardComponent,
     ChronobiologyMatrixComponent,
     FunctionalMedicineMatrixComponent,
@@ -117,7 +103,6 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
     RevealDirective,
     NodeAgentDialogComponent,
     ClinicalAssessmentsSuiteComponent,
-    AssessmentsLensTabComponent,
     ClinicalMenuComponent,
     KssCognitiveShieldComponent,
     MoodConsciousnessMatrixComponent,
@@ -215,6 +200,13 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
                 [class]="activeLens() === 'Summary Overview' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
                 class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
                 <span>📋</span> Overview
+              </button>
+
+              <button (click)="changeLens('RSNA Knee Abnormality')"
+                data-testid="tab-rsna-knee"
+                [class]="activeLens() === 'RSNA Knee Abnormality' ? '!bg-cyan-600 !text-white border-cyan-500 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-900/60 hover:bg-cyan-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
+                <span>🦵</span> RSNA Knee AI
               </button>
  
               <button (click)="changeLens('Treatment Matrix')"
@@ -335,6 +327,13 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
                     title="Toggle Bionic Reading Focus across all 13 Clinical Lenses">
               <span>📖 Bionic Focus</span>
               <span>{{ bionicReading.isBionicReadingEnabled() ? 'ON' : 'OFF' }}</span>
+            </button>
+
+            <!-- Unified Clinical Export & Portability Hub Quick Trigger -->
+            <button (click)="showClinicalToolsModal.set(true)"
+                    class="py-1.5 px-3 rounded-lg bg-indigo-950 hover:bg-indigo-900 text-indigo-200 border border-indigo-500/40 text-[11px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 shrink-0"
+                    title="Open Clinical Tools & Export Hub">
+              <span>📥 Export Hub</span>
             </button>
 
           </div>
@@ -528,6 +527,10 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
               }
             </div>
           }
+
+          @if (activeLens() === 'RSNA Knee Abnormality') {
+            <app-lens-rsna-knee></app-lens-rsna-knee>
+          }
         }
 
           @if (activeLens() === 'Chronobiology Matrix') {
@@ -594,12 +597,32 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
             <app-seven-generations-stewardship-lens-tab class="block my-6"></app-seven-generations-stewardship-lens-tab>
           }
 
+          @if (activeLens() === 'Summary Overview') {
+            <app-summary-overview-lens-tab class="block my-6"></app-summary-overview-lens-tab>
+          }
+
+          @if (activeLens() === 'Epigenetic Longevity') {
+            <app-epigenetic-longevity-lens-tab class="block my-6"></app-epigenetic-longevity-lens-tab>
+          }
+
+          @if (activeLens() === 'Patient Education') {
+            <app-patient-education-lens-tab class="block my-6"></app-patient-education-lens-tab>
+          }
+
           @if (activeLens() === 'Teledentistry & Systemic Health') {
             <app-teledentistry-systemic-lens class="block my-6"></app-teledentistry-systemic-lens>
           }
 
           @if (activeLens() === 'ASSESSMENTS') {
             <app-assessments-lens-tab></app-assessments-lens-tab>
+          }
+
+          @if (activeLens() === 'Treatment Matrix') {
+            <app-interventions-lens-tab class="block my-6"></app-interventions-lens-tab>
+          }
+
+          @if (activeLens() === 'Monitoring & Follow-up') {
+            <app-diagnostics-lens-tab class="block my-6"></app-diagnostics-lens-tab>
           } @else {
           <!-- ACM §1.3: AI-Generated Content Disclosure -->
           @if (hasAnyReport() && !state.isEmergencyMode()) {
@@ -1656,6 +1679,24 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
               </div>
             </button>
 
+            <button (click)="exportCsvTelemetry(); showClinicalToolsModal.set(false)"
+              class="p-3 rounded-2xl bg-cyan-950/40 hover:bg-cyan-900/60 border border-cyan-500/40 text-cyan-200 flex items-center gap-2.5 transition text-left cursor-pointer">
+              <span class="text-xl">📊</span>
+              <div>
+                <strong class="block font-bold text-white uppercase text-[11px] font-mono">CSV Telemetry</strong>
+                <span class="text-[10.5px] text-zinc-400">RFC 4180 Vital & Assessment Export</span>
+              </div>
+            </button>
+
+            <button (click)="exportHl7v2Message(); showClinicalToolsModal.set(false)"
+              class="p-3 rounded-2xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-500/40 text-rose-200 flex items-center gap-2.5 transition text-left cursor-pointer">
+              <span class="text-xl">🏥</span>
+              <div>
+                <strong class="block font-bold text-white uppercase text-[11px] font-mono">HL7 v2.5.1 ER7</strong>
+                <span class="text-[10.5px] text-zinc-400">Legacy EHR ORU^R01 Message</span>
+              </div>
+            </button>
+
             <button (click)="toggleParadigm(); showClinicalToolsModal.set(false)"
               class="p-3 rounded-2xl bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/40 text-amber-200 flex items-center gap-2.5 transition text-left cursor-pointer">
               <span class="text-xl">☯️</span>
@@ -1869,6 +1910,43 @@ export class AnalysisReportComponent implements OnDestroy {
   showSec1557Modal = signal<boolean>(false);
   showCdsModal = signal<boolean>(false);
   showRpmModal = signal<boolean>(false);
+
+  private get exportPatientData(): Partial<IPatient> {
+    const rawVitals = this.state.vitals();
+    const vitals: IPatientVitals = {
+      bp: rawVitals?.bp || '120/80',
+      hr: rawVitals?.hr || '72',
+      temp: rawVitals?.temp || '98.6',
+      spO2: rawVitals?.spO2 || '98',
+      weight: rawVitals?.weight || '70kg',
+      height: rawVitals?.height || '175cm',
+      cgmGlucoseMgDl: rawVitals?.cgmGlucoseMgDl || '110'
+    };
+
+    const conditions = Object.keys(this.state.issues() || {});
+
+    return {
+      id: this.state.patientId() || 'p001',
+      name: this.state.patientName() || 'Jane Doe',
+      age: this.state.patientAge() || 42,
+      gender: (this.state.patientGender() as any) || 'Female',
+      vitals,
+      preexistingConditions: conditions,
+      occupation: this.state.occupation() || ''
+    };
+  }
+
+  exportCsvTelemetry() {
+    this.export.exportCsvReport(this.exportPatientData);
+    this.flowToastMessage.set('RFC 4180 CSV Telemetry Exported Successfully!');
+    setTimeout(() => this.flowToastMessage.set(null), 3000);
+  }
+
+  exportHl7v2Message() {
+    this.export.exportHl7v2Report(this.exportPatientData);
+    this.flowToastMessage.set('HL7 v2.5.1 ER7 Observation Message Exported Successfully!');
+    setTimeout(() => this.flowToastMessage.set(null), 3000);
+  }
 
   protected readonly cdsReport = computed(() => {
     const lens = this.activeLens();
@@ -2111,7 +2189,7 @@ export class AnalysisReportComponent implements OnDestroy {
 
   activeActTitle = computed(() => {
     const raw = this.state.activePhilosophy();
-    const phil = (raw === 'arborist' || raw === 'mechanic') ? 'western' : raw;
+    const phil = (raw === 'eastern' || raw === 'ayurvedic') ? raw : 'western';
     return this.actMapper.getActTitleForLens(this.activeLens(), phil);
   });
 

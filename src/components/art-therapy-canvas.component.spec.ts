@@ -11,8 +11,8 @@ describe('ArtTherapyCanvasComponent', () => {
 
   beforeEach(() => {
     injector = createEnvironmentInjector([
-      ArtTherapyService,
-      BioHapticFeedbackService
+      { provide: ArtTherapyService, useFactory: () => new ArtTherapyService() },
+      { provide: BioHapticFeedbackService, useValue: { playSolfeggioTone: vi.fn(), triggerHapticPulse: vi.fn() } }
     ], undefined as any);
 
     runInInjectionContext(injector, () => {

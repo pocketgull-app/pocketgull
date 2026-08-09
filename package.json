@@ -1,6 +1,6 @@
 {
   "name": "pocket-gull",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api"
@@ -80,6 +80,8 @@
     "mcp:warmup": "node scripts/mcp-warmup.js",
     "build": "node scripts/build-all.mjs",
     "deploy": "gcloud builds submit . --tag us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull/pocket-gull:latest --project gen-lang-client-0540208645 && gcloud run deploy pocket-gull --image us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull/pocket-gull:latest --project gen-lang-client-0540208645 --region=us-central1 --min-instances=0 --update-env-vars=OTEL_SDK_DISABLED=true --timeout=25m --quiet",
+    "gcp:prune-storage": "node ./scripts/apply-gcp-lifecycle-policies.mjs",
+    "contracts:generate": "node ./scripts/generate-api-contracts.mjs",
     "lint": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
     "preview": "node scripts/build-if-missing.cjs && node dist/server/server.mjs",
     "test:e2e": "node ./run-playwright.cjs test",

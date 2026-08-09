@@ -27,11 +27,37 @@ import { ThemeService } from '../services/theme.service';
       <!-- 1. Top Dedicated Header Bar (Standardized with Medical Analysis Pocket-Gull Cards) -->
       <div class="px-4 py-3 sm:px-6 sm:py-3.5 bg-gray-50/80 dark:bg-zinc-900/90 border-b border-gray-200 dark:border-zinc-800/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 shrink-0 no-print z-20">
         
-
+        <div class="flex items-center gap-2">
+          <span class="text-lg">👤</span>
+          <div>
+            <h3 class="text-sm font-extrabold text-gray-900 dark:text-zinc-100 uppercase tracking-wide">Interactive Body Twin</h3>
+            <p class="text-[10px] text-gray-500 dark:text-zinc-400 font-mono">Biophysical Subsurface Scattering & Spatial Anatomy</p>
+          </div>
+        </div>
 
         <div class="flex items-center gap-2 flex-wrap">
+          <!-- 3D vs 2D Viewport Mode Switcher (Tap-Target Friendly min 44px) -->
+          <div class="flex items-center gap-1 bg-gray-200/80 dark:bg-zinc-950 p-1.5 rounded-lg border border-gray-300/80 dark:border-zinc-800 text-xs font-mono">
+            <button (click)="state.bodyViewerMode.set('3d')" 
+                    [class.bg-teal-600]="state.bodyViewerMode() === '3d'" 
+                    [class.text-white]="state.bodyViewerMode() === '3d'" 
+                    [class.text-gray-700]="state.bodyViewerMode() !== '3d'" 
+                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== '3d'" 
+                    class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1.5">
+              <span>🧊</span> 3D Model
+            </button>
+            <button (click)="state.bodyViewerMode.set('2d')" 
+                    [class.bg-sky-600]="state.bodyViewerMode() === '2d'" 
+                    [class.text-white]="state.bodyViewerMode() === '2d'" 
+                    [class.text-gray-700]="state.bodyViewerMode() !== '2d'" 
+                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== '2d'" 
+                    class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1.5">
+              <span>🗺️</span> 2D Model
+            </button>
+          </div>
+
           <!-- Search Bar -->
-          <div class="relative flex items-center bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded-xl px-3 py-1.5 w-full sm:w-64 shadow-xs">
+          <div class="relative flex items-center bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded-xl px-3 py-1.5 w-full sm:w-56 shadow-xs">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 dark:text-zinc-500 mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input 
               type="text" 
@@ -56,6 +82,9 @@ import { ThemeService } from '../services/theme.service';
             </button>
             <button (click)="state.selectPhilosophy('ayurvedic')" [class.bg-amber-600]="state.activePhilosophy() === 'ayurvedic'" [class.text-white]="state.activePhilosophy() === 'ayurvedic'" [class.text-gray-700]="state.activePhilosophy() !== 'ayurvedic'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'ayurvedic'" class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
               🪷 Ayurvedic
+            </button>
+            <button (click)="state.selectPhilosophy('osteopathic')" [class.bg-purple-600]="state.activePhilosophy() === 'osteopathic'" [class.text-white]="state.activePhilosophy() === 'osteopathic'" [class.text-gray-700]="state.activePhilosophy() !== 'osteopathic'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'osteopathic'" class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
+              🦴 Osteopathic
             </button>
           </div>
         </div>
@@ -527,7 +556,7 @@ export class BodyViewerComponent implements OnDestroy {
         noteId: newNoteId,
         name,
         painLevel: 3,
-        description: `Targeted via ${this.state.activePhilosophy().toUpperCase()} 3D Mannequin`,
+        description: `Focused via ${this.state.activePhilosophy().toUpperCase()} 3D Mannequin`,
         symptoms: [name]
       };
       this.state.updateIssue(id, newNote);

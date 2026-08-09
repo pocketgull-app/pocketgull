@@ -6,6 +6,7 @@ import { BioHapticFeedbackService } from '../services/bio-haptic-feedback.servic
 import { ResidencyOsceSimulatorComponent } from './residency-osce-simulator.component';
 import { SlackIntegrationCardComponent } from './slack-integration-card.component';
 import { PopulationHealthEquityHubComponent } from './population-health-equity-hub.component';
+import { TeledentistryOdontogramComponent } from './teledentistry-odontogram.component';
 
 export interface IWorkbenchToolStatus {
   id: string;
@@ -25,7 +26,8 @@ export interface IWorkbenchToolStatus {
     CommonModule,
     ResidencyOsceSimulatorComponent,
     SlackIntegrationCardComponent,
-    PopulationHealthEquityHubComponent
+    PopulationHealthEquityHubComponent,
+    TeledentistryOdontogramComponent
   ],
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl max-w-7xl mx-auto space-y-6">
@@ -109,6 +111,13 @@ export interface IWorkbenchToolStatus {
                 [class.text-zinc-300]="activeWorkbenchTab() !== 'equity'"
                 class="px-3.5 py-2 rounded-lg transition cursor-pointer">
           🌍 Population Health Equity Hub
+        </button>
+        <button (click)="activeWorkbenchTab.set('dental')"
+                [class.bg-teal-500]="activeWorkbenchTab() === 'dental'"
+                [class.text-zinc-950]="activeWorkbenchTab() === 'dental'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'dental'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer">
+          🦷 Teledentistry & Odontogram
         </button>
       </div>
 
@@ -196,6 +205,8 @@ export interface IWorkbenchToolStatus {
         <app-slack-integration-card />
       } @else if (activeWorkbenchTab() === 'equity') {
         <app-population-health-equity-hub />
+      } @else if (activeWorkbenchTab() === 'dental') {
+        <app-teledentistry-odontogram />
       }
 
     </div>
@@ -205,7 +216,7 @@ export class ClinicalToolWorkbenchComponent {
   readonly stateMachine = inject(DoubleFlipStateMachineService);
   private readonly haptics = inject(BioHapticFeedbackService);
 
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity'>('tools');
+  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental'>('tools');
 
   readonly tools = signal<IWorkbenchToolStatus[]>([
     {
@@ -232,7 +243,7 @@ export class ClinicalToolWorkbenchComponent {
       id: 'tool_fhir_smart',
       name: 'SMART on FHIR R4 Bundle Exporter',
       category: 'FHIR & Security',
-      description: 'DOMPurify sanitized FHIR R4 export engine with Amazon Rx pgdpo-20 routing.',
+      description: 'DOMPurify sanitized FHIR R4 export engine with HIPAA Safe Harbor §164.514 compliance.',
       status: 'PASS',
       latencyMs: 18,
       isFlipped: false,

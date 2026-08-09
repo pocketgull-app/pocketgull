@@ -5,6 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2026-08-08
+
+**Clinical Data Export Expansion (RFC 4180 CSV & HL7 v2.5.1 ER7), Unified UI Export Hub, WebMCP Tool Registration, SIGCOMM Acoustic Biomarkers, Monolith Barrel Exports, and Pathways MoE Architecture**
+
+### Added & Fixed
+- **[Clinical Export Matrix Expansion] CSV Telemetry & HL7 v2.5.1 ER7 Strategies (`CsvExportStrategyService` & `Hl7v2ExportStrategyService`)**:
+  - Implemented RFC 4180 CSV export strategy capturing patient vital signs, assessment scores (PHQ-9, GAD-7, Y-BOCS, KSS), SIBI, SOFA, and LACE risk scores.
+  - Implemented pipe-delimited HL7 v2.5.1 `ORU^R01` ER7 message strategy (`MSH`, `PID`, `PV1`, `OBR`, `OBX`) with LOINC coding (`8867-4`, `8480-6`, `8462-4`, `2708-6`, `44261-6`, `69725-0`, `82290-8`, `10535-3`, `93030-9`).
+- **[Unified UI Export Hub] Header Action Bar & Clinical Tools Integration (`AnalysisReportComponent`)**:
+  - Added **📥 Export Hub** quick trigger button in `AnalysisReportComponent`'s navigation bar.
+  - Upgraded Clinical Tools modal with quick triggers for CSV Telemetry, HL7 v2 ER7, FHIR R4 Passport, Sec 1557 Audit, and FDA 520(o) CDS.
+- **[WebMCP Agentic Tool Registration] Programmatic Telemetry Export (`WebMcpRegistrationService`)**:
+  - Registered `export_patient_csv_telemetry` and `export_patient_hl7v2_message` WebMCP tools on browser modelContext.
+- **[SIGCOMM / IEEE SPS Audio Biomarker Integration] Streaming Vocal Acoustic Telemetry**:
+  - Integrated real-time vocal & respiratory acoustic biomarkers ($F_0$ pitch Hz, dB sound energy level, respiratory acoustic pattern, severity grade) into CSV, HL7 v2, and FHIR export payloads.
+- **[Monorepo Architecture & Barrel Cleanups] Centralized `index.ts` Barrel Exports**:
+  - Created `src/components/analysis-report/index.ts` (`ANALYSIS_LENS_TAB_COMPONENTS`), `src/components/shared/index.ts` (`SHARED_POCKETGULL_COMPONENTS`), and `src/services/index.ts`.
+- **[Unit Test Suites] 100% Passing Vitest Strategy Coverage**:
+  - Created automated spec test suites (`csv-export-strategy.service.spec.ts` & `hl7v2-export-strategy.service.spec.ts`). All 16/16 tests in `src/services/export/` passing.
+- **[Pillar 1 / Pathways MoE Sparse Dynamic Routing] `ClinicalMoERouterService` & UI Telemetry HUD (`PathwaysMoeBadgeComponent`)**:
+  - Implemented Pathways-style dynamic sparse routing across specialized expert clusters (`gulliver-core`, `acoustic-sidecar`, `sibi-bridge`, `dicom-spatial-shader`).
+  - Added real-time FLOP efficiency savings badge (`⚡ Pathways MoE +36% FLOP Savings`) in the Angular navigation bar with active expert drawer popover.
+- **[Pillar 3 / Multimodal Live API] Zero-Copy PCM Base64 Audio Streaming (`AdkLiveService`)**:
+  - Refactored WebAudio `AudioWorkletNode` `onmessage` handling with chunked `uint8ArrayToBase64` & `base64ToUint8Array` decoders, replacing string concatenation loops.
+- **[Pillar 4 / Sidecar Acceleration] ONNX FP16 Engine & Thread Pool Dispatch (`pocketgull_api/services/onnx_engine.py` & `main.py`)**:
+  - Implemented `OnnxFp16InferenceEngine` supporting ONNX Runtime FP16 inference sessions.
+  - Offloaded `/ml/risk-score` probability predictions to worker thread pool (`asyncio.to_thread`) keeping event-loop response latency under < 2ms.
+- **[Pillar 5 / Cloud Economics] Scale-to-Zero Cloud Run & Storage Lifecycle Automation (`scripts/apply-gcp-lifecycle-policies.mjs`)**:
+  - Automated Cloud Run `--min-instances=0` scale-to-zero enforcement and 7-day auto-deletion policies across Artifact Registry and GCS deployment zip buckets (`gs://run-sources-*`).
+- **[Developer Tooling] Automated OpenAPI to TypeScript Contract Generator (`scripts/generate-api-contracts.mjs` & `src/services/api-contracts.types.ts`)**:
+  - Added automated generator exporting `pocketgull_api/openapi.yaml` into strongly-typed TypeScript interfaces (`src/services/api-contracts.types.ts`).
+
+## [1.14.0] - 2026-08-08
+
+**Interactive Gesture Lock Pad, Analysis Report Modularization, Dynamic ESM PDF Export, and Component Unit Test Suites**
+
+### Added & Fixed
+- **[Gesture Unlock Canvas / Splash Screen] Touch-Friendly Gesture Pad (`secure-splash.component.ts`)**:
+  - Fixed pointer capture exception handling (`try-catch` around `setPointerCapture` and `releasePointerCapture`) to prevent drawing aborts on non-touch devices and touch screens.
+  - Added dynamic coordinate scale factors (`scaleX`, `scaleY`) to align touch/mouse drawing 1:1 with canvas pixel bounds.
+  - Added direct **`🎨 Draw Gesture Lock`** button on initial splash screen to allow instant drawing access without pre-authentication.
+- **[Component Architecture] Analysis Report De-Monolithing (`analysis-report/`)**:
+  - Extracted 3 modular lens tab components ([summary-overview-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/summary-overview-lens-tab.component.ts), [epigenetic-longevity-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/epigenetic-longevity-lens-tab.component.ts), [patient-education-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/patient-education-lens-tab.component.ts)).
+- **[Performance & ESM Optimization] Dynamic `jsPDF` Lazy-Loading (`hipaa-pdf-export.service.ts` & `angular.json`)**:
+  - Converted static `jsPDF` import to on-demand `await import('jspdf')` dynamic chunk loading.
+  - Added `"jspdf"`, `"fflate"`, `"dompurify"`, and `"canvg"` to `allowedCommonJsDependencies` in `angular.json` to eliminate build warnings.
+- **[Testing & Quality Assurance] Specialized Component & Service Test Suites**:
+  - Created unit tests for `CarePlanPrintPreviewComponent`, `TeledentistryOdontogramComponent`, `LifestyleAdjunctService`, `YogaAsana3dCoachComponent`, `ActuarialGleeAlbumComponent`, `AndroscogginForagingPhytoncideComponent`, and `SevenGenerationsStewardshipLensTabComponent`.
+
 ## [1.13.0] - 2026-08-05
 
 **PocketGull Typeface Repository, Domino SSR `CSSStyleDeclaration.setProperty` Polyfill & E2E Stability**
