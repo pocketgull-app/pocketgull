@@ -174,6 +174,62 @@ export class BodyMeshFactoryService {
     pelvisGroup.add(pelvisMesh);
     addPart('pelvis', pelvisGroup);
 
+    // 6.1 Upper Extremities (Arms & Hands)
+    const rShoulder = new THREE.Mesh(new THREE.SphereGeometry(0.12, 32, 32), skinMaterial.clone());
+    rShoulder.position.set(0.35, 1.38, 0);
+    addPart('r_shoulder', rShoulder);
+
+    const lShoulder = new THREE.Mesh(new THREE.SphereGeometry(0.12, 32, 32), skinMaterial.clone());
+    lShoulder.position.set(-0.35, 1.38, 0);
+    addPart('l_shoulder', lShoulder);
+
+    const rArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.08, 0.5, 16, 32), skinMaterial.clone());
+    rArm.position.set(0.4, 1.05, 0);
+    rArm.rotation.z = Math.PI / 16;
+    addPart('r_arm', rArm);
+
+    const lArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.08, 0.5, 16, 32), skinMaterial.clone());
+    lArm.position.set(-0.4, 1.05, 0);
+    lArm.rotation.z = -Math.PI / 16;
+    addPart('l_arm', lArm);
+
+    const rHand = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 16), skinMaterial.clone());
+    rHand.scale.set(0.8, 1.2, 0.4);
+    rHand.position.set(0.45, 0.7, 0);
+    rHand.rotation.z = Math.PI / 16;
+    addPart('r_hand', rHand);
+
+    const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 16), skinMaterial.clone());
+    lHand.scale.set(0.8, 1.2, 0.4);
+    lHand.position.set(-0.45, 0.7, 0);
+    lHand.rotation.z = -Math.PI / 16;
+    addPart('l_hand', lHand);
+
+    // 6.2 Lower Extremities (Legs & Feet)
+    const rThigh = new THREE.Mesh(new THREE.CapsuleGeometry(0.12, 0.5, 16, 32), skinMaterial.clone());
+    rThigh.position.set(0.14, 0.05, 0);
+    addPart('r_thigh', rThigh);
+
+    const lThigh = new THREE.Mesh(new THREE.CapsuleGeometry(0.12, 0.5, 16, 32), skinMaterial.clone());
+    lThigh.position.set(-0.14, 0.05, 0);
+    addPart('l_thigh', lThigh);
+
+    const rShin = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.5, 16, 32), skinMaterial.clone());
+    rShin.position.set(0.14, -0.52, 0);
+    addPart('r_shin', rShin);
+
+    const lShin = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.5, 16, 32), skinMaterial.clone());
+    lShin.position.set(-0.14, -0.52, 0);
+    addPart('l_shin', lShin);
+
+    const rFoot = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.1, 0.28), skinMaterial.clone());
+    rFoot.position.set(0.14, -0.82, 0.05);
+    addPart('r_foot', rFoot);
+
+    const lFoot = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.1, 0.28), skinMaterial.clone());
+    lFoot.position.set(-0.14, -0.82, 0.05);
+    addPart('l_foot', lFoot);
+
     // 7. FDI 32-Tooth Odontogram Dental Arch Mesh
     const dentalArchGroup = new THREE.Group();
     for (let i = 0; i < 16; i++) {

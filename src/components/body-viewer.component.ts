@@ -27,7 +27,13 @@ import { ThemeService } from '../services/theme.service';
       <!-- 1. Top Dedicated Header Bar (Standardized with Medical Analysis Pocket-Gull Cards) -->
       <div class="px-4 py-3 sm:px-6 sm:py-3.5 bg-gray-50/80 dark:bg-zinc-900/90 border-b border-gray-200 dark:border-zinc-800/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 shrink-0 no-print z-20">
         
-
+        <div class="flex items-center gap-2">
+          <span class="text-lg">👤</span>
+          <div>
+            <h3 class="text-sm font-extrabold text-gray-900 dark:text-zinc-100 uppercase tracking-wide">Interactive Body Twin</h3>
+            <p class="text-[10px] text-gray-500 dark:text-zinc-400 font-mono">Biophysical Subsurface Scattering & Spatial Anatomy</p>
+          </div>
+        </div>
 
         <div class="flex items-center gap-2 flex-wrap">
           <!-- 3D vs 2D Viewport Mode Switcher (Tap-Target Friendly min 44px) -->
