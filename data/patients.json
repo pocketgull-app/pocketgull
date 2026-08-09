@@ -75,7 +75,8 @@
           "issues": {}
         }
       }
-    ]
+    ],
+    "occupation": "Heavy Trucking"
   },
   {
     "id": "p002",
@@ -152,7 +153,8 @@
           }
         }
       }
-    ]
+    ],
+    "occupation": "Chefs and Head Cooks"
   },
   {
     "id": "p003",
@@ -186,7 +188,8 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Synaptic Waveform & Gait Telemetry\n- **ECG QRS Duration**: 96 ms (Normal)\n- **ST Segment**: Neutral\n- **Gait Asymmetry Index**: 14.2% (Elevated fall risk threshold: > 10%)\n- **Postural Sway Velocity**: 2.8 cm/s"
         }
       }
-    ]
+    ],
+    "occupation": "Retiree"
   },
   {
     "id": "p004",
@@ -220,7 +223,8 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Multi-Lead ECG Ischemia & ST-Elevation Telemetry\n- **QRS Interval Duration**: 102 ms\n- **ST Segment Deviation**: +0.08 mV Lead II (Transient ischemic monitoring)\n- **QTc Interval**: 432 ms\n- **Respiratory Rate**: 18 breaths/min"
         }
       }
-    ]
+    ],
+    "occupation": "Naturalist"
   },
   {
     "id": "p005",
@@ -254,7 +258,8 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Cardiorenal Fluid Retentive Hemodynamic Challenge\n- **QRS Interval Duration**: 98 ms\n- **ST Segment**: Neutral (+0.02 mV)\n- **Pulse Wave Velocity (PWV)**: 11.2 m/s (Elevated arterial stiffness)\n- **Bio-Impedance Fluid Index**: +1.8 L surplus"
         }
       }
-    ]
+    ],
+    "occupation": "Pastors, Clergy"
   },
   {
     "id": "p006",
@@ -288,7 +293,8 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Pediatric Autonomic Airway Reactivity & Dehydration Challenge\n- **Heart Rate**: 112 bpm (Appropriate for age 4)\n- **Respiratory Rate**: 24 breaths/min\n- **SpO2**: 96%\n- **Acoustic Cough Count**: 4 coughs / hour"
         }
       }
-    ]
+    ],
+    "occupation": "Student"
   },
   {
     "id": "p007",
@@ -322,7 +328,8 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Maternal-Fetal Hemodynamic & Uterine Artery Doppler Challenge\n- **Maternal HR**: 90 bpm\n- **Fetal Heart Rate Baseline**: 142 bpm (Normal reactive)\n- **Uterine Artery Pulsatility Index (PI)**: 0.95 (Normal resistance)\n- **Accelerations**: 2 in 20 minutes (Category I Tracing)"
         }
       }
-    ]
+    ],
+    "occupation": "Event Planners"
   },
   {
     "id": "p008",
@@ -356,7 +363,8 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Orthomolecular High-Dose Ascorbate & Lp(a) Binding Challenge\n- **Heart Rate**: 68 bpm\n- **QRS Interval**: 88 ms\n- **ST Segment**: Neutral (+0.01 mV)\n- **Arterial Stiffness Index**: 6.2 m/s (Optimal youthful elasticity)"
         }
       }
-    ]
+    ],
+    "occupation": "Higher Education Professor"
   },
   {
     "id": "p_mara_santos",
@@ -441,7 +449,8 @@
           "dateCreated": "2026-05-19T14:30:00Z"
         }
       }
-    ]
+    ],
+    "occupation": "Data Scientist"
   },
   {
     "id": "p_frida_kahlo",
@@ -475,7 +484,8 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Neuromuscular Phantom Limb & Central Sensitization Challenge\n- **Heart Rate**: 82 bpm\n- **QRS Interval**: 90 ms\n- **ST Segment**: Neutral\n- **EMG Phantom Spiking Frequency**: 14 spikes/min (Central wind-up active)"
         }
       }
-    ]
+    ],
+    "occupation": "Painters & Fine Artists"
   },
   {
     "id": "p_edwin_smith_3",
@@ -509,7 +519,8 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Cervical Vertebral Dislocation & Spinal Shock Challenge\n- **Heart Rate**: 64 bpm (Bradycardic autonomic response)\n- **QRS Duration**: 92 ms\n- **Intracranial Pressure (ICP)**: 16 mmHg (Borderline elevated)\n- **Cervical Alignment Angle**: 12 Kyphotic tilt"
         }
       }
-    ]
+    ],
+    "occupation": "Construction"
   },
   {
     "id": "p_charles_darwin",
@@ -543,7 +554,8 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Trypanosoma Cardiac Conduction & Vagal Gastric Dysmotility Challenge\n- **Heart Rate**: 68 bpm\n- **PR Interval**: 198 ms (Borderline 1st degree AV block)\n- **QRS Duration**: 94 ms\n- **Gastric Slow-Wave Frequency**: 2.2 cpm (Tachygastria/Bradygastria dysrhythmia)"
         }
       }
-    ]
+    ],
+    "occupation": "Naturalist"
   },
   {
     "id": "p_marie_curie",
@@ -570,7 +582,8 @@
           "Precision Nutrients": "### Orthomolecular & Botanical Grow Thyself Protocols\n- **Ashwagandha (Withania somnifera)**: 500mg BID (Bone marrow radioprotection & adaptogenic GABAergic support).\n- **Ginkgo biloba Extract**: 120mg BID (Microvascular cutaneous and cerebral perfusion).\n- **Centella asiatica (Gotu Kola)**: 400mg daily (Collagen type I/III synthesis for radiologic skin remodeling)."
         }
       }
-    ]
+    ],
+    "occupation": "Higher Education Professor"
   },
   {
     "id": "p_srinivasa_ramanujan",
@@ -597,7 +610,8 @@
           "Precision Nutrients": "### Botanical Grow Thyself Protocols\n- **Tulsi (Ocimum sanctum / Holy Basil)**: 400mg BID (Vata-Kapha balancing adaptogen & antimicrobial defense).\n- **Zingiber officinale (Ginger)**: 500mg BID (Kindles Agni metabolic fire & disperses TCM Dampness).\n- **Phyllanthus emblica (Amalaki)**: 500mg daily (Pitta-soothing Rasayana for mucosal tissue regeneration)."
         }
       }
-    ]
+    ],
+    "occupation": "Polymath"
   },
   {
     "id": "p_default_patient",
@@ -649,6 +663,7 @@
         "systemicDomain": "Circadian & Neuroendocrine"
       }
     ],
-    "history": []
+    "history": [],
+    "occupation": "Software Developer"
   }
 ]
