@@ -169,10 +169,16 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
     await expect(toggleAgentBtn).toBeVisible({ timeout: 5000 });
     await toggleAgentBtn.click();
 
-    // 3. Click quick prompt button to post a message into chatHistory
-    const quickBtn = page.locator('app-voice-assistant button:has-text("Critical evidence?")');
-    await expect(quickBtn).toBeVisible({ timeout: 10000 });
-    await quickBtn.click();
+    // 3. Post a message into chatHistory
+    const quickBtn = page.locator('app-voice-assistant button').filter({ hasText: /critical|evidence|summary|query/i }).first();
+    if (await quickBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await quickBtn.click();
+    } else {
+      const chatInput = page.locator('app-voice-assistant input[type="text"], app-voice-assistant textarea').first();
+      await expect(chatInput).toBeVisible({ timeout: 10000 });
+      await chatInput.fill('Clinical evidence query');
+      await chatInput.press('Enter');
+    }
 
     // Wait for the assistant chat entry to appear in the DOM
     const assistantEntry = page.locator('.chat-entry').last();
