@@ -64,6 +64,9 @@ security-report.md
 sandbox/
 python_example_2026/
 contests/
+kernel-metadata.json
+*.ipynb
+pocketgull_physionet_*.zip
 
 # Agent Rules
 rules.yaml
