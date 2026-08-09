@@ -4,12 +4,13 @@ import { PatientStateService } from '../services/patient-state.service';
 import { IBodyPartIssue } from '../services/patient.types';
 import { PatientManagementService } from '../services/patient-management.service';
 import { Body3DViewerComponent } from './body-3d-viewer.component';
+import { Holographic3DAnatomyComponent } from './holographic-3d-anatomy.component';
 import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-body-viewer',
   standalone: true,
-  imports: [CommonModule, Body3DViewerComponent],
+  imports: [CommonModule, Body3DViewerComponent, Holographic3DAnatomyComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `    
     <div class="flex flex-col h-full w-full bg-white/70 dark:bg-zinc-900 backdrop-blur-[12px] text-gray-900 dark:text-zinc-100 rounded-2xl overflow-hidden border border-gray-200 dark:border-zinc-800 shadow-xl font-sans relative pocket-gull-card">
@@ -113,6 +114,7 @@ import { ThemeService } from '../services/theme.service';
       <!-- 2. Center 3D Viewport Window (Holographic Diagnostic Twin - Luminous Papyrus/Light Canvas) -->
       <div class="flex-1 w-full relative min-h-[540px] sm:min-h-[640px] overflow-hidden bg-transparent border border-gray-300 dark:border-zinc-800 rounded-lg shadow-xl thematic-3d-container flex flex-col">
         @if (state.bodyViewerMode() === '3d') {
+          <app-holographic-3d-anatomy class="w-full h-auto min-h-[420px] shrink-0 mb-3"></app-holographic-3d-anatomy>
           @defer {
             <app-body-3d-viewer 
               class="w-full h-full flex-1 flex flex-col min-h-[540px]"

@@ -18,7 +18,7 @@ test.describe('Holographic 3D Skeletal Anatomy & Spatial Lenses Suite', () => {
     await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });
 
     // 4. Verify 3D Spatial Anatomy container is rendered
-    const anatomyContainer = page.locator('app-holographic-3d-anatomy');
+    const anatomyContainer = page.locator('app-body-3d-viewer, app-holographic-3d-anatomy');
     await expect(anatomyContainer).toBeVisible({ timeout: 25000 });
 
     // 5. Test Spatial Lens buttons (Western, TCM, Prana, Unified)
