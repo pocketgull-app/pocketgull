@@ -17,7 +17,7 @@ describe('CgmTimeInRangeComponent', () => {
 
     injector = createEnvironmentInjector([
       { provide: PatientStateService, useValue: mockPatientState },
-      CgmTimeInRangeService
+      { provide: CgmTimeInRangeService, useFactory: () => new CgmTimeInRangeService() }
     ], undefined as any);
 
     runInInjectionContext(injector, () => {

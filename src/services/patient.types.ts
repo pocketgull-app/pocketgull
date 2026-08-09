@@ -270,7 +270,7 @@ export interface IPatientState {
     /** Current AI-generated AVS co-regulation protocol. */
     avsProtocol?: IAvsProtocol;
     /** Selected medical paradigm / philosophy mode. */
-    activePhilosophy?: 'western' | 'eastern' | 'ayurvedic' | 'arborist' | 'mechanic';
+    activePhilosophy?: 'western' | 'eastern' | 'ayurvedic' | 'osteopathic';
     /** Eastern TCM Diagnostic Intake findings. */
     tcmIntake?: ITcmIntake;
     /** Ayurvedic Tridosha & Ashtavidha Intake findings. */

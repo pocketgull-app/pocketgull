@@ -18,7 +18,12 @@ describe('LifestyleAdjunctService — Cappuccino & Caffeine Biofeedback Test Sui
       conditions: signal([
         'caffeine user', 'caffeinated cappuccino morning'
       ]),
-      vitals: signal({ hr: '88', bp: '128/82' })
+      vitals: signal({ hr: '88', bp: '128/82' }),
+      reasonForVisit: signal('Had espresso today, caffeinated cappuccino morning'),
+      patientGoals: signal(''),
+      occupation: signal(''),
+      clinicalNotes: signal([]),
+      medications: signal([])
     };
 
     injector = createEnvironmentInjector([

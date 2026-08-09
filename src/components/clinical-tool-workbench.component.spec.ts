@@ -1,8 +1,9 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
-import { Injector, runInInjectionContext } from '@angular/core';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { Injector, runInInjectionContext, createEnvironmentInjector } from '@angular/core';
 import { ClinicalToolWorkbenchComponent } from './clinical-tool-workbench.component';
 import { DoubleFlipStateMachineService } from '../services/double-flip-state-machine.service';
+import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { BioHapticFeedbackService } from '../services/bio-haptic-feedback.service';
 
 describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite', () => {
@@ -11,12 +12,11 @@ describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite',
 
   beforeEach(() => {
     stateMachine = new DoubleFlipStateMachineService();
-    const injector = Injector.create({
-      providers: [
-        { provide: DoubleFlipStateMachineService, useValue: stateMachine },
-        { provide: BioHapticFeedbackService, useClass: BioHapticFeedbackService }
-      ]
-    });
+    const injector = createEnvironmentInjector([
+      { provide: DoubleFlipStateMachineService, useValue: stateMachine },
+      { provide: ClinicalIntelligenceService, useValue: {} },
+      { provide: BioHapticFeedbackService, useValue: { triggerDualPulse: vi.fn() } }
+    ], undefined as any);
 
     component = runInInjectionContext(injector, () => new ClinicalToolWorkbenchComponent());
   });

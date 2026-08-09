@@ -10,7 +10,8 @@ import { ClinicalToolCardComponent, IClinicalToolItem } from '../src/components/
 import { DomainSuitesNavigatorComponent } from '../src/components/suites/domain-suites-navigator.component';
 import { ThemeStudioDrawerComponent } from '../src/components/shared/theme-studio-drawer.component';
 import { CircadianSleepinessService } from '../src/services/circadian-sleepiness.service';
-
+import { ResearchLecturesService } from '../src/services/research-lectures.service';
+import { ActuarialLongevityService } from '../src/services/actuarial-longevity.service';
 // Mock Angular constructor effects for headless Vitest environment
 vi.mock('@angular/core', async (importOriginal) => {
   const original = await importOriginal<any>();
@@ -30,11 +31,12 @@ describe('Clinical Platform & Progressive Disclosure E2E Suite', () => {
     const injector = Injector.create({
       providers: [
         { provide: PLATFORM_ID, useValue: 'server' },
-        StorageService,
-        GamificationService,
-        ThemeService,
-        PatientManagementService,
-        PatientStateService
+        { provide: StorageService, useFactory: () => new StorageService() },
+        { provide: GamificationService, useFactory: () => new GamificationService() },
+        { provide: ThemeService, useFactory: () => new ThemeService() },
+        { provide: PatientManagementService, useFactory: () => new PatientManagementService() },
+        { provide: ActuarialLongevityService, useFactory: () => new ActuarialLongevityService() },
+        { provide: PatientStateService, useFactory: () => new PatientStateService() }
       ]
     });
 
@@ -75,7 +77,7 @@ describe('Clinical Platform & Progressive Disclosure E2E Suite', () => {
   });
 
   it('3. Verifies Level 1/2/3 progressive disclosure and gesture state machines on ClinicalToolCardComponent', () => {
-    const injector = Injector.create({ providers: [] });
+    const injector = Injector.create({ providers: [{ provide: ResearchLecturesService, useValue: {} }] });
     const card = runInInjectionContext(injector, () => new ClinicalToolCardComponent());
     const mockTool: IClinicalToolItem = {
       id: 'vagal',
@@ -108,12 +110,13 @@ describe('Clinical Platform & Progressive Disclosure E2E Suite', () => {
     const injector = Injector.create({
       providers: [
         { provide: PLATFORM_ID, useValue: 'server' },
-        StorageService,
-        GamificationService,
-        ThemeService,
-        PatientManagementService,
-        PatientStateService,
-        CircadianSleepinessService
+        { provide: StorageService, useFactory: () => new StorageService() },
+        { provide: GamificationService, useFactory: () => new GamificationService() },
+        { provide: ThemeService, useFactory: () => new ThemeService() },
+        { provide: PatientManagementService, useFactory: () => new PatientManagementService() },
+        { provide: ActuarialLongevityService, useFactory: () => new ActuarialLongevityService() },
+        { provide: PatientStateService, useFactory: () => new PatientStateService() },
+        { provide: CircadianSleepinessService, useFactory: () => new CircadianSleepinessService() }
       ]
     });
     const navigator = runInInjectionContext(injector, () => new DomainSuitesNavigatorComponent());
@@ -130,7 +133,7 @@ describe('Clinical Platform & Progressive Disclosure E2E Suite', () => {
     const injector = Injector.create({
       providers: [
         { provide: PLATFORM_ID, useValue: 'server' },
-        ThemeService
+        { provide: ThemeService, useFactory: () => new ThemeService() }
       ]
     });
     const studio = runInInjectionContext(injector, () => new ThemeStudioDrawerComponent());

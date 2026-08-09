@@ -21,9 +21,9 @@ describe('Gemini 3.5 / 3.6 GA Migration & Thought Signature Circulation', () => 
             verificationModel: { modelId: 'gemini-3.5-flash', temperature: 0.0 }
           }
         },
-        AiCacheService,
-        VerifyAiService,
-        GeminiProvider
+        { provide: AiCacheService, useFactory: () => new AiCacheService() },
+        { provide: VerifyAiService, useFactory: () => new VerifyAiService() },
+        { provide: GeminiProvider, useFactory: () => new GeminiProvider() }
       ]
     });
 

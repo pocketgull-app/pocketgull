@@ -45,7 +45,7 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
         { provide: BodyMeshFactoryService, useValue: {} },
         { provide: RaycastSelectionService, useValue: {} },
         { provide: SeverityParticleService, useValue: {} },
-        AdobeFireflyTextureService
+        { provide: AdobeFireflyTextureService, useValue: {} }
       ]
     });
     return runInInjectionContext(injector, () => new Body3DViewerComponent());

@@ -13,6 +13,7 @@ import { OrcidService } from './orcid.service';
 import { WebLLMProvider } from './ai/webllm.provider';
 import { PetAuditoryService } from './pet-auditory.service';
 import { ThemeService } from './theme.service';
+import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import {
     DEMO_ANALYSIS_REPORT_WESTERN,
     DEMO_ANALYSIS_REPORT_EASTERN,
@@ -60,6 +61,7 @@ export class ClinicalIntelligenceService {
     private orcid = inject(OrcidService);
     private webgpu = inject(WebLLMProvider);
     readonly guardrails = inject(DefensiveGuardrailsService);
+    readonly moeRouter = (() => { try { return inject(ClinicalMoERouterService); } catch (e) { console.debug('[ClinicalIntelligence] ClinicalMoERouterService DI fallback:', (e as Error)?.message); return new ClinicalMoERouterService(); } })();
     private petAuditory = (() => { try { return inject(PetAuditoryService, { optional: true }); } catch (e) { console.debug('[ClinicalIntelligence] PetAuditoryService DI fallback:', (e as Error)?.message); return null; } })();
     private themeService = (() => { try { return inject(ThemeService, { optional: true }); } catch (e) { console.debug('[ClinicalIntelligence] ThemeService DI fallback:', (e as Error)?.message); return null; } })();
 
@@ -81,7 +83,7 @@ export class ClinicalIntelligenceService {
 
     readonly recentNodes = signal<INodeContext[]>([]);
 
-    readonly lastActivePhilosophy = signal<'western' | 'eastern' | 'ayurvedic' | 'arborist' | 'mechanic' | null>(null);
+    readonly lastActivePhilosophy = signal<'western' | 'eastern' | 'ayurvedic' | 'osteopathic' | null>(null);
     readonly lastPatientData = signal<string | null>(null);
 
     /**
@@ -158,7 +160,7 @@ export class ClinicalIntelligenceService {
         this.resetAIState();
         const activeName = this.patientState.patientName() || 'Patient';
         const currentPhilosophy = this.patientState.activePhilosophy() || 'western';
-        const philKey = (currentPhilosophy === 'arborist' || currentPhilosophy === 'mechanic') ? 'western' : currentPhilosophy;
+        const philKey = (currentPhilosophy === 'eastern' || currentPhilosophy === 'ayurvedic') ? currentPhilosophy : 'western';
         const dynamicMock = this.generateDynamicMockReport(activeName, philKey);
         const fullReport = { ...dynamicMock, ...report };
         this.analysisResults.set(fullReport);
@@ -497,7 +499,7 @@ Recommends voluntary pre-conception carrier screening for autosomal recessive tr
             let report: Partial<Record<AnalysisLens, string>> = {};
 
             const activePhilosophyRaw = this.patientState.activePhilosophy();
-            const currentPhilosophy = (activePhilosophyRaw === 'arborist' || activePhilosophyRaw === 'mechanic') ? 'western' : activePhilosophyRaw;
+            const currentPhilosophy = (activePhilosophyRaw === 'eastern' || activePhilosophyRaw === 'ayurvedic') ? activePhilosophyRaw : 'western';
 
             if (activeId === 'p002') {
                 report = this.getDemoReportForPhilosophy(currentPhilosophy);
@@ -653,7 +655,7 @@ CRITICAL EMERGENCY RULES:
                     }
                 } catch (e: any) {
                     const patientName = this.patientState.patientName() || 'Patient';
-                    const philKey = (currentPhilosophy === 'arborist' || currentPhilosophy === 'mechanic') ? 'western' : currentPhilosophy;
+                    const philKey = (currentPhilosophy === 'eastern' || currentPhilosophy === 'ayurvedic') ? currentPhilosophy : 'western';
                     const localFallbackReport = this.generateDynamicMockReport(patientName, philKey);
                     const fallbackContent = localFallbackReport[lens as keyof typeof localFallbackReport] || `### Local WebGPU Synthesis\nGenerated local off-grid zero-cloud care plan for ${lens}.`;
                     newReport[lens] = `${fallbackContent}\n\n*⚡ Generated via Local On-Device WebGPU Zero-Cloud Inference Engine.*`;
@@ -665,7 +667,7 @@ CRITICAL EMERGENCY RULES:
             await Promise.allSettled(orchestrationPromises);
 
             this.lastPatientData.set(patientData);
-            this.lastActivePhilosophy.set(currentPhilosophy);
+            this.lastActivePhilosophy.set(this.patientState.activePhilosophy());
             this.analysisResults.set(newReport);
             this.lastRefreshTime.set(new Date());
             await this.generateVisualMetrics(newReport as Record<string, string>);

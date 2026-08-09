@@ -34,6 +34,7 @@ from pydantic import BaseModel, Field
 
 from services.holistic_risk_service import MultiModalPatientStateInput, compute_holistic_patient_risk
 from services.readmission_sepsis_model import ReadmissionSepsisInput, predict_readmission_and_sepsis
+from services.onnx_engine import onnx_engine
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ML: CLINICAL RISK SCORING (joblib / scikit-learn) STATE & LOADING
@@ -723,10 +724,10 @@ async def ml_risk_score(req: RiskScoreRequest) -> Bundle:
         systolic_bp_deviation
     ]
 
-    if _risk_model is not None:
+    if _risk_model is not None or onnx_engine.session is not None:
         try:
-            score = float(_risk_model.predict_proba([features])[0][1])
-            note = "ML model inference"
+            score, latency_ms = await onnx_engine.predict_proba_async(np.array(features), fallback_model=_risk_model)
+            note = f"ML model inference (ONNX FP16 / ThreadPool: {latency_ms}ms)"
         except Exception as exc:
             score = 0.0
             note = f"Model error: {exc}"

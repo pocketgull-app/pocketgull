@@ -56,6 +56,7 @@ import { PocketgullTypefaceSiteComponent } from './components/pocketgull-typefac
 import { PocketgullIconComponent } from './components/pocketgull-icon.component';
 import { DocsStudyComponent } from './components/docs-study.component';
 import { NavigationShellService } from './services/navigation-shell.service';
+import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badge.component';
 
 @Component({
   selector: 'app-root',
@@ -85,7 +86,8 @@ import { NavigationShellService } from './services/navigation-shell.service';
     CompanionSyncModalComponent,
     GlossaryModalComponent,
     ClinicalCdsDisclaimerBannerComponent,
-    DocsStudyComponent
+    DocsStudyComponent,
+    PathwaysMoeBadgeComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -520,6 +522,9 @@ import { NavigationShellService } from './services/navigation-shell.service';
               </svg>
               <span class="hidden sm:inline">Docs</span>
             </button>
+
+            <!-- Jeff Dean Pathways MoE Telemetry HUD -->
+            <app-pathways-moe-badge />
             <!-- Somatic Box-Breathing Grounding (Zamecznik Canvas) -->
             <button (click)="triggerSomaticGrounding()" 
                     aria-label="Somatic Grounding & Box Breathing"

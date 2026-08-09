@@ -22,7 +22,7 @@ describe('ThemeStudioDrawerComponent', () => {
     const injector = Injector.create({
       providers: [
         { provide: PLATFORM_ID, useValue: 'browser' },
-        ThemeService
+        { provide: ThemeService, useFactory: () => new ThemeService() }
       ]
     });
     return runInInjectionContext(injector, () => new ThemeStudioDrawerComponent());

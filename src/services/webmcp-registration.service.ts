@@ -1,6 +1,9 @@
 import { Injectable, inject, NgZone } from '@angular/core';
 import { PatientStateService, BODY_PART_NAMES } from './patient-state.service';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';
+import { ExportService } from './export.service';
+import { TeledentistryService } from './teledentistry.service';
+import { GcpHealthcareApiService } from './gcp-healthcare-api.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -9,6 +12,9 @@ import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 export class WebMcpRegistrationService {
   private state = inject(PatientStateService);
   private clinicalIntelligence = inject(ClinicalIntelligenceService);
+  private exportService = inject(ExportService);
+  private teledentistryService = inject(TeledentistryService);
+  private gcpHealthcareService = inject(GcpHealthcareApiService);
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -225,6 +231,219 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(bmkTool, { signal: bmkCtrl.signal });
     this.mcpControllers.push({ name: bmkTool.name, controller: bmkCtrl });
+
+    // 8. export_patient_csv_telemetry
+    const csvCtrl = new AbortController();
+    const csvTool = {
+      name: 'export_patient_csv_telemetry',
+      description: 'Exports the active patient vital signs, biometric sensors, clinical assessment scores (PHQ-9, GAD-7, Y-BOCS, KSS), and telemetry metrics as an RFC 4180 CSV file.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          downloadFile: { type: 'boolean', description: 'Whether to trigger a client-side browser file download.' }
+        }
+      },
+      execute: async (params: any) => {
+        try {
+          const patientData = this.state.getCurrentState();
+          if (params?.downloadFile) {
+            this.ngZone.run(() => {
+              this.exportService.exportCsvReport(patientData);
+            });
+          }
+          const csvText = (this.exportService as any).csvStrategy.generatePatientCsv(patientData);
+          return { content: [{ type: 'text', text: csvText }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to export CSV telemetry: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(csvTool, { signal: csvCtrl.signal });
+    this.mcpControllers.push({ name: csvTool.name, controller: csvCtrl });
+
+    // 9. export_patient_hl7v2_message
+    const hl7Ctrl = new AbortController();
+    const hl7Tool = {
+      name: 'export_patient_hl7v2_message',
+      description: 'Exports an HL7 v2.5.1 ER7 (pipe-delimited) ORU^R01 observation message containing patient clinical observations, vitals, and LOINC codes for legacy hospital EHR systems.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          downloadFile: { type: 'boolean', description: 'Whether to trigger a client-side browser file download.' }
+        }
+      },
+      execute: async (params: any) => {
+        try {
+          const patientData = this.state.getCurrentState();
+          if (params?.downloadFile) {
+            this.ngZone.run(() => {
+              this.exportService.exportHl7v2Report(patientData);
+            });
+          }
+          const hl7Text = (this.exportService as any).hl7v2Strategy.generateHl7v2Message(patientData);
+          return { content: [{ type: 'text', text: hl7Text }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to export HL7 v2.5.1 message: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(hl7Tool, { signal: hl7Ctrl.signal });
+    this.mcpControllers.push({ name: hl7Tool.name, controller: hl7Ctrl });
+
+    // 10. purge_transient_patient_state
+    const purgeCtrl = new AbortController();
+    const purgeTool = {
+      name: 'purge_transient_patient_state',
+      description: 'Purges all active patient state, transient in-memory signals, and local storage caches to enforce strict anti-surveillance privacy hygiene.',
+      inputSchema: { type: 'object', properties: {} },
+      execute: async () => {
+        try {
+          let res: { timestamp: string; purgedItemsCount: number } = { timestamp: '', purgedItemsCount: 0 };
+          this.ngZone.run(() => {
+            res = this.state.purgeTransientPatientState();
+          });
+          return { content: [{ type: 'text', text: `Successfully purged ${res.purgedItemsCount} transient items at ${res.timestamp}` }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to purge transient patient state: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(purgeTool, { signal: purgeCtrl.signal });
+    this.mcpControllers.push({ name: purgeTool.name, controller: purgeCtrl });
+
+    // 11. toggle_ephemeral_privacy_mode
+    const privacyCtrl = new AbortController();
+    const privacyTool = {
+      name: 'toggle_ephemeral_privacy_mode',
+      description: 'Toggles strict local edge privacy mode (enabling/disabling external network telemetry egress).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          enabled: { type: 'boolean', description: 'Whether to enable strict local edge privacy mode.' }
+        }
+      },
+      execute: async (params: any) => {
+        try {
+          let nextState = true;
+          this.ngZone.run(() => {
+            nextState = this.state.toggleEphemeralPrivacyMode(params?.enabled);
+          });
+          return { content: [{ type: 'text', text: `Ephemeral Privacy Mode set to: ${nextState ? 'ENABLED (Strict Edge Isolation)' : 'DISABLED'}` }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to toggle privacy mode: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(privacyTool, { signal: privacyCtrl.signal });
+    this.mcpControllers.push({ name: privacyTool.name, controller: privacyCtrl });
+
+    // 12. get_teledentistry_systemic_telemetry
+    const dentCtrl = new AbortController();
+    const dentTool = {
+      name: 'get_teledentistry_systemic_telemetry',
+      description: 'Retrieves 32-tooth FDI odontogram findings, Tooth Wear Index (TWI Grades 0-4), periodontal probing depth (PPD >= 4mm), bleeding on probing (BOP), and Systemic Inflammatory Burden Index (SIBI 0-100) cross-talk to cardiovascular risk & HbA1c trajectory.',
+      inputSchema: { type: 'object', properties: {} },
+      execute: async () => {
+        try {
+          const telemetry = {
+            sibiScore: this.teledentistryService.sibiScore(),
+            cvRiskMultiplier: this.teledentistryService.cvRiskMultiplier(),
+            predictedHbA1cElevation: this.teledentistryService.predictedHbA1cElevation(),
+            deepPocketsCount: this.teledentistryService.deepPocketsCount(),
+            bleedingPercentage: this.teledentistryService.bleedingPercentage(),
+            hsCRP: this.teledentistryService.hsCRP(),
+            teeth: this.teledentistryService.teeth()
+          };
+          return { content: [{ type: 'text', text: JSON.stringify(telemetry, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to fetch teledentistry telemetry: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(dentTool, { signal: dentCtrl.signal });
+    this.mcpControllers.push({ name: dentTool.name, controller: dentCtrl });
+
+    // 13. update_tooth_periodontal_status
+    const updateToothCtrl = new AbortController();
+    const updateToothTool = {
+      name: 'update_tooth_periodontal_status',
+      description: 'Updates periodontal probing depth (mm), Bleeding on Probing (BOP), surface caries, or Smith & Knight Tooth Wear Index (TWI Grade 0-4) for a specific FDI tooth number (11-48).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          fdiNumber: { type: 'number', description: 'The FDI tooth number (e.g. 16 for Maxillary Right 1st Molar).' },
+          probingDepthMm: { type: 'number', description: 'Periodontal probing depth in millimeters.' },
+          hasBleedingOnProbing: { type: 'boolean', description: 'Whether bleeding on probing is present.' },
+          twiGrade: { type: 'number', description: 'Smith & Knight Tooth Wear Index grade (0 to 4).' }
+        },
+        required: ['fdiNumber']
+      },
+      execute: async (params: any) => {
+        try {
+          const fdi = Number(params.fdiNumber);
+          if (!fdi || fdi < 11 || fdi > 48) {
+            throw new Error(`Invalid FDI tooth number: ${params.fdiNumber}`);
+          }
+          this.ngZone.run(() => {
+            if (typeof params.probingDepthMm === 'number') {
+              this.teledentistryService.setProbingDepth(fdi, params.probingDepthMm);
+            }
+            if (typeof params.hasBleedingOnProbing === 'boolean') {
+              const currentTooth = this.teledentistryService.teeth().find(t => t.fdiNumber === fdi);
+              if (currentTooth && currentTooth.hasBleedingOnProbing !== params.hasBleedingOnProbing) {
+                this.teledentistryService.toggleBOP(fdi);
+              }
+            }
+            if (typeof params.twiGrade === 'number' && params.twiGrade >= 0 && params.twiGrade <= 4) {
+              this.teledentistryService.setTWIGrade(fdi, params.twiGrade as any);
+            }
+          });
+          return { content: [{ type: 'text', text: `Successfully updated FDI Tooth ${fdi} periodontal status. Recalculated SIBI score: ${this.teledentistryService.sibiScore()}` }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to update tooth status: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(updateToothTool, { signal: updateToothCtrl.signal });
+    this.mcpControllers.push({ name: updateToothTool.name, controller: updateToothCtrl });
+
+    // 14. export_patient_care_plan_fhir_r4
+    const fhirExportCtrl = new AbortController();
+    const fhirExportTool = {
+      name: 'export_patient_care_plan_fhir_r4',
+      description: 'Exports the active patient care plan as a de-identified HIPAA §164.514 compliant FHIR R4 Bundle JSON payload.',
+      inputSchema: { type: 'object', properties: {} },
+      execute: async () => {
+        try {
+          const rawBundle = this.exportService.exportFHIR();
+          const deidentifiedBundle = this.gcpHealthcareService.deidentifyFhirPayload(rawBundle);
+          return { content: [{ type: 'text', text: JSON.stringify(deidentifiedBundle, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to export FHIR R4 care plan: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(fhirExportTool, { signal: fhirExportCtrl.signal });
+    this.mcpControllers.push({ name: fhirExportTool.name, controller: fhirExportCtrl });
+
+    // 15. trigger_hybrid_fhir_dual_sync
+    const fhirSyncCtrl = new AbortController();
+    const fhirSyncTool = {
+      name: 'trigger_hybrid_fhir_dual_sync',
+      description: 'Triggers hybrid dual-synchronization of de-identified FHIR R4 care plans across Google Cloud Healthcare API & AWS HealthLake.',
+      inputSchema: { type: 'object', properties: {} },
+      execute: async () => {
+        try {
+          const rawBundle = this.exportService.exportFHIR();
+          const syncResult = await this.gcpHealthcareService.syncHybridFhirBundle(rawBundle, { deidentify: true });
+          return { content: [{ type: 'text', text: JSON.stringify(syncResult, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to execute hybrid FHIR sync: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(fhirSyncTool, { signal: fhirSyncCtrl.signal });
+    this.mcpControllers.push({ name: fhirSyncTool.name, controller: fhirSyncCtrl });
   }
 
   /**

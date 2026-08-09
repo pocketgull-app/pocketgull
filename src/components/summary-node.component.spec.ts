@@ -1,5 +1,12 @@
 import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+vi.mock('@angular/forms', () => ({
+  FormsModule: class {},
+  ReactiveFormsModule: class {},
+  NgControl: class {},
+  NgModel: class {}
+}));
 import { SummaryNodeComponent } from './summary-node.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';
@@ -8,6 +15,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
 import { DictationService } from '../services/dictation.service';
 import { SecureStorageService } from '../services/secure-storage.service';
 import { RichMediaService } from '../services/rich-media.service';
+import { DomSanitizer } from '@angular/platform-browser';
 import { PatientManagementService } from '../services/patient-management.service';
 
 describe('SummaryNodeComponent - Interactive Node Context & Telemetry Summary', () => {
@@ -64,6 +72,7 @@ describe('SummaryNodeComponent - Interactive Node Context & Telemetry Summary', 
       { provide: DictationService, useValue: mockDictation },
       { provide: SecureStorageService, useValue: mockSecureStorage },
       { provide: RichMediaService, useValue: mockRichMedia },
+      { provide: DomSanitizer, useValue: { bypassSecurityTrustHtml: (html: string) => html, sanitize: () => '' } },
       { provide: PatientManagementService, useValue: mockPatientManagement }
     ], undefined as any);
 

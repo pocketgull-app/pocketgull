@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { ClinicalIntelligenceService, AnalysisLens } from './clinical-intelligence.service';
 import { ClinicalIconGeneratorService, IClinicalIconSpec } from './clinical-icon-generator.service';
 import { PatientStateService } from './patient-state.service';
+import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import { ISummaryNode, ISummaryNodeItem } from '../components/analysis-report.types';
 
 export interface IProceduralSynthesisRequest {
@@ -18,6 +19,7 @@ export interface IProceduralSynthesisResult {
   iconSpec: IClinicalIconSpec;
   amazonStoreUrl: string;
   amazonPharmacyUrl: string;
+  moeFlopSavingsPercent: number;
   timestamp: string;
 }
 
@@ -28,6 +30,7 @@ export class InfiniteClinicalSynthesisService {
   private clinicalIntelligence = inject(ClinicalIntelligenceService, { optional: true });
   private iconGenerator = inject(ClinicalIconGeneratorService, { optional: true }) || new ClinicalIconGeneratorService();
   private patientState = inject(PatientStateService, { optional: true });
+  private moeRouter = (() => { try { return inject(ClinicalMoERouterService); } catch (e) { return new ClinicalMoERouterService(); } })();
 
   isSynthesizing = signal<boolean>(false);
   lastResult = signal<IProceduralSynthesisResult | null>(null);
@@ -96,6 +99,7 @@ export class InfiniteClinicalSynthesisService {
         iconSpec,
         amazonStoreUrl,
         amazonPharmacyUrl,
+        moeFlopSavingsPercent: this.moeRouter.computeEfficiencySavingsPercent(),
         timestamp: new Date().toISOString()
       };
 

@@ -95,25 +95,15 @@ export interface IPrintPageThumbnail {
               class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
               🟡 Ayurvedic Medicine
             </button>
-            <button (click)="selectPhilosophy('arborist')"
-              [class.bg-emerald-700]="activePhilosophy() === 'arborist'"
-              [class.text-white]="activePhilosophy() === 'arborist'"
-              [class.bg-zinc-200]="activePhilosophy() !== 'arborist'"
-              [class.text-zinc-700]="activePhilosophy() !== 'arborist'"
-              [class.dark:bg-zinc-800]="activePhilosophy() !== 'arborist'"
-              [class.dark:text-zinc-300]="activePhilosophy() !== 'arborist'"
+            <button (click)="selectPhilosophy('osteopathic')"
+              [class.bg-purple-600]="activePhilosophy() === 'osteopathic'"
+              [class.text-white]="activePhilosophy() === 'osteopathic'"
+              [class.bg-zinc-200]="activePhilosophy() !== 'osteopathic'"
+              [class.text-zinc-700]="activePhilosophy() !== 'osteopathic'"
+              [class.dark:bg-zinc-800]="activePhilosophy() !== 'osteopathic'"
+              [class.dark:text-zinc-300]="activePhilosophy() !== 'osteopathic'"
               class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
-              🌳 Arborist Order
-            </button>
-            <button (click)="selectPhilosophy('mechanic')"
-              [class.bg-cyan-600]="activePhilosophy() === 'mechanic'"
-              [class.text-white]="activePhilosophy() === 'mechanic'"
-              [class.bg-zinc-200]="activePhilosophy() !== 'mechanic'"
-              [class.text-zinc-700]="activePhilosophy() !== 'mechanic'"
-              [class.dark:bg-zinc-800]="activePhilosophy() !== 'mechanic'"
-              [class.dark:text-zinc-300]="activePhilosophy() !== 'mechanic'"
-              class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
-              🏎️ Mechanic Inspection
+              🦴 Osteopathic Medicine
             </button>
           </div>
 
@@ -546,7 +536,7 @@ export class CarePlanPrintPreviewComponent {
     this.isEditBoxOpen.update(v => !v);
   }
 
-  selectPhilosophy(philosophy: 'western' | 'eastern' | 'ayurvedic' | 'arborist' | 'mechanic') {
+  selectPhilosophy(philosophy: 'western' | 'eastern' | 'ayurvedic' | 'osteopathic') {
     this.patientState.selectPhilosophy(philosophy);
   }
 

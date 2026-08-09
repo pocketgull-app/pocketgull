@@ -5,11 +5,39 @@
 import { Injectable, signal, NgZone, inject } from '@angular/core';
 import { sanitizeLogInput } from '../../utils/security-helper';
 
-import { ActuarialLongevityService, IOccupationalHazardProfile } from '../actuarial-longevity.service';
+import type { IOccupationalHazardProfile } from '../actuarial-longevity.service';
 
 export interface ILiveMessageEvent {
   text?: string;
   isFinal?: boolean;
+}
+
+/**
+ * Zero-copy chunked Base64 encoding helper.
+ * Eliminates per-byte string allocation overhead during live audio streaming.
+ */
+export function uint8ArrayToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const len = bytes.byteLength;
+  const chunkSize = 0x8000; // 32KB chunking
+  for (let i = 0; i < len; i += chunkSize) {
+    const chunk = bytes.subarray(i, Math.min(i + chunkSize, len));
+    binary += String.fromCharCode.apply(null, chunk as unknown as number[]);
+  }
+  return btoa(binary);
+}
+
+/**
+ * Fast Base64 decoding helper converting base64 frames into Uint8Array.
+ */
+export function base64ToUint8Array(b64: string): Uint8Array {
+  const binaryStr = atob(b64);
+  const len = binaryStr.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryStr.charCodeAt(i);
+  }
+  return bytes;
 }
 
 @Injectable({
@@ -19,16 +47,7 @@ export class AdkLiveService {
   private ngZone = (() => {
     try {
       return inject(NgZone);
-    } catch (e) {
-      console.debug('[AdkLiveService] NgZone DI fallback:', (e as Error)?.message);
-      return null;
-    }
-  })();
-  private actuarialService = (() => {
-    try {
-      return inject(ActuarialLongevityService, { optional: true });
-    } catch (e) {
-      console.debug('[AdkLiveService] ActuarialLongevityService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   })();
@@ -59,6 +78,27 @@ export class AdkLiveService {
   public onMessage?: (msg: ILiveMessageEvent) => void;
   public onModelTurnComplete?: () => void;
   public onInterrupted?: () => void;
+
+  public static readonly MAX_SESSION_DURATION_MS = 10 * 60 * 1000; // 10 minutes session duration ceiling
+  private sessionDurationTimer: ReturnType<typeof setTimeout> | null = null;
+
+  private startSessionTimer() {
+    this.clearSessionTimer();
+    this.sessionDurationTimer = setTimeout(() => {
+      console.warn('[AdkLiveService] Safety Duration Limit Reached (10m). Automatically disconnecting session to prevent cost overruns.');
+      this.disconnect();
+      this.runInZone(() => {
+        this.connectionError.set('Safety Duration Limit Reached: Live streaming session automatically closed after 10 minutes to prevent cost overruns.');
+      });
+    }, AdkLiveService.MAX_SESSION_DURATION_MS);
+  }
+
+  private clearSessionTimer() {
+    if (this.sessionDurationTimer) {
+      clearTimeout(this.sessionDurationTimer);
+      this.sessionDurationTimer = null;
+    }
+  }
 
   private reconnectAttemptCount = 0;
   private maxReconnectAttempts = 5;
@@ -182,14 +222,7 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
         }
         
         const uint8Array = new Uint8Array(pcm16.buffer);
-        let binary = '';
-        const len = uint8Array.byteLength;
-        // In tight loops, avoid massive string concatenation if possible, but for 4096 framing this is okay.
-        // A slightly faster way for large arrays is String.fromCharCode.apply, but it risks Call Stack limits.
-        for (let i = 0; i < len; i++) {
-            binary += String.fromCharCode(uint8Array[i]);
-        }
-        const b64 = btoa(binary);
+        const b64 = uint8ArrayToBase64(uint8Array);
 
         this.liveClient.send(JSON.stringify({
           realtimeInput: {
@@ -246,6 +279,7 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
              this.isListening.set(true);
           });
           updateVolume(); // Start the VU loop
+          this.startSessionTimer(); // Start 10m safety duration countdown
           console.log(`[AdkLiveService] Connected to Gemini Live API with HD Voice '${voiceName}' (model: ${modelName})`);
           resolve();
         };
@@ -348,14 +382,9 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
           }
         }
         if (part.inlineData && part.inlineData.data) {
-          // This is base64 encoded audio
-          const binaryStr = atob(part.inlineData.data);
-          const len = binaryStr.length;
-          const bytes = new Uint8Array(len);
-          for (let i = 0; i < len; i++) {
-            bytes[i] = binaryStr.charCodeAt(i);
-          }
-          this.enqueueAudio(bytes.buffer);
+          // Fast zero-copy Base64 PCM audio decoding
+          const bytes = base64ToUint8Array(part.inlineData.data);
+          this.enqueueAudio(bytes.buffer as ArrayBuffer);
         }
       }
     }
@@ -459,6 +488,7 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
   }
 
   disconnect() {
+    this.clearSessionTimer();
     this.runInZone(() => {
       this.isListening.set(false);
       this.isConnected.set(false);
@@ -500,6 +530,7 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
   }
   
   private handleDisconnect() {
+    this.clearSessionTimer();
     this.runInZone(() => {
       this.isConnected.set(false);
       this.isListening.set(false);

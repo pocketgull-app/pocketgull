@@ -17,12 +17,13 @@ describe('RpmAuditService (CMS Remote Patient Monitoring Reimbursement Audit)', 
 
     injector = Injector.create({
       providers: [
-        { provide: RpmAuditService, useClass: RpmAuditService },
         { provide: PatientStateService, useValue: mockPatientState }
       ]
     });
 
-    service = runInInjectionContext(injector, () => injector.get(RpmAuditService));
+    runInInjectionContext(injector, () => {
+      service = new RpmAuditService();
+    });
   });
 
   it('should calculate initial RPM metrics and 16-day CPT 99454 eligibility', () => {

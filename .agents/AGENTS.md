@@ -131,6 +131,20 @@
 8. **Sub-Second Efficiency Latency Optimization**: For competition efficiency tracks, sample 8 central key slices, export PyTorch models to ONNX Runtime with FP16, and use multi-threaded asynchronous DICOM I/O pools.
 9. **Semantic Versioning (`SemVer v1.0.0`) & Clean Identifiers**: Protect competitive edge by using clean, standardized public version tags without exposing internal proprietary recipe names on public leaderboards.
 10. **Continuous Automated Verification (`vitest` / `pytest`)**: Write automated unit tests covering preprocessors, matrix math formulas, and DICOM tensor transformations across edge cases (empty text reports, missing headers, NaNs).
+## Anti-Surveillance & Ephemeral Data Sovereignty Standards
+- **Default to Edge Computation**: All real-time telemetry calculations, biophysical equations, and clinical symptom classifications MUST run locally on the client device via WebAssembly (WASM), WebGPU, or client-side Web Workers (`OfflineEdgeAiService`). External API calls are reserved for explicit, user-initiated AI consults.
+- **Prohibition of Third-Party Trackers**: Zero third-party analytics pixels, fingerprinting scripts, or passive telemetry pingers (Google Analytics, Segment, Mixpanel, Meta Pixel) are permitted.
+- **Explicit Opt-In Telemetry**: All network operations require deliberate, user-initiated actions. Passive background harvesting of location, mic audio, or user keystrokes is strictly prohibited.
+- **1-Click Ephemeral State Purging**: All active clinical state MUST be stored in ephemeral Angular Signals and transient local storage, with 1-click state purging capabilities (`purgeTransientPatientState`).
 
+## Skeptical Epistemology & Falsifiability Standards
+- **Popperian Null-Hypothesis ($H_0$) Testing**: Every clinical or biophysical metric evaluation MUST compute $p$-values against population baseline means (`SkepticalEpistemologyService`). Any observation where $p \ge 0.05$ MUST trigger an explicit `skepticalWarningNotice` disclosing that the finding cannot reject the null hypothesis.
+- **Cochrane Risk of Bias (RoB 2)**: All literature references and clinical citations MUST incorporate explicit Cochrane Risk of Bias assessments across randomization, intervention deviation, missing data, and measurement bias.
+- **Evidence Hierarchy Demarcation**: Clinical recommendations MUST be explicitly tagged with evidence tiers (`Level A (RCTs)`, `Level B (Cohort)`, or `Level C (Expert Consensus / Plausibility)`) to prevent uncritical acceptance or science-washing.
+- **Socratic Evidence Literacy**: Analysis reports MUST embed interactive Socratic challenges to test user critical reasoning, correlation vs. causation discernment, and publication bias awareness.
+
+## WebMCP Tool & Browser Agent Governance
+- **Explicit Tool Contracts**: Every browser tool exposed to AI model contexts MUST be registered via `WebMcpRegistrationService`, declare strict JSON Schema inputs, and provide an explicit `AbortController` cancellation signal.
+- **Mandatory Spec Coverage**: Any addition or modification to registered WebMCP tools MUST include corresponding unit tests in `webmcp-registration.service.spec.ts` verifying registration, execution, and error handling.
 
 

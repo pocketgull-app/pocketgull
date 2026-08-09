@@ -5,6 +5,7 @@ Runs unit and integration tests under pocketgull_api without external dependenci
 
 import sys
 import os
+import asyncio
 import importlib.util
 import inspect
 
@@ -45,7 +46,10 @@ def run_all_tests():
             print(f"  Running {test_func.__name__}... ", end="")
             total_run += 1
             try:
-                test_func()
+                if inspect.iscoroutinefunction(test_func):
+                    asyncio.run(test_func())
+                else:
+                    test_func()
                 print("\033[92mPASS\033[0m")
             except AssertionError as e:
                 total_failed += 1

@@ -7,6 +7,16 @@ import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { ExportService } from '../services/export.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
+import { AdobeFireflyTextureService } from '../services/adobe-firefly-texture.service';
+
+// Mock Angular effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
+vi.mock('@angular/core', async (importOriginal) => {
+  const original = await importOriginal<any>();
+  return {
+    ...original,
+    effect: () => ({ destroy: () => {} })
+  };
+});
 
 describe('CarePlanPrintPreviewComponent - Care Plan Print Studio & Document Carousel', () => {
   let component: CarePlanPrintPreviewComponent;
@@ -46,7 +56,8 @@ describe('CarePlanPrintPreviewComponent - Care Plan Print Studio & Document Caro
       { provide: PatientStateService, useValue: mockPatientState },
       { provide: PatientManagementService, useValue: mockPatientManagement },
       { provide: ExportService, useValue: mockExportService },
-      { provide: ClinicalIntelligenceService, useValue: mockClinicalIntelligence }
+      { provide: ClinicalIntelligenceService, useValue: mockClinicalIntelligence },
+      { provide: AdobeFireflyTextureService, useValue: {} }
     ], undefined as any);
 
     runInInjectionContext(injector, () => {
@@ -57,7 +68,7 @@ describe('CarePlanPrintPreviewComponent - Care Plan Print Studio & Document Caro
   it('should instantiate with default page 0 selected', () => {
     expect(component).toBeTruthy();
     expect(component.activePageIndex()).toBe(0);
-    expect(component.printPages.length).toBe(4);
+    expect(component.printPages.length).toBe(5);
   });
 
   it('should navigate through document carousel pages using nextPage and prevPage', () => {

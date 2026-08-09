@@ -1,5 +1,25 @@
 import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+vi.mock('@angular/forms', () => ({
+  FormsModule: class {},
+  ReactiveFormsModule: class {},
+  NgControl: class {},
+  NgModel: class {}
+}));
+
+// Mock Angular constructor effects for headless Vitest environment
+vi.mock('@angular/core', async (importOriginal) => {
+  const original = await importOriginal<any>();
+  return {
+    ...original,
+    effect: () => {
+      return {
+        destroy: () => {}
+      };
+    }
+  };
+});
 import { IntakeFormComponent } from './intake-form.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';
@@ -25,7 +45,7 @@ describe('IntakeFormComponent - Comprehensive Patient Symptom Intake', () => {
       getIssuesForBodyPart: vi.fn().mockReturnValue([]),
       addOrUpdateIssue: vi.fn(),
       removeIssue: vi.fn(),
-      setSelectedPartId: vi.fn()
+      selectPart: vi.fn()
     };
 
     mockMarkdown = {
@@ -72,6 +92,6 @@ describe('IntakeFormComponent - Comprehensive Patient Symptom Intake', () => {
 
   it('should call close to reset selected body part ID', () => {
     component.close();
-    expect(mockPatientState.setSelectedPartId).toHaveBeenCalledWith(null);
+    expect(mockPatientState.selectPart).toHaveBeenCalledWith(null);
   });
 });

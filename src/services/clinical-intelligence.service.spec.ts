@@ -71,8 +71,7 @@ describe('ClinicalIntelligenceService - Philosophy Modes', () => {
 
     injector = Injector.create({
       providers: [
-        { provide: ClinicalIntelligenceService, useClass: ClinicalIntelligenceService },
-        { provide: DefensiveGuardrailsService, useClass: DefensiveGuardrailsService },
+        { provide: DefensiveGuardrailsService, useValue: new DefensiveGuardrailsService() },
         { provide: PatientStateService, useValue: mockPatientState },
         { provide: IntelligenceProviderToken, useValue: mockIntelligenceProvider },
         { provide: AiCacheService, useValue: mockAiCache },
@@ -90,7 +89,9 @@ describe('ClinicalIntelligenceService - Philosophy Modes', () => {
       ]
     });
 
-    service = injector.get(ClinicalIntelligenceService);
+    runInInjectionContext(injector, () => {
+      service = new ClinicalIntelligenceService();
+    });
   });
 
   it('should prepend western philosophy instructions by default', async () => {

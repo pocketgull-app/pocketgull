@@ -11,6 +11,7 @@ describe('AndroscogginForagingPhytoncideComponent — Terpene Phytoncide Suite',
   let injector: EnvironmentInjector;
 
   beforeEach(() => {
+    vi.stubGlobal('alert', vi.fn());
     mockPatientState = {
       addClinicalNote: vi.fn(),
       symptoms: signal([]),
@@ -26,9 +27,9 @@ describe('AndroscogginForagingPhytoncideComponent — Terpene Phytoncide Suite',
     });
   });
 
-  it('should instantiate successfully with default Summer season active', () => {
+  it('should instantiate successfully with default Spring season active', () => {
     expect(component).toBeTruthy();
-    expect(component.selectedSeason()).toBe('Summer');
+    expect(component.selectedSeason()).toBe('Spring');
     expect(component.seasons.length).toBe(4);
   });
 
@@ -41,6 +42,8 @@ describe('AndroscogginForagingPhytoncideComponent — Terpene Phytoncide Suite',
   it('should log foraged botanical item into patient record', () => {
     const item = component.foragingDatabase[0];
     component.logForagedItem(item);
-    expect(mockPatientState.addClinicalNote).toHaveBeenCalledWith(expect.stringContaining(item.name));
+    expect(mockPatientState.addClinicalNote).toHaveBeenCalledWith(expect.objectContaining({
+      text: expect.stringContaining(item.name)
+    }));
   });
 });

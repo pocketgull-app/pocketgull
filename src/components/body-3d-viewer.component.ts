@@ -70,7 +70,7 @@ const PART_NAMES: Record<string, string> = {
     'chakra_muladhara': 'Muladhara (Root Earth Base Support Chakra)'
 };
 
-export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'orch_or';
+export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'orch_or';
 
 @Component({
     selector: 'app-body-3d-viewer',

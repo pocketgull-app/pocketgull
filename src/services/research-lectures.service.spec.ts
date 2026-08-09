@@ -23,4 +23,17 @@ describe('ResearchLecturesService', () => {
     expect(url).toContain('site%3Ancbi.nlm.nih.gov');
     expect(url).toContain('Medha%20Rasayana');
   });
+
+  it('4. Evaluates Socratic Evidence Literacy challenge correctly', () => {
+    const evalRes = service.evaluateSocraticChallenge('lec_vagal_01', 1);
+    expect(evalRes.isCorrect).toBe(true);
+    expect(evalRes.evidenceTier).toBe('Level A (RCTs)');
+    expect(evalRes.explanation).toContain('surrogate endpoint');
+  });
+
+  it('5. Retrieves Cochrane Risk of Bias (RoB 2) assessment details', () => {
+    const rob = service.getCochraneRiskSummary('lec_vagal_01');
+    expect(rob.overallRisk).toBe('Low');
+    expect(rob.rationale).toContain('Blinded crossover RCT');
+  });
 });

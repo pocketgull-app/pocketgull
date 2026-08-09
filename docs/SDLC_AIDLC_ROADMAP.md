@@ -41,6 +41,15 @@ flowchart TD
   - Riverpod 2.0 `AsyncNotifier` state management across iOS, Android, and Desktop builds.
 - **Accessibility & Ergonomics (Dieter Rams Principles)**:
   - Minimum touch targets ($\ge 44\text{px}$ web, $\ge 48\text{px}$ mobile), high-contrast WCAG AAA typography, and multi-level cognitive output modes (`Standard`, `Simplified`, `Dyslexia`, `Child`).
+- **ACM & IEEE Special Interest Group (SIG) Architecture Standards**:
+  - **SIGARCH**: [Quantitative Systems Architecture](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md) (Zero-copy PCM streams, ONNX FP16 SIMD, Scale-to-Zero GCP Cloud Run).
+  - **SIGCHI**: [Spatial 3D Accessibility & WCAG 2.2 AAA](file:///c:/Users/philg/Pocketgull/pocketgull/docs/ACCESSIBILITY_SIGCHI.md) (7:1 contrast ratios, Fitts's Law 44px+ hitboxes, reduced-motion snapping).
+  - **SIGBIO / SIGKDD**: [Clinical Knowledge Mining & Graph GNNs](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGBIO_SIGKDD_CLINICAL_KNOWLEDGE_MINING.md) (Heterogeneous multi-paradigm graphs, Asymmetric Loss triage, GroupKFold splits).
+  - **SIGGRAPH**: [WebGPU & Biophysical Rendering](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGGRAPH_WEBGPU_BIOPHYSICAL_RENDERING.md) (60 FPS 3D spatial viewports, Edwin Smith PBR shaders, volumetric DICOM raymarching).
+  - **SIGCOMM / IEEE SPS**: [Streaming Audio & Voice Biomarkers](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGCOMM_SPS_STREAMING_AUDIO_BIOMARKERS.md) (Zero-copy 16kHz PCM WebSockets, MFCC pitch jitter extraction, adaptive jitter pacing).
+  - **SIGSAC / IEEE SIGSEC**: [HIPAA Zero-Trust & Cryptographic Privacy](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGSAC_HIPAA_ZERO_TRUST_PRIVACY.md) (HIPAA Safe Harbor §164.514 de-identification, DOMPurify XSS defense, 53-bit IEEE-754 mantissa formulas).
+  - **SIGSOFT / SIGPLAN**: [Formally Verified Reactive State](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGSOFT_SIGPLAN_REACTIVE_STATE_ARCHITECTURE.md) (Angular Signals DAG, standalone isolation, clinical protocol DSLs).
+  - **IEEE PES**: [Energetics & Green Computing](file:///c:/Users/philg/Pocketgull/pocketgull/docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md) (Biophysical metabolic energetics, bedside mobile DVFS battery budgeting, scale-to-zero GCP carbon efficiency).
 
 ---
 

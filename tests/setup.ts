@@ -2,30 +2,19 @@ import '@angular/compiler';
 import 'zone.js';
 import 'zone.js/testing';
 
-Object.defineProperty(globalThis, 'config', {
+const g: any = typeof window !== 'undefined' ? window : globalThis;
+Object.defineProperty(g, 'config', {
   value: { production: false },
   writable: true,
   configurable: true
 });
-
-Object.defineProperty(globalThis, 'ng', {
-  value: { config: { production: false } },
+g.ng = g.ng || {};
+Object.defineProperty(g.ng, 'config', {
+  value: { production: false },
   writable: true,
   configurable: true
 });
-
-if (typeof window !== 'undefined') {
-  Object.defineProperty(window, 'config', {
-    value: { production: false },
-    writable: true,
-    configurable: true
-  });
-  Object.defineProperty(window, 'ng', {
-    value: { config: { production: false } },
-    writable: true,
-    configurable: true
-  });
-}
+g.ngDevMode = true;
 
 import { getTestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';

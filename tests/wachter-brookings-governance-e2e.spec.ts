@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Injector, runInInjectionContext, PLATFORM_ID } from '@angular/core';
 import { PatientStateService } from '../src/services/patient-state.service';
 import { ThemeService } from '../src/services/theme.service';
@@ -12,6 +12,14 @@ import { FhirIntegrationService } from '../src/services/fhir-integration.service
 import { RpmAuditService } from '../src/services/rpm-audit.service';
 
 describe('Wachter & Brookings AI Governance Integration Suite (End-to-End)', () => {
+  // Mock Angular constructor effects for headless Vitest environment
+  vi.mock('@angular/core', async (importOriginal) => {
+    const original = await importOriginal<any>();
+    return {
+      ...original,
+      effect: () => ({ destroy: () => {} })
+    };
+  });
   let injector: Injector;
   let telemetryService: FhirR5TelemetryService;
   let skepticalService: SkepticalEpistemologyService;
@@ -22,15 +30,15 @@ describe('Wachter & Brookings AI Governance Integration Suite (End-to-End)', () 
     injector = Injector.create({
       providers: [
         { provide: PLATFORM_ID, useValue: 'server' },
-        StorageService,
-        GamificationService,
-        ThemeService,
-        ActuarialLongevityService,
-        PatientStateService,
-        FhirR5TelemetryService,
-        SkepticalEpistemologyService,
-        FhirIntegrationService,
-        RpmAuditService
+        { provide: StorageService, useFactory: () => new StorageService() },
+        { provide: GamificationService, useFactory: () => new GamificationService() },
+        { provide: ThemeService, useFactory: () => new ThemeService() },
+        { provide: ActuarialLongevityService, useFactory: () => new ActuarialLongevityService() },
+        { provide: PatientStateService, useFactory: () => new PatientStateService() },
+        { provide: FhirR5TelemetryService, useFactory: () => new FhirR5TelemetryService() },
+        { provide: SkepticalEpistemologyService, useFactory: () => new SkepticalEpistemologyService() },
+        { provide: FhirIntegrationService, useFactory: () => new FhirIntegrationService() },
+        { provide: RpmAuditService, useFactory: () => new RpmAuditService() }
       ]
     });
 

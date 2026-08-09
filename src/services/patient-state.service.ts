@@ -149,10 +149,13 @@ export class PatientStateService {
     }));
   });
 
+  // --- Anti-Surveillance & Ephemeral Data Sovereignty Controls ---
+  readonly ephemeralPrivacyMode = signal<boolean>(true);
+
   // --- Enterprise Agent HIPAA Audit Telemetry ---
   readonly enterpriseAuditLog = signal<Array<{
     timestamp: string;
-    action: 'AI_SYNTHESIS' | 'FHIR_EXPORT' | 'PRESCRIBE_TOOL' | 'WAKE_WORD' | 'SBAR_HANDOFF';
+    action: 'AI_SYNTHESIS' | 'FHIR_EXPORT' | 'PRESCRIBE_TOOL' | 'WAKE_WORD' | 'SBAR_HANDOFF' | 'STATE_PURGE' | 'PRIVACY_MODE_TOGGLE';
     actor: string;
     hash: string;
     details: string;
@@ -166,7 +169,7 @@ export class PatientStateService {
     }
   ]);
 
-  logEnterpriseAudit(action: 'AI_SYNTHESIS' | 'FHIR_EXPORT' | 'PRESCRIBE_TOOL' | 'WAKE_WORD' | 'SBAR_HANDOFF', details: string) {
+  logEnterpriseAudit(action: 'AI_SYNTHESIS' | 'FHIR_EXPORT' | 'PRESCRIBE_TOOL' | 'WAKE_WORD' | 'SBAR_HANDOFF' | 'STATE_PURGE' | 'PRIVACY_MODE_TOGGLE', details: string) {
     const entry = {
       timestamp: new Date().toISOString(),
       action,
@@ -175,6 +178,57 @@ export class PatientStateService {
       details
     };
     this.enterpriseAuditLog.update(logs => [entry, ...logs.slice(0, 49)]);
+  }
+
+  toggleEphemeralPrivacyMode(enabled?: boolean): boolean {
+    const next = enabled !== undefined ? enabled : !this.ephemeralPrivacyMode();
+    this.ephemeralPrivacyMode.set(next);
+    this.logEnterpriseAudit(
+      'PRIVACY_MODE_TOGGLE',
+      `Ephemeral Privacy Mode set to ${next ? 'ENABLED (Strict Local Edge Isolation)' : 'DISABLED'}`
+    );
+    return next;
+  }
+
+  purgeTransientPatientState(): { timestamp: string; purgedItemsCount: number } {
+    const activeIssueCount = Object.keys(this.issues()).length;
+    const historyCount = this.patientHistory().length;
+    const totalPurged = activeIssueCount + historyCount;
+
+    // Ephemeral state reset
+    this.issues.set({});
+    this.patientGoals.set('');
+    this.reasonForVisit.set('');
+    this.dietaryProtocol.set('');
+    this.patientHistory.set([]);
+    this.vitals.set({
+      bp: '',
+      hr: '',
+      temp: '',
+      spO2: '',
+      weight: '',
+      height: '',
+      cgmGlucoseMgDl: '',
+      vitC: '',
+      vitD3: '',
+      magnesium: '',
+      zinc: '',
+      b12: ''
+    });
+
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        localStorage.removeItem('pocketgull_patient_state');
+        localStorage.removeItem('pocketgull_transient_cache');
+      } catch (e) {
+        console.warn('LocalStorage cleanup warning:', e);
+      }
+    }
+
+    const timestamp = new Date().toISOString();
+    this.logEnterpriseAudit('STATE_PURGE', `Purged ${totalPurged} transient patient items & local storage caches`);
+
+    return { timestamp, purgedItemsCount: totalPurged };
   }
   
   getToolState(toolId: string): 'unassigned' | 'prescribed' | 'hidden' {
@@ -225,7 +279,7 @@ export class PatientStateService {
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
   readonly bodyViewerMode = signal<'3d' | '2d'>('3d');
-  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic'>('skin');
+  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic'>('skin');
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
   readonly draftSummaryItems = signal<IDraftSummaryItem[]>([]);
@@ -240,7 +294,7 @@ export class PatientStateService {
   readonly isAudioPrimaryMode = signal<boolean>(false);
   readonly isGammaSyncActive = signal<boolean>(false);
   readonly sentinelScope = signal<'micro-patient' | 'macro-fleet'>('micro-patient');
-  readonly activePhilosophy = signal<'western' | 'eastern' | 'ayurvedic' | 'arborist' | 'mechanic'>('western');
+  readonly activePhilosophy = signal<'western' | 'eastern' | 'ayurvedic' | 'osteopathic'>('western');
   readonly tcmIntake = signal<import('./patient.types').ITcmIntake>({
     tongueColor: 'pink',
     tongueCoating: 'thin-white',
@@ -673,7 +727,7 @@ export class PatientStateService {
     this.selectedNoteId.set(noteId);
   }
 
-  selectPhilosophy(philosophy: 'western' | 'eastern' | 'ayurvedic' | 'arborist' | 'mechanic') {
+  selectPhilosophy(philosophy: 'western' | 'eastern' | 'ayurvedic' | 'osteopathic') {
     this.activePhilosophy.set(philosophy);
     this.requestAnalysisUpdate();
   }
