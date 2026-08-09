@@ -52,6 +52,7 @@ export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
       position: relative;
       white-space: nowrap;
       cursor: pointer;
+      min-height: 44px;
     }
 
     .btn-base:disabled {

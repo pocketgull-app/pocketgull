@@ -72,7 +72,8 @@ export interface IPrintPageThumbnail {
               [class.text-zinc-700]="activePhilosophy() !== 'western'"
               [class.dark:bg-zinc-800]="activePhilosophy() !== 'western'"
               [class.dark:text-zinc-300]="activePhilosophy() !== 'western'"
-              class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
+              aria-label="Select Western Allopathic Philosophy"
+              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center">
               🔵 Western Allopathic
             </button>
             <button (click)="selectPhilosophy('eastern')"
@@ -82,7 +83,8 @@ export interface IPrintPageThumbnail {
               [class.text-zinc-700]="activePhilosophy() !== 'eastern'"
               [class.dark:bg-zinc-800]="activePhilosophy() !== 'eastern'"
               [class.dark:text-zinc-300]="activePhilosophy() !== 'eastern'"
-              class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
+              aria-label="Select Eastern TCM Philosophy"
+              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center">
               🟢 Eastern (TCM)
             </button>
             <button (click)="selectPhilosophy('ayurvedic')"
@@ -92,7 +94,8 @@ export interface IPrintPageThumbnail {
               [class.text-zinc-700]="activePhilosophy() !== 'ayurvedic'"
               [class.dark:bg-zinc-800]="activePhilosophy() !== 'ayurvedic'"
               [class.dark:text-zinc-300]="activePhilosophy() !== 'ayurvedic'"
-              class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
+              aria-label="Select Ayurvedic Medicine Philosophy"
+              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center">
               🟡 Ayurvedic Medicine
             </button>
             <button (click)="selectPhilosophy('osteopathic')"
@@ -102,7 +105,8 @@ export interface IPrintPageThumbnail {
               [class.text-zinc-700]="activePhilosophy() !== 'osteopathic'"
               [class.dark:bg-zinc-800]="activePhilosophy() !== 'osteopathic'"
               [class.dark:text-zinc-300]="activePhilosophy() !== 'osteopathic'"
-              class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
+              aria-label="Select Osteopathic Medicine Philosophy"
+              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center">
               🦴 Osteopathic Medicine
             </button>
           </div>

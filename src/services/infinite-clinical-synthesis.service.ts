@@ -17,8 +17,7 @@ export interface IProceduralSynthesisResult {
   subtitle: string;
   nodes: ISummaryNode[];
   iconSpec: IClinicalIconSpec;
-  amazonStoreUrl: string;
-  amazonPharmacyUrl: string;
+  amazonStoreUrl?: string;
   moeFlopSavingsPercent: number;
   timestamp: string;
 }
@@ -49,10 +48,11 @@ export class InfiniteClinicalSynthesisService {
       // 1. Resolve theme icon spec
       const iconSpec = this.iconGenerator.getIconSpec(query, paradigm === 'tcm' ? 'tcm' : paradigm === 'ayurvedic' ? 'ayurvedic' : 'western');
 
-      // 2. Format Amazon affiliate links
+      // 2. Format Amazon affiliate links conditionally for purchasable supply recommendations
       const cleanQuery = query.replace(/[^\w\s-]/g, '').trim();
-      const amazonStoreUrl = `https://www.amazon.com/s?k=${encodeURIComponent(cleanQuery)}&tag=pgdpo-20`;
-      const amazonPharmacyUrl = `https://pharmacy.amazon.com/search?q=${encodeURIComponent(cleanQuery)}&tag=pgdpo-20`;
+      const lowerQ = cleanQuery.toLowerCase();
+      const isPurchasable = ['supplement', 'herb', 'botanical', 'kit', 'band', 'cushion', 'oils', 'tea', 'rasayana', 'triphala', 'ashwagandha', 'shilajit'].some(k => lowerQ.includes(k));
+      const amazonStoreUrl = isPurchasable ? `https://www.amazon.com/s?k=${encodeURIComponent(cleanQuery)}&tag=pgdpo-20` : undefined;
 
       // 3. Construct procedural clinical nodes
       const westernNodeItem: ISummaryNodeItem = {
@@ -98,7 +98,6 @@ export class InfiniteClinicalSynthesisService {
         nodes: [summaryNode],
         iconSpec,
         amazonStoreUrl,
-        amazonPharmacyUrl,
         moeFlopSavingsPercent: this.moeRouter.computeEfficiencySavingsPercent(),
         timestamp: new Date().toISOString()
       };

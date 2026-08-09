@@ -53,7 +53,6 @@ import { ZamecznikCanvasComponent } from './components/shared/zamecznik-canvas.c
 import { CompanionSyncModalComponent } from './components/companion-sync-modal.component';
 import { GlossaryModalComponent } from './components/glossary-modal.component';
 import { PocketgullTypefaceSiteComponent } from './components/pocketgull-typeface-site.component';
-import { PocketgullIconComponent } from './components/pocketgull-icon.component';
 import { DocsStudyComponent } from './components/docs-study.component';
 import { NavigationShellService } from './services/navigation-shell.service';
 import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badge.component';
@@ -65,7 +64,6 @@ import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badg
     CommonModule,
     FormsModule,
     PocketgullTypefaceSiteComponent,
-    PocketgullIconComponent,
     PatientDropdownComponent,
     MedicalChartComponent,
     AnalysisContainerComponent,
@@ -503,15 +501,7 @@ import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badg
               <span class="hidden sm:inline">Research</span>
             </button>
 
-            <button (click)="showTypefaceSite.set(true)"
-                    id="tour-typeface-trigger"
-                    aria-label="PocketGull Typeface Specimen Suite"
-                    title="Open PocketGull Typeface Specimen Suite"
-                    class="group shrink-0 flex items-center gap-2 max-sm:px-2 max-sm:py-1.5 px-4 py-2 border border-amber-500/40 text-amber-700 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer rounded-md">
-              <app-pocketgull-icon name="seagull" />
-              <span class="hidden sm:inline font-pocketgull">Typeface</span>
-            </button>
-            
+
             <button (click)="showDocsStudy.set(true)"
                id="tour-docs-trigger"
                aria-label="Docs"
@@ -523,17 +513,9 @@ import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badg
               <span class="hidden sm:inline">Docs</span>
             </button>
 
-            <!-- Jeff Dean Pathways MoE Telemetry HUD -->
+            <!-- Pathways MoE Telemetry HUD -->
             <app-pathways-moe-badge />
-            <!-- Somatic Box-Breathing Grounding (Zamecznik Canvas) -->
-            <button (click)="triggerSomaticGrounding()" 
-                    aria-label="Somatic Grounding & Box Breathing"
-                    title="Open Somatic Grounding & Box Breathing Canvas"
-                    class="group shrink-0 flex items-center gap-1.5 px-3 py-2 border border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-extrabold uppercase tracking-wider transition-colors rounded-md cursor-pointer">
-              <span>🧘</span>
-              <span class="hidden md:inline">Grounding</span>
-            </button>
-            
+
             <!-- Tour Guide Toggle -->
             <button (click)="tour.forceStart()" 
                     aria-label="Start Tour Guide"

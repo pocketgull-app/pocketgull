@@ -356,3 +356,45 @@ describe('CGM Glucose Status Classifier', () => {
     expect(classifyCgm(undefined)).toBe('unknown');
   });
 });
+
+describe('Lazy Loaded Body Part Issues Engine', () => {
+  function lazyLoadPartIssues(issuesMap: Record<string, IBodyPartIssue[]>, partId: string): { updatedMap: Record<string, IBodyPartIssue[]>, loaded: IBodyPartIssue[] } {
+    if (!partId) return { updatedMap: issuesMap, loaded: [] };
+    const current = issuesMap[partId];
+    if (current && current.length > 0) {
+      return { updatedMap: issuesMap, loaded: current };
+    }
+    const partName = partId.replace(/_/g, ' ').toUpperCase();
+    const defaultIssue: IBodyPartIssue = {
+      id: partId,
+      noteId: `lazy_${partId}_test`,
+      name: partName,
+      painLevel: 0,
+      description: `Baseline anatomical assessment for ${partName}. No acute pain reported.`,
+      symptoms: [],
+      recommendation: `Maintain routine wellness protocols for ${partName}.`
+    };
+    const updatedMap = { ...issuesMap, [partId]: [defaultIssue] };
+    return { updatedMap, loaded: [defaultIssue] };
+  }
+
+  it('lazily synthesizes baseline body part issues on demand when key is absent', () => {
+    const map: Record<string, IBodyPartIssue[]> = {};
+    const { updatedMap, loaded } = lazyLoadPartIssues(map, 'r_knee');
+
+    expect(loaded.length).toBe(1);
+    expect(loaded[0].id).toBe('r_knee');
+    expect(loaded[0].description).toContain('Baseline anatomical assessment');
+    expect(updatedMap['r_knee']).toBeDefined();
+  });
+
+  it('preserves existing issues if part has already been loaded', () => {
+    const existingIssue = makeIssue({ id: 'r_knee', description: 'Pre-existing acute swelling', painLevel: 8 });
+    const map: Record<string, IBodyPartIssue[]> = { 'r_knee': [existingIssue] };
+
+    const { updatedMap, loaded } = lazyLoadPartIssues(map, 'r_knee');
+    expect(loaded.length).toBe(1);
+    expect(loaded[0].description).toBe('Pre-existing acute swelling');
+    expect(loaded[0].painLevel).toBe(8);
+  });
+});

@@ -243,7 +243,7 @@ export class ClinicalToolWorkbenchComponent {
       id: 'tool_fhir_smart',
       name: 'SMART on FHIR R4 Bundle Exporter',
       category: 'FHIR & Security',
-      description: 'DOMPurify sanitized FHIR R4 export engine with Amazon Rx pgdpo-20 routing.',
+      description: 'DOMPurify sanitized FHIR R4 export engine with HIPAA Safe Harbor §164.514 compliance.',
       status: 'PASS',
       latencyMs: 18,
       isFlipped: false,

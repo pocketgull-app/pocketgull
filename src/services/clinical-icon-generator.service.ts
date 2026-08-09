@@ -59,7 +59,7 @@ export class ClinicalIconGeneratorService {
     // 3. Western Allopathic & Orthomolecular matching
     if (q.includes('medication') || q.includes('pharmacy') || q.includes('drug') || q.includes('rx')) {
       return {
-        svgMarkup: ClinicalIcons.AmazonRx,
+        svgMarkup: ClinicalIcons.Assessment,
         badgeClass: 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/30',
         label: 'Rx Pharmacy',
         theme: 'western'

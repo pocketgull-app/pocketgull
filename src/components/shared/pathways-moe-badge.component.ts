@@ -62,7 +62,7 @@ import { ClinicalMoERouterService, IExpertSubnet } from '../../services/clinical
               <h4 class="text-sm font-semibold text-zinc-100 flex items-center gap-1.5">
                 <span>Sparse Dynamic Route</span>
                 <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-mono border border-emerald-500/20">
-                  Jeff Dean Architecture
+                  Pathways MoE
                 </span>
               </h4>
               <p class="text-[11px] text-zinc-400 mt-0.5">

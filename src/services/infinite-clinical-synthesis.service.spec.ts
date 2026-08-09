@@ -34,7 +34,6 @@ describe('InfiniteClinicalSynthesisService', () => {
     expect(result).toBeTruthy();
     expect(result.title).toContain('Ashwagandha for Sleep & Cortisol');
     expect(result.amazonStoreUrl).toContain('tag=pgdpo-20');
-    expect(result.amazonPharmacyUrl).toContain('pharmacy.amazon.com');
     expect(result.moeFlopSavingsPercent).toBeGreaterThanOrEqual(0);
     expect(result.nodes.length).toBeGreaterThan(0);
     expect(result.nodes[0]?.items?.length).toBe(3);

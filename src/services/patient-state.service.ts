@@ -702,6 +702,30 @@ export class PatientStateService {
     return !!issues && issues.length > 0;
   }
 
+  // Lazy-load issue templates for a body part on demand if not already present
+  lazyLoadPartIssues(partId: string): IBodyPartIssue[] {
+    if (!partId) return [];
+    const current = this.issues()[partId];
+    if (current && current.length > 0) {
+      return current;
+    }
+    const partName = BODY_PART_NAMES[partId] || partId.replace(/_/g, ' ').toUpperCase();
+    const defaultIssue: IBodyPartIssue = {
+      id: partId,
+      noteId: `lazy_${partId}_${Date.now()}`,
+      name: partName,
+      painLevel: 0,
+      description: `Baseline anatomical assessment for ${partName}. No acute pain reported.`,
+      symptoms: [],
+      recommendation: `Maintain routine wellness protocols for ${partName}.`
+    };
+    this.issues.update(map => ({
+      ...map,
+      [partId]: [defaultIssue]
+    }));
+    return [defaultIssue];
+  }
+
   // Helper to check if a part has a note with a pain level > 0
   hasPainfulIssue(partId: string): boolean {
     const issues = this.issues()[partId];
@@ -719,6 +743,7 @@ export class PatientStateService {
     if (!partId) {
       this.selectedNoteId.set(null); // Deselect note when part is deselected
     } else {
+      this.lazyLoadPartIssues(partId);
       this.game.completeQuest('click_anatomy');
     }
   }

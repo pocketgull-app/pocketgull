@@ -85,7 +85,7 @@ export interface ITherapeuticHobby {
 
           <a [href]="amazonStoreUrl()" target="_blank" rel="noopener"
              class="min-h-[44px] min-w-[44px] px-4 py-2 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-2 shadow-md">
-            <span>🛒 Amazon Rx Store</span>
+            <span>🛒 Recommended Supplies</span>
             <span class="text-[10px] font-mono opacity-80">(tag=pgdpo-20)</span>
           </a>
         </div>
