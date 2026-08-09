@@ -4,6 +4,8 @@ import { ClinicalIntelligenceService } from './clinical-intelligence.service';
 import { ExportService } from './export.service';
 import { TeledentistryService } from './teledentistry.service';
 import { GcpHealthcareApiService } from './gcp-healthcare-api.service';
+import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
+import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -15,6 +17,8 @@ export class WebMcpRegistrationService {
   private exportService = inject(ExportService);
   private teledentistryService = inject(TeledentistryService);
   private gcpHealthcareService = inject(GcpHealthcareApiService);
+  private skepticalService = inject(SkepticalEpistemologyService);
+  private moeRouter = inject(ClinicalMoERouterService);
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -444,6 +448,58 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(fhirSyncTool, { signal: fhirSyncCtrl.signal });
     this.mcpControllers.push({ name: fhirSyncTool.name, controller: fhirSyncCtrl });
+
+    // 16. calculate_skeptical_falsifiability_score
+    const skepCtrl = new AbortController();
+    const skepTool = {
+      name: 'calculate_skeptical_falsifiability_score',
+      description: 'Evaluates Popperian p-value null-hypothesis testing (H0), Cochrane Risk of Bias 2.0 (RoB 2) rating, and FDA 21 CFR §520(o) CDS compliance report for clinical recommendations.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          lensName: { type: 'string', description: 'The clinical lens scope (e.g. "Summary Overview", "PhysioNet / RSNA 2026").' },
+          sampleSize: { type: 'number', description: 'Sample size N for null hypothesis evaluation.' }
+        }
+      },
+      execute: async (params: any) => {
+        try {
+          const report = this.skepticalService.evaluateCdsCompliance(params?.lensName || 'Summary Overview');
+          return { content: [{ type: 'text', text: JSON.stringify(report, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to calculate skeptical score: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(skepTool, { signal: skepCtrl.signal });
+    this.mcpControllers.push({ name: skepTool.name, controller: skepCtrl });
+
+    // 17. set_gemini_thinking_reasoning_budget
+    const thinkCtrl = new AbortController();
+    const thinkTool = {
+      name: 'set_gemini_thinking_reasoning_budget',
+      description: 'Dynamically configures Gemini 2.5 Thinking model reasoning token budgets (1024 summary, 4096 protocol, 8192 high acuity SIBI/RSNA).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          thinkingBudget: { type: 'number', description: 'The reasoning token budget (e.g. 1024, 4096, 8192).' },
+          enabled: { type: 'boolean', description: 'Whether reasoning thinking process is enabled.' }
+        },
+        required: ['thinkingBudget']
+      },
+      execute: async (params: any) => {
+        try {
+          this.ngZone.run(() => {
+            this.moeRouter.setCustomThinkingBudget(params.enabled === false ? 0 : params.thinkingBudget);
+          });
+          const currentConfig = this.moeRouter.currentThinkingConfig();
+          return { content: [{ type: 'text', text: `Gemini 2.5 Thinking model budget updated: ${JSON.stringify(currentConfig)}` }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to update thinking budget: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(thinkTool, { signal: thinkCtrl.signal });
+    this.mcpControllers.push({ name: thinkTool.name, controller: thinkCtrl });
   }
 
   /**

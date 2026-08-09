@@ -8,6 +8,8 @@ import { ClinicalIntelligenceService } from './clinical-intelligence.service';
 import { ExportService } from './export.service';
 import { TeledentistryService } from './teledentistry.service';
 import { GcpHealthcareApiService } from './gcp-healthcare-api.service';
+import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
+import { ClinicalMoERouterService } from './clinical-moe-router.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -20,6 +22,8 @@ describe('WebMcpRegistrationService', () => {
   let mockExportService: any;
   let mockTeledentistryService: any;
   let mockGcpHealthcareService: any;
+  let mockSkepticalService: any;
+  let mockMoeRouter: any;
   let mockModelContext: any;
   let registeredTools: Map<string, any>;
 
@@ -92,6 +96,15 @@ describe('WebMcpRegistrationService', () => {
       syncHybridFhirBundle: vi.fn().mockResolvedValue({ gcpSyncSuccess: true, awsSyncSuccess: true, timestamp: '2026-08-09T00:00:00Z' })
     };
 
+    mockSkepticalService = {
+      evaluateCdsCompliance: vi.fn().mockReturnValue({ isFdaSection520oCompliant: true, overallConfidencePercent: 88 })
+    };
+
+    mockMoeRouter = {
+      setCustomThinkingBudget: vi.fn(),
+      currentThinkingConfig: vi.fn().mockReturnValue({ thinkingBudget: 4096, enabled: true })
+    };
+
     const mockNgZone = {
       run: (fn: Function) => fn()
     };
@@ -103,6 +116,8 @@ describe('WebMcpRegistrationService', () => {
         { provide: ExportService, useValue: mockExportService },
         { provide: TeledentistryService, useValue: mockTeledentistryService },
         { provide: GcpHealthcareApiService, useValue: mockGcpHealthcareService },
+        { provide: SkepticalEpistemologyService, useValue: mockSkepticalService },
+        { provide: ClinicalMoERouterService, useValue: mockMoeRouter },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -110,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 15 WebMCP agentic tools on modelContext', () => {
+  it('should register all 17 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(15);
+    expect(registeredTools.size).toBe(17);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -129,6 +144,8 @@ describe('WebMcpRegistrationService', () => {
     expect(registeredTools.has('update_tooth_periodontal_status')).toBe(true);
     expect(registeredTools.has('export_patient_care_plan_fhir_r4')).toBe(true);
     expect(registeredTools.has('trigger_hybrid_fhir_dual_sync')).toBe(true);
+    expect(registeredTools.has('calculate_skeptical_falsifiability_score')).toBe(true);
+    expect(registeredTools.has('set_gemini_thinking_reasoning_budget')).toBe(true);
   });
 
   it('should execute generate_medical_summary tool successfully', async () => {
@@ -256,9 +273,27 @@ describe('WebMcpRegistrationService', () => {
     expect(mockTeledentistryService.setProbingDepth).toHaveBeenCalledWith(16, 6);
   });
 
+  it('should execute calculate_skeptical_falsifiability_score tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('calculate_skeptical_falsifiability_score');
+
+    const result = await tool.execute({ lensName: 'Summary Overview' });
+    expect(result.content[0].text).toContain('"isFdaSection520oCompliant": true');
+    expect(mockSkepticalService.evaluateCdsCompliance).toHaveBeenCalledWith('Summary Overview');
+  });
+
+  it('should execute set_gemini_thinking_reasoning_budget tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('set_gemini_thinking_reasoning_budget');
+
+    const result = await tool.execute({ thinkingBudget: 8192, enabled: true });
+    expect(result.content[0].text).toContain('"thinkingBudget":4096');
+    expect(mockMoeRouter.setCustomThinkingBudget).toHaveBeenCalledWith(8192);
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(15);
+    expect((service as any).mcpControllers.length).toBe(17);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
