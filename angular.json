@@ -81,7 +81,11 @@
               "@google-cloud/vertexai",
               "@google-cloud/vertexai/build/src/resources/index.js",
               "crypto-js",
-              "firebase/data-connect"
+              "firebase/data-connect",
+              "jspdf",
+              "fflate",
+              "dompurify",
+              "canvg"
             ],
             "externalDependencies": [
               "@mikro-orm/sqlite",

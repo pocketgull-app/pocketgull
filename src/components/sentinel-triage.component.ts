@@ -284,7 +284,7 @@ export class SentinelTriageComponent implements OnInit, OnDestroy {
         '🌍 [PAHO Regional Epidemic Surveillance Directive]\n' +
         '1. Activate trans-boundary vector control and micro-climate quarantine perimeters.\n' +
         '2. Stream regional clinic EHR data for real-time cluster tracing.\n' +
-        '3. Dispatch targeted nutritional bypass packs to isolated regional hubs.'
+        '3. Dispatch tailored nutritional bypass packs to isolated regional hubs.'
       );
     } else {
       this.containmentRecommendation.set(

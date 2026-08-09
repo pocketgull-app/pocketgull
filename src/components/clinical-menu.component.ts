@@ -116,7 +116,7 @@ import { ChronoWeeklyMealPlannerComponent } from './chrono-weekly-meal-planner.c
 
         <div class="flex items-center gap-2">
           <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
-            🎯 Dynamic Health Telemetry Matching Active
+            ⚡ Dynamic Health Telemetry Matching Active
           </span>
         </div>
       </div>

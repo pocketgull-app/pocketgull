@@ -61,7 +61,7 @@ Sarah Jenkins is a 42-year-old female presenting with chronic lower back pain (L
 
 ### Movement & Rehabilitation
 - **McKenzie Method (extension-biased exercises)**: Highly effective for L4-L5 disc pathology with peripheral symptoms. Begin with supervised sessions; transition to home program.
-- **Core stabilization (McGill Big Three)**: Bird-dog, curl-up, side plank. Target deep spinal stabilizers without compressive loading.
+- **Core stabilization (McGill Big Three)**: Bird-dog, curl-up, side plank. Engage deep spinal stabilizers without compressive loading.
 - **Aquatherapy**: Low-impact option for acute flare periods; reduces joint load while maintaining cardiovascular function.
 - **Avoid**: High-impact activities, heavy deadlifts, and prolonged flexion-dominant postures until PT-cleared.
 
@@ -72,13 +72,13 @@ Sarah Jenkins is a 42-year-old female presenting with chronic lower back pain (L
     'Nutrition': `### Biochemical Assessment
 The patient displays elevated systemic inflammatory markers and increased oxidative stress. Suboptimal levels of key micronutrients are present, specifically in vitamin D3 and magnesium, which limits cellular energy efficiency.
 
-### Nutrition Targets
+### Nutrition Focus
 - **Anti-inflammatory pathways**: High oxidative stress requires active anti-inflammatory dietary inputs.
 - **Mitochondrial cofactor support**: Cellular respiration needs magnesium and B-vitamins for efficient ATP production.
-- **Bone and nerve support**: Suboptimal vitamin D3 needs targeted nutritional support.
+- **Bone and nerve support**: Suboptimal vitamin D3 needs tailored nutritional support.
 
 ### Nutritional Interventions
-| Nutrient/Compound | Therapeutic Dose | Delivery Method | Targeted Pathway |
+| Nutrient/Compound | Therapeutic Dose | Delivery Method | Primary Pathway |
 |---|---|---|---|
 | Vitamin D3 | 2000 IU | Oral with fat | Bone health and immune support |
 | Magnesium glycinate | 400 mg | Oral nightly | NMDA regulation & muscle relaxation |

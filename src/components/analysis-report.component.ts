@@ -37,6 +37,7 @@ import { MoodConsciousnessMatrixComponent } from './mood-consciousness-matrix.co
 import { UkRioPubmedSourcingComponent } from './uk-rio-pubmed-sourcing.component';
 import { DietaryAllergyShieldComponent } from './dietary-allergy-shield.component';
 import { LensInsightSparkShieldComponent } from './lens-insight-spark-shield.component';
+import { LensRsnaKneeComponent } from './lens-rsna-knee.component';
 import { ParadigmClinicalDashboardComponent } from './paradigm-clinical-dashboard.component';
 import { GeolocationalHealthRelocationComponent } from './geolocational-health-relocation.component';
 import { ClinicalActLensMapperService } from '../services/clinical-act-lens-mapper.service';
@@ -78,6 +79,9 @@ import { SevenGenerationsStewardshipLensTabComponent } from './analysis-report/s
 import { SocraticEpistemologyLensTabComponent } from './analysis-report/socratic-epistemology-lens-tab.component';
 import { NutritionalBypassLensTabComponent } from './analysis-report/nutritional-bypass-lens-tab.component';
 import { EmtHandoffLensTabComponent } from './analysis-report/emt-handoff-lens-tab.component';
+import { SummaryOverviewLensTabComponent } from './analysis-report/summary-overview-lens-tab.component';
+import { EpigeneticLongevityLensTabComponent } from './analysis-report/epigenetic-longevity-lens-tab.component';
+import { PatientEducationLensTabComponent } from './analysis-report/patient-education-lens-tab.component';
 import { LocalGemmaStudioComponent } from './local-gemma-studio.component';
 import { TriParadigmSwarmCardComponent } from './tri-paradigm-swarm-card.component';
 import { PharmacogenomicsCardComponent } from './pharmacogenomics-card.component';
@@ -88,11 +92,15 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
   standalone: true,
   imports: [
     CommonModule,
+    SummaryOverviewLensTabComponent,
+    EpigeneticLongevityLensTabComponent,
+    PatientEducationLensTabComponent,
     LocalGemmaStudioComponent,
     TriParadigmSwarmCardComponent,
     PharmacogenomicsCardComponent,
     BiometricSensorFusionCardComponent,
     TeledentistrySystemicLensComponent,
+    LensRsnaKneeComponent,
     ChronobiologyMatrixLensTabComponent,
     FunctionalMedicineMatrixLensTabComponent,
     MaternalPostpartumLensTabComponent,
@@ -215,6 +223,13 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
                 [class]="activeLens() === 'Summary Overview' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
                 class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
                 <span>📋</span> Overview
+              </button>
+
+              <button (click)="changeLens('RSNA Knee Abnormality')"
+                data-testid="tab-rsna-knee"
+                [class]="activeLens() === 'RSNA Knee Abnormality' ? '!bg-cyan-600 !text-white border-cyan-500 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-900/60 hover:bg-cyan-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
+                <span>🦵</span> RSNA Knee AI
               </button>
  
               <button (click)="changeLens('Treatment Matrix')"
@@ -528,6 +543,10 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
               }
             </div>
           }
+
+          @if (activeLens() === 'RSNA Knee Abnormality') {
+            <app-lens-rsna-knee></app-lens-rsna-knee>
+          }
         }
 
           @if (activeLens() === 'Chronobiology Matrix') {
@@ -592,6 +611,18 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
 
           @if (activeLens() === 'Seven Generations Stewardship') {
             <app-seven-generations-stewardship-lens-tab class="block my-6"></app-seven-generations-stewardship-lens-tab>
+          }
+
+          @if (activeLens() === 'Summary Overview') {
+            <app-summary-overview-lens-tab class="block my-6"></app-summary-overview-lens-tab>
+          }
+
+          @if (activeLens() === 'Epigenetic Longevity') {
+            <app-epigenetic-longevity-lens-tab class="block my-6"></app-epigenetic-longevity-lens-tab>
+          }
+
+          @if (activeLens() === 'Patient Education') {
+            <app-patient-education-lens-tab class="block my-6"></app-patient-education-lens-tab>
           }
 
           @if (activeLens() === 'Teledentistry & Systemic Health') {

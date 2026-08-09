@@ -1,6 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
 import * as DOMPurify from 'dompurify';
-import { jsPDF } from 'jspdf';
 import { PatientStateService } from './patient-state.service';
 
 function sanitizeText(val: string): string {
@@ -40,7 +39,8 @@ export class HipaaPdfExportService {
     this.auditLogs.update(logs => [entry, ...logs]);
   }
 
-  generateClinicalSummaryPdf(patientName: string): void {
+  async generateClinicalSummaryPdf(patientName: string): Promise<void> {
+    const { jsPDF } = await import('jspdf');
     const doc = new jsPDF();
     const vitals = this.patientState.vitals();
     const issues = this.patientState.issues();

@@ -33,7 +33,7 @@ export interface INodeContext {
     timestamp: Date;
 }
 
-export type AnalysisLens = 'Summary Overview' | 'Functional Protocols' | 'Nutrition' | 'Monitoring & Follow-up' | 'Patient Education' | 'Precision Nutrients' | 'Treatment Matrix' | 'PhysioNet Telemetry' | 'Maternal & Postpartum' | 'Grow-Thyself Education' | 'Epigenetic Longevity' | 'Pre-Conception & Family Health' | 'Chronobiology Matrix' | 'Functional Medicine Matrix' | 'Seven Generations Stewardship' | 'Console Debugging & Integrity' | 'Performance Optimization & Web Vitals' | 'Teledentistry & Systemic Health';
+export type AnalysisLens = 'Summary Overview' | 'Functional Protocols' | 'Nutrition' | 'Monitoring & Follow-up' | 'Patient Education' | 'Precision Nutrients' | 'Treatment Matrix' | 'PhysioNet Telemetry' | 'Maternal & Postpartum' | 'Grow-Thyself Education' | 'Epigenetic Longevity' | 'Pre-Conception & Family Health' | 'Chronobiology Matrix' | 'Functional Medicine Matrix' | 'Seven Generations Stewardship' | 'Console Debugging & Integrity' | 'Performance Optimization & Web Vitals' | 'Teledentistry & Systemic Health' | 'RSNA Knee Abnormality';
 
 export interface IClinicalMetrics {
     complexity: number; // 0-10

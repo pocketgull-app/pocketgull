@@ -527,7 +527,7 @@ export class BodyViewerComponent implements OnDestroy {
         noteId: newNoteId,
         name,
         painLevel: 3,
-        description: `Targeted via ${this.state.activePhilosophy().toUpperCase()} 3D Mannequin`,
+        description: `Focused via ${this.state.activePhilosophy().toUpperCase()} 3D Mannequin`,
         symptoms: [name]
       };
       this.state.updateIssue(id, newNote);

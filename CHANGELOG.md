@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2026-08-08
+
+**Interactive Gesture Lock Pad, Analysis Report Modularization, Dynamic ESM PDF Export, and Component Unit Test Suites**
+
+### Added & Fixed
+- **[Gesture Unlock Canvas / Splash Screen] Touch-Friendly Gesture Pad (`secure-splash.component.ts`)**:
+  - Fixed pointer capture exception handling (`try-catch` around `setPointerCapture` and `releasePointerCapture`) to prevent drawing aborts on non-touch devices and touch screens.
+  - Added dynamic coordinate scale factors (`scaleX`, `scaleY`) to align touch/mouse drawing 1:1 with canvas pixel bounds.
+  - Added direct **`🎨 Draw Gesture Lock`** button on initial splash screen to allow instant drawing access without pre-authentication.
+- **[Component Architecture] Analysis Report De-Monolithing (`analysis-report/`)**:
+  - Extracted 3 modular lens tab components ([summary-overview-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/summary-overview-lens-tab.component.ts), [epigenetic-longevity-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/epigenetic-longevity-lens-tab.component.ts), [patient-education-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/patient-education-lens-tab.component.ts)).
+- **[Performance & ESM Optimization] Dynamic `jsPDF` Lazy-Loading (`hipaa-pdf-export.service.ts` & `angular.json`)**:
+  - Converted static `jsPDF` import to on-demand `await import('jspdf')` dynamic chunk loading.
+  - Added `"jspdf"`, `"fflate"`, `"dompurify"`, and `"canvg"` to `allowedCommonJsDependencies` in `angular.json` to eliminate build warnings.
+- **[Testing & Quality Assurance] Specialized Component & Service Test Suites**:
+  - Created unit tests for `CarePlanPrintPreviewComponent`, `TeledentistryOdontogramComponent`, `LifestyleAdjunctService`, `YogaAsana3dCoachComponent`, `ActuarialGleeAlbumComponent`, `AndroscogginForagingPhytoncideComponent`, and `SevenGenerationsStewardshipLensTabComponent`.
+
 ## [1.13.0] - 2026-08-05
 
 **PocketGull Typeface Repository, Domino SSR `CSSStyleDeclaration.setProperty` Polyfill & E2E Stability**

@@ -201,7 +201,7 @@ import { SecureStorageService } from '../services/secure-storage.service';
             </div>
           }
           <!-- Gesture Unlock Flow -->
-          @else if (isLocked() && viewState() !== 'kss' && viewState() !== 'ethics') {
+          @else if (viewState() === 'gesture' || (isLocked() && viewState() !== 'kss' && viewState() !== 'ethics')) {
             <div class="flex flex-col items-center justify-center gap-3 mt-2 mb-2 w-full animate-in fade-in duration-500">
                <div class="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 rounded-full shadow-xs">
                  <span class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">🎨 Draw Your Way In</span>
@@ -214,7 +214,9 @@ import { SecureStorageService } from '../services/secure-storage.service';
                <div class="relative w-[240px] h-[240px] flex items-center justify-center paper-hemp-panel rounded-3xl p-1 overflow-hidden border-2 border-emerald-500/40 dark:border-emerald-400/40 shadow-xl hover:shadow-emerald-500/15 transition-all">
                   <!-- Guidelines background SVG (Dynamic Daily Beach Item guide) -->
                   <svg class="absolute inset-0 w-full h-full pointer-events-none text-[#3ebc9e]/40 dark:text-[#2fa085]/30 stroke-current" viewBox="0 0 100 100" fill="none" stroke-width="1.5">
-                    <g [innerHTML]="todayBeachItem().svgGuide | safeHtml"></g>
+                    @if (isBrowser()) {
+                      <g [innerHTML]="todayBeachItem().svgGuide | safeHtml"></g>
+                    }
                   </svg>
                  
                  <canvas
@@ -246,6 +248,16 @@ import { SecureStorageService } from '../services/secure-storage.service';
                    class="flex-1 min-h-[42px] px-4 py-2 flex justify-center items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-[#3ebc9e] to-[#2fa085] hover:brightness-110 text-white transition-all rounded-xl shadow-md active:scale-[0.98] cursor-pointer">
                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                    <span>Enter Suite</span>
+                 </button>
+               </div>
+
+               <!-- Explicit Good Samaritan Emergency Triage Mode Option -->
+               <div class="mt-1 w-full max-w-[260px] z-30">
+                 <button 
+                   type="button"
+                   (click)="handleEmergencyBypass()"
+                   class="w-full min-h-[36px] px-3 py-1.5 flex justify-center items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-700 dark:text-red-300 transition-all rounded-xl cursor-pointer">
+                   <span>🚨 Good Samaritan Emergency Triage</span>
                  </button>
                </div>
 
@@ -448,6 +460,15 @@ import { SecureStorageService } from '../services/secure-storage.service';
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-500 dark:text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                   <span>Explore Sandbox Demo</span>
+                </button>
+
+                <!-- Draw Gesture Lock -->
+                <button 
+                  type="button" 
+                  (click)="viewState.set('gesture'); errorMsg.set('');"
+                  class="w-full py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+                >
+                  <span>🎨 Draw Gesture Lock</span>
                 </button>
 
                 <div class="relative py-4 mt-2">
@@ -1190,6 +1211,7 @@ export class SecureSplashComponent implements OnInit {
   public readonly petAuditory = inject(PetAuditoryService);
   public readonly envTelemetryService = inject(EnvironmentalTelemetryService);
   private platformId = inject(PLATFORM_ID);
+  readonly isBrowser = signal<boolean>(isPlatformBrowser(this.platformId));
   private secureStorage = inject(SecureStorageService);
   readonly appVersion = APP_VERSION;
 
@@ -1236,7 +1258,6 @@ export class SecureSplashComponent implements OnInit {
   // Inputs
   apiKeyError = input<string | null>(null);
   hasApiKey = input<boolean>(false);
-
   // Outputs
   submitKey = output<string>();
   loadDemo = output<void>();
@@ -1245,11 +1266,12 @@ export class SecureSplashComponent implements OnInit {
 
   handleUnlockSession() {
     this.session.isLocked.set(false);
-    this.emergencyBypass.emit();
+    this.isAuthorized.set(true);
+    this.session.resetIdleTimer();
   }
 
   // State
-  viewState = signal<'auth' | 'beta' | 'ethics' | 'kss' | 'signup'>('auth');
+  viewState = signal<'auth' | 'beta' | 'ethics' | 'kss' | 'signup' | 'gesture'>('auth');
   signupForm = signal({ name: '', email: '', clinic: '', pin: '' });
   signinEmailInput = signal('');
   pledgeAccepted = signal(false);
@@ -1354,6 +1376,7 @@ export class SecureSplashComponent implements OnInit {
   isAuthLoading = computed(() => this.syncService.isAuthLoading());
   showAuthGateway = computed(() => {
     if (!this.isHydrated()) return true;
+    if (this.viewState() === 'gesture') return false;
     if (this.isAuthorized()) return false;
     if (this.viewState() === 'ethics' || this.viewState() === 'kss') return false;
     return true;
@@ -1917,9 +1940,10 @@ export class SecureSplashComponent implements OnInit {
     const canvas = this.gestureCanvasRef()?.nativeElement;
     if (!canvas) return { x: 0, y: 0, pressure: 0.5 };
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    // Capture Wacom / Stylus pressure (0.0 to 1.0; fallback 0.5 for mouse/touch)
+    const scaleX = canvas.width / (rect.width || 240);
+    const scaleY = canvas.height / (rect.height || 240);
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
     const pressure = e.pressure && e.pressure > 0 ? e.pressure : 0.5;
     return { x, y, pressure };
   }
@@ -1952,7 +1976,6 @@ export class SecureSplashComponent implements OnInit {
         ctx.fillStyle = strokeStyle;
         ctx.fill();
       } else {
-        // Render pressure-sensitive segments for Wacom / Stylus input
         for (let i = 1; i < points.length; i++) {
           const prev = points[i - 1];
           const curr = points[i];
@@ -1973,7 +1996,6 @@ export class SecureSplashComponent implements OnInit {
       drawPoints(this.currentStroke);
     }
 
-    // Draw active sparks/particles (pretty & fun feedback)
     for (const p of this.particles) {
       const alpha = 1 - (p.life / p.maxLife);
       ctx.beginPath();
@@ -1993,9 +2015,11 @@ export class SecureSplashComponent implements OnInit {
     const canvas = this.gestureCanvasRef()?.nativeElement;
     if (!canvas) return;
     
-    // AVS is disabled by default until user explicitly clicks Listen
-    
-    canvas.setPointerCapture(e.pointerId);
+    try {
+      canvas.setPointerCapture(e.pointerId);
+    } catch (err) {
+      // Ignore pointer capture failure on non-touch devices
+    }
     
     this.isDrawing = true;
     this.gestureError.set(false);
@@ -2020,9 +2044,18 @@ export class SecureSplashComponent implements OnInit {
     this.redrawCanvas();
   }
 
-  stopDrawing() {
+  stopDrawing(e?: PointerEvent) {
     if (!this.isDrawing) return;
     this.isDrawing = false;
+    
+    if (e) {
+      const canvas = this.gestureCanvasRef()?.nativeElement;
+      try {
+        if (canvas && canvas.hasPointerCapture(e.pointerId)) {
+          canvas.releasePointerCapture(e.pointerId);
+        }
+      } catch (err) {}
+    }
     
     if (this.currentStroke.length > 0) {
       this.strokes.push([...this.currentStroke]);
@@ -2035,7 +2068,7 @@ export class SecureSplashComponent implements OnInit {
     }
     this.verificationTimeoutId = setTimeout(() => {
       this.verifyGesture();
-    }, 1600);
+    }, 1200);
   }
 
   clearDrawing() {
@@ -2066,8 +2099,10 @@ export class SecureSplashComponent implements OnInit {
         this.stopAmbientSoundscape();
         
         setTimeout(() => {
+          this.isAuthorized.set(true);
           this.session.isLocked.set(false);
           this.session.resetIdleTimer();
+          this.handleUnlockSession();
           this.clearDrawing();
           this.errorMsg.set('');
         }, 500);

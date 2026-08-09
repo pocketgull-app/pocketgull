@@ -272,7 +272,7 @@ export interface IConsciousnessState {
                 {{ active.avsTarget.waveType }} Wave ({{ active.avsTarget.frequencyHz }} Hz) • {{ active.avsTarget.breathingRateBpm }} BPM Vagal Resonant Breathing
               </p>
               <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
-                Synchronizes baroreflex vagal tone and entrains cortical oscillations into target <strong class="text-indigo-600 dark:text-indigo-300 font-semibold">{{ active.name }}</strong> state.
+                Synchronizes baroreflex vagal tone and entrains cortical oscillations into desired <strong class="text-indigo-600 dark:text-indigo-300 font-semibold">{{ active.name }}</strong> state.
               </p>
             </div>
 

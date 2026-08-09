@@ -1,0 +1,19 @@
+{
+  "id": "philgear/rsna-knee-2026-multimodal-2-5d-mil-baseline",
+  "title": "rsna-knee-2026-multimodal-2-5d-mil-baseline",
+  "code_file": "rsna_knee_submission.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "false",
+  "enable_tpu": "false",
+  "enable_internet": "false",
+  "dataset_sources": [],
+  "competition_sources": [
+    "rsna-knee-abnormality-detection"
+  ],
+  "kernel_sources": [],
+  "model_sources": [
+    "tom99763/9th-place-models-rsna-iad/PyTorch/default/1"
+  ]
+}

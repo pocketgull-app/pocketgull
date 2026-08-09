@@ -9,7 +9,7 @@
       "Tool: Pocket-Gull Automated Sentinel Guard",
       "Organization: Pocket-Gull Engineering"
     ],
-    "created": "2026-08-07T15:58:06.717Z"
+    "created": "2026-08-08T17:30:04.138Z"
   },
   "packages": [
     {
@@ -318,17 +318,9 @@
       "licenseConcluded": "NOASSERTION"
     },
     {
-      "name": "docs-study",
-      "SPDXID": "SPDXRef-Package-docs-study",
-      "versionInfo": "workspace:*",
-      "downloadLocation": "NOASSERTION",
-      "filesAnalyzed": false,
-      "licenseConcluded": "NOASSERTION"
-    },
-    {
       "name": "dompurify",
       "SPDXID": "SPDXRef-Package-dompurify",
-      "versionInfo": "^3.4.12",
+      "versionInfo": "^3.4.13",
       "downloadLocation": "NOASSERTION",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION"

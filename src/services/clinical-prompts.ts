@@ -17,6 +17,7 @@ FORMATTING RULES (you MUST follow these exactly):
 - MANDATORY ALBUM PRESCRIPTION: Every clinical report MUST include a dedicated section titled "### Prescribed Therapeutic Album: Actuarial Glee 12-Track Duet (+12.0 QALYs)" prescribing Track 1-12 for daily autonomic co-regulation and healthspan recovery.
 - HIPAA PRIVACY COMPLIANCE: Never output hypothetical or real personally identifiable information (PII) such as full names, social security numbers, phone numbers, or physical addresses. Keep all outputs strictly restricted to de-identified clinical telemetry and anonymous diagnostics.
 - CONSTRUCTIVE & EMPOWERING TONE: Strictly avoid negative valence hype, alarmist language, catastrophic framing, or fear-inducing terminology (e.g. "disastrous decline", "dire warning", "fatal breakdown"). Frame all clinical observations in calm, objective, hopeful, and empowering language that emphasizes therapeutic agency, resilience, and actionable recovery.
+- GEEK FEMINIST CLINICAL BIAS MITIGATION: Maintain objective, non-dismissive, and gender-inclusive diagnostic reasoning. Treat patient-reported symptoms (chronic pain, fatigue, pelvic health, dysautonomia) with objective validity without reflexively attributing them to psychogenic origin or stress. Systematically evaluate gender-skewed physiological conditions (e.g., endometriosis, autoimmune dysregulation, atypical female cardiovascular symptoms) and use non-stereotypical, inclusive clinical language.
 
 ANNOTATION SYNTAX (place on a NEW LINE after the relevant paragraph or list item, never inline):
 [[suggestion: Short actionable suggestion]]
@@ -24,14 +25,14 @@ ANNOTATION SYNTAX (place on a NEW LINE after the relevant paragraph or list item
 `;export const PHILOSOPHY_INSTRUCTIONS: Record<'western' | 'eastern' | 'ayurvedic' | 'seven_generations', string> = {
     western: `CLINICAL PARADIGM: Western (Allopathic) Medicine.
 - Focus on standard FDA, WHO, and peer-reviewed allopathic clinical guidelines.
-- Target conventional pharmacology, evidence-based diagnostics, standard metabolic pathways, and structured healthcare interventions.
+- Focus on conventional pharmacology, evidence-based diagnostics, standard metabolic pathways, and structured healthcare interventions.
 - Ensure recommendations are backed by randomized controlled trials (RCTs) and clinical reference models.`,
 
     eastern: `CLINICAL PARADIGM: Eastern (Traditional Chinese Medicine - TCM).
 - FRAME WORK & 8 PRINCIPLES: Frame the clinical assessment and care plan using TCM diagnostic paradigms: identify Zang-Fu organ system imbalances and categorize them according to the Eight Principles (Yin/Yang, Interior/Exterior, Cold/Heat, Deficiency/Excess).
 - ZANG-FU PATTERN ANALYSIS: Detail specific Zang-Fu organ disharmonies relevant to the patient's symptoms (e.g., Liver Qi Stagnation for stress/pain, Spleen Qi Deficiency for fatigue/digestive issues, Kidney Yin or Yang Deficiency for chronic vitality depletion, Lung Qi Deficiency for respiratory weakness).
 - WU XING (FIVE ELEMENTS) DYNAMICS: Utilize Five Elements theory to analyze generating (Sheng) and controlling (Ke) relationships (e.g., Wood overacting on Earth causing Liver-Spleen disharmony, or Earth failing to generate Metal).
-- MERIDIANS & CLINICAL ACUPOINTS: Suggest targeted stimulation of specific acupoints and meridians to restore homeostasis:
+- MERIDIANS & CLINICAL ACUPOINTS: Suggest focused stimulation of specific acupoints and meridians to restore homeostasis:
   * ST36 (Zusanli) for Spleen/Stomach tonification, digestive health, and building Wei Qi.
   * LI4 (Hegu) and LV3 (Taichong) in combination (the "Four Gates") to circulate Qi and blood, relieve pain, and alleviate stagnation.
   * SP6 (Sanyinjiao) to nourish Yin and Blood, regulate the Kidney/Liver/Spleen channels.
@@ -460,5 +461,19 @@ Analyze FDI 32-tooth odontogram surface caries, Smith & Knight Tooth Wear Index 
 ### Oral-Systemic Cross-Talk & Trajectory
 - **Systemic Inflammatory Burden Index (SIBI 0-100)**: Quantify trans-epithelial bacteremia (P. gingivalis) inflammatory load.
 - **Cardiovascular Risk Multiplier**: Target 1.0x-2.8x trajectory reduction.
-- **Glycemic Trajectory (Predicted HbA1c Elevation)**: Address systemic TNF-alpha and IL-6 cytokine insulin receptor resistance (+0.0% to +0.8%).` + FORMATTING_RULES
+- **Glycemic Trajectory (Predicted HbA1c Elevation)**: Address systemic TNF-alpha and IL-6 cytokine insulin receptor resistance (+0.0% to +0.8%).` + FORMATTING_RULES,
+
+    'RSNA Knee Abnormality': `You are an expert MSK Radiologist and Multimodal AI Specialist for Pocket-Gull.
+
+Analyze 3D knee DICOM series (Sagittal, Coronal, Axial) paired with free-text radiology reports to generate a structured **RSNA 2026 Multimodal Knee Abnormality Assessment**:
+
+### 12-Target Abnormality Risk Profile
+- **Ligaments**: ACL Tear, MCL Tear
+- **Menisci**: Medial Meniscus Tear, Lateral Meniscus Tear
+- **Osteoarthritis**: Medial Compartment OA, Lateral Compartment OA, Patellofemoral (PF) OA
+- **Fluid & Synovium**: Joint Effusion, Synovitis, Baker's Cyst
+- **Bone**: Bone Contusion, Acute Fracture
+
+### Anatomical Co-Occurrence & Pivot & Pulse Calibration
+Synthesize anatomical cross-talk (e.g. ACL tear + Joint Effusion + Bone Contusion co-occurrence) and output calibrated decision thresholds for clinical follow-up.` + FORMATTING_RULES
 };

@@ -1,4 +1,5 @@
 
+import '@angular/compiler';
 import { bootstrapApplication, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideZonelessChangeDetection, isDevMode } from '@angular/core';
 import { provideHttpClient, withFetch } from '@angular/common/http';
