@@ -11,15 +11,16 @@ import { SkepticalEpistemologyService } from '../src/services/skeptical-epistemo
 import { FhirIntegrationService } from '../src/services/fhir-integration.service';
 import { RpmAuditService } from '../src/services/rpm-audit.service';
 
+// Mock Angular constructor effects for headless Vitest environment
+vi.mock('@angular/core', async (importOriginal) => {
+  const original = await importOriginal<any>();
+  return {
+    ...original,
+    effect: () => ({ destroy: () => {} })
+  };
+});
+
 describe('Wachter & Brookings AI Governance Integration Suite (End-to-End)', () => {
-  // Mock Angular constructor effects for headless Vitest environment
-  vi.mock('@angular/core', async (importOriginal) => {
-    const original = await importOriginal<any>();
-    return {
-      ...original,
-      effect: () => ({ destroy: () => {} })
-    };
-  });
   let injector: Injector;
   let telemetryService: FhirR5TelemetryService;
   let skepticalService: SkepticalEpistemologyService;
