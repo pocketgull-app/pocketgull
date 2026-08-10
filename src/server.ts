@@ -159,15 +159,21 @@ app.use((req, res, next) => {
 
   const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
   if (redirectDomains.includes(rawHost)) {
-    const requestPath = typeof req.path === 'string' ? req.path : '/';
-    const rawUrl = typeof req.url === 'string' ? req.url : '';
-    const queryIndex = rawUrl.indexOf('?');
-    const query = queryIndex >= 0 ? rawUrl.slice(queryIndex) : '';
-    let safePath = `${requestPath}${query}`;
-    if (!safePath.startsWith('/') || safePath.startsWith('//') || /[\r\n]/.test(safePath)) {
-      safePath = '/';
-    }
-    return res.redirect(301, `https://${targetDomain}${safePath}`);
+    const targetOrigin = `https://${targetDomain}`;
+    const rawRequestUrl = typeof req.originalUrl === 'string'
+      ? req.originalUrl
+      : (typeof req.url === 'string' ? req.url : '/');
+
+    let safePath = '/';
+    try {
+      const parsed = new URL(rawRequestUrl, targetOrigin);
+      if (parsed.origin === targetOrigin) {
+        const normalizedPath = parsed.pathname.startsWith('/') ? parsed.pathname : `/${parsed.pathname}`;
+        safePath = `${normalizedPath}${parsed.search}`;
+      }
+    } catch {}
+
+    return res.redirect(301, `${targetOrigin}${safePath}`);
   }
 
   next();
