@@ -9,47 +9,33 @@ import { PatientStateService } from '../services/patient-state.service';
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @if (isDemoMode()) {
-      <div class="p-5 bg-zinc-900 border border-amber-500/40 rounded-2xl shadow-xl space-y-3 font-mono text-xs">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-3">
-          <div class="flex items-center gap-2 text-amber-400 font-bold uppercase tracking-wider">
-            <span>🔒 Confidential Grant & Secret IP Protection Engaged</span>
+    <div class="p-5 bg-white dark:bg-zinc-900 border border-blue-500/30 rounded-2xl shadow-xl space-y-6 font-sans">
+      <!-- Title Header -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 dark:border-zinc-800 pb-3.5">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-extrabold text-lg">
+            🏛️
           </div>
-          <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full font-mono text-[10px] font-bold">
-            STEALTH REDACTION ACTIVE
-          </span>
+          <div>
+            <h3 class="text-base font-black text-gray-900 dark:text-gray-100 uppercase tracking-wide flex items-center gap-2">
+              <span>NSF & Academic Research Grant Portal</span>
+              <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 rounded-full font-mono text-[10px] font-bold">
+                🔓 OPEN ACCESS DRAFTS
+              </span>
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-zinc-400">
+              Supporting National Science Foundation (NSF SCH / TIP / SBIR / CPS) proposals, open dataset export, and PhD fellowship matching.
+            </p>
+          </div>
         </div>
-        <p class="text-zinc-300 text-[11px] font-sans leading-relaxed">
-          Proprietary NSF SCH / TIP grant proposals, secret research lab recruitment data, and competitive trade secrets are redacted while running in public Demo Mode to protect IP secrecy.
-        </p>
-        <div class="text-[10px] text-zinc-500 font-mono flex items-center gap-2">
-          <span>🛡️ Enforced by PocketGull Security Protocol &bull; Zero Cloud Leak</span>
+
+        <div class="flex items-center gap-2">
+          <button (click)="toggleDraftsAccess()" 
+                  class="px-2.5 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30 rounded-full text-xs font-bold font-mono transition cursor-pointer">
+            {{ isDraftsUnlocked() ? '🔓 Drafts Unlocked (Click to Lock)' : '🔒 Lock Stealth Mode' }}
+          </button>
         </div>
       </div>
-    } @else {
-      <div class="p-5 bg-white dark:bg-zinc-900 border border-blue-500/30 rounded-2xl shadow-xl space-y-6 font-sans">
-        <!-- Title Header -->
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 dark:border-zinc-800 pb-3.5">
-          <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-extrabold text-lg">
-              🏛️
-            </div>
-            <div>
-              <h3 class="text-base font-black text-gray-900 dark:text-gray-100 uppercase tracking-wide">
-                NSF & Academic Research Grant Portal & Lab Matchmaker
-              </h3>
-              <p class="text-xs text-gray-500 dark:text-zinc-400">
-                Supporting National Science Foundation (NSF SCH / TIP / SBIR) proposals, open dataset export, and PhD fellowship matching.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <span class="px-2.5 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/30 rounded-full text-xs font-bold font-mono">
-              NSF SCH 2026-2030
-            </span>
-          </div>
-        </div>
 
         <!-- 4 Strategic NSF Grant Pillars -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
@@ -184,7 +170,6 @@ import { PatientStateService } from '../services/patient-state.service';
           }
         </div>
       </div>
-    }
   `,
   styles: [`:host { display: block; }`]
 })
@@ -194,10 +179,15 @@ export class NsfGrantPortalComponent {
 
   readonly labs = this.labService.curatedAcademicLabs;
   readonly isDemoMode = computed(() => this.patientState.isDemoMode());
+  readonly isDraftsUnlocked = signal<boolean>(true);
   readonly activePillar = signal<'sch' | 'tip' | 'convergence' | 'cps'>('sch');
 
   readonly isSyncingZenodo = signal<boolean>(false);
   readonly zenodoStatusMessage = signal<string | null>(null);
+
+  toggleDraftsAccess() {
+    this.isDraftsUnlocked.update(unlocked => !unlocked);
+  }
 
   selectPillar(pillar: 'sch' | 'tip' | 'convergence' | 'cps') {
     this.activePillar.set(pillar);
