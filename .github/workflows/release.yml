@@ -111,6 +111,7 @@ jobs:
             --exclude='.git' \
             --exclude='.angular' \
             --exclude='dist' \
+            --exclude='pocketgull-${{ github.ref_name }}.tar.gz' \
             .
 
       - name: Generate Release Notes
