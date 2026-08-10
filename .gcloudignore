@@ -57,3 +57,8 @@ My Pictures/
 source.tgz
 build_source.tgz
 deploy.tar.gz
+!Dockerfile
+!package.json
+!docs/study/package.json
+!companion-apps/avs-therapy/package.json
+!pocketgull_api/package.json
