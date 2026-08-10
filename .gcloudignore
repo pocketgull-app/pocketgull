@@ -43,17 +43,6 @@ trained_physio_models/
 *.hea
 *.atr
 *.rec
-AppData/
-AppData
-**/AppData/**
-Intel/
-Intel
-**/Intel/**
-Documents/
-Documents
-**/Documents/**
-My Pictures/
-**/My Pictures/**
 source.tgz
 build_source.tgz
 deploy.tar.gz

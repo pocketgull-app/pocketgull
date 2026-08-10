@@ -88,9 +88,9 @@ app.use((req, res, next) => {
   const isBusinessSite =
     req.path === '/business' ||
     req.query['preview'] === 'business' ||
-    xfh.includes('pocketgull.com') ||
-    hostHeader.includes('pocketgull.com') ||
-    hostname.includes('pocketgull.com');
+    /(^|\.)pocketgull\.com$/.test(xfh) ||
+    /(^|\.)pocketgull\.com$/.test(hostHeader) ||
+    /(^|\.)pocketgull\.com$/.test(hostname);
 
   if (isBusinessSite) {
     if (req.path === '/health' || req.path.startsWith('/api/')) {
@@ -111,7 +111,15 @@ app.use((req, res, next) => {
 
   const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
   if (redirectDomains.includes(rawHost)) {
-    return res.redirect(301, `https://${targetDomain}${req.originalUrl}`);
+    const requestPath = typeof req.path === 'string' ? req.path : '/';
+    const rawUrl = typeof req.url === 'string' ? req.url : '';
+    const queryIndex = rawUrl.indexOf('?');
+    const query = queryIndex >= 0 ? rawUrl.slice(queryIndex) : '';
+    let safePath = `${requestPath}${query}`;
+    if (!safePath.startsWith('/') || safePath.startsWith('//') || /[\r\n]/.test(safePath)) {
+      safePath = '/';
+    }
+    return res.redirect(301, `https://${targetDomain}${safePath}`);
   }
 
   next();
