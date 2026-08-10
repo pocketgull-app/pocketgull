@@ -2,12 +2,13 @@ process.env['OTEL_SDK_DISABLED'] = 'true';
 
 // Server-side polyfill for Domino / SSR missing CSSStyleDeclaration.setProperty
 try {
-  const g = (typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : {}) as any;
+  const g = (typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : {}) as Record<string, unknown>;
   if (g) {
-    if (g.CSSStyleDeclaration && g.CSSStyleDeclaration.prototype) {
-      if (typeof g.CSSStyleDeclaration.prototype.setProperty !== 'function') {
-        g.CSSStyleDeclaration.prototype.setProperty = function (name: string, value: string) {
-          try { this[name] = value; } catch {}
+    const cssStyle = g['CSSStyleDeclaration'] as { prototype?: Record<string, unknown> } | undefined;
+    if (cssStyle && cssStyle.prototype) {
+      if (typeof cssStyle.prototype['setProperty'] !== 'function') {
+        cssStyle.prototype['setProperty'] = function (name: string, value: string) {
+          try { (this as Record<string, unknown>)[name] = value; } catch {}
         };
       }
     }
@@ -28,6 +29,8 @@ import compression from 'compression';
 import { dirname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
+import type { IncomingMessage, Server as HttpServer } from 'node:http';
+import type { Socket } from 'node:net';
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import crypto from 'node:crypto';
 import { GoogleAuth } from 'google-auth-library';
@@ -70,17 +73,17 @@ function normalizeAndValidateModel(model: unknown): string {
 }
 
 const app = express();
-let angularApp: any = null;
+let angularApp: AngularNodeAppEngine | null = null;
 
-function getAngularApp() {
+function getAngularApp(): AngularNodeAppEngine | null {
   if (!angularApp) {
     try {
       angularApp = new AngularNodeAppEngine({
         allowedHosts: ['localhost', '127.0.0.1', '0.0.0.0', 'pocketgull.app', '*.pocketgull.app', 'pocketgull.com', '*.pocketgull.com', 'pocketgall.com', 'pocketgall.app', 'pocketgal.app', 'pocketgal.ai', '*.run.app', '*.cloudworkstations.dev'],
         trustProxyHeaders: true
       });
-    } catch (e: any) {
-      console.warn('[Server] AngularNodeAppEngine not initialized (dev mode without dist/ manifest):', e.message);
+    } catch (e: unknown) {
+      console.warn('[Server] AngularNodeAppEngine not initialized (dev mode without dist/ manifest):', (e as Error)?.message);
       return null;
     }
   }
@@ -319,8 +322,8 @@ async function fetchGeminiApiKey() {
     const payload = version.payload?.data ? Buffer.from(version.payload.data).toString('utf8') : '';
     console.log('[Secrets] Successfully fetched GEMINI_API_KEY from GCP.');
     return payload;
-  } catch (err: any) {
-    console.warn(`[WARN] Failed to fetch secret GEMINI_API_KEY from GCP. Returning empty string. Error: ${err.message}`);
+  } catch (err: unknown) {
+    console.warn(`[WARN] Failed to fetch secret GEMINI_API_KEY from GCP. Returning empty string. Error: ${(err as Error)?.message}`);
     return '';
   }
 }
@@ -334,34 +337,36 @@ async function getGcpAccessToken(): Promise<string | null> {
     const client = await googleAuth.getClient();
     const tokenResponse = await client.getAccessToken();
     return tokenResponse.token || null;
-  } catch (err: any) {
-    console.warn('[WARN] Failed to retrieve GCP OAuth access token:', err.message);
+  } catch (err: unknown) {
+    console.warn('[WARN] Failed to retrieve GCP OAuth access token:', (err as Error)?.message);
     return null;
   }
 }
 
-function translateToSnake(obj: any): any {
+function translateToSnake(obj: unknown): unknown {
   if (Array.isArray(obj)) {
     return obj.map(translateToSnake);
   } else if (obj !== null && typeof obj === 'object') {
-    const newObj: any = {};
-    for (const key of Object.keys(obj)) {
+    const newObj: Record<string, unknown> = {};
+    const record = obj as Record<string, unknown>;
+    for (const key of Object.keys(record)) {
       const snakeKey = key.replace(/([A-Z])/g, "_$1").toLowerCase();
-      newObj[snakeKey] = translateToSnake(obj[key]);
+      newObj[snakeKey] = translateToSnake(record[key]);
     }
     return newObj;
   }
   return obj;
 }
 
-function translateToCamel(obj: any): any {
+function translateToCamel(obj: unknown): unknown {
   if (Array.isArray(obj)) {
     return obj.map(translateToCamel);
   } else if (obj !== null && typeof obj === 'object') {
-    const newObj: any = {};
-    for (const key of Object.keys(obj)) {
+    const newObj: Record<string, unknown> = {};
+    const record = obj as Record<string, unknown>;
+    for (const key of Object.keys(record)) {
       const camelKey = key.replace(/(_\w)/g, (m) => m[1].toUpperCase());
-      newObj[camelKey] = translateToCamel(obj[key]);
+      newObj[camelKey] = translateToCamel(record[key]);
     }
     return newObj;
   }
@@ -452,7 +457,7 @@ app.use('/api-docs', apiLimiter);
 app.use('/health', apiLimiter);
 
 // CSP Telemetry Violation Reporting (Disabled in production for patient privacy)
-app.post('/api/csp-report', express.json({ type: ['application/json', 'application/csp-report'] }), (req, res: any) => {
+app.post('/api/csp-report', express.json({ type: ['application/json', 'application/csp-report'] }), (req: express.Request, res: express.Response) => {
   if (process.env['NODE_ENV'] === 'production') {
     return res.status(404).send('Not Found');
   }
@@ -487,7 +492,7 @@ app.use('/api/python', createProxyMiddleware({
   changeOrigin: true,
   pathRewrite: { '^/api/python': '' },
   on: {
-    error: (err, req, res: any) => {
+    error: (err: Error, req: express.Request, res: express.Response) => {
       console.warn('[Python Proxy] FastAPI sidecar unavailable:', (err as Error).message);
       res.status(503).json({ error: 'Python data service unavailable. Is the FastAPI sidecar running?' });
     }
@@ -558,7 +563,7 @@ app.use((req, res, next) => {
   if (!engine) return next();
   engine
     .handle(req)
-    .then(async (response: any) => {
+    .then(async (response: Response | null) => {
       if (!response) {
         return next();
       }
@@ -609,9 +614,9 @@ async function initializeAgones() {
     console.log('[Agones] Sent ready state to controller.');
 
     const healthInterval = setInterval(() => {
-      agonesSDK.health((err: any) => {
+      agonesSDK.health((err: Error | null) => {
         if (err) {
-          console.warn('[Agones] Health ping error:', err.message || err);
+          console.warn('[Agones] Health ping error:', (err as Error).message || err);
         }
       });
     }, 10000);
@@ -622,17 +627,17 @@ async function initializeAgones() {
       try {
         await agonesSDK.shutdown();
         console.log('[Agones] Sent shutdown state successfully.');
-      } catch (e: any) {
-        console.error('[Agones] Error during shutdown call:', e.message);
+      } catch (e: unknown) {
+        console.error('[Agones] Error during shutdown call:', (e as Error)?.message);
       }
       process.exit(0);
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.log('[Agones Info] Not running inside an Agones environment. Standing alone.');
   }
 }
 
-let _serverInstance: any = null;
+let _serverInstance: HttpServer | null = null;
 
 if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERVICE'] || process.env['PORT'] || process.env['CI'] || !process.env['NODE_ENV'] || process.env['NODE_ENV'] === 'development') {
   const port = process.env['PORT'] ? parseInt(process.env['PORT'], 10) : 4000;
@@ -647,7 +652,7 @@ if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERV
     // Setup secure WebSocket proxy for Vertex AI Multimodal Live API
     const wss = new WebSocketServer({ noServer: true });
     
-    _serverInstance.on('upgrade', (request: any, socket: any, head: any) => {
+    _serverInstance.on('upgrade', (request: IncomingMessage, socket: Socket, head: Buffer) => {
       const { pathname } = new URL(request.url || '', `http://${request.headers.host || 'localhost'}`);
       if (pathname === '/ws/gemini-live') {
         wss.handleUpgrade(request, socket, head, (ws) => {
@@ -718,9 +723,10 @@ if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERV
           wsClient.close(1011, 'Backend connection error');
         });
 
-      } catch (err: any) {
-        console.error('[WS Proxy] Initialization failed:', err.message);
-        wsClient.close(1011, err.message);
+      } catch (err: unknown) {
+        const msg = (err as Error)?.message || 'Initialization failed';
+        console.error('[WS Proxy] Initialization failed:', msg);
+        wsClient.close(1011, msg);
         return;
       }
 
@@ -796,17 +802,17 @@ if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERV
       });
 
       // Real-time IVitals Sync
-      socket.on('sync_vitals', (data: { patientId: string, vitals: any }) => {
+      socket.on('sync_vitals', (data: { patientId: string, vitals: Record<string, unknown> }) => {
         socket.to(data.patientId).emit('vitals_updated', data.vitals);
       });
 
       // Colleague Chat & Intelligence Notes
-      socket.on('send_note', (data: { patientId: string, note: any }) => {
+      socket.on('send_note', (data: { patientId: string, note: Record<string, unknown> }) => {
         socket.to(data.patientId).emit('note_received', data.note);
       });
 
       // Colleague Presence (e.g. "Dr. Smith is viewing this chart")
-      socket.on('presence_update', (data: { patientId: string, clinician: any }) => {
+      socket.on('presence_update', (data: { patientId: string, clinician: Record<string, unknown> }) => {
         socket.to(data.patientId).emit('presence_updated', data.clinician);
       });
 
