@@ -85,6 +85,7 @@ _Broader context and conceptual justifications._
 | Zero-Trust & Cryptographic Privacy (SIGSAC/SIGSEC) | [docs/SIGSAC_HIPAA_ZERO_TRUST_PRIVACY.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGSAC_HIPAA_ZERO_TRUST_PRIVACY.md) | Complete (new) |
 | Formally Verified State Architecture (SIGSOFT/SIGPLAN) | [docs/SIGSOFT_SIGPLAN_REACTIVE_STATE_ARCHITECTURE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGSOFT_SIGPLAN_REACTIVE_STATE_ARCHITECTURE.md) | Complete (new) |
 | Energetics & Green Computing (IEEE PES) | [docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md) | Complete (new) |
+| Sustainability, Performance & TCO Audit | [docs/EVALUATION_SUSTAINABILITY_AND_PERFORMANCE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/EVALUATION_SUSTAINABILITY_AND_PERFORMANCE.md) | Complete (new) |
 | Discovery Backlog | [QUESTIONS.md](file:///c:/Users/philg/Pocketgull/pocketgull/QUESTIONS.md) | Complete (new) |
 
 ---

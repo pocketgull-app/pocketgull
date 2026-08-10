@@ -1,8 +1,3 @@
-!Dockerfile
-!package.json
-!docs/study/package.json
-!companion-apps/avs-therapy/package.json
-!pocketgull_api/package.json
 .git
 .gcloudignore
 node_modules/
@@ -46,4 +41,14 @@ trained_physio_models/
 *.atr
 *.rec
 Intel/
+Intel
+Documents/
+Documents
 source.tgz
+deploy.tar.gz
+!Dockerfile
+!package.json
+!docs/study/package.json
+!companion-apps/avs-therapy/package.json
+!pocketgull_api/package.json
+
