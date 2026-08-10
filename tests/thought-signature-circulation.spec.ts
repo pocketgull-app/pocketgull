@@ -49,10 +49,10 @@ describe('Gemini 3.5 / 3.6 GA Migration & Thought Signature Circulation', () => 
     for await (const chunk of streamPro) {}
     expect(capturedBody.model).toBe('gemini-3.6-flash');
 
-    // 2. Standard formatting lens -> gemini-3.5-flash
+    // 2. Standard formatting lens -> gemini-2.5-flash
     const streamFlash = provider.generateReportStream$('Patient Data', 'Precision Nutrients', 'Sys Inst');
     for await (const chunk of streamFlash) {}
-    expect(capturedBody.model).toBe('gemini-3.5-flash');
+    expect(capturedBody.model).toBe('gemini-2.5-flash');
   });
 
   it('should capture and circulate thought signatures in multi-turn chat history', async () => {

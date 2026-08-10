@@ -74,7 +74,7 @@ export class GeminiProvider implements IIntelligenceProvider {
         // and gemini-3.5-flash for formatting/educational/structured lenses.
         const routingModelId = (lens === 'Summary Overview' || lens === 'Functional Protocols')
             ? 'gemini-3.6-flash'
-            : 'gemini-3.5-flash';
+            : 'gemini-2.5-flash';
 
         const response = await this.fetchWithRetry('/api/ai/stream', {
             method: 'POST',
