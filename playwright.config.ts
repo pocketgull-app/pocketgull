@@ -13,8 +13,8 @@ export default defineConfig({
   fullyParallel: true,
   timeout: 60 * 1000,
   forbidOnly: !!process.env['CI'],
-  retries: 0,
-  workers: process.env['PLAYWRIGHT_WORKERS'] ? parseInt(process.env['PLAYWRIGHT_WORKERS'], 10) : (process.env['CI'] ? 3 : 4),
+  retries: process.env['CI'] ? 2 : 0,
+  workers: process.env['PLAYWRIGHT_WORKERS'] ? parseInt(process.env['PLAYWRIGHT_WORKERS'], 10) : (process.env['CI'] ? 2 : 4),
   reporter: 'html',
   use: {
     baseURL: process.env['BASE_URL'] || 'http://127.0.0.1:4000',

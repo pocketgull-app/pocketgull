@@ -75,29 +75,44 @@ export async function ensureHealthcareStoresExist() {
     const token = await client.getAccessToken();
     const headers = { 'Authorization': `Bearer ${token.token}`, 'Content-Type': 'application/json' };
 
-    // 1. Create Dataset
-    const datasetUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets?datasetId=${defaultDatasetId}`;
-    let res = await fetch(sanitizeUrl(datasetUrl), { method: 'POST', headers });
-    if (res.ok) {
-        console.log(`[Healthcare Auto-Provision] Created Dataset: ${defaultDatasetId}`);
-    } else if (res.status !== 409) {
-        console.warn(`[Healthcare Auto-Provision] Dataset creation warning. Is billing/HC API enabled?`, await res.text());
-        return; // if dataset fails, the stores will fail too
+    // 1. Check if Dataset exists (GET), create only if 404
+    const getDatasetUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets/${defaultDatasetId}`;
+    let res = await fetch(sanitizeUrl(getDatasetUrl), { method: 'GET', headers });
+    if (!res.ok) {
+      if (res.status === 404) {
+        const datasetUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets?datasetId=${defaultDatasetId}`;
+        res = await fetch(sanitizeUrl(datasetUrl), { method: 'POST', headers });
+        if (res.ok) console.log(`[Healthcare Auto-Provision] Created Dataset: ${defaultDatasetId}`);
+        else if (res.status !== 409) {
+          console.warn(`[Healthcare Auto-Provision] Dataset creation warning. Is billing/HC API enabled?`, await res.text());
+          return;
+        }
+      } else {
+        console.warn(`[Healthcare Auto-Provision] Dataset check warning: HTTP ${res.status}`);
+      }
     }
 
-    // 2. Create DICOM Store
-    const dicomUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets/${defaultDatasetId}/dicomStores?dicomStoreId=${dicomStoreId}`;
-    res = await fetch(sanitizeUrl(dicomUrl), { method: 'POST', headers });
-    if (res.ok) console.log(`[Healthcare Auto-Provision] Created DICOM Store: ${dicomStoreId}`);
+    // 2. Check if DICOM Store exists (GET), create only if 404
+    const getDicomUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets/${defaultDatasetId}/dicomStores/${dicomStoreId}`;
+    res = await fetch(sanitizeUrl(getDicomUrl), { method: 'GET', headers });
+    if (!res.ok && res.status === 404) {
+      const dicomUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets/${defaultDatasetId}/dicomStores?dicomStoreId=${dicomStoreId}`;
+      res = await fetch(sanitizeUrl(dicomUrl), { method: 'POST', headers });
+      if (res.ok) console.log(`[Healthcare Auto-Provision] Created DICOM Store: ${dicomStoreId}`);
+    }
 
-    // 3. Create FHIR Store (R4)
-    const fhirUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets/${defaultDatasetId}/fhirStores?fhirStoreId=${fhirStoreId}`;
-    res = await fetch(sanitizeUrl(fhirUrl), { 
-        method: 'POST', 
+    // 3. Check if FHIR Store (R4) exists (GET), create only if 404
+    const getFhirUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets/${defaultDatasetId}/fhirStores/${fhirStoreId}`;
+    res = await fetch(sanitizeUrl(getFhirUrl), { method: 'GET', headers });
+    if (!res.ok && res.status === 404) {
+      const fhirUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets/${defaultDatasetId}/fhirStores?fhirStoreId=${fhirStoreId}`;
+      res = await fetch(sanitizeUrl(fhirUrl), {
+        method: 'POST',
         headers,
         body: JSON.stringify({ version: 'R4', enableUpdateCreate: true })
-    });
-    if (res.ok) console.log(`[Healthcare Auto-Provision] Created FHIR Store: ${fhirStoreId} (R4)`);
+      });
+      if (res.ok) console.log(`[Healthcare Auto-Provision] Created FHIR Store: ${fhirStoreId} (R4)`);
+    }
     
   } catch (error: any) {
     console.warn(`[Healthcare Auto-Provision Error]`, error.message);

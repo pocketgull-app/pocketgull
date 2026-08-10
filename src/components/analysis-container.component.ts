@@ -23,6 +23,7 @@ import { AmbientLivingSpaceDashboardComponent } from './ambient-living-space-das
 import { GreenRoomLoungeComponent } from './green-room-lounge.component';
 import { DoctorShiftSimulatorComponent } from './doctor-shift-simulator.component';
 import { DoctorShiftSalesDemoComponent } from './doctor-shift-sales-demo.component';
+import { Holographic3DAnatomyComponent } from './holographic-3d-anatomy.component';
 
 import { DomainSuitesNavigatorComponent } from './suites/domain-suites-navigator.component';
 
@@ -39,7 +40,7 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
   host: {
     'class': 'flex flex-col flex-1 min-h-0 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)]'
   },
-  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, DoctorShiftSalesDemoComponent],
+  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, DoctorShiftSalesDemoComponent, Holographic3DAnatomyComponent],
   template: `
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)] bg-[#F3F4F6] dark:bg-zinc-950">
       
@@ -205,6 +206,7 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
                 @if (viewMode() === 'suites') {
                   <app-domain-suites-navigator class="w-full h-auto block overflow-visible" />
                 } @else {
+                  <app-holographic-3d-anatomy class="w-full mb-6 shrink-0 block" />
                   <app-analysis-report class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" #reportRef (openGleeModal)="showGleeModal.set(true)"></app-analysis-report>
                 }
             </div>
