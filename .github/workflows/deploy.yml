@@ -285,7 +285,7 @@ jobs:
             -t $IMAGE_PATH:latest .
 
       - name: Trivy Container Scan
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@v0.29.0
         with:
           image-ref: 'gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull:${{ github.sha }}'
           format: 'sarif'
