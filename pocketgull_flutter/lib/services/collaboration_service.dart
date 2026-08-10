@@ -47,6 +47,7 @@ class CollaborationService {
     _socket = io.io(serverUrl, io.OptionBuilder()
       .setTransports(['websocket'])
       .disableAutoConnect()
+      .disableReconnection()
       .build());
 
     _socket!.connect();
@@ -54,6 +55,14 @@ class CollaborationService {
     _socket!.onConnect((_) {
       developer.log('[CollaborationService] Connected to real-time sync.');
       _joinRoom();
+    });
+
+    _socket!.onConnectError((err) {
+      developer.log('[CollaborationService] Connection error (offline fallback active): $err');
+    });
+
+    _socket!.onError((err) {
+      developer.log('[CollaborationService] Socket error (offline fallback active): $err');
     });
 
     _socket!.onDisconnect((_) {

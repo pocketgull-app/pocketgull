@@ -32,8 +32,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Connect to the unified Node.js/Express Socket.io server on port 3000
-      ref.read(collaborationServiceProvider).connect('http://localhost:3000');
+      // Connect to the unified Node.js/Express Socket.io server on port 4000
+      ref.read(collaborationServiceProvider).connect('http://localhost:4000');
     });
   }
 
@@ -50,39 +50,74 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           appBar: AppBar(
             toolbarHeight: isMobile ? 60 : 70,
             title: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                OrigamiSeagull(size: isMobile ? 36 : 50),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'POCKET GULL',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2.0,
-                        fontSize: isMobile ? 12 : 16,
-                        color: const Color(0xFF1C1C1C),
-                      ),
-                    ),
-                    if (!isMobile)
-                      const Text(
-                        'INTAKE MODULE 01',
+                OrigamiSeagull(size: isMobile ? 28 : 44),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'POCKET GULL',
                         style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                          letterSpacing: 1.0,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2.0,
+                          fontSize: isMobile ? 12 : 16,
+                          color: const Color(0xFF1C1C1C),
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                  ],
+                      if (!isMobile)
+                        const Text(
+                          'INTAKE MODULE 01',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey,
+                            letterSpacing: 1.0,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                  ),
                 ),
               ],
             ),
             backgroundColor: Colors.white,
             elevation: 1,
             actions: [
-              if (!isMobile) _buildSystemStatus(),
-              const SizedBox(width: 12),
+              if (!isMobile) ...[
+                _buildSystemStatus(),
+                const SizedBox(width: 12),
+                SizedBox(
+                  height: 32,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.favorite, size: 14),
+                    label: const Text('PULSE'),
+                    onPressed: () {
+                      ref.read(patientProvider.notifier).selectPart('chest');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF059669),
+                      foregroundColor: Colors.white,
+                      textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+              if (isMobile) ...[
+                IconButton(
+                  tooltip: 'Measure Camera Pulse',
+                  icon: const Icon(Icons.favorite, color: Color(0xFF059669), size: 20),
+                  onPressed: () {
+                    ref.read(patientProvider.notifier).selectPart('chest');
+                  },
+                ),
+              ],
               SizedBox(
                 height: 32,
                 child: OutlinedButton.icon(
@@ -100,24 +135,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              SizedBox(
-                height: 32,
-                child: OutlinedButton.icon(
-                  icon: const Icon(Icons.sync, size: 14),
-                  label: const Text('SYNC'),
-                  onPressed: () {
-                    // Send a test note to verify connection
-                    ref.read(collaborationServiceProvider).sendNote('Hello from Flutter Companion App!');
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF1C1C1C),
-                    side: const BorderSide(color: Color(0xFFE5E7EB)),
-                    textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              if (!isMobile) ...[
+                SizedBox(
+                  height: 32,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.sync, size: 14),
+                    label: const Text('SYNC'),
+                    onPressed: () {
+                      ref.read(collaborationServiceProvider).sendNote('Hello from Flutter Companion App!');
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF1C1C1C),
+                      side: const BorderSide(color: Color(0xFFE5E7EB)),
+                      textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
+                const SizedBox(width: 8),
+              ],
               if (!isMobile) ...[
                 SizedBox(
                   height: 32,
@@ -308,7 +344,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildResponsiveBody(bool isMobile, PatientState state) {
     if (!isMobile) {
       return state.selectedPartId == null
-          ? const Padding(padding: EdgeInsets.all(32.0), child: NativeBodyViewer())
+          ? Stack(
+              children: [
+                const Padding(padding: EdgeInsets.all(32.0), child: NativeBodyViewer()),
+                Positioned(
+                  bottom: 24,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        ref.read(patientProvider.notifier).selectPart('chest');
+                      },
+                      icon: const Icon(Icons.camera_alt, size: 16),
+                      label: const Text('TAKE CAMERA PULSE READING (PPG)'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF059669),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        textStyle: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.8),
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
           : ListView(
               padding: const EdgeInsets.all(16.0),
               children: [
@@ -326,7 +388,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Mobile View Switching
     return switch (_selectedMobileTab) {
       0 => state.selectedPartId == null
-          ? const Padding(padding: EdgeInsets.all(16.0), child: NativeBodyViewer())
+          ? Stack(
+              children: [
+                const Padding(padding: EdgeInsets.all(16.0), child: NativeBodyViewer()),
+                Positioned(
+                  bottom: 20,
+                  left: 16,
+                  right: 16,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      ref.read(patientProvider.notifier).selectPart('chest');
+                    },
+                    icon: const Icon(Icons.camera_alt, size: 16),
+                    label: const Text('TAKE CAMERA PULSE READING'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF059669),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      textStyle: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.8, fontSize: 12),
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    ),
+                  ),
+                ),
+              ],
+            )
           : ListView(
               padding: const EdgeInsets.all(16.0),
               children: [

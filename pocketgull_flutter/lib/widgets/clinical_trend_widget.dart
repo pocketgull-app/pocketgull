@@ -34,13 +34,16 @@ class ClinicalTrendWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${label.toUpperCase()} TREND',
-                style: const TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF64748B),
-                  letterSpacing: 1.0,
+              Flexible(
+                child: Text(
+                  '${label.toUpperCase()} TREND',
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF64748B),
+                    letterSpacing: 1.0,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               Container(

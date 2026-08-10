@@ -26,7 +26,7 @@ class _NativeBodyViewerState extends ConsumerState<NativeBodyViewer> {
   final _controller = DiTreDiController(
     rotationX: 5,
     rotationY: 180,
-    light: v.Vector3(-0.6, -1.0, 0.8),
+    light: v.Vector3(-0.25, -0.7, 0.35),
   );
 
   @override
@@ -387,8 +387,8 @@ class _NativeBodyViewerState extends ConsumerState<NativeBodyViewer> {
   /// 3D Sphere Mesh
   Mesh3D _generateSphereMesh(v.Vector3 center, double radius, Color color) {
     final triangles = <Face3D>[];
-    const int slices = 12;
-    const int stacks = 8;
+    const int slices = 24;
+    const int stacks = 16;
 
     for (int i = 0; i < stacks; i++) {
       final lat0 = math.pi * (-0.5 + i.toDouble() / stacks);
@@ -430,7 +430,7 @@ class _NativeBodyViewerState extends ConsumerState<NativeBodyViewer> {
     required Color color,
   }) {
     final triangles = <Face3D>[];
-    const int segments = 10;
+    const int segments = 24;
 
     final halfH = height / 2;
     final topY = center.y + halfH;

@@ -104,7 +104,11 @@ class _DraggableWindowState extends State<DraggableWindow> {
                   width: 20,
                   height: 20,
                   color: Colors.transparent,
-                  child: const Icon(Icons.south_east, size: 12, color: Colors.grey),
+                  child: const Icon(
+                    Icons.south_east,
+                    size: 12,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             ),

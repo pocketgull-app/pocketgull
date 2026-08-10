@@ -36,6 +36,8 @@ import { APP_VERSION } from './version';
 // @ts-ignore
 import AgonesSDK from '@google-cloud/agones-sdk';
 import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
+import { renderBusinessSiteHtml } from './server/business-site';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -74,7 +76,7 @@ function getAngularApp() {
   if (!angularApp) {
     try {
       angularApp = new AngularNodeAppEngine({
-        allowedHosts: ['localhost', '127.0.0.1', '0.0.0.0', 'pocketgull.app', '*.pocketgull.app', 'pocketgall.com', 'pocketgall.app', 'pocketgal.app', 'pocketgull.com', 'pocketgal.ai', '*.run.app', '*.cloudworkstations.dev'],
+        allowedHosts: ['localhost', '127.0.0.1', '0.0.0.0', 'pocketgull.app', '*.pocketgull.app', 'pocketgull.com', '*.pocketgull.com', 'pocketgall.com', 'pocketgall.app', 'pocketgal.app', 'pocketgal.ai', '*.run.app', '*.cloudworkstations.dev'],
         trustProxyHeaders: true
       });
     } catch (e: any) {
@@ -105,8 +107,63 @@ app.use((req, res, next) => {
   next();
 });
 
-// Trust the 1st hop Google Cloud Run proxy so req.hostname and rate limiting resolve securely
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
+
+// Explicit preview endpoints for business site
+app.get(['/business', '/preview'], (_req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderBusinessSiteHtml());
+});
+
+// Primary Business Site Handler for pocketgull.com & www.pocketgull.com
+app.use((req, res, next) => {
+  const xfh = String(req.headers['x-forwarded-host'] || '').toLowerCase();
+  const hostHeader = String(req.headers['host'] || '').toLowerCase();
+  const hostname = String(req.hostname || '').toLowerCase();
+
+  console.log('[Domain Router Log]', JSON.stringify({
+    url: req.url,
+    xfh,
+    hostHeader,
+    hostname,
+    'x-forwarded-proto': req.headers['x-forwarded-proto'],
+    'user-agent': req.headers['user-agent']
+  }));
+
+  const isBusinessSite =
+    req.path === '/business' ||
+    req.query['preview'] === 'business' ||
+    xfh.includes('pocketgull.com') ||
+    hostHeader.includes('pocketgull.com') ||
+    hostname.includes('pocketgull.com');
+
+  if (isBusinessSite) {
+    if (req.path === '/health' || req.path.startsWith('/api/')) {
+      return next();
+    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(renderBusinessSiteHtml());
+  }
+
+  // Redirect legacy alias domains to primary app domain pocketgull.app
+  const targetDomain = 'pocketgull.app';
+  const redirectDomains = [
+    'pocketgall.com',
+    'pocketgall.app',
+    'pocketgal.app',
+    'pocketgal.ai'
+  ];
+
+  const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
+  if (redirectDomains.includes(rawHost)) {
+    const rawPath = String(req.originalUrl || '/').replace(/[\r\n\s]+/g, '');
+    const safePath = isValidRedirectUrl(rawPath) ? rawPath : '/';
+    const targetUrl = new URL(safePath, `https://${targetDomain}`).pathname;
+    return res.redirect(301, `https://${targetDomain}${targetUrl}`);
+  }
+
+  next();
+});
 
 // US Regional Access Enforcement Guard
 app.use((req, res, next) => {
@@ -120,26 +177,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Forced domain redirect to pocketgull.app
-const targetDomain = 'pocketgull.app';
-const redirectDomains = [
-  'pocketgall.com',
-  'pocketgall.app',
-  'pocketgal.app',
-  'pocketgull.com',
-  'pocketgal.ai'
-];
-
-app.use((req, res, next) => {
-  const host = req.hostname;
-  if (redirectDomains.includes(host)) {
-    const rawPath = String(req.originalUrl || '/').replace(/[\r\n\s]+/g, '');
-    const safePath = isValidRedirectUrl(rawPath) ? rawPath : '/';
-    const targetUrl = new URL(safePath, `https://${targetDomain}`).pathname;
-    return res.redirect(301, `https://${targetDomain}${targetUrl}`);
-  }
-  next();
-});
 
 const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test');
 

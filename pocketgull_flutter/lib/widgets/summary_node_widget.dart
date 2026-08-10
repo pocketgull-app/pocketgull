@@ -52,30 +52,31 @@ class SummaryNodeWidget extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 4,
               children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      _buildStatusDot(),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          title.toUpperCase(),
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                            letterSpacing: 1.5,
-                          ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildStatusDot(),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        title.toUpperCase(),
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                          letterSpacing: 1.5,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

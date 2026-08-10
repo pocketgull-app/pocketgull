@@ -11,12 +11,17 @@ void main() {
 
       expect(metrics.timeInRangePercent, greaterThan(80.0));
       expect(metrics.glucoseManagementIndexGmi, greaterThan(5.0));
+      expect(metrics.timeAboveRangePercent, greaterThan(0.0));
+      expect(metrics.timeBelowRangePercent, equals(0.0));
+      expect(metrics.meanGlucoseMgDl, greaterThan(120.0));
+      expect(metrics.coefficientOfVariationPercent, lessThan(40.0));
     });
 
     test('should return default fallback metrics for empty readings', () {
       final metrics = service.calculateMetrics([]);
       expect(metrics.timeInRangePercent, equals(75.0));
       expect(metrics.coefficientOfVariationPercent, equals(28.5));
+      expect(metrics.isClinicalTargetMet, isTrue);
     });
   });
 }

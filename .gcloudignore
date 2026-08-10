@@ -12,6 +12,9 @@ test-results/
 playwright-report/
 .vscode/
 .idea/
+pubspec.yaml
+pubspec.lock
+melos.yaml
 pocketgull_flutter/
 companion-apps/patient_app/
 companion-apps/provider_app/
@@ -40,15 +43,17 @@ trained_physio_models/
 *.hea
 *.atr
 *.rec
+AppData/
+AppData
+**/AppData/**
 Intel/
 Intel
+**/Intel/**
 Documents/
 Documents
+**/Documents/**
+My Pictures/
+**/My Pictures/**
 source.tgz
+build_source.tgz
 deploy.tar.gz
-!Dockerfile
-!package.json
-!docs/study/package.json
-!companion-apps/avs-therapy/package.json
-!pocketgull_api/package.json
-
