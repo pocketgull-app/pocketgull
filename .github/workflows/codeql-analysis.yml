@@ -29,7 +29,7 @@ jobs:
 
     steps:
     - name: Harden Runner
-      uses: step-security/harden-runner@v2.20.0
+      uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
       with:
         egress-policy: audit
 
@@ -38,7 +38,7 @@ jobs:
 
     - name: Setup Python & Dependencies
       if: matrix.language == 'python'
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
       with:
         python-version: '3.11'
 
@@ -49,13 +49,13 @@ jobs:
         pip install -r pocketgull_api/requirements.txt || true
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@6ba5c05dce207b48ae07f8791b4313069c63fc2b # v3.26.6
       with:
         languages: ${{ matrix.language }}
         config-file: .github/codeql/codeql-config.yml
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@6ba5c05dce207b48ae07f8791b4313069c63fc2b # v3.26.6
       with:
         category: "/language:${{ matrix.language }}"
 
