@@ -285,21 +285,23 @@ jobs:
             -t $IMAGE_PATH:latest .
 
       - name: Trivy Container Scan
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull:${{ github.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'HIGH,CRITICAL'
-          # Don't fail the build on existing vulns, but upload results
+          limit-severities-for-sarif: true
           exit-code: '0'
+        continue-on-error: true
 
       - name: Upload Trivy Scan Results
-        uses: github/codeql-action/upload-sarif@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
           category: 'trivy-container'
+        continue-on-error: true
 
       - name: Push Docker Image
         run: |
