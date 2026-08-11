@@ -84,13 +84,12 @@ app.use((req, res, next) => {
   const xfh = String(req.headers['x-forwarded-host'] || '').toLowerCase();
   const hostHeader = String(req.headers['host'] || '').toLowerCase();
   const hostname = String(req.hostname || '').toLowerCase();
+  const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
 
   const isBusinessSite =
     req.path === '/business' ||
     req.query['preview'] === 'business' ||
-    /(^|\.)pocketgull\.com$/.test(xfh) ||
-    /(^|\.)pocketgull\.com$/.test(hostHeader) ||
-    /(^|\.)pocketgull\.com$/.test(hostname);
+    /(^|\.)pocketgull\.com$/.test(rawHost);
 
   if (isBusinessSite) {
     if (req.path === '/health' || req.path.startsWith('/api/')) {
@@ -109,7 +108,6 @@ app.use((req, res, next) => {
     'pocketgal.ai'
   ];
 
-  const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
   if (redirectDomains.includes(rawHost)) {
     return res.redirect(301, `https://${targetDomain}/`);
   }

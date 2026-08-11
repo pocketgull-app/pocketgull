@@ -217,12 +217,12 @@ app.use((req, res, next) => {
     'user-agent': req.headers['user-agent']
   }));
 
+  const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
+
   const isBusinessSite =
     req.path === '/business' ||
     req.query['preview'] === 'business' ||
-    /(^|\.)pocketgull\.com$/.test(xfh) ||
-    /(^|\.)pocketgull\.com$/.test(hostHeader) ||
-    /(^|\.)pocketgull\.com$/.test(hostname);
+    /(^|\.)pocketgull\.com$/.test(rawHost);
 
   if (isBusinessSite) {
     if (req.path === '/health' || req.path.startsWith('/api/')) {
@@ -241,7 +241,6 @@ app.use((req, res, next) => {
     'pocketgal.ai'
   ];
 
-  const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
   if (redirectDomains.includes(rawHost)) {
     const targetOrigin = `https://${targetDomain}`;
     const rawRequestUrl = typeof req.originalUrl === 'string'
