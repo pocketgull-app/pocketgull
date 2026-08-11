@@ -1,7 +1,7 @@
 # ==========================================
 # Stage 1: Build
 # ==========================================
-FROM node:24-bookworm@sha256:0d65b128504499d6fb35db0d603a1197efaa4356e545464197e937d2f92f6b3b AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ WORKDIR /app
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # Patch OS-level vulnerabilities
-RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+RUN apk update && apk upgrade --no-cache
 
 # Set Node environment to development during build stage to install devDependencies
 ENV NODE_ENV=development
@@ -32,7 +32,7 @@ RUN npm prune --omit=dev --legacy-peer-deps
 # ==========================================
 # Stage 2: Production
 # ==========================================
-FROM node:24-alpine@sha256:4b419b48b5f3965b6d5b0b2e2d8e411b3695276e185e495240cf200e6244f77a
+FROM node:24-alpine
 
 WORKDIR /app
 
