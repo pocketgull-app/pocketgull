@@ -26,7 +26,7 @@ import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { Server as SocketIOServer } from 'socket.io';
 import compression from 'compression';
-import { dirname, extname, join, normalize, resolve, sep } from 'node:path';
+import path, { dirname, extname, isAbsolute, join, normalize, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import type { IncomingMessage, Server as HttpServer } from 'node:http';
@@ -92,36 +92,35 @@ function getAngularApp(): AngularNodeAppEngine | null {
 
 app.use(compression());
 
-function isPathWithinRoot(rootPath: string, candidatePath: string): boolean {
-  const normalizedRoot = path.resolve(rootPath);
-  const normalizedCandidate = path.resolve(candidatePath);
-  return normalizedCandidate === normalizedRoot || normalizedCandidate.startsWith(normalizedRoot + path.sep);
-}
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test') ? 100_000 : 2000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { trustProxy: false }
+});
+app.use(globalLimiter);
 
 // Universal Hashed Bundle Fallback & Stale Asset Interceptor (Guarantees 100/100 Best Practices)
-app.use((req, res, next) => {
+app.use(globalLimiter, (req, res, next) => {
   const cleanPath = req.path.split('?')[0];
   const ext = extname(cleanPath).toLowerCase();
   if (ext === '.js' || ext === '.css' || cleanPath.includes('main-') || cleanPath.includes('styles-')) {
-    const relativePath = cleanPath.replace(/^[/\\]+/, '');
-    const staticRoot = path.resolve(browserDistFolder);
-    const publicRoot = path.resolve(browserDistFolder, '..', 'public');
-    const staticPath = path.resolve(staticRoot, relativePath);
-    const publicPath = path.resolve(publicRoot, relativePath);
-    if (
-      !isPathWithinRoot(staticRoot, staticPath) ||
-      !isPathWithinRoot(publicRoot, publicPath)
-    ) {
+    const fileName = path.basename(cleanPath);
+    if (!/^[a-zA-Z0-9_-]+\.(js|css)$/.test(fileName) && !cleanPath.includes('main-') && !cleanPath.includes('styles-')) {
       return next();
     }
-    if (!fs.existsSync(staticPath) && !fs.existsSync(publicPath)) {
+    const safeStaticPath = securePathResolve(browserDistFolder, fileName);
+    const safePublicPath = securePathResolve(join(browserDistFolder, '..', 'public'), fileName);
+    if (!fs.existsSync(safeStaticPath) && !fs.existsSync(safePublicPath)) {
       console.log('[BUNDLE-FALLBACK-TRIGGERED]', req.method, req.path, cleanPath);
       if (cleanPath.includes('main-')) {
         try {
           const files = fs.readdirSync(browserDistFolder);
           const activeMain = files.find(f => f.startsWith('main-') && f.endsWith('.js'));
           if (activeMain) {
-            const mainContent = fs.readFileSync(join(browserDistFolder, activeMain));
+            const safeActiveMainPath = securePathResolve(browserDistFolder, activeMain);
+            const mainContent = fs.readFileSync(safeActiveMainPath);
             res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
             res.setHeader('Cache-Control', 'no-cache, must-revalidate');
             return res.status(200).send(mainContent);
@@ -136,7 +135,8 @@ app.use((req, res, next) => {
           const files = fs.readdirSync(browserDistFolder);
           const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css'));
           if (activeCss) {
-            const cssContent = fs.readFileSync(join(browserDistFolder, activeCss));
+            const safeActiveCssPath = securePathResolve(browserDistFolder, activeCss);
+            const cssContent = fs.readFileSync(safeActiveCssPath);
             res.setHeader('Content-Type', 'text/css; charset=utf-8');
             res.setHeader('Cache-Control', 'no-cache, must-revalidate');
             return res.status(200).send(cssContent);
