@@ -92,13 +92,28 @@ function getAngularApp(): AngularNodeAppEngine | null {
 
 app.use(compression());
 
+function isPathWithinRoot(rootPath: string, candidatePath: string): boolean {
+  const normalizedRoot = path.resolve(rootPath);
+  const normalizedCandidate = path.resolve(candidatePath);
+  return normalizedCandidate === normalizedRoot || normalizedCandidate.startsWith(normalizedRoot + path.sep);
+}
+
 // Universal Hashed Bundle Fallback & Stale Asset Interceptor (Guarantees 100/100 Best Practices)
 app.use((req, res, next) => {
   const cleanPath = req.path.split('?')[0];
   const ext = extname(cleanPath).toLowerCase();
   if (ext === '.js' || ext === '.css' || cleanPath.includes('main-') || cleanPath.includes('styles-')) {
-    const staticPath = join(browserDistFolder, cleanPath);
-    const publicPath = join(browserDistFolder, '..', 'public', cleanPath);
+    const relativePath = cleanPath.replace(/^[/\\]+/, '');
+    const staticRoot = path.resolve(browserDistFolder);
+    const publicRoot = path.resolve(browserDistFolder, '..', 'public');
+    const staticPath = path.resolve(staticRoot, relativePath);
+    const publicPath = path.resolve(publicRoot, relativePath);
+    if (
+      !isPathWithinRoot(staticRoot, staticPath) ||
+      !isPathWithinRoot(publicRoot, publicPath)
+    ) {
+      return next();
+    }
     if (!fs.existsSync(staticPath) && !fs.existsSync(publicPath)) {
       console.log('[BUNDLE-FALLBACK-TRIGGERED]', req.method, req.path, cleanPath);
       if (cleanPath.includes('main-')) {
