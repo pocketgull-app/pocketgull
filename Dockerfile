@@ -32,12 +32,12 @@ RUN npm prune --omit=dev --legacy-peer-deps
 # ==========================================
 # Stage 2: Production
 # ==========================================
-FROM node:24-bookworm-slim
+FROM node:24-alpine
 
 WORKDIR /app
 
-# Patch OS-level vulnerabilities in production image
-RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+# Patch OS-level vulnerabilities in Alpine production image
+RUN apk update && apk upgrade --no-cache
 
 # Set Node to production mode
 ENV NODE_ENV=production
