@@ -74,6 +74,9 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
 @Component({
     selector: 'app-body-3d-viewer',
     standalone: true,
+    host: {
+        'ngSkipHydration': 'true'
+    },
     imports: [CommonModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `

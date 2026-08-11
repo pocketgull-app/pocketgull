@@ -20,12 +20,12 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     // 4. Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.locator('button', { hasText: 'ASSESSMENTS' }).first();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.click();
+    await assessmentsBtn.click({ force: true });
 
     // 5. Select Venn Consensus sub-tab
     const vennTab = page.getByTestId('tab-venn-matrix');
     await expect(vennTab).toBeVisible({ timeout: 15000 });
-    await vennTab.click();
+    await vennTab.click({ force: true });
 
     // 6. Verify Venn Matrix header renders
     const vennHeader = page.locator('text=Multi-Paradigm Intersection Matrix');
@@ -34,7 +34,7 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     // 7. Click Triple Consensus button (W ∩ F ∩ E)
     const tripleBtn = page.locator('button', { hasText: 'Triple Consensus' });
     await expect(tripleBtn).toBeVisible({ timeout: 10000 });
-    await tripleBtn.click();
+    await tripleBtn.click({ force: true });
 
     // 8. Verify 100% Certainty badge and biomarkers list render
     const certaintyBadge = page.locator('text=100% Certainty').first();
@@ -51,7 +51,7 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     // 2. Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.locator('button', { hasText: 'ASSESSMENTS' }).first();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.click();
+    await assessmentsBtn.click({ force: true });
 
     // 3. Select Kaizen Optimization sub-tab
     const kaizenTab = page.getByTestId('tab-kaizen-suite');

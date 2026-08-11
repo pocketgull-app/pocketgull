@@ -61,6 +61,9 @@ import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badg
 @Component({
   selector: 'app-root',
   standalone: true,
+  host: {
+    'ngSkipHydration': 'true'
+  },
   imports: [
     CommonModule,
     FormsModule,

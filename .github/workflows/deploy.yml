@@ -117,7 +117,7 @@ jobs:
 
       - name: Start Preview Server
         run: |
-          npm run preview &
+          npm run preview > /tmp/server.log 2>&1 &
           echo $! > .server.pid
         env:
           PORT: '4000'
@@ -138,8 +138,8 @@ jobs:
             if [ "$status" = "200" ]; then exit 0; fi
             sleep 2
           done
-          echo "Server did not return 200; last response:"
-          cat /tmp/preview.txt || true
+          echo "Server did not return 200; last server logs:"
+          cat /tmp/server.log || true
           exit 1
 
       - name: Run E2E Tests
