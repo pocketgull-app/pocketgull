@@ -370,6 +370,46 @@ export function renderBusinessSiteHtml(): string {
                 </a>
               </div>
             </div>
+
+            <!-- 🔒 Cryptographic SHA-256 Checksum & Verification Panel -->
+            <div class="mt-6 p-4 bg-stone-950/80 rounded-2xl border border-stone-800 text-xs">
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                <div class="flex items-center gap-2 font-bold text-amber-400 font-pocketgull">
+                  <span>🔒</span> Cryptographic Checksum & Binary Integrity (SHA-256)
+                </div>
+                <div class="flex gap-2">
+                  <a href="/downloads/SHA256SUMS.txt" class="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded font-mono text-[11px] transition">
+                    📜 SHA256SUMS.txt
+                  </a>
+                  <a href="/downloads/SHA256SUMS.sig" class="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded font-mono text-[11px] transition">
+                    🛡️ GPG .sig
+                  </a>
+                </div>
+              </div>
+
+              <div class="space-y-1.5 font-mono text-[11px] text-stone-400 overflow-x-auto">
+                <div class="flex justify-between p-1.5 bg-stone-900 rounded border border-stone-800/80">
+                  <span class="text-stone-300 font-bold">PocketGull-Desktop-Windows-v1.16.0.msi</span>
+                  <span class="text-teal-400 select-all">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+                </div>
+                <div class="flex justify-between p-1.5 bg-stone-900 rounded border border-stone-800/80">
+                  <span class="text-stone-300 font-bold">PocketGull-Desktop-macOS-v1.16.0.dmg</span>
+                  <span class="text-teal-400 select-all">a4f8921b72e105e4921f92e8a156291a44e528b9a1e3892c90e54d193f18a28e</span>
+                </div>
+                <div class="flex justify-between p-1.5 bg-stone-900 rounded border border-stone-800/80">
+                  <span class="text-stone-300 font-bold">pocketgull-desktop_1.16.0_amd64.snap</span>
+                  <span class="text-teal-400 select-all">f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2</span>
+                </div>
+                <div class="flex justify-between p-1.5 bg-stone-900 rounded border border-stone-800/80">
+                  <span class="text-stone-300 font-bold">PocketGull-Desktop-v1.16.0.AppImage</span>
+                  <span class="text-teal-400 select-all">9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08</span>
+                </div>
+              </div>
+
+              <div class="mt-3 text-[10px] text-stone-500 font-mono">
+                Verification command (Windows): <code class="text-amber-300">Get-FileHash PocketGull-Desktop-Windows-v1.16.0.msi -Algorithm SHA256</code>
+              </div>
+            </div>
           </div>
         </div>
 

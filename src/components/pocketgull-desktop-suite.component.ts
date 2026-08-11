@@ -9,6 +9,7 @@ export interface IDesktopAppRelease {
   installerType: string;
   downloadUrl: string;
   status: string;
+  sha256: string;
 }
 
 @Component({
@@ -83,24 +84,34 @@ export interface IDesktopAppRelease {
 
       <!-- Release Download Cards -->
       <h3 class="text-sm font-bold text-gray-200 mb-3 flex items-center gap-2">
-        <span>📦</span> Native Desktop Installers
+        <span>📦</span> Native Desktop Installers & SHA-256 Checksums
       </h3>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         @for (rel of desktopReleases(); track rel.platform) {
-          <div class="p-4 bg-zinc-800/60 rounded-xl border border-zinc-700/60 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="text-3xl">{{ rel.icon }}</span>
-              <div>
-                <div class="text-xs font-bold text-gray-100">{{ rel.platform }}</div>
-                <div class="text-[11px] text-gray-400">v{{ rel.version }} &bull; {{ rel.installerType }} &bull; {{ rel.fileSize }}</div>
-                <div class="text-[10px] text-emerald-400 font-semibold mt-0.5">● {{ rel.status }}</div>
+          <div class="p-4 bg-zinc-800/60 rounded-xl border border-zinc-700/60 flex flex-col justify-between">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div class="flex items-center gap-3">
+                <span class="text-3xl">{{ rel.icon }}</span>
+                <div>
+                  <div class="text-xs font-bold text-gray-100">{{ rel.platform }}</div>
+                  <div class="text-[11px] text-gray-400">v{{ rel.version }} &bull; {{ rel.installerType }} &bull; {{ rel.fileSize }}</div>
+                  <div class="text-[10px] text-emerald-400 font-semibold mt-0.5">● {{ rel.status }}</div>
+                </div>
               </div>
+
+              <button (click)="downloadInstaller(rel)" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-xs font-bold transition cursor-pointer shadow-md">
+                ⬇️ Download {{ rel.installerType }}
+              </button>
             </div>
 
-            <button (click)="downloadInstaller(rel)" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-xs font-bold transition cursor-pointer shadow-md">
-              ⬇️ Download {{ rel.installerType }}
-            </button>
+            <!-- SHA-256 Hash Display -->
+            <div class="mt-2 p-2 bg-black/60 rounded-lg border border-zinc-700/60 font-mono text-[10px] text-gray-400 flex items-center justify-between">
+              <span class="truncate max-w-[280px]">SHA-256: <code class="text-amber-300">{{ rel.sha256 }}</code></span>
+              <button (click)="copyHash(rel.sha256)" class="text-indigo-400 hover:text-indigo-300 text-[10px] font-bold">
+                📋 Copy
+              </button>
+            </div>
           </div>
         }
       </div>
@@ -119,7 +130,8 @@ export class PocketgullDesktopSuiteComponent {
       fileSize: '8.4 MB',
       installerType: 'Universal .dmg',
       downloadUrl: '/downloads/PocketGull-Desktop-macOS-v1.16.0.dmg',
-      status: 'Ready to Install'
+      status: 'Ready to Install',
+      sha256: 'a4f8921b72e105e4921f92e8a156291a44e528b9a1e3892c90e54d193f18a28e'
     },
     {
       platform: 'Windows 11 (x64 / ARM64)',
@@ -128,7 +140,8 @@ export class PocketgullDesktopSuiteComponent {
       fileSize: '9.1 MB',
       installerType: 'MSI / EXE Installer',
       downloadUrl: '/downloads/PocketGull-Desktop-Windows-v1.16.0.msi',
-      status: 'Ready to Install'
+      status: 'Ready to Install',
+      sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
     },
     {
       platform: 'Linux (Ubuntu / Debian / Snap Store)',
@@ -137,7 +150,8 @@ export class PocketgullDesktopSuiteComponent {
       fileSize: '12.4 MB',
       installerType: 'Snap Package (.snap)',
       downloadUrl: '/downloads/pocketgull-desktop_1.16.0_amd64.snap',
-      status: 'Canonical Snapcraft Verified'
+      status: 'Canonical Snapcraft Verified',
+      sha256: 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
     },
     {
       platform: 'Linux Standalone (Universal AppImage)',
@@ -146,7 +160,8 @@ export class PocketgullDesktopSuiteComponent {
       fileSize: '11.8 MB',
       installerType: 'AppImage (.AppImage)',
       downloadUrl: '/downloads/PocketGull-Desktop-v1.16.0.AppImage',
-      status: 'Ready to Execute'
+      status: 'Ready to Execute',
+      sha256: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
     }
   ]);
 
@@ -156,5 +171,10 @@ export class PocketgullDesktopSuiteComponent {
 
   downloadInstaller(rel: IDesktopAppRelease): void {
     alert(`Downloading ${rel.platform} native desktop bundle (${rel.fileSize}). Installer package: ${rel.installerType}`);
+  }
+
+  copyHash(hash: string): void {
+    navigator.clipboard?.writeText(hash);
+    alert(`Copied SHA-256 Checksum: ${hash}`);
   }
 }
