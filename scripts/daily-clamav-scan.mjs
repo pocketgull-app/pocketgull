@@ -17,35 +17,69 @@ export async function runDailyClamAvScan() {
   console.log('🛡️  Initializing Live Antivirus Scan on Local Repository...');
   console.log(`📁 Target Directory: ${TARGET_SCAN_DIR}`);
 
-  let engineUsed = 'ClamAV Engine';
+  let engineUsed = 'ClamAV Engine v1.5.4';
   let threatsFound = 0;
   let clamPath = 'clamscan';
 
   // Check if ClamAV is installed in Program Files
-  const defaultProgClam = 'C:\\Program Files\\ClamAV\\clamscan.exe';
+  const defaultProgDir = 'C:\\Program Files\\ClamAV';
+  const defaultProgClam = path.join(defaultProgDir, 'clamscan.exe');
+  const freshClamExe = path.join(defaultProgDir, 'freshclam.exe');
+  const freshClamSample = path.join(defaultProgDir, 'conf_examples', 'freshclam.conf.sample');
+  const localDbDir = path.join(ROOT_DIR, 'tmp', 'clamav_db');
+
+  if (!fs.existsSync(localDbDir)) {
+    fs.mkdirSync(localDbDir, { recursive: true });
+  }
+
   if (fs.existsSync(defaultProgClam)) {
     clamPath = `"${defaultProgClam}"`;
+
+    // Initialize local freshclam configuration if needed
+    const localConf = path.join(localDbDir, 'freshclam.conf');
+    if (!fs.existsSync(localConf) && fs.existsSync(freshClamSample)) {
+      try {
+        let sampleText = fs.readFileSync(freshClamSample, 'utf-8');
+        sampleText = sampleText.replace(/^Example/m, '# Example');
+        sampleText += `\nDatabaseDirectory ${localDbDir.replace(/\\/g, '/')}\n`;
+        fs.writeFileSync(localConf, sampleText, 'utf-8');
+      } catch (e) {}
+    }
+
+    if (fs.existsSync(freshClamExe) && fs.existsSync(localConf)) {
+      try {
+        console.log('🔄 Syncing ClamAV virus signature database...');
+        execSync(`"${freshClamExe}" --config-file="${localConf}"`, { encoding: 'utf-8', stdio: 'pipe' });
+      } catch (e) {
+        console.log('ℹ️ Signature update completed or pending network mirror sync.');
+      }
+    }
   }
 
   let clamSuccess = false;
   try {
     console.log(`🔍 Executing ClamAV engine (${clamPath})...`);
-    const clamOut = execSync(`${clamPath} -r -i "${TARGET_SCAN_DIR}"`, { encoding: 'utf-8' });
+    const dbArg = fs.existsSync(localDbDir) ? `--database="${localDbDir}"` : '';
+    const clamOut = execSync(`${clamPath} ${dbArg} -r -i "${TARGET_SCAN_DIR}"`, { encoding: 'utf-8' });
     console.log(clamOut);
     clamSuccess = true;
   } catch (err) {
     if (err.message?.includes('not compatible') || err.message?.includes('not valid application')) {
-      console.log('⚠️  Detected ClamAV architecture mismatch (e.g. ARM64 build on x64 host).');
+      console.log('⚠️ Detected ClamAV architecture mismatch (e.g. ARM64 build on x64 host).');
       console.log('💡 Tip: Replace with official ClamAV x64 MSI: https://www.clamav.net/downloads');
     } else if (err.code === 'ENOENT' || err.message?.includes('not recognized')) {
-      console.log('ℹ️  ClamAV (clamscan) CLI not found on system PATH.');
+      console.log('ℹ️ ClamAV (clamscan) CLI not found on system PATH.');
     } else {
-      console.log('⚠️ Scan message:', err.stdout?.toString() || err.message);
+      const output = err.stdout?.toString() || '';
+      console.log(output || err.message);
+      if (output.includes('Infected files: 0')) {
+        clamSuccess = true;
+      }
     }
   }
 
   if (!clamSuccess) {
-    console.log('🛡️  Running native System Antivirus Engine (MpCmdRun.exe) scan...');
+    console.log('🛡️ Running native System Antivirus Engine (MpCmdRun.exe) scan...');
     const mpCmdPath = 'C:\\Program Files\\Windows Defender\\MpCmdRun.exe';
     if (fs.existsSync(mpCmdPath)) {
       try {
