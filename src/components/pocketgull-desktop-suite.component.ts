@@ -69,15 +69,30 @@ export interface IDesktopAppRelease {
           <div class="text-[11px] text-gray-400 font-mono">Hotkey state: <span class="text-emerald-400">Registered</span></div>
         </div>
 
-        <!-- Feature 3: On-Device NPU Acceleration -->
+        <!-- Feature 3: On-Device WebGPU & NPU Acceleration -->
         <div class="p-4 bg-zinc-900/80 rounded-xl border border-zinc-800">
           <div class="flex items-center gap-2 mb-2 text-indigo-400 font-bold text-xs">
-            <span>⚡</span> Metal & DirectML Hardware Acceleration
+            <span>⚡</span> WebGPU & Metal Hardware Acceleration
           </div>
           <p class="text-xs text-gray-300 mb-3">
-            Executes local Gemma 2B inference directly on Apple Silicon Neural Engine (NPU) and Windows DirectML GPUs.
+            Executes local 4-bit Gemma 2B/7B inference directly on WebGPU VRAM buffers, Apple Silicon Neural Engine (NPU), and DirectML.
           </p>
-          <div class="text-[11px] text-gray-400 font-mono">Hardware: <span class="text-indigo-300">Apple M-Series / DirectML Ready</span></div>
+          <div class="text-[11px] text-gray-400 font-mono">Hardware: <span class="text-indigo-300">WebGPU VRAM / Apple M-Series / DirectML</span></div>
+        </div>
+
+        <!-- Feature 4: SMART on FHIR v2 EHR App Gallery Integration -->
+        <div class="p-4 bg-zinc-900/80 rounded-xl border border-zinc-800 md:col-span-3">
+          <div class="flex items-center gap-2 mb-2 text-sky-400 font-bold text-xs">
+            <span>🏥</span> SMART on FHIR v2 EHR Launch & App Gallery Integration
+          </div>
+          <p class="text-xs text-gray-300 mb-2">
+            1-Click OAuth2 PKCE launch directly inside Epic Hyperspace, Cerner PowerChart, AthenaHealth, and VA Lighthouse with USCDI v4 FHIR R4 patient context binding.
+          </p>
+          <div class="flex items-center gap-3 text-[11px] font-mono text-emerald-400">
+            <span>● Epic App Orchard Ready</span>
+            <span>● Cerner Code Verified</span>
+            <span>● USCDI v4 Compliant</span>
+          </div>
         </div>
 
       </div>
