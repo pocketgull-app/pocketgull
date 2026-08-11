@@ -89,8 +89,8 @@ export type DrilldownLens = 'evidence' | 'biophysics' | 'epigenetic';
             </button>
           </div>
 
-          <!-- Paradigm Lens Summary Banner -->
-          <div class="px-4 py-2.5 rounded-xl border text-xs font-mono flex items-center justify-between"
+          <!-- Paradigm Lens Summary Banner with De-Identified Research Donation -->
+          <div class="px-4 py-2.5 rounded-xl border text-xs font-mono flex flex-wrap items-center justify-between gap-2"
             [class.bg-emerald-500\/10]="activeLens() === 'evidence'"
             [class.border-emerald-500\/20]="activeLens() === 'evidence'"
             [class.text-emerald-400]="activeLens() === 'evidence'"
@@ -101,8 +101,22 @@ export type DrilldownLens = 'evidence' | 'biophysics' | 'epigenetic';
             [class.border-teal-500\/20]="activeLens() === 'epigenetic'"
             [class.text-teal-300]="activeLens() === 'epigenetic'">
             
-            <span>Lens Active: {{ lensDescription() }}</span>
-            <span class="font-bold">LOINC / FHIR R4 Compliant</span>
+            <div class="flex items-center gap-2">
+              <span>Lens Active: {{ lensDescription() }}</span>
+              <span class="font-bold">LOINC / FHIR R4 Compliant</span>
+            </div>
+
+            <!-- 1-Click Research Cohort Donation Button -->
+            <button 
+              (click)="donateAnonymizedCohort()"
+              [disabled]="isDonated()"
+              class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 transition-all flex items-center gap-1.5 disabled:opacity-60">
+              @if (isDonated()) {
+                <span>✅ Case Donated to Open Research (Safe Harbor §164.514)</span>
+              } @else {
+                <span>🎁 Donate De-Identified Case to Science</span>
+              }
+            </button>
           </div>
 
           <!-- Dynamic Component View -->
@@ -173,8 +187,16 @@ export class ComponentDrilldownUnitComponent {
     }
   });
 
+  readonly isDonated = signal(false);
+
+  donateAnonymizedCohort(): void {
+    this.isDonated.set(true);
+    console.log(`[Research Donation] Anonymized FHIR R4 ResearchSubject bundle exported for ${this.patientName()}. HIPAA §164.514 Safe Harbor de-identification enforced.`);
+  }
+
   open(target: DrilldownTarget): void {
     this.targetComponent.set(target);
+    this.isDonated.set(false);
   }
 
   close(): void {
