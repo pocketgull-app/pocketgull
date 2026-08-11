@@ -8,7 +8,7 @@ description: "A professional case study evaluating the performance, architecture
 
 > Insight beneath the surface.
 
-**By Phil Gear** · [g.dev/philgear](https://g.dev/philgear) · [Repository](https://github.com/philgear/pocketgull)
+**By Phil Gear** · [developers.google.com/profile/philgear](https://developers.google.com/profile/philgear) · [Repository](https://github.com/philgear/pocketgull)
 
 ---
 

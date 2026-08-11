@@ -366,7 +366,7 @@ Full documentation is available in the [`docs/study/`](file:///c:/Users/philg/Po
 
 ## 👨‍💻 MAINTAINER
 
-**Phil Gear** / [g.dev/philgear](https://g.dev/philgear)  
+**Phil Gear** / [developers.google.com/profile/philgear](https://developers.google.com/profile/philgear)  
 _Engineering with Kaizen — continuous refinement for clinical excellence._
 
 ---

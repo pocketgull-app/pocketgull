@@ -22,7 +22,7 @@ Like its namesake, the agent is **agile**, **interruptible**, and **highly obser
 
 > **Industrial Grace:** We believe medical tools should be as beautiful as they are functional. Our design language combines the clinical precision of a laboratory with the "Less, but better" philosophy of Dieter Rams.
 
-![Dashboard Snapshot](../images/dashboard.png)
+![App Icon](../images/app_icon.png)
 ---
 
 ## 🛠️ SCIENTIFIC RIGOR & CORE CAPABILITIES
@@ -79,7 +79,7 @@ Full engineering documentation is available in the [`docs/study/`](./study/) dir
 
 ## 👨💻 Public Code Repository & Spin-Up Instructions
 
-**Developer Profile:** [g.dev/philgear](https://g.dev/philgear)  
+**Developer Profile:** [developers.google.com/profile/philgear](https://developers.google.com/profile/philgear)  
 
 To run this project in a local development environment:
 
@@ -138,7 +138,7 @@ Pocket Gull adheres to the **Human-in-the-Loop** (HITL) principle.
 ---
 
 ## 👨💻 THE CRAFT
-**Phil Gear** / [g.dev/philgear](https://g.dev/philgear)  
+**Phil Gear** / [developers.google.com/profile/philgear](https://developers.google.com/profile/philgear)  
 Engineering with **Kaizen**—the belief that clinical excellence is a journey of continuous refinement.
 
 *© 2026 Pocket Gull. Industrial Grace & Clinical Intelligence.*
