@@ -72,6 +72,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'aws.amazon.com',
   'amazonaws.com',
   'healthlake.us-east-1.amazonaws.com',
+  'azure.com',
+  'azurehealthcareapis.com',
   'ohif.org',
   'viewer.ohif.org',
   'firebaseapp.com',
