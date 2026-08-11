@@ -111,15 +111,7 @@ app.use((req, res, next) => {
 
   const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
   if (redirectDomains.includes(rawHost)) {
-    const requestPath = typeof req.path === 'string' ? req.path : '/';
-    const rawUrl = typeof req.url === 'string' ? req.url : '';
-    const queryIndex = rawUrl.indexOf('?');
-    const query = queryIndex >= 0 ? rawUrl.slice(queryIndex) : '';
-    let safePath = `${requestPath}${query}`;
-    if (!safePath.startsWith('/') || safePath.startsWith('//') || /[\r\n]/.test(safePath)) {
-      safePath = '/';
-    }
-    return res.redirect(301, `https://${targetDomain}${safePath}`);
+    return res.redirect(301, `https://${targetDomain}/`);
   }
 
   next();
