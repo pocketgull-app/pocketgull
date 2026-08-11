@@ -149,14 +149,6 @@ import { GamificationService } from '../services/gamification.service';
                 New Patient
              </pocket-gull-button>
              <pocket-gull-button 
-               (click)="triggerImport()" 
-               variant="ghost" 
-               size="sm" 
-               class="w-full"
-               icon="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12">
-                Import IPatient
-             </pocket-gull-button>
-             <pocket-gull-button 
                (click)="exportActiveFhir()" 
                variant="ghost" 
                size="sm" 
