@@ -91,7 +91,7 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Cache Playwright Browsers
-        uses: actions/cache@1392dfd1b82884a686b5063db99d25c774ee1880 # v4.2.2
+        uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
