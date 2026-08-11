@@ -17,33 +17,44 @@ export async function runDailyClamAvScan() {
   console.log('🛡️  Initializing Live Antivirus Scan on Local Repository...');
   console.log(`📁 Target Directory: ${TARGET_SCAN_DIR}`);
 
-  let engineUsed = 'ClamAV';
+  let engineUsed = 'ClamAV Engine';
   let threatsFound = 0;
+  let clamPath = 'clamscan';
 
+  // Check if ClamAV is installed in Program Files
+  const defaultProgClam = 'C:\\Program Files\\ClamAV\\clamscan.exe';
+  if (fs.existsSync(defaultProgClam)) {
+    clamPath = `"${defaultProgClam}"`;
+  }
+
+  let clamSuccess = false;
   try {
-    // Try ClamAV CLI first
-    console.log('🔍 Executing clamscan engine...');
-    const clamOut = execSync(`clamscan -r -i "${TARGET_SCAN_DIR}"`, { encoding: 'utf-8' });
+    console.log(`🔍 Executing ClamAV engine (${clamPath})...`);
+    const clamOut = execSync(`${clamPath} -r -i "${TARGET_SCAN_DIR}"`, { encoding: 'utf-8' });
     console.log(clamOut);
+    clamSuccess = true;
   } catch (err) {
-    if (err.code === 'ENOENT' || err.message?.includes('not recognized')) {
-      console.log('ℹ️  ClamAV (clamscan) CLI not detected on system PATH.');
-      console.log('🛡️  Falling back to native System Antivirus Engine (MpCmdRun.exe)...');
-      
-      const mpCmdPath = 'C:\\Program Files\\Windows Defender\\MpCmdRun.exe';
-      if (fs.existsSync(mpCmdPath)) {
-        try {
-          const mpOut = execSync(`"${mpCmdPath}" -Scan -ScanType 3 -File "${TARGET_SCAN_DIR}"`, { encoding: 'utf-8' });
-          console.log(mpOut);
-          engineUsed = 'Windows Defender / ClamAV Compatible Engine';
-        } catch (mpErr) {
-          console.log('⚠️ Defender scan output:', mpErr.stdout?.toString() || mpErr.message);
-        }
-      } else {
-        console.log('ℹ️ Local antivirus CLI fallback complete.');
-      }
+    if (err.message?.includes('not compatible') || err.message?.includes('not valid application')) {
+      console.log('⚠️  Detected ClamAV architecture mismatch (e.g. ARM64 build on x64 host).');
+      console.log('💡 Tip: Replace with official ClamAV x64 MSI: https://www.clamav.net/downloads');
+    } else if (err.code === 'ENOENT' || err.message?.includes('not recognized')) {
+      console.log('ℹ️  ClamAV (clamscan) CLI not found on system PATH.');
     } else {
-      console.log('⚠️ Scan result:', err.stdout?.toString() || err.message);
+      console.log('⚠️ Scan message:', err.stdout?.toString() || err.message);
+    }
+  }
+
+  if (!clamSuccess) {
+    console.log('🛡️  Running native System Antivirus Engine (MpCmdRun.exe) scan...');
+    const mpCmdPath = 'C:\\Program Files\\Windows Defender\\MpCmdRun.exe';
+    if (fs.existsSync(mpCmdPath)) {
+      try {
+        const mpOut = execSync(`"${mpCmdPath}" -Scan -ScanType 3 -File "${TARGET_SCAN_DIR}"`, { encoding: 'utf-8' });
+        console.log(mpOut);
+        engineUsed = 'Windows Defender / ClamAV Compatible Engine';
+      } catch (mpErr) {
+        console.log('⚠️ Defender scan output:', mpErr.stdout?.toString() || mpErr.message);
+      }
     }
   }
 

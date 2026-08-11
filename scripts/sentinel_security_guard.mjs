@@ -26,6 +26,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'github.com',
   'githubusercontent.com',
   'api.github.com',
+  'clamav.net',
+  'www.clamav.net',
   'pocketgull.app',
   'www.pocketgull.app',
   'pocketgull.com',
