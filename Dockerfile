@@ -1,7 +1,7 @@
 # ==========================================
 # Stage 1: Build
 # ==========================================
-FROM node:24-bookworm AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ WORKDIR /app
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # Patch OS-level vulnerabilities
-RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+RUN apk update && apk upgrade --no-cache
 
 # Set Node environment to development during build stage to install devDependencies
 ENV NODE_ENV=development
