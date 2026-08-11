@@ -1,11 +1,18 @@
 .git
 .gcloudignore
+#!include:.gitignore
 node_modules/
 .angular/
 dist/
 tmp/
+scratch/
 .venv/
 venv/
+Documents/
+Pictures/
+"My Pictures"/
+**/My Pictures/
+**/Documents/
 **/__pycache__/
 *.pyc
 test-results/

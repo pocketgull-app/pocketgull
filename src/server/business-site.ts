@@ -148,15 +148,54 @@ export function renderBusinessSiteHtml(): string {
       z-index: -1;
       transform: rotate(-0.5deg);
     }
+
+    @keyframes wave-sway {
+      0% { transform: translateX(0) scaleY(1); }
+      50% { transform: translateX(-2%) scaleY(1.05); }
+      100% { transform: translateX(0) scaleY(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .animate-pulse, svg[style*="animation"] {
+        animation: none !important;
+      }
+    }
   </style>
 
   <!-- Google GenAI App Builder Search Widget -->
   <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=en"></script>
 </head>
-<body class="text-stone-100 min-h-screen selection:bg-amber-400 selection:text-stone-950 flex flex-col">
+<body class="text-stone-100 min-h-screen selection:bg-amber-400 selection:text-stone-950 flex flex-col relative">
+
+  <!-- Living Papercraft Background Layer -->
+  <div class="fixed inset-0 w-full h-full min-h-full overflow-hidden pointer-events-none z-0 mix-blend-screen opacity-60">
+    <!-- Sun/Circadian Glow Living Breathing Pulse -->
+    <div class="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] sm:w-[900px] sm:h-[900px] rounded-full bg-gradient-to-r from-[#0d9488]/30 via-[#f59e0b]/20 to-[#f43f5e]/30 blur-[120px] animate-pulse"></div>
+
+    <!-- Layer 1: Back Ocean Waves -->
+    <svg class="absolute -bottom-4 -left-[20%] w-[240%] h-[55%] opacity-90 min-w-[200vw]"
+         style="animation: wave-sway 18s ease-in-out infinite alternate;"
+         viewBox="0 0 2880 200" preserveAspectRatio="none">
+      <path fill="rgba(13, 148, 136, 0.08)" d="M 0 100 Q 720 40 1440 100 T 2880 100 L 2880 200 L 0 200 Z"></path>
+    </svg>
+    
+    <!-- Layer 2: Mid Ocean Waves -->
+    <svg class="absolute -bottom-4 -left-[10%] w-[220%] h-[45%] min-w-[200vw]"
+         style="animation: wave-sway 14s ease-in-out infinite alternate-reverse;"
+         viewBox="0 0 2880 200" preserveAspectRatio="none">
+      <path fill="rgba(244, 63, 94, 0.08)" d="M 0 120 Q 720 70 1440 120 T 2880 120 L 2880 200 L 0 200 Z"></path>
+    </svg>
+
+    <!-- Layer 3: Sandy Beach Front Dune -->
+    <svg class="absolute -bottom-4 left-0 w-[200%] h-[60%] min-w-[200vw]"
+         style="animation: wave-sway 10s ease-in-out infinite alternate;"
+         viewBox="0 0 2880 200" preserveAspectRatio="none">
+      <path fill="rgba(245, 158, 11, 0.08)" d="M 0 140 Q 720 100 1440 140 T 2880 140 L 2880 200 L 0 200 Z"></path>
+    </svg>
+  </div>
   
   <!-- GEARARTS Top Banner -->
-  <div class="bg-gradient-to-r from-teal-700 via-rose-600 to-amber-600 text-stone-950 font-bold text-xs uppercase tracking-widest py-2 px-4 text-center flex items-center justify-center gap-2 shadow-md">
+  <div class="relative z-10 bg-gradient-to-r from-teal-700 via-rose-600 to-amber-600 text-stone-950 font-bold text-xs uppercase tracking-widest py-2 px-4 text-center flex items-center justify-center gap-2 shadow-md">
     <span>🎨 GEARARTS</span>
     <span class="opacity-40">•</span>
     <span class="font-medium tracking-normal capitalize">Creating a Sustainable Future Through Art and Technology</span>
@@ -192,7 +231,7 @@ export function renderBusinessSiteHtml(): string {
   </header>
 
   <!-- Hero Section -->
-  <main class="flex-grow">
+  <main class="relative z-10 flex-grow">
     <section class="relative pt-16 pb-20 px-6 overflow-hidden">
       
       <div class="max-w-5xl mx-auto relative z-10">
@@ -252,18 +291,85 @@ export function renderBusinessSiteHtml(): string {
                 <span class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full ml-auto font-semibold">28 Indexed Papers</span>
               </div>
               
-              <input type="text" id="searchWidgetTrigger" placeholder="Search medical research, PocketGull Typeface spec, COCOMO II valuation, or HIPAA guidelines..." class="w-full bg-stone-900 border-2 border-stone-700 rounded-2xl px-5 py-4 text-base text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-400 transition-all cursor-pointer shadow-inner font-pocketgull" />
-              <gen-search-widget
-                config-id="projects/793190615625/locations/global/collections/default_collection/engines/pocketgull-assistant"
-                trigger-id="searchWidgetTrigger">
-              </gen-search-widget>
+              <div class="relative">
+                <input type="text" id="searchWidgetTrigger" placeholder="Search medical research, PocketGull Typeface spec, COCOMO II valuation, or HIPAA guidelines..." class="w-full bg-stone-900 border-2 border-stone-700 rounded-2xl px-5 py-4 text-base text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-400 transition-all cursor-text shadow-inner font-pocketgull pr-32" />
+                <button onclick="window.location.href='/app?search=true'" class="absolute right-2 top-2 bottom-2 bg-amber-500 hover:bg-amber-400 text-stone-900 font-bold rounded-xl px-4 transition-colors">
+                  Search App
+                </button>
+              </div>
+              <p class="mt-3 text-xs text-stone-500 text-center font-medium">Enterprise search is now fully integrated into the Pocket-Gull Clinical Engine via Vertex AI RAG.</p>
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-stone-400 font-medium">
+          <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-stone-400 font-medium mb-12">
             <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span> FHIR R4 Compliant</span>
             <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span> Google Gemini 2.5 Flash</span>
             <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> SIL OFL 1.1 Open Typeface</span>
+          </div>
+
+          <!-- ══ Software Download & Installation Portal ═════════════════════════════ -->
+          <div id="downloads" class="glass-card-dark rounded-3xl p-8 border-2 border-teal-500/40 text-left max-w-4xl mx-auto shadow-2xl mb-12">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-stone-800">
+              <div>
+                <div class="inline-flex items-center gap-2 text-xs font-bold text-teal-400 uppercase tracking-widest mb-1 font-pocketgull">
+                  <span>💻</span> Multiplatform Software Installation Portal
+                </div>
+                <h3 class="text-2xl font-extrabold font-pocketgull text-stone-100">Get Pocket-Gull for Desktop & Cloud</h3>
+              </div>
+              <a href="/app" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded-xl text-sm transition shadow-lg inline-flex items-center gap-2">
+                🚀 Launch Web App
+              </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Windows -->
+              <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800 flex flex-col justify-between">
+                <div>
+                  <div class="text-2xl mb-2">🪟</div>
+                  <div class="font-bold text-stone-200 text-sm font-pocketgull">Windows 11</div>
+                  <div class="text-xs text-stone-400 mt-1">v1.16.0 &bull; MSI / EXE Installer</div>
+                </div>
+                <a href="/downloads/PocketGull-Desktop-Windows-v1.16.0.msi" class="mt-4 py-2 px-3 bg-stone-800 hover:bg-teal-600 hover:text-white text-stone-200 text-center font-bold text-xs rounded-xl transition">
+                  ⬇️ Windows Installer
+                </a>
+              </div>
+
+              <!-- macOS -->
+              <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800 flex flex-col justify-between">
+                <div>
+                  <div class="text-2xl mb-2">🍏</div>
+                  <div class="font-bold text-stone-200 text-sm font-pocketgull">macOS Universal</div>
+                  <div class="text-xs text-stone-400 mt-1">v1.16.0 &bull; M1-M4 & Intel .dmg</div>
+                </div>
+                <a href="/downloads/PocketGull-Desktop-macOS-v1.16.0.dmg" class="mt-4 py-2 px-3 bg-stone-800 hover:bg-teal-600 hover:text-white text-stone-200 text-center font-bold text-xs rounded-xl transition">
+                  ⬇️ macOS .dmg
+                </a>
+              </div>
+
+              <!-- Linux Snap Store -->
+              <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800 flex flex-col justify-between">
+                <div>
+                  <div class="text-2xl mb-2">🐧</div>
+                  <div class="font-bold text-stone-200 text-sm font-pocketgull">Linux Snap Store</div>
+                  <div class="text-xs text-stone-400 mt-1">Ubuntu / Debian .snap</div>
+                </div>
+                <code class="mt-4 py-2 px-2 bg-stone-950 text-amber-300 text-center font-mono text-[11px] rounded-xl border border-stone-800 select-all">
+                  snap install pocketgull
+                </code>
+              </div>
+
+              <!-- Linux AppImage -->
+              <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800 flex flex-col justify-between">
+                <div>
+                  <div class="text-2xl mb-2">📦</div>
+                  <div class="font-bold text-stone-200 text-sm font-pocketgull">Linux AppImage</div>
+                  <div class="text-xs text-stone-400 mt-1">Universal Standalone Binary</div>
+                </div>
+                <a href="/downloads/PocketGull-Desktop-v1.16.0.AppImage" class="mt-4 py-2 px-3 bg-stone-800 hover:bg-teal-600 hover:text-white text-stone-200 text-center font-bold text-xs rounded-xl transition">
+                  ⬇️ AppImage
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -490,7 +596,7 @@ export function renderBusinessSiteHtml(): string {
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-stone-800 bg-stone-950 py-12 px-6 text-xs text-stone-400 font-medium">
+  <footer class="relative z-10 border-t border-stone-800 bg-stone-950 py-12 px-6 text-xs text-stone-400 font-medium">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
       <div class="flex items-center gap-3">
         <span class="font-bold font-pocketgull text-xl text-amber-400">GEARARTS / PocketGull</span>
