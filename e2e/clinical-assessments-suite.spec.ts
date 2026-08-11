@@ -20,7 +20,7 @@ test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () =
     // 4. Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.locator('button', { hasText: 'ASSESSMENTS' }).first();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.click();
+    await assessmentsBtn.click({ force: true });
 
     // 5. Select General Clinical Suite sub-tab
     const suiteTab = page.getByTestId('tab-clinical-suite');

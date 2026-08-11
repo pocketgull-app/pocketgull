@@ -10,6 +10,7 @@ import swaggerUi from 'swagger-ui-express';
 import crypto from 'crypto';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
+import { renderBusinessSiteHtml } from './src/server/business-site.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -76,24 +77,43 @@ function sanitizeLogInput(val) {
   return str.replace(/[\r\n\u2028\u2029]+/g, ' _ ').replace(/[\x00-\x1F\x7F]+/g, ' ').slice(0, 2000);
 }
 
-// Trust single hop Google Cloud Run load balancer proxy
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 
-// Redirect legacy URLs and alternative domains to the primary pocketgull.app domain
-const legacyRedirectHosts = new Set([
-  'pocketgall.com',
-  'pocketgall.app',
-  'pocketgal.app',
-  'pocketgull.com',
-  'pocketgal.ai',
-  'understory'
-]);
-
+// Primary Business Site Handler for pocketgull.com & www.pocketgull.com
 app.use((req, res, next) => {
-  const host = (req.hostname || '').toLowerCase().replace(/\.$/, '');
-  if (legacyRedirectHosts.has(host)) {
-    return res.redirect(301, `https://pocketgull.app${req.originalUrl}`);
+  const xfh = String(req.headers['x-forwarded-host'] || '').toLowerCase();
+  const hostHeader = String(req.headers['host'] || '').toLowerCase();
+  const hostname = String(req.hostname || '').toLowerCase();
+
+  const isBusinessSite =
+    req.path === '/business' ||
+    req.query['preview'] === 'business' ||
+    /(^|\.)pocketgull\.com$/.test(xfh) ||
+    /(^|\.)pocketgull\.com$/.test(hostHeader) ||
+    /(^|\.)pocketgull\.com$/.test(hostname);
+
+  if (isBusinessSite) {
+    if (req.path === '/health' || req.path.startsWith('/api/')) {
+      return next();
+    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(renderBusinessSiteHtml());
   }
+
+  // Redirect legacy alias domains to primary app domain pocketgull.app
+  const targetDomain = 'pocketgull.app';
+  const redirectDomains = [
+    'pocketgall.com',
+    'pocketgall.app',
+    'pocketgal.app',
+    'pocketgal.ai'
+  ];
+
+  const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
+  if (redirectDomains.includes(rawHost)) {
+    return res.redirect(301, `https://${targetDomain}/`);
+  }
+
   next();
 });
 

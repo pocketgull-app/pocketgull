@@ -8,6 +8,8 @@ import '../../services/ambient_lighting_service.dart';
 
 import '../../services/patient_management_service.dart';
 import '../../services/ble_wearables_service.dart';
+import '../../services/teledentistry_service.dart';
+import '../../services/skeptical_epistemology_service.dart';
 
 final clinicalIntelligenceProvider = Provider<ClinicalIntelligenceService>((ref) {
   const apiKey = String.fromEnvironment('GEMINI_API_KEY', defaultValue: 'YOUR_API_KEY_HERE');
@@ -50,4 +52,13 @@ final bleVitalsStreamProvider = StreamProvider<BleVitalsData>((ref) {
   final service = ref.watch(bleWearablesProvider);
   return service.vitalsStream;
 });
+
+final teledentistryProvider = Provider<TeledentistryService>((ref) {
+  return TeledentistryService();
+});
+
+final skepticalEpistemologyProvider = Provider<SkepticalEpistemologyService>((ref) {
+  return SkepticalEpistemologyService();
+});
+
 

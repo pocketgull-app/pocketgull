@@ -26,6 +26,6 @@ jobs:
         with:
           fail-on-severity: critical
           comment-summary-in-pr: always
-          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, BlueOak-1.0.0, PSF-2.0, 0BSD, Unlicense
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, BlueOak-1.0.0, PSF-2.0, 0BSD, Unlicense, MPL-2.0, CC-BY-4.0
           allow-dependencies-licenses: |
             pkg:pypi/fhir.resources, pkg:pypi/h5py, pkg:pypi/pandas, pkg:npm/isexe

@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.pocketgull_flutter"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

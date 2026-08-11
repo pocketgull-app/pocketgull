@@ -7,12 +7,16 @@
 **Aerial Perspective for the Clinical Ocean — Living Medical Intelligence Engine**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](file:///c:/Users/philg/Pocketgull/pocketgull/LICENSE)
-![Version](https://img.shields.io/badge/version-v1.9.1--active-blue)
-![Angular](https://img.shields.io/badge/Angular-v22.0-DD0031?logo=angular)
+![Version](https://img.shields.io/badge/version-v1.15.1--active-blue)
+[![Deploy to Cloud Run](https://github.com/philgear/pocketgull/actions/workflows/deploy.yml/badge.svg)](https://github.com/philgear/pocketgull/actions/workflows/deploy.yml)
+[![CodeQL Analysis](https://github.com/philgear/pocketgull/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/philgear/pocketgull/actions/workflows/codeql-analysis.yml)
+![Angular](https://img.shields.io/badge/Angular-v22.1-DD0031?logo=angular)
 ![Three.js](https://img.shields.io/badge/Three.js-v0.185-000000?logo=three.js)
 ![Node.js](https://img.shields.io/badge/Node.js-v24.x-Green?logo=nodedotjs)
 ![Lighthouse 100](https://img.shields.io/badge/Lighthouse-100-brightgreen?logo=lighthouse)
 ![Sentinel Guard](https://img.shields.io/badge/Sentinel_Guard-Passed-emerald?logo=shield)
+[![SLSA 3 Provenance](https://img.shields.io/badge/SLSA-Level%203%20Attested-blueviolet?logo=googlecloud)](https://github.com/philgear/pocketgull)
+[![Agentic AI (llms.txt)](https://img.shields.io/badge/Agentic_AI-llms.txt_Served-7000FF?logo=google)](https://pocket-gull-793190615625.us-central1.run.app/llms.txt)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/13644/badge)](https://bestpractices.coreinfrastructure.org/projects/13644)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/philgear/pocketgull/badge)](https://securityscorecards.dev/viewer/?uri=github.com/philgear/pocketgull)
 [![ORCID iD](https://img.shields.io/badge/ORCID-0009--0008--1372--5381-A6C900?logo=orcid&logoColor=white)](https://orcid.org/0009-0008-1372-5381)
@@ -364,10 +368,17 @@ Full documentation is available in the [`docs/study/`](file:///c:/Users/philg/Po
 
 ---
 
-## 👨‍💻 MAINTAINER
+## 👨‍💻 AUTHOR & MAINTAINER
 
-**Phil Gear** / [g.dev/philgear](https://g.dev/philgear)  
-_Engineering with Kaizen — continuous refinement for clinical excellence._
+**Phil Gear** — Lead Systems Architect & Creator of Pocket-Gull  
+[![GitHub Profile](https://img.shields.io/badge/GitHub-philgear-181717?logo=github&logoColor=white)](https://github.com/philgear)
+[![Google Developer Profile](https://img.shields.io/badge/Google_Developer-philgear-4285F4?logo=google&logoColor=white)](https://developers.google.com/profile/philgear)
+[![ORCID iD](https://img.shields.io/badge/ORCID-0009--0008--1372--5381-A6C900?logo=orcid&logoColor=white)](https://orcid.org/0009-0008-1372-5381)
+[![Email Contact](https://img.shields.io/badge/Contact-leads%40pocketgull.app-EA4335?logo=gmail&logoColor=white)](mailto:leads@pocketgull.app)
+
+> _"Engineering with Kaizen — continuous refinement for clinical excellence, deterministic safety, and open medical intelligence."_
+
+Specializing in real-time multimodal AI streaming (Google Gemini), high-performance Angular 22 standalone architectures, Three.js 3D spatial biophysical modeling, and FHIR R4 interoperability for clinical decision support.
 
 ---
 

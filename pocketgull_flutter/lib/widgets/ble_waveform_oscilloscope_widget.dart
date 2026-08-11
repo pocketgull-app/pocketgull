@@ -119,9 +119,11 @@ class _BleWaveformOscilloscopeWidgetState extends State<BleWaveformOscilloscopeW
 
           const SizedBox(height: 12),
 
-          // Vitals Summary Chips
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          // Vitals Summary Chips (Wrap to prevent horizontal overflow on narrow screens)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.spaceAround,
             children: [
               _buildVitalChip('HR', '${vitals.heartRateBpm ?? 72} bpm', Colors.cyanAccent),
               _buildVitalChip('SpO2', '${vitals.spO2Percent?.toStringAsFixed(0) ?? 98}%', const Color(0xFF34D399)),
@@ -129,11 +131,11 @@ class _BleWaveformOscilloscopeWidgetState extends State<BleWaveformOscilloscopeW
             ],
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
           // CustomPainter Dual-Trace Canvas Oscilloscope Display
           Container(
-            height: 180,
+            height: 160,
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.black,

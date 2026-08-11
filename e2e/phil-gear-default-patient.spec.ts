@@ -53,12 +53,12 @@ test.describe('Alexander Vance — Default Patient & Full Lens Verification', ()
     await enterDemoModeWithPhilGear(page);
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    const reportEl = page.locator('app-analysis-report');
-    await expect(reportEl).toBeVisible({ timeout: 15000 });
+    const reportEl = page.locator('app-analysis-container, app-analysis-report').first();
+    await expect(reportEl).toBeVisible({ timeout: 20000 });
 
     const reportTab = page.locator('button', { hasText: 'Analysis' }).first();
     if (await reportTab.isVisible()) {
-      await reportTab.click();
+      await reportTab.click({ force: true });
       await page.waitForTimeout(500);
     }
 

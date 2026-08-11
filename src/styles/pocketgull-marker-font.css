@@ -46,33 +46,38 @@
 
 /* Single Unified Felt-Tip Marker Inspired Typeface Stack */
 .font-pocketgull {
-  font-family: 'Nunito', sans-serif !important;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: 'PocketGull', 'Outfit', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-transform: none;
   color: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* 🖋️ PocketGull Chiseltip Display Variant */
 .font-pocketgull-chiseltip {
-  font-family: 'Nunito', sans-serif !important;
+  font-family: 'PocketGull', 'Outfit', sans-serif !important;
   font-weight: 900;
   letter-spacing: -0.025em;
   text-transform: uppercase;
   color: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ✍️ PocketGull Organic Accent */
 .font-pocketgull-handwritten {
-  font-family: 'Nunito', sans-serif !important;
+  font-family: 'PocketGull', 'Outfit', sans-serif !important;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
 /* 🏥 PocketGull Clinical High-Legibility Typeface */
 .font-pocketgull-inter {
-  font-family: 'Nunito', sans-serif !important;
-  font-weight: 600;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1.5;
 }

@@ -4,6 +4,9 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-zamecznik-canvas',
   standalone: true,
+  host: {
+    'ngSkipHydration': 'true'
+  },
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `

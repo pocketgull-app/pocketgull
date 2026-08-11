@@ -149,52 +149,59 @@ class _BiometricHistoryChartWidgetState
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          // Metric selector
-          Wrap(
-            spacing: 4,
-            children: _metrics.map((m) {
-              final isActive = _activeMetric == m;
-              final label = switch (m) {
-                'hr' => 'HR',
-                'bp' => 'BP',
-                'spO2' => 'SpO2',
-                'hrv' => 'HRV',
-                'coherence' => 'Coherence',
-                'breathing' => 'Breath',
-                _ => m,
-              };
-              return GestureDetector(
-                onTap: () => setState(() => _activeMetric = m),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? (isDark ? const Color(0xFF27272A) : Colors.white)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    boxShadow: isActive
-                        ? [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 4)]
-                        : null,
-                  ),
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1,
-                      color: isActive
-                          ? (isDark ? Colors.white : Colors.grey.shade900)
-                          : (isDark ? Colors.grey.shade500 : Colors.grey.shade500),
+          const SizedBox(height: 8),
+          // Metric selector (SingleLine horizontal scroll to prevent vertical height growth overflow)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: _metrics.map((m) {
+                final isActive = _activeMetric == m;
+                final label = switch (m) {
+                  'hr' => 'HR',
+                  'bp' => 'BP',
+                  'spO2' => 'SpO2',
+                  'hrv' => 'HRV',
+                  'coherence' => 'Coherence',
+                  'breathing' => 'Breath',
+                  _ => m,
+                };
+                return Padding(
+                  padding: const EdgeInsets.only(right: 4),
+                  child: GestureDetector(
+                    onTap: () => setState(() => _activeMetric = m),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? (isDark ? const Color(0xFF27272A) : Colors.white)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(6),
+                        boxShadow: isActive
+                            ? [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 4)]
+                            : null,
+                      ),
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1,
+                          color: isActive
+                              ? (isDark ? Colors.white : Colors.grey.shade900)
+                              : (isDark ? Colors.grey.shade500 : Colors.grey.shade500),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
-          const SizedBox(height: 16),
-          // Chart area
-          Expanded(
+          const SizedBox(height: 12),
+          // Chart area with bounded height constraint to prevent viewport overflow
+          SizedBox(
+            height: 160,
+            width: double.infinity,
             child: filtered.isEmpty
                 ? Center(
                     child: Column(

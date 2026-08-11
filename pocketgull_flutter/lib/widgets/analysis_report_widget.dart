@@ -14,6 +14,9 @@ import 'clinical_trend_widget.dart';
 import '../widgets/ybocs_screener_widget.dart';
 import '../widgets/research_tab_widget.dart';
 import '../widgets/mood_consciousness_matrix_widget.dart';
+import '../widgets/teledentistry_odontogram_widget.dart';
+import '../widgets/skeptical_epistemology_card_widget.dart';
+import '../widgets/camera_pulse_widget.dart';
 
 
 class AnalysisReportWidget extends ConsumerStatefulWidget {
@@ -43,14 +46,18 @@ class _AnalysisReportWidgetState extends ConsumerState<AnalysisReportWidget> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Header with Generate button
               Padding(
                 padding: const EdgeInsets.all(24.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 12,
+                  runSpacing: 12,
                   children: [
                     const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,11 +82,13 @@ class _AnalysisReportWidgetState extends ConsumerState<AnalysisReportWidget> {
                         ),
                       ],
                     ),
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         if (state.reports.isNotEmpty) ...[
                           _buildCognitionToggles(context, state),
-                          const SizedBox(width: 16),
                           IconButton(
                             tooltip: 'Export FHIR Bundle',
                             icon: const Icon(Icons.share_outlined, size: 20),
@@ -91,7 +100,6 @@ class _AnalysisReportWidgetState extends ConsumerState<AnalysisReportWidget> {
                             onPressed: () => _handleExport(context, state),
                           ),
                         ],
-                        const SizedBox(width: 8),
                         ElevatedButton(
                           onPressed: state.isLoading && state.reports.isEmpty
                               ? null
@@ -144,7 +152,8 @@ class _AnalysisReportWidgetState extends ConsumerState<AnalysisReportWidget> {
               ),
             ],
           ),
-        );
+        ),
+      );
   }
 
   Widget _buildCognitionToggles(BuildContext context, AnalysisState state) {
@@ -216,28 +225,11 @@ class _AnalysisReportWidgetState extends ConsumerState<AnalysisReportWidget> {
 
     final activeReport = state.reports[state.activeLens];
 
-    if (activeReport == null || activeReport.isEmpty) {
-      return Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 48),
-            Icon(Icons.analytics_outlined, size: 48, color: Colors.grey.shade300),
-            const SizedBox(height: 16),
-            Text(
-              state.isLoading
-                  ? 'Analyzing patient data...'
-                  : 'No analysis generated for this lens yet.',
-              style: TextStyle(color: Colors.grey.shade500),
-            ),
-            const SizedBox(height: 48),
-          ],
-        ),
-      );
-    }
-
     return Column(
       children: [
         if (state.activeLens == AnalysisLens.summaryOverview) ...[
+          const CameraPulseWidget(),
+          const SizedBox(height: 16),
           const Row(
             children: [
               Expanded(
@@ -278,47 +270,69 @@ class _AnalysisReportWidgetState extends ConsumerState<AnalysisReportWidget> {
           ),
           const SizedBox(height: 16),
         ],
-        if (state.activeLens == AnalysisLens.functionalProtocols) ...[
+        if (state.activeLens == AnalysisLens.functionalProtocols || state.activeLens == AnalysisLens.ybocsScreener) ...[
+          const TeledentistryOdontogramWidget(),
+          const SizedBox(height: 16),
+          const SkepticalEpistemologyCardWidget(),
+          const SizedBox(height: 16),
           const MoodConsciousnessMatrixWidget(),
           const SizedBox(height: 16),
         ],
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-
-          child: Row(
-            children: [
-              const Text(
-                'EXPORT MODE:',
-                style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0),
-              ),
-              const SizedBox(width: 12),
-              _buildModeChip('STD', ExportMode.standard),
-              const SizedBox(width: 8),
-              _buildModeChip('COG', ExportMode.cognition),
-              const SizedBox(width: 8),
-              _buildModeChip('PED', ExportMode.child),
-            ],
+        if (activeReport == null || activeReport.isEmpty) ...[
+          Center(
+            child: Column(
+              children: [
+                const SizedBox(height: 16),
+                Icon(Icons.analytics_outlined, size: 48, color: Colors.grey.shade300),
+                const SizedBox(height: 12),
+                Text(
+                  state.isLoading
+                      ? 'Analyzing patient data...'
+                      : 'No AI analysis generated for this lens yet. Tap GENERATE above.',
+                  style: TextStyle(color: Colors.grey.shade500),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
-        ),
-        SummaryNodeWidget(
-          title: state.activeLens.title,
-          content: activeReport,
-          status: VerificationStatus.verified,
-          showChat: _isChatOpen,
-          chatMessages: state.chatMessages,
-          isChatLoading: state.isLoading && state.reports.isNotEmpty,
-          onSendMessage: (msg) {
-            ref.read(analysisProvider.notifier).askAgent(msg, context: activeReport);
-          },
-          onAskAgent: () {
-            setState(() => _isChatOpen = !_isChatOpen);
-          },
-          onClearChat: () {
-            ref.read(analysisProvider.notifier).clearChat();
-            setState(() => _isChatOpen = false);
-          },
-          onExportFhir: () => _handleFhirExport(context),
-        ),
+        ] else ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                const Text(
+                  'EXPORT MODE:',
+                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0),
+                ),
+                const SizedBox(width: 12),
+                _buildModeChip('STD', ExportMode.standard),
+                const SizedBox(width: 8),
+                _buildModeChip('COG', ExportMode.cognition),
+                const SizedBox(width: 8),
+                _buildModeChip('PED', ExportMode.child),
+              ],
+            ),
+          ),
+          SummaryNodeWidget(
+            title: state.activeLens.title,
+            content: activeReport,
+            status: VerificationStatus.verified,
+            showChat: _isChatOpen,
+            chatMessages: state.chatMessages,
+            isChatLoading: state.isLoading && state.reports.isNotEmpty,
+            onSendMessage: (msg) {
+              ref.read(analysisProvider.notifier).askAgent(msg, context: activeReport);
+            },
+            onAskAgent: () {
+              setState(() => _isChatOpen = !_isChatOpen);
+            },
+            onClearChat: () {
+              ref.read(analysisProvider.notifier).clearChat();
+              setState(() => _isChatOpen = false);
+            },
+            onExportFhir: () => _handleFhirExport(context),
+          ),
+        ],
       ],
     );
   }

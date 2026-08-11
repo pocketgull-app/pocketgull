@@ -6,6 +6,8 @@ import 'medical_summary_widget.dart';
 import 'patient_history_timeline_widget.dart';
 import 'patient_scans_widget.dart';
 
+import 'cgm_time_in_range_widget.dart';
+
 class MedicalChartWidget extends ConsumerStatefulWidget {
   const MedicalChartWidget({super.key});
 
@@ -18,6 +20,7 @@ class _MedicalChartWidgetState extends ConsumerState<MedicalChartWidget> {
   // By default, let's expand the 3D Anatomical Map.
   final Map<String, bool> _expandedSections = {
     'map': true,
+    'cgm': true,
     'summary': false,
     'history': false,
     'scans': false,
@@ -44,6 +47,13 @@ class _MedicalChartWidgetState extends ConsumerState<MedicalChartWidget> {
                 height: 400, // Fixed height for 3D viewer
                 child: BodyViewerWidget(),
               ),
+            ),
+            const SizedBox(height: 16),
+            _buildAccordionSection(
+              key: 'cgm',
+              title: 'CONTINUOUS GLUCOSE (CGM)',
+              icon: Icons.monitor_weight_outlined,
+              child: const CgmTimeInRangeWidget(),
             ),
             const SizedBox(height: 16),
             _buildAccordionSection(

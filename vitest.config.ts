@@ -6,19 +6,27 @@ import { dirname } from 'node:path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+
 export default defineConfig({
+    root: __dirname,
     test: {
         globals: true,
         environment: 'jsdom',
-        root: __dirname,
-        setupFiles: [`${__dirname}/tests/setup.ts`],
+        setupFiles: [
+            './tests/init-globals.ts',
+            './tests/setup.ts'
+        ],
         include: [
-            'src/**/*.spec.ts',
-            'tests/**/*.spec.ts'
+            './src/**/*.spec.ts',
+            './tests/**/*.spec.ts'
         ],
         exclude: [
+            '../*',
+            '../**',
             'e2e/**/*',
-            'node_modules/**/*'
+            'node_modules/**/*',
+            'pocketgull_flutter/**',
+            'companion-apps/**'
         ],
         coverage: {
             provider: 'v8',

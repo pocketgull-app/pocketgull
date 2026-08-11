@@ -21,7 +21,7 @@ class AudioWebsocketStreamService {
   Stream<String> get transcriptStream => _transcriptStreamController.stream;
 
   /// Connects to Gemini Live Multimodal WebSocket Endpoint (sub-200ms audio stream).
-  void connectLiveAudioStream({String serverUrl = 'http://localhost:3000'}) {
+  void connectLiveAudioStream({String serverUrl = 'http://localhost:4000'}) {
     if (_socket != null) return;
 
     _updateState(GeminiLiveAudioState.connecting);
@@ -29,6 +29,7 @@ class AudioWebsocketStreamService {
     _socket = io.io(serverUrl, io.OptionBuilder()
       .setTransports(['websocket'])
       .disableAutoConnect()
+      .disableReconnection()
       .setQuery({'client': 'flutter-companion-audio', 'mode': 'gemini-live-pcm'})
       .build());
 

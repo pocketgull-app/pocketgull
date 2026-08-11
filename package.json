@@ -6,7 +6,7 @@
     "pocketgull_api"
   ],
   "description": "Insight beneath the surface. Real-time medical Care Plan Strategy and Live AI Consult engine powered by Google Gemini.",
-  "author": "Phil Gear",
+  "author": "Phil Gear <leads@pocketgull.app> (https://github.com/philgear)",
   "keywords": [
     "ai",
     "healthcare",

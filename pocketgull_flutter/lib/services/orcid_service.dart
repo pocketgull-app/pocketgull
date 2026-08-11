@@ -24,9 +24,9 @@ class OrcidService with ChangeNotifier {
     }
     // If Android emulator, use 10.0.2.2. If iOS/desktop, use localhost.
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:3000';
+      return 'http://10.0.2.2:4000';
     }
-    return 'http://localhost:3000';
+    return 'http://localhost:4000';
   }
 
   Future<void> initialize() async {

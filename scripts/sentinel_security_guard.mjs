@@ -29,6 +29,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'pocketgull.app',
   'www.pocketgull.app',
   'pocketgull.com',
+  'cdn.tailwindcss.com',
+  'tailwindcss.com',
   'fhir.org',
   'hl7.org',
   'loinc.org',
@@ -205,6 +207,17 @@ function auditFile(filePath) {
         line: content.substring(0, match.index).split('\n').length,
       });
     }
+  }
+
+  // 2b. Audit GitHub Tokens (ghs_, ghp_, gho_, ghu_, ghr_ - stateless & stateful format)
+  const githubTokenRegex = /gh[psuor]_[A-Za-z0-9\.\-_]{36,}/g;
+  while ((match = githubTokenRegex.exec(content)) !== null) {
+    issues.push({
+      type: 'LEAKED_GITHUB_TOKEN',
+      severity: 'CRITICAL',
+      message: `Hardcoded GitHub Token detected: "${match[0].substring(0, 8)}..."`,
+      line: content.substring(0, match.index).split('\n').length,
+    });
   }
 
   // 3. Audit Telemetry Stream Sanitization in Live Multimodal Handlers
