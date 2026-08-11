@@ -151,6 +151,30 @@ export class AcademicLabRecruitmentService {
           keyFindingSummary: 'Systemic dissipation of heat and disorder (negentropy) spontaneously organizes self-replicating biological matter.'
         }
       ]
+    },
+    {
+      labId: 'lab_asu_biodesign',
+      labName: 'ASU Biodesign Institute & Mayo Clinic ASU Alliance for Health Care',
+      institution: 'Arizona State University (ASU)',
+      location: 'Tempe / Phoenix, Arizona',
+      principalInvestigator: 'Dr. Joshua LaBaer & Dr. Stephen Johnston',
+      researchFocus: 'Immunosignatures for early-stage pan-cancer diagnosis, DNA origami nanobots for targeted drug delivery, and synthetic peptide microarrays.',
+      matchingPocketGullDomain: 'Bioelectric Biophysics',
+      labWebsiteUrl: 'https://biodesign.asu.edu',
+      studentRecruitmentStatus: 'Actively Recruiting PhD / Postdocs',
+      featuredCitations: [
+        {
+          id: 'cit_labaer_2022',
+          title: 'Immunosignature diagnostic microarrays for early-stage oncology and viral pathogen surveillance',
+          authors: 'LaBaer J, Johnston SA, Legutki JB, et al.',
+          journal: 'Nature Biotechnology / ASU Biodesign',
+          year: 2022,
+          pmid: '35123490',
+          doi: '10.1038/s41587-022-01200-w',
+          pmcUrl: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9100000',
+          keyFindingSummary: 'Synthetic random-sequence peptide microarrays capture systemic antibody signatures, enabling pre-symptomatic detection of 14 cancer types.'
+        }
+      ]
     }
   ];
 

@@ -183,7 +183,8 @@ export class BillingDashboardComponent {
   readonly customInstitutions = signal([
     { id: 'inst_001', name: 'Stanford School of Medicine', url: 'med.stanford.edu' },
     { id: 'inst_002', name: 'Georgetown Beeck Center', url: 'beeckcenter.georgetown.edu' },
-    { id: 'inst_003', name: 'Tufts School of Dental Medicine', url: 'dental.tufts.edu' }
+    { id: 'inst_003', name: 'Tufts School of Dental Medicine', url: 'dental.tufts.edu' },
+    { id: 'inst_004', name: 'Arizona State University (Biodesign)', url: 'asu.edu' }
   ]);
 
   constructor(private http: HttpClient) {}
