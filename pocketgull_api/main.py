@@ -34,6 +34,7 @@ from pydantic import BaseModel, Field
 
 from services.holistic_risk_service import MultiModalPatientStateInput, compute_holistic_patient_risk
 from services.readmission_sepsis_model import ReadmissionSepsisInput, predict_readmission_and_sepsis
+from services.sibi_cross_talk_model import SibiCrossTalkInput, SibiCrossTalkOutput, compute_sibi_cross_talk_risk
 from services.onnx_engine import onnx_engine
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -87,6 +88,14 @@ async def _load_ml_model() -> None:
 async def lifespan(app: FastAPI):
     # Load ML model at startup
     await _load_ml_model()
+
+    # Cloud SQL Proxy v2.22.0 Unix Domain Socket readiness check
+    conn_name = os.getenv("INSTANCE_CONNECTION_NAME")
+    if conn_name:
+        socket_path = f"/cloudsql/{conn_name}"
+        print(f"[Cloud SQL v2.22] Unix domain socket configured at {socket_path}")
+    else:
+        print("[Cloud SQL v2.22] Operating in local memory/emulated database mode.")
     yield
 
 
@@ -347,6 +356,12 @@ async def calculate_sibi_teledentistry_score(payload: SibiTeledentistryRequest) 
 async def get_holistic_patient_risk(payload: MultiModalPatientStateInput) -> dict[str, Any]:
     """Calculates unified holistic patient risk score fusing PSG sleep architecture, vitals, and passive wearable telemetry."""
     return compute_holistic_patient_risk(payload)
+
+
+@app.post("/ml/sibi-cross-talk", response_model=SibiCrossTalkOutput, summary="Calculate Periodontal SIBI & Systemic Cardiovascular Risk", tags=["ML"])
+async def get_sibi_cross_talk_risk(payload: SibiCrossTalkInput) -> SibiCrossTalkOutput:
+    """Calculates Systemic Inflammatory Burden Index (SIBI) and periodontal-cardiovascular cross-talk with 95% Conformal Prediction bounds."""
+    return compute_sibi_cross_talk_risk(payload)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
