@@ -2,13 +2,13 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface IDesktopAppRelease {
-  platform: 'Windows 11 (x64 / ARM64)' | 'macOS (Universal M1-M4 / Intel)' | 'Linux (AppImage / Deb)';
+  platform: string;
   icon: string;
   version: string;
   fileSize: string;
   installerType: string;
   downloadUrl: string;
-  status: 'Ready to Install' | 'Auto-Updates Enabled' | 'Production Build';
+  status: string;
 }
 
 @Component({
@@ -129,6 +129,24 @@ export class PocketgullDesktopSuiteComponent {
       installerType: 'MSI / EXE Installer',
       downloadUrl: '/downloads/PocketGull-Desktop-Windows-v1.16.0.msi',
       status: 'Ready to Install'
+    },
+    {
+      platform: 'Linux (Ubuntu / Debian / Snap Store)',
+      icon: '🐧',
+      version: '1.16.0',
+      fileSize: '12.4 MB',
+      installerType: 'Snap Package (.snap)',
+      downloadUrl: '/downloads/pocketgull-desktop_1.16.0_amd64.snap',
+      status: 'Canonical Snapcraft Verified'
+    },
+    {
+      platform: 'Linux Standalone (Universal AppImage)',
+      icon: '📦',
+      version: '1.16.0',
+      fileSize: '11.8 MB',
+      installerType: 'AppImage (.AppImage)',
+      downloadUrl: '/downloads/PocketGull-Desktop-v1.16.0.AppImage',
+      status: 'Ready to Execute'
     }
   ]);
 
