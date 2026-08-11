@@ -156,11 +156,21 @@ import { PatientStateService } from '../services/patient-state.service';
               </p>
             </div>
 
-            <button (click)="triggerZenodoSync()" 
-                    [disabled]="isSyncingZenodo()"
-                    class="px-3.5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold text-xs transition cursor-pointer shrink-0 flex items-center gap-1.5 shadow-lg shadow-purple-900/40">
-              <span>{{ isSyncingZenodo() ? '⏳ Syncing...' : '🚀 Trigger Zenodo Sync' }}</span>
-            </button>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button (click)="downloadNsfProjectSummary()" 
+                      class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition cursor-pointer flex items-center gap-1.5 shadow-lg shadow-blue-900/40">
+                <span>📥 NSF Form 1030 Draft</span>
+              </button>
+              <button (click)="exportNsfOpenAccessDataset()" 
+                      class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-bold text-xs transition cursor-pointer flex items-center gap-1.5 shadow-lg shadow-teal-900/40">
+                <span>📦 NSF Open Access Dataset</span>
+              </button>
+              <button (click)="triggerZenodoSync()" 
+                      [disabled]="isSyncingZenodo()"
+                      class="px-3.5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold text-xs transition cursor-pointer shrink-0 flex items-center gap-1.5 shadow-lg shadow-purple-900/40">
+                <span>{{ isSyncingZenodo() ? '⏳ Syncing...' : '🚀 Trigger Zenodo Sync' }}</span>
+              </button>
+            </div>
           </div>
 
           @if (zenodoStatusMessage()) {
@@ -201,5 +211,65 @@ export class NsfGrantPortalComponent {
       this.isSyncingZenodo.set(false);
       this.zenodoStatusMessage.set('✅ .zenodo.json verified! Target DOI: 10.5281/zenodo.20647514. Software Release v1.3.0 synchronized with open science license CC0-1.0.');
     }, 1200);
+  }
+
+  downloadNsfProjectSummary(): void {
+    const summaryText = `===================================================================
+NSF FORM 1030 — PROJECT SUMMARY DRAFT
+Title: SCH: Real-Time Multimodal Care Plan Strategy & Live AI Consult Engine
+PI: Phil Gear (ORCID: 0009-0008-1372-5381)
+Institution: Pocket-Gull Open Science Lab
+===================================================================
+
+1. OVERVIEW:
+This project advances real-time multimodal clinical intelligence through full-duplex WebRTC audio streaming, tri-paradigm clinical lenses (Evidence, Biophysics, 7-Generations Epigenetics), and HIPAA Safe Harbor §164.514 de-identified cohort research donation.
+
+2. INTELLECTUAL MERIT:
+- Sub-200ms audio stream processing via Google Gemini 2.5 Live.
+- Allometric quarter-power scaling (M^3/4) & Friston Free Energy Negentropy scoring.
+- 53-bit IEEE-754 mantissa unbiased biophysical random walk generation.
+
+3. BROADER IMPACTS:
+- Open Science CC0-1.0 public domain research dataset exports (FHIR R4 / LOINC).
+- 1-click de-identified research donation supporting safety-net teledentistry & rural health equity.
+- Direct academic lab recruitment matching across NSF/NIH fellowship cohorts.
+`;
+    const blob = new Blob([summaryText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'NSF_Form_1030_Project_Summary_Draft.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  exportNsfOpenAccessDataset(): void {
+    const dataset = {
+      resourceType: 'Bundle',
+      type: 'collection',
+      timestamp: new Date().toISOString(),
+      meta: {
+        license: 'CC0-1.0',
+        doi: '10.5281/zenodo.20647514',
+        safeHarborDeidentified: true
+      },
+      entry: [
+        {
+          resource: {
+            resourceType: 'ResearchSubject',
+            id: 'nsf-cohort-sample-001',
+            status: 'candidate',
+            individual: { display: 'Homo Sapiens (Female, Neurological, 40-44y)' }
+          }
+        }
+      ]
+    };
+    const blob = new Blob([JSON.stringify(dataset, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'NSF_Open_Access_Benchmark_Dataset.json';
+    a.click();
+    URL.revokeObjectURL(url);
   }
 }
