@@ -29,6 +29,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'pocketgull.app',
   'www.pocketgull.app',
   'pocketgull.com',
+  'cdn.tailwindcss.com',
+  'tailwindcss.com',
   'fhir.org',
   'hl7.org',
   'loinc.org',

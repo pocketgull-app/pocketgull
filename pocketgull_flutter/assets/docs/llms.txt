@@ -8,7 +8,7 @@ This application was built for the Gemini Live Agent Challenge hackathon (Catego
 
 - Live URL: https://pocketgull.app
 - Repository: https://github.com/philgear/pocketgull
-- Developer: https://g.dev/philgear
+- Developer: https://developers.google.com/profile/philgear
 
 ## Key Capabilities
 

@@ -372,7 +372,7 @@ Full documentation is available in the [`docs/study/`](file:///c:/Users/philg/Po
 
 **Phil Gear** — Lead Systems Architect & Creator of Pocket-Gull  
 [![GitHub Profile](https://img.shields.io/badge/GitHub-philgear-181717?logo=github&logoColor=white)](https://github.com/philgear)
-[![Google Developer Profile](https://img.shields.io/badge/Google_Developer-philgear-4285F4?logo=google&logoColor=white)](https://g.dev/philgear)
+[![Google Developer Profile](https://img.shields.io/badge/Google_Developer-philgear-4285F4?logo=google&logoColor=white)](https://developers.google.com/profile/philgear)
 [![ORCID iD](https://img.shields.io/badge/ORCID-0009--0008--1372--5381-A6C900?logo=orcid&logoColor=white)](https://orcid.org/0009-0008-1372-5381)
 [![Email Contact](https://img.shields.io/badge/Contact-leads%40pocketgull.app-EA4335?logo=gmail&logoColor=white)](mailto:leads@pocketgull.app)
 

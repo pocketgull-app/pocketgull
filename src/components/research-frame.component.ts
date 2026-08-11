@@ -335,7 +335,7 @@ export class ResearchFrameComponent implements OnDestroy {
       'http://127.0.0.1:4000',
       'http://127.0.0.1:4200'
     ];
-    if (event.origin && !allowedOrigins.includes(event.origin) && !event.origin.endsWith('.pocketgull.app')) {
+    if (event.origin && !allowedOrigins.includes(event.origin) && !event.origin.endsWith('.pocketgull.app') && !event.origin.endsWith('.pocketgull.com')) {
       return;
     }
 

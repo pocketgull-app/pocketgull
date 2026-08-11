@@ -500,7 +500,7 @@ export function renderBusinessSiteHtml(): string {
       <div class="flex items-center gap-6 text-sm">
         <a href="https://pocketgull.app" class="hover:text-amber-400 transition-colors font-bold font-pocketgull">pocketgull.app</a>
         <a href="https://github.com/philgear/pocketgull" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">GitHub</a>
-        <a href="https://g.dev/philgear" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">Google Dev</a>
+        <a href="https://developers.google.com/profile/philgear" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">Google Dev</a>
         <a href="https://orcid.org/0009-0008-1372-5381" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">ORCID iD</a>
       </div>
     </div>

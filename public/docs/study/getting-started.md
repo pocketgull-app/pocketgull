@@ -7,7 +7,7 @@ import DocNode from '../components/DocNode.astro';
 
 # Getting Started
 
-**Developer Profile:** [g.dev/philgear](https://g.dev/philgear)
+**Developer Profile:** [developers.google.com/profile/philgear](https://developers.google.com/profile/philgear)
 **Repository:** [github.com/philgear/pocketgull](https://github.com/philgear/pocketgull)
 
 ---
