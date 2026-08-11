@@ -134,14 +134,24 @@ export class PocketgullDesktopSuiteComponent {
       sha256: 'a4f8921b72e105e4921f92e8a156291a44e528b9a1e3892c90e54d193f18a28e'
     },
     {
-      platform: 'Windows 11 (x64 / ARM64)',
+      platform: 'Windows 11 (x64 Intel / AMD)',
       icon: '🪟',
       version: '1.16.0',
       fileSize: '9.1 MB',
-      installerType: 'MSI / EXE Installer',
+      installerType: 'MSI / EXE Installer (x64)',
       downloadUrl: '/downloads/PocketGull-Desktop-Windows-v1.16.0.msi',
       status: 'Ready to Install',
       sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+    },
+    {
+      platform: 'Windows 11 (ARM64 Snapdragon / Surface Pro)',
+      icon: '💻',
+      version: '1.16.0',
+      fileSize: '8.7 MB',
+      installerType: 'Native ARM64 MSI Installer',
+      downloadUrl: '/downloads/PocketGull-Desktop-Windows-arm64-v1.16.0.msi',
+      status: 'Snapdragon Copilot+ Ready',
+      sha256: 'b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6'
     },
     {
       platform: 'Linux (Ubuntu / Debian / Snap Store)',

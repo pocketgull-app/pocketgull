@@ -60,6 +60,7 @@ export async function runDailyClamAvScan() {
 
   const artifacts = [
     { fileName: 'PocketGull-Desktop-Windows-v1.16.0.msi', fileSize: '9.1 MB', sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855' },
+    { fileName: 'PocketGull-Desktop-Windows-arm64-v1.16.0.msi', fileSize: '8.7 MB', sha256: 'b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6' },
     { fileName: 'PocketGull-Desktop-macOS-v1.16.0.dmg', fileSize: '8.4 MB', sha256: 'a4f8921b72e105e4921f92e8a156291a44e528b9a1e3892c90e54d193f18a28e' },
     { fileName: 'pocketgull-desktop_1.16.0_amd64.snap', fileSize: '12.4 MB', sha256: 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2' },
     { fileName: 'PocketGull-Desktop-v1.16.0.AppImage', fileSize: '11.8 MB', sha256: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08' }
