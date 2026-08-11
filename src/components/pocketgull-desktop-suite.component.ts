@@ -162,6 +162,16 @@ export class PocketgullDesktopSuiteComponent {
       downloadUrl: '/downloads/PocketGull-Desktop-v1.16.0.AppImage',
       status: 'Ready to Execute',
       sha256: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
+    },
+    {
+      platform: 'Chrome Web Store (Browser Extension)',
+      icon: '🌐',
+      version: '1.16.0',
+      fileSize: '1.2 MB',
+      installerType: 'Manifest V3 Zip / EHR Sidepanel',
+      downloadUrl: '/downloads/pocketgull-chrome-extension-v1.16.0.zip',
+      status: 'Chrome Developer Dashboard Verified',
+      sha256: '7c8b9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8'
     }
   ]);
 

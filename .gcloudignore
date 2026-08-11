@@ -1,5 +1,6 @@
 .git
 .gcloudignore
+!Dockerfile
 #!include:.gitignore
 node_modules/
 .angular/
@@ -8,11 +9,10 @@ tmp/
 scratch/
 .venv/
 venv/
-Documents/
-Pictures/
-"My Pictures"/
-**/My Pictures/
-**/Documents/
+*Documents*
+*Pictures*
+**/*Documents*
+**/*Pictures*
 **/__pycache__/
 *.pyc
 test-results/

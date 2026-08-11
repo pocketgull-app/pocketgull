@@ -77,6 +77,7 @@
     "dev": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
     "models:retrain": "node scripts/retrain-models.mjs",
     "sentinel:audit": "node scripts/sentinel_security_guard.mjs",
+    "clamav:scan": "node scripts/daily-clamav-scan.mjs",
     "sbom:generate": "node scripts/generate-sbom.mjs",
     "mcp:warmup": "node scripts/mcp-warmup.js",
     "build": "node scripts/build-all.mjs",
