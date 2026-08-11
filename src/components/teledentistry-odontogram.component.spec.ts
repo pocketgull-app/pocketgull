@@ -48,9 +48,9 @@ describe('TeledentistryOdontogramComponent', () => {
   });
 
   it('should calculate deep probing sites count for teeth with PPD >= 4mm', () => {
-    expect(component.deepProbingSitesCount()).toBe(1); // tooth 16 has 4mm default
+    expect(component.deepProbingSitesCount()).toBe(2); // teeth 16 and 36 have 4mm default
 
     component.setProbingDepth(11, 5);
-    expect(component.deepProbingSitesCount()).toBe(2);
+    expect(component.deepProbingSitesCount()).toBe(3);
   });
 });

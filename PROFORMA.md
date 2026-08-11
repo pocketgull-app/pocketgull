@@ -28,6 +28,14 @@ This document outlines the financial projections, unit economics, SaaS monetizat
 | *Security Audit, Monitoring & Compliance (HIPAA)* | $6,000 | $18,000 | $45,000 |
 | **Total COGS** | **$28,800** | **$161,000** | **$560,000** |
 | **Gross Profit Margin** | **92.0%** | **93.7%** | **94.2%** |
+
+### 🏛️ Founder Compensation & Philanthropic Alumni Endowment Split Model
+
+Pocket-Gull incorporates a transparent 3-Tier revenue allocation model built directly into its Stripe Billing Engine:
+
+1. **Founder Salary & Living Dispensations (~50%):** Direct bank payout covering founder living expenses, bills, and platform stewardship.
+2. **Alumni Endowment & Public Health Pledges (~30%):** Automated non-profit pledges supporting university research endowments and civic health digital services.
+3. **Serverless Infrastructure & Payment COGS (~20%):** Covers Google Cloud Run scale-to-zero compute ($0.20/mo baseline) and Stripe processing fees.
 | | | | |
 | **Operating Expenses (OpEx)** | | | |
 | *R&D / Engineering & AI Model Fine-Tuning* | $140,000 | $450,000 | $1,200,000 |

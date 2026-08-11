@@ -57,6 +57,9 @@ import { PocketgullIconComponent } from './components/pocketgull-icon.component'
 import { DocsStudyComponent } from './components/docs-study.component';
 import { NavigationShellService } from './services/navigation-shell.service';
 import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badge.component';
+import { BillingDashboardComponent } from './components/billing-dashboard.component';
+import { PatientPortalComponent } from './components/patient-portal.component';
+import { ClinicianOnboardingComponent } from './components/clinician-onboarding.component';
 
 @Component({
   selector: 'app-root',
@@ -90,7 +93,10 @@ import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badg
     GlossaryModalComponent,
     ClinicalCdsDisclaimerBannerComponent,
     DocsStudyComponent,
-    PathwaysMoeBadgeComponent
+    PathwaysMoeBadgeComponent,
+    BillingDashboardComponent,
+    PatientPortalComponent,
+    ClinicianOnboardingComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -99,6 +105,18 @@ import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badg
     <!-- ACM §1.6: First-run informed consent -->
     @if (!showSplash() && !consentService.hasConsented()) {
       <app-consent-modal></app-consent-modal>
+    }
+
+    @if (showBillingDashboard()) {
+      <app-billing-dashboard (close)="showBillingDashboard.set(false)"></app-billing-dashboard>
+    }
+
+    @if (showPatientPortal()) {
+      <app-patient-portal (close)="showPatientPortal.set(false)"></app-patient-portal>
+    }
+
+    @if (showClinicianOnboarding()) {
+      <app-clinician-onboarding (close)="showClinicianOnboarding.set(false)"></app-clinician-onboarding>
     }
 
     @if (showGlossaryModal()) {
@@ -388,6 +406,33 @@ import { PathwaysMoeBadgeComponent } from './components/shared/pathways-moe-badg
               class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-indigo-500/50 outline-none"
               title="Generate FHIR R4 Smart Launch QR for Patient/Doctor Mobile Companion">
               <span>📱 Sync Companion</span>
+            </button>
+
+            <!-- Billing & Subscription Button -->
+            <button 
+              type="button" 
+              (click)="showBillingDashboard.set(true)"
+              class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none"
+              title="Manage Billing and Subscription">
+              <span>💳 Billing & Plan</span>
+            </button>
+
+            <!-- Patient Telehealth Portal Button -->
+            <button 
+              type="button" 
+              (click)="showPatientPortal.set(true)"
+              class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-blue-500/50 outline-none"
+              title="Open Patient Self-Service Portal">
+              <span>🩺 Patient Portal</span>
+            </button>
+
+            <!-- Clinician & Medical School Onboarding Button -->
+            <button 
+              type="button" 
+              (click)="showClinicianOnboarding.set(true)"
+              class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-amber-500/50 outline-none"
+              title="Clinician & Teaching Medical School Onboarding">
+              <span>🏛️ Clinician & School Sign-Up</span>
             </button>
               
               <!-- Tooltip -->
@@ -1387,6 +1432,9 @@ export class AppComponent implements OnDestroy {
   private secureStorage = inject(SecureStorageService);
   showTypefaceSite = signal(false);
   showDocsStudy = signal(false);
+  showBillingDashboard = signal(false);
+  showPatientPortal = signal(false);
+  showClinicianOnboarding = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
   readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);

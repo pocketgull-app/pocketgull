@@ -108,6 +108,14 @@ Pocket Gull adheres strictly to **Dieter Rams Functional Design Principles** (*W
 
 ---
 
+### 🩺 6. Patient Telehealth Portal & Founder Compensation Revenue Split Model
+
+- **Patient Self-Service Portal (`PatientPortalComponent`)**: Dedicated patient-facing interface featuring live SIBI Inflammatory telemetry, 3D Spatial Anatomy canvas, oral-systemic tooth matrix, and bi-directional Gemini Live AI consult assistant.
+- **1-Click Ephemeral State Purging**: Respects patient privacy with 1-click transient state wiping (`purgeTransientPatientState`) per HIPAA Safe Harbor §164.514 standards.
+- **Founder Compensation & Alumni Endowment Revenue Split**: Built-in Stripe billing model allocating incoming subscription proceeds transparently (50% Founder Living Salary & Expenses, 30% University Alumni Research Endowment Pledges, 20% Serverless Cloud Infrastructure COGS).
+
+---
+
 ### 📖 6. Health Literacy Personas & Cognitive Reading Modes
 
 #### 🧠 5 Persona Writing Styles

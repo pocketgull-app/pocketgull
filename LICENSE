@@ -1,4 +1,4 @@
-MIT License
+MIT License & CERN Open Hardware Dual-Licensing Notice
 
 Copyright (c) 2026 Phil Gear
 
@@ -19,3 +19,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+### CERN Open Hardware License — Strongly Permissive (CERN OHL-S v2) Notice
+All 3D spatial anatomical meshes, procedural WebGL PBR shaders, and biophysical substrate specifications in this repository are dual-licensed under the CERN Open Hardware License v2 — Strongly Permissive (CERN OHL-S v2).
+
+For details, visit: https://ohwr.org/cernohl

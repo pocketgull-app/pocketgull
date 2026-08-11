@@ -1,14 +1,14 @@
 import { APP_VERSION } from '../version';
 
 export const environment = {
-  production: false,
+  production: true,
   appVersion: APP_VERSION,
   firebase: {
-    projectId: 'growthyself',
-    appId: '1:placeholder:web:abcd1234',
-    storageBucket: 'growthyself.appspot.com',
-    apiKey: 'AIzaSyA_placeholder_firebase_key',
-    authDomain: 'growthyself.firebaseapp.com',
-    messagingSenderId: '123456789'
+    projectId: 'gen-lang-client-0540208645',
+    appId: '1:0540208645:web:pocketgull',
+    storageBucket: 'gen-lang-client-0540208645.appspot.com',
+    apiKey: typeof process !== 'undefined' && process.env?.['FIREBASE_API_KEY'] ? process.env['FIREBASE_API_KEY'] : 'AIzaSy_gen_lang_client_pocketgull',
+    authDomain: 'gen-lang-client-0540208645.firebaseapp.com',
+    messagingSenderId: '0540208645'
   }
 };

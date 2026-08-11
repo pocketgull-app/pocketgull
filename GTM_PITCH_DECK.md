@@ -59,9 +59,10 @@ flowchart LR
    - $38.5B Telehealth & Remote Patient Monitoring market.
 
 5. **Slide 5: Business Model & Unit Economics**
-   - **B2B SaaS**: $199/seat/month.
-   - **COGS**: Serverless Google Cloud Run + Gemini LLM tokens = ~$0.04/report.
+   - **B2B SaaS**: $199/seat/month & self-service Stripe portal.
+   - **COGS**: Serverless Google Cloud Run + Gemini LLM tokens = ~$0.04/report ($0.20/mo baseline).
    - **Gross Margin**: **94.2%**.
+   - **Philanthropic & Founder Split**: Automated Stripe Connect allocation (50% Founder Living Salary / 30% Alumni Research Endowment Pledge / 20% Infra COGS).
 
 6. **Slide 6: Proven Software Valuation (COCOMO II)**
    - **Codebase Size**: 47.6 KSLOC across Angular 22 Signals, Express proxy, Python FastAPI sidecar, and Three.js 3D shaders.
