@@ -642,6 +642,11 @@ app.use((req, res, next) => {
 });
 
 // Strict static file extension resolver — prevents Angular SSR from rendering index.html for missing assets
+const isWithinRoot = (root: string, candidate: string): boolean => {
+  const rel = relative(root, candidate);
+  return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel);
+};
+
 app.use((req, res, next) => {
   const ext = extname(req.path).toLowerCase();
   const staticExts = new Set(['.svg', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.css', '.js', '.webmanifest', '.woff2', '.woff', '.ttf', '.ico', '.json']);
@@ -663,12 +668,14 @@ app.use((req, res, next) => {
       res.setHeader('Cache-Control', 'no-cache, must-revalidate');
       return res.status(200).send('/* Stale main JS bundle hash bypass */');
     }
-    const staticPath = join(browserDistFolder, req.path);
-    const publicPath = join(browserDistFolder, '..', 'public', req.path);
-    if (fs.existsSync(staticPath) && fs.statSync(staticPath).isFile()) {
+    const browserRoot = resolve(browserDistFolder);
+    const publicRoot = resolve(browserDistFolder, '..', 'public');
+    const staticPath = resolve(browserRoot, `.${req.path}`);
+    const publicPath = resolve(publicRoot, `.${req.path}`);
+    if (isWithinRoot(browserRoot, staticPath) && fs.existsSync(staticPath) && fs.statSync(staticPath).isFile()) {
       return res.sendFile(staticPath);
     }
-    if (fs.existsSync(publicPath) && fs.statSync(publicPath).isFile()) {
+    if (isWithinRoot(publicRoot, publicPath) && fs.existsSync(publicPath) && fs.statSync(publicPath).isFile()) {
       return res.sendFile(publicPath);
     }
     if (ext === '.js') {
