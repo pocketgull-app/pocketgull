@@ -639,15 +639,16 @@ app.use(
 );
 
 // Fallback handler for hashed CSS stylesheet requests from stale browser caches
-app.use((req, res, next) => {
+app.use(globalLimiter, (req, res, next) => {
   if (req.path === '/styles.css' || (req.path.startsWith('/styles-') && req.path.endsWith('.css'))) {
     try {
       const files = fs.readdirSync(browserDistFolder);
       const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css'));
       if (activeCss) {
+        const safeActiveCssPath = securePathResolve(browserDistFolder, activeCss);
         res.setHeader('Content-Type', 'text/css');
         res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-        return res.sendFile(join(browserDistFolder, activeCss));
+        return res.sendFile(safeActiveCssPath);
       }
     } catch (e) {
       console.debug('[Server] CSS hash fallback failed:', (e as Error)?.message);
@@ -657,21 +658,24 @@ app.use((req, res, next) => {
 });
 
 // Strict static file extension resolver — prevents Angular SSR from rendering index.html for missing assets
-const isWithinRoot = (root: string, candidate: string): boolean => {
-  const rel = relative(root, candidate);
-  return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel);
-};
-
-app.use((req, res, next) => {
-  const ext = extname(req.path).toLowerCase();
+app.use(globalLimiter, (req, res, next) => {
+  const cleanPath = req.path.split('?')[0];
+  const ext = extname(cleanPath).toLowerCase();
   const staticExts = new Set(['.svg', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.css', '.js', '.webmanifest', '.woff2', '.woff', '.ttf', '.ico', '.json']);
+  
   if (staticExts.has(ext)) {
-    if (req.path.startsWith('/main-') && req.path.endsWith('.js')) {
+    const fileName = path.basename(cleanPath);
+    if (!/^[a-zA-Z0-9_-]+\.(svg|png|jpg|jpeg|webp|gif|css|js|webmanifest|woff2|woff|ttf|ico|json)$/.test(fileName)) {
+      return res.status(400).send('Bad Request');
+    }
+
+    if (fileName.startsWith('main-') && fileName.endsWith('.js')) {
       try {
         const files = fs.readdirSync(browserDistFolder);
         const activeMain = files.find(f => f.startsWith('main-') && f.endsWith('.js'));
         if (activeMain) {
-          const mainContent = fs.readFileSync(join(browserDistFolder, activeMain));
+          const safeActiveMainPath = securePathResolve(browserDistFolder, activeMain);
+          const mainContent = fs.readFileSync(safeActiveMainPath);
           res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
           res.setHeader('Cache-Control', 'no-cache, must-revalidate');
           return res.status(200).send(mainContent);
@@ -683,15 +687,15 @@ app.use((req, res, next) => {
       res.setHeader('Cache-Control', 'no-cache, must-revalidate');
       return res.status(200).send('/* Stale main JS bundle hash bypass */');
     }
-    const browserRoot = resolve(browserDistFolder);
-    const publicRoot = resolve(browserDistFolder, '..', 'public');
-    const staticPath = resolve(browserRoot, `.${req.path}`);
-    const publicPath = resolve(publicRoot, `.${req.path}`);
-    if (isWithinRoot(browserRoot, staticPath) && fs.existsSync(staticPath) && fs.statSync(staticPath).isFile()) {
-      return res.sendFile(staticPath);
+
+    const safeStaticPath = securePathResolve(browserDistFolder, fileName);
+    const safePublicPath = securePathResolve(join(browserDistFolder, '..', 'public'), fileName);
+
+    if (fs.existsSync(safeStaticPath) && fs.statSync(safeStaticPath).isFile()) {
+      return res.sendFile(safeStaticPath);
     }
-    if (isWithinRoot(publicRoot, publicPath) && fs.existsSync(publicPath) && fs.statSync(publicPath).isFile()) {
-      return res.sendFile(publicPath);
+    if (fs.existsSync(safePublicPath) && fs.statSync(safePublicPath).isFile()) {
+      return res.sendFile(safePublicPath);
     }
     if (ext === '.js') {
       res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
