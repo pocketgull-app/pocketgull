@@ -127,7 +127,7 @@ export class FhirIntegrationService {
       client_id: this.CLIENT_ID,
       redirect_uri: redirectUri,
       scope: emergencyScopes,
-      state: 'EMERGENCY_' + crypto.randomUUID(), 
+      state: 'EMERGENCY_' + getSecureRandomId(), 
       aud: 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R6'
     });
 
@@ -173,7 +173,7 @@ export class FhirIntegrationService {
       client_id: this.CLIENT_ID,
       redirect_uri: redirectUri,
       scope: 'launch openid fhirUser patient/Patient.read patient/Observation.read patient/Condition.read patient/CarePlan.write',
-      state: 'EHR_LAUNCH_' + crypto.randomUUID(),
+      state: 'EHR_LAUNCH_' + getSecureRandomId(),
       aud: iss,
       launch: launchToken
     });

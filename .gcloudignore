@@ -9,10 +9,6 @@ tmp/
 scratch/
 .venv/
 venv/
-*Documents*
-*Pictures*
-**/*Documents*
-**/*Pictures*
 **/__pycache__/
 *.pyc
 test-results/
@@ -58,3 +54,6 @@ deploy.tar.gz
 !docs/study/package.json
 !companion-apps/avs-therapy/package.json
 !pocketgull_api/package.json
+!src/
+!src/**
+

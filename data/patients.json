@@ -650,25 +650,5 @@
       }
     ],
     "history": []
-  },
-  {
-    "id": "emergency_casualty",
-    "name": "Emergency Patient",
-    "age": 30,
-    "gender": "Other",
-    "history": [],
-    "vitals": {
-      "bp": "",
-      "hr": "",
-      "temp": "",
-      "spO2": "",
-      "weight": "",
-      "height": "",
-      "vitC": "",
-      "vitD3": "",
-      "magnesium": "",
-      "zinc": "",
-      "b12": ""
-    }
   }
 ]

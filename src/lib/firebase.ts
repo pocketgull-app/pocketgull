@@ -1,5 +1,4 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
 import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
 import { connectorConfig } from './dataconnect/esm/index.esm.js';
 import { environment } from '../environments/environment';
@@ -7,7 +6,6 @@ import { environment } from '../environments/environment';
 // Initialize or reuse Firebase App instance targeting gen-lang-client-0540208645
 const firebaseApp = getApps().length === 0 ? initializeApp(environment.firebase) : getApp();
 
-export const auth = getAuth(firebaseApp);
 export const dataConnect = getDataConnect(firebaseApp, connectorConfig);
 
 // Connect to local emulator during development if explicit flag or emulator parameter is specified

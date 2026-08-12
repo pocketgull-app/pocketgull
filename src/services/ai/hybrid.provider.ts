@@ -162,7 +162,7 @@ export class HybridProvider implements IIntelligenceProvider {
         console.warn(`translateReadingLevel failed on ${provider.constructor.name}, trying next...`);
       }
     }
-    return text;
+    throw new AIProviderExhaustedError('translateReadingLevel', chain.map(p => p.constructor.name));
   }
 
   async analyzeTranslation(original: string, translated: string): Promise<string> {

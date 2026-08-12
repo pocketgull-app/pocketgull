@@ -130,18 +130,30 @@ app.use(globalLimiter, (req, res, next) => {
         res.setHeader('Cache-Control', 'no-cache, must-revalidate');
         return res.status(200).send('/* Main bundle fallback */');
       }
-      if (cleanPath.includes('styles-') || cleanPath === '/styles.css') {
-        try {
-          const files = fs.readdirSync(browserDistFolder);
-          const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css'));
-          if (activeCss) {
-            const safeActiveCssPath = securePathResolve(browserDistFolder, activeCss);
-            const cssContent = fs.readFileSync(safeActiveCssPath);
-            res.setHeader('Content-Type', 'text/css; charset=utf-8');
-            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-            return res.status(200).send(cssContent);
-          }
-        } catch (e) {}
+      if (cleanPath.includes('styles-') || cleanPath === '/styles.css' || ext === '.css') {
+        const candidateDirs = [browserDistFolder, join(browserDistFolder, 'browser'), process.cwd(), join(process.cwd(), 'src')];
+        for (const dir of candidateDirs) {
+          try {
+            if (fs.existsSync(dir)) {
+              const files = fs.readdirSync(dir);
+              const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css'));
+              if (activeCss) {
+                const safeCssPath = securePathResolve(dir, activeCss);
+                const cssContent = fs.readFileSync(safeCssPath);
+                res.setHeader('Content-Type', 'text/css; charset=utf-8');
+                res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+                return res.status(200).send(cssContent);
+              }
+            }
+          } catch (e) {}
+        }
+        const srcStylesPath = join(process.cwd(), 'src', 'styles.css');
+        if (fs.existsSync(srcStylesPath)) {
+          const cssContent = fs.readFileSync(srcStylesPath);
+          res.setHeader('Content-Type', 'text/css; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+          return res.status(200).send(cssContent);
+        }
         res.setHeader('Content-Type', 'text/css; charset=utf-8');
         res.setHeader('Cache-Control', 'no-cache, must-revalidate');
         return res.status(200).send('/* Stylesheet fallback */');
@@ -150,11 +162,6 @@ app.use(globalLimiter, (req, res, next) => {
         res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
         res.setHeader('Cache-Control', 'no-cache, must-revalidate');
         return res.status(200).send('/* Hashed JS bundle fallback */');
-      }
-      if (ext === '.css') {
-        res.setHeader('Content-Type', 'text/css; charset=utf-8');
-        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-        return res.status(200).send('/* Hashed CSS stylesheet fallback */');
       }
     }
   }
@@ -537,14 +544,19 @@ app.use((req, res, next) => {
   const isProd = process.env['NODE_ENV'] === 'production';
   const isDev = !isProd;
   const scriptSrc = isDev
-    ? `'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://*.googleapis.com`
-    : `'self' 'nonce-${nonce}' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com`;
+    ? `'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com`
+    : `'self' 'nonce-${nonce}' 'unsafe-inline' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com`;
+
+  const scriptSrcAttr = `'self' 'unsafe-inline'`;
+  const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
+  const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
+  const styleSrcAttr = `'self' 'unsafe-inline'`;
 
   const connectSrc = isDev
     ? `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`
     : `'self' http://localhost:9399 http://localhost:4000 http://localhost:4200 http://127.0.0.1:9399 ws://localhost:9399 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;
 
-  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org; connect-src ${connectSrc}; frame-src 'self' https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://growthyself.firebaseapp.com https://insightspark-82c75.web.app; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
+  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; script-src-attr ${scriptSrcAttr}; style-src ${styleSrc}; style-src-elem ${styleSrcElem}; style-src-attr ${styleSrcAttr}; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org; connect-src ${connectSrc}; frame-src 'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
   
   if (!isProd) {
     res.setHeader('Reporting-Endpoints', 'csp-endpoint="/api/csp-report"');
@@ -718,6 +730,27 @@ app.use(globalLimiter, (req, res, next) => {
       return res.status(200).send('/* Stub JS asset */');
     }
     if (ext === '.css') {
+      const candidateDirs = [browserDistFolder, join(browserDistFolder, 'browser'), process.cwd(), join(process.cwd(), 'src')];
+      for (const dir of candidateDirs) {
+        try {
+          if (fs.existsSync(dir)) {
+            const files = fs.readdirSync(dir);
+            const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css'));
+            if (activeCss) {
+              const safeCssPath = securePathResolve(dir, activeCss);
+              res.setHeader('Content-Type', 'text/css; charset=utf-8');
+              res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+              return res.sendFile(safeCssPath);
+            }
+          }
+        } catch (e) {}
+      }
+      const srcStylesPath = join(process.cwd(), 'src', 'styles.css');
+      if (fs.existsSync(srcStylesPath)) {
+        res.setHeader('Content-Type', 'text/css; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        return res.sendFile(srcStylesPath);
+      }
       res.setHeader('Content-Type', 'text/css; charset=utf-8');
       return res.status(200).send('/* Stub CSS asset */');
     }

@@ -2,20 +2,20 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "pocket-gull-v1.14.0-SBOM",
-  "documentNamespace": "https://github.com/philgear/pocketgull/spdx/pocket-gull-1.14.0",
+  "name": "pocket-gull-v1.15.0-SBOM",
+  "documentNamespace": "https://github.com/philgear/pocketgull/spdx/pocket-gull-1.15.0",
   "creationInfo": {
     "creators": [
       "Tool: Pocket-Gull Automated Sentinel Guard",
       "Organization: Pocket-Gull Engineering"
     ],
-    "created": "2026-08-08T17:30:04.138Z"
+    "created": "2026-08-12T10:27:40.562Z"
   },
   "packages": [
     {
       "name": "pocket-gull",
       "SPDXID": "SPDXRef-Package-Root",
-      "versionInfo": "1.14.0",
+      "versionInfo": "1.15.0",
       "downloadLocation": "git+https://github.com/philgear/pocketgull.git",
       "filesAnalyzed": false,
       "licenseConcluded": "MIT",
@@ -441,6 +441,14 @@
       "name": "socket.io-client",
       "SPDXID": "SPDXRef-Package-socket-io-client",
       "versionInfo": "^4.2.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION"
+    },
+    {
+      "name": "stripe",
+      "SPDXID": "SPDXRef-Package-stripe",
+      "versionInfo": "^17.7.0",
       "downloadLocation": "NOASSERTION",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION"

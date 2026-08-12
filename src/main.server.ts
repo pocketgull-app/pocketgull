@@ -24,7 +24,6 @@ import { HybridProvider } from './services/ai/hybrid.provider';
 
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { provideAuth, getAuth } from '@angular/fire/auth';
 import { environment } from './environments/environment';
 
 export const config: ApplicationConfig = {
@@ -34,7 +33,6 @@ export const config: ApplicationConfig = {
         provideHttpClient(withFetch()),
         provideFirebaseApp(() => initializeApp(environment.firebase)),
         provideFirestore(() => getFirestore()),
-        provideAuth(() => getAuth()),
         {
             provide: AI_CONFIG,
             useFactory: () => ({

@@ -26,12 +26,9 @@ import {
   IBodyPartIssue,
   IDiagnosticScan
 } from "./patient.types";
-import * as CryptoJS from 'crypto-js';
 import { MOCK_PATIENTS } from "../mock-patients";
 import { dataConnect } from '../lib/firebase';
 import { listPatients, getPatientWithCarePlan, createPatient } from '../lib/dataconnect/esm/index.esm.js';
-
-const ENCRYPTION_KEY = 'pocket-gull-clinical-vault-key-poc';
 
 // Re-export for use in other components
 export type { IBodyPartIssue, HistoryEntry, IPatient };

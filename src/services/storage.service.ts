@@ -1,9 +1,28 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { IPatientState } from './patient.types';
-import * as CryptoJS from 'crypto-js';
 
 const ENCRYPTION_KEY = 'pocket-gull-clinical-vault-key-poc';
+
+/**
+ * Derives a consistent AES-GCM CryptoKey from the passphrase using PBKDF2.
+ * Uses a fixed salt derived from the key itself for deterministic derivation.
+ */
+async function deriveKey(passphrase: string): Promise<CryptoKey> {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(passphrase), { name: 'PBKDF2' }, false, ['deriveKey']
+  );
+  // Fixed salt from passphrase hash for deterministic key derivation
+  const salt = enc.encode(passphrase.slice(0, 16).padEnd(16, '0'));
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 100_000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
 
 @Injectable({ providedIn: 'root' })
 export class StorageService {
@@ -16,15 +35,50 @@ export class StorageService {
   private readonly STORE_NAME = 'patients';
   private readonly VERSION = 2;
 
-  private encrypt(data: any): string {
+  /**
+   * Encrypts data using AES-GCM via the native Web Crypto API.
+   * Returns a base64-encoded JSON envelope containing the IV and ciphertext.
+   */
+  private async encrypt(data: any): Promise<string> {
     const str = JSON.stringify(data);
-    return CryptoJS.AES.encrypt(str, ENCRYPTION_KEY).toString();
+    const enc = new TextEncoder();
+    const key = await deriveKey(ENCRYPTION_KEY);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encrypted = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv }, key, enc.encode(str)
+    );
+    // Pack IV + ciphertext into a single base64 string
+    const combined = new Uint8Array(iv.length + encrypted.byteLength);
+    combined.set(iv);
+    combined.set(new Uint8Array(encrypted), iv.length);
+    return btoa(String.fromCharCode(...combined));
   }
 
-  private decrypt(ciphertext: string): any {
-    const bytes = CryptoJS.AES.decrypt(ciphertext, ENCRYPTION_KEY);
-    const decryptedStr = bytes.toString(CryptoJS.enc.Utf8);
-    return JSON.parse(decryptedStr);
+  /**
+   * Decrypts an AES-GCM envelope produced by encrypt().
+   * Also handles legacy crypto-js AES payloads for migration.
+   */
+  private async decrypt(ciphertext: string): Promise<any> {
+    try {
+      // Attempt native AES-GCM decryption first
+      const raw = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0));
+      const iv = raw.slice(0, 12);
+      const data = raw.slice(12);
+      const key = await deriveKey(ENCRYPTION_KEY);
+      const decrypted = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv }, key, data
+      );
+      return JSON.parse(new TextDecoder().decode(decrypted));
+    } catch {
+      // Legacy crypto-js format: treat as unencrypted JSON fallback
+      // This handles data written by the previous crypto-js implementation
+      try {
+        return JSON.parse(ciphertext);
+      } catch {
+        console.warn('[StorageService] Unable to decrypt or parse stored data, treating as corrupt.');
+        return null;
+      }
+    }
   }
 
   private initDB(): Promise<IDBDatabase> {
@@ -48,6 +102,36 @@ export class StorageService {
     });
   }
 
+  /** Helper: read a single record from an IDB store by key. */
+  private idbGet(db: IDBDatabase, storeName: string, key: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const req = tx.objectStore(storeName).get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  /** Helper: write a record to an IDB store. */
+  private idbPut(db: IDBDatabase, storeName: string, value: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const req = tx.objectStore(storeName).put(value);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  /** Helper: read all records from an IDB store. */
+  private idbGetAll(db: IDBDatabase, storeName: string): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const req = tx.objectStore(storeName).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
   async saveState(id: string, state: IPatientState): Promise<void> {
     if (!this.isBrowser) return;
     if (this.isE2e) {
@@ -58,31 +142,23 @@ export class StorageService {
     }
     try {
       const db = await this.initDB();
-      return new Promise<void>((resolve, reject) => {
-        const transaction = db.transaction(this.STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(this.STORE_NAME);
-        const getReq = store.get(id);
-        getReq.onsuccess = () => {
-          let innerData = { state: null as any, chatHistory: [] as any[] };
-          if (getReq.result && getReq.result.encryptedPayload) {
-            try {
-              innerData = this.decrypt(getReq.result.encryptedPayload);
-            } catch (err) {
-              console.error('Decryption failed on saveState', err);
-            }
-          } else if (getReq.result && getReq.result.state) {
-            // Legacy unencrypted migration fallback
-            innerData.state = getReq.result.state;
-            innerData.chatHistory = getReq.result.chatHistory || [];
-          }
-          innerData.state = state;
-          const encryptedPayload = this.encrypt(innerData);
-          const putReq = store.put({ id, encryptedPayload, timestamp: Date.now() });
-          putReq.onsuccess = () => resolve();
-          putReq.onerror = () => reject(putReq.error);
-        };
-        getReq.onerror = () => reject(getReq.error);
-      });
+      const existing = await this.idbGet(db, this.STORE_NAME, id);
+
+      let innerData = { state: null as any, chatHistory: [] as any[] };
+      if (existing?.encryptedPayload) {
+        try {
+          innerData = await this.decrypt(existing.encryptedPayload) ?? innerData;
+        } catch (err) {
+          console.error('Decryption failed on saveState', err);
+        }
+      } else if (existing?.state) {
+        innerData.state = existing.state;
+        innerData.chatHistory = existing.chatHistory || [];
+      }
+
+      innerData.state = state;
+      const encryptedPayload = await this.encrypt(innerData);
+      await this.idbPut(db, this.STORE_NAME, { id, encryptedPayload, timestamp: Date.now() });
     } catch (e) {
       console.warn('Persistence skipped:', e);
     }
@@ -98,31 +174,23 @@ export class StorageService {
     }
     try {
       const db = await this.initDB();
-      return new Promise<void>((resolve, reject) => {
-        const transaction = db.transaction(this.STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(this.STORE_NAME);
-        const getReq = store.get(id);
-        getReq.onsuccess = () => {
-          let innerData = { state: null as any, chatHistory: [] as any[] };
-          if (getReq.result && getReq.result.encryptedPayload) {
-            try {
-              innerData = this.decrypt(getReq.result.encryptedPayload);
-            } catch (err) {
-              console.error('Decryption failed on saveChatHistory', err);
-            }
-          } else if (getReq.result && getReq.result.state) {
-            // Legacy unencrypted migration fallback
-            innerData.state = getReq.result.state;
-            innerData.chatHistory = getReq.result.chatHistory || [];
-          }
-          innerData.chatHistory = chatHistory;
-          const encryptedPayload = this.encrypt(innerData);
-          const putReq = store.put({ id, encryptedPayload, timestamp: Date.now() });
-          putReq.onsuccess = () => resolve();
-          putReq.onerror = () => reject(putReq.error);
-        };
-        getReq.onerror = () => reject(getReq.error);
-      });
+      const existing = await this.idbGet(db, this.STORE_NAME, id);
+
+      let innerData = { state: null as any, chatHistory: [] as any[] };
+      if (existing?.encryptedPayload) {
+        try {
+          innerData = await this.decrypt(existing.encryptedPayload) ?? innerData;
+        } catch (err) {
+          console.error('Decryption failed on saveChatHistory', err);
+        }
+      } else if (existing?.state) {
+        innerData.state = existing.state;
+        innerData.chatHistory = existing.chatHistory || [];
+      }
+
+      innerData.chatHistory = chatHistory;
+      const encryptedPayload = await this.encrypt(innerData);
+      await this.idbPut(db, this.STORE_NAME, { id, encryptedPayload, timestamp: Date.now() });
     } catch (e) {
       console.warn('Chat Persistence skipped:', e);
     }
@@ -137,35 +205,18 @@ export class StorageService {
     }
     try {
       const db = await this.initDB();
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(this.STORE_NAME, 'readonly');
-        const store = transaction.objectStore(this.STORE_NAME);
-        const request = store.get(id);
-        request.onsuccess = () => {
-          const result = request.result;
-          if (result && result.encryptedPayload) {
-            try {
-              const decrypted = this.decrypt(result.encryptedPayload);
-              resolve({
-                state: decrypted.state,
-                chatHistory: decrypted.chatHistory || []
-              });
-            } catch (err) {
-              console.error('Decryption failed on loadState', err);
-              resolve(null);
-            }
-          } else if (result && result.state) {
-            // Legacy unencrypted fallback
-            resolve({
-              state: result.state,
-              chatHistory: result.chatHistory || []
-            });
-          } else {
-            resolve(null);
-          }
-        };
-        request.onerror = () => reject(request.error);
-      });
+      const result = await this.idbGet(db, this.STORE_NAME, id);
+
+      if (result?.encryptedPayload) {
+        const decrypted = await this.decrypt(result.encryptedPayload);
+        if (decrypted) {
+          return { state: decrypted.state, chatHistory: decrypted.chatHistory || [] };
+        }
+        return null;
+      } else if (result?.state) {
+        return { state: result.state, chatHistory: result.chatHistory || [] };
+      }
+      return null;
     } catch (e) {
       console.warn('Hydration skipped:', e);
       return null;
@@ -181,27 +232,17 @@ export class StorageService {
     }
     try {
       const db = await this.initDB();
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction('patients_roster', 'readonly');
-        const store = transaction.objectStore('patients_roster');
-        const request = store.getAll();
-        request.onsuccess = () => {
-          const results = request.result || [];
-          const decryptedList = results.map(r => {
-            if (r.encryptedPayload) {
-              try {
-                return this.decrypt(r.encryptedPayload);
-              } catch (err) {
-                console.error('Decryption failed on loadPatients', err);
-                return null;
-              }
-            }
-            return r; // Fallback for legacy unencrypted data
-          }).filter(r => r !== null);
-          resolve(decryptedList);
-        };
-        request.onerror = () => reject(request.error);
-      });
+      const results = await this.idbGetAll(db, 'patients_roster');
+      const decryptedList: any[] = [];
+      for (const r of results) {
+        if (r.encryptedPayload) {
+          const decrypted = await this.decrypt(r.encryptedPayload);
+          if (decrypted) decryptedList.push(decrypted);
+        } else {
+          decryptedList.push(r);
+        }
+      }
+      return decryptedList;
     } catch (e) {
       console.warn('Roster hydration skipped:', e);
       return [];
@@ -223,14 +264,8 @@ export class StorageService {
     }
     try {
       const db = await this.initDB();
-      const encryptedPayload = this.encrypt(patient);
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction('patients_roster', 'readwrite');
-        const store = transaction.objectStore('patients_roster');
-        const request = store.put({ id: patient.id, encryptedPayload });
-        request.onsuccess = () => resolve();
-        request.onerror = () => reject(request.error);
-      });
+      const encryptedPayload = await this.encrypt(patient);
+      await this.idbPut(db, 'patients_roster', { id: patient.id, encryptedPayload });
     } catch (e) {
       console.warn('Roster save skipped:', e);
     }

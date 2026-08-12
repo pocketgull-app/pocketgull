@@ -117,7 +117,7 @@ $$\text{AI-Agentic Pair Schedule} \approx 3.5 \text{ Calendar Months (1 Lead Eng
 
 ## 🏰 5. Intellectual Property & Competitive Moat Matrix
 
-Pocket-Gull holds 4 distinct technical trade secrets and patentable software architecture assets:
+Pocket-Gull holds 18 distinct technical trade secrets, philosophical frameworks, and patentable software architecture assets:
 
 | IP Innovation | Component / Architecture | Defensibility & Moat |
 | :--- | :--- | :--- |
@@ -125,3 +125,20 @@ Pocket-Gull holds 4 distinct technical trade secrets and patentable software arc
 | **2. Zero-Copy WebAudio PCM Binary Pipeline** | `AdkLiveService` & AudioWorklet | ACM SIGCOMM / IEEE SPS compliant zero-garbage-collection PCM frame transport for Gemini Live API. |
 | **3. Biophysical PBR WebGL Anatomical Lenses** | `ZamecznikCanvasComponent` & Three.js | Edwin Smith III empirical surgical codex mapping 3D anatomical PBR texture substrate layers. |
 | **4. WebMCP Agentic Telemetry Bridge** | `WebMcpRegistrationService` | Standardized browser-level Model Context Protocol tools exposing clinical exports for AI subagents. |
+| **5. Popperian $H_0$ & Cochrane Risk-of-Bias Engine** | `SkepticalEpistemologyService` | Automated $p$-value statistical baseline testing ($p < 0.05$), Cochrane RoB 2 bias scoring, and Socratic evidence literacy challenges preventing clinical science-washing. |
+| **6. Multimodal Actuarial Longevity & Risk Engine** | `ActuarialLongevityService` | 142 KB multi-system mortality risk engine computing bio-age differentials, actuarial trajectory curves, and survival hazard ratios across 10 diagnostic paradigms. |
+| **7. WebGPU / WASM Local Ephemeral Inference Guard** | `WebgpuEdgeAiService` & `OfflineEdgeAiService` | Client-side WebGPU/WASM pipeline executing real-time biophysical telemetry and risk scoring locally—guaranteeing zero-knowledge HIPAA data sovereignty. |
+| **8. FDI Odontogram Systemic Inflammatory Burden (SIBI)** | `PeriodontalSystemicBridgeService` & `TeledentistryService` | Direct mathematical cross-talk bridge connecting FDI 32-tooth odontogram surface caries and periodontal probing depths to systemic cardiovascular & HbA1c trajectory. |
+| **9. Counterfactual Clinical Decision Simulation** | `CounterfactualSimulationService` | Dynamic "what-if" treatment scenario projection engine calculating NNT (Number Needed to Treat), risk reduction profiles, and multi-paradigm intervention trade-offs. |
+| **10. Evidence Graph & Literature Citation Resolver** | `DataScienceCitationService` | Multi-source evidence tiering engine resolving PubMed PMIDs, Europe PMC XML, arXiv preprints, and openFDA adverse event data into structured clinical evidence matrices (Levels A, B, C). |
+| **11. Disorders of Consciousness (DOC) Sensory Engine** | `DocProtocolService` | Evidence-based stimulation protocol generator for Coma, VS/UWS, and MCS based on Thalamocortical arousal theory and MIT 40 Hz GENUS gamma entrainment. |
+| **12. Conformal Prediction Readmission & qSOFA Sepsis Risk** | `PythonBridgeService` & `ConformalReadmissionCardComponent` | 30-day readmission risk model with mathematically guaranteed coverage confidence intervals via Conformal Prediction, LACE Index scoring, and qSOFA sepsis alerts. |
+| **13. Henderson-Hasselbalch & Nernst Redox Stoichiometry** | `ClinicalBiochemistryService` | Real-time acid-base equilibrium solver ($pH = 6.1 + \log_{10}\frac{[\text{HCO}_3^-]}{0.03 \times P_a\text{CO}_2}$), cellular Nernst redox potentials ($E_{hc}$ in mV), and $\text{Zn}/\text{Cu}$ mineral stoichiometry. |
+| **14. CGM Glycemic Variability & GMI Analytics Engine** | `CgmTimeInRangeService` | Continuous Glucose Monitoring analytics engine computing Time-in-Range (TIR 70–180 mg/dL), Time-in-Tight-Range (TITR), GMI/eA1c, and %CV ($\le 36\%$) for ADA/EASD care plans. |
+| **15. Digital Hippocratic Oath & 6 Ethical Pledges** | [digital-hippocratic-oath.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/digital-hippocratic-oath.md) & `DefensiveGuardrailsService` | Encapsulates *Primum Non Nocere*, epistemic humility, anti-surveillance data sovereignty, and human-in-the-loop CDS into software guardrails. |
+| **16. Dieter Rams Minimalist Clinical Interface** | [DIETER_RAMS_CLINICAL_DESIGN_PRINCIPLES.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/DIETER_RAMS_CLINICAL_DESIGN_PRINCIPLES.md) | Implementation of Dieter Rams' 10 Principles (*Weniger, aber besser*) eliminating visual cognitive noise in high-stakes exam room workflows. |
+| **17. Tri-Paradigm Epistemological Synthesis Arbiter** | `ParadigmArbiterService` & `TriParadigmSwarmService` | Non-dogmatic synthesis framework integrating Western Allopathic, TCM Zang-Fu, Ayurveda, Kampo, and Functional Medicine into unified clinical intelligence. |
+| **18. Socratic Compassionate Analogy Engine** | `CompassionateAnalogyService` & `PlainLanguageGlossaryService` | Translates complex clinical diagnoses and lab biomarkers into empathetic, patient-accessible analogies at grade-6 reading levels without sacrificing rigor. |
+
+
+

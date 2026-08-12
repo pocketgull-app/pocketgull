@@ -1265,11 +1265,20 @@ export class SecureSplashComponent implements OnInit {
   handleUnlockSession() {
     this.session.isLocked.set(false);
     this.isAuthorized.set(true);
+    this.session.isOnboardingComplete.set(true);
     this.session.resetIdleTimer();
+    if (typeof sessionStorage !== 'undefined') {
+      try {
+        sessionStorage.setItem('pg_session_onboarded', '1');
+      } catch (e) { /* ignore */ }
+    }
+    // Signal the parent to re-enter the application.
+    // Emit loadDemo so the parent sets hasApiKey(true) and dismisses the splash.
+    this.loadDemo.emit();
   }
 
   // State
-  viewState = signal<'auth' | 'beta' | 'ethics' | 'kss' | 'signup' | 'gesture'>('auth');
+  viewState = signal<'auth' | 'beta' | 'ethics' | 'kss' | 'signup' | 'gesture'>('gesture');
   signupForm = signal({ name: '', email: '', clinic: '', pin: '' });
   signinEmailInput = signal('');
   pledgeAccepted = signal(false);
