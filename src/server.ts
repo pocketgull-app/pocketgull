@@ -480,8 +480,20 @@ async function getApiKey(req?: express.Request): Promise<string> {
   const clientKey = req?.headers?.['x-gemini-api-key'] || req?.headers?.['X-Gemini-API-Key'];
   if (typeof clientKey === 'string' && clientKey.trim()) {
     const trimmed = clientKey.trim();
-    process.env['GEMINI_API_KEY'] = trimmed;
-    return trimmed;
+    if (trimmed.startsWith('sk_live_')) {
+      // Validate federated API key
+      const tenantId = await apiKeyService.validateKey(trimmed);
+      if (!tenantId) {
+        throw new Error('Invalid or revoked API key.');
+      }
+      if (req) {
+        req.headers['x-tenant-id'] = tenantId; // Inject for downstream tracking
+      }
+      // Continue to fetch the real system GEMINI_API_KEY from Secret Manager
+    } else {
+      process.env['GEMINI_API_KEY'] = trimmed;
+      return trimmed;
+    }
   }
 
   if (geminiApiKeyCached !== null) {
@@ -580,6 +592,9 @@ import { createAiRouter } from './server/routes/ai.routes';
 import { createPatientsRouter } from './server/routes/patients.routes';
 import { createUtilityRouter } from './server/routes/utility.routes';
 import { slackRouter } from './server/routes/slack.routes';
+import { createApiKeysRouter } from './server/routes/api-keys.routes';
+import { createBillingRouter } from './server/routes/billing.routes';
+import { apiKeyService } from './server/services/api-key.service';
 
 app.use('/api/slack', slackRouter);
 
@@ -604,6 +619,8 @@ const routeDeps = { getApiKey, getGcpAccessToken, normalizeAndValidateModel };
 
 app.use('/api/ai', createAiRouter(routeDeps));
 app.use('/api/patients', createPatientsRouter());
+app.use('/api/keys', createApiKeysRouter());
+app.use('/api/billing', createBillingRouter());
 
 const utilityRouter = createUtilityRouter({ getApiKey, rootDir });
 app.use('/api', utilityRouter);
@@ -815,102 +832,189 @@ if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERV
       }
     });
 
-    wss.on('connection', async (wsClient, request) => {
+    wss.on('connection', (wsClient, request) => {
       console.log('[WS Proxy] Client connected to /ws/gemini-live');
       
       let vertexClient: WebSocket | null = null;
       const messageQueue: string[] = [];
       let isConnecting = true;
-      let token: string | null = null;
+      let tokenPromise = getGcpAccessToken().catch(err => {
+        console.warn('Failed to get GCP token early:', err);
+        return null;
+      });
+      
+      let setupPromise: Promise<void> | null = null;
 
-      try {
-        const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
-        const location = process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1';
-        
-        token = await getGcpAccessToken();
-        
-        if (!token) {
-          const urlObj = new URL(request.url || '', 'http://localhost');
-          const keyParam = urlObj.searchParams.get('key') || process.env['GEMINI_API_KEY'] || '';
-          const devUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${keyParam}`;
+      const connectToVertex = async (keyParam: string) => {
+        try {
+          const token = await tokenPromise;
+          const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
+          const location = process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1';
           
-          console.log('[WS Proxy] Falling back to Developer Live WS API');
-          vertexClient = new WebSocket(devUrl);
-        } else {
-          const vertexUrl = `wss://${location}-aiplatform.googleapis.com/ws/google.cloud.aiplatform.v1.LlmBidiService/BidiGenerateContent`;
-          console.log(`[WS Proxy] Connecting to Vertex AI Live WS: ${vertexUrl}`);
-          
-          vertexClient = new WebSocket(vertexUrl, {
-            headers: {
-              'Authorization': `Bearer ${token}`
+          if (!token) {
+            const devUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${keyParam}`;
+            console.log('[WS Proxy] Falling back to Developer Live WS API');
+            vertexClient = new WebSocket(devUrl);
+          } else {
+            const vertexUrl = `wss://${location}-aiplatform.googleapis.com/ws/google.cloud.aiplatform.v1.LlmBidiService/BidiGenerateContent`;
+            console.log(`[WS Proxy] Connecting to Vertex AI Live WS: ${vertexUrl}`);
+            
+            vertexClient = new WebSocket(vertexUrl, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+          }
+
+          vertexClient.on('open', () => {
+            console.log('[WS Proxy] Backend Live WS connection established');
+            isConnecting = false;
+            while (messageQueue.length > 0) {
+              const msg = messageQueue.shift();
+              if (msg) vertexClient?.send(msg);
             }
           });
+
+          vertexClient.on('message', (data) => {
+            try {
+              const text = data.toString();
+              const json = JSON.parse(text);
+              const camelJson = translateToCamel(json);
+              wsClient.send(JSON.stringify(camelJson));
+            } catch (err) {
+              wsClient.send(data);
+            }
+          });
+
+          vertexClient.on('close', (code, reason) => {
+            console.log(`[WS Proxy] Backend Live WS closed: ${code} - ${reason.toString()}`);
+            wsClient.close(code, reason);
+          });
+
+          vertexClient.on('error', (err) => {
+            console.error('[WS Proxy] Backend Live WS error:', err);
+            wsClient.close(1011, 'Backend connection error');
+          });
+        } catch (err: unknown) {
+          const msg = (err as Error)?.message || 'Initialization failed';
+          console.error('[WS Proxy] Initialization failed:', msg);
+          wsClient.close(1011, msg);
         }
-
-        vertexClient.on('open', () => {
-          console.log('[WS Proxy] Backend Live WS connection established');
-          isConnecting = false;
-          while (messageQueue.length > 0) {
-            const msg = messageQueue.shift();
-            if (msg) vertexClient?.send(msg);
-          }
-        });
-
-        vertexClient.on('message', (data) => {
-          try {
-            const text = data.toString();
-            const json = JSON.parse(text);
-            const camelJson = translateToCamel(json);
-            wsClient.send(JSON.stringify(camelJson));
-          } catch (err) {
-            wsClient.send(data);
-          }
-        });
-
-        vertexClient.on('close', (code, reason) => {
-          console.log(`[WS Proxy] Backend Live WS closed: ${code} - ${reason.toString()}`);
-          wsClient.close(code, reason);
-        });
-
-        vertexClient.on('error', (err) => {
-          console.error('[WS Proxy] Backend Live WS error:', err);
-          wsClient.close(1011, 'Backend connection error');
-        });
-
-      } catch (err: unknown) {
-        const msg = (err as Error)?.message || 'Initialization failed';
-        console.error('[WS Proxy] Initialization failed:', msg);
-        wsClient.close(1011, msg);
-        return;
-      }
+      };
 
       wsClient.on('message', (message) => {
-        try {
+        if (!setupPromise) {
           const text = message.toString();
-          let json = JSON.parse(text);
+          try {
+            let json = JSON.parse(text);
+            if (json.setup) {
+              setupPromise = (async () => {
+                try {
+                  const urlObj = new URL(request.url || '', 'http://localhost');
+                  const keyParam = urlObj.searchParams.get('key') || process.env['GEMINI_API_KEY'] || '';
+                  const token = await tokenPromise;
+                  
+                  // Extract patient text for RAG query
+                  let userTextForSearch = '';
+                  if (json.setup.systemInstruction?.parts?.[0]?.text) {
+                     userTextForSearch = json.setup.systemInstruction.parts[0].text;
+                  }
+
+                  // 1. Perform Vertex AI Search query if token is present
+                  if (token && userTextForSearch) {
+                    try {
+                      const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
+                      const engineId = 'pocketgull-assistant';
+                      const endpoint = `https://discoveryengine.googleapis.com/v1/projects/${projectId}/locations/global/collections/default_collection/engines/${engineId}/servingConfigs/default_search:search`;
+                      
+                      const patientDataMatch = userTextForSearch.match(/Patient Data:\n([\s\S]+)$/i);
+                      const queryText = patientDataMatch ? patientDataMatch[1] : userTextForSearch;
+
+                      const searchRes = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': `Bearer ${token}`,
+                          'Content-Type': 'application/json',
+                          'x-goog-user-project': projectId
+                        },
+                        body: JSON.stringify({
+                          query: queryText.substring(0, 1000),
+                          pageSize: 5
+                        }),
+                        signal: AbortSignal.timeout(3000)
+                      });
+
+                      if (searchRes.ok) {
+                        const data = await searchRes.json();
+                        if (data && data.results && data.results.length > 0) {
+                          const hits = data.results.map((r: any) => {
+                            const title = r.document?.derivedStructData?.title || 'Protocol';
+                            const snippet = r.document?.derivedStructData?.snippets?.[0]?.snippet || '';
+                            return `- **${title}**: ${snippet}`;
+                          }).join('\n');
+                          const ragContext = `\n\nVERTEX AI SEARCH RAG GROUNDING (Enterprise App Builder):\n${hits}\n\nUse these validated enterprise protocols when formulating your response.`;
+                          json.setup.systemInstruction.parts[0].text += ragContext;
+                          console.log('[WS Proxy] Successfully appended Clinical RAG protocols');
+                        }
+                      }
+                    } catch (ragError) {
+                      console.warn('[WS Proxy] Clinical RAG Vertex Search failed or timed out:', (ragError as Error)?.message);
+                    }
+                  }
+
+                  // 2. Adjust Model Path
+                  if (token) {
+                    const rawModel = (json.setup.model || 'gemini-2.0-flash-exp').replace(/^models\//, '');
+                    const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
+                    const location = process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1';
+                    json.setup.model = `projects/${projectId}/locations/${location}/publishers/google/models/${rawModel}`;
+                  }
+
+                  // 3. Connect to Vertex
+                  await connectToVertex(keyParam);
+
+                  // 4. Send the augmented setup payload
+                  const snakeJson = translateToSnake(json);
+                  const payload = JSON.stringify(snakeJson);
+                  messageQueue.push(payload);
+
+                } catch (err: unknown) {
+                   const msg = (err as Error)?.message || 'Setup processing failed';
+                   console.error('[WS Proxy] Setup processing failed:', msg);
+                   wsClient.close(1011, msg);
+                }
+              })();
+              return;
+            }
+          } catch (e) {}
           
-          if (json.setup && token) {
-            const rawModel = (json.setup.model || 'gemini-2.0-flash-exp').replace(/^models\//, '');
-            const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
-            const location = process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1';
-            json.setup.model = `projects/${projectId}/locations/${location}/publishers/google/models/${rawModel}`;
-          }
-
-          const snakeJson = translateToSnake(json);
-          const payload = JSON.stringify(snakeJson);
-
-          if (isConnecting) {
-            messageQueue.push(payload);
-          } else {
-            vertexClient?.send(payload);
-          }
-        } catch (err) {
-          if (isConnecting) {
-            messageQueue.push(message.toString());
-          } else {
-            vertexClient?.send(message);
-          }
+          setupPromise = Promise.resolve();
+          connectToVertex(new URL(request.url || '', 'http://localhost').searchParams.get('key') || '');
         }
+
+        // Handle all non-setup messages sequentially after setup completes
+        setupPromise.then(() => {
+           try {
+             const text = message.toString();
+             let json = JSON.parse(text);
+             if (json.setup) return;
+
+             const snakeJson = translateToSnake(json);
+             const payload = JSON.stringify(snakeJson);
+
+             if (isConnecting) {
+               messageQueue.push(payload);
+             } else {
+               vertexClient?.send(payload);
+             }
+           } catch (err) {
+             if (isConnecting) {
+               messageQueue.push(message.toString());
+             } else {
+               vertexClient?.send(message);
+             }
+           }
+        });
       });
 
       wsClient.on('close', (code, reason) => {

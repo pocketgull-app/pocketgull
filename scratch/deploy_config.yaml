@@ -1,0 +1,22 @@
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-pocket-gull-v2'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'pocket-gull-v2'
+      - '--image=us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocket-gull-v2:latest'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-pocket-gull'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'pocket-gull'
+      - '--image=us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocket-gull-v2:latest'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'

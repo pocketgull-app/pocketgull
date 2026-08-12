@@ -160,7 +160,7 @@ export class ComponentDrilldownUnitComponent {
   readonly targetComponent = signal<DrilldownTarget>(null);
   readonly activeLens = signal<DrilldownLens>('evidence');
 
-  constructor(private patientState: PatientStateService = {} as any) {}
+  private patientState = inject(PatientStateService);
 
   readonly patientName = computed(() => this.patientState.patientName() || 'Patient');
 

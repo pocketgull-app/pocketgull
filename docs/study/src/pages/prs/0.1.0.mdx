@@ -1,0 +1,69 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: "PR: v0.1.0"
+---
+
+---
+
+## PR: feat(release): general updates and improvements for 0.1.0
+
+### Description
+This PR corresponds to the release **v0.1.0**.
+General updates and improvements for 0.1.0
+
+### Changelog Entry
+- **Care Plan Recommendation Engine**: A structured AI analysis module categorizing recommendations into Overview, Interventions, Monitoring, and Education.
+- **Task Bracketing System**: Interactive UI allowing clinicians to Accept, Reject, or Modify AI-generated interventions before finalizing.
+- **Live Voice Consult (Aura)**: An integrated voice assistant agent for real-time collaboration on patient strategies. Includes a dedicated chat interface with speech-to-text integration.
+- **3D Body Viewer Integration**: Visual anatomical mapping tools to correlate physical symptoms with digital chart records.
+- **Automated Clinical Task Extraction**: Parses unstructured clinical notes into actionable checklist items.
+- **Biometric Telemetry Visualization**: Chart.js integration providing retrospective trend analysis for patient blood pressure and pain metrics.
+- **Preview & Print Final Care Plan**: A dedicated modal to review, edit, and print the finalized patient care strategy before charting.
+- Re-architected core layouts for a responsive 3-column split view (Medical Chart, Intake Flow, and Analysis/Voice Assistant).
+- Optimized client-side payload delivery via Express compression (Gzip/Brotli) and structural font preconnections.
+- Upgraded UI interactions with modern tailwind aesthetics, smooth transitions, and dynamic hover states across all components.
+- Addressed infinite reactivity loops within the Intake Form component upon body part selection.
+- Corrected Voice Assistant triggering bugs preventing the component from rendering on mobile and desktop viewports.
+- Handled improper API Key rejection formatting from the Gemini API service, surfacing graceful UI alerts instead of silent failures.
+
+### Type of change
+- [ ] Bug fix (`fix`)
+- [x] New feature (`feat`)
+- [ ] Security fix (`security`)
+- [ ] Refactoring (`refactor`)
+- [ ] Documentation update (`docs`)
+- [ ] Testing/CI update (`test`, `ci`)
+- [ ] Clinical Intelligence & AI Prompting
+- [ ] 3D Anatomical Spatial Lens (Three.js)
+- [ ] Voice / Hardware Telemetry
+- [ ] Companion App (Flutter / Dart)
+
+## ☯️ Clinical Paradigms Touched
+- [ ] 🔵 Western Allopathic
+- [ ] 🟢 Eastern TCM (Traditional Chinese Medicine)
+- [ ] 🟡 Ayurvedic Medicine
+
+## Core Integration Checklist:
+- [x] My commit messages follow the Conventional Commits format (max 72 chars subject, imperative mood).
+- [x] My branch compiles with zero errors (`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`).
+- [x] I have performed a self-review of my own code.
+- [x] New and existing unit tests pass locally with my changes (`npm test`).
+- [x] I have run the local security audit (`npm run sentinel:audit`).
+
+## Domain-Specific Quality Gates (Check all that apply):
+### 🏥 Clinical AI & Safety
+- [ ] **Safety Filters:** Verified `DANGEROUS_CONTENT` remains `OFF` for clinical text to prevent false-positive blocks on standard-of-care plans.
+- [ ] **Evidence Literacy:** Clinical recommendations include demarcated evidence tiers (Level A/B/C) and Cochrane Risk of Bias considerations.
+- [ ] **Skeptical Epistemology:** If computing p-values, findings where $p \ge 0.05$ trigger the `skepticalWarningNotice`.
+
+### 🔒 Privacy & Data Sovereignty
+- [ ] **FHIR R4:** Serialized patient data structures conform strictly to the FHIR R4 Bundle standard.
+- [ ] **Logging Integrity:** No raw user inputs or un-sanitized PHI strings are passed to server loggers.
+- [ ] **De-Identification:** New mock patient data adheres to HIPAA §164.514 Safe Harbor standards (or preserves historical luminaries).
+- [ ] **CodeQL & Egress Guard:** Verified zero new SSRF, path traversal, or log injection vulnerabilities, and local Sentinel whitelists remain intact.
+
+### 🎨 Dieter Rams UX & Accessibility
+- [ ] **Functional Aesthetics:** Adheres to Dieter Rams principles ("Weniger, aber besser")—no unnecessary UI bloat or non-structural rounded pills.
+- [ ] **Fitts's Law:** All new touch targets and buttons are at least 44x44px.
+- [ ] **WCAG & Neurodiversity:** UI changes maintain 7:1 contrast ratios and respect `prefers-reduced-motion` for animations.
+

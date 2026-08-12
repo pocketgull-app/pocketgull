@@ -1,8 +1,31 @@
-import { describe, it, expect } from 'vitest';
+import '@angular/compiler';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { Injector, runInInjectionContext, PLATFORM_ID, ɵChangeDetectionScheduler as ChangeDetectionScheduler } from '@angular/core';
 import { ComponentDrilldownUnitComponent } from './component-drilldown-unit.component';
+import { PatientStateService } from '../services/patient-state.service';
+import { ThemeService } from '../services/theme.service';
+import { ActuarialLongevityService } from '../services/actuarial-longevity.service';
+import { StorageService } from '../services/storage.service';
+import { GamificationService } from '../services/gamification.service';
 
 describe('ComponentDrilldownUnitComponent', () => {
-  const component = new ComponentDrilldownUnitComponent();
+  let component: ComponentDrilldownUnitComponent;
+
+  beforeEach(() => {
+    const injector = Injector.create({
+      providers: [
+        { provide: ChangeDetectionScheduler, useValue: { schedule: () => {}, notify: () => {} } },
+        { provide: PLATFORM_ID, useValue: 'server' },
+        ThemeService,
+        StorageService,
+        GamificationService,
+        ActuarialLongevityService,
+        PatientStateService,
+        ComponentDrilldownUnitComponent
+      ]
+    });
+    component = runInInjectionContext(injector, () => injector.get(ComponentDrilldownUnitComponent));
+  });
 
   it('1. Starts closed with null targetComponent', () => {
     expect(component.targetComponent()).toBeNull();

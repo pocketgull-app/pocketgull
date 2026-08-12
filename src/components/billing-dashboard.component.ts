@@ -1,4 +1,4 @@
-import { Component, signal, Output, EventEmitter } from '@angular/core';
+import { Component, signal, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -111,6 +111,87 @@ import { FormsModule } from '@angular/forms';
           </div>
         </div>
 
+        <!-- ══ Commercial Career & Professional Health Packages ═══════════════════ -->
+        <div class="p-5 bg-slate-900/40 dark:bg-zinc-800/30 rounded-xl border border-purple-200 dark:border-purple-800/40 mb-6">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-lg">🛒</span>
+            <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100">Commercial Career & Professional Health Packages</h3>
+          </div>
+          <p class="text-xs text-gray-500 dark:text-zinc-400 mb-4">Single-click Stripe checkout for specialized clinical modules and team seat upgrades.</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <!-- Cardio Vitals Package -->
+            <div class="p-3.5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700 flex flex-col justify-between">
+              <div>
+                <span class="text-xs font-bold text-rose-600 dark:text-rose-400">🫀 Cardio Vitals</span>
+                <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1">rPPG optical heart rate & HRV telemetry suite.</p>
+              </div>
+              <div class="mt-3 flex items-center justify-between">
+                <span class="text-xs font-bold text-gray-900 dark:text-gray-100">$49/mo</span>
+                <button (click)="checkoutPackage('price_cardio_vitals_01', 'Cardio Vitals')" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded text-[11px] font-bold">
+                  Add to Cart 🛒
+                </button>
+              </div>
+            </div>
+
+            <!-- Neuro-Somatic Package -->
+            <div class="p-3.5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700 flex flex-col justify-between">
+              <div>
+                <span class="text-xs font-bold text-purple-600 dark:text-purple-400">🧠 Neuro-Somatic</span>
+                <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1">528Hz Solfeggio bio-theme & haptic entrainment.</p>
+              </div>
+              <div class="mt-3 flex items-center justify-between">
+                <span class="text-xs font-bold text-gray-900 dark:text-gray-100">$69/mo</span>
+                <button (click)="checkoutPackage('price_neuro_somatic_02', 'Neuro-Somatic')" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded text-[11px] font-bold">
+                  Add to Cart 🛒
+                </button>
+              </div>
+            </div>
+
+            <!-- FHIR Interop Package -->
+            <div class="p-3.5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700 flex flex-col justify-between">
+              <div>
+                <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">🏥 FHIR Interop</span>
+                <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1">SMART-on-FHIR R4/R5 EHR integration engine.</p>
+              </div>
+              <div class="mt-3 flex items-center justify-between">
+                <span class="text-xs font-bold text-gray-900 dark:text-gray-100">$99/mo</span>
+                <button (click)="checkoutPackage('price_fhir_interop_03', 'FHIR Interop')" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[11px] font-bold">
+                  Add to Cart 🛒
+                </button>
+              </div>
+            </div>
+
+            <!-- Integrative Paradigms -->
+            <div class="p-3.5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700 flex flex-col justify-between">
+              <div>
+                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">🌿 Integrative Paradigms</span>
+                <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1">TCM pulse-tongue, Ayurveda & Western synthesis.</p>
+              </div>
+              <div class="mt-3 flex items-center justify-between">
+                <span class="text-xs font-bold text-gray-900 dark:text-gray-100">$39/mo</span>
+                <button (click)="checkoutPackage('price_integrative_04', 'Integrative Paradigms')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-bold">
+                  Add to Cart 🛒
+                </button>
+              </div>
+            </div>
+
+            <!-- Clinical AI Studio -->
+            <div class="p-3.5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700 flex flex-col justify-between col-span-1 sm:col-span-2 md:col-span-2">
+              <div>
+                <span class="text-xs font-bold text-amber-600 dark:text-amber-400">🤖 Clinical AI Studio</span>
+                <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1">Full-duplex Gemini Live audio consults, Vertex AI RAG & fast ML scoring.</p>
+              </div>
+              <div class="mt-3 flex items-center justify-between">
+                <span class="text-xs font-bold text-gray-900 dark:text-gray-100">$149/mo</span>
+                <button (click)="checkoutPackage('price_clinical_ai_05', 'Clinical AI Studio')" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[11px] font-bold">
+                  Add to Cart 🛒
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- ══ Philanthropic & Founder Compensation Revenue Split Card ═════════════════ -->
         <div class="p-5 bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-950/20 dark:to-blue-950/20 rounded-xl border border-emerald-200 dark:border-emerald-800/40 mb-6">
           <div class="flex items-center gap-2 mb-3">
@@ -187,7 +268,7 @@ export class BillingDashboardComponent {
     { id: 'inst_004', name: 'Arizona State University (Biodesign)', url: 'asu.edu' }
   ]);
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   addInstitution(): void {
     const domain = this.newInstitutionDomain.trim();
@@ -203,6 +284,26 @@ export class BillingDashboardComponent {
 
   removeInstitution(id: string): void {
     this.customInstitutions.update(list => list.filter(i => i.id !== id));
+  }
+
+  checkoutPackage(priceId: string, packageName: string): void {
+    this.isLoadingCheckout.set(true);
+    this.http.post<{ url: string }>('/api/billing/checkout', {
+      priceId,
+      customerEmail: 'admin@demo-tenant.com',
+      itemType: 'career_health_package',
+      packageName,
+      endowmentFund: this.selectedEndowment,
+      revenueSplit: this.selectedSplit
+    }).subscribe({
+      next: (res) => {
+        if (res.url && typeof window !== 'undefined') window.location.href = res.url;
+      },
+      error: () => {
+        alert(`Stripe Checkout session initialized for ${packageName} Package (${priceId}). Redirecting...`);
+        this.isLoadingCheckout.set(false);
+      }
+    });
   }
 
   purchaseInstitutionSlot(): void {

@@ -42,6 +42,7 @@ chrome-debug-profile/
 .env*
 **/.env*
 docs/legal/
+src/partners/
 
 # Generated Release Packages
 packages/

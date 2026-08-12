@@ -1,12 +1,16 @@
-import { TestBed } from '@angular/core/testing';
+import '@angular/compiler';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { StanfordHciClinicalLensService } from './stanford-hci-clinical-lens.service';
 
 describe('StanfordHciClinicalLensService', () => {
   let service: StanfordHciClinicalLensService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(StanfordHciClinicalLensService);
+    const injector = Injector.create({
+      providers: [StanfordHciClinicalLensService]
+    });
+    service = runInInjectionContext(injector, () => injector.get(StanfordHciClinicalLensService));
   });
 
   it('1. Initializes Stanford HCI principles list', () => {

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, HostListener, ElementRef, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientManagementService } from '../services/patient-management.service';
@@ -217,7 +217,7 @@ export class PatientDropdownComponent {
     }
   }
 
-  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
   filteredPatients = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -281,8 +281,11 @@ export class PatientDropdownComponent {
   }
 
   triggerImport() {
-    this.fileInput.nativeElement.value = ''; // Reset so same file can be re-selected
-    this.fileInput.nativeElement.click();
+    const input = this.fileInput()?.nativeElement;
+    if (input) {
+      input.value = '';
+      input.click();
+    }
   }
 
   async onFileSelected(event: Event) {

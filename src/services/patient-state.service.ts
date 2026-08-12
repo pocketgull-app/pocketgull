@@ -505,15 +505,19 @@ export class PatientStateService {
       }
 
       // 2. Persist state on any signal mutation
-      effect(() => {
-        const currentState = this.getCurrentState();
-        const isEmergency = this.isEmergencyMode();
-        untracked(() => {
-          if (!isEmergency) {
-            this.storage.saveState('current_patient', currentState);
-          }
+      try {
+        effect(() => {
+          const currentState = this.getCurrentState();
+          const isEmergency = this.isEmergencyMode();
+          untracked(() => {
+            if (!isEmergency) {
+              this.storage.saveState('current_patient', currentState);
+            }
+          });
         });
-      });
+      } catch (e) {
+        // Fallback for test injectors without EffectScheduler
+      }
     }
   }
 

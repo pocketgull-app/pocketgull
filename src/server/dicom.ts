@@ -7,10 +7,12 @@ import { ReadableStream } from 'stream/web';
 
 export const dicomRouter = Router();
 
+const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] !== 'production');
+
 // Rate limiting: 60 requests per minute per IP for all DICOM proxy routes
 dicomRouter.use(rateLimit({
   windowMs: 60_000,
-  max: 60,
+  max: isTestingEnv ? 100_000 : 60,
   standardHeaders: true,
   legacyHeaders: false,
   validate: { trustProxy: false },

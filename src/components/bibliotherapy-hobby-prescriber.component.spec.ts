@@ -2,7 +2,7 @@ import '@angular/compiler';
 import { describe, it, expect } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { BibliotherapyHobbyPrescriberComponent } from './bibliotherapy-hobby-prescriber.component';
-import { BioHapticFeedbackService } from '../services/bio-haptic-feedback.service';
+import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedback.service';
 
 describe('BibliotherapyHobbyPrescriberComponent', () => {
   const createComponent = () => {

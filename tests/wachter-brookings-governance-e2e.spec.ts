@@ -6,9 +6,10 @@ import { ThemeService } from '../src/services/theme.service';
 import { StorageService } from '../src/services/storage.service';
 import { GamificationService } from '../src/services/gamification.service';
 import { ActuarialLongevityService } from '../src/services/actuarial-longevity.service';
-import { FhirR5TelemetryService } from '../src/services/fhir-r5-telemetry.service';
+import { FhirR5TelemetryService } from '../src/services/fhir/fhir-r5-telemetry.service';
+import { FhirBundleFactoryService } from '../src/services/fhir/fhir-bundle-factory.service';
 import { SkepticalEpistemologyService } from '../src/services/skeptical-epistemology.service';
-import { FhirIntegrationService } from '../src/services/fhir-integration.service';
+import { FhirIntegrationService } from '../src/services/fhir/fhir-integration.service';
 import { RpmAuditService } from '../src/services/rpm-audit.service';
 
 describe('Wachter & Brookings AI Governance Integration Suite (End-to-End)', () => {
@@ -37,6 +38,7 @@ describe('Wachter & Brookings AI Governance Integration Suite (End-to-End)', () 
         { provide: PatientStateService, useFactory: () => new PatientStateService() },
         { provide: FhirR5TelemetryService, useFactory: () => new FhirR5TelemetryService() },
         { provide: SkepticalEpistemologyService, useFactory: () => new SkepticalEpistemologyService() },
+        FhirBundleFactoryService,
         { provide: FhirIntegrationService, useFactory: () => new FhirIntegrationService() },
         { provide: RpmAuditService, useFactory: () => new RpmAuditService() }
       ]

@@ -88,7 +88,7 @@ action_setup_environment() {
         echo -e "  ${SPARK_WARM_AMBER}Installing pinned sidecar requirements (FastAPI, NumPy, SciPy, scikit-learn)...${RESET}"
         source .venv/bin/activate
         pip install --require-hashes -r requirements-bootstrap.txt --quiet
-        pip install -r requirements.txt --quiet
+        pip install --require-hashes -r requirements.txt --quiet
         echo -e "  ${SPARK_EMERALD}✓ Python FastAPI sidecar environment successfully initialized.${RESET}\n"
     fi
 

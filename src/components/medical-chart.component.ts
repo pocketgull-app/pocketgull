@@ -3,7 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { IPatientState, IPatient, HistoryEntry } from '../services/patient.types';
-import { BodyViewerComponent } from './body-viewer.component';
+import { BodyViewerComponent } from './anatomy-3d/body-viewer.component';
 import { PatientHistoryTimelineComponent } from './patient-history-timeline.component';
 import { DictationService } from '../services/dictation.service';
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';

@@ -43,9 +43,15 @@ npm test
 ## 🔀 Branching & Pull Request Process
 
 1. **Branch Naming**: Use descriptive branch names (`feature/wacom-pressure-telemetry`, `fix/care-plan-pdf-export`, `security/codeql-remediation`).
-2. **Commit Messages**: Write clear, imperative commit messages (`Fix Markdown parser fallback in Care Plan PDF export`).
+2. **Commit Messages**: We strictly follow the **Conventional Commits** specification: `<type>(<scope>): <description>`.
+   - **Subject Line**: Strictly **72 characters or fewer**. Use imperative mood ("add", "fix"), do NOT capitalize the first letter, and no period at the end.
+   - **Types**: `feat`, `fix`, `docs`, `test`, `security`, `chore`, `refactor`, `perf`, `style`, `ci`, `build`.
+   - **Body**: Wrap at 80 characters. Explain *why* the change was made, not *what*. Prefix with `BREAKING CHANGE:` if applicable.
 3. **Automated Audits**: Ensure your branch compiles with zero errors (`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`).
-4. **Pull Request Review**: Submit your PR targeting `main`. Automated GitHub Actions will run CodeQL, Sentinel egress audits, and dependency review scanners.
+4. **Pull Request Descriptions**: PR descriptions must be written to cleanly translate into our `CHANGELOG.md` history. PR descriptions should use the following format for each major change:
+   - **Format**: `- **[Subsystem / Area] Short Feature Name (\`impacted-file.ts\`)**:`
+   - Include nested bullet points detailing exactly what was added, fixed, or modified.
+5. **Pull Request Review**: Submit your PR targeting `main`. Automated GitHub Actions will run CodeQL, Sentinel egress audits, and dependency review scanners.
 
 ---
 

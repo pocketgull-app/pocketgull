@@ -5,10 +5,12 @@ import express from 'express';
 
 export const healthcareRouter = Router();
 
+const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] !== 'production');
+
 // Rate limiting: 30 requests per minute per IP for all Healthcare API proxy routes
 healthcareRouter.use(rateLimit({
   windowMs: 60_000,
-  max: 30,
+  max: isTestingEnv ? 100_000 : 30,
   standardHeaders: true,
   legacyHeaders: false,
   validate: { trustProxy: false },

@@ -59,6 +59,7 @@ export class AdkLiveService {
   public connectionError = signal<string | null>(null);
   public latencyMs = signal<number>(145); // Sub-200ms streaming latency tracker
   public selectedVoice = signal<string>('Aoede'); // HD Voice target
+  public conversationHistory = signal<{ role: 'user' | 'model'; text: string }[]>([]);
 
   private audioContext: AudioContext | null = null;
   private mediaStream: MediaStream | null = null;
@@ -535,6 +536,37 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
       this.isConnected.set(false);
       this.isListening.set(false);
       this.isSpeaking.set(false);
+    });
+  }
+
+  /**
+   * Simulates real-time token/audio streaming chunks for automated testing
+   * without establishing a physical WebSocket connection.
+   */
+  public simulateLiveStreamResponse(chunks: string[], delayMs: number = 100): void {
+    this.runInZone(() => {
+      this.isConnected.set(true);
+      this.isSpeaking.set(true);
+      this.latestTranscript.set('');
+    });
+
+    let current = '';
+    chunks.forEach((chunk, index) => {
+      setTimeout(() => {
+        current += chunk;
+        this.runInZone(() => {
+          this.latestTranscript.set(current);
+          this.latencyMs.set(Math.round(120 + Math.random() * 30));
+        });
+
+        if (index === chunks.length - 1) {
+          setTimeout(() => {
+            this.runInZone(() => {
+              this.isSpeaking.set(false);
+            });
+          }, 300);
+        }
+      }, (index + 1) * delayMs);
     });
   }
 }

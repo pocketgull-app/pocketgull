@@ -71,6 +71,20 @@ const versions = [
   </script>
 </head>
 <body>
+  <!-- Living Papercraft Background Layer -->
+  <div class="docs-backdrop">
+    <div class="docs-glow"></div>
+    <svg class="docs-wave docs-wave-back" viewBox="0 0 2880 200" preserveAspectRatio="none">
+      <path d="M 0 100 Q 720 40 1440 100 T 2880 100 L 2880 200 L 0 200 Z"></path>
+    </svg>
+    <svg class="docs-wave docs-wave-mid" viewBox="0 0 2880 200" preserveAspectRatio="none">
+      <path d="M 0 120 Q 720 70 1440 120 T 2880 120 L 2880 200 L 0 200 Z"></path>
+    </svg>
+    <svg class="docs-wave docs-wave-front" viewBox="0 0 2880 200" preserveAspectRatio="none">
+      <path d="M 0 140 Q 720 100 1440 140 T 2880 140 L 2880 200 L 0 200 Z"></path>
+    </svg>
+  </div>
+
   <!-- Top Navbar -->
   <nav class="docs-nav">
     <div class="nav-inner">
@@ -282,6 +296,73 @@ const versions = [
 </style>
 
 <style>
+  .docs-backdrop {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+    mix-blend-mode: screen;
+    opacity: 0.6;
+  }
+  
+  .docs-glow {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 900px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(62, 188, 158, 0.15) 0%, rgba(250, 166, 59, 0.1) 40%, rgba(239, 102, 88, 0.15) 80%, transparent 100%);
+    filter: blur(80px);
+    animation: docs-pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes docs-pulse {
+    0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+    50% { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
+  }
+
+  .docs-wave {
+    position: absolute;
+    bottom: -1rem;
+    min-width: 200vw;
+  }
+
+  .docs-wave-back {
+    left: -20%; width: 240%; height: 45%;
+    opacity: 0.9;
+    fill: rgba(62, 188, 158, 0.08);
+    animation: docs-wave-sway 18s ease-in-out infinite alternate;
+  }
+
+  .docs-wave-mid {
+    left: -10%; width: 220%; height: 35%;
+    fill: rgba(239, 102, 88, 0.08);
+    animation: docs-wave-sway 14s ease-in-out infinite alternate-reverse;
+  }
+
+  .docs-wave-front {
+    left: 0; width: 200%; height: 50%;
+    fill: rgba(250, 166, 59, 0.08);
+    animation: docs-wave-sway 10s ease-in-out infinite alternate;
+  }
+
+  @keyframes docs-wave-sway {
+    0% { transform: translateX(0) scaleY(1); }
+    50% { transform: translateX(-2%) scaleY(1.05); }
+    100% { transform: translateX(0) scaleY(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .docs-glow, .docs-wave-back, .docs-wave-mid, .docs-wave-front {
+      animation: none !important;
+    }
+  }
+
   .docs-nav {
     position: sticky;
     top: 0;
@@ -517,6 +598,8 @@ const versions = [
 
   /* Container: sidebar + main */
   .docs-container {
+    position: relative;
+    z-index: 10;
     display: flex;
     max-width: 1200px;
     margin: 0 auto;

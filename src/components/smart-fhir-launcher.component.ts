@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SmartOnFhirLauncherService } from '../services/smart-on-fhir-launcher.service';
+import { SmartOnFhirLauncherService } from '../services/fhir/smart-on-fhir-launcher.service';
 
 @Component({
   selector: 'app-smart-fhir-launcher',

@@ -51,7 +51,7 @@ export interface IToothData {
       </div>
 
       <!-- Oral Microbiome & Salivary Health Dashboard -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
         <div class="p-3 bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 rounded-xl space-y-1">
           <span class="text-[11px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider block">Salivary pH Buffer</span>
           <div class="text-lg font-black text-teal-600 dark:text-teal-400 font-mono">{{ salivaryPh() }}</div>
@@ -68,8 +68,87 @@ export interface IToothData {
 
         <div class="p-3 bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 rounded-xl space-y-1">
           <span class="text-[11px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider block">Periodontal Sites &ge; 4mm</span>
-          <div class="text-lg font-black text-rose-500 font-mono">{{ deepProbingSitesCount() }} sites</div>
+          <div class="text-lg font-black text-rose-500 font-mono">{{ deepProbingSitesCount() }} / 32 sites</div>
           <span class="text-[10px] text-gray-500 dark:text-zinc-400">LOINC 54568-1 PSR Score</span>
+        </div>
+
+        <div class="p-3 bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 rounded-xl space-y-1">
+          <span class="text-[11px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider block">Bleeding-on-Probing (%BOP)</span>
+          <div class="text-lg font-black text-amber-500 font-mono">{{ bopPercentage() }}%</div>
+          <span class="text-[10px] text-gray-500 dark:text-zinc-400">Gingival inflammation index</span>
+        </div>
+      </div>
+
+      <!-- Systemic Inflammatory Burden Index (SIBI) Cross-Talk Card -->
+      <div class="p-4 bg-gradient-to-r from-zinc-900 via-teal-950/40 to-zinc-900 border border-teal-500/40 rounded-2xl space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-teal-500/20 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🫀</span>
+            <div>
+              <h4 class="text-xs font-black uppercase tracking-wider text-teal-300">
+                Systemic Inflammatory Burden Index (SIBI: {{ sibiScore() }}/100)
+              </h4>
+              <p class="text-[10px] text-zinc-400">
+                Trans-epithelial bacteremia (P. gingivalis) cross-talk to cardiovascular risk & systemic HbA1c trajectory.
+              </p>
+            </div>
+          </div>
+
+          <!-- hs-CRP Input -->
+          <div class="flex items-center gap-2 bg-zinc-900/90 p-1.5 rounded-xl border border-zinc-700 text-xs">
+            <label class="text-[10px] text-zinc-400 font-bold uppercase">hs-CRP Serum:</label>
+            <input 
+              type="number" 
+              step="0.1" 
+              min="0" 
+              max="20"
+              [value]="hsCrpMgL()" 
+              (input)="updateHsCrp($event)"
+              class="w-14 px-1.5 py-0.5 bg-zinc-950 border border-zinc-700 rounded text-teal-300 font-mono text-center font-bold outline-none" />
+            <span class="text-[10px] text-zinc-500 font-mono">mg/L</span>
+          </div>
+        </div>
+
+        <!-- SIBI Gauges & Impact Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <!-- SIBI Score Progress Bar -->
+          <div class="space-y-1.5 bg-zinc-950/60 p-2.5 rounded-xl border border-zinc-800">
+            <div class="flex justify-between items-center text-[10px]">
+              <span class="text-zinc-400 font-bold uppercase">SIBI Inflammatory Index</span>
+              <span class="font-mono font-bold" [class.text-emerald-400]="sibiScore() < 25" [class.text-amber-400]="sibiScore() >= 25 && sibiScore() < 50" [class.text-rose-400]="sibiScore() >= 50">
+                {{ sibiScore() }} / 100
+              </span>
+            </div>
+            <div class="w-full bg-zinc-800 rounded-full h-2">
+              <div class="h-2 rounded-full transition-all duration-300"
+                   [style.width.%]="sibiScore()"
+                   [class.bg-emerald-500]="sibiScore() < 25"
+                   [class.bg-amber-500]="sibiScore() >= 25 && sibiScore() < 50"
+                   [class.bg-rose-500]="sibiScore() >= 50"></div>
+            </div>
+          </div>
+
+          <!-- Cardiovascular Risk Multiplier -->
+          <div class="bg-zinc-950/60 p-2.5 rounded-xl border border-zinc-800 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] text-zinc-400 font-bold uppercase block">Cardiovascular Risk</span>
+              <span class="text-[10px] text-zinc-500">Atherosclerotic Plaque Multiplier</span>
+            </div>
+            <div class="text-base font-black font-mono px-2 py-1 rounded bg-rose-950/60 border border-rose-500/40 text-rose-400">
+              {{ cardiovascularMultiplier() }}x
+            </div>
+          </div>
+
+          <!-- Predicted HbA1c Elevation -->
+          <div class="bg-zinc-950/60 p-2.5 rounded-xl border border-zinc-800 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] text-zinc-400 font-bold uppercase block">Glycemic Cytokine Shift</span>
+              <span class="text-[10px] text-zinc-500">TNF-&alpha;/IL-6 Insulin Resistance</span>
+            </div>
+            <div class="text-base font-black font-mono px-2 py-1 rounded bg-amber-950/60 border border-amber-500/40 text-amber-400">
+              +{{ predictedHba1cElevation() }}% HbA1c
+            </div>
+          </div>
         </div>
       </div>
 
@@ -212,6 +291,7 @@ export class TeledentistryOdontogramComponent {
 
   readonly selectedFdiCode = signal<number>(11);
   readonly salivaryPh = signal<number>(6.9);
+  readonly hsCrpMgL = signal<number>(1.5);
   readonly microbiomeRisk = signal<'Low' | 'Moderate' | 'High'>('Low');
 
   readonly pHStatus = computed(() => {
@@ -239,7 +319,26 @@ export class TeledentistryOdontogramComponent {
     { fdiCode: 25, name: 'Upper Left 2nd Premolar', quadrant: 2, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 3, bleedingOnProbing: false, wearGrade: 0 },
     { fdiCode: 26, name: 'Upper Left 1st Molar', quadrant: 2, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 3, bleedingOnProbing: false, wearGrade: 1 },
     { fdiCode: 27, name: 'Upper Left 2nd Molar', quadrant: 2, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 1 },
-    { fdiCode: 28, name: 'Upper Left 3rd Molar (Wisdom)', quadrant: 2, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 }
+    { fdiCode: 28, name: 'Upper Left 3rd Molar (Wisdom)', quadrant: 2, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+
+    // Mandibular Lower Arch (48 -> 38)
+    { fdiCode: 48, name: 'Lower Right 3rd Molar (Wisdom)', quadrant: 4, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+    { fdiCode: 47, name: 'Lower Right 2nd Molar', quadrant: 4, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 3, bleedingOnProbing: false, wearGrade: 1 },
+    { fdiCode: 46, name: 'Lower Right 1st Molar', quadrant: 4, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 3, bleedingOnProbing: false, wearGrade: 1 },
+    { fdiCode: 45, name: 'Lower Right 2nd Premolar', quadrant: 4, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+    { fdiCode: 44, name: 'Lower Right 1st Premolar', quadrant: 4, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+    { fdiCode: 43, name: 'Lower Right Canine', quadrant: 4, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+    { fdiCode: 42, name: 'Lower Right Lateral Incisor', quadrant: 4, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+    { fdiCode: 41, name: 'Lower Right Central Incisor', quadrant: 4, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+
+    { fdiCode: 31, name: 'Lower Left Central Incisor', quadrant: 3, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+    { fdiCode: 32, name: 'Lower Left Lateral Incisor', quadrant: 3, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+    { fdiCode: 33, name: 'Lower Left Canine', quadrant: 3, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+    { fdiCode: 34, name: 'Lower Left 1st Premolar', quadrant: 3, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+    { fdiCode: 35, name: 'Lower Left 2nd Premolar', quadrant: 3, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 },
+    { fdiCode: 36, name: 'Lower Left 1st Molar', quadrant: 3, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 4, bleedingOnProbing: true, wearGrade: 2 },
+    { fdiCode: 37, name: 'Lower Left 2nd Molar', quadrant: 3, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 3, bleedingOnProbing: false, wearGrade: 1 },
+    { fdiCode: 38, name: 'Lower Left 3rd Molar (Wisdom)', quadrant: 3, surfaces: { mesial: false, occlusal: false, distal: false, facial: false, lingual: false }, probingDepthMm: 2, bleedingOnProbing: false, wearGrade: 0 }
   ]);
 
   readonly activeToothData = computed(() => {
@@ -254,6 +353,38 @@ export class TeledentistryOdontogramComponent {
   readonly significantToothWearCount = computed(() => {
     return this.teeth().filter(t => t.wearGrade >= 2).length;
   });
+
+  readonly bopPercentage = computed(() => {
+    const totalTeeth = this.teeth().length;
+    if (totalTeeth === 0) return 0;
+    const bopCount = this.teeth().filter(t => t.bleedingOnProbing).length;
+    return Math.round((bopCount / totalTeeth) * 100);
+  });
+
+  readonly sibiScore = computed(() => {
+    const deepPockets = this.deepProbingSitesCount();
+    const bop = this.bopPercentage();
+    const crp = this.hsCrpMgL();
+    const score = Math.round((deepPockets * 6) + (bop * 0.8) + (crp * 12));
+    return Math.min(100, Math.max(0, score));
+  });
+
+  readonly cardiovascularMultiplier = computed(() => {
+    const sibi = this.sibiScore();
+    return (1.0 + (sibi / 100) * 1.8).toFixed(2);
+  });
+
+  readonly predictedHba1cElevation = computed(() => {
+    const sibi = this.sibiScore();
+    return ((sibi / 100) * 0.8).toFixed(2);
+  });
+
+  updateHsCrp(event: Event): void {
+    const val = parseFloat((event.target as HTMLInputElement).value);
+    if (!isNaN(val)) {
+      this.hsCrpMgL.set(Math.max(0, Math.min(30, val)));
+    }
+  }
 
   setWearGrade(fdiCode: number, grade: 0 | 1 | 2 | 3 | 4): void {
     this.teeth.update(teethList => 

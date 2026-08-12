@@ -1,0 +1,65 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: "PR: v1.13.0"
+---
+
+---
+
+## PR: feat(release): pocketgull typeface repository, domino ssr `cssstyledeclarat...
+
+### Description
+This PR corresponds to the release **v1.13.0**.
+PocketGull Typeface Repository, Domino SSR `CSSStyleDeclaration.setProperty` Polyfill & E2E Stability
+
+### Changelog Entry
+- **[SSR Stability / Domino Polyfill] Server-Side `CSSStyleDeclaration.setProperty` Fallback (`server.ts` & `main.server.ts`)**:
+  - Implemented top-level server polyfill for Domino's missing `CSSStyleDeclaration.setProperty` method to prevent `NotYetImplemented` runtime exceptions during Angular Server-Side Rendering (SSR).
+  - Guarded `applyParadigmToDom()` in `ThemeService` with `isPlatformBrowser` checks to ensure DOM style mutations only execute on client runtime.
+  - Added preview server startup health check step (`Verify Preview Server Started`) to `.github/workflows/deploy.yml`.
+- **[Playwright E2E / Test Suite Fix] Duplicate Identifier Fix (`domain-suites-navigation.spec.ts`)**:
+  - Resolved `SyntaxError` caused by duplicate `const showAllBtn` declaration in `domain-suites-navigation.spec.ts`.
+- **[Design & Typography] PocketGull Typeface Repository & Google Fonts Package**:
+  - Initialized and published standalone [`philgear/PocketGull-typeface`](https://github.com/philgear/PocketGull-typeface) repository with automated GitHub Actions Pages deployment (`deploy-pages.yml`).
+  - Added COCOMO II Software Cost Valuation ($242,000 USD) in `docs/COCOMO_II_TYPEFACE_VALUATION.md`.
+
+### Type of change
+- [ ] Bug fix (`fix`)
+- [x] New feature (`feat`)
+- [ ] Security fix (`security`)
+- [ ] Refactoring (`refactor`)
+- [ ] Documentation update (`docs`)
+- [ ] Testing/CI update (`test`, `ci`)
+- [ ] Clinical Intelligence & AI Prompting
+- [ ] 3D Anatomical Spatial Lens (Three.js)
+- [ ] Voice / Hardware Telemetry
+- [ ] Companion App (Flutter / Dart)
+
+## ☯️ Clinical Paradigms Touched
+- [ ] 🔵 Western Allopathic
+- [ ] 🟢 Eastern TCM (Traditional Chinese Medicine)
+- [ ] 🟡 Ayurvedic Medicine
+
+## Core Integration Checklist:
+- [x] My commit messages follow the Conventional Commits format (max 72 chars subject, imperative mood).
+- [x] My branch compiles with zero errors (`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`).
+- [x] I have performed a self-review of my own code.
+- [x] New and existing unit tests pass locally with my changes (`npm test`).
+- [x] I have run the local security audit (`npm run sentinel:audit`).
+
+## Domain-Specific Quality Gates (Check all that apply):
+### 🏥 Clinical AI & Safety
+- [ ] **Safety Filters:** Verified `DANGEROUS_CONTENT` remains `OFF` for clinical text to prevent false-positive blocks on standard-of-care plans.
+- [ ] **Evidence Literacy:** Clinical recommendations include demarcated evidence tiers (Level A/B/C) and Cochrane Risk of Bias considerations.
+- [ ] **Skeptical Epistemology:** If computing p-values, findings where $p \ge 0.05$ trigger the `skepticalWarningNotice`.
+
+### 🔒 Privacy & Data Sovereignty
+- [ ] **FHIR R4:** Serialized patient data structures conform strictly to the FHIR R4 Bundle standard.
+- [ ] **Logging Integrity:** No raw user inputs or un-sanitized PHI strings are passed to server loggers.
+- [ ] **De-Identification:** New mock patient data adheres to HIPAA §164.514 Safe Harbor standards (or preserves historical luminaries).
+- [ ] **CodeQL & Egress Guard:** Verified zero new SSRF, path traversal, or log injection vulnerabilities, and local Sentinel whitelists remain intact.
+
+### 🎨 Dieter Rams UX & Accessibility
+- [ ] **Functional Aesthetics:** Adheres to Dieter Rams principles ("Weniger, aber besser")—no unnecessary UI bloat or non-structural rounded pills.
+- [ ] **Fitts's Law:** All new touch targets and buttons are at least 44x44px.
+- [ ] **WCAG & Neurodiversity:** UI changes maintain 7:1 contrast ratios and respect `prefers-reduced-motion` for animations.
+

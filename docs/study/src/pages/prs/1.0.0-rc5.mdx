@@ -1,0 +1,63 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: "PR: v1.0.0-rc5"
+---
+
+---
+
+## PR: feat(release): general updates and improvements for 1.0.0-rc5
+
+### Description
+This PR corresponds to the release **v1.0.0-rc5**.
+General updates and improvements for 1.0.0-rc5
+
+### Changelog Entry
+- **`angular.json` CommonJS Allowlist**: Added `@google-cloud/vertexai` and `@google-cloud/vertexai/build/src/resources/index.js` to `allowedCommonJsDependencies` to suppress recurring build-time optimization warnings from `@genkit-ai/vertexai`.
+- **Documentation Sync**: Rewrote `README.md` with categorized features (Security, AI, Clinical UX, Data), updated architecture diagram to show Vertex AI Enterprise and WebSocket proxy, corrected `pocketgall.app` URL typo, and synced all `docs/study/` MDX pages (`architecture.mdx`, `features.mdx`, `changelog.mdx`) with the rc4 state.
+- **`DESIGN.md` Squadron Expansion**: Added three new Gull Squadron personas — `Stratosphere` (Vertex AI Enterprise layer), `Relay` (WebSocket live proxy), and `Samaritan` (Good Samaritan emergency care mode).
+- **`angular.json` Host Cleanup**: Removed three stale Cloud Run hostnames (`pocket-gall-444980566010`, `understory-315235665910`, `pocket-gall-315235665910`) from `allowedHosts`.
+- **`qs` Security Patch**: Pinned `qs` transitive dependency to `>=6.15.2` via `package.json` overrides, patching GHSA-q8mj-m7cp-5q26 (DoS via `qs.stringify` on null entries in comma-format arrays).
+- **`package.json` Version**: Bumped from `0.10.0` to `1.0.0-rc4` to align with CHANGELOG release state.
+---
+
+### Type of change
+- [ ] Bug fix (`fix`)
+- [x] New feature (`feat`)
+- [ ] Security fix (`security`)
+- [ ] Refactoring (`refactor`)
+- [ ] Documentation update (`docs`)
+- [ ] Testing/CI update (`test`, `ci`)
+- [ ] Clinical Intelligence & AI Prompting
+- [ ] 3D Anatomical Spatial Lens (Three.js)
+- [ ] Voice / Hardware Telemetry
+- [ ] Companion App (Flutter / Dart)
+
+## ☯️ Clinical Paradigms Touched
+- [ ] 🔵 Western Allopathic
+- [ ] 🟢 Eastern TCM (Traditional Chinese Medicine)
+- [ ] 🟡 Ayurvedic Medicine
+
+## Core Integration Checklist:
+- [x] My commit messages follow the Conventional Commits format (max 72 chars subject, imperative mood).
+- [x] My branch compiles with zero errors (`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`).
+- [x] I have performed a self-review of my own code.
+- [x] New and existing unit tests pass locally with my changes (`npm test`).
+- [x] I have run the local security audit (`npm run sentinel:audit`).
+
+## Domain-Specific Quality Gates (Check all that apply):
+### 🏥 Clinical AI & Safety
+- [ ] **Safety Filters:** Verified `DANGEROUS_CONTENT` remains `OFF` for clinical text to prevent false-positive blocks on standard-of-care plans.
+- [ ] **Evidence Literacy:** Clinical recommendations include demarcated evidence tiers (Level A/B/C) and Cochrane Risk of Bias considerations.
+- [ ] **Skeptical Epistemology:** If computing p-values, findings where $p \ge 0.05$ trigger the `skepticalWarningNotice`.
+
+### 🔒 Privacy & Data Sovereignty
+- [ ] **FHIR R4:** Serialized patient data structures conform strictly to the FHIR R4 Bundle standard.
+- [ ] **Logging Integrity:** No raw user inputs or un-sanitized PHI strings are passed to server loggers.
+- [ ] **De-Identification:** New mock patient data adheres to HIPAA §164.514 Safe Harbor standards (or preserves historical luminaries).
+- [ ] **CodeQL & Egress Guard:** Verified zero new SSRF, path traversal, or log injection vulnerabilities, and local Sentinel whitelists remain intact.
+
+### 🎨 Dieter Rams UX & Accessibility
+- [ ] **Functional Aesthetics:** Adheres to Dieter Rams principles ("Weniger, aber besser")—no unnecessary UI bloat or non-structural rounded pills.
+- [ ] **Fitts's Law:** All new touch targets and buttons are at least 44x44px.
+- [ ] **WCAG & Neurodiversity:** UI changes maintain 7:1 contrast ratios and respect `prefers-reduced-motion` for animations.
+

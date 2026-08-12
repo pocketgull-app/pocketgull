@@ -4,7 +4,7 @@ import { SocraticChallengeCardComponent } from '../socratic-challenge-card.compo
 import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component';
 import { DailyActionChecklistComponent } from '../daily-action-checklist.component';
 import { SymptomHabitJournalComponent } from '../symptom-habit-journal.component';
-import { CaregiverBridgeModalComponent } from '../caregiver-bridge-modal.component';
+import { CaregiverBridgeModalComponent } from '../modals/caregiver-bridge-modal.component';
 import { ISocraticChallenge } from '../../services/skeptical-epistemology.service';
 
 const DEFAULT_SOCRATIC_CHALLENGE: ISocraticChallenge = {

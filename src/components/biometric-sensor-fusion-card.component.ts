@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BiometricSensorFusionService } from '../services/biometric-sensor-fusion.service';
+import { BiometricSensorFusionService } from '../services/hardware/biometric-sensor-fusion.service';
 
 @Component({
   selector: 'app-biometric-sensor-fusion-card',

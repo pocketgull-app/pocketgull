@@ -2,7 +2,7 @@ import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DoubleFlipStateMachineService, DoubleClickState } from '../services/double-flip-state-machine.service';
 import { PatientStateService } from '../services/patient-state.service';
-import { BioHapticFeedbackService } from '../services/bio-haptic-feedback.service';
+import { BioHapticFeedbackService, SolfeggioTone } from '../services/hardware/bio-haptic-feedback.service';
 import { ResidencyOsceSimulatorComponent } from './residency-osce-simulator.component';
 import { SlackIntegrationCardComponent } from './slack-integration-card.component';
 import { PopulationHealthEquityHubComponent } from './population-health-equity-hub.component';

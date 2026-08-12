@@ -12,7 +12,7 @@ import { PatientStateService } from '../services/patient-state.service';
 import { PetAuditoryService } from '../services/pet-auditory.service';
 import { EnvironmentalTelemetryService } from '../services/environmental-telemetry.service';
 import { environment } from '../environments/environment';
-import { PocketgullIconComponent } from './pocketgull-icon.component';
+import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
 import { PapercraftBackdropComponent } from './papercraft-backdrop.component';
 import { SecureStorageService } from '../services/secure-storage.service';
@@ -251,15 +251,6 @@ import { SecureStorageService } from '../services/secure-storage.service';
                  </button>
                </div>
 
-               <!-- Explicit Good Samaritan Emergency Triage Mode Option -->
-               <div class="mt-1 w-full max-w-[260px] z-30">
-                 <button 
-                   type="button"
-                   (click)="handleEmergencyBypass()"
-                   class="w-full min-h-[36px] px-3 py-1.5 flex justify-center items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-700 dark:text-red-300 transition-all rounded-xl cursor-pointer">
-                   <span>🚨 Good Samaritan Emergency Triage</span>
-                 </button>
-               </div>
 
                 <!-- Washi Rice Paper Daily Medical Quote Banner -->
                 <div class="mt-1 px-4 py-2.5 paper-rice-panel rounded-xl text-center max-w-xs transition-all hover:scale-[1.02] shadow-xs">

@@ -1,5 +1,5 @@
 import { Component, inject , ChangeDetectionStrategy} from '@angular/core';
-import { FhirIntegrationService } from '../services/fhir-integration.service';
+import { FhirIntegrationService } from '../services/fhir/fhir-integration.service';
 import { PatientManagementService } from '../services/patient-management.service';
 
 @Component({

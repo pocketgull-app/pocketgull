@@ -105,7 +105,9 @@
               "swagger-ui-express",
               "genkit",
               "@genkit-ai/googleai",
-              "zod"
+              "zod",
+              "@google-cloud/firestore",
+              "stripe"
             ],
             "security": {
               "allowedHosts": [

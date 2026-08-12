@@ -4,7 +4,7 @@ import { Injector, runInInjectionContext, createEnvironmentInjector } from '@ang
 import { ClinicalToolWorkbenchComponent } from './clinical-tool-workbench.component';
 import { DoubleFlipStateMachineService } from '../services/double-flip-state-machine.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
-import { BioHapticFeedbackService } from '../services/bio-haptic-feedback.service';
+import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedback.service';
 
 describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite', () => {
   let component: ClinicalToolWorkbenchComponent;

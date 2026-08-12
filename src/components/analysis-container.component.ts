@@ -13,17 +13,17 @@ import { ClinicalIcons } from '../assets/clinical-icons';
 import { GamificationService } from '../services/gamification.service';
 
 import { HumanDignityPactComponent } from './human-dignity-pact.component';
-import { MyChartBriefModalComponent } from './mychart-brief-modal.component';
+import { MyChartBriefModalComponent } from './modals/mychart-brief-modal.component';
 import { FamilyTreePedigreeComponent } from './family-tree-pedigree.component';
-import { PatientStoryModalComponent } from './patient-story-modal.component';
-import { PostItNotesComponent } from './post-it-notes.component';
+import { PatientStoryModalComponent } from './modals/patient-story-modal.component';
+import { PostItNotesComponent } from './shared/post-it-notes.component';
 import { ActuarialGleeAlbumComponent } from './actuarial-glee-album.component';
-import { GcpHealthcareService } from '../services/gcp-healthcare.service';
+import { GcpHealthcareApiService } from '../services/fhir/gcp-healthcare-api.service';
 import { AmbientLivingSpaceDashboardComponent } from './ambient-living-space-dashboard.component';
 import { GreenRoomLoungeComponent } from './green-room-lounge.component';
 import { DoctorShiftSimulatorComponent } from './doctor-shift-simulator.component';
 import { DoctorShiftSalesDemoComponent } from './doctor-shift-sales-demo.component';
-import { Holographic3DAnatomyComponent } from './holographic-3d-anatomy.component';
+import { Holographic3DAnatomyComponent } from './anatomy-3d/holographic-3d-anatomy.component';
 
 import { DomainSuitesNavigatorComponent } from './suites/domain-suites-navigator.component';
 
@@ -206,7 +206,14 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
                 @if (viewMode() === 'suites') {
                   <app-domain-suites-navigator class="w-full h-auto block overflow-visible" />
                 } @else {
-                  <app-holographic-3d-anatomy class="w-full mb-6 shrink-0 block" />
+                  @defer (on viewport; prefetch on idle) {
+                    <app-holographic-3d-anatomy class="w-full mb-6 shrink-0 block" />
+                  } @placeholder {
+                    <div class="w-full mb-6 shrink-0 h-48 rounded-2xl bg-slate-100 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 animate-pulse flex items-center justify-center gap-3">
+                      <div class="w-3 h-3 rounded-full bg-cyan-500 animate-ping"></div>
+                      <span class="text-xs font-mono text-slate-500 dark:text-zinc-400">Initializing Holographic 3D Spatial Lens...</span>
+                    </div>
+                  }
                   <app-analysis-report class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" #reportRef (openGleeModal)="showGleeModal.set(true)"></app-analysis-report>
                 }
             </div>
@@ -456,7 +463,7 @@ export class AnalysisContainerComponent {
   intelligence = inject(ClinicalIntelligenceService);
   game = inject(GamificationService);
   exportService = inject(ExportService);
-  gcpHealthcare = inject(GcpHealthcareService);
+  gcpHealthcare = inject(GcpHealthcareApiService);
   network = inject(NetworkStateService);
   ClinicalIcons = ClinicalIcons;
 

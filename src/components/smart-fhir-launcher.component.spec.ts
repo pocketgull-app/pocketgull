@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SmartFhirLauncherComponent } from './smart-fhir-launcher.component';
-import { SmartOnFhirLauncherService } from '../services/smart-on-fhir-launcher.service';
+import { SmartOnFhirLauncherService } from '../services/fhir/smart-on-fhir-launcher.service';
 
 describe('SmartFhirLauncherComponent', () => {
   let component: SmartFhirLauncherComponent;

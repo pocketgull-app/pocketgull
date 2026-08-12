@@ -1,4 +1,4 @@
-import { Component, signal, Output, EventEmitter } from '@angular/core';
+import { Component, signal, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -196,14 +196,14 @@ export type OnboardingTier = 'practitioner' | 'clinic' | 'academic' | 'resident'
   `
 })
 export class ClinicianOnboardingComponent {
-  @Output() close = new EventEmitter<void>();
+  close = output<void>();
 
   selectedTier = signal<OnboardingTier>('practitioner');
   email = 'dr.smith@teaching-hospital.edu';
   licenseId = '';
   isSubmitting = signal(false);
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   selectedTierTitle(): string {
     switch (this.selectedTier()) {

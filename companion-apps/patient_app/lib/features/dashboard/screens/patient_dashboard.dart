@@ -260,6 +260,71 @@ class _PatientDashboardState extends State<PatientDashboard> {
                       ],
                     ),
                   ),
+
+                  SizedBox(height: sectionSpacing),
+
+                  // Bio-Network & Solfeggio Theme Studio Card
+                  _buildSectionTitle('BIO-NETWORK & THEME STUDIO', textColor, sectionTitleFontSize),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: EdgeInsets.all(isWatch ? 12.0 : 20.0),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF27272A).withValues(alpha: 0.5) : const Color(0xFFF5F3FF),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: isDark ? const Color(0xFF6B21A8) : const Color(0xFFDDD6FE)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.qr_code_2, color: Colors.purple.shade400, size: isWatch ? 16 : 22),
+                            SizedBox(width: isWatch ? 8 : 12),
+                            Expanded(
+                              child: Text(
+                                'Sharable Bio-Network QR',
+                                style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: infoFontSize),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Sharable QR payload, Solfeggio 528Hz entrance theme song, and real-time haptic pulse entrainment.',
+                          style: TextStyle(height: 1.5, color: subColor, fontSize: isWatch ? 9 : 13),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.purple.shade400,
+                              side: BorderSide(color: Colors.purple.shade400),
+                              padding: EdgeInsets.symmetric(vertical: buttonVerticalPadding),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                            ),
+                            icon: const Icon(Icons.music_note, size: 16),
+                            label: Text(
+                              'SHOW MY BIO-NETWORK QR',
+                              style: TextStyle(
+                                fontSize: isWatch ? 10 : 12,
+                                letterSpacing: 1.5,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('📱 Playing 528Hz Entrance Solfeggio Chime & Haptic Pulse!'),
+                                  backgroundColor: Colors.purple,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

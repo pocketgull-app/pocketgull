@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArtTherapyService, IArtTherapyPrompt } from '../services/art-therapy.service';
-import { BioHapticFeedbackService, SolfeggioTone } from '../services/bio-haptic-feedback.service';
+import { BioHapticFeedbackService, SolfeggioTone } from '../services/hardware/bio-haptic-feedback.service';
 
 @Component({
   selector: 'app-art-therapy-canvas',

@@ -7,7 +7,7 @@ import { PatientStateService } from './patient-state.service';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';
 import { ExportService } from './export.service';
 import { TeledentistryService } from './teledentistry.service';
-import { GcpHealthcareApiService } from './gcp-healthcare-api.service';
+import { GcpHealthcareApiService } from './fhir/gcp-healthcare-api.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
 

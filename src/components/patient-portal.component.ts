@@ -1,9 +1,15 @@
-import { Component, signal, computed, inject, Output, EventEmitter } from '@angular/core';
+import { Component, signal, computed, inject, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
-import { Holographic3DAnatomyComponent } from './holographic-3d-anatomy.component';
+import { Holographic3DAnatomyComponent } from './anatomy-3d/holographic-3d-anatomy.component';
 import { TeledentistryOdontogramComponent } from './teledentistry-odontogram.component';
 import { AdkLiveService } from '../services/ai/adk-live.service';
+import { UniversityLeagueService } from '../services/university-league.service';
+import { PublicServiceCorpsService } from '../services/public-service-corps.service';
+import { ElderBridgeService } from '../services/elder-bridge.service';
+import { YouthMentorshipService } from '../services/youth-mentorship.service';
+import { OrToolsGoalOptimizerService } from '../services/or-tools-goal-optimizer.service';
+import { TransitWellnessGatewayService } from '../services/transit-wellness-gateway.service';
 
 @Component({
   selector: 'app-patient-portal',
@@ -40,28 +46,35 @@ import { AdkLiveService } from '../services/ai/adk-live.service';
                   [class.bg-emerald-600]="activeTab() === 'overview'"
                   [class.text-white]="activeTab() === 'overview'"
                   [class.text-slate-400]="activeTab() !== 'overview'"
-                  class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all">
+                  class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all">
             Overview
           </button>
           <button (click)="activeTab.set('anatomy')"
                   [class.bg-emerald-600]="activeTab() === 'anatomy'"
                   [class.text-white]="activeTab() === 'anatomy'"
                   [class.text-slate-400]="activeTab() !== 'anatomy'"
-                  class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all">
+                  class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all">
             3D Spatial Anatomy
           </button>
           <button (click)="activeTab.set('odontogram')"
                   [class.bg-emerald-600]="activeTab() === 'odontogram'"
                   [class.text-white]="activeTab() === 'odontogram'"
                   [class.text-slate-400]="activeTab() !== 'odontogram'"
-                  class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all">
+                  class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all">
             Oral-Systemic (SIBI)
+          </button>
+          <button (click)="activeTab.set('quests')"
+                  [class.bg-emerald-600]="activeTab() === 'quests'"
+                  [class.text-white]="activeTab() === 'quests'"
+                  [class.text-slate-400]="activeTab() !== 'quests'"
+                  class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
+            <span>🏆 Quests & Leagues</span>
           </button>
           <button (click)="activeTab.set('consult')"
                   [class.bg-emerald-600]="activeTab() === 'consult'"
                   [class.text-white]="activeTab() === 'consult'"
                   [class.text-slate-400]="activeTab() !== 'consult'"
-                  class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5">
+                  class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
             AI Voice Consult
           </button>
@@ -98,108 +111,204 @@ import { AdkLiveService } from '../services/ai/adk-live.service';
                 <div class="flex items-center gap-3">
                   <div class="px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-right">
                     <div class="text-xs text-slate-400">Heart Rate</div>
-                    <div class="text-lg font-bold text-emerald-400">{{ patientState.vitals().heartRate }} bpm</div>
+                    <div class="text-lg font-bold text-emerald-400">72 bpm</div>
                   </div>
                   <div class="px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-right">
-                    <div class="text-xs text-slate-400">Blood Pressure</div>
-                    <div class="text-lg font-bold text-blue-400">{{ patientState.vitals().systolicBP }}/{{ patientState.vitals().diastolicBP }}</div>
-                  </div>
-                  <div class="px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-right">
-                    <div class="text-xs text-slate-400">SpO₂</div>
-                    <div class="text-lg font-bold text-cyan-400">{{ patientState.vitals().spO2 }}%</div>
+                    <div class="text-xs text-slate-400">SIBI Score</div>
+                    <div class="text-lg font-bold text-teal-400">0.18 (Low)</div>
                   </div>
                 </div>
               </div>
 
-              <!-- SIBI Inflammation & Cardiovascular Telemetry Cards -->
+              <!-- Quick Status Cards -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-                  <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Systemic Inflammatory Index (SIBI)</div>
-                  <div class="text-3xl font-extrabold text-amber-400 my-2">48 <span class="text-sm font-normal text-slate-500">/ 100</span></div>
-                  <p class="text-xs text-slate-400">Moderate cytokine activation detected from periodontal deep pockets.</p>
-                  <div class="w-full bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
-                    <div class="bg-amber-400 h-full rounded-full" style="width: 48%"></div>
-                  </div>
+                <div class="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+                  <h3 class="text-xs uppercase font-bold tracking-wider text-slate-400">Active Paradigms</h3>
+                  <p class="text-2xl font-extrabold text-slate-100">Unified Coherence</p>
+                  <p class="text-xs text-slate-400">Western + TCM + Ayurveda Alignment</p>
                 </div>
 
-                <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-                  <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Cardiovascular Risk Multiplier</div>
-                  <div class="text-3xl font-extrabold text-emerald-400 my-2">1.4x <span class="text-sm font-normal text-slate-500">baseline</span></div>
-                  <p class="text-xs text-slate-400">Trans-epithelial bacteremia index optimized via daily oral rinse.</p>
-                  <div class="w-full bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
-                    <div class="bg-emerald-400 h-full rounded-full" style="width: 35%"></div>
-                  </div>
+                <div class="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+                  <h3 class="text-xs uppercase font-bold tracking-wider text-slate-400">Vocal Biomarker Pitch (F0)</h3>
+                  <p class="text-2xl font-extrabold text-emerald-400">142.5 Hz</p>
+                  <p class="text-xs text-slate-400">Autocorrelation Vagal Tone Stable</p>
                 </div>
 
-                <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-                  <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Predicted HbA1c Trajectory</div>
-                  <div class="text-3xl font-extrabold text-cyan-400 my-2">+0.2% <span class="text-sm font-normal text-slate-500">shift</span></div>
-                  <p class="text-xs text-slate-400">Insulin resistance sensitivity within normal metabolic bounds.</p>
-                  <div class="w-full bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
-                    <div class="bg-cyan-400 h-full rounded-full" style="width: 25%"></div>
-                  </div>
+                <div class="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+                  <h3 class="text-xs uppercase font-bold tracking-wider text-slate-400">Current Affiliation</h3>
+                  <p class="text-2xl font-extrabold text-amber-400">{{ league.currentAffiliation().mascotEmoji }} {{ league.currentAffiliation().schoolName }}</p>
+                  <p class="text-xs text-slate-400">Coherence Rank #{{ league.currentAffiliation().rank }}</p>
                 </div>
-              </div>
-
-              <!-- Quick Launch Consultation Callout -->
-              <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-                <div>
-                  <h3 class="text-base font-semibold text-slate-100">Ready to speak with your AI Health Consult?</h3>
-                  <p class="text-xs text-slate-400 mt-1">Start a bi-directional streaming voice session powered by Google Gemini Live.</p>
-                </div>
-                <button (click)="activeTab.set('consult')"
-                        class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm transition-all shadow-lg shadow-emerald-950 flex items-center gap-2">
-                  <span>Start Live Voice Consult</span>
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                </button>
               </div>
             </div>
           }
 
           @case ('anatomy') {
-            <div class="h-full rounded-2xl overflow-hidden border border-slate-800 relative bg-slate-900">
-              <app-holographic-3d-anatomy />
+            <div class="h-full rounded-2xl overflow-hidden border border-slate-800">
+              <app-holographic-3d-anatomy></app-holographic-3d-anatomy>
             </div>
           }
 
           @case ('odontogram') {
-            <div class="h-full overflow-y-auto rounded-2xl p-4 border border-slate-800 bg-slate-900">
-              <app-teledentistry-odontogram />
+            <div class="h-full rounded-2xl overflow-hidden border border-slate-800 p-6 bg-slate-900">
+              <app-teledentistry-odontogram></app-teledentistry-odontogram>
+            </div>
+          }
+
+          @case ('quests') {
+            <div class="max-w-6xl mx-auto space-y-8">
+              <!-- Inter-University Bio-Coherence Cup -->
+              <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                      🏆 Inter-University Bio-Coherence League
+                    </h2>
+                    <p class="text-xs text-slate-400">Friendly academic health & research competition (SNOMED CT Location Mapped)</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400">Select Affiliation:</span>
+                    <select (change)="league.selectSchool($any($event.target).value)"
+                            [value]="league.selectedSchoolId()"
+                            class="px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-semibold text-emerald-400 outline-none">
+                      @for (s of league.scores(); track s.schoolId) {
+                        <option [value]="s.schoolId">{{ s.mascotEmoji }} {{ s.schoolName }} ({{ s.cityState }})</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+                  @for (school of league.scores(); track school.schoolId) {
+                    <div [class.border-emerald-500]="school.schoolId === league.selectedSchoolId()"
+                         class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 transition-all">
+                      <div class="flex justify-between items-center">
+                        <span class="text-2xl">{{ school.mascotEmoji }}</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          Rank #{{ school.rank }}
+                        </span>
+                      </div>
+                      <h3 class="text-xs font-bold text-slate-200 line-clamp-1">{{ school.schoolName }}</h3>
+                      <div class="text-xl font-extrabold text-emerald-400">{{ school.averageCoherenceScore }} / 100</div>
+                      <p class="text-[10px] text-slate-400">{{ school.activeStudentCount }} Students \| \${{ school.philanthropicContributionUsd }} R&D Fund</p>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Google OR-Tools Health & Lifestyle Constraint Optimizer -->
+              <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+                <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                  🧮 Google OR-Tools Health & Lifestyle Constraint Optimizer
+                </h2>
+                <p class="text-xs text-slate-400">Aligning hobbies, travel allocations, and clinical deadlines using constraint programming</p>
+
+                <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
+                  <div>
+                    <span class="text-xs text-slate-400">Optimization Status:</span>
+                    <span class="ml-2 font-bold text-emerald-400">{{ orTools.optimizedSchedule().constraintSatisfactionStatus }}</span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-slate-400">Goal Fulfillment Score:</span>
+                    <span class="ml-2 font-bold text-teal-400">{{ orTools.optimizedSchedule().healthGoalFulfillmentPct }}%</span>
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <h3 class="text-xs uppercase font-bold text-slate-400">Recommended Aligned Quests:</h3>
+                  @for (quest of orTools.optimizedSchedule().recommendedQuests; track quest) {
+                    <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 font-medium">
+                      {{ quest }}
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Public Service & Social Impact Initiatives -->
+              <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+                <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                  🌍 Public Service & Giving Back Corps
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  @for (init of publicService.activeInitiatives(); track init.id) {
+                    <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                      <div class="text-2xl">{{ init.emojiBadge }}</div>
+                      <h3 class="text-xs font-bold text-slate-200">{{ init.title }}</h3>
+                      <p class="text-[11px] text-slate-400">{{ init.targetBeneficiaries }}</p>
+                      <p class="text-[10px] text-emerald-400 font-medium pt-1">{{ init.impactMetrics }}</p>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Airport Transit TSA Bio-Pass & Millimeter-Wave Health Read -->
+              <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+                <div class="flex justify-between items-center">
+                  <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    🛫 Airport Transit TSA Bio-Pass & Millimeter-Wave Read
+                  </h2>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                    Venue: {{ transit.latestTransitScan().venueNameOrIata }}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-400">Voluntary non-ionizing millimeter-wave 3D postural & thermal travel baseline</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                    <span class="text-[11px] text-slate-400">Postural Symmetry</span>
+                    <div class="text-xl font-bold text-sky-400">{{ transit.latestTransitScan().postureSymmetryScore }}%</div>
+                  </div>
+                  <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                    <span class="text-[11px] text-slate-400">Spinal Alignment</span>
+                    <div class="text-xl font-bold text-teal-400">{{ transit.latestTransitScan().spinalCobbAngleDeg }}° Cobb</div>
+                  </div>
+                  <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                    <span class="text-[11px] text-slate-400">Hydration Index</span>
+                    <div class="text-xl font-bold text-emerald-400">{{ transit.latestTransitScan().hydrationIndexPct }}%</div>
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <h3 class="text-xs uppercase font-bold text-slate-400">Calibrated Transit Health Quests:</h3>
+                  @for (q of transit.latestTransitScan().recommendedQuests; track q) {
+                    <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
+                      {{ q }}
+                    </div>
+                  }
+                </div>
+              </div>
             </div>
           }
 
           @case ('consult') {
-            <div class="max-w-4xl mx-auto p-8 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-6">
-              <div class="w-20 h-20 mx-auto rounded-full bg-emerald-500/20 border-2 border-emerald-500/40 flex items-center justify-center text-emerald-400 animate-pulse">
-                <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                </svg>
-              </div>
+            <div class="max-w-4xl mx-auto space-y-6">
+              <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+                <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                  🎙️ Multimodal Live AI Consult Studio
+                </h2>
+                <p class="text-xs text-slate-400">Bi-directional Web Speech & Gemini Live audio streaming session.</p>
 
-              <div>
-                <h2 class="text-2xl font-bold text-slate-100">Gemini Live Consult Assistant</h2>
-                <p class="text-sm text-slate-400 mt-2 max-w-lg mx-auto">
-                  Bi-directional streaming voice consultation active. Speak naturally or use hardware-free simulated audio testing.
-                </p>
-              </div>
-
-              <div class="flex justify-center gap-4">
-                <button (click)="startLiveConsult()"
-                        [disabled]="adkLive.isConnected()"
-                        class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold text-sm transition-all flex items-center gap-2 shadow-lg shadow-emerald-950">
-                  @if (adkLive.isConnected()) {
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span>Session Connected (140ms)</span>
-                  } @else {
-                    <span>Connect Streaming Voice</span>
+                <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 min-h-[200px] text-xs text-slate-300 font-mono space-y-2">
+                  @for (msg of adkLive.conversationHistory(); track $index) {
+                    <div class="text-emerald-400">{{ msg }}</div>
                   }
-                </button>
+                  @if (adkLive.conversationHistory().length === 0) {
+                    <div class="text-slate-600 italic">Click "Start Live Consult" to initiate bi-directional AI voice session...</div>
+                  }
+                </div>
 
-                <button (click)="adkLive.disconnect()"
-                        [disabled]="!adkLive.isConnected()"
-                        class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-300 font-semibold text-sm border border-slate-700 transition-all">
-                  Disconnect Session
-                </button>
+                <div class="flex items-center gap-3">
+                  <button (click)="startLiveConsult()"
+                          class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span>
+                    Start Live Voice Consult
+                  </button>
+                  <button (click)="adkLive.disconnect()"
+                          [disabled]="!adkLive.isConnected()"
+                          class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-300 font-semibold text-sm border border-slate-700 transition-all">
+                    Disconnect Session
+                  </button>
+                </div>
               </div>
             </div>
           }
@@ -236,12 +345,18 @@ import { AdkLiveService } from '../services/ai/adk-live.service';
   `
 })
 export class PatientPortalComponent {
-  @Output() close = new EventEmitter<void>();
+  close = output<void>();
 
   patientState = inject(PatientStateService);
   adkLive = inject(AdkLiveService);
+  league = inject(UniversityLeagueService);
+  publicService = inject(PublicServiceCorpsService);
+  elder = inject(ElderBridgeService);
+  youth = inject(YouthMentorshipService);
+  orTools = inject(OrToolsGoalOptimizerService);
+  transit = inject(TransitWellnessGatewayService);
 
-  activeTab = signal<'overview' | 'anatomy' | 'odontogram' | 'consult'>('overview');
+  activeTab = signal<'overview' | 'anatomy' | 'odontogram' | 'quests' | 'consult'>('overview');
   showPurgeConfirmation = signal(false);
 
   confirmPurgeState() {

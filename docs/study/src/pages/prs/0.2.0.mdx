@@ -1,0 +1,65 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: "PR: v0.2.0"
+---
+
+---
+
+## PR: feat(release): general updates and improvements for 0.2.0
+
+### Description
+This PR corresponds to the release **v0.2.0**.
+General updates and improvements for 0.2.0
+
+### Changelog Entry
+- **Offline Printable Stationery**: CSS Grid-optimized, multi-page physical printouts featuring Halftone body maps for visual pain hotspot diagnosis.
+- **Smartwatch Optimization**: Responsive UI scaling down to extremely constrained viewports (e.g., Pixel Watch 2 at 286px width).
+- **Box Breathing UX**: 16-second box breathing visual animations integrated into primary intake text areas to promote practitioner mindfulness.
+- **Server-Side Rendering (SSR)**: Transitioned architecture to Angular SSR for performance optimization.
+- **Mobile Navigation**: Implemented tabbed view-switching (Tasks / Analysis) optimized for constrained mobile environments.
+- **SSR Build Stability**: Resolved "no exports" optimization bailouts caused by unresolved TypeScript properties in `PatientStateService`.
+- **Mobile Scrolling**: Fixed mobile page scrolling flow by removing forced height constraints.
+- **UI Clipping**: Fixed horizontal/vertical clipping of action buttons and contents in the analysis report.
+- **Type Safety**: Ensured strict type checking and proper exports for patient history and summary models across services.
+
+### Type of change
+- [ ] Bug fix (`fix`)
+- [x] New feature (`feat`)
+- [ ] Security fix (`security`)
+- [ ] Refactoring (`refactor`)
+- [ ] Documentation update (`docs`)
+- [ ] Testing/CI update (`test`, `ci`)
+- [ ] Clinical Intelligence & AI Prompting
+- [ ] 3D Anatomical Spatial Lens (Three.js)
+- [ ] Voice / Hardware Telemetry
+- [ ] Companion App (Flutter / Dart)
+
+## ☯️ Clinical Paradigms Touched
+- [ ] 🔵 Western Allopathic
+- [ ] 🟢 Eastern TCM (Traditional Chinese Medicine)
+- [ ] 🟡 Ayurvedic Medicine
+
+## Core Integration Checklist:
+- [x] My commit messages follow the Conventional Commits format (max 72 chars subject, imperative mood).
+- [x] My branch compiles with zero errors (`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`).
+- [x] I have performed a self-review of my own code.
+- [x] New and existing unit tests pass locally with my changes (`npm test`).
+- [x] I have run the local security audit (`npm run sentinel:audit`).
+
+## Domain-Specific Quality Gates (Check all that apply):
+### 🏥 Clinical AI & Safety
+- [ ] **Safety Filters:** Verified `DANGEROUS_CONTENT` remains `OFF` for clinical text to prevent false-positive blocks on standard-of-care plans.
+- [ ] **Evidence Literacy:** Clinical recommendations include demarcated evidence tiers (Level A/B/C) and Cochrane Risk of Bias considerations.
+- [ ] **Skeptical Epistemology:** If computing p-values, findings where $p \ge 0.05$ trigger the `skepticalWarningNotice`.
+
+### 🔒 Privacy & Data Sovereignty
+- [ ] **FHIR R4:** Serialized patient data structures conform strictly to the FHIR R4 Bundle standard.
+- [ ] **Logging Integrity:** No raw user inputs or un-sanitized PHI strings are passed to server loggers.
+- [ ] **De-Identification:** New mock patient data adheres to HIPAA §164.514 Safe Harbor standards (or preserves historical luminaries).
+- [ ] **CodeQL & Egress Guard:** Verified zero new SSRF, path traversal, or log injection vulnerabilities, and local Sentinel whitelists remain intact.
+
+### 🎨 Dieter Rams UX & Accessibility
+- [ ] **Functional Aesthetics:** Adheres to Dieter Rams principles ("Weniger, aber besser")—no unnecessary UI bloat or non-structural rounded pills.
+- [ ] **Fitts's Law:** All new touch targets and buttons are at least 44x44px.
+- [ ] **WCAG & Neurodiversity:** UI changes maintain 7:1 contrast ratios and respect `prefers-reduced-motion` for animations.
+

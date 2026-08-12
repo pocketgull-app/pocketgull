@@ -21,7 +21,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY requirements-bootstrap.txt .
 COPY requirements.txt .
 RUN pip install --require-hashes --no-cache-dir -r requirements-bootstrap.txt && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --require-hashes --no-cache-dir -r requirements.txt
 
 # ==========================================
 # Stage 2: Runtime

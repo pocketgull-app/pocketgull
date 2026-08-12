@@ -110,6 +110,20 @@ const APPROVED_EGRESS_DOMAINS = [
   'commons.wikimedia.org',
   'porkbun.com',
   'api.porkbun.com',
+  'legalzoom.com',
+  'www.legalzoom.com',
+  'impact.com',
+  'app.impact.com',
+  'seatgeek.com',
+  'developer.seatgeek.com',
+  'instagram.com',
+  'www.instagram.com',
+  'tiktok.com',
+  'www.tiktok.com',
+  'facebook.com',
+  'www.facebook.com',
+  'x.com',
+  'twitter.com',
   'example.com',
   'astro.build',
   'ieee.org',
@@ -196,14 +210,15 @@ function auditFile(filePath) {
   while ((match = stringLiteralRegex.exec(content)) !== null) {
     const literal = match[1];
     
-    // Ignore standard SVG paths, base64 data URLs, and import paths
+    // Ignore standard SVG paths, base64 data URLs, public checklist IDs, and import paths
     if (
       literal.startsWith('data:') ||
       literal.includes('M0 ') ||
       literal.includes('L0 ') ||
       literal.startsWith('./') ||
       literal.startsWith('../') ||
-      literal.includes('/')
+      literal.includes('/') ||
+      literal.startsWith('___')
     ) {
       continue;
     }

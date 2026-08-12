@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@a
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
-import { RosettaStoneAnatomyComponent } from './rosetta-stone-anatomy.component';
+import { RosettaStoneAnatomyComponent } from './anatomy-3d/rosetta-stone-anatomy.component';
 import { ParadigmArbitrationMatrixComponent } from './paradigm-arbitration-matrix.component';
 
 export type MedicalParadigmMode = 'western' | 'functional' | 'tcm' | 'ayurveda' | 'chronobiology' | 'blend_all' | 'blend_west_tcm' | 'blend_west_ayurveda' | 'blend_tcm_ayurveda';

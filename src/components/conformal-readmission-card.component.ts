@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
-import { BioHapticFeedbackService } from '../services/bio-haptic-feedback.service';
+import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedback.service';
 
 export interface IParetoInterventionOption {
   paradigm: 'Western' | 'Eastern' | 'Ayurvedic';

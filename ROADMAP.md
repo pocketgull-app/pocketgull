@@ -26,3 +26,10 @@ Pocket Gull is committed to continuous refinement (**Kaizen**) in integrative cl
 - [x] **WebMCP (Web Model Context Protocol)**: Polyfilled client-side agent orchestration allowing browser AI tools to securely discover Pocketgull clinical capabilities (13 registered WebMCP tools).
 - [x] **Hybrid FHIR Federation**: Seamless dual-sync across Google Cloud Healthcare API and AWS HealthLake with HIPAA Safe Harbor §164.514 de-identification.
 
+---
+
+## 🌌 H1 2028: GEAR Federation & Vertex AI Ecosystem
+- [x] **Clinical RAG (Retrieval-Augmented Generation)**: Direct integration of Vertex AI Search into the Pocket-Gull backend to ground Gemini 2.5 Live streams with peer-reviewed protocols.
+- [ ] **Strict API Decoupling**: Isolate Pocket-Gull's clinical core behind versioned REST/gRPC interfaces for independent consumption by the GEAR platform.
+- [x] **Angular Vertex Search Component**: Replace static HTML `<gen-search-widget>` with a fully reactive, standalone Angular component tied to patient state.
+- [ ] **Unified Telemetry & Auth**: Implement cross-origin IdP authentication and aggregate telemetry/billing back to the GEAR Enterprise platform.

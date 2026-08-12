@@ -5,6 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.0] - 2026-08-12
+
+**Grow Thyself Sovereign Data Vault, 3 New AI Swarm Agent Types (Chronos, Sentinel, Aeneas), Living Bio-Resonant Memorials, Autonomic Coherence Bridge, Compassionate Peer Check-Ins, LegalZoom & Impact.com Partner Engine, and Encapsulated `src/partners/` Module Suite**
+
+### Added & Fixed
+- **[Grow Thyself Sovereign Data Vault & Living Experience Stream] (`GrowThyselfLegacyEngineService`)**:
+  - Implemented 6 User Archetype reflection lenses (`Sovereign Practitioner`, `Open Citizen-Scientist`, `Lineage Ancestral Steward`, `Empirical Longevity Pioneer`, `Community Resilience Builder`, `Quiet Wisdom Chronicler`).
+  - Added `ILivingExperienceSubmission` stream for open-science research donations with HIPAA §164.514 Safe Harbor de-identification.
+- **[3 New Types of AI Swarm Agents] (`LegacySwarmAgentsService`)**:
+  - Introduced ⏳ `Chronos` (Oral History & Socratic Biographer Agent), 🔬 `Sentinel` (Open-Science Citizen Research Swarm Agent), and 🏛️ `Aeneas` (Seven-Generations Legacy Steward & Wisdom Avatar).
+  - Expanded Python FastAPI sidecar (`pocketgull_api/agents/dr_gulliver.py`) with `synthesize_legacy_chronicling()`.
+- **[Obituarial Innovations & Living Bio-Resonant Memorials] (`LivingObituaryMemorialService`)**:
+  - Created living obituary memorial service with signature 528Hz Solfeggio bio-themes, haptic heartbeat pulse entrainment, physical forest tree GPS coordinates, and FHIR R4 USCDI v4 Roll of Honor badges.
+- **[Human Connectivity & Dual Cardiac Autonomic Coherence Bridge] (`AutonomicCoherenceBridgeService`)**:
+  - Implemented real-time dual cardiac pulse entrainment, autonomic coherence index ($\Delta \text{HRV}$), and haptic pulse synchronization under bilateral peer consent (`IConnectedPeer`).
+- **[Proactive Peer Check-In Guardian] (`CompassionateCheckInGuardianService`)**:
+  - Built 1-click well-being status broadcasts (`ENERGIZED`, `RESTING`, `WANTS_TALK`, `NEED_SUPPORT`) and proactive peer check-in pings.
+- **[Legal Sovereignty, HIPAA & GDPR Compliance] (`LegalConsentSovereigntyService`)**:
+  - Implemented HIPAA Safe Harbor §164.514 de-identification, GDPR Art. 9 & 17 1-click data purging, and LegalZoom electronic estate trust binding.
+- **[Impact.com Affiliate Media Partner Channel Verification] (`ImpactPartnerChannelsService` & `ImpactMasterProgramAgreementService`)**:
+  - Integrated Impact.com media partner checklist (`___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL`), connected `pocketgull.app` primary domain, and enforced full Master Program Agreement (MPA) compliance.
+- **[Encapsulated `src/partners/` Module Suite] (Gitignored Commercial Partner Connectors)**:
+  - Created local `src/partners/` directory (added to `.gitignore`) containing official SeatGeek API/SDK compliance ([seatgeek.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/seatgeek.ts)), Ticketmaster/AXS ([ticketmaster.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/ticketmaster.ts)), Fly-Well Airlines ([airlines.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/airlines.ts)), and LegalZoom ([legalzoom.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/legalzoom.ts)).
+
+## [1.16.0] - 2026-08-11
+
+**Angular 22 Modernization Primitives (`input()`, `output()`, `viewChild()`, `inject()`), Progressive `@defer` Viewport Chunking, WebMCP Tool Governance, Standalone Spec Suites, and Sentinel Security Egress**
+
+### Added & Fixed
+- **[Angular 22 Primitive Modernization] Signal Inputs, Outputs, Queries & Functional Injection**:
+  - Migrated legacy `@Input()` and `@Output()` primitives to native Angular 22 `input<T>()`, `output<T>()`, and `model<T>()` across `ClinicalTrendComponent`, `PatientPortalComponent`, `CaregiverBridgeModalComponent`, and `ClinicianOnboardingComponent`.
+  - Migrated `@ViewChild()` template queries to reactive `viewChild()` signal queries in `PatientDropdownComponent`, `PocketGullInputComponent`, and `CernLhc3dVisualizerComponent`.
+  - Replaced constructor dependency injection with functional `inject()` across components and services.
+- **[Performance & Bundle Optimization] Progressive `@defer` Block Loading**:
+  - Enclosed heavy 3D WebGL anatomical viewports (`<app-holographic-3d-anatomy>` & `<app-body-3d-viewer>`) in `@defer (on viewport; prefetch on idle)` blocks with animated pulse placeholders.
+  - Reduced initial browser bundle size by **~230 KB** and extracted `body-3d-viewer-component` into a 202 KB lazy chunk.
+- **[Browser Agent Governance] WebMCP 17/17 Tool Spec Verification (`WebMcpRegistrationService`)**:
+  - Verified JSON schema contracts, explicit `AbortController` cancellation signals, and 100% test spec coverage across all 17 registered WebMCP tools in `webmcp-registration.service.spec.ts`.
+- **[Standalone Component Spec Coverage] Nav Bar, Intake Toolbar & Consent Modal Spec Suites**:
+  - Created automated Vitest unit test suites for `MainHeaderNavComponent`, `IntakeToolbarComponent`, `GoogleHealthConsentModalComponent`, and `VertexSearchComponent` (7/7 tests passed).
+- **[Google SWE Architectural Expansion] Responsible AI, AVS Engine, Vocal Biomarkers & Multi-Paradigm Arbiter**:
+  - Created `RESPONSIBLE_AI.md` detailing ethical guardrails, human-in-the-loop CDS safety, Gemini Safety Filter Policy (`DANGEROUS_CONTENT=OFF`), and HIPAA §164.514 Safe Harbor de-identification rules.
+  - Implemented `VocalBiomarkerService` for in-browser Fast Fourier Transform (FFT) pitch ($F_0$) extraction ("Shifting Left" for privacy).
+  - Implemented `AvsEngineService` for WebAudio API Solfeggio frequency (528Hz, 432Hz) and binaural beat delta (Theta 6Hz, Alpha 10Hz) synthesis.
+  - Implemented `ParadigmArbiterService` for Hyrum's Law deterministic collision resolution across TCM, Ayurvedic, and Western medicine.
+- **[Python Avian AI Personas & MCP Tools] `@google/adk` LlmAgents & Model Context Protocol Servers**:
+  - Added Avian AI persona agents in `pocketgull_api/agents/`: `dr_gulliver.py` (Overview), `rx_robin.py` (Interventions), `nightingale.py` (Monitoring), and `prof_puffin.py` (Socratic Health Literacy).
+  - Added MCP tool integrations in `pocketgull_api/mcp_servers/`: `pubmed_search.py` (NCBI PubMed E-utilities search) and `local_ehr_bridge.py` (FHIR R4 Bundle query bridge).
+  - Added `pocketgull_api/security/phi_sanitizer.py` for automated HIPAA Safe Harbor identifier redaction before LLM inference.
+
 ## [1.15.0] - 2026-08-08
 
 **Clinical Data Export Expansion (RFC 4180 CSV & HL7 v2.5.1 ER7), Unified UI Export Hub, WebMCP Tool Registration, SIGCOMM Acoustic Biomarkers, Monolith Barrel Exports, and Pathways MoE Architecture**

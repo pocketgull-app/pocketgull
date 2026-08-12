@@ -6,7 +6,7 @@ import { marked } from 'marked';
 
 import { IPatient, HistoryEntry, IPatientVitals, IBodyPartIssue, IFhirGenomicObservation } from './patient.types';
 import { ClinicalIcons } from '../assets/clinical-icons';
-import { LaafFhirHapticScheduleService, ILaafHapticItem } from './laaf-fhir-haptic-schedule.service';
+import { LaafFhirHapticScheduleService, ILaafHapticItem } from './fhir/laaf-fhir-haptic-schedule.service';
 import { ClinicalAssessmentsService } from './clinical-assessments/clinical-assessments.service';
 import { YbocsService } from './ybocs/ybocs.service';
 import { AcronymExpanderService } from './acronym-expander.service';

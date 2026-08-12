@@ -480,6 +480,30 @@ Recommends voluntary pre-conception carrier screening for autosomal recessive tr
         }
     }
 
+    private async fetchClinicalProtocols(query: string): Promise<string> {
+        try {
+            const res = await fetch('/api/ai/vertex-search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query.substring(0, 1000) })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.results && data.results.length > 0) {
+                    const hits = data.results.map((r: any) => {
+                        const title = r.document?.derivedStructData?.title || 'Protocol';
+                        const snippet = r.document?.derivedStructData?.snippets?.[0]?.snippet || '';
+                        return `- **${title}**: ${snippet}`;
+                    }).join('\n');
+                    return `\n\nVERTEX AI SEARCH RAG GROUNDING (Enterprise App Builder):\n${hits}\n\nUse these validated enterprise protocols when formulating your response.`;
+                }
+            }
+        } catch (e) {
+            console.warn('[ClinicalIntelligence] Failed to fetch Vertex AI Search protocols', e);
+        }
+        return '';
+    }
+
     async generateComprehensiveReport(patientData: string): Promise<Partial<Record<AnalysisLens, string>>> {
         const isEmergency = this.patientState.isEmergencyMode();
         const currentPhilosophy = this.patientState.activePhilosophy();
@@ -581,6 +605,8 @@ Recommends voluntary pre-conception carrier screening for autosomal recessive tr
             }
         }
 
+        // Fetch Vertex AI Search protocols for grounding context if we're not in emergency mode
+        const vertexAiGroundingContext = !isEmergency ? await this.fetchClinicalProtocols(patientData) : '';
 
         try {
             const orchestrationPromises = lenses.map(async (lens) => {
@@ -592,6 +618,10 @@ Recommends voluntary pre-conception carrier screening for autosomal recessive tr
                 const agentIdentity = `You are ${agentName}, the ${agentRole} for the Pocket Gull Clinical Intelligence Platform. Speak and write from this professional clinical expert persona.`;
 
                 let sysInstruction = agentIdentity + '\n\n' + philosophyInstruction + '\n\n' + this.systemInstructions[lens];
+                
+                if (vertexAiGroundingContext) {
+                    sysInstruction += vertexAiGroundingContext;
+                }
                 
                 const orcidProfile = this.orcid.orcidProfile();
                 if (orcidProfile) {
@@ -727,6 +757,12 @@ Their published works and projects:
 ${orcidProfile.works.map(w => `- "${w.title}" (${w.year || 'N/A'}) - ${w.type || 'publication'}${w.url ? ' (URL: ' + w.url + ')' : ''}`).join('\n')}
 
 Feel free to reference their research areas and publications if it supports the clinical advice.`;
+        }
+
+        // Fetch Vertex AI Search protocols for grounding context if we're not in emergency mode
+        const vertexAiGroundingContext = !isEmergency ? await this.fetchClinicalProtocols(patientData) : '';
+        if (vertexAiGroundingContext) {
+            context += vertexAiGroundingContext;
         }
 
         await this.ai.startChat(patientData, context);
