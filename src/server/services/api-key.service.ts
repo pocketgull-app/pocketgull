@@ -1,5 +1,5 @@
 import { Firestore, Timestamp } from '@google-cloud/firestore';
-import * as crypto from 'crypto';
+import * as crypto from 'node:crypto';
 
 // Use standard Firestore client for GCP backend.
 // ADC (Application Default Credentials) will be used automatically.
