@@ -228,8 +228,15 @@ import { SecureStorageService } from '../services/secure-storage.service';
                    [class.border-emerald-500]="isChecking()"
                    (pointerdown)="startDrawing($event)"
                    (pointermove)="draw($event)"
-                   (pointerup)="stopDrawing()"
-                   (pointerleave)="stopDrawing()"
+                   (pointerup)="stopDrawing($event)"
+                   (pointerleave)="stopDrawing($event)"
+                   (mousedown)="startDrawing($event)"
+                   (mousemove)="draw($event)"
+                   (mouseup)="stopDrawing($event)"
+                   (mouseleave)="stopDrawing($event)"
+                   (touchstart)="startDrawing($event)"
+                   (touchmove)="draw($event)"
+                   (touchend)="stopDrawing($event)"
                  ></canvas>
                </div>
 
@@ -2001,15 +2008,17 @@ export class SecureSplashComponent implements OnInit {
     ctx.shadowBlur = 0;
   }
 
-  startDrawing(e: PointerEvent) {
+  startDrawing(e: any) {
     if (!isPlatformBrowser(this.platformId)) return;
     const canvas = this.gestureCanvasRef()?.nativeElement;
     if (!canvas) return;
-    
-    try {
-      canvas.setPointerCapture(e.pointerId);
-    } catch (err) {
-      // Ignore pointer capture failure on non-touch devices
+
+    if (e.pointerId !== undefined && canvas.setPointerCapture) {
+      try {
+        canvas.setPointerCapture(e.pointerId);
+      } catch (err) {
+        // Ignore pointer capture failure
+      }
     }
     
     this.isDrawing = true;
