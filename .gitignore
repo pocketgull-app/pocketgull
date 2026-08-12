@@ -43,6 +43,7 @@ chrome-debug-profile/
 **/.env*
 docs/legal/
 src/partners/
+pocketgull_api/agents/
 
 # Generated Release Packages
 packages/
