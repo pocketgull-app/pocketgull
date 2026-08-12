@@ -2036,7 +2036,7 @@ export class SecureSplashComponent implements OnInit {
     this.redrawCanvas();
   }
 
-  draw(e: PointerEvent) {
+  draw(e: any) {
     if (!this.isDrawing) return;
     const pos = this.getCanvasCoords(e);
     this.currentStroke.push(pos);
@@ -2044,11 +2044,11 @@ export class SecureSplashComponent implements OnInit {
     this.redrawCanvas();
   }
 
-  stopDrawing(e?: PointerEvent) {
+  stopDrawing(e?: any) {
     if (!this.isDrawing) return;
     this.isDrawing = false;
     
-    if (e) {
+    if (e && e.pointerId !== undefined) {
       const canvas = this.gestureCanvasRef()?.nativeElement;
       try {
         if (canvas && canvas.hasPointerCapture(e.pointerId)) {
