@@ -3,7 +3,7 @@ import { Injectable, signal, computed } from '@angular/core';
 export interface ISnomedLocationConcept {
   snomedCode: string; // e.g. "224670002" (University / Academic Institution)
   displayName: string;
-  category: 'UNIVERSITY' | 'MEDICAL_CENTER' | 'COMMUNITY_HEALTH_HUB';
+  category: 'UNIVERSITY' | 'COMMUNITY_COLLEGE' | 'VOCATIONAL_ACADEMY' | 'MEDICAL_CENTER' | 'COMMUNITY_HEALTH_HUB';
   latitude?: number;
   longitude?: number;
   cityState: string;
@@ -99,6 +99,54 @@ export class UniversityLeagueService {
       completedQuestsCount: 890,
       philanthropicContributionUsd: 10800,
       rank: 5
+    },
+    {
+      schoolId: 'foothill',
+      schoolName: 'Foothill College (Paramedic & Allied Health)',
+      mascotEmoji: '🏔️',
+      snomedCode: '224670002-FOOTHILL',
+      cityState: 'Los Altos Hills, CA',
+      averageCoherenceScore: 88.1,
+      activeStudentCount: 290,
+      completedQuestsCount: 840,
+      philanthropicContributionUsd: 9400,
+      rank: 6
+    },
+    {
+      schoolId: 'deanza',
+      schoolName: 'De Anza College (Biological & Health Sciences)',
+      mascotEmoji: '🚴',
+      snomedCode: '224670002-DEANZA',
+      cityState: 'Cupertino, CA',
+      averageCoherenceScore: 87.4,
+      activeStudentCount: 310,
+      completedQuestsCount: 810,
+      philanthropicContributionUsd: 8900,
+      rank: 7
+    },
+    {
+      schoolId: 'miamidade',
+      schoolName: 'Miami Dade College (Leon School of Nursing)',
+      mascotEmoji: '🌴',
+      snomedCode: '224670002-MDC',
+      cityState: 'Miami, FL',
+      averageCoherenceScore: 86.9,
+      activeStudentCount: 450,
+      completedQuestsCount: 920,
+      philanthropicContributionUsd: 11200,
+      rank: 8
+    },
+    {
+      schoolId: 'smc',
+      schoolName: 'Santa Monica College (Respiratory & Health Care)',
+      mascotEmoji: '🏖️',
+      snomedCode: '224670002-SMC',
+      cityState: 'Santa Monica, CA',
+      averageCoherenceScore: 86.2,
+      activeStudentCount: 270,
+      completedQuestsCount: 760,
+      philanthropicContributionUsd: 8100,
+      rank: 9
     }
   ]);
 
@@ -115,11 +163,20 @@ export class UniversityLeagueService {
     {
       id: 'quest-002',
       title: 'Inter-Collegiate SIBI Inflammatory Reduction Hackathon',
-      participatingSchools: ['MIT', 'Harvard Medical'],
+      participatingSchools: ['MIT', 'Harvard Medical', 'Foothill College', 'De Anza College'],
       description: 'Collaborative trial evaluating 14-day anti-inflammatory nutrition and daily 10-min AVS grounding.',
       totalXpPool: 7500,
       status: 'ACTIVE',
-      emojiBadge: '⚡⚙️🎓'
+      emojiBadge: '⚡⚙️🎓🏔️'
+    },
+    {
+      id: 'quest-003',
+      title: 'Global Allied Health & Community College Peer Mentorship Swarm',
+      participatingSchools: ['Miami Dade College', 'Santa Monica College', 'BMCC', 'Austin Community College'],
+      description: 'Open access peer mentorship network connecting nursing and pre-med students worldwide with clinical AI tools.',
+      totalXpPool: 10000,
+      status: 'ACTIVE',
+      emojiBadge: '🌍🌴🏖️🗽🤠'
     }
   ]);
 
