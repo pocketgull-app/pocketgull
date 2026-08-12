@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://pocketgull.app"><img src="https://img.shields.io/badge/Live_App-pocketgull.app-0ea5e9?style=flat-square&logo=google-cloud&logoColor=white" alt="Live App"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-orange?style=flat-square" alt="License: MIT"></a>
-  <img src="https://img.shields.io/badge/version-v1.15.0-blue?style=flat-square" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.17.0-blue?style=flat-square" alt="Version">
   <a href="https://github.com/philgear/pocketgull/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/philgear/pocketgull/deploy.yml?style=flat-square&label=deploy" alt="Deploy"></a>
   <a href="https://github.com/philgear/pocketgull/actions/workflows/codeql-analysis.yml"><img src="https://img.shields.io/github/actions/workflow/status/philgear/pocketgull/codeql-analysis.yml?style=flat-square&label=CodeQL" alt="CodeQL"></a>
 </p>
