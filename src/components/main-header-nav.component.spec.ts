@@ -9,6 +9,8 @@ import { HardwareTelemetryService } from '../services/hardware/hardware-telemetr
 import { GamificationService } from '../services/gamification.service';
 import { WalkthroughTourService } from '../services/walkthrough-tour.service';
 
+import { SessionStateService } from '../services/session-state.service';
+
 describe('MainHeaderNavComponent', () => {
   let component: MainHeaderNavComponent;
   let mockNetwork: any;
@@ -17,6 +19,7 @@ describe('MainHeaderNavComponent', () => {
   let mockHardware: any;
   let mockGame: any;
   let mockTour: any;
+  let mockSession: any;
 
   beforeEach(() => {
     mockNetwork = { isOnline: signal(true) };
@@ -35,6 +38,7 @@ describe('MainHeaderNavComponent', () => {
       progressPercentage: signal(75)
     };
     mockTour = { forceStart: vi.fn() };
+    mockSession = { lock: vi.fn(), isLocked: signal(false) };
 
     const injector = Injector.create({
       providers: [
@@ -43,7 +47,8 @@ describe('MainHeaderNavComponent', () => {
         { provide: ThemeService, useValue: mockTheme },
         { provide: HardwareTelemetryService, useValue: mockHardware },
         { provide: GamificationService, useValue: mockGame },
-        { provide: WalkthroughTourService, useValue: mockTour }
+        { provide: WalkthroughTourService, useValue: mockTour },
+        { provide: SessionStateService, useValue: mockSession }
       ]
     });
 

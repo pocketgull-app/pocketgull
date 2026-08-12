@@ -9,6 +9,8 @@ import { WalkthroughTourService } from '../services/walkthrough-tour.service';
 import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
 import { PathwaysMoeBadgeComponent } from './shared/pathways-moe-badge.component';
 
+import { SessionStateService } from '../services/session-state.service';
+
 @Component({
   selector: 'app-main-header-nav',
   standalone: true,
@@ -90,13 +92,13 @@ import { PathwaysMoeBadgeComponent } from './shared/pathways-moe-badge.component
             <span>🩺 Patient Portal</span>
           </button>
 
-          <!-- Clinician & Medical School Onboarding Button -->
+          <!-- Lock Session & View Splash Screen Button -->
           <button 
             type="button" 
-            (click)="openClinicianOnboarding.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-amber-500/50 outline-none cursor-pointer"
-            title="Clinician & Teaching Medical School Onboarding">
-            <span>🏛️ Clinician & School Sign-Up</span>
+            (click)="session.lock()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border border-slate-300 dark:border-zinc-700 hover:bg-slate-300 dark:hover:bg-zinc-700 rounded-md text-xs font-bold uppercase tracking-wider transition outline-none cursor-pointer"
+            title="Lock Session & View Papercraft Secure Splash Screen">
+            <span>🔒 Splash Screen</span>
           </button>
         </div>
       </div>
@@ -255,6 +257,7 @@ export class MainHeaderNavComponent {
   hardware = inject(HardwareTelemetryService);
   game = inject(GamificationService);
   tour = inject(WalkthroughTourService);
+  session = inject(SessionStateService);
 
   today = new Date();
 
