@@ -15,14 +15,14 @@ describe('UniversityLeagueService (Selectable Schools & SNOMED CT Location Sugge
 
   it('1. Initializes default inter-university leaderboard and scores', () => {
     const scores = service.scores();
-    expect(scores.length).toBe(9);
+    expect(scores.length).toBe(12);
     expect(scores[0].schoolName).toContain('Stanford');
     expect(service.totalActiveStudents()).toBeGreaterThan(1000);
   });
 
   it('2. Computes total philanthropic contributions from student quest completions', () => {
     expect(service.totalPhilanthropicUsd()).toBeGreaterThan(50000);
-    expect(service.interSchoolQuests().length).toBe(3);
+    expect(service.interSchoolQuests().length).toBe(4);
   });
 
   it('3. Allows dynamic school selection & transfer', () => {

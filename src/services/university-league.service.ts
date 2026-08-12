@@ -3,7 +3,7 @@ import { Injectable, signal, computed } from '@angular/core';
 export interface ISnomedLocationConcept {
   snomedCode: string; // e.g. "224670002" (University / Academic Institution)
   displayName: string;
-  category: 'UNIVERSITY' | 'COMMUNITY_COLLEGE' | 'VOCATIONAL_ACADEMY' | 'MEDICAL_CENTER' | 'COMMUNITY_HEALTH_HUB';
+  category: 'UNIVERSITY' | 'COMMUNITY_COLLEGE' | 'HIGH_SCHOOL' | 'VOCATIONAL_ACADEMY' | 'MEDICAL_CENTER' | 'COMMUNITY_HEALTH_HUB';
   latitude?: number;
   longitude?: number;
   cityState: string;
@@ -147,6 +147,42 @@ export class UniversityLeagueService {
       completedQuestsCount: 760,
       philanthropicContributionUsd: 8100,
       rank: 9
+    },
+    {
+      schoolId: 'lowell_hs',
+      schoolName: 'Lowell High School (Biomedical & HOSA Chapter)',
+      mascotEmoji: '🔬',
+      snomedCode: '224670002-LOWELL',
+      cityState: 'San Francisco, CA',
+      averageCoherenceScore: 89.2,
+      activeStudentCount: 310,
+      completedQuestsCount: 950,
+      philanthropicContributionUsd: 10400,
+      rank: 10
+    },
+    {
+      schoolId: 'stuyvesant_hs',
+      schoolName: 'Stuyvesant High School (Regeneron STS & Bio-Tech)',
+      mascotEmoji: '🧪',
+      snomedCode: '224670002-STUY',
+      cityState: 'New York, NY',
+      averageCoherenceScore: 88.8,
+      activeStudentCount: 340,
+      completedQuestsCount: 980,
+      philanthropicContributionUsd: 11100,
+      rank: 11
+    },
+    {
+      schoolId: 'tjhsst',
+      schoolName: 'Thomas Jefferson High (Neuroscience & Bio Lab)',
+      mascotEmoji: '🧬',
+      snomedCode: '224670002-TJHSST',
+      cityState: 'Alexandria, VA',
+      averageCoherenceScore: 88.5,
+      activeStudentCount: 320,
+      completedQuestsCount: 930,
+      philanthropicContributionUsd: 10200,
+      rank: 12
     }
   ]);
 
@@ -177,6 +213,15 @@ export class UniversityLeagueService {
       totalXpPool: 10000,
       status: 'ACTIVE',
       emojiBadge: '🌍🌴🏖️🗽🤠'
+    },
+    {
+      id: 'quest-004',
+      title: 'Global High School STEM & Youth Health Literacy Challenge',
+      participatingSchools: ['Lowell High School', 'Stuyvesant High School', 'TJHSST', 'IMSA', 'Bronx Science'],
+      description: 'Secondary student research quest entraining Cochrane evidence literacy, biophysical HRV biofeedback, and Socratic health inquiry.',
+      totalXpPool: 12500,
+      status: 'ACTIVE',
+      emojiBadge: '🔬🧪🧬🪐'
     }
   ]);
 
