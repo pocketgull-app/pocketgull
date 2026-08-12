@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { FhirBundleFactoryService } from './fhir-bundle-factory.service';
+import { getSecureRandomId } from '../../utils/security-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class FhirIntegrationService {
       client_id: this.CLIENT_ID,
       redirect_uri: redirectUri,
       scope: this.SCOPES,
-      state: crypto.randomUUID(), // Prevent CSRF attacks
+      state: getSecureRandomId(), // Prevent CSRF attacks
       aud: 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R6' // Target FHIR Server URL
     });
 

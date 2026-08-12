@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { PatientStateService } from './patient-state.service';
 import { AuthService } from './auth.service';
 import { IPatientVitals } from './patient.types';
+import { getSecureRandomId } from '../utils/security-helper';
 
 export interface ICollaborationNote {
   id: string;
@@ -88,7 +89,7 @@ export class CollaborationService {
     if (!this.socket) return;
 
     const newNote: ICollaborationNote = {
-      id: crypto.randomUUID(),
+      id: getSecureRandomId(),
       clinicianName: 'Dr. Colleague',
       text,
       timestamp: new Date().toISOString()
