@@ -42,8 +42,11 @@ chrome-debug-profile/
 .env*
 **/.env*
 docs/legal/
-src/partners/
+!src/partners/
 pocketgull_api/agents/
+pocketgull_api/eval_agent.py
+pocketgull_api/tests/test_*agent*.py
+pocketgull_api/tests/test_dr_gulliver.py
 
 # Generated Release Packages
 packages/
@@ -154,9 +157,11 @@ deploy_log.txt
 firebase-debug.log
 firebase-debug.*.log
 
-# --- Billing & Stripe Configs ---
-*billing*
-*stripe*
+# --- Billing & Stripe Configs & Secrets ---
+*billing-secret*
+*stripe-secret*
+!src/**/billing*
+!src/**/stripe*
 
 # --- Pocket Gull Custom Ignores ---
 
