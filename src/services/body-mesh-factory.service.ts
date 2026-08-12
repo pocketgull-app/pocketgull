@@ -75,6 +75,22 @@ export class BodyMeshFactoryService {
       mesh.userData['id'] = id;
       parts.set(id, mesh);
       mannequinGroup.add(mesh);
+
+      // 🎯 Touch Target Hit Proxy: Expanded invisible bounding mesh for Fitts's Law mobile touch targets
+      if (mesh instanceof THREE.Mesh) {
+        const proxyGeom = mesh.geometry.clone();
+        proxyGeom.scale(1.5, 1.5, 1.5);
+        const proxyMesh = new THREE.Mesh(
+          proxyGeom,
+          new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
+        );
+        proxyMesh.position.copy(mesh.position);
+        proxyMesh.rotation.copy(mesh.rotation);
+        proxyMesh.scale.copy(mesh.scale);
+        proxyMesh.userData['id'] = id;
+        proxyMesh.userData['isTouchProxy'] = true;
+        mannequinGroup.add(proxyMesh);
+      }
     };
 
     // 1. Head & Cranial Vault
