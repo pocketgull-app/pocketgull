@@ -1934,16 +1934,34 @@ export class SecureSplashComponent implements OnInit {
     osc2.stop(ctx.currentTime + 1.3);
   }
 
-  private getCanvasCoords(e: PointerEvent): {x: number, y: number, pressure: number} {
+  private getCanvasCoords(e: any): {x: number, y: number, pressure: number, tiltX: number, tiltY: number, pointerType: string} {
     const canvas = this.gestureCanvasRef()?.nativeElement;
-    if (!canvas) return { x: 0, y: 0, pressure: 0.5 };
+    if (!canvas) return { x: 0, y: 0, pressure: 0.5, tiltX: 0, tiltY: 0, pointerType: 'mouse' };
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / (rect.width || 240);
     const scaleY = canvas.height / (rect.height || 240);
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
-    const pressure = e.pressure && e.pressure > 0 ? e.pressure : 0.5;
-    return { x, y, pressure };
+
+    let clientX = e.clientX;
+    let clientY = e.clientY;
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else if (e.changedTouches && e.changedTouches.length > 0) {
+      clientX = e.changedTouches[0].clientX;
+      clientY = e.changedTouches[0].clientY;
+    }
+
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+    
+    // Wacom & Pen Pressure sensitivity (8192 levels fallback)
+    const rawPressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : (e.tangentialPressure ? Math.abs(e.tangentialPressure) : 0.5);
+    const pressure = Math.max(0.1, Math.min(1.0, rawPressure));
+    const tiltX = e.tiltX || 0;
+    const tiltY = e.tiltY || 0;
+    const pointerType = e.pointerType || (e.touches ? 'touch' : 'mouse');
+
+    return { x, y, pressure, tiltX, tiltY, pointerType };
   }
 
   private redrawCanvas() {
