@@ -88,6 +88,11 @@
               "canvg"
             ],
             "externalDependencies": [
+              "path",
+              "fs",
+              "crypto",
+              "url",
+              "os",
               "@mikro-orm/sqlite",
               "@google-cloud/opentelemetry-cloud-monitoring-exporter",
               "@google-cloud/opentelemetry-cloud-trace-exporter",
