@@ -61,6 +61,7 @@ import { ClinicianOnboardingComponent } from './components/clinician-onboarding.
 import { GoogleHealthConsentModalComponent } from './components/modals/google-health-consent-modal.component';
 import { MainHeaderNavComponent } from './components/main-header-nav.component';
 import { IntakeToolbarComponent } from './components/intake-toolbar.component';
+import { OnboardingTourOverlayComponent } from './components/onboarding-tour-overlay.component';
 
 @Component({
   selector: 'app-root',
@@ -97,11 +98,14 @@ import { IntakeToolbarComponent } from './components/intake-toolbar.component';
     ClinicianOnboardingComponent,
     GoogleHealthConsentModalComponent,
     MainHeaderNavComponent,
-    IntakeToolbarComponent
+    IntakeToolbarComponent,
+    OnboardingTourOverlayComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+
+    <app-onboarding-tour-overlay></app-onboarding-tour-overlay>
 
     <!-- ACM §1.6: First-run informed consent -->
     @if (!showSplash() && !consentService.hasConsented()) {
@@ -1289,10 +1293,14 @@ export class AppComponent implements OnDestroy {
     } catch (e: any) {
       console.error('[AWS HealthLake Sync] Error:', e);
       this.showAwsError.set(e.message || 'An error occurred during synchronization.');
-      setTimeout(() => this.showAwsError.set(null), 8000);
     } finally {
       this.isAwsSyncing.set(false);
     }
+  }
+
+  @HostListener('window:close-docs-study')
+  handleCloseDocsStudy() {
+    this.showDocsStudy.set(false);
   }
 
 
