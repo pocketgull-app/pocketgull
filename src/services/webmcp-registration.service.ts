@@ -20,6 +20,7 @@ import { WebgpuSpatialDigitalTwinService } from './webgpu-spatial-digital-twin.s
 import { InteractiveOnboardingTourService } from './interactive-onboarding-tour.service';
 import { NavigationShellService } from './navigation-shell.service';
 import { HelpfulListsService } from './helpful-lists.service';
+import { MultilingualEquityService } from './multilingual-equity.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -47,6 +48,7 @@ export class WebMcpRegistrationService {
   private tourService = inject(InteractiveOnboardingTourService, { optional: true });
   private navService = inject(NavigationShellService, { optional: true });
   private helpfulListsService = inject(HelpfulListsService, { optional: true });
+  private multilingualService = inject(MultilingualEquityService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1063,6 +1065,39 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(listsTool, { signal: listsCtrl.signal });
     this.mcpControllers.push({ name: listsTool.name, controller: listsCtrl });
+
+    // 36. translate_clinical_care_plan_multilingual
+    const multiCtrl = new AbortController();
+    const multiTool = {
+      name: 'translate_clinical_care_plan_multilingual',
+      description: 'Translates clinical care plans into plain-language multilingual summaries across 10 global languages (English, Spanish, Mandarin, Hindi, Arabic, Tagalog, French, Swahili, German, Japanese).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          text: { type: 'string', description: 'Clinical recommendation text' },
+          targetLanguageCode: {
+            type: 'string',
+            enum: ['en', 'es', 'zh', 'hi', 'ar', 'tl', 'fr', 'sw', 'de', 'ja'],
+            description: 'Target language code'
+          }
+        },
+        required: ['text']
+      },
+      execute: async (params: any) => {
+        const svc = this.multilingualService || new MultilingualEquityService();
+        const res = svc.translateClinicalCarePlan(params.text, params.targetLanguageCode || 'es');
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(res, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(multiTool, { signal: multiCtrl.signal });
+    this.mcpControllers.push({ name: multiTool.name, controller: multiCtrl });
   }
 
   /**
