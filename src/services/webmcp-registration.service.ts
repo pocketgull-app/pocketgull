@@ -17,6 +17,7 @@ import { JoyPlayfulFlourishingService } from './joy-playful-flourishing.service'
 import { ClinicalTrialMatcherService } from './clinical-trial-matcher.service';
 import { SmartOnFhirLaunchService } from './smart-on-fhir-launch.service';
 import { WebgpuSpatialDigitalTwinService } from './webgpu-spatial-digital-twin.service';
+import { InteractiveOnboardingTourService } from './interactive-onboarding-tour.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -41,6 +42,7 @@ export class WebMcpRegistrationService {
   private trialMatcherService = inject(ClinicalTrialMatcherService, { optional: true });
   private smartLaunchService = inject(SmartOnFhirLaunchService, { optional: true });
   private digitalTwinService = inject(WebgpuSpatialDigitalTwinService, { optional: true });
+  private tourService = inject(InteractiveOnboardingTourService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -957,6 +959,36 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(twinTool, { signal: twinCtrl.signal });
     this.mcpControllers.push({ name: twinTool.name, controller: twinCtrl });
+
+    // 33. guide_user_onboarding_walkthrough
+    const tourCtrl = new AbortController();
+    const tourTool = {
+      name: 'guide_user_onboarding_walkthrough',
+      description: 'Starts or advances interactive feature onboarding walkthrough tours tailored for PATIENT, CLINICIAN, or RESEARCHER personas.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          action: { type: 'string', enum: ['START', 'NEXT', 'PREVIOUS', 'STOP'], description: 'Tour action' },
+          persona: { type: 'string', enum: ['PATIENT', 'CLINICIAN', 'RESEARCHER', 'ALL'], description: 'Target user persona' }
+        },
+        required: ['action']
+      },
+      execute: async (params: any) => {
+        const svc = this.tourService || new InteractiveOnboardingTourService();
+        if (params.action === 'START') {
+          svc.startTour(params.persona || 'PATIENT');
+        } else if (params.action === 'NEXT') {
+          svc.nextStep();
+        } else if (params.action === 'PREVIOUS') {
+          svc.previousStep();
+        } else {
+          svc.completeTour();
+        }
+        return { content: [{ type: 'text', text: JSON.stringify(svc.progress(), null, 2) }] };
+      }
+    };
+    modelContext.registerTool(tourTool, { signal: tourCtrl.signal });
+    this.mcpControllers.push({ name: tourTool.name, controller: tourCtrl });
   }
 
   /**
