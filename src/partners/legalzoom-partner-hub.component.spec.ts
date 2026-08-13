@@ -1,9 +1,10 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, beforeEach, expect } from 'vitest';
 import { Injector, runInInjectionContext, PLATFORM_ID, ɵChangeDetectionScheduler as ChangeDetectionScheduler } from '@angular/core';
 import { LegalZoomPartnerHubComponent } from './legalzoom-partner-hub.component';
 import { LegalZoomIntegrationService } from '../services/legalzoom-integration.service';
 import { LegalConsentSovereigntyService } from '../services/legal-consent-sovereignty.service';
+import { UniversalLivingWillService } from '../services/universal-living-will.service';
 import { GrowThyselfLegacyEngineService } from '../services/grow-thyself-legacy-engine.service';
 import { PatientStateService } from '../services/patient-state.service';
 
@@ -28,6 +29,7 @@ describe('LegalZoomPartnerHubComponent (src/partners/)', () => {
         GrowThyselfLegacyEngineService,
         LegalConsentSovereigntyService,
         LegalZoomIntegrationService,
+        UniversalLivingWillService,
         LegalZoomPartnerHubComponent
       ]
     });
@@ -35,6 +37,6 @@ describe('LegalZoomPartnerHubComponent (src/partners/)', () => {
   });
 
   it('1. Initializes legalzoom partner hub component inside src/partners/', () => {
-    expect(component.legalZoomService.availablePackages().length).toBe(2);
+    expect(component.universalWillService.partnerOptions().length).toBeGreaterThanOrEqual(3);
   });
 });
