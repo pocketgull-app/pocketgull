@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 20 WebMCP agentic tools on modelContext', () => {
+  it('should register all 21 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(20);
+    expect(registeredTools.size).toBe(21);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -316,9 +316,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('microgravityResorptionRate');
   });
 
+  it('should execute evaluate_irmaa_medicare_surcharge_and_ssa44_appeal tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_irmaa_medicare_surcharge_and_ssa44_appeal');
+
+    const result = await tool.execute({ magi: 140000, filingStatus: 'single', lifeChangingEvents: ['WORK_REDUCTION'] });
+    expect(result.content[0].text).toContain('Tier 2 Surcharge');
+    expect(result.content[0].text).toContain('estimatedAnnualSavings');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(20);
+    expect((service as any).mcpControllers.length).toBe(21);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

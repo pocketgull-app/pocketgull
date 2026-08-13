@@ -6,6 +6,7 @@ import { TeledentistryService } from './teledentistry.service';
 import { GcpHealthcareApiService } from './fhir/gcp-healthcare-api.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
+import { IrmaaDecisionService } from './irmaa-decision.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -19,6 +20,7 @@ export class WebMcpRegistrationService {
   private gcpHealthcareService = inject(GcpHealthcareApiService);
   private skepticalService = inject(SkepticalEpistemologyService);
   private moeRouter = inject(ClinicalMoERouterService);
+  private irmaaService = inject(IrmaaDecisionService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -590,6 +592,36 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(subTool, { signal: subCtrl.signal });
     this.mcpControllers.push({ name: subTool.name, controller: subCtrl });
+
+    // 21. evaluate_irmaa_medicare_surcharge_and_ssa44_appeal
+    const irmaaCtrl = new AbortController();
+    const irmaaTool = {
+      name: 'evaluate_irmaa_medicare_surcharge_and_ssa44_appeal',
+      description: 'Calculates Medicare Part B and Part D IRMAA monthly surcharges, tax cliff buffer distance, and Social Security Form SSA-44 Life-Changing Event appeal eligibility.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          magi: { type: 'number', description: 'Modified Adjusted Gross Income (from 2 years prior or current estimate)' },
+          filingStatus: { type: 'string', enum: ['single', 'joint', 'separate'], description: 'Tax Filing Status' },
+          lifeChangingEvents: { 
+            type: 'array', 
+            items: { type: 'string' },
+            description: 'Qualifying events: WORK_STOPPAGE, WORK_REDUCTION, DEATH_OF_SPOUSE, MARRIAGE, DIVORCE_OR_ANNULMENT, INCOME_PROPERTY_LOSS, PENSION_PORTFOLIO_LOSS, EMPLOYER_SETTLEMENT' 
+          }
+        },
+        required: ['magi']
+      },
+      execute: async (params: any) => {
+        const magi = Number(params.magi) || 125000;
+        const status = params.filingStatus || 'single';
+        const events = Array.isArray(params.lifeChangingEvents) ? params.lifeChangingEvents : [];
+        const svc = this.irmaaService || new IrmaaDecisionService();
+        const res = svc.evaluateIrmaa(magi, status, events);
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(irmaaTool, { signal: irmaaCtrl.signal });
+    this.mcpControllers.push({ name: irmaaTool.name, controller: irmaaCtrl });
   }
 
   /**
