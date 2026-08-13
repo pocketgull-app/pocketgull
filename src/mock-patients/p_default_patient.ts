@@ -2,7 +2,7 @@ import { IPatient } from '../services/patient.types';
 
 export const p_default_patient: IPatient = {
   id: "p_default_patient",
-  name: "Alexander Vance",
+  name: "Homo Sapiens (Male, Metabolic & Executive Stress, 44y)",
   age: 42,
   gender: "Male",
   lastVisit: "2026.05.20",
