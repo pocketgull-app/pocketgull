@@ -16,6 +16,7 @@ import { ClinicalGameTheoryService } from './clinical-game-theory.service';
 import { JoyPlayfulFlourishingService } from './joy-playful-flourishing.service';
 import { ClinicalTrialMatcherService } from './clinical-trial-matcher.service';
 import { SmartOnFhirLaunchService } from './smart-on-fhir-launch.service';
+import { WebgpuSpatialDigitalTwinService } from './webgpu-spatial-digital-twin.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -39,6 +40,7 @@ export class WebMcpRegistrationService {
   private joyService = inject(JoyPlayfulFlourishingService, { optional: true });
   private trialMatcherService = inject(ClinicalTrialMatcherService, { optional: true });
   private smartLaunchService = inject(SmartOnFhirLaunchService, { optional: true });
+  private digitalTwinService = inject(WebgpuSpatialDigitalTwinService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -929,6 +931,32 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(medicareIrmaaTool, { signal: medicareIrmaaCtrl.signal });
     this.mcpControllers.push({ name: medicareIrmaaTool.name, controller: medicareIrmaaCtrl });
+
+    // 32. render_webgpu_3d_organ_digital_twin
+    const twinCtrl = new AbortController();
+    const twinTool = {
+      name: 'render_webgpu_3d_organ_digital_twin',
+      description: 'Calculates real-time WebGPU 3D organ digital twin mesh deformation, perfusion rates, and WGSL compute shader parameters.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          organ: { type: 'string', enum: ['HEART', 'LUNGS', 'LIVER', 'KIDNEYS', 'BRAIN'], description: 'Target organ' },
+          heartRateBpm: { type: 'number', description: 'Heart rate in BPM' },
+          spo2Percent: { type: 'number', description: 'Blood oxygen saturation percentage (70-100%)' }
+        },
+        required: ['organ']
+      },
+      execute: async (params: any) => {
+        const svc = this.digitalTwinService || new WebgpuSpatialDigitalTwinService();
+        svc.selectedOrgan.set(params.organ || 'HEART');
+        if (params.heartRateBpm) svc.heartRate.set(Number(params.heartRateBpm));
+        if (params.spo2Percent) svc.spo2Percent.set(Number(params.spo2Percent));
+        const frame = svc.computeDigitalTwinFrame();
+        return { content: [{ type: 'text', text: JSON.stringify(frame, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(twinTool, { signal: twinCtrl.signal });
+    this.mcpControllers.push({ name: twinTool.name, controller: twinCtrl });
   }
 
   /**

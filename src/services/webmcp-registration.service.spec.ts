@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 31 WebMCP agentic tools on modelContext', () => {
+  it('should register all 32 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(31);
+    expect(registeredTools.size).toBe(32);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -417,9 +417,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('appealAssessment');
   });
 
+  it('should execute render_webgpu_3d_organ_digital_twin tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('render_webgpu_3d_organ_digital_twin');
+
+    const result = await tool.execute({ organ: 'HEART', heartRateBpm: 80 });
+    expect(result.content[0].text).toContain('HEART');
+    expect(result.content[0].text).toContain('biophysics');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(31);
+    expect((service as any).mcpControllers.length).toBe(32);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
