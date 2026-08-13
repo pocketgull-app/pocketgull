@@ -21,6 +21,10 @@ test-results/
 playwright-report/
 source.tgz
 deploy.tgz
+deploy_source.tar.gz
+live_pocketgull_app.png
+report.html
+report.json
 *.local
 *.local.*
 
