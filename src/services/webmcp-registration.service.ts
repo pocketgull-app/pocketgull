@@ -13,6 +13,7 @@ import { FhirPriorAuthService } from './fhir-prior-auth.service';
 import { SnomedIcdCrosswalkService } from './snomed-icd-crosswalk.service';
 import { WebgpuBioSignalService } from './webgpu-bio-signal.service';
 import { ClinicalGameTheoryService } from './clinical-game-theory.service';
+import { JoyPlayfulFlourishingService } from './joy-playful-flourishing.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -33,6 +34,7 @@ export class WebMcpRegistrationService {
   private snomedCrosswalkService = inject(SnomedIcdCrosswalkService, { optional: true });
   private bioSignalService = inject(WebgpuBioSignalService, { optional: true });
   private gameTheoryService = inject(ClinicalGameTheoryService, { optional: true });
+  private joyService = inject(JoyPlayfulFlourishingService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -821,6 +823,27 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(gameTheoryTool, { signal: gameTheoryCtrl.signal });
     this.mcpControllers.push({ name: gameTheoryTool.name, controller: gameTheoryCtrl });
+
+    // 28. prescribe_joy_and_playful_flourishing
+    const joyCtrl = new AbortController();
+    const joyTool = {
+      name: 'prescribe_joy_and_playful_flourishing',
+      description: 'Prescribes micro-joy and micro-play activities (sea shanty rhythm drumming, botanical foraging, origami, storytelling, laughter yoga) and calculates PERMA+ playfulness scorecards.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string', description: 'Patient ID (e.g. p010)' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.joyService || new JoyPlayfulFlourishingService();
+        const prescriptions = svc.dailyPrescriptions();
+        const scorecard = svc.calculateJoyScorecard();
+        return { content: [{ type: 'text', text: JSON.stringify({ prescriptions, scorecard }, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(joyTool, { signal: joyCtrl.signal });
+    this.mcpControllers.push({ name: joyTool.name, controller: joyCtrl });
   }
 
   /**
