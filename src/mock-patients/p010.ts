@@ -13,7 +13,7 @@ export const p010: IPatient = {
     'Neurogenic Orthostatic Hypotension (nOH)',
     'REM Sleep Behavior Disorder (RBD)'
   ],
-  patientGoals: 'Maintain cognitive autonomy and daily executive memory, reduce nocturnal motor freezing and resting tremor, prevent orthostatic syncope during morning transitions, and optimize dual Carbidopa/Levodopa & Donepezil neuro-pharmacotherapy.',
+  patientGoals: 'Maintain cognitive autonomy and daily executive memory, reduce nocturnal motor freezing and resting tremor, prevent orthostatic syncope during morning transitions, and optimize dual Carbidopa/Levodopa & Donepezil neuro-pharmacotherapy with integrative TCM and Ayurvedic Medhya Rasayanas.',
   vitals: {
     bp: '128/78 (Supine) / 102/64 (Standing)',
     hr: '68',
@@ -26,6 +26,28 @@ export const p010: IPatient = {
     b12: '540 pg/mL',
     zinc: '72 mcg/dL'
   },
+  tcmIntake: {
+    tongueColor: 'pale',
+    tongueCoating: 'thin-white',
+    pulseQuality: 'deep-thready',
+    thermalPreference: 'aversion-cold',
+    sweatPattern: 'spontaneous-day',
+    tasteInMouth: 'bland',
+    tcmPattern: 'Kidney Essence (Jing) Deficiency & Liver Wind Agitation with Phlegm-Damp Stagnation'
+  },
+  ayurvedicIntake: {
+    prakritiVata: 7,
+    prakritiPitta: 3,
+    prakritiKapha: 2,
+    vikritiVata: 10,
+    vikritiPitta: 5,
+    vikritiKapha: 2,
+    agniType: 'vishamagni',
+    amaScore: 6.4,
+    nadiPulseType: 'snake-vata',
+    ashtavidhaStatus: 'Nadi (Vata-dominant), Jihva (Pale-coated), Mutra (Clear)',
+    ayurvedicImbalance: 'Severe Kampavata (Vata Tremor/Parkinsonism) with Majja Dhatu Kshaya (Nervous Marrow Wasting)'
+  },
   oxidativeStressMarkers: [
     { id: '1', name: 'CSF Amyloid-Beta 42/40 Ratio', value: '0.048 (Abnormal, Amyloid Plaque Deposition)' },
     { id: '2', name: 'CSF Phosphorylated Tau (p-Tau 181)', value: '68.4 pg/mL (Elevated Neurofibrillary Tangles)' },
@@ -34,7 +56,9 @@ export const p010: IPatient = {
   ],
   antioxidantSources: [
     { id: '1', name: 'Coenzyme Q10 (Ubiquinol Bio-Active)', value: '200mg QAM (Mitochondrial Electron Transport)' },
-    { id: '2', name: 'Curcuminoid Phytosome Cross-BBB Formula', value: '500mg BID (Microglial Anti-Inflammatory)' }
+    { id: '2', name: 'Curcuminoid Phytosome Cross-BBB Formula', value: '500mg BID (Microglial Anti-Inflammatory)' },
+    { id: '3', name: 'Brahmi (Bacopa Monnieri 50% Bacosides)', value: '450mg QAM (Medhya Rasayana Synaptic Plasticity)' },
+    { id: '4', name: 'Kapikacchu (Mucuna Pruriens 15% L-DOPA)', value: '250mg BID (Natural Dopaminergic Seed Extract)' }
   ],
   medications: [
     { id: '1', name: 'Carbidopa / Levodopa (Sinemet 25/100mg)', value: '1 tablet TID (30 mins before meals - Dopamine Precursor)' },
@@ -53,7 +77,7 @@ export const p010: IPatient = {
     {
       id: 'note_p010_1',
       date: '2026.08.13',
-      text: "Comprehensive Movement Disorder & Memory Clinic Evaluation:\n- Cognitive Status: MMSE 19/30 (Mild-to-Moderate impairment). Short-term recall 1/3 at 5 minutes. Clock drawing test shows right-sided spatial crowding.\n- Motor Evaluation: UPDRS Part III Motor Score 24. Asymmetric resting tremor in right upper extremity (3 Hz). Mild bilateral pill-rolling tremor, stooped posture, and decreased arm swing during gait.\n- Orthostatic Telemetry: Supine BP 128/78 -> Standing BP 102/64 at 3 mins (-26 mmHg SBP drop). Fludrocortisone dose maintained.\n- Neuro-Care Plan: Continue Sinemet 25/100mg TID 30 mins before high-protein meals (prevent amino acid competition across BBB). Maintain Donepezil 10mg QHS.",
+      text: "Comprehensive Movement Disorder & Memory Clinic Evaluation:\n- Cognitive Status: MMSE 19/30 (Mild-to-Moderate impairment). Short-term recall 1/3 at 5 minutes. Clock drawing test shows right-sided spatial crowding.\n- Motor Evaluation: UPDRS Part III Motor Score 24. Asymmetric resting tremor in right upper extremity (3 Hz). Mild bilateral pill-rolling tremor, stooped posture, and decreased arm swing during gait.\n- Orthostatic Telemetry: Supine BP 128/78 -> Standing BP 102/64 at 3 mins (-26 mmHg SBP drop). Fludrocortisone dose maintained.\n- TCM & Ayurvedic Evaluation: Kidney Essence (Jing) Deficiency with Liver Wind Agitation (Tremor). Kampavata Vata imbalance. Integrate Bacopa (Brahmi) & Gastrodia (Tian Ma) adjuncts.\n- Neuro-Care Plan: Continue Sinemet 25/100mg TID 30 mins before high-protein meals (prevent amino acid competition across BBB). Maintain Donepezil 10mg QHS.",
       sourceLens: 'Neurology & Neurodegenerative Pathology'
     }
   ],
@@ -78,12 +102,12 @@ export const p010: IPatient = {
     {
       type: 'AnalysisRun',
       date: '2026.08.13',
-      summary: "Alzheimer's & Parkinson's Dual Overlap Neuro-Pathology Assessment",
+      summary: "Alzheimer's & Parkinson's Dual Overlap Integrative Assessment (Western + TCM + Ayurvedic)",
       report: {
-        'Summary Overview': "### 🧠 Dual Neurodegenerative Pathology Assessment\nPatient presents with concurrent Alzheimer's Disease and Parkinson's Disease (Hoehn & Yahr Stage II). Primary clinical imperatives: manage cholinergic executive cognitive loss, optimize dopaminergic motor control while preventing L-DOPA-induced dyskinesias, stabilize orthostatic pressure drops, and provide caregiver assistance for activities of daily living.",
-        'Functional Protocols': '### Dual Neuro-Pharmacotherapy & Timing Strategy\n- **Carbidopa/Levodopa Timing**: Administer Sinemet 25/100mg 30 minutes before high-protein meals to prevent large neutral amino acids from competing across the Blood-Brain Barrier (BBB).\n- **Cholinesterase Protection**: Maintain Donepezil (10mg QHS) and Memantine XR (28mg QAM) to stabilize cortical acetylcholine and modulate NMDA glutamate excitotoxicity.\n- **Orthostatic Syncope Prevention**: Compression stockings, hydration, and Fludrocortisone 0.1mg QAM.',
-        'Nutrition': '### Neuro-Protective & Brain Energy Nutrition\n- **Medium-Chain Triglyceride (MCT) Ketone Support**: 15ml MCT C8 oil daily to provide alternative microglial ATP substrate.\n- **Protein Redistribution Diet**: Consume 70% of daily protein during evening meals to maximize daylight L-DOPA motor absorption.',
-        'Precision Nutrients': '### Mitochondrial & Microglial Support\n- **Ubiquinol (CoQ10)**: 200mg QAM (Mitochondrial Complex I bioenergetics).\n- **Curcuminoid Phytosome**: 500mg BID (Cross-BBB microglial anti-inflammatory modulation).\n- **Magnesium L-Threonate**: 2,000mg QHS (Synaptic density and sleep continuity).'
+        'Summary Overview': "### 🧠 Dual Neurodegenerative Pathology Integrative Assessment\nPatient presents with concurrent Alzheimer's Disease and Parkinson's Disease (Hoehn & Yahr Stage II). Western neuro-pathology indicates dual amyloid-tau plaques and alpha-synuclein Lewy bodies. TCM pattern shows Kidney Essence (Jing) Deficiency & Liver Wind Agitation (*Shen Jing Kiu / Gan Feng*). Ayurvedic diagnosis reveals severe Kampavata (Vata Tremor) with Majja Dhatu Kshaya (Nervous Marrow Wasting).",
+        'Functional Protocols': '### Tri-Paradigm Neuro-Pharmacotherapy & Timing Strategy\n- **Western L-DOPA Protocol**: Carbidopa/Levodopa 25/100mg TID 30 minutes before meals to avoid neutral amino acid BBB transport competition.\n- **TCM Wind-Extinguishing Protocol**: Gastrodia Elata (*Tian Ma*) & Uncaria Rhynchophylla (*Gou Teng*) to pacify internal Liver Wind tremor.\n- **Ayurvedic Medhya Rasayana Protocol**: Bacopa Monnieri (*Brahmi* 450mg QAM) to enhance cholinergic synaptic plasticity, paired with *Kapikacchu* (Mucuna Pruriens 15% natural L-DOPA) co-administration.\n- **Cholinesterase Protection**: Donepezil (10mg QHS) & Memantine XR (28mg QAM).',
+        'Nutrition': '### Neuro-Protective & Vata-Pacifying Nutrition\n- **MCT Ketone Energy Substrate**: 15ml MCT C8 oil daily to provide microglial ATP bypass substrate.\n- **Ayurvedic Warm Vata Diet**: Warm, cooked foods with ghee, sesame oil, and ground spices (cinnamon, nutmeg, turmeric) to calm hyperactive Vata.\n- **Daylight Protein Redistribution**: Consume 70% of protein during evening meals to optimize daytime L-DOPA absorption.',
+        'Precision Nutrients': '### Mitochondrial & Microglial Support\n- **Ubiquinol (CoQ10)**: 200mg QAM (Mitochondrial Complex I electron transport).\n- **Ashwagandha (Withania Somnifera)**: 600mg QHS (Vata-pacifying adaptogen, inhibits alpha-synuclein toxicity).\n- **Curcuminoid Phytosome**: 500mg BID (Cross-BBB microglial anti-inflammatory modulation).'
       }
     }
   ],
@@ -102,8 +126,8 @@ export const p010: IPatient = {
   anatomicalTarget: 'head',
   clinicalMoERoute: {
     primaryDomain: 'Neurology & Neurodegenerative Pathology',
-    activeSpecialists: ['Cognitive Neurologist', 'Movement Disorder Specialist', 'Neuro-Pharmacologist', 'Physical Therapist'],
-    confidenceScore: 0.96,
+    activeSpecialists: ['Cognitive Neurologist', 'Movement Disorder Specialist', 'Neuro-Pharmacologist', 'TCM Botanical Specialist', 'Ayurvedic Vaidya'],
+    confidenceScore: 0.97,
     reasoning: 'Patient exhibits dual-pathology overlap of Alzheimer-type cholinergic memory loss and Parkinsonian nigrostriatal dopaminergic deficit.'
   }
 };
