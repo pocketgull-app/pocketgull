@@ -903,6 +903,32 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(smartLaunchTool, { signal: smartLaunchCtrl.signal });
     this.mcpControllers.push({ name: smartLaunchTool.name, controller: smartLaunchCtrl });
+
+    // 31. calculate_medicare_irmaa_and_ssa44_appeals
+    const medicareIrmaaCtrl = new AbortController();
+    const medicareIrmaaTool = {
+      name: 'calculate_medicare_irmaa_and_ssa44_appeals',
+      description: 'Calculates 2026 Medicare IRMAA Part B/D income surcharges based on MAGI and determines eligibility for SSA-44 Life-Changing Event appeals.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          magiUsd: { type: 'number', description: 'Modified Adjusted Gross Income in USD' },
+          filingStatus: { type: 'string', enum: ['single', 'joint', 'separate'], description: 'Tax filing status' },
+          lifeChangingEvent: { type: 'string', enum: ['WORK_STOPPAGE', 'WORK_REDUCTION', 'MARRIAGE', 'DIVORCE_OR_ANNULMENT', 'INCOME_PROPERTY_LOSS'], description: 'SSA-44 Life-Changing Event' }
+        },
+        required: ['magiUsd']
+      },
+      execute: async (params: any) => {
+        const svc = this.irmaaService || new IrmaaDecisionService();
+        if (params.magiUsd !== undefined) svc.magi.set(Number(params.magiUsd));
+        if (params.filingStatus) svc.filingStatus.set(params.filingStatus as any);
+        if (params.lifeChangingEvent) svc.activeEvents.set([params.lifeChangingEvent as any]);
+        const analysisResult = svc.analysis();
+        return { content: [{ type: 'text', text: JSON.stringify(analysisResult, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(medicareIrmaaTool, { signal: medicareIrmaaCtrl.signal });
+    this.mcpControllers.push({ name: medicareIrmaaTool.name, controller: medicareIrmaaCtrl });
   }
 
   /**
