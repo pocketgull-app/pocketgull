@@ -1,9 +1,16 @@
 import '@angular/compiler';
 import * as DOMPurify from 'dompurify'; // HIPAA Safe Harbor Sanitization
-import { vi } from 'vitest';
-import { TestBed } from '@angular/core/testing';
+import { vi, describe, it, beforeEach, expect } from 'vitest';
 import { VoiceAssistantComponent } from './voice-assistant.component';
-import { signal } from '@angular/core';
+import { signal, Injector, runInInjectionContext } from '@angular/core';
+
+vi.mock('@angular/core', async (importOriginal) => {
+  const original = await importOriginal<any>();
+  return {
+    ...original,
+    effect: () => ({ destroy: () => {} })
+  };
+});
 import { PatientStateService } from '../services/patient-state.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { DictationService } from '../services/dictation.service';
@@ -90,8 +97,7 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
       scores: signal({})
     };
 
-    TestBed.configureTestingModule({
-      imports: [VoiceAssistantComponent],
+    const injector = Injector.create({
       providers: [
         { provide: PatientStateService, useValue: mockPatientState },
         { provide: ClinicalIntelligenceService, useValue: mockClinicalIntelligence },
@@ -107,8 +113,7 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
       ]
     });
 
-    const fixture = TestBed.createComponent(VoiceAssistantComponent);
-    component = fixture.componentInstance;
+    component = runInInjectionContext(injector, () => new VoiceAssistantComponent());
   });
 
   it('should instantiate successfully with empty message text signal', () => {

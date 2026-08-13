@@ -500,6 +500,96 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(thinkTool, { signal: thinkCtrl.signal });
     this.mcpControllers.push({ name: thinkTool.name, controller: thinkCtrl });
+
+    // 16. analyze_systemic_inflammatory_burden
+    const sibiCtrl = new AbortController();
+    const sibiTool = {
+      name: 'analyze_systemic_inflammatory_burden',
+      description: 'Calculates the Systemic Inflammatory Burden Index (SIBI) cross-talk score from CRP, Periodontal Probing Depth (PPD), and blood pressure.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          hsCrp: { type: 'number', description: 'Serum hs-CRP level in mg/L.' },
+          ppd: { type: 'number', description: 'Max Periodontal Probing Depth in mm.' },
+          sbp: { type: 'number', description: 'Systolic Blood Pressure in mmHg.' }
+        },
+        required: ['hsCrp', 'ppd', 'sbp']
+      },
+      execute: async (params: any) => {
+        try {
+          const score = Number((params.hsCrp * 0.35 + params.ppd * 0.75 + Math.max(0, params.sbp - 120) * 0.04).toFixed(2));
+          const tier = score > 8.0 ? 'HIGH_INFLAMMATORY_BURDEN' : score > 4.0 ? 'MODERATE_BURDEN' : 'LOW_BURDEN';
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({ sibiScore: score, burdenTier: tier, cvRiskMultiplier: Number((1 + score * 0.08).toFixed(2)) })
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to compute SIBI: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(sibiTool, { signal: sibiCtrl.signal });
+    this.mcpControllers.push({ name: sibiTool.name, controller: sibiCtrl });
+
+    // 17. assess_cochrane_risk_of_bias
+    const robCtrl = new AbortController();
+    const robTool = {
+      name: 'assess_cochrane_risk_of_bias',
+      description: 'Evaluates literature evidence citations for Cochrane RoB 2 study design biases across randomization and missing outcome data.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          studyTitle: { type: 'string', description: 'The title of the clinical trial or literature citation.' },
+          randomization: { type: 'string', enum: ['LOW', 'SOME_CONCERNS', 'HIGH'], description: 'Randomization bias assessment.' },
+          missingData: { type: 'string', enum: ['LOW', 'SOME_CONCERNS', 'HIGH'], description: 'Missing outcome data bias assessment.' }
+        },
+        required: ['studyTitle', 'randomization', 'missingData']
+      },
+      execute: async (params: any) => {
+        try {
+          const overall = (params.randomization === 'HIGH' || params.missingData === 'HIGH') ? 'HIGH_RISK_OF_BIAS'
+            : (params.randomization === 'SOME_CONCERNS' || params.missingData === 'SOME_CONCERNS') ? 'SOME_CONCERNS' : 'LOW_RISK_OF_BIAS';
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({ studyTitle: params.studyTitle, overallRiskOfBias: overall, evidenceTier: overall === 'LOW_RISK_OF_BIAS' ? 'Level A (High Quality RCT)' : 'Level C (Exploratory/Observational)' })
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to assess Cochrane RoB 2: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(robTool, { signal: robCtrl.signal });
+    this.mcpControllers.push({ name: robTool.name, controller: robCtrl });
+
+    // 18. query_biophysical_substrate_params
+    const subCtrl = new AbortController();
+    const subTool = {
+      name: 'query_biophysical_substrate_params',
+      description: 'Returns 3D anatomical WebGL PBR surface and biophysical tissue parameters.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          tissueType: { type: 'string', enum: ['bone', 'skin', 'vascular', 'dental'], description: 'Anatomical tissue type.' }
+        },
+        required: ['tissueType']
+      },
+      execute: async (params: any) => {
+        const substrateMap: Record<string, any> = {
+          bone: { roughness: 0.65, metalness: 0.05, microgravityResorptionRate: '1.5% / month', tensileStrengthMpa: 130 },
+          skin: { roughness: 0.40, metalness: 0.0, sssStrength: 0.85, hydrationSensitivity: 'High' },
+          vascular: { roughness: 0.20, metalness: 0.1, elasticityModulusKpa: 450, shearStressLimitPa: 15 },
+          dental: { roughness: 0.15, metalness: 0.0, enamelHardnessVickers: 350, twiGradeMax: 4 }
+        };
+        const data = substrateMap[params.tissueType] || substrateMap['bone'];
+        return { content: [{ type: 'text', text: JSON.stringify({ tissueType: params.tissueType, substrate: data }) }] };
+      }
+    };
+    modelContext.registerTool(subTool, { signal: subCtrl.signal });
+    this.mcpControllers.push({ name: subTool.name, controller: subCtrl });
   }
 
   /**

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi, describe, it, beforeEach, expect } from 'vitest';
 import { Injector, runInInjectionContext, NgZone } from '@angular/core';
 import { WebMcpRegistrationService } from './webmcp-registration.service';
 import { PatientStateService } from './patient-state.service';
@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 17 WebMCP agentic tools on modelContext', () => {
+  it('should register all 20 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(17);
+    expect(registeredTools.size).toBe(20);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -291,9 +291,34 @@ describe('WebMcpRegistrationService', () => {
     expect(mockMoeRouter.setCustomThinkingBudget).toHaveBeenCalledWith(8192);
   });
 
+  it('should execute analyze_systemic_inflammatory_burden tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('analyze_systemic_inflammatory_burden');
+
+    const result = await tool.execute({ hsCrp: 4.5, ppd: 5.0, sbp: 135 });
+    expect(result.content[0].text).toContain('sibiScore');
+    expect(result.content[0].text).toContain('cvRiskMultiplier');
+  });
+
+  it('should execute assess_cochrane_risk_of_bias tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('assess_cochrane_risk_of_bias');
+
+    const result = await tool.execute({ studyTitle: 'RCT of High Dose EPA/DHA', randomization: 'LOW', missingData: 'LOW' });
+    expect(result.content[0].text).toContain('LOW_RISK_OF_BIAS');
+  });
+
+  it('should execute query_biophysical_substrate_params tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('query_biophysical_substrate_params');
+
+    const result = await tool.execute({ tissueType: 'bone' });
+    expect(result.content[0].text).toContain('microgravityResorptionRate');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(17);
+    expect((service as any).mcpControllers.length).toBe(20);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

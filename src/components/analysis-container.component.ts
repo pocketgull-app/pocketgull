@@ -24,6 +24,7 @@ import { GreenRoomLoungeComponent } from './green-room-lounge.component';
 import { DoctorShiftSimulatorComponent } from './doctor-shift-simulator.component';
 import { DoctorShiftSalesDemoComponent } from './doctor-shift-sales-demo.component';
 import { Holographic3DAnatomyComponent } from './anatomy-3d/holographic-3d-anatomy.component';
+import { GenesisBiophysicalSubstrateComponent } from './anatomy-3d/genesis-biophysical-substrate.component';
 
 import { DomainSuitesNavigatorComponent } from './suites/domain-suites-navigator.component';
 
@@ -40,7 +41,7 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
   host: {
     'class': 'flex flex-col flex-1 min-h-0 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)]'
   },
-  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, DoctorShiftSalesDemoComponent, Holographic3DAnatomyComponent],
+  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, DoctorShiftSalesDemoComponent, Holographic3DAnatomyComponent, GenesisBiophysicalSubstrateComponent],
   template: `
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)] bg-[#F3F4F6] dark:bg-zinc-950">
       
@@ -208,6 +209,7 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
                 } @else {
                   @defer (on viewport; prefetch on idle) {
                     <app-holographic-3d-anatomy class="w-full mb-6 shrink-0 block" />
+                    <app-genesis-biophysical-substrate class="w-full mb-6 shrink-0 block" />
                   } @placeholder {
                     <div class="w-full mb-6 shrink-0 h-48 rounded-2xl bg-slate-100 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 animate-pulse flex items-center justify-center gap-3">
                       <div class="w-3 h-3 rounded-full bg-cyan-500 animate-ping"></div>

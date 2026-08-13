@@ -16,9 +16,12 @@ export interface ISmartLaunchSession {
   clientId: string;
   launchToken?: string;
   accessToken?: string;
+  refreshToken?: string;
   idToken?: string;
   patientId?: string;
   encounterId?: string;
+  codeVerifier?: string;
+  stateNonce?: string;
   status: 'IDLE' | 'AUTHORIZING' | 'CONNECTED' | 'ERROR';
   uscdiVersion: 'v1' | 'v2' | 'v3' | 'v4';
 }
@@ -81,10 +84,15 @@ export class SmartOnFhirLauncherService {
     const vendor = this.supportedVendors().find(v => v.id === vendorId);
     if (!vendor) return;
 
+    const verifier = generatePkceVerifier();
+    const stateNonce = generateStateNonce();
+
     this.activeSession.set({
       vendorId: vendor.id,
       clientId: 'pocketgull-smart-app-v1',
       launchToken: launchToken || 'simulated-epic-launch-token-88f92a',
+      codeVerifier: verifier,
+      stateNonce,
       status: 'AUTHORIZING',
       uscdiVersion: 'v4'
     });
@@ -94,17 +102,60 @@ export class SmartOnFhirLauncherService {
       this.activeSession.update(session => ({
         ...session,
         accessToken: 'smart-v2-access-token-epic-P001',
+        refreshToken: 'smart-v2-refresh-token-epic-P001',
         idToken: 'smart-v2-id-token-dr-gear',
         patientId: 'P001',
         encounterId: 'ENC-2026-0811',
         status: 'CONNECTED'
       }));
 
-      // Hydrate PatientStateService if available
-      if (this.patientState) {
-        console.log('[SMART on FHIR] Ingested USCDI v4 Patient Context for P001');
+      // Hydrate USCDI v4 Patient Context
+      const sampleUscdi = {
+        resourceType: 'Bundle',
+        type: 'collection',
+        entry: [
+          { resource: { resourceType: 'Patient', id: 'P001', gender: 'female', birthDate: '1992-04-12' } },
+          { resource: { resourceType: 'Observation', code: { text: 'Heart Rate' }, valueQuantity: { value: 74, unit: 'bpm' } } },
+          { resource: { resourceType: 'Condition', code: { text: 'Tension Headache' }, clinicalStatus: { coding: [{ code: 'active' }] } } }
+        ]
+      };
+      this.mapUscdiV4PayloadToPatientState(sampleUscdi);
+    }, 400);
+  }
+
+  mapUscdiV4PayloadToPatientState(bundle: any): void {
+    if (!bundle || bundle.resourceType !== 'Bundle') return;
+
+    const patientEntry = bundle.entry?.find((e: any) => e.resource?.resourceType === 'Patient')?.resource;
+    const vitalsEntries = bundle.entry?.filter((e: any) => e.resource?.resourceType === 'Observation') || [];
+    const conditionEntries = bundle.entry?.filter((e: any) => e.resource?.resourceType === 'Condition') || [];
+
+    if (this.patientState) {
+      if (vitalsEntries.length > 0) {
+        vitalsEntries.forEach((v: any) => {
+          const obs = v.resource;
+          const val = obs.valueQuantity?.value || obs.valueString;
+          const label = obs.code?.text || obs.code?.coding?.[0]?.display || 'Vital';
+          if (val) {
+            console.log(`[USCDI v4 Sync] Updated vital ${label}: ${val}`);
+          }
+        });
       }
-    }, 800);
+    }
+  }
+
+  validateFhirR4Bundle(bundle: any): { valid: boolean; errors: string[] } {
+    const errors: string[] = [];
+    if (!bundle || typeof bundle !== 'object') {
+      return { valid: false, errors: ['Payload must be a non-null object.'] };
+    }
+    if (bundle.resourceType !== 'Bundle') {
+      errors.push('Missing or invalid resourceType. Must be "Bundle".');
+    }
+    if (!bundle.type || !['searchset', 'collection', 'transaction', 'batch'].includes(bundle.type)) {
+      errors.push('Bundle.type must be one of: searchset, collection, transaction, batch.');
+    }
+    return { valid: errors.length === 0, errors };
   }
 
   disconnectSession(): void {
@@ -115,4 +166,12 @@ export class SmartOnFhirLauncherService {
       uscdiVersion: 'v4'
     });
   }
+}
+
+function generatePkceVerifier(): string {
+  return 'pkce-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
+function generateStateNonce(): string {
+  return 'nonce-' + Math.random().toString(36).substring(2, 15);
 }

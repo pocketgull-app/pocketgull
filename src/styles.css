@@ -19,15 +19,15 @@ body, html {
   letter-spacing: -0.01em;
 }
 
-h1, h2, h3, h4, h5, h6, .font-heading, .font-pocketgull, .font-pocketgull-chiseltip {
-  font-family: 'Nunito', sans-serif !important;
-  font-weight: 800 !important;
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.25;
 }
 
-.font-sans, .ui-sans-serif, .font-serif, .ui-serif, .font-caslon, .font-pocketgull-inter {
-  font-family: 'Nunito', sans-serif !important;
+.font-sans, .ui-sans-serif {
+  font-family: 'Nunito', sans-serif;
 }
 
 .font-mono, .ui-monospace, code, kbd, samp, pre {

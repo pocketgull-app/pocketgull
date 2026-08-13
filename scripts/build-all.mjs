@@ -18,6 +18,14 @@ delete cleanEnv.npm_config_local_prefix;
 delete cleanEnv.npm_package_json;
 delete cleanEnv.NPM_PREFIX;
 
+console.log('🔤 Downloading Google Fonts and compiling local fonts.css...');
+execSync('node scripts/download-fonts.js', {
+  cwd: rootDir,
+  env: cleanEnv,
+  stdio: 'inherit'
+});
+console.log('✅ Local font asset pipeline ready.\n');
+
 console.log('🧹 [Zero Agent] Executing Pre-Build Console Integrity & Type Safety Audit...');
 execSync('node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit', {
   cwd: rootDir,
