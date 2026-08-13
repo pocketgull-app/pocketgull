@@ -14,6 +14,7 @@ import { SnomedIcdCrosswalkService } from './snomed-icd-crosswalk.service';
 import { WebgpuBioSignalService } from './webgpu-bio-signal.service';
 import { ClinicalGameTheoryService } from './clinical-game-theory.service';
 import { JoyPlayfulFlourishingService } from './joy-playful-flourishing.service';
+import { ClinicalTrialMatcherService } from './clinical-trial-matcher.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -35,6 +36,7 @@ export class WebMcpRegistrationService {
   private bioSignalService = inject(WebgpuBioSignalService, { optional: true });
   private gameTheoryService = inject(ClinicalGameTheoryService, { optional: true });
   private joyService = inject(JoyPlayfulFlourishingService, { optional: true });
+  private trialMatcherService = inject(ClinicalTrialMatcherService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -844,6 +846,31 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(joyTool, { signal: joyCtrl.signal });
     this.mcpControllers.push({ name: joyTool.name, controller: joyCtrl });
+
+    // 29. match_clinical_trials_for_patient_conditions
+    const trialCtrl = new AbortController();
+    const trialTool = {
+      name: 'match_clinical_trials_for_patient_conditions',
+      description: 'Queries ClinicalTrials.gov API v2 for active recruiting clinical trials matching patient conditions, returning Phase I-IV studies and eligibility match scores.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          conditionName: { type: 'string', description: 'Condition name (e.g. Parkinson Disease, Alzheimer Disease, Glioblastoma)' },
+          recruitingOnly: { type: 'boolean', description: 'Filter only actively recruiting trials' }
+        },
+        required: ['conditionName']
+      },
+      execute: async (params: any) => {
+        const svc = this.trialMatcherService || new ClinicalTrialMatcherService();
+        const matches = svc.searchClinicalTrials({
+          conditionName: params.conditionName,
+          recruitingOnly: params.recruitingOnly ?? true
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(matches, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(trialTool, { signal: trialCtrl.signal });
+    this.mcpControllers.push({ name: trialTool.name, controller: trialCtrl });
   }
 
   /**

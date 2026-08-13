@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 28 WebMCP agentic tools on modelContext', () => {
+  it('should register all 29 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(28);
+    expect(registeredTools.size).toBe(29);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -390,9 +390,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('compositeJoyIndex');
   });
 
+  it('should execute match_clinical_trials_for_patient_conditions tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('match_clinical_trials_for_patient_conditions');
+
+    const result = await tool.execute({ conditionName: 'Parkinson Disease' });
+    expect(result.content[0].text).toContain('NCT05214789');
+    expect(result.content[0].text).toContain('RECRUITING');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(28);
+    expect((service as any).mcpControllers.length).toBe(29);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

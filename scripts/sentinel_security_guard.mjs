@@ -60,6 +60,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'pub.orcid.org',
   'doi.org',
   'zenodo.org',
+  'clinicaltrials.gov',
+  'www.clinicaltrials.gov',
   'developers.zenodo.org',
   'fitbit.com',
   'api.fitbit.com',
