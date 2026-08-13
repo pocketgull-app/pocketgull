@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 26 WebMCP agentic tools on modelContext', () => {
+  it('should register all 27 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(26);
+    expect(registeredTools.size).toBe(27);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -372,9 +372,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('tremor');
   });
 
+  it('should execute calculate_clinical_game_theory_adherence_incentives tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('calculate_clinical_game_theory_adherence_incentives');
+
+    const result = await tool.execute({ annualCopayCostUsd: 480, estAnnualHospitalizationRiskUsd: 12500 });
+    expect(result.content[0].text).toContain('NASH EQUILIBRIUM REACHED');
+    expect(result.content[0].text).toContain('optimalRebateSubsidyUsd');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(26);
+    expect((service as any).mcpControllers.length).toBe(27);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

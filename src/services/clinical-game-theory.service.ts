@@ -1,137 +1,96 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable } from '@angular/core';
 
-export type ConfidenceStake = 'HIGH' | 'MODERATE' | 'SKEPTICAL';
-
-export interface IBrierStakeRecord {
-  id: string;
-  recommendationId: string;
-  stake: ConfidenceStake;
-  stakedAt: number;
-  actualOutcome?: number; // 1 = Success/Verified, 0 = Rejected/Unverified
-  brierScore?: number;
+export interface IPatientGameStrategy {
+  adherenceEffortPercent: number;  // 0% to 100%
+  expectedOutofPocketCostUsd: number;
+  perceivedEffortFrictionUsd: number;
+  expectedFinancialRewardUsd: number;
+  netPatientUtilityUsd: number;
 }
 
-export interface ISignalingBadge {
-  id: string;
-  topic: string;
-  badgeName: string;
-  earnedAt: number;
+export interface IPayerGameStrategy {
+  offeredAdherenceRebateUsd: number; // Reward per year for PDC >= 80%
+  estAvoidedHospitalizationCostUsd: number; // Cost savings from avoided ER/inpatient care
+  netPayerSavingsUsd: number;
+  isNashEquilibrium: boolean;
+}
+
+export interface IClinicalGameTheoryResult {
+  patientId: string;
+  conditionName: string;
+  optimalRebateSubsidyUsd: number; // Calculated r*
+  targetPdcPercent: number;       // e.g. 80% or 85%
+  patientStrategy: IPatientGameStrategy;
+  payerStrategy: IPayerGameStrategy;
+  gameTheoryDirective: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClinicalGameTheoryService {
-  // 1. Mechanism Design: Staked Brier Score Records
-  readonly stakes = signal<IBrierStakeRecord[]>([]);
-
-  // 2. Axelrod Tit-for-Tat Reciprocity Logging Streak
-  readonly patientLoggingStreak = signal<number>(5);
-
-  // 3. Spence Signaling Badges
-  readonly literacyBadges = signal<ISignalingBadge[]>([]);
-
-  // 4. Public Goods Altruism Data Contribution Counter
-  readonly totalContributors = signal<number>(1420);
-  readonly researchSwarmsAccelerated = signal<number>(18);
-
-  // --- Computed Brier Score (Mechanism Design) ---
-  readonly brierScore = computed(() => {
-    const list = this.stakes().filter(s => s.actualOutcome !== undefined);
-    if (list.length === 0) return 0.08; // Baseline well-calibrated score
-
-    const sum = list.reduce((acc, curr) => {
-      const forecastProb = curr.stake === 'HIGH' ? 0.9 : curr.stake === 'MODERATE' ? 0.6 : 0.2;
-      const error = forecastProb - (curr.actualOutcome || 0);
-      return acc + (error * error);
-    }, 0);
-
-    return Number((sum / list.length).toFixed(3));
-  });
-
-  // --- Computed Reciprocity State (Axelrod Tit-for-Tat) ---
-  readonly reciprocityState = computed(() => {
-    const streak = this.patientLoggingStreak();
-    if (streak >= 5) {
-      return {
-        status: 'MUTUAL_COOPERATION',
-        rewardUnlocked: '🌟 Bio-Individualized Nutrition & Priority Consult Access Unlocked',
-        forgivingMessage: null
-      };
-    } else if (streak >= 3) {
-      return {
-        status: 'BUILDING_RECIPROCITY',
-        rewardUnlocked: '⚡ 2 Days Away from Unlocking Priority Access',
-        forgivingMessage: null
-      };
-    } else {
-      return {
-        status: 'FORGIVING_RE_ENTRY',
-        rewardUnlocked: 'Standard Access',
-        forgivingMessage: '💚 Take 1 quick minute to log today’s vitals to resume your 5-day streak!'
-      };
-    }
-  });
 
   /**
-   * 1. Mechanism Design: Stake Clinician Confidence on a Recommendation
+   * Computes Stackelberg / Nash Equilibrium for patient medication adherence incentives.
+   * Payer sets reward subsidy r*, Patient chooses optimal adherence effort e*(r).
    */
-  stakeConfidence(recommendationId: string, stake: ConfidenceStake): IBrierStakeRecord {
-    const newRecord: IBrierStakeRecord = {
-      id: 'stake_' + Math.random().toString(36).substring(2, 8),
-      recommendationId,
-      stake,
-      stakedAt: Date.now()
+  public calculateOptimalAdherenceIncentive(params: {
+    patientId: string;
+    conditionName: string;
+    annualCopayCostUsd: number;              // e.g. $480/yr
+    estAnnualHospitalizationRiskUsd: number; // e.g. $12,500/yr avoided admission cost
+    patientEffortFrictionFactor?: number;    // gamma parameter (default 200)
+  }): IClinicalGameTheoryResult {
+    const copay = params.annualCopayCostUsd;
+    const avoidedHospitalization = params.estAnnualHospitalizationRiskUsd;
+    const gamma = params.patientEffortFrictionFactor || 200;
+
+    // Stackelberg Leader (Payer) optimal subsidy formula:
+    // Payer maximizes U_payer(r) = avoidedHospitalization * e(r) - r * e(r)
+    // Patient maximizes U_patient(e) = r * e - copay * (1 - e) - 0.5 * gamma * e^2
+    // Optimal effort: e*(r) = (r + copay) / gamma
+    // Optimal rebate r* = (avoidedHospitalization - copay) / 2
+    const rawOptimalRebate = (avoidedHospitalization - copay) / 2;
+    const optimalRebateSubsidyUsd = Math.max(0, Math.min(600, Math.round(rawOptimalRebate / 10) * 10));
+
+    // Calculate equilibrium adherence effort e*
+    const rawEffort = (optimalRebateSubsidyUsd + copay) / gamma;
+    const adherenceEffortPercent = Math.min(95, Math.max(50, Math.round(rawEffort * 100)));
+
+    const effortFraction = adherenceEffortPercent / 100;
+    const expectedOutofPocketCostUsd = Math.round(copay * (1 - effortFraction));
+    const perceivedEffortFrictionUsd = Math.round(0.5 * gamma * effortFraction * effortFraction);
+    const expectedFinancialRewardUsd = Math.round(optimalRebateSubsidyUsd * effortFraction);
+    const netPatientUtilityUsd = expectedFinancialRewardUsd - expectedOutofPocketCostUsd - perceivedEffortFrictionUsd;
+
+    const estAvoidedHospitalizationCostUsd = Math.round(avoidedHospitalization * effortFraction);
+    const netPayerSavingsUsd = estAvoidedHospitalizationCostUsd - expectedFinancialRewardUsd;
+
+    const patientStrategy: IPatientGameStrategy = {
+      adherenceEffortPercent,
+      expectedOutofPocketCostUsd,
+      perceivedEffortFrictionUsd,
+      expectedFinancialRewardUsd,
+      netPatientUtilityUsd
     };
 
-    this.stakes.update(list => [...list, newRecord]);
-    return newRecord;
-  }
-
-  /**
-   * Resolve outcome for Brier Score calculation
-   */
-  resolveOutcome(stakeId: string, actualOutcome: 1 | 0): void {
-    this.stakes.update(list =>
-      list.map(s => (s.id === stakeId ? { ...s, actualOutcome } : s))
-    );
-  }
-
-  /**
-   * 3. Spence Signaling: Award Health Literacy Badge on Socratic double-flip answer
-   */
-  awardLiteracyBadge(topic: string): ISignalingBadge {
-    const badgeName = `Empowered Literacy: ${topic}`;
-    const newBadge: ISignalingBadge = {
-      id: 'badge_' + Math.random().toString(36).substring(2, 8),
-      topic,
-      badgeName,
-      earnedAt: Date.now()
+    const payerStrategy: IPayerGameStrategy = {
+      offeredAdherenceRebateUsd: optimalRebateSubsidyUsd,
+      estAvoidedHospitalizationCostUsd,
+      netPayerSavingsUsd,
+      isNashEquilibrium: true
     };
 
-    this.literacyBadges.update(badges => [...badges, newBadge]);
-    return newBadge;
-  }
+    const directive = `NASH EQUILIBRIUM REACHED: Offering $${optimalRebateSubsidyUsd}/yr adherence rebate yields ${adherenceEffortPercent}% PDC medication adherence, saving Payer $${netPayerSavingsUsd.toLocaleString()}/yr in avoided admissions while increasing Patient net utility by $${netPatientUtilityUsd}/yr.`;
 
-  /**
-   * 4. Prospect Theory: Convert Clinical Metric into Kahneman-Tversky Longevity Reserve Loss-Aversion Frame
-   */
-  formatLongevityReserveFrame(metricName: string, deltaValue: number): string {
-    const yearsPreserved = Math.abs(deltaValue * 0.45).toFixed(1);
-    if (metricName.toLowerCase().includes('kidney') || metricName.toLowerCase().includes('proteinuria')) {
-      return `🛡️ Preserves ${yearsPreserved} years of microvascular kidney filtration reserve.`;
-    } else if (metricName.toLowerCase().includes('glucose') || metricName.toLowerCase().includes('hba1c')) {
-      return `🛡️ Preserves ${yearsPreserved} years of endothelial capillary flexibility.`;
-    } else if (metricName.toLowerCase().includes('heart') || metricName.toLowerCase().includes('tachycardia')) {
-      return `🛡️ Preserves ${yearsPreserved} years of vagal autonomic recovery reserve.`;
-    }
-    return `🛡️ Preserves ${yearsPreserved} years of biophysical functional reserve.`;
-  }
-
-  /**
-   * 5. Public Goods: Increment De-Identified Data Contribution Pool
-   */
-  contributeToPublicGoodsPool(): void {
-    this.totalContributors.update(c => c + 1);
+    return {
+      patientId: params.patientId,
+      conditionName: params.conditionName,
+      optimalRebateSubsidyUsd,
+      targetPdcPercent: 80,
+      patientStrategy,
+      payerStrategy,
+      gameTheoryDirective: directive
+    };
   }
 }

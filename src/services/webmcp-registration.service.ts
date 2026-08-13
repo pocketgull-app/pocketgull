@@ -12,6 +12,7 @@ import { HedisStarRatingService } from './hedis-star-rating.service';
 import { FhirPriorAuthService } from './fhir-prior-auth.service';
 import { SnomedIcdCrosswalkService } from './snomed-icd-crosswalk.service';
 import { WebgpuBioSignalService } from './webgpu-bio-signal.service';
+import { ClinicalGameTheoryService } from './clinical-game-theory.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -31,6 +32,7 @@ export class WebMcpRegistrationService {
   private priorAuthService = inject(FhirPriorAuthService, { optional: true });
   private snomedCrosswalkService = inject(SnomedIcdCrosswalkService, { optional: true });
   private bioSignalService = inject(WebgpuBioSignalService, { optional: true });
+  private gameTheoryService = inject(ClinicalGameTheoryService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -790,6 +792,35 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(bioSignalTool, { signal: bioSignalCtrl.signal });
     this.mcpControllers.push({ name: bioSignalTool.name, controller: bioSignalCtrl });
+
+    // 27. calculate_clinical_game_theory_adherence_incentives
+    const gameTheoryCtrl = new AbortController();
+    const gameTheoryTool = {
+      name: 'calculate_clinical_game_theory_adherence_incentives',
+      description: 'Calculates Stackelberg / Nash equilibrium for medication adherence rebate subsidies and avoided hospitalization savings.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string', description: 'Patient ID (e.g. p010)' },
+          conditionName: { type: 'string', description: 'Condition name (e.g. Parkinson disease)' },
+          annualCopayCostUsd: { type: 'number', description: 'Annual patient co-pay cost in USD' },
+          estAnnualHospitalizationRiskUsd: { type: 'number', description: 'Estimated avoided inpatient hospitalization cost in USD' }
+        },
+        required: ['annualCopayCostUsd', 'estAnnualHospitalizationRiskUsd']
+      },
+      execute: async (params: any) => {
+        const svc = this.gameTheoryService || new ClinicalGameTheoryService();
+        const res = svc.calculateOptimalAdherenceIncentive({
+          patientId: params.patientId || 'p010',
+          conditionName: params.conditionName || 'Parkinson disease',
+          annualCopayCostUsd: Number(params.annualCopayCostUsd || 480),
+          estAnnualHospitalizationRiskUsd: Number(params.estAnnualHospitalizationRiskUsd || 12500)
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(gameTheoryTool, { signal: gameTheoryCtrl.signal });
+    this.mcpControllers.push({ name: gameTheoryTool.name, controller: gameTheoryCtrl });
   }
 
   /**
