@@ -7,6 +7,8 @@ import { p005 } from './mock-patients/p005';
 import { p006 } from './mock-patients/p006';
 import { p007 } from './mock-patients/p007';
 import { p008 } from './mock-patients/p008';
+import { p009 } from './mock-patients/p009';
+import { p010 } from './mock-patients/p010';
 import { p_mara_santos } from './mock-patients/p_mara_santos';
 import { p_frida_kahlo } from './mock-patients/p_frida_kahlo';
 import { p_edwin_smith_3 } from './mock-patients/p_edwin_smith_3';
@@ -24,6 +26,8 @@ export const MOCK_PATIENTS: IPatient[] = [
   p006,
   p007,
   p008,
+  p009,
+  p010,
   p_mara_santos,
   p_frida_kahlo,
   p_edwin_smith_3,
