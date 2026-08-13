@@ -68,6 +68,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'launch.smarthealthit.org',
   'caringinfo.org',
   'www.caringinfo.org',
+  'foodwise.org',
+  'www.foodwise.org',
   'freewill.com',
   'www.freewill.com',
   'trustandwill.com',

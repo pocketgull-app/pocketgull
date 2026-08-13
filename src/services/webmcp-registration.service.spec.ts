@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 38 WebMCP agentic tools on modelContext', () => {
+  it('should register all 39 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(38);
+    expect(registeredTools.size).toBe(39);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -480,9 +480,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('WebGPU');
   });
 
+  it('should execute localize_community_eco_health_hubs tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('localize_community_eco_health_hubs');
+
+    const result = await tool.execute({ hubType: 'FOREST_PARK' });
+    expect(result.content[0].text).toContain('Golden Gate Park');
+    expect(result.content[0].text).toContain('phytoncides');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(38);
+    expect((service as any).mcpControllers.length).toBe(39);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

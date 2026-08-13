@@ -23,6 +23,7 @@ import { HelpfulListsService } from './helpful-lists.service';
 import { MultilingualEquityService } from './multilingual-equity.service';
 import { WhoCdcHealthEquityService } from './who-cdc-health-equity.service';
 import { GreenComputingSustainabilityService } from './green-computing-sustainability.service';
+import { CommunityEcoLocalizationService } from './community-eco-localization.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -53,6 +54,7 @@ export class WebMcpRegistrationService {
   private multilingualService = inject(MultilingualEquityService, { optional: true });
   private equityService = inject(WhoCdcHealthEquityService, { optional: true });
   private greenService = inject(GreenComputingSustainabilityService, { optional: true });
+  private communityEcoService = inject(CommunityEcoLocalizationService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1158,7 +1160,7 @@ export class WebMcpRegistrationService {
         properties: {
           category: {
             type: 'string',
-            enum: ['COMPUTE_ENERGY', 'PLANETARY_DIET', 'ACTIVE_TRANSIT', 'CIRCULAR_WASTE_REDUCTION', 'ALL'],
+            enum: ['COMPUTE_ENERGY', 'PLANETARY_DIET', 'ACTIVE_TRANSIT', 'CIRCULAR_WASTE_REDUCTION', 'JOYFUL_ECO_EXPERIENCE', 'ALL'],
             description: 'Target eco recommendation category'
           }
         },
@@ -1187,6 +1189,47 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(greenTool, { signal: greenCtrl.signal });
     this.mcpControllers.push({ name: greenTool.name, controller: greenCtrl });
+
+    // 39. localize_community_eco_health_hubs
+    const communityEcoCtrl = new AbortController();
+    const communityEcoTool = {
+      name: 'localize_community_eco_health_hubs',
+      description: 'Finds local farmers markets, community gardens, Shinrin-yoku forest bathing parks, greenways, and seed sharing libraries by geo-location.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          hubType: {
+            type: 'string',
+            enum: ['FARMERS_MARKET', 'COMMUNITY_GARDEN', 'FOREST_PARK', 'GREENWAY_BIKE_PATH', 'SEED_TOOL_LIBRARY', 'ALL'],
+            description: 'Target eco hub type filter'
+          }
+        },
+        required: []
+      },
+      execute: async (params: any) => {
+        const svc = this.communityEcoService || new CommunityEcoLocalizationService();
+        const hubType = params.hubType || 'ALL';
+        const summary = svc.localizedEcoSummary();
+        const hubs = hubType === 'ALL' ? summary.hubs : svc.getHubsByType(hubType);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                city: summary.city,
+                region: summary.region,
+                closestParkMiles: summary.closestParkMiles,
+                closestMarketMiles: summary.closestMarketMiles,
+                hubs
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(communityEcoTool, { signal: communityEcoCtrl.signal });
+    this.mcpControllers.push({ name: communityEcoTool.name, controller: communityEcoCtrl });
   }
 
   /**
