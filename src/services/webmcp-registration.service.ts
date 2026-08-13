@@ -9,6 +9,7 @@ import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import { IrmaaDecisionService } from './irmaa-decision.service';
 import { MedicareBillingBestPracticesService } from './medicare-billing-best-practices.service';
 import { HedisStarRatingService } from './hedis-star-rating.service';
+import { FhirPriorAuthService } from './fhir-prior-auth.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -25,6 +26,7 @@ export class WebMcpRegistrationService {
   private irmaaService = inject(IrmaaDecisionService, { optional: true });
   private medicareBillingService = inject(MedicareBillingBestPracticesService, { optional: true });
   private hedisService = inject(HedisStarRatingService, { optional: true });
+  private priorAuthService = inject(FhirPriorAuthService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -701,6 +703,44 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(hedisTool, { signal: hedisCtrl.signal });
     this.mcpControllers.push({ name: hedisTool.name, controller: hedisCtrl });
+
+    // 24. submit_fhir_davinci_prior_authorization_claim
+    const pasCtrl = new AbortController();
+    const pasTool = {
+      name: 'submit_fhir_davinci_prior_authorization_claim',
+      description: 'Submits HL7 FHIR Da Vinci PAS (Prior Authorization Support) IG claim under CMS-0057-F mandate for real-time sub-second medical necessity prior-authorization approval.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string', description: 'Patient Identifier (e.g. p010)' },
+          payerId: { type: 'string', description: 'Payer Identifier (default PAYER-MEDICARE-001)' },
+          cptCode: { type: 'string', description: 'CPT Procedure Code (e.g. 70553 Brain MRI, 78607 DaTscan, 74177 Abdominal CT)' },
+          icd10DiagnosisCodes: { type: 'array', items: { type: 'string' }, description: 'ICD-10 Diagnosis Codes (e.g. G30.9, G20, C25.0)' },
+          clinicalDocumentationText: { type: 'string', description: 'Supporting clinical note text' }
+        },
+        required: ['cptCode', 'icd10DiagnosisCodes']
+      },
+      execute: async (params: any) => {
+        const svc = this.priorAuthService || new FhirPriorAuthService();
+        const claim = svc.createPasClaimRequest({
+          patientId: params.patientId || 'p010',
+          payerId: params.payerId || 'PAYER-MEDICARE-001',
+          providerNpi: '1992837465',
+          items: [{
+            sequence: 1,
+            cptCode: params.cptCode,
+            description: `Procedure CPT ${params.cptCode}`,
+            unitPriceUsd: 1200,
+            icd10DiagnosisCodes: Array.isArray(params.icd10DiagnosisCodes) ? params.icd10DiagnosisCodes : ['G30.9']
+          }],
+          clinicalDocumentationText: params.clinicalDocumentationText || 'Patient presents with MMSE 19/30 cognitive memory loss and 3Hz resting tremor.'
+        });
+        const res = svc.evaluatePriorAuthClaim(claim);
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(pasTool, { signal: pasCtrl.signal });
+    this.mcpControllers.push({ name: pasTool.name, controller: pasCtrl });
   }
 
   /**

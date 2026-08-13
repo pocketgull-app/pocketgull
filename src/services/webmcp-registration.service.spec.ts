@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 23 WebMCP agentic tools on modelContext', () => {
+  it('should register all 24 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(23);
+    expect(registeredTools.size).toBe(24);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -343,9 +343,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('isQualityBonusEligible');
   });
 
+  it('should execute submit_fhir_davinci_prior_authorization_claim tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('submit_fhir_davinci_prior_authorization_claim');
+
+    const result = await tool.execute({ cptCode: '70553', icd10DiagnosisCodes: ['G30.9'] });
+    expect(result.content[0].text).toContain('ClaimResponse');
+    expect(result.content[0].text).toContain('approved');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(23);
+    expect((service as any).mcpControllers.length).toBe(24);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
