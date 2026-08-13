@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 36 WebMCP agentic tools on modelContext', () => {
+  it('should register all 37 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(36);
+    expect(registeredTools.size).toBe(37);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -462,9 +462,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('es');
   });
 
+  it('should execute calculate_who_cdc_health_equity_index tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('calculate_who_cdc_health_equity_index');
+
+    const result = await tool.execute({ sdoh: { foodInsecurity: true } });
+    expect(result.content[0].text).toContain('compositeEquityIndex');
+    expect(result.content[0].text).toContain('SNAP');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(36);
+    expect((service as any).mcpControllers.length).toBe(37);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

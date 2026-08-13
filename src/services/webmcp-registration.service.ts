@@ -21,6 +21,7 @@ import { InteractiveOnboardingTourService } from './interactive-onboarding-tour.
 import { NavigationShellService } from './navigation-shell.service';
 import { HelpfulListsService } from './helpful-lists.service';
 import { MultilingualEquityService } from './multilingual-equity.service';
+import { WhoCdcHealthEquityService } from './who-cdc-health-equity.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -49,6 +50,7 @@ export class WebMcpRegistrationService {
   private navService = inject(NavigationShellService, { optional: true });
   private helpfulListsService = inject(HelpfulListsService, { optional: true });
   private multilingualService = inject(MultilingualEquityService, { optional: true });
+  private equityService = inject(WhoCdcHealthEquityService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1098,6 +1100,51 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(multiTool, { signal: multiCtrl.signal });
     this.mcpControllers.push({ name: multiTool.name, controller: multiCtrl });
+
+    // 37. calculate_who_cdc_health_equity_index
+    const equityCtrl = new AbortController();
+    const equityTool = {
+      name: 'calculate_who_cdc_health_equity_index',
+      description: 'Evaluates WHO GPW 14 and CDC 2025-2030 Global Health Equity Index, SDOH PRAPARE risk vectors (housing, food, transport), and climate-health AQI vulnerability metrics.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          sdoh: {
+            type: 'object',
+            properties: {
+              housingInsecurity: { type: 'boolean' },
+              foodInsecurity: { type: 'boolean' },
+              transportationBarrier: { type: 'boolean' },
+              utilityInsecurity: { type: 'boolean' },
+              digitalLiteracyBarrier: { type: 'boolean' }
+            }
+          },
+          climate: {
+            type: 'object',
+            properties: {
+              airQualityIndex: { type: 'number' },
+              pm25MicrogramsM3: { type: 'number' },
+              extremeHeatRiskDaysYear: { type: 'number' }
+            }
+          }
+        },
+        required: []
+      },
+      execute: async (params: any) => {
+        const svc = this.equityService || new WhoCdcHealthEquityService();
+        const res = svc.evaluateHealthEquity(params.sdoh, params.climate);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(res, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(equityTool, { signal: equityCtrl.signal });
+    this.mcpControllers.push({ name: equityTool.name, controller: equityCtrl });
   }
 
   /**
