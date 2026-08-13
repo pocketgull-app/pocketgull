@@ -836,7 +836,7 @@ export class WebMcpRegistrationService {
     const joyCtrl = new AbortController();
     const joyTool = {
       name: 'prescribe_joy_and_playful_flourishing',
-      description: 'Prescribes micro-joy and micro-play activities (sea shanty rhythm drumming, botanical foraging, origami, storytelling, laughter yoga) and calculates PERMA+ playfulness scorecards.',
+      description: 'Prescribes micro-joy and micro-play activities (acoustic neuro-rhythm entrainment, botanical foraging, origami, storytelling, laughter yoga) and calculates PERMA+ playfulness scorecards.',
       inputSchema: {
         type: 'object',
         properties: {

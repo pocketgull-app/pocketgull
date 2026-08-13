@@ -35,11 +35,11 @@ export class JoyPlayfulFlourishingService {
   public dailyPrescriptions = signal<IMicroJoyPrescription[]>([
     {
       id: 'joy_1',
-      title: '🎵 Avian Sea Shanty Rhythm Drumming',
+      title: '🎼 Acoustic Neuro-Rhythm & Harmonic Entrainment',
       category: 'MUSIC_RHYTHM',
       durationMinutes: 10,
-      description: 'Tap along to rhythmic sea shanties using hand drumming or tabletop tapping to stimulate basal ganglia dopamine release.',
-      dopamineSerotoninBenefit: 'Enhances motor rhythm coordination and triggers endomorphin release.',
+      description: 'Listen to 60 BPM acoustic classical harmony or binaural acoustic rhythms while engaging in light tabletop finger-tapping to synchronize thalamocortical alpha-wave oscillations.',
+      dopamineSerotoninBenefit: 'Enhances motor rhythm coordination, lowers salivary cortisol, and promotes 8-12 Hz alpha-wave mental calm.',
       adaptedForTremorOrCognitive: true,
       isCompletedToday: false
     },
@@ -120,7 +120,7 @@ export class JoyPlayfulFlourishingService {
     } else if (compositeJoyIndex >= 70) {
       directive = '🌱 VIBRANT WELLNESS: Strong joy foundation. Completing 1 more micro-play activity today will boost dopamine flow.';
     } else {
-      directive = '☀️ PLAYFUL RESTORATION: Take 10 minutes now for sea shanty drumming or botanical aromatherapy to restore vitality.';
+      directive = '☀️ PLAYFUL RESTORATION: Take 10 minutes now for acoustic neuro-rhythmic entrainment or botanical aromatherapy to restore vitality.';
     }
 
     return {

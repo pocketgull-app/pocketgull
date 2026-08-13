@@ -12,7 +12,7 @@ describe('JoyPlayfulFlourishingService Unit Suite', () => {
   it('1. Initializes default micro-joy prescriptions', () => {
     const list = service.dailyPrescriptions();
     expect(list.length).toBeGreaterThanOrEqual(5);
-    expect(list[0].title).toContain('Avian Sea Shanty');
+    expect(list[0].title).toContain('Acoustic Neuro-Rhythm');
     expect(list[0].adaptedForTremorOrCognitive).toBe(true);
   });
 
