@@ -11,6 +11,7 @@ import { MedicareBillingBestPracticesService } from './medicare-billing-best-pra
 import { HedisStarRatingService } from './hedis-star-rating.service';
 import { FhirPriorAuthService } from './fhir-prior-auth.service';
 import { SnomedIcdCrosswalkService } from './snomed-icd-crosswalk.service';
+import { WebgpuBioSignalService } from './webgpu-bio-signal.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -29,6 +30,7 @@ export class WebMcpRegistrationService {
   private hedisService = inject(HedisStarRatingService, { optional: true });
   private priorAuthService = inject(FhirPriorAuthService, { optional: true });
   private snomedCrosswalkService = inject(SnomedIcdCrosswalkService, { optional: true });
+  private bioSignalService = inject(WebgpuBioSignalService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -764,6 +766,30 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(snomedTool, { signal: snomedCtrl.signal });
     this.mcpControllers.push({ name: snomedTool.name, controller: snomedCtrl });
+
+    // 26. analyze_webgpu_bio_signal_tremor_and_rppg
+    const bioSignalCtrl = new AbortController();
+    const bioSignalTool = {
+      name: 'analyze_webgpu_bio_signal_tremor_and_rppg',
+      description: 'Executes 100% client-side WebGPU zero-egress tremor frequency spectrum analysis (3-6 Hz Parkinsonian vs 6-12 Hz Essential tremor) and rPPG Heart Rate Variability (HRV / RMSSD).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          displacementsMm: { type: 'array', items: { type: 'number' }, description: 'Spatial displacement array in millimeters (30 fps sample rate)' },
+          luminescenceSignal: { type: 'array', items: { type: 'number' }, description: 'Skin luminescence intensity array for rPPG heart rate extraction' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.bioSignalService || new WebgpuBioSignalService();
+        const displacements = Array.isArray(params.displacementsMm) && params.displacementsMm.length > 0
+          ? params.displacementsMm
+          : [0, 2.5, -2.5, 2.5, -2.5, 2.5, -2.5, 0];
+        const res = svc.analyzeBioSignalTelemetry(displacements, params.luminescenceSignal);
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(bioSignalTool, { signal: bioSignalCtrl.signal });
+    this.mcpControllers.push({ name: bioSignalTool.name, controller: bioSignalCtrl });
   }
 
   /**

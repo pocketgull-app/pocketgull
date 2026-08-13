@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 25 WebMCP agentic tools on modelContext', () => {
+  it('should register all 26 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(25);
+    expect(registeredTools.size).toBe(26);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -354,6 +354,8 @@ describe('WebMcpRegistrationService', () => {
 
   it('should execute crosswalk_snomed_ct_to_icd10_and_cpt tool', async () => {
     service.registerTools({});
+    expect(registeredTools.has('crosswalk_snomed_ct_to_icd10_and_cpt')).toBe(true);
+    expect(registeredTools.has('analyze_webgpu_bio_signal_tremor_and_rppg')).toBe(true);
     const tool = registeredTools.get('crosswalk_snomed_ct_to_icd10_and_cpt');
 
     const result = await tool.execute({ snomedCode: '26929004' });
@@ -361,9 +363,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('http://snomed.info/sct');
   });
 
+  it('should execute analyze_webgpu_bio_signal_tremor_and_rppg tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('analyze_webgpu_bio_signal_tremor_and_rppg');
+
+    const result = await tool.execute({ displacementsMm: [0, 2.5, -2.5, 2.5, -2.5] });
+    expect(result.content[0].text).toContain('100% CLIENT-SIDE WEBGPU COMPUTE GUARANTEE');
+    expect(result.content[0].text).toContain('tremor');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(25);
+    expect((service as any).mcpControllers.length).toBe(26);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
