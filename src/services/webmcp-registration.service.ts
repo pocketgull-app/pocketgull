@@ -22,6 +22,7 @@ import { NavigationShellService } from './navigation-shell.service';
 import { HelpfulListsService } from './helpful-lists.service';
 import { MultilingualEquityService } from './multilingual-equity.service';
 import { WhoCdcHealthEquityService } from './who-cdc-health-equity.service';
+import { GreenComputingSustainabilityService } from './green-computing-sustainability.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -51,6 +52,7 @@ export class WebMcpRegistrationService {
   private helpfulListsService = inject(HelpfulListsService, { optional: true });
   private multilingualService = inject(MultilingualEquityService, { optional: true });
   private equityService = inject(WhoCdcHealthEquityService, { optional: true });
+  private greenService = inject(GreenComputingSustainabilityService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1145,6 +1147,46 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(equityTool, { signal: equityCtrl.signal });
     this.mcpControllers.push({ name: equityTool.name, controller: equityCtrl });
+
+    // 38. recommend_sustainability_and_eco_health_actions
+    const greenCtrl = new AbortController();
+    const greenTool = {
+      name: 'recommend_sustainability_and_eco_health_actions',
+      description: 'Generates green computing, IEEE PES energy reduction, EAT-Lancet planetary health nutrition, active transit, and circular waste sustainability recommendations.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          category: {
+            type: 'string',
+            enum: ['COMPUTE_ENERGY', 'PLANETARY_DIET', 'ACTIVE_TRANSIT', 'CIRCULAR_WASTE_REDUCTION', 'ALL'],
+            description: 'Target eco recommendation category'
+          }
+        },
+        required: []
+      },
+      execute: async (params: any) => {
+        const svc = this.greenService || new GreenComputingSustainabilityService();
+        const category = params.category || 'ALL';
+        const scorecard = svc.sustainabilityScorecard();
+        const recs = category === 'ALL' ? scorecard.recommendations : svc.getRecommendationsByCategory(category);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                category,
+                sustainabilityTier: scorecard.sustainabilityTier,
+                totalCo2SavingsKgPerYear: scorecard.totalCo2SavingsKgPerYear,
+                recommendations: recs
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(greenTool, { signal: greenCtrl.signal });
+    this.mcpControllers.push({ name: greenTool.name, controller: greenCtrl });
   }
 
   /**
