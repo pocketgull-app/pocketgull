@@ -7,6 +7,7 @@ import { ResidencyOsceSimulatorComponent } from './residency-osce-simulator.comp
 import { SlackIntegrationCardComponent } from './slack-integration-card.component';
 import { PopulationHealthEquityHubComponent } from './population-health-equity-hub.component';
 import { TeledentistryOdontogramComponent } from './teledentistry-odontogram.component';
+import { JoyPlayfulFlourishingCardComponent } from './joy-playful-flourishing-card.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -41,7 +42,8 @@ export interface IWorkbenchToolStatus {
     ResidencyOsceSimulatorComponent,
     SlackIntegrationCardComponent,
     PopulationHealthEquityHubComponent,
-    TeledentistryOdontogramComponent
+    TeledentistryOdontogramComponent,
+    JoyPlayfulFlourishingCardComponent
   ],
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl max-w-7xl mx-auto space-y-6">
@@ -175,6 +177,13 @@ export interface IWorkbenchToolStatus {
                 [class.text-zinc-300]="activeWorkbenchTab() !== 'dental'"
                 class="px-3.5 py-2 rounded-lg transition cursor-pointer">
           🦷 Teledentistry & Odontogram
+        </button>
+        <button (click)="activeWorkbenchTab.set('joy')"
+                [class.bg-amber-500]="activeWorkbenchTab() === 'joy'"
+                [class.text-zinc-950]="activeWorkbenchTab() === 'joy'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'joy'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer">
+          ☀️ Joy & Play Matrix
         </button>
       </div>
 
@@ -313,6 +322,8 @@ export interface IWorkbenchToolStatus {
         <app-population-health-equity-hub />
       } @else if (activeWorkbenchTab() === 'dental') {
         <app-teledentistry-odontogram />
+      } @else if (activeWorkbenchTab() === 'joy') {
+        <app-joy-playful-flourishing-card />
       }
 
     </div>
@@ -322,7 +333,7 @@ export class ClinicalToolWorkbenchComponent {
   readonly stateMachine = inject(DoubleFlipStateMachineService);
   private readonly haptics = inject(BioHapticFeedbackService);
 
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental'>('tools');
+  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy'>('tools');
   readonly intakeDirectiveQuery = signal<string>('');
 
   readonly tools = signal<IWorkbenchToolStatus[]>([
