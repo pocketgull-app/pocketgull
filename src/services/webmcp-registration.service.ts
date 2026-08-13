@@ -18,6 +18,8 @@ import { ClinicalTrialMatcherService } from './clinical-trial-matcher.service';
 import { SmartOnFhirLaunchService } from './smart-on-fhir-launch.service';
 import { WebgpuSpatialDigitalTwinService } from './webgpu-spatial-digital-twin.service';
 import { InteractiveOnboardingTourService } from './interactive-onboarding-tour.service';
+import { NavigationShellService } from './navigation-shell.service';
+import { HelpfulListsService } from './helpful-lists.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -43,6 +45,8 @@ export class WebMcpRegistrationService {
   private smartLaunchService = inject(SmartOnFhirLaunchService, { optional: true });
   private digitalTwinService = inject(WebgpuSpatialDigitalTwinService, { optional: true });
   private tourService = inject(InteractiveOnboardingTourService, { optional: true });
+  private navService = inject(NavigationShellService, { optional: true });
+  private helpfulListsService = inject(HelpfulListsService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -989,6 +993,76 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(tourTool, { signal: tourCtrl.signal });
     this.mcpControllers.push({ name: tourTool.name, controller: tourCtrl });
+
+    // 34. navigate_user_way_back_home
+    const homeNavCtrl = new AbortController();
+    const homeNavTool = {
+      name: 'navigate_user_way_back_home',
+      description: 'Resets user active shell navigation to primary clinical chart, closes all open modal overlays, and restores home view state.',
+      inputSchema: {
+        type: 'object',
+        properties: {},
+        required: []
+      },
+      execute: async () => {
+        const svc = this.navService || new NavigationShellService();
+        svc.navigateWayBackHome();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                status: 'SUCCESS',
+                activeTab: svc.activeTab(),
+                message: 'Successfully navigated user way back home to clinical chart overview.'
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(homeNavTool, { signal: homeNavCtrl.signal });
+    this.mcpControllers.push({ name: homeNavTool.name, controller: homeNavCtrl });
+
+    // 35. retrieve_helpful_community_and_clinical_lists
+    const listsCtrl = new AbortController();
+    const listsTool = {
+      name: 'retrieve_helpful_community_and_clinical_lists',
+      description: 'Retrieves curated quick-reference lists for 24/7 emergency hotlines (988, Poison, Vets), free 50-state statutory living wills, HEDIS quality benchmarks, and SSA-44 appeal checklists.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          category: {
+            type: 'string',
+            enum: ['EMERGENCY_HOTLINES', 'PATIENT_RIGHTS_LIVING_WILLS', 'CLINICAL_CHECKLISTS', 'MEDICARE_FINANCIAL_RESOURCES', 'ALL'],
+            description: 'Target list category'
+          }
+        },
+        required: []
+      },
+      execute: async (params: any) => {
+        const svc = this.helpfulListsService || new HelpfulListsService();
+        const category = params.category || 'ALL';
+        const resultLists = category === 'ALL' 
+          ? svc.curatedLists() 
+          : svc.getListsByCategory(category);
+        
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                category,
+                totalCount: resultLists.length,
+                lists: resultLists
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(listsTool, { signal: listsCtrl.signal });
+    this.mcpControllers.push({ name: listsTool.name, controller: listsCtrl });
   }
 
   /**

@@ -37,6 +37,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'sandbox-api.va.gov',
   'pocketgull.app',
   'www.pocketgull.app',
+  'ssa.gov',
+  'www.ssa.gov',
   'pocketgull.com',
   'cdn.tailwindcss.com',
   'tailwindcss.com',

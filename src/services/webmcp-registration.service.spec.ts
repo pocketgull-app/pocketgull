@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 33 WebMCP agentic tools on modelContext', () => {
+  it('should register all 35 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(33);
+    expect(registeredTools.size).toBe(35);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -435,9 +435,27 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('currentStepIndex');
   });
 
+  it('should execute navigate_user_way_back_home tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('navigate_user_way_back_home');
+
+    const result = await tool.execute({});
+    expect(result.content[0].text).toContain('SUCCESS');
+    expect(result.content[0].text).toContain('chart');
+  });
+
+  it('should execute retrieve_helpful_community_and_clinical_lists tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('retrieve_helpful_community_and_clinical_lists');
+
+    const result = await tool.execute({ category: 'EMERGENCY_HOTLINES' });
+    expect(result.content[0].text).toContain('EMERGENCY_HOTLINES');
+    expect(result.content[0].text).toContain('988');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(33);
+    expect((service as any).mcpControllers.length).toBe(35);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
