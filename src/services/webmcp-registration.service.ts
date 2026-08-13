@@ -15,6 +15,7 @@ import { WebgpuBioSignalService } from './webgpu-bio-signal.service';
 import { ClinicalGameTheoryService } from './clinical-game-theory.service';
 import { JoyPlayfulFlourishingService } from './joy-playful-flourishing.service';
 import { ClinicalTrialMatcherService } from './clinical-trial-matcher.service';
+import { SmartOnFhirLaunchService } from './smart-on-fhir-launch.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -37,6 +38,7 @@ export class WebMcpRegistrationService {
   private gameTheoryService = inject(ClinicalGameTheoryService, { optional: true });
   private joyService = inject(JoyPlayfulFlourishingService, { optional: true });
   private trialMatcherService = inject(ClinicalTrialMatcherService, { optional: true });
+  private smartLaunchService = inject(SmartOnFhirLaunchService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -871,6 +873,36 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(trialTool, { signal: trialCtrl.signal });
     this.mcpControllers.push({ name: trialTool.name, controller: trialCtrl });
+
+    // 30. initiate_smart_on_fhir_ehr_launch
+    const smartLaunchCtrl = new AbortController();
+    const smartLaunchTool = {
+      name: 'initiate_smart_on_fhir_ehr_launch',
+      description: 'Generates SMART-on-FHIR OAuth2 authorization launch URL with PKCE S256 challenge for embedded Epic, Cerner, and AthenaHealth EHR launches.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          vendor: { type: 'string', enum: ['EPIC', 'CERNER', 'ATHENAHEALTH', 'GENERIC_FHIR'], description: 'Target EHR vendor' },
+          fhirBaseUrl: { type: 'string', description: 'FHIR R4 Server Base URL' },
+          clientId: { type: 'string', description: 'SMART App Client ID' },
+          launchToken: { type: 'string', description: 'EHR Launch Context Token' }
+        },
+        required: ['vendor']
+      },
+      execute: async (params: any) => {
+        const svc = this.smartLaunchService || new SmartOnFhirLaunchService();
+        const res = svc.buildAuthorizationUrl({
+          vendor: params.vendor || 'EPIC',
+          fhirBaseUrl: params.fhirBaseUrl,
+          clientId: params.clientId || 'pocketgull-smart-client-v1',
+          redirectUri: 'https://pocketgull.app/launch/callback',
+          launchToken: params.launchToken
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(smartLaunchTool, { signal: smartLaunchCtrl.signal });
+    this.mcpControllers.push({ name: smartLaunchTool.name, controller: smartLaunchCtrl });
   }
 
   /**

@@ -62,6 +62,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'zenodo.org',
   'clinicaltrials.gov',
   'www.clinicaltrials.gov',
+  'smarthealthit.org',
+  'launch.smarthealthit.org',
   'developers.zenodo.org',
   'fitbit.com',
   'api.fitbit.com',

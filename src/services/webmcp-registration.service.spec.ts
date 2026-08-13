@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 29 WebMCP agentic tools on modelContext', () => {
+  it('should register all 30 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(29);
+    expect(registeredTools.size).toBe(30);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -399,9 +399,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('RECRUITING');
   });
 
+  it('should execute initiate_smart_on_fhir_ehr_launch tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('initiate_smart_on_fhir_ehr_launch');
+
+    const result = await tool.execute({ vendor: 'EPIC' });
+    expect(result.content[0].text).toContain('fhir.epic.com');
+    expect(result.content[0].text).toContain('authorizationUrl');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(29);
+    expect((service as any).mcpControllers.length).toBe(30);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
