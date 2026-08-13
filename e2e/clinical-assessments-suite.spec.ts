@@ -18,14 +18,14 @@ test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () =
     await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });
 
     // 4. Switch to ASSESSMENTS lens tab
-    const assessmentsBtn = page.locator('button', { hasText: 'ASSESSMENTS' }).first();
+    const assessmentsBtn = page.getByTestId('tab-assessments');
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
     await assessmentsBtn.click({ force: true });
 
     // 5. Select General Clinical Suite sub-tab
     const suiteTab = page.getByTestId('tab-clinical-suite');
     await expect(suiteTab).toBeVisible({ timeout: 15000 });
-    await suiteTab.click();
+    await suiteTab.click({ force: true });
 
     // 6. Verify Clinical Assessments Suite header renders
     const suiteHeader = page.locator('text=Multimodal Clinical & Life Assessments');

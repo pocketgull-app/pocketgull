@@ -136,6 +136,16 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
     });
   });
 
+  // Intercept Genkit flow endpoints to prevent 429 quota exhaustion errors in test suites
+  await page.route('**/api/genkit/**', async route => {
+    console.log('E2E MOCK: Intercepted Genkit flow endpoint');
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ result: { text: 'Clinical assessment complete.' } })
+    });
+  });
+
   // Intercept all AI Chat endpoints (/start, /message)
   await page.route('**/*api/ai/chat*', async route => {
     const url = route.request().url();

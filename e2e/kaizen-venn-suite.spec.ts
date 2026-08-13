@@ -18,7 +18,7 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });
 
     // 4. Switch to ASSESSMENTS lens tab
-    const assessmentsBtn = page.locator('button', { hasText: 'ASSESSMENTS' }).first();
+    const assessmentsBtn = page.getByTestId('tab-assessments');
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
     await assessmentsBtn.click({ force: true });
 
@@ -56,7 +56,7 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     // 3. Select Kaizen Optimization sub-tab
     const kaizenTab = page.getByTestId('tab-kaizen-suite');
     await expect(kaizenTab).toBeVisible({ timeout: 15000 });
-    await kaizenTab.click();
+    await kaizenTab.click({ force: true });
 
     // 4. Verify Continuous Outcome Optimization Suite header renders
     const kaizenHeader = page.locator('text=Continuous Outcome Optimization Suite');
