@@ -7,6 +7,7 @@ import { GcpHealthcareApiService } from './fhir/gcp-healthcare-api.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import { IrmaaDecisionService } from './irmaa-decision.service';
+import { MedicareBillingBestPracticesService } from './medicare-billing-best-practices.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -21,6 +22,7 @@ export class WebMcpRegistrationService {
   private skepticalService = inject(SkepticalEpistemologyService);
   private moeRouter = inject(ClinicalMoERouterService);
   private irmaaService = inject(IrmaaDecisionService, { optional: true });
+  private medicareBillingService = inject(MedicareBillingBestPracticesService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -622,6 +624,43 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(irmaaTool, { signal: irmaaCtrl.signal });
     this.mcpControllers.push({ name: irmaaTool.name, controller: irmaaCtrl });
+
+    // 22. evaluate_medicare_billing_and_gfe_eligibility
+    const billingCtrl = new AbortController();
+    const billingTool = {
+      name: 'evaluate_medicare_billing_and_gfe_eligibility',
+      description: 'Evaluates Inflation Reduction Act $2,000 Part D prescription cap, MPPP monthly smoothing, RPM/CCM CPT compliance (CPT 99454/99457), No Surprises Act Good Faith Estimates, and IRS Section 501(r) Charity Care FPL eligibility.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          annualRxCost: { type: 'number', description: 'Annual out-of-pocket prescription medication cost' },
+          daysDeviceTransmitted: { type: 'number', description: 'Days of RPM physiological telemetry readings in 30-day period (16+ required)' },
+          clinicalMinutesLogged: { type: 'number', description: 'Minutes of clinical staff management time in month (20+ required)' },
+          annualIncome: { type: 'number', description: 'Patient household annual income in USD' },
+          householdSize: { type: 'number', description: 'Household size (default 1)' }
+        },
+        required: ['annualRxCost', 'annualIncome']
+      },
+      execute: async (params: any) => {
+        const annualRxCost = Number(params.annualRxCost) || 0;
+        const daysDeviceTransmitted = Number(params.daysDeviceTransmitted) || 0;
+        const clinicalMinutesLogged = Number(params.clinicalMinutesLogged) || 0;
+        const annualIncome = Number(params.annualIncome) || 30000;
+        const householdSize = Number(params.householdSize) || 1;
+
+        const svc = this.medicareBillingService || new MedicareBillingBestPracticesService();
+        const res = svc.assessMedicareBilling({
+          annualRxCost,
+          daysDeviceTransmitted,
+          clinicalMinutesLogged,
+          annualIncome,
+          householdSize
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(billingTool, { signal: billingCtrl.signal });
+    this.mcpControllers.push({ name: billingTool.name, controller: billingCtrl });
   }
 
   /**

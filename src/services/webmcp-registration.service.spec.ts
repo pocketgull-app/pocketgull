@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 21 WebMCP agentic tools on modelContext', () => {
+  it('should register all 22 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(21);
+    expect(registeredTools.size).toBe(22);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -325,9 +325,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('estimatedAnnualSavings');
   });
 
+  it('should execute evaluate_medicare_billing_and_gfe_eligibility tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_medicare_billing_and_gfe_eligibility');
+
+    const result = await tool.execute({ annualRxCost: 3500, daysDeviceTransmitted: 18, clinicalMinutesLogged: 22, annualIncome: 25000 });
+    expect(result.content[0].text).toContain('Protected by Inflation Reduction Act');
+    expect(result.content[0].text).toContain('100% Charity Care discount');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(21);
+    expect((service as any).mcpControllers.length).toBe(22);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
