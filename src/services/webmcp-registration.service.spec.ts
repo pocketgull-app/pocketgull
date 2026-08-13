@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 22 WebMCP agentic tools on modelContext', () => {
+  it('should register all 23 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(22);
+    expect(registeredTools.size).toBe(23);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -334,9 +334,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('100% Charity Care discount');
   });
 
+  it('should execute evaluate_hedis_quality_measures_and_care_gaps tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_hedis_quality_measures_and_care_gaps');
+
+    const result = await tool.execute({ systolicBp: 125, diastolicBp: 80, hbA1c: 7.1 });
+    expect(result.content[0].text).toContain('overallStarRating');
+    expect(result.content[0].text).toContain('isQualityBonusEligible');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(22);
+    expect((service as any).mcpControllers.length).toBe(23);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

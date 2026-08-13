@@ -8,6 +8,7 @@ import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import { IrmaaDecisionService } from './irmaa-decision.service';
 import { MedicareBillingBestPracticesService } from './medicare-billing-best-practices.service';
+import { HedisStarRatingService } from './hedis-star-rating.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -23,6 +24,7 @@ export class WebMcpRegistrationService {
   private moeRouter = inject(ClinicalMoERouterService);
   private irmaaService = inject(IrmaaDecisionService, { optional: true });
   private medicareBillingService = inject(MedicareBillingBestPracticesService, { optional: true });
+  private hedisService = inject(HedisStarRatingService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -661,6 +663,44 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(billingTool, { signal: billingCtrl.signal });
     this.mcpControllers.push({ name: billingTool.name, controller: billingCtrl });
+
+    // 23. evaluate_hedis_quality_measures_and_care_gaps
+    const hedisCtrl = new AbortController();
+    const hedisTool = {
+      name: 'evaluate_hedis_quality_measures_and_care_gaps',
+      description: 'Evaluates HEDIS quality measures (CBP, HBD, MAD, MAH, MAS, COL, EED), CMS 1-5 Star Ratings, triple-weighted medication adherence PDC percentages, and CMS Quality Bonus Payment (QBP) eligibility.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          systolicBp: { type: 'number', description: 'Systolic blood pressure in mmHg' },
+          diastolicBp: { type: 'number', description: 'Diastolic blood pressure in mmHg' },
+          hbA1c: { type: 'number', description: 'Hemoglobin A1c percentage (e.g. 7.2)' },
+          diabetesRefillDays: { type: 'number', description: 'Diabetes medication refill days in year' },
+          hypertensionRefillDays: { type: 'number', description: 'Hypertension/RAS medication refill days in year' },
+          statinRefillDays: { type: 'number', description: 'Statin medication refill days in year' },
+          hasColorectalScreening: { type: 'boolean', description: 'Whether colorectal screening is up to date' },
+          hasDiabeticEyeExam: { type: 'boolean', description: 'Whether diabetic retinal exam is complete' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.hedisService || new HedisStarRatingService();
+        const res = svc.generateOverallSummary('P-101', {
+          systolicBp: params.systolicBp !== undefined ? Number(params.systolicBp) : 128,
+          diastolicBp: params.diastolicBp !== undefined ? Number(params.diastolicBp) : 82,
+          hbA1c: params.hbA1c !== undefined ? Number(params.hbA1c) : 7.2,
+          diabetesRefillDays: params.diabetesRefillDays !== undefined ? Number(params.diabetesRefillDays) : 310,
+          hypertensionRefillDays: params.hypertensionRefillDays !== undefined ? Number(params.hypertensionRefillDays) : 310,
+          statinRefillDays: params.statinRefillDays !== undefined ? Number(params.statinRefillDays) : 300,
+          hasColorectalScreening: params.hasColorectalScreening !== false,
+          hasDiabeticEyeExam: params.hasDiabeticEyeExam !== false,
+          hasDiabetes: true,
+          hasHypertension: true
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(hedisTool, { signal: hedisCtrl.signal });
+    this.mcpControllers.push({ name: hedisTool.name, controller: hedisCtrl });
   }
 
   /**
