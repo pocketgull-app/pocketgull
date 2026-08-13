@@ -1,0 +1,8 @@
+{
+  "preCommit": [
+    {
+      "command": "node",
+      "args": ["c:/Users/philg/Pocketgull/pocketgull/node_modules/typescript/lib/tsc.js", "-p", "c:/Users/philg/Pocketgull/pocketgull/tsconfig.json", "--noEmit"]
+    }
+  ]
+}

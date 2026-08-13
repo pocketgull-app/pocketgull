@@ -1,0 +1,11 @@
+{
+  "display_name": "Pocket-Gull Python FastAPI Sidecar",
+  "description": "Python FastAPI sidecar providing ONNX FP16 risk scoring, ML triage pipelines, and swarm agents",
+  "command": "python",
+  "args": ["-m", "uvicorn", "pocketgull_api.main:app", "--host", "127.0.0.1", "--port", "8000"],
+  "restart_policy": "on-failure",
+  "env": {
+    "PYTHONPATH": ".",
+    "POCKETGULL_LIVE_DEMO": "true"
+  }
+}

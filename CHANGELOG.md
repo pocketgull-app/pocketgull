@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0] - 2026-08-12
+
+**Universal App-Wide Bionic Focus & Accessibility Engine, Live Agentic AI Chat Bionic Formatting, Sub-2ms ONNX Triage Acceleration, and Antigravity IDE Workspace Setup**
+
+### Added & Enhanced
+- **[Universal Bionic Focus Engine] (`BionicReadingService`)**:
+  - Upgraded Bionic Reading Engine regex to preserve HTML markup, leading/trailing punctuation, quotes, brackets `[Level A]`, and parens `(PHQ-9)`.
+  - Expanded Bionic Reading bolding across all 13 clinical report lenses, trajectory storybooks, and **live agentic AI chat responses** (`VoiceAssistantComponent`).
+- **[Diagnostic Acceleration & Triage Suite] (`pocketgull_api/services/onnx_engine.py` & `ClinicalMoERouterService`)**:
+  - Fast sub-2ms ONNX FP16 matrix risk scoring engine bypassing network latency for emergency triage alerts.
+  - Dynamic Gemini reasoning token budgeting (1024 / 4096 / 8192 tokens) for instant red-flag detection.
+  - 1-click export of HIPAA §164.514 Safe Harbor FHIR R4 Bundles, HL7 v2.5.1 ER7 messages, and RFC 4180 CSV telemetry.
+- **[Antigravity IDE Workspace Setup] (`.agents/`)**:
+  - Configured workspace sidecar manifest (`.agents/sidecars/pocketgull-api.json`), pre-commit typecheck hook (`.agents/hooks.json`), local MCP tools (`.agents/mcp_config.json`), and `/antigravity-healthcheck` workflow.
+  - Trained 3 specialized agent swarms: `@swe-code-reviewer` (Google SWE Book standards & Hyrum's Law), `@clinical-auditor` (HIPAA/FHIR/Socratic bias checks), and `@webmcp-tester` (WebMCP tool governance).
+
 ## [1.17.0] - 2026-08-12
 
 **Grow Thyself Sovereign Data Vault, 3 New AI Swarm Agent Types (Chronos, Sentinel, Aeneas), Living Bio-Resonant Memorials, Autonomic Coherence Bridge, Compassionate Peer Check-Ins, LegalZoom & Impact.com Partner Engine, and Encapsulated `src/partners/` Module Suite**

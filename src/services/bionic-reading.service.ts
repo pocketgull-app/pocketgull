@@ -15,30 +15,48 @@ export class BionicReadingService {
   }
 
   /**
-   * Converts plain text string into Bionic Reading HTML string.
-   * Bolds the first 40% of characters in each word for accelerated reading focus.
+   * Sets Bionic Reading Mode state explicitly.
    */
-  formatToBionicHtml(text: string): string {
+  setBionicReading(enabled: boolean): void {
+    this.isBionicReadingEnabled.set(enabled);
+  }
+
+  /**
+   * Converts plain text string or HTML content into Bionic Reading HTML string.
+   * Accurately extracts leading non-word prefixes (punctuation, quotes, brackets, parens)
+   * and trailing punctuation, bolding the initial 40-50% of characters in each word
+   * for accelerated reading focus and accessibility.
+   *
+   * @param text Plain text or HTML string to format
+   * @param highlightClass Optional custom Tailwind CSS class for bolded prefix letters
+   */
+  formatToBionicHtml(text: string, highlightClass?: string): string {
     if (!text) return '';
 
-    // Split paragraphs while preserving formatting
-    return text.split(' ').map(word => {
-      // Strip trailing punctuation for accurate bolding ratio
-      const match = word.match(/^([a-zA-Z0-9]+)(.*)$/);
-      if (!match) return word;
-
-      const letters = match[1];
-      const punctuation = match[2] || '';
-
-      if (letters.length <= 1) {
-        return `<b>${letters}</b>${punctuation}`;
+    // Match HTML tags (to preserve markup) or whitespace-delimited tokens
+    return text.replace(/<[^>]+>|([^\s<>]+)/g, (match) => {
+      // Preserve HTML tags untouched
+      if (match.startsWith('<') && match.endsWith('>')) {
+        return match;
       }
 
-      const boldLen = Math.max(1, Math.ceil(letters.length * 0.4));
-      const boldPart = letters.slice(0, boldLen);
-      const restPart = letters.slice(boldLen);
+      // Format individual word letter/digit runs while preserving surrounding punctuation
+      return match.replace(/[a-zA-Z0-9]+/g, (letters) => {
+        if (letters.length <= 1) {
+          return highlightClass 
+            ? `<strong class="${highlightClass}">${letters}</strong>`
+            : `<b>${letters}</b>`;
+        }
 
-      return `<b>${boldPart}</b>${restPart}${punctuation}`;
-    }).join(' ');
+        const boldLen = Math.max(1, Math.ceil(letters.length * 0.45));
+        const boldPart = letters.slice(0, boldLen);
+        const restPart = letters.slice(boldLen);
+
+        return highlightClass
+          ? `<strong class="${highlightClass}">${boldPart}</strong>${restPart}`
+          : `<b>${boldPart}</b>${restPart}`;
+      });
+    });
   }
 }
+

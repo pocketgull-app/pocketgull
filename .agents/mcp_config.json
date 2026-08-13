@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "pocketgull_pubmed": {
+      "command": "python",
+      "args": ["-c", "from pocketgull_api.mcp_servers.pubmed_search import pubmed_mcp; print(pubmed_mcp.execute_query('hypertension'))"]
+    },
+    "pocketgull_local_ehr": {
+      "command": "python",
+      "args": ["-c", "from pocketgull_api.mcp_servers.local_ehr_bridge import ehr_mcp; print('EHR Bridge Loaded')"]
+    }
+  }
+}

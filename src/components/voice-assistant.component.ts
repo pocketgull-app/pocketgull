@@ -18,6 +18,7 @@ import { inject as baseInject } from '@angular/core';
 import { getStoredApiKey } from '../services/secure-key';
 import { YbocsService } from '../services/ybocs/ybocs.service';
 import { severityQuestions } from '../services/ybocs/data';
+import { BionicReadingService } from '../services/bionic-reading.service';
 
 export interface IChatEntry {
     role: 'user' | 'model';
@@ -244,7 +245,7 @@ export interface IChatEntry {
 
                                                 <!-- Content -->
                                                 <div class="prose prose-base md:prose-lg dark:prose-invert max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-a:text-blue-500 text-gray-800 dark:text-gray-200 text-xs md:text-sm leading-relaxed">
-                                                    <div [innerHTML]="(entry.htmlContent || entry.text) | safeHtml"></div>
+                                                    <div [innerHTML]="getFormattedChatText(entry) | safeHtml"></div>
                                                 </div>
 
                                                 <!-- Inline Micro-Component Drill-Down Widgets -->
@@ -446,6 +447,15 @@ export class VoiceAssistantComponent implements OnDestroy {
     richMedia = inject(RichMediaService);
     storage = inject(StorageService);
     secureStorage = inject(SecureStorageService);
+    bionicReading = inject(BionicReadingService);
+
+    getFormattedChatText(entry: IChatEntry): string {
+      const rawContent = entry.htmlContent || entry.text;
+      if (this.bionicReading.isBionicReadingEnabled()) {
+        return this.bionicReading.formatToBionicHtml(rawContent, 'font-bold text-indigo-600 dark:text-indigo-400');
+      }
+      return rawContent;
+    }
 
     ybocsService = inject(YbocsService);
     voiceAssistantMode = signal<'standard' | 'ybocs' | 'chrono' | 'avs'>('standard');
