@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { CgmTimeInRangeComponent } from './cgm-time-in-range.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';

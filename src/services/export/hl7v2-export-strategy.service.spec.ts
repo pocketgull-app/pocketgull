@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { Hl7v2ExportStrategyService } from './hl7v2-export-strategy.service';
 import type { IPatient } from '../patient.types';
 

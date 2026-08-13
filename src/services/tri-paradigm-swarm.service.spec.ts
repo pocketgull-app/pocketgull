@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { TriParadigmSwarmService } from './tri-paradigm-swarm.service';
 
 describe('TriParadigmSwarmService', () => {

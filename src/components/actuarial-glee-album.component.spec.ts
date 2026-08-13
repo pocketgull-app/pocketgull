@@ -1,6 +1,6 @@
 import '@angular/compiler';
 import * as DOMPurify from 'dompurify';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi } from 'vitest';
 import { ActuarialGleeAlbumComponent } from './actuarial-glee-album.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';

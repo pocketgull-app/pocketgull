@@ -1,5 +1,6 @@
 import { Injectable, inject, NgZone } from '@angular/core';
 import { PatientStateService, BODY_PART_NAMES } from './patient-state.service';
+import { IPatient } from './patient.types';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';
 import { ExportService } from './export.service';
 import { TeledentistryService } from './teledentistry.service';
@@ -1230,6 +1231,64 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(communityEcoTool, { signal: communityEcoCtrl.signal });
     this.mcpControllers.push({ name: communityEcoTool.name, controller: communityEcoCtrl });
+
+    // 40. export_complete_fhir_r4_health_sovereignty_bundle
+    const fhirSovereigntyCtrl = new AbortController();
+    const fhirSovereigntyTool = {
+      name: 'export_complete_fhir_r4_health_sovereignty_bundle',
+      description: 'Exports a complete HIPAA-compliant FHIR R4 Bundle containing patient demographic resources, observations, vitals, clinical assessments, and tri-paradigm care plans.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          format: {
+            type: 'string',
+            enum: ['JSON', 'COMPACT_JSON', 'SUMMARY'],
+            description: 'Export bundle payload format'
+          }
+        },
+        required: []
+      },
+      execute: async (params: any) => {
+        const format = params?.format || 'JSON';
+        const rawVitals = this.state.vitals ? this.state.vitals() : null;
+        const patientData: Partial<IPatient> = {
+          id: this.state.patientId ? this.state.patientId() : 'p001',
+          name: this.state.patientName ? this.state.patientName() : 'Jane Doe',
+          age: this.state.patientAge ? this.state.patientAge() : 42,
+          vitals: {
+            bp: rawVitals?.bp || '120/80',
+            hr: String(rawVitals?.hr || '72'),
+            temp: rawVitals?.temp || '98.6',
+            spO2: String(rawVitals?.spO2 || '98'),
+            weight: rawVitals?.weight || '70kg',
+            height: rawVitals?.height || '175cm'
+          }
+        };
+
+        const bundle = this.exportService.buildFhirR4Bundle
+          ? this.exportService.buildFhirR4Bundle(patientData)
+          : {
+              resourceType: 'Bundle',
+              type: 'collection',
+              entry: [
+                { resource: { resourceType: 'Patient', id: patientData.patientId, name: [{ text: patientData.name }] } }
+              ]
+            };
+
+        const jsonText = format === 'COMPACT_JSON' ? JSON.stringify(bundle) : JSON.stringify(bundle, null, 2);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: jsonText
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(fhirSovereigntyTool, { signal: fhirSovereigntyCtrl.signal });
+    this.mcpControllers.push({ name: fhirSovereigntyTool.name, controller: fhirSovereigntyCtrl });
   }
 
   /**

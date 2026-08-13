@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { PhysicsBiophysicsService } from './physics-biophysics.service';
 
 describe('PhysicsBiophysicsService', () => {

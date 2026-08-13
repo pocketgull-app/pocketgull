@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { DoubleFlipStateMachineService } from './double-flip-state-machine.service';
 
 describe('DoubleFlipStateMachineService', () => {

@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { FhirR7HorizonService } from './fhir-r7-horizon.service';
 
 describe('FhirR7HorizonService', () => {

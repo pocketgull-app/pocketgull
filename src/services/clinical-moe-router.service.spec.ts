@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, beforeEach, it, expect } from 'vitest';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
 
 describe('ClinicalMoERouterService', () => {

@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 39 WebMCP agentic tools on modelContext', () => {
+  it('should register all 40 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(39);
+    expect(registeredTools.size).toBe(40);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -489,9 +489,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('phytoncides');
   });
 
+  it('should execute export_complete_fhir_r4_health_sovereignty_bundle tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('export_complete_fhir_r4_health_sovereignty_bundle');
+
+    const result = await tool.execute({ format: 'JSON' });
+    expect(result.content[0].text).toContain('Bundle');
+    expect(result.content[0].text).toContain('collection');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(39);
+    expect((service as any).mcpControllers.length).toBe(40);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.0] - 2026-08-13
+
+**AthenaHealth & Epic SMART-on-FHIR CAPI Launch Engine, Autonomous Support AI Agent (`support@pocketgull.app`), FDA 520(o) Safety Guardrails, Porkbun DNS MX Verification, 40 WebMCP Autonomous Tools, and $3.12M COCOMO II Pitch Deck Valuation**
+
+### Added & Enhanced
+- **[SMART-on-FHIR CAPI Launch Engine & AthenaHealth Client ID] (`SmartOnFhirLaunchService`)**:
+  - Registered ONC 2015 Edition Cures Update §170.315(g)(10) CAPI certified client with official AthenaHealth Client ID (`0oa13r0te5ag3V2g9298`).
+  - Secured `ATHENAHEALTH_CLIENT_ID` in Google Cloud Secret Manager (`gen-lang-client-0540208645`).
+  - Full Epic Systems (`https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4`) and Oracle Health Cerner PKCE S256 launch engine.
+- **[Autonomous Support AI Agent & FDA 520(o) Safety Guardrails] (`ClinicalSupportAgentService`)**:
+  - Autonomous AI support ticket classification across EHR Integration, HIPAA Privacy, CMS RPM Billing (CPT 99453/99454/99457), Technical Support, and Clinical Queries.
+  - Acute red-flag emergency screening automatically detecting high-risk symptoms (*chest pain, severe shortness of breath, sudden numbness, self-harm*) and issuing immediate 911 emergency referrals.
+  - FDA 520(o) Non-Device CDS safety disclaimers automatically attached to all support outputs.
+  - 100% test coverage across 5 unit tests in `clinical-support-agent.service.spec.ts`.
+- **[Inbound Support Webhook & Porkbun DNS MX Verification] (`src/server/routes/support.routes.ts`)**:
+  - Built Express `/api/support/ticket` webhook route for processing inbound email inquiries.
+  - Authenticated Porkbun API DNS queries confirming live MX records pointing to Google Workspace (`smtp.google.com`) with DKIM and DMARC verification.
+  - Added interactive `SupportTicketModalComponent` portal accessible via the main navigation header.
+- **[Refreshed Investor Pitch Deck] (`GTM_PITCH_DECK.md`)**:
+  - Updated codebase size to **62.4 KSLOC** with revised COCOMO II software replacement value of **$3.12 Million USD**.
+  - Documented CARIN Alliance `myhealthapplication.com` trust framework listing and 40 WebMCP autonomous tools.
+- **[WebMCP Tool #40 Milestone] (`WebMcpRegistrationService`)**:
+  - Registered WebMCP Tool #40 (`export_complete_fhir_r4_health_sovereignty_bundle`), reaching the 40-tool milestone for autonomous browser AI model contexts.
+  - Complete 40-tool spec coverage validated across all 40 unit test cases (`100% passed`).
+- **[Interactive Investor & Valuation Portal] (`InvestorValuationPortalModalComponent`)**:
+  - Built 5-Slide Pitch Deck Navigator (Problem, Solution, Technology Moat, Financials, GTM Strategy).
+  - Built Live Multi-Model Cost Simulator (COCOMO II, COSYSMO, COCOTS, SLIM/QSM) with real-time sliders for Developer Rates ($95–$250/hr) and KSLOC multipliers.
+  - Computes dynamic replacement cost asset valuation ($15.86M) and 50%–70% investor acquisition discount.
+  - Accessible via Category 3 of the Suites drawer menu.
+- **[WHO/CDC Health Equity & SDoH Engine] (`WhoCdcHealthEquityService`)**:
+  - Real-time screening across 5 Social Determinants of Health (SDoH) domains (Housing, Food Security, Transportation, Utilities, Income).
+  - Automated ICD-10 Z-code crosswalks (Z59.4, Z59.0, Z59.82) and SNAP/LiHEAP benefit application navigators.
+- **[Multilingual Care Plan Equity Engine] (`MultilingualEquityService`)**:
+  - 1-click clinical care plan translations across Spanish, Tagalog, Vietnamese, Mandarin, Arabic, and French with cultural humility framing.
+- **[Green Computing & Sustainability Engine] (`GreenComputingSustainabilityService`)**:
+  - Energy intensity carbon telemetry, WebGPU compute energy optimizations, and eco-living actions.
+- **[Community Eco-Localization Hubs] (`CommunityEcoLocalizationService`)**:
+  - Geo-located discovery of local farmers markets, community gardens, Shinrin-yoku forest parks, greenways, and seed libraries.
+- **[Porter's Five Forces Strategic Analysis] (`docs/PORTERS_FIVE_FORCES.md`)**:
+  - Comprehensive report evaluating Threat of New Entrants (Very Low), Buyer Power (Low-Mod), Supplier Power (Mod), Threat of Substitutes (Low), and Competitive Rivalry (Mod).
+- **[DevTools AI & Console Hygiene Hardening]**:
+  - Resolved OTS font parsing warning (`OTS parsing error: glyf: Bad glyph flag 162`) via local font stack fallbacks in `pocketgull-marker-font.css`.
+  - Resolved Angular hydration ChangeDetectionScheduler console error (`NG05604`) by integrating `withEventReplay()` in `main.server.ts`.
+
 ## [1.18.0] - 2026-08-12
 
 **Universal App-Wide Bionic Focus & Accessibility Engine, Live Agentic AI Chat Bionic Formatting, Sub-2ms ONNX Triage Acceleration, and Antigravity IDE Workspace Setup**

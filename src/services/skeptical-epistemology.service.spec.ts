@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 
 describe('SkepticalEpistemologyService', () => {

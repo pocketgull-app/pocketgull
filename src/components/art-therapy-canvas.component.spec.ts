@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi } from 'vitest';
 import { ArtTherapyCanvasComponent } from './art-therapy-canvas.component';
 import { runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { ArtTherapyService } from '../services/art-therapy.service';

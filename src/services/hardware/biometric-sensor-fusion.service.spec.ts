@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { BiometricSensorFusionService } from './biometric-sensor-fusion.service';
 
 describe('BiometricSensorFusionService', () => {

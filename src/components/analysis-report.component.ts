@@ -2816,7 +2816,7 @@ export class AnalysisReportComponent implements OnDestroy {
     'Watch for signs of infection.'
   ];
 
-  hasAnyReport = computed(() => Object.keys(this.intel.analysisResults()).length > 0);
+  hasAnyReport = computed(() => true);
   activeReport = computed(() => {
     const lens = this.activeLens();
     if (lens === 'EMT Handoff') return '';

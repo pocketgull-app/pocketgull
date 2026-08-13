@@ -59,6 +59,7 @@ import { BillingDashboardComponent } from './components/billing-dashboard.compon
 import { PatientPortalComponent } from './components/patient-portal.component';
 import { ClinicianOnboardingComponent } from './components/clinician-onboarding.component';
 import { GoogleHealthConsentModalComponent } from './components/modals/google-health-consent-modal.component';
+import { SupportTicketModalComponent } from './components/modals/support-ticket-modal.component';
 import { MainHeaderNavComponent } from './components/main-header-nav.component';
 import { IntakeToolbarComponent } from './components/intake-toolbar.component';
 import { OnboardingTourOverlayComponent } from './components/onboarding-tour-overlay.component';
@@ -99,7 +100,8 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
     GoogleHealthConsentModalComponent,
     MainHeaderNavComponent,
     IntakeToolbarComponent,
-    OnboardingTourOverlayComponent
+    OnboardingTourOverlayComponent,
+    SupportTicketModalComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -142,6 +144,11 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
       <!-- Companion Sync Modal -->
       @if (showCompanionSyncModal()) {
         <app-companion-sync-modal (closeModal)="showCompanionSyncModal.set(false)"></app-companion-sync-modal>
+      }
+
+      <!-- Support Ticket Modal Portal -->
+      @if (showSupportTicketModal()) {
+        <app-support-ticket-modal (closed)="showSupportTicketModal.set(false)"></app-support-ticket-modal>
       }
 
       @defer (on idle) {
@@ -331,6 +338,7 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
           (openClinicianOnboarding)="showClinicianOnboarding.set(true)"
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
+          (openSupportTicket)="showSupportTicketModal.set(true)"
           (triggerSomaticGrounding)="triggerSomaticGrounding()">
         </app-main-header-nav>
 
@@ -1019,6 +1027,7 @@ export class AppComponent implements OnDestroy {
   });
   isDemoMode = this.state.isDemoMode;
   readonly showCompanionSyncModal = signal<boolean>(false);
+  readonly showSupportTicketModal = signal<boolean>(false);
   readonly showHeaderThemeMenu = signal<boolean>(false);
   apiKeyInput = signal<string>('');
   showPassword = signal<boolean>(false);

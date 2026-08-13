@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, beforeEach, it, expect } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { InfiniteClinicalSynthesisService } from './infinite-clinical-synthesis.service';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';

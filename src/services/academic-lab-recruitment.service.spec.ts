@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { AcademicLabRecruitmentService } from './academic-lab-recruitment.service';
 
 describe('AcademicLabRecruitmentService', () => {

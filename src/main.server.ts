@@ -14,7 +14,7 @@ try {
 
 import '@angular/compiler';
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { BootstrapContext, bootstrapApplication, provideClientHydration } from '@angular/platform-browser';
+import { BootstrapContext, bootstrapApplication, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { provideServerRendering } from '@angular/platform-server';
 import { provideZonelessChangeDetection, ApplicationConfig } from '@angular/core';
@@ -45,7 +45,7 @@ export const config: ApplicationConfig = {
             provide: IntelligenceProviderToken,
             useClass: HybridProvider
         },
-        provideClientHydration()
+        provideClientHydration(withEventReplay())
     ]
 };
 

@@ -6,7 +6,6 @@
  *  - Issue CRUD helpers (hasIssue, hasPainfulIssue)
  *  - State management (getCurrentState, clearState)
  */
-import { describe, it, expect, beforeEach } from 'vitest';
 
 // We test the Ayurvedic inference function directly since it's a public method.
 // Rather than bootstrapping Angular TestBed for a pure-logic test, we extract

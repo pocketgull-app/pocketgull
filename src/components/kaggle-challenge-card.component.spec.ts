@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { KaggleChallengeCardComponent } from './kaggle-challenge-card.component';
 
 describe('KaggleChallengeCardComponent', () => {

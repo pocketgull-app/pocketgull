@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi } from 'vitest';
 import { ElementRef, Renderer2, createEnvironmentInjector, runInInjectionContext } from '@angular/core';
 import { PatientEducationFlipDirective, IPatientEducationFlipData } from './patient-education-flip.directive';
 import { DoubleFlipStateMachineService } from '../services/double-flip-state-machine.service';

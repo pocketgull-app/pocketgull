@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { FhirBundleFactoryService } from './fhir-bundle-factory.service';
 
 describe('FhirBundleFactoryService', () => {

@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext, PLATFORM_ID, ɵChangeDetectionScheduler as ChangeDetectionScheduler } from '@angular/core';
 import { GrowThyselfLegacyVaultComponent } from './grow-thyself-legacy-vault.component';
 import { GrowThyselfLegacyEngineService } from '../services/grow-thyself-legacy-engine.service';

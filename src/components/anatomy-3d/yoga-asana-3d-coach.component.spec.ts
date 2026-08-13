@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { expect, vi } from 'vitest';
 import { YogaAsana3dCoachComponent } from './yoga-asana-3d-coach.component';
 import { runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { YogaAsanaCoachingService } from '../../services/yoga-asana-coaching.service';

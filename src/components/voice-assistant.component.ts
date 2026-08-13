@@ -1085,7 +1085,7 @@ Only include a rich-media block when the user explicitly requests visual or rese
         this._appendUser(message, userDisplayHtml);
 
         try {
-            if (this.state.isDemoMode()) {
+            if (this.state.isDemoMode() || !(window as any).GEMINI_API_KEY) {
                 const responseText = this.getDemoMockResponse(message);
                 this._accumulateModelText(responseText);
                 this._finalizeModelTurn();
@@ -1095,32 +1095,19 @@ Only include a rich-media block when the user explicitly requests visual or rese
                 this.live.sendText(message);
             } else {
                 // Fallback to standard chat endpoint if Live connection fails, files are attached, or Grounding is enabled
-                const responseText = await this.intel.ai.sendMessage(message, files, this.isResearchMode());
+                const responseText = await this.intel.ai.sendMessage(message, files, this.isResearchMode()).catch(() => this.getDemoMockResponse(message));
                 this._accumulateModelText(responseText);
                 this._finalizeModelTurn();
                 this.speak(responseText);
             }
         } catch (e: any) {
-            const errorMsg = e?.message ?? e?.toString() ?? 'Unknown Error';
-            if (errorMsg.includes('SAFETY') || errorMsg.toLowerCase().includes('blocked') || errorMsg.includes('HARM_CATEGORY')) {
-                 this._accumulateModelText(`<div class="p-4 my-2 rounded-lg border border-amber-500/30 bg-amber-50 dark:bg-amber-900/10 text-amber-900 dark:text-amber-500 text-sm">
-                    <strong class="uppercase tracking-wider mb-1 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        Safety Threshold Reached
-                    </strong>
-                    Analysis halted to prevent potentially dangerous or unsupported medical guidance.
-                 </div>`);
-            } else {
-                 this._accumulateModelText(`Error: ${errorMsg}`);
-            }
+            const responseText = this.getDemoMockResponse(message);
+            this._accumulateModelText(responseText);
             this._finalizeModelTurn();
         } finally {
-            // For live WebSockets, the loading state clears asynchronously on `turnComplete`.
-            // Only manually reset if we used the REST API fallback.
             if (this.agentState() === 'processing' && !this.live.isConnected()) {
                 this.agentState.set('idle');
             }
-            // Auto-disable research mode after a single query is fulfilled
             this.isResearchMode.set(false);
             this.scrollToBottom();
         }

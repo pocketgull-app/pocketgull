@@ -65,6 +65,15 @@ import { SessionStateService } from '../services/session-state.service';
             <span>📱 Sync Companion</span>
           </button>
 
+          <!-- Support AI Agent Portal Button -->
+          <button 
+            type="button" 
+            (click)="openSupportTicket.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer"
+            title="Open Autonomous Support AI Portal (support@pocketgull.app)">
+            <span>📬 AI Support</span>
+          </button>
+
           <!-- Bio-Network QR & Theme Song Studio Button -->
           <button 
             type="button" 
@@ -268,5 +277,6 @@ export class MainHeaderNavComponent {
   openClinicianOnboarding = output<void>();
   openTypefaceSite = output<void>();
   openDocsStudy = output<void>();
+  openSupportTicket = output<void>();
   triggerSomaticGrounding = output<void>();
 }

@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { MicrosoftIbmClinicalBridgeService } from './microsoft-ibm-clinical-bridge.service';
 

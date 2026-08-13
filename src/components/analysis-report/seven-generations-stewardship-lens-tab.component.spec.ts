@@ -1,6 +1,6 @@
 import '@angular/compiler';
 import * as DOMPurify from 'dompurify';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi } from 'vitest';
 import { SevenGenerationsStewardshipLensTabComponent } from './seven-generations-stewardship-lens-tab.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../../services/patient-state.service';

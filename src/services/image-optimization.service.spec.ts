@@ -1,5 +1,4 @@
 import { ImageOptimizationService } from './image-optimization.service';
-import { describe, beforeEach, it, expect } from 'vitest';
 
 describe('ImageOptimizationService', () => {
   let service: ImageOptimizationService;

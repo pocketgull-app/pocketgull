@@ -1,6 +1,6 @@
 {
   "name": "pocket-gull",
-  "version": "1.18.0",
+  "version": "1.20.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api"
@@ -81,7 +81,7 @@
     "sbom:generate": "node scripts/generate-sbom.mjs",
     "mcp:warmup": "node scripts/mcp-warmup.js",
     "build": "node scripts/build-all.mjs",
-    "deploy": "gcloud run deploy pocket-gull --source . --project gen-lang-client-0540208645 --region us-central1 --min-instances=0 --max-instances=5 --update-env-vars=OTEL_SDK_DISABLED=true --update-secrets=\"STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest\" --timeout=25m --quiet",
+    "deploy": "gcloud run deploy pocket-gull --source . --project gen-lang-client-0540208645 --region us-central1 --min-instances=0 --max-instances=5 --update-env-vars=OTEL_SDK_DISABLED=true --update-secrets=\"STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest,ATHENAHEALTH_CLIENT_ID=ATHENAHEALTH_CLIENT_ID:latest\" --timeout=25m --quiet",
     "gcp:prune-storage": "node ./scripts/apply-gcp-lifecycle-policies.mjs",
     "contracts:generate": "node ./scripts/generate-api-contracts.mjs",
     "lint": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",

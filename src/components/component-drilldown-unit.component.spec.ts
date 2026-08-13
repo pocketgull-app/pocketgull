@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext, PLATFORM_ID, ɵChangeDetectionScheduler as ChangeDetectionScheduler } from '@angular/core';
 import { ComponentDrilldownUnitComponent } from './component-drilldown-unit.component';
 import { PatientStateService } from '../services/patient-state.service';

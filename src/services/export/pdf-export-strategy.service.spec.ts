@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { PdfExportStrategyService } from './pdf-export-strategy.service';
 
 describe('PdfExportStrategyService', () => {

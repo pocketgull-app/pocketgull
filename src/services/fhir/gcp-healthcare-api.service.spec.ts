@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { GcpHealthcareApiService } from './gcp-healthcare-api.service';
 
 describe('GcpHealthcareApiService', () => {

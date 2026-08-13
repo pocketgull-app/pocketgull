@@ -56,8 +56,9 @@ pocketgull_api/tests/test_dr_gulliver.py
 packages/
 pocketgull-release.tar.gz
 
-# Angular framework
+# Angular & Mobile frameworks
 .angular
+.gradle/
 
 # Generated Reports & Snapshots
 dom-*.html
@@ -258,6 +259,27 @@ python_example_2026/synthetic_model/
 python_example_2026/real_model_output/
 python_example_2026/synthetic_predictions/
 python_example_2026/*.sav
+
+# Temporary Agent & Playwright Script Artifacts
+scripts/capture-*.cjs
+scripts/resize-icon.cjs
+scripts/cleanup-screenshots.cjs
+
+# Local AI Build & Benchmark Logs
+build_error*.txt
+cocomo2_report.*
+pocketgull_benchmark_plots.png
+
+# Antigravity IDE & Local Agent Workspace Caches
+.antigravity-ide/
+.antigravity/
+.cagent/
+.sandboxd/
+
+# Cloud Run & Local Deployment Tarballs
+deploy_bundle.tar.gz
+deploy_source.tar.gz
+pocketgull-v*.tar.gz
 
 
 

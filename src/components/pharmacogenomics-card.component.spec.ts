@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { PharmacogenomicsCardComponent } from './pharmacogenomics-card.component';
 import { PharmacogenomicsService } from '../services/pharmacogenomics.service';

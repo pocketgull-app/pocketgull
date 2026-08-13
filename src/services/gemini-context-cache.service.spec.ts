@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, beforeEach, it, expect } from 'vitest';
 import { GeminiContextCacheService } from './gemini-context-cache.service';
 
 describe('GeminiContextCacheService', () => {

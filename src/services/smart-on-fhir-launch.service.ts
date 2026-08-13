@@ -64,8 +64,10 @@ export class SmartOnFhirLaunchService {
 
     const params = new URLSearchParams({
       response_type: 'code',
-      client_id: config.clientId || 'pocketgull-smart-client-v1',
-      redirect_uri: config.redirectUri || 'https://pocketgull.app/launch/callback',
+      client_id: config.clientId || (config.vendor === 'ATHENAHEALTH' ? '0oa13r0te5ag3V2g9298' : config.vendor === 'CERNER' ? '311f9a54-f5b6-4196-b764-8798fd46afb8' : 'pocketgull-smart-client-v1'),
+      redirect_uri: config.redirectUri || (typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+        ? `${window.location.protocol}//${window.location.host}/launch/callback` 
+        : 'https://pocketgull.app/launch/callback'),
       scope: scopes,
       state: state,
       aud: fhirBaseUrl,

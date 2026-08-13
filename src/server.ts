@@ -40,6 +40,7 @@ import { APP_VERSION } from './version';
 import AgonesSDK from '@google-cloud/agones-sdk';
 import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
 import { renderBusinessSiteHtml } from './server/business-site';
+import { supportRouter } from './server/routes/support.routes';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -361,6 +362,8 @@ app.get('/api/config', manifestRateLimiter, (req, res) => {
 app.post('/api/audit', manifestRateLimiter, (req, res) => {
   res.status(200).json({ status: 'logged', timestamp: new Date().toISOString() });
 });
+
+app.use('/api/support', supportRouter);
 
 app.all('/api/python/*splat', manifestRateLimiter, (req, res) => {
   res.status(200).json({

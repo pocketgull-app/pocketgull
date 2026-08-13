@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { OsceTrainerService } from './osce-trainer.service';
 import { createEnvironmentInjector, EnvironmentInjector, runInInjectionContext } from '@angular/core';
 

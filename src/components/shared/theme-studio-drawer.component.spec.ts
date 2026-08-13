@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, vi } from 'vitest';
+import { vi } from 'vitest';
 import { Injector, runInInjectionContext, PLATFORM_ID } from '@angular/core';
 import { ThemeStudioDrawerComponent } from './theme-studio-drawer.component';
 import { ThemeService } from '../../services/theme.service';

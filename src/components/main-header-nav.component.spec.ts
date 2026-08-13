@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi } from 'vitest';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { MainHeaderNavComponent } from './main-header-nav.component';
 import { NetworkStateService } from '../services/network-state.service';
