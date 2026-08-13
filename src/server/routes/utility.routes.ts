@@ -330,5 +330,48 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
     }
   });
 
+  // GET /api/equity/who-cdc — Returns WHO GPW 14 & CDC Global Health Equity scoring
+  router.get('/api/equity/who-cdc', async (req: Request, res: Response) => {
+    try {
+      const housingInsecurity = req.query.housing === 'true';
+      const foodInsecurity = req.query.food === 'true';
+      const transportationBarrier = req.query.transport === 'true';
+      const utilityInsecurity = req.query.utility === 'true';
+      const digitalLiteracyBarrier = req.query.digital === 'true';
+
+      const sdohCount = [housingInsecurity, foodInsecurity, transportationBarrier, utilityInsecurity, digitalLiteracyBarrier].filter(Boolean).length;
+      let compositeIndex = Math.max(0, 100 - (sdohCount * 15));
+
+      res.json({
+        standard: 'WHO GPW 14 (2025-2028) & CDC Global Health Equity',
+        sdohPrapareVectorCount: sdohCount,
+        compositeEquityIndex: compositeIndex,
+        equityTier: compositeIndex >= 85 ? 'OPTIMAL' : compositeIndex >= 65 ? 'MODERATE_RISK' : 'HIGH_VULNERABILITY',
+        timestamp: new Date().toISOString()
+      });
+    } catch (err: unknown) {
+      res.status(500).json({ error: 'Failed to compute health equity metrics' });
+    }
+  });
+
+  // GET /api/lists/helpful — Returns curated quick-reference emergency & legal lists
+  router.get('/api/lists/helpful', (_req: Request, res: Response) => {
+    res.json({
+      hotlines: [
+        { title: '988 Suicide & Crisis Lifeline', contact: '988', text: 'Call/Text 24/7' },
+        { title: 'Poison Help Emergency Line', contact: '1-800-222-1222' },
+        { title: 'Veterans Crisis Line', contact: '988 Press 1' }
+      ],
+      livingWills: [
+        { title: 'NHPCO CaringInfo 50-State Living Wills', url: 'https://www.caringinfo.org' },
+        { title: 'FreeWill Non-Profit Estate Portal', url: 'https://www.freewill.com' }
+      ],
+      checklists: [
+        { title: 'Form SSA-44 Medicare IRMAA Surcharge Appeal', url: 'https://www.ssa.gov/forms/ssa-44.pdf' },
+        { title: 'HEDIS Star Rating Quality Control Benchmarks' }
+      ]
+    });
+  });
+
   return router;
 }
