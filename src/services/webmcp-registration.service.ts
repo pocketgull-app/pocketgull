@@ -10,6 +10,7 @@ import { IrmaaDecisionService } from './irmaa-decision.service';
 import { MedicareBillingBestPracticesService } from './medicare-billing-best-practices.service';
 import { HedisStarRatingService } from './hedis-star-rating.service';
 import { FhirPriorAuthService } from './fhir-prior-auth.service';
+import { SnomedIcdCrosswalkService } from './snomed-icd-crosswalk.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -27,6 +28,7 @@ export class WebMcpRegistrationService {
   private medicareBillingService = inject(MedicareBillingBestPracticesService, { optional: true });
   private hedisService = inject(HedisStarRatingService, { optional: true });
   private priorAuthService = inject(FhirPriorAuthService, { optional: true });
+  private snomedCrosswalkService = inject(SnomedIcdCrosswalkService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -741,6 +743,27 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(pasTool, { signal: pasCtrl.signal });
     this.mcpControllers.push({ name: pasTool.name, controller: pasCtrl });
+
+    // 25. crosswalk_snomed_ct_to_icd10_and_cpt
+    const snomedCtrl = new AbortController();
+    const snomedTool = {
+      name: 'crosswalk_snomed_ct_to_icd10_and_cpt',
+      description: 'Cross-walks point-of-care SNOMED CT clinical terms (USCDI v4 mandate) to ICD-10-CM diagnosis codes, CPT procedure codes, LOINC lab identifiers, and RxNorm CUIs.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          snomedCode: { type: 'string', description: 'SNOMED CT Concept Code (e.g. 26929004 Alzheimer, 49049000 Parkinson, 372130007 Pancreatic Cancer, 38341003 Hypertension, 73211009 Diabetes)' }
+        },
+        required: ['snomedCode']
+      },
+      execute: async (params: any) => {
+        const svc = this.snomedCrosswalkService || new SnomedIcdCrosswalkService();
+        const res = svc.crosswalkSnomedToIcd10(String(params.snomedCode || '26929004'));
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(snomedTool, { signal: snomedCtrl.signal });
+    this.mcpControllers.push({ name: snomedTool.name, controller: snomedCtrl });
   }
 
   /**

@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 24 WebMCP agentic tools on modelContext', () => {
+  it('should register all 25 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(24);
+    expect(registeredTools.size).toBe(25);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -352,9 +352,18 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('approved');
   });
 
+  it('should execute crosswalk_snomed_ct_to_icd10_and_cpt tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('crosswalk_snomed_ct_to_icd10_and_cpt');
+
+    const result = await tool.execute({ snomedCode: '26929004' });
+    expect(result.content[0].text).toContain('G30.9');
+    expect(result.content[0].text).toContain('http://snomed.info/sct');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(24);
+    expect((service as any).mcpControllers.length).toBe(25);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
