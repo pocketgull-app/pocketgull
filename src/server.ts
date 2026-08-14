@@ -544,27 +544,16 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
 
-  const isProd = process.env['NODE_ENV'] === 'production';
-  const isDev = !isProd;
-  const scriptSrc = isDev
-    ? `'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com`
-    : `'self' 'nonce-${nonce}' 'unsafe-inline' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com`;
+  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com`;
 
-  const scriptSrcAttr = `'self' 'unsafe-inline'`;
+  const scriptSrcAttr = `'self' 'unsafe-inline' 'unsafe-hashes'`;
   const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
   const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
   const styleSrcAttr = `'self' 'unsafe-inline'`;
 
-  const connectSrc = isDev
-    ? `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`
-    : `'self' http://localhost:9399 http://localhost:4000 http://localhost:4200 http://127.0.0.1:9399 ws://localhost:9399 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;
+  const connectSrc = `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;
 
   let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; script-src-attr ${scriptSrcAttr}; style-src ${styleSrc}; style-src-elem ${styleSrcElem}; style-src-attr ${styleSrcAttr}; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org; connect-src ${connectSrc}; frame-src 'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
-  
-  if (!isProd) {
-    res.setHeader('Reporting-Endpoints', 'csp-endpoint="/api/csp-report"');
-    csp += " report-uri /api/csp-report; report-to csp-endpoint;";
-  }
 
   res.setHeader('Content-Security-Policy', csp);
   next();
@@ -671,15 +660,20 @@ app.use(
 
 // Fallback handler for hashed CSS stylesheet requests from stale browser caches
 app.use(globalLimiter, (req, res, next) => {
-  if (req.path === '/styles.css' || (req.path.startsWith('/styles-') && req.path.endsWith('.css'))) {
+  if (req.path.endsWith('.css') || req.path.includes('.css')) {
     try {
-      const files = fs.readdirSync(browserDistFolder);
-      const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css'));
-      if (activeCss) {
-        const safeActiveCssPath = securePathResolve(browserDistFolder, activeCss);
-        res.setHeader('Content-Type', 'text/css');
-        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-        return res.sendFile(safeActiveCssPath);
+      const candidateDirs = [browserDistFolder, join(browserDistFolder, 'browser'), process.cwd(), join(process.cwd(), 'dist')];
+      for (const dir of candidateDirs) {
+        if (fs.existsSync(dir)) {
+          const files = fs.readdirSync(dir);
+          const activeCss = files.find(f => f.startsWith('styles') && f.endsWith('.css')) || files.find(f => f.endsWith('.css'));
+          if (activeCss) {
+            const safeActiveCssPath = securePathResolve(dir, activeCss);
+            res.setHeader('Content-Type', 'text/css; charset=utf-8');
+            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+            return res.sendFile(safeActiveCssPath);
+          }
+        }
       }
     } catch (e) {
       console.debug('[Server] CSS hash fallback failed:', (e as Error)?.message);

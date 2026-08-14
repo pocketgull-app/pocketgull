@@ -12,7 +12,7 @@
     "skipLibCheck": true,
     "types": [
       "node",
-      "jasmine"
+      "vitest/globals"
     ],
     "moduleResolution": "bundler",
     "isolatedModules": true,

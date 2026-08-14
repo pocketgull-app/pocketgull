@@ -2,6 +2,10 @@
 @import './styles/pocketgull-marker-font.css';
 @import './styles/pocketgull-icon-font.css';
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-sans: 'Nunito', sans-serif;
@@ -38,10 +42,6 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .font-rounded, .ui-rounded {
   font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* ==========================================================================
    PAPERCRAFT THEME SYSTEM (Rice Paper, Hemp, Construction, Cardstock)
