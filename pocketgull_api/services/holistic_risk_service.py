@@ -6,46 +6,52 @@ and continuous sleep fluidity continuum modeling.
 
 from typing import Dict, Any, Optional
 import numpy as np
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from services.conformal_risk_service import ConformalPredictor
 
 
 class AmbientEnvironmentInput(BaseModel):
     """Remote / Contactless Ambient Smart Home Environmental Telemetry."""
-    ambient_light_lux: float = Field(default=2.5, description="Bedroom light intensity (lux)")
-    room_temp_celsius: float = Field(default=18.5, description="Ambient room temperature (°C)")
-    noise_level_db: float = Field(default=32.0, description="Ambient acoustic noise level (dB)")
-    co2_ppm: float = Field(default=650.0, description="Indoor CO2 concentration (ppm)")
+    model_config = ConfigDict(str_strip_whitespace=True, extra="ignore")
+
+    ambient_light_lux: float = Field(default=2.5, ge=0.0, le=100000.0, description="Bedroom light intensity (lux)")
+    room_temp_celsius: float = Field(default=18.5, ge=-40.0, le=60.0, description="Ambient room temperature (°C)")
+    noise_level_db: float = Field(default=32.0, ge=0.0, le=160.0, description="Ambient acoustic noise level (dB)")
+    co2_ppm: float = Field(default=650.0, ge=200.0, le=10000.0, description="Indoor CO2 concentration (ppm)")
 
 
 class WearableTelemetryInput(BaseModel):
     """Real-time passive wearable telemetry stream."""
-    hrv_rmssd: float = Field(default=35.0, description="Time-domain HRV RMSSD (ms)")
-    skin_temp_celsius: float = Field(default=36.6, description="Continuous peripheral skin temperature")
-    actigraphy_movement_index: float = Field(default=0.15, description="Accelerometric movement density")
-    sleep_efficiency_wearable: float = Field(default=85.0, description="Estimated sleep efficiency %")
+    model_config = ConfigDict(str_strip_whitespace=True, extra="ignore")
+
+    hrv_rmssd: float = Field(default=35.0, ge=0.0, le=500.0, description="Time-domain HRV RMSSD (ms)")
+    skin_temp_celsius: float = Field(default=36.6, ge=20.0, le=45.0, description="Continuous peripheral skin temperature")
+    actigraphy_movement_index: float = Field(default=0.15, ge=0.0, le=10.0, description="Accelerometric movement density")
+    sleep_efficiency_wearable: float = Field(default=85.0, ge=0.0, le=100.0, description="Estimated sleep efficiency %")
 
 
 class MultiModalPatientStateInput(BaseModel):
     """Cross-domain Patient State input fusing PSG, Vitals, Ambient Cues & Wearable Telemetry."""
-    age: float = Field(default=65.0, description="Patient age in years")
-    hr: float = Field(default=72.0, description="Heart Rate (bpm)")
-    bp_systolic: float = Field(default=128.0, description="Systolic Blood Pressure (mmHg)")
-    bp_diastolic: float = Field(default=80.0, description="Diastolic Blood Pressure (mmHg)")
-    spo2: float = Field(default=97.0, description="Oxygen Saturation (%)")
+    model_config = ConfigDict(str_strip_whitespace=True, extra="ignore")
+
+    age: float = Field(default=65.0, ge=0.0, le=120.0, description="Patient age in years")
+    hr: float = Field(default=72.0, ge=20.0, le=240.0, description="Heart Rate (bpm)")
+    bp_systolic: float = Field(default=128.0, ge=40.0, le=300.0, description="Systolic Blood Pressure (mmHg)")
+    bp_diastolic: float = Field(default=80.0, ge=20.0, le=200.0, description="Diastolic Blood Pressure (mmHg)")
+    spo2: float = Field(default=97.0, ge=50.0, le=100.0, description="Oxygen Saturation (%)")
     
     # PhysioNet 2026 PSG Features
-    n3_percentage: float = Field(default=18.0, description="N3 Slow-Wave Sleep %")
-    apnea_hypopnea_index: float = Field(default=12.0, description="Apnea-Hypopnea Index (AHI)")
-    obstructive_apnea_index: float = Field(default=4.0, description="Obstructive Apnea Index (OAI)")
-    central_apnea_index: float = Field(default=2.0, description="Central Apnea Index (CAI)")
-    hypopnea_index: float = Field(default=6.0, description="Hypopnea Index (HI)")
-    arousal_index: float = Field(default=16.0, description="Sleep Arousal Index")
+    n3_percentage: float = Field(default=18.0, ge=0.0, le=100.0, description="N3 Slow-Wave Sleep %")
+    apnea_hypopnea_index: float = Field(default=12.0, ge=0.0, le=150.0, description="Apnea-Hypopnea Index (AHI)")
+    obstructive_apnea_index: float = Field(default=4.0, ge=0.0, le=150.0, description="Obstructive Apnea Index (OAI)")
+    central_apnea_index: float = Field(default=2.0, ge=0.0, le=150.0, description="Central Apnea Index (CAI)")
+    hypopnea_index: float = Field(default=6.0, ge=0.0, le=150.0, description="Hypopnea Index (HI)")
+    arousal_index: float = Field(default=16.0, ge=0.0, le=150.0, description="Sleep Arousal Index")
     
     # PhysioNet 2022-2025 Multi-Year Cross-Domain Signals
-    eeg_alpha_delta_ratio: float = Field(default=1.4, description="EEG Alpha/Delta ratio (2023 Neurological)")
-    ecg_qtc_ms: float = Field(default=420.0, description="ECG QTc interval ms (2024 Arrhythmia)")
-    serum_lactate: float = Field(default=1.2, description="Serum Lactate mmol/L (2025 Sepsis)")
+    eeg_alpha_delta_ratio: float = Field(default=1.4, ge=0.0, le=20.0, description="EEG Alpha/Delta ratio (2023 Neurological)")
+    ecg_qtc_ms: float = Field(default=420.0, ge=200.0, le=700.0, description="ECG QTc interval ms (2024 Arrhythmia)")
+    serum_lactate: float = Field(default=1.2, ge=0.1, le=30.0, description="Serum Lactate mmol/L (2025 Sepsis)")
     
     # Telemetry Streams
     wearable: WearableTelemetryInput = Field(default_factory=WearableTelemetryInput)
