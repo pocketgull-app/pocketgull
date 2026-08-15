@@ -98,6 +98,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'reactome.org',
   'who.int',
   'www.who.int',
+  'sccm.org',
+  'www.sccm.org',
   'santafe.edu',
   'www.santafe.edu',
   'arizona.edu',

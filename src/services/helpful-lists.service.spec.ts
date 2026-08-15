@@ -25,5 +25,11 @@ describe('HelpfulListsService Unit Suite', () => {
     const livingWills = service.getListsByCategory('PATIENT_RIGHTS_LIVING_WILLS');
     expect(livingWills.length).toBeGreaterThanOrEqual(2);
     expect(livingWills.every(item => item.category === 'PATIENT_RIGHTS_LIVING_WILLS')).toBe(true);
+
+    const veterans = service.getListsByCategory('VETERANS_HEALTH_AND_BENEFITS');
+    expect(veterans.length).toBeGreaterThanOrEqual(3);
+    expect(veterans.every(item => item.category === 'VETERANS_HEALTH_AND_BENEFITS')).toBe(true);
+    expect(veterans.some(item => item.id === 'list_va_lighthouse')).toBe(true);
+    expect(veterans.some(item => item.id === 'list_va_pact')).toBe(true);
   });
 });

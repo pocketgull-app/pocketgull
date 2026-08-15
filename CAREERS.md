@@ -38,6 +38,16 @@ We reject burnout culture. We don't believe in late-night crunch or pointless co
 * **What you’ll do**: Expand cognitive localization (Bionic Reading, simplified clinical translation, multilingual equity) and audit screen-reader accessibility for diverse patient populations.
 * **Who it’s for**: Multilingual educators, accessibility advocates, and community health workers.
 
+### 5. Veterans & Military Health Transition Fellow (Open / Priority Fellowship)
+* **What you’ll do**: Develop VA Lighthouse FHIR R4 data connectors, PACT Act toxic exposure / burn pit screener algorithms, and TBI somatic recovery protocols.
+* **Who it’s for**: Military veterans, combat medics, Navy corpsmen, signals/IT specialists, and military spouses transitioning into high-tech healthcare careers.
+* **Skills you’ll gain**: VA Lighthouse API, FHIR R4 Clinical Resources, Agentic AI pairing (Gemini 2.5), and ONC HTI-2 certification.
+
+### 6. Artist-in-Residence & Creative Technologist (Open / Creative Fellow)
+* **What you’ll do**: Design clinical 3D anatomical models, WebGL/Three.js shaders, digital art therapy canvases, narrative graphic storybook chapters, and custom glyphs for the open-source PocketGull Typeface family (SIL OFL 1.1).
+* **Who it’s for**: Digital painters, medical illustrators, calligraphers, font designers, 3D animators, comic artists, and art therapists.
+* **Skills you’ll gain**: Three.js WebGL procedural shaders, Caslon typography engineering, art therapy UX, and narrative medicine design.
+
 ---
 
 ## 💎 Compensation & Recognition

@@ -4,7 +4,8 @@ export type HelpfulListCategory =
   | 'EMERGENCY_HOTLINES'
   | 'PATIENT_RIGHTS_LIVING_WILLS'
   | 'CLINICAL_CHECKLISTS'
-  | 'MEDICARE_FINANCIAL_RESOURCES';
+  | 'MEDICARE_FINANCIAL_RESOURCES'
+  | 'VETERANS_HEALTH_AND_BENEFITS';
 
 export interface IHelpfulListItem {
   id: string;
@@ -55,7 +56,39 @@ export class HelpfulListsService {
       tags: ['Veterans', 'Military', 'Crisis']
     },
 
-    // 2. Patient Rights & Living Wills
+    // 2. Veterans Health & Benefits (VA Lighthouse & PACT Act)
+    {
+      id: 'list_va_lighthouse',
+      category: 'VETERANS_HEALTH_AND_BENEFITS',
+      title: '🎖️ VA Lighthouse Health Record Sync',
+      subtitle: 'US Department of Veterans Affairs (FHIR R4 API)',
+      description: 'Direct SMART-on-FHIR connection allowing veterans to securely import VA medical history and community care records.',
+      contactOrUrl: 'https://www.va.gov/health-care/about-va-health-benefits/',
+      actionLabel: 'Connect VA Health Record',
+      tags: ['VA', 'Veterans', 'FHIR R4', 'Health Record']
+    },
+    {
+      id: 'list_va_pact',
+      category: 'VETERANS_HEALTH_AND_BENEFITS',
+      title: '💨 PACT Act Airborne & Burn Pit Hazard Screener',
+      subtitle: 'VA Presumptive Disability & Toxic Exposure Benefits',
+      description: 'Automated clinical symptom crosswalk matching chronic rhinitis, constrictive bronchiolitis, and fatigue with VA presumptive coverage.',
+      contactOrUrl: 'https://www.va.gov/resources/the-pact-act-and-your-va-benefits/',
+      actionLabel: 'Check PACT Act Presumptive Criteria',
+      tags: ['PACT Act', 'Toxic Exposure', 'Burn Pits', 'Veterans']
+    },
+    {
+      id: 'list_va_somatic',
+      category: 'VETERANS_HEALTH_AND_BENEFITS',
+      title: '🧠 Veteran TBI & Autonomic Somatic Recovery',
+      subtitle: 'Bionic Reading & Vagal Nerve HRV Regulation',
+      description: 'Zero-cognitive-fatigue Bionic Mode (Alt+B) and guided bio-haptic heart rate variability training for combat stress and TBI support.',
+      contactOrUrl: 'https://www.va.gov/wholehealth/',
+      actionLabel: 'Explore Whole Health Modalities',
+      tags: ['TBI', 'PTSD', 'Bionic Mode', 'HRV Biofeedback']
+    },
+
+    // 3. Patient Rights & Living Wills
     {
       id: 'list_caringinfo',
       category: 'PATIENT_RIGHTS_LIVING_WILLS',
@@ -77,7 +110,27 @@ export class HelpfulListsService {
       tags: ['Legal', 'Non-Profit', 'Living Will']
     },
 
-    // 3. Clinical Checklists
+    // 4. Clinical Checklists
+    {
+      id: 'list_who_surgical',
+      category: 'CLINICAL_CHECKLISTS',
+      title: '📋 WHO Surgical Safety Checklist',
+      subtitle: 'World Health Organization Patient Safety',
+      description: 'Global standard 19-point surgical verification matrix preventing wrong-site surgery and perioperative complications.',
+      contactOrUrl: 'https://www.who.int/teams/integrated-health-services/patient-safety/research/safe-surgery',
+      actionLabel: 'View WHO Protocol',
+      tags: ['Surgery', 'Safety', 'Checklist', 'Clinical']
+    },
+    {
+      id: 'list_sepsis_hour1',
+      category: 'CLINICAL_CHECKLISTS',
+      title: '⏱️ Surviving Sepsis Campaign: Hour-1 Bundle',
+      subtitle: 'Society of Critical Care Medicine (SCCM)',
+      description: 'Rapid-sequence protocol: blood cultures, broad-spectrum antimicrobials, lactate measurement, and fluid resuscitation.',
+      contactOrUrl: 'https://pubmed.ncbi.nlm.nih.gov/34543254/',
+      actionLabel: 'View Hour-1 Bundle on PubMed',
+      tags: ['Sepsis', 'Critical Care', 'Emergency']
+    },
     {
       id: 'list_hedis_gaps',
       category: 'CLINICAL_CHECKLISTS',

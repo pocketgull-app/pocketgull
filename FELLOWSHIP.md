@@ -37,6 +37,7 @@ Before writing your first line of production code, you will experience the platf
 | **Phase 2: Edge Intelligence** | Build an interactive WebGPU / WASM symptom scorer | WebGPU shaders, Angular Signals, WASM |
 | **Phase 3: Deep Imaging Vision** | Train an RSNA Knee anomaly slice detector on Kaggle | PyTorch, GroupKFold, DICOM, ASL Loss |
 | **Phase 4: Capstone & Release** | Ship an ONC HTI-2 certified clinical decision tool | OpenAPI 3.1, FHIR R4, Cloud Run, CI/CD |
+| **Phase 5: Creative & Visual Arts** | Design 3D anatomy shaders, font glyphs, or art therapy canvases | Three.js WebGL, Caslon typography, Graphic Storytelling |
 
 ---
 
