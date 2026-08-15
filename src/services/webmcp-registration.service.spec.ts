@@ -125,13 +125,14 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 43 WebMCP agentic tools on modelContext', () => {
+  it('should register all 44 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(43);
+    expect(registeredTools.size).toBe(44);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
+    expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -534,9 +535,32 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
+  it('should register all 44 WebMCP agentic tools on modelContext', () => {
+    service.registerTools({});
+
+    expect(registeredTools.size).toBe(44);
+    expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
+    expect(registeredTools.has('get_healing_postcards')).toBe(true);
+    expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
+    expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
+  });
+
+  it('should execute get_jurisdictional_compliance_and_regulatory_matrix tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('get_jurisdictional_compliance_and_regulatory_matrix');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      countryCode: 'US',
+      stateCode: 'WA'
+    });
+    expect(result.content[0].text).toContain('US-WA');
+    expect(result.content[0].text).toContain('MHMDA');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(43);
+    expect((service as any).mcpControllers.length).toBe(44);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

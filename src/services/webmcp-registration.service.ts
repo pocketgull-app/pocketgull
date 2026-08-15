@@ -27,6 +27,7 @@ import { GreenComputingSustainabilityService } from './green-computing-sustainab
 import { CommunityEcoLocalizationService } from './community-eco-localization.service';
 import { ZenSanctuaryService } from './zen-sanctuary.service';
 import { SsaDisabilityNavigatorService } from './ssa-disability-navigator.service';
+import { GlobalJurisdictionMatrixService } from './global-jurisdiction-matrix.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -60,6 +61,7 @@ export class WebMcpRegistrationService {
   private communityEcoService = inject(CommunityEcoLocalizationService, { optional: true });
   private zenService = inject(ZenSanctuaryService, { optional: true });
   private ssaDisabilityService = inject(SsaDisabilityNavigatorService, { optional: true });
+  private jurisdictionMatrixService = inject(GlobalJurisdictionMatrixService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1399,6 +1401,38 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(ssaDisabilityTool, { signal: ssaDisabilityCtrl.signal });
     this.mcpControllers.push({ name: ssaDisabilityTool.name, controller: ssaDisabilityCtrl });
+
+    // 43. Get Jurisdictional Compliance & Regulatory Matrix
+    const jurisdictionMatrixCtrl = new AbortController();
+    const jurisdictionMatrixTool = {
+      name: 'get_jurisdictional_compliance_and_regulatory_matrix',
+      description: 'Retrieves data privacy statutes, clinical AI device classifications (EU AI Act, FDA, MHRA, PMDA, CDSCO), EHR standards, and mandatory consent requirements for US states (CA, WA, IL, NY, TX) and international jurisdictions (EU, UK, Canada, Australia, Japan, India).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          countryCode: { type: 'string', description: 'ISO 3166-1 alpha-2 country code (e.g. US, EU, GB, CA, AU, JP, IN)' },
+          stateCode: { type: 'string', description: 'US State code if country is US (e.g. CA, WA, IL, NY, TX)' }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        const svc = this.jurisdictionMatrixService || new GlobalJurisdictionMatrixService();
+        if (params?.countryCode) svc.countryCode.set(String(params.countryCode));
+        if (params?.stateCode) svc.stateCode.set(String(params.stateCode));
+
+        const profile = svc.activeProfile();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(profile, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(jurisdictionMatrixTool, { signal: jurisdictionMatrixCtrl.signal });
+    this.mcpControllers.push({ name: jurisdictionMatrixTool.name, controller: jurisdictionMatrixCtrl });
   }
 
   /**
