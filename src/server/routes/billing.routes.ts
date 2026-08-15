@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import Stripe from 'stripe';
 import { rateLimit } from 'express-rate-limit';
 import { Firestore } from '@google-cloud/firestore';
+import { resolveTierFromPriceId } from '../services/tier-config';
 
 const db = new Firestore();
 
@@ -113,10 +114,23 @@ export function createBillingRouter() {
         const checkoutSession = event.data.object as any;
         console.log(`[Billing] Checkout session completed for ${checkoutSession.customer_email}`);
         
+        // Resolve subscription tier from the line item priceId
+        let resolvedTier = 'explorer';
+        if (checkoutSession.subscription) {
+          try {
+            const subscription = await stripe.subscriptions.retrieve(checkoutSession.subscription as string);
+            const priceId = subscription.items?.data?.[0]?.price?.id || '';
+            resolvedTier = resolveTierFromPriceId(priceId);
+          } catch (subErr: any) {
+            console.error('[Billing] Error retrieving subscription for tier resolution:', subErr.message);
+          }
+        }
+
         // Update user/tenant document in Firestore to unlock quota/seats
         if (checkoutSession.customer_email) {
           await db.collection('tenants').doc(checkoutSession.customer_email).set({
             subscriptionStatus: 'active',
+            subscriptionTier: resolvedTier,
             stripeCustomerId: checkoutSession.customer,
             updatedAt: new Date()
           }, { merge: true });
@@ -150,6 +164,24 @@ export function createBillingRouter() {
           const docRef = snapshot.docs[0].ref;
           await docRef.set({
             subscriptionStatus: 'canceled',
+            subscriptionTier: 'explorer',  // Downgrade to free tier
+            updatedAt: new Date()
+          }, { merge: true });
+        }
+        break;
+      case 'customer.subscription.updated':
+        // Tier change (upgrade/downgrade)
+        const updatedSub = event.data.object as any;
+        const updatedPriceId = updatedSub.items?.data?.[0]?.price?.id || '';
+        const newTier = resolveTierFromPriceId(updatedPriceId);
+        console.log(`[Billing] Subscription updated for customer ${updatedSub.customer} → tier: ${newTier}`);
+
+        const updateSnapshot = await db.collection('tenants').where('stripeCustomerId', '==', updatedSub.customer).get();
+        if (!updateSnapshot.empty) {
+          const updateDocRef = updateSnapshot.docs[0].ref;
+          await updateDocRef.set({
+            subscriptionStatus: updatedSub.status === 'active' ? 'active' : updatedSub.status,
+            subscriptionTier: newTier,
             updatedAt: new Date()
           }, { merge: true });
         }
