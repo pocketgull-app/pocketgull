@@ -35,6 +35,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthStatus'
 
+  /evidence/grade:
+    post:
+      summary: Oxford CEBM, Cochrane RoB 2, and GRADE Evidence Appraisal
+      description: Evaluates clinical trial methodology, assigns Oxford Level (1-5), evaluates Cochrane RoB 2 bias domains, and executes Popperian null hypothesis statistical tests.
+      operationId: gradeStudyEvidence
+      tags:
+        - Clinical Evidence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComprehensiveEvaluationRequest'
+      responses:
+        '200':
+          description: Comprehensive evidence evaluation report with actionability tier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClinicalEvidenceReport'
+
   /ml/dicom/analyze:
     post:
       summary: DICOM Medical Imaging Abnormality & Key-Slice Inference
@@ -375,3 +396,107 @@ components:
                   type: string
               year:
                 type: integer
+
+    ComprehensiveEvaluationRequest:
+      type: object
+      required:
+        - study_id
+        - study_title
+        - study_design
+      properties:
+        study_id:
+          type: string
+          example: "NCT01206062"
+        study_title:
+          type: string
+          example: "SPRINT Trial: Intensive vs Standard BP Control"
+        study_design:
+          type: string
+          enum: [systematic_review_rct, individual_rct, prospective_cohort, retrospective_cohort, case_series, expert_opinion]
+        randomized:
+          type: boolean
+          default: true
+        allocation_concealed:
+          type: boolean
+          default: true
+        blinded_assessors:
+          type: boolean
+          default: true
+        missing_outcome_pct:
+          type: number
+          default: 1.5
+        pre_registered_protocol:
+          type: boolean
+          default: true
+        mean_treatment:
+          type: number
+          default: 121.4
+        mean_control:
+          type: number
+          default: 136.2
+        std_treatment:
+          type: number
+          default: 12.1
+        std_control:
+          type: number
+          default: 13.0
+        n_treatment:
+          type: integer
+          default: 4678
+        n_control:
+          type: integer
+          default: 4683
+        metric_name:
+          type: string
+          default: "Systolic Blood Pressure (mmHg)"
+
+    ClinicalEvidenceReport:
+      type: object
+      required:
+        - study_id
+        - study_title
+        - oxford_level
+        - cochrane_rob2
+        - grade_certainty
+        - clinical_actionability_tier
+      properties:
+        study_id:
+          type: string
+        study_title:
+          type: string
+        oxford_level:
+          type: string
+          enum: [Level 1, Level 2, Level 3, Level 4, Level 5]
+        grade_certainty:
+          type: string
+          enum: [High, Moderate, Low, Very Low]
+        clinical_actionability_tier:
+          type: string
+        cochrane_rob2:
+          type: object
+          properties:
+            overall_rob:
+              type: string
+              enum: [Low Risk of Bias, Some Concerns, High Risk of Bias]
+            d1_randomization:
+              type: string
+            d2_deviations:
+              type: string
+            d3_missing_data:
+              type: string
+            d4_measurement:
+              type: string
+            d5_reporting:
+              type: string
+        statistical_validation:
+          type: object
+          properties:
+            test_statistic:
+              type: number
+            p_value:
+              type: number
+            reject_null:
+              type: boolean
+            skeptical_warning:
+              type: string
+              nullable: true

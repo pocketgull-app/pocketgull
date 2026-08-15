@@ -42,6 +42,7 @@ import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils
 import { renderBusinessSiteHtml } from './server/business-site';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
+import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -419,6 +420,8 @@ app.post('/api/audit', manifestRateLimiter, (req, res) => {
 });
 
 app.use('/api/support', supportRouter);
+app.use('/api/v1/agent-builder', manifestRateLimiter, vertexAgentRouter);
+app.use('/api/agent-builder', manifestRateLimiter, vertexAgentRouter);
 
 app.all('/api/python/*splat', manifestRateLimiter, (req, res) => {
   res.status(200).json({
