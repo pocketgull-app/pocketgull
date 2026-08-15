@@ -1,0 +1,63 @@
+name: "Domain Specialist Task / Contractor Scope"
+description: "Define a scoped deliverable for external ML engineers, Flutter developers, or clinical specialists."
+title: "[SPECIALIST-TASK]: "
+labels: ["specialist-task", "contractor-scope"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 🎯 Domain Specialist Work Package
+        Please define the exact contract boundaries, deliverables, and acceptance criteria for this task.
+
+  - type: dropdown
+    id: domain_discipline
+    attributes:
+      label: Domain Discipline
+      description: Select the engineering discipline responsible for this task.
+      options:
+        - "Clinical ML & Imaging (Python, PyTorch, FastDICOM)"
+        - "Mobile Engineering (Flutter, Riverpod, HealthKit)"
+        - "Frontend & 3D Anatomy (Angular 22, Three.js, WebGL)"
+        - "Health Informatics & FHIR (Ruby, FHIR R4, EHR Sync)"
+        - "Clinical CDS & Medical Writing (Literature, Cochrane Reviews)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: contract_spec
+    attributes:
+      label: OpenAPI / Schema Contract Boundary
+      description: Specify the relevant endpoint(s) or data model(s) in `contracts/clinical-ml-openapi.yaml`.
+      placeholder: "e.g., /ml/dicom/analyze endpoint, DicomInferenceResponse model"
+    validations:
+      required: true
+
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: Scoped Deliverables & Technical Requirements
+      description: List the exact outputs, models, widgets, or algorithms to be delivered.
+      placeholder: "- Train PyTorch ResNet-50 on RSNA Knee dataset\n- Achieve OOF AUROC > 0.88\n- Export ONNX FP16 model with unit test suite"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria & Proof of Verification
+      description: What empirical tests or benchmarks must pass before PR merge?
+      placeholder: "1. pytest tests/ passes with 100% test coverage\n2. Memory consumption < 512MB per study\n3. Zero PHI leakage verified by Sentinel Scanner"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: compliance_checklist
+    attributes:
+      label: Enterprise Compliance Checklist
+      options:
+        - label: "Conforms to HIPAA §164.514 Safe Harbor de-identification rules"
+          required: true
+        - label: "Includes deterministic unit tests and empirical benchmark log"
+          required: true
+        - label: "Commit messages follow Conventional Commits (<= 72 char limit)"
+          required: true
