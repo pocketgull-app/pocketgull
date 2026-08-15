@@ -28,6 +28,7 @@ import { CommunityEcoLocalizationService } from './community-eco-localization.se
 import { ZenSanctuaryService } from './zen-sanctuary.service';
 import { SsaDisabilityNavigatorService } from './ssa-disability-navigator.service';
 import { GlobalJurisdictionMatrixService } from './global-jurisdiction-matrix.service';
+import { MandiantClinicalDefenseService } from './mandiant-clinical-defense.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -62,6 +63,7 @@ export class WebMcpRegistrationService {
   private zenService = inject(ZenSanctuaryService, { optional: true });
   private ssaDisabilityService = inject(SsaDisabilityNavigatorService, { optional: true });
   private jurisdictionMatrixService = inject(GlobalJurisdictionMatrixService, { optional: true });
+  private mandiantDefenseService = inject(MandiantClinicalDefenseService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1433,6 +1435,48 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(jurisdictionMatrixTool, { signal: jurisdictionMatrixCtrl.signal });
     this.mcpControllers.push({ name: jurisdictionMatrixTool.name, controller: jurisdictionMatrixCtrl });
+
+    // 44. Query Mandiant Threat Intelligence & Defense Posture
+    const mandiantCtrl = new AbortController();
+    const mandiantTool = {
+      name: 'query_mandiant_threat_intelligence_and_defense',
+      description: 'Queries Google Mandiant threat actor profiles (UNC2596, FIN12, APT41, UNC3944), MITRE ATLAS AI attack vectors, HHS 405(d) HICP alignment, and DFIR incident containment telemetry.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          threatActorId: { type: 'string', description: 'Specific actor ID to query (e.g. MND-UNC2596, MND-FIN12, MND-APT41)' },
+          triggerEmergencyContainment: { type: 'boolean', description: 'Set true to simulate emergency zero-trust containment' }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        const svc = this.mandiantDefenseService || new MandiantClinicalDefenseService();
+        if (params?.triggerEmergencyContainment) {
+          svc.triggerEmergencyContainment();
+        }
+
+        const posture = svc.defensePosture();
+        const actors = params?.threatActorId 
+          ? svc.threatActors().filter(a => a.actorId === params.threatActorId)
+          : svc.threatActors();
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                posture,
+                threatActors: actors,
+                mitreAtlasTactics: svc.atlasTactics(),
+                latestForensicSnapshots: svc.forensicSnapshots()
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(mandiantTool, { signal: mandiantCtrl.signal });
+    this.mcpControllers.push({ name: mandiantTool.name, controller: mandiantCtrl });
   }
 
   /**

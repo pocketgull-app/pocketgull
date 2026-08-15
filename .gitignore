@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Submodules & Local Challenge Repos
+python_example_2026
 python_example_2026/
 
 node_modules
