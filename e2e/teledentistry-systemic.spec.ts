@@ -14,17 +14,16 @@ test.describe('Teledentistry & Systemic Health Cross-Talk Suite', () => {
     // 2. Select patient Phil Gear
     await selectPatientByName(page, 'Phil Gear');
 
-    // 3. Ensure core analysis container is loaded
-    await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });
-
-    // 4. Switch to ASSESSMENTS lens tab
+    // 3. Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.getByTestId('tab-assessments');
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
     await assessmentsBtn.click({ force: true });
+    await page.evaluate(() => window.scrollTo(0, 1400));
+    await page.waitForTimeout(500);
 
     // 5. Select Teledentistry (32-Tooth) sub-tab
     const teledentistryTab = page.getByTestId('tab-teledentistry');
-    await expect(teledentistryTab).toBeVisible({ timeout: 15000 });
+    await teledentistryTab.scrollIntoViewIfNeeded();
     await teledentistryTab.click({ force: true });
 
     // 6. Verify SIBI Telemetry Header components

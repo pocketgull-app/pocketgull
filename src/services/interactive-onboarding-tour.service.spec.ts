@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, beforeEach, expect } from 'vitest';
+import { expect } from 'vitest';
 import { InteractiveOnboardingTourService } from './interactive-onboarding-tour.service';
 
 describe('InteractiveOnboardingTourService Unit Suite', () => {

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import '@angular/compiler';
-import { vi, describe, it, beforeEach, expect } from 'vitest';
+import { vi, expect } from 'vitest';
 import { Injector, runInInjectionContext, NgZone } from '@angular/core';
 import { WebMcpRegistrationService } from './webmcp-registration.service';
 import { PatientStateService } from './patient-state.service';

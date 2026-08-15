@@ -165,6 +165,8 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
       'url': 'https://pocketgull.app',
       'version': APP_VERSION,
       'description': 'Real-time Medical Care Plan Strategy and Live AI Consult Engine WebMCP Tools',
+      'discoveryEndpoint': '/v1/discovery/tools',
+      'note': 'For the complete dynamic tool registry with full JSON-Schema signatures (40+ tools), query GET /v1/discovery/tools.',
       'tools': [
         {
           'name': 'get_patient_state',

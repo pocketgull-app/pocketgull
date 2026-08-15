@@ -359,6 +359,37 @@
     ]
   },
   {
+    "id": "p009",
+    "name": "Homo Sapiens (Male, Pancreatic Oncology & Cachexia, 62y)",
+    "age": 62,
+    "gender": "Male",
+    "vitals": {
+      "bp": "118/74",
+      "hr": "78",
+      "temp": "98.2F",
+      "spO2": "96%",
+      "weight": "142 lbs",
+      "height": "5'10\"",
+      "vitD3": "22 ng/mL",
+      "magnesium": "1.6 mg/dL",
+      "b12": "380 pg/mL",
+      "zinc": "58 mcg/dL"
+    },
+    "history": [
+      {
+        "type": "AnalysisRun",
+        "date": "2026.08.12",
+        "summary": "Pancreatic Oncology & Exocrine Insufficiency Comprehensive Assessment",
+        "report": {
+          "Summary Overview": "###  Pancreatic Oncology & Metabolic Assessment\nPatient presents with Stage III Pancreatic Ductal Adenocarcinoma (PDAC), Exocrine Pancreatic Insufficiency (EPI), pancreatogenic diabetes (Type 3c), and cancer-related cachexia. Primary clinical imperatives: optimize digestive enzyme replacement therapy (PERT) to restore nutrient assimilation, mitigate pro-inflammatory cytokine-driven muscle wasting (IL-6/TNF-alpha), stabilize postprandial glycemic excursions, and manage epigastric pain radiating to the mid-back.",
+          "Functional Protocols": "### Exocrine Replacement & Anti-Cachectic Strategy\n- **PERT Enzyme Protocol**: Pancrelipase (Creon 24,00048,000 USP units Lipase) with first bite of all meals and snacks.\n- **Cytokine-Driven Cachexia Suppression**: High-dose EPA/DHA ethyl esters (3,000mg/day) to downregulate NF-kB & STAT3 muscle degradation signaling.\n- **Glycemic Stabilization**: Metformin (500mg BID) paired with low-glycemic load dietary pattern to maintain HbA1c < 7.0%.",
+          "Nutrition": "### Pancreatic-Sparing & Anti-Cachectic Nutrition\n- **Medium-Chain Triglycerides (MCT)**: 15ml MCT oil daily for direct portal venous absorption bypassing pancreatic lipase.\n- **Hydrolyzed Protein Substrates**: Whey/pea protein isolate (30g/serving) for muscle protein synthesis.\n- **Avoid**: Refined simple sugars, fried high-fat meals, industrial seed oils, and alcohol.",
+          "Precision Nutrients": "### Orthomolecular & Botanical Protocols\n- **Curcumin Phytosome (Meriva)**: 1,000mg BID (STAT3 & NF-kB anti-inflammatory modulation).\n- **Vitamin D3 + K2**: 5,000 IU daily (Immune homeostasis & bone mineral retention).\n- **Zinc Carnosine**: 75mg BID (Gastric & intestinal mucosal integrity).\n- **N-Acetylcysteine (NAC)**: 1,200mg BID (Glutathione pool replenishment)."
+        }
+      }
+    ]
+  },
+  {
     "id": "p_mara_santos",
     "name": "Homo Sapiens (Female, Neurological & Methylation, 34y)",
     "age": 34,
@@ -649,6 +680,25 @@
         "systemicDomain": "Circadian & Neuroendocrine"
       }
     ],
-    "history": []
+    "history": [
+      {
+        "type": "FinalizedPatientSummary",
+        "date": "2026.08.13",
+        "summary": "Patient Summary updated (auto-saved).",
+        "report": {
+          "Summary Overview": "### Clinical Assessment\nAlexander Vance is a 42-year-old male presenting for management of active clinical concerns and functional optimization. \n\n### Current Presentation & Vitals\n- **Vitals**: BP: 122/82, HR: 68 bpm, Temp: 98.6F, SpO2: 98%\n- **Active Concerns**:\n- **General Wellness**: No acute physical issues reported.\n\n### Clinical Priorities\n- **Symptom Management**: Focus on non-pharmacological and targeted interventions for general wellness.\n- **Lifestyle Modification**: Circadian alignment, metabolic optimization, and targeted movement.\n- **Patient Goals**: Optimize metabolic health, synchronize all personal biometrics from Google Health Connect, and reduce sleep latency.\n\n### Plan of Care\n- **Short-term**: Optimize daily movement and address acute stressors/pain.\n- **Long-term**: Functional rehabilitation and systemic health optimization.",
+          "Functional Protocols": "### Diagnostic Workup & Lifestyle\n- **Exercise**: Structured moderate-intensity cardiovascular exercise 3x/week.\n- **Posture & Ergonomics**: Regular movement breaks and ergonomic assessment.\n- **Sleep**: Maintain consistent sleep/wake cycle.",
+          "Nutrition": "### Nutritional Interventions\n- **Anti-inflammatory Diet**: Emphasize whole foods, lean proteins, omega-3 fats, and high-fiber vegetables.\n- **Hydration**: Target 2-3 liters of filtered water daily.\n\n### Local & Wild Sourcing\n- **Standard Supermarkets**: Source wild-caught salmon and mackerel in the seafood aisle. Frozen wild blueberries are highly abundant and cost-effective.\n- **Wild Foraging**: Forage for wild dandelions or stinging nettles in organic, pesticide-free meadows (blanch nettles thoroughly to deactivate stingers; they are rich in iron and vitamin C).",
+          "Precision Nutrients": "### Biomarker Matrix & Suggested Supplements\n- **Magnesium Glycinate**: 300-400mg before bed.\n- **Vitamin D3**: Optimize levels to support immune and bone health.\n- **Omega-3 Fatty Acids**: Anti-inflammatory support.",
+          "Monitoring & Follow-up": "### Immediate (24-72 hours) & Clinical Tracking\n- Monitor vitals and symptom logs.\n- Re-assess functional capacity in 4 weeks.",
+          "Patient Education": "### Understanding Your Health Path\nBy focusing on nutrition, movement, sleep, and targeted supplementation, we can address the root functional causes of your symptoms and build a foundation for long-term health.",
+          "Maternal & Postpartum": "### Perinatal Health Assessment\nAlexander Vance is a 42-year-old male evaluated for perinatal functional optimization and maternal autonomic balance. Maternal blood pressure is 122/82 with stable SpO2 at 98%.\n\n### Perinatal Safety Thresholds\n| Metric | Target Range | Frequency | Action Threshold |\n| :--- | :--- | :--- | :--- |\n| Blood Pressure | < 130/80 mmHg | Daily | > 140/90 mmHg (Preeclampsia Rule-out) |\n| Fetal Movement |  10 kicks / 2 hrs | Daily | < 10 kicks in 2 hours |\n| Postpartum Mood | EPDS Score < 9 | Bi-weekly | EPDS  10 |\n\n### Integrated Care Protocol\n- **Western Support**: Pre-eclampsia monitoring, prenatal iron/folate supplementation.\n- **Eastern TCM**: Ren Mai (Conception Vessel) warming & Shen calming.\n- **Ayurvedic Garbhini**: Sattvic diet, warm sesame Abhyanga, Nadi Shodhana breathing.",
+          "Grow-Thyself Education": "### Ecological Cellular & Garden Metaphors\nYour cellular energy system operates like a living garden ecosystem. Nutrients and hydration are your fertile soil; circadian sleep and morning sunlight provide vital solar energy.\n\n### Ancestral Dietary Heritage & Cultural Swaps\n| Cultural Heritage | Traditional Swap | Bio-Individual Benefit | Local Sourcing Tip |\n| :--- | :--- | :--- | :--- |\n| African Heritage | Collard greens & okra broth | High folate, prebiotic fiber | Local farmers market |\n| Latino/Hispanic | Black beans & avocado oil | Stable glycemic index, oleic acid | Standard grocery produce |\n| East/South Asian | Miso & ginger jujube tea | Probiotic enzymes, digestion | Asian specialty market |\n\n### Daily Micro-Habits (Grow-Thyself Quests)\n- ** Morning Circadian Sun Reset**: 15 min morning light.\n- ** Vagal Tone Breathing**: 6.0 bpm resonant breathing.\n- ** Ancestral Mineralization**: Warm herbal mineral infusion.",
+          "Epigenetic Longevity": "### Actuarial Risk & Biological Age Synthesis\nQuantitative Gompertz-Makeham hazard modeling indicates a biological age delta of **-4.5 years** relative to chronological age (42), projecting **+7.2 Quality-Adjusted Life Years (QALY)** gain.\n\n### CDC 4-Driver Hazard Reduction Matrix\n| Mortality Vector | Baseline Risk | Multi-Paradigm Strategy | Projected Hazard Ratio (HR) |\n| :--- | :--- | :--- | :--- |\n| Cardiovascular | Moderate | HRV 6.0 bpm Vagal Tone + CoQ10 | **0.62** (38% Risk Reduction) |\n| Metabolic | Low-Moderate | Sirtuin Activators + Low Glycemic | **0.55** (45% Risk Reduction) |\n| Neurodegenerative | Low | TCM Shen Harmonization + Neti/Nasya | **0.68** (32% Risk Reduction) |\n| Oncological | Low | Autophagic Rasayana & Anti-inflammatory | **0.74** (26% Risk Reduction) |\n\n### Multi-Paradigm Cell Longevity Protocol\n- **Western Epigenetic Support**: Sirtuin activation (NAD+/NMN), AMPK activation, HRV vagal tone.\n- **Eastern TCM Essence**: Zang-Fu meridian balancing, sleep architecture, Jing preservation.\n- **Ayurvedic Rasayana**: Ama detoxification, Agni metabolic fire, adaptogenic rejuvenation.",
+          "Pre-Conception & Family Health": "### Pre-Conception Parental Epigenetic Matrix\n| Optimization Vector | Targeted Biomarker | Parental Protocol | Fetal Healthspan Impact |\n| :--- | :--- | :--- | :--- |\n| Folate Methylation | MTHFR C677T / Homocysteine | L-5-MTHF (800 mcg) + B12 | Neural tube & DNA fidelity |\n| Maternal Mitochondria | CoQ10 Ubiquinol / Fasting Insulin | Ubiquinol (300 mg) + Alpha-Lipoic | High oocyte cleavage ATP |\n| Paternal Spermatogenesis | Sperm DNA DFI / Zinc | Zinc (30 mg) + Selenium + Carnitine | Lower germline mutational load |\n| Environmental Detox | Heavy metals & Endocrine Disruptors | Filtered water & organic whole foods | Reduced epigenetic transgenerational risk |\n\n### Senior & Geriatric Caretaking Strategy\n- **Autonomic Vagal Tone**: HRV SDNN 6.0 bpm resonant breathing sessions to reduce agitation and improve sleep.\n- **TCM Kidney Jing & Shen**: Warm bone broths, Rehmannia, and Gingko Biloba to nourish brain marrow (*Sui Hai*).\n- **Ayurvedic Vata Pacification**: Warm sesame Abhyanga massage & Bacopa Monnieri (Brahmi) for joint/cognitive support.\n\n### Voluntary ACOG/ACMG Carrier Screening Guidance\nRecommends voluntary pre-conception carrier screening for autosomal recessive traits. Pre-conception optimization ensures offspring inherit optimal epigenetic programming while preserving human dignity."
+        },
+        "annotations": {}
+      }
+    ]
   }
 ]

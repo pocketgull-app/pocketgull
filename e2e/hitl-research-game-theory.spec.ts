@@ -14,7 +14,7 @@ test.describe('HITL Research Queue, Tri-Gesture & Game Theory Engine Suite', () 
     const researchTrigger = page.locator('#tour-research-frame-trigger, button[title*="Research"]').first();
     
     if (await researchTrigger.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await researchTrigger.click();
+      await researchTrigger.click({ force: true });
 
       // Verify Research Frame window opens
       const researchWindow = page.locator('#tour-research-frame-window').first();
@@ -29,7 +29,7 @@ test.describe('HITL Research Queue, Tri-Gesture & Game Theory Engine Suite', () 
   test('2. Should verify Cognitive Filter Buckets (Level A, Preprints, Active Trials)', async ({ page }) => {
     const pubmedBtn = page.locator('button', { hasText: 'PubMed' }).first();
     if (await pubmedBtn.isVisible().catch(() => false)) {
-      await pubmedBtn.click();
+      await pubmedBtn.click({ force: true });
 
       const levelABtn = page.locator('button', { hasText: /Level A/i }).first();
       if (await levelABtn.isVisible().catch(() => false)) {

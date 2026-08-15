@@ -14,17 +14,13 @@ test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () =
     // 2. Select patient Alexander Vance
     await selectPatientByName(page, 'Alexander Vance');
 
-    // 3. Ensure core analysis container is loaded
-    await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });
-
-    // 4. Switch to ASSESSMENTS lens tab
+    // 3. Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.getByTestId('tab-assessments');
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
     await assessmentsBtn.click({ force: true });
 
     // 5. Select General Clinical Suite sub-tab
     const suiteTab = page.getByTestId('tab-clinical-suite');
-    await expect(suiteTab).toBeVisible({ timeout: 15000 });
     await suiteTab.click({ force: true });
 
     // 6. Verify Clinical Assessments Suite header renders

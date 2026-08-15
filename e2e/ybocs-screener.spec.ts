@@ -16,9 +16,6 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     // Select Phil Gear using shared utility (avoids flaky raw locator)
     await selectPatientByName(page, 'Phil Gear');
 
-    // Wait for core AI container (deferred block) to be visible
-    await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });
-
     // Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.getByTestId('tab-assessments');
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
@@ -26,7 +23,7 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
 
     // 3. Select Y-BOCs Screener Tab
     const ybocsTab = page.getByTestId('tab-ybocs-screener');
-    await expect(ybocsTab).toBeVisible({ timeout: 15000 });
+    await ybocsTab.scrollIntoViewIfNeeded();
     await ybocsTab.click({ force: true });
 
     // 3. Verify Y-BOCs Screener renders

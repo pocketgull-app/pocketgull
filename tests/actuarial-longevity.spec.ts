@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { ActuarialLongevityService } from '../src/services/actuarial-longevity.service';
 
 describe('ActuarialLongevityService', () => {

@@ -179,8 +179,10 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
     next();
   });
 
+  router.use(expressJson({ limit: '50mb' }));
+
   // POST /api/ai/metrics
-  router.post('/metrics', expressJson(), async (req: Request, res: Response) => {
+  router.post('/metrics', async (req: Request, res: Response) => {
     try {
       await getApiKey(req);
       const body = req.body as IAiMetricsRequest;

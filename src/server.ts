@@ -41,11 +41,19 @@ import AgonesSDK from '@google-cloud/agones-sdk';
 import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
 import { renderBusinessSiteHtml } from './server/business-site';
 import { supportRouter } from './server/routes/support.routes';
+import { createDiscoveryRouter } from './server/routes/discovery.routes';
 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const browserDistFolder = join(__dirname, '..'); // root dir of dist when built
+const candidateDistFolders = [
+  __dirname,
+  join(__dirname, 'browser'),
+  join(process.cwd(), 'dist'),
+  join(process.cwd(), 'dist', 'browser'),
+  join(__dirname, '..'),
+];
+const browserDistFolder = candidateDistFolders.find(dir => fs.existsSync(join(dir, 'index.html')) || fs.existsSync(join(dir, 'index.csr.html'))) || join(process.cwd(), 'dist');
 
 const studyDocsRoot = resolve(browserDistFolder, 'docs', 'study');
 
@@ -236,6 +244,12 @@ app.use((req, res, next) => {
     if (req.path === '/health' || req.path.startsWith('/api/')) {
       return next();
     }
+    const cleanPath = req.path.split('?')[0];
+    const ext = extname(cleanPath).toLowerCase();
+    const staticExts = new Set(['.svg', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.css', '.js', '.webmanifest', '.woff2', '.woff', '.ttf', '.ico', '.json', '.txt', '.map']);
+    if (staticExts.has(ext)) {
+      return next();
+    }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     return res.send(renderBusinessSiteHtml());
   }
@@ -354,6 +368,23 @@ app.get('/robots.txt', manifestRateLimiter, (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=3600');
   res.sendFile(targetPath);
 });
+
+// Agentic Discovery Endpoints (/.well-known/agent.json + /v1/discovery/*)
+app.get('/.well-known/agent.json', manifestRateLimiter, (req: express.Request, res: express.Response): void => {
+  const candidatePaths = [
+    join(process.cwd(), 'public', '.well-known', 'agent.json'),
+    join(__dirname, '..', 'browser', '.well-known', 'agent.json'),
+    join(rootDir, 'public', '.well-known', 'agent.json')
+  ];
+  const targetPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[candidatePaths.length - 1];
+
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(targetPath);
+});
+
+const discoveryRouter = createDiscoveryRouter();
+app.use(manifestRateLimiter, discoveryRouter);
 
 app.get('/api/config', manifestRateLimiter, (req, res) => {
   res.json({ apiKey: process.env['GEMINI_API_KEY'] || '' });
@@ -544,11 +575,11 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
 
-  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com`;
+  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com https://cloud.google.com`;
 
   const scriptSrcAttr = `'self' 'unsafe-inline' 'unsafe-hashes'`;
-  const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
-  const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
+  const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com data:`;
+  const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com data:`;
   const styleSrcAttr = `'self' 'unsafe-inline'`;
 
   const connectSrc = `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;
@@ -658,15 +689,26 @@ app.use(
   }),
 );
 
+if (fs.existsSync(publicFolder)) {
+  app.use(
+    express.static(publicFolder, {
+      maxAge: '1y',
+      index: false,
+      redirect: false,
+    }),
+  );
+}
+
 // Fallback handler for hashed CSS stylesheet requests from stale browser caches
 app.use(globalLimiter, (req, res, next) => {
-  if (req.path.endsWith('.css') || req.path.includes('.css')) {
+  const cleanPath = req.path.split('?')[0];
+  if (cleanPath === '/styles.css' || (cleanPath.startsWith('/styles-') && cleanPath.endsWith('.css'))) {
     try {
       const candidateDirs = [browserDistFolder, join(browserDistFolder, 'browser'), process.cwd(), join(process.cwd(), 'dist')];
       for (const dir of candidateDirs) {
         if (fs.existsSync(dir)) {
           const files = fs.readdirSync(dir);
-          const activeCss = files.find(f => f.startsWith('styles') && f.endsWith('.css')) || files.find(f => f.endsWith('.css'));
+          const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css')) || files.find(f => f.startsWith('styles') && f.endsWith('.css'));
           if (activeCss) {
             const safeActiveCssPath = securePathResolve(dir, activeCss);
             res.setHeader('Content-Type', 'text/css; charset=utf-8');
@@ -774,6 +816,11 @@ app.use((req, res, next) => {
         let html = await response.text();
         const nonce = res.locals['nonce'] || '';
         
+        // Strip print media + onload from stylesheet link tags so browser doesn't wait on CSP-blocked inline handlers
+        html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)media=["']print["']\s+onload=["'][^"']*["']/gi, '<link$1media="all"');
+        html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)\s+media=["']print["'](?![^>]*class=["']print-only["'])/gi, '<link$1media="all"');
+        html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)\s+onload=["'][^"']*["']/gi, '<link$1');
+
         // Inject nonces into all inline script elements to comply with CSP
         if (nonce) {
           html = html.replace(/<script(?![^>]*nonce=)/g, `<script nonce="${nonce}"`);

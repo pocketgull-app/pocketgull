@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, beforeEach, expect } from 'vitest';
+import { expect } from 'vitest';
 import { WebGpuEdgeAiService } from './webgpu-edge-ai.service';
 
 describe('WebGpuEdgeAiService Unit Suite', () => {

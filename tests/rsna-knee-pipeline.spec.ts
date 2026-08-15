@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { LensRsnaKneeComponent, IFhirR4DiagnosticReport } from '../src/components/lens-rsna-knee.component';
 
 describe('RSNA Knee AI Lens & FHIR R4 Suite', () => {

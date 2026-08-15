@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, beforeEach, expect } from 'vitest';
+import { expect } from 'vitest';
 import { SnomedIcdCrosswalkService } from './snomed-icd-crosswalk.service';
 
 describe('SnomedIcdCrosswalkService Unit Suite', () => {

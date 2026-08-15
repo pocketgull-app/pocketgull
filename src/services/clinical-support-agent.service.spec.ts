@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { expect } from 'vitest';
 import { ClinicalSupportAgentService } from './clinical-support-agent.service';
 
 describe('ClinicalSupportAgentService', () => {

@@ -22,7 +22,8 @@ import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@ang
 try {
   getTestBed().initTestEnvironment(
     BrowserDynamicTestingModule,
-    platformBrowserDynamicTesting()
+    platformBrowserDynamicTesting(),
+    { teardown: { destroyAfterEach: true } }
   );
 } catch {
   // Environment already initialized

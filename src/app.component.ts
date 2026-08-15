@@ -56,6 +56,7 @@ import { PocketgullTypefaceSiteComponent } from './components/shared/pocketgull-
 import { DocsStudyComponent } from './components/docs-study.component';
 import { NavigationShellService } from './services/navigation-shell.service';
 import { BillingDashboardComponent } from './components/billing-dashboard.component';
+import { ApiPricingComponent } from './components/api-pricing.component';
 import { PatientPortalComponent } from './components/patient-portal.component';
 import { ClinicianOnboardingComponent } from './components/clinician-onboarding.component';
 import { GoogleHealthConsentModalComponent } from './components/modals/google-health-consent-modal.component';
@@ -101,7 +102,8 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
     MainHeaderNavComponent,
     IntakeToolbarComponent,
     OnboardingTourOverlayComponent,
-    SupportTicketModalComponent
+    SupportTicketModalComponent,
+    ApiPricingComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -116,6 +118,10 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
 
     @if (showBillingDashboard()) {
       <app-billing-dashboard (close)="showBillingDashboard.set(false)"></app-billing-dashboard>
+    }
+
+    @if (showApiPricing()) {
+      <app-api-pricing (close)="showApiPricing.set(false)"></app-api-pricing>
     }
 
     @if (showPatientPortal()) {
@@ -334,6 +340,7 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
           (openCompanionSync)="showCompanionSyncModal.set(true)"
           (openBioNetworkQr)="showCompanionSyncModal.set(true)"
           (openBillingDashboard)="showBillingDashboard.set(true)"
+          (openApiPricing)="showApiPricing.set(true)"
           (openPatientPortal)="showPatientPortal.set(true)"
           (openClinicianOnboarding)="showClinicianOnboarding.set(true)"
           (openTypefaceSite)="showTypefaceSite.set(true)"
@@ -958,6 +965,7 @@ export class AppComponent implements OnDestroy {
   showTypefaceSite = signal(false);
   showDocsStudy = signal(false);
   showBillingDashboard = signal(false);
+  showApiPricing = signal(false);
   showPatientPortal = signal(false);
   showClinicianOnboarding = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);

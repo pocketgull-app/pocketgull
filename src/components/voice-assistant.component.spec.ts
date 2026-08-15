@@ -1,6 +1,6 @@
 import '@angular/compiler';
 import * as DOMPurify from 'dompurify'; // HIPAA Safe Harbor Sanitization
-import { vi, describe, it, beforeEach, expect } from 'vitest';
+import { vi, expect } from 'vitest';
 import { VoiceAssistantComponent } from './voice-assistant.component';
 import { signal, Injector, runInInjectionContext } from '@angular/core';
 

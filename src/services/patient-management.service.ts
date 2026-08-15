@@ -326,15 +326,18 @@ export class PatientManagementService implements OnDestroy {
           const patient = this.patients().find((p) => p.id === patientId);
           console.log('[PatientManagementService] patientId:', patientId, 'found:', !!patient, 'roster size:', this.patients().length);
           if (patient) {
+            // Defensive: ensure history array exists (stale IndexedDB records may lack it)
+            const history = patient.history ?? [];
+
             // Load the selected patient's data into the main state service
             this.patientState.loadState(patient);
-            this.findAndLoadActivePatientSummary(patient.history);
+            this.findAndLoadActivePatientSummary(history);
 
             // Reset the AI analysis first, then load the selected patient's report
             this.geminiService.resetAIState();
 
-            console.log('[PatientManagementService] selected patient:', patientId, 'history length:', patient.history.length);
-            const latestAnalysis = patient.history.find(
+            console.log('[PatientManagementService] selected patient:', patientId, 'history length:', history.length);
+            const latestAnalysis = history.find(
               (entry) =>
                 entry.type === "AnalysisRun" ||
                 entry.type === "FinalizedPatientSummary",
@@ -358,6 +361,10 @@ export class PatientManagementService implements OnDestroy {
   }
 
   private findAndLoadActivePatientSummary(history: HistoryEntry[]) {
+    if (!history?.length) {
+      this.patientState.updateActivePatientSummary(null);
+      return;
+    }
     // Find the most recent patient summary update
     const latestSummary = history.find(
       (entry) => entry.type === "PatientSummaryUpdate",
@@ -390,7 +397,8 @@ export class PatientManagementService implements OnDestroy {
       this.geminiService.resetAIState();
 
       // Reload the latest analysis so the panel isn't empty after exiting review mode
-      const latestAnalysis = patient.history.find(
+      const history = patient.history ?? [];
+      const latestAnalysis = history.find(
         (entry) =>
           entry.type === "AnalysisRun" ||
           entry.type === "FinalizedPatientSummary",

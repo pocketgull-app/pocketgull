@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, beforeEach, expect } from 'vitest';
+import { expect } from 'vitest';
 import { Injector, runInInjectionContext, PLATFORM_ID, ɵChangeDetectionScheduler as ChangeDetectionScheduler } from '@angular/core';
 import { OnboardingTourOverlayComponent } from './onboarding-tour-overlay.component';
 import { InteractiveOnboardingTourService } from '../services/interactive-onboarding-tour.service';

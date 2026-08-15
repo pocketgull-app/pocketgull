@@ -293,9 +293,9 @@ export function renderBusinessSiteHtml(): string {
               
               <div class="relative">
                 <input type="text" id="searchWidgetTrigger" placeholder="Search medical research, PocketGull Typeface spec, COCOMO II valuation, or HIPAA guidelines..." class="w-full bg-stone-900 border-2 border-stone-700 rounded-2xl px-5 py-4 text-base text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-400 transition-all cursor-text shadow-inner font-pocketgull pr-32" />
-                <button onclick="window.location.href='/app?search=true'" class="absolute right-2 top-2 bottom-2 bg-amber-500 hover:bg-amber-400 text-stone-900 font-bold rounded-xl px-4 transition-colors">
+                <a href="/app?search=true" class="absolute right-2 top-2 bottom-2 bg-amber-500 hover:bg-amber-400 text-stone-900 font-bold rounded-xl px-4 transition-colors flex items-center justify-center">
                   Search App
-                </button>
+                </a>
               </div>
               <p class="mt-3 text-xs text-stone-500 text-center font-medium">Enterprise search is now fully integrated into the Pocket-Gull Clinical Engine via Vertex AI RAG.</p>
             </div>

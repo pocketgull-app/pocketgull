@@ -92,6 +92,15 @@ import { SessionStateService } from '../services/session-state.service';
             <span>💳 Billing & Plan</span>
           </button>
 
+          <!-- API Pricing Button -->
+          <button 
+            type="button" 
+            (click)="openApiPricing.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60 hover:bg-sky-100 dark:hover:bg-sky-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-sky-500/50 outline-none cursor-pointer"
+            title="View API Pricing & Usage">
+            <span>🔌 API Pricing</span>
+          </button>
+
           <!-- Patient Telehealth Portal Button -->
           <button 
             type="button" 
@@ -273,6 +282,7 @@ export class MainHeaderNavComponent {
   openCompanionSync = output<void>();
   openBioNetworkQr = output<void>();
   openBillingDashboard = output<void>();
+  openApiPricing = output<void>();
   openPatientPortal = output<void>();
   openClinicianOnboarding = output<void>();
   openTypefaceSite = output<void>();

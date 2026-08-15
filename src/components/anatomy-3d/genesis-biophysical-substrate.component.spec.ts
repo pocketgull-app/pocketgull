@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, beforeEach, expect, vi } from 'vitest';
+import { expect, vi } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { GenesisBiophysicalSubstrateComponent } from './genesis-biophysical-substrate.component';
 import { WebGpuEdgeAiService } from '../../services/webgpu-edge-ai.service';

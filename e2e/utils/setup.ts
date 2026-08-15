@@ -259,8 +259,9 @@ export async function enterDemoMode(page: Page) {
     await page.waitForTimeout(300).catch(() => {});
   }
 
-  // Final wait for splash screen to disappear
+  // Final wait for splash screen to disappear and hydrate viewport @defer blocks
   await page.locator('.secure-splash-main').waitFor({ state: 'detached', timeout: 15000 }).catch(() => {});
+  await page.evaluate(() => window.scrollTo(0, 600)).catch(() => {});
 }
 
 /** Shared patient selection helper for all E2E specs */

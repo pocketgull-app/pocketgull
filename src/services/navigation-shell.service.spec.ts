@@ -1,5 +1,3 @@
-import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { NavigationShellService } from './navigation-shell.service';
 
 describe('NavigationShellService Suite', () => {
