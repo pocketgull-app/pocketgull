@@ -1,28 +1,28 @@
-# Pocket Gull — FastAPI Sidecar Requirements (hash-pinned for OpenSSF Scorecard supply-chain security)
-# Install: pip install --require-hashes -r requirements.txt
+# Pocket Gull — FastAPI Sidecar Requirements
+# Install: pip install -r requirements.txt
 
 # Core — required
-fastapi==0.141.1 --hash=sha256:bfb91aa2d334c61cb35ba9a116fc123b3d3df31640b801cf57a7a78ec3f603b3 --hash=sha256:e8822fc40db1e1858054d7a949a888695bc9bdce70139178e33bd2871a453ca1
-uvicorn==0.52.0 --hash=sha256:3d887809810b89ed33501bcf0a9aba469b06ecd608158efce04bd6b48d8c9b08 --hash=sha256:ca8876ad6c1983f394157c168b39d52f6dd56dabf5602fa0982751cffc2293ae
-pydantic==2.13.4 --hash=sha256:45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba --hash=sha256:c40756b57adaa8b1efeeced5c196f3f3b7c435f90e84ea7f443901bec8099ef6
-numpy==2.5.1 --hash=sha256:2c889b56fe48b1018f764b0eec8df59ab654e9148aa91faa12596043500de277 --hash=sha256:ab451b59c5643c570974c43aef780703ef1d3b4965d2be07afd530615a9358d1 --hash=sha256:59fda5e192b570217ec2580c96f00e9a7e12ef6866a900eb089b62c1a32545ca
+fastapi==0.141.1
+uvicorn==0.52.0
+pydantic==2.13.4
+numpy==2.5.1
 
 # DataFrame ingestion (P1)
-pandas==3.0.5 --hash=sha256:2946e77e4a53cd248cbde631a12f0e51c8324ce354c3eba4d20147c1ad6f4282 --hash=sha256:71ecc8fb7ed1a7aa4392316b5309a6347e8e7f832f38fd897846b3a1457a9298
+pandas==3.0.5
 
 # FHIR Bundle validation gateway (P1)
-fhir.resources==8.3.0 --hash=sha256:151e6c9b4336e36383cc2aaf2067a6f112a420fce1c7bd289182e55dd950871b --hash=sha256:bdfd1c7bd1b89bfa269c1f435727771f6c632cd857e2848221713b3f8b9f46e8
+fhir.resources==8.3.0
 
 # HDF5 biosignal archive reader (P2)
-h5py==3.8.0 --hash=sha256:533d7dad466ddb7e3b30af274b630eb7c1a6e4ddf01d1c373a0334dc2152110a --hash=sha256:c873ba9fd4fa875ad62ce0e4891725e257a8fe7f5abdbc17e51a5d54819be55c
-scipy==1.18.0 --hash=sha256:7bd21faaf5a1a3b2eff922d02db5f191b99a6518db9078a8fb23169f6d22259a --hash=sha256:265915e79107de9f946b855e50d7470d5893ec3f54b342e1aa6201cbdcd8bb6b
+h5py==3.8.0
+scipy==1.18.0
 
 # ML risk scoring (P3 — only needed when a trained model is present)
-joblib==1.5.3 --hash=sha256:5fc3c5039fc5ca8c0276333a188bbd59d6b7ab37fe6632daa76bc7f9ec18e713 --hash=sha256:8561a3269e6801106863fd0d6d84bb737be9e7631e33aaed3fb9ce5953688da3
-scikit-learn==1.9.0 --hash=sha256:9db6f4d34e68c8899e4cab27fdf8eafe6ed21f2ba52ceb25ea250cd237f8e47b --hash=sha256:f401448645a3e7bc115aa3c094097865155b34bff1cba8101857d9104e99074c
+joblib==1.5.3
+scikit-learn==1.9.0
 
 # File uploads (multipart/form-data support)
-python-multipart==0.0.32 --hash=sha256:ff6d3f776f16878c894e52e107296ffc890e913c611b1a4ec6c44e2821fe2e23 --hash=sha256:be54b7f3fa167bb83e4fcd936b887b708f4e57fe75911c02aebf53efaf8d938e
+python-multipart==0.0.32
 
 # Development
-httpx==0.28.1 --hash=sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad --hash=sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc
+httpx==0.28.1
