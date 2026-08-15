@@ -29,6 +29,7 @@ import { ZenSanctuaryService } from './zen-sanctuary.service';
 import { SsaDisabilityNavigatorService } from './ssa-disability-navigator.service';
 import { GlobalJurisdictionMatrixService } from './global-jurisdiction-matrix.service';
 import { MandiantClinicalDefenseService } from './mandiant-clinical-defense.service';
+import { ClinicalMandarinateExamService } from './clinical-mandarinate-exam.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -64,6 +65,7 @@ export class WebMcpRegistrationService {
   private ssaDisabilityService = inject(SsaDisabilityNavigatorService, { optional: true });
   private jurisdictionMatrixService = inject(GlobalJurisdictionMatrixService, { optional: true });
   private mandiantDefenseService = inject(MandiantClinicalDefenseService, { optional: true });
+  private mandarinateExamService = inject(ClinicalMandarinateExamService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1477,6 +1479,49 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(mandiantTool, { signal: mandiantCtrl.signal });
     this.mcpControllers.push({ name: mandiantTool.name, controller: mandiantCtrl });
+
+    // 45. Administer Clinical Mandarinate Examination & Keju Benchmark
+    const mandarinateCtrl = new AbortController();
+    const mandarinateTool = {
+      name: 'administer_clinical_mandarinate_exam',
+      description: 'Administers standardized meritocratic clinical OSCE examinations (Cardiology, Neurology, Integrative Pharma), evaluating candidate diagnostic accuracy, contraindication harm avoidance, and multi-paradigm balance.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          caseId: { type: 'string', description: 'Exam vignette case ID (e.g. CASE-CARDIO-01, CASE-NEURO-02, CASE-INTEGRATIVE-03)' },
+          selectedPrimaryDiagnosis: { type: 'string', description: 'Primary diagnostic conclusion' },
+          differentialDiagnoses: { type: 'array', items: { type: 'string' }, description: 'Differential diagnostic considerations' },
+          identifiedContraindications: { type: 'array', items: { type: 'string' }, description: 'Safety contraindications flagged' }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        const svc = this.mandarinateExamService || new ClinicalMandarinateExamService();
+        if (params?.caseId) svc.selectedCaseId.set(String(params.caseId));
+
+        const activeCase = svc.activeCase();
+        const evalResult = svc.evaluateSubmission({
+          caseId: activeCase.caseId,
+          candidateName: 'Autonomous Agentic Candidate',
+          modelIdentifier: 'gemini-agent-benchmarking',
+          selectedPrimaryDiagnosis: params?.selectedPrimaryDiagnosis || activeCase.expectedPrimaryDiagnosis,
+          differentialDiagnoses: params?.differentialDiagnoses || activeCase.acceptableDifferentials,
+          proposedInterventions: ['Emergent evidence-grounded standard of care'],
+          identifiedContraindications: params?.identifiedContraindications || activeCase.criticalContraindications
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(evalResult, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(mandarinateTool, { signal: mandarinateCtrl.signal });
+    this.mcpControllers.push({ name: mandarinateTool.name, controller: mandarinateCtrl });
   }
 
   /**

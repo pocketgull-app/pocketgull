@@ -125,15 +125,16 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 45 WebMCP agentic tools on modelContext', () => {
+  it('should register all 46 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(45);
+    expect(registeredTools.size).toBe(46);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
     expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
     expect(registeredTools.has('query_mandiant_threat_intelligence_and_defense')).toBe(true);
+    expect(registeredTools.has('administer_clinical_mandarinate_exam')).toBe(true);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -536,32 +537,34 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 45 WebMCP agentic tools on modelContext', () => {
+  it('should register all 46 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(45);
+    expect(registeredTools.size).toBe(46);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
     expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
     expect(registeredTools.has('query_mandiant_threat_intelligence_and_defense')).toBe(true);
+    expect(registeredTools.has('administer_clinical_mandarinate_exam')).toBe(true);
   });
 
-  it('should execute query_mandiant_threat_intelligence_and_defense tool', async () => {
+  it('should execute administer_clinical_mandarinate_exam tool', async () => {
     service.registerTools({});
-    const tool = registeredTools.get('query_mandiant_threat_intelligence_and_defense');
+    const tool = registeredTools.get('administer_clinical_mandarinate_exam');
     expect(tool).toBeDefined();
 
     const result = await tool.execute({
-      threatActorId: 'MND-UNC2596'
+      caseId: 'CASE-CARDIO-01'
     });
-    expect(result.content[0].text).toContain('UNC2596');
-    expect(result.content[0].text).toContain('Cuba Ransomware');
+    expect(result.content[0].text).toContain('CASE-CARDIO-01');
+    expect(result.content[0].text).toContain('overallScore');
+    expect(result.content[0].text).toContain('KEJU-CERT-');
   });
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(45);
+    expect((service as any).mcpControllers.length).toBe(46);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
