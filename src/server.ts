@@ -290,14 +290,29 @@ app.use((req, res, next) => {
   next();
 });
 
-// US Regional Access Enforcement Guard
+// US Regional Access Enforcement Guard & Territorial Sovereignty
+const ALLOWED_US_JURISDICTIONS = new Set(['US', 'PR', 'VI', 'GU', 'AS', 'MP', 'UM', 'ZZ']);
+
+app.get('/api/geo/jurisdiction', (req, res) => {
+  const rawCountry = String(req.headers['x-appengine-country'] || req.headers['cf-ipcountry'] || req.headers['x-client-geo-location'] || 'US').toUpperCase().trim();
+  const isUs = ALLOWED_US_JURISDICTIONS.has(rawCountry);
+  res.json({
+    country: rawCountry,
+    isUsJurisdiction: isUs,
+    activeFramework: isUs ? 'US_FEDERAL_HIPAA_SSA_CMS' : 'INTERNATIONAL_WHO_GDPR'
+  });
+});
+
 app.use((req, res, next) => {
   const country = req.headers['x-appengine-country'] || req.headers['cf-ipcountry'] || req.headers['x-client-geo-location'];
-  if (country && typeof country === 'string' && country.toUpperCase() !== 'US' && country.toUpperCase() !== 'ZZ') {
-    return res.status(403).json({
-      error: 'Access Restricted',
-      message: 'Pocket-Gull Clinical Intelligence Service is currently restricted to the United States region.'
-    });
+  if (country && typeof country === 'string') {
+    const normCountry = country.toUpperCase().trim();
+    if (!ALLOWED_US_JURISDICTIONS.has(normCountry)) {
+      return res.status(403).json({
+        error: 'Access Restricted',
+        message: 'Pocket-Gull Clinical Intelligence Service is currently restricted to the United States region.'
+      });
+    }
   }
   next();
 });
