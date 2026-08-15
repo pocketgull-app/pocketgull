@@ -1,6 +1,7 @@
 name: "CodeQL Analysis"
 
-permissions: read-all
+permissions:
+  contents: read
 
 on:
   push:

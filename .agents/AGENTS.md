@@ -131,6 +131,18 @@
 8. **Sub-Second Efficiency Latency Optimization**: For competition efficiency tracks, sample 8 central key slices, export PyTorch models to ONNX Runtime with FP16, and use multi-threaded asynchronous DICOM I/O pools.
 9. **Semantic Versioning (`SemVer v1.0.0`) & Clean Identifiers**: Protect competitive edge by using clean, standardized public version tags without exposing internal proprietary recipe names on public leaderboards.
 10. **Continuous Automated Verification (`vitest` / `pytest`)**: Write automated unit tests covering preprocessors, matrix math formulas, and DICOM tensor transformations across edge cases (empty text reports, missing headers, NaNs).
+11. **Kaggle Code Competition Submission Protocol & Zero-Crash Rules**:
+    - **Hardware & Accelerator Conformance**: Use `enable_gpu: false` (CPU mode) or explicit T4 GPU settings (`gpu_t4`). NEVER use un-gated GPU settings that default to P100 GPUs, which are prohibited by competition submission rules.
+    - **Immediate Baseline Disk Output**: Always write a baseline `submission.csv` to disk at the very beginning of the submission cell *before* starting any ML inference loop.
+    - **Defensive Symbol & Engine Guards**: Wrap imports in `try-except` blocks and check `if 'engine' in globals() and engine is not None:` before calling inference methods to prevent unhandled `NameError` crashes.
+    - **ASCII Terminal Hygiene**: Use plain text status tags (`[OK]`, `[WARN]`) instead of non-ASCII emojis (`✅`, `⚠️`) in notebook `print()` calls to prevent Papermill `UnicodeEncodeError` failures.
+    - **In-Place Schema Preservation**: Load candidate `sample_submission.csv` directly, modify target columns in-place, format floats with `float_format='%.6f'`, and preserve exact row index order.
+    - **Memory Hygiene**: Call `gc.collect()` and `torch.cuda.empty_cache()` every 100 studies to prevent RAM/CUDA OOM during hidden test evaluation.
+12. **Kaggle Tagging & Platform Asset Governance (March 2026 Guidelines Compliance)**:
+    - **Synthetic Dataset Tagging Mandatory**: Per Kaggle's Synthetic Dataset Etiquette, any dataset containing partially or fully synthetic clinical consult vectors or LLM-generated weak labels MUST include the `synthetic` tag.
+    - **Standardized Tag Taxonomy**: All published Kaggle models, datasets, utility scripts, and notebooks MUST import and utilize `get_standard_tags()` from `scripts/kaggle_tags.py` to enforce unified metadata tags (`CLINICAL_TAGS`, `AI_ML_TAGS`, `PROJECT_TAGS`).
+    - **Usability 10 Checklist**: Every published Model Hub entry or Dataset MUST generate complete `model-metadata.json` / `dataset-metadata.json` containing explicit data dictionaries, open source licenses (`Apache 2.0` / `CC-BY-4.0`), and HIPAA §164.514(b)(2) Safe Harbor verification to maintain a perfect 10/10 usability rating.
+    - **Zero Spam & Self-Promotion**: Strictly prohibit upvote begging, off-topic self-promotion, plagiarism, or attaching unrelated datasets/models to notebooks. All shared work must provide genuine educational, research, or competition modeling value.
 ## Anti-Surveillance & Ephemeral Data Sovereignty Standards
 - **Default to Edge Computation**: All real-time telemetry calculations, biophysical equations, and clinical symptom classifications MUST run locally on the client device via WebAssembly (WASM), WebGPU, or client-side Web Workers (`OfflineEdgeAiService`). External API calls are reserved for explicit, user-initiated AI consults.
 - **Prohibition of Third-Party Trackers**: Zero third-party analytics pixels, fingerprinting scripts, or passive telemetry pingers (Google Analytics, Segment, Mixpanel, Meta Pixel) are permitted.

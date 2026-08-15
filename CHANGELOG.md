@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.21.0] - 2026-08-14
+
+**PyTorch 2.5D Multiple Instance Learning (MIL) Knee Abnormality Detection Pipeline (v4.0.0) with Gemini-Derived Weak Labels**
+
+### Added
+- **[Gemini Weak Label Extractor & Dataset] (`contests/rsna_knee_2026/extract_labels_gemini.py`)**:
+  - Extracted weak labels from 4,349 free-text radiology reports with 100% success rate (0 errors).
+  - Ensembled with 58 expert gold-standard annotations into `train_labels_gemini.csv`.
+- **[PyTorch 2.5D MIL Training Notebook] (`contests/rsna_knee_2026/rsna_knee_train.ipynb`)**:
+  - Automatically generated via `update_training_notebook.py` using 5-fold GroupKFold cross-validation.
+  - Multi-stage learning: Stage 1 pretraining on all 4,407 weak/gold labels (weighted by extraction confidence), Stage 2 fine-tuning on gold-standard labels.
+  - Extends slice-level ResNet18 features via a learnable Multiple Instance Learning (MIL) attention pooling head.
+- **[PyTorch 2.5D MIL Inference Notebook] (`contests/rsna_knee_2026/rsna_knee_submission_v4.ipynb`)**:
+  - Automatically generated via `update_submission_notebook_v4.py` supporting 5-fold model checkpoint ensembling.
+  - Zero-internet constraint-compliant (`pretrained=False`) for offline Kaggle scoring.
+  - Built-in defensive verification writing baseline template to `submission.csv` to ensure zero scoring failures.
+- **[Kaggle CLI Metadata Configs] (`contests/rsna_knee_2026/kernel-metadata-train.json`)**:
+  - Configured pipeline metadata files mapping data bundles, competition datasets, and accelerator requirements.
+
+### Fixed
+- **[Kaggle Path Resolution Mismatch]**:
+  - Fixed candidate search lists in `find_images_dir()` and `find_test_images_root()` to resolve paths containing the `/competitions/` prefix on Kaggle. Corrects the all-zero tensor loading failure that caused validation AUC to hit the 0.5000 wall.
+
 ## [1.20.0] - 2026-08-13
 
 **AthenaHealth & Epic SMART-on-FHIR CAPI Launch Engine, Autonomous Support AI Agent (`support@pocketgull.app`), FDA 520(o) Safety Guardrails, Porkbun DNS MX Verification, 40 WebMCP Autonomous Tools, and $3.12M COCOMO II Pitch Deck Valuation**

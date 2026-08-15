@@ -2,7 +2,7 @@ import express from 'express';
 import compression from 'compression';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
-import { dirname, join, resolve, relative, isAbsolute } from 'path';
+import { dirname, join, resolve, relative, isAbsolute, extname } from 'path';
 import { rateLimit } from 'express-rate-limit';
 import fs from 'fs';
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
@@ -52,10 +52,7 @@ io.on('connection', (socket) => {
   });
 });
 app.use(compression());
-app.use((req, res, next) => {
-  res.setHeader('Content-Security-Policy', "default-src 'self' data: blob: 'unsafe-inline' 'unsafe-eval' http: https: ws: wss:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:; connect-src 'self' http: https: ws: wss:;");
-  next();
-});
+
 app.use('/api', cors()); // Enable CORS for API routes so Flutter apps can sync data
 
 const apiLimiter = rateLimit({
@@ -93,6 +90,12 @@ app.use((req, res, next) => {
 
   if (isBusinessSite) {
     if (req.path === '/health' || req.path.startsWith('/api/')) {
+      return next();
+    }
+    const cleanPath = req.path.split('?')[0];
+    const ext = extname(cleanPath).toLowerCase();
+    const staticExts = new Set(['.svg', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.css', '.js', '.webmanifest', '.woff2', '.woff', '.ttf', '.ico', '.json', '.txt', '.map']);
+    if (staticExts.has(ext)) {
       return next();
     }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -361,22 +364,24 @@ app.use((req, res, next) => {
   // X-Frame-Options
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   
-  // Content Security Policy - prevents inline scripts and restricts resource loading
-  res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; " +
-    "worker-src 'self' blob:; " +
-    `script-src 'self' 'nonce-${nonce}'; ` +
-    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
-    "img-src 'self' https: data:; " +
-    "font-src 'self'; " +
-    "connect-src 'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://eutils.ncbi.nlm.nih.gov https://generativelanguage.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com; " +
-    "frame-src 'self' https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app; " +
-    "frame-ancestors 'self'; " +
-    "object-src 'none'; " +
-    "base-uri 'self'; " +
-    "form-action 'self'"
-  );
+  const isProd = process.env['NODE_ENV'] === 'production';
+  const isDev = !isProd;
+  const scriptSrc = isDev
+    ? `'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com`
+    : `'self' 'nonce-${nonce}' 'unsafe-inline' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com`;
+
+  const scriptSrcAttr = `'self' 'unsafe-inline' 'unsafe-hashes'`;
+  const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
+  const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
+  const styleSrcAttr = `'self' 'unsafe-inline'`;
+
+  const connectSrc = isDev
+    ? `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`
+    : `'self' http://localhost:9399 http://localhost:4000 http://localhost:4200 http://127.0.0.1:9399 ws://localhost:9399 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;
+
+  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; script-src-attr ${scriptSrcAttr}; style-src ${styleSrc}; style-src-elem ${styleSrcElem}; style-src-attr ${styleSrcAttr}; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org; connect-src ${connectSrc}; frame-src 'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
+
+  res.setHeader('Content-Security-Policy', csp);
   
   // X-Content-Type-Options - prevents MIME type sniffing
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -790,6 +795,11 @@ app.get(/(.*)/, (req, res) => {
         const scriptTag = `<script nonce="${nonce}" px-api-key="true">window.GEMINI_API_KEY = "${geminiApiKeyCached}";</script>\n</head>`;
         html = html.replace('</head>', scriptTag);
       }
+      // Strip print media + onload from stylesheet link tags so browser doesn't wait on CSP-blocked inline handlers
+      html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)media=["']print["']\s+onload=["'][^"']*["']/gi, '<link$1media="all"');
+      html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)\s+media=["']print["'](?![^>]*class=["']print-only["'])/gi, '<link$1media="all"');
+      html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)\s+onload=["'][^"']*["']/gi, '<link$1');
+
       const nonce = res.locals.nonce || '';
       if (nonce) {
         html = html.replace(/<script(?![^>]*nonce=)/g, `<script nonce="${nonce}"`);

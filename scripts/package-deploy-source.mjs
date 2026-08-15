@@ -41,7 +41,33 @@ if (fs.existsSync(outputPath)) {
   fs.unlinkSync(outputPath);
 }
 
-const tarCmd = `tar -czf ${outputPath} ${projectItems.join(' ')}`;
+const excludes = [
+  'node_modules',
+  '*node_modules*',
+  '.venv',
+  '*venv*',
+  'dist',
+  '*dist*',
+  '.angular',
+  '*.angular*',
+  'tmp',
+  '.temp',
+  'test-results',
+  'playwright-report',
+  '__pycache__',
+  '*.pyc',
+  'contests',
+  '*contests*',
+  'scratch',
+  '*scratch*',
+  '*.tar.gz',
+  '*.tgz',
+  '.git',
+  '.dart_tool',
+  'build'
+].map(e => `--exclude=${e}`).join(' ');
+
+const tarCmd = `tar -czf "${outputPath}" ${excludes} ${projectItems.join(' ')}`;
 execSync(tarCmd, { cwd: rootDir, stdio: 'inherit' });
 
 const stats = fs.statSync(outputPath);

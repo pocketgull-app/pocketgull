@@ -1,30 +1,56 @@
+# Core exclusions
 .git
 .gcloudignore
-!Dockerfile
-#!include:.gitignore
 node_modules/
 .angular/
 dist/
 tmp/
-scratch/
 .venv/
 venv/
+**/.venv/
+**/venv/
 **/__pycache__/
 *.pyc
-test-results/
-playwright-report/
+pocketgull_api/.venv/
+pocketgull_api/venv/
+pocketgull_api/__pycache__/
+
+# IDE / editor
 .vscode/
 .idea/
+.continue/
+.gemini/
+.agents/
+
+# Testing
+test-results/
+playwright-report/
+.playwright_temp/
+.lighthouseci/
+cov/
+coverage/
+.nyc_output/
+
+# Dart / Flutter (not needed for server)
 pubspec.yaml
 pubspec.lock
 melos.yaml
+.dart_tool/
 pocketgull_flutter/
-companion-apps/patient_app/
-companion-apps/provider_app/
-companion-apps/packages/
+
+# Companion apps node_modules
+companion-apps/**/node_modules/
+companion-apps/**/.angular/
+companion-apps/**/dist/
+
+# ML contests and training data
 contests/
 models/
 trained_models/
+python_example_2026/
+sandbox/
+
+# ML model weights
 *.onnx
 *.safetensors
 *.pt
@@ -33,6 +59,8 @@ trained_models/
 *.h5
 *.hdf5
 *.joblib
+
+# PhysioNet data
 physio*/
 physionet*/
 *physio*model*
@@ -46,14 +74,15 @@ trained_physio_models/
 *.hea
 *.atr
 *.rec
-source.tgz
-build_source.tgz
-deploy.tar.gz
-!Dockerfile
-!package.json
-!docs/study/package.json
-!companion-apps/avs-therapy/package.json
-!pocketgull_api/package.json
-!src/
-!src/**
 
+# Deploy artifacts / tarballs
+*.tar.gz
+*.tgz
+scratch/
+
+# Logs / temp
+*.log
+logs/
+.temp/
+.DS_Store
+Thumbbs.db

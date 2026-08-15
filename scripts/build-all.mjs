@@ -19,7 +19,7 @@ delete cleanEnv.npm_package_json;
 delete cleanEnv.NPM_PREFIX;
 
 console.log('🔤 Downloading Google Fonts and compiling local fonts.css...');
-execSync('node scripts/download-fonts.js', {
+execSync(`node "${path.resolve(rootDir, 'scripts/download-fonts.js')}"`, {
   cwd: rootDir,
   env: cleanEnv,
   stdio: 'inherit'
@@ -27,7 +27,7 @@ execSync('node scripts/download-fonts.js', {
 console.log('✅ Local font asset pipeline ready.\n');
 
 console.log('🧹 [Zero Agent] Executing Pre-Build Console Integrity & Type Safety Audit...');
-execSync('node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit', {
+execSync(`node "${path.resolve(rootDir, 'node_modules/typescript/lib/tsc.js')}" -p "${path.resolve(rootDir, 'tsconfig.json')}" --noEmit`, {
   cwd: rootDir,
   env: cleanEnv,
   stdio: 'inherit'
@@ -35,7 +35,7 @@ execSync('node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit', {
 console.log('✅ [Zero Agent] TypeScript & Console Integrity Audit Passed (0 Errors).\n');
 
 console.log('🕯️ [Beacon Agent] Running Sentinel Security & Bundle Budget Pre-Audit...');
-execSync('node scripts/sentinel_security_guard.mjs', {
+execSync(`node "${path.resolve(rootDir, 'scripts/sentinel_security_guard.mjs')}"`, {
   cwd: rootDir,
   env: cleanEnv,
   stdio: 'inherit'
@@ -43,7 +43,7 @@ execSync('node scripts/sentinel_security_guard.mjs', {
 console.log('✅ [Beacon Agent] Pre-Build Performance & Security Guard Passed.\n');
 
 console.log('Building Angular SSR app...');
-execSync('node node_modules/@angular/cli/bin/ng.js build', {
+execSync(`node "${path.resolve(rootDir, 'node_modules/@angular/cli/bin/ng.js')}" build`, {
   cwd: rootDir,
   env: cleanEnv,
   stdio: 'inherit'

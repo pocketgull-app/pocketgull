@@ -115,9 +115,35 @@ $$\text{AI-Agentic Pair Schedule} \approx 3.5 \text{ Calendar Months (1 Lead Eng
 
 ---
 
-## 🏰 5. Intellectual Property & Competitive Moat Matrix
+## 🏛️ 6. EHR Marketplace Fee Structure & Startup Capital Expenditure (CapEx) Budget
 
-Pocket-Gull holds 18 distinct technical trade secrets, philosophical frameworks, and patentable software architecture assets:
+To deploy Pocket Gull into enterprise health system workflows, the following fee structures govern EHR marketplace partnerships (Oracle Health / Cerner Code Console & Epic Showroom):
+
+### A. Oracle Health API Access & Partner Network (OPN) Fee Schedule
+
+| Oracle Health Service / Tier | Annual Fee | Access & Value-Added Services |
+| :--- | :---: | :--- |
+| **Consumer Access Tier (Certified Open FHIR APIs)** | **$0** | Free API access for consumer apps attesting to CARIN Alliance Code of Conduct (`myhealthapplication.com`). |
+| **OPN Annual Membership** | **$500** | Required base tier to join Oracle PartnerNetwork and access commercial partner tracks. |
+| **Oracle Health Validated Integration** | **$3,000** | Formal Oracle Validated Integration badge, co-marketing rights, and client referral directory listing. |
+| **Oracle Health Millennium Dedicated Environment Access** | **$5,000** | Dedicated enterprise sandbox environment access for custom client integration testing. |
+| **Total Oracle Validated Integration Track** | **$8,500 / yr** | Complete commercial enterprise validation suite. |
+
+### B. Startup Capital Expenditure (CapEx) Allocation Model
+
+Pocket Gull supports a dual-tier capital expenditure roadmap, allowing zero-capital bootstrapping before scaling into full enterprise partner tiers:
+
+| CapEx Category | Item Description | Tier 1: Bootstrap Launch | Tier 2: Enterprise Marketplace |
+| :--- | :--- | :---: | :---: |
+| **EHR Marketplace** | Oracle Health OPN & Integration Fees | $0 (Consumer Access) | $8,500 / yr |
+| **EHR Marketplace** | Epic Showroom Partner Listing | $0 (Open Epic) | $1,500 / yr |
+| **Cloud Compute** | GCP Cloud Run (`minScale: 0` scale-to-zero) | $2.40 / yr ($0.20/mo) | $120.00 / yr |
+| **Domain & Identity** | `pocketgull.app` DNS & SSL certificates | $15.00 / yr | $15.00 / yr |
+| **Security & Compliance** | OpenSSF 10/10 & ClamAV automated audits | $0 (In-house) | $500.00 / yr |
+| **Total Startup CapEx** | **Total Required Initial Capital** | **~$17.40** | **~$10,650.00 / yr** |
+
+> **Key Financial Takeaway**: Pocket Gull's architecture allows launching immediately at **$17.40 total capital expenditure**, maintaining 94% gross margins while delaying the **$10,650/yr enterprise partner fee schedule** until initial clinician subscription ARR reaches >$50,000.
+
 
 | IP Innovation | Component / Architecture | Defensibility & Moat |
 | :--- | :--- | :--- |

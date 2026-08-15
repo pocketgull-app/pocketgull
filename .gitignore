@@ -281,6 +281,9 @@ deploy_bundle.tar.gz
 deploy_source.tar.gz
 pocketgull-v*.tar.gz
 
+# Temporary scratch files
+scratch/
+
 
 
 
