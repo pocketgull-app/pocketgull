@@ -194,7 +194,7 @@
     "jsdom": "^30.0.1",
     "lighthouse": "^13.0.3",
     "lint-staged": "^17.0.5",
-    "puppeteer": "^24.39.0",
+    "puppeteer": "^25.0.0",
     "typescript": "~5.5.4",
     "vite": "^7.3.5 || ^8.0.0",
     "vitest": "^4.1.6",
