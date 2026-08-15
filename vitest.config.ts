@@ -18,7 +18,8 @@ export default defineConfig({
         ],
         include: [
             './src/**/*.spec.ts',
-            './tests/**/*.spec.ts'
+            './tests/**/*.spec.ts',
+            './packages/**/*.spec.ts'
         ],
         exclude: [
             '../*',
