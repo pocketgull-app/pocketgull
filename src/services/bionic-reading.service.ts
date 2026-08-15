@@ -7,11 +7,39 @@ export class BionicReadingService {
   /** Global toggle signal for Bionic Reading Mode across Research Frame and Care Plans. */
   readonly isBionicReadingEnabled = signal<boolean>(false);
 
+  /** Notification signal for assistive screen readers when mode changes. */
+  readonly accessibilityNotice = signal<string>('');
+
+  constructor() {
+    this.initKeyboardShortcutListener();
+  }
+
+  /**
+   * Initializes global keyboard shortcut (Alt + B / Option + B) for rapid accessibility toggle.
+   */
+  private initKeyboardShortcutListener(): void {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+    window.addEventListener('keydown', (event: KeyboardEvent) => {
+      // Check for Alt+B or Option+B without active input/textarea focus
+      if (event.altKey && (event.key === 'b' || event.key === 'B')) {
+        const target = event.target as HTMLElement | null;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+          return;
+        }
+        event.preventDefault();
+        this.toggleBionicReading();
+      }
+    });
+  }
+
   /**
    * Toggles Bionic Reading Mode globally.
    */
   toggleBionicReading(): void {
-    this.isBionicReadingEnabled.set(!this.isBionicReadingEnabled());
+    const nextState = !this.isBionicReadingEnabled();
+    this.isBionicReadingEnabled.set(nextState);
+    this.accessibilityNotice.set(`Bionic Reading mode ${nextState ? 'enabled (40% fixation active)' : 'disabled'}`);
   }
 
   /**
@@ -19,6 +47,7 @@ export class BionicReadingService {
    */
   setBionicReading(enabled: boolean): void {
     this.isBionicReadingEnabled.set(enabled);
+    this.accessibilityNotice.set(`Bionic Reading mode ${enabled ? 'enabled (40% fixation active)' : 'disabled'}`);
   }
 
   /**
@@ -59,4 +88,3 @@ export class BionicReadingService {
     });
   }
 }
-

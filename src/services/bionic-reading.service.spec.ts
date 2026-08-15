@@ -45,5 +45,20 @@ describe('BionicReadingService', () => {
   it('should handle empty input gracefully', () => {
     expect(service.formatToBionicHtml('')).toBe('');
   });
+
+  it('should emit accessibility notice on state change', () => {
+    service.toggleBionicReading();
+    expect(service.accessibilityNotice()).toContain('enabled');
+    service.toggleBionicReading();
+    expect(service.accessibilityNotice()).toContain('disabled');
+  });
+
+  it('should toggle on Alt+B keydown event', () => {
+    const event = new KeyboardEvent('keydown', { key: 'b', altKey: true });
+    window.dispatchEvent(event);
+    expect(service.isBionicReadingEnabled()).toBe(true);
+    window.dispatchEvent(event);
+    expect(service.isBionicReadingEnabled()).toBe(false);
+  });
 });
 
