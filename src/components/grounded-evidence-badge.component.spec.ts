@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { expect } from 'vitest';
 import { GroundedEvidenceBadgeComponent } from './grounded-evidence-badge.component';
 import { VertexAgentBuilderService } from '../services/ai/vertex-agent-builder.service';
 

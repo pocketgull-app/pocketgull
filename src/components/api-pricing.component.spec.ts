@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { expect, vi } from 'vitest';
 import { ApiPricingComponent } from './api-pricing.component';
 import { HttpClient } from '@angular/common/http';
 import { runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
