@@ -1,0 +1,58 @@
+name: "Kaggle Platform Synchronization & Badge Engine"
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  kaggle-sync:
+    name: Sync Kaggle Models, Datasets & Utility Scripts
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          disable-sudo: false
+          egress-policy: audit
+
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.12'
+
+      - name: Install Kaggle CLI
+        run: |
+          python -m pip install --upgrade pip
+          pip install kaggle
+
+      - name: Validate Dry-Run Metadata Pipelines
+        run: |
+          python scripts/kaggle_push_model.py --owner philgear --dry-run
+          python scripts/kaggle_push_dataset.py --owner philgear --dry-run
+          python scripts/kaggle_sync_utility.py --owner philgear --dry-run
+          python scripts/kaggle_sync_notebooks.py --owner philgear --dry-run
+
+      - name: Deploy to Kaggle Model Hub & Datasets
+        if: ${{ secrets.KAGGLE_USERNAME != '' && secrets.KAGGLE_KEY != '' }}
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          python scripts/kaggle_push_model.py --owner philgear
+          python scripts/kaggle_push_dataset.py --owner philgear
+          python scripts/kaggle_sync_utility.py --owner philgear
+          python scripts/kaggle_sync_notebooks.py --owner philgear

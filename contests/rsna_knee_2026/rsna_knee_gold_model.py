@@ -326,6 +326,29 @@ if HAS_TORCH:
             }
             return logits, attn_maps
 
+    def configure_lora_adapters(model: nn.Module, r: int = 16, alpha: int = 32, dropout: float = 0.05) -> Tuple[nn.Module, bool]:
+        """
+        Configures Low-Rank Adaptation (LoRA) adapters for vision transformer and NLP linear projection layers.
+        Reduces trainable parameters by ~95% while preventing catastrophic forgetting.
+        """
+        try:
+            from peft import LoraConfig, get_peft_model
+            config = LoraConfig(
+                r=r,
+                lora_alpha=alpha,
+                target_modules=["cross_attn", "vision_fc", "text_fc", "attention_V", "attention_U"],
+                lora_dropout=dropout,
+                bias="none"
+            )
+            peft_model = get_peft_model(model, config)
+            return peft_model, True
+        except Exception:
+            # Fallback parameter freezing if peft package is missing/unsupported in local environment
+            for name, param in model.named_parameters():
+                if not any(k in name for k in ["classifier", "gate", "cross_attn"]):
+                    param.requires_grad = False
+            return model, False
+
 
 if __name__ == "__main__":
     print("=" * 65)
@@ -358,8 +381,15 @@ if __name__ == "__main__":
         
         logits, attns = model(sag, cor, ax, text)
         print(f"\n[OK] PyTorch GoldMultimodalKneeNet Active!")
-        print(f"     Model Parameters: {sum(p.numel() for p in model.parameters()):,}")
+        print(f"     Total Parameters: {sum(p.numel() for p in model.parameters()):,}")
+        
+        # Configure LoRA Adapters
+        lora_model, is_peft = configure_lora_adapters(model, r=16, alpha=32, dropout=0.05)
+        trainable_params = sum(p.numel() for p in lora_model.parameters() if p.requires_grad)
+        print(f"     LoRA Adapters Configured! (PEFT Active: {is_peft})")
+        print(f"     Trainable Parameters: {trainable_params:,} ({trainable_params / sum(p.numel() for p in model.parameters()) * 100:.2f}%)")
         print(f"     Logits Shape: {logits.shape}")
         print(f"     Sagittal Attention Map Shape: {attns['sagittal_attn'].shape}")
     else:
         print("\n[INFO] PyTorch runtime skipped locally (Sklearn fallback active for Windows local testing).")
+

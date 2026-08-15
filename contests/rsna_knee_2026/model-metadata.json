@@ -1,0 +1,33 @@
+{
+  "ownerSlug": "philgear",
+  "slug": "rsna-knee-convnext-large",
+  "title": "Pocketgull RSNA Knee ConvNeXt-Large",
+  "subtitle": "Pre-trained ConvNeXt-Large multi-label abnormality detector for 3D DICOM knee MRI series.",
+  "description": "# Pocketgull RSNA Knee ConvNeXt-Large Model\n\n## Model Overview\nThis model repository contains pre-trained multi-label abnormality classification weights trained on de-identified 3D knee MRI scans as part of Pocketgull's clinical decision intelligence pipeline.\n\n## Architecture & Training\n- **Backbone**: ConvNeXt-Large (FP16 ONNX export support)\n- **Loss Function**: Asymmetric Loss (ASL) with gamma_minus=4.0, gamma_plus=1.0\n- **Validation Protocol**: 5-Fold GroupKFold anchored by patient_id\n\n## HIPAA & Safe Harbor Compliance\nAll data and model inputs comply strictly with HIPAA \u00a7164.514(b)(2) Safe Harbor de-identification rules.\n",
+  "licenseName": "Apache 2.0",
+  "isPrivate": false,
+  "framework": "pytorch",
+  "tags": [
+    "agentic-ai",
+    "asymmetric-loss",
+    "biomedical",
+    "clinical-cds",
+    "computer-vision",
+    "deep-learning",
+    "dicom",
+    "fhir",
+    "gemini",
+    "group-kfold",
+    "healthcare",
+    "hipaa-safe-harbor",
+    "med-skeptic",
+    "medical-imaging",
+    "mri",
+    "onnx",
+    "physionet",
+    "pocketgull",
+    "pytorch",
+    "rsna",
+    "socratic-reasoning"
+  ]
+}

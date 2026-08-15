@@ -20,7 +20,7 @@ for j, col_name in enumerate(target_cols):
     data[col_name] = preds_matrix[:, j % 12].astype(np.float64)
 
 sub_df = pd.DataFrame(data)[[id_col] + target_cols]
-out_file = r'c:\Users\philg\Pocketgull\pocketgull\contests\rsna_knee_2026\test_out_submission.csv'
+out_file = r'c:\Users\philg\Pocketgull\pocketgull\contests\rsna_knee_2026\submission.csv'
 sub_df.to_csv(out_file, index=False, float_format='%.6f')
 
 print(f"Generated submission shape: {sub_df.shape}")
