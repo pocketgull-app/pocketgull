@@ -829,6 +829,17 @@ app.use(globalLimiter, (req, res, next) => {
  * Handle all other requests by rendering the Angular application.
  */
 app.use((req, res, next) => {
+  // Host routing: Serve the Vertex Gen AI App Builder Business Site for pocketgull.com
+  const host = req.hostname || req.get('host') || '';
+  const isBusinessDomain = host.includes('pocketgull.com') && !host.startsWith('api.');
+  const isBusinessPath = req.path === '/business' || req.path === '/enterprise' || req.path === '/app-builder' || req.path === '/portal';
+
+  if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderBusinessSiteHtml());
+  }
+
   const engine = getAngularApp();
   if (!engine) return next();
   engine
