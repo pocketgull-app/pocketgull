@@ -8,6 +8,10 @@ import { SlackIntegrationCardComponent } from './slack-integration-card.componen
 import { PopulationHealthEquityHubComponent } from './population-health-equity-hub.component';
 import { TeledentistryOdontogramComponent } from './teledentistry-odontogram.component';
 import { JoyPlayfulFlourishingCardComponent } from './joy-playful-flourishing-card.component';
+import { SsaDisabilityNavigatorComponent } from './shared/ssa-disability-navigator.component';
+import { JurisdictionMatrixCardComponent } from './shared/jurisdiction-matrix-card.component';
+import { MandiantCyberDefenseCardComponent } from './shared/mandiant-cyber-defense-card.component';
+import { ClinicalMandarinateExamCardComponent } from './shared/clinical-mandarinate-exam-card.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -43,7 +47,11 @@ export interface IWorkbenchToolStatus {
     SlackIntegrationCardComponent,
     PopulationHealthEquityHubComponent,
     TeledentistryOdontogramComponent,
-    JoyPlayfulFlourishingCardComponent
+    JoyPlayfulFlourishingCardComponent,
+    SsaDisabilityNavigatorComponent,
+    JurisdictionMatrixCardComponent,
+    MandiantCyberDefenseCardComponent,
+    ClinicalMandarinateExamCardComponent
   ],
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl max-w-7xl mx-auto space-y-6">
@@ -185,6 +193,34 @@ export interface IWorkbenchToolStatus {
                 class="px-3.5 py-2 rounded-lg transition cursor-pointer">
           ☀️ Joy & Play Matrix
         </button>
+        <button (click)="activeWorkbenchTab.set('ssa')"
+                [class.bg-blue-600]="activeWorkbenchTab() === 'ssa'"
+                [class.text-white]="activeWorkbenchTab() === 'ssa'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'ssa'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          🏛️ SSA Disability Navigator
+        </button>
+        <button (click)="activeWorkbenchTab.set('jurisdiction')"
+                [class.bg-indigo-600]="activeWorkbenchTab() === 'jurisdiction'"
+                [class.text-white]="activeWorkbenchTab() === 'jurisdiction'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'jurisdiction'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          🌐 Global & State Compliance
+        </button>
+        <button (click)="activeWorkbenchTab.set('mandiant')"
+                [class.bg-red-600]="activeWorkbenchTab() === 'mandiant'"
+                [class.text-white]="activeWorkbenchTab() === 'mandiant'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'mandiant'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          🛡️ Mandiant Threat Defense
+        </button>
+        <button (click)="activeWorkbenchTab.set('mandarinate')"
+                [class.bg-amber-600]="activeWorkbenchTab() === 'mandarinate'"
+                [class.text-zinc-950]="activeWorkbenchTab() === 'mandarinate'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'mandarinate'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          📜 Keju AI Exam Arena
+        </button>
       </div>
 
       @if (activeWorkbenchTab() === 'tools') {
@@ -324,6 +360,14 @@ export interface IWorkbenchToolStatus {
         <app-teledentistry-odontogram />
       } @else if (activeWorkbenchTab() === 'joy') {
         <app-joy-playful-flourishing-card />
+      } @else if (activeWorkbenchTab() === 'ssa') {
+        <app-ssa-disability-navigator />
+      } @else if (activeWorkbenchTab() === 'jurisdiction') {
+        <app-jurisdiction-matrix-card />
+      } @else if (activeWorkbenchTab() === 'mandiant') {
+        <app-mandiant-cyber-defense-card />
+      } @else if (activeWorkbenchTab() === 'mandarinate') {
+        <app-clinical-mandarinate-exam-card />
       }
 
     </div>
@@ -333,7 +377,7 @@ export class ClinicalToolWorkbenchComponent {
   readonly stateMachine = inject(DoubleFlipStateMachineService);
   private readonly haptics = inject(BioHapticFeedbackService);
 
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy'>('tools');
+  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate'>('tools');
   readonly intakeDirectiveQuery = signal<string>('');
 
   readonly tools = signal<IWorkbenchToolStatus[]>([

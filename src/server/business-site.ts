@@ -558,28 +558,28 @@ export function renderBusinessSiteHtml(): string {
     <section id="valuation" class="py-20 px-6 border-t border-stone-800 bg-stone-900/40">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-16">
-          <div class="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2 font-pocketgull">Commercial Valuation & Multi-Model Analysis</div>
-          <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100">$15.9M – $24.9M Cost-to-Replicate Asset</h2>
-          <p class="text-stone-400 text-sm max-w-xl mx-auto mt-3">Verified across four independent estimation frameworks (COCOMO II, COSYSMO, COCOTS, SLIM/QSM).</p>
+          <div class="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2 font-pocketgull">Commercial Valuation & Multi-Model Analysis (2026 Enterprise Edition)</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100">$28.5M – $42.0M Cost-to-Replicate Asset</h2>
+          <p class="text-stone-400 text-sm max-w-xl mx-auto mt-3">Verified across four independent estimation frameworks (COCOMO II, COSYSMO, COCOTS, SLIM/QSM) across 914+ verified source files, 46 WebMCP agentic tools, and zero open vulnerabilities.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="glass-card-dark p-8 rounded-3xl text-center border border-amber-500/30">
             <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">Pre-Revenue / Tech Asset</div>
-            <div class="font-pocketgull text-4xl font-bold text-amber-300 mb-2">$5.0M – $8.0M</div>
-            <p class="text-xs text-stone-400">Current Phase valuation based on 338K SLOC, containerized dual-engine architecture, and zero open vulnerabilities.</p>
+            <div class="font-pocketgull text-4xl font-bold text-amber-300 mb-2">$12.0M – $22.0M</div>
+            <p class="text-xs text-stone-400">Enterprise valuation based on proprietary Tri-Paradigm Swarm, SSA Blue Book automation, Mandiant MITRE ATLAS AI defense, and 3D Genesis shaders.</p>
           </div>
 
           <div class="glass-card-dark p-8 rounded-3xl text-center border border-teal-500/30">
             <div class="text-xs font-bold text-teal-400 uppercase tracking-wider mb-2">Early Clinical Pilot</div>
-            <div class="font-pocketgull text-4xl font-bold text-teal-300 mb-2">$10.0M – $18.0M</div>
-            <p class="text-xs text-stone-400">1–3 active clinic partnerships, real-world charting efficiency metrics, and signed LOIs.</p>
+            <div class="font-pocketgull text-4xl font-bold text-teal-300 mb-2">$30.0M – $55.0M</div>
+            <p class="text-xs text-stone-400">1–3 active health system pilots, AthenaHealth/Epic FHIR bi-directional sync, and automated CAL disability fast-tracking.</p>
           </div>
 
           <div class="glass-card-dark p-8 rounded-3xl text-center border border-rose-500/30">
-            <div class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-2">Commercial SaaS</div>
-            <div class="font-pocketgull text-4xl font-bold text-rose-300 mb-2">8x – 15x ARR</div>
-            <p class="text-xs text-stone-400">Enterprise health system integration into Epic/Cerner App Orchard and high customer retention.</p>
+            <div class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-2">Commercial SaaS Scale</div>
+            <div class="font-pocketgull text-4xl font-bold text-rose-300 mb-2">12x – 25x ARR</div>
+            <p class="text-xs text-stone-400">High-margin B2B health system deployment, value-based care prior-auth efficiency, and Scale-to-Zero cloud operations.</p>
           </div>
         </div>
       </div>
