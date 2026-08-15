@@ -1,0 +1,377 @@
+openapi: 3.1.0
+info:
+  title: Pocket-Gull Clinical Intelligence & ML Microservice Contract
+  description: >
+    Official contract-driven API specification for the Pocket-Gull decoupled Clinical ML sidecar.
+    Used for automated code generation of TypeScript (@pocketgull/sdk), Python (Pydantic v2),
+    and Flutter/Dart (freezed) client libraries for domain specialists.
+  version: 1.0.0
+  contact:
+    name: Pocket-Gull Engineering Team
+    url: https://github.com/pocketgull-app
+    email: engineering@pocketgull.app
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://127.0.0.1:8000/api/v1
+    description: Local ML Sidecar Service
+  - url: https://api.pocketgull.app/v1
+    description: Production Google Cloud Run Gateway
+
+paths:
+  /health:
+    get:
+      summary: Service Health & Telemetry Status
+      operationId: getServiceHealth
+      tags:
+        - System
+      responses:
+        '200':
+          description: Service is operational
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+  /ml/dicom/analyze:
+    post:
+      summary: DICOM Medical Imaging Abnormality & Key-Slice Inference
+      description: Ingests normalized DICOM pixel arrays or study series and returns abnormality probabilities with spatial coordinate bounding.
+      operationId: analyzeDicomStudy
+      tags:
+        - Medical Imaging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DicomInferenceRequest'
+      responses:
+        '200':
+          description: Abnormality scores and key-slice coordinates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DicomInferenceResponse'
+        '422':
+          description: Validation error in DICOM tensor shape or metadata
+
+  /ml/predict/readmission:
+    post:
+      summary: 30-Day Hospital Readmission Risk Score
+      description: Computes clinical readmission probability using tree-ensemble and calibrated logistic scoring.
+      operationId: predictReadmissionRisk
+      tags:
+        - Predictive Clinical ML
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReadmissionRiskRequest'
+      responses:
+        '200':
+          description: Calibrated readmission risk prediction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadmissionRiskResponse'
+
+  /ml/predict/outbreak:
+    post:
+      summary: Epidemiological Outbreak & Symptom Cluster Detection
+      description: Computes localized spatial-temporal anomaly metrics across patient cohorts.
+      operationId: detectOutbreakRisk
+      tags:
+        - Epidemiology
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutbreakDetectionRequest'
+      responses:
+        '200':
+          description: Outbreak cluster detection results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutbreakDetectionResponse'
+
+  /fhir/bundle/validate:
+    post:
+      summary: FHIR R4 Bundle Strict Structural Validation
+      description: Validates sanitized clinical JSON against FHIR R4 standard schemas without persisting PHI.
+      operationId: validateFhirBundle
+      tags:
+        - Health Informatics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FhirBundlePayload'
+      responses:
+        '200':
+          description: FHIR validation results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FhirValidationResponse'
+
+  /intelligence/literature/search:
+    get:
+      summary: Evidence-Grounded Biomedical Literature Search
+      description: Queries PubMed and Europe PMC with Cochrane Risk-of-Bias filters.
+      operationId: searchBiomedicalLiterature
+      tags:
+        - Clinical Evidence
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: minEvidenceLevel
+          in: query
+          schema:
+            type: string
+            enum: [Level_A_RCT, Level_B_Cohort, Level_C_Consensus]
+            default: Level_A_RCT
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 5
+      responses:
+        '200':
+          description: Curated literature citations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiteratureSearchResponse'
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required:
+        - status
+        - version
+        - uptime_seconds
+      properties:
+        status:
+          type: string
+          example: "healthy"
+        version:
+          type: string
+          example: "1.0.0"
+        uptime_seconds:
+          type: number
+          example: 3600.5
+        cuda_available:
+          type: boolean
+          example: false
+
+    DicomInferenceRequest:
+      type: object
+      required:
+        - study_id
+        - series_uid
+        - num_slices
+      properties:
+        study_id:
+          type: string
+          example: "study_001849"
+        series_uid:
+          type: string
+          example: "1.2.840.10008.1.2.4"
+        modality:
+          type: string
+          enum: [MR, CT, CR, DX]
+          default: MR
+        num_slices:
+          type: integer
+          example: 32
+        pixel_array_b64:
+          type: string
+          description: Optional base64-encoded compressed FP16 tensor array
+
+    DicomInferenceResponse:
+      type: object
+      required:
+        - study_id
+        - abnormality_probability
+        - key_slice_index
+        - confidence_interval
+      properties:
+        study_id:
+          type: string
+        abnormality_probability:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          example: 0.842
+        key_slice_index:
+          type: integer
+          example: 16
+        findings:
+          type: array
+          items:
+            type: string
+          example: ["Anterior Cruciate Ligament Tear", "Joint Effusion"]
+        confidence_interval:
+          type: object
+          properties:
+            lower:
+              type: number
+              example: 0.79
+            upper:
+              type: number
+              example: 0.89
+
+    ReadmissionRiskRequest:
+      type: object
+      required:
+        - age
+        - charlson_comorbidity_index
+        - prior_admissions_12m
+      properties:
+        age:
+          type: integer
+          example: 64
+        charlson_comorbidity_index:
+          type: integer
+          example: 3
+        prior_admissions_12m:
+          type: integer
+          example: 2
+        systolic_bp:
+          type: number
+          example: 138.0
+        hba1c:
+          type: number
+          example: 7.4
+
+    ReadmissionRiskResponse:
+      type: object
+      required:
+        - risk_score
+        - risk_tier
+        - top_contributing_factors
+      properties:
+        risk_score:
+          type: number
+          format: float
+          example: 0.284
+        risk_tier:
+          type: string
+          enum: [LOW, MODERATE, HIGH, CRITICAL]
+          example: MODERATE
+        top_contributing_factors:
+          type: array
+          items:
+            type: string
+          example: ["Prior Admissions in 12 Months", "Elevated HbA1c"]
+
+    OutbreakDetectionRequest:
+      type: object
+      required:
+        - postal_code
+        - symptom_cluster
+        - timestamp_iso
+      properties:
+        postal_code:
+          type: string
+          example: "98101"
+        symptom_cluster:
+          type: array
+          items:
+            type: string
+          example: ["fever", "respiratory_distress", "anosmia"]
+        timestamp_iso:
+          type: string
+          format: date-time
+
+    OutbreakDetectionResponse:
+      type: object
+      required:
+        - cluster_anomaly_score
+        - outbreak_alert_level
+      properties:
+        cluster_anomaly_score:
+          type: number
+          example: 0.72
+        outbreak_alert_level:
+          type: string
+          enum: [BASELINE, ELEVATED, WARNING, OUTBREAK]
+          example: ELEVATED
+
+    FhirBundlePayload:
+      type: object
+      required:
+        - resourceType
+        - type
+        - entry
+      properties:
+        resourceType:
+          type: string
+          enum: [Bundle]
+        type:
+          type: string
+          enum: [collection, transaction, batch]
+        entry:
+          type: array
+          items:
+            type: object
+
+    FhirValidationResponse:
+      type: object
+      required:
+        - is_valid
+        - errors
+      properties:
+        is_valid:
+          type: boolean
+          example: true
+        errors:
+          type: array
+          items:
+            type: string
+        parsed_resource_count:
+          type: integer
+          example: 4
+
+    LiteratureSearchResponse:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 1
+        results:
+          type: array
+          items:
+            type: object
+            required:
+              - title
+              - doi
+              - evidence_tier
+            properties:
+              title:
+                type: string
+              doi:
+                type: string
+              evidence_tier:
+                type: string
+              authors:
+                type: array
+                items:
+                  type: string
+              year:
+                type: integer

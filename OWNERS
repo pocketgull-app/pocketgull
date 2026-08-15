@@ -4,7 +4,9 @@
 
 approvers:
   - philgear
+  - pocketgull-app/core-maintainers
   - leads@pocketgull.app
 
 labels:
   - monorepo-root
+

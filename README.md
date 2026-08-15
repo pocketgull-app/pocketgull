@@ -13,8 +13,8 @@
   <a href="https://pocketgull.app"><img src="https://img.shields.io/badge/Live_App-pocketgull.app-0ea5e9?style=flat-square&logo=google-cloud&logoColor=white" alt="Live App"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-orange?style=flat-square" alt="License: MIT"></a>
   <img src="https://img.shields.io/badge/version-v1.17.0-blue?style=flat-square" alt="Version">
-  <a href="https://github.com/philgear/pocketgull/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/philgear/pocketgull/deploy.yml?style=flat-square&label=deploy" alt="Deploy"></a>
-  <a href="https://github.com/philgear/pocketgull/actions/workflows/codeql-analysis.yml"><img src="https://img.shields.io/github/actions/workflow/status/philgear/pocketgull/codeql-analysis.yml?style=flat-square&label=CodeQL" alt="CodeQL"></a>
+  <a href="https://github.com/pocketgull-app/pocketgull/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/pocketgull-app/pocketgull/deploy.yml?style=flat-square&label=deploy" alt="Deploy"></a>
+  <a href="https://github.com/pocketgull-app/pocketgull/actions/workflows/codeql-analysis.yml"><img src="https://img.shields.io/github/actions/workflow/status/pocketgull-app/pocketgull/codeql-analysis.yml?style=flat-square&label=CodeQL" alt="CodeQL"></a>
 </p>
 
 <p align="center">
@@ -23,8 +23,8 @@
   <img src="https://img.shields.io/badge/Three.js-v0.185-000000?style=flat-square&logo=threedotjs&logoColor=white" alt="Three.js">
   <img src="https://img.shields.io/badge/Gemini-3.5_Flash-4285F4?style=flat-square&logo=google&logoColor=white" alt="Gemini">
   <a href="https://bestpractices.coreinfrastructure.org/projects/13644"><img src="https://img.shields.io/badge/CII-passing-brightgreen?style=flat-square" alt="CII Best Practices"></a>
-  <a href="https://securityscorecards.dev/viewer/?uri=github.com/philgear/pocketgull"><img src="https://img.shields.io/badge/OpenSSF-10%2F10-blueviolet?style=flat-square" alt="OpenSSF Scorecard"></a>
-  <a href="https://github.com/philgear/pocketgull"><img src="https://img.shields.io/badge/SLSA-Level_3-blueviolet?style=flat-square&logo=googlecloud" alt="SLSA 3"></a>
+  <a href="https://securityscorecards.dev/viewer/?uri=github.com/pocketgull-app/pocketgull"><img src="https://img.shields.io/badge/OpenSSF-10%2F10-blueviolet?style=flat-square" alt="OpenSSF Scorecard"></a>
+  <a href="https://github.com/pocketgull-app/pocketgull"><img src="https://img.shields.io/badge/SLSA-Level_3-blueviolet?style=flat-square&logo=googlecloud" alt="SLSA 3"></a>
   <a href="https://doi.org/10.5281/zenodo.20647514"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20647514.svg" alt="DOI"></a>
   <a href="https://orcid.org/0009-0008-1372-5381"><img src="https://img.shields.io/badge/ORCID-0009--0008--1372--5381-A6C900?style=flat-square&logo=orcid&logoColor=white" alt="ORCID"></a>
 </p>
@@ -219,7 +219,7 @@ graph TB
 
 ```bash
 # Clone
-git clone https://github.com/philgear/pocketgull.git
+git clone https://github.com/pocketgull-app/pocketgull.git
 cd pocketgull
 
 # Install dependencies

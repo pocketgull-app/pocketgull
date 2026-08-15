@@ -1,9 +1,22 @@
-# Default: Phil reviews everything
-* @philgear
+# Pocket-Gull Enterprise Code Ownership Matrix
+# Default: Executive review
+* @philgear @pocketgull-app/core-maintainers
 
-# Security-sensitive files require explicit review
-/.github/ @philgear
-/Dockerfile @philgear
-/SECURITY.md @philgear
-/pocketgull_api/Dockerfile* @philgear
-/cloudrun-redirects/Dockerfile @philgear
+# Clinical ML Sidecar & AI Intelligence
+/pocketgull_api/ @philgear @pocketgull-app/clinical-ai
+/src/services/ai/ @philgear @pocketgull-app/clinical-ai
+/contests/ @philgear @pocketgull-app/clinical-ai
+
+# Mobile & Companion Apps
+/pocketgull_flutter/ @philgear @pocketgull-app/mobile-team
+/companion-apps/ @philgear @pocketgull-app/mobile-team
+
+# Contracts & API Specifications
+/contracts/ @philgear @pocketgull-app/core-maintainers
+
+# Infrastructure, CI/CD, and Security
+/.github/ @philgear @pocketgull-app/security-leads
+/Dockerfile @philgear @pocketgull-app/security-leads
+/SECURITY.md @philgear @pocketgull-app/security-leads
+/cloudrun-redirects/ @philgear @pocketgull-app/security-leads
+

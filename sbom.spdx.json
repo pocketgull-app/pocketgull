@@ -2,21 +2,21 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "pocket-gull-v1.15.0-SBOM",
-  "documentNamespace": "https://github.com/philgear/pocketgull/spdx/pocket-gull-1.15.0",
+  "name": "pocket-gull-v1.21.0-SBOM",
+  "documentNamespace": "https://github.com/pocketgull-app/pocketgull/spdx/pocket-gull-1.21.0",
   "creationInfo": {
     "creators": [
       "Tool: Pocket-Gull Automated Sentinel Guard",
       "Organization: Pocket-Gull Engineering"
     ],
-    "created": "2026-08-12T10:27:40.562Z"
+    "created": "2026-08-15T14:03:19.897Z"
   },
   "packages": [
     {
       "name": "pocket-gull",
       "SPDXID": "SPDXRef-Package-Root",
-      "versionInfo": "1.15.0",
-      "downloadLocation": "git+https://github.com/philgear/pocketgull.git",
+      "versionInfo": "1.21.0",
+      "downloadLocation": "git+https://github.com/pocketgull-app/pocketgull.git",
       "filesAnalyzed": false,
       "licenseConcluded": "MIT",
       "description": "Insight beneath the surface. Real-time medical Care Plan Strategy and Live AI Consult engine powered by Google Gemini."
