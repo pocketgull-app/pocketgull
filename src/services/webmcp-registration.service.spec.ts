@@ -125,12 +125,13 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 42 WebMCP agentic tools on modelContext', () => {
+  it('should register all 43 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(42);
+    expect(registeredTools.size).toBe(43);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
+    expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -519,9 +520,23 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('postcardsCount');
   });
 
+  it('should execute evaluate_ssa_disability_and_blue_book_listings tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_ssa_disability_and_blue_book_listings');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      claimantAge: 58,
+      primaryDiagnosis: 'Chronic Heart Failure',
+      ejectionFractionPercent: 25
+    });
+    expect(result.content[0].text).toContain('SSA-FHIR-PROV-');
+    expect(result.content[0].text).toContain('4.02');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(42);
+    expect((service as any).mcpControllers.length).toBe(43);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

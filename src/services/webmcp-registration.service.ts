@@ -26,6 +26,7 @@ import { WhoCdcHealthEquityService } from './who-cdc-health-equity.service';
 import { GreenComputingSustainabilityService } from './green-computing-sustainability.service';
 import { CommunityEcoLocalizationService } from './community-eco-localization.service';
 import { ZenSanctuaryService } from './zen-sanctuary.service';
+import { SsaDisabilityNavigatorService } from './ssa-disability-navigator.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -58,6 +59,7 @@ export class WebMcpRegistrationService {
   private greenService = inject(GreenComputingSustainabilityService, { optional: true });
   private communityEcoService = inject(CommunityEcoLocalizationService, { optional: true });
   private zenService = inject(ZenSanctuaryService, { optional: true });
+  private ssaDisabilityService = inject(SsaDisabilityNavigatorService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1357,6 +1359,46 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(healingPostcardsTool, { signal: healingPostcardsCtrl.signal });
     this.mcpControllers.push({ name: healingPostcardsTool.name, controller: healingPostcardsCtrl });
+
+    // 42. Evaluate SSA Disability & Blue Book Listings (20 CFR Part 404 App 1)
+    const ssaDisabilityCtrl = new AbortController();
+    const ssaDisabilityTool = {
+      name: 'evaluate_ssa_disability_and_blue_book_listings',
+      description: 'Evaluates patient eligibility under Social Security Administration (SSA) Blue Book 20 CFR Part 404 App 1, screens Compassionate Allowances (CAL), and synthesizes Residual Functional Capacity (RFC).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          claimantAge: { type: 'number', description: 'Claimant age in years' },
+          primaryDiagnosis: { type: 'string', description: 'Primary impairment diagnosis' },
+          secondaryDiagnosis: { type: 'string', description: 'Secondary medical condition' },
+          ejectionFractionPercent: { type: 'number', description: 'Left ventricular ejection fraction percentage' },
+          fev1Liters: { type: 'number', description: 'Pulmonary FEV1 in liters' },
+          isAmbulatoryAssistanceRequired: { type: 'boolean', description: 'Whether bilateral upper-limb ambulatory device is required' }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        const svc = this.ssaDisabilityService || new SsaDisabilityNavigatorService();
+        if (params?.claimantAge !== undefined) svc.claimantAge.set(Number(params.claimantAge));
+        if (params?.primaryDiagnosis) svc.primaryDiagnosis.set(String(params.primaryDiagnosis));
+        if (params?.secondaryDiagnosis) svc.secondaryDiagnosis.set(String(params.secondaryDiagnosis));
+        if (params?.ejectionFractionPercent !== undefined) svc.ejectionFractionPercent.set(Number(params.ejectionFractionPercent));
+        if (params?.fev1Liters !== undefined) svc.fev1Liters.set(Number(params.fev1Liters));
+        if (params?.isAmbulatoryAssistanceRequired !== undefined) svc.isAmbulatoryAssistanceRequired.set(Boolean(params.isAmbulatoryAssistanceRequired));
+
+        const report = svc.assessment();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(report, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(ssaDisabilityTool, { signal: ssaDisabilityCtrl.signal });
+    this.mcpControllers.push({ name: ssaDisabilityTool.name, controller: ssaDisabilityCtrl });
   }
 
   /**
