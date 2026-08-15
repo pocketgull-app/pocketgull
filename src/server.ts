@@ -60,12 +60,17 @@ const studyDocsRoot = resolve(browserDistFolder, 'docs', 'study');
 // No custom rate limiter — use express-rate-limit (recognised by CodeQL)
 
 const ALLOWED_GEMINI_MODELS = new Set([
-  'gemini-3.5-flash',
+  'gemini-3.7-flash',
   'gemini-3.6-flash',
+  'gemini-3.5-flash',
   'gemini-3.1-flash-lite',
   'gemini-2.5-flash',
   'gemini-2.5-pro',
+  'gemini-2.0-flash',
   'gemini-2.0-flash-exp',
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash-lite-preview-02-05',
+  'gemini-2.0-pro-exp-02-05',
   'gemini-1.5-flash',
   'gemini-1.5-pro'
 ]);
@@ -246,7 +251,7 @@ app.use((req, res, next) => {
     }
     const cleanPath = req.path.split('?')[0];
     const ext = extname(cleanPath).toLowerCase();
-    const staticExts = new Set(['.svg', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.css', '.js', '.webmanifest', '.woff2', '.woff', '.ttf', '.ico', '.json', '.txt', '.map']);
+    const staticExts = new Set(['.svg', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.css', '.js', '.webmanifest', '.woff2', '.woff', '.ttf', '.ico', '.json', '.txt', '.map', '.xml']);
     if (staticExts.has(ext)) {
       return next();
     }
@@ -365,6 +370,25 @@ app.get('/robots.txt', manifestRateLimiter, (req, res) => {
   const targetPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[candidatePaths.length - 1];
 
   res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.sendFile(targetPath);
+});
+
+// SEO sitemap.xml handler
+app.get('/sitemap.xml', manifestRateLimiter, (req, res) => {
+  const candidatePaths = [
+    join(process.cwd(), 'public', 'sitemap.xml'),
+    join(process.cwd(), 'sitemap.xml'),
+    join(__dirname, 'sitemap.xml'),
+    join(__dirname, '..', 'browser', 'sitemap.xml'),
+    join(__dirname, '..', 'sitemap.xml'),
+    join(rootDir, 'public', 'sitemap.xml'),
+    join(rootDir, 'src', 'sitemap.xml'),
+    join(rootDir, 'sitemap.xml')
+  ];
+  const targetPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[candidatePaths.length - 1];
+
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=3600');
   res.sendFile(targetPath);
 });
