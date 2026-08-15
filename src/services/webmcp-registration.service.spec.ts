@@ -125,10 +125,12 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 40 WebMCP agentic tools on modelContext', () => {
+  it('should register all 42 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(40);
+    expect(registeredTools.size).toBe(42);
+    expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
+    expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -498,9 +500,28 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('collection');
   });
 
+  it('should execute open_zen_sanctuary tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('open_zen_sanctuary');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({});
+    expect(result.content[0].text).toContain('ACTIVE');
+    expect(result.content[0].text).toContain('432Hz Tibetan Singing Bowl');
+  });
+
+  it('should execute get_healing_postcards tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('get_healing_postcards');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ limit: 3 });
+    expect(result.content[0].text).toContain('postcardsCount');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(40);
+    expect((service as any).mcpControllers.length).toBe(42);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

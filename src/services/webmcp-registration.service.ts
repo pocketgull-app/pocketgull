@@ -25,6 +25,7 @@ import { MultilingualEquityService } from './multilingual-equity.service';
 import { WhoCdcHealthEquityService } from './who-cdc-health-equity.service';
 import { GreenComputingSustainabilityService } from './green-computing-sustainability.service';
 import { CommunityEcoLocalizationService } from './community-eco-localization.service';
+import { ZenSanctuaryService } from './zen-sanctuary.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -56,6 +57,7 @@ export class WebMcpRegistrationService {
   private equityService = inject(WhoCdcHealthEquityService, { optional: true });
   private greenService = inject(GreenComputingSustainabilityService, { optional: true });
   private communityEcoService = inject(CommunityEcoLocalizationService, { optional: true });
+  private zenService = inject(ZenSanctuaryService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1289,6 +1291,72 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(fhirSovereigntyTool, { signal: fhirSovereigntyCtrl.signal });
     this.mcpControllers.push({ name: fhirSovereigntyTool.name, controller: fhirSovereigntyCtrl });
+
+    // 40. Open Zen Sanctuary & Parasympathetic Breath Reset
+    const zenSanctuaryCtrl = new AbortController();
+    const zenSanctuaryTool = {
+      name: 'open_zen_sanctuary',
+      description: 'Activates the 1-click Zen Sanctuary Mode with 432Hz Tibetan singing bowl chime, 4-7-8 vagal breath pacer, and Kintsugi gold vein healing illumination.',
+      inputSchema: {
+        type: 'object',
+        properties: {},
+        additionalProperties: false
+      },
+      execute: async () => {
+        if (this.zenService) {
+          this.ngZone.run(() => {
+            this.zenService?.openSanctuary();
+          });
+        }
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                status: 'ACTIVE',
+                sound: '432Hz Tibetan Singing Bowl',
+                breathPacer: '4-7-8 Vagal Entrainment',
+                kintsugiIlluminated: true,
+                message: 'Sanctuary mode activated. When the mind is quiet, the body begins to heal.'
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(zenSanctuaryTool, { signal: zenSanctuaryCtrl.signal });
+    this.mcpControllers.push({ name: zenSanctuaryTool.name, controller: zenSanctuaryCtrl });
+
+    // 41. Get Healing Postcards from the Pier
+    const healingPostcardsCtrl = new AbortController();
+    const healingPostcardsTool = {
+      name: 'get_healing_postcards',
+      description: 'Retrieves quiet, anonymous peer encouragement postcards from the pier with recovery notes and community affirmations.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          limit: { type: 'number', description: 'Maximum number of postcards to retrieve' }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        const limit = params?.limit || 10;
+        const cards = this.zenService ? this.zenService.postcards().slice(0, limit) : [];
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                postcardsCount: cards.length,
+                postcards: cards
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(healingPostcardsTool, { signal: healingPostcardsCtrl.signal });
+    this.mcpControllers.push({ name: healingPostcardsTool.name, controller: healingPostcardsCtrl });
   }
 
   /**
