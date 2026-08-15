@@ -16,6 +16,7 @@ dist-ssr
 # Local temporary test results & deployment tarball
 tmp/
 .temp/
+scratch/
 .playwright_temp/
 test-results/
 playwright-report/
