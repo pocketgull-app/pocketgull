@@ -48,4 +48,36 @@ execSync(`node "${path.resolve(rootDir, 'node_modules/@angular/cli/bin/ng.js')}"
   env: cleanEnv,
   stdio: 'inherit'
 });
+
+// Post-build stylesheet optimization (removes media="print" / onload from generated HTML files)
+import fs from 'fs';
+const distDir = path.resolve(rootDir, 'dist');
+if (fs.existsSync(distDir)) {
+  const htmlFiles = [];
+  function scan(dir) {
+    for (const f of fs.readdirSync(dir)) {
+      const full = path.join(dir, f);
+      if (fs.statSync(full).isDirectory()) scan(full);
+      else if (full.endsWith('.html')) htmlFiles.push(full);
+    }
+  }
+  scan(distDir);
+  for (const file of htmlFiles) {
+    let content = fs.readFileSync(file, 'utf-8');
+    const updated = content.replace(/<link\b([^>]*\brel=["']stylesheet["'][^>]*)>/gi, (_match, attrs) => {
+      let cleanAttrs = attrs
+        .replace(/\s+onload=(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+        .replace(/\s+media=(?:"print"|'print')/gi, ' media="all"');
+      if (!cleanAttrs.includes('media=')) {
+        cleanAttrs += ' media="all"';
+      }
+      return `<link ${cleanAttrs.trim()}>`;
+    });
+    if (updated !== content) {
+      fs.writeFileSync(file, updated, 'utf-8');
+      console.log(`✨ Post-processed stylesheet links in ${path.relative(rootDir, file)}`);
+    }
+  }
+}
+
 console.log('✅ Pure Angular SSR & Docs Build Completed Successfully.\n');

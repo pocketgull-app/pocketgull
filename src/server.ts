@@ -854,10 +854,16 @@ app.use((req, res, next) => {
         let html = await response.text();
         const nonce = res.locals['nonce'] || '';
         
-        // Strip print media + onload from stylesheet link tags so browser doesn't wait on CSP-blocked inline handlers
-        html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)media=["']print["']\s+onload=["'][^"']*["']/gi, '<link$1media="all"');
-        html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)\s+media=["']print["'](?![^>]*class=["']print-only["'])/gi, '<link$1media="all"');
-        html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)\s+onload=["'][^"']*["']/gi, '<link$1');
+        // Ensure all stylesheets are immediately active (media="all") and strip any inline onload handler (CSP-safe)
+        html = html.replace(/<link\b([^>]*\brel=["']stylesheet["'][^>]*)>/gi, (_match, attrs) => {
+          let cleanAttrs = attrs
+            .replace(/\s+onload=(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+            .replace(/\s+media=(?:"print"|'print')/gi, ' media="all"');
+          if (!cleanAttrs.includes('media=')) {
+            cleanAttrs += ' media="all"';
+          }
+          return `<link ${cleanAttrs.trim()}>`;
+        });
 
         // Inject nonces into all inline script elements to comply with CSP
         if (nonce) {

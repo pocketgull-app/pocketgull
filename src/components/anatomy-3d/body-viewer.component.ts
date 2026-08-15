@@ -4,12 +4,13 @@ import { PatientStateService } from '../../services/patient-state.service';
 import { IBodyPartIssue } from '../../services/patient.types';
 import { PatientManagementService } from '../../services/patient-management.service';
 import { Body3DViewerComponent } from './body-3d-viewer.component';
+import { GenesisBiophysicalSubstrateComponent } from './genesis-biophysical-substrate.component';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-body-viewer',
   standalone: true,
-  imports: [CommonModule, Body3DViewerComponent],
+  imports: [CommonModule, Body3DViewerComponent, GenesisBiophysicalSubstrateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `    
     <div class="flex flex-col h-full w-full bg-white/70 dark:bg-zinc-900 backdrop-blur-[12px] text-gray-900 dark:text-zinc-100 rounded-2xl overflow-hidden border border-gray-200 dark:border-zinc-800 shadow-xl font-sans relative pocket-gull-card">
@@ -36,7 +37,7 @@ import { ThemeService } from '../../services/theme.service';
         </div>
 
         <div class="flex items-center gap-2 flex-wrap">
-          <!-- 3D vs 2D Viewport Mode Switcher (Tap-Target Friendly min 44px) -->
+          <!-- 3D vs 2D vs Genesis Viewport Mode Switcher (Tap-Target Friendly min 44px) -->
           <div class="flex items-center gap-1 bg-gray-200/80 dark:bg-zinc-950 p-1.5 rounded-lg border border-gray-300/80 dark:border-zinc-800 text-xs font-mono">
             <button (click)="state.bodyViewerMode.set('3d')" 
                     [class.bg-teal-600]="state.bodyViewerMode() === '3d'" 
@@ -53,6 +54,14 @@ import { ThemeService } from '../../services/theme.service';
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== '2d'" 
                     class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1.5">
               <span>🗺️</span> 2D Model
+            </button>
+            <button (click)="state.bodyViewerMode.set('genesis')" 
+                    [class.bg-amber-600]="state.bodyViewerMode() === 'genesis'" 
+                    [class.text-white]="state.bodyViewerMode() === 'genesis'" 
+                    [class.text-gray-700]="state.bodyViewerMode() !== 'genesis'" 
+                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'genesis'" 
+                    class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1.5">
+              <span>🧬</span> Genesis Substrate
             </button>
           </div>
 
@@ -126,6 +135,8 @@ import { ThemeService } from '../../services/theme.service';
               <p class="text-sm font-medium uppercase tracking-widest text-zinc-400">Loading 3D Engine...</p>
             </div>
           }
+        } @else if (state.bodyViewerMode() === 'genesis') {
+          <app-genesis-biophysical-substrate class="w-full h-full flex-1 flex flex-col min-h-[540px]"></app-genesis-biophysical-substrate>
         } @else {
           <!-- 2D SVG Schematic (Redrawn Holographic Medical Vector Twin) -->
           <div class="h-full w-full flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-b from-slate-900/50 via-zinc-900/40 to-slate-950/60 rounded-xl">
@@ -364,6 +375,7 @@ import { ThemeService } from '../../services/theme.service';
           <div class="flex items-center bg-zinc-950 p-1 rounded-xl border border-zinc-800">
             <button (click)="state.bodyViewerMode.set('3d')" [class.bg-indigo-600]="state.bodyViewerMode() === '3d'" [class.text-white]="state.bodyViewerMode() === '3d'" [class.text-zinc-400]="state.bodyViewerMode() !== '3d'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🧊 3D</button>
             <button (click)="state.bodyViewerMode.set('2d')" [class.bg-indigo-600]="state.bodyViewerMode() === '2d'" [class.text-white]="state.bodyViewerMode() === '2d'" [class.text-zinc-400]="state.bodyViewerMode() !== '2d'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🗺️ 2D</button>
+            <button (click)="state.bodyViewerMode.set('genesis')" [class.bg-amber-600]="state.bodyViewerMode() === 'genesis'" [class.text-white]="state.bodyViewerMode() === 'genesis'" [class.text-zinc-400]="state.bodyViewerMode() !== 'genesis'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🧬 Genesis</button>
           </div>
 
           <!-- Layers Strip -->
