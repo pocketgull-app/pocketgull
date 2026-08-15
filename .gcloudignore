@@ -31,17 +31,19 @@ cov/
 coverage/
 .nyc_output/
 
-# Dart / Flutter (not needed for server)
+# Dart / Flutter / Android companion apps (not needed for server)
 pubspec.yaml
 pubspec.lock
 melos.yaml
 .dart_tool/
 pocketgull_flutter/
-
-# Companion apps node_modules
 companion-apps/**/node_modules/
 companion-apps/**/.angular/
 companion-apps/**/dist/
+companion-apps/**/.gradle/
+companion-apps/**/build/
+companion-apps/patient_app/
+**/.gradle/
 
 # ML contests and training data
 contests/
