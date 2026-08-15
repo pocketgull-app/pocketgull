@@ -47,10 +47,10 @@ jobs:
           python scripts/kaggle_sync_notebooks.py --owner philgear --dry-run
 
       - name: Deploy to Kaggle Model Hub & Datasets
-        if: ${{ secrets.KAGGLE_USERNAME != '' && secrets.KAGGLE_KEY != '' }}
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        if: env.KAGGLE_USERNAME != '' && env.KAGGLE_KEY != ''
         run: |
           python scripts/kaggle_push_model.py --owner philgear
           python scripts/kaggle_push_dataset.py --owner philgear
