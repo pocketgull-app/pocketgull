@@ -51,6 +51,49 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/fonts/fonts.css">
+  
+  <!-- Structured JSON-LD Schema Markup for Search Engine & AI Agent Property Indexing -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://pocketgull.app/#software",
+        "name": "Pocket Gull",
+        "url": "https://pocketgull.app/",
+        "applicationCategory": "HealthApplication",
+        "operatingSystem": "Web, iOS, Android",
+        "offers": {
+          "@type": "Offer",
+          "price": "0.00",
+          "priceCurrency": "USD"
+        },
+        "description": "Real-time medical care plan strategy and live AI consult engine powered by Google Gemini and Vertex AI."
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://pocketgull.app/#organization",
+        "name": "Pocket Gull",
+        "url": "https://pocketgull.app/",
+        "logo": "https://pocketgull.app/social-preview.png",
+        "sameAs": [
+          "https://github.com/pocketgull-app/pocketgull"
+        ]
+      },
+      {
+        "@type": "MedicalWebPage",
+        "@id": "https://pocketgull.app/#webpage",
+        "url": "https://pocketgull.app/",
+        "name": "Pocket Gull | Real-Time Clinical AI & FHIR Care Strategy",
+        "description": "Pocket Gull provides actionable clinical intelligence, 10D diagnostic paradigms, FHIR R4 interoperability, and 3D spatial anatomy.",
+        "isPartOf": {
+          "@id": "https://pocketgull.app/#organization"
+        }
+      }
+    ]
+  }
+  </script>
   <style>
     body {
       font-family: 'Inter', sans-serif;

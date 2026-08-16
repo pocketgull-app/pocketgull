@@ -70,8 +70,10 @@ export const TIER_DEFINITIONS: Record<SubscriptionTier, ITierDefinition> = {
       pipeline_graph: 200
     },
     stripePriceIds: [
+      process.env['STRIPE_PRICE_PRACTITIONER_LIVE'] || '',
+      process.env['STRIPE_PRICE_PRACTITIONER'] || '',
       'price_1U4M4fJLexbgGCRFzIHyPrzT'  // Stripe test mode — prod_V4V4O81Wqj3g4h
-    ],
+    ].filter(Boolean),
     features: [
       'Full discovery endpoint access',
       '1,000 entity resolutions/mo',
@@ -93,8 +95,10 @@ export const TIER_DEFINITIONS: Record<SubscriptionTier, ITierDefinition> = {
       pipeline_graph: 2000
     },
     stripePriceIds: [
+      process.env['STRIPE_PRICE_INSTITUTION_LIVE'] || '',
+      process.env['STRIPE_PRICE_INSTITUTION'] || '',
       'price_1U4M5MJLexbgGCRFg5LrWabu'  // Stripe test mode — prod_V4V5JhSTSTyYOQ
-    ],
+    ].filter(Boolean),
     features: [
       'Everything in Practitioner',
       '25,000 entity resolutions/mo',

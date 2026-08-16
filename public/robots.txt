@@ -2,5 +2,21 @@ User-agent: *
 Allow: /
 Allow: /llms.txt
 Allow: /api/webmcp/tools
+Allow: /contracts/clinical-ml-openapi.yaml
+Allow: /search.html
+Allow: /privacy-policy.html
+Allow: /terms-of-service.html
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
 
 Sitemap: https://pocketgull.app/sitemap.xml
