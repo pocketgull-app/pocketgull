@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { rateLimit } from 'express-rate-limit';
 import { Firestore } from '@google-cloud/firestore';
 import { resolveTierFromPriceId } from '../services/tier-config';
+import { gaapAccountingService } from '../services/gaap-accounting.service';
 
 const db = new Firestore();
 
@@ -134,11 +135,45 @@ export function createBillingRouter() {
             stripeCustomerId: checkoutSession.customer,
             updatedAt: new Date()
           }, { merge: true });
+
+          // Record GAAP ASC 606 Journal Entry and Revenue Schedule
+          const grossAmount = (checkoutSession.amount_total || 4900) / 100;
+          const stripeFee = Math.round((grossAmount * 0.029 + 0.30) * 100) / 100;
+          const now = new Date();
+          const periodEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+          await gaapAccountingService.recordSubscriptionPayment({
+            tenantId: checkoutSession.customer_email,
+            referenceId: checkoutSession.id,
+            amountGrossUsd: grossAmount,
+            stripeFeeUsd: stripeFee,
+            periodStart: now,
+            periodEnd,
+            tierName: resolvedTier,
+            endowmentFund: checkoutSession.metadata?.endowment_fund,
+            revenueSplit: checkoutSession.metadata?.revenue_split
+          }).catch(e => console.error('[Billing] Error recording GAAP journal entry:', e.message));
         }
         break;
       case 'invoice.paid':
         const invoice = event.data.object as any;
         console.log(`[Billing] Invoice paid for ${invoice.customer_email}`);
+        if (invoice.customer_email) {
+          const grossAmount = (invoice.amount_paid || 4900) / 100;
+          const stripeFee = Math.round((grossAmount * 0.029 + 0.30) * 100) / 100;
+          const now = new Date(invoice.period_start ? invoice.period_start * 1000 : Date.now());
+          const periodEnd = new Date(invoice.period_end ? invoice.period_end * 1000 : Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+          await gaapAccountingService.recordSubscriptionPayment({
+            tenantId: invoice.customer_email,
+            referenceId: invoice.id,
+            amountGrossUsd: grossAmount,
+            stripeFeeUsd: stripeFee,
+            periodStart: now,
+            periodEnd,
+            tierName: 'subscription',
+          }).catch(e => console.error('[Billing] Error recording GAAP invoice payment:', e.message));
+        }
         break;
       case 'invoice.payment_failed':
         const failedInvoice = event.data.object as any;
@@ -192,6 +227,20 @@ export function createBillingRouter() {
 
     // Return a 200 response to acknowledge receipt of the event
     res.json({ received: true });
+  });
+
+  /**
+   * GET /api/billing/gaap-ledger — Returns ASC 606 compliant GAAP financial statements
+   * (Balance Sheet, Income Statement, Double-Entry Journal Audit Trail).
+   */
+  router.get('/gaap-ledger', limiter, async (_req, res) => {
+    try {
+      const report = await gaapAccountingService.generateFinancialReport();
+      res.json(report);
+    } catch (err: any) {
+      console.error('[Billing] Error generating GAAP ledger report:', err.message);
+      res.status(500).json({ error: 'Failed to generate GAAP financial statement' });
+    }
   });
 
   return router;
