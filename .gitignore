@@ -49,10 +49,6 @@ chrome-debug-profile/
 **/.env*
 docs/legal/
 !src/partners/
-pocketgull_api/agents/
-pocketgull_api/eval_agent.py
-pocketgull_api/tests/test_*agent*.py
-pocketgull_api/tests/test_dr_gulliver.py
 
 # Generated Release Packages
 packages/
