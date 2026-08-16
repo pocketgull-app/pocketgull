@@ -24,6 +24,8 @@ export default defineConfig({
         exclude: [
             '../*',
             '../**',
+            '**/AppData/**',
+            '**/go/**',
             'e2e/**/*',
             'node_modules/**/*',
             'pocketgull_flutter/**',

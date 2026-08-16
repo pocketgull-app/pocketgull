@@ -5,11 +5,10 @@ test.describe('Teledentistry & Systemic Health Cross-Talk Suite', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
     await setupE2ePage(page);
+    await enterDemoMode(page);
   });
 
   test('should render 32-Tooth Odontogram, update TWI grade, and recalculate SIBI score', async ({ page }) => {
-    // 1. Enter Demo Mode cleanly
-    await enterDemoMode(page);
 
     // 2. Select patient Phil Gear
     await selectPatientByName(page, 'Phil Gear');

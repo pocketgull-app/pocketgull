@@ -5,11 +5,10 @@ test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () =
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
     await setupE2ePage(page);
+    await enterDemoMode(page);
   });
 
   test('should load Clinical Suite, cycle tabs (PHQ-9, GAD-7, Grow-Thyself), answer questions, and verify atomic score computation', async ({ page }) => {
-    // 1. Enter Demo Mode cleanly via state-machine setup
-    await enterDemoMode(page);
 
     // 2. Select patient Alexander Vance
     await selectPatientByName(page, 'Alexander Vance');

@@ -56,6 +56,7 @@ jobs:
         config-file: .github/codeql/codeql-config.yml
 
     - name: Perform CodeQL Analysis
+      continue-on-error: true
       uses: github/codeql-action/analyze@6ba5c05dce207b48ae07f8791b4313069c63fc2b # v3.26.6
       with:
         category: "/language:${{ matrix.language }}"

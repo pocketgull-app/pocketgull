@@ -5,13 +5,12 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
     await setupE2ePage(page);
+    await enterDemoMode(page);
   });
 
   test('should load Y-BOCs Screener, toggle checklist, set severity scores, and reset successfully', async ({ page }) => {
     // Enable console logging to see page issues if any
     page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-
-    await enterDemoMode(page);
 
     // Select Phil Gear using shared utility (avoids flaky raw locator)
     await selectPatientByName(page, 'Phil Gear');

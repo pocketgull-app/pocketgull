@@ -58,4 +58,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Python Tests
+        env:
+          PYTHONPATH: .
         run: python3 pocketgull_api/run_tests.py

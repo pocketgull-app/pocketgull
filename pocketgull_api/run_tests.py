@@ -12,6 +12,8 @@ import inspect
 def run_all_tests():
     api_dir = os.path.dirname(os.path.abspath(__file__))
     root_dir = os.path.dirname(api_dir)
+    sys.path.insert(0, root_dir)
+    sys.path.insert(0, api_dir)
     evidence_src = os.path.join(root_dir, "packages", "clinical-evidence-grade", "src")
     evidence_tests = os.path.join(root_dir, "packages", "clinical-evidence-grade", "tests")
     sys.path.insert(0, evidence_src)

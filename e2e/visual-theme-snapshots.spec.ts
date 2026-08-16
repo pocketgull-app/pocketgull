@@ -30,12 +30,13 @@ test.describe('Automated Theme & Persona Visual Snapshot Suite', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
     await setupE2ePage(page, { mockClinician: true });
+    await enterDemoMode(page);
     await page.setViewportSize({ width: 1440, height: 900 });
   });
 
   for (const theme of THEMES) {
     test(`verify theme loading and styling: ${theme}`, async ({ page }) => {
-      await enterDemoMode(page);
+      // Apply theme via DOM root class
       
       // Apply theme via DOM root class
       await page.evaluate((t) => {
