@@ -54,6 +54,7 @@ import { ClinicalContextModeService } from './clinical-context-mode.service';
 import { AcademicCitationService } from './academic-citation.service';
 import { GlobalHealthUtilityService } from './global-health-utility.service';
 import { SocialPragmaticsGymService } from './social-pragmatics-gym.service';
+import { SocraticEvidenceLiteracyService } from './socratic-evidence-literacy.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -114,6 +115,7 @@ export class WebMcpRegistrationService {
   private citationService = inject(AcademicCitationService, { optional: true });
   private utilityService = inject(GlobalHealthUtilityService, { optional: true });
   private socialGymService = inject(SocialPragmaticsGymService, { optional: true });
+  private socraticService = inject(SocraticEvidenceLiteracyService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2866,6 +2868,35 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(socialTool, { signal: socialCtrl.signal });
     this.mcpControllers.push({ name: socialTool.name, controller: socialCtrl });
+
+    // 75. Validate Clinical Claim via Socratic Epistemology
+    const socraticCtrl = new AbortController();
+    const socraticTool = {
+      name: 'validate_clinical_claim_socratic_epistemology',
+      description: 'Deconstructs and evaluates any medical claim, supplement headline, or clinical assertion against Popperian falsification, Cochrane Risk of Bias (RoB 2), and correlation vs causation confounders.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          claimText: {
+            type: 'string',
+            description: 'The medical assertion or health claim to audit (e.g., "Periodontal debridement lowers hs-CRP and cardiovascular risk").'
+          }
+        },
+        required: ['claimText']
+      },
+      execute: async (params: any) => {
+        const svc = this.socraticService || new SocraticEvidenceLiteracyService();
+        const analysis = svc.evaluateClaim(params?.claimText || 'General clinical claim');
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(analysis, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(socraticTool, { signal: socraticCtrl.signal });
+    this.mcpControllers.push({ name: socraticTool.name, controller: socraticCtrl });
   }
 
   /**

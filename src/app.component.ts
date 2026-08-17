@@ -75,6 +75,7 @@ import { ClinicalContextModeSwitcherComponent } from './components/clinical-cont
 import { AcademicCitationDrawerComponent } from './components/academic-citation-drawer.component';
 import { GlobalHealthUtilityFolioComponent } from './components/global-health-utility-folio.component';
 import { SocialPragmaticsGymComponent } from './components/social-pragmatics-gym.component';
+import { SocraticEvidenceValidatorComponent } from './components/socratic-evidence-validator.component';
 
 @Component({
   selector: 'app-root',
@@ -116,6 +117,7 @@ import { SocialPragmaticsGymComponent } from './components/social-pragmatics-gym
     AcademicCitationDrawerComponent,
     GlobalHealthUtilityFolioComponent,
     SocialPragmaticsGymComponent,
+    SocraticEvidenceValidatorComponent,
     OnboardingTourOverlayComponent,
     SupportTicketModalComponent,
     ApiPricingComponent,
@@ -492,6 +494,7 @@ import { SocialPragmaticsGymComponent } from './components/social-pragmatics-gym
           (openAcademicCitations)="showAcademicCitationsDrawer.set(true)"
           (openGlobalHealthUtility)="showGlobalHealthUtilityModal.set(true)"
           (openSocialGym)="showSocialGymModal.set(true)"
+          (openSocraticValidator)="showSocraticValidatorModal.set(true)"
           (openZooniverse)="showZooniverseModal.set(true)"
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
@@ -790,6 +793,11 @@ import { SocialPragmaticsGymComponent } from './components/social-pragmatics-gym
     <!-- Social Pragmatics & Empathetic Communication Gym Modal -->
     @if (showSocialGymModal()) {
       <app-social-pragmatics-gym (close)="showSocialGymModal.set(false)"></app-social-pragmatics-gym>
+    }
+
+    <!-- Socratic Evidence Literacy & Claim Validator Modal -->
+    @if (showSocraticValidatorModal()) {
+      <app-socratic-evidence-validator (close)="showSocraticValidatorModal.set(false)"></app-socratic-evidence-validator>
     }
 
     <!-- Preview & Print Modal (Dieter Rams Style) -->
@@ -1145,6 +1153,7 @@ export class AppComponent implements OnDestroy {
   showAcademicCitationsDrawer = signal(false);
   showGlobalHealthUtilityModal = signal(false);
   showSocialGymModal = signal(false);
+  showSocraticValidatorModal = signal(false);
   showZooniverseModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;

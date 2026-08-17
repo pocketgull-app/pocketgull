@@ -15,6 +15,7 @@ import { ClinicalContextModeService } from './clinical-context-mode.service';
 import { AcademicCitationService } from './academic-citation.service';
 import { GlobalHealthUtilityService } from './global-health-utility.service';
 import { SocialPragmaticsGymService } from './social-pragmatics-gym.service';
+import { SocraticEvidenceLiteracyService } from './socratic-evidence-literacy.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -150,6 +151,14 @@ describe('WebMcpRegistrationService', () => {
       })
     };
 
+    const mockSocraticService = {
+      evaluateClaim: vi.fn().mockReturnValue({
+        claimId: 'SOC-EVID-TEST-1',
+        analyzedTopic: 'Periodontal-Systemic Cross-Talk (SIBI)',
+        evidenceTier: 'Level A (Meta-Analysis / Large RCTs)'
+      })
+    };
+
     const mockNgZone = {
       run: (fn: Function) => fn()
     };
@@ -168,6 +177,7 @@ describe('WebMcpRegistrationService', () => {
         { provide: AcademicCitationService, useValue: mockCitationService },
         { provide: GlobalHealthUtilityService, useValue: mockUtilityService },
         { provide: SocialPragmaticsGymService, useValue: mockSocialGymService },
+        { provide: SocraticEvidenceLiteracyService, useValue: mockSocraticService },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -175,10 +185,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 74 WebMCP agentic tools on modelContext', () => {
+  it('should register all 75 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(74);
+    expect(registeredTools.size).toBe(75);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -606,10 +616,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 74 WebMCP agentic tools on modelContext', () => {
+  it('should register all 75 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(74);
+    expect(registeredTools.size).toBe(75);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -995,9 +1005,21 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('Maya');
   });
 
+  it('should register tool #75: validate_clinical_claim_socratic_epistemology', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('validate_clinical_claim_socratic_epistemology');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      claimText: 'Treating active periodontal pockets reduces hs-CRP inflammation.'
+    });
+    expect(result.content[0].text).toContain('claimId');
+    expect(result.content[0].text).toContain('Periodontal-Systemic Cross-Talk (SIBI)');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(74);
+    expect((service as any).mcpControllers.length).toBe(75);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

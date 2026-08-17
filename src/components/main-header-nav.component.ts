@@ -155,6 +155,15 @@ import { SessionStateService } from '../services/session-state.service';
             <span>🤝 Social Gym</span>
           </button>
 
+          <!-- Socratic Evidence Literacy & Claim Validator Button -->
+          <button 
+            type="button" 
+            (click)="openSocraticValidator.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-amber-500/50 outline-none cursor-pointer"
+            title="Socratic Evidence Literacy & Claim Validator (Cochrane RoB 2, Popperian Falsification, Confounder Auditing)">
+            <span>⚖️ Socratic Validator</span>
+          </button>
+
           <!-- Citizen Science & Micro-Annotation Arena Button -->
           <button 
             type="button" 
@@ -379,6 +388,7 @@ export class MainHeaderNavComponent {
   openAcademicCitations = output<void>();
   openGlobalHealthUtility = output<void>();
   openSocialGym = output<void>();
+  openSocraticValidator = output<void>();
   openZooniverse = output<void>();
   openBioNetworkQr = output<void>();
   openBillingDashboard = output<void>();
