@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 65 WebMCP agentic tools on modelContext', () => {
+  it('should register all 66 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(65);
+    expect(registeredTools.size).toBe(66);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -556,10 +556,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 65 WebMCP agentic tools on modelContext', () => {
+  it('should register all 66 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(65);
+    expect(registeredTools.size).toBe(66);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -815,9 +815,26 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('Naloxone');
   });
 
+  it('should register tool #66: generate_section_504_school_accommodation_plan', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('generate_section_504_school_accommodation_plan');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      patientId: 'p202',
+      studentName: 'Maya Vance',
+      conditionCategory: 'type1_diabetes',
+      gradeLevel: 'Grade 7',
+      schoolName: 'Westview Middle School'
+    });
+    expect(result.content[0].text).toContain('Type 1 Diabetes Mellitus');
+    expect(result.content[0].text).toContain('t1d-cgm');
+    expect(result.content[0].text).toContain('Baqsimi');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(65);
+    expect((service as any).mcpControllers.length).toBe(66);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

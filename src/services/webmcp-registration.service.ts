@@ -47,6 +47,7 @@ import { YouthNeurodevelopmentHygieneService } from './youth-neurodevelopment-hy
 import { FutureCarePlanningService } from './future-care-planning.service';
 import { ClinicalSocialWorkNavigatorService } from './clinical-social-work-navigator.service';
 import { AddictionMedicineRecoveryService } from './addiction-medicine-recovery.service';
+import { Section504AccommodationService } from './section-504-accommodation.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -100,6 +101,7 @@ export class WebMcpRegistrationService {
   private futureCareService = inject(FutureCarePlanningService, { optional: true });
   private socialWorkService = inject(ClinicalSocialWorkNavigatorService, { optional: true });
   private addictionService = inject(AddictionMedicineRecoveryService, { optional: true });
+  private section504Service = inject(Section504AccommodationService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2529,6 +2531,60 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(sudTool, { signal: sudCtrl.signal });
     this.mcpControllers.push({ name: sudTool.name, controller: sudCtrl });
+
+    // 66. Generate Section 504 School Accommodation Plan
+    const sec504Ctrl = new AbortController();
+    const sec504Tool = {
+      name: 'generate_section_504_school_accommodation_plan',
+      description: 'Generates a legally binding Section 504 School Accommodation Plan under the Rehabilitation Act of 1973 for pediatric/adolescent chronic health conditions (Type 1 Diabetes, ADHD, POTS, Food Anaphylaxis, Epilepsy, Asthma, Dyslexia, IBD, JIA) with Emergency Action Plans (EAPs) and testing modifications.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string' },
+          studentName: { type: 'string' },
+          conditionCategory: { 
+            type: 'string', 
+            enum: [
+              'type1_diabetes',
+              'adhd_executive_function',
+              'food_allergy_anaphylaxis',
+              'pots_dysautonomia',
+              'epilepsy_seizure',
+              'asthma_respiratory',
+              'dyslexia_learning',
+              'ibd_gastrointestinal',
+              'juvenile_arthritis'
+            ]
+          },
+          gradeLevel: { type: 'string' },
+          schoolName: { type: 'string' },
+          attendingPhysician: { type: 'string' },
+          customAccommodations: { 
+            type: 'array', 
+            items: { type: 'string' } 
+          }
+        },
+        required: ['patientId', 'studentName', 'conditionCategory']
+      },
+      execute: async (params: any) => {
+        const svc = this.section504Service || new Section504AccommodationService();
+        const plan = svc.generateSection504Plan({
+          patientId: params?.patientId || 'p001',
+          studentName: params?.studentName || 'Student',
+          conditionCategory: params?.conditionCategory || 'type1_diabetes',
+          gradeLevel: params?.gradeLevel,
+          schoolName: params?.schoolName,
+          attendingPhysician: params?.attendingPhysician,
+          customAccommodations: params?.customAccommodations
+        });
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(plan, null, 2) }]
+        };
+      }
+    };
+    modelContext.registerTool(sec504Tool, { signal: sec504Ctrl.signal });
+    this.mcpControllers.push({ name: sec504Tool.name, controller: sec504Ctrl });
   }
 
   /**

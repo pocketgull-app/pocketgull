@@ -303,7 +303,7 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
       '@type': 'WebMCPToolCatalog',
       name: 'PocketGull Dynamic Clinical WebMCP Tool Registry',
       version: APP_VERSION,
-      totalTools: 65,
+      totalTools: 66,
       tools: [
         { name: 'open_zen_sanctuary', category: 'Therapy & Bibliotherapy' },
         { name: 'get_healing_postcards', category: 'Patient Engagement' },
@@ -323,6 +323,7 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
         { name: 'generate_future_care_and_longevity_plan', category: 'Future Planning & Values Advance Directives' },
         { name: 'navigate_clinical_social_work_and_sdoh', category: 'Clinical Social Work & SDoH Z-Codes' },
         { name: 'evaluate_addiction_recovery_and_harm_reduction', category: 'Addiction Medicine & Harm Reduction' },
+        { name: 'generate_section_504_school_accommodation_plan', category: 'Pediatric & Section 504 Accommodations' },
         { name: 'resolve_clinical_nlp_context', category: 'Clinical NLP' },
         { name: 'audit_clinical_coding_and_hcc_risk', category: 'HIM Coding & HCC V28' },
         { name: 'issue_him_ceu_microcredential', category: 'AHIMA / AAPC CEU Career' },
