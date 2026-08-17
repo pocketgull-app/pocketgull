@@ -55,6 +55,28 @@ export interface ISection504Plan {
   fhirBundleDigest: string;
 }
 
+export interface ISubstituteTeacherCard {
+  studentName: string;
+  gradeLevel: string;
+  conditionName: string;
+  quickIdentifier: string;
+  threeKeyRules: string[];
+  emergencyActionText: string;
+  rescueMedLocation: string;
+  nurseExtension: string;
+}
+
+export interface IPediatricCourageBadge {
+  badgeTitle: string;
+  recipientName: string;
+  badgeLevel: string;
+  heroicAttributes: string[];
+  motto: string;
+  artworkTheme: string;
+  dateGranted: string;
+  physicianSignature: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -522,5 +544,74 @@ export class Section504AccommodationService {
   savePlan(plan: ISection504Plan): void {
     this.activePlans.update(plans => [plan, ...plans]);
     this.selectedPlan.set(plan);
+  }
+
+  /**
+   * Generates a 30-second rapid summary card for substitute teachers and staff.
+   */
+  generateSubstituteTeacherCard(plan: ISection504Plan): ISubstituteTeacherCard {
+    const rules: string[] = plan.accommodations.slice(0, 3).map(a => `${a.title}: ${a.description}`);
+    const eapText = plan.emergencyActionPlan 
+      ? `If ${plan.emergencyActionPlan.triggerSymptoms.slice(0, 2).join(' or ')}, take immediate action: ${plan.emergencyActionPlan.immediateSteps[0] || 'Notify nurse'}.`
+      : 'Follow standard classroom guidelines.';
+
+    const medLoc = plan.emergencyActionPlan?.rescueMedication 
+      ? `${plan.emergencyActionPlan.rescueMedication.name} (${plan.emergencyActionPlan.rescueMedication.location})`
+      : 'Health Office / Nurse Station';
+
+    return {
+      studentName: plan.studentName,
+      gradeLevel: plan.gradeLevel || 'Enrolled Student',
+      conditionName: plan.primaryDiagnosis,
+      quickIdentifier: `Student ${plan.studentName} has a legal medical Section 504 plan for ${plan.primaryDiagnosis}.`,
+      threeKeyRules: rules.length > 0 ? rules : ['Allow unrestricted hydration and restroom passes', 'Never delay access to school nurse'],
+      emergencyActionText: eapText,
+      rescueMedLocation: medLoc,
+      nurseExtension: 'Ext. 104 / Speed-Dial 1'
+    };
+  }
+
+  /**
+   * Generates a printable Pediatric Courage & Resilience Keepsake Badge for young patients.
+   */
+  generatePediatricCourageBadge(studentName: string, conditionCategory: Section504Category): IPediatricCourageBadge {
+    const titles: Record<Section504Category, string> = {
+      type1_diabetes: 'Grand Commander of Glucose Harmony & Cellular Energy',
+      pots_dysautonomia: 'Master Navigator of Ocean Currents & Vagal Calm',
+      food_allergy_anaphylaxis: 'Guardian of Safe Horizons & Golden Vigilance',
+      adhd_executive_function: 'Grand Architect of Creative Lightning & Focus Sparks',
+      epilepsy_seizure: 'Champion of Steady Rhythms & Lightning Courage',
+      asthma_respiratory: 'Admiral of Gentle Breezes & Deep Breathing',
+      dyslexia_learning: 'Master Storyteller & Multidimensional Thinker',
+      ibd_gastrointestinal: 'Warrior of Resilience & Gut Instinct Strength',
+      juvenile_arthritis: 'Noble Knight of Gentle Motion & Enduring Spirit'
+    };
+
+    const mottos: Record<Section504Category, string> = {
+      type1_diabetes: 'Strong cells, steady mind, unstoppable spirit.',
+      pots_dysautonomia: 'Like the seagull resting on the crest of the wave, balance is within.',
+      food_allergy_anaphylaxis: 'Clear eyes, true friends, fierce protection.',
+      adhd_executive_function: 'My mind creates constellations where others see stars.',
+      epilepsy_seizure: 'Courage is the light that shines after every storm.',
+      asthma_respiratory: 'Every breath is a reminder of how high I can soar.',
+      dyslexia_learning: 'Words are maps, and I am the explorer.',
+      ibd_gastrointestinal: 'Strength is not the absence of challenge, but rising each morning.',
+      juvenile_arthritis: 'Every step forward is a victory of will.'
+    };
+
+    return {
+      badgeTitle: titles[conditionCategory] || 'Order of the Brave Seagull',
+      recipientName: studentName || 'Champion Patient',
+      badgeLevel: 'Honorary First Class Navigator',
+      heroicAttributes: [
+        'Unwavering Resilience & Tenacity',
+        'Mastery of Daily Healthspan Habits',
+        'Inspiring Kindness to Fellow Classmates'
+      ],
+      motto: mottos[conditionCategory] || 'Soar high above the storm.',
+      artworkTheme: 'Origami Seagull & Coastal Lighthouse Folio',
+      dateGranted: new Date().toISOString().split('T')[0],
+      physicianSignature: 'Dr. Phil Gear, FACP'
+    };
   }
 }

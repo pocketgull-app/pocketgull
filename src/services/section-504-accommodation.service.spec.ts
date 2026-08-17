@@ -89,4 +89,26 @@ describe('Section504AccommodationService', () => {
       expect(entry.accommodations.length).toBeGreaterThan(0);
     });
   });
+
+  it('should generate a 30-second substitute teacher card', () => {
+    const plan = service.generateSection504Plan({
+      patientId: 'p101',
+      studentName: 'Maya Torres',
+      conditionCategory: 'type1_diabetes'
+    });
+    const subCard = service.generateSubstituteTeacherCard(plan);
+
+    expect(subCard.studentName).toBe('Maya Torres');
+    expect(subCard.conditionName).toContain('Type 1 Diabetes');
+    expect(subCard.threeKeyRules.length).toBeGreaterThanOrEqual(1);
+    expect(subCard.emergencyActionText).toContain('immediate action');
+  });
+
+  it('should generate pediatric courage badges across conditions', () => {
+    const badge = service.generatePediatricCourageBadge('Leo Vance', 'pots_dysautonomia');
+    expect(badge.recipientName).toBe('Leo Vance');
+    expect(badge.badgeTitle).toContain('Master Navigator');
+    expect(badge.heroicAttributes.length).toBe(3);
+    expect(badge.motto).toContain('crest of the wave');
+  });
 });

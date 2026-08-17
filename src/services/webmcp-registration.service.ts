@@ -2620,6 +2620,57 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(cscTool, { signal: cscCtrl.signal });
     this.mcpControllers.push({ name: cscTool.name, controller: cscCtrl });
+
+    // 68. Generate Pediatric Substitute Teacher Card & Courage Badge
+    const cardCtrl = new AbortController();
+    const cardTool = {
+      name: 'generate_pediatric_substitute_teacher_and_courage_card',
+      description: 'Generates a 30-second rapid classroom summary card for substitute teachers and an inspiring, collectible Pediatric Courage & Resilience Keepsake Badge with fine art origami and lighthouse motifs for young patients.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string' },
+          studentName: { type: 'string' },
+          conditionCategory: { 
+            type: 'string', 
+            enum: [
+              'type1_diabetes',
+              'adhd_executive_function',
+              'food_allergy_anaphylaxis',
+              'pots_dysautonomia',
+              'epilepsy_seizure',
+              'asthma_respiratory',
+              'dyslexia_learning',
+              'ibd_gastrointestinal',
+              'juvenile_arthritis'
+            ]
+          },
+          gradeLevel: { type: 'string' }
+        },
+        required: ['patientId', 'studentName', 'conditionCategory']
+      },
+      execute: async (params: any) => {
+        const svc = this.section504Service || new Section504AccommodationService();
+        const plan = svc.generateSection504Plan({
+          patientId: params?.patientId || 'p001',
+          studentName: params?.studentName || 'Student',
+          conditionCategory: params?.conditionCategory || 'type1_diabetes',
+          gradeLevel: params?.gradeLevel
+        });
+
+        const substituteCard = svc.generateSubstituteTeacherCard(plan);
+        const courageBadge = svc.generatePediatricCourageBadge(params?.studentName || 'Student', params?.conditionCategory || 'type1_diabetes');
+
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({ substituteCard, courageBadge }, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(cardTool, { signal: cardCtrl.signal });
+    this.mcpControllers.push({ name: cardTool.name, controller: cardCtrl });
   }
 
   /**

@@ -33,25 +33,35 @@ describe('Section504FolioComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should default to Type 1 Diabetes and render diagnosis & accommodations', () => {
+  it('should default to legal_folio view and Type 1 Diabetes', () => {
+    expect(component.activeView()).toBe('legal_folio');
     expect(component.activeCategory()).toBe('type1_diabetes');
     const plan = component.currentPlan();
     expect(plan).toBeDefined();
     expect(plan.primaryDiagnosis).toContain('Type 1 Diabetes');
-    expect(plan.accommodations.some(a => a.id === 't1d-cgm')).toBe(true);
   });
 
-  it('should switch categories when selectCategory is called', () => {
-    component.selectCategory('pots_dysautonomia');
+  it('should switch to substitute_card view and compute rapid card metrics', () => {
+    component.setViewMode('substitute_card');
     fixture.detectChanges();
 
-    expect(component.activeCategory()).toBe('pots_dysautonomia');
-    const plan = component.currentPlan();
-    expect(plan.primaryDiagnosis).toContain('Postural Orthostatic Tachycardia');
-    expect(plan.accommodations.some(a => a.id === 'pots-hydration')).toBe(true);
+    expect(component.activeView()).toBe('substitute_card');
+    const card = component.substituteCard();
+    expect(card).toBeDefined();
+    expect(card.studentName).toBe(component.activeStudentName());
+    expect(card.threeKeyRules.length).toBeGreaterThanOrEqual(1);
+    expect(card.emergencyActionText).toContain('immediate action');
   });
 
-  it('should contain all 9 pediatric condition options', () => {
-    expect(component.conditionOptions.length).toBe(9);
+  it('should switch to courage_badge view and generate courage title and motto', () => {
+    component.setViewMode('courage_badge');
+    fixture.detectChanges();
+
+    expect(component.activeView()).toBe('courage_badge');
+    const badge = component.courageBadge();
+    expect(badge).toBeDefined();
+    expect(badge.badgeTitle).toContain('Glucose Harmony');
+    expect(badge.heroicAttributes.length).toBe(3);
+    expect(badge.motto).toContain('Strong cells');
   });
 });

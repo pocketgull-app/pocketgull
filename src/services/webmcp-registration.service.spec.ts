@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 67 WebMCP agentic tools on modelContext', () => {
+  it('should register all 68 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(67);
+    expect(registeredTools.size).toBe(68);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -556,10 +556,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 67 WebMCP agentic tools on modelContext', () => {
+  it('should register all 68 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(67);
+    expect(registeredTools.size).toBe(68);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -846,9 +846,24 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('fdaSection520oComplianceScore');
   });
 
+  it('should register tool #68: generate_pediatric_substitute_teacher_and_courage_card', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('generate_pediatric_substitute_teacher_and_courage_card');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      patientId: 'p303',
+      studentName: 'Maya Torres',
+      conditionCategory: 'type1_diabetes'
+    });
+    expect(result.content[0].text).toContain('substituteCard');
+    expect(result.content[0].text).toContain('courageBadge');
+    expect(result.content[0].text).toContain('Glucose Harmony');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(67);
+    expect((service as any).mcpControllers.length).toBe(68);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
