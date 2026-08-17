@@ -1136,19 +1136,20 @@ import { SecureStorageService } from '../services/secure-storage.service';
       position: absolute;
       top: 50%;
       left: 52%;
-      transform: translate(-50%, -50%);
+      transform: translate3d(-50%, -50%, 0);
       pointer-events: none;
       animation: heart-emerge-pulse 7s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+      will-change: transform, opacity;
     }
 
     @keyframes heart-emerge-pulse {
-      0%, 62% { transform: translate(-50%, -50%) scale(0); opacity: 0; filter: drop-shadow(0 0 0px transparent); }
-      70% { transform: translate(-50%, -50%) scale(1.25); opacity: 1; filter: drop-shadow(0 0 18px rgba(239, 102, 88, 0.85)); }
-      76% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.9; }
-      82% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; filter: drop-shadow(0 0 22px rgba(239, 102, 88, 0.95)); }
-      88% { transform: translate(-50%, -50%) scale(1); opacity: 0.95; }
-      94% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; filter: drop-shadow(0 0 18px rgba(239, 102, 88, 0.85)); }
-      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; filter: drop-shadow(0 0 14px rgba(239, 102, 88, 0.75)); }
+      0%, 62% { transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1); opacity: 0; }
+      70% { transform: translate3d(-50%, -50%, 0) scale3d(1.25, 1.25, 1); opacity: 1; }
+      76% { transform: translate3d(-50%, -50%, 0) scale3d(0.95, 0.95, 1); opacity: 0.9; }
+      82% { transform: translate3d(-50%, -50%, 0) scale3d(1.15, 1.15, 1); opacity: 1; }
+      88% { transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1); opacity: 0.95; }
+      94% { transform: translate3d(-50%, -50%, 0) scale3d(1.08, 1.08, 1); opacity: 1; }
+      100% { transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1); opacity: 1; }
     }
 
     /* Responsive styling for small mobile screens (Pixel 9 or smaller) */

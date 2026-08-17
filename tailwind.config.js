@@ -8,6 +8,13 @@ module.exports = {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                heading: ['PocketGull VF', 'Outfit', 'Inter', 'sans-serif'],
+                marker: ['PocketGull VF', 'Outfit', 'sans-serif'],
+                serif: ['Libre Caslon Text', 'Georgia', 'serif'],
+                mono: ['PocketGull Mono', 'JetBrains Mono', 'monospace'],
+            },
             colors: {
                 brand: {
                     blue: {
@@ -32,9 +39,9 @@ module.exports = {
                     }
                 }
             }
-        },
+        }
     },
     plugins: [
         require('@tailwindcss/typography'),
     ],
-}
+};

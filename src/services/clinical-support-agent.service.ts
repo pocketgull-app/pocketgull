@@ -23,6 +23,7 @@ export interface ISupportTicket {
 })
 export class ClinicalSupportAgentService {
   readonly supportEmail = 'support@pocketgull.app';
+  readonly dpoEmail = 'dpo@pocketgull.app';
   readonly isProcessing = signal<boolean>(false);
 
   readonly tickets = signal<ISupportTicket[]>([
@@ -153,7 +154,7 @@ export class ClinicalSupportAgentService {
         return `${header}**EHR & SMART-on-FHIR Technical Guidance**:\n\nOur SMART-on-FHIR launch engine supports both Patient Standalone and Provider EHR Embedded launches. Verify your configuration:\n- **Epic / Cerner Client ID**: Configure in \`src/services/smart-on-fhir-launch.service.ts\`\n- **Scopes**: \`launch/patient patient/CarePlan.read patient/Observation.read openid fhirUser\`\n- **Attestation Package**: CARIN Alliance trust framework attestation is available at \`docs/CARIN_ALLIANCE_MYHEALTHAPPLICATION_ATTESTATION.md\`.\n\nTicket ID: \`${ticket.id}\`${safetyDisclaimer}`;
 
       case 'PRIVACY_HIPAA':
-        return `${header}**HIPAA §164.514 Safe Harbor Privacy Assurance**:\n\nPocketGull operates on an Ephemeral Zero-Egress Edge Architecture. All transient patient data stays strictly within local Angular Signals memory. To instantly purge all stored telemetry, use the 1-Click Ephemeral State Purge option in Privacy Settings.\n\nTicket ID: \`${ticket.id}\`${safetyDisclaimer}`;
+        return `${header}**HIPAA §164.514 Safe Harbor Privacy Assurance**:\n\nPocketGull operates on an Ephemeral Zero-Egress Edge Architecture. All transient patient data stays strictly within local Angular Signals memory. To instantly purge all stored telemetry, use the 1-Click Ephemeral State Purge option in Privacy Settings.\n\nFor formal HIPAA/GDPR inquiries or Data Subject Access Requests (DSAR), contact our Data Protection Officer directly at ${this.dpoEmail}.\n\nTicket ID: \`${ticket.id}\`${safetyDisclaimer}`;
 
       case 'BILLING_RPM':
         return `${header}**CMS Remote Patient Monitoring (RPM) Billing Guidance**:\n\nPocketGull clinical telemetry qualifies for the following CMS CPT reimbursement codes:\n- **CPT 99453**: Initial setup & patient onboarding.\n- **CPT 99454**: Remote biometric telemetry (30-day continuous transmission).\n- **CPT 99457**: Clinical staff care management (first 20 minutes/month).\n\nTicket ID: \`${ticket.id}\`${safetyDisclaimer}`;

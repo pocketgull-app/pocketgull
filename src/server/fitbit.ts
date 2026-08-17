@@ -381,7 +381,9 @@ fitbitRouter.get('/consent-info', (_req, res) => {
     dataCollected: CONSENTED_DATA_TYPES,
     retentionPolicy: 'Data is held in memory only and is erased on server restart or explicit withdrawal.',
     withdrawalMethod: 'POST /api/fitbit/revoke with { patientId, purgeData: true }',
-    contact: 'privacy@pocketgull.app',
+    contact: 'dpo@pocketgull.app',
+    dpoContact: 'dpo@pocketgull.app',
+    privacyEmail: 'privacy@pocketgull.app',
     legalBasis: 'Explicit informed consent (GDPR Art. 6(1)(a) / HIPAA)',
   });
 });

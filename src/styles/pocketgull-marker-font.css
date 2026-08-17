@@ -1,11 +1,34 @@
 /* ==========================================================================
-   PocketGull Marker Typeface — Clean Web Font System
-   Inspired by handwritten felt-tip & clinical typography
+   PocketGull Master Typeface Suite — Variable Web Font & Clinical Precision
+   Inspired by handwritten felt-tip & Dieter Rams clinical typography
    ========================================================================== */
 
-/* Single Unified Felt-Tip Marker Inspired Typeface Stack */
+/* 0. PocketGull Variable Font (VF) @font-face Registration */
+@font-face {
+  font-family: 'PocketGull VF';
+  src: url('/fonts/PocketGull-VF.woff2') format('woff2-variations'),
+       url('/fonts/PocketGull-VF.woff2') format('woff2'),
+       url('/fonts/PocketGull-VF.ttf') format('truetype-variations'),
+       url('/fonts/PocketGull-VF.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 1. Variable Font Base Root Properties */
+:root {
+  --pg-font-variation: 'wght' 700, 'opsz' 24;
+}
+
+html.dark {
+  /* Optical Delensing: Reduce weight in dark mode to stop high-contrast glare */
+  --pg-font-variation: 'wght' 660, 'opsz' 24;
+}
+
+/* 2. Single Unified Felt-Tip Marker Inspired Typeface Stack */
 .font-pocketgull {
-  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-family: 'PocketGull VF', 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-variation-settings: var(--pg-font-variation);
   font-weight: 700;
   letter-spacing: -0.01em;
   text-transform: none;
@@ -17,7 +40,8 @@
 
 /* 🖋️ PocketGull Chiseltip Display Variant */
 .font-pocketgull-chiseltip {
-  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family: 'PocketGull VF', 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-variation-settings: 'wght' 850, 'slnt' -6;
   font-weight: 900;
   letter-spacing: -0.025em;
   text-transform: uppercase;
@@ -33,12 +57,35 @@
   letter-spacing: -0.01em;
 }
 
-/* 🏥 PocketGull Clinical High-Legibility Typeface */
-.font-pocketgull-inter {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+/* 🏥 PocketGull Clinical High-Legibility Typeface & Disambiguation */
+.font-pocketgull-inter,
+.font-clinical-precision {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
   font-weight: 500;
-  letter-spacing: -0.01em;
-  line-height: 1.5;
+  letter-spacing: -0.011em;
+  line-height: 1.55;
+  font-feature-settings: 
+    "cv05" 1,  /* Lowercase 'l' with distinct bottom tail */
+    "cv08" 1,  /* Uppercase 'I' with crossbars */
+    "cv11" 1,  /* Single-storey 'a' for clean geometric clarity */
+    "zero" 1,  /* Slashed zero to prevent '0' vs 'O' dosage confusion */
+    "tnum" 1,  /* Tabular numbers for jitter-free real-time vitals */
+    "case" 1;  /* Case-sensitive punctuation alignment */
+}
+
+/* ⚡ Optical Delensing Utility (prevents glare on OLED / Dark displays) */
+.optical-delensing {
+  font-variation-settings: 'wght' 410;
+}
+html.dark .optical-delensing {
+  font-variation-settings: 'wght' 375;
+}
+
+/* 🔬 Medical Unit Ligatures and Tabular Formatting */
+.clinical-tabular-metric {
+  font-family: 'JetBrains Mono', 'Inter', monospace;
+  font-feature-settings: "tnum" 1, "zero" 1, "ss01" 1, "ss02" 1;
+  letter-spacing: -0.02em;
 }
 
 .marker-stroke-glow {
@@ -52,10 +99,6 @@
   display: inline-block;
   vertical-align: middle;
   fill: currentColor;
-  stroke: currentColor;
-  stroke-width: 0.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 /* 🧠 Bionic Reading Marker Mode: Felt-Tip 40% Fixation Accentuation */
@@ -96,3 +139,4 @@ html.dark .bionic-pocketgull-marker b {
   z-index: -1;
   transform: rotate(-0.5deg);
 }
+

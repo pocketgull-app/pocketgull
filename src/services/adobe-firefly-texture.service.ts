@@ -68,10 +68,18 @@ export class AdobeFireflyTextureService {
 
   constructor() {
     // Register cached static PNG texture assets generated via Firefly AI
-    this.imageCache.set('skin', 'assets/textures/firefly_skin.png');
-    this.imageCache.set('muscle', 'assets/textures/firefly_muscle.png');
-    this.imageCache.set('skeleton', 'assets/textures/firefly_skeleton.png');
-    this.imageCache.set('organs', 'assets/textures/firefly_organs.png');
+    const base = typeof window !== 'undefined' && window.location.origin ? '' : '/';
+    this.imageCache.set('skin', `${base}assets/textures/firefly_skin.png`);
+    this.imageCache.set('muscle', `${base}assets/textures/firefly_muscle.png`);
+    this.imageCache.set('skeleton', `${base}assets/textures/firefly_skeleton.png`);
+    this.imageCache.set('organs', `${base}assets/textures/firefly_organs.png`);
+  }
+
+  /**
+   * Retrieves the metadata and prompt config for a given Firefly texture type.
+   */
+  public getFireflyMetadata(type: FireflyTextureType): IFireflyTextureMetadata {
+    return this.textureConfigs[type] || this.textureConfigs.skin;
   }
 
   /**

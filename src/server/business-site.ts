@@ -56,6 +56,36 @@ export function renderBusinessSiteHtml(): string {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
+    @font-face {
+      font-family: 'PocketGull VF';
+      src: url('/brand/fonts/PocketGull-VF.woff2') format('woff2'),
+           url('/brand/fonts/PocketGull-VF.ttf') format('truetype');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'PocketGull Bold';
+      src: url('/brand/fonts/PocketGull-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'PocketGull Numerics';
+      src: url('/brand/fonts/PocketGull-Numerics.woff2') format('woff2'),
+           url('/brand/fonts/PocketGull-Numerics.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    .font-pocketgull-heading {
+      font-family: 'PocketGull VF', 'PocketGull Bold', -apple-system, sans-serif;
+    }
+
     html, body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background-color: #f7f7f3;
@@ -1524,7 +1554,7 @@ export function renderBusinessSiteHtml(): string {
 
               <div class="pt-2 flex items-center justify-between">
                 <span id="stageImpact" class="text-[11px] font-mono-code text-teal-400 font-bold">Outcome: Zero Afternoon Energy Slumps</span>
-                <a href="https://pocketgull.app" class="px-3.5 py-1.5 rounded-lg bg-orange-700 hover:bg-orange-800 text-white font-bold transition text-xs flex items-center gap-1 min-h-[44px] items-center">
+                <a href="https://pocketgull.app" class="px-3.5 py-1.5 rounded-lg bg-orange-700 hover:bg-orange-800 text-white font-bold transition text-xs flex items-center gap-1 min-h-[44px]">
                   <span>Try It Free</span> <span>→</span>
                 </a>
               </div>

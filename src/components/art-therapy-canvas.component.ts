@@ -118,6 +118,9 @@ import { BioHapticFeedbackService, SolfeggioTone } from '../services/hardware/bi
             🎨 Color Tone Frequency: {{ activeFrequency() }} Hz
           </span>
           <div class="flex items-center gap-2">
+            <button (click)="exportToAdobeExpress()" class="px-2.5 py-1 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white border border-rose-400/40 rounded font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm" title="Download high-resolution image for Adobe Express import">
+              <span>🎨</span> Export to Adobe Express
+            </button>
             <button (click)="bioHaptic.playNasaSaturnSkrTone(3500)" class="px-2.5 py-1 bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/40 rounded font-bold hover:bg-indigo-500/30 transition cursor-pointer">
               🪐 NASA Saturn SKR Plasma Tone
             </button>
@@ -236,6 +239,20 @@ export class ArtTherapyCanvasComponent implements AfterViewInit {
     this.ctx.fillStyle = '#09090b';
     this.ctx.fillRect(0, 0, el.width, el.height);
     this.hasDrawn.set(false);
+  }
+
+  exportToAdobeExpress(): void {
+    const el = this.canvasElement()?.nativeElement;
+    if (!el) return;
+    el.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `pocketgull_art_therapy_${this.selectedPrompt().id}_${Date.now()}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
   }
 
   paintStroke(): void {

@@ -16,9 +16,12 @@ Only the latest `main` branch and currently deployed production versions receive
 If you discover a security vulnerability within Pocket Gull, please do **not** disclose it publicly. Instead, use one of the following private channels:
 
 1.  **GitHub Private Vulnerability Reporting**: [Report a vulnerability](https://github.com/pocketgull-app/pocketgull/security/advisories/new) (preferred).
-2.  **Email**: Send details to **dpo@pocketgull.app**.
+2.  **Data Protection Officer (DPO)**: Send inquiries, security disclosures, or GDPR/HIPAA requests to **dpo@pocketgull.app**.
 
-We will review the submission within 48 hours and work with you to patch the vulnerability safely before public disclosure.
+### Data Protection Officer (DPO) & Regulatory Governance
+- **Designated DPO & HIPAA Privacy Lead**: Phil Gear (`dpo@pocketgull.app`)
+- **Scope**: HIPAA §164.514 Safe Harbor adherence, GDPR Article 37/38 compliance, FDA 21 CFR §520(o) Non-Device CDS risk posture, and cryptographic de-identification auditing.
+- **SLA**: Initial assessment and acknowledgment within 24–48 hours.
 
 ---
 

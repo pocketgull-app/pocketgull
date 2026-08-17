@@ -48,15 +48,15 @@ interface IRect { top: number; left: number; width: number; height: number; }
       box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06);
       overflow: hidden;
       animation: tour-card-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-      transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1), left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform, opacity;
     }
     .dark .tour-card {
       background: #18181b;
       box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
     }
     @keyframes tour-card-in {
-      from { opacity: 0; transform: scale(0.88) translateY(8px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
+      from { opacity: 0; transform: scale3d(0.88, 0.88, 1) translate3d(0, 8px, 0); }
+      to   { opacity: 1; transform: scale3d(1, 1, 1) translate3d(0, 0, 0); }
     }
 
     /* ─── Seagull Header ──────────────────────────── */
@@ -77,12 +77,12 @@ interface IRect { top: number; left: number; width: number; height: number; }
     }
     .tour-gull-svg {
       flex-shrink: 0; width: 52px; height: 52px;
-      filter: drop-shadow(0 4px 12px rgba(104,159,56,0.3));
       animation: gull-float 3s ease-in-out infinite;
+      will-change: transform;
     }
     @keyframes gull-float {
-      0%, 100% { transform: translateY(0) rotate(-2deg); }
-      50%       { transform: translateY(-4px) rotate(1deg); }
+      0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+      50%       { transform: translate3d(0, -4px, 0) rotate(1deg); }
     }
     .tour-gull-name {
       font-size: 8px; font-weight: 800; letter-spacing: 0.18em;
@@ -205,7 +205,7 @@ interface IRect { top: number; left: number; width: number; height: number; }
       background: radial-gradient(ellipse at 80% 50%, rgba(249, 115, 22, 0.2) 0%, transparent 60%) !important;
     }
     .theme-spark .tour-gull-svg {
-      filter: drop-shadow(0 4px 12px rgba(249, 115, 22, 0.4)) !important;
+      opacity: 0.95;
     }
     .theme-spark .tour-body-text {
       color: #dfc8bf !important;

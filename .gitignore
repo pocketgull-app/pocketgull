@@ -21,6 +21,10 @@ scratch/
 .playwright_temp/
 test-results/
 playwright-report/
+.lighthouseci/
+sandbox/
+*lighthouse*
+lhr-*
 source.tgz
 deploy.tgz
 deploy_source.tar.gz

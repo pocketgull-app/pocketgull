@@ -48,12 +48,21 @@ interface IBracketedClaim {
 
 // ─── Helper: Parse HTML → ClaimUnits ─────────────────────────────────────────
 
+function getStableClaimId(text: string, idx: number): string {
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    hash = ((hash << 5) - hash) + text.charCodeAt(i);
+    hash |= 0;
+  }
+  return `claim-${Math.abs(hash).toString(36)}-${idx}`;
+}
+
 function parseHtmlToClaims(html: string): IClaimUnit[] {
   const claims: IClaimUnit[] = [];
   let idx = 0;
 
   // Split at block-level HTML boundaries
-  // Capture content of <p>, <li>, <h2>, <h3>, <h4> as claim units
+  // Capture content of <p>, <li>, <h2>, 3, <h4> as claim units
   const blockPattern = /<(p|li|h2|h3|h4)([^>]*)>([\s\S]*?)<\/\1>/gi;
   let match: RegExpExecArray | null;
 
@@ -69,7 +78,7 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
     else if (tag === 'h2' || tag === 'h3' || tag === 'h4') type = 'heading';
 
     claims.push({
-      id: `claim-${Date.now()}-${idx++}`,
+      id: getStableClaimId(innerText, idx++),
       type,
       text: innerText.slice(0, 300),
       html: innerHtml,
@@ -80,7 +89,7 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
   if (claims.length === 0) {
     const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     if (text.length > 0) {
-      claims.push({ id: `claim-${Date.now()}-0`, type: 'paragraph', text, html });
+      claims.push({ id: getStableClaimId(text, 0), type: 'paragraph', text, html });
     }
   }
 
@@ -107,9 +116,10 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
             border-radius: 4px; padding: 16px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             border: 1px solid #333;
-            pointer-events: none; opacity: 0; transform: translateY(4px);
-            transition: all .2s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none; opacity: 0; transform: translate3d(0, 4px, 0);
+            transition: opacity .15s ease-out, transform .15s cubic-bezier(0.16, 1, 0.3, 1);
             transform-origin: top left;
+            will-change: transform, opacity;
         }
         .evidence-popover::before {
             content:''; position:absolute; top:-5px; left:22px;
@@ -118,7 +128,7 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
             border-top: 1px solid #333;
             border-left: 1px solid #333;
         }
-        .node-wrapper:hover .evidence-popover { opacity:1; pointer-events:auto; transform:translateY(0); }
+        .node-wrapper:hover .evidence-popover { opacity:1; pointer-events:auto; transform:translate3d(0, 0, 0); }
         .node-wrapper.has-inline-chat .evidence-popover { display:none; }
         .evidence-label { font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:#9CA3AF; margin-bottom:5px; }
         .evidence-hint  { font-size:11px; line-height:1.5; color:#D1D5DB; margin-bottom:8px; }
@@ -133,23 +143,24 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
         /* ─── Hover Toolbar ─────────────────────── */
         .node-toolbar {
             opacity: 0;
+            pointer-events: none;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             gap: 4px;
             z-index: 50;
-            padding: 0;
-            max-height: 0;
+            padding: 4px 0;
             max-width: 100%;
             overflow-x: auto;
-            transition: opacity .2s ease-out, max-height .2s ease-out, padding .2s ease-out;
+            transform: translate3d(0, -2px, 0);
+            transition: opacity .15s ease-out, transform .15s ease-out;
+            will-change: transform, opacity;
         }
         .node-wrapper:hover .node-toolbar,
         .node-wrapper:focus-within .node-toolbar {
             opacity: 1;
-            max-height: 100px;
-            padding: 6px 0;
-            transition-delay: 0s;
+            pointer-events: auto;
+            transform: translate3d(0, 0, 0);
             position: relative;
             z-index: 60;
         }

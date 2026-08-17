@@ -2,13 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(scriptDir, '..');
+const stylesPath = path.resolve(rootDir, 'src/styles.css');
+const markerStylesPath = path.resolve(rootDir, 'src/styles/pocketgull-marker-font.css');
 
-const stylesPath = path.resolve(__dirname, '../src/styles.css');
-const markerStylesPath = path.resolve(__dirname, '../src/styles/pocketgull-marker-font.css');
-
-console.log('🔤 Running Caslon Typography & Leading/Kerning Verification...');
+console.log('🔤 Running Caslon Typography & Leading/Kerning Verification on:', rootDir);
 
 let errors = [];
 

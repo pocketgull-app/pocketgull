@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { ClinicalSupportAgentService } from './clinical-support-agent.service';
 
 describe('ClinicalSupportAgentService', () => {
@@ -9,9 +8,10 @@ describe('ClinicalSupportAgentService', () => {
     service = new ClinicalSupportAgentService();
   });
 
-  it('should be created with support@pocketgull.app configuration', () => {
+  it('should be created with support@pocketgull.app and dpo@pocketgull.app configuration', () => {
     expect(service).toBeTruthy();
     expect(service.supportEmail).toBe('support@pocketgull.app');
+    expect(service.dpoEmail).toBe('dpo@pocketgull.app');
   });
 
   it('should classify EHR integration inquiries correctly', async () => {
@@ -33,6 +33,7 @@ describe('ClinicalSupportAgentService', () => {
     );
     expect(ticket.category).toBe('PRIVACY_HIPAA');
     expect(ticket.aiResponse).toContain('Safe Harbor Privacy Assurance');
+    expect(ticket.aiResponse).toContain('dpo@pocketgull.app');
   });
 
   it('should classify CMS RPM billing inquiries correctly', async () => {

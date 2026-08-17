@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { OfflineEdgeAiService } from '../services/offline-edge-ai.service';
 import { NetworkStateService } from '../services/network-state.service';
+import { AdobeEnterpriseSuiteService } from '../services/adobe-enterprise-suite.service';
 
 @Component({
   selector: 'app-privacy-sovereignty-dashboard',
@@ -137,6 +138,40 @@ import { NetworkStateService } from '../services/network-state.service';
         }
       </div>
 
+      <!-- Adobe Enterprise C2PA Content Credentials & DPO Attestation -->
+      <div class="mt-6 bg-zinc-900/80 rounded-2xl p-5 border border-blue-500/30 relative z-10 font-sans">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-base">📜</span>
+              <h4 class="text-xs font-mono font-bold text-blue-300 uppercase tracking-wider">
+                Adobe C2PA Content Credentials &amp; 21 CFR Part 11 Audit Sealed
+              </h4>
+            </div>
+            <p class="text-xs text-zinc-400 mt-0.5">
+              Designated DPO: <span class="text-blue-300 font-mono font-semibold">{{ adobeSuite.dpoEmail }}</span> &middot; Org: <span class="font-mono text-zinc-300">{{ adobeSuite.orgId }}</span>
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button (click)="generateC2paAudit()" type="button"
+                    class="px-3 py-1.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5">
+              <span>🔏</span> Generate C2PA Manifest
+            </button>
+            <a [href]="adobeSuite.acrobatWebUrl" target="_blank" rel="noopener noreferrer"
+               class="px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5">
+              <span>📄</span> Acrobat Web
+            </a>
+          </div>
+        </div>
+
+        @if (c2paManifestJson()) {
+          <div class="p-3.5 bg-zinc-950 rounded-xl border border-blue-500/30 font-mono text-[11px] text-blue-300 mt-3">
+            <span class="text-[10px] text-blue-400 uppercase font-bold tracking-wider block mb-1">Verifiable C2PA JUMBF Manifest (SHA-256 Digest)</span>
+            <pre class="whitespace-pre-wrap">{{ c2paManifestJson() }}</pre>
+          </div>
+        }
+      </div>
+
       <!-- Action Confirmation Toast / Banner -->
       @if (lastActionNotice()) {
         <div class="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono flex items-center justify-between animate-fade-in">
@@ -151,9 +186,11 @@ export class PrivacySovereigntyDashboardComponent {
   readonly patientState = inject(PatientStateService);
   readonly edgeAi = inject(OfflineEdgeAiService);
   readonly network = inject(NetworkStateService);
+  readonly adobeSuite = inject(AdobeEnterpriseSuiteService);
 
   readonly showSanitizationPreview = signal<boolean>(false);
   readonly lastActionNotice = signal<string>('');
+  readonly c2paManifestJson = signal<string>('');
 
   readonly activeItemsCount = computed(() => {
     const issues = Object.keys(this.patientState.issues()).length;
@@ -200,5 +237,14 @@ export class PrivacySovereigntyDashboardComponent {
 
   toggleSanitizationPreview() {
     this.showSanitizationPreview.update(v => !v);
+  }
+
+  generateC2paAudit() {
+    const manifest = this.adobeSuite.generateC2paManifest(
+      'Ephemeral Clinical Sovereign Session Record',
+      'application/fhir+json'
+    );
+    this.c2paManifestJson.set(JSON.stringify(manifest, null, 2));
+    this.lastActionNotice.set(`Generated verifiable C2PA Manifest ID: ${manifest.instance_id}`);
   }
 }

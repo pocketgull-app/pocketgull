@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pocket-Gull Sanctuary — Adobe Express Add-on</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-card: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-teal: #14b8a6;
+      --accent-amber: #f59e0b;
+      --accent-purple: #a855f7;
+      --accent-rose: #f43f5e;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logo-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(20,184,166,0.2), rgba(168,85,247,0.2));
+      border: 1px solid var(--accent-teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .title-group h1 {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .title-group p {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-height: 48px;
+      padding: 8px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    .tab-btn.active {
+      background: #ea580c;
+      color: #ffffff;
+    }
+
+    .section-content {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-content.active {
+      display: flex;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--accent-teal);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 12px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .btn-insert {
+      width: 100%;
+      min-height: 48px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      background: linear-gradient(135deg, #0d9488, #14b8a6);
+      color: #fff;
+      touch-action: manipulation;
+    }
+
+    .btn-insert:hover {
+      background: linear-gradient(135deg, #14b8a6, #2dd4bf);
+    }
+
+    .btn-amber {
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: #000;
+    }
+    .btn-amber:hover {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    }
+
+    .btn-purple {
+      background: linear-gradient(135deg, #7e22ce, #a855f7);
+      color: #fff;
+    }
+    .btn-purple:hover {
+      background: linear-gradient(135deg, #a855f7, #c084fc);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: rgba(20, 184, 166, 0.15);
+      color: #2dd4bf;
+      border: 1px solid rgba(20, 184, 166, 0.3);
+    }
+
+    footer {
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo-badge">🕊️</div>
+    <div class="title-group">
+      <h1>Pocket-Gull Sanctuary</h1>
+      <p>Clinical Art Therapy &amp; Patient Design Engine</p>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs" role="tablist" aria-label="PocketGull Sanctuary Navigation">
+    <button id="tab-btn-branddesk" class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-branddesk" onclick="switchTab('branddesk')">🖋️ BrandDesk</button>
+    <button id="tab-btn-pediatric" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-pediatric" onclick="switchTab('pediatric')">🎖️ Pediatric</button>
+    <button id="tab-btn-therapy" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-therapy" onclick="switchTab('therapy')">🎨 Art Therapy</button>
+    <button id="tab-btn-school504" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-school504" onclick="switchTab('school504')">🏫 504 Folio</button>
+    <button id="tab-btn-textures" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-textures" onclick="switchTab('textures')">🧬 Substance 3D</button>
+  </div>
+
+  <!-- Tab 0: BrandDesk & Living Typefoundry -->
+  <div id="tab-branddesk" class="section-content active" role="tabpanel" aria-labelledby="tab-btn-branddesk">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🖋️ PocketGull Wordmark &amp; Header</span>
+        <span class="status-badge" style="background: rgba(234, 88, 12, 0.2); color: #ea580c; border: 1px solid #ea580c;">Vector SVG</span>
+      </div>
+      <p class="card-desc">Handcrafted felt-marker display wordmark with 45° origami chamfer cuts.</p>
+      <button class="btn-insert" style="background: linear-gradient(135deg, #ea580c, #f97316);" onclick="insertBrandWordmark()">
+        <span>✨ Insert Master Brandmark</span>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🕊️ 5 Origami Brand Mascots</span>
+        <span class="status-badge" style="background: rgba(233, 196, 106, 0.2); color: #e9c46a; border: 1px solid #e9c46a;">Archetypes</span>
+      </div>
+      <p class="card-desc">Insert the 5 clinical intelligence guides: Navigator, Chronicler, Statistician, Scholar, or Explorer.</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+        <button class="btn-insert" style="background: #d4a373; font-size: 10px;" onclick="insertOrigamiMascot('navigator')">
+          <span>🧭 Navigator</span>
+        </button>
+        <button class="btn-insert" style="background: #e9c46a; color: #1e293b; font-size: 10px;" onclick="insertOrigamiMascot('chronicler')">
+          <span>⏳ Chronicler</span>
+        </button>
+        <button class="btn-insert" style="background: #7bdff2; color: #042f2e; font-size: 10px;" onclick="insertOrigamiMascot('statistician')">
+          <span>⚖️ Statistician</span>
+        </button>
+        <button class="btn-insert" style="background: #c77dff; font-size: 10px;" onclick="insertOrigamiMascot('scholar')">
+          <span>📖 Scholar</span>
+        </button>
+      </div>
+      <button class="btn-insert" style="background: #0284c7; margin-top: 4px; font-size: 10px;" onclick="insertOrigamiMascot('explorer')">
+        <span>🔭 Explorer (3D Anatomy)</span>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📊 ICU Telemetry &amp; Slashed Zero</span>
+        <span class="status-badge" style="background: rgba(20, 184, 166, 0.2); color: #14b8a6; border: 1px solid #14b8a6;">WCAG AAA</span>
+      </div>
+      <p class="card-desc">Precision clinical vitals readout badge: 120/80 mmHg · 72 bpm · SpO2 98% · φ = 1.618.</p>
+      <button class="btn-insert" style="background: linear-gradient(135deg, #0f172a, #1e293b); border: 1px solid #334155;" onclick="insertTelemetryBadge()">
+        <span>🫀 Insert Telemetry Badge</span>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🏺 Sumerian Cuneiform Tablet</span>
+        <span class="status-badge" style="background: rgba(200, 109, 81, 0.2); color: #c86d51; border: 1px solid #c86d51;">Archaic Codex</span>
+      </div>
+      <p class="card-desc">Sun-baked clay tablet with 3D embossed cuneiform medical ideograms (ASU = Physician, TI = Life).</p>
+      <button class="btn-insert" style="background: linear-gradient(135deg, #c86d51, #9a3412);" onclick="insertCuneiformTablet()">
+        <span>🏺 Insert Cuneiform Tablet</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab 1: Pediatric Courage Keepsakes -->
+  <div id="tab-pediatric" class="section-content">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🎖️ Bravery Medal of Honor</span>
+        <span class="status-badge">Keepsake</span>
+      </div>
+      <p class="card-desc">Gold embossed courage medal for pediatric patients completing treatment or chemotherapy cycles.</p>
+      <button class="btn-insert btn-amber" onclick="insertPediatricMedal()">
+        <span>✨ Insert Courage Medal</span>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📜 Super-Healer Certificate</span>
+        <span class="status-badge">Print Ready</span>
+      </div>
+      <p class="card-desc">Personalized clinical diploma celebrating milestone recovery with origami mascot badge.</p>
+      <button class="btn-insert btn-amber" onclick="insertCertificate()">
+        <span>📄 Insert Certificate Template</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab 2: Art Therapy & Kintsugi -->
+  <div id="tab-therapy" class="section-content">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🏺 24K Gold Kintsugi Seam</span>
+        <span class="status-badge">Somatic Healing</span>
+      </div>
+      <p class="card-desc">Japanese aesthetic fracture repair lines symbolising post-traumatic growth and resilience.</p>
+      <button class="btn-insert btn-purple" onclick="insertKintsugiSeam()">
+        <span>✨ Insert Kintsugi Seams</span>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🌸 528 Hz Bio-Resonance Mandala</span>
+        <span class="status-badge">Chromesthesia</span>
+      </div>
+      <p class="card-desc">Solfeggio harmonic geometry for autonomic nervous system calming and stress relief.</p>
+      <button class="btn-insert btn-purple" onclick="insertMandala()">
+        <span>🪷 Insert Healing Mandala</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab 3: 504 School Accommodation Folio -->
+  <div id="tab-school504" class="section-content">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📋 Teacher Classroom Quick-Card</span>
+        <span class="status-badge">ADA / Section 504</span>
+      </div>
+      <p class="card-desc">Visual classroom cheat-sheet for teachers: sensory quiet zones, blood glucose checks, elevator passes.</p>
+      <button class="btn-insert" onclick="insert504Card()">
+        <span>🏫 Insert 504 Quick-Card</span>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📊 Symptom &amp; Energy Tracker</span>
+        <span class="status-badge">FHIR R4</span>
+      </div>
+      <p class="card-desc">Visual daily rhythm and fatigue management infographic for youth with chronic illness.</p>
+      <button class="btn-insert" onclick="insertSymptomTracker()">
+        <span>📈 Insert Energy Tracker</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab 4: Substance 3D & Firefly Textures -->
+  <div id="tab-textures" class="section-content">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🦴 Osteon Bone Matrix PBR</span>
+        <span class="status-badge">Case III Codex</span>
+      </div>
+      <p class="card-desc">Substance 3D compact cortical bone lattice texture synthesized via Adobe Firefly.</p>
+      <button class="btn-insert" onclick="insertTexture('skeleton')">
+        <span>🧬 Insert Bone PBR Texture</span>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🫀 Endothelial Perfusion PBR</span>
+        <span class="status-badge">Case IV Codex</span>
+      </div>
+      <p class="card-desc">Substance 3D micro-vascular capillary substrate with biophotonic glowing aesthetics.</p>
+      <button class="btn-insert" onclick="insertTexture('organs')">
+        <span>🫀 Insert Vascular PBR Texture</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span class="status-dot"></span>
+      <span>Add-on SDK v1.39 Linked</span>
+    </div>
+    <span>Adobe Org: 00AF226E687833EB0A495CEE</span>
+  </footer>
+
+  <script src="src/ui/index.js"></script>
+</body>
+</html>

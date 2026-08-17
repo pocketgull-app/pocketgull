@@ -36,7 +36,7 @@ import { FitbitService } from '../../services/hardware/fitbit.service';
             <p><span class="font-semibold">Data handling:</span> Health data is held in server memory only during your session and is never written to permanent storage, sold, shared with third parties, or used for advertising.</p>
             <p><span class="font-semibold">Security:</span> Data is transmitted over HTTPS. Tokens are stored in memory only (ephemeral — cleared on server restart).</p>
             <p><span class="font-semibold">Your rights:</span> You may withdraw at any time via Imports → Google Health Disconnect. Selecting "Disconnect &amp; Erase Data" will permanently remove all synced health data from this session.</p>
-            <p><span class="font-semibold">Contact:</span> <a href="mailto:privacy@pocketgull.app" class="text-blue-600 dark:text-blue-400 underline">privacy@pocketgull.app</a></p>
+            <p><span class="font-semibold">Contact:</span> <a href="mailto:dpo@pocketgull.app" class="text-blue-600 dark:text-blue-400 underline">dpo@pocketgull.app</a> (Data Protection Officer) &middot; <a href="mailto:privacy@pocketgull.app" class="text-blue-600 dark:text-blue-400 underline">privacy@pocketgull.app</a></p>
           </div>
           <div class="rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 p-3 text-xs text-amber-800 dark:text-amber-300">
             <strong>Note:</strong> Google Health API scopes are classified as Restricted. Your own personal data is accessible immediately. Production use with other users requires Google's privacy review.

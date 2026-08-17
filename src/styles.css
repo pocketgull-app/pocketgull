@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=JetBrains+Mono:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 @import './styles/pocketgull-marker-font.css';
 @import './styles/pocketgull-icon-font.css';
 
@@ -7,40 +7,40 @@
 @tailwind utilities;
 
 :root {
-  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans: 'Nunito', sans-serif;
-  --font-heading: 'Nunito', sans-serif;
-  --font-serif: 'Nunito', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-rounded: 'Nunito', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-heading: 'PocketGull VF', 'Outfit', sans-serif;
+  --font-serif: 'Libre Caslon Text', Georgia, serif;
+  --font-mono: 'PocketGull Mono', 'JetBrains Mono', monospace;
+  --font-rounded: 'PocketGull VF', 'Outfit', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body, html {
-  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.6;
-  letter-spacing: -0.01em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.55;
+  letter-spacing: -0.011em;
 }
 
 h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'PocketGull VF', 'Outfit', 'Inter', sans-serif;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.25;
 }
 
 .font-sans, .ui-sans-serif {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .font-mono, .ui-monospace, code, kbd, samp, pre {
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
-  font-feature-settings: "zero", "ss01", "ss02";
+  font-family: 'PocketGull Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-feature-settings: "zero" 1, "ss01" 1, "ss02" 1;
 }
 
 .font-rounded, .ui-rounded {
-  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+  font-family: 'PocketGull VF', 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
 }
 
 /* ==========================================================================
@@ -637,16 +637,18 @@ app-body-3d-viewer,
     background: #e2e8f0;
 }
 
-/* Imagineering Scroll & Reveal Animations */
+/* Imagineering Scroll & Reveal Animations (Hardware Composited) */
 .reveal-hidden {
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translate3d(0, 16px, 0);
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
 }
 
 .reveal-visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
 }
 
 /* Tab Fade Transition for mobile */
@@ -1574,22 +1576,24 @@ body.avs-active .cursor-col-resize .rounded-full {
 /* ── Research frame border pulse ─────────────────────────────── */
 body.avs-active app-research-frame {
     animation: avs-frame-pulse var(--avs-breath-duration) ease-in-out infinite;
+    will-change: opacity, transform;
 }
 
 @keyframes avs-frame-pulse {
-    0%, 100% { filter: drop-shadow(0 0 4px  rgba(var(--avs-color-primary), 0.0)); }
-    50%       { filter: drop-shadow(0 0 12px rgba(var(--avs-color-primary), 0.15)); }
+    0%, 100% { opacity: 0.92; box-shadow: 0 0 4px rgba(var(--avs-color-primary), 0.0); }
+    50%       { opacity: 1.0; box-shadow: 0 0 12px rgba(var(--avs-color-primary), 0.2); }
 }
 
 /* ── Body 3D viewer lens glow ────────────────────────────────── */
 body.avs-active app-body-3d-viewer,
 body.avs-active canvas {
     animation: avs-lens-breathe var(--avs-breath-duration) ease-in-out infinite;
+    will-change: opacity;
 }
 
 @keyframes avs-lens-breathe {
-    0%, 100% { filter: drop-shadow(0 0  6px rgba(var(--avs-color-primary), 0.0)); }
-    50%       { filter: drop-shadow(0 0 18px rgba(var(--avs-color-primary), 0.20)); }
+    0%, 100% { opacity: 0.95; }
+    50%       { opacity: 1.0; }
 }
 
 /* ── Input & textarea focus rings ────────────────────────────── */
@@ -2325,38 +2329,42 @@ html.papercraft-construction nav::before {
 .anim-lantern-sweep {
   animation: lanternSweep 4s ease-in-out infinite;
   transform-origin: center center;
+  will-change: transform, opacity;
 }
 @keyframes lanternSweep {
-  0% { transform: rotate(0deg); opacity: 0.7; }
-  50% { transform: rotate(180deg); opacity: 1; filter: drop-shadow(0 0 10px #F59E0B); }
-  100% { transform: rotate(360deg); opacity: 0.7; }
+  0% { transform: rotate(0deg) translateZ(0); opacity: 0.7; }
+  50% { transform: rotate(180deg) translateZ(0); opacity: 1; }
+  100% { transform: rotate(360deg) translateZ(0); opacity: 0.7; }
 }
 
 .anim-quill-write {
   animation: quillWrite 2.5s ease-in-out infinite;
+  will-change: transform;
 }
 @keyframes quillWrite {
-  0% { transform: rotate(0deg) translate(0, 0); }
-  25% { transform: rotate(-10deg) translate(-2px, -3px); }
-  75% { transform: rotate(10deg) translate(2px, 3px); }
-  100% { transform: rotate(0deg) translate(0, 0); }
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  25% { transform: translate3d(-2px, -3px, 0) rotate(-10deg); }
+  75% { transform: translate3d(2px, 3px, 0) rotate(10deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
 }
 
 .anim-speed-dash {
   animation: speedDash 1.2s linear infinite;
+  will-change: transform, opacity;
 }
 @keyframes speedDash {
-  0% { transform: translateX(-4px) skewX(-10deg); opacity: 0.6; }
-  50% { transform: translateX(4px) skewX(10deg); opacity: 1; }
-  100% { transform: translateX(-4px) skewX(-10deg); opacity: 0.6; }
+  0% { transform: translate3d(-4px, 0, 0) skewX(-10deg); opacity: 0.6; }
+  50% { transform: translate3d(4px, 0, 0) skewX(10deg); opacity: 1; }
+  100% { transform: translate3d(-4px, 0, 0) skewX(-10deg); opacity: 0.6; }
 }
 
 .anim-cpr-pulse {
   animation: cprPulse 545ms ease-in-out infinite alternate; /* 110 BPM */
+  will-change: transform;
 }
 @keyframes cprPulse {
-  0% { transform: scale(0.96); filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.4)); }
-  100% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.9)); }
+  0% { transform: scale3d(0.96, 0.96, 1); opacity: 0.85; }
+  100% { transform: scale3d(1.06, 1.06, 1); opacity: 1.0; }
 }
 
 /* ─── Neo-Brutalist Tactile Papercraft Utilities ─── */
@@ -3813,14 +3821,39 @@ textarea:focus-visible {
   outline-offset: 2px !important;
 }
 
-/* 5. Mobile & Touch Target Accessibility (WCAG 2.5.5 / 2.5.8 - 48px Min Hit Area) */
+/* 5. Mobile & Touch Target Accessibility (WCAG 2.5.5 / 2.5.8 - 48px Universal Hit Area) */
+button,
+a,
+input[type="button"],
+input[type="submit"],
+[role="button"] {
+  touch-action: manipulation;
+  position: relative;
+}
+
 app-secure-splash button,
 app-secure-splash a,
 app-secure-splash input[type="button"],
 app-secure-splash input[type="submit"],
 app-secure-splash [role="button"] {
   min-height: 48px;
-  touch-action: manipulation;
+}
+
+@media (pointer: coarse) {
+  button::after,
+  a::after,
+  [role="button"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    min-width: 48px;
+    min-height: 48px;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+  }
 }
 
 .origami-seagull-container,

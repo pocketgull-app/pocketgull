@@ -1,10 +1,11 @@
-import { Component, ElementRef, viewChild, AfterViewInit, OnDestroy, effect, inject, signal, computed, ChangeDetectionStrategy, NgZone } from '@angular/core';
+import { Component, ElementRef, viewChild, AfterViewInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { PatientStateService } from '../../services/patient-state.service';
 import { WebGpuEdgeAiService } from '../../services/webgpu-edge-ai.service';
 import { TeledentistryService } from '../../services/teledentistry.service';
+import { AdobeFireflyTextureService, FireflyTextureType } from '../../services/adobe-firefly-texture.service';
 
 export type BiophysicalTissueSubstrate = 'bone' | 'vascular' | 'dental' | 'skin';
 
@@ -29,11 +30,11 @@ export type BiophysicalTissueSubstrate = 'bone' | 'vascular' | 'dental' | 'skin'
             <div class="flex items-center gap-2">
               <h3 class="text-sm font-black uppercase tracking-wider text-amber-200">Genesis Biophysical Substrate Lens</h3>
               <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase bg-amber-500/20 text-amber-300 rounded-full border border-amber-500/40">
-                Edwin Smith PBR Codex
+                Adobe Firefly &bull; Edwin Smith PBR Codex
               </span>
             </div>
             <p class="text-[11px] text-zinc-400 font-sans">
-              WebGL 3D Procedural Tissue Texture Simulation & Microgravity Resorption HUD
+              WebGL 3D Procedural Tissue Texture Simulation &amp; Microgravity Resorption HUD
             </p>
           </div>
         </div>
@@ -79,7 +80,22 @@ export type BiophysicalTissueSubstrate = 'bone' | 'vascular' | 'dental' | 'skin'
         </div>
       </div>
 
-      <!-- 3D Canvas Canvas Container -->
+      <!-- Adobe Firefly & Codex Live Prompt HUD Banner -->
+      <div class="relative z-20 px-4 py-2 bg-zinc-900/60 border-b border-zinc-800/60 flex items-center justify-between gap-2 text-[11px]">
+        <div class="flex items-center gap-2 overflow-hidden">
+          <span class="px-2 py-0.5 rounded-lg bg-teal-500/20 text-teal-300 font-bold border border-teal-500/30 shrink-0">
+            🎨 Adobe Firefly PBR
+          </span>
+          <span class="text-zinc-300 truncate font-sans" [title]="currentParams().prompt">
+            {{ currentParams().prompt }}
+          </span>
+        </div>
+        <span class="text-zinc-400 font-mono shrink-0 hidden md:inline">
+          512&times;512 PBR Normal/Bump
+        </span>
+      </div>
+
+      <!-- 3D Canvas Container -->
       <div #canvasContainer class="w-full flex-1 relative min-h-[300px] cursor-grab active:cursor-grabbing">
         
         <!-- Live Parameter HUD Overlay -->
@@ -94,7 +110,10 @@ export type BiophysicalTissueSubstrate = 'bone' | 'vascular' | 'dental' | 'skin'
             <span class="text-zinc-400">Metalness:</span>
             <span class="text-zinc-200 font-bold text-right">{{ currentParams().metalness }}</span>
 
-            <span class="text-zinc-400">Microgravity $\Delta$BMD:</span>
+            <span class="text-zinc-400">Bump Scale:</span>
+            <span class="text-teal-300 font-bold text-right">{{ currentParams().bumpScale }}</span>
+
+            <span class="text-zinc-400">Microgravity &Delta;BMD:</span>
             <span class="text-amber-300 font-bold text-right">-{{ bmdResorptionRate() }}% / mo</span>
 
             <span class="text-zinc-400">SIBI Inflammatory:</span>
@@ -123,7 +142,7 @@ export type BiophysicalTissueSubstrate = 'bone' | 'vascular' | 'dental' | 'skin'
         <!-- Microgravity Resorption Slider -->
         <div class="space-y-1">
           <div class="flex justify-between text-[11px] font-bold">
-            <span class="text-amber-300">Spaceflight Bone Resorption ($\Delta$BMD)</span>
+            <span class="text-amber-300">Spaceflight Bone Resorption (&Delta;BMD)</span>
             <span class="text-amber-400 font-mono">-{{ bmdResorptionRate() }}%</span>
           </div>
           <input 
@@ -171,6 +190,7 @@ export class GenesisBiophysicalSubstrateComponent implements AfterViewInit, OnDe
   private readonly ngZone = inject(NgZone, { optional: true });
   readonly edgeAi = this.injectedEdgeAi || new WebGpuEdgeAiService();
   private readonly teledentistry = inject(TeledentistryService, { optional: true });
+  protected readonly fireflyTexture = inject(AdobeFireflyTextureService, { optional: true });
 
   readonly activeSubstrate = signal<BiophysicalTissueSubstrate>('bone');
   readonly bmdResorptionRate = signal<number>(1.5);
@@ -178,10 +198,50 @@ export class GenesisBiophysicalSubstrateComponent implements AfterViewInit, OnDe
 
   readonly currentParams = computed(() => {
     switch (this.activeSubstrate()) {
-      case 'bone': return { roughness: 0.65, metalness: 0.05, color: 0xe6dfd5 };
-      case 'vascular': return { roughness: 0.25, metalness: 0.15, color: 0x991b1b };
-      case 'dental': return { roughness: 0.15, metalness: 0.0, color: 0xf8fafc };
-      case 'skin': return { roughness: 0.45, metalness: 0.0, color: 0xd97706 };
+      case 'bone':
+        return {
+          roughness: 0.65,
+          metalness: 0.05,
+          color: 0xe6dfd5,
+          bumpScale: 0.05,
+          emissiveHex: 0x44403c,
+          emissiveIntensity: 0.05,
+          fireflyType: 'skeleton' as FireflyTextureType,
+          prompt: 'Edwin Smith Surgical Codex Case III: Compact osteon cortical bone matrix, Haversian canal lattice, polished ivory trabecular architecture'
+        };
+      case 'vascular':
+        return {
+          roughness: 0.25,
+          metalness: 0.15,
+          color: 0x991b1b,
+          bumpScale: 0.08,
+          emissiveHex: 0xef4444,
+          emissiveIntensity: 0.25,
+          fireflyType: 'organs' as FireflyTextureType,
+          prompt: 'Edwin Smith Surgical Codex Case IV: Endothelial organ vascular membrane, glowing cardiac micro-capillary web, visceral perfusion substrate'
+        };
+      case 'dental':
+        return {
+          roughness: 0.15,
+          metalness: 0.0,
+          color: 0xf8fafc,
+          bumpScale: 0.03,
+          emissiveHex: 0x06b6d4,
+          emissiveIntensity: 0.10,
+          fireflyType: 'skeleton' as FireflyTextureType,
+          prompt: 'Edwin Smith Codex Case V: Hydroxyapatite enamel crystal lattice, periodontal probing substrate & dentin prism alignment'
+        };
+      case 'skin':
+        return {
+          roughness: 0.45,
+          metalness: 0.0,
+          color: 0xd97706,
+          bumpScale: 0.04,
+          emissiveHex: 0x0284c7,
+          emissiveIntensity: 0.12,
+          fireflyType: 'skin' as FireflyTextureType,
+          prompt: 'Edwin Smith Surgical Codex Case I: Micro-cellular dermal integument, biophotonic SSS refraction, Type I/III collagen substrate'
+        };
     }
   });
 
@@ -192,28 +252,13 @@ export class GenesisBiophysicalSubstrateComponent implements AfterViewInit, OnDe
   private mesh!: THREE.Mesh;
   private animationFrameId?: number;
 
-  constructor() {
-    try {
-      effect(() => {
-        const params = this.currentParams();
-        if (this.mesh && this.mesh.material) {
-          const mat = this.mesh.material as THREE.MeshStandardMaterial;
-          mat.roughness = params.roughness;
-          mat.metalness = params.metalness;
-          mat.color.setHex(params.color);
-        }
-      });
-    } catch {
-      // In headless test environments without scheduler, gracefully skip constructor effect
-    }
-  }
-
   ngAfterViewInit(): void {
     this.initThreeJs();
   }
 
   setSubstrate(sub: BiophysicalTissueSubstrate): void {
     this.activeSubstrate.set(sub);
+    this.updateSubstrateMaterial();
   }
 
   updateBmdRate(event: Event): void {
@@ -229,6 +274,34 @@ export class GenesisBiophysicalSubstrateComponent implements AfterViewInit, OnDe
   async runOfflineEdgeAssessment(): Promise<void> {
     const context = `Biophysical Substrate ${this.activeSubstrate()}, BMD Resorption Rate: ${this.bmdResorptionRate()}%, SIBI Burden Score: ${this.sibiScore()}`;
     await this.edgeAi.generateStructuredOfflineAssessment(context);
+  }
+
+  private updateSubstrateMaterial(): void {
+    if (!this.mesh || typeof window === 'undefined') return;
+    const params = this.currentParams();
+    const bumpTexture = this.fireflyTexture?.getFireflyTexture(params.fireflyType);
+
+    const mat = new THREE.MeshStandardMaterial({
+      color: params.color,
+      roughness: params.roughness,
+      metalness: params.metalness,
+      bumpMap: bumpTexture || null,
+      bumpScale: params.bumpScale,
+      emissive: params.emissiveHex,
+      emissiveIntensity: params.emissiveIntensity,
+      wireframe: false
+    });
+
+    if (this.mesh.material) {
+      if (Array.isArray(this.mesh.material)) {
+        this.mesh.material.forEach(m => m.dispose());
+      } else {
+        (this.mesh.material as THREE.Material).dispose();
+      }
+    }
+
+    this.mesh.material = mat;
+    mat.needsUpdate = true;
   }
 
   private initThreeJs(): void {
@@ -252,40 +325,49 @@ export class GenesisBiophysicalSubstrateComponent implements AfterViewInit, OnDe
     this.controls.dampingFactor = 0.05;
 
     // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     this.scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0xf59e0b, 1.5);
+    const dirLight1 = new THREE.DirectionalLight(0xf59e0b, 1.6);
     dirLight1.position.set(5, 5, 5);
     this.scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 1.0);
+    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 1.2);
     dirLight2.position.set(-5, -5, -2);
     this.scene.add(dirLight2);
 
-    // Procedural Mesh (Icosahedron Geometry with PBR Standard Material)
+    // Procedural Mesh (Icosahedron Geometry with Adobe Firefly PBR Material)
     const geom = new THREE.IcosahedronGeometry(1.2, 4);
     const params = this.currentParams();
+    const bumpTexture = this.fireflyTexture?.getFireflyTexture(params.fireflyType);
+
     const mat = new THREE.MeshStandardMaterial({
       color: params.color,
       roughness: params.roughness,
       metalness: params.metalness,
+      bumpMap: bumpTexture || null,
+      bumpScale: params.bumpScale,
+      emissive: params.emissiveHex,
+      emissiveIntensity: params.emissiveIntensity,
       wireframe: false
     });
 
     this.mesh = new THREE.Mesh(geom, mat);
     this.scene.add(this.mesh);
 
-    this.ngZone.runOutsideAngular(() => {
-      const animate = () => {
-        this.animationFrameId = requestAnimationFrame(animate);
-        this.mesh.rotation.y += 0.005;
-        this.mesh.rotation.x += 0.002;
-        this.controls.update();
-        this.renderer.render(this.scene, this.camera);
-      };
-      animate();
-    });
+    const runLoop = () => {
+      this.animationFrameId = requestAnimationFrame(runLoop);
+      this.mesh.rotation.y += 0.005;
+      this.mesh.rotation.x += 0.002;
+      this.controls.update();
+      this.renderer.render(this.scene, this.camera);
+    };
+
+    if (this.ngZone) {
+      this.ngZone.runOutsideAngular(() => runLoop());
+    } else {
+      runLoop();
+    }
   }
 
   ngOnDestroy(): void {

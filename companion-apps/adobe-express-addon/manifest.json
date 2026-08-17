@@ -1,0 +1,38 @@
+{
+  "id": "pocketgull-clinical-art-sanctuary",
+  "name": "Pocket-Gull Clinical Art & Sanctuary",
+  "version": "1.0.0",
+  "manifestVersion": 2,
+  "requirements": {
+    "apps": [
+      {
+        "name": "Express",
+        "apiVersion": 1
+      }
+    ]
+  },
+  "entryPoints": [
+    {
+      "type": "panel",
+      "id": "panel1",
+      "main": "src/index.html",
+      "documentSandbox": "src/document/index.js",
+      "title": "Pocket-Gull Sanctuary",
+      "label": {
+        "default": "Pocket-Gull Sanctuary"
+      },
+      "icons": [
+        {
+          "width": 24,
+          "height": 24,
+          "path": "icons/icon-24.png"
+        },
+        {
+          "width": 48,
+          "height": 48,
+          "path": "icons/icon-48.png"
+        }
+      ]
+    }
+  ]
+}

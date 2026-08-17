@@ -167,7 +167,7 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
           }
 
         <div class="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden relative">
-          <div class="flex-1 min-h-0 min-w-0 h-full flex flex-col overflow-y-auto transition-all duration-300 p-4 sm:p-6">
+          <div class="flex-1 min-h-0 min-w-0 h-full flex flex-col overflow-y-auto p-4 sm:p-6">
             
             <!-- Cohort Triage Matrix Panel -->
             @if (showCohortMatrixModal()) {

@@ -1,0 +1,22 @@
+{
+  "name": "pocketgull-express-addon",
+  "version": "1.0.0",
+  "description": "Pocket-Gull Adobe Express Add-on for Clinical Art Therapy, Pediatric Keepsakes, and Medical Design",
+  "author": "Pocket-Gull Open Science Consortium <dpo@pocketgull.app>",
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "ccweb-add-on-scripts start --use-mcp",
+    "build": "ccweb-add-on-scripts build",
+    "package": "ccweb-add-on-scripts package"
+  },
+  "devDependencies": {
+    "@adobe/ccweb-add-on-sdk-types": "^1.39.0",
+    "@adobe/ccweb-add-on-scripts": "^2.1.0"
+  },
+  "dependencies": {
+    "@spectrum-web-components/theme": "^0.39.0",
+    "@spectrum-web-components/button": "^0.39.0",
+    "@spectrum-web-components/tabs": "^0.39.0",
+    "@spectrum-web-components/card": "^0.39.0"
+  }
+}

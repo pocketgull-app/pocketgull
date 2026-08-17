@@ -27,6 +27,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[Interpersonal Social Pragmatics Gym] (`SocialPragmaticsGymService`, `SocialPragmaticsGymComponent`, WebMCP Tool #74)**:
   - Interactive clinical negotiation, Non-Violent Communication (NVC), de-escalation, and assertive boundary-setting training for neurodivergent individuals and patient advocates.
   - Registered **WebMCP Tool #74 (`evaluate_social_conversational_pragmatics`)**.
+- **[Adobe Enterprise Suite & C2PA Content Authenticity Bridge] (`AdobeSubstanceMaterialGalleryComponent`, `AdobeCloudServicesService`, `AdobeEnterpriseSuiteService`)**:
+  - Integrated Adobe Substance 3D PBR procedural biophysical materials for anatomical tissue shaders.
+  - Connected Adobe Acrobat PDF Services API with C2PA digital provenance manifests and cryptographic tamper-evident signing for medical reports.
+  - Integrated Firefly Generative AI asset generation with Sentinel security egress protection.
+- **[Build Pipeline, CSS, & Workspace Tooling Hardening]**:
+  - Corrected Tailwind CSS `theme.extend` configuration ensuring universal access to Tailwind's core color palette across all custom components.
+  - Standardized OpenType `font-feature-settings` and variable font CSS properties for cross-platform LightningCSS/esbuild compilation.
+  - Hardened Sentinel Security & Egress Guard with approved domain whitelist for Adobe Developer, Cloud Services, and C2PA manifests.
+  - Configured Gradle and Java language server exclusions preventing stale project discovery across Flutter companion apps.
 - **[CERN / Zenodo Academic Archival Governance] (`CITATION.cff`, `.zenodo.json`)**:
   - Synchronized `CITATION.cff` and `.zenodo.json` to release `v1.22.0` for 1-click academic BibTeX/APA citations and 100+ year permanent archival preservation at the CERN Data Centre in Geneva.
   - Verified 18/18 OpenSSF Scorecard heuristics and StepSecurity Harden-Runner egress auditing.

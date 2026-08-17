@@ -37,8 +37,6 @@ test.describe('Automated Theme & Persona Visual Snapshot Suite', () => {
   for (const theme of THEMES) {
     test(`verify theme loading and styling: ${theme}`, async ({ page }) => {
       // Apply theme via DOM root class
-      
-      // Apply theme via DOM root class
       await page.evaluate((t) => {
         document.documentElement.className = t;
       }, theme);
