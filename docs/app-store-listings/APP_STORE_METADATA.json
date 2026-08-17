@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json.schemastore.org/appstore-metadata.json",
+  "version": "1.21.0",
+  "buildNumber": "195",
+  "apps": {
+    "provider": {
+      "appId": "app.pocketgull.clinical",
+      "bundleId": "app.pocketgull.clinical",
+      "sku": "PG-CLINICAL-IOS-01",
+      "name": "PocketGull Clinical CDS",
+      "subtitle": "Real-Time AI Clinical Strategy",
+      "primaryCategory": "MEDICAL",
+      "secondaryCategory": "BUSINESS",
+      "contentRating": "17+",
+      "keywords": "clinical,cds,fhir,ehr,gemini,doctor,medical,emr,triage,careplan,ambient,charting",
+      "promotionalText": "Transform clinical exam workflows with full-duplex Google Gemini Live AI consults, tri-paradigm synthesis, instant FHIR R4 care plans, and 30x practice RPM reimbursement.",
+      "privacyPolicyUrl": "https://pocketgull.app/privacy-policy.html",
+      "termsOfServiceUrl": "https://pocketgull.app/terms-of-service.html",
+      "supportUrl": "https://pocketgull.app",
+      "marketingUrl": "https://pocketgull.com",
+      "inAppPurchases": [
+        {
+          "productId": "pocketgull.clinical.monthly",
+          "referenceName": "PocketGull Clinical Professional (Monthly)",
+          "type": "AUTO_RENEWABLE_SUBSCRIPTION",
+          "priceTier": 199.00,
+          "duration": "1m"
+        },
+        {
+          "productId": "pocketgull.clinical.annual",
+          "referenceName": "PocketGull Clinical Professional (Annual)",
+          "type": "AUTO_RENEWABLE_SUBSCRIPTION",
+          "priceTier": 1990.00,
+          "duration": "1y"
+        }
+      ]
+    },
+    "patient": {
+      "appId": "app.pocketgull.patient",
+      "bundleId": "app.pocketgull.patient",
+      "sku": "PG-HEALTH-IOS-01",
+      "name": "PocketGull: 3D Digital Twin",
+      "subtitle": "3D Body Vitals & AI Care Plan",
+      "primaryCategory": "HEALTH_AND_FITNESS",
+      "secondaryCategory": "MEDICAL",
+      "contentRating": "12+",
+      "keywords": "digital-twin,health,vitals,careplan,gemini,symptoms,cgm,longevity,whoop,oura,applehealth",
+      "promotionalText": "Explore your personal 3D physiological digital twin, get live voice consults with Google Gemini AI, track continuous vitals, and own your health data.",
+      "privacyPolicyUrl": "https://pocketgull.app/privacy-policy.html",
+      "termsOfServiceUrl": "https://pocketgull.app/terms-of-service.html",
+      "supportUrl": "https://pocketgull.app",
+      "marketingUrl": "https://pocketgull.com",
+      "inAppPurchases": [
+        {
+          "productId": "pocketgull.health.monthly",
+          "referenceName": "PocketGull Health Plus (Monthly)",
+          "type": "AUTO_RENEWABLE_SUBSCRIPTION",
+          "priceTier": 9.99,
+          "duration": "1m"
+        },
+        {
+          "productId": "pocketgull.health.annual",
+          "referenceName": "PocketGull Health Plus (Annual)",
+          "type": "AUTO_RENEWABLE_SUBSCRIPTION",
+          "priceTier": 79.99,
+          "duration": "1y"
+        }
+      ]
+    }
+  }
+}

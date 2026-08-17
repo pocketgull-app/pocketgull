@@ -29,6 +29,7 @@ report.html
 report.json
 *.local
 *.local.*
+*.exe
 
 # Editor directories and files
 .vscode/*

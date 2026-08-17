@@ -1,6 +1,8 @@
 User-agent: *
 Allow: /
 Allow: /llms.txt
+Allow: /docs/
+Allow: /docs/overview.md
 Allow: /api/webmcp/tools
 Allow: /contracts/clinical-ml-openapi.yaml
 Allow: /search.html
