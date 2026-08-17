@@ -1,5 +1,5 @@
 # 🎬 Pocket-Gull: Google Veo Video Treatment & Production Pipeline
-## 60–90s Cinematic Showcase for Build with Gemini + XPRIZE
+## 60–90s Cinematic Showcase for Build with Gemini + XPRIZE (Business Track)
 
 ---
 
@@ -7,7 +7,7 @@
 
 - **Format**: 16:9 4K (3840×2160), 24 FPS, CinemaScope 2.39:1 aspect ratio.
 - **Cinematic Style**: Ultra-premium medical documentary aesthetic (Arri Alexa 65, Master Anamorphic Prime lenses, f/1.8 shallow depth of field, warm amber clinical rim lighting against dark titanium and deep teal surfaces).
-- **Core Theme**: *From Administrative Burden to Human Connection* — showing how Google Gemini Live and 3D spatial computing restore intimacy to medicine while pushing the frontier of cellular longevity.
+- **Core Theme**: *From Administrative Burden to Human Connection* — showing how Google Gemini Live and 3D spatial computing restore clinical intimacy while driving enterprise B2B health system revenue.
 
 ---
 
@@ -16,13 +16,14 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                       CINEMATIC STORYBOARD TIMELINE                         │
+│                  Build with Gemini · XPRIZE (Business Track)                │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ 00:00 - 00:12 │ Scene 1: The Clerical Trap (Overwhelmed Doctor & EHR)      │
 │ 00:12 - 00:26 │ Scene 2: Voice Awakening (Full-Duplex Gemini Live Consult)  │
 │ 00:26 - 00:42 │ Scene 3: The 3D Digital Twin (Biophysical Holographic Body) │
 │ 00:42 - 00:58 │ Scene 4: The Microscopic Frontier (3D Organelle Modeling)  │
 │ 00:58 - 01:14 │ Scene 5: Multi-Paradigm Synthesis & Sentinel Triage         │
-│ 01:14 - 01:30 │ Scene 6: The XPRIZE Healthspan Horizon (Empowered Patient)  │
+│ 01:14 - 01:30 │ Scene 6: The XPRIZE Business Horizon (Enterprise Growth)    │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -88,7 +89,7 @@
 
 ---
 
-#### 🎬 Scene 6: The XPRIZE Healthspan Horizon (01:14 – 01:30)
+#### 🎬 Scene 6: The XPRIZE Business Horizon (01:14 – 01:30)
 - **Visual**: Patient walking vibrantly into morning sunlight along a modern coastal promenade, checking her 3D digital twin on a mobile phone. The Pocket-Gull logo and XPRIZE / Gemini insignia glow elegantly on screen.
 - **Camera Movement**: Wide cinematic tracking shot following the patient walking into golden hour morning light, then crane up to reveal the logo lockup.
 - **Google Veo Prompt**:

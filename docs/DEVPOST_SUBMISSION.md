@@ -13,7 +13,7 @@
   ```text
   A real-time clinical AI co-pilot powered by Google Gemini Live, 3D biophysical anatomy, tri-paradigm medical synthesis, and FHIR R4 interoperability that eliminates clinician burnout.
   ```
-- **Primary Track**: Health, Longevity & Bio-Intelligence / Agentic AI
+- **Primary Track**: Business / Enterprise Innovation Track (XPRIZE)
 - **Live Production App**: [https://pocketgull.app](https://pocketgull.app)
 - **Marketing & Investor Deck**: [https://pocketgull.com](https://pocketgull.com)
 - **Interactive Documentation**: [https://pocketgull.app/docs/study/](https://pocketgull.app/docs/study/)
@@ -28,7 +28,7 @@ Clinicians today spend **more than 2 hours clicking through EHR dropdowns for ev
 
 We asked: *What if clinical care was as fluid, natural, and immediate as a conversation?* What if a clinician could conduct a full exam while **Google Gemini Live listens, reasons across Eastern and Western medical paradigms, updates an interactive 3D digital twin in real time, and synthesizes instant FHIR R4 care plans with zero clerical burden?**
 
-Inspired by the **XPRIZE Healthspan** vision of proactive, decentralized longevity and **Google Gemini’s groundbreaking multimodal live audio streaming**, we built **Pocket-Gull** — a clinical co-pilot and patient digital twin that bridges evidence-based medicine, citizen science, and biophysical modeling.
+Inspired by the **XPRIZE (Business Track)** vision of high-impact enterprise transformation and **Google Gemini’s groundbreaking multimodal live audio streaming**, we built **Pocket-Gull** — a B2B clinical co-pilot, revenue optimization engine, and patient digital twin that bridges evidence-based medicine, citizen science, and biophysical modeling.
 
 ---
 

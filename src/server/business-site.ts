@@ -1869,19 +1869,19 @@ export function renderBusinessSiteHtml(): string {
 
         </div>
 
-        <!-- XPRIZE Healthspan Submission Card in dark instrument bay -->
+        <!-- XPRIZE Business Category Submission Card in dark instrument bay -->
         <div class="p-6 sm:p-8 rounded-3xl bg-zinc-900 border border-zinc-700 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl text-white">
           <div class="space-y-1.5 text-center sm:text-left">
             <div class="inline-flex items-center gap-1.5 text-xs font-mono-code text-amber-300 font-bold">
-              <span>🏆</span> XPRIZE HEALTHSPAN GLOBAL COMPETITION
+              <span>🏆</span> BUILD WITH GEMINI · XPRIZE (BUSINESS CATEGORY)
             </div>
-            <h3 class="text-xl sm:text-2xl font-serif font-bold text-white">Empowering Multi-Generational Longevity &amp; Healthspan</h3>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-white">B2B Clinical Co-Pilot &amp; Health System Revenue Architecture</h3>
             <p class="text-xs sm:text-sm text-zinc-300 max-w-2xl">
-              Engineered to quantify 10-year functional rejuvenation across cognition, muscular strength, and immune resilience via continuous multi-agent biomarker telemetry.
+              Engineered to eliminate $180,000/yr in uncaptured RPM reimbursement per physician, reduce EHR clerical burnout, and deliver real-time multi-agent biomarker telemetry.
             </p>
           </div>
           <div class="px-4 py-2 rounded-xl bg-zinc-800 border border-amber-500/40 text-amber-300 text-xs font-mono-code whitespace-nowrap">
-            Submission Track: Active
+            Track: Business Category
           </div>
         </div>
 

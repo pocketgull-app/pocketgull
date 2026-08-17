@@ -230,7 +230,7 @@ app.get(['/business', '/preview'], (_req, res) => {
   return res.send(renderBusinessSiteHtml());
 });
 
-// Dedicated XPRIZE Healthspan Contest Submission & Video Studio Route
+// Dedicated XPRIZE (Business Category) Video Studio & Showcase Route
 app.get(['/xprize', '/xprize-submission', '/xprize-showcase', '/video-showcase', '/video-showcase.html'], (_req, res) => {
   const possiblePaths = [
     securePathResolve(browserDistFolder, 'video-showcase.html'),
