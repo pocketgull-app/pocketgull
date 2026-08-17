@@ -11,6 +11,7 @@ import { GcpHealthcareApiService } from './fhir/gcp-healthcare-api.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import { ClinicalGraphQLService } from './clinical-graphql.service';
+import { ClinicalContextModeService } from './clinical-context-mode.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -114,6 +115,10 @@ describe('WebMcpRegistrationService', () => {
       })
     };
 
+    const mockContextModeService = {
+      setMode: vi.fn()
+    };
+
     const mockNgZone = {
       run: (fn: Function) => fn()
     };
@@ -128,6 +133,7 @@ describe('WebMcpRegistrationService', () => {
         { provide: SkepticalEpistemologyService, useValue: mockSkepticalService },
         { provide: ClinicalMoERouterService, useValue: mockMoeRouter },
         { provide: ClinicalGraphQLService, useValue: mockGraphqlService },
+        { provide: ClinicalContextModeService, useValue: mockContextModeService },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -135,10 +141,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 69 WebMCP agentic tools on modelContext', () => {
+  it('should register all 70 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(69);
+    expect(registeredTools.size).toBe(70);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -566,10 +572,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 69 WebMCP agentic tools on modelContext', () => {
+  it('should register all 70 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(69);
+    expect(registeredTools.size).toBe(70);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -892,9 +898,22 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('74');
   });
 
+  it('should register tool #70: set_clinical_interface_context_mode', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('set_clinical_interface_context_mode');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      mode: 'school_safety',
+      reason: 'School nurse reviewing emergency protocol'
+    });
+    expect(result.content[0].text).toContain('school_safety');
+    expect(result.content[0].text).toContain('School nurse reviewing emergency protocol');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(69);
+    expect((service as any).mcpControllers.length).toBe(70);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

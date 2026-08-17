@@ -71,6 +71,7 @@ import { ZooniverseMicroAnnotationComponent } from './components/zooniverse-micr
 import { Section504FolioComponent } from './components/section-504-folio.component';
 import { ArchivalHealthGalleryComponent } from './components/archival-health-gallery.component';
 import { SteeringCommitteeDossierComponent } from './components/steering-committee-dossier.component';
+import { ClinicalContextModeSwitcherComponent } from './components/clinical-context-mode-switcher.component';
 
 @Component({
   selector: 'app-root',
@@ -108,6 +109,7 @@ import { SteeringCommitteeDossierComponent } from './components/steering-committ
     GoogleHealthConsentModalComponent,
     MainHeaderNavComponent,
     IntakeToolbarComponent,
+    ClinicalContextModeSwitcherComponent,
     OnboardingTourOverlayComponent,
     SupportTicketModalComponent,
     ApiPricingComponent,
@@ -500,6 +502,9 @@ import { SteeringCommitteeDossierComponent } from './components/steering-committ
           (uploadData)="uploadData()"
           (finalizeRecord)="finalizeRecord()">
         </app-intake-toolbar>
+
+        <!-- Dynamic Progressive Disclosure Persona Switcher -->
+        <app-clinical-context-mode-switcher></app-clinical-context-mode-switcher>
 
         <!-- Main Grid Layout -->
         <div #mainContainer class="flex-1 flex flex-col md:flex-row max-md:overflow-visible overflow-y-auto md:overflow-hidden relative bg-[#F9FAFB] dark:bg-[#09090b] p-2 md:p-6 gap-3 md:gap-6 min-h-0">

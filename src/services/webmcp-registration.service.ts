@@ -50,6 +50,7 @@ import { AddictionMedicineRecoveryService } from './addiction-medicine-recovery.
 import { Section504AccommodationService } from './section-504-accommodation.service';
 import { ClinicalSteeringCommitteeDossierService } from './clinical-steering-committee-dossier.service';
 import { ClinicalGraphQLService } from './clinical-graphql.service';
+import { ClinicalContextModeService } from './clinical-context-mode.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -106,6 +107,7 @@ export class WebMcpRegistrationService {
   private section504Service = inject(Section504AccommodationService, { optional: true });
   private cscDossierService = inject(ClinicalSteeringCommitteeDossierService, { optional: true });
   private graphqlService = inject(ClinicalGraphQLService, { optional: true });
+  private contextModeService = inject(ClinicalContextModeService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2697,6 +2699,40 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(gqlTool, { signal: gqlCtrl.signal });
     this.mcpControllers.push({ name: gqlTool.name, controller: gqlCtrl });
+
+    // 70. Set Clinical Interface Context Mode
+    const modeCtrl = new AbortController();
+    const modeTool = {
+      name: 'set_clinical_interface_context_mode',
+      description: 'Dynamically switches the visual persona and progressive disclosure mode of the PocketGull clinical interface (patient_family, school_safety, clinical_specialist, executive_governance).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          mode: {
+            type: 'string',
+            enum: ['patient_family', 'school_safety', 'clinical_specialist', 'executive_governance'],
+            description: 'The target clinical persona mode.'
+          },
+          reason: { type: 'string', description: 'Clinical or situational rationale for mode switch.' }
+        },
+        required: ['mode']
+      },
+      execute: async (params: any) => {
+        if (this.contextModeService) {
+          this.ngZone.run(() => {
+            this.contextModeService?.setMode(params.mode);
+          });
+        }
+        return {
+          content: [{
+            type: 'text',
+            text: `Successfully switched interface context mode to "${params.mode}". Rationale: ${params.reason || 'Clinical workflow alignment'}.`
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(modeTool, { signal: modeCtrl.signal });
+    this.mcpControllers.push({ name: modeTool.name, controller: modeCtrl });
   }
 
   /**
