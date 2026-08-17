@@ -3050,6 +3050,105 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(brandTool, { signal: brandCtrl.signal });
     this.mcpControllers.push({ name: brandTool.name, controller: brandCtrl });
+
+    // 79. Auto-Extract and Crosswalk Clinical Narrative (SNOMED, ICD-10, CPT, HCC, RVU, MDM)
+    const extractCodesCtrl = new AbortController();
+    const extractCodesTool = {
+      name: 'auto_extract_and_crosswalk_clinical_codes',
+      description: 'Parses clinical text, SOAP narrative, or ambient consult dialogue and automatically extracts and crosswalks SNOMED-CT, ICD-10-CM, CPT-4/HCPCS, CMS-HCC V28, and LOINC codes with 2024 AMA E/M MDM scoring and FHIR R4 Bundle export.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          clinicalText: {
+            type: 'string',
+            description: 'Clinical narrative, SOAP note, or ambient transcription to analyze and extract.'
+          },
+          patientId: {
+            type: 'string',
+            description: 'Optional patient identifier for FHIR R4 and audit referencing (default: p_active_chart).'
+          }
+        },
+        required: ['clinicalText']
+      },
+      execute: async (params: any) => {
+        const copilot = this.codingCopilotService || new ClinicalCodingCopilotService();
+        const report = copilot.auditChartText(params.clinicalText, params.patientId || 'p_active_chart');
+        const fhirBundle = copilot.exportFhirR4ClaimBundle();
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              report,
+              fhirR4Bundle: fhirBundle
+            }, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(extractCodesTool, { signal: extractCodesCtrl.signal });
+    this.mcpControllers.push({ name: extractCodesTool.name, controller: extractCodesCtrl });
+
+    // 80. Authoritative USCDI v4 SNOMED-CT to ICD-10-CM, CPT & LOINC Crosswalk
+    const crosswalkCtrl = new AbortController();
+    const crosswalkTool = {
+      name: 'crosswalk_snomed_icd10_cpt',
+      description: 'Bi-directionally crosswalks between SNOMED-CT concept IDs, ICD-10-CM diagnostic codes, CPT procedure codes, and LOINC laboratory observations under USCDI v4 standards.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          snomedCode: {
+            type: 'string',
+            description: 'SNOMED-CT Concept Code (e.g. 38341003 for Essential Hypertension, 88805009 for HFrEF).'
+          },
+          icd10Code: {
+            type: 'string',
+            description: 'ICD-10-CM Diagnosis Code for reverse lookup (e.g. I10, I50.22, E11.40, G30.9).'
+          },
+          searchTerm: {
+            type: 'string',
+            description: 'Clinical term query for fuzzy matching (e.g. "Parkinson", "Neuropathy", "Food insecurity").'
+          }
+        }
+      },
+      execute: async (params: any) => {
+        const xwalk = this.snomedCrosswalkService || new SnomedIcdCrosswalkService();
+        if (params?.snomedCode) {
+          const res = xwalk.crosswalkSnomedToIcd10(params.snomedCode);
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify(res, null, 2)
+            }]
+          };
+        }
+        if (params?.icd10Code) {
+          const res = xwalk.crosswalkIcd10ToSnomed(params.icd10Code);
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify(res || { status: 'Unmapped ICD-10 code' }, null, 2)
+            }]
+          };
+        }
+        if (params?.searchTerm) {
+          const results = xwalk.searchByTerm(params.searchTerm);
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({ matchesCount: results.length, matches: results }, null, 2)
+            }]
+          };
+        }
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({ error: 'Please provide snomedCode, icd10Code, or searchTerm.' }, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(crosswalkTool, { signal: crosswalkCtrl.signal });
+    this.mcpControllers.push({ name: crosswalkTool.name, controller: crosswalkCtrl });
   }
 
   /**

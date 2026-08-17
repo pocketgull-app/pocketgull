@@ -199,10 +199,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 78 WebMCP agentic tools on modelContext', () => {
+  it('should register all 80 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(78);
+    expect(registeredTools.size).toBe(80);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -630,10 +630,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 78 WebMCP agentic tools on modelContext', () => {
+  it('should register all 80 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(78);
+    expect(registeredTools.size).toBe(80);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -1065,11 +1065,39 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('--brand-color-primary');
   });
 
+  it('should register tool #79: auto_extract_and_crosswalk_clinical_codes', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('auto_extract_and_crosswalk_clinical_codes');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      clinicalText: 'Patient has long standing T2DM presenting with diabetic neuropathy and congestive heart failure.'
+    });
+    expect(result.content[0].text).toContain('E11.40');
+    expect(result.content[0].text).toContain('I50.22');
+    expect(result.content[0].text).toContain('Bundle');
+  });
+
+  it('should register tool #80: crosswalk_snomed_icd10_cpt', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('crosswalk_snomed_icd10_cpt');
+    expect(tool).toBeDefined();
+
+    const resSnomed = await tool.execute({ snomedCode: '38341003' });
+    expect(resSnomed.content[0].text).toContain('I10');
+    expect(resSnomed.content[0].text).toContain('Essential hypertension');
+
+    const resIcd = await tool.execute({ icd10Code: 'G30.9' });
+    expect(resIcd.content[0].text).toContain('26929004');
+    expect(resIcd.content[0].text).toContain("Alzheimer's disease");
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(78);
+    expect((service as any).mcpControllers.length).toBe(80);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
   });
 });
+

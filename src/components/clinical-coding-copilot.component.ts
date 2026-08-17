@@ -21,29 +21,34 @@ import { ClinicalCodingCopilotService, ICodingSuggestion } from '../services/cli
           <div class="space-y-1">
             <div class="flex items-center gap-2">
               <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold tracking-wider uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                👩‍⚕️ HIM & CODING AUDITOR COPILOT · CMS-HCC V28
+                👩‍⚕️ HIM & CODING AUDITOR COPILOT · USCDI v4 · CMS-HCC V28
               </span>
               <span class="text-xs text-zinc-400 font-mono">100% Keyboard Driven (Vim Shortcuts Enabled)</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight">
-              Clinical Documentation Integrity & Code Defense Suite
+              Clinical Coding & Multi-Terminology Crosswalk Suite
             </h1>
             <p class="text-xs text-zinc-400 max-w-2xl">
-              Eliminating clerical burnout, eye strain, and RAC audit clawbacks for professional clinical coders and HIM specialists.
+              Real-time crosswalk between SNOMED-CT, ICD-10-CM, CPT-4/HCPCS, CMS-HCC V28, and LOINC with 2024 AMA E/M MDM scoring and FHIR R4 claim export.
             </p>
           </div>
 
           <!-- RAF Score & Productivity Badges -->
           <div class="flex flex-wrap items-center gap-3">
-            <div class="p-3 rounded-2xl bg-zinc-950/80 border border-amber-500/30 text-center min-w-[120px]">
-              <div class="text-[10px] font-mono text-zinc-400 uppercase">CMS-HCC RAF Impact</div>
+            <div class="p-3 rounded-2xl bg-zinc-950/80 border border-amber-500/30 text-center min-w-[110px]">
+              <div class="text-[10px] font-mono text-zinc-400 uppercase">CMS-HCC RAF</div>
               <div class="text-xl font-mono font-black text-amber-400">+{{ copilotService.totalRafScore().toFixed(3) }}</div>
             </div>
 
+            <div class="p-3 rounded-2xl bg-zinc-950/80 border border-sky-500/30 text-center min-w-[110px]">
+              <div class="text-[10px] font-mono text-zinc-400 uppercase">Work RVUs</div>
+              <div class="text-xl font-mono font-black text-sky-400">{{ copilotService.totalWorkRvus().toFixed(2) }}</div>
+            </div>
+
             <div class="p-3 rounded-2xl bg-zinc-950/80 border border-emerald-500/30 text-center min-w-[110px]">
-              <div class="text-[10px] font-mono text-zinc-400 uppercase">Accepted Codes</div>
+              <div class="text-[10px] font-mono text-zinc-400 uppercase">Est. Reimbursement</div>
               <div class="text-xl font-mono font-black text-emerald-400">
-                {{ acceptedCount() }} / {{ totalSuggestionsCount() }}
+                \${{ copilotService.totalEstimatedReimbursement().toFixed(2) }}
               </div>
             </div>
 
@@ -53,15 +58,15 @@ import { ClinicalCodingCopilotService, ICodingSuggestion } from '../services/cli
                       type="button"
                       [class.bg-amber-950]="copilotService.eyeCareMode() === 'warm-amber'"
                       [class.text-amber-300]="copilotService.eyeCareMode() === 'warm-amber'"
-                      class="px-2.5 py-1 rounded-xl transition cursor-pointer text-zinc-400">
-                🕯️ Warm Amber
+                      class="min-h-[44px] px-2.5 py-1 rounded-xl transition cursor-pointer text-zinc-400">
+                🕯️ Amber
               </button>
               <button (click)="copilotService.setEyeCareMode('oled-dark')"
                       type="button"
                       [class.bg-zinc-800]="copilotService.eyeCareMode() === 'oled-dark'"
                       [class.text-white]="copilotService.eyeCareMode() === 'oled-dark'"
-                      class="px-2.5 py-1 rounded-xl transition cursor-pointer text-zinc-400">
-                ⬛ OLED Dark
+                      class="min-h-[44px] px-2.5 py-1 rounded-xl transition cursor-pointer text-zinc-400">
+                ⬛ OLED
               </button>
             </div>
           </div>
@@ -82,7 +87,7 @@ import { ClinicalCodingCopilotService, ICodingSuggestion } from '../services/cli
                 </span>
                 <button (click)="runSampleAudit()"
                         type="button"
-                        class="px-2.5 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-[11px] font-mono border border-amber-500/40 transition cursor-pointer">
+                        class="min-h-[44px] px-3 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-[11px] font-mono border border-amber-500/40 transition cursor-pointer">
                   Load Complex Chart
                 </button>
               </div>
@@ -92,18 +97,48 @@ import { ClinicalCodingCopilotService, ICodingSuggestion } from '../services/cli
                         class="w-full p-3.5 rounded-2xl bg-zinc-950/90 border border-zinc-800 text-xs font-mono text-zinc-200 focus:outline-none focus:border-amber-500/80 transition resize-y leading-relaxed"
                         placeholder="Paste physician SOAP note, discharge summary, or operative transcript here..."></textarea>
 
-              <div class="flex items-center justify-between pt-2">
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
                 <button (click)="analyzeCurrentNote()"
                         type="button"
-                        class="min-h-[44px] px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 cursor-pointer">
-                  ⚡ Auto-Extract & Audit Codes
+                        class="min-h-[48px] px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 cursor-pointer">
+                  ⚡ Auto-Extract & Crosswalk
                 </button>
                 <button (click)="copilotService.acceptAll()"
                         type="button"
-                        class="min-h-[44px] px-4 py-2.5 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs uppercase tracking-wider border border-zinc-700 transition cursor-pointer">
+                        class="min-h-[48px] px-4 py-2.5 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs uppercase tracking-wider border border-zinc-700 transition cursor-pointer">
                   Accept All (Ctrl+A)
                 </button>
               </div>
+            </div>
+
+            <!-- Multi-Terminology Export Suite -->
+            <div class="p-5 rounded-3xl border space-y-3"
+                 [ngClass]="cardThemeClass()">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 block">
+                📦 Interoperability & Claim Serialization
+              </span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                <button (click)="exportFhirR4Claim()"
+                        type="button"
+                        class="min-h-[48px] px-3 py-2 rounded-2xl bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 text-xs font-mono border border-emerald-700 transition cursor-pointer flex items-center justify-center gap-1.5">
+                  <span>🔥</span>
+                  <span>Export FHIR R4 Bundle</span>
+                </button>
+
+                <button (click)="exportDenialDefense()"
+                        type="button"
+                        class="min-h-[48px] px-3 py-2 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-amber-200 text-xs font-mono border border-amber-600/40 transition cursor-pointer flex items-center justify-center gap-1.5">
+                  <span>🛡️</span>
+                  <span>1-Click Denial Defense</span>
+                </button>
+              </div>
+
+              @if (exportNotice()) {
+                <div class="p-2.5 rounded-xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 text-xs font-mono flex items-center justify-between">
+                  <span>{{ exportNotice() }}</span>
+                  <button (click)="exportNotice.set(null)" class="text-emerald-400 hover:text-white">&times;</button>
+                </div>
+              }
             </div>
 
             <!-- Keyboard Shortcuts Legend (Ergonomic RSI Protection) -->
@@ -117,47 +152,65 @@ import { ClinicalCodingCopilotService, ICodingSuggestion } from '../services/cli
 
           </div>
 
-          <!-- Right Column (7 Cols): Coding Suggestions & Audit Defense Card -->
+          <!-- Right Column (7 Cols): Coding Suggestions & Crosswalk Matrix -->
           <div class="lg:col-span-7 space-y-4">
             
             @if (activeReport(); as report) {
               
               <!-- E&M Level & Medical Decision Making (MDM) Header -->
-              <div class="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-between">
-                <div>
-                  <span class="text-[10px] font-mono text-zinc-400 uppercase block">RECOMMENDED E&M CODE</span>
-                  <div class="flex items-center gap-2 mt-0.5">
-                    <span class="text-xl font-mono font-black text-amber-300">CPT {{ report.mdmAudit.emLevel }}</span>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                      MDM: {{ report.mdmAudit.mdmLevel }} COMPLEXITY
-                    </span>
+              <div class="p-5 rounded-3xl bg-zinc-900/90 border border-zinc-800 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <span class="text-[10px] font-mono text-zinc-400 uppercase block">RECOMMENDED ENCOUNTER E&M CODE</span>
+                    <div class="flex items-center gap-2 mt-0.5">
+                      <span class="text-2xl font-mono font-black text-amber-300">CPT {{ report.mdmAudit.emLevel }}</span>
+                      <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                        MDM: {{ report.mdmAudit.mdmLevel }}
+                      </span>
+                      <span class="text-xs font-mono text-emerald-400 font-bold">
+                        \${{ report.mdmAudit.estimatedMedicarePayment.toFixed(2) }} ({{ report.mdmAudit.workRvu.toFixed(2) }} RVU)
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="text-right">
+                    <span class="text-[10px] font-mono text-zinc-400 uppercase block">ACCEPTED CODES</span>
+                    <span class="text-lg font-mono font-black text-emerald-400">{{ acceptedCount() }} / {{ totalSuggestionsCount() }}</span>
                   </div>
                 </div>
 
-                <button (click)="exportDenialDefense()"
-                        type="button"
-                        class="min-h-[44px] px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wider transition shadow-md cursor-pointer flex items-center gap-1.5">
-                  <span>🛡️</span>
-                  <span>1-Click Denial Defense Packet</span>
-                </button>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 pt-2 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-400">
+                  <div class="p-2 rounded-xl bg-zinc-950/60 border border-zinc-800">
+                    <div class="text-zinc-500 text-[10px] uppercase">1. Problems Addressed</div>
+                    <div class="font-bold text-zinc-200 truncate">{{ report.mdmAudit.problemsAddressed.level }}</div>
+                  </div>
+                  <div class="p-2 rounded-xl bg-zinc-950/60 border border-zinc-800">
+                    <div class="text-zinc-500 text-[10px] uppercase">2. Data Reviewed</div>
+                    <div class="font-bold text-zinc-200 truncate">{{ report.mdmAudit.dataReviewed.level }}</div>
+                  </div>
+                  <div class="p-2 rounded-xl bg-zinc-950/60 border border-zinc-800">
+                    <div class="text-zinc-500 text-[10px] uppercase">3. Management Risk</div>
+                    <div class="font-bold text-zinc-200 truncate">{{ report.mdmAudit.riskOfComplications.level }}</div>
+                  </div>
+                </div>
               </div>
 
-              <!-- Suggestions List -->
+              <!-- Suggestions List with Multi-Terminology Crosswalk Pills -->
               <div class="space-y-3">
                 @for (sug of report.suggestions; track sug.id; let idx = $index) {
-                  <div class="p-4 rounded-2xl border transition-all cursor-pointer relative"
+                  <div class="p-5 rounded-3xl border transition-all cursor-pointer relative"
                        (click)="copilotService.selectedIndex.set(idx)"
                        [ngClass]="suggestionCardClass(sug, idx)">
                     
                     <!-- Top Ribbon -->
-                    <div class="flex items-center justify-between gap-2 pb-2 border-b border-zinc-800/60 text-xs font-mono">
-                      <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded text-[11px] font-black bg-zinc-950 border border-zinc-700 text-white">
+                    <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-zinc-800/60 text-xs font-mono">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-lg text-xs font-black bg-zinc-950 border border-zinc-700 text-white shadow-sm">
                           {{ sug.code }}
                         </span>
                         <span class="text-zinc-400 font-bold">{{ sug.codeType }}</span>
                         @if (sug.hccCategory) {
-                          <span class="px-2 py-0.2 rounded text-[10px] bg-amber-950 text-amber-300 border border-amber-500/30">
+                          <span class="px-2 py-0.5 rounded-md text-[10px] bg-amber-950 text-amber-300 border border-amber-500/30 font-bold">
                             {{ sug.hccCategory }}
                           </span>
                         }
@@ -167,7 +220,7 @@ import { ClinicalCodingCopilotService, ICodingSuggestion } from '../services/cli
                         @if (sug.rafWeight) {
                           <span class="text-amber-400 font-bold text-[11px]">RAF +{{ sug.rafWeight.toFixed(3) }}</span>
                         }
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold"
+                        <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold"
                               [ngClass]="statusBadgeClass(sug.status)">
                           {{ sug.status }}
                         </span>
@@ -177,6 +230,32 @@ import { ClinicalCodingCopilotService, ICodingSuggestion } from '../services/cli
                     <!-- Description -->
                     <div class="pt-2 text-sm font-semibold text-zinc-100">
                       {{ sug.description }}
+                    </div>
+
+                    <!-- Crosswalk Badges (SNOMED, CPT, LOINC, RxNorm) -->
+                    <div class="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
+                      @if (sug.snomedCode) {
+                        <span class="px-2 py-0.5 rounded-md bg-sky-950/80 border border-sky-600/40 text-sky-300" title="SNOMED-CT Concept ID">
+                          🩺 SCT: {{ sug.snomedCode }}
+                        </span>
+                      }
+                      @if (sug.cptCodes && sug.cptCodes.length > 0) {
+                        @for (cpt of sug.cptCodes; track cpt) {
+                          <span class="px-2 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-600/40 text-emerald-300" title="Associated CPT Procedure Code">
+                            📋 CPT: {{ cpt }}
+                          </span>
+                        }
+                      }
+                      @if (sug.loincCode) {
+                        <span class="px-2 py-0.5 rounded-md bg-purple-950/80 border border-purple-600/40 text-purple-300" title="LOINC Lab Code">
+                          🧪 LOINC: {{ sug.loincCode }}
+                        </span>
+                      }
+                      @if (sug.rxNormCui) {
+                        <span class="px-2 py-0.5 rounded-md bg-teal-950/80 border border-teal-600/40 text-teal-300" title="RxNorm CUI">
+                          💊 RxCUI: {{ sug.rxNormCui }}
+                        </span>
+                      }
                     </div>
 
                     <!-- Evidence Quote Callout -->
@@ -190,18 +269,18 @@ import { ClinicalCodingCopilotService, ICodingSuggestion } from '../services/cli
                     <!-- Action Buttons -->
                     <div class="mt-3 flex items-center justify-between pt-2 border-t border-zinc-800/60">
                       <div class="text-[10px] font-mono text-zinc-500">
-                        {{ sug.ahaCodingClinicRef || 'CMS Coding Guidelines Compliant' }}
+                        {{ sug.ahaCodingClinicRef || 'CMS Title XVIII & USCDI v4 Compliant' }}
                       </div>
 
                       <div class="flex items-center gap-2">
                         <button (click)="copilotService.rejectCode(sug.id); $event.stopPropagation()"
                                 type="button"
-                                class="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-mono border border-rose-800 transition cursor-pointer">
+                                class="min-h-[44px] px-3.5 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-mono border border-rose-800 transition cursor-pointer">
                           Dispute (D)
                         </button>
                         <button (click)="copilotService.acceptCode(sug.id); $event.stopPropagation()"
                                 type="button"
-                                class="px-3 py-1.5 rounded-xl bg-emerald-950/60 hover:bg-emerald-900 text-emerald-300 text-xs font-mono border border-emerald-800 transition cursor-pointer font-bold">
+                                class="min-h-[44px] px-4 py-1.5 rounded-xl bg-emerald-950/60 hover:bg-emerald-900 text-emerald-300 text-xs font-mono border border-emerald-800 transition cursor-pointer font-bold">
                           Accept (A)
                         </button>
                       </div>
@@ -217,11 +296,11 @@ import { ClinicalCodingCopilotService, ICodingSuggestion } from '../services/cli
                 <div class="text-4xl">📋</div>
                 <h3 class="text-lg font-serif font-bold text-white">No Active Chart Audit Loaded</h3>
                 <p class="text-xs text-zinc-400 max-w-md mx-auto">
-                  Paste clinical documentation in the left window or click "Load Complex Chart" to analyze and extract ICD-10, CPT, HCC, and SDOH codes.
+                  Paste clinical documentation in the left window or click "Load Complex Chart" to analyze and extract ICD-10, SNOMED-CT, CPT, HCC, and SDOH codes.
                 </p>
                 <button (click)="runSampleAudit()"
                         type="button"
-                        class="px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+                        class="min-h-[48px] px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
                   Load Clinical Demo Chart
                 </button>
               </div>
@@ -238,6 +317,8 @@ import { ClinicalCodingCopilotService, ICodingSuggestion } from '../services/cli
 })
 export class ClinicalCodingCopilotComponent {
   copilotService = inject(ClinicalCodingCopilotService);
+
+  exportNotice = signal<string | null>(null);
 
   chartInputText = `Patient is a 64-year-old female presenting with long-standing Type 2 Diabetes Mellitus with worsening bilateral foot numbness and neuropathic tingling, consistent with diabetic peripheral neuropathy.
 
@@ -292,6 +373,23 @@ Plan: Adjusted insulin glargine, initiated dapagliflozin renal protocol, and pla
     this.copilotService.auditChartText(this.chartInputText, 'p_marie_curie');
   }
 
+  exportFhirR4Claim(): void {
+    const bundle = this.copilotService.exportFhirR4ClaimBundle();
+    if (!bundle) return;
+
+    const jsonStr = JSON.stringify(bundle, null, 2);
+    if (typeof window !== 'undefined') {
+      const blob = new Blob([jsonStr], { type: 'application/fhir+json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `FHIR_R4_CLAIM_BUNDLE_${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      this.exportNotice.set(`FHIR R4 Bundle downloaded (${bundle.entry?.length || 0} conditions serialized)`);
+    }
+  }
+
   exportDenialDefense(): void {
     const packet = this.copilotService.generateDenialDefensePacket();
     if (typeof window !== 'undefined') {
@@ -302,6 +400,7 @@ Plan: Adjusted insulin glargine, initiated dapagliflozin renal protocol, and pla
       a.download = `DENIAL_DEFENSE_PACKET_${Date.now()}.txt`;
       a.click();
       URL.revokeObjectURL(url);
+      this.exportNotice.set('Denial Defense Dossier downloaded successfully');
     }
   }
 
@@ -336,3 +435,4 @@ Plan: Adjusted insulin glargine, initiated dapagliflozin renal protocol, and pla
     }
   }
 }
+

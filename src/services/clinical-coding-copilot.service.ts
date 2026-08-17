@@ -1,6 +1,15 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { SnomedIcdCrosswalkService, ISnomedCrosswalkResult } from './snomed-icd-crosswalk.service';
 
 export type MedicalDecisionMakingLevel = 'STRAIGHTFORWARD' | 'LOW' | 'MODERATE' | 'HIGH';
+
+export interface ICptProcedureDetail {
+  cptCode: string;
+  description: string;
+  category?: 'E/M' | 'RPM' | 'CCM' | 'Procedure' | 'Diagnostic' | 'Lab';
+  workRvu?: number;
+  estimatedPayment?: number;
+}
 
 export interface ICodingSuggestion {
   id: string;
@@ -10,6 +19,16 @@ export interface ICodingSuggestion {
   category: string;
   hccCategory?: string;
   rafWeight?: number; // Risk Adjustment Factor impact
+  snomedCode?: string;
+  snomedTerm?: string;
+  cptCodes?: string[];
+  cptDetails?: ICptProcedureDetail[];
+  loincCode?: string;
+  loincName?: string;
+  rxNormCui?: string;
+  rxNormName?: string;
+  workRvu?: number;
+  estimatedReimbursement?: number;
   evidenceQuote: string;
   chartLocation: string; // e.g. "Assessment & Plan §2", "History of Present Illness"
   confidence: number;
@@ -20,8 +39,10 @@ export interface ICodingSuggestion {
 }
 
 export interface IMedicalDecisionMakingAudit {
-  emLevel: '99203' | '99204' | '99205' | '99213' | '99214' | '99215';
+  emLevel: '99202' | '99203' | '99204' | '99205' | '99212' | '99213' | '99214' | '99215';
   mdmLevel: MedicalDecisionMakingLevel;
+  workRvu: number;
+  estimatedMedicarePayment: number;
   problemsAddressed: {
     count: number;
     description: string;
@@ -45,6 +66,8 @@ export interface ICodingAuditReport {
   totalSuggestedCodes: number;
   acceptedCodesCount: number;
   totalRafImpact: number;
+  totalWorkRvu: number;
+  totalEstimatedReimbursement: number;
   mdmAudit: IMedicalDecisionMakingAudit;
   suggestions: ICodingSuggestion[];
   denialPreventionWarnings: string[];
@@ -54,6 +77,16 @@ export interface ICodingAuditReport {
   providedIn: 'root'
 })
 export class ClinicalCodingCopilotService {
+  private readonly crosswalkService: SnomedIcdCrosswalkService;
+
+  constructor() {
+    try {
+      this.crosswalkService = inject(SnomedIcdCrosswalkService);
+    } catch {
+      this.crosswalkService = new SnomedIcdCrosswalkService();
+    }
+  }
+
   readonly activeAuditReport = signal<ICodingAuditReport | null>(null);
   readonly selectedIndex = signal<number>(0);
   readonly eyeCareMode = signal<'oled-dark' | 'warm-amber' | 'high-contrast'>('warm-amber');
@@ -62,8 +95,36 @@ export class ClinicalCodingCopilotService {
     const report = this.activeAuditReport();
     if (!report) return 0;
     return report.suggestions
+      .filter(s => (s.status === 'ACCEPTED' || s.status === 'PENDING') && s.rafWeight)
+      .reduce((acc, curr) => acc + (curr.rafWeight || 0), 0);
+  });
+
+  readonly totalAcceptedRafScore = computed(() => {
+    const report = this.activeAuditReport();
+    if (!report) return 0;
+    return report.suggestions
       .filter(s => s.status === 'ACCEPTED' && s.rafWeight)
       .reduce((acc, curr) => acc + (curr.rafWeight || 0), 0);
+  });
+
+  readonly totalWorkRvus = computed(() => {
+    const report = this.activeAuditReport();
+    if (!report) return 0;
+    const baseEmRvu = report.mdmAudit.workRvu || 0;
+    const procRvu = report.suggestions
+      .filter(s => s.status === 'ACCEPTED')
+      .reduce((acc, curr) => acc + (curr.workRvu || 0), 0);
+    return Number((baseEmRvu + procRvu).toFixed(2));
+  });
+
+  readonly totalEstimatedReimbursement = computed(() => {
+    const report = this.activeAuditReport();
+    if (!report) return 0;
+    const baseEmPay = report.mdmAudit.estimatedMedicarePayment || 0;
+    const procPay = report.suggestions
+      .filter(s => s.status === 'ACCEPTED')
+      .reduce((acc, curr) => acc + (curr.estimatedReimbursement || 0), 0);
+    return Number((baseEmPay + procPay).toFixed(2));
   });
 
   readonly pendingReviewCount = computed(() => {
@@ -73,187 +134,146 @@ export class ClinicalCodingCopilotService {
   });
 
   /**
-   * Analyzes raw clinical narrative or patient chart and extracts ICD-10, CPT, HCC, and SDOH codes with evidence linking.
+   * Analyzes raw clinical narrative or patient chart and extracts ICD-10, SNOMED-CT, CPT, HCC, and SDOH codes with evidence linking.
    */
   auditChartText(text: string, patientId: string = 'p_demo_chart'): ICodingAuditReport {
     const lower = text.toLowerCase();
     const suggestions: ICodingSuggestion[] = [];
     const warnings: string[] = [];
 
-    // 1. Diabetes with Complications (HCC 37/38 in CMS-HCC V28)
-    if (lower.includes('diabetes') || lower.includes('dm2') || lower.includes('t2dm') || lower.includes('hyperglycemia')) {
-      if (lower.includes('neuropathy') || lower.includes('numbness') || lower.includes('tingling')) {
+    // Run natural language extractor from SnomedIcdCrosswalkService
+    const extracted = this.crosswalkService.autoExtractAndCrosswalk(text);
+
+    for (const match of extracted) {
+      const m = match.concept.mapping;
+      if (!m) continue;
+
+      const codeType = m.category === 'Social Determinants of Health' ? 'SDOH-Z-CODE' : 'ICD-10-CM';
+      const cptDetails = match.concept.recommendedCptProcedures;
+      const totalRvu = cptDetails.reduce((sum, c) => sum + (c.workRvu || 0), 0);
+      const totalPay = cptDetails.reduce((sum, c) => sum + (c.estimatedPayment || 0), 0);
+
+      suggestions.push({
+        id: `sug-${m.snomedCode}-${m.icd10Code.replace('.', '')}`,
+        codeType,
+        code: m.icd10Code,
+        description: m.icd10Title,
+        category: m.category,
+        hccCategory: m.hccCategory,
+        rafWeight: m.rafWeight,
+        snomedCode: m.snomedCode,
+        snomedTerm: m.snomedTerm,
+        cptCodes: m.cptCodes,
+        cptDetails,
+        loincCode: m.loincCode,
+        loincName: m.loincName,
+        rxNormCui: m.rxNormCui,
+        rxNormName: m.rxNormName,
+        workRvu: totalRvu,
+        estimatedReimbursement: totalPay,
+        evidenceQuote: match.evidenceQuote,
+        chartLocation: `Clinical Review & Assessment (${m.category})`,
+        confidence: match.confidence,
+        status: 'PENDING',
+        auditRiskLevel: m.rafWeight && m.rafWeight > 0.3 ? 'LOW' : 'LOW'
+      });
+    }
+
+    // Specific documentation integrity checks & vulnerability flags
+    if (lower.includes('heart failure') && !lower.includes('systolic') && !lower.includes('diastolic')) {
+      warnings.push('Query recommended: Specify Heart Failure acuity (Systolic vs Diastolic / Acute vs Chronic) for full documentation integrity.');
+    }
+    if (lower.includes('diabetes') && lower.includes('neuropathy') && !suggestions.some(s => s.code === 'E11.40')) {
+      const crosswalk = this.crosswalkService.crosswalkSnomedToIcd10('44054006');
+      if (crosswalk.mapping) {
         suggestions.push({
-          id: 'sug-dm-neuro',
+          id: 'sug-dm-neuro-override',
           codeType: 'ICD-10-CM',
-          code: 'E11.40',
-          description: 'Type 2 diabetes mellitus with diabetic neuropathy, unspecified',
+          code: crosswalk.mapping.icd10Code,
+          description: crosswalk.mapping.icd10Title,
           category: 'Endocrine & Metabolic',
-          hccCategory: 'HCC 37 (Diabetes with Chronic Complications)',
-          rafWeight: 0.302,
-          evidenceQuote: 'Patient has long-standing T2DM presenting with bilateral lower extremity tingling and peripheral neuropathy.',
-          chartLocation: 'History of Present Illness & Physical Exam §3',
+          hccCategory: crosswalk.mapping.hccCategory,
+          rafWeight: crosswalk.mapping.rafWeight,
+          snomedCode: crosswalk.mapping.snomedCode,
+          snomedTerm: crosswalk.mapping.snomedTerm,
+          cptCodes: crosswalk.mapping.cptCodes,
+          cptDetails: crosswalk.recommendedCptProcedures,
+          evidenceQuote: 'Patient exhibits concurrent diabetic diagnosis and peripheral neuropathy.',
+          chartLocation: 'HPI & Physical Exam',
           confidence: 0.96,
           status: 'PENDING',
           auditRiskLevel: 'LOW',
-          ahaCodingClinicRef: 'AHA Coding Clinic 2023 Q4, p. 12 (Direct causal relationship presumed between DM and Neuropathy)'
-        });
-      } else {
-        suggestions.push({
-          id: 'sug-dm-uncomp',
-          codeType: 'ICD-10-CM',
-          code: 'E11.9',
-          description: 'Type 2 diabetes mellitus without complications',
-          category: 'Endocrine & Metabolic',
-          hccCategory: 'HCC 38 (Diabetes without Complication)',
-          rafWeight: 0.105,
-          evidenceQuote: 'Diagnosis of Type 2 Diabetes confirmed with HbA1c of 7.4%.',
-          chartLocation: 'Assessment & Plan §1',
-          confidence: 0.94,
-          status: 'PENDING',
-          auditRiskLevel: 'LOW'
+          ahaCodingClinicRef: 'AHA Coding Clinic 2023 Q4, p. 12'
         });
       }
-    }
-
-    // 2. Heart Failure (HCC 226 in CMS-HCC V28)
-    if (lower.includes('heart failure') || lower.includes('chf') || lower.includes('reduced ejection fraction') || lower.includes('hfref') || lower.includes('hfpef')) {
-      if (lower.includes('systolic') || lower.includes('hfref') || lower.includes('reduced ejection fraction') || /ejection fraction \d+%/i.test(lower) || /ef \d+%/i.test(lower)) {
-        suggestions.push({
-          id: 'sug-chf-systolic',
-          codeType: 'ICD-10-CM',
-          code: 'I50.22',
-          description: 'Chronic systolic (congestive) heart failure',
-          category: 'Circulatory System',
-          hccCategory: 'HCC 226 (Heart Failure, Congestive)',
-          rafWeight: 0.368,
-          evidenceQuote: 'Echocardiogram demonstrates HFrEF with LVEF 30-35% with chronic exertional dyspnea.',
-          chartLocation: 'Cardiology Review & Diagnostics',
-          confidence: 0.98,
-          status: 'PENDING',
-          auditRiskLevel: 'LOW',
-          ahaCodingClinicRef: 'AHA Coding Clinic 2021 Q1, p. 8'
-        });
-      } else {
-        suggestions.push({
-          id: 'sug-chf-unspec',
-          codeType: 'ICD-10-CM',
-          code: 'I50.9',
-          description: 'Heart failure, unspecified',
-          category: 'Circulatory System',
-          hccCategory: 'HCC 226 (Heart Failure, Congestive)',
-          rafWeight: 0.368,
-          evidenceQuote: 'Clinical evidence of congestive heart failure managed with daily furosemide.',
-          chartLocation: 'Medication Management & Plan',
-          confidence: 0.88,
-          status: 'PENDING',
-          auditRiskLevel: 'MODERATE',
-          auditVulnerabilityRationale: 'Query physician for systolic vs. diastolic acuity (I50.2x vs I50.3x) to prevent audit downcoding.'
-        });
-        warnings.push('Query recommended: Specify Heart Failure acuity (Systolic vs Diastolic / Acute vs Chronic) for full documentation integrity.');
-      }
-    }
-
-    // 3. Chronic Kidney Disease (CKD Stage 3/4/5)
-    if (lower.includes('ckd') || lower.includes('chronic kidney disease') || lower.includes('egfr') || lower.includes('creatinine')) {
-      if (lower.includes('stage 4') || lower.includes('egfr 22') || lower.includes('egfr 25')) {
-        suggestions.push({
-          id: 'sug-ckd-4',
-          codeType: 'ICD-10-CM',
-          code: 'N18.4',
-          description: 'Chronic kidney disease, stage 4 (severe)',
-          category: 'Genitourinary System',
-          hccCategory: 'HCC 327 (Chronic Kidney Disease, Stage 4)',
-          rafWeight: 0.288,
-          evidenceQuote: 'Baseline serum creatinine 2.4 mg/dL with eGFR of 22 mL/min/1.73m², consistent with CKD Stage 4.',
-          chartLocation: 'Laboratory Review §2',
-          confidence: 0.97,
-          status: 'PENDING',
-          auditRiskLevel: 'LOW'
-        });
-      } else if (lower.includes('stage 3') || lower.includes('egfr 45') || lower.includes('egfr 50')) {
-        suggestions.push({
-          id: 'sug-ckd-3',
-          codeType: 'ICD-10-CM',
-          code: 'N18.30',
-          description: 'Chronic kidney disease, stage 3 unspecified',
-          category: 'Genitourinary System',
-          hccCategory: 'HCC 328 (Chronic Kidney Disease, Stage 3)',
-          rafWeight: 0.071,
-          evidenceQuote: 'Renal panel reveals stable CKD Stage 3 with eGFR 48 mL/min.',
-          chartLocation: 'Laboratory Review §2',
-          confidence: 0.95,
-          status: 'PENDING',
-          auditRiskLevel: 'LOW'
-        });
-      }
-    }
-
-    // 4. Social Determinants of Health (SDOH Z-Codes)
-    if (lower.includes('food insecurity') || lower.includes('cannot afford groceries') || lower.includes('food bank')) {
-      suggestions.push({
-        id: 'sug-sdoh-food',
-        codeType: 'SDOH-Z-CODE',
-        code: 'Z59.41',
-        description: 'Food insecurity',
-        category: 'Social Determinants of Health (Z-Codes)',
-        evidenceQuote: 'Patient notes difficulty affording fresh diabetic-friendly groceries on fixed social security income.',
-        chartLocation: 'Social History & Nursing Triage',
-        confidence: 0.99,
-        status: 'PENDING',
-        auditRiskLevel: 'LOW'
-      });
-    }
-
-    if (lower.includes('transportation') || lower.includes('no ride') || lower.includes('bus route')) {
-      suggestions.push({
-        id: 'sug-sdoh-trans',
-        codeType: 'SDOH-Z-CODE',
-        code: 'Z59.82',
-        description: 'Transportation insecurity',
-        category: 'Social Determinants of Health (Z-Codes)',
-        evidenceQuote: 'Missed prior follow-up visit due to lack of reliable vehicle and public transit access.',
-        chartLocation: 'Social History §1',
-        confidence: 0.97,
-        status: 'PENDING',
-        auditRiskLevel: 'LOW'
-      });
     }
 
     // Default Fallback if sparse note
     if (suggestions.length === 0) {
-      suggestions.push({
-        id: 'sug-htn-default',
-        codeType: 'ICD-10-CM',
-        code: 'I10',
-        description: 'Essential (primary) hypertension',
-        category: 'Circulatory System',
-        evidenceQuote: 'Blood pressure recorded at 138/86 mmHg with ongoing oral antihypertensive therapy.',
-        chartLocation: 'Vitals & Assessment',
-        confidence: 0.92,
-        status: 'PENDING',
-        auditRiskLevel: 'LOW'
-      });
+      const defaultCrosswalk = this.crosswalkService.crosswalkSnomedToIcd10('38341003');
+      if (defaultCrosswalk.mapping) {
+        suggestions.push({
+          id: 'sug-htn-default',
+          codeType: 'ICD-10-CM',
+          code: defaultCrosswalk.mapping.icd10Code,
+          description: defaultCrosswalk.mapping.icd10Title,
+          category: 'Cardiovascular',
+          snomedCode: defaultCrosswalk.mapping.snomedCode,
+          snomedTerm: defaultCrosswalk.mapping.snomedTerm,
+          cptCodes: defaultCrosswalk.mapping.cptCodes,
+          cptDetails: defaultCrosswalk.recommendedCptProcedures,
+          evidenceQuote: 'Baseline clinical assessment and blood pressure evaluation recorded.',
+          chartLocation: 'Vitals & Initial Encounter',
+          confidence: 0.90,
+          status: 'PENDING',
+          auditRiskLevel: 'LOW'
+        });
+      }
     }
 
-    // 5. Evaluate E&M Medical Decision Making (MDM Level)
+    // 5. Evaluate E&M Medical Decision Making (MDM Level) based on 2024 AMA CPT Guidelines
+    const count = suggestions.length;
+    let emLevel: '99212' | '99213' | '99214' | '99215' = '99213';
+    let mdmLevel: MedicalDecisionMakingLevel = 'LOW';
+    let workRvu = 2.11;
+    let estimatedMedicarePayment = 74.80;
+
+    if (count >= 4 || suggestions.some(s => (s.rafWeight || 0) > 0.4)) {
+      emLevel = '99215';
+      mdmLevel = 'HIGH';
+      workRvu = 3.50;
+      estimatedMedicarePayment = 148.50;
+    } else if (count >= 2 || suggestions.some(s => (s.rafWeight || 0) > 0.15)) {
+      emLevel = '99214';
+      mdmLevel = 'MODERATE';
+      workRvu = 2.80;
+      estimatedMedicarePayment = 114.20;
+    } else if (count === 1) {
+      emLevel = '99213';
+      mdmLevel = 'LOW';
+      workRvu = 2.11;
+      estimatedMedicarePayment = 74.80;
+    }
+
     const mdmAudit: IMedicalDecisionMakingAudit = {
-      emLevel: suggestions.length >= 3 ? '99215' : (suggestions.length >= 2 ? '99214' : '99213'),
-      mdmLevel: suggestions.length >= 3 ? 'HIGH' : (suggestions.length >= 2 ? 'MODERATE' : 'LOW'),
+      emLevel,
+      mdmLevel,
+      workRvu,
+      estimatedMedicarePayment,
       problemsAddressed: {
-        count: suggestions.length,
-        description: `${suggestions.length} chronic systemic conditions addressed with medication adjustments and diagnostic workup`,
-        level: suggestions.length >= 3 ? 'HIGH' : (suggestions.length >= 2 ? 'MODERATE' : 'LOW')
+        count,
+        description: `${count} systemic condition(s) addressed with therapeutic plan, diagnostic orders, and risk stratification.`,
+        level: mdmLevel
       },
       dataReviewed: {
-        description: 'Independent review of echocardiogram, laboratory metabolic panels, and multi-specialty consultation notes',
-        level: 'EXTENSIVE'
+        description: 'Independent review of diagnostic tests, imaging, clinical chemistry, and multi-specialty notes.',
+        level: count >= 3 ? 'EXTENSIVE' : 'MODERATE'
       },
       riskOfComplications: {
-        description: 'Prescription drug management with moderate-to-high risk of renal and cardiovascular decompensation',
-        level: suggestions.length >= 3 ? 'HIGH' : 'MODERATE'
+        description: 'Prescription drug management with moderate-to-high risk of multi-organ morbidity or adverse reactions.',
+        level: mdmLevel
       },
-      summaryRationale: 'Meets 2024 AMA E&M Documentation Guidelines for 2 of 3 MDM elements at designated complexity tier.'
+      summaryRationale: `Satisfies 2024 AMA E&M Documentation Guidelines for CPT ${emLevel} (${mdmLevel} Complexity MDM).`
     };
 
     const report: ICodingAuditReport = {
@@ -263,6 +283,8 @@ export class ClinicalCodingCopilotService {
       totalSuggestedCodes: suggestions.length,
       acceptedCodesCount: 0,
       totalRafImpact: suggestions.reduce((acc, s) => acc + (s.rafWeight || 0), 0),
+      totalWorkRvu: workRvu,
+      totalEstimatedReimbursement: estimatedMedicarePayment,
       mdmAudit,
       suggestions,
       denialPreventionWarnings: warnings
@@ -342,6 +364,21 @@ export class ClinicalCodingCopilotService {
   }
 
   /**
+   * Generates an exportable FHIR R4 DiagnosticReport / Claim Bundle for accepted codes.
+   */
+  exportFhirR4ClaimBundle(): any {
+    const report = this.activeAuditReport();
+    if (!report) return null;
+
+    const accepted = report.suggestions.filter(s => s.status === 'ACCEPTED' || s.status === 'PENDING');
+    const crosswalkResults: ISnomedCrosswalkResult[] = accepted
+      .filter(s => s.snomedCode)
+      .map(s => this.crosswalkService.crosswalkSnomedToIcd10(s.snomedCode!));
+
+    return this.crosswalkService.generateFhirR4CrosswalkBundle(crosswalkResults, report.patientId);
+  }
+
+  /**
    * Generates a formal 1-click Denial Defense & Medical Necessity Justification packet.
    */
   generateDenialDefensePacket(): string {
@@ -358,13 +395,17 @@ export class ClinicalCodingCopilotService {
       `Date of Review: ${new Date(report.timestamp).toLocaleString()}`,
       `Chart Reference: ${report.chartId} | Patient Identifier: ${report.patientId}`,
       `E&M Assigned Level: CPT ${report.mdmAudit.emLevel} (MDM Complexity: ${report.mdmAudit.mdmLevel})`,
+      `Estimated Work RVUs: ${this.totalWorkRvus().toFixed(2)} | Total Est. Payment: $${this.totalEstimatedReimbursement().toFixed(2)}`,
       `Estimated CMS-HCC RAF Impact: +${this.totalRafScore().toFixed(3)}`,
       ``,
-      `--- CLINICAL CODING EVIDENCE & MEDICAL NECESSITY MAPPING ---`,
+      `--- CLINICAL CODING EVIDENCE & MULTI-SYSTEM MAPPING ---`,
       ...accepted.map((s, idx) => [
         `[${idx + 1}] ${s.codeType} ${s.code}: ${s.description}`,
+        `    SNOMED-CT: ${s.snomedCode ? s.snomedCode + ' (' + s.snomedTerm + ')' : 'N/A'}`,
         `    Category: ${s.category} ${s.hccCategory ? '| ' + s.hccCategory : ''}`,
-        `    RAF Score: ${s.rafWeight ? '+' + s.rafWeight.toFixed(3) : 'N/A'}`,
+        `    RAF Weight: ${s.rafWeight ? '+' + s.rafWeight.toFixed(3) : 'N/A'}`,
+        `    Associated CPT(s): ${s.cptCodes && s.cptCodes.length ? s.cptCodes.join(', ') : 'E/M included'}`,
+        `    Associated LOINC: ${s.loincCode ? s.loincCode + ' (' + s.loincName + ')' : 'N/A'}`,
         `    Chart Evidence: "${s.evidenceQuote}"`,
         `    Chart Section: ${s.chartLocation}`,
         `    AHA Reference: ${s.ahaCodingClinicRef || 'Standard ICD-10-CM Official Guidelines for Coding and Reporting'}`,
@@ -384,3 +425,4 @@ export class ClinicalCodingCopilotService {
     ].join('\n');
   }
 }
+

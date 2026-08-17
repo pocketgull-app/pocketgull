@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ClinicalCodingCopilotComponent } from './clinical-coding-copilot.component';
 import { ClinicalCodingCopilotService } from '../services/clinical-coding-copilot.service';
+import { SnomedIcdCrosswalkService } from '../services/snomed-icd-crosswalk.service';
 
 describe('ClinicalCodingCopilotComponent (HIM Auditor Workstation)', () => {
   let component: ClinicalCodingCopilotComponent;
@@ -8,7 +9,7 @@ describe('ClinicalCodingCopilotComponent (HIM Auditor Workstation)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ClinicalCodingCopilotService]
+      providers: [ClinicalCodingCopilotService, SnomedIcdCrosswalkService]
     });
     service = TestBed.inject(ClinicalCodingCopilotService);
     component = TestBed.runInInjectionContext(() => new ClinicalCodingCopilotComponent());
@@ -45,4 +46,17 @@ describe('ClinicalCodingCopilotComponent (HIM Auditor Workstation)', () => {
     component.handleKeyboardHotkeys(new KeyboardEvent('keydown', { key: 'a' }));
     expect(component.acceptedCount()).toBe(1);
   });
+
+  it('should trigger FHIR R4 Claim Bundle export without error', () => {
+    const spy = vi.spyOn(service, 'exportFhirR4ClaimBundle');
+    component.exportFhirR4Claim();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should trigger Denial Defense packet export without error', () => {
+    const spy = vi.spyOn(service, 'generateDenialDefensePacket');
+    component.exportDenialDefense();
+    expect(spy).toHaveBeenCalled();
+  });
 });
+
