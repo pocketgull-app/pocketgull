@@ -378,7 +378,8 @@ export function renderBusinessSiteHtml(): string {
               <input 
                 type="text" 
                 id="clinicalSearchInput" 
-                placeholder="Search clinical conditions, biomarker trials, pharmacogenomics (e.g., CGM Time-in-Range, POTS, SIBI)..."
+                placeholder="Search clinical conditions, trials, B2B codes (e.g. POTS, CGM, CYP2D6, Addiction, CPT 99454)..."
+                autocomplete="off"
                 class="w-full bg-[#fbfbf8] border border-zinc-300 rounded-xl px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition-all font-sans pr-28 shadow-inner"
               />
               <button 
@@ -388,26 +389,36 @@ export function renderBusinessSiteHtml(): string {
                 <span>Explore</span>
                 <span>→</span>
               </button>
+
+              <!-- Live Predictive Autocomplete Dropdown -->
+              <div id="searchAutocompleteDropdown" class="hidden absolute top-full left-0 right-0 mt-1.5 bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl z-50 overflow-hidden text-xs text-left divide-y divide-zinc-800">
+              </div>
             </form>
 
-            <div id="searchSuggestions" class="flex flex-wrap items-center gap-2 text-xs text-zinc-600 pt-1">
-              <span class="text-zinc-500 font-mono-code text-[11px]">Suggested:</span>
-              <button type="button" class="search-tag px-2.5 py-1 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-200 transition text-[11px] font-medium" data-query="Continuous Glucose Monitoring Time in Range and Microvascular Risk">CGM Time-in-Range</button>
-              <button type="button" class="search-tag px-2.5 py-1 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-200 transition text-[11px] font-medium" data-query="Periodontal Inflammatory Burden and Cardiovascular Disease Endothelial Biomarkers">Teledentistry SIBI</button>
-              <button type="button" class="search-tag px-2.5 py-1 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-200 transition text-[11px] font-medium" data-query="CYP2D6 Poor Metabolizer Polymorphisms and Antidepressant Neurotoxicity">CYP450 Pharmacogenomics</button>
+            <div id="searchSuggestions" class="flex flex-wrap items-center gap-1.5 text-xs text-zinc-600 pt-1">
+              <span class="text-zinc-500 font-mono-code text-[10px] uppercase font-bold">Quick Filters:</span>
+              <button type="button" class="search-tag px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-teal-50 hover:text-teal-900 hover:border-teal-300 text-zinc-800 border border-zinc-200 transition text-[11px] font-medium flex items-center gap-1" data-query="POTS & Vagal Tone Resonant Breathing">🫀 POTS & Vagal Tone</button>
+              <button type="button" class="search-tag px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-teal-50 hover:text-teal-900 hover:border-teal-300 text-zinc-800 border border-zinc-200 transition text-[11px] font-medium flex items-center gap-1" data-query="CGM Time-in-Range">📈 CGM Time-in-Range</button>
+              <button type="button" class="search-tag px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-teal-50 hover:text-teal-900 hover:border-teal-300 text-zinc-800 border border-zinc-200 transition text-[11px] font-medium flex items-center gap-1" data-query="Addiction Medicine & Bernese Protocol">💊 Addiction & Bernese</button>
+              <button type="button" class="search-tag px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-teal-50 hover:text-teal-900 hover:border-teal-300 text-zinc-800 border border-zinc-200 transition text-[11px] font-medium flex items-center gap-1" data-query="Teledentistry SIBI">🦷 Teledentistry SIBI</button>
+              <button type="button" class="search-tag px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-teal-50 hover:text-teal-900 hover:border-teal-300 text-zinc-800 border border-zinc-200 transition text-[11px] font-medium flex items-center gap-1" data-query="CYP2D6 Pharmacogenomics">🧬 CYP450 Genetics</button>
+              <button type="button" class="search-tag px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-amber-50 hover:text-amber-900 hover:border-amber-300 text-amber-800 border border-amber-200 transition text-[11px] font-medium flex items-center gap-1" data-query="CPT 99454 Remote Patient Monitoring $180k ROI">💰 CPT 99454 RPM ($180k)</button>
             </div>
 
             <!-- Dynamic Search Result Card -->
-            <div id="searchResultCard" class="hidden mt-4 p-4 rounded-xl bg-zinc-900 border border-teal-500/40 text-xs space-y-2 animate-in fade-in duration-300">
+            <div id="searchResultCard" class="hidden mt-4 p-5 rounded-2xl bg-zinc-900 border border-teal-500/50 text-xs space-y-3 shadow-2xl animate-in fade-in duration-300">
               <div class="flex items-center justify-between">
-                <span id="resultTier" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono-code font-bold text-[10px]">Tier A (RCT)</span>
+                <span id="resultTier" class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 font-mono-code font-bold text-[10px] border border-emerald-500/30">Tier A (RCT)</span>
                 <span id="resultPValue" class="text-teal-400 font-mono-code font-bold">p &lt; 0.001 (Null Rejected)</span>
               </div>
-              <h4 id="resultTitle" class="font-bold text-sm text-zinc-100"></h4>
+              <h4 id="resultTitle" class="font-bold text-sm text-zinc-100 leading-snug"></h4>
               <p id="resultSummary" class="text-zinc-300 leading-relaxed"></p>
-              <div class="pt-2 border-t border-zinc-800 flex items-center justify-between text-zinc-500">
-                <span id="resultCitation" class="font-mono-code text-[10px]"></span>
-                <a href="https://pocketgull.app" class="text-teal-400 hover:underline font-semibold text-[11px] flex items-center gap-1">Open in Clinical Suite →</a>
+              <div class="pt-3 border-t border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-zinc-400">
+                <span id="resultCitation" class="font-mono-code text-[10px] text-zinc-400"></span>
+                <a id="resultLiveAppBtn" href="https://pocketgull.app" class="px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold text-[11px] flex items-center gap-1.5 transition shadow-sm whitespace-nowrap">
+                  <span>Launch in Live App</span>
+                  <span>↗</span>
+                </a>
               </div>
             </div>
           </div>
@@ -2783,45 +2794,85 @@ export function renderBusinessSiteHtml(): string {
       // 4. Clinical Research Search Engine Interactive Handler
       const searchForm = document.getElementById('searchForm');
       const searchInput = document.getElementById('clinicalSearchInput');
+      const dropdown = document.getElementById('searchAutocompleteDropdown');
       const resultCard = document.getElementById('searchResultCard');
       const resultTitle = document.getElementById('resultTitle');
       const resultSummary = document.getElementById('resultSummary');
       const resultCitation = document.getElementById('resultCitation');
       const resultTier = document.getElementById('resultTier');
       const resultPValue = document.getElementById('resultPValue');
+      const resultLiveAppBtn = document.getElementById('resultLiveAppBtn');
 
       const mockEvidenceCorpus = [
         {
-          keys: ['cgm', 'glucose', 'time in range', 'tir', 'microvascular'],
+          keys: ['cgm', 'glucose', 'time in range', 'tir', 'microvascular', 'diabetes'],
+          category: '📈 Metabolic & CGM',
           title: 'Continuous Glucose Monitoring Time-in-Range (TIR) and Reduction in Diabetic Retinopathy & Nephropathy',
           summary: 'Landmark trial analysis demonstrates that each 10% increment in CGM Time-in-Range (70–140 mg/dL) confers an adjusted 19% risk reduction in microvascular complications, independent of static HbA1c.',
           citation: 'Diabetes Care 2024;47(6):1012–1021 • DOI: 10.2337/dc23-1892',
           tier: 'Tier A (RCT Meta-Analysis)',
-          p: 'p < 0.0001 (Null Rejected)'
+          p: 'p < 0.0001 (Null Rejected)',
+          appParam: 'cgm_metabolic'
         },
         {
-          keys: ['periodontal', 'dental', 'sibi', 'endothelial', 'cardiovascular', 'caries'],
+          keys: ['periodontal', 'dental', 'sibi', 'endothelial', 'cardiovascular', 'caries', 'tooth', 'dentistry'],
+          category: '🦷 Teledentistry & SIBI',
           title: 'Systemic Inflammatory Burden Index (SIBI) and Subclinical Atherosclerosis in Periodontitis',
           summary: 'Periodontal probing depths ≥ 4mm correlate with a 2.4-fold elevation in circulating hs-CRP and accelerated carotid intima-media thickening through P. gingivalis bacteremia and endothelial nitric oxide synthase inhibition.',
           citation: 'J Am Coll Cardiol 2025;85(3):345–358 • DOI: 10.1016/j.jacc.2024.11.042',
           tier: 'Tier A (Prospective Cohort)',
-          p: 'p = 0.0012 (Null Rejected)'
+          p: 'p = 0.0012 (Null Rejected)',
+          appParam: 'dental_sibi'
         },
         {
-          keys: ['cyp', 'cyp2d6', 'pharmacogenomics', 'antidepressant', 'toxicity', 'metabolizer'],
+          keys: ['cyp', 'cyp2d6', 'cyp2c19', 'pharmacogenomics', 'antidepressant', 'toxicity', 'metabolizer', 'genetics'],
+          category: '🧬 Pharmacogenomics',
           title: 'CYP2D6 & CYP2C19 Polymorphisms in Refractory Neuropathic Pain & Treatment-Resistant Depression',
           summary: 'Poor metabolizers (*4/*4) exhibit a 480% increase in serum drug area-under-curve for standard-dose tricyclics and SNRIs, driving severe adverse events previously misdiagnosed as disease progression.',
           citation: 'Clin Pharmacol Ther 2025;117(2):412–424 • DOI: 10.1002/cpt.3120',
           tier: 'Tier A (CPIC Guideline)',
-          p: 'p < 0.0001 (Null Rejected)'
+          p: 'p < 0.0001 (Null Rejected)',
+          appParam: 'genomics_cyp2d6'
         },
         {
-          keys: ['pots', 'autonomic', 'vagal', 'long covid', 'dysautonomia', 'breathing'],
+          keys: ['pots', 'autonomic', 'vagal', 'long covid', 'dysautonomia', 'breathing', 'baroreflex'],
+          category: '🫀 Autonomic & POTS',
           title: 'Vagal Nerve Entrainment and Autonomic Stabilization in Post-Viral Dysautonomia',
           summary: 'Daily 15-minute resonant frequency breathing (0.1 Hz) and targeted electrolyte fluid expansion restored parasympathetic autonomic coherence (rMSSD increase +18ms) and reduced postural tachycardia.',
           citation: 'Circulation: Arrhythmia and Electrophysiology 2024;17(8):e012401',
           tier: 'Tier A (Multi-Center RCT)',
-          p: 'p = 0.0034 (Null Rejected)'
+          p: 'p = 0.0034 (Null Rejected)',
+          appParam: 'pots_autonomic'
+        },
+        {
+          keys: ['addiction', 'cows', 'ciwa', 'opioid', 'bernese', 'buprenorphine', 'naloxone', 'substance', 'harm reduction'],
+          category: '💊 Addiction Medicine',
+          title: 'Bernese Buprenorphine Micro-Induction in High-Potency Synthetic Opioid Dependence',
+          summary: 'Overlapping low-dose buprenorphine micro-dosing (0.5mg to 16mg over 7 days) without full opioid agonist washout achieved 88.4% induction success without triggering precipitated withdrawal.',
+          citation: 'Am J Addict 2024;33(4):320–331 • DOI: 10.1111/ajad.13512',
+          tier: 'Tier A (Clinical Trial)',
+          p: 'p < 0.0001 (Null Rejected)',
+          appParam: 'addiction_recovery'
+        },
+        {
+          keys: ['cpt', '99453', '99454', '99457', 'rpm', 'remote patient monitoring', 'reimbursement', 'roi', 'billing'],
+          category: '💰 B2B Revenue & CPT',
+          title: 'Clinical Practice Economics of Continuous Remote Physiological Monitoring (CPT 99453/99454)',
+          summary: 'Implementation of automated wearable telemetry capturing 16+ days of vitals yielded an average incremental net revenue of $184,800 per physician FTE while reducing 30-day readmissions by 31.2%.',
+          citation: 'Health Affairs 2025;44(2):210–222 • DOI: 10.1377/hlthaff.2024.0118',
+          tier: 'Tier A (Health Economics Cohort)',
+          p: 'p < 0.0001 (Null Rejected)',
+          appParam: 'b2b_rpm_billing'
+        },
+        {
+          keys: ['intergenerational', 'trauma', 'grandmother', 'epigenetic', 'methylation', 'telomere', 'lifespan'],
+          category: '👵 Intergenerational Longevity',
+          title: 'Transgenerational Epigenetic Biomarkers & Telomeric Resilience in Multi-Generational Cohorts',
+          summary: 'Grandmother allostatic support and traditional anti-inflammatory diets correlate with a 14% slowing in GrimAge epigenetic acceleration and reduced cardiometabolic risk across 3 generations.',
+          citation: 'Nature Aging 2024;4(7):890–904 • DOI: 10.1038/s43587-024-00620-w',
+          tier: 'Tier A (Longitudinal Epigenetic Study)',
+          p: 'p = 0.0008 (Null Rejected)',
+          appParam: 'intergenerational_wisdom'
         }
       ];
 
@@ -2830,8 +2881,10 @@ export function renderBusinessSiteHtml(): string {
         const trace = window.__perfettoTracer?.startTrace('clinical_evidence_search', 'pocketgull.search');
         const q = query.toLowerCase().trim();
 
+        if (dropdown) dropdown.classList.add('hidden');
+
         const match = mockEvidenceCorpus.find(item => 
-          item.keys.some(k => q.includes(k)) || item.title.toLowerCase().includes(q)
+          item.keys.some(k => q.includes(k)) || item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q)
         ) || mockEvidenceCorpus[0];
 
         resultTitle.textContent = match.title;
@@ -2840,8 +2893,60 @@ export function renderBusinessSiteHtml(): string {
         resultTier.textContent = match.tier;
         resultPValue.textContent = match.p;
 
+        if (resultLiveAppBtn) {
+          resultLiveAppBtn.href = 'https://pocketgull.app/?scenario=' + encodeURIComponent(match.appParam);
+        }
+
         resultCard.classList.remove('hidden');
         window.__perfettoTracer?.endTrace(trace, { query, matchedTitle: match.title, pValue: match.p });
+      }
+
+      if (searchInput && dropdown) {
+        searchInput.addEventListener('input', (e) => {
+          const val = e.target.value.toLowerCase().trim();
+          if (!val || val.length < 1) {
+            dropdown.classList.add('hidden');
+            return;
+          }
+
+          const matches = mockEvidenceCorpus.filter(item =>
+            item.keys.some(k => k.includes(val) || val.includes(k)) ||
+            item.title.toLowerCase().includes(val) ||
+            item.category.toLowerCase().includes(val)
+          ).slice(0, 4);
+
+          if (matches.length === 0) {
+            dropdown.classList.add('hidden');
+            return;
+          }
+
+          dropdown.innerHTML = matches.map(m => 
+            '<div class="p-3 hover:bg-zinc-800 cursor-pointer transition flex items-center justify-between gap-2" data-query="' + m.title.replace(/"/g, '&quot;') + '">' +
+              '<div class="space-y-0.5">' +
+                '<span class="text-[10px] font-mono-code font-bold text-teal-400 block">' + m.category + '</span>' +
+                '<span class="text-xs text-zinc-200 font-medium line-clamp-1">' + m.title + '</span>' +
+              '</div>' +
+              '<span class="text-zinc-500 font-mono-code text-[10px] shrink-0">' + m.tier.split(' ')[0] + '</span>' +
+            '</div>'
+          ).join('');
+
+          dropdown.querySelectorAll('[data-query]').forEach(item => {
+            item.addEventListener('click', () => {
+              const q = item.getAttribute('data-query');
+              searchInput.value = q;
+              dropdown.classList.add('hidden');
+              performSearch(q);
+            });
+          });
+
+          dropdown.classList.remove('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!searchForm.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
       }
 
       if (searchForm && searchInput) {
