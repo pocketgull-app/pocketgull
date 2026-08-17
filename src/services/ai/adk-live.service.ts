@@ -142,7 +142,7 @@ Occupational Healthspan & Precision Strategy Context:
 - Choral Vocal Resonance & Glee Protocol: ${prof.vocalResonanceProtocol || 'N/A'}`;
   }
 
-  async connect(apiKey: string, systemInstruction: string, voiceName: string = 'Aoede', modelName: string = 'models/gemini-3.5-flash', occupationalProfile?: IOccupationalHazardProfile | null) {
+  async connect(apiKey: string, systemInstruction: string, voiceName: string = 'Aoede', modelName: string = 'models/gemini-2.5-flash', occupationalProfile?: IOccupationalHazardProfile | null) {
     if (this.isConnected()) return;
     this.connectionError.set(null);
 

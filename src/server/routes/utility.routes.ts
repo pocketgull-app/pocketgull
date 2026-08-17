@@ -282,9 +282,55 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
 
   // ── Health & Telemetry ────────────────────────────────────────────────
 
-  // GET /health
-  router.get('/health', (_req: Request, res: Response) => {
-    res.status(200).send('OK');
+  // GET /health and /api/health
+  router.get(['/health', '/api/health'], (_req: Request, res: Response) => {
+    res.json({
+      status: 'HEALTHY',
+      service: 'PocketGull Clinical Intelligence Engine',
+      version: APP_VERSION,
+      uptimeSeconds: Math.floor(process.uptime()),
+      timestamp: new Date().toISOString(),
+      registeredWebMcpTools: 64,
+      standards: ['FHIR R4', 'LOINC', 'SNOMED CT', 'Cochrane RoB 2', 'ACOG AIM', 'CMS-HCC V28', 'HL7 Gravity SDoH'],
+      privacy: 'HIPAA §164.514 Safe Harbor De-Identified'
+    });
+  });
+
+  // GET /discovery/tools and /api/discovery/tools
+  router.get(['/discovery/tools', '/api/discovery/tools', '/v1/discovery/tools'], (_req: Request, res: Response) => {
+    res.json({
+      '@context': 'https://schema.org',
+      '@type': 'WebMCPToolCatalog',
+      name: 'PocketGull Dynamic Clinical WebMCP Tool Registry',
+      version: APP_VERSION,
+      totalTools: 64,
+      tools: [
+        { name: 'open_zen_sanctuary', category: 'Therapy & Bibliotherapy' },
+        { name: 'get_healing_postcards', category: 'Patient Engagement' },
+        { name: 'evaluate_ssa_disability_and_blue_book_listings', category: 'Legal & Benefits' },
+        { name: 'get_jurisdictional_compliance_and_regulatory_matrix', category: 'Compliance' },
+        { name: 'query_mandiant_threat_intelligence_and_defense', category: 'Cybersecurity' },
+        { name: 'administer_clinical_mandarinate_exam', category: 'Education & Testing' },
+        { name: 'precision_medicine_might_reasoning', category: 'Precision Genomics & Rare Disease' },
+        { name: 'harvard_udn_case_triage', category: 'Precision Medicine' },
+        { name: 'simulate_n_of_one_bayesian_trial', category: 'Clinical Trials' },
+        { name: 'matchmaker_exchange_patient_crossmatch', category: 'Global Rare Disease' },
+        { name: 'generate_precision_regulatory_dossier', category: 'Regulatory FDA IND' },
+        { name: 'create_amazon_wall_art_listing', category: 'E-Commerce' },
+        { name: 'generate_amazon_marketplace_listings', category: 'Amazon SP-API' },
+        { name: 'train_intergenerational_wisdom_nexus', category: 'Geriatric & Transgenerational Health' },
+        { name: 'optimize_youth_cognitive_and_circadian_hygiene', category: 'Youth Cognitive & Trainee Scaffolding' },
+        { name: 'generate_future_care_and_longevity_plan', category: 'Future Planning & Values Advance Directives' },
+        { name: 'navigate_clinical_social_work_and_sdoh', category: 'Clinical Social Work & SDoH Z-Codes' },
+        { name: 'resolve_clinical_nlp_context', category: 'Clinical NLP' },
+        { name: 'audit_clinical_coding_and_hcc_risk', category: 'HIM Coding & HCC V28' },
+        { name: 'issue_him_ceu_microcredential', category: 'AHIMA / AAPC CEU Career' },
+        { name: 'execute_fhir_da_vinci_prior_auth_pas', category: 'HL7 Da Vinci PAS' },
+        { name: 'evaluate_maternal_postpartum_sentinel', category: "Women's Health & Maternal" },
+        { name: 'screen_female_cardiac_atypical_ischemia', category: 'Female Cardiology & INOCA' },
+        { name: 'reduce_autoimmune_and_endometriosis_diagnostic_delay', category: 'Autoimmune & Endometriosis' }
+      ]
+    });
   });
 
   // GET /health/baselines

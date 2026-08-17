@@ -90,7 +90,7 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         avatarPath: 'assets/images/agents/skimmer.png',
         props: ['Racing Goggles', 'Speed Lines', 'Mandible Probe'],
         svgAnimation: 'speed-dash',
-        adkMapping: 'gemini-3.5-flash',
+        adkMapping: 'gemini-2.5-flash',
     },
     samaritan: {
         name: 'Samaritan',

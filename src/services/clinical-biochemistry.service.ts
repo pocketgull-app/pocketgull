@@ -26,6 +26,15 @@ export interface IMineralStoichiometryResult {
   calciumMagnesiumBalanceStatus: 'Optimal (2:1)' | 'Magnesium Deficient (Excess Ca)' | 'Calcium Deficient';
 }
 
+export interface IContinuousLactateResult {
+  lactateMmolL: number;
+  metabolicZone: 'Zone 1 (Baseline / Rest)' | 'Zone 2 (FatMax / Optimal Mitochondrial Clearance)' | 'Zone 3 (Lactate Inflexion)' | 'Zone 4+ (Anaerobic Glycolytic Glycogenolysis)' | 'Critical Lactic Acidosis (Tissue Hypoperfusion Risk)';
+  mitochondrialClearanceCapacityPct: number;
+  wadellSphericityCoupling: number;
+  clinicalSeverity: 'Normal Baseline' | 'Optimal Zone 2 Endurance' | 'Metabolic Glycolytic Stress' | 'Critical Hyperlactatemia (Sepsis / Ischemia Alert)';
+  recommendation: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -140,6 +149,53 @@ export class ClinicalBiochemistryService {
       calciumMagnesiumRatio: caMgRatio,
       zincCopperBalanceStatus: znCuStatus,
       calciumMagnesiumBalanceStatus: caMgStatus
+    };
+  }
+
+  /**
+   * 5. Continuous Lactate Sensing & Mitochondrial Clearance Dynamics (Peter Attia / San-Millán Model)
+   * Integrates real-time interstitial lactate (mmol/L) with Wadell Sphericity (Ψ)
+   */
+  calculateContinuousLactateDynamics(
+    lactateMmolL: number = 1.2,
+    wadellSphericity: number = 0.887
+  ): IContinuousLactateResult {
+    const clampedLactate = Math.max(0.2, parseFloat(lactateMmolL.toFixed(2)));
+    
+    // Mathematical clearance capacity coupled with mitochondrial morphological sphericity (Ψ)
+    const clearancePct = Math.min(100, Math.max(10, Math.round(
+      (wadellSphericity * 100) * (1 / (1 + Math.exp(1.2 * (clampedLactate - 2.5)))) * 1.15
+    )));
+
+    let zone: IContinuousLactateResult['metabolicZone'] = 'Zone 1 (Baseline / Rest)';
+    let severity: IContinuousLactateResult['clinicalSeverity'] = 'Normal Baseline';
+    let recommendation = 'Basal lactate homeostasis. Mitochondria operating in unstressed baseline respiration.';
+
+    if (clampedLactate >= 1.5 && clampedLactate < 2.0) {
+      zone = 'Zone 2 (FatMax / Optimal Mitochondrial Clearance)';
+      severity = 'Optimal Zone 2 Endurance';
+      recommendation = 'Peak lipid oxidation & maximum mitochondrial lactate clearance capacity. Ideal healthspan aerobic training zone.';
+    } else if (clampedLactate >= 2.0 && clampedLactate < 4.0) {
+      zone = 'Zone 3 (Lactate Inflexion)';
+      severity = 'Metabolic Glycolytic Stress';
+      recommendation = 'Above aerobic threshold (LT1). Type II fast-twitch glycolytic recruitment exceeding mitochondrial oxidation rate.';
+    } else if (clampedLactate >= 4.0 && clampedLactate < 7.0) {
+      zone = 'Zone 4+ (Anaerobic Glycolytic Glycogenolysis)';
+      severity = 'Metabolic Glycolytic Stress';
+      recommendation = 'OBLA (Onset of Blood Lactate Accumulation). Heavy anaerobic proton buffering required.';
+    } else if (clampedLactate >= 7.0) {
+      zone = 'Critical Lactic Acidosis (Tissue Hypoperfusion Risk)';
+      severity = 'Critical Hyperlactatemia (Sepsis / Ischemia Alert)';
+      recommendation = 'Critical hyperlactatemia detected. Evaluate immediate tissue hypoperfusion, qSOFA sepsis criteria, or mesenteric ischemia.';
+    }
+
+    return {
+      lactateMmolL: clampedLactate,
+      metabolicZone: zone,
+      mitochondrialClearanceCapacityPct: clearancePct,
+      wadellSphericityCoupling: wadellSphericity,
+      clinicalSeverity: severity,
+      recommendation
     };
   }
 }

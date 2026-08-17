@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import '@angular/compiler';
-import { vi, expect } from 'vitest';
+import { vi } from 'vitest';
 import { Injector, runInInjectionContext, NgZone } from '@angular/core';
 import { WebMcpRegistrationService } from './webmcp-registration.service';
 import { PatientStateService } from './patient-state.service';
@@ -125,16 +125,34 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 46 WebMCP agentic tools on modelContext', () => {
+  it('should register all 64 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(46);
+    expect(registeredTools.size).toBe(64);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
     expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
     expect(registeredTools.has('query_mandiant_threat_intelligence_and_defense')).toBe(true);
     expect(registeredTools.has('administer_clinical_mandarinate_exam')).toBe(true);
+    expect(registeredTools.has('precision_medicine_might_reasoning')).toBe(true);
+    expect(registeredTools.has('harvard_udn_case_triage')).toBe(true);
+    expect(registeredTools.has('simulate_n_of_one_bayesian_trial')).toBe(true);
+    expect(registeredTools.has('matchmaker_exchange_patient_crossmatch')).toBe(true);
+    expect(registeredTools.has('generate_precision_regulatory_dossier')).toBe(true);
+    expect(registeredTools.has('create_amazon_wall_art_listing')).toBe(true);
+    expect(registeredTools.has('generate_amazon_marketplace_listings')).toBe(true);
+    expect(registeredTools.has('train_intergenerational_wisdom_nexus')).toBe(true);
+    expect(registeredTools.has('optimize_youth_cognitive_and_circadian_hygiene')).toBe(true);
+    expect(registeredTools.has('generate_future_care_and_longevity_plan')).toBe(true);
+    expect(registeredTools.has('navigate_clinical_social_work_and_sdoh')).toBe(true);
+    expect(registeredTools.has('resolve_clinical_nlp_context')).toBe(true);
+    expect(registeredTools.has('audit_clinical_coding_and_hcc_risk')).toBe(true);
+    expect(registeredTools.has('issue_him_ceu_microcredential')).toBe(true);
+    expect(registeredTools.has('execute_fhir_da_vinci_prior_auth_pas')).toBe(true);
+    expect(registeredTools.has('evaluate_maternal_postpartum_sentinel')).toBe(true);
+    expect(registeredTools.has('screen_female_cardiac_atypical_ischemia')).toBe(true);
+    expect(registeredTools.has('reduce_autoimmune_and_endometriosis_diagnostic_delay')).toBe(true);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -537,16 +555,227 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 46 WebMCP agentic tools on modelContext', () => {
+  it('should register all 64 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(46);
+    expect(registeredTools.size).toBe(64);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
     expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
     expect(registeredTools.has('query_mandiant_threat_intelligence_and_defense')).toBe(true);
     expect(registeredTools.has('administer_clinical_mandarinate_exam')).toBe(true);
+    expect(registeredTools.has('precision_medicine_might_reasoning')).toBe(true);
+    expect(registeredTools.has('harvard_udn_case_triage')).toBe(true);
+    expect(registeredTools.has('simulate_n_of_one_bayesian_trial')).toBe(true);
+    expect(registeredTools.has('matchmaker_exchange_patient_crossmatch')).toBe(true);
+    expect(registeredTools.has('generate_precision_regulatory_dossier')).toBe(true);
+    expect(registeredTools.has('create_amazon_wall_art_listing')).toBe(true);
+    expect(registeredTools.has('generate_amazon_marketplace_listings')).toBe(true);
+    expect(registeredTools.has('train_intergenerational_wisdom_nexus')).toBe(true);
+    expect(registeredTools.has('optimize_youth_cognitive_and_circadian_hygiene')).toBe(true);
+    expect(registeredTools.has('generate_future_care_and_longevity_plan')).toBe(true);
+    expect(registeredTools.has('navigate_clinical_social_work_and_sdoh')).toBe(true);
+    expect(registeredTools.has('resolve_clinical_nlp_context')).toBe(true);
+    expect(registeredTools.has('audit_clinical_coding_and_hcc_risk')).toBe(true);
+    expect(registeredTools.has('issue_him_ceu_microcredential')).toBe(true);
+    expect(registeredTools.has('execute_fhir_da_vinci_prior_auth_pas')).toBe(true);
+    expect(registeredTools.has('evaluate_maternal_postpartum_sentinel')).toBe(true);
+    expect(registeredTools.has('screen_female_cardiac_atypical_ischemia')).toBe(true);
+    expect(registeredTools.has('reduce_autoimmune_and_endometriosis_diagnostic_delay')).toBe(true);
+  });
+
+  it('should execute evaluate_maternal_postpartum_sentinel tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_maternal_postpartum_sentinel');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      systolicBp: 162,
+      diastolicBp: 110,
+      daysPostpartum: 10,
+      symptoms: { severeHeadacheUnrelievedByMeds: true }
+    });
+    expect(result.content[0].text).toContain('CRITICAL_EMERGENCY');
+    expect(result.content[0].text).toContain('Late Postpartum Preeclampsia');
+    expect(result.content[0].text).toContain('ACOG AIM Equity Protocol');
+  });
+
+  it('should execute screen_female_cardiac_atypical_ischemia tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('screen_female_cardiac_atypical_ischemia');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      patientAge: 52,
+      highSensitivityTroponinI_ng_L: 20.0,
+      symptoms: { epigastricBurningOrNausea: true, unexplainedProfoundFatigue: true }
+    });
+    expect(result.content[0].text).toContain('isElevatedByFemaleStandard');
+    expect(result.content[0].text).toContain('YENTL SYNDROME PREVENTION');
+  });
+
+  it('should execute reduce_autoimmune_and_endometriosis_diagnostic_delay tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('reduce_autoimmune_and_endometriosis_diagnostic_delay');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      patientAge: 31,
+      symptomsDurationMonths: 36,
+      symptoms: { severeCyclicalPelvicPainOrDysmenorrhea: true, deepDyspareuniaOrInfertility: true }
+    });
+    expect(result.content[0].text).toContain('ENDOMETRIOSIS_RASRM');
+    expect(result.content[0].text).toContain('diagnosticDelayReductionYearsEstimate');
+    expect(result.content[0].text).toContain('OBJECTIVE CLINICAL DISMISSAL DEFENSE');
+  });
+
+  it('should execute issue_him_ceu_microcredential tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('issue_him_ceu_microcredential');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      trackId: 'track-ai-cdis',
+      recipientName: 'Sarah Jenkins, RHIA'
+    });
+    expect(result.content[0].text).toContain('CEU-AHIMA-');
+    expect(result.content[0].text).toContain('Sarah Jenkins, RHIA');
+    expect(result.content[0].text).toContain('AI-Supervised Clinical Documentation Integrity');
+  });
+
+  it('should execute execute_fhir_da_vinci_prior_auth_pas tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('execute_fhir_da_vinci_prior_auth_pas');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      patientId: 'p_test_davinci',
+      patientName: 'Marie Curie',
+      payerId: 'UHC',
+      serviceCode: '81415',
+      diagnosisCode: 'G35',
+      clinicalEvidence: [
+        'Progressive neurodegenerative symptoms refractory to treatment.',
+        'High probability of monogenic mitochondrial defect.'
+      ]
+    });
+    expect(result.content[0].text).toContain('INSTANT_APPROVED');
+    expect(result.content[0].text).toContain('AUTH-PAS-');
+    expect(result.content[0].text).toContain('x12Transaction278Sample');
+  });
+
+  it('should execute audit_clinical_coding_and_hcc_risk tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('audit_clinical_coding_and_hcc_risk');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      chartText: 'Patient has long-standing T2DM with diabetic peripheral neuropathy and chronic systolic heart failure.'
+    });
+    expect(result.content[0].text).toContain('E11.40');
+    expect(result.content[0].text).toContain('I50.22');
+    expect(result.content[0].text).toContain('HCC 37');
+    expect(result.content[0].text).toContain('denialDefensePacketText');
+  });
+
+  it('should execute resolve_clinical_nlp_context tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('resolve_clinical_nlp_context');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      clinicalText: 'Patient denies chest pain and palpitations, but experiences severe dyspnea after walking up stairs. Mother had breast cancer.'
+    });
+    expect(result.content[0].text).toContain('Dyspnea');
+    expect(result.content[0].text).toContain('Chest Pain');
+    expect(result.content[0].text).toContain('Malignant Neoplasm of Breast');
+    expect(result.content[0].text).toContain('ConText/NegEx');
+  });
+
+  it('should execute create_amazon_wall_art_listing tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('create_amazon_wall_art_listing');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      sku: 'CELL',
+      includeSpApiFeed: true
+    });
+    expect(result.content[0].text).toContain('PG-ART-CELL-001-3X4');
+    expect(result.content[0].text).toContain('PocketGull Fine Art');
+    expect(result.content[0].text).toContain('spApiBatchFeed');
+  });
+
+  it('should execute matchmaker_exchange_patient_crossmatch tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('matchmaker_exchange_patient_crossmatch');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      gene: 'AXIN2'
+    });
+    expect(result.content[0].text).toContain('AXIN2');
+    expect(result.content[0].text).toContain('Broad CMG');
+    expect(result.content[0].text).toContain('matchCount');
+  });
+
+  it('should execute generate_precision_regulatory_dossier tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('generate_precision_regulatory_dossier');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      gene: 'NGLY1',
+      dossierType: 'both'
+    });
+    expect(result.content[0].text).toContain('NGLY1');
+    expect(result.content[0].text).toContain('NIH U54');
+    expect(result.content[0].text).toContain('21 CFR §312.310');
+  });
+
+  it('should execute simulate_n_of_one_bayesian_trial tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('simulate_n_of_one_bayesian_trial');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      drugCandidate: 'N-Acetylglucosamine',
+      targetGene: 'NGLY1',
+      trueEffectSize: 0.75
+    });
+    expect(result.content[0].text).toContain('N-Acetylglucosamine');
+    expect(result.content[0].text).toContain('NGLY1');
+    expect(result.content[0].text).toContain('finalProbabilityEfficacy');
+  });
+
+  it('should execute precision_medicine_might_reasoning tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('precision_medicine_might_reasoning');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      gene: 'NGLY1',
+      mutation: 'c.1201A>T',
+      exportFhirBundle: true
+    });
+    expect(result.content[0].text).toContain('NGLY1');
+    expect(result.content[0].text).toContain('N-Acetylglucosamine');
+    expect(result.content[0].text).toContain('fhir-might-precision-');
+  });
+
+  it('should execute harvard_udn_case_triage tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('harvard_udn_case_triage');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      gene: 'AXIN2',
+      exportGatewayBundle: true
+    });
+    expect(result.content[0].text).toContain('AXIN2');
+    expect(result.content[0].text).toContain('Danio rerio');
+    expect(result.content[0].text).toContain('fhir-udn-harvard-');
   });
 
   it('should execute administer_clinical_mandarinate_exam tool', async () => {
@@ -564,7 +793,7 @@ describe('WebMcpRegistrationService', () => {
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(46);
+    expect((service as any).mcpControllers.length).toBe(64);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

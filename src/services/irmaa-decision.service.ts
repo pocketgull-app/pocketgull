@@ -74,12 +74,9 @@ export class IrmaaDecisionService {
   /** Selected Life-Changing Events signal for Form SSA-44 */
   public activeEvents = signal<LifeChangingEvent[]>(['WORK_REDUCTION']);
 
-  /** Reactive IRMAA Analysis Output */
-  public analysis = computed<IIrmaaAnalysisResult>(() => {
-    const status = this.filingStatus();
-    const magiValue = Math.max(0, this.magi());
-    const events = this.activeEvents();
-
+  /** Pure evaluation calculation without signal mutation */
+  public static computeIrmaa(magi: number, status: TaxFilingStatus = 'single', events: LifeChangingEvent[] = []): IIrmaaAnalysisResult {
+    const magiValue = Math.max(0, magi);
     const tiers = status === 'joint' ? JOINT_TIERS : SINGLE_TIERS;
     let currentTierIndex = 0;
 
@@ -145,26 +142,17 @@ export class IrmaaDecisionService {
       appealAssessment,
       clinicalFinancialDirectives: directives
     };
+  }
+
+  /** Reactive IRMAA Analysis Output */
+  public analysis = computed<IIrmaaAnalysisResult>(() => {
+    return IrmaaDecisionService.computeIrmaa(this.magi(), this.filingStatus(), this.activeEvents());
   });
 
   /**
-   * Directly evaluates IRMAA surcharges for arbitrary parameters.
+   * Directly evaluates IRMAA surcharges for arbitrary parameters purely without signal mutations.
    */
   public evaluateIrmaa(magi: number, status: TaxFilingStatus = 'single', events: LifeChangingEvent[] = []): IIrmaaAnalysisResult {
-    const originalMagi = this.magi();
-    const originalStatus = this.filingStatus();
-    const originalEvents = this.activeEvents();
-
-    this.magi.set(magi);
-    this.filingStatus.set(status);
-    this.activeEvents.set(events);
-
-    const res = this.analysis();
-
-    this.magi.set(originalMagi);
-    this.filingStatus.set(originalStatus);
-    this.activeEvents.set(originalEvents);
-
-    return res;
+    return IrmaaDecisionService.computeIrmaa(magi, status, events);
   }
 }

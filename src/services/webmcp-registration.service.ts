@@ -30,6 +30,22 @@ import { SsaDisabilityNavigatorService } from './ssa-disability-navigator.servic
 import { GlobalJurisdictionMatrixService } from './global-jurisdiction-matrix.service';
 import { MandiantClinicalDefenseService } from './mandiant-clinical-defense.service';
 import { ClinicalMandarinateExamService } from './clinical-mandarinate-exam.service';
+import { MattMightPrecisionEngineService } from './precision-medicine-might.service';
+import { NOfOneBayesianSimulatorService } from './n-of-one-bayesian-simulator.service';
+import { MatchmakerExchangeService } from './matchmaker-exchange.service';
+import { PrecisionRegulatoryDossierService } from './precision-regulatory-dossier.service';
+import { AmazonListingGeneratorService } from './amazon-listing-generator.service';
+import { ClinicalNegationResolutionService } from './clinical-negation-resolution.service';
+import { ClinicalCodingCopilotService } from './clinical-coding-copilot.service';
+import { ClinicalCeuUpskillingService } from './clinical-ceu-upskilling.service';
+import { FhirDaVinciPasService } from './fhir-da-vinci-pas.service';
+import { MaternalPostpartumSentinelService } from './maternal-postpartum-sentinel.service';
+import { FemaleCardiacAtypicalScreeningService } from './female-cardiac-atypical-screening.service';
+import { AutoimmuneMultiSystemDelayReducerService } from './autoimmune-multi-system-delay-reducer.service';
+import { IntergenerationalWisdomService } from './intergenerational-wisdom.service';
+import { YouthNeurodevelopmentHygieneService } from './youth-neurodevelopment-hygiene.service';
+import { FutureCarePlanningService } from './future-care-planning.service';
+import { ClinicalSocialWorkNavigatorService } from './clinical-social-work-navigator.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -66,6 +82,22 @@ export class WebMcpRegistrationService {
   private jurisdictionMatrixService = inject(GlobalJurisdictionMatrixService, { optional: true });
   private mandiantDefenseService = inject(MandiantClinicalDefenseService, { optional: true });
   private mandarinateExamService = inject(ClinicalMandarinateExamService, { optional: true });
+  private precisionMightService = inject(MattMightPrecisionEngineService, { optional: true });
+  private bayesianSimulator = inject(NOfOneBayesianSimulatorService, { optional: true });
+  private matchmakerService = inject(MatchmakerExchangeService, { optional: true });
+  private dossierService = inject(PrecisionRegulatoryDossierService, { optional: true });
+  private amazonListingService = inject(AmazonListingGeneratorService, { optional: true });
+  private negationNlpService = inject(ClinicalNegationResolutionService, { optional: true });
+  private codingCopilotService = inject(ClinicalCodingCopilotService, { optional: true });
+  private ceuService = inject(ClinicalCeuUpskillingService, { optional: true });
+  private daVinciPasService = inject(FhirDaVinciPasService, { optional: true });
+  private maternalSentinelService = inject(MaternalPostpartumSentinelService, { optional: true });
+  private femaleCardiacService = inject(FemaleCardiacAtypicalScreeningService, { optional: true });
+  private autoimmuneReducerService = inject(AutoimmuneMultiSystemDelayReducerService, { optional: true });
+  private wisdomService = inject(IntergenerationalWisdomService, { optional: true });
+  private youthHygieneService = inject(YouthNeurodevelopmentHygieneService, { optional: true });
+  private futureCareService = inject(FutureCarePlanningService, { optional: true });
+  private socialWorkService = inject(ClinicalSocialWorkNavigatorService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1522,6 +1554,926 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(mandarinateTool, { signal: mandarinateCtrl.signal });
     this.mcpControllers.push({ name: mandarinateTool.name, controller: mandarinateCtrl });
+
+    // 46. Dr. Matt Might Algorithm for Precision Medicine (mediKanren & N-of-1 Drug Repurposing)
+    const mightCtrl = new AbortController();
+    const mightTool = {
+      name: 'precision_medicine_might_reasoning',
+      description: 'Executes Dr. Matt Might\'s 5-step Algorithm for Precision Medicine: translates genomic/exome variants into functional proteostasis graphs, traverses biomedical knowledge graphs for FDA/nutraceutical drug repurposing candidates, and generates N-of-1 clinical trial protocols with FHIR R4 Bundle export.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          gene: { type: 'string', description: 'Target gene symbol (e.g. NGLY1, ADCY5, SLC6A1, CACNA1A)' },
+          mutation: { type: 'string', description: 'HGVS variant or nucleotide mutation (e.g. c.1201A>T, c.2176G>A, c.863G>A)' },
+          exportFhirBundle: { type: 'boolean', description: 'Whether to export the resulting N-of-1 trial protocol as a FHIR R4 Bundle' }
+        },
+        required: ['gene']
+      },
+      execute: async (params: any) => {
+        const svc = this.precisionMightService || new MattMightPrecisionEngineService();
+        const gene = String(params?.gene || 'NGLY1');
+        const mutation = params?.mutation ? String(params.mutation) : '';
+        const study = svc.runCustomVariantPrecisionReasoning(gene, mutation);
+
+        let fhirBundle: any = null;
+        if (params?.exportFhirBundle) {
+          fhirBundle = svc.exportFhirR4TrialBundle(study);
+        }
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                framework: 'Dr. Matt Might Algorithm for Precision Medicine',
+                selectedGene: study.primaryGene,
+                disease: study.diseaseName,
+                variant: study.variant,
+                knowledgeGraphNodes: study.nodes,
+                repurposingCandidates: study.repurposingCandidates,
+                nOfOneTrialProtocol: study.trialProtocol,
+                publishedOutcome: study.publishedOutcome,
+                drMightQuote: study.mightQuote,
+                fhirR4Bundle: fhirBundle
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(mightTool, { signal: mightCtrl.signal });
+    this.mcpControllers.push({ name: mightTool.name, controller: mightCtrl });
+
+    // 47. Harvard Medical School Undiagnosed Diseases Network (UDN) Diagnostic Odyssey & MOSC Screening
+    const udnCtrl = new AbortController();
+    const udnTool = {
+      name: 'harvard_udn_case_triage',
+      description: 'Evaluates rare and ultra-rare undiagnosed patient cases using Harvard Medical School Undiagnosed Diseases Network (UDN) protocols, NIH Model Organism Screening Center (MOSC) validation assays (Drosophila, C. elegans, Zebrafish), and exports official UDN Gateway submission bundles.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          gene: { type: 'string', description: 'Target gene symbol (e.g. AXIN2, RNU4ATAC, ETFDH, BCL11B, MED13L)' },
+          hpoTerms: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Human Phenotype Ontology (HPO) codes or clinical phenotype descriptions'
+          },
+          exportGatewayBundle: { type: 'boolean', description: 'Whether to export a Harvard UDN Gateway DiagnosticReport FHIR R4 Bundle' }
+        },
+        required: ['gene']
+      },
+      execute: async (params: any) => {
+        const svc = this.precisionMightService || new MattMightPrecisionEngineService();
+        const gene = String(params?.gene || 'AXIN2');
+        const hpoTerms = Array.isArray(params?.hpoTerms) ? params.hpoTerms : [];
+        const triage = svc.evaluateUdnDiagnosticOdyssey(gene, hpoTerms);
+        const study = svc.runCustomVariantPrecisionReasoning(gene, '');
+
+        let gatewayBundle: any = null;
+        if (params?.exportGatewayBundle) {
+          gatewayBundle = svc.exportUdnGatewaySubmissionBundle(study, triage);
+        }
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                framework: 'Harvard Medical School Undiagnosed Diseases Network (UDN) & MOSC Protocol',
+                udnCaseId: triage.udnId,
+                participantAlias: triage.participantAlias,
+                primaryGene: triage.primaryGene,
+                diseaseCategory: triage.diseaseCategory,
+                hpoTerms: triage.hpoTerms,
+                multiOmicProfile: triage.multiOmicProfile,
+                modelOrganismScreening: triage.modelOrganismScreening,
+                targetedTherapeuticHypothesis: triage.targetedTherapeuticHypothesis,
+                udnClinicalRecommendation: triage.udnClinicalRecommendation,
+                gatewaySubmissionUrl: triage.gatewaySubmissionUrl,
+                hmsClinicalLead: triage.hmsClinicalLead,
+                fhirR4GatewayBundle: gatewayBundle
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(udnTool, { signal: udnCtrl.signal });
+    this.mcpControllers.push({ name: udnTool.name, controller: udnCtrl });
+
+    // 49. N-of-1 Bayesian Adaptive Clinical Trial Simulator (ABAB Sequential Updating & Deciban Evidence)
+    const bayesCtrl = new AbortController();
+    const bayesTool = {
+      name: 'simulate_n_of_one_bayesian_trial',
+      description: 'Executes an adaptive Monte Carlo N-of-1 ABAB single-subject clinical trial simulation: models drug PK/PD onset & washout kinetics, computes Turing Decibans of weight of evidence, and determines posterior probability of efficacy.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          drugCandidate: { type: 'string', description: 'Name of the candidate repurposed therapeutic agent (e.g. N-Acetylglucosamine, Caffeine, Sodium Phenylbutyrate, Riboflavin)' },
+          targetGene: { type: 'string', description: 'Target gene symbol (e.g. NGLY1, ADCY5, SLC6A1, ETFDH)' },
+          trueEffectSize: { type: 'number', description: 'Target biomarker percentage improvement (0.0 to 1.0, e.g. 0.70 for 70% rescue)' },
+          noiseSd: { type: 'number', description: 'Physiological daily noise standard deviation (e.g. 0.08)' },
+          washoutHalfLifeDays: { type: 'number', description: 'Drug elimination half-life in days (e.g. 4.0)' }
+        },
+        required: ['drugCandidate', 'targetGene']
+      },
+      execute: async (params: any) => {
+        const sim = this.bayesianSimulator || new NOfOneBayesianSimulatorService();
+        const drug = String(params?.drugCandidate || 'Repurposed Agent');
+        const gene = String(params?.targetGene || 'TARGET_GENE');
+        const effectSize = typeof params?.trueEffectSize === 'number' ? params.trueEffectSize : 0.70;
+        const noise = typeof params?.noiseSd === 'number' ? params.noiseSd : 0.08;
+        const halfLife = typeof params?.washoutHalfLifeDays === 'number' ? params.washoutHalfLifeDays : 4.0;
+
+        const result = sim.runSimulation(drug, gene, effectSize, noise, halfLife);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                framework: 'N-of-1 Bayesian Adaptive Single-Subject Clinical Trial Simulation',
+                protocolId: result.protocolId,
+                drugCandidate: result.drugCandidate,
+                targetGene: result.targetGene,
+                totalTrialDays: result.totalDays,
+                summaryMetrics: result.summaryMetrics,
+                sampleDataPoints: [
+                  ...result.simulatedData.slice(0, 3),
+                  ...result.simulatedData.slice(54, 57),
+                  ...result.simulatedData.slice(109, 112)
+                ]
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(bayesTool, { signal: bayesCtrl.signal });
+    this.mcpControllers.push({ name: bayesTool.name, controller: bayesCtrl });
+
+    // 50. Matchmaker Exchange (MME) Global Rare Disease Patient Cross-Matching
+    const mmeCtrl = new AbortController();
+    const mmeTool = {
+      name: 'matchmaker_exchange_patient_crossmatch',
+      description: 'Queries international Matchmaker Exchange (MME) federated registries (Broad CMG, Sanger DECIPHER, GeneMatcher, RD-Connect, MyGene2) to discover other patients worldwide sharing identical or orthologous rare genomic variants and overlapping HPO phenotypes.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          gene: { type: 'string', description: 'Target gene symbol (e.g. AXIN2, RNU4ATAC, ETFDH, NGLY1, ADCY5)' },
+          hpoTerms: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Array of Human Phenotype Ontology terms or codes'
+          }
+        },
+        required: ['gene']
+      },
+      execute: async (params: any) => {
+        const mme = this.matchmakerService || new MatchmakerExchangeService();
+        const gene = String(params?.gene || 'AXIN2');
+        const hpoTerms = Array.isArray(params?.hpoTerms) ? params.hpoTerms : [];
+        const matches = mme.queryMatchmaker(gene, hpoTerms);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                framework: 'Matchmaker Exchange (MME) Federated Rare Disease Network Protocol',
+                queriedGene: gene,
+                matchCount: matches.length,
+                matches
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(mmeTool, { signal: mmeCtrl.signal });
+    this.mcpControllers.push({ name: mmeTool.name, controller: mmeCtrl });
+
+    // 51. Precision Regulatory Dossier & NIH Grant Narrative Generator
+    const dossierCtrl = new AbortController();
+    const dossierTool = {
+      name: 'generate_precision_regulatory_dossier',
+      description: 'Generates formal NIH Grant Application narratives (U54 / R21) with MOSC animal model validation plans and FDA Single-Patient Expanded Access IND protocol dossiers (21 CFR §312.310) with Bayesian Deciban stopping criteria.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          gene: { type: 'string', description: 'Target gene symbol (e.g. NGLY1, ADCY5, AXIN2, ETFDH)' },
+          dossierType: {
+            type: 'string',
+            enum: ['nih_grant_u54', 'fda_expanded_access_ind', 'both'],
+            description: 'Type of regulatory dossier to produce'
+          }
+        },
+        required: ['gene']
+      },
+      execute: async (params: any) => {
+        const pEngine = this.precisionMightService || new MattMightPrecisionEngineService();
+        const dSvc = this.dossierService || new PrecisionRegulatoryDossierService();
+        const gene = String(params?.gene || 'NGLY1');
+        const dossierType = params?.dossierType || 'both';
+
+        const study = pEngine.runCustomVariantPrecisionReasoning(gene, '');
+        
+        let nihGrant = null;
+        let fdaInd = null;
+
+        if (dossierType === 'nih_grant_u54' || dossierType === 'both') {
+          nihGrant = dSvc.generateNihGrantNarrative(study);
+        }
+        if (dossierType === 'fda_expanded_access_ind' || dossierType === 'both') {
+          fdaInd = dSvc.generateFdaExpandedAccessIndDossier(study);
+        }
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                framework: 'Precision Medicine Regulatory & Grant Application Dossier Engine',
+                selectedGene: study.primaryGene,
+                disease: study.diseaseName,
+                nihGrantNarrative: nihGrant,
+                fdaExpandedAccessIndDossier: fdaInd
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(dossierTool, { signal: dossierCtrl.signal });
+    this.mcpControllers.push({ name: dossierTool.name, controller: dossierCtrl });
+
+    // 52. Amazon Marketplace SP-API Wall Art Listing Generator
+    const amzCtrl = new AbortController();
+    const amzTool = {
+      name: 'create_amazon_wall_art_listing',
+      description: 'Generates production-ready Amazon Marketplace SP-API Listings (Listings Items API format) with SEO-optimized titles, 5 high-converting bullet points, backend search terms, A+ content outlines, and JSON Feed payloads for the Full-Bleed Cell Biology Paper Quilling Wall Art Trilogy.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          sku: {
+            type: 'string',
+            description: 'Optional SKU or keyword filter (e.g. CELL, SYNAPSE, MITO, or PG-ART-CELL-001-3X4)'
+          },
+          includeSpApiFeed: {
+            type: 'boolean',
+            description: 'Set true to include batch SP-API JSON Feed message payload'
+          }
+        }
+      },
+      execute: async (params: any) => {
+        const amz = this.amazonListingService || new AmazonListingGeneratorService();
+        const skuFilter = params?.sku ? String(params.sku) : undefined;
+        const includeFeed = Boolean(params?.includeSpApiFeed);
+
+        const listings = amz.generateAmazonListings(skuFilter);
+        const feed = includeFeed ? amz.exportSpApiListingsFeed() : null;
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                marketplace: 'Amazon.com (US)',
+                brand: 'PocketGull Fine Art',
+                productCategory: 'Home & Kitchen > Wall Art > Posters & Prints',
+                totalListingsGenerated: listings.length,
+                listings,
+                spApiBatchFeed: feed
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(amzTool, { signal: amzCtrl.signal });
+    this.mcpControllers.push({ name: amzTool.name, controller: amzCtrl });
+
+    // 53. Advanced Clinical Negation, Experiencer Scoping & Acronym Disambiguation NLP
+    const nlpCtrl = new AbortController();
+    const nlpTool = {
+      name: 'resolve_clinical_nlp_context',
+      description: 'Executes contextual NegEx/ConText clinical syntax parsing, separating active patient symptoms from explicitly negated findings, family history conditions, and hypothetical guidance, while resolving ambiguous clinical acronyms (e.g. MS, PE, RA) with standardized SNOMED-CT, ICD-10-CM, and HPO codes.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          clinicalText: {
+            type: 'string',
+            description: 'Raw patient narrative, clinical consultation transcript, or doctor SOAP note'
+          }
+        },
+        required: ['clinicalText']
+      },
+      execute: async (params: any) => {
+        const nlp = this.negationNlpService || new ClinicalNegationResolutionService();
+        const text = String(params?.clinicalText || '');
+        const res = nlp.resolveClinicalText(text);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                framework: 'PocketGull ConText/NegEx Clinical Syntax & Acronym Disambiguator',
+                originalText: res.originalText,
+                timestamp: res.timestamp,
+                diagnosticConfidenceScore: res.diagnosticConfidenceScore,
+                activeSymptoms: res.activeSymptoms,
+                negatedSymptoms: res.negatedSymptoms,
+                familyHistoryConditions: res.familyHistoryConditions,
+                hypotheticalWarnings: res.hypotheticalWarnings,
+                summarySummaryCount: {
+                  activeCount: res.activeSymptoms.length,
+                  negatedCount: res.negatedSymptoms.length,
+                  familyHistoryCount: res.familyHistoryConditions.length,
+                  hypotheticalCount: res.hypotheticalWarnings.length
+                }
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(nlpTool, { signal: nlpCtrl.signal });
+    this.mcpControllers.push({ name: nlpTool.name, controller: nlpCtrl });
+
+    // 54. HIM & Clinical Coding Copilot with CMS-HCC V28 & E&M MDM Defense
+    const codingCtrl = new AbortController();
+    const codingTool = {
+      name: 'audit_clinical_coding_and_hcc_risk',
+      description: 'Performs comprehensive Health Information Management (HIM) coding audit on clinical charts, extracting ICD-10-CM, CPT E&M (99202-99215) with Medical Decision Making (MDM) complexity justification, CMS-HCC V28 Risk Adjustment Factor (RAF) scoring, and SDOH Z-codes with 1-click Denial Defense dossier generation.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          chartText: {
+            type: 'string',
+            description: 'Clinical narrative, physician SOAP note, discharge summary, or operative transcript'
+          },
+          patientId: {
+            type: 'string',
+            description: 'De-identified patient or chart identifier'
+          }
+        },
+        required: ['chartText']
+      },
+      execute: async (params: any) => {
+        const copilot = this.codingCopilotService || new ClinicalCodingCopilotService();
+        const text = String(params?.chartText || '');
+        const pid = String(params?.patientId || 'p_audit_case');
+        const report = copilot.auditChartText(text, pid);
+        const defenseDossier = copilot.generateDenialDefensePacket();
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                chartId: report.chartId,
+                patientId: report.patientId,
+                recommendedEmCode: report.mdmAudit.emLevel,
+                medicalDecisionMakingLevel: report.mdmAudit.mdmLevel,
+                totalSuggestedCodes: report.totalSuggestedCodes,
+                totalPotentialRafImpact: report.totalRafImpact,
+                suggestions: report.suggestions,
+                mdmAudit: report.mdmAudit,
+                denialPreventionWarnings: report.denialPreventionWarnings,
+                denialDefensePacketText: defenseDossier
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(codingTool, { signal: codingCtrl.signal });
+    this.mcpControllers.push({ name: codingTool.name, controller: codingCtrl });
+
+    // 55. AAPC & AHIMA CEU Micro-Credentialing & Career Upskilling
+    const ceuCtrl = new AbortController();
+    const ceuTool = {
+      name: 'issue_him_ceu_microcredential',
+      description: 'Generates accredited Continuing Education Units (CEU) certificates for AAPC (CPC) and AHIMA (RHIA/CDIS) credentials, tracking audited chart hours across AI Documentation Integrity (AI-CDIS), CMS-HCC Risk Adjustment (CRC-AI), and Genomic Orphan Coding (CMRS-GEN).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          trackId: {
+            type: 'string',
+            description: 'Target credential track: track-ai-cdis, track-crc-v28, or track-cmrs-gen'
+          },
+          recipientName: {
+            type: 'string',
+            description: 'Full name and professional credentials of the clinical coding specialist'
+          }
+        },
+        required: ['trackId']
+      },
+      execute: async (params: any) => {
+        const ceu = this.ceuService || new ClinicalCeuUpskillingService();
+        const trackId = String(params?.trackId || 'track-ai-cdis');
+        const name = params?.recipientName ? String(params.recipientName) : undefined;
+        const certificate = ceu.issueCertificate(trackId, name);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                certificateId: certificate.certificateId,
+                recipientName: certificate.recipientName,
+                credentialTrack: certificate.credentialTrackName,
+                accreditationBody: certificate.accreditationBody,
+                ceuCreditsAwarded: certificate.ceuCreditsAwarded,
+                issueDate: certificate.issueDate,
+                verificationHash: certificate.verificationHash,
+                competencyPillars: certificate.specialtyPillars,
+                attestation: certificate.accreditationAttestation
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(ceuTool, { signal: ceuCtrl.signal });
+    this.mcpControllers.push({ name: ceuTool.name, controller: ceuCtrl });
+
+    // 56. HL7 FHIR Da Vinci Prior Authorization Automation (CRD / DTR / PAS)
+    const daVinciPasCtrl = new AbortController();
+    const daVinciPasTool = {
+      name: 'execute_fhir_da_vinci_prior_auth_pas',
+      description: 'Executes automated electronic Prior Authorization according to the HL7 FHIR Da Vinci CRD, DTR, and PAS implementation guides, compiling clinical chart evidence into standard X12 278 transactions for immediate payer adjudication.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string', description: 'De-identified patient identifier' },
+          patientName: { type: 'string', description: 'Patient legal name' },
+          payerId: { type: 'string', description: 'Target electronic payer ID (e.g. UHC, Aetna, Humana)' },
+          serviceCode: { type: 'string', description: 'CPT or HCPCS procedure code (e.g. 81415, 93458)' },
+          serviceDescription: { type: 'string', description: 'Clinical description of requested medical service' },
+          diagnosisCode: { type: 'string', description: 'Primary ICD-10-CM diagnosis indication' },
+          clinicalEvidence: { type: 'array', items: { type: 'string' }, description: 'Supporting clinical chart excerpts and notes' }
+        },
+        required: ['patientId', 'serviceCode', 'diagnosisCode']
+      },
+      execute: async (params: any) => {
+        const pas = this.daVinciPasService || new FhirDaVinciPasService();
+        const req = pas.createPriorAuthRequest({
+          patientId: String(params?.patientId || 'p_pas_case'),
+          patientName: String(params?.patientName || 'Patient Case'),
+          patientDob: '1975-06-15',
+          payerId: String(params?.payerId || 'PAYER-COMMERCIAL-001'),
+          payerName: 'National Commercial Health Network',
+          orderingProviderNpi: '1982736450',
+          orderingProviderName: 'Attending Physician, MD',
+          claimType: 'professional',
+          items: [
+            {
+              sequence: 1,
+              serviceCode: String(params?.serviceCode || '81415'),
+              serviceDescription: String(params?.serviceDescription || 'Precision Molecular Diagnostics'),
+              quantity: 1,
+              unitPriceUsd: 2850.00,
+              primaryDiagnosisCode: String(params?.diagnosisCode || 'G35'),
+              priorAuthRequired: true,
+              payerGuidelineRef: 'Standard Clinical Policy Bulletin #0028'
+            }
+          ],
+          attachedEvidenceNotes: Array.isArray(params?.clinicalEvidence) ? params.clinicalEvidence : ['Detailed clinical indication attached by ordering physician.']
+        });
+
+        const dtrValidated = pas.executeCrdAndDtr(req.requestId);
+        const adjudicated = pas.submitPasBundle(dtrValidated.requestId);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                requestId: adjudicated.requestId,
+                status: adjudicated.status,
+                adjudicationOutcome: adjudicated.adjudicationOutcome,
+                claimItems: adjudicated.items,
+                x12Transaction278Sample: adjudicated.x12Transaction278Payload
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(daVinciPasTool, { signal: daVinciPasCtrl.signal });
+    this.mcpControllers.push({ name: daVinciPasTool.name, controller: daVinciPasCtrl });
+
+    // 57. ACOG AIM 4th-Trimester Maternal Postpartum Sentinel
+    const maternalCtrl = new AbortController();
+    const maternalTool = {
+      name: 'evaluate_maternal_postpartum_sentinel',
+      description: 'Evaluates 4th-trimester postpartum maternal health telemetry under ACOG AIM safety bundles, calculating Mean Arterial Pressure (MAP) and flagging preeclampsia, peripartum cardiomyopathy (PPCM), and secondary hemorrhage with equity guardrails.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          systolicBp: { type: 'number', description: 'Systolic blood pressure (mmHg)' },
+          diastolicBp: { type: 'number', description: 'Diastolic blood pressure (mmHg)' },
+          heartRate: { type: 'number', description: 'Resting maternal heart rate (bpm)' },
+          daysPostpartum: { type: 'number', description: 'Days since childbirth (1 to 84)' },
+          symptoms: {
+            type: 'object',
+            properties: {
+              severeHeadacheUnrelievedByMeds: { type: 'boolean' },
+              visualScotomaOrBlurring: { type: 'boolean' },
+              epigastricOrRightUpperQuadrantPain: { type: 'boolean' },
+              shortnessOfBreathOrOrthopnea: { type: 'boolean' },
+              suddenFaceHandEdema: { type: 'boolean' },
+              excessiveLochiaOrClots: { type: 'boolean' },
+              feverOrFoulDischarge: { type: 'boolean' }
+            }
+          }
+        },
+        required: ['systolicBp', 'diastolicBp', 'daysPostpartum']
+      },
+      execute: async (params: any) => {
+        const mom = this.maternalSentinelService || new MaternalPostpartumSentinelService();
+        const assessment = mom.evaluatePostpartumMorbidity({
+          systolicBp: Number(params?.systolicBp || 120),
+          diastolicBp: Number(params?.diastolicBp || 80),
+          heartRate: Number(params?.heartRate || 75),
+          spO2Percent: 98,
+          daysPostpartum: Number(params?.daysPostpartum || 7),
+          symptoms: params?.symptoms || {}
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                assessmentId: assessment.assessmentId,
+                daysPostpartum: assessment.daysPostpartum,
+                meanArterialPressure: assessment.meanArterialPressure,
+                riskTier: assessment.riskTier,
+                urgentActionRequired: assessment.urgentActionRequired,
+                flaggedConditions: assessment.flaggedConditions,
+                acogAimBundleRecommendations: assessment.acogAimBundleRecommendations,
+                disparityMitigationNotice: assessment.disparityMitigationNotice,
+                fhirObservation: assessment.fhirObservationPayload
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(maternalTool, { signal: maternalCtrl.signal });
+    this.mcpControllers.push({ name: maternalTool.name, controller: maternalCtrl });
+
+    // 58. Female Cardiac Atypical Ischemia & Yentl Syndrome Interception
+    const femCardCtrl = new AbortController();
+    const femCardTool = {
+      name: 'screen_female_cardiac_atypical_ischemia',
+      description: 'Screens female atypical cardiovascular presentations for INOCA (microvascular angina), SCAD, Takotsubo cardiomyopathy, and calibrates high-sensitivity Troponin against female-specific 99th percentile limits to eliminate Yentl Syndrome misattribution.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientAge: { type: 'number', description: 'Patient age in years' },
+          highSensitivityTroponinI_ng_L: { type: 'number', description: 'hs-cTnI in ng/L' },
+          coronaryAngioObstructiveCadFound: { type: 'boolean', description: 'Whether obstructive CAD was found on angiography' },
+          symptoms: {
+            type: 'object',
+            properties: {
+              chestDiscomfortOrPressure: { type: 'boolean' },
+              jawNeckOrThroatPain: { type: 'boolean' },
+              epigastricBurningOrNausea: { type: 'boolean' },
+              unexplainedProfoundFatigue: { type: 'boolean' },
+              dyspneaOnMinimalExertion: { type: 'boolean' },
+              postpartumOrRecentParturition: { type: 'boolean' },
+              severeEmotionalOrPhysicalStress: { type: 'boolean' }
+            }
+          }
+        },
+        required: ['patientAge']
+      },
+      execute: async (params: any) => {
+        const fem = this.femaleCardiacService || new FemaleCardiacAtypicalScreeningService();
+        const evaluation = fem.evaluateFemaleCardiovascularProfile({
+          patientAge: Number(params?.patientAge || 45),
+          gender: 'female',
+          highSensitivityTroponinI_ng_L: params?.highSensitivityTroponinI_ng_L !== undefined ? Number(params.highSensitivityTroponinI_ng_L) : undefined,
+          coronaryAngioObstructiveCadFound: params?.coronaryAngioObstructiveCadFound,
+          symptoms: params?.symptoms || {}
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                evaluationId: evaluation.evaluationId,
+                suspectedSyndrome: evaluation.suspectedSyndrome,
+                syndromeTitle: evaluation.syndromeTitle,
+                hsTroponinInterpretation: evaluation.hsTroponinInterpretation,
+                misattributionWarning: evaluation.misattributionWarning,
+                clinicalActionPlan: evaluation.clinicalActionPlan,
+                guidelinesCitation: evaluation.ahaGuidelinesCitation
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(femCardTool, { signal: femCardCtrl.signal });
+    this.mcpControllers.push({ name: femCardTool.name, controller: femCardCtrl });
+
+    // 59. Autoimmune & Endometriosis 7-Year Diagnostic Delay Reducer
+    const autoCtrl = new AbortController();
+    const autoTool = {
+      name: 'reduce_autoimmune_and_endometriosis_diagnostic_delay',
+      description: 'Synthesizes multi-system complaints (malar rash, joint swelling, sicca, Raynaud phenomenon, catamenial dysmenorrhea) to compress the 7-year diagnostic delay in Lupus (SLE), Sjögren syndrome, Hashimoto thyroiditis, and Endometriosis.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientAge: { type: 'number', description: 'Patient age' },
+          symptomsDurationMonths: { type: 'number', description: 'Duration of chronic symptoms in months' },
+          symptoms: {
+            type: 'object',
+            properties: {
+              malarOrDiscoidRash: { type: 'boolean' },
+              photosensitivity: { type: 'boolean' },
+              oralOrNasalUlcers: { type: 'boolean' },
+              symmetricalJointSwelling: { type: 'boolean' },
+              raynaudsPhenomenonTriphasicColorChange: { type: 'boolean' },
+              persistentDryEyesOrXerostomiaSicca: { type: 'boolean' },
+              unexplainedColdIntoleranceOrWeightGain: { type: 'boolean' },
+              severeCyclicalPelvicPainOrDysmenorrhea: { type: 'boolean' },
+              deepDyspareuniaOrInfertility: { type: 'boolean' },
+              profoundUnexplainedBrainFog: { type: 'boolean' },
+              alopeciaNonScarring: { type: 'boolean' }
+            }
+          },
+          laboratoryFindings: {
+            type: 'object',
+            properties: {
+              anaTiterAndPattern: { type: 'string' },
+              antiDsDnaPositive: { type: 'boolean' },
+              antiRoSsaPositive: { type: 'boolean' },
+              antiTpoAntibodies_IU_mL: { type: 'number' },
+              tsh_uIU_mL: { type: 'number' }
+            }
+          }
+        },
+        required: ['patientAge']
+      },
+      execute: async (params: any) => {
+        const auto = this.autoimmuneReducerService || new AutoimmuneMultiSystemDelayReducerService();
+        const report = auto.synthesizeMultiSystemComplaints({
+          patientAge: Number(params?.patientAge || 30),
+          gender: 'female',
+          symptomsDurationMonths: Number(params?.symptomsDurationMonths || 12),
+          symptoms: params?.symptoms || {},
+          laboratoryFindings: params?.laboratoryFindings
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                reportId: report.reportId,
+                suspectedConditions: report.suspectedConditions,
+                diagnosticDelayReductionYearsEstimate: report.diagnosticDelayReductionYearsEstimate,
+                physicianDismissalCounterEvidence: report.physicianDismissalCounterEvidence,
+                lifestyleAndImmuneModulationSupport: report.lifestyleAndImmuneModulationSupport
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(autoTool, { signal: autoCtrl.signal });
+    this.mcpControllers.push({ name: autoTool.name, controller: autoCtrl });
+
+    // 60. Generate Amazon Marketplace Listings & SP-API Feeds (Fine Art & Medical Wall Art)
+    const amazonCtrl = new AbortController();
+    const amazonTool = {
+      name: 'generate_amazon_marketplace_listings',
+      description: 'Generates compliant Amazon Seller Central batch inventory feeds (Flat File TSV), Selling Partner API (SP-API Listings Items v2021-08-01) JSON payloads, 100+ character high-converting search keywords, and full-bleed wall art print catalogs.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          selectedSku: { type: 'string', description: 'Optional SKU filter (e.g. PG-ART-CELL-001-3X4, PG-ART-SYNAPSE-002-3X4, PG-ART-MITO-003-3X4)' },
+          exportFormat: { type: 'string', enum: ['JSON_PAYLOAD', 'FLAT_FILE_TSV', 'SP_API_BATCH_FEED'], description: 'Export format structure' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.amazonListingService || new AmazonListingGeneratorService();
+        const listings = svc.generateAmazonListings(params?.selectedSku);
+        const format = params?.exportFormat || 'JSON_PAYLOAD';
+
+        if (format === 'SP_API_BATCH_FEED') {
+          const spFeed = svc.exportSpApiListingsFeed();
+          return {
+            content: [{ type: 'text', text: JSON.stringify(spFeed, null, 2) }]
+          };
+        }
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                catalogCount: listings.length,
+                listings: listings.map(l => ({
+                  sku: l.sku,
+                  title: l.title,
+                  standardPrice: l.standardPrice,
+                  currency: l.currency,
+                  bulletPoints: l.bulletPoints,
+                  backendSearchTerms: l.backendSearchTerms,
+                  spApiPayload: l.spApiPayload
+                }))
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(amazonTool, { signal: amazonCtrl.signal });
+    this.mcpControllers.push({ name: amazonTool.name, controller: amazonCtrl });
+
+    // 61. Train Intergenerational Wisdom Nexus & Transgenerational Resilience
+    const wisdomCtrl = new AbortController();
+    const wisdomTool = {
+      name: 'train_intergenerational_wisdom_nexus',
+      description: 'Synthesizes multi-generational family pedigrees, grandmother hypothesis longevity genetics, master clinician tacit heuristics (Oslerian observation), and elder life-review dignity narratives into a structured FHIR R4 KnowledgeArtifact dossier.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          generationDepth: { type: 'number', description: 'Number of family generations tracked (2, 3, 4)' },
+          maternalLongevityYears: { type: 'number' },
+          paternalLongevityYears: { type: 'number' },
+          knownFamilialResilienceTraits: { type: 'array', items: { type: 'string' } },
+          transgenerationalStressors: { type: 'array', items: { type: 'string' } },
+          ancestralDietaryPattern: { type: 'string', enum: ['Mediterranean', 'Okinawan_Asian', 'Nordic_High_Fiber', 'Mesoamerican_Polyphenol', 'Standard_Western'] },
+          elderNarrative: {
+            type: 'object',
+            properties: {
+              storytellerArchetype: { type: 'string' },
+              coreLifeLesson: { type: 'string' },
+              clinicalOrLongevityHeuristic: { type: 'string' },
+              tacitObservationTechnique: { type: 'string' },
+              palliativeOrCopingPhilosophy: { type: 'string' }
+            }
+          }
+        },
+        required: ['generationDepth']
+      },
+      execute: async (params: any) => {
+        const svc = this.wisdomService || new IntergenerationalWisdomService();
+        const report = svc.synthesizeWisdomNexus({
+          pedigree: {
+            generationDepth: Number(params?.generationDepth || 3),
+            maternalLongevityYears: params?.maternalLongevityYears,
+            paternalLongevityYears: params?.paternalLongevityYears,
+            knownFamilialResilienceTraits: params?.knownFamilialResilienceTraits || [],
+            transgenerationalStressors: params?.transgenerationalStressors || [],
+            ancestralDietaryPattern: params?.ancestralDietaryPattern || 'Mediterranean'
+          },
+          elderNarrative: params?.elderNarrative,
+          patientAge: params?.patientAge
+        });
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(report, null, 2) }]
+        };
+      }
+    };
+    modelContext.registerTool(wisdomTool, { signal: wisdomCtrl.signal });
+    this.mcpControllers.push({ name: wisdomTool.name, controller: wisdomCtrl });
+
+    // 62. Optimize Youth Cognitive & Circadian Hygiene
+    const youthCtrl = new AbortController();
+    const youthTool = {
+      name: 'optimize_youth_cognitive_and_circadian_hygiene',
+      description: 'Generates tailored digital dopamine reset protocols, Kaplan Attention Restoration nature intervals, infradian/hormonal cycle synchronization, and early-career medical trainee Socratic reasoning scaffolding.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          ageYears: { type: 'number' },
+          dailyScreenTimeHours: { type: 'number' },
+          lateNightScreenUseMinutes: { type: 'number' },
+          attentionalFragmentationScore: { type: 'number', description: 'Scale 1-10' },
+          subjectiveExamOrSocialAnxietyScale: { type: 'number', description: 'Scale 1-10' },
+          isEarlyCareerClinicianOrStudent: { type: 'boolean' },
+          menstrualCyclePhase: { type: 'string', enum: ['Follicular', 'Ovulatory', 'Luteal', 'Menstrual', 'Not_Applicable'] }
+        },
+        required: ['ageYears', 'dailyScreenTimeHours']
+      },
+      execute: async (params: any) => {
+        const svc = this.youthHygieneService || new YouthNeurodevelopmentHygieneService();
+        const report = svc.evaluateYouthHygiene({
+          ageYears: Number(params?.ageYears || 20),
+          dailyScreenTimeHours: Number(params?.dailyScreenTimeHours || 6),
+          lateNightScreenUseMinutes: Number(params?.lateNightScreenUseMinutes || 30),
+          attentionalFragmentationScore: Number(params?.attentionalFragmentationScore || 5),
+          subjectiveExamOrSocialAnxietyScale: Number(params?.subjectiveExamOrSocialAnxietyScale || 4),
+          isEarlyCareerClinicianOrStudent: Boolean(params?.isEarlyCareerClinicianOrStudent),
+          menstrualCyclePhase: params?.menstrualCyclePhase
+        });
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(report, null, 2) }]
+        };
+      }
+    };
+    modelContext.registerTool(youthTool, { signal: youthCtrl.signal });
+    this.mcpControllers.push({ name: youthTool.name, controller: youthCtrl });
+
+    // 63. Generate Future Care & Longevity Plan
+    const futureCareCtrl = new AbortController();
+    const futureCareTool = {
+      name: 'generate_future_care_and_longevity_plan',
+      description: 'Generates multi-decadal (10/20/30-year) organ-system healthspan trajectory models, statutory values-based Advance Care Directives (POLST/MOLST & FHIR R4 Consent), and Long-Term Care Medicare IRMAA financial strategies.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientAge: { type: 'number' },
+          currentHealthStatus: { type: 'string', enum: ['Optimal_Vitality', 'Mild_Chronic_Condition', 'Complex_Multimorbid', 'Early_Frailty'] },
+          primaryValuesAndDignityGoals: { type: 'array', items: { type: 'string' } },
+          refusalOfInvasiveInterventionsUnderIrreversibleLoss: { type: 'boolean' },
+          designatedHealthcareProxyRelationship: { type: 'string', enum: ['Adult_Child', 'Spouse_Partner', 'Trusted_Advocate', 'Professional_Fiduciary'] },
+          financialHealthspanPriorities: { type: 'array', items: { type: 'string' } },
+          baselineBiomarkers: {
+            type: 'object',
+            properties: {
+              cacScore: { type: 'number' },
+              apob_mg_dL: { type: 'number' },
+              vo2Max_mL_kg_min: { type: 'number' },
+              hba1c_percent: { type: 'number' }
+            }
+          }
+        },
+        required: ['patientAge', 'currentHealthStatus']
+      },
+      execute: async (params: any) => {
+        const svc = this.futureCareService || new FutureCarePlanningService();
+        const plan = svc.generateFuturePlan({
+          patientAge: Number(params?.patientAge || 50),
+          currentHealthStatus: params?.currentHealthStatus || 'Optimal_Vitality',
+          primaryValuesAndDignityGoals: params?.primaryValuesAndDignityGoals || [],
+          refusalOfInvasiveInterventionsUnderIrreversibleLoss: Boolean(params?.refusalOfInvasiveInterventionsUnderIrreversibleLoss),
+          designatedHealthcareProxyRelationship: params?.designatedHealthcareProxyRelationship || 'Adult_Child',
+          financialHealthspanPriorities: params?.financialHealthspanPriorities || ['Medicare_IRMAA_Avoidance', 'Long_Term_Care_Home_Independence'],
+          baselineBiomarkers: params?.baselineBiomarkers
+        });
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(plan, null, 2) }]
+        };
+      }
+    };
+    modelContext.registerTool(futureCareTool, { signal: futureCareCtrl.signal });
+    this.mcpControllers.push({ name: futureCareTool.name, controller: futureCareCtrl });
+
+    // 64. Navigate Clinical Social Work & SDoH Z-Codes
+    const swCtrl = new AbortController();
+    const swTool = {
+      name: 'navigate_clinical_social_work_and_sdoh',
+      description: 'Synthesizes Social Determinants of Health (SDoH), PRAPARE screening indicators, ICD-10 Z-codes (Z55-Z65), emergency community resource linkages, 30-day hospital readmission mitigation, and Zarit Caregiver Burden respite planning.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientAge: { type: 'number' },
+          housingStatus: { type: 'string', enum: ['Housed_Stable', 'At_Risk_Of_Eviction', 'Unhoused_Sheltered', 'Unhoused_Unsheltered'] },
+          foodSecurityLevel: { type: 'string', enum: ['Food_Secure', 'Marginal_Food_Insecure', 'Severe_Hunger_Skip_Meals'] },
+          transportationAccess: { type: 'string', enum: ['Reliable_Personal_Vehicle', 'Public_Transit_Dependent', 'Zero_Transportation_Barrier'] },
+          utilityInsecurity: { type: 'boolean' },
+          caregiverSupportStatus: { type: 'string', enum: ['Supported_By_Family', 'Living_Alone_Isolated', 'Sole_Caregiver_High_Strain'] },
+          caregiverSubjectiveBurdenScore: { type: 'number', description: 'Zarit Scale 0-88' },
+          insuranceCoverage: { type: 'string', enum: ['Commercial', 'Medicare_Only', 'Medicaid_Dual_Eligible', 'Uninsured'] },
+          recentHospitalAdmissionsLast12Months: { type: 'number' }
+        },
+        required: ['patientAge', 'housingStatus', 'foodSecurityLevel']
+      },
+      execute: async (params: any) => {
+        const svc = this.socialWorkService || new ClinicalSocialWorkNavigatorService();
+        const report = svc.evaluateSocialWorkNeeds({
+          patientAge: Number(params?.patientAge || 65),
+          housingStatus: params?.housingStatus || 'Housed_Stable',
+          foodSecurityLevel: params?.foodSecurityLevel || 'Food_Secure',
+          transportationAccess: params?.transportationAccess || 'Reliable_Personal_Vehicle',
+          utilityInsecurity: Boolean(params?.utilityInsecurity),
+          caregiverSupportStatus: params?.caregiverSupportStatus || 'Supported_By_Family',
+          caregiverSubjectiveBurdenScore: params?.caregiverSubjectiveBurdenScore,
+          insuranceCoverage: params?.insuranceCoverage || 'Medicare_Only',
+          recentHospitalAdmissionsLast12Months: Number(params?.recentHospitalAdmissionsLast12Months || 0)
+        });
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(report, null, 2) }]
+        };
+      }
+    };
+    modelContext.registerTool(swTool, { signal: swCtrl.signal });
+    this.mcpControllers.push({ name: swTool.name, controller: swCtrl });
   }
 
   /**
