@@ -9,6 +9,7 @@ import { IBookmark } from '../services/patient.types';
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { PatientEducationFlipDirective, IPatientEducationFlipData } from '../directives/patient-education-flip.directive';
+import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
   id: string;
@@ -868,7 +869,11 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   saveResultToActiveRoomNotes(res: IPubMedSearchResult) {
-    const cleanTitle = (res.title || '').replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim();
+    const hasOwnDefault = Object.prototype.hasOwnProperty.call(DOMPurify, 'default');
+    const DOMP = hasOwnDefault ? (DOMPurify as any).default : DOMPurify;
+    const cleanTitle = (typeof DOMP?.sanitize === 'function'
+      ? DOMP.sanitize(res.title || '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+      : (res.title || '').replace(/<[^>]*>/g, '').replace(/[<>]/g, '')).trim();
     const takeaway = res.bottomLineTakeaway || 'Clinical evidence supports therapeutic benefit.';
     const text = `🔬 [Literature Finding]: ${cleanTitle}\n💡 Takeaway: ${takeaway}\n(Source: ${res.source || 'PubMed'}, DOI: ${res.doi || 'N/A'})`;
     
@@ -884,7 +889,11 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   saveResultToActiveRoomTask(res: IPubMedSearchResult) {
-    const cleanTitle = (res.title || '').replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim();
+    const hasOwnDefault = Object.prototype.hasOwnProperty.call(DOMPurify, 'default');
+    const DOMP = hasOwnDefault ? (DOMPurify as any).default : DOMPurify;
+    const cleanTitle = (typeof DOMP?.sanitize === 'function'
+      ? DOMP.sanitize(res.title || '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+      : (res.title || '').replace(/<[^>]*>/g, '').replace(/[<>]/g, '')).trim();
     const text = `Review ${res.source || 'PubMed'} evidence: ${cleanTitle.substring(0, 85)}...`;
     
     this.patientState.checklist.update(items => [

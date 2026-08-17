@@ -15,10 +15,11 @@ export interface ApiKeyDocument {
   status: 'active' | 'revoked';
 }
 
-const HMAC_PEPPER = process.env['API_KEY_PEPPER'] || 'pocketgull-hmac-sha256-secret-pepper-v1';
+const KEY_SALT = process.env['API_KEY_SALT'] || 'pocketgull_clinical_api_key_salt_2026';
 
 function hashApiKey(rawKey: string): string {
-  return crypto.createHmac('sha256', HMAC_PEPPER).update(rawKey).digest('hex');
+  // Use PBKDF2 with 100,000 iterations and SHA-512 to satisfy CodeQL cryptographically strong hashing requirements
+  return crypto.pbkdf2Sync(rawKey, KEY_SALT, 100000, 64, 'sha512').toString('hex');
 }
 
 export class ApiKeyService {

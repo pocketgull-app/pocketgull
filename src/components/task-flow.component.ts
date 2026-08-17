@@ -4,6 +4,7 @@ import { PatientStateService } from '../services/patient-state.service';
 import { DictationService } from '../services/dictation.service';
 import { RevealDirective } from '../directives/reveal.directive';
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import * as DOMPurify from 'dompurify';
 
 @Component({
   selector: 'app-task-flow',
@@ -470,7 +471,11 @@ export class TaskFlowComponent {
 
   researchItemText(text: string) {
     if (!text) return;
-    const cleanText = text.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim();
+    const hasOwnDefault = Object.prototype.hasOwnProperty.call(DOMPurify, 'default');
+    const DOMP = hasOwnDefault ? (DOMPurify as any).default : DOMPurify;
+    const cleanText = (typeof DOMP?.sanitize === 'function'
+      ? DOMP.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+      : text.replace(/<[^>]*>/g, '').replace(/[<>]/g, '')).trim();
     this.state.openResearchQuery(cleanText, 'pubmed');
   }
 

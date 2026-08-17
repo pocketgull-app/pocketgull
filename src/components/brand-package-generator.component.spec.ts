@@ -7,6 +7,7 @@ describe('BrandPackageGeneratorComponent', () => {
 
   beforeEach(() => {
     component = new BrandPackageGeneratorComponent();
+    component.ngOnInit();
   });
 
   it('should create and initialize default brand package', () => {
