@@ -199,10 +199,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 77 WebMCP agentic tools on modelContext', () => {
+  it('should register all 78 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(77);
+    expect(registeredTools.size).toBe(78);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -630,10 +630,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 77 WebMCP agentic tools on modelContext', () => {
+  it('should register all 78 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(77);
+    expect(registeredTools.size).toBe(78);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -1051,9 +1051,23 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('CYP2D6');
   });
 
+  it('should register tool #78: generate_ai_branding_package', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('generate_ai_branding_package');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      brandName: 'PocketGull Sanctuary',
+      industry: 'Clinical Art Therapy',
+      archetype: 'The Scholar'
+    });
+    expect(result.content[0].text).toContain('PocketGull Sanctuary');
+    expect(result.content[0].text).toContain('--brand-color-primary');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(77);
+    expect((service as any).mcpControllers.length).toBe(78);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

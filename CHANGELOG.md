@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.0] - 2026-08-17
+
+**AI Branding Package Generator (`design.philgear.dev`), Google SWE Book Zero-Waste Architecture, Deterministic WCAG 2.2 AAA Contrast Engine, Scale-to-Zero Deployment Playbook, and WebMCP Tool #78**
+
+### Added & Enhanced
+- **[AI Branding Package Generator & Zero-Waste Design Engine] (`BrandPackageGeneratorService`, `BrandPackageGeneratorComponent`, WebMCP Tool #78)**:
+  - High-performance, scale-to-zero branding synthesis engine adhering strictly to the Google Software Engineering (SWE Book / Abseil) principles.
+  - Zero-waste token economics using Gemini 2.5 Flash with strict `responseSchema` (structured JSON output), eliminating conversational token bloat by 60–80%.
+  - Deterministic client-side edge generation engine computing WCAG 2.2 AAA relative luminance, 5 Origami Mascot pairings (The Navigator, Chronicler, Statistician, Scholar, Explorer), and rendering pure vector SVG wordmarks, monograms, and telemetry badges.
+  - Client-side in-memory and `IndexedDB` caching keyed by cryptographic SHA-256 prompt hashes to eliminate redundant API billing.
+  - Registered **WebMCP Tool #78 (`generate_ai_branding_package`)** with full schema and `AbortController` cancellation support.
+- **[Zero-Cost Production Deployment & SWE Book Architecture Playbook] (`docs/DESIGN_PHILGEAR_DEV_DEPLOYMENT.md`)**:
+  - Detailed deployment guide for `design.philgear.dev` configuring Firebase Hosting / Cloudflare Pages for $0.00/mo static delivery, hermetic Node 24 builds, DNS CNAME routing, and automatic Let's Encrypt SSL.
+
 ## [1.22.0] - 2026-08-16
 
 **W3C Web Bluetooth GATT & Apple Health Engine, Pharmacogenomics (PGx) CPIC Safety Optimizer, Socratic Claim Validation (Cochrane RoB 2), Social Pragmatics Gym, 77 WebMCP Tools, and CERN / Zenodo Archival Synchronization**

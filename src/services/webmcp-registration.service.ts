@@ -57,6 +57,7 @@ import { SocialPragmaticsGymService } from './social-pragmatics-gym.service';
 import { SocraticEvidenceLiteracyService } from './socratic-evidence-literacy.service';
 import { WebBluetoothTelemetryService } from './hardware/web-bluetooth-telemetry.service';
 import { PharmacogenomicsService } from './pharmacogenomics.service';
+import { BrandPackageGeneratorService } from './brand-package-generator.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -120,6 +121,7 @@ export class WebMcpRegistrationService {
   private socraticService = inject(SocraticEvidenceLiteracyService, { optional: true });
   private bleService = inject(WebBluetoothTelemetryService, { optional: true });
   private pgxService = inject(PharmacogenomicsService, { optional: true });
+  private brandPackageService = inject(BrandPackageGeneratorService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2997,6 +2999,57 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(pgxTool, { signal: pgxCtrl.signal });
     this.mcpControllers.push({ name: pgxTool.name, controller: pgxCtrl });
+
+    // 78. AI Branding Package & Zero-Waste Design Tokens Optimizer
+    const brandCtrl = new AbortController();
+    const brandTool = {
+      name: 'generate_ai_branding_package',
+      description: 'Generates mathematically calibrated, WCAG 2.2 AAA compliant AI branding packages, vector SVG logotypes, and design tokens adhering to Google SWE Book zero-waste standards.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          brandName: {
+            type: 'string',
+            description: 'Brand or product name to synthesize (e.g. PocketGull Sanctuary, Apex Health).'
+          },
+          industry: {
+            type: 'string',
+            description: 'Industry domain or specialization (e.g. Clinical Art Therapy, Pediatric Oncology, Cardiology).'
+          },
+          archetype: {
+            type: 'string',
+            enum: ['The Navigator', 'The Chronicler', 'The Statistician', 'The Scholar', 'The Explorer'],
+            description: 'Optional guide archetype to steer narrative, typography, and color tokens.'
+          },
+          primaryColorHex: {
+            type: 'string',
+            description: 'Optional custom primary hex color override (e.g. #EA580C).'
+          }
+        },
+        required: ['brandName']
+      },
+      execute: async (params: any) => {
+        const svc = this.brandPackageService || new BrandPackageGeneratorService();
+        const brandKit = await svc.generateBrandPackage({
+          brandName: params.brandName,
+          industry: params.industry,
+          archetype: params.archetype,
+          primaryColorHex: params.primaryColorHex
+        });
+        const cssTokens = svc.exportCssTokens(brandKit);
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              package: brandKit,
+              cssTokens
+            }, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(brandTool, { signal: brandCtrl.signal });
+    this.mcpControllers.push({ name: brandTool.name, controller: brandCtrl });
   }
 
   /**
