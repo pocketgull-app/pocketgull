@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { ClinicalGaugeComponent } from './clinical-gauge.component';
 

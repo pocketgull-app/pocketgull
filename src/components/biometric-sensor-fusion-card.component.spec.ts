@@ -1,8 +1,8 @@
 import '@angular/compiler';
-import { describe, it, expect, vi } from 'vitest';
+import { vi } from 'vitest';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-card.component';
-import { BiometricSensorFusionService } from '../services/biometric-sensor-fusion.service';
+import { BiometricSensorFusionService } from '../services/hardware/biometric-sensor-fusion.service';
 
 describe('BiometricSensorFusionCardComponent', () => {
   const createComponent = () => {

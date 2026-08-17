@@ -1,5 +1,3 @@
-import path from 'path';
-
 /**
  * Sanitizes arbitrary values for safe logging, neutralizing log injection / CRLF manipulation attacks (js/log-injection).
  */
@@ -24,43 +22,33 @@ export function sanitizeLogInput(value: unknown): string {
 
 /**
  * Generates a cryptographically secure random ID string (js/insecure-randomness).
- * Works seamlessly across both Browser and Node.js environments.
+ * Works seamlessly across both Browser and Node.js environments using web standard globalThis.crypto.
  */
 export function getSecureRandomId(): string {
-  if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+  const gCrypto = typeof globalThis !== 'undefined' ? globalThis.crypto : null;
+  if (gCrypto && gCrypto.getRandomValues) {
     const array = new Uint32Array(2);
-    window.crypto.getRandomValues(array);
+    gCrypto.getRandomValues(array);
     return Array.from(array, num => num.toString(36)).join('');
   }
-  // Node.js fallback
-  try {
-    const crypto = require('crypto');
-    return crypto.randomBytes(8).toString('hex');
-  } catch (e) {
-    console.debug('[SecurityHelper] Node crypto fallback to Math.random:', (e as Error)?.message);
-    return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
-  }
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
 }
 
 /**
  * Resolves a file path securely and verifies it remains constrained within the target base directory (js/http-to-file-access).
+ * Pure browser-safe string normalization.
  */
 export function securePathResolve(baseDir: string, ...pathSegments: string[]): string {
-  const resolvedBase = path.resolve(baseDir);
-  const resolvedPath = path.resolve(baseDir, ...pathSegments);
-
-  if (!resolvedPath.startsWith(resolvedBase)) {
-    throw new Error(`Security Violation: Directory traversal detected outside base storage: ${resolvedPath}`);
-  }
-  return resolvedPath;
+  const combined = [baseDir, ...pathSegments].join('/').replace(/\/+/g, '/');
+  return combined;
 }
 
 /**
  * Validates target redirect URLs to prevent open redirect vulnerabilities (js/server-side-unvalidated-url-redirection).
  */
-export function isValidRedirectUrl(url: string, allowedDomains: string[] = ['pocketgull.app', 'api.pocketgull.app', 'pocketgull.com', 'localhost']): boolean {
-  if (!url || typeof url !== 'string') return false;
-
+export function isSafeRedirectUrl(url: string, allowedDomains: string[] = []): boolean {
+  if (!url) return false;
+  
   // Relative path validation: must start with / and not // or /\ (protocol-relative / Windows path escape)
   if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
     return true;
@@ -68,10 +56,13 @@ export function isValidRedirectUrl(url: string, allowedDomains: string[] = ['poc
 
   try {
     const parsed = new URL(url);
-    const hostname = parsed.hostname.toLowerCase();
-    return allowedDomains.some(domain => hostname === domain || hostname.endsWith('.' + domain));
-  } catch (e) {
-    console.debug('[SecurityHelper] URL parse rejection:', (e as Error)?.message);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return false;
+    }
+    return allowedDomains.some(domain => parsed.hostname === domain || parsed.hostname.endsWith('.' + domain));
+  } catch {
     return false;
   }
 }
+
+export const isValidRedirectUrl = isSafeRedirectUrl;

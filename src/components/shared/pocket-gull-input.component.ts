@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, computed, inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, signal, computed, inject, viewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -223,14 +223,14 @@ export class PocketGullInputComponent implements AfterViewInit {
   value = input<string>('');
   valueChange = output<string>();
 
-  @ViewChild('inputEl') inputEl?: ElementRef<HTMLInputElement | HTMLTextAreaElement>;
+  inputEl = viewChild<ElementRef<HTMLInputElement | HTMLTextAreaElement>>('inputEl');
 
   private sanitizer = inject(DomSanitizer);
 
   ngAfterViewInit() {
     if (this.autofocus() && !this.disabled()) {
       setTimeout(() => {
-        this.inputEl?.nativeElement.focus();
+        this.inputEl()?.nativeElement.focus();
       }, 150);
     }
   }
@@ -264,7 +264,7 @@ export class PocketGullInputComponent implements AfterViewInit {
 
   focus() {
     setTimeout(() => {
-      this.inputEl?.nativeElement?.focus();
+      this.inputEl()?.nativeElement?.focus();
     }, 50);
   }
 }

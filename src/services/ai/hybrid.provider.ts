@@ -7,7 +7,7 @@ import { WebLLMProvider } from './webllm.provider';
 import { IClinicalMetrics } from '../clinical-intelligence.service';
 import { IVerificationIssue } from '../../components/analysis-report.types';
 import { NetworkStateService } from '../network-state.service';
-import { HardwareTelemetryService } from '../hardware-telemetry.service';
+import { HardwareTelemetryService } from '../hardware/hardware-telemetry.service';
 import { PatientStateService } from '../patient-state.service';
 
 /**
@@ -162,7 +162,7 @@ export class HybridProvider implements IIntelligenceProvider {
         console.warn(`translateReadingLevel failed on ${provider.constructor.name}, trying next...`);
       }
     }
-    return text;
+    throw new AIProviderExhaustedError('translateReadingLevel', chain.map(p => p.constructor.name));
   }
 
   async analyzeTranslation(original: string, translated: string): Promise<string> {

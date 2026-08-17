@@ -5,31 +5,35 @@ Sidecar ML Service v1.0
 
 from typing import Dict, Any, List
 import numpy as np
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ReadmissionSepsisInput(BaseModel):
     """Input payload for 30-day readmission and ICU sepsis risk scoring."""
-    age: float = Field(default=68.0, description="Patient age in years")
-    length_of_stay_days: int = Field(default=4, description="Hospital length of stay in days")
-    prior_admissions_12m: int = Field(default=2, description="Hospitalizations in past 12 months")
-    emergency_dept_visits_12m: int = Field(default=3, description="ED visits in past 12 months")
-    chads_vasc_score: int = Field(default=2, description="CHA2DS2-VASc stroke risk score")
+    model_config = ConfigDict(str_strip_whitespace=True, extra="ignore")
+
+    age: float = Field(default=68.0, ge=0.0, le=120.0, description="Patient age in years")
+    length_of_stay_days: int = Field(default=4, ge=0, le=365, description="Hospital length of stay in days")
+    prior_admissions_12m: int = Field(default=2, ge=0, le=50, description="Hospitalizations in past 12 months")
+    emergency_dept_visits_12m: int = Field(default=3, ge=0, le=100, description="ED visits in past 12 months")
+    chads_vasc_score: int = Field(default=2, ge=0, le=9, description="CHA2DS2-VASc stroke risk score")
     
     # Sepsis & Vitals Telemetry
-    systolic_bp: float = Field(default=96.0, description="Systolic Blood Pressure (mmHg)")
-    respiratory_rate: float = Field(default=24.0, description="Respiratory Rate (breaths/min)")
-    serum_lactate_mmol_l: float = Field(default=2.8, description="Serum Lactate (mmol/L)")
-    wbc_count: float = Field(default=13.5, description="White Blood Cell Count (10^9/L)")
+    systolic_bp: float = Field(default=96.0, ge=40.0, le=300.0, description="Systolic Blood Pressure (mmHg)")
+    respiratory_rate: float = Field(default=24.0, ge=4.0, le=60.0, description="Respiratory Rate (breaths/min)")
+    serum_lactate_mmol_l: float = Field(default=2.8, ge=0.1, le=30.0, description="Serum Lactate (mmol/L)")
+    wbc_count: float = Field(default=13.5, ge=0.1, le=100.0, description="White Blood Cell Count (10^9/L)")
     altered_mental_status: bool = Field(default=False, description="Altered mentation GCS < 15")
 
 
 class ReadmissionSepsisOutput(BaseModel):
-    readmission_30d_probability: float = Field(..., description="30-day all-cause readmission probability (0-1)")
+    model_config = ConfigDict(extra="ignore")
+
+    readmission_30d_probability: float = Field(..., ge=0.0, le=1.0, description="30-day all-cause readmission probability (0-1)")
     readmission_risk_level: str = Field(..., description="Low, Moderate, High, Critical")
-    lace_index_score: int = Field(..., description="LACE Index Score (0-19)")
+    lace_index_score: int = Field(..., ge=0, le=19, description="LACE Index Score (0-19)")
     
-    qsofa_sepsis_score: int = Field(..., description="qSOFA score (0-3)")
+    qsofa_sepsis_score: int = Field(..., ge=0, le=3, description="qSOFA score (0-3)")
     sepsis_escalation_risk: str = Field(..., description="Low, Moderate, High Sepsis Risk")
     conformal_confidence_interval: List[float] = Field(..., description="95% Conformal Prediction Interval")
     primary_driving_features: List[str] = Field(..., description="Top feature importance drivers")

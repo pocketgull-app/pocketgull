@@ -1,0 +1,65 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: "PR: v1.12.0"
+---
+
+---
+
+## PR: feat(release): on-device webgpu air-gapped local gemma ai studio, flutter c...
+
+### Description
+This PR corresponds to the release **v1.12.0**.
+On-Device WebGPU Air-Gapped Local Gemma AI Studio, Flutter Companion Mobile App APK Builds, and Full Monolith Integration
+
+### Changelog Entry
+- **[On-Device AI / Zero-Egress] 100% Offline WebGPU Local Gemma AI Studio (`local-gemma-studio.component.ts`)**:
+  - Engineered on-device local AI studio interfacing directly with `@mlc-ai/web-llm` web worker engine (`gemma-2b-it-q4f32_1-MLC`).
+  - Enables zero-egress, 100% air-gapped local clinical consultations with real-time streaming token outputs and WebGPU loading telemetry.
+  - Added unit test suite `local-gemma-studio.component.spec.ts`.
+- **[Mobile Companion Apps] Flutter Android APK Packaging & Test Suite**:
+  - Built production-ready debug APKs for `patient_app` and `provider_app` (`build/app/outputs/flutter-apk/app-debug.apk`).
+  - Executed Flutter mobile test suite with 100% pass rate (21/21 tests passed across `MobileCgmTimeInRangeService`, `BleWearablesService`, `FhirService`, `MobileOfflineEdgeAiService`, `SocialGravitationService`, and `YbocsScreenerWidget`).
+- **[Analysis Report UI] Integrated Future Clinical Cards**:
+  - Integrated `TriParadigmSwarmCardComponent`, `PharmacogenomicsCardComponent`, `BiometricSensorFusionCardComponent`, and `LocalGemmaStudioComponent` into `AnalysisReportComponent`'s telemetry dashboard.
+
+### Type of change
+- [ ] Bug fix (`fix`)
+- [x] New feature (`feat`)
+- [ ] Security fix (`security`)
+- [ ] Refactoring (`refactor`)
+- [ ] Documentation update (`docs`)
+- [ ] Testing/CI update (`test`, `ci`)
+- [ ] Clinical Intelligence & AI Prompting
+- [ ] 3D Anatomical Spatial Lens (Three.js)
+- [ ] Voice / Hardware Telemetry
+- [ ] Companion App (Flutter / Dart)
+
+## ☯️ Clinical Paradigms Touched
+- [ ] 🔵 Western Allopathic
+- [ ] 🟢 Eastern TCM (Traditional Chinese Medicine)
+- [ ] 🟡 Ayurvedic Medicine
+
+## Core Integration Checklist:
+- [x] My commit messages follow the Conventional Commits format (max 72 chars subject, imperative mood).
+- [x] My branch compiles with zero errors (`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`).
+- [x] I have performed a self-review of my own code.
+- [x] New and existing unit tests pass locally with my changes (`npm test`).
+- [x] I have run the local security audit (`npm run sentinel:audit`).
+
+## Domain-Specific Quality Gates (Check all that apply):
+### 🏥 Clinical AI & Safety
+- [ ] **Safety Filters:** Verified `DANGEROUS_CONTENT` remains `OFF` for clinical text to prevent false-positive blocks on standard-of-care plans.
+- [ ] **Evidence Literacy:** Clinical recommendations include demarcated evidence tiers (Level A/B/C) and Cochrane Risk of Bias considerations.
+- [ ] **Skeptical Epistemology:** If computing p-values, findings where $p \ge 0.05$ trigger the `skepticalWarningNotice`.
+
+### 🔒 Privacy & Data Sovereignty
+- [ ] **FHIR R4:** Serialized patient data structures conform strictly to the FHIR R4 Bundle standard.
+- [ ] **Logging Integrity:** No raw user inputs or un-sanitized PHI strings are passed to server loggers.
+- [ ] **De-Identification:** New mock patient data adheres to HIPAA §164.514 Safe Harbor standards (or preserves historical luminaries).
+- [ ] **CodeQL & Egress Guard:** Verified zero new SSRF, path traversal, or log injection vulnerabilities, and local Sentinel whitelists remain intact.
+
+### 🎨 Dieter Rams UX & Accessibility
+- [ ] **Functional Aesthetics:** Adheres to Dieter Rams principles ("Weniger, aber besser")—no unnecessary UI bloat or non-structural rounded pills.
+- [ ] **Fitts's Law:** All new touch targets and buttons are at least 44x44px.
+- [ ] **WCAG & Neurodiversity:** UI changes maintain 7:1 contrast ratios and respect `prefers-reduced-motion` for animations.
+

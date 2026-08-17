@@ -2,6 +2,10 @@
 @import './styles/pocketgull-marker-font.css';
 @import './styles/pocketgull-icon-font.css';
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-sans: 'Nunito', sans-serif;
@@ -19,15 +23,15 @@ body, html {
   letter-spacing: -0.01em;
 }
 
-h1, h2, h3, h4, h5, h6, .font-heading, .font-pocketgull, .font-pocketgull-chiseltip {
-  font-family: 'Nunito', sans-serif !important;
-  font-weight: 800 !important;
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.25;
 }
 
-.font-sans, .ui-sans-serif, .font-serif, .ui-serif, .font-caslon, .font-pocketgull-inter {
-  font-family: 'Nunito', sans-serif !important;
+.font-sans, .ui-sans-serif {
+  font-family: 'Nunito', sans-serif;
 }
 
 .font-mono, .ui-monospace, code, kbd, samp, pre {
@@ -38,10 +42,6 @@ h1, h2, h3, h4, h5, h6, .font-heading, .font-pocketgull, .font-pocketgull-chisel
 .font-rounded, .ui-rounded {
   font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* ==========================================================================
    PAPERCRAFT THEME SYSTEM (Rice Paper, Hemp, Construction, Cardstock)

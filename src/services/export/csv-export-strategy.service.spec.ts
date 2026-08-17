@@ -1,10 +1,14 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { CsvExportStrategyService } from './csv-export-strategy.service';
 import type { IPatient } from '../patient.types';
 
 describe('CsvExportStrategyService Suite', () => {
-  const service = new CsvExportStrategyService();
+  let service: CsvExportStrategyService;
+
+  beforeEach(() => {
+    service = new CsvExportStrategyService();
+  });
+
 
   const mockPatient: IPatient = {
     id: 'pt-csv-101',

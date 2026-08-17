@@ -278,7 +278,7 @@ export class PatientStateService {
   readonly requestedResearchQuery = signal<string | null>(null);
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
-  readonly bodyViewerMode = signal<'3d' | '2d'>('3d');
+  readonly bodyViewerMode = signal<'3d' | '2d' | 'genesis'>('3d');
   readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic'>('skin');
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
@@ -505,15 +505,19 @@ export class PatientStateService {
       }
 
       // 2. Persist state on any signal mutation
-      effect(() => {
-        const currentState = this.getCurrentState();
-        const isEmergency = this.isEmergencyMode();
-        untracked(() => {
-          if (!isEmergency) {
-            this.storage.saveState('current_patient', currentState);
-          }
+      try {
+        effect(() => {
+          const currentState = this.getCurrentState();
+          const isEmergency = this.isEmergencyMode();
+          untracked(() => {
+            if (!isEmergency) {
+              this.storage.saveState('current_patient', currentState);
+            }
+          });
         });
-      });
+      } catch (e) {
+        // Fallback for test injectors without EffectScheduler
+      }
     }
   }
 

@@ -1,0 +1,27 @@
+{
+  "id": "philgear/rsna-knee-2026-training-v5",
+  "title": "rsna-knee-2026-training-v5",
+  "code_file": "rsna_knee_train.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [
+    "philgear/rsna-knee-2026-gemini-weak-labels"
+  ],
+  "competition_sources": [
+    "rsna-knee-abnormality-detection"
+  ],
+  "kernel_sources": [],
+  "model_sources": [],
+  "keywords": [
+    "healthcare",
+    "medical-imaging",
+    "dicom",
+    "mri",
+    "gemini",
+    "pocketgull"
+  ]
+}

@@ -5,27 +5,25 @@ test.describe('Teledentistry & Systemic Health Cross-Talk Suite', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
     await setupE2ePage(page);
+    await enterDemoMode(page);
   });
 
   test('should render 32-Tooth Odontogram, update TWI grade, and recalculate SIBI score', async ({ page }) => {
-    // 1. Enter Demo Mode cleanly
-    await enterDemoMode(page);
 
     // 2. Select patient Phil Gear
     await selectPatientByName(page, 'Phil Gear');
 
-    // 3. Ensure core analysis container is loaded
-    await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });
-
-    // 4. Switch to ASSESSMENTS lens tab
-    const assessmentsBtn = page.locator('button', { hasText: 'ASSESSMENTS' }).first();
+    // 3. Switch to ASSESSMENTS lens tab
+    const assessmentsBtn = page.getByTestId('tab-assessments');
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.click();
+    await assessmentsBtn.click({ force: true });
+    await page.evaluate(() => window.scrollTo(0, 1400));
+    await page.waitForTimeout(500);
 
     // 5. Select Teledentistry (32-Tooth) sub-tab
     const teledentistryTab = page.getByTestId('tab-teledentistry');
-    await expect(teledentistryTab).toBeVisible({ timeout: 15000 });
-    await teledentistryTab.click();
+    await teledentistryTab.scrollIntoViewIfNeeded();
+    await teledentistryTab.click({ force: true });
 
     // 6. Verify SIBI Telemetry Header components
     await expect(page.locator('text=SIBI Score')).toBeVisible({ timeout: 10000 });

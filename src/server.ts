@@ -40,23 +40,38 @@ import { APP_VERSION } from './version';
 import AgonesSDK from '@google-cloud/agones-sdk';
 import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
 import { renderBusinessSiteHtml } from './server/business-site';
+import { supportRouter } from './server/routes/support.routes';
+import { createDiscoveryRouter } from './server/routes/discovery.routes';
+import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const browserDistFolder = join(__dirname, '..'); // root dir of dist when built
+const candidateDistFolders = [
+  __dirname,
+  join(__dirname, 'browser'),
+  join(process.cwd(), 'dist'),
+  join(process.cwd(), 'dist', 'browser'),
+  join(__dirname, '..'),
+];
+const browserDistFolder = candidateDistFolders.find(dir => fs.existsSync(join(dir, 'index.html')) || fs.existsSync(join(dir, 'index.csr.html'))) || join(process.cwd(), 'dist');
 
 const studyDocsRoot = resolve(browserDistFolder, 'docs', 'study');
 
 // No custom rate limiter — use express-rate-limit (recognised by CodeQL)
 
 const ALLOWED_GEMINI_MODELS = new Set([
-  'gemini-3.5-flash',
+  'gemini-3.7-flash',
   'gemini-3.6-flash',
+  'gemini-3.5-flash',
   'gemini-3.1-flash-lite',
   'gemini-2.5-flash',
   'gemini-2.5-pro',
+  'gemini-2.0-flash',
   'gemini-2.0-flash-exp',
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash-lite-preview-02-05',
+  'gemini-2.0-pro-exp-02-05',
   'gemini-1.5-flash',
   'gemini-1.5-pro'
 ]);
@@ -130,18 +145,30 @@ app.use(globalLimiter, (req, res, next) => {
         res.setHeader('Cache-Control', 'no-cache, must-revalidate');
         return res.status(200).send('/* Main bundle fallback */');
       }
-      if (cleanPath.includes('styles-') || cleanPath === '/styles.css') {
-        try {
-          const files = fs.readdirSync(browserDistFolder);
-          const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css'));
-          if (activeCss) {
-            const safeActiveCssPath = securePathResolve(browserDistFolder, activeCss);
-            const cssContent = fs.readFileSync(safeActiveCssPath);
-            res.setHeader('Content-Type', 'text/css; charset=utf-8');
-            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-            return res.status(200).send(cssContent);
-          }
-        } catch (e) {}
+      if (cleanPath.includes('styles-') || cleanPath === '/styles.css' || ext === '.css') {
+        const candidateDirs = [browserDistFolder, join(browserDistFolder, 'browser'), process.cwd(), join(process.cwd(), 'src')];
+        for (const dir of candidateDirs) {
+          try {
+            if (fs.existsSync(dir)) {
+              const files = fs.readdirSync(dir);
+              const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css'));
+              if (activeCss) {
+                const safeCssPath = securePathResolve(dir, activeCss);
+                const cssContent = fs.readFileSync(safeCssPath);
+                res.setHeader('Content-Type', 'text/css; charset=utf-8');
+                res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+                return res.status(200).send(cssContent);
+              }
+            }
+          } catch (e) {}
+        }
+        const srcStylesPath = join(process.cwd(), 'src', 'styles.css');
+        if (fs.existsSync(srcStylesPath)) {
+          const cssContent = fs.readFileSync(srcStylesPath);
+          res.setHeader('Content-Type', 'text/css; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+          return res.status(200).send(cssContent);
+        }
         res.setHeader('Content-Type', 'text/css; charset=utf-8');
         res.setHeader('Cache-Control', 'no-cache, must-revalidate');
         return res.status(200).send('/* Stylesheet fallback */');
@@ -150,11 +177,6 @@ app.use(globalLimiter, (req, res, next) => {
         res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
         res.setHeader('Cache-Control', 'no-cache, must-revalidate');
         return res.status(200).send('/* Hashed JS bundle fallback */');
-      }
-      if (ext === '.css') {
-        res.setHeader('Content-Type', 'text/css; charset=utf-8');
-        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-        return res.status(200).send('/* Hashed CSS stylesheet fallback */');
       }
     }
   }
@@ -217,15 +239,21 @@ app.use((req, res, next) => {
     'user-agent': req.headers['user-agent']
   }));
 
+  const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
+
   const isBusinessSite =
     req.path === '/business' ||
     req.query['preview'] === 'business' ||
-    /(^|\.)pocketgull\.com$/.test(xfh) ||
-    /(^|\.)pocketgull\.com$/.test(hostHeader) ||
-    /(^|\.)pocketgull\.com$/.test(hostname);
+    /(^|\.)pocketgull\.com$/.test(rawHost);
 
   if (isBusinessSite) {
     if (req.path === '/health' || req.path.startsWith('/api/')) {
+      return next();
+    }
+    const cleanPath = req.path.split('?')[0];
+    const ext = extname(cleanPath).toLowerCase();
+    const staticExts = new Set(['.svg', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.css', '.js', '.webmanifest', '.woff2', '.woff', '.ttf', '.ico', '.json', '.txt', '.map', '.xml']);
+    if (staticExts.has(ext)) {
       return next();
     }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -241,7 +269,6 @@ app.use((req, res, next) => {
     'pocketgal.ai'
   ];
 
-  const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
   if (redirectDomains.includes(rawHost)) {
     const targetOrigin = `https://${targetDomain}`;
     const rawRequestUrl = typeof req.originalUrl === 'string'
@@ -263,14 +290,29 @@ app.use((req, res, next) => {
   next();
 });
 
-// US Regional Access Enforcement Guard
+// US Regional Access Enforcement Guard & Territorial Sovereignty
+const ALLOWED_US_JURISDICTIONS = new Set(['US', 'PR', 'VI', 'GU', 'AS', 'MP', 'UM', 'ZZ']);
+
+app.get('/api/geo/jurisdiction', (req, res) => {
+  const rawCountry = String(req.headers['x-appengine-country'] || req.headers['cf-ipcountry'] || req.headers['x-client-geo-location'] || 'US').toUpperCase().trim();
+  const isUs = ALLOWED_US_JURISDICTIONS.has(rawCountry);
+  res.json({
+    country: rawCountry,
+    isUsJurisdiction: isUs,
+    activeFramework: isUs ? 'US_FEDERAL_HIPAA_SSA_CMS' : 'INTERNATIONAL_WHO_GDPR'
+  });
+});
+
 app.use((req, res, next) => {
   const country = req.headers['x-appengine-country'] || req.headers['cf-ipcountry'] || req.headers['x-client-geo-location'];
-  if (country && typeof country === 'string' && country.toUpperCase() !== 'US' && country.toUpperCase() !== 'ZZ') {
-    return res.status(403).json({
-      error: 'Access Restricted',
-      message: 'Pocket-Gull Clinical Intelligence Service is currently restricted to the United States region.'
-    });
+  if (country && typeof country === 'string') {
+    const normCountry = country.toUpperCase().trim();
+    if (!ALLOWED_US_JURISDICTIONS.has(normCountry)) {
+      return res.status(403).json({
+        error: 'Access Restricted',
+        message: 'Pocket-Gull Clinical Intelligence Service is currently restricted to the United States region.'
+      });
+    }
   }
   next();
 });
@@ -348,6 +390,42 @@ app.get('/robots.txt', manifestRateLimiter, (req, res) => {
   res.sendFile(targetPath);
 });
 
+// SEO sitemap.xml handler
+app.get('/sitemap.xml', manifestRateLimiter, (req, res) => {
+  const candidatePaths = [
+    join(process.cwd(), 'public', 'sitemap.xml'),
+    join(process.cwd(), 'sitemap.xml'),
+    join(__dirname, 'sitemap.xml'),
+    join(__dirname, '..', 'browser', 'sitemap.xml'),
+    join(__dirname, '..', 'sitemap.xml'),
+    join(rootDir, 'public', 'sitemap.xml'),
+    join(rootDir, 'src', 'sitemap.xml'),
+    join(rootDir, 'sitemap.xml')
+  ];
+  const targetPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[candidatePaths.length - 1];
+
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.sendFile(targetPath);
+});
+
+// Agentic Discovery Endpoints (/.well-known/agent.json + /v1/discovery/*)
+app.get('/.well-known/agent.json', manifestRateLimiter, (req: express.Request, res: express.Response): void => {
+  const candidatePaths = [
+    join(process.cwd(), 'public', '.well-known', 'agent.json'),
+    join(__dirname, '..', 'browser', '.well-known', 'agent.json'),
+    join(rootDir, 'public', '.well-known', 'agent.json')
+  ];
+  const targetPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[candidatePaths.length - 1];
+
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(targetPath);
+});
+
+const discoveryRouter = createDiscoveryRouter();
+app.use(manifestRateLimiter, discoveryRouter);
+
 app.get('/api/config', manifestRateLimiter, (req, res) => {
   res.json({ apiKey: process.env['GEMINI_API_KEY'] || '' });
 });
@@ -355,6 +433,10 @@ app.get('/api/config', manifestRateLimiter, (req, res) => {
 app.post('/api/audit', manifestRateLimiter, (req, res) => {
   res.status(200).json({ status: 'logged', timestamp: new Date().toISOString() });
 });
+
+app.use('/api/support', supportRouter);
+app.use('/api/v1/agent-builder', manifestRateLimiter, vertexAgentRouter);
+app.use('/api/agent-builder', manifestRateLimiter, vertexAgentRouter);
 
 app.all('/api/python/*splat', manifestRateLimiter, (req, res) => {
   res.status(200).json({
@@ -481,8 +563,20 @@ async function getApiKey(req?: express.Request): Promise<string> {
   const clientKey = req?.headers?.['x-gemini-api-key'] || req?.headers?.['X-Gemini-API-Key'];
   if (typeof clientKey === 'string' && clientKey.trim()) {
     const trimmed = clientKey.trim();
-    process.env['GEMINI_API_KEY'] = trimmed;
-    return trimmed;
+    if (trimmed.startsWith('sk_live_')) {
+      // Validate federated API key
+      const tenantId = await apiKeyService.validateKey(trimmed);
+      if (!tenantId) {
+        throw new Error('Invalid or revoked API key.');
+      }
+      if (req) {
+        req.headers['x-tenant-id'] = tenantId; // Inject for downstream tracking
+      }
+      // Continue to fetch the real system GEMINI_API_KEY from Secret Manager
+    } else {
+      process.env['GEMINI_API_KEY'] = trimmed;
+      return trimmed;
+    }
   }
 
   if (geminiApiKeyCached !== null) {
@@ -523,22 +617,16 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
 
-  const isProd = process.env['NODE_ENV'] === 'production';
-  const isDev = !isProd;
-  const scriptSrc = isDev
-    ? `'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://*.googleapis.com`
-    : `'self' 'nonce-${nonce}' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com`;
+  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com https://cloud.google.com`;
 
-  const connectSrc = isDev
-    ? `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`
-    : `'self' http://localhost:9399 http://localhost:4000 http://localhost:4200 http://127.0.0.1:9399 ws://localhost:9399 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;
+  const scriptSrcAttr = `'self' 'unsafe-inline' 'unsafe-hashes'`;
+  const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com data:`;
+  const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com data:`;
+  const styleSrcAttr = `'self' 'unsafe-inline'`;
 
-  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org; connect-src ${connectSrc}; frame-src 'self' https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://growthyself.firebaseapp.com https://insightspark-82c75.web.app; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
-  
-  if (!isProd) {
-    res.setHeader('Reporting-Endpoints', 'csp-endpoint="/api/csp-report"');
-    csp += " report-uri /api/csp-report; report-to csp-endpoint;";
-  }
+  const connectSrc = `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;
+
+  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; script-src-attr ${scriptSrcAttr}; style-src ${styleSrc}; style-src-elem ${styleSrcElem}; style-src-attr ${styleSrcAttr}; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org; connect-src ${connectSrc}; frame-src 'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
 
   res.setHeader('Content-Security-Policy', csp);
   next();
@@ -581,6 +669,9 @@ import { createAiRouter } from './server/routes/ai.routes';
 import { createPatientsRouter } from './server/routes/patients.routes';
 import { createUtilityRouter } from './server/routes/utility.routes';
 import { slackRouter } from './server/routes/slack.routes';
+import { createApiKeysRouter } from './server/routes/api-keys.routes';
+import { createBillingRouter } from './server/routes/billing.routes';
+import { apiKeyService } from './server/services/api-key.service';
 
 app.use('/api/slack', slackRouter);
 
@@ -605,6 +696,8 @@ const routeDeps = { getApiKey, getGcpAccessToken, normalizeAndValidateModel };
 
 app.use('/api/ai', createAiRouter(routeDeps));
 app.use('/api/patients', createPatientsRouter());
+app.use('/api/keys', createApiKeysRouter());
+app.use('/api/billing', createBillingRouter());
 
 const utilityRouter = createUtilityRouter({ getApiKey, rootDir });
 app.use('/api', utilityRouter);
@@ -638,17 +731,33 @@ app.use(
   }),
 );
 
+if (fs.existsSync(publicFolder)) {
+  app.use(
+    express.static(publicFolder, {
+      maxAge: '1y',
+      index: false,
+      redirect: false,
+    }),
+  );
+}
+
 // Fallback handler for hashed CSS stylesheet requests from stale browser caches
 app.use(globalLimiter, (req, res, next) => {
-  if (req.path === '/styles.css' || (req.path.startsWith('/styles-') && req.path.endsWith('.css'))) {
+  const cleanPath = req.path.split('?')[0];
+  if (cleanPath === '/styles.css' || (cleanPath.startsWith('/styles-') && cleanPath.endsWith('.css'))) {
     try {
-      const files = fs.readdirSync(browserDistFolder);
-      const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css'));
-      if (activeCss) {
-        const safeActiveCssPath = securePathResolve(browserDistFolder, activeCss);
-        res.setHeader('Content-Type', 'text/css');
-        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-        return res.sendFile(safeActiveCssPath);
+      const candidateDirs = [browserDistFolder, join(browserDistFolder, 'browser'), process.cwd(), join(process.cwd(), 'dist')];
+      for (const dir of candidateDirs) {
+        if (fs.existsSync(dir)) {
+          const files = fs.readdirSync(dir);
+          const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css')) || files.find(f => f.startsWith('styles') && f.endsWith('.css'));
+          if (activeCss) {
+            const safeActiveCssPath = securePathResolve(dir, activeCss);
+            res.setHeader('Content-Type', 'text/css; charset=utf-8');
+            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+            return res.sendFile(safeActiveCssPath);
+          }
+        }
       }
     } catch (e) {
       console.debug('[Server] CSS hash fallback failed:', (e as Error)?.message);
@@ -702,6 +811,27 @@ app.use(globalLimiter, (req, res, next) => {
       return res.status(200).send('/* Stub JS asset */');
     }
     if (ext === '.css') {
+      const candidateDirs = [browserDistFolder, join(browserDistFolder, 'browser'), process.cwd(), join(process.cwd(), 'src')];
+      for (const dir of candidateDirs) {
+        try {
+          if (fs.existsSync(dir)) {
+            const files = fs.readdirSync(dir);
+            const activeCss = files.find(f => f.startsWith('styles-') && f.endsWith('.css'));
+            if (activeCss) {
+              const safeCssPath = securePathResolve(dir, activeCss);
+              res.setHeader('Content-Type', 'text/css; charset=utf-8');
+              res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+              return res.sendFile(safeCssPath);
+            }
+          }
+        } catch (e) {}
+      }
+      const srcStylesPath = join(process.cwd(), 'src', 'styles.css');
+      if (fs.existsSync(srcStylesPath)) {
+        res.setHeader('Content-Type', 'text/css; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        return res.sendFile(srcStylesPath);
+      }
       res.setHeader('Content-Type', 'text/css; charset=utf-8');
       return res.status(200).send('/* Stub CSS asset */');
     }
@@ -714,6 +844,17 @@ app.use(globalLimiter, (req, res, next) => {
  * Handle all other requests by rendering the Angular application.
  */
 app.use((req, res, next) => {
+  // Host routing: Serve the Vertex Gen AI App Builder Business Site for pocketgull.com
+  const host = req.hostname || req.get('host') || '';
+  const isBusinessDomain = host.includes('pocketgull.com') && !host.startsWith('api.');
+  const isBusinessPath = req.path === '/business' || req.path === '/enterprise' || req.path === '/app-builder' || req.path === '/portal';
+
+  if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderBusinessSiteHtml());
+  }
+
   const engine = getAngularApp();
   if (!engine) return next();
   engine
@@ -728,6 +869,17 @@ app.use((req, res, next) => {
         let html = await response.text();
         const nonce = res.locals['nonce'] || '';
         
+        // Ensure all stylesheets are immediately active (media="all") and strip any inline onload handler (CSP-safe)
+        html = html.replace(/<link\b([^>]*\brel=["']stylesheet["'][^>]*)>/gi, (_match, attrs) => {
+          let cleanAttrs = attrs
+            .replace(/\s+onload=(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+            .replace(/\s+media=(?:"print"|'print')/gi, ' media="all"');
+          if (!cleanAttrs.includes('media=')) {
+            cleanAttrs += ' media="all"';
+          }
+          return `<link ${cleanAttrs.trim()}>`;
+        });
+
         // Inject nonces into all inline script elements to comply with CSP
         if (nonce) {
           html = html.replace(/<script(?![^>]*nonce=)/g, `<script nonce="${nonce}"`);
@@ -816,102 +968,189 @@ if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERV
       }
     });
 
-    wss.on('connection', async (wsClient, request) => {
+    wss.on('connection', (wsClient, request) => {
       console.log('[WS Proxy] Client connected to /ws/gemini-live');
       
       let vertexClient: WebSocket | null = null;
       const messageQueue: string[] = [];
       let isConnecting = true;
-      let token: string | null = null;
+      let tokenPromise = getGcpAccessToken().catch(err => {
+        console.warn('Failed to get GCP token early:', err);
+        return null;
+      });
+      
+      let setupPromise: Promise<void> | null = null;
 
-      try {
-        const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
-        const location = process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1';
-        
-        token = await getGcpAccessToken();
-        
-        if (!token) {
-          const urlObj = new URL(request.url || '', 'http://localhost');
-          const keyParam = urlObj.searchParams.get('key') || process.env['GEMINI_API_KEY'] || '';
-          const devUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${keyParam}`;
+      const connectToVertex = async (keyParam: string) => {
+        try {
+          const token = await tokenPromise;
+          const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
+          const location = process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1';
           
-          console.log('[WS Proxy] Falling back to Developer Live WS API');
-          vertexClient = new WebSocket(devUrl);
-        } else {
-          const vertexUrl = `wss://${location}-aiplatform.googleapis.com/ws/google.cloud.aiplatform.v1.LlmBidiService/BidiGenerateContent`;
-          console.log(`[WS Proxy] Connecting to Vertex AI Live WS: ${vertexUrl}`);
-          
-          vertexClient = new WebSocket(vertexUrl, {
-            headers: {
-              'Authorization': `Bearer ${token}`
+          if (!token) {
+            const devUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${keyParam}`;
+            console.log('[WS Proxy] Falling back to Developer Live WS API');
+            vertexClient = new WebSocket(devUrl);
+          } else {
+            const vertexUrl = `wss://${location}-aiplatform.googleapis.com/ws/google.cloud.aiplatform.v1.LlmBidiService/BidiGenerateContent`;
+            console.log(`[WS Proxy] Connecting to Vertex AI Live WS: ${vertexUrl}`);
+            
+            vertexClient = new WebSocket(vertexUrl, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+          }
+
+          vertexClient.on('open', () => {
+            console.log('[WS Proxy] Backend Live WS connection established');
+            isConnecting = false;
+            while (messageQueue.length > 0) {
+              const msg = messageQueue.shift();
+              if (msg) vertexClient?.send(msg);
             }
           });
+
+          vertexClient.on('message', (data) => {
+            try {
+              const text = data.toString();
+              const json = JSON.parse(text);
+              const camelJson = translateToCamel(json);
+              wsClient.send(JSON.stringify(camelJson));
+            } catch (err) {
+              wsClient.send(data);
+            }
+          });
+
+          vertexClient.on('close', (code, reason) => {
+            console.log(`[WS Proxy] Backend Live WS closed: ${code} - ${reason.toString()}`);
+            wsClient.close(code, reason);
+          });
+
+          vertexClient.on('error', (err) => {
+            console.error('[WS Proxy] Backend Live WS error:', err);
+            wsClient.close(1011, 'Backend connection error');
+          });
+        } catch (err: unknown) {
+          const msg = (err as Error)?.message || 'Initialization failed';
+          console.error('[WS Proxy] Initialization failed:', msg);
+          wsClient.close(1011, msg);
         }
-
-        vertexClient.on('open', () => {
-          console.log('[WS Proxy] Backend Live WS connection established');
-          isConnecting = false;
-          while (messageQueue.length > 0) {
-            const msg = messageQueue.shift();
-            if (msg) vertexClient?.send(msg);
-          }
-        });
-
-        vertexClient.on('message', (data) => {
-          try {
-            const text = data.toString();
-            const json = JSON.parse(text);
-            const camelJson = translateToCamel(json);
-            wsClient.send(JSON.stringify(camelJson));
-          } catch (err) {
-            wsClient.send(data);
-          }
-        });
-
-        vertexClient.on('close', (code, reason) => {
-          console.log(`[WS Proxy] Backend Live WS closed: ${code} - ${reason.toString()}`);
-          wsClient.close(code, reason);
-        });
-
-        vertexClient.on('error', (err) => {
-          console.error('[WS Proxy] Backend Live WS error:', err);
-          wsClient.close(1011, 'Backend connection error');
-        });
-
-      } catch (err: unknown) {
-        const msg = (err as Error)?.message || 'Initialization failed';
-        console.error('[WS Proxy] Initialization failed:', msg);
-        wsClient.close(1011, msg);
-        return;
-      }
+      };
 
       wsClient.on('message', (message) => {
-        try {
+        if (!setupPromise) {
           const text = message.toString();
-          let json = JSON.parse(text);
+          try {
+            let json = JSON.parse(text);
+            if (json.setup) {
+              setupPromise = (async () => {
+                try {
+                  const urlObj = new URL(request.url || '', 'http://localhost');
+                  const keyParam = urlObj.searchParams.get('key') || process.env['GEMINI_API_KEY'] || '';
+                  const token = await tokenPromise;
+                  
+                  // Extract patient text for RAG query
+                  let userTextForSearch = '';
+                  if (json.setup.systemInstruction?.parts?.[0]?.text) {
+                     userTextForSearch = json.setup.systemInstruction.parts[0].text;
+                  }
+
+                  // 1. Perform Vertex AI Search query if token is present
+                  if (token && userTextForSearch) {
+                    try {
+                      const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
+                      const engineId = 'pocketgull-assistant';
+                      const endpoint = `https://discoveryengine.googleapis.com/v1/projects/${projectId}/locations/global/collections/default_collection/engines/${engineId}/servingConfigs/default_search:search`;
+                      
+                      const patientDataMatch = userTextForSearch.match(/Patient Data:\n([\s\S]+)$/i);
+                      const queryText = patientDataMatch ? patientDataMatch[1] : userTextForSearch;
+
+                      const searchRes = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': `Bearer ${token}`,
+                          'Content-Type': 'application/json',
+                          'x-goog-user-project': projectId
+                        },
+                        body: JSON.stringify({
+                          query: queryText.substring(0, 1000),
+                          pageSize: 5
+                        }),
+                        signal: AbortSignal.timeout(3000)
+                      });
+
+                      if (searchRes.ok) {
+                        const data = await searchRes.json();
+                        if (data && data.results && data.results.length > 0) {
+                          const hits = data.results.map((r: any) => {
+                            const title = r.document?.derivedStructData?.title || 'Protocol';
+                            const snippet = r.document?.derivedStructData?.snippets?.[0]?.snippet || '';
+                            return `- **${title}**: ${snippet}`;
+                          }).join('\n');
+                          const ragContext = `\n\nVERTEX AI SEARCH RAG GROUNDING (Enterprise App Builder):\n${hits}\n\nUse these validated enterprise protocols when formulating your response.`;
+                          json.setup.systemInstruction.parts[0].text += ragContext;
+                          console.log('[WS Proxy] Successfully appended Clinical RAG protocols');
+                        }
+                      }
+                    } catch (ragError) {
+                      console.warn('[WS Proxy] Clinical RAG Vertex Search failed or timed out:', (ragError as Error)?.message);
+                    }
+                  }
+
+                  // 2. Adjust Model Path
+                  if (token) {
+                    const rawModel = (json.setup.model || 'gemini-2.0-flash-exp').replace(/^models\//, '');
+                    const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
+                    const location = process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1';
+                    json.setup.model = `projects/${projectId}/locations/${location}/publishers/google/models/${rawModel}`;
+                  }
+
+                  // 3. Connect to Vertex
+                  await connectToVertex(keyParam);
+
+                  // 4. Send the augmented setup payload
+                  const snakeJson = translateToSnake(json);
+                  const payload = JSON.stringify(snakeJson);
+                  messageQueue.push(payload);
+
+                } catch (err: unknown) {
+                   const msg = (err as Error)?.message || 'Setup processing failed';
+                   console.error('[WS Proxy] Setup processing failed:', msg);
+                   wsClient.close(1011, msg);
+                }
+              })();
+              return;
+            }
+          } catch (e) {}
           
-          if (json.setup && token) {
-            const rawModel = (json.setup.model || 'gemini-2.0-flash-exp').replace(/^models\//, '');
-            const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
-            const location = process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1';
-            json.setup.model = `projects/${projectId}/locations/${location}/publishers/google/models/${rawModel}`;
-          }
-
-          const snakeJson = translateToSnake(json);
-          const payload = JSON.stringify(snakeJson);
-
-          if (isConnecting) {
-            messageQueue.push(payload);
-          } else {
-            vertexClient?.send(payload);
-          }
-        } catch (err) {
-          if (isConnecting) {
-            messageQueue.push(message.toString());
-          } else {
-            vertexClient?.send(message);
-          }
+          setupPromise = Promise.resolve();
+          connectToVertex(new URL(request.url || '', 'http://localhost').searchParams.get('key') || '');
         }
+
+        // Handle all non-setup messages sequentially after setup completes
+        setupPromise.then(() => {
+           try {
+             const text = message.toString();
+             let json = JSON.parse(text);
+             if (json.setup) return;
+
+             const snakeJson = translateToSnake(json);
+             const payload = JSON.stringify(snakeJson);
+
+             if (isConnecting) {
+               messageQueue.push(payload);
+             } else {
+               vertexClient?.send(payload);
+             }
+           } catch (err) {
+             if (isConnecting) {
+               messageQueue.push(message.toString());
+             } else {
+               vertexClient?.send(message);
+             }
+           }
+        });
       });
 
       wsClient.on('close', (code, reason) => {

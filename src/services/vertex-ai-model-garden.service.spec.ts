@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { VertexAiModelGardenService } from './vertex-ai-model-garden.service';
 
 describe('VertexAiModelGardenService', () => {

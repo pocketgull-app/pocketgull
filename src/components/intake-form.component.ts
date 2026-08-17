@@ -5,7 +5,7 @@ import { DictationService } from '../services/dictation.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
-import { FhirR5TelemetryService } from '../services/fhir-r5-telemetry.service';
+import { FhirR5TelemetryService } from '../services/fhir/fhir-r5-telemetry.service';
 import { IBodyPartIssue, BODY_PART_NAMES, BODY_PART_MAPPING, HistoryEntry } from '../services/patient.types';
 
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';

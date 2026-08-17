@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi } from 'vitest';
 
 vi.mock('@angular/forms', () => ({
   FormsModule: class {},
@@ -27,7 +27,7 @@ import { MarkdownService } from '../services/markdown.service';
 import { DictationService } from '../services/dictation.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { PatientManagementService } from '../services/patient-management.service';
-import { FhirR5TelemetryService } from '../services/fhir-r5-telemetry.service';
+import { FhirR5TelemetryService } from '../services/fhir/fhir-r5-telemetry.service';
 
 describe('IntakeFormComponent - Comprehensive Patient Symptom Intake', () => {
   let component: IntakeFormComponent;

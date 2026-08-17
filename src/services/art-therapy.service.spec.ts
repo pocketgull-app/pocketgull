@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { ArtTherapyService } from './art-therapy.service';
 
 describe('ArtTherapyService', () => {

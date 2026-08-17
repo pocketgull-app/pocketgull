@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 
 describe('SkepticalEpistemologyService CDS Transparency (FDA Section 520(o))', () => {

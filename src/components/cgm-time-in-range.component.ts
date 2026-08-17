@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CgmTimeInRangeService } from '../services/cgm-time-in-range.service';
+import { CgmTimeInRangeService } from '../services/hardware/cgm-time-in-range.service';
 
 @Component({
   selector: 'app-cgm-time-in-range',

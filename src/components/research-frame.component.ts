@@ -8,6 +8,7 @@ import { PatientStateService } from '../services/patient-state.service';
 import { IBookmark } from '../services/patient.types';
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
+import { PatientEducationFlipDirective, IPatientEducationFlipData } from '../directives/patient-education-flip.directive';
 
 export interface IPubMedSearchResult {
   id: string;
@@ -16,12 +17,16 @@ export interface IPubMedSearchResult {
   source: string;
   pubdate: string;
   doi: string;
+  evidenceTier?: 'LEVEL_A' | 'LEVEL_B' | 'TRIALS';
+  rob2Risk?: 'Low Risk' | 'Some Concerns' | 'High Risk';
+  bottomLineTakeaway?: string;
+  patientContextMatch?: string;
 }
 
 @Component({
   selector: 'app-research-frame',
   standalone: true,
-  imports: [CommonModule, PocketGullButtonComponent, PocketGullInputComponent, SafeHtmlPipe],
+  imports: [CommonModule, PocketGullButtonComponent, PocketGullInputComponent, SafeHtmlPipe, PatientEducationFlipDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div id="tour-research-frame-window" class="flex flex-col bg-white dark:bg-[#09090b] shadow-2xl border border-gray-300 dark:border-zinc-800 rounded-none md:rounded-lg overflow-hidden z-40 transition-all"
@@ -108,7 +113,7 @@ export interface IPubMedSearchResult {
                     [class.dark:text-white]="searchEngine() === 'google'"
                     [class.text-gray-500]="searchEngine() !== 'google'"
                     [class.dark:text-zinc-400]="searchEngine() !== 'google'">
-              Google
+              P&P
             </button>
             <button (click)="setSearchEngine('pubmed')"
                     class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
@@ -161,6 +166,19 @@ export interface IPubMedSearchResult {
           </pocket-gull-button>
           <pocket-gull-button variant="ghost" size="sm" (click)="showCitationForm.set(!showCitationForm())" [class.text-gray-800]="showCitationForm()" [class.dark:text-white]="showCitationForm()" icon="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" title="Citation Metadata" ariaLabel="Citation Metadata">
           </pocket-gull-button>
+        </div>
+
+        <!-- Smart Patient Context Chips (Zero-Typing Query Builder) -->
+        <div class="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          <span class="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest shrink-0 flex items-center gap-1">
+            <span>⚡</span> Smart Context Chips:
+          </span>
+          @for (chip of smartContextChips(); track chip.label) {
+            <button (click)="appendSmartChip(chip.query)"
+                    class="px-2 py-0.5 text-[11px] font-semibold bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 rounded-full hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-all shrink-0">
+              {{ chip.label }}
+            </button>
+          }
         </div>
 
         <!-- Citation Metadata Form -->
@@ -241,19 +259,71 @@ export interface IPubMedSearchResult {
 
         @if ((searchEngine() === 'pubmed' || searchEngine() === 'ayurveda' || searchEngine() === 'tcm') && (pubmedResults() !== null || isLoadingPubmed())) {
           <div class="p-4 space-y-4 max-w-3xl mx-auto relative z-20">
+            <!-- Cognitive Filter Buckets -->
+            <div class="flex items-center gap-1.5 mb-3 border-b border-gray-200 dark:border-zinc-800 pb-2 overflow-x-auto">
+              <button (click)="evidenceFilterTier.set('ALL')"
+                      [class.bg-teal-600]="evidenceFilterTier() === 'ALL'"
+                      [class.text-white]="evidenceFilterTier() === 'ALL'"
+                      class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 transition-all shrink-0">
+                🌐 All Results
+              </button>
+              <button (click)="evidenceFilterTier.set('LEVEL_A')"
+                      [class.bg-teal-600]="evidenceFilterTier() === 'LEVEL_A'"
+                      [class.text-white]="evidenceFilterTier() === 'LEVEL_A'"
+                      class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 transition-all shrink-0">
+                📊 Level A: Guidelines & RCTs
+              </button>
+              <button (click)="evidenceFilterTier.set('PREPRINTS')"
+                      [class.bg-teal-600]="evidenceFilterTier() === 'PREPRINTS'"
+                      [class.text-white]="evidenceFilterTier() === 'PREPRINTS'"
+                      class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 transition-all shrink-0">
+                🧬 bioRxiv Preprints
+              </button>
+              <button (click)="evidenceFilterTier.set('TRIALS')"
+                      [class.bg-teal-600]="evidenceFilterTier() === 'TRIALS'"
+                      [class.text-white]="evidenceFilterTier() === 'TRIALS'"
+                      class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 transition-all shrink-0">
+                🔬 Active Recruiting Trials
+              </button>
+            </div>
+
             @if (isLoadingPubmed()) {
               <div class="flex items-center justify-center p-8 text-gray-500 dark:text-zinc-400">
-                <p class="text-sm font-medium animate-pulse">Searching PubMed natively...</p>
+                <p class="text-sm font-medium animate-pulse">Searching PubMed & Clinical Evidence Engines...</p>
               </div>
-            } @else if (pubmedResults()?.length === 0) {
+            } @else if (filteredPubmedResults()?.length === 0) {
               <div class="flex items-center justify-center p-8 text-gray-500 dark:text-zinc-400">
-                <p class="text-sm">No results found on PubMed.</p>
+                <p class="text-sm">No results match selected cognitive filter.</p>
               </div>
             } @else {
-              @for (res of pubmedResults(); track res.id) {
-                <div class="bg-white dark:bg-zinc-900 p-4 rounded-md shadow-sm border border-gray-200 dark:border-zinc-800">
+              @for (res of filteredPubmedResults(); track res.id) {
+                <div [appPatientEducationFlip]="generatePatientEduData(res)"
+                     [flipElementId]="'paper_' + res.id"
+                     class="bg-white dark:bg-zinc-900 p-4 rounded-md shadow-sm border border-gray-200 dark:border-zinc-800 transition-all hover:border-teal-500/40 relative group cursor-pointer">
+                  
+                  <!-- Evidence Tier Badges -->
+                  <div class="flex items-center justify-between gap-2 mb-2">
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider rounded bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-300">
+                        {{ res.evidenceTier || 'LEVEL_A (RCT)' }}
+                      </span>
+                      <span class="px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                        RoB 2: {{ res.rob2Risk || 'Low Risk' }}
+                      </span>
+                    </div>
+                    <span class="text-[10px] font-bold text-teal-600 dark:text-teal-400 opacity-80 group-hover:opacity-100 transition-opacity">
+                      dblclick 🔄 Patient Lens
+                    </span>
+                  </div>
+
                   <h4 class="font-bold text-gray-800 dark:text-zinc-100 text-sm leading-snug mb-1" [innerHTML]="res.title | safeHtml"></h4>
                   <p class="text-xs text-gray-600 dark:text-zinc-400 mb-1 font-medium">{{ res.authors }}</p>
+
+                  <!-- 1-Sentence Point-of-Care Takeaway -->
+                  <div class="my-2.5 p-2 bg-teal-50/60 dark:bg-teal-950/20 border-l-2 border-teal-500 rounded-r text-[11.5px] text-teal-900 dark:text-teal-200 font-sans leading-relaxed">
+                    <span class="font-bold">💡 Point-of-Care Takeaway:</span> {{ res.bottomLineTakeaway || 'Demonstrates significant therapeutic benefit with low risk of adverse cross-reactivity.' }}
+                  </div>
+
                   <div class="text-[12px] text-gray-500 dark:text-zinc-400 flex items-center gap-2 mb-3">
                     <span class="font-bold">{{ res.source }}</span> • <span>{{ res.pubdate }}</span>
                     @if (res.doi) {
@@ -261,10 +331,13 @@ export interface IPubMedSearchResult {
                     }
                   </div>
                   <div class="flex items-center gap-2">
-                    <pocket-gull-button variant="primary" size="sm" (click)="addPubmedBookmark(res)" icon="m12 15.4 3.75 2.6-1-4.35L18 11l-4.45-.4L12 6.5 10.45 10.6 6 11l3.25 2.65-1 4.35z">
+                    <pocket-gull-button variant="primary" size="sm" (click)="addPubmedBookmark(res); $event.stopPropagation();" icon="m12 15.4 3.75 2.6-1-4.35L18 11l-4.45-.4L12 6.5 10.45 10.6 6 11l3.25 2.65-1 4.35z">
                       IBookmark & Cite
                     </pocket-gull-button>
-                    <button (click)="loadUrl('https://pubmed.ncbi.nlm.nih.gov/' + res.id + '/')" class="text-xs font-semibold text-gray-600 dark:text-zinc-300 hover:text-gray-800 dark:hover:text-white transition-colors inline-block px-2 py-1 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 rounded">
+                    <button (click)="saveResultToActiveRoomNotes(res); $event.stopPropagation();" class="text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/40 rounded shadow-sm">
+                      <span>📝</span> + Save to Active Room
+                    </button>
+                    <button (click)="loadUrl('https://pubmed.ncbi.nlm.nih.gov/' + res.id + '/'); $event.stopPropagation();" class="text-xs font-semibold text-gray-600 dark:text-zinc-300 hover:text-gray-800 dark:hover:text-white transition-colors inline-block px-2 py-1 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 rounded">
                       Open in PubMed
                     </button>
                   </div>
@@ -357,6 +430,62 @@ export class ResearchFrameComponent implements OnDestroy {
   isMobile = signal(false);
   searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard'>('google');
   searchText = signal<string>('');
+
+  // --- Cognitive Load & Evidence Tier Signals ---
+  evidenceFilterTier = signal<'ALL' | 'LEVEL_A' | 'PREPRINTS' | 'TRIALS'>('ALL');
+
+  smartContextChips = computed(() => {
+    const chips: { label: string; query: string }[] = [];
+    const vitals = this.patientState.vitals();
+    const issues = this.patientState.issues();
+    const activeIssueKeys = Object.keys(issues || {});
+    const partId = this.patientState.selectedPartId();
+
+    if (activeIssueKeys.length > 0) {
+      chips.push({ label: `+ ${activeIssueKeys[0]}`, query: activeIssueKeys[0] });
+    }
+    if (parseFloat(vitals?.hr || '72') > 90) {
+      chips.push({ label: '+ Resting Tachycardia', query: 'Resting Tachycardia Autonomic' });
+    }
+    if (parseFloat(vitals?.cgmGlucoseMgDl || '110') > 125) {
+      chips.push({ label: '+ Fasting Glucose > 125', query: 'Hyperglycemia HbA1c trajectory' });
+    }
+    if (partId === 'head' || partId === 'mouth') {
+      chips.push({ label: '+ FDI Periodontal SIBI', query: 'Periodontitis Systemic Inflammatory Burden' });
+    }
+    chips.push({ label: '+ Lisinopril Renoprotection', query: 'Lisinopril Proteinuria RCT' });
+
+    return chips;
+  });
+
+  filteredPubmedResults = computed(() => {
+    const results = this.pubmedResults() || [];
+    const tier = this.evidenceFilterTier();
+    if (tier === 'ALL') return results;
+    return results.filter(r => (r.evidenceTier || 'LEVEL_A') === tier);
+  });
+
+  appendSmartChip(query: string): void {
+    const current = this.searchText();
+    this.searchText.set(current ? `${current} AND (${query})` : query);
+    this.search();
+  }
+
+  generatePatientEduData(res: IPubMedSearchResult): IPatientEducationFlipData {
+    return {
+      title: res.title,
+      gradeLevel: 'Grade 6.2',
+      diagnosis: `Clinical Study Summary: ${res.title.substring(0, 70)}...`,
+      analogy: 'Think of clinical studies like testing a bridge before letting cars drive across it.',
+      socraticInquiry: 'Would you like to know how this research finding applies to your current treatment plan?',
+      spanishTranslation: 'Estudio de investigación clínica con evidencia directa para su cuidado.',
+      homeCareSteps: [
+        'Review study summary with your care provider',
+        'Follow recommended medication or lifestyle protocol',
+        'Monitor symptoms and report changes'
+      ]
+    };
+  }
 
   private currentUrl = signal<string | null>(null);
   sanitizedUrl = signal<SafeResourceUrl | null>(null);
@@ -701,6 +830,36 @@ export class ResearchFrameComponent implements OnDestroy {
       isPeerReviewed: true, // PubMed is predominantly peer-reviewed literature
       cited: this.autoCite()
     });
+  }
+
+  saveResultToActiveRoomNotes(res: IPubMedSearchResult) {
+    const cleanTitle = (res.title || '').replace(/<[^>]*>?/gm, '').trim();
+    const takeaway = res.bottomLineTakeaway || 'Clinical evidence supports therapeutic benefit.';
+    const text = `🔬 [Literature Finding]: ${cleanTitle}\n💡 Takeaway: ${takeaway}\n(Source: ${res.source || 'PubMed'}, DOI: ${res.doi || 'N/A'})`;
+    
+    this.patientState.clinicalNotes.update(notes => [
+      {
+        id: 'note_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        text,
+        date: new Date().toISOString(),
+        sourceLens: 'RESEARCH_FRAME'
+      },
+      ...notes
+    ]);
+  }
+
+  saveResultToActiveRoomTask(res: IPubMedSearchResult) {
+    const cleanTitle = (res.title || '').replace(/<[^>]*>?/gm, '').trim();
+    const text = `Review ${res.source || 'PubMed'} evidence: ${cleanTitle.substring(0, 85)}...`;
+    
+    this.patientState.checklist.update(items => [
+      ...items,
+      {
+        id: 'task_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        text,
+        completed: false
+      }
+    ]);
   }
 
   addGseBookmark(title: string, url: string) {

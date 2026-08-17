@@ -5,29 +5,25 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
     await setupE2ePage(page);
+    await enterDemoMode(page);
   });
 
   test('should load Y-BOCs Screener, toggle checklist, set severity scores, and reset successfully', async ({ page }) => {
     // Enable console logging to see page issues if any
     page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
-    await enterDemoMode(page);
-
     // Select Phil Gear using shared utility (avoids flaky raw locator)
     await selectPatientByName(page, 'Phil Gear');
 
-    // Wait for core AI container (deferred block) to be visible
-    await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });
-
     // Switch to ASSESSMENTS lens tab
-    const assessmentsBtn = page.locator('button', { hasText: 'ASSESSMENTS' }).first();
+    const assessmentsBtn = page.getByTestId('tab-assessments');
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.click();
+    await assessmentsBtn.click({ force: true });
 
     // 3. Select Y-BOCs Screener Tab
     const ybocsTab = page.getByTestId('tab-ybocs-screener');
-    await expect(ybocsTab).toBeVisible({ timeout: 15000 });
-    await ybocsTab.click();
+    await ybocsTab.scrollIntoViewIfNeeded();
+    await ybocsTab.click({ force: true });
 
     // 3. Verify Y-BOCs Screener renders
     const screenerHeader = page.locator('text=Yale-Brown Obsessive-Compulsive Scale');

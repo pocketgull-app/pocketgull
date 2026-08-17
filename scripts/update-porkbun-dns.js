@@ -60,8 +60,9 @@ async function updateDomain(domain) {
       }
     }
 
-    // GitHub Pages custom domain
-    targets.push({ name: 'typeface', type: 'CNAME', content: 'philgear.github.io' });
+    // GitHub Pages custom domain for organization docs & design system
+    targets.push({ name: 'typeface', type: 'CNAME', content: 'pocketgull-app.github.io' });
+    targets.push({ name: 'docs', type: 'CNAME', content: 'pocketgull-app.github.io' });
 
     const existingRecords = data.records || [];
 

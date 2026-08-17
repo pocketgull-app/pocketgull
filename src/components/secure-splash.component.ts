@@ -12,7 +12,7 @@ import { PatientStateService } from '../services/patient-state.service';
 import { PetAuditoryService } from '../services/pet-auditory.service';
 import { EnvironmentalTelemetryService } from '../services/environmental-telemetry.service';
 import { environment } from '../environments/environment';
-import { PocketgullIconComponent } from './pocketgull-icon.component';
+import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
 import { PapercraftBackdropComponent } from './papercraft-backdrop.component';
 import { SecureStorageService } from '../services/secure-storage.service';
@@ -228,8 +228,15 @@ import { SecureStorageService } from '../services/secure-storage.service';
                    [class.border-emerald-500]="isChecking()"
                    (pointerdown)="startDrawing($event)"
                    (pointermove)="draw($event)"
-                   (pointerup)="stopDrawing()"
-                   (pointerleave)="stopDrawing()"
+                   (pointerup)="stopDrawing($event)"
+                   (pointerleave)="stopDrawing($event)"
+                   (mousedown)="startDrawing($event)"
+                   (mousemove)="draw($event)"
+                   (mouseup)="stopDrawing($event)"
+                   (mouseleave)="stopDrawing($event)"
+                   (touchstart)="startDrawing($event)"
+                   (touchmove)="draw($event)"
+                   (touchend)="stopDrawing($event)"
                  ></canvas>
                </div>
 
@@ -251,15 +258,6 @@ import { SecureStorageService } from '../services/secure-storage.service';
                  </button>
                </div>
 
-               <!-- Explicit Good Samaritan Emergency Triage Mode Option -->
-               <div class="mt-1 w-full max-w-[260px] z-30">
-                 <button 
-                   type="button"
-                   (click)="handleEmergencyBypass()"
-                   class="w-full min-h-[36px] px-3 py-1.5 flex justify-center items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-700 dark:text-red-300 transition-all rounded-xl cursor-pointer">
-                   <span>🚨 Good Samaritan Emergency Triage</span>
-                 </button>
-               </div>
 
                 <!-- Washi Rice Paper Daily Medical Quote Banner -->
                 <div class="mt-1 px-4 py-2.5 paper-rice-panel rounded-xl text-center max-w-xs transition-all hover:scale-[1.02] shadow-xs">
@@ -1267,11 +1265,20 @@ export class SecureSplashComponent implements OnInit {
   handleUnlockSession() {
     this.session.isLocked.set(false);
     this.isAuthorized.set(true);
+    this.session.isOnboardingComplete.set(true);
     this.session.resetIdleTimer();
+    if (typeof sessionStorage !== 'undefined') {
+      try {
+        sessionStorage.setItem('pg_session_onboarded', '1');
+      } catch (e) { /* ignore */ }
+    }
+    // Signal the parent to re-enter the application.
+    // Emit loadDemo so the parent sets hasApiKey(true) and dismisses the splash.
+    this.loadDemo.emit();
   }
 
   // State
-  viewState = signal<'auth' | 'beta' | 'ethics' | 'kss' | 'signup' | 'gesture'>('auth');
+  viewState = signal<'auth' | 'beta' | 'ethics' | 'kss' | 'signup' | 'gesture'>('gesture');
   signupForm = signal({ name: '', email: '', clinic: '', pin: '' });
   signinEmailInput = signal('');
   pledgeAccepted = signal(false);
@@ -1936,16 +1943,34 @@ export class SecureSplashComponent implements OnInit {
     osc2.stop(ctx.currentTime + 1.3);
   }
 
-  private getCanvasCoords(e: PointerEvent): {x: number, y: number, pressure: number} {
+  private getCanvasCoords(e: any): {x: number, y: number, pressure: number, tiltX: number, tiltY: number, pointerType: string} {
     const canvas = this.gestureCanvasRef()?.nativeElement;
-    if (!canvas) return { x: 0, y: 0, pressure: 0.5 };
+    if (!canvas) return { x: 0, y: 0, pressure: 0.5, tiltX: 0, tiltY: 0, pointerType: 'mouse' };
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / (rect.width || 240);
     const scaleY = canvas.height / (rect.height || 240);
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
-    const pressure = e.pressure && e.pressure > 0 ? e.pressure : 0.5;
-    return { x, y, pressure };
+
+    let clientX = e.clientX;
+    let clientY = e.clientY;
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else if (e.changedTouches && e.changedTouches.length > 0) {
+      clientX = e.changedTouches[0].clientX;
+      clientY = e.changedTouches[0].clientY;
+    }
+
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+    
+    // Wacom & Pen Pressure sensitivity (8192 levels fallback)
+    const rawPressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : (e.tangentialPressure ? Math.abs(e.tangentialPressure) : 0.5);
+    const pressure = Math.max(0.1, Math.min(1.0, rawPressure));
+    const tiltX = e.tiltX || 0;
+    const tiltY = e.tiltY || 0;
+    const pointerType = e.pointerType || (e.touches ? 'touch' : 'mouse');
+
+    return { x, y, pressure, tiltX, tiltY, pointerType };
   }
 
   private redrawCanvas() {
@@ -2010,15 +2035,17 @@ export class SecureSplashComponent implements OnInit {
     ctx.shadowBlur = 0;
   }
 
-  startDrawing(e: PointerEvent) {
+  startDrawing(e: any) {
     if (!isPlatformBrowser(this.platformId)) return;
     const canvas = this.gestureCanvasRef()?.nativeElement;
     if (!canvas) return;
-    
-    try {
-      canvas.setPointerCapture(e.pointerId);
-    } catch (err) {
-      // Ignore pointer capture failure on non-touch devices
+
+    if (e.pointerId !== undefined && canvas.setPointerCapture) {
+      try {
+        canvas.setPointerCapture(e.pointerId);
+      } catch (err) {
+        // Ignore pointer capture failure
+      }
     }
     
     this.isDrawing = true;
@@ -2036,7 +2063,7 @@ export class SecureSplashComponent implements OnInit {
     this.redrawCanvas();
   }
 
-  draw(e: PointerEvent) {
+  draw(e: any) {
     if (!this.isDrawing) return;
     const pos = this.getCanvasCoords(e);
     this.currentStroke.push(pos);
@@ -2044,11 +2071,11 @@ export class SecureSplashComponent implements OnInit {
     this.redrawCanvas();
   }
 
-  stopDrawing(e?: PointerEvent) {
+  stopDrawing(e?: any) {
     if (!this.isDrawing) return;
     this.isDrawing = false;
     
-    if (e) {
+    if (e && e.pointerId !== undefined) {
       const canvas = this.gestureCanvasRef()?.nativeElement;
       try {
         if (canvas && canvas.hasPointerCapture(e.pointerId)) {

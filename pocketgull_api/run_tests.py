@@ -11,12 +11,19 @@ import inspect
 
 def run_all_tests():
     api_dir = os.path.dirname(os.path.abspath(__file__))
-    sys.path.append(api_dir)
-    
+    root_dir = os.path.dirname(api_dir)
+    sys.path.insert(0, root_dir)
+    sys.path.insert(0, api_dir)
+    evidence_src = os.path.join(root_dir, "packages", "clinical-evidence-grade", "src")
+    evidence_tests = os.path.join(root_dir, "packages", "clinical-evidence-grade", "tests")
+    sys.path.insert(0, evidence_src)
+
     test_files = [(api_dir, f) for f in os.listdir(api_dir) if f.startswith("test_") and f.endswith(".py")]
     tests_dir = os.path.join(api_dir, "tests")
     if os.path.exists(tests_dir):
         test_files.extend([(tests_dir, f) for f in os.listdir(tests_dir) if f.startswith("test_") and f.endswith(".py")])
+    if os.path.exists(evidence_tests):
+        test_files.extend([(evidence_tests, f) for f in os.listdir(evidence_tests) if f.startswith("test_") and f.endswith(".py")])
     
     total_run = 0
     total_failed = 0

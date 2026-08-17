@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BleWearablesService } from '../services/ble-wearables.service';
+import { BleWearablesService } from '../services/hardware/ble-wearables.service';
 
 @Component({
   selector: 'app-ble-wearables-hud',

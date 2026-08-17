@@ -52,3 +52,21 @@ $$\text{Final Score} = \frac{1}{12} \sum_{i=0}^{11} \text{AUC}_i$$
 
 ### 4. Pivot & Pulse Co-Occurrence Calibration
 - Post-process probability predictions using Bayesian conditional priors $\mathbb{P}(\text{contusion} \mid \text{acl\_tear})$ and $\mathbb{P}(\text{effusion} \mid \text{acl\_tear})$.
+
+---
+
+## 5. Kaggle Code Competition Submission Protocol (Leaderboard Proven Rules)
+
+1. **Hardware Accelerator Restriction**:
+   - Competition submission rules explicitly prohibit P100 GPUs.
+   - Set `"enable_gpu": "false"` (CPU mode) or use explicit T4 GPU settings (`"accelerator": "gpu_t4"`). CPU mode executes in $\sim 23$ seconds and guarantees zero hardware gating errors.
+2. **Immediate Disk Output**:
+   - Write `submission.csv` to `/kaggle/working/submission.csv` at the VERY FIRST STEP of the submission cell before starting model inference loop.
+3. **Defensive Engine Guards**:
+   - Wrap optional imports in `try-except` blocks.
+   - Always check `if 'engine' in globals() and engine is not None:` before dereferencing model methods to prevent `NameError`.
+4. **ASCII Output Stream**:
+   - Use plain text tags `[OK]` and `[WARN]` instead of non-ASCII emojis (`✅`, `⚠️`) to prevent Papermill stdout `UnicodeEncodeError`.
+5. **In-Place Schema Preservation**:
+   - Modify candidate `sample_submission.csv` in-place, format floats with `float_format='%.6f'`, and preserve exact row index ordering.
+

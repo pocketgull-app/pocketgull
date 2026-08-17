@@ -345,5 +345,33 @@ export class DictationService {
       // AudioContext silent fail safe
     }
   }
+
+  /**
+   * Simulates incoming speech recognition results without requiring physical microphone input.
+   * Useful for automated testing, dev environments, and agentic workflows per simulate_voice skill.
+   */
+  public simulateVoiceInput(transcript: string): void {
+    this.isListening.set(true);
+    this.initialText.set(transcript);
+    this.lastCommand.set(transcript);
+
+    // Play feedback tone
+    this.playPersonaAudioFx(523.25, 'sine');
+
+    setTimeout(() => {
+      this.isListening.set(false);
+    }, 400);
+  }
+
+  /**
+   * Programmatically triggers a wake-word detection for automated testing.
+   */
+  public triggerWakeWord(wakeWord: 'gulliver' | 'swoop' | 'sentinel' | 'scribes'): void {
+    this.wakeWordDetected.set(wakeWord);
+    this.playPersonaAudioFx(880, 'triangle');
+    setTimeout(() => {
+      this.wakeWordDetected.set(null);
+    }, 1500);
+  }
 }
 

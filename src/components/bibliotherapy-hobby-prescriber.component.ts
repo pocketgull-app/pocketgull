@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BioHapticFeedbackService } from '../services/bio-haptic-feedback.service';
+import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedback.service';
 import { ClinicalIconComponent } from './shared/clinical-icon.component';
 
 export interface ITherapeuticHobby {

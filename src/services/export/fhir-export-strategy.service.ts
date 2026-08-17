@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import * as DOMPurify from 'dompurify';
 import { IPatient, HistoryEntry, IPatientVitals } from '../patient.types';
-import { LaafFhirHapticScheduleService } from '../laaf-fhir-haptic-schedule.service';
+import { LaafFhirHapticScheduleService } from '../fhir/laaf-fhir-haptic-schedule.service';
 import { ClinicalAssessmentsService } from '../clinical-assessments/clinical-assessments.service';
 import { YbocsService } from '../ybocs/ybocs.service';
 import { AcronymExpanderService } from '../acronym-expander.service';

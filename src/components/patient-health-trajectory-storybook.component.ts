@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, OnDestroy
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
 
 export type StorybookReadingStyle = 'classic' | 'bionic' | 'dyslexic' | 'audiobook';
 
@@ -319,6 +320,8 @@ export class PatientHealthTrajectoryStorybookComponent implements OnDestroy {
     }
   }
 
+  private readonly bionicReadingService = inject(BionicReadingService);
+
   formatParagraphText(text: string): string {
     // XSS-safe: strip all HTML tags before applying bionic formatting
     let sanitized = '';
@@ -330,7 +333,7 @@ export class PatientHealthTrajectoryStorybookComponent implements OnDestroy {
     }
 
     if (this.readingStyle() === 'bionic') {
-      return sanitized.replace(/\b([A-Za-z]{1,3})([A-Za-z]*)\b/g, '<strong class="font-extrabold text-indigo-600 dark:text-indigo-400">$1</strong>$2');
+      return this.bionicReadingService.formatToBionicHtml(sanitized, 'font-extrabold text-indigo-600 dark:text-indigo-400');
     }
     return sanitized;
   }

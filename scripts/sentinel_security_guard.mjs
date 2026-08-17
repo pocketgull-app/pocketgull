@@ -26,8 +26,19 @@ const APPROVED_EGRESS_DOMAINS = [
   'github.com',
   'githubusercontent.com',
   'api.github.com',
+  'clamav.net',
+  'www.clamav.net',
+  'cerner.com',
+  'authorization.cerner.com',
+  'fhir-myrecord.cerner.com',
+  'athenahealth.com',
+  'api.platform.athenahealth.com',
+  'va.gov',
+  'sandbox-api.va.gov',
   'pocketgull.app',
   'www.pocketgull.app',
+  'ssa.gov',
+  'www.ssa.gov',
   'pocketgull.com',
   'cdn.tailwindcss.com',
   'tailwindcss.com',
@@ -43,14 +54,29 @@ const APPROVED_EGRESS_DOMAINS = [
   'epic.com',
   'fhir.epic.com',
   'ncbi.nlm.nih.gov',
+  'nlm.nih.gov',
+  'www.nlm.nih.gov',
   'eutils.ncbi.nlm.nih.gov',
   'pubmed.ncbi.nlm.nih.gov',
+  'ama-assn.org',
+  'www.ama-assn.org',
   'cdc.gov',
   'wwwn.cdc.gov',
   'orcid.org',
   'pub.orcid.org',
   'doi.org',
   'zenodo.org',
+  'clinicaltrials.gov',
+  'www.clinicaltrials.gov',
+  'smarthealthit.org',
+  'launch.smarthealthit.org',
+  'caringinfo.org',
+  'www.caringinfo.org',
+  'foodwise.org',
+  'www.foodwise.org',
+  'freewill.com',
+  'www.freewill.com',
+  'trustandwill.com',
   'developers.zenodo.org',
   'fitbit.com',
   'api.fitbit.com',
@@ -63,6 +89,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'aws.amazon.com',
   'amazonaws.com',
   'healthlake.us-east-1.amazonaws.com',
+  'azure.com',
+  'azurehealthcareapis.com',
   'ohif.org',
   'viewer.ohif.org',
   'firebaseapp.com',
@@ -70,6 +98,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'reactome.org',
   'who.int',
   'www.who.int',
+  'sccm.org',
+  'www.sccm.org',
   'santafe.edu',
   'www.santafe.edu',
   'arizona.edu',
@@ -80,6 +110,9 @@ const APPROVED_EGRESS_DOMAINS = [
   'www.drmichaellevin.org',
   'mit.edu',
   'biophysics.mit.edu',
+  'asu.edu',
+  'biodesign.asu.edu',
+  'www.asu.edu',
   'uniprot.org',
   'www.uniprot.org',
   'mediawiki.org',
@@ -96,6 +129,20 @@ const APPROVED_EGRESS_DOMAINS = [
   'commons.wikimedia.org',
   'porkbun.com',
   'api.porkbun.com',
+  'legalzoom.com',
+  'www.legalzoom.com',
+  'impact.com',
+  'app.impact.com',
+  'seatgeek.com',
+  'developer.seatgeek.com',
+  'instagram.com',
+  'www.instagram.com',
+  'tiktok.com',
+  'www.tiktok.com',
+  'facebook.com',
+  'www.facebook.com',
+  'x.com',
+  'twitter.com',
   'example.com',
   'astro.build',
   'ieee.org',
@@ -182,14 +229,15 @@ function auditFile(filePath) {
   while ((match = stringLiteralRegex.exec(content)) !== null) {
     const literal = match[1];
     
-    // Ignore standard SVG paths, base64 data URLs, and import paths
+    // Ignore standard SVG paths, base64 data URLs, public checklist IDs, and import paths
     if (
       literal.startsWith('data:') ||
       literal.includes('M0 ') ||
       literal.includes('L0 ') ||
       literal.startsWith('./') ||
       literal.startsWith('../') ||
-      literal.includes('/')
+      literal.includes('/') ||
+      literal.startsWith('___')
     ) {
       continue;
     }

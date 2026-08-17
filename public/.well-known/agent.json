@@ -1,0 +1,125 @@
+{
+  "name": "Pocket Gull",
+  "description": "Real-Time AI Clinical Copilot & Care Plan Engine powered by Google Gemini 2.5",
+  "protocol_version": "1.0.0",
+  "schema_version": "2026-08-14",
+  "homepage": "https://pocketgull.app",
+  "logo": "https://pocketgull.app/icons/icon-192x192.png",
+  "supported_protocols": ["SSE", "WebSocket", "JSON-RPC", "HTTP/REST"],
+  "schema_formats": ["JSON-Schema", "OpenAPI 3.1"],
+  "authentication": {
+    "modes": ["API_KEY", "SMART_ON_FHIR_OAUTH2"],
+    "api_key_header": "X-Gemini-API-Key",
+    "oauth2_smart_launch": "/api/smart-launch",
+    "oauth2_vendors": ["EPIC", "CERNER", "ATHENAHEALTH", "GENERIC_FHIR"]
+  },
+  "rate_limits": {
+    "manifest_endpoints": {
+      "window_ms": 60000,
+      "max_requests": 300,
+      "note": "Relaxed in non-production environments"
+    },
+    "global": {
+      "window_ms": 900000,
+      "max_requests": 2000
+    }
+  },
+  "namespaces": {
+    "clinical": "https://pocketgull.app/v1/clinical",
+    "fhir": "https://pocketgull.app/v1/fhir",
+    "discovery": "https://pocketgull.app/v1/discovery"
+  },
+  "discovery_endpoints": {
+    "tools": "/v1/discovery/tools",
+    "context_schema": "/v1/discovery/context-schema",
+    "resolve": "/v1/discovery/resolve",
+    "taxonomy": "/v1/discovery/taxonomy",
+    "capabilities_probe": "/v1/discovery/capabilities/probe",
+    "pipeline_graph": "/v1/discovery/pipelines/{pipelineId}/graph",
+    "artifact_schema": "/v1/discovery/artifacts/schema"
+  },
+  "pricing": {
+    "model": "flat_rate_subscription",
+    "currency": "usd",
+    "tiers": [
+      {
+        "name": "explorer",
+        "label": "Explorer (Free)",
+        "price_monthly_usd": 0,
+        "quotas": {
+          "discovery_read": "unlimited",
+          "discovery_resolve": 50,
+          "discovery_probe": 25,
+          "tool_execution": 0,
+          "pipeline_graph": 0
+        }
+      },
+      {
+        "name": "practitioner",
+        "label": "Practitioner",
+        "price_monthly_usd": 49,
+        "stripe_price_id": "price_1U4M4fJLexbgGCRFzIHyPrzT",
+        "quotas": {
+          "discovery_read": "unlimited",
+          "discovery_resolve": 1000,
+          "discovery_probe": 500,
+          "tool_execution": 5000,
+          "pipeline_graph": 200
+        }
+      },
+      {
+        "name": "institution",
+        "label": "Institution",
+        "price_monthly_usd": 299,
+        "stripe_price_id": "price_1U4M5MJLexbgGCRFg5LrWabu",
+        "quotas": {
+          "discovery_read": "unlimited",
+          "discovery_resolve": 25000,
+          "discovery_probe": 10000,
+          "tool_execution": 100000,
+          "pipeline_graph": 2000
+        }
+      }
+    ],
+    "checkout_url": "/api/billing/checkout",
+    "portal_url": "/api/billing/portal",
+    "free_endpoints": [
+      "/.well-known/agent.json",
+      "/v1/discovery/tools",
+      "/v1/discovery/taxonomy",
+      "/v1/discovery/context-schema",
+      "/v1/discovery/artifacts/schema"
+    ],
+    "metered_endpoints": [
+      "/v1/discovery/resolve",
+      "/v1/discovery/capabilities/probe",
+      "/v1/discovery/pipelines/{pipelineId}/graph"
+    ]
+  },
+  "resource_pointers": {
+    "llms_txt": "/llms.txt",
+    "openapi_docs": "/api-docs",
+    "webmcp_tools": "/api/webmcp/tools",
+    "health": "/health",
+    "robots_txt": "/robots.txt",
+    "sitemap": "/sitemap.xml"
+  },
+  "clinical_standards": [
+    "HL7 FHIR R4",
+    "HL7 FHIR R5 SubscriptionTopic",
+    "HL7 v2.5.1 ORU^R01",
+    "SNOMED CT",
+    "ICD-10-CM",
+    "LOINC",
+    "RxNorm",
+    "CPT",
+    "Da Vinci PAS IG",
+    "SMART on FHIR",
+    "USCDI v4"
+  ],
+  "contact": {
+    "developer": "Phil Gear",
+    "orcid": "0009-0008-1372-5381",
+    "repository": "https://github.com/philgear/pocketgull"
+  }
+}

@@ -34,9 +34,14 @@ import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
           </div>
         </div>
         <div class="flex flex-col items-end gap-1 sm:gap-2">
-            <div class="flex items-center gap-1.5 px-2 py-1 bg-green-50 dark:bg-[#689f38]/10 rounded-md border border-green-100 dark:border-[#689f38]/30">
-              <div class="w-1.5 h-1.5 rounded-full status-dot bg-green-500 dark:bg-[#689f38] animate-pulse"></div>
-              <span class="text-[12px] sm:text-xs font-medium text-green-700 dark:text-[#689f38] uppercase tracking-wide">Live</span>
+            <div class="flex items-center gap-2">
+              <button (click)="state.toggleResearchFrame(true)" class="flex items-center gap-1 px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-md border border-indigo-200 dark:border-indigo-800/50 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold uppercase tracking-wider transition-all shadow-sm">
+                <span>🔬</span> Research Frame
+              </button>
+              <div class="flex items-center gap-1.5 px-2 py-1 bg-green-50 dark:bg-[#689f38]/10 rounded-md border border-green-100 dark:border-[#689f38]/30">
+                <div class="w-1.5 h-1.5 rounded-full status-dot bg-green-500 dark:bg-[#689f38] animate-pulse"></div>
+                <span class="text-[12px] sm:text-xs font-medium text-green-700 dark:text-[#689f38] uppercase tracking-wide">Live</span>
+              </div>
             </div>
             <div class="text-[12px] sm:text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-widest text-right">
                {{ checklist().length }} Tasks • {{ clinicalNotes().length }} Notes • {{ shoppingList().length }} Items
@@ -89,9 +94,14 @@ import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
                           >
                           <label [for]="'task-' + task.id" class="text-sm text-[#1C1C1C] dark:text-zinc-100 flex-1 cursor-pointer" [class.line-through]="task.completed" [class.opacity-50]="task.completed" [innerHTML]="task.formattedText | safeHtml">
                           </label>
-                          <button (click)="removeTask(task.id)" class="text-gray-300 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" title="Remove Task">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                          </button>
+                          <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <button (click)="researchItemText(task.text)" class="text-gray-400 dark:text-zinc-500 hover:text-teal-600 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Search Literature for this Task">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </button>
+                            <button (click)="removeTask(task.id)" class="text-gray-300 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Remove Task">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     }
@@ -151,9 +161,14 @@ import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
                             <span class="text-[12px] font-bold uppercase tracking-widest text-[#416B1F] dark:text-[#689f38] bg-[#F1F8E9] dark:bg-[#689f38]/10 px-2 py-1 rounded inline-block">
                               {{ note.sourceLens }}
                             </span>
-                            <button (click)="removeNote(note.id)" class="text-gray-300 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Remove Note">
-                               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                            </button>
+                            <div class="flex items-center gap-1.5">
+                              <button (click)="researchItemText(note.text)" class="text-gray-400 dark:text-zinc-500 hover:text-teal-600 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Search Literature for this Note">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                              </button>
+                              <button (click)="removeNote(note.id)" class="text-gray-300 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Remove Note">
+                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                              </button>
+                            </div>
                           </div>
                           <p class="text-sm text-gray-700 dark:text-zinc-300 font-medium leading-relaxed mb-3 whitespace-pre-wrap" [innerHTML]="note.formattedText | safeHtml"></p>
                           <div class="flex justify-between items-center text-[12px] text-gray-400 dark:text-zinc-500 font-bold uppercase tracking-widest pt-2.5 border-t border-gray-50 dark:border-zinc-800/50 mt-1">
@@ -227,6 +242,10 @@ import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
               <button (click)="submitShoppingItem(itemInput)" class="w-full sm:w-auto justify-center px-4 py-2 sm:py-1.5 text-xs font-bold text-white bg-[#E3663B] hover:bg-[#c95a34] rounded transition-colors uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 sm:w-3 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                  Add Item
+              </button>
+              <button (click)="submitResearchQuery(itemInput)" class="w-full sm:w-auto justify-center px-4 py-2 sm:py-1.5 text-xs font-bold text-white bg-teal-700 hover:bg-teal-800 rounded transition-colors uppercase tracking-widest flex items-center gap-1.5 shadow-sm" title="Search Literature for Input Context">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 sm:w-3 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                 ⚡ Research
               </button>
               <button (click)="submitTask(itemInput)" class="w-full sm:w-auto justify-center px-4 py-2 sm:py-1.5 text-xs font-bold text-white bg-[#1C1C1C] hover:bg-[#416B1F] rounded transition-colors uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 sm:w-3 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
@@ -437,6 +456,22 @@ export class TaskFlowComponent {
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }]);
     this.resetInput(el);
+  }
+
+  submitResearchQuery(el: HTMLTextAreaElement) {
+    const text = el.value.trim();
+    if (text) {
+      this.state.openResearchQuery(text, 'pubmed');
+      this.resetInput(el);
+    } else {
+      this.state.toggleResearchFrame(true);
+    }
+  }
+
+  researchItemText(text: string) {
+    if (!text) return;
+    const cleanText = text.replace(/<[^>]*>?/gm, '').trim();
+    this.state.openResearchQuery(cleanText, 'pubmed');
   }
 
   autoResize(el: HTMLTextAreaElement) {

@@ -19,7 +19,7 @@ export class ThemeService {
   public isDyslexiaFontEnabled = signal<boolean>(false);
   public isHighContrastEnabled = signal<boolean>(false);
   private platformId = (() => {
-    try { return inject(PLATFORM_ID); } catch (e) { return 'browser'; }
+    try { return inject(PLATFORM_ID); } catch (e) { return 'server'; }
   })();
   private storage = (() => {
     try { return inject(SecureStorageService); } catch (e) { return new SecureStorageService(); }
@@ -475,24 +475,32 @@ export class ThemeService {
     }
   }
 
-  public setTheme(theme: AppTheme) {
+  public setTheme(theme: AppTheme): void {
     this.currentTheme.set(theme);
     this.playThemeUiAudioFx('theme-change');
     this.triggerHapticFeedback('double');
   }
 
-  public setParadigm(paradigm: 'western' | 'tcm' | 'ayurveda' | 'unified') {
+  public cycleTheme(): void {
+    const themes: AppTheme[] = ['light', 'dark', 'system', 'spark'];
+    const current = this.currentTheme();
+    const currentIndex = themes.indexOf(current);
+    const nextTheme = themes[(currentIndex + 1) % themes.length] || 'light';
+    this.setTheme(nextTheme);
+  }
+
+  public setParadigm(paradigm: 'western' | 'tcm' | 'ayurveda' | 'unified'): void {
     this.activeParadigm.set(paradigm);
     this.playThemeUiAudioFx('toggle');
     this.triggerHapticFeedback('medium');
   }
 
-  public setReduceMotion(reduce: boolean) {
+  public setReduceMotion(reduce: boolean): void {
     this.reduceMotion.set(reduce);
     this.triggerHapticFeedback('light');
   }
 
-  public cycleTextSizeScale() {
+  public cycleTextSizeScale(): void {
     const curr = this.textSizeScale();
     if (curr === 'standard') this.textSizeScale.set('large');
     else if (curr === 'large') this.textSizeScale.set('extra-large');
@@ -502,7 +510,7 @@ export class ThemeService {
     this.triggerHapticFeedback('light');
   }
 
-  public togglePlainLanguageMode() {
+  public togglePlainLanguageMode(): void {
     this.isPlainLanguageMode.update(curr => !curr);
     this.playThemeUiAudioFx('toggle');
     this.triggerHapticFeedback('medium');

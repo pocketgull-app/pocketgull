@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DicomService, IDicomStudy } from '../services/dicom.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { PatientManagementService } from '../services/patient-management.service';
-import { Medical3DViewerComponent } from './medical-3d-viewer.component';
+import { Medical3DViewerComponent } from './anatomy-3d/medical-3d-viewer.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

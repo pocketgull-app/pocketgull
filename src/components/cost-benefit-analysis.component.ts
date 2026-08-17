@@ -3,6 +3,11 @@ import { CommonModule } from '@angular/common';
 import { PatientManagementService } from '../services/patient-management.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
+import { IrmaaDecisionService } from '../services/irmaa-decision.service';
+import { HedisStarRatingService } from '../services/hedis-star-rating.service';
+import { MedicareBillingBestPracticesService } from '../services/medicare-billing-best-practices.service';
+import { SocraticJargonTooltipComponent } from './shared/socratic-jargon-tooltip.component';
+import { ThemeService } from '../services/theme.service';
 import { IFhirGenomicObservation } from '../services/patient.types';
 
 interface IAnnotatedItem {
@@ -45,7 +50,7 @@ interface ISentinelContainmentOption {
 @Component({
   selector: 'app-cost-benefit-analysis',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SocraticJargonTooltipComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mb-8 mt-4 bg-zinc-900/5 dark:bg-black/20 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800/80 shadow-inner relative overflow-hidden">
@@ -71,6 +76,15 @@ interface ISentinelContainmentOption {
           </div>
 
           <div class="flex flex-wrap items-center gap-3">
+            <!-- Audience Mode Switcher (Clinician vs Patient) -->
+            <button (click)="themeService.setAnalogyLensMode(isPlainLanguage() ? 'clinical' : 'coach')"
+              type="button"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border shadow-sm flex items-center gap-1.5"
+              [class]="isPlainLanguage() ? 'bg-emerald-600 text-white border-emerald-500 hover:bg-emerald-500' : 'bg-indigo-600 text-white border-indigo-500 hover:bg-indigo-500'">
+              <span>{{ isPlainLanguage() ? '🏡 Patient & Family View' : '🩺 Clinician Deep-Dive' }}</span>
+              <span class="text-[9px] opacity-80">(Switch)</span>
+            </button>
+
             <!-- ACA Mandate vs Cash-Pay Compliance Switcher -->
             <div class="flex bg-gray-200/80 dark:bg-zinc-800/60 p-0.5 rounded-xl border border-gray-300/30">
               <button (click)="compliancePricingMode.set('cash')"
@@ -147,6 +161,80 @@ interface ISentinelContainmentOption {
             </div>
           </div>
         </div>
+
+        <!-- ══ MEDICARE & FINANCIAL NAVIGATION INTELLIGENCE HUD ═════════════════════ -->
+        @if (isMedicareEligible) {
+          <div class="mb-6 bg-gradient-to-r from-indigo-900/20 via-purple-900/10 to-emerald-900/20 dark:from-indigo-950/40 dark:via-purple-950/30 dark:to-emerald-950/40 rounded-xl p-4 border border-indigo-500/20 shadow-md">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 pb-2 border-b border-indigo-500/20">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">🏛️</span>
+                <div>
+                  <h4 class="text-xs font-bold text-gray-900 dark:text-zinc-100 uppercase tracking-wider">
+                    Medicare & Financial Navigation Matrix (<app-socratic-jargon-tooltip term="MPPP">IRA $2K Part D Cap</app-socratic-jargon-tooltip> + <app-socratic-jargon-tooltip term="SSA-44">SSA-44 Appeals</app-socratic-jargon-tooltip>)
+                  </h4>
+                  <p class="text-[11px] text-gray-500 dark:text-zinc-400">
+                    Real-time <app-socratic-jargon-tooltip term="IRMAA">IRMAA Surcharge Tiering</app-socratic-jargon-tooltip>, <app-socratic-jargon-tooltip term="HEDIS">HEDIS Star Rating QBP Bonuses</app-socratic-jargon-tooltip> & Good Faith Estimate Protection
+                  </p>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 uppercase tracking-widest">
+                <app-socratic-jargon-tooltip term="CMS-0057-F">CMS-0057-F Active</app-socratic-jargon-tooltip>
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+              <!-- 1. IRMAA Surcharge Card -->
+              @if (irmaaData) {
+                <div class="bg-white/70 dark:bg-zinc-900/70 p-3 rounded-lg border border-indigo-500/20">
+                  <div class="flex items-center justify-between font-bold text-gray-800 dark:text-zinc-200 mb-1">
+                    <span>Part B/D <app-socratic-jargon-tooltip term="IRMAA">IRMAA Surcharge</app-socratic-jargon-tooltip></span>
+                    <span class="text-amber-600 dark:text-amber-400 font-mono">+\${{ irmaaData.currentTier.totalMonthlySurcharge }}/mo</span>
+                  </div>
+                  <p class="text-[11px] text-gray-600 dark:text-zinc-400 mb-1.5">
+                    Annual Impact: <strong class="text-amber-600 dark:text-amber-400">\${{ irmaaData.annualSurcharge }}/yr</strong> (Tier {{ irmaaData.currentTier.tier }})
+                  </p>
+                  @if (irmaaData.appealAssessment.isEligible) {
+                    <div class="text-[10px] bg-amber-500/10 text-amber-700 dark:text-amber-300 p-1.5 rounded font-medium border border-amber-500/20">
+                      ⚡ <app-socratic-jargon-tooltip term="SSA-44">SSA-44 Appeal Vector</app-socratic-jargon-tooltip>: Potential \${{ irmaaData.appealAssessment.estimatedAnnualSavings }}/yr savings
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- 2. HEDIS QBP Star Rating Card -->
+              @if (hedisData) {
+                <div class="bg-white/70 dark:bg-zinc-900/70 p-3 rounded-lg border border-purple-500/20">
+                  <div class="flex items-center justify-between font-bold text-gray-800 dark:text-zinc-200 mb-1">
+                    <span><app-socratic-jargon-tooltip term="HEDIS">HEDIS Plan Star Rating</app-socratic-jargon-tooltip></span>
+                    <span class="text-purple-600 dark:text-purple-300 font-bold">★ {{ hedisData.overallStarRating }} / 5.0</span>
+                  </div>
+                  <p class="text-[11px] text-gray-600 dark:text-zinc-400 mb-1.5">
+                    CMS Quality Bonus: <strong class="text-purple-600 dark:text-purple-300">\${{ hedisData.estQbpBonusPerMemberAnnual }}/member/yr</strong>
+                  </p>
+                  <div class="text-[10px] bg-purple-500/10 text-purple-700 dark:text-purple-300 p-1.5 rounded font-medium border border-purple-500/20">
+                    💰 QBP Status: {{ hedisData.isQualityBonusEligible ? 'QUALIFIED FOR CMS BONUS' : 'Care Gaps Active' }}
+                  </div>
+                </div>
+              }
+
+              <!-- 3. Billing & GFE Protection Card -->
+              @if (billingData) {
+                <div class="bg-white/70 dark:bg-zinc-900/70 p-3 rounded-lg border border-emerald-500/20">
+                  <div class="flex items-center justify-between font-bold text-gray-800 dark:text-zinc-200 mb-1">
+                    <span>Inflation Reduction Act Cap</span>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold">$2,000 Part D Cap</span>
+                  </div>
+                  <p class="text-[11px] text-gray-600 dark:text-zinc-400 mb-1.5">
+                    <app-socratic-jargon-tooltip term="MPPP">MPPP Monthly Max</app-socratic-jargon-tooltip>: <strong class="text-emerald-600 dark:text-emerald-400">\${{ monthlyMpppCapUsd }}/mo</strong>
+                  </p>
+                  <div class="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 p-1.5 rounded font-medium border border-emerald-500/20">
+                    🛡️ NSA Dispute Threshold: \${{ billingData.gfe.disputeNoticeThreshold }} Protection
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
 
         <!-- ══ ML INNOVATION CONTROLS PANEL ═════════════════════════════════════════ -->
         <div class="mb-6 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md rounded-xl p-4 border border-zinc-200/80 dark:border-zinc-800/80 space-y-4">
@@ -584,6 +672,38 @@ export class CostBenefitAnalysisComponent {
   patientManagement = inject(PatientManagementService);
   patientState = inject(PatientStateService);
   clinicalIntelligence = inject(ClinicalIntelligenceService);
+  irmaaService = inject(IrmaaDecisionService, { optional: true });
+  hedisService = inject(HedisStarRatingService, { optional: true });
+  medicareBillingService = inject(MedicareBillingBestPracticesService, { optional: true });
+  themeService = inject(ThemeService);
+
+  isPlainLanguage = computed(() => this.themeService.isPlainLanguageMode());
+
+  medicareFinancialMatrix = computed(() => {
+    const age = this.patientState.patientAge() || 68;
+    const irmaa = this.irmaaService?.evaluateIrmaa(145000, 'single') || null;
+    const hedis = this.hedisService?.generateOverallSummary('p010', { systolicBp: 125, diastolicBp: 80, hbA1c: 7.1 }) || null;
+    const billing = this.medicareBillingService?.assessMedicareBilling({
+      annualRxCost: 3800,
+      daysDeviceTransmitted: 16,
+      clinicalMinutesLogged: 22,
+      annualIncome: 28000
+    }) || null;
+
+    return {
+      isMedicareEligible: age >= 65,
+      irmaa,
+      hedis,
+      billing,
+      monthlyMpppCapUsd: billing ? Math.round(billing.mppp.effectiveCapAmount / 12) : 167
+    };
+  });
+
+  get irmaaData() { return this.medicareFinancialMatrix().irmaa; }
+  get hedisData() { return this.medicareFinancialMatrix().hedis; }
+  get billingData() { return this.medicareFinancialMatrix().billing; }
+  get isMedicareEligible() { return this.medicareFinancialMatrix().isMedicareEligible; }
+  get monthlyMpppCapUsd() { return this.medicareFinancialMatrix().monthlyMpppCapUsd; }
 
   isSentinel = computed(() => {
     const id = this.patientManagement.selectedPatientId();

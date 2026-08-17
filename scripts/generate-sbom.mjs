@@ -3,8 +3,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const rootDir = path.resolve(__dirname, '..');
+const scriptDir = path.dirname(__filename);
+const rootDir = fs.existsSync(path.join(process.cwd(), 'package.json'))
+  ? process.cwd()
+  : path.resolve(scriptDir, '..');
 
 console.log('📜 Generating SPDX 2.3 Software Bill of Materials (SBOM)...');
 
@@ -16,7 +18,7 @@ const sbom = {
   dataLicense: 'CC0-1.0',
   SPDXID: 'SPDXRef-DOCUMENT',
   name: `${pkg.name}-v${pkg.version}-SBOM`,
-  documentNamespace: `https://github.com/philgear/pocketgull/spdx/${pkg.name}-${pkg.version}`,
+  documentNamespace: `https://github.com/pocketgull-app/pocketgull/spdx/${pkg.name}-${pkg.version}`,
   creationInfo: {
     creators: ['Tool: Pocket-Gull Automated Sentinel Guard', 'Organization: Pocket-Gull Engineering'],
     created: new Date().toISOString()
@@ -26,7 +28,7 @@ const sbom = {
       name: pkg.name,
       SPDXID: 'SPDXRef-Package-Root',
       versionInfo: pkg.version,
-      downloadLocation: 'git+https://github.com/philgear/pocketgull.git',
+      downloadLocation: 'git+https://github.com/pocketgull-app/pocketgull.git',
       filesAnalyzed: false,
       licenseConcluded: pkg.license || 'MIT',
       description: pkg.description || 'Pocket-Gull Real-Time Clinical Intelligence Suite'

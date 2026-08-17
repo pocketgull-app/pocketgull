@@ -20,7 +20,7 @@ export interface IClinicalMenuItem {
 
 import { PantryLazySusanComponent } from './pantry-lazy-susan.component';
 import { ChronoClockDecisionRailComponent } from './chrono-clock-decision-rail.component';
-import { MobileMenuQrModalComponent } from './mobile-menu-qr-modal.component';
+import { MobileMenuQrModalComponent } from './modals/mobile-menu-qr-modal.component';
 import { ChronoWeeklyMealPlannerComponent } from './chrono-weekly-meal-planner.component';
 
 @Component({

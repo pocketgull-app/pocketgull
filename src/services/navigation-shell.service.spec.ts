@@ -1,5 +1,3 @@
-import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { NavigationShellService } from './navigation-shell.service';
 
 describe('NavigationShellService Suite', () => {
@@ -23,5 +21,18 @@ describe('NavigationShellService Suite', () => {
 
     nav.closeGlossary();
     expect(nav.showGlossaryModal()).toBe(false);
+  });
+
+  it('resets all navigation state and modal overlays when navigateWayBackHome is called', () => {
+    const nav = new NavigationShellService();
+    nav.selectTab('research');
+    nav.openGlossary();
+    nav.openDictation();
+
+    nav.navigateWayBackHome();
+
+    expect(nav.activeTab()).toBe('chart');
+    expect(nav.showGlossaryModal()).toBe(false);
+    expect(nav.showDictationModal()).toBe(false);
   });
 });

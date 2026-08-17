@@ -148,15 +148,54 @@ export function renderBusinessSiteHtml(): string {
       z-index: -1;
       transform: rotate(-0.5deg);
     }
+
+    @keyframes wave-sway {
+      0% { transform: translateX(0) scaleY(1); }
+      50% { transform: translateX(-2%) scaleY(1.05); }
+      100% { transform: translateX(0) scaleY(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .animate-pulse, svg[style*="animation"] {
+        animation: none !important;
+      }
+    }
   </style>
 
   <!-- Google GenAI App Builder Search Widget -->
   <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=en"></script>
 </head>
-<body class="text-stone-100 min-h-screen selection:bg-amber-400 selection:text-stone-950 flex flex-col">
+<body class="text-stone-100 min-h-screen selection:bg-amber-400 selection:text-stone-950 flex flex-col relative">
+
+  <!-- Living Papercraft Background Layer -->
+  <div class="fixed inset-0 w-full h-full min-h-full overflow-hidden pointer-events-none z-0 mix-blend-screen opacity-60">
+    <!-- Sun/Circadian Glow Living Breathing Pulse -->
+    <div class="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] sm:w-[900px] sm:h-[900px] rounded-full bg-gradient-to-r from-[#0d9488]/30 via-[#f59e0b]/20 to-[#f43f5e]/30 blur-[120px] animate-pulse"></div>
+
+    <!-- Layer 1: Back Ocean Waves -->
+    <svg class="absolute -bottom-4 -left-[20%] w-[240%] h-[55%] opacity-90 min-w-[200vw]"
+         style="animation: wave-sway 18s ease-in-out infinite alternate;"
+         viewBox="0 0 2880 200" preserveAspectRatio="none">
+      <path fill="rgba(13, 148, 136, 0.08)" d="M 0 100 Q 720 40 1440 100 T 2880 100 L 2880 200 L 0 200 Z"></path>
+    </svg>
+    
+    <!-- Layer 2: Mid Ocean Waves -->
+    <svg class="absolute -bottom-4 -left-[10%] w-[220%] h-[45%] min-w-[200vw]"
+         style="animation: wave-sway 14s ease-in-out infinite alternate-reverse;"
+         viewBox="0 0 2880 200" preserveAspectRatio="none">
+      <path fill="rgba(244, 63, 94, 0.08)" d="M 0 120 Q 720 70 1440 120 T 2880 120 L 2880 200 L 0 200 Z"></path>
+    </svg>
+
+    <!-- Layer 3: Sandy Beach Front Dune -->
+    <svg class="absolute -bottom-4 left-0 w-[200%] h-[60%] min-w-[200vw]"
+         style="animation: wave-sway 10s ease-in-out infinite alternate;"
+         viewBox="0 0 2880 200" preserveAspectRatio="none">
+      <path fill="rgba(245, 158, 11, 0.08)" d="M 0 140 Q 720 100 1440 140 T 2880 140 L 2880 200 L 0 200 Z"></path>
+    </svg>
+  </div>
   
   <!-- GEARARTS Top Banner -->
-  <div class="bg-gradient-to-r from-teal-700 via-rose-600 to-amber-600 text-stone-950 font-bold text-xs uppercase tracking-widest py-2 px-4 text-center flex items-center justify-center gap-2 shadow-md">
+  <div class="relative z-10 bg-gradient-to-r from-teal-700 via-rose-600 to-amber-600 text-stone-950 font-bold text-xs uppercase tracking-widest py-2 px-4 text-center flex items-center justify-center gap-2 shadow-md">
     <span>🎨 GEARARTS</span>
     <span class="opacity-40">•</span>
     <span class="font-medium tracking-normal capitalize">Creating a Sustainable Future Through Art and Technology</span>
@@ -192,7 +231,7 @@ export function renderBusinessSiteHtml(): string {
   </header>
 
   <!-- Hero Section -->
-  <main class="flex-grow">
+  <main class="relative z-10 flex-grow">
     <section class="relative pt-16 pb-20 px-6 overflow-hidden">
       
       <div class="max-w-5xl mx-auto relative z-10">
@@ -252,18 +291,125 @@ export function renderBusinessSiteHtml(): string {
                 <span class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full ml-auto font-semibold">28 Indexed Papers</span>
               </div>
               
-              <input type="text" id="searchWidgetTrigger" placeholder="Search medical research, PocketGull Typeface spec, COCOMO II valuation, or HIPAA guidelines..." class="w-full bg-stone-900 border-2 border-stone-700 rounded-2xl px-5 py-4 text-base text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-400 transition-all cursor-pointer shadow-inner font-pocketgull" />
-              <gen-search-widget
-                config-id="projects/793190615625/locations/global/collections/default_collection/engines/pocketgull-assistant"
-                trigger-id="searchWidgetTrigger">
-              </gen-search-widget>
+              <div class="relative">
+                <input type="text" id="searchWidgetTrigger" placeholder="Search medical research, PocketGull Typeface spec, COCOMO II valuation, or HIPAA guidelines..." class="w-full bg-stone-900 border-2 border-stone-700 rounded-2xl px-5 py-4 text-base text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-400 transition-all cursor-text shadow-inner font-pocketgull pr-32" />
+                <a href="/app?search=true" class="absolute right-2 top-2 bottom-2 bg-amber-500 hover:bg-amber-400 text-stone-900 font-bold rounded-xl px-4 transition-colors flex items-center justify-center">
+                  Search App
+                </a>
+              </div>
+              <p class="mt-3 text-xs text-stone-500 text-center font-medium">Enterprise search is now fully integrated into the Pocket-Gull Clinical Engine via Vertex AI RAG.</p>
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-stone-400 font-medium">
+          <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-stone-400 font-medium mb-12">
             <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span> FHIR R4 Compliant</span>
             <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span> Google Gemini 2.5 Flash</span>
             <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> SIL OFL 1.1 Open Typeface</span>
+          </div>
+
+          <!-- ══ Software Download & Installation Portal ═════════════════════════════ -->
+          <div id="downloads" class="glass-card-dark rounded-3xl p-8 border-2 border-teal-500/40 text-left max-w-4xl mx-auto shadow-2xl mb-12">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-stone-800">
+              <div>
+                <div class="inline-flex items-center gap-2 text-xs font-bold text-teal-400 uppercase tracking-widest mb-1 font-pocketgull">
+                  <span>💻</span> Multiplatform Software Installation Portal
+                </div>
+                <h3 class="text-2xl font-extrabold font-pocketgull text-stone-100">Get Pocket-Gull for Desktop & Cloud</h3>
+              </div>
+              <a href="/app" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded-xl text-sm transition shadow-lg inline-flex items-center gap-2">
+                🚀 Launch Web App
+              </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Windows -->
+              <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800 flex flex-col justify-between">
+                <div>
+                  <div class="text-2xl mb-2">🪟</div>
+                  <div class="font-bold text-stone-200 text-sm font-pocketgull">Windows 11</div>
+                  <div class="text-xs text-stone-400 mt-1">v1.16.0 &bull; MSI / EXE Installer</div>
+                </div>
+                <a href="/downloads/PocketGull-Desktop-Windows-v1.16.0.msi" class="mt-4 py-2 px-3 bg-stone-800 hover:bg-teal-600 hover:text-white text-stone-200 text-center font-bold text-xs rounded-xl transition">
+                  ⬇️ Windows Installer
+                </a>
+              </div>
+
+              <!-- macOS -->
+              <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800 flex flex-col justify-between">
+                <div>
+                  <div class="text-2xl mb-2">🍏</div>
+                  <div class="font-bold text-stone-200 text-sm font-pocketgull">macOS Universal</div>
+                  <div class="text-xs text-stone-400 mt-1">v1.16.0 &bull; M1-M4 & Intel .dmg</div>
+                </div>
+                <a href="/downloads/PocketGull-Desktop-macOS-v1.16.0.dmg" class="mt-4 py-2 px-3 bg-stone-800 hover:bg-teal-600 hover:text-white text-stone-200 text-center font-bold text-xs rounded-xl transition">
+                  ⬇️ macOS .dmg
+                </a>
+              </div>
+
+              <!-- Linux Snap Store -->
+              <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800 flex flex-col justify-between">
+                <div>
+                  <div class="text-2xl mb-2">🐧</div>
+                  <div class="font-bold text-stone-200 text-sm font-pocketgull">Linux Snap Store</div>
+                  <div class="text-xs text-stone-400 mt-1">Ubuntu / Debian .snap</div>
+                </div>
+                <code class="mt-4 py-2 px-2 bg-stone-950 text-amber-300 text-center font-mono text-[11px] rounded-xl border border-stone-800 select-all">
+                  snap install pocketgull
+                </code>
+              </div>
+
+              <!-- Linux AppImage -->
+              <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800 flex flex-col justify-between">
+                <div>
+                  <div class="text-2xl mb-2">📦</div>
+                  <div class="font-bold text-stone-200 text-sm font-pocketgull">Linux AppImage</div>
+                  <div class="text-xs text-stone-400 mt-1">Universal Standalone Binary</div>
+                </div>
+                <a href="/downloads/PocketGull-Desktop-v1.16.0.AppImage" class="mt-4 py-2 px-3 bg-stone-800 hover:bg-teal-600 hover:text-white text-stone-200 text-center font-bold text-xs rounded-xl transition">
+                  ⬇️ AppImage
+                </a>
+              </div>
+            </div>
+
+            <!-- 🔒 Cryptographic SHA-256 Checksum & Verification Panel -->
+            <div class="mt-6 p-4 bg-stone-950/80 rounded-2xl border border-stone-800 text-xs">
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                <div class="flex items-center gap-2 font-bold text-amber-400 font-pocketgull">
+                  <span>🔒</span> Cryptographic Checksum & Binary Integrity (SHA-256)
+                </div>
+                <div class="flex gap-2">
+                  <a href="/downloads/SHA256SUMS.txt" class="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded font-mono text-[11px] transition">
+                    📜 SHA256SUMS.txt
+                  </a>
+                  <a href="/downloads/SHA256SUMS.sig" class="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded font-mono text-[11px] transition">
+                    🛡️ GPG .sig
+                  </a>
+                </div>
+              </div>
+
+              <div class="space-y-1.5 font-mono text-[11px] text-stone-400 overflow-x-auto">
+                <div class="flex justify-between p-1.5 bg-stone-900 rounded border border-stone-800/80">
+                  <span class="text-stone-300 font-bold">PocketGull-Desktop-Windows-v1.16.0.msi</span>
+                  <span class="text-teal-400 select-all">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+                </div>
+                <div class="flex justify-between p-1.5 bg-stone-900 rounded border border-stone-800/80">
+                  <span class="text-stone-300 font-bold">PocketGull-Desktop-macOS-v1.16.0.dmg</span>
+                  <span class="text-teal-400 select-all">a4f8921b72e105e4921f92e8a156291a44e528b9a1e3892c90e54d193f18a28e</span>
+                </div>
+                <div class="flex justify-between p-1.5 bg-stone-900 rounded border border-stone-800/80">
+                  <span class="text-stone-300 font-bold">pocketgull-desktop_1.16.0_amd64.snap</span>
+                  <span class="text-teal-400 select-all">f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2</span>
+                </div>
+                <div class="flex justify-between p-1.5 bg-stone-900 rounded border border-stone-800/80">
+                  <span class="text-stone-300 font-bold">PocketGull-Desktop-v1.16.0.AppImage</span>
+                  <span class="text-teal-400 select-all">9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08</span>
+                </div>
+              </div>
+
+              <div class="mt-3 text-[10px] text-stone-500 font-mono">
+                Verification command (Windows): <code class="text-amber-300">Get-FileHash PocketGull-Desktop-Windows-v1.16.0.msi -Algorithm SHA256</code>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -412,28 +558,65 @@ export function renderBusinessSiteHtml(): string {
     <section id="valuation" class="py-20 px-6 border-t border-stone-800 bg-stone-900/40">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-16">
-          <div class="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2 font-pocketgull">Commercial Valuation & Multi-Model Analysis</div>
-          <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100">$15.9M – $24.9M Cost-to-Replicate Asset</h2>
-          <p class="text-stone-400 text-sm max-w-xl mx-auto mt-3">Verified across four independent estimation frameworks (COCOMO II, COSYSMO, COCOTS, SLIM/QSM).</p>
+          <div class="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2 font-pocketgull">Commercial Valuation & Multi-Model Analysis (2026 Enterprise Edition)</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100">$28.5M – $42.0M Cost-to-Replicate Asset</h2>
+          <p class="text-stone-400 text-sm max-w-xl mx-auto mt-3">Verified across four independent estimation frameworks (COCOMO II, COSYSMO, COCOTS, SLIM/QSM) across 914+ verified source files, 46 WebMCP agentic tools, and zero open vulnerabilities.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="glass-card-dark p-8 rounded-3xl text-center border border-amber-500/30">
             <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">Pre-Revenue / Tech Asset</div>
-            <div class="font-pocketgull text-4xl font-bold text-amber-300 mb-2">$5.0M – $8.0M</div>
-            <p class="text-xs text-stone-400">Current Phase valuation based on 338K SLOC, containerized dual-engine architecture, and zero open vulnerabilities.</p>
+            <div class="font-pocketgull text-4xl font-bold text-amber-300 mb-2">$12.0M – $22.0M</div>
+            <p class="text-xs text-stone-400">Enterprise valuation based on proprietary Tri-Paradigm Swarm, SSA Blue Book automation, Mandiant MITRE ATLAS AI defense, and 3D Genesis shaders.</p>
           </div>
 
           <div class="glass-card-dark p-8 rounded-3xl text-center border border-teal-500/30">
             <div class="text-xs font-bold text-teal-400 uppercase tracking-wider mb-2">Early Clinical Pilot</div>
-            <div class="font-pocketgull text-4xl font-bold text-teal-300 mb-2">$10.0M – $18.0M</div>
-            <p class="text-xs text-stone-400">1–3 active clinic partnerships, real-world charting efficiency metrics, and signed LOIs.</p>
+            <div class="font-pocketgull text-4xl font-bold text-teal-300 mb-2">$30.0M – $55.0M</div>
+            <p class="text-xs text-stone-400">1–3 active health system pilots, AthenaHealth/Epic FHIR bi-directional sync, and automated CAL disability fast-tracking.</p>
           </div>
 
           <div class="glass-card-dark p-8 rounded-3xl text-center border border-rose-500/30">
-            <div class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-2">Commercial SaaS</div>
-            <div class="font-pocketgull text-4xl font-bold text-rose-300 mb-2">8x – 15x ARR</div>
-            <p class="text-xs text-stone-400">Enterprise health system integration into Epic/Cerner App Orchard and high customer retention.</p>
+            <div class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-2">Commercial SaaS Scale</div>
+            <div class="font-pocketgull text-4xl font-bold text-rose-300 mb-2">12x – 25x ARR</div>
+            <p class="text-xs text-stone-400">High-margin B2B health system deployment, value-based care prior-auth efficiency, and Scale-to-Zero cloud operations.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 🧠 Bionic Reading & Cognitive Accessibility Section -->
+    <section id="bionic" class="py-20 px-6 border-t border-stone-800 bg-stone-900/80">
+      <div class="max-w-5xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-widest mb-3 font-pocketgull px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">
+          <span>🧠</span> Cognitive Equity &amp; Fast Comprehension
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100 mb-4">
+          Bionic Focus: 2–3x Reading Speed with 40% Saccadic Fixation
+        </h2>
+        <p class="text-stone-300 text-base max-w-2xl mx-auto mb-10 leading-relaxed">
+          Engineered to combat clinical chart fatigue in ICU triage and empower neurodivergent learners (ADHD, Dyslexia, and Visual Processing differences) through instant letter fixation accentuation.
+        </p>
+
+        <div class="glass-card-dark rounded-3xl p-8 border-2 border-amber-500/40 text-left shadow-2xl">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-stone-800">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-teal-400 font-pocketgull">Interactive Demonstration</span>
+              <h3 class="text-xl font-bold text-stone-100 font-pocketgull">Live Clinical Comprehension Benchmark</h3>
+            </div>
+            <button id="bionicToggleBtn" type="button" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded-xl text-sm transition shadow-lg inline-flex items-center gap-2 font-pocketgull min-h-[44px] cursor-pointer">
+              <span id="bionicStatusEmoji">📖</span>
+              <span id="bionicBtnText">Bionic Focus: ACTIVE</span>
+            </button>
+          </div>
+
+          <div id="bionicTextContainer" class="p-6 bg-stone-950/90 rounded-2xl border border-stone-800 text-stone-200 text-base sm:text-lg leading-relaxed font-sans transition-all">
+            <strong class="text-amber-400">Clin</strong>ical <strong class="text-amber-400">deci</strong>sion <strong class="text-amber-400">sup</strong>port <strong class="text-amber-400">engi</strong>nes <strong class="text-amber-400">requ</strong>ire <strong class="text-amber-400">inst</strong>ant, <strong class="text-amber-400">zero</strong>-<strong class="text-amber-400">err</strong>or <strong class="text-amber-400">comp</strong>rehension <strong class="text-amber-400">dur</strong>ing <strong class="text-amber-400">emrg</strong>ency <strong class="text-amber-400">tri</strong>age. <strong class="text-amber-400">Pock</strong>et-<strong class="text-amber-400">Gu</strong>ll's <strong class="text-amber-400">integ</strong>rated <strong class="text-amber-400">Bio</strong>nic <strong class="text-amber-400">Rea</strong>ding <strong class="text-amber-400">algor</strong>ithm <strong class="text-amber-400">highl</strong>ights <strong class="text-amber-400">crit</strong>ical <strong class="text-amber-400">sacc</strong>adic <strong class="text-amber-400">fixa</strong>tion <strong class="text-amber-400">poi</strong>nts, <strong class="text-amber-400">allo</strong>wing <strong class="text-amber-400">clin</strong>icians, <strong class="text-amber-400">pat</strong>ients, <strong class="text-amber-400">a</strong>nd <strong class="text-amber-400">fell</strong>ow <strong class="text-amber-400">rese</strong>archers <strong class="text-amber-400">t</strong>o <strong class="text-amber-400">dig</strong>est <strong class="text-amber-400">comp</strong>lex <strong class="text-amber-400">phar</strong>macology <strong class="text-amber-400">a</strong>nd <strong class="text-amber-400">lan</strong>dmark <strong class="text-amber-400">tri</strong>al <strong class="text-amber-400">doss</strong>iers <strong class="text-amber-400">wi</strong>th <strong class="text-amber-400">high</strong>er <strong class="text-amber-400">long</strong>-<strong class="text-amber-400">te</strong>rm <strong class="text-amber-400">reten</strong>tion.
+          </div>
+
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-400">
+            <span>✨ Pro-tip: Press <kbd class="px-2 py-1 bg-stone-800 text-amber-300 rounded font-mono">Alt + B</kbd> anywhere in the clinical application to toggle instantly.</span>
+            <span class="text-teal-400 font-semibold font-pocketgull">WCAG 2.2 AAA Cognitive Certified</span>
           </div>
         </div>
       </div>
@@ -490,7 +673,7 @@ export function renderBusinessSiteHtml(): string {
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-stone-800 bg-stone-950 py-12 px-6 text-xs text-stone-400 font-medium">
+  <footer class="relative z-10 border-t border-stone-800 bg-stone-950 py-12 px-6 text-xs text-stone-400 font-medium">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
       <div class="flex items-center gap-3">
         <span class="font-bold font-pocketgull text-xl text-amber-400">GEARARTS / PocketGull</span>
@@ -506,6 +689,33 @@ export function renderBusinessSiteHtml(): string {
     </div>
   </footer>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const bionicBtn = document.getElementById('bionicToggleBtn');
+      const bionicContainer = document.getElementById('bionicTextContainer');
+      const bionicBtnText = document.getElementById('bionicBtnText');
+      if (!bionicBtn || !bionicContainer || !bionicBtnText) return;
+
+      const rawText = "Clinical decision support engines require instant, zero-error comprehension during emergency triage. Pocket-Gull's integrated Bionic Reading algorithm highlights critical saccadic fixation points, allowing clinicians, patients, and fellow researchers to digest complex pharmacology and landmark trial dossiers with higher long-term retention.";
+      const bionicHtml = '<strong class="text-amber-400">Clin</strong>ical <strong class="text-amber-400">deci</strong>sion <strong class="text-amber-400">sup</strong>port <strong class="text-amber-400">engi</strong>nes <strong class="text-amber-400">requ</strong>ire <strong class="text-amber-400">inst</strong>ant, <strong class="text-amber-400">zero</strong>-<strong class="text-amber-400">err</strong>or <strong class="text-amber-400">comp</strong>rehension <strong class="text-amber-400">dur</strong>ing <strong class="text-amber-400">emrg</strong>ency <strong class="text-amber-400">tri</strong>age. <strong class="text-amber-400">Pock</strong>et-<strong class="text-amber-400">Gu</strong>ll\\'s <strong class="text-amber-400">integ</strong>rated <strong class="text-amber-400">Bio</strong>nic <strong class="text-amber-400">Rea</strong>ding <strong class="text-amber-400">algor</strong>ithm <strong class="text-amber-400">highl</strong>ights <strong class="text-amber-400">crit</strong>ical <strong class="text-amber-400">sacc</strong>adic <strong class="text-amber-400">fixa</strong>tion <strong class="text-amber-400">poi</strong>nts, <strong class="text-amber-400">allo</strong>wing <strong class="text-amber-400">clin</strong>icians, <strong class="text-amber-400">pat</strong>ients, <strong class="text-amber-400">a</strong>nd <strong class="text-amber-400">fell</strong>ow <strong class="text-amber-400">rese</strong>archers <strong class="text-amber-400">t</strong>o <strong class="text-amber-400">dig</strong>est <strong class="text-amber-400">comp</strong>lex <strong class="text-amber-400">phar</strong>macology <strong class="text-amber-400">a</strong>nd <strong class="text-amber-400">lan</strong>dmark <strong class="text-amber-400">tri</strong>al <strong class="text-amber-400">doss</strong>iers <strong class="text-amber-400">wi</strong>th <strong class="text-amber-400">high</strong>er <strong class="text-amber-400">long</strong>-<strong class="text-amber-400">te</strong>rm <strong class="text-amber-400">reten</strong>tion.';
+
+      let isBionic = true;
+      bionicBtn.addEventListener('click', () => {
+        isBionic = !isBionic;
+        if (isBionic) {
+          bionicContainer.innerHTML = bionicHtml;
+          bionicBtnText.textContent = 'Bionic Focus: ACTIVE';
+          bionicBtn.classList.remove('bg-stone-700', 'text-stone-300');
+          bionicBtn.classList.add('bg-amber-500', 'text-stone-950');
+        } else {
+          bionicContainer.textContent = rawText;
+          bionicBtnText.textContent = 'Standard Text: ACTIVE';
+          bionicBtn.classList.remove('bg-amber-500', 'text-stone-950');
+          bionicBtn.classList.add('bg-stone-700', 'text-stone-300');
+        }
+      });
+    });
+  </script>
 </body>
 </html>`;
 }

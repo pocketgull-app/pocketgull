@@ -108,5 +108,5 @@ import { ProviderTreatmentNetworkService, IClinicianPeer, ITreatmentCenter } fro
 export class ProviderTreatmentNetworkComponent {
   readonly activeTab = signal<'peers' | 'facilities'>('peers');
 
-  constructor(public networkService: ProviderTreatmentNetworkService = new ProviderTreatmentNetworkService()) {}
+  public networkService = inject(ProviderTreatmentNetworkService);
 }

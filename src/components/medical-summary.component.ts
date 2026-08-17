@@ -7,7 +7,7 @@ import { PatientManagementService, HistoryEntry, IPatient } from '../services/pa
 import { IDraftSummaryItem } from '../services/patient.types';
 import { ExportService } from '../services/export.service';
 import { ImportService } from '../services/import.service';
-import { FhirIntegrationService } from '../services/fhir-integration.service';
+import { FhirIntegrationService } from '../services/fhir/fhir-integration.service';
 import { DictationService } from '../services/dictation.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { OrcidService } from '../services/orcid.service';

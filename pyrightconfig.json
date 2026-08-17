@@ -2,9 +2,11 @@
   "venvPath": "pocketgull_api",
   "venv": ".venv",
   "include": [
-    "pocketgull_api"
+    "pocketgull_api",
+    "packages/clinical-evidence-grade/src"
   ],
   "extraPaths": [
-    "pocketgull_api"
+    "pocketgull_api",
+    "packages/clinical-evidence-grade/src"
   ]
 }

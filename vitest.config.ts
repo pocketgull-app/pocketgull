@@ -1,7 +1,7 @@
 import '@angular/compiler';
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import path, { dirname } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -10,21 +10,27 @@ const __dirname = dirname(__filename);
 export default defineConfig({
     root: __dirname,
     test: {
+        dir: __dirname,
         globals: true,
         environment: 'jsdom',
         setupFiles: [
-            './tests/init-globals.ts',
-            './tests/setup.ts'
+            path.resolve(__dirname, 'tests/init-globals.ts'),
+            path.resolve(__dirname, 'tests/setup.ts')
         ],
         include: [
-            './src/**/*.spec.ts',
-            './tests/**/*.spec.ts'
+            'src/**/*.spec.ts',
+            'tests/**/*.spec.ts',
+            'packages/**/*.spec.ts'
         ],
         exclude: [
-            '../*',
-            '../**',
-            'e2e/**/*',
-            'node_modules/**/*',
+            '**/AppData/**',
+            '**/Local Settings/**',
+            '**/Steam/**',
+            '**/Google/**',
+            '**/pg2/**',
+            '**/Pocketgull/pg2/**',
+            'e2e/**',
+            'node_modules/**',
             'pocketgull_flutter/**',
             'companion-apps/**'
         ],

@@ -1,11 +1,35 @@
 import { Injectable, inject, NgZone } from '@angular/core';
 import { PatientStateService, BODY_PART_NAMES } from './patient-state.service';
+import { IPatient } from './patient.types';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';
 import { ExportService } from './export.service';
 import { TeledentistryService } from './teledentistry.service';
-import { GcpHealthcareApiService } from './gcp-healthcare-api.service';
+import { GcpHealthcareApiService } from './fhir/gcp-healthcare-api.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
+import { IrmaaDecisionService } from './irmaa-decision.service';
+import { MedicareBillingBestPracticesService } from './medicare-billing-best-practices.service';
+import { HedisStarRatingService } from './hedis-star-rating.service';
+import { FhirPriorAuthService } from './fhir-prior-auth.service';
+import { SnomedIcdCrosswalkService } from './snomed-icd-crosswalk.service';
+import { WebgpuBioSignalService } from './webgpu-bio-signal.service';
+import { ClinicalGameTheoryService } from './clinical-game-theory.service';
+import { JoyPlayfulFlourishingService } from './joy-playful-flourishing.service';
+import { ClinicalTrialMatcherService } from './clinical-trial-matcher.service';
+import { SmartOnFhirLaunchService } from './smart-on-fhir-launch.service';
+import { WebgpuSpatialDigitalTwinService } from './webgpu-spatial-digital-twin.service';
+import { InteractiveOnboardingTourService } from './interactive-onboarding-tour.service';
+import { NavigationShellService } from './navigation-shell.service';
+import { HelpfulListsService } from './helpful-lists.service';
+import { MultilingualEquityService } from './multilingual-equity.service';
+import { WhoCdcHealthEquityService } from './who-cdc-health-equity.service';
+import { GreenComputingSustainabilityService } from './green-computing-sustainability.service';
+import { CommunityEcoLocalizationService } from './community-eco-localization.service';
+import { ZenSanctuaryService } from './zen-sanctuary.service';
+import { SsaDisabilityNavigatorService } from './ssa-disability-navigator.service';
+import { GlobalJurisdictionMatrixService } from './global-jurisdiction-matrix.service';
+import { MandiantClinicalDefenseService } from './mandiant-clinical-defense.service';
+import { ClinicalMandarinateExamService } from './clinical-mandarinate-exam.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -19,6 +43,29 @@ export class WebMcpRegistrationService {
   private gcpHealthcareService = inject(GcpHealthcareApiService);
   private skepticalService = inject(SkepticalEpistemologyService);
   private moeRouter = inject(ClinicalMoERouterService);
+  private irmaaService = inject(IrmaaDecisionService, { optional: true });
+  private medicareBillingService = inject(MedicareBillingBestPracticesService, { optional: true });
+  private hedisService = inject(HedisStarRatingService, { optional: true });
+  private priorAuthService = inject(FhirPriorAuthService, { optional: true });
+  private snomedCrosswalkService = inject(SnomedIcdCrosswalkService, { optional: true });
+  private bioSignalService = inject(WebgpuBioSignalService, { optional: true });
+  private gameTheoryService = inject(ClinicalGameTheoryService, { optional: true });
+  private joyService = inject(JoyPlayfulFlourishingService, { optional: true });
+  private trialMatcherService = inject(ClinicalTrialMatcherService, { optional: true });
+  private smartLaunchService = inject(SmartOnFhirLaunchService, { optional: true });
+  private digitalTwinService = inject(WebgpuSpatialDigitalTwinService, { optional: true });
+  private tourService = inject(InteractiveOnboardingTourService, { optional: true });
+  private navService = inject(NavigationShellService, { optional: true });
+  private helpfulListsService = inject(HelpfulListsService, { optional: true });
+  private multilingualService = inject(MultilingualEquityService, { optional: true });
+  private equityService = inject(WhoCdcHealthEquityService, { optional: true });
+  private greenService = inject(GreenComputingSustainabilityService, { optional: true });
+  private communityEcoService = inject(CommunityEcoLocalizationService, { optional: true });
+  private zenService = inject(ZenSanctuaryService, { optional: true });
+  private ssaDisabilityService = inject(SsaDisabilityNavigatorService, { optional: true });
+  private jurisdictionMatrixService = inject(GlobalJurisdictionMatrixService, { optional: true });
+  private mandiantDefenseService = inject(MandiantClinicalDefenseService, { optional: true });
+  private mandarinateExamService = inject(ClinicalMandarinateExamService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -500,6 +547,981 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(thinkTool, { signal: thinkCtrl.signal });
     this.mcpControllers.push({ name: thinkTool.name, controller: thinkCtrl });
+
+    // 16. analyze_systemic_inflammatory_burden
+    const sibiCtrl = new AbortController();
+    const sibiTool = {
+      name: 'analyze_systemic_inflammatory_burden',
+      description: 'Calculates the Systemic Inflammatory Burden Index (SIBI) cross-talk score from CRP, Periodontal Probing Depth (PPD), and blood pressure.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          hsCrp: { type: 'number', description: 'Serum hs-CRP level in mg/L.' },
+          ppd: { type: 'number', description: 'Max Periodontal Probing Depth in mm.' },
+          sbp: { type: 'number', description: 'Systolic Blood Pressure in mmHg.' }
+        },
+        required: ['hsCrp', 'ppd', 'sbp']
+      },
+      execute: async (params: any) => {
+        try {
+          const score = Number((params.hsCrp * 0.35 + params.ppd * 0.75 + Math.max(0, params.sbp - 120) * 0.04).toFixed(2));
+          const tier = score > 8.0 ? 'HIGH_INFLAMMATORY_BURDEN' : score > 4.0 ? 'MODERATE_BURDEN' : 'LOW_BURDEN';
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({ sibiScore: score, burdenTier: tier, cvRiskMultiplier: Number((1 + score * 0.08).toFixed(2)) })
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to compute SIBI: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(sibiTool, { signal: sibiCtrl.signal });
+    this.mcpControllers.push({ name: sibiTool.name, controller: sibiCtrl });
+
+    // 17. assess_cochrane_risk_of_bias
+    const robCtrl = new AbortController();
+    const robTool = {
+      name: 'assess_cochrane_risk_of_bias',
+      description: 'Evaluates literature evidence citations for Cochrane RoB 2 study design biases across randomization and missing outcome data.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          studyTitle: { type: 'string', description: 'The title of the clinical trial or literature citation.' },
+          randomization: { type: 'string', enum: ['LOW', 'SOME_CONCERNS', 'HIGH'], description: 'Randomization bias assessment.' },
+          missingData: { type: 'string', enum: ['LOW', 'SOME_CONCERNS', 'HIGH'], description: 'Missing outcome data bias assessment.' }
+        },
+        required: ['studyTitle', 'randomization', 'missingData']
+      },
+      execute: async (params: any) => {
+        try {
+          const overall = (params.randomization === 'HIGH' || params.missingData === 'HIGH') ? 'HIGH_RISK_OF_BIAS'
+            : (params.randomization === 'SOME_CONCERNS' || params.missingData === 'SOME_CONCERNS') ? 'SOME_CONCERNS' : 'LOW_RISK_OF_BIAS';
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({ studyTitle: params.studyTitle, overallRiskOfBias: overall, evidenceTier: overall === 'LOW_RISK_OF_BIAS' ? 'Level A (High Quality RCT)' : 'Level C (Exploratory/Observational)' })
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to assess Cochrane RoB 2: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(robTool, { signal: robCtrl.signal });
+    this.mcpControllers.push({ name: robTool.name, controller: robCtrl });
+
+    // 18. query_biophysical_substrate_params
+    const subCtrl = new AbortController();
+    const subTool = {
+      name: 'query_biophysical_substrate_params',
+      description: 'Returns 3D anatomical WebGL PBR surface and biophysical tissue parameters.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          tissueType: { type: 'string', enum: ['bone', 'skin', 'vascular', 'dental'], description: 'Anatomical tissue type.' }
+        },
+        required: ['tissueType']
+      },
+      execute: async (params: any) => {
+        const substrateMap: Record<string, any> = {
+          bone: { roughness: 0.65, metalness: 0.05, microgravityResorptionRate: '1.5% / month', tensileStrengthMpa: 130 },
+          skin: { roughness: 0.40, metalness: 0.0, sssStrength: 0.85, hydrationSensitivity: 'High' },
+          vascular: { roughness: 0.20, metalness: 0.1, elasticityModulusKpa: 450, shearStressLimitPa: 15 },
+          dental: { roughness: 0.15, metalness: 0.0, enamelHardnessVickers: 350, twiGradeMax: 4 }
+        };
+        const data = substrateMap[params.tissueType] || substrateMap['bone'];
+        return { content: [{ type: 'text', text: JSON.stringify({ tissueType: params.tissueType, substrate: data }) }] };
+      }
+    };
+    modelContext.registerTool(subTool, { signal: subCtrl.signal });
+    this.mcpControllers.push({ name: subTool.name, controller: subCtrl });
+
+    // 21. evaluate_irmaa_medicare_surcharge_and_ssa44_appeal
+    const irmaaCtrl = new AbortController();
+    const irmaaTool = {
+      name: 'evaluate_irmaa_medicare_surcharge_and_ssa44_appeal',
+      description: 'Calculates Medicare Part B and Part D IRMAA monthly surcharges, tax cliff buffer distance, and Social Security Form SSA-44 Life-Changing Event appeal eligibility.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          magi: { type: 'number', description: 'Modified Adjusted Gross Income (from 2 years prior or current estimate)' },
+          filingStatus: { type: 'string', enum: ['single', 'joint', 'separate'], description: 'Tax Filing Status' },
+          lifeChangingEvents: { 
+            type: 'array', 
+            items: { type: 'string' },
+            description: 'Qualifying events: WORK_STOPPAGE, WORK_REDUCTION, DEATH_OF_SPOUSE, MARRIAGE, DIVORCE_OR_ANNULMENT, INCOME_PROPERTY_LOSS, PENSION_PORTFOLIO_LOSS, EMPLOYER_SETTLEMENT' 
+          }
+        },
+        required: ['magi']
+      },
+      execute: async (params: any) => {
+        const magi = Number(params.magi) || 125000;
+        const status = params.filingStatus || 'single';
+        const events = Array.isArray(params.lifeChangingEvents) ? params.lifeChangingEvents : [];
+        const svc = this.irmaaService || new IrmaaDecisionService();
+        const res = svc.evaluateIrmaa(magi, status, events);
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(irmaaTool, { signal: irmaaCtrl.signal });
+    this.mcpControllers.push({ name: irmaaTool.name, controller: irmaaCtrl });
+
+    // 22. evaluate_medicare_billing_and_gfe_eligibility
+    const billingCtrl = new AbortController();
+    const billingTool = {
+      name: 'evaluate_medicare_billing_and_gfe_eligibility',
+      description: 'Evaluates Inflation Reduction Act $2,000 Part D prescription cap, MPPP monthly smoothing, RPM/CCM CPT compliance (CPT 99454/99457), No Surprises Act Good Faith Estimates, and IRS Section 501(r) Charity Care FPL eligibility.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          annualRxCost: { type: 'number', description: 'Annual out-of-pocket prescription medication cost' },
+          daysDeviceTransmitted: { type: 'number', description: 'Days of RPM physiological telemetry readings in 30-day period (16+ required)' },
+          clinicalMinutesLogged: { type: 'number', description: 'Minutes of clinical staff management time in month (20+ required)' },
+          annualIncome: { type: 'number', description: 'Patient household annual income in USD' },
+          householdSize: { type: 'number', description: 'Household size (default 1)' }
+        },
+        required: ['annualRxCost', 'annualIncome']
+      },
+      execute: async (params: any) => {
+        const annualRxCost = Number(params.annualRxCost) || 0;
+        const daysDeviceTransmitted = Number(params.daysDeviceTransmitted) || 0;
+        const clinicalMinutesLogged = Number(params.clinicalMinutesLogged) || 0;
+        const annualIncome = Number(params.annualIncome) || 30000;
+        const householdSize = Number(params.householdSize) || 1;
+
+        const svc = this.medicareBillingService || new MedicareBillingBestPracticesService();
+        const res = svc.assessMedicareBilling({
+          annualRxCost,
+          daysDeviceTransmitted,
+          clinicalMinutesLogged,
+          annualIncome,
+          householdSize
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(billingTool, { signal: billingCtrl.signal });
+    this.mcpControllers.push({ name: billingTool.name, controller: billingCtrl });
+
+    // 23. evaluate_hedis_quality_measures_and_care_gaps
+    const hedisCtrl = new AbortController();
+    const hedisTool = {
+      name: 'evaluate_hedis_quality_measures_and_care_gaps',
+      description: 'Evaluates HEDIS quality measures (CBP, HBD, MAD, MAH, MAS, COL, EED), CMS 1-5 Star Ratings, triple-weighted medication adherence PDC percentages, and CMS Quality Bonus Payment (QBP) eligibility.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          systolicBp: { type: 'number', description: 'Systolic blood pressure in mmHg' },
+          diastolicBp: { type: 'number', description: 'Diastolic blood pressure in mmHg' },
+          hbA1c: { type: 'number', description: 'Hemoglobin A1c percentage (e.g. 7.2)' },
+          diabetesRefillDays: { type: 'number', description: 'Diabetes medication refill days in year' },
+          hypertensionRefillDays: { type: 'number', description: 'Hypertension/RAS medication refill days in year' },
+          statinRefillDays: { type: 'number', description: 'Statin medication refill days in year' },
+          hasColorectalScreening: { type: 'boolean', description: 'Whether colorectal screening is up to date' },
+          hasDiabeticEyeExam: { type: 'boolean', description: 'Whether diabetic retinal exam is complete' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.hedisService || new HedisStarRatingService();
+        const res = svc.generateOverallSummary('P-101', {
+          systolicBp: params.systolicBp !== undefined ? Number(params.systolicBp) : 128,
+          diastolicBp: params.diastolicBp !== undefined ? Number(params.diastolicBp) : 82,
+          hbA1c: params.hbA1c !== undefined ? Number(params.hbA1c) : 7.2,
+          diabetesRefillDays: params.diabetesRefillDays !== undefined ? Number(params.diabetesRefillDays) : 310,
+          hypertensionRefillDays: params.hypertensionRefillDays !== undefined ? Number(params.hypertensionRefillDays) : 310,
+          statinRefillDays: params.statinRefillDays !== undefined ? Number(params.statinRefillDays) : 300,
+          hasColorectalScreening: params.hasColorectalScreening !== false,
+          hasDiabeticEyeExam: params.hasDiabeticEyeExam !== false,
+          hasDiabetes: true,
+          hasHypertension: true
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(hedisTool, { signal: hedisCtrl.signal });
+    this.mcpControllers.push({ name: hedisTool.name, controller: hedisCtrl });
+
+    // 24. submit_fhir_davinci_prior_authorization_claim
+    const pasCtrl = new AbortController();
+    const pasTool = {
+      name: 'submit_fhir_davinci_prior_authorization_claim',
+      description: 'Submits HL7 FHIR Da Vinci PAS (Prior Authorization Support) IG claim under CMS-0057-F mandate for real-time sub-second medical necessity prior-authorization approval.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string', description: 'Patient Identifier (e.g. p010)' },
+          payerId: { type: 'string', description: 'Payer Identifier (default PAYER-MEDICARE-001)' },
+          cptCode: { type: 'string', description: 'CPT Procedure Code (e.g. 70553 Brain MRI, 78607 DaTscan, 74177 Abdominal CT)' },
+          icd10DiagnosisCodes: { type: 'array', items: { type: 'string' }, description: 'ICD-10 Diagnosis Codes (e.g. G30.9, G20, C25.0)' },
+          clinicalDocumentationText: { type: 'string', description: 'Supporting clinical note text' }
+        },
+        required: ['cptCode', 'icd10DiagnosisCodes']
+      },
+      execute: async (params: any) => {
+        const svc = this.priorAuthService || new FhirPriorAuthService();
+        const claim = svc.createPasClaimRequest({
+          patientId: params.patientId || 'p010',
+          payerId: params.payerId || 'PAYER-MEDICARE-001',
+          providerNpi: '1992837465',
+          items: [{
+            sequence: 1,
+            cptCode: params.cptCode,
+            description: `Procedure CPT ${params.cptCode}`,
+            unitPriceUsd: 1200,
+            icd10DiagnosisCodes: Array.isArray(params.icd10DiagnosisCodes) ? params.icd10DiagnosisCodes : ['G30.9']
+          }],
+          clinicalDocumentationText: params.clinicalDocumentationText || 'Patient presents with MMSE 19/30 cognitive memory loss and 3Hz resting tremor.'
+        });
+        const res = svc.evaluatePriorAuthClaim(claim);
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(pasTool, { signal: pasCtrl.signal });
+    this.mcpControllers.push({ name: pasTool.name, controller: pasCtrl });
+
+    // 25. crosswalk_snomed_ct_to_icd10_and_cpt
+    const snomedCtrl = new AbortController();
+    const snomedTool = {
+      name: 'crosswalk_snomed_ct_to_icd10_and_cpt',
+      description: 'Cross-walks point-of-care SNOMED CT clinical terms (USCDI v4 mandate) to ICD-10-CM diagnosis codes, CPT procedure codes, LOINC lab identifiers, and RxNorm CUIs.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          snomedCode: { type: 'string', description: 'SNOMED CT Concept Code (e.g. 26929004 Alzheimer, 49049000 Parkinson, 372130007 Pancreatic Cancer, 38341003 Hypertension, 73211009 Diabetes)' }
+        },
+        required: ['snomedCode']
+      },
+      execute: async (params: any) => {
+        const svc = this.snomedCrosswalkService || new SnomedIcdCrosswalkService();
+        const res = svc.crosswalkSnomedToIcd10(String(params.snomedCode || '26929004'));
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(snomedTool, { signal: snomedCtrl.signal });
+    this.mcpControllers.push({ name: snomedTool.name, controller: snomedCtrl });
+
+    // 26. analyze_webgpu_bio_signal_tremor_and_rppg
+    const bioSignalCtrl = new AbortController();
+    const bioSignalTool = {
+      name: 'analyze_webgpu_bio_signal_tremor_and_rppg',
+      description: 'Executes 100% client-side WebGPU zero-egress tremor frequency spectrum analysis (3-6 Hz Parkinsonian vs 6-12 Hz Essential tremor) and rPPG Heart Rate Variability (HRV / RMSSD).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          displacementsMm: { type: 'array', items: { type: 'number' }, description: 'Spatial displacement array in millimeters (30 fps sample rate)' },
+          luminescenceSignal: { type: 'array', items: { type: 'number' }, description: 'Skin luminescence intensity array for rPPG heart rate extraction' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.bioSignalService || new WebgpuBioSignalService();
+        const displacements = Array.isArray(params.displacementsMm) && params.displacementsMm.length > 0
+          ? params.displacementsMm
+          : [0, 2.5, -2.5, 2.5, -2.5, 2.5, -2.5, 0];
+        const res = svc.analyzeBioSignalTelemetry(displacements, params.luminescenceSignal);
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(bioSignalTool, { signal: bioSignalCtrl.signal });
+    this.mcpControllers.push({ name: bioSignalTool.name, controller: bioSignalCtrl });
+
+    // 27. calculate_clinical_game_theory_adherence_incentives
+    const gameTheoryCtrl = new AbortController();
+    const gameTheoryTool = {
+      name: 'calculate_clinical_game_theory_adherence_incentives',
+      description: 'Calculates Stackelberg / Nash equilibrium for medication adherence rebate subsidies and avoided hospitalization savings.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string', description: 'Patient ID (e.g. p010)' },
+          conditionName: { type: 'string', description: 'Condition name (e.g. Parkinson disease)' },
+          annualCopayCostUsd: { type: 'number', description: 'Annual patient co-pay cost in USD' },
+          estAnnualHospitalizationRiskUsd: { type: 'number', description: 'Estimated avoided inpatient hospitalization cost in USD' }
+        },
+        required: ['annualCopayCostUsd', 'estAnnualHospitalizationRiskUsd']
+      },
+      execute: async (params: any) => {
+        const svc = this.gameTheoryService || new ClinicalGameTheoryService();
+        const res = svc.calculateOptimalAdherenceIncentive({
+          patientId: params.patientId || 'p010',
+          conditionName: params.conditionName || 'Parkinson disease',
+          annualCopayCostUsd: Number(params.annualCopayCostUsd || 480),
+          estAnnualHospitalizationRiskUsd: Number(params.estAnnualHospitalizationRiskUsd || 12500)
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(gameTheoryTool, { signal: gameTheoryCtrl.signal });
+    this.mcpControllers.push({ name: gameTheoryTool.name, controller: gameTheoryCtrl });
+
+    // 28. prescribe_joy_and_playful_flourishing
+    const joyCtrl = new AbortController();
+    const joyTool = {
+      name: 'prescribe_joy_and_playful_flourishing',
+      description: 'Prescribes micro-joy and micro-play activities (acoustic neuro-rhythm entrainment, botanical foraging, origami, storytelling, laughter yoga) and calculates PERMA+ playfulness scorecards.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string', description: 'Patient ID (e.g. p010)' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.joyService || new JoyPlayfulFlourishingService();
+        const prescriptions = svc.dailyPrescriptions();
+        const scorecard = svc.calculateJoyScorecard();
+        return { content: [{ type: 'text', text: JSON.stringify({ prescriptions, scorecard }, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(joyTool, { signal: joyCtrl.signal });
+    this.mcpControllers.push({ name: joyTool.name, controller: joyCtrl });
+
+    // 29. match_clinical_trials_for_patient_conditions
+    const trialCtrl = new AbortController();
+    const trialTool = {
+      name: 'match_clinical_trials_for_patient_conditions',
+      description: 'Queries ClinicalTrials.gov API v2 for active recruiting clinical trials matching patient conditions, returning Phase I-IV studies and eligibility match scores.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          conditionName: { type: 'string', description: 'Condition name (e.g. Parkinson Disease, Alzheimer Disease, Glioblastoma)' },
+          recruitingOnly: { type: 'boolean', description: 'Filter only actively recruiting trials' }
+        },
+        required: ['conditionName']
+      },
+      execute: async (params: any) => {
+        const svc = this.trialMatcherService || new ClinicalTrialMatcherService();
+        const matches = svc.searchClinicalTrials({
+          conditionName: params.conditionName,
+          recruitingOnly: params.recruitingOnly ?? true
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(matches, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(trialTool, { signal: trialCtrl.signal });
+    this.mcpControllers.push({ name: trialTool.name, controller: trialCtrl });
+
+    // 30. initiate_smart_on_fhir_ehr_launch
+    const smartLaunchCtrl = new AbortController();
+    const smartLaunchTool = {
+      name: 'initiate_smart_on_fhir_ehr_launch',
+      description: 'Generates SMART-on-FHIR OAuth2 authorization launch URL with PKCE S256 challenge for embedded Epic, Cerner, and AthenaHealth EHR launches.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          vendor: { type: 'string', enum: ['EPIC', 'CERNER', 'ATHENAHEALTH', 'GENERIC_FHIR'], description: 'Target EHR vendor' },
+          fhirBaseUrl: { type: 'string', description: 'FHIR R4 Server Base URL' },
+          clientId: { type: 'string', description: 'SMART App Client ID' },
+          launchToken: { type: 'string', description: 'EHR Launch Context Token' }
+        },
+        required: ['vendor']
+      },
+      execute: async (params: any) => {
+        const svc = this.smartLaunchService || new SmartOnFhirLaunchService();
+        const res = svc.buildAuthorizationUrl({
+          vendor: params.vendor || 'EPIC',
+          fhirBaseUrl: params.fhirBaseUrl,
+          clientId: params.clientId || 'pocketgull-smart-client-v1',
+          redirectUri: 'https://pocketgull.app/launch/callback',
+          launchToken: params.launchToken
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(smartLaunchTool, { signal: smartLaunchCtrl.signal });
+    this.mcpControllers.push({ name: smartLaunchTool.name, controller: smartLaunchCtrl });
+
+    // 31. calculate_medicare_irmaa_and_ssa44_appeals
+    const medicareIrmaaCtrl = new AbortController();
+    const medicareIrmaaTool = {
+      name: 'calculate_medicare_irmaa_and_ssa44_appeals',
+      description: 'Calculates 2026 Medicare IRMAA Part B/D income surcharges based on MAGI and determines eligibility for SSA-44 Life-Changing Event appeals.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          magiUsd: { type: 'number', description: 'Modified Adjusted Gross Income in USD' },
+          filingStatus: { type: 'string', enum: ['single', 'joint', 'separate'], description: 'Tax filing status' },
+          lifeChangingEvent: { type: 'string', enum: ['WORK_STOPPAGE', 'WORK_REDUCTION', 'MARRIAGE', 'DIVORCE_OR_ANNULMENT', 'INCOME_PROPERTY_LOSS'], description: 'SSA-44 Life-Changing Event' }
+        },
+        required: ['magiUsd']
+      },
+      execute: async (params: any) => {
+        const svc = this.irmaaService || new IrmaaDecisionService();
+        if (params.magiUsd !== undefined) svc.magi.set(Number(params.magiUsd));
+        if (params.filingStatus) svc.filingStatus.set(params.filingStatus as any);
+        if (params.lifeChangingEvent) svc.activeEvents.set([params.lifeChangingEvent as any]);
+        const analysisResult = svc.analysis();
+        return { content: [{ type: 'text', text: JSON.stringify(analysisResult, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(medicareIrmaaTool, { signal: medicareIrmaaCtrl.signal });
+    this.mcpControllers.push({ name: medicareIrmaaTool.name, controller: medicareIrmaaCtrl });
+
+    // 32. render_webgpu_3d_organ_digital_twin
+    const twinCtrl = new AbortController();
+    const twinTool = {
+      name: 'render_webgpu_3d_organ_digital_twin',
+      description: 'Calculates real-time WebGPU 3D organ digital twin mesh deformation, perfusion rates, and WGSL compute shader parameters.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          organ: { type: 'string', enum: ['HEART', 'LUNGS', 'LIVER', 'KIDNEYS', 'BRAIN'], description: 'Target organ' },
+          heartRateBpm: { type: 'number', description: 'Heart rate in BPM' },
+          spo2Percent: { type: 'number', description: 'Blood oxygen saturation percentage (70-100%)' }
+        },
+        required: ['organ']
+      },
+      execute: async (params: any) => {
+        const svc = this.digitalTwinService || new WebgpuSpatialDigitalTwinService();
+        svc.selectedOrgan.set(params.organ || 'HEART');
+        if (params.heartRateBpm) svc.heartRate.set(Number(params.heartRateBpm));
+        if (params.spo2Percent) svc.spo2Percent.set(Number(params.spo2Percent));
+        const frame = svc.computeDigitalTwinFrame();
+        return { content: [{ type: 'text', text: JSON.stringify(frame, null, 2) }] };
+      }
+    };
+    modelContext.registerTool(twinTool, { signal: twinCtrl.signal });
+    this.mcpControllers.push({ name: twinTool.name, controller: twinCtrl });
+
+    // 33. guide_user_onboarding_walkthrough
+    const tourCtrl = new AbortController();
+    const tourTool = {
+      name: 'guide_user_onboarding_walkthrough',
+      description: 'Starts or advances interactive feature onboarding walkthrough tours tailored for PATIENT, CLINICIAN, or RESEARCHER personas.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          action: { type: 'string', enum: ['START', 'NEXT', 'PREVIOUS', 'STOP'], description: 'Tour action' },
+          persona: { type: 'string', enum: ['PATIENT', 'CLINICIAN', 'RESEARCHER', 'ALL'], description: 'Target user persona' }
+        },
+        required: ['action']
+      },
+      execute: async (params: any) => {
+        const svc = this.tourService || new InteractiveOnboardingTourService();
+        if (params.action === 'START') {
+          svc.startTour(params.persona || 'PATIENT');
+        } else if (params.action === 'NEXT') {
+          svc.nextStep();
+        } else if (params.action === 'PREVIOUS') {
+          svc.previousStep();
+        } else {
+          svc.completeTour();
+        }
+        return { content: [{ type: 'text', text: JSON.stringify(svc.progress(), null, 2) }] };
+      }
+    };
+    modelContext.registerTool(tourTool, { signal: tourCtrl.signal });
+    this.mcpControllers.push({ name: tourTool.name, controller: tourCtrl });
+
+    // 34. navigate_user_way_back_home
+    const homeNavCtrl = new AbortController();
+    const homeNavTool = {
+      name: 'navigate_user_way_back_home',
+      description: 'Resets user active shell navigation to primary clinical chart, closes all open modal overlays, and restores home view state.',
+      inputSchema: {
+        type: 'object',
+        properties: {},
+        required: []
+      },
+      execute: async () => {
+        const svc = this.navService || new NavigationShellService();
+        svc.navigateWayBackHome();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                status: 'SUCCESS',
+                activeTab: svc.activeTab(),
+                message: 'Successfully navigated user way back home to clinical chart overview.'
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(homeNavTool, { signal: homeNavCtrl.signal });
+    this.mcpControllers.push({ name: homeNavTool.name, controller: homeNavCtrl });
+
+    // 35. retrieve_helpful_community_and_clinical_lists
+    const listsCtrl = new AbortController();
+    const listsTool = {
+      name: 'retrieve_helpful_community_and_clinical_lists',
+      description: 'Retrieves curated quick-reference lists for 24/7 emergency hotlines (988, Poison, Vets), free 50-state statutory living wills, HEDIS quality benchmarks, and SSA-44 appeal checklists.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          category: {
+            type: 'string',
+            enum: ['EMERGENCY_HOTLINES', 'PATIENT_RIGHTS_LIVING_WILLS', 'CLINICAL_CHECKLISTS', 'MEDICARE_FINANCIAL_RESOURCES', 'ALL'],
+            description: 'Target list category'
+          }
+        },
+        required: []
+      },
+      execute: async (params: any) => {
+        const svc = this.helpfulListsService || new HelpfulListsService();
+        const category = params.category || 'ALL';
+        const resultLists = category === 'ALL' 
+          ? svc.curatedLists() 
+          : svc.getListsByCategory(category);
+        
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                category,
+                totalCount: resultLists.length,
+                lists: resultLists
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(listsTool, { signal: listsCtrl.signal });
+    this.mcpControllers.push({ name: listsTool.name, controller: listsCtrl });
+
+    // 36. translate_clinical_care_plan_multilingual
+    const multiCtrl = new AbortController();
+    const multiTool = {
+      name: 'translate_clinical_care_plan_multilingual',
+      description: 'Translates clinical care plans into plain-language multilingual summaries across 10 global languages (English, Spanish, Mandarin, Hindi, Arabic, Tagalog, French, Swahili, German, Japanese).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          text: { type: 'string', description: 'Clinical recommendation text' },
+          targetLanguageCode: {
+            type: 'string',
+            enum: ['en', 'es', 'zh', 'hi', 'ar', 'tl', 'fr', 'sw', 'de', 'ja'],
+            description: 'Target language code'
+          }
+        },
+        required: ['text']
+      },
+      execute: async (params: any) => {
+        const svc = this.multilingualService || new MultilingualEquityService();
+        const res = svc.translateClinicalCarePlan(params.text, params.targetLanguageCode || 'es');
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(res, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(multiTool, { signal: multiCtrl.signal });
+    this.mcpControllers.push({ name: multiTool.name, controller: multiCtrl });
+
+    // 37. calculate_who_cdc_health_equity_index
+    const equityCtrl = new AbortController();
+    const equityTool = {
+      name: 'calculate_who_cdc_health_equity_index',
+      description: 'Evaluates WHO GPW 14 and CDC 2025-2030 Global Health Equity Index, SDOH PRAPARE risk vectors (housing, food, transport), and climate-health AQI vulnerability metrics.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          sdoh: {
+            type: 'object',
+            properties: {
+              housingInsecurity: { type: 'boolean' },
+              foodInsecurity: { type: 'boolean' },
+              transportationBarrier: { type: 'boolean' },
+              utilityInsecurity: { type: 'boolean' },
+              digitalLiteracyBarrier: { type: 'boolean' }
+            }
+          },
+          climate: {
+            type: 'object',
+            properties: {
+              airQualityIndex: { type: 'number' },
+              pm25MicrogramsM3: { type: 'number' },
+              extremeHeatRiskDaysYear: { type: 'number' }
+            }
+          }
+        },
+        required: []
+      },
+      execute: async (params: any) => {
+        const svc = this.equityService || new WhoCdcHealthEquityService();
+        const res = svc.evaluateHealthEquity(params.sdoh, params.climate);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(res, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(equityTool, { signal: equityCtrl.signal });
+    this.mcpControllers.push({ name: equityTool.name, controller: equityCtrl });
+
+    // 38. recommend_sustainability_and_eco_health_actions
+    const greenCtrl = new AbortController();
+    const greenTool = {
+      name: 'recommend_sustainability_and_eco_health_actions',
+      description: 'Generates green computing, IEEE PES energy reduction, EAT-Lancet planetary health nutrition, active transit, and circular waste sustainability recommendations.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          category: {
+            type: 'string',
+            enum: ['COMPUTE_ENERGY', 'PLANETARY_DIET', 'ACTIVE_TRANSIT', 'CIRCULAR_WASTE_REDUCTION', 'JOYFUL_ECO_EXPERIENCE', 'ALL'],
+            description: 'Target eco recommendation category'
+          }
+        },
+        required: []
+      },
+      execute: async (params: any) => {
+        const svc = this.greenService || new GreenComputingSustainabilityService();
+        const category = params.category || 'ALL';
+        const scorecard = svc.sustainabilityScorecard();
+        const recs = category === 'ALL' ? scorecard.recommendations : svc.getRecommendationsByCategory(category);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                category,
+                sustainabilityTier: scorecard.sustainabilityTier,
+                totalCo2SavingsKgPerYear: scorecard.totalCo2SavingsKgPerYear,
+                recommendations: recs
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(greenTool, { signal: greenCtrl.signal });
+    this.mcpControllers.push({ name: greenTool.name, controller: greenCtrl });
+
+    // 39. localize_community_eco_health_hubs
+    const communityEcoCtrl = new AbortController();
+    const communityEcoTool = {
+      name: 'localize_community_eco_health_hubs',
+      description: 'Finds local farmers markets, community gardens, Shinrin-yoku forest bathing parks, greenways, and seed sharing libraries by geo-location.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          hubType: {
+            type: 'string',
+            enum: ['FARMERS_MARKET', 'COMMUNITY_GARDEN', 'FOREST_PARK', 'GREENWAY_BIKE_PATH', 'SEED_TOOL_LIBRARY', 'ALL'],
+            description: 'Target eco hub type filter'
+          }
+        },
+        required: []
+      },
+      execute: async (params: any) => {
+        const svc = this.communityEcoService || new CommunityEcoLocalizationService();
+        const hubType = params.hubType || 'ALL';
+        const summary = svc.localizedEcoSummary();
+        const hubs = hubType === 'ALL' ? summary.hubs : svc.getHubsByType(hubType);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                city: summary.city,
+                region: summary.region,
+                closestParkMiles: summary.closestParkMiles,
+                closestMarketMiles: summary.closestMarketMiles,
+                hubs
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(communityEcoTool, { signal: communityEcoCtrl.signal });
+    this.mcpControllers.push({ name: communityEcoTool.name, controller: communityEcoCtrl });
+
+    // 40. export_complete_fhir_r4_health_sovereignty_bundle
+    const fhirSovereigntyCtrl = new AbortController();
+    const fhirSovereigntyTool = {
+      name: 'export_complete_fhir_r4_health_sovereignty_bundle',
+      description: 'Exports a complete HIPAA-compliant FHIR R4 Bundle containing patient demographic resources, observations, vitals, clinical assessments, and tri-paradigm care plans.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          format: {
+            type: 'string',
+            enum: ['JSON', 'COMPACT_JSON', 'SUMMARY'],
+            description: 'Export bundle payload format'
+          }
+        },
+        required: []
+      },
+      execute: async (params: any) => {
+        const format = params?.format || 'JSON';
+        const rawVitals = this.state.vitals ? this.state.vitals() : null;
+        const patientData: Partial<IPatient> = {
+          id: this.state.patientId ? this.state.patientId() : 'p001',
+          name: this.state.patientName ? this.state.patientName() : 'Jane Doe',
+          age: this.state.patientAge ? this.state.patientAge() : 42,
+          vitals: {
+            bp: rawVitals?.bp || '120/80',
+            hr: String(rawVitals?.hr || '72'),
+            temp: rawVitals?.temp || '98.6',
+            spO2: String(rawVitals?.spO2 || '98'),
+            weight: rawVitals?.weight || '70kg',
+            height: rawVitals?.height || '175cm'
+          }
+        };
+
+        const bundle = this.exportService.buildFhirR4Bundle
+          ? this.exportService.buildFhirR4Bundle(patientData)
+          : {
+              resourceType: 'Bundle',
+              type: 'collection',
+              entry: [
+                { resource: { resourceType: 'Patient', id: patientData.patientId, name: [{ text: patientData.name }] } }
+              ]
+            };
+
+        const jsonText = format === 'COMPACT_JSON' ? JSON.stringify(bundle) : JSON.stringify(bundle, null, 2);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: jsonText
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(fhirSovereigntyTool, { signal: fhirSovereigntyCtrl.signal });
+    this.mcpControllers.push({ name: fhirSovereigntyTool.name, controller: fhirSovereigntyCtrl });
+
+    // 40. Open Zen Sanctuary & Parasympathetic Breath Reset
+    const zenSanctuaryCtrl = new AbortController();
+    const zenSanctuaryTool = {
+      name: 'open_zen_sanctuary',
+      description: 'Activates the 1-click Zen Sanctuary Mode with 432Hz Tibetan singing bowl chime, 4-7-8 vagal breath pacer, and Kintsugi gold vein healing illumination.',
+      inputSchema: {
+        type: 'object',
+        properties: {},
+        additionalProperties: false
+      },
+      execute: async () => {
+        if (this.zenService) {
+          this.ngZone.run(() => {
+            this.zenService?.openSanctuary();
+          });
+        }
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                status: 'ACTIVE',
+                sound: '432Hz Tibetan Singing Bowl',
+                breathPacer: '4-7-8 Vagal Entrainment',
+                kintsugiIlluminated: true,
+                message: 'Sanctuary mode activated. When the mind is quiet, the body begins to heal.'
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(zenSanctuaryTool, { signal: zenSanctuaryCtrl.signal });
+    this.mcpControllers.push({ name: zenSanctuaryTool.name, controller: zenSanctuaryCtrl });
+
+    // 41. Get Healing Postcards from the Pier
+    const healingPostcardsCtrl = new AbortController();
+    const healingPostcardsTool = {
+      name: 'get_healing_postcards',
+      description: 'Retrieves quiet, anonymous peer encouragement postcards from the pier with recovery notes and community affirmations.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          limit: { type: 'number', description: 'Maximum number of postcards to retrieve' }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        const limit = params?.limit || 10;
+        const cards = this.zenService ? this.zenService.postcards().slice(0, limit) : [];
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                postcardsCount: cards.length,
+                postcards: cards
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(healingPostcardsTool, { signal: healingPostcardsCtrl.signal });
+    this.mcpControllers.push({ name: healingPostcardsTool.name, controller: healingPostcardsCtrl });
+
+    // 42. Evaluate SSA Disability & Blue Book Listings (20 CFR Part 404 App 1)
+    const ssaDisabilityCtrl = new AbortController();
+    const ssaDisabilityTool = {
+      name: 'evaluate_ssa_disability_and_blue_book_listings',
+      description: 'Evaluates patient eligibility under Social Security Administration (SSA) Blue Book 20 CFR Part 404 App 1, screens Compassionate Allowances (CAL), and synthesizes Residual Functional Capacity (RFC).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          claimantAge: { type: 'number', description: 'Claimant age in years' },
+          primaryDiagnosis: { type: 'string', description: 'Primary impairment diagnosis' },
+          secondaryDiagnosis: { type: 'string', description: 'Secondary medical condition' },
+          ejectionFractionPercent: { type: 'number', description: 'Left ventricular ejection fraction percentage' },
+          fev1Liters: { type: 'number', description: 'Pulmonary FEV1 in liters' },
+          isAmbulatoryAssistanceRequired: { type: 'boolean', description: 'Whether bilateral upper-limb ambulatory device is required' }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        const svc = this.ssaDisabilityService || new SsaDisabilityNavigatorService();
+        if (params?.claimantAge !== undefined) svc.claimantAge.set(Number(params.claimantAge));
+        if (params?.primaryDiagnosis) svc.primaryDiagnosis.set(String(params.primaryDiagnosis));
+        if (params?.secondaryDiagnosis) svc.secondaryDiagnosis.set(String(params.secondaryDiagnosis));
+        if (params?.ejectionFractionPercent !== undefined) svc.ejectionFractionPercent.set(Number(params.ejectionFractionPercent));
+        if (params?.fev1Liters !== undefined) svc.fev1Liters.set(Number(params.fev1Liters));
+        if (params?.isAmbulatoryAssistanceRequired !== undefined) svc.isAmbulatoryAssistanceRequired.set(Boolean(params.isAmbulatoryAssistanceRequired));
+
+        const report = svc.assessment();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(report, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(ssaDisabilityTool, { signal: ssaDisabilityCtrl.signal });
+    this.mcpControllers.push({ name: ssaDisabilityTool.name, controller: ssaDisabilityCtrl });
+
+    // 43. Get Jurisdictional Compliance & Regulatory Matrix
+    const jurisdictionMatrixCtrl = new AbortController();
+    const jurisdictionMatrixTool = {
+      name: 'get_jurisdictional_compliance_and_regulatory_matrix',
+      description: 'Retrieves data privacy statutes, clinical AI device classifications (EU AI Act, FDA, MHRA, PMDA, CDSCO), EHR standards, and mandatory consent requirements for US states (CA, WA, IL, NY, TX) and international jurisdictions (EU, UK, Canada, Australia, Japan, India).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          countryCode: { type: 'string', description: 'ISO 3166-1 alpha-2 country code (e.g. US, EU, GB, CA, AU, JP, IN)' },
+          stateCode: { type: 'string', description: 'US State code if country is US (e.g. CA, WA, IL, NY, TX)' }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        const svc = this.jurisdictionMatrixService || new GlobalJurisdictionMatrixService();
+        if (params?.countryCode) svc.countryCode.set(String(params.countryCode));
+        if (params?.stateCode) svc.stateCode.set(String(params.stateCode));
+
+        const profile = svc.activeProfile();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(profile, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(jurisdictionMatrixTool, { signal: jurisdictionMatrixCtrl.signal });
+    this.mcpControllers.push({ name: jurisdictionMatrixTool.name, controller: jurisdictionMatrixCtrl });
+
+    // 44. Query Mandiant Threat Intelligence & Defense Posture
+    const mandiantCtrl = new AbortController();
+    const mandiantTool = {
+      name: 'query_mandiant_threat_intelligence_and_defense',
+      description: 'Queries Google Mandiant threat actor profiles (UNC2596, FIN12, APT41, UNC3944), MITRE ATLAS AI attack vectors, HHS 405(d) HICP alignment, and DFIR incident containment telemetry.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          threatActorId: { type: 'string', description: 'Specific actor ID to query (e.g. MND-UNC2596, MND-FIN12, MND-APT41)' },
+          triggerEmergencyContainment: { type: 'boolean', description: 'Set true to simulate emergency zero-trust containment' }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        const svc = this.mandiantDefenseService || new MandiantClinicalDefenseService();
+        if (params?.triggerEmergencyContainment) {
+          svc.triggerEmergencyContainment();
+        }
+
+        const posture = svc.defensePosture();
+        const actors = params?.threatActorId 
+          ? svc.threatActors().filter(a => a.actorId === params.threatActorId)
+          : svc.threatActors();
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                posture,
+                threatActors: actors,
+                mitreAtlasTactics: svc.atlasTactics(),
+                latestForensicSnapshots: svc.forensicSnapshots()
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(mandiantTool, { signal: mandiantCtrl.signal });
+    this.mcpControllers.push({ name: mandiantTool.name, controller: mandiantCtrl });
+
+    // 45. Administer Clinical Mandarinate Examination & Keju Benchmark
+    const mandarinateCtrl = new AbortController();
+    const mandarinateTool = {
+      name: 'administer_clinical_mandarinate_exam',
+      description: 'Administers standardized meritocratic clinical OSCE examinations (Cardiology, Neurology, Integrative Pharma), evaluating candidate diagnostic accuracy, contraindication harm avoidance, and multi-paradigm balance.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          caseId: { type: 'string', description: 'Exam vignette case ID (e.g. CASE-CARDIO-01, CASE-NEURO-02, CASE-INTEGRATIVE-03)' },
+          selectedPrimaryDiagnosis: { type: 'string', description: 'Primary diagnostic conclusion' },
+          differentialDiagnoses: { type: 'array', items: { type: 'string' }, description: 'Differential diagnostic considerations' },
+          identifiedContraindications: { type: 'array', items: { type: 'string' }, description: 'Safety contraindications flagged' }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        const svc = this.mandarinateExamService || new ClinicalMandarinateExamService();
+        if (params?.caseId) svc.selectedCaseId.set(String(params.caseId));
+
+        const activeCase = svc.activeCase();
+        const evalResult = svc.evaluateSubmission({
+          caseId: activeCase.caseId,
+          candidateName: 'Autonomous Agentic Candidate',
+          modelIdentifier: 'gemini-agent-benchmarking',
+          selectedPrimaryDiagnosis: params?.selectedPrimaryDiagnosis || activeCase.expectedPrimaryDiagnosis,
+          differentialDiagnoses: params?.differentialDiagnoses || activeCase.acceptableDifferentials,
+          proposedInterventions: ['Emergent evidence-grounded standard of care'],
+          identifiedContraindications: params?.identifiedContraindications || activeCase.criticalContraindications
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(evalResult, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(mandarinateTool, { signal: mandarinateCtrl.signal });
+    this.mcpControllers.push({ name: mandarinateTool.name, controller: mandarinateCtrl });
   }
 
   /**

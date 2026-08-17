@@ -38,4 +38,17 @@ export class NavigationShellService {
 
   public openDictation(): void { this.showDictationModal.set(true); }
   public closeDictation(): void { this.showDictationModal.set(false); }
+
+  /**
+   * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
+   */
+  public navigateWayBackHome(): void {
+    this.activeTab.set('chart');
+    this.showGlossaryModal.set(false);
+    this.showCompanionSyncModal.set(false);
+    this.showFhirCallback.set(false);
+    this.showApiKeyModal.set(false);
+    this.showPatientDirectoryModal.set(false);
+    this.showDictationModal.set(false);
+  }
 }

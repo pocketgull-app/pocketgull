@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, beforeEach, it, expect } from 'vitest';
 import { PathwaysMoeBadgeComponent } from './pathways-moe-badge.component';
 import { ClinicalMoERouterService } from '../../services/clinical-moe-router.service';
 

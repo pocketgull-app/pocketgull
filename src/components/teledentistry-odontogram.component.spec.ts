@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { TeledentistryOdontogramComponent } from './teledentistry-odontogram.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';
@@ -48,9 +47,9 @@ describe('TeledentistryOdontogramComponent', () => {
   });
 
   it('should calculate deep probing sites count for teeth with PPD >= 4mm', () => {
-    expect(component.deepProbingSitesCount()).toBe(1); // tooth 16 has 4mm default
+    expect(component.deepProbingSitesCount()).toBe(2); // teeth 16 and 36 have 4mm default
 
     component.setProbingDepth(11, 5);
-    expect(component.deepProbingSitesCount()).toBe(2);
+    expect(component.deepProbingSitesCount()).toBe(3);
   });
 });

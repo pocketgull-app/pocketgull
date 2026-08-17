@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, HostListener, ElementRef, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientManagementService } from '../services/patient-management.service';
@@ -149,14 +149,6 @@ import { GamificationService } from '../services/gamification.service';
                 New Patient
              </pocket-gull-button>
              <pocket-gull-button 
-               (click)="triggerImport()" 
-               variant="ghost" 
-               size="sm" 
-               class="w-full"
-               icon="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12">
-                Import IPatient
-             </pocket-gull-button>
-             <pocket-gull-button 
                (click)="exportActiveFhir()" 
                variant="ghost" 
                size="sm" 
@@ -225,7 +217,7 @@ export class PatientDropdownComponent {
     }
   }
 
-  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
   filteredPatients = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -289,8 +281,11 @@ export class PatientDropdownComponent {
   }
 
   triggerImport() {
-    this.fileInput.nativeElement.value = ''; // Reset so same file can be re-selected
-    this.fileInput.nativeElement.click();
+    const input = this.fileInput()?.nativeElement;
+    if (input) {
+      input.value = '';
+      input.click();
+    }
   }
 
   async onFileSelected(event: Event) {

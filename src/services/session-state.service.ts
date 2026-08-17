@@ -53,7 +53,9 @@ export class SessionStateService {
       this.patientMgmt.triggerImmediateSaveAndSync();
     }
     this.isLocked.set(true);
-    this.isOnboardingComplete.set(false);
+    // Note: isOnboardingComplete is intentionally NOT reset here.
+    // HIPAA idle-lock re-entry only requires re-authentication (gesture/PIN),
+    // not a full KSS onboarding cycle. The session remains "onboarded".
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }

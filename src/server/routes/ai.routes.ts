@@ -54,6 +54,11 @@ interface IAiScanDocumentRequest {
   context?: string;
 }
 
+/** POST /api/ai/vertex-search */
+interface IAiVertexSearchRequest {
+  query: string;
+}
+
 /** POST /api/ai/stream */
 interface IAiStreamRequest {
   patientData: string;
@@ -94,12 +99,17 @@ interface IAiRouteDeps {
 }
 
 const ALLOWED_GEMINI_MODELS = new Set([
-  'gemini-3.5-flash',
+  'gemini-3.7-flash',
   'gemini-3.6-flash',
+  'gemini-3.5-flash',
   'gemini-3.1-flash-lite',
   'gemini-2.5-flash',
   'gemini-2.5-pro',
+  'gemini-2.0-flash',
   'gemini-2.0-flash-exp',
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash-lite-preview-02-05',
+  'gemini-2.0-pro-exp-02-05',
   'gemini-1.5-flash',
   'gemini-1.5-pro'
 ]);
@@ -156,8 +166,28 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   const router = Router();
   const { getApiKey, getGcpAccessToken, normalizeAndValidateModel } = deps;
 
+  // Lightweight native CORS middleware for cross-origin federated access
+  const ALLOWED_ORIGINS = ['pocketgull.com', 'pocketgull.app'];
+  router.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin) {
+      if (ALLOWED_ORIGINS.some(o => origin.endsWith(o)) || origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key, x-goog-user-project');
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+      return;
+    }
+    next();
+  });
+
+  router.use(expressJson({ limit: '50mb' }));
+
   // POST /api/ai/metrics
-  router.post('/metrics', expressJson(), async (req: Request, res: Response) => {
+  router.post('/metrics', async (req: Request, res: Response) => {
     try {
       await getApiKey(req);
       const body = req.body as IAiMetricsRequest;
@@ -195,6 +225,66 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         newData: body.newData
       });
       res.json({ significant: result });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      res.status(500).json({ error: message });
+    }
+  });
+
+  // POST /api/ai/vertex-search
+  router.post('/vertex-search', expressJson(), async (req: Request, res: Response) => {
+    try {
+      await getApiKey(req);
+      const accessToken = await getGcpAccessToken();
+      const body = req.body as IAiVertexSearchRequest;
+      
+      if (!accessToken) {
+        throw new Error('Google Cloud ADC credentials missing. Cannot query Vertex AI Search.');
+      }
+      if (!body.query) {
+        throw new Error('Missing "query" parameter');
+      }
+
+      // Project ID and engine ID are mapped from the GenAI App Builder config
+      const projectId = '793190615625';
+      const engineId = 'pocketgull-assistant';
+      const endpoint = `https://discoveryengine.googleapis.com/v1/projects/${projectId}/locations/global/collections/default_collection/engines/${engineId}/servingConfigs/default_search:search`;
+
+      const startTime = performance.now();
+
+      const searchRes = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+          'x-goog-user-project': projectId
+        },
+        body: JSON.stringify({
+          query: body.query,
+          pageSize: 5
+        })
+      });
+
+      if (!searchRes.ok) {
+        const errText = await searchRes.text();
+        throw new Error(`Vertex AI Search failed: ${searchRes.status} ${errText}`);
+      }
+
+      const searchData = await searchRes.json();
+      const latencyMs = performance.now() - startTime;
+      const resultsCount = searchData.results ? searchData.results.length : 0;
+      
+      // Native GCP Cloud Logging structured telemetry
+      console.log(JSON.stringify({
+        severity: 'INFO',
+        message: `Vertex Search Executed: ${body.query}`,
+        event: 'vertex_search_query',
+        query: body.query,
+        latencyMs: Math.round(latencyMs),
+        resultsCount: resultsCount
+      }));
+
+      res.json(searchData);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Unknown error';
       res.status(500).json({ error: message });

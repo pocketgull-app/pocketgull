@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { GeminiProvider } from '../src/services/ai/gemini.provider';
 import { AI_CONFIG } from '../src/services/ai-provider.types';
 import { VerifyAiService } from '../src/services/verify-ai.service';

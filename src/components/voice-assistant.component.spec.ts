@@ -1,28 +1,16 @@
 import '@angular/compiler';
 import * as DOMPurify from 'dompurify'; // HIPAA Safe Harbor Sanitization
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi, expect } from 'vitest';
+import { VoiceAssistantComponent } from './voice-assistant.component';
+import { signal, Injector, runInInjectionContext } from '@angular/core';
 
-vi.mock('@angular/forms', () => ({
-  FormsModule: class {},
-  ReactiveFormsModule: class {},
-  NgControl: class {},
-  NgModel: class {}
-}));
-
-// Mock Angular constructor effects for headless Vitest environment
 vi.mock('@angular/core', async (importOriginal) => {
   const original = await importOriginal<any>();
   return {
     ...original,
-    effect: () => {
-      return {
-        destroy: () => {}
-      };
-    }
+    effect: () => ({ destroy: () => {} })
   };
 });
-import { VoiceAssistantComponent } from './voice-assistant.component';
-import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { DictationService } from '../services/dictation.service';
@@ -33,6 +21,7 @@ import { AdkLiveService } from '../services/ai/adk-live.service';
 import { StorageService } from '../services/storage.service';
 import { SecureStorageService } from '../services/secure-storage.service';
 import { YbocsService } from '../services/ybocs/ybocs.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
 
 describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Controls', () => {
   let component: VoiceAssistantComponent;
@@ -46,14 +35,14 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
   let mockStorage: any;
   let mockSecureStorage: any;
   let mockYbocs: any;
-  let injector: EnvironmentInjector;
 
   beforeEach(() => {
     mockPatientState = {
       vitals: signal({ hr: '72', bp: '120/80', temp: '98.6°F', spO2: '98%' }),
       symptoms: signal([]),
       conditions: signal([]),
-      activeDrilldownComponent: signal(null)
+      activeDrilldownComponent: signal(null),
+      liveAgentInput: signal(null)
     };
 
     mockClinicalIntelligence = {
@@ -108,28 +97,27 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
       scores: signal({})
     };
 
-    injector = createEnvironmentInjector([
-      { provide: PatientStateService, useValue: mockPatientState },
-      { provide: ClinicalIntelligenceService, useValue: mockClinicalIntelligence },
-      { provide: DictationService, useValue: mockDictation },
-      { provide: PatientManagementService, useValue: mockPatientManagement },
-      { provide: MarkdownService, useValue: mockMarkdown },
-      { provide: RichMediaService, useValue: mockRichMedia },
-      { provide: AdkLiveService, useValue: mockAdkLive },
-      { provide: StorageService, useValue: mockStorage },
-      { provide: SecureStorageService, useValue: mockSecureStorage },
-      { provide: YbocsService, useValue: mockYbocs }
-    ], undefined as any);
-
-    runInInjectionContext(injector, () => {
-      component = new VoiceAssistantComponent();
+    const injector = Injector.create({
+      providers: [
+        { provide: PatientStateService, useValue: mockPatientState },
+        { provide: ClinicalIntelligenceService, useValue: mockClinicalIntelligence },
+        { provide: DictationService, useValue: mockDictation },
+        { provide: PatientManagementService, useValue: mockPatientManagement },
+        { provide: MarkdownService, useValue: mockMarkdown },
+        { provide: RichMediaService, useValue: mockRichMedia },
+        { provide: AdkLiveService, useValue: mockAdkLive },
+        { provide: StorageService, useValue: mockStorage },
+        { provide: SecureStorageService, useValue: mockSecureStorage },
+        { provide: YbocsService, useValue: mockYbocs },
+        BionicReadingService
+      ]
     });
+
+    component = runInInjectionContext(injector, () => new VoiceAssistantComponent());
   });
 
   it('should instantiate successfully with empty message text signal', () => {
     expect(component).toBeTruthy();
     expect(component.messageText()).toBe('');
   });
-
-
 });

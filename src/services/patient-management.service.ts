@@ -26,12 +26,9 @@ import {
   IBodyPartIssue,
   IDiagnosticScan
 } from "./patient.types";
-import * as CryptoJS from 'crypto-js';
 import { MOCK_PATIENTS } from "../mock-patients";
 import { dataConnect } from '../lib/firebase';
 import { listPatients, getPatientWithCarePlan, createPatient } from '../lib/dataconnect/esm/index.esm.js';
-
-const ENCRYPTION_KEY = 'pocket-gull-clinical-vault-key-poc';
 
 // Re-export for use in other components
 export type { IBodyPartIssue, HistoryEntry, IPatient };
@@ -63,7 +60,13 @@ export class PatientManagementService implements OnDestroy {
     let chronoWindow = '';
     let orthomolecularProtocol = '';
 
-    if (conds.some(c => c.includes('diabetes') || c.includes('metabolic') || c.includes('obesity') || c.includes('hypertension'))) {
+    if (conds.some(c => c.includes('cancer') || c.includes('pancreatic') || c.includes('oncology') || c.includes('pdac') || c.includes('tumor'))) {
+      dietaryPattern = `### Pancreatic-Sparing & Anti-Cachectic Precision Oncology Pattern\nPrimary focus for ${name}: High-density nutrient assimilation via Pancreatic Enzyme Replacement Therapy (PERT), medium-chain triglyceride (MCT) fats, and pro-resolving anti-inflammatory substrates to suppress IL-6/TNF-alpha muscle wasting.`;
+      functionalFoods = `- **Medium-Chain Triglyceride (MCT) Oil**: Bypasses pancreatic lipase digestion for immediate hepatic energy.\n- **Hydrolyzed Protein & Glutamine**: 30g daily to preserve lean muscle mass and repair enterocytes.\n- **Steamed Broccoli Sprouts & Curcumin**: High-potency Nrf2 activation and NF-kB inflammatory suppression.`;
+      avoidFoods = `- **Refined Simple Sugars**: Prevents glycemic spikes given pancreatogenic (Type 3c) glycemic instability.\n- **Heavy Saturated & Fried Fats**: Reduces exocrine pancreatic digestive strain.\n- **Ultra-Processed Excitotoxins**: Protects against gastrointestinal mucosal irritation.`;
+      chronoWindow = `5-6 Small Frequent Nutrient-Dense Meals paired with PERT enzymes to maximize nutrient absorption without gastrointestinal overload.`;
+      orthomolecularProtocol = `### Personalized Orthomolecular Protocol for ${name}\n- **Pancrelipase (Creon)**: 24,000-48,000 USP units with meals (Essential exocrine enzyme replacement).\n- **High-EPA Fish Oil Ethyl Esters**: 3,000mg daily (Suppresses cancer cachexia & pro-inflammatory cytokines).\n- **Curcumin Phytosome (Meriva)**: 1,000mg BID (Modulates NF-kB & STAT3 signaling pathways).\n- **Vitamin D3 + K2**: 5,000 IU daily (Immune modulation & bone density preservation).`;
+    } else if (conds.some(c => c.includes('diabetes') || c.includes('metabolic') || c.includes('obesity') || c.includes('hypertension'))) {
       dietaryPattern = `### Precision Cardiometabolic & Low-Glycemic Anti-Inflammatory Pattern\nPrimary focus for ${name}: Low Glycemic Load (<20 GI), high-fiber monounsaturated fat emphasis to improve insulin receptor sensitivity, reduce hepatic steatosis, and stabilize vascular endothelial nitric oxide.`;
       functionalFoods = `- **Cold-Pressed EVOO & Avocado**: 2 tbsp daily to deliver Oleic Acid and endogenous Glutathione support.\n- **Wild Alaskan Sockeye Salmon**: 3x/week for SPM (Specialized Pro-Resolving Mediators) EPA/DHA resolution.\n- **Steamed Bok Choy & Broccoli Sprouts**: Sulforaphane Nrf2 phase II liver detoxification.`;
       avoidFoods = `- **Refined Carbohydrates & High-Fructose Corn Syrup**: Eliminates postprandial glucose spikes.\n- **High Sodium (>2,000mg/day)**: Protects against vascular stiffness given BP of ${bp}.\n- **Trans Fats & Seed Oils**: Prevents oxLDL endothelial injury.`;
@@ -323,15 +326,18 @@ export class PatientManagementService implements OnDestroy {
           const patient = this.patients().find((p) => p.id === patientId);
           console.log('[PatientManagementService] patientId:', patientId, 'found:', !!patient, 'roster size:', this.patients().length);
           if (patient) {
+            // Defensive: ensure history array exists (stale IndexedDB records may lack it)
+            const history = patient.history ?? [];
+
             // Load the selected patient's data into the main state service
             this.patientState.loadState(patient);
-            this.findAndLoadActivePatientSummary(patient.history);
+            this.findAndLoadActivePatientSummary(history);
 
             // Reset the AI analysis first, then load the selected patient's report
             this.geminiService.resetAIState();
 
-            console.log('[PatientManagementService] selected patient:', patientId, 'history length:', patient.history.length);
-            const latestAnalysis = patient.history.find(
+            console.log('[PatientManagementService] selected patient:', patientId, 'history length:', history.length);
+            const latestAnalysis = history.find(
               (entry) =>
                 entry.type === "AnalysisRun" ||
                 entry.type === "FinalizedPatientSummary",
@@ -355,6 +361,10 @@ export class PatientManagementService implements OnDestroy {
   }
 
   private findAndLoadActivePatientSummary(history: HistoryEntry[]) {
+    if (!history?.length) {
+      this.patientState.updateActivePatientSummary(null);
+      return;
+    }
     // Find the most recent patient summary update
     const latestSummary = history.find(
       (entry) => entry.type === "PatientSummaryUpdate",
@@ -387,7 +397,8 @@ export class PatientManagementService implements OnDestroy {
       this.geminiService.resetAIState();
 
       // Reload the latest analysis so the panel isn't empty after exiting review mode
-      const latestAnalysis = patient.history.find(
+      const history = patient.history ?? [];
+      const latestAnalysis = history.find(
         (entry) =>
           entry.type === "AnalysisRun" ||
           entry.type === "FinalizedPatientSummary",

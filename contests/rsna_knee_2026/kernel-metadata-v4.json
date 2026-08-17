@@ -1,0 +1,19 @@
+{
+  "id": "philgear/rsna-knee-2026-pytorch-inference",
+  "title": "rsna-knee-2026-pytorch-inference",
+  "code_file": "rsna_knee_submission_v4.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "false",
+  "enable_tpu": "false",
+  "enable_internet": "false",
+  "dataset_sources": [],
+  "competition_sources": [
+    "rsna-knee-abnormality-detection"
+  ],
+  "kernel_sources": [
+    "philgear/rsna-knee-2026-training-v4"
+  ],
+  "model_sources": []
+}

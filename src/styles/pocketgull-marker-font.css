@@ -19,9 +19,9 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/assets/fonts/PocketGull-Bold.ttf') format('truetype'),
-       url('/fonts/PocketGull-Bold.ttf') format('truetype'),
-       url('/fonts/google_fonts_submission/ofl/pocketgull/PocketGull-Bold.ttf') format('truetype');
+  src: url('/assets/fonts/PocketGull-Fineliner.ttf') format('truetype'),
+       url('/assets/fonts/PocketGull-Chiseltip.ttf') format('truetype'),
+       local('Outfit Bold'), local('Inter Bold'), local('sans-serif');
 }
 
 @font-face {

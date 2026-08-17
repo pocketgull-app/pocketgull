@@ -1,0 +1,62 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: "PR: v1.0.0-rc3"
+---
+
+---
+
+## PR: feat(release): general updates and improvements for 1.0.0-rc3
+
+### Description
+This PR corresponds to the release **v1.0.0-rc3**.
+General updates and improvements for 1.0.0-rc3
+
+### Changelog Entry
+- **[2026-06-08] Porkbun DNS Automation**: Integrated automated Porkbun API sync helper (`scripts/update-porkbun-dns.js`) to handle lifecycle mapping of the live Cloud Run custom domains (`pocketgull.app` and subdomains).
+- **[2026-06-08] Scaling & Valuation Architectural Blueprints**: Added complete operational manuals and diagrams for hospital-grade deployment (`docs/valuation_and_positioning.md` and `docs/study/src/pages/positioning.mdx`), detailing BigQuery telemetry partitioning/clustering strategies, Vertex AI context caching/cost management, and OpenEMR/OpenMRS FHIR database bridging.
+- **[2026-06-08] Custom JSON Security Auditing CLI**: Built `scripts/security-audit.mjs` to automatically verify sub-dependency vulnerability status during build/CI checkpoints.
+- **[2026-06-08] Windows Unicode Pre-Commit Compatibility**: Modified `scripts/phi_compliance_scanner.py` to suppress non-ASCII console emojis, resolving execution and file check crashes on Windows environments using default CP1252 shell encodings.
+- **[2026-06-08] Doc Path Resolution**: Corrected file path references in husky pre-commit check tasks (`scripts/pre-commit-check.cjs`).
+- **[2026-06-08] Sub-Project Dependency Remediation**: Resolved 11 medium/high risk vulnerabilities in `pocketgull_api` sub-project lockfile, applying strict version overrides for `uuid` and `protobufjs`.
+
+### Type of change
+- [ ] Bug fix (`fix`)
+- [x] New feature (`feat`)
+- [ ] Security fix (`security`)
+- [ ] Refactoring (`refactor`)
+- [ ] Documentation update (`docs`)
+- [ ] Testing/CI update (`test`, `ci`)
+- [ ] Clinical Intelligence & AI Prompting
+- [ ] 3D Anatomical Spatial Lens (Three.js)
+- [ ] Voice / Hardware Telemetry
+- [ ] Companion App (Flutter / Dart)
+
+## ☯️ Clinical Paradigms Touched
+- [ ] 🔵 Western Allopathic
+- [ ] 🟢 Eastern TCM (Traditional Chinese Medicine)
+- [ ] 🟡 Ayurvedic Medicine
+
+## Core Integration Checklist:
+- [x] My commit messages follow the Conventional Commits format (max 72 chars subject, imperative mood).
+- [x] My branch compiles with zero errors (`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`).
+- [x] I have performed a self-review of my own code.
+- [x] New and existing unit tests pass locally with my changes (`npm test`).
+- [x] I have run the local security audit (`npm run sentinel:audit`).
+
+## Domain-Specific Quality Gates (Check all that apply):
+### 🏥 Clinical AI & Safety
+- [ ] **Safety Filters:** Verified `DANGEROUS_CONTENT` remains `OFF` for clinical text to prevent false-positive blocks on standard-of-care plans.
+- [ ] **Evidence Literacy:** Clinical recommendations include demarcated evidence tiers (Level A/B/C) and Cochrane Risk of Bias considerations.
+- [ ] **Skeptical Epistemology:** If computing p-values, findings where $p \ge 0.05$ trigger the `skepticalWarningNotice`.
+
+### 🔒 Privacy & Data Sovereignty
+- [ ] **FHIR R4:** Serialized patient data structures conform strictly to the FHIR R4 Bundle standard.
+- [ ] **Logging Integrity:** No raw user inputs or un-sanitized PHI strings are passed to server loggers.
+- [ ] **De-Identification:** New mock patient data adheres to HIPAA §164.514 Safe Harbor standards (or preserves historical luminaries).
+- [ ] **CodeQL & Egress Guard:** Verified zero new SSRF, path traversal, or log injection vulnerabilities, and local Sentinel whitelists remain intact.
+
+### 🎨 Dieter Rams UX & Accessibility
+- [ ] **Functional Aesthetics:** Adheres to Dieter Rams principles ("Weniger, aber besser")—no unnecessary UI bloat or non-structural rounded pills.
+- [ ] **Fitts's Law:** All new touch targets and buttons are at least 44x44px.
+- [ ] **WCAG & Neurodiversity:** UI changes maintain 7:1 contrast ratios and respect `prefers-reduced-motion` for animations.
+

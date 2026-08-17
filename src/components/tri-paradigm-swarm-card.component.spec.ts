@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, vi } from 'vitest';
+import { vi } from 'vitest';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { TriParadigmSwarmCardComponent } from './tri-paradigm-swarm-card.component';
 import { TriParadigmSwarmService } from '../services/tri-paradigm-swarm.service';

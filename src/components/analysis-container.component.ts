@@ -13,17 +13,19 @@ import { ClinicalIcons } from '../assets/clinical-icons';
 import { GamificationService } from '../services/gamification.service';
 
 import { HumanDignityPactComponent } from './human-dignity-pact.component';
-import { MyChartBriefModalComponent } from './mychart-brief-modal.component';
+import { MyChartBriefModalComponent } from './modals/mychart-brief-modal.component';
 import { FamilyTreePedigreeComponent } from './family-tree-pedigree.component';
-import { PatientStoryModalComponent } from './patient-story-modal.component';
-import { PostItNotesComponent } from './post-it-notes.component';
+import { PatientStoryModalComponent } from './modals/patient-story-modal.component';
+import { PostItNotesComponent } from './shared/post-it-notes.component';
 import { ActuarialGleeAlbumComponent } from './actuarial-glee-album.component';
-import { GcpHealthcareService } from '../services/gcp-healthcare.service';
+import { GcpHealthcareApiService } from '../services/fhir/gcp-healthcare-api.service';
 import { AmbientLivingSpaceDashboardComponent } from './ambient-living-space-dashboard.component';
 import { GreenRoomLoungeComponent } from './green-room-lounge.component';
 import { DoctorShiftSimulatorComponent } from './doctor-shift-simulator.component';
 import { DoctorShiftSalesDemoComponent } from './doctor-shift-sales-demo.component';
-import { Holographic3DAnatomyComponent } from './holographic-3d-anatomy.component';
+import { InvestorValuationPortalModalComponent } from './modals/investor-valuation-portal-modal.component';
+import { Holographic3DAnatomyComponent } from './anatomy-3d/holographic-3d-anatomy.component';
+import { GenesisBiophysicalSubstrateComponent } from './anatomy-3d/genesis-biophysical-substrate.component';
 
 import { DomainSuitesNavigatorComponent } from './suites/domain-suites-navigator.component';
 
@@ -40,7 +42,7 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
   host: {
     'class': 'flex flex-col flex-1 min-h-0 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)]'
   },
-  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, DoctorShiftSalesDemoComponent, Holographic3DAnatomyComponent],
+  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, DoctorShiftSalesDemoComponent, InvestorValuationPortalModalComponent, Holographic3DAnatomyComponent, GenesisBiophysicalSubstrateComponent],
   template: `
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)] bg-[#F3F4F6] dark:bg-zinc-950">
       
@@ -206,7 +208,15 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
                 @if (viewMode() === 'suites') {
                   <app-domain-suites-navigator class="w-full h-auto block overflow-visible" />
                 } @else {
-                  <app-holographic-3d-anatomy class="w-full mb-6 shrink-0 block" />
+                  @defer (on viewport; prefetch on idle) {
+                    <app-holographic-3d-anatomy class="w-full mb-6 shrink-0 block" />
+                    <app-genesis-biophysical-substrate class="w-full mb-6 shrink-0 block" />
+                  } @placeholder {
+                    <div class="w-full mb-6 shrink-0 h-48 rounded-2xl bg-slate-100 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 animate-pulse flex items-center justify-center gap-3">
+                      <div class="w-3 h-3 rounded-full bg-cyan-500 animate-ping"></div>
+                      <span class="text-xs font-mono text-slate-500 dark:text-zinc-400">Initializing Holographic 3D Spatial Lens...</span>
+                    </div>
+                  }
                   <app-analysis-report class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" #reportRef (openGleeModal)="showGleeModal.set(true)"></app-analysis-report>
                 }
             </div>
@@ -344,6 +354,9 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
               <button (click)="showGreenRoomModal.set(true); showToolsMenu.set(false)" class="w-full text-left p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-850 text-zinc-200 border border-zinc-800 transition flex items-center gap-2 cursor-pointer">
                 <span>🌿</span> Green Room
               </button>
+              <button (click)="showInvestorPortalModal.set(true); showToolsMenu.set(false)" class="w-full text-left p-2.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 hover:bg-purple-500 hover:text-zinc-950 transition flex items-center gap-2 cursor-pointer font-bold">
+                <span>💎</span> Investor & Valuation Portal
+              </button>
               <button (click)="syncGcpHealthcare(); showToolsMenu.set(false)" class="w-full text-left p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-850 text-zinc-200 border border-zinc-800 transition flex items-center gap-2 cursor-pointer">
                 <span>☁️</span> GCP Healthcare Sync
               </button>
@@ -412,6 +425,11 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
     @if (showSalesDemoModal()) {
       <app-doctor-shift-sales-demo (closeModal)="showSalesDemoModal.set(false)"></app-doctor-shift-sales-demo>
     }
+
+    <!-- Investor & Valuation Portal Modal -->
+    @if (showInvestorPortalModal()) {
+      <app-investor-valuation-portal-modal (closeModal)="showInvestorPortalModal.set(false)"></app-investor-valuation-portal-modal>
+    }
   `,
   styles: [`
     :host { display: block; height: 100%; width: 100%; }
@@ -456,7 +474,7 @@ export class AnalysisContainerComponent {
   intelligence = inject(ClinicalIntelligenceService);
   game = inject(GamificationService);
   exportService = inject(ExportService);
-  gcpHealthcare = inject(GcpHealthcareService);
+  gcpHealthcare = inject(GcpHealthcareApiService);
   network = inject(NetworkStateService);
   ClinicalIcons = ClinicalIcons;
 
@@ -466,6 +484,7 @@ export class AnalysisContainerComponent {
   showSoapModal = signal(false);
   showCohortMatrixModal = signal(false);
   showHipaaPdfModal = signal(false);
+  showInvestorPortalModal = signal(false);
 
   constructor() {
     // Re-trigger 3D slide-in animation whenever a patient is selected or analysis completes

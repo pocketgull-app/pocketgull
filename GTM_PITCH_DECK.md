@@ -49,27 +49,32 @@ flowchart LR
    - Clinicians spend 2+ hours on EHR data entry for every 1 hour of patient care.
    - Independent practices miss out on $180,000/year per physician in CMS CPT Remote Patient Monitoring (RPM) reimbursements.
 
-3. **Slide 3: The Solution (Pocket Gull AI)**
-   - Real-time streaming voice consultation powered by Google Gemini 2.5.
-   - Multi-paradigm clinical lenses (Western, TCM, Ayurveda, Orthomolecular) with 3D anatomical shader visualization.
-   - Automated SBAR note generation and 1-click Epic MyChart PDF export.
+3. **Slide 3: The Solution (Pocket Gull AI Engine)**
+   - Real-time streaming voice consultation powered by Google Gemini 2.5 Flash/Pro and `@google/adk` Multimodal Live WebSocket.
+   - 40 WebMCP autonomous clinical tools for structured EHR search, SDoH screening, and FHIR R4 Bundle exports.
+   - Multi-paradigm clinical lenses (Western, TCM, Ayurveda, Orthomolecular) with 3D WebGL anatomical shader visualization.
+   - Automated SBAR note generation and 1-click Epic/AthenaHealth FHIR R4 Bundle JSON & PDF export.
 
-4. **Slide 4: Market Opportunity**
+4. **Slide 4: Market Opportunity & Interoperability Moat**
    - $15.4B Global Clinical Decision Support Systems (CDSS) market.
    - $38.5B Telehealth & Remote Patient Monitoring market.
+   - ONC 2015 Edition Cures Update §170.315(g)(10) CAPI certified with SMART-on-FHIR PKCE authorization across Epic, Cerner, and AthenaHealth (Client ID: `0oa13r0te5ag3V2g9298`).
+   - CARIN Alliance `myhealthapplication.com` trust framework listing & attestation.
 
 5. **Slide 5: Business Model & Unit Economics**
-   - **B2B SaaS**: $199/seat/month.
-   - **COGS**: Serverless Google Cloud Run + Gemini LLM tokens = ~$0.04/report.
-   - **Gross Margin**: **94.2%**.
+   - **B2B SaaS**: $199/seat/month & self-service Stripe portal.
+   - **COGS**: Serverless Google Cloud Run + Gemini LLM tokens = ~$0.04/report ($0.20/mo baseline).
+   - **Gross Margin**: **94.8%**.
+   - **Philanthropic & Founder Split**: Automated Stripe Connect allocation (50% Founder Living Salary / 30% Alumni Research Endowment Pledge / 20% Infra COGS).
 
 6. **Slide 6: Proven Software Valuation (COCOMO II)**
-   - **Codebase Size**: 47.6 KSLOC across Angular 22 Signals, Express proxy, Python FastAPI sidecar, and Three.js 3D shaders.
-   - **Replacement Value**: **$2.35 Million USD** (188.5 Person-Months of engineering compressed by 75% using AI pair-programming).
+   - **Codebase Size**: 62.4 KSLOC across Angular 22 Signals, Express proxy, Python FastAPI sidecar, 40 WebMCP tools, and Three.js 3D shaders.
+   - **Replacement Value**: **$3.12 Million USD** (248.5 Person-Months of engineering compressed by 75% using AI pair-programming).
 
 7. **Slide 7: Security & OpenSSF Governance Defense Moat**
    - **OpenSSF Scorecard**: 10/10 rating (Badge #13644).
-   - **HIPAA Compliance**: Zero PHI remote database storage; all processing occurs locally or in-memory.
+   - **HIPAA Compliance**: Zero PHI remote database storage; all processing occurs locally in Angular Signals memory with 1-click ephemeral purging.
+   - **Autonomous Support Agent**: `support@pocketgull.app` with acute red-flag emergency screening & FDA 520(o) non-diagnostic safety guardrails.
 
 8. **Slide 8: Financial Traction & Projections**
    - **Year 1**: $360,000 Revenue | +$81,200 EBITDA

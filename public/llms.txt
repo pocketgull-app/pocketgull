@@ -48,6 +48,17 @@ Pocket Gull exposes native WebMCP tools and 13 specialized clinical lenses for a
 - [Positioning & Open-Source Strategy](/docs/study/positioning/)
 - [Changelog](/docs/study/changelog/)
 
+## Agentic Discovery Endpoints
+Pocket Gull exposes structured discovery endpoints for autonomous AI agents to introspect capabilities, resolve entities, and chain actions dynamically:
+- `GET /.well-known/agent.json`: Agent manifest declaring protocol version, authentication modes, rate limits, and discovery endpoint URIs (edge cached, 24h TTL).
+- `GET /v1/discovery/tools`: Dynamic tool registry with full JSON-Schema signatures for all 40+ WebMCP tools and 6 Genkit flows (5min TTL).
+- `GET /v1/discovery/context-schema`: Expected context envelope structures (session, authentication, tracing, privacy).
+- `POST /v1/discovery/resolve`: Fuzzy natural-language entity resolution to canonical URIs (body parts, FHIR types, SNOMED/LOINC codes).
+- `GET /v1/discovery/taxonomy`: Ontology graphs for SNOMED CT, ICD-10-CM, LOINC, RxNorm, CPT, and FHIR resource types (24h TTL).
+- `POST /v1/discovery/capabilities/probe`: Pre-flight validation — checks if required actions are serviceable before execution.
+- `GET /v1/discovery/pipelines/{pipelineId}/graph`: DAG inspection for Genkit flows and Python sidecar ML pipelines.
+- `GET /v1/discovery/artifacts/schema`: Schema registry for intermediate/final deliverables (FHIR R4 Bundles, HL7v2, CSV, Markdown reports).
+
 ## AI Agent Guidance
 When navigating or controlling Pocket Gull:
 1. Always verify patient consent and ethics pledge before accessing clinical metrics.

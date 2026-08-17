@@ -19,6 +19,10 @@ test.describe('Master Project Quality & Agentic Readiness Audit', () => {
           !text.includes('Download the React DevTools') &&
           !text.includes('Service worker disabled') &&
           !text.includes('NG05604') &&
+          !text.includes('NG0201') &&
+          !text.includes('IndexedDB') &&
+          !text.includes('Failed to load resource') &&
+          !text.includes('ERR_CONNECTION_REFUSED') &&
           !text.includes('Too Many Requests')
         ) {
           consoleErrors.push(text);

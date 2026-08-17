@@ -1,0 +1,59 @@
+name: "Clinical Algorithm & CDS Assessment"
+description: "Propose or audit a clinical decision support algorithm, scoring formula, or evidence tier."
+title: "[CLINICAL-CDS]: "
+labels: ["clinical-cds", "medical-evidence"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 🩺 Clinical Decision Support (CDS) Specification
+        Document clinical justification, evidence tiering, and biophysical rationale.
+
+  - type: input
+    id: clinical_domain
+    attributes:
+      label: Medical Domain & Sub-Specialty
+      placeholder: "e.g., Cardiology, Functional Medicine, Orthopedic Imaging, Periodontics"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: evidence_level
+    attributes:
+      label: Oxford Evidence Level / Cochrane Grade
+      options:
+        - "Level A: Randomized Controlled Trials (RCTs) / Systematic Meta-Analyses"
+        - "Level B: Well-Designed Cohort / Case-Control Studies"
+        - "Level C: Expert Consensus / Mechanistic Biological Plausibility"
+    validations:
+      required: true
+
+  - type: textarea
+    id: null_hypothesis
+    attributes:
+      label: Popperian Null Hypothesis ($H_0$) & Statistical Benchmark
+      description: What is the baseline expectation, and how will $p < 0.05$ rejection be verified?
+      placeholder: "H0: Feature X produces no statistically significant difference in 30-day readmission vs baseline mean."
+    validations:
+      required: true
+
+  - type: textarea
+    id: literature_citations
+    attributes:
+      label: Primary Literature Citations & DOIs
+      description: Provide PubMed IDs, DOIs, or Cochrane review references.
+      placeholder: "- Smith et al. (2024), Lancet Digital Health, DOI: 10.1016/..."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: clinical_safety_checklist
+    attributes:
+      label: Clinical Safety & Epistemology Verification
+      options:
+        - label: "Incorporates explicit Cochrane Risk of Bias (RoB 2) assessment"
+          required: true
+        - label: "Enforces Human-in-the-Loop (HITL) physician approval requirement"
+          required: true
+        - label: "Includes skeptical warning notice for unproven or observational claims"
+          required: true

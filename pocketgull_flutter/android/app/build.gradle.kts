@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.pocketgull_flutter"
+    namespace = "app.pocketgull.companion"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -20,20 +20,15 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.pocketgull_flutter"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        applicationId = "app.pocketgull.companion"
+        minSdk = 24
+        targetSdk = 35
+        versionCode = 15
+        versionName = "1.15.0"
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }

@@ -6,7 +6,7 @@ import { marked } from 'marked';
 
 import { IPatient, HistoryEntry, IPatientVitals, IBodyPartIssue, IFhirGenomicObservation } from './patient.types';
 import { ClinicalIcons } from '../assets/clinical-icons';
-import { LaafFhirHapticScheduleService, ILaafHapticItem } from './laaf-fhir-haptic-schedule.service';
+import { LaafFhirHapticScheduleService, ILaafHapticItem } from './fhir/laaf-fhir-haptic-schedule.service';
 import { ClinicalAssessmentsService } from './clinical-assessments/clinical-assessments.service';
 import { YbocsService } from './ybocs/ybocs.service';
 import { AcronymExpanderService } from './acronym-expander.service';
@@ -1164,8 +1164,12 @@ export class ExportService {
   <div class="print-bar">
     <span class="print-bar-title">Pocket Gull Clinical Report — ${patientName}</span>
     <div class="print-bar-actions">
-      <button class="btn-close" onclick="window.close()">Close</button>
-      <button class="btn-print" onclick="window.print()">Save as PDF / Print</button>
+      <button class="btn-close" id="docBtnClose">Close</button>
+      <button class="btn-print" id="docBtnPrint">Save as PDF / Print</button>
+      <script>
+        document.getElementById('docBtnClose')?.addEventListener('click', function() { window.close(); });
+        document.getElementById('docBtnPrint')?.addEventListener('click', function() { window.print(); });
+      </script>
     </div>
   </div>
 
@@ -1900,8 +1904,12 @@ export class ExportService {
   <div class="print-bar">
     <span class="print-bar-title">Pocket Gull Care Plan — ${patientName}</span>
     <div class="print-bar-actions">
-      <button class="btn-close" onclick="window.close()">Close</button>
-      <button class="btn-print" onclick="window.print()">Save as PDF / Print</button>
+      <button class="btn-close" id="carePlanBtnClose">Close</button>
+      <button class="btn-print" id="carePlanBtnPrint">Save as PDF / Print</button>
+      <script>
+        document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
+        document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
+      </script>
     </div>
   </div>
 

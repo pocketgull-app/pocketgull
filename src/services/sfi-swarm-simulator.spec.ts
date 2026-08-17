@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { SentinelSurveillanceService } from './sentinel-surveillance.service';
 
 describe('SFI John Holland Complex Adaptive Systems Swarm Simulator', () => {

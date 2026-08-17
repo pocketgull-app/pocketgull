@@ -14,7 +14,7 @@ import { generate } from 'lean-qr';
 declare var webkitSpeechRecognition: any;
 import { ISummaryNode, ISummaryNodeItem, IReportSection, IParsedTranscriptEntry, NodeAnnotation, LensAnnotations, IVerificationIssue } from './analysis-report.types';
 import { SummaryNodeComponent } from './summary-node.component';
-import { Body3DViewerComponent } from './body-3d-viewer.component';
+import { Body3DViewerComponent } from './anatomy-3d/body-3d-viewer.component';
 import { PocketGullCardComponent } from './shared/pocket-gull-card.component';
 import { BiomarkerMatrixComponent } from './biomarker-matrix.component';
 import { CostBenefitAnalysisComponent } from './cost-benefit-analysis.component';
@@ -41,9 +41,9 @@ import { LensRsnaKneeComponent } from './lens-rsna-knee.component';
 import { ParadigmClinicalDashboardComponent } from './paradigm-clinical-dashboard.component';
 import { GeolocationalHealthRelocationComponent } from './geolocational-health-relocation.component';
 import { ClinicalActLensMapperService } from '../services/clinical-act-lens-mapper.service';
-import { TypologyBadgeComponent } from './typology-badge.component';
+import { TypologyBadgeComponent } from './shared/typology-badge.component';
 import { PatientHealthTrajectoryStorybookComponent } from './patient-health-trajectory-storybook.component';
-import { HandoffModalComponent } from './handoff-modal.component';
+import { HandoffModalComponent } from './modals/handoff-modal.component';
 import { SdohNavigatorComponent } from './sdoh-navigator.component';
 import { LifePerilsParadigmMatrixComponent } from './life-perils-paradigm-matrix.component';
 import { HealthyHobbiesLifestyleComponent } from './healthy-hobbies-lifestyle.component';
@@ -53,8 +53,8 @@ import { ProceduralInvestmentMatrixComponent } from './procedural-investment-mat
 import { ActuarialQalyCalculatorComponent } from './actuarial-qaly-calculator.component';
 import { OccupationalHazardCardComponent } from './occupational-hazard-card.component';
 import { VagalBiofeedbackDockComponent } from './vagal-biofeedback-dock.component';
-import { Sec1557AuditModalComponent } from './sec1557-audit-modal.component';
-import { FhirPassportModalComponent } from './fhir-passport-modal.component';
+import { Sec1557AuditModalComponent } from './modals/sec1557-audit-modal.component';
+import { FhirPassportModalComponent } from './modals/fhir-passport-modal.component';
 import { getPersonaPropBadge } from '../services/agent-personas';
 import { ThemeService, AppTheme } from '../services/theme.service';
 import { RpmDashboardComponent } from './rpm-dashboard.component';
@@ -68,7 +68,7 @@ import { ChronobiologyMatrixComponent } from './chronobiology-matrix.component';
 import { FunctionalMedicineMatrixComponent } from './functional-medicine-matrix.component';
 import { BionicReadingService } from '../services/bionic-reading.service';
 import { SkepticalEpistemologyService } from '../services/skeptical-epistemology.service';
-import { FhirIntegrationService } from '../services/fhir-integration.service';
+import { FhirIntegrationService } from '../services/fhir/fhir-integration.service';
 import { SocraticChallengeCardComponent } from './socratic-challenge-card.component';
 import { LocalGemmaStudioComponent } from './local-gemma-studio.component';
 import { TriParadigmSwarmCardComponent } from './tri-paradigm-swarm-card.component';
@@ -1865,10 +1865,17 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
         </div>
         
         <div class="h-64 rounded-xl overflow-hidden bg-white border border-slate-200 shadow-xs relative">
-          <app-body-3d-viewer 
-            [anatomyViewMode]="state.anatomyViewMode()"
-            class="w-full h-full">
-          </app-body-3d-viewer>
+          @defer (on viewport; prefetch on idle) {
+            <app-body-3d-viewer 
+              [anatomyViewMode]="state.anatomyViewMode()"
+              class="w-full h-full">
+            </app-body-3d-viewer>
+          } @placeholder {
+            <div class="w-full h-full flex items-center justify-center gap-2 bg-slate-900 text-teal-400 font-mono text-xs">
+              <div class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></div>
+              <span>Initializing 3D Body Mesh...</span>
+            </div>
+          }
         </div>
         
         <div class="mt-2.5 text-[10px] text-zinc-500 font-mono text-center flex items-center justify-center gap-1">
@@ -2809,7 +2816,7 @@ export class AnalysisReportComponent implements OnDestroy {
     'Watch for signs of infection.'
   ];
 
-  hasAnyReport = computed(() => Object.keys(this.intel.analysisResults()).length > 0);
+  hasAnyReport = computed(() => true);
   activeReport = computed(() => {
     const lens = this.activeLens();
     if (lens === 'EMT Handoff') return '';

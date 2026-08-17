@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi, expect } from 'vitest';
 import { Injector, runInInjectionContext, NgZone } from '@angular/core';
 import { WebMcpRegistrationService } from './webmcp-registration.service';
 import { PatientStateService } from './patient-state.service';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';
 import { ExportService } from './export.service';
 import { TeledentistryService } from './teledentistry.service';
-import { GcpHealthcareApiService } from './gcp-healthcare-api.service';
+import { GcpHealthcareApiService } from './fhir/gcp-healthcare-api.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
 
@@ -125,10 +125,16 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 17 WebMCP agentic tools on modelContext', () => {
+  it('should register all 46 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(17);
+    expect(registeredTools.size).toBe(46);
+    expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
+    expect(registeredTools.has('get_healing_postcards')).toBe(true);
+    expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
+    expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
+    expect(registeredTools.has('query_mandiant_threat_intelligence_and_defense')).toBe(true);
+    expect(registeredTools.has('administer_clinical_mandarinate_exam')).toBe(true);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -291,9 +297,274 @@ describe('WebMcpRegistrationService', () => {
     expect(mockMoeRouter.setCustomThinkingBudget).toHaveBeenCalledWith(8192);
   });
 
+  it('should execute analyze_systemic_inflammatory_burden tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('analyze_systemic_inflammatory_burden');
+
+    const result = await tool.execute({ hsCrp: 4.5, ppd: 5.0, sbp: 135 });
+    expect(result.content[0].text).toContain('sibiScore');
+    expect(result.content[0].text).toContain('cvRiskMultiplier');
+  });
+
+  it('should execute assess_cochrane_risk_of_bias tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('assess_cochrane_risk_of_bias');
+
+    const result = await tool.execute({ studyTitle: 'RCT of High Dose EPA/DHA', randomization: 'LOW', missingData: 'LOW' });
+    expect(result.content[0].text).toContain('LOW_RISK_OF_BIAS');
+  });
+
+  it('should execute query_biophysical_substrate_params tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('query_biophysical_substrate_params');
+
+    const result = await tool.execute({ tissueType: 'bone' });
+    expect(result.content[0].text).toContain('microgravityResorptionRate');
+  });
+
+  it('should execute evaluate_irmaa_medicare_surcharge_and_ssa44_appeal tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_irmaa_medicare_surcharge_and_ssa44_appeal');
+
+    const result = await tool.execute({ magi: 140000, filingStatus: 'single', lifeChangingEvents: ['WORK_REDUCTION'] });
+    expect(result.content[0].text).toContain('Tier 2 Surcharge');
+    expect(result.content[0].text).toContain('estimatedAnnualSavings');
+  });
+
+  it('should execute evaluate_medicare_billing_and_gfe_eligibility tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_medicare_billing_and_gfe_eligibility');
+
+    const result = await tool.execute({ annualRxCost: 3500, daysDeviceTransmitted: 18, clinicalMinutesLogged: 22, annualIncome: 25000 });
+    expect(result.content[0].text).toContain('Protected by Inflation Reduction Act');
+    expect(result.content[0].text).toContain('100% Charity Care discount');
+  });
+
+  it('should execute evaluate_hedis_quality_measures_and_care_gaps tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_hedis_quality_measures_and_care_gaps');
+
+    const result = await tool.execute({ systolicBp: 125, diastolicBp: 80, hbA1c: 7.1 });
+    expect(result.content[0].text).toContain('overallStarRating');
+    expect(result.content[0].text).toContain('isQualityBonusEligible');
+  });
+
+  it('should execute submit_fhir_davinci_prior_authorization_claim tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('submit_fhir_davinci_prior_authorization_claim');
+
+    const result = await tool.execute({ cptCode: '70553', icd10DiagnosisCodes: ['G30.9'] });
+    expect(result.content[0].text).toContain('ClaimResponse');
+    expect(result.content[0].text).toContain('approved');
+  });
+
+  it('should execute crosswalk_snomed_ct_to_icd10_and_cpt tool', async () => {
+    service.registerTools({});
+    expect(registeredTools.has('crosswalk_snomed_ct_to_icd10_and_cpt')).toBe(true);
+    expect(registeredTools.has('analyze_webgpu_bio_signal_tremor_and_rppg')).toBe(true);
+    const tool = registeredTools.get('crosswalk_snomed_ct_to_icd10_and_cpt');
+
+    const result = await tool.execute({ snomedCode: '26929004' });
+    expect(result.content[0].text).toContain('G30.9');
+    expect(result.content[0].text).toContain('http://snomed.info/sct');
+  });
+
+  it('should execute analyze_webgpu_bio_signal_tremor_and_rppg tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('analyze_webgpu_bio_signal_tremor_and_rppg');
+
+    const result = await tool.execute({ displacementsMm: [0, 2.5, -2.5, 2.5, -2.5] });
+    expect(result.content[0].text).toContain('100% CLIENT-SIDE WEBGPU COMPUTE GUARANTEE');
+    expect(result.content[0].text).toContain('tremor');
+  });
+
+  it('should execute calculate_clinical_game_theory_adherence_incentives tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('calculate_clinical_game_theory_adherence_incentives');
+
+    const result = await tool.execute({ annualCopayCostUsd: 480, estAnnualHospitalizationRiskUsd: 12500 });
+    expect(result.content[0].text).toContain('NASH EQUILIBRIUM REACHED');
+    expect(result.content[0].text).toContain('optimalRebateSubsidyUsd');
+  });
+
+  it('should execute prescribe_joy_and_playful_flourishing tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('prescribe_joy_and_playful_flourishing');
+
+    const result = await tool.execute({ patientId: 'p010' });
+    expect(result.content[0].text).toContain('prescriptions');
+    expect(result.content[0].text).toContain('compositeJoyIndex');
+  });
+
+  it('should execute match_clinical_trials_for_patient_conditions tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('match_clinical_trials_for_patient_conditions');
+
+    const result = await tool.execute({ conditionName: 'Parkinson Disease' });
+    expect(result.content[0].text).toContain('NCT05214789');
+    expect(result.content[0].text).toContain('RECRUITING');
+  });
+
+  it('should execute initiate_smart_on_fhir_ehr_launch tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('initiate_smart_on_fhir_ehr_launch');
+
+    const result = await tool.execute({ vendor: 'EPIC' });
+    expect(result.content[0].text).toContain('fhir.epic.com');
+    expect(result.content[0].text).toContain('authorizationUrl');
+  });
+
+  it('should execute calculate_medicare_irmaa_and_ssa44_appeals tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('calculate_medicare_irmaa_and_ssa44_appeals');
+
+    const result = await tool.execute({ magiUsd: 105000, filingStatus: 'single' });
+    expect(result.content[0].text).toContain('currentTier');
+    expect(result.content[0].text).toContain('appealAssessment');
+  });
+
+  it('should execute render_webgpu_3d_organ_digital_twin tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('render_webgpu_3d_organ_digital_twin');
+
+    const result = await tool.execute({ organ: 'HEART', heartRateBpm: 80 });
+    expect(result.content[0].text).toContain('HEART');
+    expect(result.content[0].text).toContain('biophysics');
+  });
+
+  it('should execute guide_user_onboarding_walkthrough tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('guide_user_onboarding_walkthrough');
+
+    const result = await tool.execute({ action: 'START', persona: 'PATIENT' });
+    expect(result.content[0].text).toContain('PATIENT');
+    expect(result.content[0].text).toContain('currentStepIndex');
+  });
+
+  it('should execute navigate_user_way_back_home tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('navigate_user_way_back_home');
+
+    const result = await tool.execute({});
+    expect(result.content[0].text).toContain('SUCCESS');
+    expect(result.content[0].text).toContain('chart');
+  });
+
+  it('should execute retrieve_helpful_community_and_clinical_lists tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('retrieve_helpful_community_and_clinical_lists');
+
+    const result = await tool.execute({ category: 'EMERGENCY_HOTLINES' });
+    expect(result.content[0].text).toContain('EMERGENCY_HOTLINES');
+    expect(result.content[0].text).toContain('988');
+  });
+
+  it('should execute translate_clinical_care_plan_multilingual tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('translate_clinical_care_plan_multilingual');
+
+    const result = await tool.execute({ text: 'Monitor vitals', targetLanguageCode: 'es' });
+    expect(result.content[0].text).toContain('Resumen en Español');
+    expect(result.content[0].text).toContain('es');
+  });
+
+  it('should execute calculate_who_cdc_health_equity_index tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('calculate_who_cdc_health_equity_index');
+
+    const result = await tool.execute({ sdoh: { foodInsecurity: true } });
+    expect(result.content[0].text).toContain('compositeEquityIndex');
+    expect(result.content[0].text).toContain('SNAP');
+  });
+
+  it('should execute recommend_sustainability_and_eco_health_actions tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('recommend_sustainability_and_eco_health_actions');
+
+    const result = await tool.execute({ category: 'COMPUTE_ENERGY' });
+    expect(result.content[0].text).toContain('COMPUTE_ENERGY');
+    expect(result.content[0].text).toContain('WebGPU');
+  });
+
+  it('should execute localize_community_eco_health_hubs tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('localize_community_eco_health_hubs');
+
+    const result = await tool.execute({ hubType: 'FOREST_PARK' });
+    expect(result.content[0].text).toContain('Golden Gate Park');
+    expect(result.content[0].text).toContain('phytoncides');
+  });
+
+  it('should execute export_complete_fhir_r4_health_sovereignty_bundle tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('export_complete_fhir_r4_health_sovereignty_bundle');
+
+    const result = await tool.execute({ format: 'JSON' });
+    expect(result.content[0].text).toContain('Bundle');
+    expect(result.content[0].text).toContain('collection');
+  });
+
+  it('should execute open_zen_sanctuary tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('open_zen_sanctuary');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({});
+    expect(result.content[0].text).toContain('ACTIVE');
+    expect(result.content[0].text).toContain('432Hz Tibetan Singing Bowl');
+  });
+
+  it('should execute get_healing_postcards tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('get_healing_postcards');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ limit: 3 });
+    expect(result.content[0].text).toContain('postcardsCount');
+  });
+
+  it('should execute evaluate_ssa_disability_and_blue_book_listings tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_ssa_disability_and_blue_book_listings');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      claimantAge: 58,
+      primaryDiagnosis: 'Chronic Heart Failure',
+      ejectionFractionPercent: 25
+    });
+    expect(result.content[0].text).toContain('SSA-FHIR-PROV-');
+    expect(result.content[0].text).toContain('4.02');
+  });
+
+  it('should register all 46 WebMCP agentic tools on modelContext', () => {
+    service.registerTools({});
+
+    expect(registeredTools.size).toBe(46);
+    expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
+    expect(registeredTools.has('get_healing_postcards')).toBe(true);
+    expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
+    expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
+    expect(registeredTools.has('query_mandiant_threat_intelligence_and_defense')).toBe(true);
+    expect(registeredTools.has('administer_clinical_mandarinate_exam')).toBe(true);
+  });
+
+  it('should execute administer_clinical_mandarinate_exam tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('administer_clinical_mandarinate_exam');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      caseId: 'CASE-CARDIO-01'
+    });
+    expect(result.content[0].text).toContain('CASE-CARDIO-01');
+    expect(result.content[0].text).toContain('overallScore');
+    expect(result.content[0].text).toContain('KEJU-CERT-');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(17);
+    expect((service as any).mcpControllers.length).toBe(46);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

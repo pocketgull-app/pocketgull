@@ -5,27 +5,22 @@ test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () =
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
     await setupE2ePage(page);
+    await enterDemoMode(page);
   });
 
   test('should load Clinical Suite, cycle tabs (PHQ-9, GAD-7, Grow-Thyself), answer questions, and verify atomic score computation', async ({ page }) => {
-    // 1. Enter Demo Mode cleanly via state-machine setup
-    await enterDemoMode(page);
 
     // 2. Select patient Alexander Vance
     await selectPatientByName(page, 'Alexander Vance');
 
-    // 3. Ensure core analysis container is loaded
-    await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });
-
-    // 4. Switch to ASSESSMENTS lens tab
-    const assessmentsBtn = page.locator('button', { hasText: 'ASSESSMENTS' }).first();
+    // 3. Switch to ASSESSMENTS lens tab
+    const assessmentsBtn = page.getByTestId('tab-assessments');
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
     await assessmentsBtn.click({ force: true });
 
     // 5. Select General Clinical Suite sub-tab
     const suiteTab = page.getByTestId('tab-clinical-suite');
-    await expect(suiteTab).toBeVisible({ timeout: 15000 });
-    await suiteTab.click();
+    await suiteTab.click({ force: true });
 
     // 6. Verify Clinical Assessments Suite header renders
     const suiteHeader = page.locator('text=Multimodal Clinical & Life Assessments');

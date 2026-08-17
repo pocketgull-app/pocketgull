@@ -80,7 +80,6 @@
               "xmlhttprequest-ssl",
               "@google-cloud/vertexai",
               "@google-cloud/vertexai/build/src/resources/index.js",
-              "crypto-js",
               "firebase/data-connect",
               "jspdf",
               "fflate",
@@ -105,7 +104,9 @@
               "swagger-ui-express",
               "genkit",
               "@genkit-ai/googleai",
-              "zod"
+              "zod",
+              "@google-cloud/firestore",
+              "stripe"
             ],
             "security": {
               "allowedHosts": [

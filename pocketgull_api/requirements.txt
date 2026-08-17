@@ -3,7 +3,7 @@
 
 # Core — required
 fastapi==0.141.1
-uvicorn[standard]==0.52.0
+uvicorn==0.52.0
 pydantic==2.13.4
 numpy==2.5.1
 
@@ -25,4 +25,4 @@ scikit-learn==1.9.0
 python-multipart==0.0.32
 
 # Development
-httpx==0.28.1       # for testing async endpoints
+httpx==0.28.1

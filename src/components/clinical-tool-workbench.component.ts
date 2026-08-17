@@ -2,11 +2,26 @@ import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DoubleFlipStateMachineService, DoubleClickState } from '../services/double-flip-state-machine.service';
 import { PatientStateService } from '../services/patient-state.service';
-import { BioHapticFeedbackService } from '../services/bio-haptic-feedback.service';
+import { BioHapticFeedbackService, SolfeggioTone } from '../services/hardware/bio-haptic-feedback.service';
 import { ResidencyOsceSimulatorComponent } from './residency-osce-simulator.component';
 import { SlackIntegrationCardComponent } from './slack-integration-card.component';
 import { PopulationHealthEquityHubComponent } from './population-health-equity-hub.component';
 import { TeledentistryOdontogramComponent } from './teledentistry-odontogram.component';
+import { JoyPlayfulFlourishingCardComponent } from './joy-playful-flourishing-card.component';
+import { SsaDisabilityNavigatorComponent } from './shared/ssa-disability-navigator.component';
+import { JurisdictionMatrixCardComponent } from './shared/jurisdiction-matrix-card.component';
+import { MandiantCyberDefenseCardComponent } from './shared/mandiant-cyber-defense-card.component';
+import { ClinicalMandarinateExamCardComponent } from './shared/clinical-mandarinate-exam-card.component';
+
+export interface IPatientEducationLens {
+  plainLanguageTitle: string;
+  gradeLevel: string;
+  plainLanguageDiagnosis: string;
+  biophysicalAnalogy: string;
+  socraticInquiry: string;
+  spanishTranslation: string;
+  homeCareSteps: string[];
+}
 
 export interface IWorkbenchToolStatus {
   id: string;
@@ -17,6 +32,10 @@ export interface IWorkbenchToolStatus {
   latencyMs: number;
   isFlipped: boolean;
   cognitiveInsight: string;
+  isAutopilotSurfaced?: boolean;
+  autopilotPriority?: 'HIGH' | 'MEDIUM';
+  autopilotReason?: string;
+  patientEducation?: IPatientEducationLens;
 }
 
 @Component({
@@ -27,7 +46,12 @@ export interface IWorkbenchToolStatus {
     ResidencyOsceSimulatorComponent,
     SlackIntegrationCardComponent,
     PopulationHealthEquityHubComponent,
-    TeledentistryOdontogramComponent
+    TeledentistryOdontogramComponent,
+    JoyPlayfulFlourishingCardComponent,
+    SsaDisabilityNavigatorComponent,
+    JurisdictionMatrixCardComponent,
+    MandiantCyberDefenseCardComponent,
+    ClinicalMandarinateExamCardComponent
   ],
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl max-w-7xl mx-auto space-y-6">
@@ -36,13 +60,13 @@ export interface IWorkbenchToolStatus {
       <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-zinc-800">
         <div>
           <div class="flex items-center gap-2">
-            <h2 class="text-xl font-bold tracking-tight text-white">🔬 Clinical Tool Workbench & Diagnostics Lab</h2>
+            <h2 class="text-xl font-bold tracking-tight text-white">🔬 Clinical Tool Workbench & Generative UI Lab</h2>
             <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
               NN/g Heuristic #5 Compliant
             </span>
           </div>
           <p class="text-xs text-zinc-400 mt-1">
-            Double-click any card (<code class="text-amber-400">dblclick 🔄</code>) to trigger the safety interlock and flip between Clinical Controls and Cognitive Diagnostics.
+            Double-click any card (<code class="text-amber-400">dblclick 🔄</code>) to trigger the safety interlock and flip between <strong class="text-zinc-200">Clinician Controls (Front)</strong> and <strong class="text-emerald-400">Patient Education Lens (Back)</strong>.
           </p>
         </div>
 
@@ -55,41 +79,84 @@ export interface IWorkbenchToolStatus {
           </div>
           <button
             (click)="runAllDiagnostics()"
-            class="px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 rounded-lg shadow-md transition-all active:scale-95 flex items-center gap-2"
+            class="px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 rounded-lg shadow-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
           >
             <span>⚡ Run Self-Diagnostic Suite</span>
           </button>
         </div>
       </div>
 
-      <!-- State Machine Safety Interlock HUD Banner -->
-      <div class="p-4 rounded-xl bg-gradient-to-r from-zinc-900 via-amber-950/20 to-zinc-900 border border-amber-500/20 flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">
-            🔄
-          </div>
-          <div>
-            <div class="text-xs font-medium text-amber-400">Double-Flip Safety Interlock Status</div>
-            <div class="text-sm font-semibold text-zinc-200 mt-0.5">
-              State: <span class="font-mono text-cyan-300">{{ stateMachine.doubleClickStatus().state }}</span>
-              <span class="mx-2 text-zinc-600">|</span>
-              Telemetry: <span class="text-emerald-400">{{ stateMachine.doubleFlipTelemetry().vagalSympatheticBalance }}</span>
+      <!-- State Machine Safety Interlock & Generative UI Autopilot HUD Banner -->
+      <div class="p-4 rounded-xl bg-gradient-to-r from-zinc-900 via-amber-950/20 to-zinc-900 border border-amber-500/20 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">
+              🔄
             </div>
+            <div>
+              <div class="text-xs font-medium text-amber-400">Double-Flip Safety Interlock Status</div>
+              <div class="text-sm font-semibold text-zinc-200 mt-0.5">
+                State: <span class="font-mono text-cyan-300">{{ stateMachine.doubleClickStatus().state }}</span>
+                <span class="mx-2 text-zinc-600">|</span>
+                Telemetry: <span class="text-emerald-400">{{ stateMachine.doubleFlipTelemetry().vagalSympatheticBalance }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 text-xs font-mono text-zinc-400">
+            <div>Flips: <span class="text-amber-400 font-bold">{{ stateMachine.doubleFlipTelemetry().flipCount }}</span></div>
+            <div>Hysteresis: <span class="text-cyan-400 font-bold">{{ stateMachine.doubleFlipTelemetry().hysteresisRatio }}</span></div>
           </div>
         </div>
 
-        <div class="flex items-center gap-4 text-xs font-mono text-zinc-400">
-          <div>Flips: <span class="text-amber-400 font-bold">{{ stateMachine.doubleFlipTelemetry().flipCount }}</span></div>
-          <div>Hysteresis: <span class="text-cyan-400 font-bold">{{ stateMachine.doubleFlipTelemetry().hysteresisRatio }}</span></div>
+        <!-- Generative UI Autopilot Directive Input -->
+        <div class="pt-3 border-t border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2 text-teal-400 font-semibold font-mono">
+            <span>✨ Generative UI Autopilot:</span>
+          </div>
+          <div class="flex-1 min-w-[280px]">
+            <input
+              type="text"
+              [value]="intakeDirectiveQuery()"
+              (input)="onIntakeInput($event)"
+              placeholder="Enter patient symptoms (e.g. 'FDI tooth 36 pain + glucose 132', 'chest tightness', 'sleep hr spike')..."
+              class="w-full px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition font-mono text-xs"
+            />
+          </div>
+          <div class="flex items-center gap-2">
+            <button (click)="applyPresetDirective('dental')"
+                    class="px-2.5 py-1 rounded bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/20 transition cursor-pointer text-[11px]">
+              🦷 FDI Tooth 36 + SIBI
+            </button>
+            <button (click)="applyPresetDirective('respiratory')"
+                    class="px-2.5 py-1 rounded bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/20 transition cursor-pointer text-[11px]">
+              🫁 Dyspnea & Cough
+            </button>
+            <button (click)="applyPresetDirective('fhir')"
+                    class="px-2.5 py-1 rounded bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/20 transition cursor-pointer text-[11px]">
+              📄 FHIR R4 Bundle
+            </button>
+            <button (click)="clearAutopilotDirective()"
+                    class="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400 transition cursor-pointer text-[11px]">
+              Reset
+            </button>
+          </div>
         </div>
-           <!-- Navigation Tabs -->
+      </div>
+
+      <!-- Navigation Tabs -->
       <div class="flex flex-wrap items-center gap-2 p-1.5 bg-zinc-900 rounded-xl border border-zinc-800 text-xs font-bold font-mono">
         <button (click)="activeWorkbenchTab.set('tools')"
                 [class.bg-cyan-500]="activeWorkbenchTab() === 'tools'"
                 [class.text-zinc-950]="activeWorkbenchTab() === 'tools'"
                 [class.text-zinc-300]="activeWorkbenchTab() !== 'tools'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer">
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer flex items-center gap-1.5">
           🛠️ Diagnostic Tools
+          @if (surfacedCount() > 0) {
+            <span class="px-1.5 py-0.5 text-[10px] rounded-full bg-teal-400 text-zinc-950 font-bold animate-pulse">
+              {{ surfacedCount() }} surfaced
+            </span>
+          }
         </button>
         <button (click)="activeWorkbenchTab.set('osce')"
                 [class.bg-amber-500]="activeWorkbenchTab() === 'osce'"
@@ -119,6 +186,41 @@ export interface IWorkbenchToolStatus {
                 class="px-3.5 py-2 rounded-lg transition cursor-pointer">
           🦷 Teledentistry & Odontogram
         </button>
+        <button (click)="activeWorkbenchTab.set('joy')"
+                [class.bg-amber-500]="activeWorkbenchTab() === 'joy'"
+                [class.text-zinc-950]="activeWorkbenchTab() === 'joy'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'joy'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer">
+          ☀️ Joy & Play Matrix
+        </button>
+        <button (click)="activeWorkbenchTab.set('ssa')"
+                [class.bg-blue-600]="activeWorkbenchTab() === 'ssa'"
+                [class.text-white]="activeWorkbenchTab() === 'ssa'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'ssa'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          🏛️ SSA Disability Navigator
+        </button>
+        <button (click)="activeWorkbenchTab.set('jurisdiction')"
+                [class.bg-indigo-600]="activeWorkbenchTab() === 'jurisdiction'"
+                [class.text-white]="activeWorkbenchTab() === 'jurisdiction'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'jurisdiction'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          🌐 Global & State Compliance
+        </button>
+        <button (click)="activeWorkbenchTab.set('mandiant')"
+                [class.bg-red-600]="activeWorkbenchTab() === 'mandiant'"
+                [class.text-white]="activeWorkbenchTab() === 'mandiant'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'mandiant'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          🛡️ Mandiant Threat Defense
+        </button>
+        <button (click)="activeWorkbenchTab.set('mandarinate')"
+                [class.bg-amber-600]="activeWorkbenchTab() === 'mandarinate'"
+                [class.text-zinc-950]="activeWorkbenchTab() === 'mandarinate'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'mandarinate'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          📜 Keju AI Exam Arena
+        </button>
       </div>
 
       @if (activeWorkbenchTab() === 'tools') {
@@ -127,32 +229,48 @@ export interface IWorkbenchToolStatus {
           @for (tool of tools(); track tool.id) {
             <div
               (dblclick)="onCardDblClick(tool.id)"
-              class="relative min-h-[220px] rounded-xl border transition-all duration-300 cursor-pointer select-none group perspective-1000 p-4 flex flex-col justify-between"
+              class="relative min-h-[260px] rounded-xl border transition-all duration-300 cursor-pointer select-none group perspective-1000 p-4 flex flex-col justify-between"
               [ngClass]="{
-                'bg-zinc-900/80 border-zinc-800 hover:border-teal-500/50 hover:shadow-lg hover:shadow-teal-950/30': !tool.isFlipped,
-                'bg-zinc-900 border-amber-500/40 shadow-xl shadow-amber-950/40 ring-1 ring-amber-500/20': tool.isFlipped
+                'bg-zinc-900/80 border-zinc-800 hover:border-teal-500/50 hover:shadow-lg hover:shadow-teal-950/30': !tool.isFlipped && !tool.isAutopilotSurfaced,
+                'bg-zinc-900 border-teal-500/80 shadow-lg shadow-teal-950/50 ring-2 ring-teal-500/30': !tool.isFlipped && tool.isAutopilotSurfaced,
+                'bg-zinc-900 border-emerald-500/60 shadow-xl shadow-emerald-950/40 ring-1 ring-emerald-500/30': tool.isFlipped
               }"
             >
-              <!-- FRONT SIDE: Clinical Controls -->
+              <!-- FRONT SIDE: Clinician Control Panel -->
               @if (!tool.isFlipped) {
                 <div>
                   <div class="flex items-center justify-between text-xs mb-2">
                     <span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono">{{ tool.category }}</span>
-                    <span
-                      class="px-2 py-0.5 rounded font-mono font-semibold text-[10px]"
-                      [ngClass]="{
-                        'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20': tool.status === 'PASS',
-                        'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20': tool.status === 'OPERATIONAL',
-                        'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse': tool.status === 'TESTING'
-                      }"
-                    >
-                      {{ tool.status }}
-                    </span>
+                    
+                    <div class="flex items-center gap-1.5">
+                      @if (tool.isAutopilotSurfaced) {
+                        <span class="px-1.5 py-0.5 rounded font-mono font-bold text-[9px] bg-teal-500/20 text-teal-300 border border-teal-500/40 animate-pulse">
+                          ✨ {{ tool.autopilotPriority }} SURFACED
+                        </span>
+                      }
+                      <span
+                        class="px-2 py-0.5 rounded font-mono font-semibold text-[10px]"
+                        [ngClass]="{
+                          'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20': tool.status === 'PASS',
+                          'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20': tool.status === 'OPERATIONAL',
+                          'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse': tool.status === 'TESTING'
+                        }"
+                      >
+                        {{ tool.status }}
+                      </span>
+                    </div>
                   </div>
 
                   <h3 class="text-sm font-semibold text-zinc-100 group-hover:text-teal-400 transition-colors">
                     {{ tool.name }}
                   </h3>
+
+                  @if (tool.isAutopilotSurfaced && tool.autopilotReason) {
+                    <div class="my-2 p-2 rounded bg-teal-950/40 border border-teal-500/30 text-[11px] text-teal-200 leading-snug">
+                      <strong>AI Dispatch Rationale:</strong> {{ tool.autopilotReason }}
+                    </div>
+                  }
+
                   <p class="text-xs text-zinc-400 mt-1.5 leading-relaxed">
                     {{ tool.description }}
                   </p>
@@ -162,37 +280,70 @@ export interface IWorkbenchToolStatus {
                   <span class="font-mono">Latency: <span class="text-zinc-300">{{ tool.latencyMs }}ms</span></span>
                   <button type="button" (click)="onCardDblClick(tool.id); $event.stopPropagation()"
                           class="text-amber-400 hover:text-amber-300 font-medium cursor-pointer transition flex items-center gap-1">
-                    Double-click to Flip 🔄
+                    Double-click for Patient Lens 🔄
                   </button>
                 </div>
               } @else {
-                <!-- BACK SIDE: Cognitive Diagnostics & Mechanism Insight -->
-                <div class="space-y-2">
-                  <div class="flex items-center justify-between text-xs pb-1.5 border-b border-amber-500/20">
-                    <span class="font-bold text-amber-400 flex items-center gap-1">
-                      🧠 Cognitive Diagnostic Insight
+                <!-- BACK SIDE: Patient Education Lens (Double-Flip Patient-Facing View) -->
+                <div class="space-y-2.5">
+                  <div class="flex items-center justify-between text-xs pb-1.5 border-b border-emerald-500/30">
+                    <span class="font-bold text-emerald-400 flex items-center gap-1">
+                      🌿 Patient Education Lens
                     </span>
-                    <button type="button" (click)="onCardDblClick(tool.id); $event.stopPropagation()"
-                            class="text-[10px] text-zinc-400 hover:text-zinc-200 font-mono cursor-pointer">
-                      Flipped View 🔄
-                    </button>
+                    <span class="px-1.5 py-0.5 rounded font-mono text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      {{ tool.patientEducation?.gradeLevel || 'Grade 6.2' }}
+                    </span>
                   </div>
 
-                  <p class="text-xs text-zinc-300 leading-relaxed font-sans">
-                    {{ tool.cognitiveInsight }}
-                  </p>
+                  <!-- Plain Language Diagnosis -->
+                  <div>
+                    <div class="text-[11px] font-semibold text-zinc-200">
+                      {{ tool.patientEducation?.plainLanguageTitle || tool.name }}
+                    </div>
+                    <p class="text-xs text-zinc-300 mt-0.5 leading-relaxed font-sans">
+                      {{ tool.patientEducation?.plainLanguageDiagnosis || tool.cognitiveInsight }}
+                    </p>
+                  </div>
+
+                  <!-- Biophysical Analogy Callout -->
+                  @if (tool.patientEducation?.biophysicalAnalogy) {
+                    <div class="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-[11px] text-emerald-200 leading-snug">
+                      <strong class="text-emerald-300">💡 Everyday Analogy:</strong>
+                      <p class="mt-0.5 text-zinc-300 font-sans">
+                        {{ tool.patientEducation?.biophysicalAnalogy }}
+                      </p>
+                    </div>
+                  }
+
+                  <!-- Socratic Health Literacy Question -->
+                  @if (tool.patientEducation?.socraticInquiry) {
+                    <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-[11px] text-cyan-200 leading-snug">
+                      <strong class="text-cyan-300">❓ Socratic Inquiry:</strong>
+                      <p class="mt-0.5 text-zinc-300 italic font-sans">
+                        "{{ tool.patientEducation?.socraticInquiry }}"
+                      </p>
+                    </div>
+                  }
+
+                  <!-- Section 1557 ACA Spanish Badge -->
+                  @if (tool.patientEducation?.spanishTranslation) {
+                    <div class="text-[10px] text-teal-400 font-mono flex items-center gap-1">
+                      <span class="px-1 py-0.5 rounded bg-teal-500/10 border border-teal-500/20">Section 1557 ACA</span>
+                      <span class="truncate">{{ tool.patientEducation?.spanishTranslation }}</span>
+                    </div>
+                  }
                 </div>
 
                 <div class="pt-2 border-t border-zinc-800 flex items-center justify-between text-[11px]">
                   <button
                     (click)="testSingleTool(tool.id); $event.stopPropagation()"
-                    class="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-medium transition-colors cursor-pointer"
+                    class="px-2.5 py-1 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-medium transition-colors cursor-pointer"
                   >
-                    ⚡ Trigger Test
+                    ⚡ Test Audio/Print
                   </button>
                   <button type="button" (click)="onCardDblClick(tool.id); $event.stopPropagation()"
                           class="text-zinc-400 hover:text-zinc-200 text-[10px] cursor-pointer">
-                    Return ↩️
+                    Return to Clinician ↩️
                   </button>
                 </div>
               }
@@ -207,6 +358,16 @@ export interface IWorkbenchToolStatus {
         <app-population-health-equity-hub />
       } @else if (activeWorkbenchTab() === 'dental') {
         <app-teledentistry-odontogram />
+      } @else if (activeWorkbenchTab() === 'joy') {
+        <app-joy-playful-flourishing-card />
+      } @else if (activeWorkbenchTab() === 'ssa') {
+        <app-ssa-disability-navigator />
+      } @else if (activeWorkbenchTab() === 'jurisdiction') {
+        <app-jurisdiction-matrix-card />
+      } @else if (activeWorkbenchTab() === 'mandiant') {
+        <app-mandiant-cyber-defense-card />
+      } @else if (activeWorkbenchTab() === 'mandarinate') {
+        <app-clinical-mandarinate-exam-card />
       }
 
     </div>
@@ -216,7 +377,8 @@ export class ClinicalToolWorkbenchComponent {
   readonly stateMachine = inject(DoubleFlipStateMachineService);
   private readonly haptics = inject(BioHapticFeedbackService);
 
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental'>('tools');
+  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate'>('tools');
+  readonly intakeDirectiveQuery = signal<string>('');
 
   readonly tools = signal<IWorkbenchToolStatus[]>([
     {
@@ -227,37 +389,16 @@ export class ClinicalToolWorkbenchComponent {
       status: 'PASS',
       latencyMs: 12,
       isFlipped: false,
-      cognitiveInsight: 'Bistable hysteresis model prevents accidental state destruction by requiring a 300ms double-click confirmation window.'
-    },
-    {
-      id: 'tool_3d_hominid',
-      name: '3D Hominid & Primate Anatomy Engine',
-      category: '3D & Spatial',
-      description: 'WebGL 2 procedural skeletal model with Homo Sapiens & Pongo Pygmaeus archetypes.',
-      status: 'PASS',
-      latencyMs: 24,
-      isFlipped: false,
-      cognitiveInsight: 'Biophysical Subsurface Scattering (SSS) & Edwin Smith Surgical Codex PBR textures map tissue strain in real time.'
-    },
-    {
-      id: 'tool_fhir_smart',
-      name: 'SMART on FHIR R4 Bundle Exporter',
-      category: 'FHIR & Security',
-      description: 'DOMPurify sanitized FHIR R4 export engine with HIPAA Safe Harbor §164.514 compliance.',
-      status: 'PASS',
-      latencyMs: 18,
-      isFlipped: false,
-      cognitiveInsight: 'HIPAA §164.514 Safe Harbor de-identification serializes symptoms, vitals, and conditions into standard FHIR bundles.'
-    },
-    {
-      id: 'tool_audio_respiratory',
-      name: 'Audio Respiratory Acoustic Analyzer',
-      category: 'Multimodal Sensor',
-      description: 'Real-time Web Audio spectral FFT dyspnea & cough frequency analyzer.',
-      status: 'PASS',
-      latencyMs: 15,
-      isFlipped: false,
-      cognitiveInsight: '40Hz Gamma wave resonance and respiratory rate spectral density detect early pulmonary distress signals.'
+      cognitiveInsight: 'Bistable hysteresis model prevents accidental state destruction by requiring a 300ms double-click confirmation window.',
+      patientEducation: {
+        plainLanguageTitle: 'Double-Click Safety Interlock',
+        gradeLevel: 'Grade 6.1',
+        plainLanguageDiagnosis: 'A 2-step double-click confirmation window that keeps your medical data safe and prevents accidental button presses.',
+        biophysicalAnalogy: 'Think of it like a child-proof bottle cap: it requires two intentional steps so nothing gets changed by mistake.',
+        socraticInquiry: 'Would you feel more comfortable knowing every clinical action requires a double-confirmation before making changes?',
+        spanishTranslation: 'Interbloqueo de seguridad de doble clic para protección de datos.',
+        homeCareSteps: ['Review your health plan twice daily', 'Confirm medication dosages before taking']
+      }
     },
     {
       id: 'tool_teledentistry',
@@ -267,7 +408,73 @@ export class ClinicalToolWorkbenchComponent {
       status: 'PASS',
       latencyMs: 22,
       isFlipped: false,
-      cognitiveInsight: 'Periodontal probing depth (PPD >= 4mm) cross-references cardiovascular & HbA1c glycemic risk trajectories.'
+      cognitiveInsight: 'Periodontal probing depth (PPD >= 4mm) cross-references cardiovascular & HbA1c glycemic risk trajectories.',
+      patientEducation: {
+        plainLanguageTitle: 'Gum & Blood Sugar Connection',
+        gradeLevel: 'Grade 6.2',
+        plainLanguageDiagnosis: 'Deep gum pockets around your teeth can cause mild body-wide swelling that affects how your body handles morning blood sugar.',
+        biophysicalAnalogy: 'Think of healthy gums like a sealed door. When gum pockets get deeper than 4mm, bacteria slip through into your bloodstream, making your body work harder to balance blood sugar.',
+        socraticInquiry: 'Would you like to see how taking care of your gums can help keep your morning blood sugar numbers steady?',
+        spanishTranslation: 'Conexión entre salud bucal y control de glucosa en sangre.',
+        homeCareSteps: ['Brush twice daily with soft bristles', 'Rinse with antimicrobial mouthwash', 'Schedule 2-week follow-up']
+      }
+    },
+    {
+      id: 'tool_3d_hominid',
+      name: '3D Hominid & Primate Anatomy Engine',
+      category: '3D & Spatial',
+      description: 'WebGL 2 procedural skeletal model with Homo Sapiens & Pongo Pygmaeus archetypes.',
+      status: 'PASS',
+      latencyMs: 24,
+      isFlipped: false,
+      cognitiveInsight: 'Biophysical Subsurface Scattering (SSS) & Edwin Smith Surgical Codex PBR textures map tissue strain in real time.',
+      patientEducation: {
+        plainLanguageTitle: '3D Body & Joint Map',
+        gradeLevel: 'Grade 6.0',
+        plainLanguageDiagnosis: 'An interactive 3D model that highlights exactly where your body feels pressure or muscle tightness.',
+        biophysicalAnalogy: 'Think of your muscles and bones like a bridge structure: when one cable gets tight, we can see where the pressure builds.',
+        socraticInquiry: 'Would you like to see a 3D picture of your joints to understand where your tightness is coming from?',
+        spanishTranslation: 'Mapa tridimensional de músculos y articulaciones.',
+        homeCareSteps: ['Perform gentle daily stretching', 'Apply warm compress for 15 minutes', 'Stay hydrated']
+      }
+    },
+    {
+      id: 'tool_fhir_smart',
+      name: 'SMART on FHIR R4 Bundle Exporter',
+      category: 'FHIR & Security',
+      description: 'DOMPurify sanitized FHIR R4 export engine with HIPAA Safe Harbor §164.514 compliance.',
+      status: 'PASS',
+      latencyMs: 18,
+      isFlipped: false,
+      cognitiveInsight: 'HIPAA §164.514 Safe Harbor de-identification serializes symptoms, vitals, and conditions into standard FHIR bundles.',
+      patientEducation: {
+        plainLanguageTitle: 'Private Health Records Exporter',
+        gradeLevel: 'Grade 5.9',
+        plainLanguageDiagnosis: 'A secure tool that cleans your health summary so it can be shared with your other doctors without leaking personal ID numbers.',
+        biophysicalAnalogy: 'Think of it like putting your medical record in an envelope where your name is blacked out for total privacy.',
+        socraticInquiry: 'Would you like a private digital copy of your health summary sent directly to your phone?',
+        spanishTranslation: 'Exportación privada y segura de registros de salud.',
+        homeCareSteps: ['Keep a digital copy of your care plan', 'Share health summary with primary doctor']
+      }
+    },
+    {
+      id: 'tool_audio_respiratory',
+      name: 'Audio Respiratory Acoustic Analyzer',
+      category: 'Multimodal Sensor',
+      description: 'Real-time Web Audio spectral FFT dyspnea & cough frequency analyzer.',
+      status: 'PASS',
+      latencyMs: 15,
+      isFlipped: false,
+      cognitiveInsight: '40Hz Gamma wave resonance and respiratory rate spectral density detect early pulmonary distress signals.',
+      patientEducation: {
+        plainLanguageTitle: 'Breathing Sound & Rhythm Check',
+        gradeLevel: 'Grade 6.4',
+        plainLanguageDiagnosis: 'Listens to your breath rhythm to check how easily air flows in and out of your lungs.',
+        biophysicalAnalogy: 'Think of your airways like a clear drinking straw: when there is mild swelling, the sound changes slightly as air flows.',
+        socraticInquiry: 'Would you like to try a short guided breathing exercise to help relax your airway muscles?',
+        spanishTranslation: 'Análisis de ritmo respiratorio y flujo de aire.',
+        homeCareSteps: ['Practice 4-7-8 breathing twice daily', 'Use prescribed inhaler as directed']
+      }
     },
     {
       id: 'tool_3paradigm_matrix',
@@ -277,7 +484,16 @@ export class ClinicalToolWorkbenchComponent {
       status: 'PASS',
       latencyMs: 28,
       isFlipped: false,
-      cognitiveInsight: 'Synthesizes empirical Western biomarkers with TCM Du Mai channel stagnation and Ayurvedic Vata Pranavaha imbalance.'
+      cognitiveInsight: 'Synthesizes empirical Western biomarkers with TCM Du Mai channel stagnation and Ayurvedic Vata Pranavaha imbalance.',
+      patientEducation: {
+        plainLanguageTitle: 'Whole-Person Whole-Body Matrix',
+        gradeLevel: 'Grade 6.3',
+        plainLanguageDiagnosis: 'Combines modern lab tests with traditional wellness insights to look at sleep, digestion, and energy balance together.',
+        biophysicalAnalogy: 'Think of your health like an ecosystem: we look at your lab numbers, sleep patterns, and daily energy as one connected circle.',
+        socraticInquiry: 'Would you like to explore how adjusting your sleep timing can improve your morning energy levels?',
+        spanishTranslation: 'Matriz de salud integral y equilibrio corporal.',
+        homeCareSteps: ['Maintain regular bedtime schedule', 'Eat balanced whole food meals']
+      }
     },
     {
       id: 'tool_bio_haptics',
@@ -287,7 +503,16 @@ export class ClinicalToolWorkbenchComponent {
       status: 'PASS',
       latencyMs: 8,
       isFlipped: false,
-      cognitiveInsight: 'Dual-pulse haptic tactile rhythm (20ms-30ms-20ms) induces parasympathetic autonomic entrainment.'
+      cognitiveInsight: 'Dual-pulse haptic tactile rhythm (20ms-30ms-20ms) induces parasympathetic autonomic entrainment.',
+      patientEducation: {
+        plainLanguageTitle: 'Calming Heart-Rhythm Vibration',
+        gradeLevel: 'Grade 5.8',
+        plainLanguageDiagnosis: 'Gentle tactile vibrations on your phone or device that help slow down a racing pulse during stress.',
+        biophysicalAnalogy: 'Think of it like a soothing tapping rhythm on your shoulder that guides your heart back to a slow, steady pulse.',
+        socraticInquiry: 'Would you like to try feeling a gentle rhythm pulse on your phone for 60 seconds to lower your stress?',
+        spanishTranslation: 'Vibraciones rítmicas para calmar el ritmo cardíaco.',
+        homeCareSteps: ['Use haptic calming pulse during stress spikes', 'Combine with slow nasal breathing']
+      }
     },
     {
       id: 'tool_gemini_live',
@@ -297,13 +522,105 @@ export class ClinicalToolWorkbenchComponent {
       status: 'PASS',
       latencyMs: 45,
       isFlipped: false,
-      cognitiveInsight: 'InMemoryRunner ADK multi-turn streaming engine handles symptom management and live clinical strategy.'
+      cognitiveInsight: 'InMemoryRunner ADK multi-turn streaming engine handles symptom management and live clinical strategy.',
+      patientEducation: {
+        plainLanguageTitle: 'Live AI Health Assistant',
+        gradeLevel: 'Grade 6.0',
+        plainLanguageDiagnosis: 'A real-time voice and text assistant that answers your health questions instantly between clinic visits.',
+        biophysicalAnalogy: 'Think of it like a friendly nurse on call who can explain your doctor’s instructions whenever you need a reminder.',
+        socraticInquiry: 'Do you have any questions about your care plan that you would like your AI health assistant to explain right now?',
+        spanishTranslation: 'Asistente de salud con voz e inteligencia artificial en vivo.',
+        homeCareSteps: ['Ask AI assistant to review your care instructions', 'Record daily symptom updates']
+      }
     }
   ]);
 
   readonly operationalCount = computed(() => 
     this.tools().filter(t => t.status === 'PASS' || t.status === 'OPERATIONAL').length
   );
+
+  readonly surfacedCount = computed(() =>
+    this.tools().filter(t => t.isAutopilotSurfaced).length
+  );
+
+  onIntakeInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.intakeDirectiveQuery.set(value);
+    this.evaluateAutopilotDirective(value);
+  }
+
+  applyPresetDirective(preset: 'dental' | 'respiratory' | 'fhir'): void {
+    let query = '';
+    if (preset === 'dental') query = 'FDI tooth 36 pain + Fasting Glucose 132 mg/dL';
+    if (preset === 'respiratory') query = 'Dyspnea, exertion cough, respiratory rate 24';
+    if (preset === 'fhir') query = 'Export SMART on FHIR R4 anonymized bundle';
+
+    this.intakeDirectiveQuery.set(query);
+    this.evaluateAutopilotDirective(query);
+  }
+
+  clearAutopilotDirective(): void {
+    this.intakeDirectiveQuery.set('');
+    this.tools.update(items => items.map(t => ({
+      ...t,
+      isAutopilotSurfaced: false,
+      autopilotPriority: undefined,
+      autopilotReason: undefined
+    })));
+  }
+
+  private evaluateAutopilotDirective(query: string): void {
+    const q = query.toLowerCase();
+    this.tools.update(items => items.map(t => {
+      let isSurfaced = false;
+      let priority: 'HIGH' | 'MEDIUM' | undefined = undefined;
+      let reason: string | undefined = undefined;
+
+      if (q.includes('tooth') || q.includes('fdi') || q.includes('sibi') || q.includes('dental') || q.includes('glucose')) {
+        if (t.id === 'tool_teledentistry') {
+          isSurfaced = true;
+          priority = 'HIGH';
+          reason = 'Periodontal SIBI risk detected from FDI tooth 36 + glycemic coupling.';
+        }
+        if (t.id === 'tool_3d_hominid') {
+          isSurfaced = true;
+          priority = 'MEDIUM';
+          reason = 'Surfacing 3D mandible bone PBR mesh for spatial pain localization.';
+        }
+      }
+
+      if (q.includes('breath') || q.includes('cough') || q.includes('respiratory') || q.includes('dyspnea')) {
+        if (t.id === 'tool_audio_respiratory') {
+          isSurfaced = true;
+          priority = 'HIGH';
+          reason = 'Acoustic pulmonary distress signals flagged from intake transcription.';
+        }
+      }
+
+      if (q.includes('fhir') || q.includes('export') || q.includes('bundle') || q.includes('hipaa')) {
+        if (t.id === 'tool_fhir_smart') {
+          isSurfaced = true;
+          priority = 'HIGH';
+          reason = 'SMART on FHIR R4 export requested with §164.514 Safe Harbor de-identification.';
+        }
+      }
+
+      if (q.includes('hr') || q.includes('heart') || q.includes('sleep') || q.includes('tachycardia')) {
+        if (t.id === 'tool_bio_haptics') {
+          isSurfaced = true;
+          priority = 'MEDIUM';
+          reason = 'Dual-pulse haptic tactile co-regulation recommended for autonomic vagal sync.';
+        }
+      }
+
+      return {
+        ...t,
+        isAutopilotSurfaced: isSurfaced,
+        autopilotPriority: priority,
+        autopilotReason: reason
+      };
+    }));
+  }
 
   onCardDblClick(toolId: string): void {
     // 1. Register click in Double-Click State Machine

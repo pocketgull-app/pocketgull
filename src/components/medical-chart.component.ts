@@ -3,7 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { IPatientState, IPatient, HistoryEntry } from '../services/patient.types';
-import { BodyViewerComponent } from './body-viewer.component';
+import { BodyViewerComponent } from './anatomy-3d/body-viewer.component';
 import { PatientHistoryTimelineComponent } from './patient-history-timeline.component';
 import { DictationService } from '../services/dictation.service';
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
@@ -55,45 +55,6 @@ import { SentinelTelemetryPlotterComponent } from './sentinel-telemetry-plotter.
           </div>
       }
       
-
-      <!-- Accessibility & Neuro-Divergence UX Toolbar (Dieter Rams Touch Targets) -->
-      <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 shadow-xs font-mono text-[11px] no-print">
-        <div class="flex items-center gap-1.5 font-black uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
-          <span class="text-indigo-700 dark:text-indigo-300">♿ Sensory & Accessibility Controls:</span>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-1.5">
-          <!-- Audio-Primary Mode Toggle (Visual Impairments / Blindness) -->
-          <button type="button" 
-            (click)="state.isAudioPrimaryMode.set(!state.isAudioPrimaryMode())"
-            [class]="state.isAudioPrimaryMode() ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-gray-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700'"
-            class="min-h-[36px] px-3 py-1.5 rounded-md border font-extrabold uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-            title="Toggle Audio-Primary Spatial Entrainment & Voice Assistant for Visual Impairments">
-            <span>🎧 Audio-Primary</span>
-            @if (state.isAudioPrimaryMode()) { <span>✓</span> }
-          </button>
-
-          <!-- Dyslexia Font Toggle -->
-          <button type="button" 
-            (click)="state.selectedCognitiveLevel.set(state.selectedCognitiveLevel() === 'dyslexia' ? 'standard' : 'dyslexia')"
-            [class]="state.selectedCognitiveLevel() === 'dyslexia' ? 'bg-amber-500 text-zinc-950 font-black border-amber-500' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-gray-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700'"
-            class="min-h-[36px] px-3 py-1.5 rounded-md border font-extrabold uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-            title="Toggle Dyslexia-Friendly High-Legibility Literacy Mode">
-            <span>📖 Dyslexia Font</span>
-            @if (state.selectedCognitiveLevel() === 'dyslexia') { <span>✓</span> }
-          </button>
-
-          <!-- 40 Hz Gamma Cognitive Sync (MCI / Concussion / ADHD) -->
-          <button type="button" 
-            (click)="state.isGammaSyncActive.set(!state.isGammaSyncActive())"
-            [class]="state.isGammaSyncActive() ? 'bg-purple-600 text-white border-purple-600 animate-pulse' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-gray-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700'"
-            class="min-h-[36px] px-3 py-1.5 rounded-md border font-extrabold uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-            title="Toggle 40 Hz Gamma Cognitive Synchronization for MCI / Concussion / ADHD">
-            <span>🧠 40Hz Gamma</span>
-            @if (state.isGammaSyncActive()) { <span>✓</span> }
-          </button>
-        </div>
-      </div>
 
       <!-- 3D Body Viewer Card -->
       <pocket-gull-card 

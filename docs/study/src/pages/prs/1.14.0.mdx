@@ -1,0 +1,67 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: "PR: v1.14.0"
+---
+
+---
+
+## PR: feat(release): interactive gesture lock pad, analysis report modularization...
+
+### Description
+This PR corresponds to the release **v1.14.0**.
+Interactive Gesture Lock Pad, Analysis Report Modularization, Dynamic ESM PDF Export, and Component Unit Test Suites
+
+### Changelog Entry
+- **[Gesture Unlock Canvas / Splash Screen] Touch-Friendly Gesture Pad (`secure-splash.component.ts`)**:
+  - Fixed pointer capture exception handling (`try-catch` around `setPointerCapture` and `releasePointerCapture`) to prevent drawing aborts on non-touch devices and touch screens.
+  - Added dynamic coordinate scale factors (`scaleX`, `scaleY`) to align touch/mouse drawing 1:1 with canvas pixel bounds.
+  - Added direct **`🎨 Draw Gesture Lock`** button on initial splash screen to allow instant drawing access without pre-authentication.
+- **[Component Architecture] Analysis Report De-Monolithing (`analysis-report/`)**:
+  - Extracted 3 modular lens tab components ([summary-overview-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/summary-overview-lens-tab.component.ts), [epigenetic-longevity-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/epigenetic-longevity-lens-tab.component.ts), [patient-education-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/patient-education-lens-tab.component.ts)).
+- **[Performance & ESM Optimization] Dynamic `jsPDF` Lazy-Loading (`hipaa-pdf-export.service.ts` & `angular.json`)**:
+  - Converted static `jsPDF` import to on-demand `await import('jspdf')` dynamic chunk loading.
+  - Added `"jspdf"`, `"fflate"`, `"dompurify"`, and `"canvg"` to `allowedCommonJsDependencies` in `angular.json` to eliminate build warnings.
+- **[Testing & Quality Assurance] Specialized Component & Service Test Suites**:
+  - Created unit tests for `CarePlanPrintPreviewComponent`, `TeledentistryOdontogramComponent`, `LifestyleAdjunctService`, `YogaAsana3dCoachComponent`, `ActuarialGleeAlbumComponent`, `AndroscogginForagingPhytoncideComponent`, and `SevenGenerationsStewardshipLensTabComponent`.
+
+### Type of change
+- [ ] Bug fix (`fix`)
+- [x] New feature (`feat`)
+- [ ] Security fix (`security`)
+- [ ] Refactoring (`refactor`)
+- [ ] Documentation update (`docs`)
+- [ ] Testing/CI update (`test`, `ci`)
+- [ ] Clinical Intelligence & AI Prompting
+- [ ] 3D Anatomical Spatial Lens (Three.js)
+- [ ] Voice / Hardware Telemetry
+- [ ] Companion App (Flutter / Dart)
+
+## ☯️ Clinical Paradigms Touched
+- [ ] 🔵 Western Allopathic
+- [ ] 🟢 Eastern TCM (Traditional Chinese Medicine)
+- [ ] 🟡 Ayurvedic Medicine
+
+## Core Integration Checklist:
+- [x] My commit messages follow the Conventional Commits format (max 72 chars subject, imperative mood).
+- [x] My branch compiles with zero errors (`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`).
+- [x] I have performed a self-review of my own code.
+- [x] New and existing unit tests pass locally with my changes (`npm test`).
+- [x] I have run the local security audit (`npm run sentinel:audit`).
+
+## Domain-Specific Quality Gates (Check all that apply):
+### 🏥 Clinical AI & Safety
+- [ ] **Safety Filters:** Verified `DANGEROUS_CONTENT` remains `OFF` for clinical text to prevent false-positive blocks on standard-of-care plans.
+- [ ] **Evidence Literacy:** Clinical recommendations include demarcated evidence tiers (Level A/B/C) and Cochrane Risk of Bias considerations.
+- [ ] **Skeptical Epistemology:** If computing p-values, findings where $p \ge 0.05$ trigger the `skepticalWarningNotice`.
+
+### 🔒 Privacy & Data Sovereignty
+- [ ] **FHIR R4:** Serialized patient data structures conform strictly to the FHIR R4 Bundle standard.
+- [ ] **Logging Integrity:** No raw user inputs or un-sanitized PHI strings are passed to server loggers.
+- [ ] **De-Identification:** New mock patient data adheres to HIPAA §164.514 Safe Harbor standards (or preserves historical luminaries).
+- [ ] **CodeQL & Egress Guard:** Verified zero new SSRF, path traversal, or log injection vulnerabilities, and local Sentinel whitelists remain intact.
+
+### 🎨 Dieter Rams UX & Accessibility
+- [ ] **Functional Aesthetics:** Adheres to Dieter Rams principles ("Weniger, aber besser")—no unnecessary UI bloat or non-structural rounded pills.
+- [ ] **Fitts's Law:** All new touch targets and buttons are at least 44x44px.
+- [ ] **WCAG & Neurodiversity:** UI changes maintain 7:1 contrast ratios and respect `prefers-reduced-motion` for animations.
+

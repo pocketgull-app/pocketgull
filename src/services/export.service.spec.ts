@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
+import { expect } from 'vitest';
 import type { IPatient } from './patient.types';
 import { ExportService } from './export.service';
 

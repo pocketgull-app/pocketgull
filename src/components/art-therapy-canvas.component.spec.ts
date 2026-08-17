@@ -1,9 +1,9 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { vi } from 'vitest';
 import { ArtTherapyCanvasComponent } from './art-therapy-canvas.component';
 import { runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { ArtTherapyService } from '../services/art-therapy.service';
-import { BioHapticFeedbackService } from '../services/bio-haptic-feedback.service';
+import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedback.service';
 
 describe('ArtTherapyCanvasComponent', () => {
   let component: ArtTherapyCanvasComponent;

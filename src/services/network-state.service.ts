@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { HardwareTelemetryService } from './hardware-telemetry.service';
+import { HardwareTelemetryService } from './hardware/hardware-telemetry.service';
 import { PatientStateService } from './patient-state.service';
 import { SecureStorageService } from './secure-storage.service';
 

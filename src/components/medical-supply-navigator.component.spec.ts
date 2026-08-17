@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { MedicalSupplyNavigatorComponent } from './medical-supply-navigator.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { ProviderTreatmentNetworkService } from '../services/provider-treatment-network.service';

@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { DataScienceCitationService } from './data-science-citation.service';
 
 describe('DataScienceCitationService', () => {

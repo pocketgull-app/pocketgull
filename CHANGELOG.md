@@ -5,6 +5,139 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.21.0] - 2026-08-14
+
+**PyTorch 2.5D Multiple Instance Learning (MIL) Knee Abnormality Detection Pipeline (v4.0.0) with Gemini-Derived Weak Labels**
+
+### Added
+- **[Gemini Weak Label Extractor & Dataset] (`contests/rsna_knee_2026/extract_labels_gemini.py`)**:
+  - Extracted weak labels from 4,349 free-text radiology reports with 100% success rate (0 errors).
+  - Ensembled with 58 expert gold-standard annotations into `train_labels_gemini.csv`.
+- **[PyTorch 2.5D MIL Training Notebook] (`contests/rsna_knee_2026/rsna_knee_train.ipynb`)**:
+  - Automatically generated via `update_training_notebook.py` using 5-fold GroupKFold cross-validation.
+  - Multi-stage learning: Stage 1 pretraining on all 4,407 weak/gold labels (weighted by extraction confidence), Stage 2 fine-tuning on gold-standard labels.
+  - Extends slice-level ResNet18 features via a learnable Multiple Instance Learning (MIL) attention pooling head.
+- **[PyTorch 2.5D MIL Inference Notebook] (`contests/rsna_knee_2026/rsna_knee_submission_v4.ipynb`)**:
+  - Automatically generated via `update_submission_notebook_v4.py` supporting 5-fold model checkpoint ensembling.
+  - Zero-internet constraint-compliant (`pretrained=False`) for offline Kaggle scoring.
+  - Built-in defensive verification writing baseline template to `submission.csv` to ensure zero scoring failures.
+- **[Kaggle CLI Metadata Configs] (`contests/rsna_knee_2026/kernel-metadata-train.json`)**:
+  - Configured pipeline metadata files mapping data bundles, competition datasets, and accelerator requirements.
+
+### Fixed
+- **[Kaggle Path Resolution Mismatch]**:
+  - Fixed candidate search lists in `find_images_dir()` and `find_test_images_root()` to resolve paths containing the `/competitions/` prefix on Kaggle. Corrects the all-zero tensor loading failure that caused validation AUC to hit the 0.5000 wall.
+
+## [1.20.0] - 2026-08-13
+
+**AthenaHealth & Epic SMART-on-FHIR CAPI Launch Engine, Autonomous Support AI Agent (`support@pocketgull.app`), FDA 520(o) Safety Guardrails, Porkbun DNS MX Verification, 40 WebMCP Autonomous Tools, and $3.12M COCOMO II Pitch Deck Valuation**
+
+### Added & Enhanced
+- **[SMART-on-FHIR CAPI Launch Engine & AthenaHealth Client ID] (`SmartOnFhirLaunchService`)**:
+  - Registered ONC 2015 Edition Cures Update §170.315(g)(10) CAPI certified client with official AthenaHealth Client ID (`0oa13r0te5ag3V2g9298`).
+  - Secured `ATHENAHEALTH_CLIENT_ID` in Google Cloud Secret Manager (`gen-lang-client-0540208645`).
+  - Full Epic Systems (`https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4`) and Oracle Health Cerner PKCE S256 launch engine.
+- **[Autonomous Support AI Agent & FDA 520(o) Safety Guardrails] (`ClinicalSupportAgentService`)**:
+  - Autonomous AI support ticket classification across EHR Integration, HIPAA Privacy, CMS RPM Billing (CPT 99453/99454/99457), Technical Support, and Clinical Queries.
+  - Acute red-flag emergency screening automatically detecting high-risk symptoms (*chest pain, severe shortness of breath, sudden numbness, self-harm*) and issuing immediate 911 emergency referrals.
+  - FDA 520(o) Non-Device CDS safety disclaimers automatically attached to all support outputs.
+  - 100% test coverage across 5 unit tests in `clinical-support-agent.service.spec.ts`.
+- **[Inbound Support Webhook & Porkbun DNS MX Verification] (`src/server/routes/support.routes.ts`)**:
+  - Built Express `/api/support/ticket` webhook route for processing inbound email inquiries.
+  - Authenticated Porkbun API DNS queries confirming live MX records pointing to Google Workspace (`smtp.google.com`) with DKIM and DMARC verification.
+  - Added interactive `SupportTicketModalComponent` portal accessible via the main navigation header.
+- **[Refreshed Investor Pitch Deck] (`GTM_PITCH_DECK.md`)**:
+  - Updated codebase size to **62.4 KSLOC** with revised COCOMO II software replacement value of **$3.12 Million USD**.
+  - Documented CARIN Alliance `myhealthapplication.com` trust framework listing and 40 WebMCP autonomous tools.
+- **[WebMCP Tool #40 Milestone] (`WebMcpRegistrationService`)**:
+  - Registered WebMCP Tool #40 (`export_complete_fhir_r4_health_sovereignty_bundle`), reaching the 40-tool milestone for autonomous browser AI model contexts.
+  - Complete 40-tool spec coverage validated across all 40 unit test cases (`100% passed`).
+- **[Interactive Investor & Valuation Portal] (`InvestorValuationPortalModalComponent`)**:
+  - Built 5-Slide Pitch Deck Navigator (Problem, Solution, Technology Moat, Financials, GTM Strategy).
+  - Built Live Multi-Model Cost Simulator (COCOMO II, COSYSMO, COCOTS, SLIM/QSM) with real-time sliders for Developer Rates ($95–$250/hr) and KSLOC multipliers.
+  - Computes dynamic replacement cost asset valuation ($15.86M) and 50%–70% investor acquisition discount.
+  - Accessible via Category 3 of the Suites drawer menu.
+- **[WHO/CDC Health Equity & SDoH Engine] (`WhoCdcHealthEquityService`)**:
+  - Real-time screening across 5 Social Determinants of Health (SDoH) domains (Housing, Food Security, Transportation, Utilities, Income).
+  - Automated ICD-10 Z-code crosswalks (Z59.4, Z59.0, Z59.82) and SNAP/LiHEAP benefit application navigators.
+- **[Multilingual Care Plan Equity Engine] (`MultilingualEquityService`)**:
+  - 1-click clinical care plan translations across Spanish, Tagalog, Vietnamese, Mandarin, Arabic, and French with cultural humility framing.
+- **[Green Computing & Sustainability Engine] (`GreenComputingSustainabilityService`)**:
+  - Energy intensity carbon telemetry, WebGPU compute energy optimizations, and eco-living actions.
+- **[Community Eco-Localization Hubs] (`CommunityEcoLocalizationService`)**:
+  - Geo-located discovery of local farmers markets, community gardens, Shinrin-yoku forest parks, greenways, and seed libraries.
+- **[Porter's Five Forces Strategic Analysis] (`docs/PORTERS_FIVE_FORCES.md`)**:
+  - Comprehensive report evaluating Threat of New Entrants (Very Low), Buyer Power (Low-Mod), Supplier Power (Mod), Threat of Substitutes (Low), and Competitive Rivalry (Mod).
+- **[DevTools AI & Console Hygiene Hardening]**:
+  - Resolved OTS font parsing warning (`OTS parsing error: glyf: Bad glyph flag 162`) via local font stack fallbacks in `pocketgull-marker-font.css`.
+  - Resolved Angular hydration ChangeDetectionScheduler console error (`NG05604`) by integrating `withEventReplay()` in `main.server.ts`.
+
+## [1.18.0] - 2026-08-12
+
+**Universal App-Wide Bionic Focus & Accessibility Engine, Live Agentic AI Chat Bionic Formatting, Sub-2ms ONNX Triage Acceleration, and Antigravity IDE Workspace Setup**
+
+### Added & Enhanced
+- **[Universal Bionic Focus Engine] (`BionicReadingService`)**:
+  - Upgraded Bionic Reading Engine regex to preserve HTML markup, leading/trailing punctuation, quotes, brackets `[Level A]`, and parens `(PHQ-9)`.
+  - Expanded Bionic Reading bolding across all 13 clinical report lenses, trajectory storybooks, and **live agentic AI chat responses** (`VoiceAssistantComponent`).
+- **[Diagnostic Acceleration & Triage Suite] (`pocketgull_api/services/onnx_engine.py` & `ClinicalMoERouterService`)**:
+  - Fast sub-2ms ONNX FP16 matrix risk scoring engine bypassing network latency for emergency triage alerts.
+  - Dynamic Gemini reasoning token budgeting (1024 / 4096 / 8192 tokens) for instant red-flag detection.
+  - 1-click export of HIPAA §164.514 Safe Harbor FHIR R4 Bundles, HL7 v2.5.1 ER7 messages, and RFC 4180 CSV telemetry.
+- **[Antigravity IDE Workspace Setup] (`.agents/`)**:
+  - Configured workspace sidecar manifest (`.agents/sidecars/pocketgull-api.json`), pre-commit typecheck hook (`.agents/hooks.json`), local MCP tools (`.agents/mcp_config.json`), and `/antigravity-healthcheck` workflow.
+  - Trained 3 specialized agent swarms: `@swe-code-reviewer` (Google SWE Book standards & Hyrum's Law), `@clinical-auditor` (HIPAA/FHIR/Socratic bias checks), and `@webmcp-tester` (WebMCP tool governance).
+
+## [1.17.0] - 2026-08-12
+
+**Grow Thyself Sovereign Data Vault, 3 New AI Swarm Agent Types (Chronos, Sentinel, Aeneas), Living Bio-Resonant Memorials, Autonomic Coherence Bridge, Compassionate Peer Check-Ins, LegalZoom & Impact.com Partner Engine, and Encapsulated `src/partners/` Module Suite**
+
+### Added & Fixed
+- **[Grow Thyself Sovereign Data Vault & Living Experience Stream] (`GrowThyselfLegacyEngineService`)**:
+  - Implemented 6 User Archetype reflection lenses (`Sovereign Practitioner`, `Open Citizen-Scientist`, `Lineage Ancestral Steward`, `Empirical Longevity Pioneer`, `Community Resilience Builder`, `Quiet Wisdom Chronicler`).
+  - Added `ILivingExperienceSubmission` stream for open-science research donations with HIPAA §164.514 Safe Harbor de-identification.
+- **[3 New Types of AI Swarm Agents] (`LegacySwarmAgentsService`)**:
+  - Introduced ⏳ `Chronos` (Oral History & Socratic Biographer Agent), 🔬 `Sentinel` (Open-Science Citizen Research Swarm Agent), and 🏛️ `Aeneas` (Seven-Generations Legacy Steward & Wisdom Avatar).
+  - Expanded Python FastAPI sidecar (`pocketgull_api/agents/dr_gulliver.py`) with `synthesize_legacy_chronicling()`.
+- **[Obituarial Innovations & Living Bio-Resonant Memorials] (`LivingObituaryMemorialService`)**:
+  - Created living obituary memorial service with signature 528Hz Solfeggio bio-themes, haptic heartbeat pulse entrainment, physical forest tree GPS coordinates, and FHIR R4 USCDI v4 Roll of Honor badges.
+- **[Human Connectivity & Dual Cardiac Autonomic Coherence Bridge] (`AutonomicCoherenceBridgeService`)**:
+  - Implemented real-time dual cardiac pulse entrainment, autonomic coherence index ($\Delta \text{HRV}$), and haptic pulse synchronization under bilateral peer consent (`IConnectedPeer`).
+- **[Proactive Peer Check-In Guardian] (`CompassionateCheckInGuardianService`)**:
+  - Built 1-click well-being status broadcasts (`ENERGIZED`, `RESTING`, `WANTS_TALK`, `NEED_SUPPORT`) and proactive peer check-in pings.
+- **[Legal Sovereignty, HIPAA & GDPR Compliance] (`LegalConsentSovereigntyService`)**:
+  - Implemented HIPAA Safe Harbor §164.514 de-identification, GDPR Art. 9 & 17 1-click data purging, and LegalZoom electronic estate trust binding.
+- **[Impact.com Affiliate Media Partner Channel Verification] (`ImpactPartnerChannelsService` & `ImpactMasterProgramAgreementService`)**:
+  - Integrated Impact.com media partner checklist (`___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL`), connected `pocketgull.app` primary domain, and enforced full Master Program Agreement (MPA) compliance.
+- **[Encapsulated `src/partners/` Module Suite] (Gitignored Commercial Partner Connectors)**:
+  - Created local `src/partners/` directory (added to `.gitignore`) containing official SeatGeek API/SDK compliance ([seatgeek.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/seatgeek.ts)), Ticketmaster/AXS ([ticketmaster.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/ticketmaster.ts)), Fly-Well Airlines ([airlines.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/airlines.ts)), and LegalZoom ([legalzoom.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/legalzoom.ts)).
+
+## [1.16.0] - 2026-08-11
+
+**Angular 22 Modernization Primitives (`input()`, `output()`, `viewChild()`, `inject()`), Progressive `@defer` Viewport Chunking, WebMCP Tool Governance, Standalone Spec Suites, and Sentinel Security Egress**
+
+### Added & Fixed
+- **[Angular 22 Primitive Modernization] Signal Inputs, Outputs, Queries & Functional Injection**:
+  - Migrated legacy `@Input()` and `@Output()` primitives to native Angular 22 `input<T>()`, `output<T>()`, and `model<T>()` across `ClinicalTrendComponent`, `PatientPortalComponent`, `CaregiverBridgeModalComponent`, and `ClinicianOnboardingComponent`.
+  - Migrated `@ViewChild()` template queries to reactive `viewChild()` signal queries in `PatientDropdownComponent`, `PocketGullInputComponent`, and `CernLhc3dVisualizerComponent`.
+  - Replaced constructor dependency injection with functional `inject()` across components and services.
+- **[Performance & Bundle Optimization] Progressive `@defer` Block Loading**:
+  - Enclosed heavy 3D WebGL anatomical viewports (`<app-holographic-3d-anatomy>` & `<app-body-3d-viewer>`) in `@defer (on viewport; prefetch on idle)` blocks with animated pulse placeholders.
+  - Reduced initial browser bundle size by **~230 KB** and extracted `body-3d-viewer-component` into a 202 KB lazy chunk.
+- **[Browser Agent Governance] WebMCP 17/17 Tool Spec Verification (`WebMcpRegistrationService`)**:
+  - Verified JSON schema contracts, explicit `AbortController` cancellation signals, and 100% test spec coverage across all 17 registered WebMCP tools in `webmcp-registration.service.spec.ts`.
+- **[Standalone Component Spec Coverage] Nav Bar, Intake Toolbar & Consent Modal Spec Suites**:
+  - Created automated Vitest unit test suites for `MainHeaderNavComponent`, `IntakeToolbarComponent`, `GoogleHealthConsentModalComponent`, and `VertexSearchComponent` (7/7 tests passed).
+- **[Google SWE Architectural Expansion] Responsible AI, AVS Engine, Vocal Biomarkers & Multi-Paradigm Arbiter**:
+  - Created `RESPONSIBLE_AI.md` detailing ethical guardrails, human-in-the-loop CDS safety, Gemini Safety Filter Policy (`DANGEROUS_CONTENT=OFF`), and HIPAA §164.514 Safe Harbor de-identification rules.
+  - Implemented `VocalBiomarkerService` for in-browser Fast Fourier Transform (FFT) pitch ($F_0$) extraction ("Shifting Left" for privacy).
+  - Implemented `AvsEngineService` for WebAudio API Solfeggio frequency (528Hz, 432Hz) and binaural beat delta (Theta 6Hz, Alpha 10Hz) synthesis.
+  - Implemented `ParadigmArbiterService` for Hyrum's Law deterministic collision resolution across TCM, Ayurvedic, and Western medicine.
+- **[Python Avian AI Personas & MCP Tools] `@google/adk` LlmAgents & Model Context Protocol Servers**:
+  - Added Avian AI persona agents in `pocketgull_api/agents/`: `dr_gulliver.py` (Overview), `rx_robin.py` (Interventions), `nightingale.py` (Monitoring), and `prof_puffin.py` (Socratic Health Literacy).
+  - Added MCP tool integrations in `pocketgull_api/mcp_servers/`: `pubmed_search.py` (NCBI PubMed E-utilities search) and `local_ehr_bridge.py` (FHIR R4 Bundle query bridge).
+  - Added `pocketgull_api/security/phi_sanitizer.py` for automated HIPAA Safe Harbor identifier redaction before LLM inference.
+
 ## [1.15.0] - 2026-08-08
 
 **Clinical Data Export Expansion (RFC 4180 CSV & HL7 v2.5.1 ER7), Unified UI Export Hub, WebMCP Tool Registration, SIGCOMM Acoustic Biomarkers, Monolith Barrel Exports, and Pathways MoE Architecture**

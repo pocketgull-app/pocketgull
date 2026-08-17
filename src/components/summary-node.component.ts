@@ -16,7 +16,7 @@ import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { MarkdownService } from '../services/markdown.service';
 import { RichMediaService, IRichMediaCard } from '../services/rich-media.service';
-import { Medical3DViewerComponent } from './medical-3d-viewer.component';
+import { Medical3DViewerComponent } from './anatomy-3d/medical-3d-viewer.component';
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';

@@ -1,0 +1,32 @@
+name: pocketgull-desktop
+base: core22
+version: '1.16.0'
+summary: Real-Time Medical Care Plan Strategy & Live AI Consult Engine
+description: |
+  Pocket-Gull is a clinical intelligence application powered by Google Gemini 2.5,
+  providing real-time streaming AI consults, FHIR R4 export, bi-directional voice translation,
+  and offline edge inference for clinicians and patients.
+
+grade: stable
+confinement: strict
+
+apps:
+  pocketgull-desktop:
+    command: bin/pocketgull-desktop
+    desktop: usr/share/applications/pocketgull-desktop.desktop
+    plugs:
+      - network
+      - network-bind
+      - audio-record
+      - audio-playback
+      - desktop
+      - desktop-legacy
+      - wayland
+      - x11
+
+parts:
+  pocketgull-desktop:
+    plugin: nil
+    override-build: |
+      mkdir -p $CRAFT_PART_INSTALL/bin
+      cp -r ../dist/browser/* $CRAFT_PART_INSTALL/bin/

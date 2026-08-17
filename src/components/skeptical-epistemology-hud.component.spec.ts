@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, beforeEach, it, expect } from 'vitest';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.component';
 import { SkepticalEpistemologyService } from '../services/skeptical-epistemology.service';

@@ -1,0 +1,61 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: "PR: v1.0.0-rc12"
+---
+
+---
+
+## PR: feat(release): 7-day chrono weekly meal planner, geolocational micro-climat...
+
+### Description
+This PR corresponds to the release **v1.0.0-rc12**.
+7-Day Chrono Weekly Meal Planner, Geolocational Micro-Climate Relocation Engine, KSS Acronym Expansion & PhysioNet 2026 Dataset Integration
+
+### Changelog Entry
+- **[Nutrition / Chrono] 7-Day Chrono Weekly Meal Planner (`chrono-weekly-meal-planner.component.ts`)**: 7-day circadian calendar (Monday–Sunday) with regional ingredient sourcing filters (Pacific Northwest, Mediterranean, Asian, Nordic), prep time complexity filters (Snacks <5m, Quick <15m, Full Course 30m+), and 1-click Care Plan prescribing capabilities.
+- **[Geolocational / SDOH] Geolocational Micro-Climate & Relocation Engine (`geolocational-health-relocation.component.ts`)**: Analyzes US Census ACS data, EPA Air Quality Index (AQI), Walkability Scores, and Blue Zone Longevity indices to prescribe therapeutic relocation micro-climates (Desert Hot Springs CA, San Luis Obispo CA, Sequim WA, Loma Linda CA, Nicoya Costa Rica) and geolocational hobbies (*Shinrin-yoku*, *Geothermal Mineral Hydrotherapy*, *Citrus Permaculture*).
+- **[Health Literacy / KSS] KSS-Driven Medical Acronym Expansion Engine (`acronym-expander.service.ts` & `acronym-expander.pipe.ts`)**: Automatically expands 40+ clinical medical acronyms (e.g., `COPD` &rarr; `Chronic Obstructive Pulmonary Disease (COPD)`) and provides interactive `<abbr>` tooltips when Karolinska Sleepiness Scale (KSS) score &ge; 5 or in simplified cognitive modes.
+- **[Patient Dataset / PhysioNet] Complete Roster Data Completeness & PhysioNet 2026 Scenarios (`src/mock-patients/`)**: Updated all 13 patient records with full vitals (`bp`, `hr`, `temp`, `spO2`, `weight`, `height`, `vitD3`, `magnesium`, `b12`, `zinc`), oxidative stress markers, antioxidant metrics, diagnostic scans, and dedicated PhysioNet 2026 Challenge scenarios across all 7 lenses.
+- **[Export / Literacy] Cognitive Level OpenDyslexic PDF Exporting (`export.service.ts` & `care-plan-print-preview.component.ts`)**: Added Health Literacy Export Badges and OpenDyslexic typography CSS overrides (`line-height: 1.95`, `letter-spacing: 0.05em`) to printed PDF reports.
+
+### Type of change
+- [ ] Bug fix (`fix`)
+- [x] New feature (`feat`)
+- [ ] Security fix (`security`)
+- [ ] Refactoring (`refactor`)
+- [ ] Documentation update (`docs`)
+- [ ] Testing/CI update (`test`, `ci`)
+- [ ] Clinical Intelligence & AI Prompting
+- [ ] 3D Anatomical Spatial Lens (Three.js)
+- [ ] Voice / Hardware Telemetry
+- [ ] Companion App (Flutter / Dart)
+
+## ☯️ Clinical Paradigms Touched
+- [ ] 🔵 Western Allopathic
+- [ ] 🟢 Eastern TCM (Traditional Chinese Medicine)
+- [ ] 🟡 Ayurvedic Medicine
+
+## Core Integration Checklist:
+- [x] My commit messages follow the Conventional Commits format (max 72 chars subject, imperative mood).
+- [x] My branch compiles with zero errors (`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`).
+- [x] I have performed a self-review of my own code.
+- [x] New and existing unit tests pass locally with my changes (`npm test`).
+- [x] I have run the local security audit (`npm run sentinel:audit`).
+
+## Domain-Specific Quality Gates (Check all that apply):
+### 🏥 Clinical AI & Safety
+- [ ] **Safety Filters:** Verified `DANGEROUS_CONTENT` remains `OFF` for clinical text to prevent false-positive blocks on standard-of-care plans.
+- [ ] **Evidence Literacy:** Clinical recommendations include demarcated evidence tiers (Level A/B/C) and Cochrane Risk of Bias considerations.
+- [ ] **Skeptical Epistemology:** If computing p-values, findings where $p \ge 0.05$ trigger the `skepticalWarningNotice`.
+
+### 🔒 Privacy & Data Sovereignty
+- [ ] **FHIR R4:** Serialized patient data structures conform strictly to the FHIR R4 Bundle standard.
+- [ ] **Logging Integrity:** No raw user inputs or un-sanitized PHI strings are passed to server loggers.
+- [ ] **De-Identification:** New mock patient data adheres to HIPAA §164.514 Safe Harbor standards (or preserves historical luminaries).
+- [ ] **CodeQL & Egress Guard:** Verified zero new SSRF, path traversal, or log injection vulnerabilities, and local Sentinel whitelists remain intact.
+
+### 🎨 Dieter Rams UX & Accessibility
+- [ ] **Functional Aesthetics:** Adheres to Dieter Rams principles ("Weniger, aber besser")—no unnecessary UI bloat or non-structural rounded pills.
+- [ ] **Fitts's Law:** All new touch targets and buttons are at least 44x44px.
+- [ ] **WCAG & Neurodiversity:** UI changes maintain 7:1 contrast ratios and respect `prefers-reduced-motion` for animations.
+

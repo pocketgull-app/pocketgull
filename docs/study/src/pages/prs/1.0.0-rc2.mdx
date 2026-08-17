@@ -1,0 +1,63 @@
+---
+layout: ../../layouts/DocsLayout.astro
+title: "PR: v1.0.0-rc2"
+---
+
+---
+
+## PR: feat(release): general updates and improvements for 1.0.0-rc2
+
+### Description
+This PR corresponds to the release **v1.0.0-rc2**.
+General updates and improvements for 1.0.0-rc2
+
+### Changelog Entry
+- **[2026-05-22] Client-Side Speech & Interruption Barge-in**: Implemented local `onspeechstart` barge-in interruption tuning across the clinical dialog and main voice assistant panels, allowing instant audio muting and queue clearing when the clinician begins speaking or typing.
+- **[2026-05-22] Real-Time Voice Consult**: Integrated the `AdkLiveService` directly into the focused recommendations/claims dialog (`NodeAgentDialogComponent`) with amplitude-responsive recording visualizers, local Speech-to-Text feedback, and graceful lifecycle teardowns.
+- **[2026-05-22] Multi-Paradigm Philosophy Dashboards**: Added full system support for selecting Western, Eastern, Ayurvedic, or "Grow Thy Self" longevity medicine paradigms. Includes automated report regeneration and a secular translation engine mapping 13 world philosophies into psychological and physiological domains.
+- **[2026-05-22] Good Samaritan Emergency Care**: Engineered an offline emergency override mode featuring a 110 BPM chest-compression metronome, basic life support (BLS) safety-gated Gemini Nano local routing (`window.ai`), local FHIR-compliant EMT QR code serialization (`lean-qr`), and global telemetry (OTel) suppression.
+- **[2026-05-22] Draw-to-Unlock Secure Gateway**: Replaced the legacy numeric PIN code screen with a premium Canvas drawing pad verifying a smiley face gesture pattern, with multi-stroke verification windows and an invisible E2E test bypass hook.
+- **[2026-05-22] Shift-Left Pre-Commit hook**: Introduced a husky pre-commit pipeline that checks TypeScript types, runs Vitest unit tests, scans markdown image file references, and blocks staged commits containing credential or API key leaks.
+- **[2026-05-22] Multi-Vendor GPU Telemetry**: Implemented Windows CIM/WMI adapters querying AMD/Intel/NVIDIA graphics, macOS system profiles, unified memory estimation, and dynamic WebGPU routing recommendations.
+
+### Type of change
+- [ ] Bug fix (`fix`)
+- [x] New feature (`feat`)
+- [ ] Security fix (`security`)
+- [ ] Refactoring (`refactor`)
+- [ ] Documentation update (`docs`)
+- [ ] Testing/CI update (`test`, `ci`)
+- [ ] Clinical Intelligence & AI Prompting
+- [ ] 3D Anatomical Spatial Lens (Three.js)
+- [ ] Voice / Hardware Telemetry
+- [ ] Companion App (Flutter / Dart)
+
+## ☯️ Clinical Paradigms Touched
+- [ ] 🔵 Western Allopathic
+- [ ] 🟢 Eastern TCM (Traditional Chinese Medicine)
+- [ ] 🟡 Ayurvedic Medicine
+
+## Core Integration Checklist:
+- [x] My commit messages follow the Conventional Commits format (max 72 chars subject, imperative mood).
+- [x] My branch compiles with zero errors (`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`).
+- [x] I have performed a self-review of my own code.
+- [x] New and existing unit tests pass locally with my changes (`npm test`).
+- [x] I have run the local security audit (`npm run sentinel:audit`).
+
+## Domain-Specific Quality Gates (Check all that apply):
+### 🏥 Clinical AI & Safety
+- [ ] **Safety Filters:** Verified `DANGEROUS_CONTENT` remains `OFF` for clinical text to prevent false-positive blocks on standard-of-care plans.
+- [ ] **Evidence Literacy:** Clinical recommendations include demarcated evidence tiers (Level A/B/C) and Cochrane Risk of Bias considerations.
+- [ ] **Skeptical Epistemology:** If computing p-values, findings where $p \ge 0.05$ trigger the `skepticalWarningNotice`.
+
+### 🔒 Privacy & Data Sovereignty
+- [ ] **FHIR R4:** Serialized patient data structures conform strictly to the FHIR R4 Bundle standard.
+- [ ] **Logging Integrity:** No raw user inputs or un-sanitized PHI strings are passed to server loggers.
+- [ ] **De-Identification:** New mock patient data adheres to HIPAA §164.514 Safe Harbor standards (or preserves historical luminaries).
+- [ ] **CodeQL & Egress Guard:** Verified zero new SSRF, path traversal, or log injection vulnerabilities, and local Sentinel whitelists remain intact.
+
+### 🎨 Dieter Rams UX & Accessibility
+- [ ] **Functional Aesthetics:** Adheres to Dieter Rams principles ("Weniger, aber besser")—no unnecessary UI bloat or non-structural rounded pills.
+- [ ] **Fitts's Law:** All new touch targets and buttons are at least 44x44px.
+- [ ] **WCAG & Neurodiversity:** UI changes maintain 7:1 contrast ratios and respect `prefers-reduced-motion` for animations.
+

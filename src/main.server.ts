@@ -14,7 +14,7 @@ try {
 
 import '@angular/compiler';
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { BootstrapContext, bootstrapApplication, provideClientHydration } from '@angular/platform-browser';
+import { BootstrapContext, bootstrapApplication, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { provideServerRendering } from '@angular/platform-server';
 import { provideZonelessChangeDetection, ApplicationConfig } from '@angular/core';
@@ -24,7 +24,6 @@ import { HybridProvider } from './services/ai/hybrid.provider';
 
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { provideAuth, getAuth } from '@angular/fire/auth';
 import { environment } from './environments/environment';
 
 export const config: ApplicationConfig = {
@@ -34,7 +33,6 @@ export const config: ApplicationConfig = {
         provideHttpClient(withFetch()),
         provideFirebaseApp(() => initializeApp(environment.firebase)),
         provideFirestore(() => getFirestore()),
-        provideAuth(() => getAuth()),
         {
             provide: AI_CONFIG,
             useFactory: () => ({
@@ -47,7 +45,7 @@ export const config: ApplicationConfig = {
             provide: IntelligenceProviderToken,
             useClass: HybridProvider
         },
-        provideClientHydration()
+        provideClientHydration(withEventReplay())
     ]
 };
 

@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, vi } from 'vitest';
+import { vi } from 'vitest';
 import { Injector, runInInjectionContext, PLATFORM_ID } from '@angular/core';
 import { PatientStateService } from '../src/services/patient-state.service';
 import { PatientManagementService } from '../src/services/patient-management.service';

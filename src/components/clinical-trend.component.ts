@@ -1,15 +1,15 @@
-import { Component, Input, computed , ChangeDetectionStrategy} from '@angular/core';
+import { Component, input, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-clinical-trend',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+  standalone: true,
+  imports: [CommonModule],
+  template: `
     <div class="trend-card">
       <div class="trend-header">
-        <span class="label">{{ label }} Trend</span>
+        <span class="label">{{ label() }} Trend</span>
         <span class="delta" [class.positive]="isImproving()" [class.negative]="!isImproving()">
           {{ delta() > 0 ? '+' : '' }}{{ delta().toFixed(1) }}
         </span>
@@ -17,13 +17,13 @@ import { CommonModule } from '@angular/common';
       
       <div class="sparkline-container">
         <svg viewBox="0 0 100 30" preserveAspectRatio="none">
-          <path [attr.d]="pathData()" fill="none" [attr.stroke]="strokeColor" stroke-width="2" stroke-linecap="round" />
+          <path [attr.d]="pathData()" fill="none" [attr.stroke]="strokeColor()" stroke-width="2" stroke-linecap="round" />
           <path [attr.d]="areaData()" [attr.fill]="areaColor()" opacity="0.1" />
         </svg>
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .trend-card {
       background: rgba(255, 255, 255, 0.5);
       border-radius: 12px;
@@ -64,39 +64,38 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class ClinicalTrendComponent {
-    @Input() label: string = '';
-    @Input() values: number[] = [];
-    @Input() type: 'complexity' | 'stability' | 'certainty' = 'certainty';
+    label = input<string>('');
+    values = input<number[]>([]);
+    type = input<'complexity' | 'stability' | 'certainty'>('certainty');
 
     delta = computed(() => {
-        if (this.values.length < 2) return 0;
-        return this.values[this.values.length - 1] - this.values[0];
+        const vals = this.values();
+        if (vals.length < 2) return 0;
+        return vals[vals.length - 1] - vals[0];
     });
 
     isImproving = computed(() => {
         const d = this.delta();
-        // For complexity, lower is often better depending on context, 
-        // but here we just treat positive delta as "increasing"
-        // Usually stability and certainty increasing is positive.
-        if (this.type === 'complexity') return d <= 0;
+        if (this.type() === 'complexity') return d <= 0;
         return d >= 0;
     });
 
-    strokeColor = '#3b82f6'; // Default blue
+    strokeColor = computed(() => '#3b82f6');
 
     areaColor = computed(() => {
         return this.isImproving() ? '#22c55e' : '#ef4444';
     });
 
     pathData = computed(() => {
-        if (this.values.length < 2) return '';
+        const vals = this.values();
+        if (vals.length < 2) return '';
         const max = 10;
         const min = 0;
         const width = 100;
         const height = 30;
 
-        const points = this.values.map((v, i) => {
-            const x = (i / (this.values.length - 1)) * width;
+        const points = vals.map((v, i) => {
+            const x = (i / (vals.length - 1)) * width;
             const y = height - ((v - min) / (max - min)) * height;
             return `${x},${y}`;
         });

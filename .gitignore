@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Submodules & Local Challenge Repos
+python_example_2026
 python_example_2026/
 
 node_modules
@@ -16,11 +17,16 @@ dist-ssr
 # Local temporary test results & deployment tarball
 tmp/
 .temp/
+scratch/
 .playwright_temp/
 test-results/
 playwright-report/
 source.tgz
 deploy.tgz
+deploy_source.tar.gz
+live_pocketgull_app.png
+report.html
+report.json
 *.local
 *.local.*
 
@@ -42,13 +48,17 @@ chrome-debug-profile/
 .env*
 **/.env*
 docs/legal/
+!src/partners/
 
 # Generated Release Packages
 packages/
+!packages/clinical-evidence-grade/
+!packages/pocketgull-github-app/
 pocketgull-release.tar.gz
 
-# Angular framework
+# Angular & Mobile frameworks
 .angular
+.gradle/
 
 # Generated Reports & Snapshots
 dom-*.html
@@ -152,9 +162,11 @@ deploy_log.txt
 firebase-debug.log
 firebase-debug.*.log
 
-# --- Billing & Stripe Configs ---
-*billing*
-*stripe*
+# --- Billing & Stripe Configs & Secrets ---
+*billing-secret*
+*stripe-secret*
+!src/**/billing*
+!src/**/stripe*
 
 # --- Pocket Gull Custom Ignores ---
 
@@ -247,6 +259,30 @@ python_example_2026/synthetic_model/
 python_example_2026/real_model_output/
 python_example_2026/synthetic_predictions/
 python_example_2026/*.sav
+
+# Temporary Agent & Playwright Script Artifacts
+scripts/capture-*.cjs
+scripts/resize-icon.cjs
+scripts/cleanup-screenshots.cjs
+
+# Local AI Build & Benchmark Logs
+build_error*.txt
+cocomo2_report.*
+pocketgull_benchmark_plots.png
+
+# Antigravity IDE & Local Agent Workspace Caches
+.antigravity-ide/
+.antigravity/
+.cagent/
+.sandboxd/
+
+# Cloud Run & Local Deployment Tarballs
+deploy_bundle.tar.gz
+deploy_source.tar.gz
+pocketgull-v*.tar.gz
+
+# Temporary scratch files
+scratch/
 
 
 

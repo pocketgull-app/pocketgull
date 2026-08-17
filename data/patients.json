@@ -359,6 +359,37 @@
     ]
   },
   {
+    "id": "p009",
+    "name": "Homo Sapiens (Male, Pancreatic Oncology & Cachexia, 62y)",
+    "age": 62,
+    "gender": "Male",
+    "vitals": {
+      "bp": "118/74",
+      "hr": "78",
+      "temp": "98.2F",
+      "spO2": "96%",
+      "weight": "142 lbs",
+      "height": "5'10\"",
+      "vitD3": "22 ng/mL",
+      "magnesium": "1.6 mg/dL",
+      "b12": "380 pg/mL",
+      "zinc": "58 mcg/dL"
+    },
+    "history": [
+      {
+        "type": "AnalysisRun",
+        "date": "2026.08.12",
+        "summary": "Pancreatic Oncology & Exocrine Insufficiency Comprehensive Assessment",
+        "report": {
+          "Summary Overview": "###  Pancreatic Oncology & Metabolic Assessment\nPatient presents with Stage III Pancreatic Ductal Adenocarcinoma (PDAC), Exocrine Pancreatic Insufficiency (EPI), pancreatogenic diabetes (Type 3c), and cancer-related cachexia. Primary clinical imperatives: optimize digestive enzyme replacement therapy (PERT) to restore nutrient assimilation, mitigate pro-inflammatory cytokine-driven muscle wasting (IL-6/TNF-alpha), stabilize postprandial glycemic excursions, and manage epigastric pain radiating to the mid-back.",
+          "Functional Protocols": "### Exocrine Replacement & Anti-Cachectic Strategy\n- **PERT Enzyme Protocol**: Pancrelipase (Creon 24,00048,000 USP units Lipase) with first bite of all meals and snacks.\n- **Cytokine-Driven Cachexia Suppression**: High-dose EPA/DHA ethyl esters (3,000mg/day) to downregulate NF-kB & STAT3 muscle degradation signaling.\n- **Glycemic Stabilization**: Metformin (500mg BID) paired with low-glycemic load dietary pattern to maintain HbA1c < 7.0%.",
+          "Nutrition": "### Pancreatic-Sparing & Anti-Cachectic Nutrition\n- **Medium-Chain Triglycerides (MCT)**: 15ml MCT oil daily for direct portal venous absorption bypassing pancreatic lipase.\n- **Hydrolyzed Protein Substrates**: Whey/pea protein isolate (30g/serving) for muscle protein synthesis.\n- **Avoid**: Refined simple sugars, fried high-fat meals, industrial seed oils, and alcohol.",
+          "Precision Nutrients": "### Orthomolecular & Botanical Protocols\n- **Curcumin Phytosome (Meriva)**: 1,000mg BID (STAT3 & NF-kB anti-inflammatory modulation).\n- **Vitamin D3 + K2**: 5,000 IU daily (Immune homeostasis & bone mineral retention).\n- **Zinc Carnosine**: 75mg BID (Gastric & intestinal mucosal integrity).\n- **N-Acetylcysteine (NAC)**: 1,200mg BID (Glutathione pool replenishment)."
+        }
+      }
+    ]
+  },
+  {
     "id": "p_mara_santos",
     "name": "Homo Sapiens (Female, Neurological & Methylation, 34y)",
     "age": 34,
@@ -652,7 +683,7 @@
     "history": [
       {
         "type": "FinalizedPatientSummary",
-        "date": "2026.08.10",
+        "date": "2026.08.13",
         "summary": "Patient Summary updated (auto-saved).",
         "report": {
           "Summary Overview": "### Clinical Assessment\nAlexander Vance is a 42-year-old male presenting for management of active clinical concerns and functional optimization. \n\n### Current Presentation & Vitals\n- **Vitals**: BP: 122/82, HR: 68 bpm, Temp: 98.6F, SpO2: 98%\n- **Active Concerns**:\n- **General Wellness**: No acute physical issues reported.\n\n### Clinical Priorities\n- **Symptom Management**: Focus on non-pharmacological and targeted interventions for general wellness.\n- **Lifestyle Modification**: Circadian alignment, metabolic optimization, and targeted movement.\n- **Patient Goals**: Optimize metabolic health, synchronize all personal biometrics from Google Health Connect, and reduce sleep latency.\n\n### Plan of Care\n- **Short-term**: Optimize daily movement and address acute stressors/pain.\n- **Long-term**: Functional rehabilitation and systemic health optimization.",
