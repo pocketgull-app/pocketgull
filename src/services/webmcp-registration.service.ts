@@ -49,6 +49,7 @@ import { ClinicalSocialWorkNavigatorService } from './clinical-social-work-navig
 import { AddictionMedicineRecoveryService } from './addiction-medicine-recovery.service';
 import { Section504AccommodationService } from './section-504-accommodation.service';
 import { ClinicalSteeringCommitteeDossierService } from './clinical-steering-committee-dossier.service';
+import { ClinicalGraphQLService } from './clinical-graphql.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -104,6 +105,7 @@ export class WebMcpRegistrationService {
   private addictionService = inject(AddictionMedicineRecoveryService, { optional: true });
   private section504Service = inject(Section504AccommodationService, { optional: true });
   private cscDossierService = inject(ClinicalSteeringCommitteeDossierService, { optional: true });
+  private graphqlService = inject(ClinicalGraphQLService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2671,6 +2673,30 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(cardTool, { signal: cardCtrl.signal });
     this.mcpControllers.push({ name: cardTool.name, controller: cardCtrl });
+
+    // 69. Execute Clinical GraphQL Query
+    const gqlCtrl = new AbortController();
+    const gqlTool = {
+      name: 'execute_clinical_graphql_query',
+      description: 'Executes a strongly typed GraphQL query across the unified PocketGull clinical knowledge graph (Patient demographics, active conditions, Section 504 plans, substitute cards, pediatric courage badges, Steering Committee governance dossiers, and multi-hop biological cross-talk pathways).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'The GraphQL query string to execute against the clinical schema.' },
+          variables: { type: 'object', description: 'Optional key-value query variables.' }
+        },
+        required: ['query']
+      },
+      execute: async (params: any) => {
+        const svc = this.graphqlService || new ClinicalGraphQLService();
+        const res = await svc.executeQuery(params?.query || '', params?.variables || {});
+        return {
+          content: [{ type: 'text', text: JSON.stringify(res, null, 2) }]
+        };
+      }
+    };
+    modelContext.registerTool(gqlTool, { signal: gqlCtrl.signal });
+    this.mcpControllers.push({ name: gqlTool.name, controller: gqlCtrl });
   }
 
   /**
