@@ -124,6 +124,7 @@ describe('WebMcpRegistrationService', () => {
       exportCitationDossier: vi.fn().mockReturnValue({
         queryTopic: 'Section504FolioComponent',
         totalCitations: 1,
+        entries: [{ id: 'cite-cgm', title: 'Beck RW' }],
         amaBibliography: ['Beck RW. JAMA 2017.']
       })
     };
@@ -151,10 +152,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 71 WebMCP agentic tools on modelContext', () => {
+  it('should register all 72 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(71);
+    expect(registeredTools.size).toBe(72);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -582,10 +583,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 71 WebMCP agentic tools on modelContext', () => {
+  it('should register all 72 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(71);
+    expect(registeredTools.size).toBe(72);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -933,9 +934,22 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('Beck RW');
   });
 
+  it('should register tool #72: inspect_active_view_citations', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('inspect_active_view_citations');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      lensOrTopic: 'Section 504'
+    });
+    expect(result.content[0].text).toContain('status');
+    expect(result.content[0].text).toContain('success');
+    expect(result.content[0].text).toContain('matchedEvidenceEntries');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(71);
+    expect((service as any).mcpControllers.length).toBe(72);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

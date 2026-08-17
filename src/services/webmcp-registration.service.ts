@@ -2764,6 +2764,37 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(citeTool, { signal: citeCtrl.signal });
     this.mcpControllers.push({ name: citeTool.name, controller: citeCtrl });
+
+    // 72. Inspect Active View Citations
+    const inspectCtrl = new AbortController();
+    const inspectTool = {
+      name: 'inspect_active_view_citations',
+      description: 'Opens or retrieves the live academic citation and evidence ledger corresponding to currently active clinical lenses, teledentistry assessments, Section 504 school accommodations, or 3D anatomical models.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          lensOrTopic: { type: 'string', description: 'The clinical lens, symptom, or topic name.' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.citationService || new AcademicCitationService();
+        const topic = params?.lensOrTopic || 'clinical';
+        const dossier = svc.exportCitationDossier(topic);
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              status: 'success',
+              activeTopic: topic,
+              matchedEvidenceEntries: dossier?.entries?.length ?? dossier?.totalCitations ?? 0,
+              bibliographySample: dossier?.amaBibliography ? dossier.amaBibliography.slice(0, 3) : []
+            }, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(inspectTool, { signal: inspectCtrl.signal });
+    this.mcpControllers.push({ name: inspectTool.name, controller: inspectCtrl });
   }
 
   /**

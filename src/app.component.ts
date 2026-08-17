@@ -72,6 +72,7 @@ import { Section504FolioComponent } from './components/section-504-folio.compone
 import { ArchivalHealthGalleryComponent } from './components/archival-health-gallery.component';
 import { SteeringCommitteeDossierComponent } from './components/steering-committee-dossier.component';
 import { ClinicalContextModeSwitcherComponent } from './components/clinical-context-mode-switcher.component';
+import { AcademicCitationDrawerComponent } from './components/academic-citation-drawer.component';
 
 @Component({
   selector: 'app-root',
@@ -110,6 +111,7 @@ import { ClinicalContextModeSwitcherComponent } from './components/clinical-cont
     MainHeaderNavComponent,
     IntakeToolbarComponent,
     ClinicalContextModeSwitcherComponent,
+    AcademicCitationDrawerComponent,
     OnboardingTourOverlayComponent,
     SupportTicketModalComponent,
     ApiPricingComponent,
@@ -483,6 +485,7 @@ import { ClinicalContextModeSwitcherComponent } from './components/clinical-cont
           (openSection504Folio)="showSection504Modal.set(true)"
           (openArchivalGallery)="showArchivalGalleryModal.set(true)"
           (openSteeringCommittee)="showSteeringCommitteeModal.set(true)"
+          (openAcademicCitations)="showAcademicCitationsDrawer.set(true)"
           (openZooniverse)="showZooniverseModal.set(true)"
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
@@ -766,6 +769,11 @@ import { ClinicalContextModeSwitcherComponent } from './components/clinical-cont
     <!-- Native Angular Documentation Suite -->
     @if (showDocsStudy()) {
       <app-docs-study></app-docs-study>
+    }
+
+    <!-- Academic Citation & Evidence Ledger Drawer -->
+    @if (showAcademicCitationsDrawer()) {
+      <app-academic-citation-drawer (close)="showAcademicCitationsDrawer.set(false)"></app-academic-citation-drawer>
     }
 
     <!-- Preview & Print Modal (Dieter Rams Style) -->
@@ -1118,6 +1126,7 @@ export class AppComponent implements OnDestroy {
   showSection504Modal = signal(false);
   showArchivalGalleryModal = signal(false);
   showSteeringCommitteeModal = signal(false);
+  showAcademicCitationsDrawer = signal(false);
   showZooniverseModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;

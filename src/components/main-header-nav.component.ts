@@ -128,6 +128,15 @@ import { SessionStateService } from '../services/session-state.service';
             <span>🏛️ Steering Committee</span>
           </button>
 
+          <!-- Academic Citations & Evidence Ledger Button -->
+          <button 
+            type="button" 
+            (click)="openAcademicCitations.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer"
+            title="Academic Citation & Evidence Ledger (PubMed PMIDs, Cochrane RoB 2, AMA/BibTeX/RIS Exports)">
+            <span>📚 Citations</span>
+          </button>
+
           <!-- Citizen Science & Micro-Annotation Arena Button -->
           <button 
             type="button" 
@@ -349,6 +358,7 @@ export class MainHeaderNavComponent {
   openSection504Folio = output<void>();
   openArchivalGallery = output<void>();
   openSteeringCommittee = output<void>();
+  openAcademicCitations = output<void>();
   openZooniverse = output<void>();
   openBioNetworkQr = output<void>();
   openBillingDashboard = output<void>();
