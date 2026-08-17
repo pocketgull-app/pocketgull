@@ -56,6 +56,7 @@ import { GlobalHealthUtilityService } from './global-health-utility.service';
 import { SocialPragmaticsGymService } from './social-pragmatics-gym.service';
 import { SocraticEvidenceLiteracyService } from './socratic-evidence-literacy.service';
 import { WebBluetoothTelemetryService } from './hardware/web-bluetooth-telemetry.service';
+import { PharmacogenomicsService } from './pharmacogenomics.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -118,6 +119,7 @@ export class WebMcpRegistrationService {
   private socialGymService = inject(SocialPragmaticsGymService, { optional: true });
   private socraticService = inject(SocraticEvidenceLiteracyService, { optional: true });
   private bleService = inject(WebBluetoothTelemetryService, { optional: true });
+  private pgxService = inject(PharmacogenomicsService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2937,6 +2939,64 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(bleTool, { signal: bleCtrl.signal });
     this.mcpControllers.push({ name: bleTool.name, controller: bleCtrl });
+
+    // 77. Evaluate Pharmacogenomics & CPIC Guidelines
+    const pgxCtrl = new AbortController();
+    const pgxTool = {
+      name: 'evaluate_pharmacogenomics_and_cpic_guidelines',
+      description: 'Evaluates clinical pharmacogenomics (PGx) variants (CYP2D6, CYP2C19, SLCO1B1, HLA-B*57:01, DPYD, TPMT), CPIC Level A guidelines, and drug-induced phenoconversion.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          drugName: {
+            type: 'string',
+            description: 'Specific pharmaceutical candidate to check against active genomic diplotypes (e.g. Codeine, Clopidogrel, Simvastatin, Abacavir, 5-FU).'
+          },
+          targetGene: {
+            type: 'string',
+            description: 'Optional gene to update diplotype (e.g. CYP2D6, CYP2C19, SLCO1B1).'
+          },
+          newDiplotype: {
+            type: 'string',
+            description: 'New diplotype allele to assign (e.g. *1/*1, *4/*4, *2/*2, *5/*5, Pos, Neg).'
+          },
+          concomitantInhibitor: {
+            type: 'string',
+            description: 'Optional concomitant enzyme inhibitor to test phenoconversion (e.g. Fluoxetine, Bupropion).'
+          }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.pgxService || new PharmacogenomicsService();
+        if (params?.targetGene && params?.newDiplotype) {
+          svc.updateGeneDiplotype(params.targetGene, params.newDiplotype);
+        }
+        if (params?.concomitantInhibitor) {
+          svc.toggleInhibitor(params.concomitantInhibitor);
+        }
+        if (params?.drugName) {
+          const check = svc.checkDrugGeneSafety(params.drugName);
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                queriedDrug: params.drugName,
+                interaction: check || 'No high-risk CPIC contraindications found for this drug-gene pair.',
+                activeProfile: svc.activeProfile()
+              }, null, 2)
+            }]
+          };
+        }
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(svc.activeProfile(), null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(pgxTool, { signal: pgxCtrl.signal });
+    this.mcpControllers.push({ name: pgxTool.name, controller: pgxCtrl });
   }
 
   /**

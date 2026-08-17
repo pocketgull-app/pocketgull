@@ -199,10 +199,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 76 WebMCP agentic tools on modelContext', () => {
+  it('should register all 77 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(76);
+    expect(registeredTools.size).toBe(77);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -630,10 +630,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 76 WebMCP agentic tools on modelContext', () => {
+  it('should register all 77 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(76);
+    expect(registeredTools.size).toBe(77);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -1041,9 +1041,19 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('heartRateBpm');
   });
 
+  it('should register tool #77: evaluate_pharmacogenomics_and_cpic_guidelines', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_pharmacogenomics_and_cpic_guidelines');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ drugName: 'Codeine' });
+    expect(result.content[0].text).toContain('queriedDrug');
+    expect(result.content[0].text).toContain('CYP2D6');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(76);
+    expect((service as any).mcpControllers.length).toBe(77);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

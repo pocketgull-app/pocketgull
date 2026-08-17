@@ -77,6 +77,7 @@ import { GlobalHealthUtilityFolioComponent } from './components/global-health-ut
 import { SocialPragmaticsGymComponent } from './components/social-pragmatics-gym.component';
 import { SocraticEvidenceValidatorComponent } from './components/socratic-evidence-validator.component';
 import { BiometricBluetoothHubComponent } from './components/biometric-bluetooth-hub.component';
+import { PharmacogenomicsOptimizerComponent } from './components/pharmacogenomics-optimizer.component';
 
 @Component({
   selector: 'app-root',
@@ -120,6 +121,7 @@ import { BiometricBluetoothHubComponent } from './components/biometric-bluetooth
     SocialPragmaticsGymComponent,
     SocraticEvidenceValidatorComponent,
     BiometricBluetoothHubComponent,
+    PharmacogenomicsOptimizerComponent,
     OnboardingTourOverlayComponent,
     SupportTicketModalComponent,
     ApiPricingComponent,
@@ -498,6 +500,7 @@ import { BiometricBluetoothHubComponent } from './components/biometric-bluetooth
           (openSocialGym)="showSocialGymModal.set(true)"
           (openSocraticValidator)="showSocraticValidatorModal.set(true)"
           (openBluetoothHub)="showBluetoothHubModal.set(true)"
+          (openPgxOptimizer)="showPgxOptimizerModal.set(true)"
           (openZooniverse)="showZooniverseModal.set(true)"
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
@@ -806,6 +809,11 @@ import { BiometricBluetoothHubComponent } from './components/biometric-bluetooth
     <!-- Biometric Telemetry & Bluetooth GATT Hub Modal -->
     @if (showBluetoothHubModal()) {
       <app-biometric-bluetooth-hub (close)="showBluetoothHubModal.set(false)"></app-biometric-bluetooth-hub>
+    }
+
+    <!-- Pharmacogenomics (PGx) & CPIC Safety Optimizer Modal -->
+    @if (showPgxOptimizerModal()) {
+      <app-pharmacogenomics-optimizer (close)="showPgxOptimizerModal.set(false)"></app-pharmacogenomics-optimizer>
     }
 
     <!-- Preview & Print Modal (Dieter Rams Style) -->
@@ -1163,6 +1171,7 @@ export class AppComponent implements OnDestroy {
   showSocialGymModal = signal(false);
   showSocraticValidatorModal = signal(false);
   showBluetoothHubModal = signal(false);
+  showPgxOptimizerModal = signal(false);
   showZooniverseModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;

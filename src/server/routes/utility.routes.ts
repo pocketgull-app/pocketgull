@@ -303,7 +303,7 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
       '@type': 'WebMCPToolCatalog',
       name: 'PocketGull Dynamic Clinical WebMCP Tool Registry',
       version: APP_VERSION,
-      totalTools: 76,
+      totalTools: 77,
       tools: [
         { name: 'open_zen_sanctuary', category: 'Therapy & Bibliotherapy' },
         { name: 'get_healing_postcards', category: 'Patient Engagement' },
@@ -334,6 +334,7 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
         { name: 'evaluate_social_conversational_pragmatics', category: 'Interpersonal Social Pragmatics Gym' },
         { name: 'validate_clinical_claim_socratic_epistemology', category: 'Socratic Epistemology & Claim Validation' },
         { name: 'connect_bluetooth_biometric_device_or_parse_healthkit', category: 'Hardware Telemetry & Web Bluetooth' },
+        { name: 'evaluate_pharmacogenomics_and_cpic_guidelines', category: 'Pharmacogenomics & CPIC Guidelines' },
         { name: 'resolve_clinical_nlp_context', category: 'Clinical NLP' },
         { name: 'audit_clinical_coding_and_hcc_risk', category: 'HIM Coding & HCC V28' },
         { name: 'issue_him_ceu_microcredential', category: 'AHIMA / AAPC CEU Career' },
