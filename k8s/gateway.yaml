@@ -1,0 +1,41 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: pocketgull-gateway
+  namespace: pocketgull-production
+spec:
+  gatewayClassName: gke-l7-global-external-managed
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: pocketgull-managed-cert
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pocketgull-http-route
+  namespace: pocketgull-production
+spec:
+  parentRefs:
+    - name: pocketgull-gateway
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: pocketgull-service
+          port: 80
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: pocketgull-managed-cert
+  namespace: pocketgull-production
+spec:
+  domains:
+    - pocketgull.app

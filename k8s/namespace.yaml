@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pocketgull-production
+  labels:
+    app.kubernetes.io/name: pocketgull
+    app.kubernetes.io/part-of: clinical-intelligence-engine
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+    compliance.healthcare.gov/hipaa-safe-harbor: "enforced"
