@@ -23,7 +23,8 @@ describe('Section504AccommodationService', () => {
       conditionCategory: 'type1_diabetes',
       gradeLevel: 'Grade 5',
       schoolName: 'Lincoln Middle School',
-      attendingPhysician: 'Dr. Elena Vance, MD'
+      attendingPhysician: 'Dr. Elena Vance, MD',
+      saveToState: true
     });
 
     expect(plan).toBeDefined();

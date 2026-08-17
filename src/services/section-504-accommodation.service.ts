@@ -476,26 +476,27 @@ export class Section504AccommodationService {
     schoolName?: string;
     attendingPhysician?: string;
     customAccommodations?: string[];
+    saveToState?: boolean;
   }): ISection504Plan {
     const template = this.standardAccommodationCatalog[params.conditionCategory];
-    const today = new Date().toISOString().split('T')[0].replace(/-/g, '.');
-    const nextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0].replace(/-/g, '.');
+    const today = new Date().toISOString().split('T')[0];
+    const nextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    const customItems: IAccommodationItem[] = (params.customAccommodations || []).map((acc, i) => ({
-      id: `custom-acc-${i + 1}`,
-      category: 'Individualized Physician Order',
-      title: 'Individualized Accommodation',
-      description: acc,
-      rationale: 'Prescribed by attending clinician based on unique patient biophysical presentation.',
+    const customItems: IAccommodationItem[] = (params.customAccommodations || []).map((desc, idx) => ({
+      id: `custom-acc-${idx + 1}`,
+      category: 'Specialized Custom Accommodation',
+      title: 'Individualized Classroom Modification',
+      description: desc,
+      rationale: 'Specific clinical necessity determined by attending medical provider.',
       isMandatory: true
     }));
 
     const plan: ISection504Plan = {
-      id: `504-${params.patientId}-${Date.now().toString(36)}`,
+      id: `504-${params.patientId}-${Date.now()}`,
       patientId: params.patientId,
       studentName: params.studentName,
-      gradeLevel: params.gradeLevel || 'Grade 6',
-      schoolName: params.schoolName || 'District Public School',
+      gradeLevel: params.gradeLevel || 'Standard Grade',
+      schoolName: params.schoolName || 'Enrolled School District',
       attendingPhysician: params.attendingPhysician || 'Dr. Phil Gear, FACP',
       physicianLicense: 'CA-MD-94021',
       primaryDiagnosis: template.primaryDiagnosis,
@@ -511,8 +512,15 @@ export class Section504AccommodationService {
       fhirBundleDigest: `urn:uuid:504-bundle-${Math.random().toString(36).substring(2, 10)}`
     };
 
+    if (params.saveToState) {
+      this.activePlans.update(plans => [plan, ...plans]);
+      this.selectedPlan.set(plan);
+    }
+    return plan;
+  }
+
+  savePlan(plan: ISection504Plan): void {
     this.activePlans.update(plans => [plan, ...plans]);
     this.selectedPlan.set(plan);
-    return plan;
   }
 }
