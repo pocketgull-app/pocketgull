@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 64 WebMCP agentic tools on modelContext', () => {
+  it('should register all 65 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(64);
+    expect(registeredTools.size).toBe(65);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -146,6 +146,7 @@ describe('WebMcpRegistrationService', () => {
     expect(registeredTools.has('optimize_youth_cognitive_and_circadian_hygiene')).toBe(true);
     expect(registeredTools.has('generate_future_care_and_longevity_plan')).toBe(true);
     expect(registeredTools.has('navigate_clinical_social_work_and_sdoh')).toBe(true);
+    expect(registeredTools.has('evaluate_addiction_recovery_and_harm_reduction')).toBe(true);
     expect(registeredTools.has('resolve_clinical_nlp_context')).toBe(true);
     expect(registeredTools.has('audit_clinical_coding_and_hcc_risk')).toBe(true);
     expect(registeredTools.has('issue_him_ceu_microcredential')).toBe(true);
@@ -555,10 +556,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 64 WebMCP agentic tools on modelContext', () => {
+  it('should register all 65 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(64);
+    expect(registeredTools.size).toBe(65);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -576,6 +577,7 @@ describe('WebMcpRegistrationService', () => {
     expect(registeredTools.has('optimize_youth_cognitive_and_circadian_hygiene')).toBe(true);
     expect(registeredTools.has('generate_future_care_and_longevity_plan')).toBe(true);
     expect(registeredTools.has('navigate_clinical_social_work_and_sdoh')).toBe(true);
+    expect(registeredTools.has('evaluate_addiction_recovery_and_harm_reduction')).toBe(true);
     expect(registeredTools.has('resolve_clinical_nlp_context')).toBe(true);
     expect(registeredTools.has('audit_clinical_coding_and_hcc_risk')).toBe(true);
     expect(registeredTools.has('issue_him_ceu_microcredential')).toBe(true);
@@ -791,9 +793,31 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('KEJU-CERT-');
   });
 
+  it('should execute evaluate_addiction_recovery_and_harm_reduction tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_addiction_recovery_and_harm_reduction');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      patientAge: 29,
+      primarySubstance: 'Opioids_Fentanyl',
+      durationOfUseMonths: 14,
+      lastUseHoursAgo: 10,
+      priorPrecipitatedWithdrawalHistory: true,
+      currentWithdrawalSymptoms: {
+        tachycardiaPulseOver100: true,
+        diaphoresisSweating: true,
+        tremorsOrRestlessness: true
+      }
+    });
+    expect(result.content[0].text).toContain('SUD-REC-');
+    expect(result.content[0].text).toContain('Bernese Micro-Induction');
+    expect(result.content[0].text).toContain('Naloxone');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(64);
+    expect((service as any).mcpControllers.length).toBe(65);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

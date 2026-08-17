@@ -46,6 +46,7 @@ import { IntergenerationalWisdomService } from './intergenerational-wisdom.servi
 import { YouthNeurodevelopmentHygieneService } from './youth-neurodevelopment-hygiene.service';
 import { FutureCarePlanningService } from './future-care-planning.service';
 import { ClinicalSocialWorkNavigatorService } from './clinical-social-work-navigator.service';
+import { AddictionMedicineRecoveryService } from './addiction-medicine-recovery.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -98,6 +99,7 @@ export class WebMcpRegistrationService {
   private youthHygieneService = inject(YouthNeurodevelopmentHygieneService, { optional: true });
   private futureCareService = inject(FutureCarePlanningService, { optional: true });
   private socialWorkService = inject(ClinicalSocialWorkNavigatorService, { optional: true });
+  private addictionService = inject(AddictionMedicineRecoveryService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2474,6 +2476,59 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(swTool, { signal: swCtrl.signal });
     this.mcpControllers.push({ name: swTool.name, controller: swCtrl });
+
+    // 65. Evaluate Addiction Recovery, Withdrawal Scoring & Harm Reduction
+    const sudCtrl = new AbortController();
+    const sudTool = {
+      name: 'evaluate_addiction_recovery_and_harm_reduction',
+      description: 'Evaluates substance withdrawal severity (COWS for opioids, CIWA-Ar for alcohol), computes the Bernese method micro-induction protocol for buprenorphine, precision pharmacotherapy (naltrexone, acamprosate), and life-saving naloxone/overdose harm reduction safeguards.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientAge: { type: 'number' },
+          primarySubstance: { type: 'string', enum: ['Opioids_Fentanyl', 'Alcohol', 'Stimulants_Meth_Cocaine', 'Benzodiazepines', 'Cannabis_High_THC', 'Nicotine_Vaping', 'Polysubstance'] },
+          durationOfUseMonths: { type: 'number' },
+          lastUseHoursAgo: { type: 'number' },
+          cowsScore: { type: 'number', description: 'COWS score 0-48' },
+          ciwaScore: { type: 'number', description: 'CIWA-Ar score 0-67' },
+          priorPrecipitatedWithdrawalHistory: { type: 'boolean' },
+          acesScore: { type: 'number', description: 'Adverse Childhood Experiences scale 0-10' },
+          currentWithdrawalSymptoms: {
+            type: 'object',
+            properties: {
+              tachycardiaPulseOver100: { type: 'boolean' },
+              diaphoresisSweating: { type: 'boolean' },
+              tremorsOrRestlessness: { type: 'boolean' },
+              pupilDilationMydriasis: { type: 'boolean' },
+              gastrointestinalDistress: { type: 'boolean' },
+              visualOrTactileHallucinations: { type: 'boolean' },
+              severeAnxietyOrCravings: { type: 'boolean' }
+            }
+          }
+        },
+        required: ['patientAge', 'primarySubstance', 'durationOfUseMonths']
+      },
+      execute: async (params: any) => {
+        const svc = this.addictionService || new AddictionMedicineRecoveryService();
+        const report = svc.evaluateAddictionRecovery({
+          patientAge: Number(params?.patientAge || 35),
+          primarySubstance: params?.primarySubstance || 'Opioids_Fentanyl',
+          durationOfUseMonths: Number(params?.durationOfUseMonths || 12),
+          lastUseHoursAgo: Number(params?.lastUseHoursAgo || 6),
+          cowsScore: params?.cowsScore,
+          ciwaScore: params?.ciwaScore,
+          priorPrecipitatedWithdrawalHistory: Boolean(params?.priorPrecipitatedWithdrawalHistory),
+          acesScore: params?.acesScore,
+          currentWithdrawalSymptoms: params?.currentWithdrawalSymptoms || {}
+        });
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(report, null, 2) }]
+        };
+      }
+    };
+    modelContext.registerTool(sudTool, { signal: sudCtrl.signal });
+    this.mcpControllers.push({ name: sudTool.name, controller: sudCtrl });
   }
 
   /**

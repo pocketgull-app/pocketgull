@@ -383,21 +383,44 @@
         telemetry: "• Engine: Google Gemini 2.5 Flash Live API\n• Audio: 16-bit Natural Voice AI\n• Privacy: Safe & Private for Families\n• Accessibility: Simple, Clear Conversation",
         drawOverlay: (ctx, t, w, h) => {
           ctx.save();
-          ctx.strokeStyle = 'rgba(45, 212, 191, 0.85)';
-          ctx.lineWidth = 3;
+          // Glassmorphic HUD Card Container
+          const cardX = w * 0.64;
+          const cardY = h * 0.22;
+          const cardW = 280;
+          const cardH = 90;
+
+          ctx.fillStyle = 'rgba(9, 9, 11, 0.78)';
+          ctx.strokeStyle = 'rgba(45, 212, 191, 0.75)';
+          ctx.lineWidth = 1.5;
+          ctx.roundRect(cardX, cardY, cardW, cardH, 12);
+          ctx.fill();
+          ctx.stroke();
+
+          // Header text
+          ctx.fillStyle = '#2dd4bf';
+          ctx.font = 'bold 12px "JetBrains Mono", monospace';
+          ctx.fillText('🎙️ GEMINI LIVE AUDIO STREAM', cardX + 16, cardY + 26);
+
+          // Waveform inside the card
+          ctx.strokeStyle = 'rgba(45, 212, 191, 0.9)';
+          ctx.lineWidth = 2;
           ctx.beginPath();
-          const centerY = h * 0.52;
-          const startX = w * 0.38;
-          const endX = w * 0.62;
-          for (let x = startX; x <= endX; x += 4) {
+          const startX = cardX + 16;
+          const endX = cardX + cardW - 16;
+          const centerY = cardY + 56;
+          for (let x = startX; x <= endX; x += 3) {
             const rel = (x - startX) / (endX - startX);
             const env = Math.sin(rel * Math.PI);
-            const wave = Math.sin(x * 0.05 + t * 8) * Math.cos(x * 0.02 - t * 4);
-            const y = centerY + wave * 28 * env;
+            const wave = Math.sin(x * 0.12 + t * 9) * Math.cos(x * 0.06 - t * 5);
+            const y = centerY + wave * 14 * env;
             if (x === startX) ctx.moveTo(x, y);
             else ctx.lineTo(x, y);
           }
           ctx.stroke();
+
+          ctx.font = '10px "Inter", sans-serif';
+          ctx.fillStyle = '#a1a1aa';
+          ctx.fillText('16-bit Multimodal Live Consultation', cardX + 16, cardY + 78);
           ctx.restore();
         }
       },
@@ -560,10 +583,13 @@
     function speakCurrentScene() {
       const persona = document.getElementById('voicePersonaSelect')?.value || 'journey-male';
       
-      // Stop any existing studio audio
+      // Stop any existing studio audio with smooth cleanup
       if (currentAudioEl) {
-        currentAudioEl.pause();
-        currentAudioEl.currentTime = 0;
+        try {
+          currentAudioEl.pause();
+          currentAudioEl.onended = null;
+          currentAudioEl.currentTime = 0;
+        } catch (e) {}
         currentAudioEl = null;
       }
       if ('speechSynthesis' in window) {
@@ -578,6 +604,24 @@
       // Play ultra-high-definition Studio Neural Audio
       currentAudioEl = new Audio(audioUrl);
       currentAudioEl.volume = 1.0;
+
+      // Dynamically synchronize scene duration with the actual audio length to eliminate audio clipping
+      currentAudioEl.onloadedmetadata = () => {
+        if (currentAudioEl && currentAudioEl.duration && !isNaN(currentAudioEl.duration)) {
+          scenes[currentSceneIdx].duration = Math.max(9, currentAudioEl.duration + 0.8);
+        }
+      };
+
+      currentAudioEl.onended = () => {
+        if (isPlaying) {
+          // Smoothly advance after speech finishes naturally
+          currentSceneIdx = (currentSceneIdx + 1) % scenes.length;
+          sceneStartTime = performance.now();
+          updateUiState();
+          speakCurrentScene();
+        }
+      };
+
       currentAudioEl.play().catch(err => {
         console.warn('Direct MP3 playback fallback to speech synthesizer:', err);
         // Fallback to speech synthesizer if audio file is not loaded yet
@@ -586,6 +630,14 @@
           const utter = new SpeechSynthesisUtterance(s.vo);
           utter.rate = 0.94;
           utter.pitch = 0.92;
+          utter.onend = () => {
+            if (isPlaying && !currentAudioEl) {
+              currentSceneIdx = (currentSceneIdx + 1) % scenes.length;
+              sceneStartTime = performance.now();
+              updateUiState();
+              speakCurrentScene();
+            }
+          };
           window.speechSynthesis.speak(utter);
         }
       });
@@ -621,10 +673,10 @@
       const s = scenes[currentSceneIdx];
       const img = themeImages[activeTheme][currentSceneIdx];
       const elapsedSec = (now - sceneStartTime) / 1000;
-      const progress = elapsedSec / s.duration;
+      const progress = Math.min(elapsedSec / (s.duration || 10), 1.0);
 
-      // Auto-advance scene
-      if (isPlaying && elapsedSec >= s.duration) {
+      // Auto-advance scene as fallback timer if audio onended didn't trigger
+      if (isPlaying && (!currentAudioEl || currentAudioEl.paused) && elapsedSec >= (s.duration || 10)) {
         currentSceneIdx = (currentSceneIdx + 1) % scenes.length;
         sceneStartTime = now;
         updateUiState();
@@ -635,12 +687,13 @@
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, w, h);
 
-      // 2. Draw Image with smooth Ken Burns Pan / Zoom
+      // 2. Draw Image with safe Ken Burns Pan / Zoom (starting at 1.12 scale to eliminate border clipping)
       if (img && img.complete && img.naturalWidth > 0) {
         ctx.save();
-        const scale = 1.0 + (progress % 1.0) * 0.08;
-        const panX = (Math.sin(elapsedSec * 0.5) * 20);
-        const panY = (Math.cos(elapsedSec * 0.3) * 10);
+        const baseScale = 1.12; // Extra margin so panning never reveals black canvas edges
+        const scale = baseScale + (progress % 1.0) * 0.08;
+        const panX = Math.sin(elapsedSec * 0.4) * 22;
+        const panY = Math.cos(elapsedSec * 0.25) * 12;
         
         ctx.translate(w / 2, h / 2);
         ctx.scale(scale, scale);
@@ -653,7 +706,7 @@
       const grad = ctx.createLinearGradient(0, 0, 0, h);
       grad.addColorStop(0, 'rgba(0,0,0,0.5)');
       grad.addColorStop(0.2, 'rgba(0,0,0,0)');
-      grad.addColorStop(0.75, 'rgba(0,0,0,0)');
+      grad.addColorStop(0.72, 'rgba(0,0,0,0)');
       grad.addColorStop(1, 'rgba(0,0,0,0.85)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
@@ -663,49 +716,48 @@
         s.drawOverlay(ctx, elapsedSec, w, h);
       }
 
-      // 5. Draw Cinematic Subtitles Lower-Third
+      // 5. Draw Dynamic, Non-Clipping Subtitles Lower-Third
       ctx.save();
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-      ctx.lineWidth = 1;
-      const subWidth = w * 0.82;
-      const subHeight = 52;
-      const subX = (w - subWidth) / 2;
-      const subY = h - 85;
-      ctx.roundRect(subX, subY, subWidth, subHeight, 14);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#f4f4f5';
       ctx.font = '500 15px "Inter", sans-serif';
-      ctx.textAlign = 'center';
-      
-      // Word wrap subtitles
+      const subWidth = w * 0.84;
       const words = s.vo.split(' ');
       let line = '';
       let lines = [];
       for (let n = 0; n < words.length; n++) {
         const testLine = line + words[n] + ' ';
         const metrics = ctx.measureText(testLine);
-        if (metrics.width > subWidth - 40 && n > 0) {
-          lines.push(line);
+        if (metrics.width > subWidth - 48 && n > 0) {
+          lines.push(line.trim());
           line = words[n] + ' ';
         } else {
           line = testLine;
         }
       }
-      lines.push(line);
+      lines.push(line.trim());
 
-      if (lines.length === 1) {
-        ctx.fillText(lines[0], w / 2, subY + 31);
-      } else {
-        ctx.fillText(lines[0], w / 2, subY + 22);
-        ctx.fillText(lines[1], w / 2, subY + 42);
-      }
+      const lineCount = lines.length;
+      const subHeight = Math.max(52, lineCount * 22 + 20);
+      const subX = (w - subWidth) / 2;
+      const subY = h - subHeight - 28;
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.78)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+      ctx.lineWidth = 1;
+      ctx.roundRect(subX, subY, subWidth, subHeight, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f4f4f5';
+      ctx.textAlign = 'center';
+      
+      const startTextY = subY + 22 + (subHeight - 20 - (lineCount * 22)) / 2;
+      lines.forEach((l, i) => {
+        ctx.fillText(l, w / 2, startTextY + i * 22);
+      });
       ctx.restore();
 
       // 6. Update HTML UI progress bar and clock
-      const totalTimeSec = currentSceneIdx * 10 + Math.min(elapsedSec, 10);
+      const totalTimeSec = currentSceneIdx * 10 + Math.min(elapsedSec, (s.duration || 10));
       const totalPct = (totalTimeSec / 60) * 100;
       document.getElementById('videoProgressBar').style.width = Math.min(totalPct, 100) + '%';
       const mm = String(Math.floor(totalTimeSec / 60)).padStart(2, '0');
