@@ -134,10 +134,11 @@ import { SecureStorageService } from '../services/secure-storage.service';
       }
 
       <!-- Unified Origami Unfolding Seagull Mascot & Papercraft Heart -->
-      <div class="origami-seagull-container group drop-shadow-xl relative z-20 pointer-events-none mb-2 sm:mb-3 avs-breathing-mascot origami-unfold-container">
+      <div class="origami-seagull-container group drop-shadow-xl relative z-20 pointer-events-none mb-3 sm:mb-4 avs-breathing-mascot origami-unfold-container will-change-transform">
         <svg
           class="w-14 h-14 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 hover:scale-105 active:scale-95 transition-transform origami-unfold-svg" 
-          viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true">
           <g>
             <!-- Far Wing (Teal) -->
             <polygon class="origami-fold-far-wing" points="50,40 65,15 58,45" fill="#3ebc9e" stroke="#2fa085" stroke-width="0.5" stroke-linejoin="round"></polygon>
@@ -445,28 +446,31 @@ import { SecureStorageService } from '../services/secure-storage.service';
                   type="button" 
                   (click)="handleGoogleAuth()"
                   [disabled]="isChecking() || !signinEmailInput()"
-                  class="w-full py-4 bg-brand-blue-600 hover:bg-brand-blue-700 text-white text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(37,99,235,0.15)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.25)] active:scale-[0.98] disabled:opacity-50"
+                  aria-label="Clinician Sign-in with Email"
+                  class="w-full min-h-[48px] py-3.5 px-4 bg-brand-blue-600 hover:bg-brand-blue-700 text-white text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(37,99,235,0.15)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.25)] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                 >
-                  <span>Clinician Sign-in</span>
+                  <span class="text-sm">Clinician Sign-in</span>
                 </button>
 
                 <!-- Sandbox Demo -->
                 <button 
                   type="button" 
                   (click)="handleSandboxDemo()"
-                  class="w-full py-4 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800/90 border border-zinc-200/80 dark:border-zinc-700/50 text-zinc-950 dark:text-zinc-200 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98]"
+                  aria-label="Explore Clinical Sandbox Demo"
+                  class="w-full min-h-[48px] py-3.5 px-4 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800/90 border border-zinc-200/80 dark:border-zinc-700/50 text-zinc-950 dark:text-zinc-200 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-500 dark:text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                  <span>Explore Sandbox Demo</span>
+                  <span class="text-sm">Explore Sandbox Demo</span>
                 </button>
 
                 <!-- Draw Gesture Lock -->
                 <button 
                   type="button" 
                   (click)="viewState.set('gesture'); errorMsg.set('');"
-                  class="w-full py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+                  aria-label="Unlock using Draw Gesture Lock"
+                  class="w-full min-h-[48px] py-3.5 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
                 >
-                  <span>🎨 Draw Gesture Lock</span>
+                  <span class="text-sm">🎨 Draw Gesture Lock</span>
                 </button>
 
                 <div class="relative py-4 mt-2">
@@ -482,9 +486,10 @@ import { SecureStorageService } from '../services/secure-storage.service';
                 <button 
                   type="button" 
                   (click)="viewState.set('signup'); errorMsg.set('');"
-                  class="w-full py-3 bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-350 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300"
+                  aria-label="Create Clinician Account"
+                  class="w-full min-h-[48px] py-3.5 px-4 bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-350 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 cursor-pointer"
                 >
-                  Create Clinician Account (Sign Up)
+                  <span class="text-sm">Create Clinician Account (Sign Up)</span>
                 </button>
               </div>
             </div>
@@ -791,25 +796,26 @@ import { SecureStorageService } from '../services/secure-storage.service';
         <button 
           type="button" 
           (click)="handleEmergencyBypass()"
-          class="mt-3.5 w-full py-3.5 bg-rose-600 hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-600 text-white font-extrabold text-xs uppercase tracking-[0.18em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg border border-rose-400 dark:border-rose-500 cursor-pointer active:scale-[0.98]"
+          aria-label="Good Samaritan Mode Emergency Bypass"
+          class="mt-6 w-full min-h-[48px] py-3.5 px-4 bg-rose-600 hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-600 text-white font-extrabold text-xs uppercase tracking-[0.18em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg border border-rose-400 dark:border-rose-500 cursor-pointer active:scale-[0.98]"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 5v14M5 12h14"/>
           </svg>
-          <span class="font-extrabold">Good Samaritan Mode (Bypass)</span>
+          <span class="font-extrabold text-sm">Good Samaritan Mode (Bypass)</span>
         </button>
 
         <!-- Terms and Privacy Links -->
-        <div class="mt-2.5 flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider font-semibold text-zinc-400 dark:text-zinc-500 z-30">
-          <button type="button" (click)="showTermsModal.set(true)" class="min-h-[32px] px-2.5 py-1.5 inline-flex items-center justify-center hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors bg-transparent border-none cursor-pointer">Terms of Service</button>
-          <span class="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-800"></span>
-          <button type="button" (click)="showPrivacyModal.set(true)" class="min-h-[32px] px-2.5 py-1.5 inline-flex items-center justify-center hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors bg-transparent border-none cursor-pointer">Privacy Policy</button>
+        <div class="mt-4 flex items-center justify-center gap-3 text-xs uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400 z-30">
+          <button type="button" (click)="showTermsModal.set(true)" aria-label="Open Terms of Service" class="min-h-[48px] min-w-[48px] px-3 py-2 inline-flex items-center justify-center hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors bg-transparent border-none cursor-pointer">Terms of Service</button>
+          <span class="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" aria-hidden="true"></span>
+          <button type="button" (click)="showPrivacyModal.set(true)" aria-label="Open Privacy Policy" class="min-h-[48px] min-w-[48px] px-3 py-2 inline-flex items-center justify-center hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors bg-transparent border-none cursor-pointer">Privacy Policy</button>
         </div>
 
-        <div class="mt-2 flex items-center justify-center gap-2">
-          <p class="text-[10px] text-zinc-500 dark:text-zinc-500 font-mono uppercase tracking-[0.2em]">v{{ appVersion }}</p>
-          <a href="https://github.com/philgear/pocketgull" target="_blank" rel="noopener noreferrer" class="min-h-[32px] min-w-[32px] inline-flex items-center justify-center text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors" aria-label="View on GitHub">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        <div class="mt-2 flex items-center justify-center gap-3">
+          <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono uppercase tracking-[0.2em]">v{{ appVersion }}</p>
+          <a href="https://github.com/pocketgull-app/pocketgull" target="_blank" rel="noopener noreferrer" class="min-h-[48px] min-w-[48px] inline-flex items-center justify-center text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors" aria-label="View Source Code on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
           </a>
         </div>
 
@@ -895,16 +901,18 @@ import { SecureStorageService } from '../services/secure-storage.service';
     .fold-3 { animation-delay: 450ms; }
     .fold-4 { animation-delay: 600ms; }
 
-    /* Clinical Standard Box Breathing (4s Inhale, 4s Hold, 4s Exhale, 4s Hold = 16s total) */
+    /* Clinical Standard Box Breathing (4s Inhale, 4s Hold, 4s Exhale, 4s Hold = 16s total) - Fully Hardware Composited */
     @keyframes avs-respiratory-breath {
-        0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(62, 188, 158, 0.15)); }
-        25% { transform: scale(1.12); filter: drop-shadow(0 0 28px rgba(62, 188, 158, 0.45)); }
-        50% { transform: scale(1.12); filter: drop-shadow(0 0 28px rgba(239, 102, 88, 0.45)); }
-        75% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(239, 102, 88, 0.15)); }
-        100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(62, 188, 158, 0.15)); }
+        0% { transform: scale3d(1, 1, 1); opacity: 0.95; }
+        25% { transform: scale3d(1.08, 1.08, 1); opacity: 1; }
+        50% { transform: scale3d(1.08, 1.08, 1); opacity: 1; }
+        75% { transform: scale3d(1, 1, 1); opacity: 0.95; }
+        100% { transform: scale3d(1, 1, 1); opacity: 0.95; }
     }
     .avs-breathing-mascot {
         animation: avs-respiratory-breath 16s ease-in-out infinite;
+        will-change: transform, opacity;
+        transform: translateZ(0);
     }
 
     @keyframes avs-glow-breath {

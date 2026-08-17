@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, computed, signal, viewChild, ElementRef, OnInit, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, signal, viewChild, ElementRef, OnInit, OnDestroy, PLATFORM_ID, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { PocketGullCardComponent } from './shared/pocket-gull-card.component';
@@ -172,9 +172,15 @@ interface ISirPoint {
   `
 })
 export class SentinelTelemetryPlotterComponent implements OnInit, OnDestroy {
-  private readonly platformId = inject(PLATFORM_ID);
-  private readonly exportService = inject(ExportService);
-  private readonly patientState = inject(PatientStateService);
+  private state = inject(PatientStateService);
+  private exportService = inject(ExportService);
+  private platformId = inject(PLATFORM_ID);
+  private ngZone = inject(NgZone);
+
+  private cachedSirW = 0;
+  private cachedSirH = 0;
+  private cachedEcgW = 0;
+  private cachedEcgH = 0;
 
   readonly sirCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('sirCanvas');
   readonly ecgCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('ecgCanvas');
@@ -323,12 +329,14 @@ export class SentinelTelemetryPlotterComponent implements OnInit, OnDestroy {
   }
 
   private startAnimationLoop() {
-    const render = () => {
-      this.drawSirCanvas();
-      this.drawEcgCanvas();
-      this.animationFrameId = requestAnimationFrame(render);
-    };
-    render();
+    this.ngZone.runOutsideAngular(() => {
+      const render = () => {
+        this.drawSirCanvas();
+        this.drawEcgCanvas();
+        this.animationFrameId = requestAnimationFrame(render);
+      };
+      render();
+    });
   }
 
   private drawSirCanvas() {
@@ -337,13 +345,15 @@ export class SentinelTelemetryPlotterComponent implements OnInit, OnDestroy {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    if (canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight) {
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
+    const currentW = canvas.clientWidth;
+    const currentH = canvas.clientHeight;
+    if (currentW !== this.cachedSirW || currentH !== this.cachedSirH) {
+      this.cachedSirW = canvas.width = currentW;
+      this.cachedSirH = canvas.height = currentH;
     }
 
-    const w = canvas.width;
-    const h = canvas.height;
+    const w = this.cachedSirW;
+    const h = this.cachedSirH;
 
     ctx.clearRect(0, 0, w, h);
 
@@ -417,13 +427,15 @@ export class SentinelTelemetryPlotterComponent implements OnInit, OnDestroy {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    if (canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight) {
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
+    const currentW = canvas.clientWidth;
+    const currentH = canvas.clientHeight;
+    if (currentW !== this.cachedEcgW || currentH !== this.cachedEcgH) {
+      this.cachedEcgW = canvas.width = currentW;
+      this.cachedEcgH = canvas.height = currentH;
     }
 
-    const w = canvas.width;
-    const h = canvas.height;
+    const w = this.cachedEcgW;
+    const h = this.cachedEcgH;
 
     ctx.clearRect(0, 0, w, h);
 

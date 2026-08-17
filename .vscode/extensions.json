@@ -6,6 +6,7 @@
     "ms-python.python",
     "ms-python.vscode-pylance",
     "googlecloudtools.cloudcode",
+    "googlecloudtools.datacloud",
     "github.vscode-github-actions",
     "redhat.vscode-yaml",
     "ms-azuretools.vscode-docker",

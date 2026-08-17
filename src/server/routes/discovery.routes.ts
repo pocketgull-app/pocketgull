@@ -973,8 +973,8 @@ export function createDiscoveryRouter(): Router {
 
   router.use(expressJson({ limit: '100kb' }));
 
-  // ── GET /v1/discovery/tools ───────────────────────────────────────────
-  router.get('/v1/discovery/tools', (_req: Request, res: Response) => {
+  // ── GET /v1/discovery/tools (and /api/discovery/tools alias) ───────────
+  router.get(['/v1/discovery/tools', '/api/discovery/tools', '/discovery/tools'], (_req: Request, res: Response) => {
     const tools = buildToolRegistry();
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.json({
@@ -999,8 +999,8 @@ export function createDiscoveryRouter(): Router {
     });
   });
 
-  // ── GET /v1/discovery/context-schema ──────────────────────────────────
-  router.get('/v1/discovery/context-schema', (_req: Request, res: Response) => {
+  // ── GET /v1/discovery/context-schema (and /api/discovery/context-schema) 
+  router.get(['/v1/discovery/context-schema', '/api/discovery/context-schema', '/discovery/context-schema'], (_req: Request, res: Response) => {
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.json({
       contextEnvelope: {
@@ -1048,7 +1048,7 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── POST /v1/discovery/resolve (metered: explorer+ with quota) ────────
-  router.post('/v1/discovery/resolve', requireTier('explorer', 'discovery_resolve', true), (req: Request, res: Response) => {
+  router.post(['/v1/discovery/resolve', '/api/discovery/resolve', '/discovery/resolve'], requireTier('explorer', 'discovery_resolve', true), (req: Request, res: Response) => {
     const body = req.body as IResolveRequest | undefined;
     if (!body?.query || typeof body.query !== 'string') {
       return res.status(400).json({ error: 'Missing required field: query (string).' });
@@ -1065,7 +1065,7 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── GET /v1/discovery/taxonomy ────────────────────────────────────────
-  router.get('/v1/discovery/taxonomy', (_req: Request, res: Response) => {
+  router.get(['/v1/discovery/taxonomy', '/api/discovery/taxonomy', '/discovery/taxonomy'], (_req: Request, res: Response) => {
     res.setHeader('Cache-Control', 'public, max-age=86400');
     const taxonomy = buildTaxonomyGraph();
     res.json({
@@ -1079,7 +1079,7 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── POST /v1/discovery/capabilities/probe (metered: explorer+ with quota) ──
-  router.post('/v1/discovery/capabilities/probe', requireTier('explorer', 'discovery_probe', true), (req: Request, res: Response) => {
+  router.post(['/v1/discovery/capabilities/probe', '/api/discovery/capabilities/probe', '/discovery/capabilities/probe'], requireTier('explorer', 'discovery_probe', true), (req: Request, res: Response) => {
     const body = req.body as ICapabilitiesProbeRequest | undefined;
     if (!body?.required_actions || !Array.isArray(body.required_actions)) {
       return res.status(400).json({ error: 'Missing required field: required_actions (string[]).' });
@@ -1116,7 +1116,7 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── GET /v1/discovery/pipelines/:pipelineId/graph (metered: practitioner+) ──
-  router.get('/v1/discovery/pipelines/:pipelineId/graph', requireTier('practitioner', 'pipeline_graph'), (req: Request, res: Response) => {
+  router.get(['/v1/discovery/pipelines/:pipelineId/graph', '/api/discovery/pipelines/:pipelineId/graph', '/discovery/pipelines/:pipelineId/graph'], requireTier('practitioner', 'pipeline_graph'), (req: Request, res: Response) => {
     const pipelineId = String(req.params['pipelineId'] || '');
     const dags = buildPipelineDAGs();
 
@@ -1132,7 +1132,7 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── GET /v1/discovery/artifacts/schema ─────────────────────────────────
-  router.get('/v1/discovery/artifacts/schema', (_req: Request, res: Response) => {
+  router.get(['/v1/discovery/artifacts/schema', '/api/discovery/artifacts/schema', '/discovery/artifacts/schema'], (_req: Request, res: Response) => {
     res.setHeader('Cache-Control', 'public, max-age=3600');
     const schemas = buildArtifactSchemas();
     res.json({

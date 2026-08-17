@@ -1,24 +1,11 @@
-const defaultNg = { config: { production: false } };
-const defaultConfig = { production: false };
+const g: any = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : {});
+g.config = { production: false };
+g.ng = g.ng || {};
+g.ng.config = { production: false };
+g.ngDevMode = true;
 
-function ensureGlobals(target: any) {
-  if (!target) return;
-  if (!target.ng) {
-    target.ng = defaultNg;
-  } else if (!target.ng.config) {
-    target.ng.config = { production: false };
-  }
-
-  if (!target.config) {
-    target.config = defaultConfig;
-  }
-  target.ngDevMode = true;
-}
-
-ensureGlobals(globalThis);
 if (typeof window !== 'undefined') {
-  ensureGlobals(window);
+  (window as any).ng = g.ng;
+  (window as any).config = g.config;
+  (window as any).ngDevMode = true;
 }
-
-
-

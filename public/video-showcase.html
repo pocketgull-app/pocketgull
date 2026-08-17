@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pocket-Gull: XPRIZE Healthspan Contest Submission &amp; Video Studio</title>
+  <meta name="description" content="Official 60-Second Video Pitch and Technical Showcase for the XPRIZE Healthspan Global Competition.">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { teal: '#0d9488', gold: '#f59e0b', dark: '#09090b' }
+          },
+          fontFamily: {
+            serif: ['"Libre Caslon Display"', 'Georgia', 'serif'],
+            sans: ['"Inter"', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#09090b] text-zinc-100 font-sans min-h-screen flex flex-col antialiased selection:bg-teal-500 selection:text-black">
+
+  <!-- Header -->
+  <header class="border-b border-zinc-800/80 bg-zinc-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2">
+          <span class="text-2xl">🕊️</span>
+          <span class="font-serif text-xl font-bold tracking-tight text-white">Pocket-Gull</span>
+        </a>
+        <span class="px-2.5 py-0.5 text-[10px] font-mono font-bold bg-amber-950/90 text-amber-300 border border-amber-500/50 rounded-full flex items-center gap-1">
+          <span>🏆</span> <span>XPRIZE HEALTHSPAN CONTEST SUBMISSION</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-3 text-xs font-medium">
+        <a href="/docs/study/" class="text-zinc-400 hover:text-zinc-100 transition-colors">Study Guide</a>
+        <a href="https://pocketgull.app" class="px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold transition-all shadow-sm">
+          Launch App ↗
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Showcase Container -->
+  <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-8 space-y-8">
+    
+    <!-- Hero Title Header -->
+    <div class="text-center space-y-3">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-xs font-mono text-emerald-300 shadow-sm">
+        <span>🟢</span> RATED G / PG · APPROVED FOR ALL AUDIENCES (EDUCATIONAL SCIENCE)
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-serif font-bold tracking-tight text-white max-w-3xl mx-auto leading-tight">
+        The Wonder of Science &amp; The 3D Digital Twin
+      </h1>
+      <p class="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto">
+        A family-friendly educational journey into human physiology, ambient AI voice intelligence, and the cellular engines of longevity.
+      </p>
+    </div>
+
+    <!-- Video Canvas Studio Frame -->
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl space-y-0">
+      
+      <!-- Video Screen Frame (16:9 Canvas) -->
+      <div class="relative aspect-video bg-black overflow-hidden select-none">
+        <canvas id="videoCanvas" width="1280" height="720" class="w-full h-full object-cover"></canvas>
+
+        <!-- Top Status HUD -->
+        <div class="absolute top-4 left-4 right-4 flex items-center justify-between text-xs font-mono pointer-events-none">
+          <div class="flex items-center gap-2 px-2.5 py-1 rounded-md bg-black/70 backdrop-blur border border-white/10 text-teal-400 font-bold">
+            <span id="recordingDot" class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+            <span id="hudSceneLabel">SCENE 1: THE BURDEN OF THE SCREEN</span>
+          </div>
+          <div class="px-2.5 py-1 rounded-md bg-black/70 backdrop-blur border border-white/10 text-zinc-300" id="timeDisplay">
+            00:00 / 01:00
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-zinc-800">
+          <div id="videoProgressBar" class="h-full bg-teal-500 transition-all duration-100 w-0"></div>
+        </div>
+      </div>
+
+      <!-- Video Controls Toolbar -->
+      <div class="p-4 bg-zinc-950 border-t border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+        
+        <!-- Play / Pause & Reset & Voice Selector -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button id="togglePlayBtn" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold flex items-center gap-2 transition-all shadow-md">
+            <svg id="playIconSvg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <span id="playBtnText">Play Video</span>
+          </button>
+          <button id="restartBtn" class="px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 font-medium transition-all">
+            Restart ↺
+          </button>
+          <button id="toggleThemeBtn" class="px-3 py-2 rounded-xl bg-gradient-to-r from-teal-950 to-zinc-900 border border-teal-500/50 hover:border-teal-400 text-teal-300 font-medium flex items-center gap-1.5 transition-all shadow-sm">
+            <span>🎨</span>
+            <span id="themeBtnText">Theme: Paper Craft ✂️</span>
+          </button>
+          
+          <!-- Voice Persona Dropdown -->
+          <div class="flex items-center gap-1.5 bg-zinc-900 border border-amber-500/50 rounded-xl px-2 py-1 shadow-sm">
+            <span class="text-amber-400">🎙️</span>
+            <select id="voicePersonaSelect" class="bg-transparent text-amber-200 font-medium text-xs focus:outline-none cursor-pointer pr-2">
+              <option value="journey-male" class="bg-zinc-900 text-zinc-100">✨ Google Journey (Natural Male)</option>
+              <option value="journey-female" class="bg-zinc-900 text-zinc-100">✨ Google Journey (Natural Female)</option>
+              <option value="studio-male" class="bg-zinc-900 text-zinc-100">🎙️ Studio Master (Deep Cinematic)</option>
+              <option value="british-neural" class="bg-zinc-900 text-zinc-100">🇬🇧 British Neural (BBC Documentary)</option>
+              <option value="muted" class="bg-zinc-900 text-zinc-100">🔇 Mute Voice (Soundtrack Only)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 1-Click Video Recording Exporter -->
+        <div class="flex items-center gap-2">
+          <button id="recordExportBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-zinc-950 font-bold flex items-center gap-2 transition-all shadow-lg">
+            <span>🎥</span>
+            <span id="recordBtnText">Record &amp; Download Video (.webm)</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Scene Jump Grid (All 6 Scenes) -->
+      <div class="p-3 bg-zinc-950/80 border-t border-zinc-800/80 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-xs font-mono">
+        <button onclick="jumpToScene(0)" class="scene-tab p-2 rounded-xl bg-zinc-900 border border-teal-500/40 text-teal-300 text-left">
+          <div class="font-bold">01 · Clerical Trap</div>
+          <div class="text-[10px] text-zinc-400 truncate">The EHR Burden</div>
+        </button>
+        <button onclick="jumpToScene(1)" class="scene-tab p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 text-left">
+          <div class="font-bold">02 · Gemini Live</div>
+          <div class="text-[10px] text-zinc-400 truncate">Ambient Consult</div>
+        </button>
+        <button onclick="jumpToScene(2)" class="scene-tab p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 text-left">
+          <div class="font-bold">03 · Digital Twin</div>
+          <div class="text-[10px] text-zinc-400 truncate">3D WebGL Body</div>
+        </button>
+        <button onclick="jumpToScene(3)" class="scene-tab p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 text-left">
+          <div class="font-bold">04 · Organelles</div>
+          <div class="text-[10px] text-zinc-400 truncate">SBF-SEM 3D Mesh</div>
+        </button>
+        <button onclick="jumpToScene(4)" class="scene-tab p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 text-left">
+          <div class="font-bold">05 · Tri-Paradigm</div>
+          <div class="text-[10px] text-zinc-400 truncate">East + West + SIBI</div>
+        </button>
+        <button onclick="jumpToScene(5)" class="scene-tab p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 text-left">
+          <div class="font-bold">06 · XPRIZE Horizon</div>
+          <div class="text-[10px] text-zinc-400 truncate">Longevity &amp; Healthspan</div>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Scene Script & Cinematography Details -->
+    <div class="p-6 bg-zinc-900/60 border border-zinc-800 rounded-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <h2 class="text-lg font-serif font-bold text-white flex items-center gap-2">
+          <span>🎬</span> Active Scene Script &amp; Telemetry Feed
+        </h2>
+        <span class="text-xs font-mono text-zinc-400" id="sceneMetaTime">SCENE 1 OF 6</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+        <div class="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
+          <div class="text-teal-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span>🎙️</span> Synchronized Narration Script
+          </div>
+          <p class="text-zinc-300 leading-relaxed font-sans text-sm" id="sceneScriptText">
+            "Modern medicine is drowning in clerical paperwork. Physicians spend two hours trapped behind screens for every single hour spent caring for patients."
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
+          <div class="text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span>📊</span> Live Clinical Telemetry Overlay
+          </div>
+          <div class="space-y-1 text-zinc-300 text-xs" id="sceneTelemetryText">
+            • Clerical Burden: 2:1 EHR-to-Patient Ratio<br>
+            • Physician Burnout Rate: 63% Nationally<br>
+            • Uncaptured RPM Reimbursement: $180,000/yr<br>
+            • Solution: Ambient Gemini Live Intelligence
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paper Craft Artwork Gallery & Concept Showcase -->
+    <div class="p-6 bg-zinc-900/80 border border-zinc-800 rounded-2xl space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-4">
+        <div>
+          <h2 class="text-xl font-serif font-bold text-white flex items-center gap-2">
+            <span>✂️</span> Handcrafted Paper Craft Visual Storyboard
+          </h2>
+          <p class="text-xs text-zinc-400 mt-0.5">
+            Inspired by Carl Sagan's <em>Science as a Candle in the Dark</em> · Click any artwork to jump the video engine to that scene.
+          </p>
+        </div>
+        <span class="px-3 py-1 text-xs font-mono font-bold bg-amber-950/80 text-amber-300 border border-amber-800/60 rounded-full self-start sm:self-auto">
+          7 MASTER STILLS
+        </span>
+      </div>
+
+      <!-- Gallery Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+        <!-- Candle in the Dark Hero Card -->
+        <div onclick="jumpToScene(0)" class="group cursor-pointer bg-zinc-950 border border-amber-500/30 hover:border-amber-400 rounded-xl overflow-hidden transition-all shadow-lg hover:shadow-amber-500/10">
+          <div class="aspect-video overflow-hidden relative">
+            <img src="/assets/veo-frames/paper/candle_in_the_dark.jpg" alt="Science as a Candle in the Dark" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-amber-300 font-mono text-[10px] font-bold border border-amber-500/40">
+              PHILOSOPHICAL THEME
+            </span>
+          </div>
+          <div class="p-3.5 space-y-1">
+            <h3 class="text-sm font-serif font-bold text-zinc-100 group-hover:text-amber-300 transition-colors">Science as a Candle in the Dark</h3>
+            <p class="text-xs text-zinc-400 leading-snug">The guiding Sagan thesis: illuminating opaque medical data with transparent, human-centered understanding.</p>
+          </div>
+        </div>
+
+        <!-- Scene 1 Card -->
+        <div onclick="jumpToScene(0)" class="group cursor-pointer bg-zinc-950 border border-zinc-800 hover:border-teal-500 rounded-xl overflow-hidden transition-all shadow-lg">
+          <div class="aspect-video overflow-hidden relative">
+            <img src="/assets/veo-frames/paper/scene1_clerical_trap.jpg" alt="Scene 1: The Clerical Trap" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-teal-300 font-mono text-[10px] font-bold border border-teal-500/40">
+              SCENE 01 · 00:00
+            </span>
+          </div>
+          <div class="p-3.5 space-y-1">
+            <h3 class="text-sm font-serif font-bold text-zinc-100 group-hover:text-teal-300 transition-colors">01 · The Clerical Trap</h3>
+            <p class="text-xs text-zinc-400 leading-snug">Towering stacks of paper patient files and complex EHR screens that burn clinicians out.</p>
+          </div>
+        </div>
+
+        <!-- Scene 2 Card -->
+        <div onclick="jumpToScene(1)" class="group cursor-pointer bg-zinc-950 border border-zinc-800 hover:border-teal-500 rounded-xl overflow-hidden transition-all shadow-lg">
+          <div class="aspect-video overflow-hidden relative">
+            <img src="/assets/veo-frames/paper/scene2_gemini_live.jpg" alt="Scene 2: Voice Awakening" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-teal-300 font-mono text-[10px] font-bold border border-teal-500/40">
+              SCENE 02 · 00:10
+            </span>
+          </div>
+          <div class="p-3.5 space-y-1">
+            <h3 class="text-sm font-serif font-bold text-zinc-100 group-hover:text-teal-300 transition-colors">02 · Voice Awakening</h3>
+            <p class="text-xs text-zinc-400 leading-snug">Ambient Gemini Live audio consult with floating quilled golden-teal soundwaves.</p>
+          </div>
+        </div>
+
+        <!-- Scene 3 Card -->
+        <div onclick="jumpToScene(2)" class="group cursor-pointer bg-zinc-950 border border-zinc-800 hover:border-teal-500 rounded-xl overflow-hidden transition-all shadow-lg">
+          <div class="aspect-video overflow-hidden relative">
+            <img src="/assets/veo-frames/paper/scene3_biophysical_twin.jpg" alt="Scene 3: 3D Digital Twin" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-teal-300 font-mono text-[10px] font-bold border border-teal-500/40">
+              SCENE 03 · 00:20
+            </span>
+          </div>
+          <div class="p-3.5 space-y-1">
+            <h3 class="text-sm font-serif font-bold text-zinc-100 group-hover:text-teal-300 transition-colors">03 · 3D Biophysical Twin</h3>
+            <p class="text-xs text-zinc-400 leading-snug">Laser-cut ivory paper skeleton with multi-layered emerald and amber vascular relief.</p>
+          </div>
+        </div>
+
+        <!-- Scene 4 Card (Mitochondria) -->
+        <div onclick="jumpToScene(3)" class="group cursor-pointer bg-zinc-950 border border-zinc-800 hover:border-amber-500 rounded-xl overflow-hidden transition-all shadow-lg">
+          <div class="aspect-video overflow-hidden relative">
+            <img src="/assets/veo-frames/paper/scene4_organelle_mitochondria.jpg" alt="Scene 4: Microscopic 3D Organelles" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-amber-300 font-mono text-[10px] font-bold border border-amber-500/40">
+              SCENE 04 · 00:30
+            </span>
+          </div>
+          <div class="p-3.5 space-y-1">
+            <h3 class="text-sm font-serif font-bold text-zinc-100 group-hover:text-amber-300 transition-colors">04 · 3D Organelles (Mitochondria)</h3>
+            <p class="text-xs text-zinc-400 leading-snug">Backlit golden folded paper cristae inside the mitochondria quantifying Wadell Sphericity (Ψ).</p>
+          </div>
+        </div>
+
+        <!-- Scene 5 Card -->
+        <div onclick="jumpToScene(4)" class="group cursor-pointer bg-zinc-950 border border-zinc-800 hover:border-teal-500 rounded-xl overflow-hidden transition-all shadow-lg">
+          <div class="aspect-video overflow-hidden relative">
+            <img src="/assets/veo-frames/paper/scene5_tri_paradigm.jpg" alt="Scene 5: Tri-Paradigm Synthesis" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-teal-300 font-mono text-[10px] font-bold border border-teal-500/40">
+              SCENE 05 · 00:40
+            </span>
+          </div>
+          <div class="p-3.5 space-y-1">
+            <h3 class="text-sm font-serif font-bold text-zinc-100 group-hover:text-teal-300 transition-colors">05 · Tri-Paradigm Synthesis</h3>
+            <p class="text-xs text-zinc-400 leading-snug">Eastern acupuncture meridians + Western blood diagnostics + 32-tooth odontogram lotus nexus.</p>
+          </div>
+        </div>
+
+        <!-- Scene 6 Card -->
+        <div onclick="jumpToScene(5)" class="group cursor-pointer bg-zinc-950 border border-zinc-800 hover:border-teal-500 rounded-xl overflow-hidden transition-all shadow-lg sm:col-span-2 lg:col-span-1">
+          <div class="aspect-video overflow-hidden relative">
+            <img src="/assets/veo-frames/paper/scene6_xprize_healthspan.jpg" alt="Scene 6: XPRIZE Horizon" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-teal-300 font-mono text-[10px] font-bold border border-teal-500/40">
+              SCENE 06 · 00:50
+            </span>
+          </div>
+          <div class="p-3.5 space-y-1">
+            <h3 class="text-sm font-serif font-bold text-zinc-100 group-hover:text-teal-300 transition-colors">06 · XPRIZE Healthspan Horizon</h3>
+            <p class="text-xs text-zinc-400 leading-snug">Empowered patient along coastal promenade at dawn with a soaring white origami gull.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="border-t border-zinc-800 py-6 text-center text-xs text-zinc-500 font-mono">
+    © 2026 Pocket-Gull · Build with Gemini + XPRIZE Hackathon Entry · <a href="/docs/study/" class="underline hover:text-zinc-300">Study Guide</a>
+  </footer>
+
+  <!-- Real-Time 60 FPS Canvas Video Engine Script -->
+  <script>
+    const canvas = document.getElementById('videoCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let activeTheme = 'paper'; // 'paper' or 'photoreal'
+
+    const sceneAssets = {
+      paper: [
+        "/assets/veo-frames/paper/scene1_clerical_trap.jpg",
+        "/assets/veo-frames/paper/scene2_gemini_live.jpg",
+        "/assets/veo-frames/paper/scene3_biophysical_twin.jpg",
+        "/assets/veo-frames/paper/scene4_organelle_mitochondria.jpg",
+        "/assets/veo-frames/paper/scene5_tri_paradigm.jpg",
+        "/assets/veo-frames/paper/scene6_xprize_healthspan.jpg"
+      ],
+      photoreal: [
+        "/assets/veo-frames/scene1_clerical_trap.jpg",
+        "/assets/veo-frames/scene2_gemini_live.jpg",
+        "/assets/veo-frames/scene3_biophysical_twin.jpg",
+        "/assets/veo-frames/scene4_organelle_mitochondria.jpg",
+        "/assets/veo-frames/scene5_tri_paradigm.jpg",
+        "/assets/veo-frames/scene6_xprize_healthspan.jpg"
+      ]
+    };
+
+    const scenes = [
+      {
+        id: 0,
+        title: "SCENE 1: A HELPING HAND FOR DOCTORS & FAMILIES",
+        duration: 10,
+        vo: "Every doctor wants to spend more time truly listening to their patients. But too often, busy screens and endless paperwork get in the way.",
+        telemetry: "• Purpose: Empowering Doctors & Patients\n• Care Focus: Listening & Human Connection\n• Ease: Zero Manual Typing\n• Vision: Stress-Free Health Visits",
+        drawOverlay: (ctx, t, w, h) => {
+          ctx.save();
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.8)';
+          ctx.lineWidth = 1.5;
+          ctx.roundRect(w * 0.06, h * 0.22, 280, 80, 10);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#34d399';
+          ctx.font = 'bold 13px "JetBrains Mono", monospace';
+          ctx.fillText('PUTTING PATIENTS FIRST', w * 0.06 + 16, h * 0.22 + 28);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '12px "Inter", sans-serif';
+          ctx.fillText('More time for conversation & care', w * 0.06 + 16, h * 0.22 + 54);
+          ctx.restore();
+        }
+      },
+      {
+        id: 1,
+        title: "SCENE 2: SCIENCE AS A CANDLE IN THE DARK",
+        duration: 10,
+        vo: "Science is a candle in the dark — lighting the way to better health. Meet Pocket-Gull, where gentle, natural conversation helps doctors and families connect using Google Gemini Live.",
+        telemetry: "• Engine: Google Gemini 2.5 Flash Live API\n• Audio: 16-bit Natural Voice AI\n• Privacy: Safe & Private for Families\n• Accessibility: Simple, Clear Conversation",
+        drawOverlay: (ctx, t, w, h) => {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(45, 212, 191, 0.85)';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          const centerY = h * 0.52;
+          const startX = w * 0.38;
+          const endX = w * 0.62;
+          for (let x = startX; x <= endX; x += 4) {
+            const rel = (x - startX) / (endX - startX);
+            const env = Math.sin(rel * Math.PI);
+            const wave = Math.sin(x * 0.05 + t * 8) * Math.cos(x * 0.02 - t * 4);
+            const y = centerY + wave * 28 * env;
+            if (x === startX) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+          ctx.restore();
+        }
+      },
+      {
+        id: 2,
+        title: "SCENE 3: THE WONDER OF THE HUMAN BODY",
+        duration: 10,
+        vo: "An interactive 3D digital model that helps you explore how your body works. Friendly, clear, and easy for everyone to understand.",
+        telemetry: "• 3D Anatomy: Interactive Bone & Organ Twin\n• Healthy Vitals: Heart Rhythm & Oxygen\n• Wellness Balance: Activity & Energy Tracking\n• Understanding: Making Biology Crystal Clear",
+        drawOverlay: (ctx, t, w, h) => {
+          ctx.save();
+          ctx.fillStyle = 'rgba(9, 9, 11, 0.75)';
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.6)';
+          ctx.lineWidth = 1.5;
+          ctx.roundRect(w * 0.06, h * 0.22, 260, 110, 12);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#34d399';
+          ctx.font = 'bold 14px "JetBrains Mono", monospace';
+          ctx.fillText('VITAL HEALTH STATS', w * 0.06 + 16, h * 0.22 + 28);
+          ctx.fillStyle = '#f4f4f5';
+          ctx.font = '12px "Inter", sans-serif';
+          ctx.fillText('Heart Rhythm: 72 bpm (Calm & Steady)', w * 0.06 + 16, h * 0.22 + 54);
+          ctx.fillText('Oxygen Level: 99% (Optimal)', w * 0.06 + 16, h * 0.22 + 76);
+          ctx.fillText('Wellness Balance: 100% Thriving', w * 0.06 + 16, h * 0.22 + 96);
+          ctx.restore();
+        }
+      },
+      {
+        id: 3,
+        title: "SCENE 4: THE CELL'S TINY POWERHOUSES",
+        duration: 10,
+        vo: "Journeying inside our cells to discover the tiny engines called mitochondria — keeping our bodies energetic, strong, and thriving.",
+        telemetry: "• Microscope View: Nanometer Cell Exploration\n• Powerhouses: Mitochondria Energy Cristae\n• Discovery: Citizen Science for Young Minds\n• Energy Level: High Vitality & Healthspan",
+        drawOverlay: (ctx, t, w, h) => {
+          ctx.save();
+          ctx.fillStyle = 'rgba(9, 9, 11, 0.8)';
+          ctx.strokeStyle = 'rgba(245, 158, 11, 0.7)';
+          ctx.lineWidth = 1.5;
+          ctx.roundRect(w * 0.68, h * 0.22, 280, 100, 12);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = 'bold 13px "JetBrains Mono", monospace';
+          ctx.fillText('CELLULAR ENERGY ENGINE', w * 0.68 + 16, h * 0.22 + 28);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 20px "JetBrains Mono", monospace';
+          ctx.fillText('Mitochondria Intact', w * 0.68 + 16, h * 0.22 + 58);
+          ctx.font = '11px "Inter", sans-serif';
+          ctx.fillStyle = '#a1a1aa';
+          ctx.fillText('Generating Clean Natural Energy (ATP)', w * 0.68 + 16, h * 0.22 + 82);
+          ctx.restore();
+        }
+      },
+      {
+        id: 4,
+        title: "SCENE 5: WHOLE-BODY WELLNESS & HEALTHY HABITS",
+        duration: 10,
+        vo: "Bringing together whole-body wellness — from healthy daily habits and restful sleep to bright smiles and preventive care.",
+        telemetry: "• Whole Body: Mind, Muscles, Nutrition & Dental\n• Daily Habits: Restful Sleep & Hydration\n• Preventive Care: Early Healthy Support\n• Smile Health: Bright, Strong Teeth",
+        drawOverlay: (ctx, t, w, h) => {
+          ctx.save();
+          ctx.fillStyle = 'rgba(9, 9, 11, 0.8)';
+          ctx.strokeStyle = 'rgba(20, 184, 166, 0.7)';
+          ctx.lineWidth = 1.5;
+          ctx.roundRect(w * 0.06, h * 0.68, 300, 70, 10);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#2dd4bf';
+          ctx.font = 'bold 13px "JetBrains Mono", monospace';
+          ctx.fillText('WHOLE-BODY WELLNESS', w * 0.06 + 16, h * 0.68 + 26);
+          ctx.fillStyle = '#f4f4f5';
+          ctx.font = '11px "Inter", sans-serif';
+          ctx.fillText('Nutrition + Daily Movement + Restful Sleep', w * 0.06 + 16, h * 0.68 + 50);
+          ctx.restore();
+        }
+      },
+      {
+        id: 5,
+        title: "SCENE 6: A BRIGHTER, HEALTHIER TOMORROW",
+        duration: 10,
+        vo: "Helping every generation live longer, healthier, and happier lives together. Discover the wonder of science at pocketgull.app.",
+        telemetry: "• Community: Family & Multi-Generational Health\n• Longevity: Active, Joyful Living for All Ages\n• Accessibility: Free & Open for Everyone\n• Live Today: https://pocketgull.app",
+        drawOverlay: (ctx, t, w, h) => {
+          ctx.save();
+          ctx.fillStyle = 'rgba(9, 9, 11, 0.75)';
+          ctx.strokeStyle = 'rgba(45, 212, 191, 0.8)';
+          ctx.lineWidth = 1.5;
+          ctx.roundRect(w * 0.32, h * 0.78, w * 0.36, 50, 25);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 15px "Libre Caslon Display", serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Pocket-Gull · The Wonder of Human Health', w * 0.5, h * 0.78 + 31);
+          ctx.restore();
+        }
+      }
+    ];
+
+    // Preload scene images for both themes
+    const themeImages = {
+      paper: sceneAssets.paper.map(src => { const img = new Image(); img.src = src; return img; }),
+      photoreal: sceneAssets.photoreal.map(src => { const img = new Image(); img.src = src; return img; })
+    };
+
+    let currentSceneIdx = 0;
+    let sceneStartTime = 0;
+    let isPlaying = false;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+
+    // Available speech synthesis voices
+    let availableVoices = [];
+    function loadVoices() {
+      if ('speechSynthesis' in window) {
+        availableVoices = window.speechSynthesis.getVoices();
+      }
+    }
+    if ('speechSynthesis' in window) {
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    // Rich Ambient Pad Synthesizer (Warm Harmonics)
+    let audioCtx = null;
+    let masterGain = null;
+    let chordOscs = [];
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        masterGain.connect(audioCtx.destination);
+
+        // Warm multi-octave root chord (A2, E3, A3, C#4)
+        const freqs = [110, 164.81, 220, 277.18];
+        chordOscs = freqs.map(f => {
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+          g.gain.setValueAtTime(0.25, audioCtx.currentTime);
+          osc.connect(g);
+          g.connect(masterGain);
+          osc.start();
+          return osc;
+        });
+      }
+    }
+
+    let currentAudioEl = null;
+
+    function speakCurrentScene() {
+      const persona = document.getElementById('voicePersonaSelect')?.value || 'journey-male';
+      
+      // Stop any existing studio audio
+      if (currentAudioEl) {
+        currentAudioEl.pause();
+        currentAudioEl.currentTime = 0;
+        currentAudioEl = null;
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      if (persona === 'muted') return;
+
+      const sNum = currentSceneIdx + 1;
+      const audioUrl = `/assets/audio/${persona}/scene${sNum}.mp3`;
+
+      // Play ultra-high-definition Studio Neural Audio
+      currentAudioEl = new Audio(audioUrl);
+      currentAudioEl.volume = 1.0;
+      currentAudioEl.play().catch(err => {
+        console.warn('Direct MP3 playback fallback to speech synthesizer:', err);
+        // Fallback to speech synthesizer if audio file is not loaded yet
+        if ('speechSynthesis' in window) {
+          const s = scenes[currentSceneIdx];
+          const utter = new SpeechSynthesisUtterance(s.vo);
+          utter.rate = 0.94;
+          utter.pitch = 0.92;
+          window.speechSynthesis.speak(utter);
+        }
+      });
+    }
+
+    function updateUiState() {
+      const s = scenes[currentSceneIdx];
+      document.getElementById('hudSceneLabel').textContent = s.title;
+      document.getElementById('sceneScriptText').textContent = s.vo;
+      document.getElementById('sceneTelemetryText').innerHTML = s.telemetry.replace(/\n/g, '<br>');
+      document.getElementById('sceneMetaTime').textContent = `SCENE ${currentSceneIdx + 1} OF 6`;
+
+      document.querySelectorAll('.scene-tab').forEach((tab, i) => {
+        if (i === currentSceneIdx) {
+          tab.className = 'scene-tab p-2 rounded-xl bg-zinc-900 border border-teal-500 text-teal-300 text-left transition-all';
+        } else {
+          tab.className = 'scene-tab p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 text-left transition-all';
+        }
+      });
+    }
+
+    function jumpToScene(idx) {
+      currentSceneIdx = idx;
+      sceneStartTime = performance.now();
+      updateUiState();
+      if (isPlaying) speakCurrentScene();
+    }
+
+    // 60 FPS Render Loop with Ken Burns Animation & Overlays
+    function renderFrame(now) {
+      const w = canvas.width;
+      const h = canvas.height;
+      const s = scenes[currentSceneIdx];
+      const img = themeImages[activeTheme][currentSceneIdx];
+      const elapsedSec = (now - sceneStartTime) / 1000;
+      const progress = elapsedSec / s.duration;
+
+      // Auto-advance scene
+      if (isPlaying && elapsedSec >= s.duration) {
+        currentSceneIdx = (currentSceneIdx + 1) % scenes.length;
+        sceneStartTime = now;
+        updateUiState();
+        speakCurrentScene();
+      }
+
+      // 1. Clear background
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, w, h);
+
+      // 2. Draw Image with smooth Ken Burns Pan / Zoom
+      if (img && img.complete && img.naturalWidth > 0) {
+        ctx.save();
+        const scale = 1.0 + (progress % 1.0) * 0.08;
+        const panX = (Math.sin(elapsedSec * 0.5) * 20);
+        const panY = (Math.cos(elapsedSec * 0.3) * 10);
+        
+        ctx.translate(w / 2, h / 2);
+        ctx.scale(scale, scale);
+        ctx.translate(-w / 2 + panX, -h / 2 + panY);
+        ctx.drawImage(img, 0, 0, w, h);
+        ctx.restore();
+      }
+
+      // 3. Cinematic Vignette & Ambient Top/Bottom Gradients
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, 'rgba(0,0,0,0.5)');
+      grad.addColorStop(0.2, 'rgba(0,0,0,0)');
+      grad.addColorStop(0.75, 'rgba(0,0,0,0)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.85)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // 4. Draw Custom Scene Overlay (Waveforms, Telemetry, Sphericity)
+      if (s.drawOverlay) {
+        s.drawOverlay(ctx, elapsedSec, w, h);
+      }
+
+      // 5. Draw Cinematic Subtitles Lower-Third
+      ctx.save();
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 1;
+      const subWidth = w * 0.82;
+      const subHeight = 52;
+      const subX = (w - subWidth) / 2;
+      const subY = h - 85;
+      ctx.roundRect(subX, subY, subWidth, subHeight, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f4f4f5';
+      ctx.font = '500 15px "Inter", sans-serif';
+      ctx.textAlign = 'center';
+      
+      // Word wrap subtitles
+      const words = s.vo.split(' ');
+      let line = '';
+      let lines = [];
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > subWidth - 40 && n > 0) {
+          lines.push(line);
+          line = words[n] + ' ';
+        } else {
+          line = testLine;
+        }
+      }
+      lines.push(line);
+
+      if (lines.length === 1) {
+        ctx.fillText(lines[0], w / 2, subY + 31);
+      } else {
+        ctx.fillText(lines[0], w / 2, subY + 22);
+        ctx.fillText(lines[1], w / 2, subY + 42);
+      }
+      ctx.restore();
+
+      // 6. Update HTML UI progress bar and clock
+      const totalTimeSec = currentSceneIdx * 10 + Math.min(elapsedSec, 10);
+      const totalPct = (totalTimeSec / 60) * 100;
+      document.getElementById('videoProgressBar').style.width = Math.min(totalPct, 100) + '%';
+      const mm = String(Math.floor(totalTimeSec / 60)).padStart(2, '0');
+      const ss = String(Math.floor(totalTimeSec % 60)).padStart(2, '0');
+      document.getElementById('timeDisplay').textContent = `${mm}:${ss} / 01:00`;
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    // Toggle Play / Pause
+    document.getElementById('togglePlayBtn').addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      initAudio();
+      const icon = document.getElementById('playIconSvg');
+      const text = document.getElementById('playBtnText');
+      if (isPlaying) {
+        sceneStartTime = performance.now();
+        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        text.textContent = 'Pause';
+        speakCurrentScene();
+      } else {
+        icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+        text.textContent = 'Play Video';
+        if (currentAudioEl) { currentAudioEl.pause(); }
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      }
+    });
+
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      currentSceneIdx = 0;
+      sceneStartTime = performance.now();
+      if (currentAudioEl) { currentAudioEl.pause(); currentAudioEl = null; }
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      updateUiState();
+      if (isPlaying) speakCurrentScene();
+    });
+
+    document.getElementById('toggleThemeBtn').addEventListener('click', () => {
+      activeTheme = activeTheme === 'paper' ? 'photoreal' : 'paper';
+      const text = document.getElementById('themeBtnText');
+      if (activeTheme === 'paper') {
+        text.textContent = 'Theme: Paper Craft ✂️';
+      } else {
+        text.textContent = 'Theme: Cinematic 3D 🎥';
+      }
+    });
+
+    document.getElementById('voicePersonaSelect').addEventListener('change', () => {
+      if (isPlaying) speakCurrentScene();
+    });
+
+    // 1-Click Video Recording Exporter using MediaRecorder
+    document.getElementById('recordExportBtn').addEventListener('click', () => {
+      if (isRecording) {
+        mediaRecorder.stop();
+        return;
+      }
+
+      initAudio();
+      isRecording = true;
+      recordedChunks = [];
+      const recordBtn = document.getElementById('recordExportBtn');
+      const recordText = document.getElementById('recordBtnText');
+      recordBtn.className = 'px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold flex items-center gap-2 transition-all shadow-lg animate-pulse';
+      recordText.textContent = 'Recording 60s Video (Click to Finish)...';
+
+      // Capture 60fps stream from canvas
+      const stream = canvas.captureStream(60);
+
+      // Setup MediaRecorder
+      const options = { mimeType: 'video/webm;codecs=vp9,opus' };
+      try {
+        mediaRecorder = new MediaRecorder(stream, options);
+      } catch (e) {
+        mediaRecorder = new MediaRecorder(stream);
+      }
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        isRecording = false;
+        recordBtn.className = 'px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-zinc-950 font-bold flex items-center gap-2 transition-all shadow-lg';
+        recordText.textContent = 'Download Complete! (Record Again)';
+
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'pocket-gull-gemini-xprize-showcase.webm';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 100);
+      };
+
+      // Play video from start and record
+      currentSceneIdx = 0;
+      sceneStartTime = performance.now();
+      isPlaying = true;
+      document.getElementById('playIconSvg').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      document.getElementById('playBtnText').textContent = 'Pause';
+      updateUiState();
+      speakCurrentScene();
+
+      mediaRecorder.start();
+
+      // Auto-stop after 60 seconds
+      setTimeout(() => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+        }
+      }, 60000);
+    });
+
+    // Initialize display and start render loop
+    updateUiState();
+    requestAnimationFrame(renderFrame);
+  </script>
+</body>
+</html>

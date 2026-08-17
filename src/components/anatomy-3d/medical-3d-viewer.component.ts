@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ElementRef, OnDestroy, AfterViewInit, input, viewChild, effect, signal, inject, PLATFORM_ID } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ElementRef, OnDestroy, AfterViewInit, input, viewChild, effect, signal, inject, PLATFORM_ID, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -32,8 +32,10 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
     `]
 })
 export class Medical3DViewerComponent implements AfterViewInit, OnDestroy {
-    private readonly platformId = inject(PLATFORM_ID);
-    private readonly canvasContainer = viewChild<ElementRef<HTMLDivElement>>('canvasContainer');
+    private platformId = inject(PLATFORM_ID);
+    private ngZone = inject(NgZone);
+
+    readonly canvasContainer = viewChild<ElementRef<HTMLDivElement>>('canvasContainer');
 
     threejsId = input.required<string>();
     severity = input<'green' | 'yellow' | 'red' | undefined>();
@@ -564,87 +566,89 @@ export class Medical3DViewerComponent implements AfterViewInit, OnDestroy {
     }
 
     private startAnimation() {
-        const animate = () => {
-            this.animationFrameId = requestAnimationFrame(animate);
+        this.ngZone.runOutsideAngular(() => {
+            const animate = () => {
+                this.animationFrameId = requestAnimationFrame(animate);
 
-            if (this.controls) this.controls.update();
+                if (this.controls) this.controls.update();
 
-            // Custom animations
-            if (this.currentModelGroup) {
-                this.currentModelGroup.traverse((child) => {
-                    if (child.userData?.isHighlight) {
-                        child.userData.tick += 0.05;
-                        const pulse = 1.05 + Math.sin(child.userData.tick) * 0.03;
-                        child.scale.setScalar(pulse);
-                    }
-                    if (child instanceof THREE.Points && child.userData?.isHighlightParticle) {
-                        child.rotation.y += 0.02;
-                        child.rotation.x += 0.01;
-                    }
-                    if (child instanceof THREE.Points && child.userData?.isFlowing) {
-                        const positions = child.geometry.attributes['position'];
-                        const dir = child.userData.flowDirection;
-                        const speed = 0.03;
-                        const spread = child.userData.spread;
-
-                        for (let i = 0; i < positions.count; i++) {
-                            let y = positions.getY(i) + dir.y * speed;
-                            if (y > spread / 2) y = -spread / 2;
-                            if (y < -spread / 2) y = spread / 2;
-                            positions.setY(i, y);
-
-                            let x = positions.getX(i) + dir.x * speed;
-                            if (x > spread / 2) x = -spread / 2;
-                            if (x < -spread / 2) x = spread / 2;
-                            positions.setX(i, x);
-
-                            let z = positions.getZ(i) + dir.z * speed;
-                            if (z > spread / 2) z = -spread / 2;
-                            if (z < -spread / 2) z = spread / 2;
-                            positions.setZ(i, z);
+                // Custom animations
+                if (this.currentModelGroup) {
+                    this.currentModelGroup.traverse((child) => {
+                        if (child.userData?.isHighlight) {
+                            child.userData.tick += 0.05;
+                            const pulse = 1.05 + Math.sin(child.userData.tick) * 0.03;
+                            child.scale.setScalar(pulse);
                         }
-                        positions.needsUpdate = true;
+                        if (child instanceof THREE.Points && child.userData?.isHighlightParticle) {
+                            child.rotation.y += 0.02;
+                            child.rotation.x += 0.01;
+                        }
+                        if (child instanceof THREE.Points && child.userData?.isFlowing) {
+                            const positions = child.geometry.attributes['position'];
+                            const dir = child.userData.flowDirection;
+                            const speed = 0.03;
+                            const spread = child.userData.spread;
+
+                            for (let i = 0; i < positions.count; i++) {
+                                let y = positions.getY(i) + dir.y * speed;
+                                if (y > spread / 2) y = -spread / 2;
+                                if (y < -spread / 2) y = spread / 2;
+                                positions.setY(i, y);
+
+                                let x = positions.getX(i) + dir.x * speed;
+                                if (x > spread / 2) x = -spread / 2;
+                                if (x < -spread / 2) x = spread / 2;
+                                positions.setX(i, x);
+
+                                let z = positions.getZ(i) + dir.z * speed;
+                                if (z > spread / 2) z = -spread / 2;
+                                if (z < -spread / 2) z = spread / 2;
+                                positions.setZ(i, z);
+                            }
+                            positions.needsUpdate = true;
+                        }
+                    });
+
+                    // Intro scale animation
+                    const currentScale = this.currentModelGroup.scale.x;
+                    const data = this.currentModelGroup.userData;
+                    const baseScale = data.baseScale || 1;
+                    
+                    if (currentScale < baseScale - 0.01) {
+                        this.currentModelGroup.scale.lerp(new THREE.Vector3(baseScale, baseScale, baseScale), 0.1);
                     }
-                });
 
-                // Intro scale animation
-                const currentScale = this.currentModelGroup.scale.x;
-                const data = this.currentModelGroup.userData;
-                const baseScale = data.baseScale || 1;
-                
-                if (currentScale < baseScale - 0.01) {
-                    this.currentModelGroup.scale.lerp(new THREE.Vector3(baseScale, baseScale, baseScale), 0.1);
+                    if (data.type === 'heart') {
+                        data.tick += 0.05;
+                        // Heartbeat pulse
+                        const pulseOffset = Math.sin(data.tick * Math.PI * 2) * 0.05 * (Math.sin(data.tick * Math.PI) > 0 ? 1 : 0.2);
+                        const scale = baseScale + pulseOffset;
+                        this.currentModelGroup.scale.set(scale, scale, scale);
+                    }
+                    else if (data.type === 'lungs') {
+                        data.tick += 0.02;
+                        // Breathing pulse
+                        const scaleY = baseScale + Math.sin(data.tick) * 0.05;
+                        const scaleXZ = baseScale + Math.sin(data.tick) * 0.08;
+                        this.currentModelGroup.scale.set(scaleXZ, scaleY, scaleXZ);
+                    }
+                    else if (data.type === 'spine' || data.type === 'brain' || data.type === 'generic') {
+                        // Gentle ambient float/breathing for other organs
+                        data.tick = (data.tick || 0) + 0.01;
+                        const scale = baseScale + Math.sin(data.tick) * 0.02;
+                        this.currentModelGroup.scale.set(scale, scale, scale);
+                    }
                 }
 
-                if (data.type === 'heart') {
-                    data.tick += 0.05;
-                    // Heartbeat pulse
-                    const pulseOffset = Math.sin(data.tick * Math.PI * 2) * 0.05 * (Math.sin(data.tick * Math.PI) > 0 ? 1 : 0.2);
-                    const scale = baseScale + pulseOffset;
-                    this.currentModelGroup.scale.set(scale, scale, scale);
+                if (this.composer && this.scene && this.camera) {
+                    this.composer.render();
+                } else if (this.renderer && this.scene && this.camera) {
+                    this.renderer.render(this.scene, this.camera);
                 }
-                else if (data.type === 'lungs') {
-                    data.tick += 0.02;
-                    // Breathing pulse
-                    const scaleY = baseScale + Math.sin(data.tick) * 0.05;
-                    const scaleXZ = baseScale + Math.sin(data.tick) * 0.08;
-                    this.currentModelGroup.scale.set(scaleXZ, scaleY, scaleXZ);
-                }
-                else if (data.type === 'spine' || data.type === 'brain' || data.type === 'generic') {
-                    // Gentle ambient float/breathing for other organs
-                    data.tick = (data.tick || 0) + 0.01;
-                    const scale = baseScale + Math.sin(data.tick) * 0.02;
-                    this.currentModelGroup.scale.set(scale, scale, scale);
-                }
-            }
+            };
 
-            if (this.composer && this.scene && this.camera) {
-                this.composer.render();
-            } else if (this.renderer && this.scene && this.camera) {
-                this.renderer.render(this.scene, this.camera);
-            }
-        };
-
-        animate();
+            animate();
+        });
     }
 }

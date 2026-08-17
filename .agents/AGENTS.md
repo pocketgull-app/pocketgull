@@ -120,6 +120,19 @@
 - **Strict Pre-Commit Self-Healing**: Husky pre-commit hooks (`lint-staged`, commit-msg 72-char limit, Sentinel security guard) are mandatory. If a pre-commit check fails, read the un-truncated log output, fix the root cause, and re-commit. Never bypass hooks with `--no-verify`.
 - **Token Budget & Research Subagent Isolation**: Offload heavy codebase surveys, log extractions, or multi-file research to background subagents (`research` or `self`). Allow the primary session to maintain clean focus on implementation and verification.
 
+## Zero-Jank CSS & Hardware Compositor Standards
+- **No Layout or Filter Keyframe Animations**: Never animate layout geometry (`width`, `height`, `margin`, `padding`, `top`, `left`) or CPU-intensive pixel filters (`filter: drop-shadow()`). These cause compositor de-opt and Lighthouse failures.
+- **Strict Hardware Compositing**: Keyframe animations MUST exclusively animate `transform: translate3d()`, `scale3d()`, and `opacity`. Always annotate with `will-change: transform` and `transform: translateZ(0)`.
+- **Universal 48px Touch Target Mandate**: All clickable elements, inputs, buttons, and gesture targets MUST declare a minimum hitbox of 48px $\times$ 48px (`min-h-[48px]`, `min-w-[48px]`, `touch-action: manipulation`) with at least 8px margin separation.
+
+## Content Security Policy (CSP Level 3) Invariants
+- **No Nonce Collisions with Angular SSR**: Never inject `'nonce-...'` into `script-src` / `script-src-elem` unless every single SSR script chunk and JSON-LD block is guaranteed to carry the dynamic nonce.
+- **Permissive Execution Allowlist**: Maintain explicit allowlists for `script-src` and `style-src` (`'unsafe-inline'`, `'unsafe-hashes'`, `https://apis.google.com`, `https://*.googleapis.com`, `https://cdn.tailwindcss.com`, `https://*.stripe.com`, `https://js.stripe.com`) to guarantee 0 console errors during client hydration and payment flows.
+
+## Production Deployment & Cloud Run Traffic Guarantee
+- **Automated Deploy & Traffic Shift Chain**: `cloudbuild.yaml` and `npm run deploy` MUST chain Docker build, `gcloud run deploy`, and `gcloud run services update-traffic --to-latest` in a single atomic pipeline. Never declare a deployment complete based on Docker image push alone.
+- **Mandatory Post-Deploy Smoke Testing**: Every production release MUST run `scripts/deploy-production.mjs` to ping live endpoints (`/`, `/llms.txt`, `/docs/overview.md`), verify `Link` headers, assert 0 CSP console blocks, and confirm 100% traffic migration.
+
 ## Data Science & ML Competition Engineering Standards
 1. **Leak-Free Cross-Validation Anchoring (`GroupKFold`)**: In medical imaging datasets where patients have multiple series/scans, group splits strictly by `patient_id` using `GroupKFold(n_splits=5)` to prevent patient-feature leakage between train and validation splits.
 2. **Empirical Pipeline Verification (Numerical Proof First)**: Never claim an architecture edit or post-processing pipeline works based on intuition alone. Record Out-of-Fold (OOF) metric progression at every stage.

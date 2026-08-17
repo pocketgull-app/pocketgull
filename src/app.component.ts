@@ -64,6 +64,10 @@ import { SupportTicketModalComponent } from './components/modals/support-ticket-
 import { MainHeaderNavComponent } from './components/main-header-nav.component';
 import { IntakeToolbarComponent } from './components/intake-toolbar.component';
 import { OnboardingTourOverlayComponent } from './components/onboarding-tour-overlay.component';
+import { ClinicalTrialArenaComponent } from './components/clinical-trial-arena.component';
+import { BigQueryTrajectoryForecasterComponent } from './components/bigquery-trajectory-forecaster.component';
+import { TeledentistryOdontogramComponent } from './components/teledentistry-odontogram.component';
+import { ZooniverseMicroAnnotationComponent } from './components/zooniverse-micro-annotation.component';
 
 @Component({
   selector: 'app-root',
@@ -103,7 +107,11 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
     IntakeToolbarComponent,
     OnboardingTourOverlayComponent,
     SupportTicketModalComponent,
-    ApiPricingComponent
+    ApiPricingComponent,
+    ClinicalTrialArenaComponent,
+    BigQueryTrajectoryForecasterComponent,
+    TeledentistryOdontogramComponent,
+    ZooniverseMicroAnnotationComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -134,6 +142,64 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
 
     @if (showGlossaryModal()) {
       <app-glossary-modal (close)="showGlossaryModal.set(false)"></app-glossary-modal>
+    }
+
+    @if (showClinicalTrialsModal()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="relative w-full max-w-5xl my-8 bg-slate-900 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden">
+          <div class="absolute top-4 right-4 z-10">
+            <button
+              type="button"
+              (click)="showClinicalTrialsModal.set(false)"
+              class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold text-lg transition min-h-[48px] min-w-[48px]"
+              aria-label="Close Clinical Trials Matching Arena"
+            >
+              ✕
+            </button>
+          </div>
+          <app-clinical-trial-arena></app-clinical-trial-arena>
+        </div>
+      </div>
+    }
+
+    @if (showBigQueryModal()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="relative w-full max-w-5xl my-8 bg-slate-900 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden">
+          <div class="absolute top-4 right-4 z-10">
+            <button
+              type="button"
+              (click)="showBigQueryModal.set(false)"
+              class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold text-lg transition min-h-[48px] min-w-[48px]"
+              aria-label="Close BigQuery Trajectory Forecaster"
+            >
+              ✕
+            </button>
+          </div>
+          <app-bigquery-trajectory-forecaster></app-bigquery-trajectory-forecaster>
+        </div>
+      </div>
+    }
+
+    @if (showTeledentistryModal()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="relative w-full max-w-6xl my-8 bg-slate-900 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden">
+          <div class="absolute top-4 right-4 z-10">
+            <button
+              type="button"
+              (click)="showTeledentistryModal.set(false)"
+              class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold text-lg transition min-h-[48px] min-w-[48px]"
+              aria-label="Close Teledentistry Odontogram"
+            >
+              ✕
+            </button>
+          </div>
+          <app-teledentistry-odontogram></app-teledentistry-odontogram>
+        </div>
+      </div>
+    }
+
+    @if (showZooniverseModal()) {
+      <app-zooniverse-micro-annotation (closeModal)="showZooniverseModal.set(false)"></app-zooniverse-micro-annotation>
     }
 
     @if (showFhirCallback()) {
@@ -343,6 +409,10 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
           (openApiPricing)="showApiPricing.set(true)"
           (openPatientPortal)="showPatientPortal.set(true)"
           (openClinicianOnboarding)="showClinicianOnboarding.set(true)"
+          (openClinicalTrials)="showClinicalTrialsModal.set(true)"
+          (openBigQueryAnalytics)="showBigQueryModal.set(true)"
+          (openTeledentistry)="showTeledentistryModal.set(true)"
+          (openZooniverse)="showZooniverseModal.set(true)"
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
           (openSupportTicket)="showSupportTicketModal.set(true)"
@@ -968,6 +1038,10 @@ export class AppComponent implements OnDestroy {
   showApiPricing = signal(false);
   showPatientPortal = signal(false);
   showClinicianOnboarding = signal(false);
+  showClinicalTrialsModal = signal(false);
+  showBigQueryModal = signal(false);
+  showTeledentistryModal = signal(false);
+  showZooniverseModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
   readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);

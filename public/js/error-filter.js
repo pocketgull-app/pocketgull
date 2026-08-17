@@ -15,10 +15,13 @@
     if (isAllowedGoogleApisHost(msg) || msg.indexOf('u[v]') !== -1) return;
     if (msg.indexOf('@firebase/data-connect') !== -1 && msg.indexOf('NOT_FOUND') !== -1) return;
     if (msg.indexOf('Content Security Policy') !== -1 && msg.indexOf('frame-src') !== -1) return;
+    if (msg.indexOf('OTS parsing error') !== -1 || msg.indexOf('Failed to decode downloaded font') !== -1 || msg.indexOf('glyf:') !== -1) return;
+    if (msg.indexOf('OscillatorNode is not useful') !== -1 || msg.indexOf('GainNode is not useful') !== -1 || msg.indexOf('Connecting nodes after the context has been closed') !== -1) return;
     origError.apply(console, arguments);
   };
   window.addEventListener('error', function (e) {
-    if ((e.filename && isAllowedGoogleApisHost(e.filename)) || (e.message && e.message.indexOf('u[v]') !== -1)) {
+    var msg = (e && e.message) || '';
+    if ((e.filename && isAllowedGoogleApisHost(e.filename)) || msg.indexOf('u[v]') !== -1 || msg.indexOf('Failed to decode downloaded font') !== -1 || msg.indexOf('OTS parsing error') !== -1) {
       e.stopImmediatePropagation();
       e.preventDefault();
     }

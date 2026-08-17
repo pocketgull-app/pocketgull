@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, effect, viewChild, ElementRef, OnDestroy, AfterViewInit, output, input, PLATFORM_ID } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, effect, viewChild, ElementRef, OnDestroy, AfterViewInit, output, input, PLATFORM_ID, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -685,6 +685,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     private meshFactory = inject(BodyMeshFactoryService);
     private raycastService = inject(RaycastSelectionService);
     private particleService = inject(SeverityParticleService);
+    private ngZone = inject(NgZone, { optional: true });
 
     private renderer!: THREE.WebGLRenderer;
     private scene!: THREE.Scene;
@@ -702,6 +703,8 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     private bloomPass!: UnrealBloomPass;
     private timer = new THREE.Timer();
     private resizeObserver: ResizeObserver | null = null;
+    private intersectionObserver: IntersectionObserver | null = null;
+    private isViewVisible = true;
 
     private handleResize = () => {
         const container = this.canvasContainer()?.nativeElement;
@@ -850,6 +853,17 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 this.resizeObserver = new ResizeObserver(() => this.handleResize());
                 this.resizeObserver.observe(container);
             }
+            if (typeof IntersectionObserver !== 'undefined' && container) {
+                this.intersectionObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        this.isViewVisible = entry.isIntersecting;
+                        if (this.isViewVisible && !this.animationFrameId) {
+                            this.startAnimation();
+                        }
+                    }
+                }, { threshold: 0.05 });
+                this.intersectionObserver.observe(container);
+            }
             window.addEventListener('resize', this.handleResize);
 
             requestAnimationFrame(() => this.handleResize());
@@ -874,6 +888,10 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             if (this.resizeObserver) {
                 this.resizeObserver.disconnect();
                 this.resizeObserver = null;
+            }
+            if (this.intersectionObserver) {
+                this.intersectionObserver.disconnect();
+                this.intersectionObserver = null;
             }
         }
         if (this.animationFrameId) {
@@ -2206,9 +2224,14 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     private startAnimation() {
         if (!isPlatformBrowser(this.platformId)) return;
         
-        const animate = () => {
-            if (!this.renderer || !this.scene || !this.camera) return;
-            this.animationFrameId = requestAnimationFrame(animate);
+        this.ngZone.runOutsideAngular(() => {
+            const animate = () => {
+                if (!this.isViewVisible) {
+                    this.animationFrameId = undefined;
+                    return;
+                }
+                if (!this.renderer || !this.scene || !this.camera) return;
+                this.animationFrameId = requestAnimationFrame(animate);
 
             if (this.controls) this.controls.update();
             
@@ -2432,5 +2455,6 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             }
         };
         animate();
+        });
     }
 }

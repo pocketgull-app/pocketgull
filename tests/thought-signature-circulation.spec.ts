@@ -43,10 +43,10 @@ describe('Gemini 3.5 / 3.6 GA Migration & Thought Signature Circulation', () => 
       }));
     };
 
-    // 1. Heavy synthesis lens -> gemini-3.6-flash
+    // 1. Heavy synthesis lens -> gemini-2.5-pro
     const streamPro = provider.generateReportStream$('Patient Data', 'Functional Protocols', 'Sys Inst');
     for await (const chunk of streamPro) {}
-    expect(capturedBody.model).toBe('gemini-3.6-flash');
+    expect(capturedBody.model).toBe('gemini-2.5-pro');
 
     // 2. Standard formatting lens -> gemini-2.5-flash
     const streamFlash = provider.generateReportStream$('Patient Data', 'Precision Nutrients', 'Sys Inst');

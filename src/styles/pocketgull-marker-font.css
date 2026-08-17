@@ -1,52 +1,11 @@
 /* ==========================================================================
-   PocketGull Marker Typeface — Custom SVG & CSS Web Font System
-   Inspired by the handwritten marker lettering on the PocketGull GearArts card
+   PocketGull Marker Typeface — Clean Web Font System
+   Inspired by handwritten felt-tip & clinical typography
    ========================================================================== */
-
-/* 🖋️ PocketGull Superfamily Font Declarations */
-@font-face {
-  font-family: 'PocketGull';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/assets/fonts/PocketGull-Fineliner.ttf') format('truetype'),
-       url('/fonts/PocketGull-Fineliner.ttf') format('truetype'),
-       url('/fonts/google_fonts_submission/ofl/pocketgull/PocketGull-Fineliner.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'PocketGull';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/assets/fonts/PocketGull-Fineliner.ttf') format('truetype'),
-       url('/assets/fonts/PocketGull-Chiseltip.ttf') format('truetype'),
-       local('Outfit Bold'), local('Inter Bold'), local('sans-serif');
-}
-
-@font-face {
-  font-family: 'PocketGull';
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url('/assets/fonts/PocketGull-Chiseltip.ttf') format('truetype'),
-       url('/fonts/PocketGull-Chiseltip.ttf') format('truetype'),
-       url('/fonts/google_fonts_submission/ofl/pocketgull/PocketGull-Chiseltip.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'PocketGull Mono';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/assets/fonts/PocketGullMono-Regular.ttf') format('truetype'),
-       url('/fonts/PocketGullMono-Regular.ttf') format('truetype'),
-       url('/fonts/google_fonts_submission/ofl/pocketgull/PocketGullMono-Regular.ttf') format('truetype');
-}
 
 /* Single Unified Felt-Tip Marker Inspired Typeface Stack */
 .font-pocketgull {
-  font-family: 'PocketGull', 'Outfit', sans-serif !important;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   font-weight: 700;
   letter-spacing: -0.01em;
   text-transform: none;
@@ -58,7 +17,7 @@
 
 /* 🖋️ PocketGull Chiseltip Display Variant */
 .font-pocketgull-chiseltip {
-  font-family: 'PocketGull', 'Outfit', sans-serif !important;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
   font-weight: 900;
   letter-spacing: -0.025em;
   text-transform: uppercase;
@@ -69,14 +28,14 @@
 
 /* ✍️ PocketGull Organic Accent */
 .font-pocketgull-handwritten {
-  font-family: 'PocketGull', 'Outfit', sans-serif !important;
+  font-family: 'Outfit', 'Inter', sans-serif !important;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
 /* 🏥 PocketGull Clinical High-Legibility Typeface */
 .font-pocketgull-inter {
-  font-family: 'Inter', sans-serif !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
   font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1.5;
@@ -113,7 +72,7 @@ html.dark .bionic-pocketgull-marker b {
 
 /* 🖋️ Marker Heavy Bold Emphasis */
 .marker-bold-emphasis {
-  font-family: 'PocketGull', 'Permanent Marker', sans-serif;
+  font-family: 'Outfit', 'Inter', sans-serif;
   font-weight: 900;
   background: linear-gradient(120deg, rgba(251, 146, 60, 0.25) 0%, rgba(249, 115, 22, 0.35) 100%);
   border-radius: 4px;

@@ -15,11 +15,13 @@ import { BiochemicalSuiteComponent } from '../biochemical-suite.component';
 import { PublicHealthSentinelSuiteComponent } from '../public-health-sentinel-suite.component';
 import { OccupationalHazardCardComponent } from '../occupational-hazard-card.component';
 import { FoodSafetyGuardrailCardComponent } from '../food-safety-guardrail-card.component';
+import { MattMightPrecisionMedicineComponent } from '../matt-might-precision-medicine.component';
+import { ClinicalCodingCopilotComponent } from '../clinical-coding-copilot.component';
 import { PatientStateService } from '../../services/patient-state.service';
 import { CircadianSleepinessService } from '../../services/circadian-sleepiness.service';
 import { ThemeService } from '../../services/theme.service';
 
-export type DomainSuiteId = 'biomedical' | 'biochemical' | 'public_health' | 'therapeutics' | 'nutrition' | 'recovery' | 'turing' | 'nobel' | 'aaas' | 'lasker' | 'eastern_tcm' | 'ayurvedic_systems';
+export type DomainSuiteId = 'biomedical' | 'biochemical' | 'precision_might' | 'him_coding' | 'public_health' | 'therapeutics' | 'nutrition' | 'recovery' | 'turing' | 'nobel' | 'aaas' | 'lasker' | 'eastern_tcm' | 'ayurvedic_systems';
 
 export interface IDomainSuite {
   id: DomainSuiteId;
@@ -48,7 +50,9 @@ export interface IDomainSuite {
     OccupationalHazardCardComponent,
     FoodSafetyGuardrailCardComponent,
     BiochemicalSuiteComponent,
-    PublicHealthSentinelSuiteComponent
+    PublicHealthSentinelSuiteComponent,
+    MattMightPrecisionMedicineComponent,
+    ClinicalCodingCopilotComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -181,6 +185,8 @@ export interface IDomainSuite {
         @switch (activeSuite()) {
           @case ('biomedical') { <app-biomedical-suite /> }
           @case ('biochemical') { <app-biochemical-suite /> }
+          @case ('precision_might') { <app-matt-might-precision-medicine /> }
+          @case ('him_coding') { <app-clinical-coding-copilot /> }
           @case ('public_health') { <app-public-health-sentinel-suite /> }
           @case ('therapeutics') { <app-therapeutics-suite /> }
           @case ('nutrition') { <app-nutrition-suite /> }
@@ -224,7 +230,9 @@ export class DomainSuitesNavigatorComponent {
 
   suites: IDomainSuite[] = [
     { id: 'biomedical', name: 'Biomedical & Diagnostic', subtitle: 'Ground Truth Telemetry', icon: '🩺', badge: 'Lab & Vitals' },
-    { id: 'biochemical', name: 'Biochemical & Molecular', subtitle: 'Genomics & Pathways', icon: '🧬', badge: 'Genomics' },
+    { id: 'precision_might', name: 'Matt Might Precision Medicine', subtitle: 'mediKanren & N-of-1 Drug Repurposing', icon: '🧬', badge: 'Precision AI' },
+    { id: 'him_coding', name: 'HIM Coding & Audit Defense', subtitle: 'CMS-HCC V28, E&M MDM & Da Vinci PAS', icon: '👩‍⚕️', badge: 'HIM AI' },
+    { id: 'biochemical', name: 'Biochemical & Molecular', subtitle: 'Genomics & Pathways', icon: '🧪', badge: 'Genomics' },
     { id: 'public_health', name: 'WHO / CDC Public Health', subtitle: 'Epidemiological & EWARS', icon: '📡', badge: 'Surveillance' },
     { id: 'therapeutics', name: 'Therapeutics & Botanical', subtitle: 'Precision Formulas', icon: '🌿', badge: 'Nutrients & Herbs' },
     { id: 'nutrition', name: 'Nutritional & Metabolic', subtitle: 'Circadian Meal Planning', icon: '🥗', badge: 'Thermal Matrix' },

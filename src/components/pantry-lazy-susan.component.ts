@@ -10,7 +10,8 @@ import {
   effect,
   signal,
   inject,
-  PLATFORM_ID
+  PLATFORM_ID,
+  NgZone
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
@@ -112,6 +113,7 @@ import { IClinicalMenuItem } from './clinical-menu.component';
 })
 export class PantryLazySusanComponent implements AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly ngZone = inject(NgZone);
   private readonly canvasContainer = viewChild<ElementRef<HTMLDivElement>>('canvasContainer');
 
   items = input<IClinicalMenuItem[]>([]);
@@ -246,50 +248,52 @@ export class PantryLazySusanComponent implements AfterViewInit, OnDestroy {
 
     // 8. Animation loop
     const startTime = performance.now();
-    const animate = () => {
-      this.animationFrameId = requestAnimationFrame(animate);
-      const elapsedTime = (performance.now() - startTime) / 1000;
+    this.ngZone.runOutsideAngular(() => {
+      const animate = () => {
+        this.animationFrameId = requestAnimationFrame(animate);
+        const elapsedTime = (performance.now() - startTime) / 1000;
 
-      // Smooth interpolation for Carousel rotation Y
-      if (this.carouselGroup) {
-        this.carouselGroup.rotation.y += (this.targetRotationY - this.carouselGroup.rotation.y) * 0.08;
-        const currentDeg = (this.carouselGroup.rotation.y * 180 / Math.PI) % 360;
-        this.currentAngle.set(currentDeg < 0 ? currentDeg + 360 : currentDeg);
+        // Smooth interpolation for Carousel rotation Y
+        if (this.carouselGroup) {
+          this.carouselGroup.rotation.y += (this.targetRotationY - this.carouselGroup.rotation.y) * 0.08;
+          const currentDeg = (this.carouselGroup.rotation.y * 180 / Math.PI) % 360;
+          this.currentAngle.set(currentDeg < 0 ? currentDeg + 360 : currentDeg);
 
-        // Cloche Dome Lift Mechanics:
-        // Calculate which of the 4 dish positions is closest to the front viewer position (local angle near 0)
-        this.clocheDomes.forEach((cloche, idx) => {
-          const dishAngle = (idx * (Math.PI / 2)) + this.carouselGroup.rotation.y;
-          // Normalize angle around 0
-          let norm = Math.atan2(Math.sin(dishAngle), Math.cos(dishAngle));
-          const isFront = Math.abs(norm) < 0.35; // Front-facing dish position
+          // Cloche Dome Lift Mechanics:
+          // Calculate which of the 4 dish positions is closest to the front viewer position (local angle near 0)
+          this.clocheDomes.forEach((cloche, idx) => {
+            const dishAngle = (idx * (Math.PI / 2)) + this.carouselGroup.rotation.y;
+            // Normalize angle around 0
+            let norm = Math.atan2(Math.sin(dishAngle), Math.cos(dishAngle));
+            const isFront = Math.abs(norm) < 0.35; // Front-facing dish position
 
-          const targetLiftY = isFront ? 0.75 : 0.0; // Lift cloche up by 0.75 units when front-facing
-          cloche.position.y += (targetLiftY - cloche.position.y) * 0.1;
-        });
+            const targetLiftY = isFront ? 0.75 : 0.0; // Lift cloche up by 0.75 units when front-facing
+            cloche.position.y += (targetLiftY - cloche.position.y) * 0.1;
+          });
 
-        // Gentle floating plates wobble
-        this.plateGroups.forEach(pg => {
-          pg.rotation.y += 0.003;
-        });
-      }
-
-      // Gentle breeze particle drift
-      if (this.breezeParticles) {
-        const positions = this.breezeParticles.geometry.attributes['position'].array as Float32Array;
-        for (let i = 0; i < positions.length; i += 3) {
-          positions[i] += Math.sin(elapsedTime + i) * 0.002;
-          positions[i + 1] += Math.cos(elapsedTime * 0.5 + i) * 0.001;
-          if (positions[i + 1] < 0) positions[i + 1] = 6;
+          // Gentle floating plates wobble
+          this.plateGroups.forEach(pg => {
+            pg.rotation.y += 0.003;
+          });
         }
-        this.breezeParticles.geometry.attributes['position'].needsUpdate = true;
-      }
 
-      this.controls.update();
-      this.renderer.render(this.scene, this.camera);
-    };
+        // Gentle breeze particle drift
+        if (this.breezeParticles) {
+          const positions = this.breezeParticles.geometry.attributes['position'].array as Float32Array;
+          for (let i = 0; i < positions.length; i += 3) {
+            positions[i] += Math.sin(elapsedTime + i) * 0.002;
+            positions[i + 1] += Math.cos(elapsedTime * 0.5 + i) * 0.001;
+            if (positions[i + 1] < 0) positions[i + 1] = 6;
+          }
+          this.breezeParticles.geometry.attributes['position'].needsUpdate = true;
+        }
 
-    animate();
+        this.controls.update();
+        this.renderer.render(this.scene, this.camera);
+      };
+
+      animate();
+    });
   }
 
   private buildOutdoorEnvironment(): void {

@@ -22,7 +22,6 @@ import { GcpHealthcareApiService } from '../services/fhir/gcp-healthcare-api.ser
 import { AmbientLivingSpaceDashboardComponent } from './ambient-living-space-dashboard.component';
 import { GreenRoomLoungeComponent } from './green-room-lounge.component';
 import { DoctorShiftSimulatorComponent } from './doctor-shift-simulator.component';
-import { DoctorShiftSalesDemoComponent } from './doctor-shift-sales-demo.component';
 import { InvestorValuationPortalModalComponent } from './modals/investor-valuation-portal-modal.component';
 import { Holographic3DAnatomyComponent } from './anatomy-3d/holographic-3d-anatomy.component';
 import { GenesisBiophysicalSubstrateComponent } from './anatomy-3d/genesis-biophysical-substrate.component';
@@ -42,7 +41,7 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
   host: {
     'class': 'flex flex-col flex-1 min-h-0 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)]'
   },
-  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, DoctorShiftSalesDemoComponent, InvestorValuationPortalModalComponent, Holographic3DAnatomyComponent, GenesisBiophysicalSubstrateComponent],
+  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, InvestorValuationPortalModalComponent, Holographic3DAnatomyComponent, GenesisBiophysicalSubstrateComponent],
   template: `
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)] bg-[#F3F4F6] dark:bg-zinc-950">
       
@@ -115,12 +114,6 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
                 </span>
                 <span>{{ network.forceOffline() ? 'App Forced Offline' : 'System Ready' }}</span>
               </button>
-                      <!-- B2B Executive Sales Pitch Demo Button -->
-                <button type="button" (click)="showSalesDemoModal.set(true)" title="Launch B2B Health System Executive Demo & ROI Calculator"
-                  class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-600 hover:text-white transition cursor-pointer shadow-sm">
-                  <span>💼</span> B2B Executive Demo
-                </button>
-
                 <!-- Cohort Triage Matrix Button -->
                 <button type="button" (click)="showCohortMatrixModal.set(!showCohortMatrixModal())"
                   title="Open Multi-Patient Cohort Triage Matrix"
@@ -421,11 +414,6 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
       <app-doctor-shift-simulator (closeModal)="showShiftSimulatorModal.set(false)"></app-doctor-shift-simulator>
     }
 
-    <!-- B2B Executive Sales Demo & Marketing Landing Page Modal -->
-    @if (showSalesDemoModal()) {
-      <app-doctor-shift-sales-demo (closeModal)="showSalesDemoModal.set(false)"></app-doctor-shift-sales-demo>
-    }
-
     <!-- Investor & Valuation Portal Modal -->
     @if (showInvestorPortalModal()) {
       <app-investor-valuation-portal-modal (closeModal)="showInvestorPortalModal.set(false)"></app-investor-valuation-portal-modal>
@@ -519,7 +507,6 @@ export class AnalysisContainerComponent {
   showLivingSpaceModal = signal(false);
   showGreenRoomModal = signal(false);
   showShiftSimulatorModal = signal(false);
-  showSalesDemoModal = signal(false);
   showToolsMenu = signal(false);
 
   exportPdf() {

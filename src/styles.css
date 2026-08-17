@@ -3813,6 +3813,25 @@ textarea:focus-visible {
   outline-offset: 2px !important;
 }
 
+/* 5. Mobile & Touch Target Accessibility (WCAG 2.5.5 / 2.5.8 - 48px Min Hit Area) */
+app-secure-splash button,
+app-secure-splash a,
+app-secure-splash input[type="button"],
+app-secure-splash input[type="submit"],
+app-secure-splash [role="button"] {
+  min-height: 48px;
+  touch-action: manipulation;
+}
+
+.origami-seagull-container,
+.avs-breathing-mascot,
+.avs-breathing-glow,
+.wave-layer {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
 
 
 

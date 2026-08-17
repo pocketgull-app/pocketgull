@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BleWearablesService } from '../services/hardware/ble-wearables.service';
 
@@ -127,33 +127,27 @@ import { BleWearablesService } from '../services/hardware/ble-wearables.service'
 })
 export class BleWearablesHudComponent implements AfterViewInit, OnDestroy {
   bleService = inject(BleWearablesService);
+  private ngZone = inject(NgZone);
+  private cachedWidth = 0;
+  private cachedHeight = 0;
 
   @ViewChild('oscilloscopeCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   private animFrameId: number | null = null;
 
-  constructor() {
-    effect(() => {
-      // Re-trigger render loop when waveforms update
-      const ppg = this.bleService.ppgWaveform();
-      const ecg = this.bleService.ecgWaveform();
-    });
-  }
+  constructor() {}
 
   ngAfterViewInit(): void {
     this.startOscilloscopeLoop();
   }
 
   ngOnDestroy(): void {
-    if (this.animFrameId !== null) {
+    if (this.animFrameId) {
       cancelAnimationFrame(this.animFrameId);
-    }
-    if (this.bleService.isSimulationActive()) {
-      this.bleService.stopSyntheticStream();
     }
   }
 
   connectBleDevice() {
-    this.bleService.connectMultiVitalsSensor();
+    this.bleService.connectHeartRateMonitor();
   }
 
   startSyntheticStream() {
@@ -168,11 +162,13 @@ export class BleWearablesHudComponent implements AfterViewInit, OnDestroy {
   }
 
   private startOscilloscopeLoop(): void {
-    const render = () => {
-      this.drawCanvasOscilloscope();
+    this.ngZone.runOutsideAngular(() => {
+      const render = () => {
+        this.drawCanvasOscilloscope();
+        this.animFrameId = requestAnimationFrame(render);
+      };
       this.animFrameId = requestAnimationFrame(render);
-    };
-    this.animFrameId = requestAnimationFrame(render);
+    });
   }
 
   private drawCanvasOscilloscope(): void {
@@ -182,8 +178,15 @@ export class BleWearablesHudComponent implements AfterViewInit, OnDestroy {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const width = (canvas.width = canvas.offsetWidth);
-    const height = (canvas.height = canvas.offsetHeight);
+    const currentW = canvas.offsetWidth;
+    const currentH = canvas.offsetHeight;
+    if (currentW !== this.cachedWidth || currentH !== this.cachedHeight) {
+      this.cachedWidth = canvas.width = currentW;
+      this.cachedHeight = canvas.height = currentH;
+    }
+
+    const width = this.cachedWidth;
+    const height = this.cachedHeight;
 
     ctx.clearRect(0, 0, width, height);
 

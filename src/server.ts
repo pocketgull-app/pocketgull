@@ -43,6 +43,9 @@ import { renderBusinessSiteHtml } from './server/business-site';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
+import { clinicalTrialsRouter } from './server/routes/clinical-trials.routes';
+import { analyticsRouter } from './server/routes/analytics.routes';
+import { handleDocsStudyRequest } from './server/docs-study-site';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -186,6 +189,8 @@ app.use(globalLimiter, (req, res, next) => {
 app.use('/fonts', express.static(join(browserDistFolder, 'fonts'), { maxAge: '1y' }));
 app.use('/images', express.static(join(browserDistFolder, 'images'), { maxAge: '1y' }));
 app.use('/icons', express.static(join(browserDistFolder, 'icons'), { maxAge: '1y' }));
+app.use('/assets', express.static(join(browserDistFolder, 'assets'), { maxAge: '1d' }));
+app.use('/assets', express.static(join(browserDistFolder, '..', 'public', 'assets'), { maxAge: '1d' }));
 app.use(express.static(browserDistFolder, { maxAge: '1y', index: false }));
 app.use(express.static(join(browserDistFolder, '..', 'public'), { maxAge: '1d', index: false }));
 
@@ -205,6 +210,7 @@ app.use((req, res, next) => {
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
+  res.setHeader('Link', '</docs/overview.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
   next();
 });
 
@@ -222,6 +228,41 @@ app.set('trust proxy', true);
 app.get(['/business', '/preview'], (_req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   return res.send(renderBusinessSiteHtml());
+});
+
+// Dedicated XPRIZE Healthspan Contest Submission & Video Studio Route
+app.get(['/xprize', '/xprize-submission', '/xprize-showcase', '/video-showcase', '/video-showcase.html'], (_req, res) => {
+  const possiblePaths = [
+    securePathResolve(browserDistFolder, 'video-showcase.html'),
+    securePathResolve(join(process.cwd(), 'public'), 'video-showcase.html'),
+    securePathResolve(join(process.cwd(), 'dist'), 'video-showcase.html'),
+    securePathResolve(join(__dirname, '..', 'public'), 'video-showcase.html'),
+    securePathResolve(join(__dirname, '..', 'browser'), 'video-showcase.html')
+  ];
+  const filePath = possiblePaths.find(p => fs.existsSync(p));
+  if (filePath) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.sendFile(filePath);
+  }
+  return res.redirect('/');
+});
+
+// Fine Art & Wall Art Gallery Route
+app.get(['/store', '/art', '/gallery', '/store.html', '/art.html'], (_req, res) => {
+  const possiblePaths = [
+    securePathResolve(browserDistFolder, 'store.html'),
+    securePathResolve(join(process.cwd(), 'public'), 'store.html'),
+    securePathResolve(browserDistFolder, 'index.html'),
+    securePathResolve(join(process.cwd(), 'dist'), 'index.html')
+  ];
+  const filePath = possiblePaths.find(p => fs.existsSync(p));
+  if (filePath) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.sendFile(filePath);
+  }
+  return res.redirect('/');
 });
 
 // Primary Business Site Handler for pocketgull.com & www.pocketgull.com
@@ -387,6 +428,14 @@ app.get('/robots.txt', manifestRateLimiter, (req, res) => {
 
   res.setHeader('Content-Type', 'text/plain; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=3600');
+
+  if (targetPath && fs.existsSync(targetPath)) {
+    let content = fs.readFileSync(targetPath, 'utf-8');
+    if (req.hostname.includes('pocketgull.com')) {
+      content = content.replace(/https:\/\/pocketgull\.app/g, 'https://pocketgull.com');
+    }
+    return res.send(content);
+  }
   res.sendFile(targetPath);
 });
 
@@ -406,6 +455,14 @@ app.get('/sitemap.xml', manifestRateLimiter, (req, res) => {
 
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=3600');
+
+  if (targetPath && fs.existsSync(targetPath)) {
+    let content = fs.readFileSync(targetPath, 'utf-8');
+    if (req.hostname.includes('pocketgull.com')) {
+      content = content.replace(/https:\/\/pocketgull\.app/g, 'https://pocketgull.com');
+    }
+    return res.send(content);
+  }
   res.sendFile(targetPath);
 });
 
@@ -425,6 +482,58 @@ app.get('/.well-known/agent.json', manifestRateLimiter, (req: express.Request, r
 
 const discoveryRouter = createDiscoveryRouter();
 app.use(manifestRateLimiter, discoveryRouter);
+
+// Engineering & Clinical Study Documentation Portal (/docs/study/*)
+app.use(['/docs/study', '/docs/study/*splat'], manifestRateLimiter, handleDocsStudyRequest);
+
+// SEO & Compliance Static Legal Handlers
+app.get(['/privacy-policy', '/privacy-policy.html'], manifestRateLimiter, (req, res) => {
+  const candidatePaths = [
+    join(process.cwd(), 'public', 'privacy-policy.html'),
+    join(rootDir, 'public', 'privacy-policy.html'),
+    join(__dirname, '..', 'browser', 'privacy-policy.html')
+  ];
+  const targetPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[0];
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(targetPath);
+});
+
+app.get(['/terms-of-service', '/terms-of-service.html'], manifestRateLimiter, (req, res) => {
+  const candidatePaths = [
+    join(process.cwd(), 'public', 'terms-of-service.html'),
+    join(rootDir, 'public', 'terms-of-service.html'),
+    join(__dirname, '..', 'browser', 'terms-of-service.html')
+  ];
+  const targetPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[0];
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(targetPath);
+});
+
+app.get(['/search', '/search.html'], manifestRateLimiter, (req, res) => {
+  const candidatePaths = [
+    join(process.cwd(), 'public', 'search.html'),
+    join(rootDir, 'public', 'search.html'),
+    join(__dirname, '..', 'browser', 'search.html')
+  ];
+  const targetPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[0];
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.sendFile(targetPath);
+});
+
+app.get(['/video-showcase', '/video-showcase.html'], manifestRateLimiter, (req, res) => {
+  const candidatePaths = [
+    join(process.cwd(), 'public', 'video-showcase.html'),
+    join(rootDir, 'public', 'video-showcase.html'),
+    join(__dirname, '..', 'browser', 'video-showcase.html')
+  ];
+  const targetPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[0];
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.sendFile(targetPath);
+});
 
 app.get('/api/config', manifestRateLimiter, (req, res) => {
   res.json({ apiKey: process.env['GEMINI_API_KEY'] || '' });
@@ -617,16 +726,16 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
 
-  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com https://cloud.google.com`;
+  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com https://cloud.google.com https://*.stripe.com https://js.stripe.com`;
 
   const scriptSrcAttr = `'self' 'unsafe-inline' 'unsafe-hashes'`;
   const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com data:`;
   const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com data:`;
   const styleSrcAttr = `'self' 'unsafe-inline'`;
 
-  const connectSrc = `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;
+  const connectSrc = `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://apis.google.com https://*.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.firebaseapp.com https://*.stripe.com https://api.stripe.com`;
 
-  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; script-src-attr ${scriptSrcAttr}; style-src ${styleSrc}; style-src-elem ${styleSrcElem}; style-src-attr ${styleSrcAttr}; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org; connect-src ${connectSrc}; frame-src 'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
+  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; script-src-attr ${scriptSrcAttr}; style-src ${styleSrc}; style-src-elem ${styleSrcElem}; style-src-attr ${styleSrcAttr}; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org https://*.stripe.com; connect-src ${connectSrc}; frame-src 'self' https://apis.google.com https://*.google.com https://www.google.com https://maps.google.com https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app https://*.stripe.com https://js.stripe.com https://hooks.stripe.com; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
 
   res.setHeader('Content-Security-Policy', csp);
   next();
@@ -660,6 +769,9 @@ app.post('/api/csp-report', express.json({ type: ['application/json', 'applicati
   console.log('[CSP Violation Report]:', JSON.stringify(safeReport));
   res.status(204).end();
 });
+
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 import { dicomRouter } from './server/dicom';
 import { healthcareRouter, ensureHealthcareStoresExist } from './server/healthcare';
@@ -706,6 +818,8 @@ app.use('/', utilityRouter);
 app.use('/api/dicom', dicomRouter);
 app.use('/api/healthcare', healthcareRouter);
 app.use('/api/fitbit', fitbitRouter);
+app.use('/api/clinical-trials', clinicalTrialsRouter);
+app.use('/api/analytics', analyticsRouter);
 
 
 // ── Docs Rate Limiter (remains in server.ts for static file serving) ────

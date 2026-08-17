@@ -229,17 +229,18 @@ export class ZamecznikCanvasComponent implements OnDestroy {
       if (this.mousePoints.length > 100) this.mousePoints.shift();
     };
 
-    canvas.addEventListener('mousemove', handleMove);
-    canvas.addEventListener('touchmove', handleMove);
-    canvas.addEventListener('touchstart', handleMove);
+    canvas.addEventListener('mousemove', handleMove, { passive: true });
+    canvas.addEventListener('touchmove', handleMove, { passive: true });
+    canvas.addEventListener('touchstart', handleMove, { passive: true });
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     let time = 0;
-    const draw = () => {
-      if (!this.isActive()) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    this.ngZone.runOutsideAngular(() => {
+      const draw = () => {
+        if (!this.isActive()) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       time += 0.015;
 
@@ -332,6 +333,7 @@ export class ZamecznikCanvasComponent implements OnDestroy {
     };
 
     draw();
+    });
   }
 
   private stopDrawingLoop() {

@@ -74,6 +74,42 @@ import { SessionStateService } from '../services/session-state.service';
             <span>📬 AI Support</span>
           </button>
 
+          <!-- Clinical Trials Matching Arena Button -->
+          <button 
+            type="button" 
+            (click)="openClinicalTrials.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-blue-500/50 outline-none cursor-pointer"
+            title="Live Decentralized Clinical Trial (DCT) Matching via ClinicalTrials.gov API v2">
+            <span>🧪 Clinical Trials</span>
+          </button>
+
+          <!-- BigQuery ML Clinical Trajectory Forecaster Button -->
+          <button 
+            type="button" 
+            (click)="openBigQueryAnalytics.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-indigo-500/50 outline-none cursor-pointer"
+            title="BigQuery ML ARIMA_PLUS Clinical Trajectory & QALY Longevity Forecasting">
+            <span>📈 BigQuery ML</span>
+          </button>
+
+          <!-- Teledentistry 32-Tooth FDI Odontogram & SIBI Button -->
+          <button 
+            type="button" 
+            (click)="openTeledentistry.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer"
+            title="FDI 32-Tooth Odontogram, TWI Wear Grades, and Systemic Inflammatory Burden (SIBI) Cross-Talk">
+            <span>🦷 Odontogram & SIBI</span>
+          </button>
+
+          <!-- Citizen Science & Micro-Annotation Arena Button -->
+          <button 
+            type="button" 
+            (click)="openZooniverse.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer"
+            title="Zooniverse & Citizen Science Micro-Annotation Arena (2D Slicing + 3D Three.js Volumetric Mesh Viewer)">
+            <span>🔬 Citizen Science</span>
+          </button>
+
           <!-- Bio-Network QR & Theme Song Studio Button -->
           <button 
             type="button" 
@@ -280,6 +316,10 @@ export class MainHeaderNavComponent {
   today = new Date();
 
   openCompanionSync = output<void>();
+  openClinicalTrials = output<void>();
+  openBigQueryAnalytics = output<void>();
+  openTeledentistry = output<void>();
+  openZooniverse = output<void>();
   openBioNetworkQr = output<void>();
   openBillingDashboard = output<void>();
   openApiPricing = output<void>();

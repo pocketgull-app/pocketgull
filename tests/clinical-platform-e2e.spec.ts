@@ -1,5 +1,4 @@
-import '@angular/compiler';
-import { vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { Injector, runInInjectionContext, PLATFORM_ID } from '@angular/core';
 import { PatientStateService } from '../src/services/patient-state.service';
 import { PatientManagementService } from '../src/services/patient-management.service';
@@ -12,18 +11,6 @@ import { ThemeStudioDrawerComponent } from '../src/components/shared/theme-studi
 import { CircadianSleepinessService } from '../src/services/circadian-sleepiness.service';
 import { ResearchLecturesService } from '../src/services/research-lectures.service';
 import { ActuarialLongevityService } from '../src/services/actuarial-longevity.service';
-// Mock Angular constructor effects for headless Vitest environment
-vi.mock('@angular/core', async (importOriginal) => {
-  const original = await importOriginal<any>();
-  return {
-    ...original,
-    effect: () => {
-      return {
-        destroy: () => {}
-      };
-    }
-  };
-});
 
 describe('Clinical Platform & Progressive Disclosure E2E Suite', () => {
 
@@ -116,7 +103,7 @@ describe('Clinical Platform & Progressive Disclosure E2E Suite', () => {
         { provide: PatientManagementService, useFactory: () => new PatientManagementService() },
         { provide: ActuarialLongevityService, useFactory: () => new ActuarialLongevityService() },
         { provide: PatientStateService, useFactory: () => new PatientStateService() },
-        { provide: CircadianSleepinessService, useFactory: () => new CircadianSleepinessService() }
+        { provide: CircadianSleepinessService, useValue: { clinicianKss: () => 1 } }
       ]
     });
     const navigator = runInInjectionContext(injector, () => new DomainSuitesNavigatorComponent());
@@ -126,7 +113,7 @@ describe('Clinical Platform & Progressive Disclosure E2E Suite', () => {
 
     navigator.toggleShowAllSuites();
     expect(navigator.showAllSuites()).toBe(true);
-    expect(navigator.displayedSuites().length).toBe(12);
+    expect(navigator.displayedSuites().length).toBe(navigator.suites.length);
   });
 
   it('5. Verifies Dieter Rams Theme Studio drawer palette selection and primary fast-cycling', () => {

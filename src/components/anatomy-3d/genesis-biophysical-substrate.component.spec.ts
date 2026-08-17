@@ -1,22 +1,21 @@
 import '@angular/compiler';
-import { expect, vi } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { GenesisBiophysicalSubstrateComponent } from './genesis-biophysical-substrate.component';
 import { WebGpuEdgeAiService } from '../../services/webgpu-edge-ai.service';
-
-vi.mock('@angular/core', async (importOriginal) => {
-  const original = await importOriginal<any>();
-  return {
-    ...original,
-    effect: () => ({ destroy: () => {} })
-  };
-});
+import { PatientStateService } from '../../services/patient-state.service';
+import { TeledentistryService } from '../../services/teledentistry.service';
 
 describe('GenesisBiophysicalSubstrateComponent Unit Suite', () => {
   let component: GenesisBiophysicalSubstrateComponent;
 
   beforeEach(() => {
-    const injector = Injector.create({ providers: [{ provide: WebGpuEdgeAiService }] });
+    const injector = Injector.create({
+      providers: [
+        { provide: WebGpuEdgeAiService, useClass: WebGpuEdgeAiService },
+        { provide: PatientStateService, useClass: PatientStateService },
+        { provide: TeledentistryService, useClass: TeledentistryService }
+      ]
+    });
     component = runInInjectionContext(injector, () => new GenesisBiophysicalSubstrateComponent());
   });
 

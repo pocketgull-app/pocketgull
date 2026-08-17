@@ -13,6 +13,7 @@ export default defineConfig({
         dir: __dirname,
         globals: true,
         environment: 'jsdom',
+        isolate: true,
         setupFiles: [
             path.resolve(__dirname, 'tests/init-globals.ts'),
             path.resolve(__dirname, 'tests/setup.ts')

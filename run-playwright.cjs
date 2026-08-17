@@ -1,10 +1,9 @@
 /**
- * Playwright EPERM shim for Windows Application Control environments.
- * Patches fs.readdirSync to silently ignore EPERM (access denied) errors
- * that occur when endpoint security software locks temp inspection folders.
+ * Universal Playwright Launcher with EPERM shield for Windows.
  */
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 
 const workspaceTemp = path.join(__dirname, '.playwright_temp');
 if (!fs.existsSync(workspaceTemp)) {
@@ -13,57 +12,23 @@ if (!fs.existsSync(workspaceTemp)) {
 process.env.TMP = workspaceTemp;
 process.env.TEMP = workspaceTemp;
 
-const origReaddirSync = fs.readdirSync;
-fs.readdirSync = function(p, options) {
-  try {
-    return origReaddirSync.call(fs, p, options);
-  } catch (e) {
-    if (e.code === 'EPERM' || e.code === 'EACCES') {
-      console.warn(`[shim] Ignoring ${e.code} on readdirSync: ${p}`);
-      return [];
-    }
-    throw e;
-  }
-};
+const shimPath = path.resolve(__dirname, 'scripts/playwright_shim.cjs');
+require(shimPath);
 
-const origReaddir = fs.readdir;
-fs.readdir = function(p, ...args) {
-  const callback = args[args.length - 1];
-  if (typeof callback === 'function') {
-    const newArgs = [...args.slice(0, -1), function(err, files) {
-      if (err && (err.code === 'EPERM' || err.code === 'EACCES')) {
-        console.warn(`[shim] Ignoring ${err.code} on readdir: ${p}`);
-        return callback(null, []);
-      }
-      return callback(err, files);
-    }];
-    return origReaddir.call(fs, p, ...newArgs);
-  }
-  return origReaddir.call(fs, p, ...args);
-};
-
-if (fs.promises && fs.promises.readdir) {
-  const origPromisesReaddir = fs.promises.readdir;
-  fs.promises.readdir = async function(p, ...args) {
-    try {
-      return await origPromisesReaddir.call(fs.promises, p, ...args);
-    } catch (e) {
-      if (e.code === 'EPERM' || e.code === 'EACCES') {
-        console.warn(`[shim] Ignoring ${e.code} on promises.readdir: ${p}`);
-        return [];
-      }
-      throw e;
-    }
-  };
+// Ensure all worker threads / child processes inherit the shim
+const nodeOptions = process.env.NODE_OPTIONS || '';
+if (!nodeOptions.includes('playwright_shim.cjs')) {
+  process.env.NODE_OPTIONS = `${nodeOptions} -r "${shimPath}"`.trim();
 }
 
-// Now launch Playwright CLI with remaining args using spawnSync to ensure clean process context
-const { spawnSync } = require('child_process');
-const cliPath = path.resolve(__dirname, 'node_modules/@playwright/test/cli.js');
 const userArgs = process.argv.slice(2);
-const cliArgs = userArgs[0] === 'test' ? userArgs : ['test', ...userArgs];
+const cliPath = path.resolve(__dirname, 'node_modules/@playwright/test/cli.js');
+const configPath = path.resolve(__dirname, 'playwright.config.ts');
+const hasConfig = userArgs.some(a => a.startsWith('-c') || a.startsWith('--config'));
+const filteredArgs = userArgs[0] === 'test' ? userArgs.slice(1) : userArgs;
+const cliArgs = ['-r', shimPath, cliPath, 'test', ...(hasConfig ? [] : ['-c', configPath]), ...filteredArgs];
 
-const res = spawnSync(process.execPath, [cliPath, ...cliArgs], {
+const res = spawnSync(process.execPath, cliArgs, {
   stdio: 'inherit',
   env: process.env,
   cwd: __dirname

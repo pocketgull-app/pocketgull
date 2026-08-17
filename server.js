@@ -365,10 +365,7 @@ app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   
   const isProd = process.env['NODE_ENV'] === 'production';
-  const isDev = !isProd;
-  const scriptSrc = isDev
-    ? `'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com`
-    : `'self' 'nonce-${nonce}' 'unsafe-inline' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com`;
+  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com https://*.stripe.com https://js.stripe.com`;
 
   const scriptSrcAttr = `'self' 'unsafe-inline' 'unsafe-hashes'`;
   const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
@@ -376,10 +373,10 @@ app.use((req, res, next) => {
   const styleSrcAttr = `'self' 'unsafe-inline'`;
 
   const connectSrc = isDev
-    ? `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`
-    : `'self' http://localhost:9399 http://localhost:4000 http://localhost:4200 http://127.0.0.1:9399 ws://localhost:9399 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;
+    ? `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://apis.google.com https://*.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.firebaseapp.com https://*.stripe.com https://api.stripe.com`
+    : `'self' http://localhost:9399 http://localhost:4000 http://localhost:4200 http://127.0.0.1:9399 ws://localhost:9399 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://apis.google.com https://*.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.firebaseapp.com https://*.stripe.com https://api.stripe.com`;
 
-  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; script-src-attr ${scriptSrcAttr}; style-src ${styleSrc}; style-src-elem ${styleSrcElem}; style-src-attr ${styleSrcAttr}; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org; connect-src ${connectSrc}; frame-src 'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
+  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; script-src-attr ${scriptSrcAttr}; style-src ${styleSrc}; style-src-elem ${styleSrcElem}; style-src-attr ${styleSrcAttr}; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org https://*.stripe.com; connect-src ${connectSrc}; frame-src 'self' https://apis.google.com https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app https://*.stripe.com https://js.stripe.com https://hooks.stripe.com; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
 
   res.setHeader('Content-Security-Policy', csp);
   
@@ -391,6 +388,9 @@ app.use((req, res, next) => {
   
   // Cross-Origin Resource Policy
   res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+  
+  // llms.txt v2 Agentic Discovery Link header
+  res.setHeader('Link', '</docs/overview.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"');
   
   // Permissions-Policy (formerly Feature-Policy)
   res.setHeader(

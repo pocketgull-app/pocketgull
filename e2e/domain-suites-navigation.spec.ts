@@ -35,6 +35,8 @@ test.describe('10-Dimensional Master Domain Suites E2E Verification', () => {
     // Define suite tab names to test
     const suites = [
       'Biomedical & Diagnostic',
+      'Matt Might Precision Medicine',
+      'Biochemical & Molecular',
       'Therapeutics & Botanical',
       'Nutritional & Metabolic',
       'Kinetic & Recovery',
