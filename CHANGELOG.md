@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.0] - 2026-08-16
+
+**W3C Web Bluetooth GATT & Apple Health Engine, Pharmacogenomics (PGx) CPIC Safety Optimizer, Socratic Claim Validation (Cochrane RoB 2), Social Pragmatics Gym, 77 WebMCP Tools, and CERN / Zenodo Archival Synchronization**
+
+### Added & Enhanced
+- **[W3C Web Bluetooth GATT Hub & Apple Health XML Streaming] (`WebBluetoothTelemetryService`, `BiometricImportService`, `BiometricBluetoothHubComponent`, WebMCP Tool #76)**:
+  - Direct zero-app browser Bluetooth pairing via `navigator.bluetooth` supporting 0x180D (Heart Rate & 16-bit RR-intervals), 0x1822 (Pulse Oximeter SpO2), and 0x180F (Battery Level).
+  - Real-time **HRV RMSSD** (Root Mean Square of Successive Differences) calculation for autonomic vagal tone monitoring.
+  - High-throughput streaming regex parser for Apple Health `export.xml` backups, converting multi-year HR, SpO2, blood glucose, and HRV into local FHIR R4 Observations without server egress.
+  - Registered **WebMCP Tool #76 (`connect_bluetooth_biometric_device_or_parse_healthkit`)**.
+- **[Pharmacogenomics (PGx) & CPIC Level A Drug-Gene Safety Engine] (`PharmacogenomicsService`, `PharmacogenomicsOptimizerComponent`, WebMCP Tool #77)**:
+  - Star-allele diplotype matching across `CYP2D6` (*4/*4, *1xN), `CYP2C19` (*2/*2), `SLCO1B1` (*5/*5), `HLA-B*57:01`, `DPYD`, and `TPMT`.
+  - Intercepts lethal adverse drug reactions (ADRs): Codeine prodrug failure and toxicity, Clopidogrel acute stent thrombosis, Simvastatin rhabdomyolysis, and Abacavir hypersensitivity.
+  - Drug-induced phenoconversion simulator modeling strong enzyme inhibitors (Fluoxetine, Bupropion) converting normal genotypic metabolizers into phenotypic Poor Metabolizers.
+  - Registered **WebMCP Tool #77 (`evaluate_pharmacogenomics_and_cpic_guidelines`)**.
+- **[Socratic Claim Validator & Cochrane RoB 2 Engine] (`SocraticEvidenceLiteracyService`, `SocraticEvidenceValidatorComponent`, WebMCP Tool #75)**:
+  - 5-Domain Cochrane Risk of Bias 2 (RoB 2) assessment across Randomization, Deviations, Missing Outcome Data, Measurement Bias, and Selective Reporting.
+  - Popperian Null-Hypothesis ($H_0$) statistical engine calculating empirical $p$-values and automatically enforcing skeptical warning disclosures when $p \ge 0.05$.
+  - Registered **WebMCP Tool #75 (`validate_clinical_claim_socratic_epistemology`)**.
+- **[Interpersonal Social Pragmatics Gym] (`SocialPragmaticsGymService`, `SocialPragmaticsGymComponent`, WebMCP Tool #74)**:
+  - Interactive clinical negotiation, Non-Violent Communication (NVC), de-escalation, and assertive boundary-setting training for neurodivergent individuals and patient advocates.
+  - Registered **WebMCP Tool #74 (`evaluate_social_conversational_pragmatics`)**.
+- **[CERN / Zenodo Academic Archival Governance] (`CITATION.cff`, `.zenodo.json`)**:
+  - Synchronized `CITATION.cff` and `.zenodo.json` to release `v1.22.0` for 1-click academic BibTeX/APA citations and 100+ year permanent archival preservation at the CERN Data Centre in Geneva.
+  - Verified 18/18 OpenSSF Scorecard heuristics and StepSecurity Harden-Runner egress auditing.
+
 ## [1.21.0] - 2026-08-14
 
 **PyTorch 2.5D Multiple Instance Learning (MIL) Knee Abnormality Detection Pipeline (v4.0.0) with Gemini-Derived Weak Labels**
