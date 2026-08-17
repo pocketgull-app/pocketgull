@@ -48,6 +48,7 @@ import { FutureCarePlanningService } from './future-care-planning.service';
 import { ClinicalSocialWorkNavigatorService } from './clinical-social-work-navigator.service';
 import { AddictionMedicineRecoveryService } from './addiction-medicine-recovery.service';
 import { Section504AccommodationService } from './section-504-accommodation.service';
+import { ClinicalSteeringCommitteeDossierService } from './clinical-steering-committee-dossier.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -102,6 +103,7 @@ export class WebMcpRegistrationService {
   private socialWorkService = inject(ClinicalSocialWorkNavigatorService, { optional: true });
   private addictionService = inject(AddictionMedicineRecoveryService, { optional: true });
   private section504Service = inject(Section504AccommodationService, { optional: true });
+  private cscDossierService = inject(ClinicalSteeringCommitteeDossierService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2585,6 +2587,39 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(sec504Tool, { signal: sec504Ctrl.signal });
     this.mcpControllers.push({ name: sec504Tool.name, controller: sec504Ctrl });
+
+    // 67. Generate Steering Committee Governance Dossier
+    const cscCtrl = new AbortController();
+    const cscTool = {
+      name: 'generate_steering_committee_governance_dossier',
+      description: 'Generates a certified Clinical AI Steering Committee Governance Dossier for hospital executive leadership, Institutional Review Boards (IRB), and regulatory compliance (FDA §520(o) Non-Device CDS transparency, Cochrane Level-A evidence distribution, SDoH algorithmic equity parity audits, and zero-audio retention verification).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          institutionName: { type: 'string', description: 'Healthcare system or academic medical center name.' },
+          reportingQuarter: { type: 'string', description: 'Quarter identifier (e.g. 2026-Q3).' },
+          chiefMedicalOfficer: { type: 'string' },
+          chiefInformaticsOfficer: { type: 'string' },
+          totalConsults: { type: 'number' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.cscDossierService || new ClinicalSteeringCommitteeDossierService();
+        const dossier = svc.generateGovernanceDossier({
+          institutionName: params?.institutionName,
+          reportingQuarter: params?.reportingQuarter,
+          chiefMedicalOfficer: params?.chiefMedicalOfficer,
+          chiefInformaticsOfficer: params?.chiefInformaticsOfficer,
+          totalConsults: params?.totalConsults ? Number(params.totalConsults) : undefined
+        });
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(dossier, null, 2) }]
+        };
+      }
+    };
+    modelContext.registerTool(cscTool, { signal: cscCtrl.signal });
+    this.mcpControllers.push({ name: cscTool.name, controller: cscCtrl });
   }
 
   /**

@@ -101,6 +101,33 @@ import { SessionStateService } from '../services/session-state.service';
             <span>🦷 Odontogram & SIBI</span>
           </button>
 
+          <!-- Section 504 School Accommodation Folio Button -->
+          <button 
+            type="button" 
+            (click)="openSection504Folio.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-amber-500/50 outline-none cursor-pointer"
+            title="Section 504 School Accommodation Plan & School Nurse Emergency Action Plan (EAP)">
+            <span>🎒 504 Folio</span>
+          </button>
+
+          <!-- Archival Living Health History Gallery Button -->
+          <button 
+            type="button" 
+            (click)="openArchivalGallery.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer"
+            title="Living Archival Health History Gallery & Illuminated Milestone Keepsakes">
+            <span>🖼️ Health Gallery</span>
+          </button>
+
+          <!-- Clinical AI Steering Committee Governance Button -->
+          <button 
+            type="button" 
+            (click)="openSteeringCommittee.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-indigo-500/50 outline-none cursor-pointer"
+            title="Clinical AI Steering Committee Governance Dossier (FDA §520(o) & SDoH Parity)">
+            <span>🏛️ Steering Committee</span>
+          </button>
+
           <!-- Citizen Science & Micro-Annotation Arena Button -->
           <button 
             type="button" 
@@ -319,6 +346,9 @@ export class MainHeaderNavComponent {
   openClinicalTrials = output<void>();
   openBigQueryAnalytics = output<void>();
   openTeledentistry = output<void>();
+  openSection504Folio = output<void>();
+  openArchivalGallery = output<void>();
+  openSteeringCommittee = output<void>();
   openZooniverse = output<void>();
   openBioNetworkQr = output<void>();
   openBillingDashboard = output<void>();

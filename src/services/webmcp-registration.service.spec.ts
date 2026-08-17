@@ -125,10 +125,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 66 WebMCP agentic tools on modelContext', () => {
+  it('should register all 67 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(66);
+    expect(registeredTools.size).toBe(67);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -556,10 +556,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 66 WebMCP agentic tools on modelContext', () => {
+  it('should register all 67 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(66);
+    expect(registeredTools.size).toBe(67);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -832,9 +832,23 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('Baqsimi');
   });
 
+  it('should register tool #67: generate_steering_committee_governance_dossier', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('generate_steering_committee_governance_dossier');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      institutionName: 'Stanford Healthcare Consortia',
+      reportingQuarter: '2026-Q3'
+    });
+    expect(result.content[0].text).toContain('Stanford Healthcare Consortia');
+    expect(result.content[0].text).toContain('2026-Q3');
+    expect(result.content[0].text).toContain('fdaSection520oComplianceScore');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(66);
+    expect((service as any).mcpControllers.length).toBe(67);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

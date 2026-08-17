@@ -68,6 +68,9 @@ import { ClinicalTrialArenaComponent } from './components/clinical-trial-arena.c
 import { BigQueryTrajectoryForecasterComponent } from './components/bigquery-trajectory-forecaster.component';
 import { TeledentistryOdontogramComponent } from './components/teledentistry-odontogram.component';
 import { ZooniverseMicroAnnotationComponent } from './components/zooniverse-micro-annotation.component';
+import { Section504FolioComponent } from './components/section-504-folio.component';
+import { ArchivalHealthGalleryComponent } from './components/archival-health-gallery.component';
+import { SteeringCommitteeDossierComponent } from './components/steering-committee-dossier.component';
 
 @Component({
   selector: 'app-root',
@@ -111,7 +114,10 @@ import { ZooniverseMicroAnnotationComponent } from './components/zooniverse-micr
     ClinicalTrialArenaComponent,
     BigQueryTrajectoryForecasterComponent,
     TeledentistryOdontogramComponent,
-    ZooniverseMicroAnnotationComponent
+    ZooniverseMicroAnnotationComponent,
+    Section504FolioComponent,
+    ArchivalHealthGalleryComponent,
+    SteeringCommitteeDossierComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -200,6 +206,66 @@ import { ZooniverseMicroAnnotationComponent } from './components/zooniverse-micr
 
     @if (showZooniverseModal()) {
       <app-zooniverse-micro-annotation (closeModal)="showZooniverseModal.set(false)"></app-zooniverse-micro-annotation>
+    }
+
+    @if (showSection504Modal()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="relative w-full max-w-5xl my-8 bg-slate-900 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden">
+          <div class="absolute top-4 right-4 z-10">
+            <button
+              type="button"
+              (click)="showSection504Modal.set(false)"
+              class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold text-lg transition min-h-[48px] min-w-[48px] cursor-pointer"
+              aria-label="Close Section 504 Folio"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="p-4 sm:p-6">
+            <app-section-504-folio></app-section-504-folio>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (showArchivalGalleryModal()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="relative w-full max-w-6xl my-8 bg-slate-900 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden">
+          <div class="absolute top-4 right-4 z-10">
+            <button
+              type="button"
+              (click)="showArchivalGalleryModal.set(false)"
+              class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold text-lg transition min-h-[48px] min-w-[48px] cursor-pointer"
+              aria-label="Close Living Archival Health History Gallery"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="p-4 sm:p-6">
+            <app-archival-health-gallery></app-archival-health-gallery>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (showSteeringCommitteeModal()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="relative w-full max-w-5xl my-8 bg-slate-900 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden">
+          <div class="absolute top-4 right-4 z-10">
+            <button
+              type="button"
+              (click)="showSteeringCommitteeModal.set(false)"
+              class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold text-lg transition min-h-[48px] min-w-[48px] cursor-pointer"
+              aria-label="Close Clinical AI Steering Committee Dossier"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="p-4 sm:p-6">
+            <app-steering-committee-dossier></app-steering-committee-dossier>
+          </div>
+        </div>
+      </div>
     }
 
     @if (showFhirCallback()) {
@@ -412,6 +478,9 @@ import { ZooniverseMicroAnnotationComponent } from './components/zooniverse-micr
           (openClinicalTrials)="showClinicalTrialsModal.set(true)"
           (openBigQueryAnalytics)="showBigQueryModal.set(true)"
           (openTeledentistry)="showTeledentistryModal.set(true)"
+          (openSection504Folio)="showSection504Modal.set(true)"
+          (openArchivalGallery)="showArchivalGalleryModal.set(true)"
+          (openSteeringCommittee)="showSteeringCommitteeModal.set(true)"
           (openZooniverse)="showZooniverseModal.set(true)"
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
@@ -1041,6 +1110,9 @@ export class AppComponent implements OnDestroy {
   showClinicalTrialsModal = signal(false);
   showBigQueryModal = signal(false);
   showTeledentistryModal = signal(false);
+  showSection504Modal = signal(false);
+  showArchivalGalleryModal = signal(false);
+  showSteeringCommitteeModal = signal(false);
   showZooniverseModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
