@@ -472,10 +472,8 @@ export class TaskFlowComponent {
   researchItemText(text: string) {
     if (!text) return;
     const hasOwnDefault = Object.prototype.hasOwnProperty.call(DOMPurify, 'default');
-    const DOMP = hasOwnDefault ? (DOMPurify as any).default : DOMPurify;
-    const cleanText = (typeof DOMP?.sanitize === 'function'
-      ? DOMP.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
-      : text.replace(/<[^>]*>/g, '').replace(/[<>]/g, '')).trim();
+    const purify = (hasOwnDefault ? (DOMPurify as any).default : DOMPurify) as { sanitize: (val: string, opts?: any) => string };
+    const cleanText = purify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
     this.state.openResearchQuery(cleanText, 'pubmed');
   }
 
