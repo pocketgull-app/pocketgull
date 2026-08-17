@@ -1,0 +1,28 @@
+config {
+  type: "incremental",
+  schema: "pocketgull_marts",
+  description: "Curated clinical cohort insights and CDS aggregated features for ML sidecar and dashboards",
+  uniqueKey: ["cohort_key"],
+  bigquery: {
+    partitionBy: "DATE(encounter_date)",
+    clusterBy: ["demographic_archetype", "triage_tier"]
+  }
+}
+
+SELECT
+  CONCAT(demographic_archetype, '_', triage_tier, '_', CAST(DATE(encounter_timestamp) AS STRING)) AS cohort_key,
+  demographic_archetype,
+  triage_tier,
+  DATE(encounter_timestamp) AS encounter_date,
+  COUNT(encounter_id) AS total_encounters,
+  AVG(sibi_score) AS avg_sibi_burden,
+  AVG(twi_grade) AS avg_tooth_wear_grade,
+  COUNTIF(p_value < 0.05) AS statistically_significant_observations,
+  CURRENT_TIMESTAMP() AS mart_updated_at
+FROM
+  ${ref("stg_fhir_encounters")}
+${when(incremental(), `WHERE encounter_timestamp > (SELECT MAX(encounter_date) FROM ${self()})`)}
+GROUP BY
+  demographic_archetype,
+  triage_tier,
+  DATE(encounter_timestamp)

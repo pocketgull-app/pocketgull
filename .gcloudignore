@@ -20,7 +20,11 @@ pocketgull_api/__pycache__/
 .idea/
 .continue/
 .gemini/
+**/.gemini/**
 .agents/
+**/.agents/**
+.agent/
+**/.agent/**
 
 # Testing
 test-results/

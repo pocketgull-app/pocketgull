@@ -1,6 +1,42 @@
 steps:
+  # 1. Build and tag container
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocket-gull-v2:latest', '.']
+
+  # 2. Deploy directly to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'pocket-gull-v2'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocket-gull-v2:latest'
+      - '--region'
+      - 'us-central1'
+      - '--project'
+      - 'gen-lang-client-0540208645'
+      - '--min-instances=0'
+      - '--max-instances=5'
+      - '--set-env-vars=OTEL_SDK_DISABLED=true'
+      - '--update-secrets=STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest,ATHENAHEALTH_CLIENT_ID=ATHENAHEALTH_CLIENT_ID:latest'
+      - '--timeout=25m'
+      - '--quiet'
+
+  # 3. Route 100% traffic immediately to the new revision
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'services'
+      - 'update-traffic'
+      - 'pocket-gull-v2'
+      - '--to-latest'
+      - '--region'
+      - 'us-central1'
+      - '--project'
+      - 'gen-lang-client-0540208645'
+
 images:
   - 'us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocket-gull-v2:latest'
 timeout: 1800s

@@ -1,0 +1,31 @@
+config {
+  type: "view",
+  schema: "pocketgull_staging",
+  description: "Cleaned and HIPAA Safe Harbor de-identified FHIR R4 clinical encounters",
+  columns: {
+    encounter_id: "Unique encounter identifier (UUID)",
+    encounter_timestamp: "Timestamp of the clinical encounter",
+    demographic_archetype: "HIPAA Safe Harbor de-identified demographic archetype",
+    triage_tier: "Clinical triage priority level (EMERGENCY, URGENT, ROUTINE)",
+    sibi_score: "Systemic Inflammatory Burden Index",
+    twi_grade: "Smith & Knight Tooth Wear Index Grade (0-4)",
+    p_value: "Popperian null-hypothesis significance test statistic"
+  },
+  assertions: {
+    uniqueKey: ["encounter_id"],
+    nonNull: ["encounter_id", "encounter_timestamp", "triage_tier"]
+  }
+}
+
+SELECT
+  CAST(JSON_VALUE(raw_payload, '$.id') AS STRING) AS encounter_id,
+  CAST(JSON_VALUE(raw_payload, '$.timestamp') AS TIMESTAMP) AS encounter_timestamp,
+  CAST(JSON_VALUE(raw_payload, '$.subject.demographicArchetype') AS STRING) AS demographic_archetype,
+  CAST(JSON_VALUE(raw_payload, '$.priority.code') AS STRING) AS triage_tier,
+  CAST(JSON_VALUE(raw_payload, '$.biometrics.sibi') AS FLOAT64) AS sibi_score,
+  CAST(JSON_VALUE(raw_payload, '$.dental.twiGrade') AS INT64) AS twi_grade,
+  CAST(JSON_VALUE(raw_payload, '$.stats.pValue') AS FLOAT64) AS p_value
+FROM
+  `${constants.PROJECT_ID || 'gen-lang-client-0540208645'}.pocketgull_raw.fhir_encounters`
+WHERE
+  raw_payload IS NOT NULL

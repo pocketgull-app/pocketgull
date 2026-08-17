@@ -27,7 +27,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
 # Prune devDependencies to keep production container small
-RUN npm prune --omit=dev --legacy-peer-deps
+RUN npm prune --omit=dev --legacy-peer-deps --workspaces --include-workspace-root
 
 # ==========================================
 # Stage 2: Production

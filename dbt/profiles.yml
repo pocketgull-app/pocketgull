@@ -1,0 +1,21 @@
+pocketgull_profile:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: gen-lang-client-0540208645
+      dataset: pocketgull_analytics
+      threads: 4
+      timeout_seconds: 300
+      location: us-central1
+      priority: interactive
+    prod:
+      type: bigquery
+      method: oauth
+      project: gen-lang-client-0540208645
+      dataset: pocketgull_analytics
+      threads: 8
+      timeout_seconds: 600
+      location: us-central1
+      priority: batch

@@ -1,0 +1,5 @@
+defaultProject: gen-lang-client-0540208645
+defaultLocation: us-central1
+defaultDataset: pocketgull_analytics
+defaultAssertionDataset: pocketgull_assertions
+dataformCoreVersion: 3.0.0
