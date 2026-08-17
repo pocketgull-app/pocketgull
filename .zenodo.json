@@ -11,8 +11,8 @@
   ],
   "access_right": "open",
   "license": "MIT",
-  "publication_date": "2026-07-24",
-  "version": "1.15.0",
+  "publication_date": "2026-08-16",
+  "version": "1.22.0",
   "keywords": [
     "clinical-decision-support",
     "google-gemini",
