@@ -51,7 +51,7 @@ app.get(['/api/discovery/tools', '/discovery/tools', '/v1/discovery/tools'], (re
     '@context': 'https://schema.org',
     '@type': 'WebMCPToolCatalog',
     name: 'PocketGull Dynamic Clinical WebMCP Tool Registry',
-    totalTools: 73,
+    totalTools: 74,
     tools: [
       { name: 'open_zen_sanctuary', category: 'Therapy & Bibliotherapy' },
       { name: 'get_healing_postcards', category: 'Patient Engagement' },
@@ -79,6 +79,7 @@ app.get(['/api/discovery/tools', '/discovery/tools', '/v1/discovery/tools'], (re
       { name: 'generate_academic_citation_dossier', category: 'Academic Citations & Literature Proof' },
       { name: 'inspect_active_view_citations', category: 'Context-Aware Evidence Inspector' },
       { name: 'calculate_global_health_and_humanitarian_utility', category: 'Humanitarian Health Utility & QALY' },
+      { name: 'evaluate_social_conversational_pragmatics', category: 'Interpersonal Social Pragmatics Gym' },
       { name: 'resolve_clinical_nlp_context', category: 'Clinical NLP' },
       { name: 'audit_clinical_coding_and_hcc_risk', category: 'HIM Coding & HCC V28' },
       { name: 'issue_him_ceu_microcredential', category: 'AHIMA / AAPC CEU Career' },

@@ -146,6 +146,15 @@ import { SessionStateService } from '../services/session-state.service';
             <span>🌍 Humanitarian Utility</span>
           </button>
 
+          <!-- Social Pragmatics & Empathetic Communication Gym Button -->
+          <button 
+            type="button" 
+            (click)="openSocialGym.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-indigo-500/50 outline-none cursor-pointer"
+            title="Social Pragmatics & Empathetic Communication Gym (NVC, Active-Constructive Listening, Inner Monologue Mirror)">
+            <span>🤝 Social Gym</span>
+          </button>
+
           <!-- Citizen Science & Micro-Annotation Arena Button -->
           <button 
             type="button" 
@@ -369,6 +378,7 @@ export class MainHeaderNavComponent {
   openSteeringCommittee = output<void>();
   openAcademicCitations = output<void>();
   openGlobalHealthUtility = output<void>();
+  openSocialGym = output<void>();
   openZooniverse = output<void>();
   openBioNetworkQr = output<void>();
   openBillingDashboard = output<void>();

@@ -14,6 +14,7 @@ import { ClinicalGraphQLService } from './clinical-graphql.service';
 import { ClinicalContextModeService } from './clinical-context-mode.service';
 import { AcademicCitationService } from './academic-citation.service';
 import { GlobalHealthUtilityService } from './global-health-utility.service';
+import { SocialPragmaticsGymService } from './social-pragmatics-gym.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -138,6 +139,17 @@ describe('WebMcpRegistrationService', () => {
       })
     };
 
+    const mockSocialGymService = {
+      resetSession: vi.fn(),
+      processUserResponse: vi.fn(),
+      generateTelemetryReport: vi.fn().mockReturnValue({
+        sessionId: 'SOC-TEST-1',
+        personaName: 'Maya',
+        curiosityRatio: 60,
+        empathyDepthTier: 'Level 3 (Resonant Attunement)'
+      })
+    };
+
     const mockNgZone = {
       run: (fn: Function) => fn()
     };
@@ -155,6 +167,7 @@ describe('WebMcpRegistrationService', () => {
         { provide: ClinicalContextModeService, useValue: mockContextModeService },
         { provide: AcademicCitationService, useValue: mockCitationService },
         { provide: GlobalHealthUtilityService, useValue: mockUtilityService },
+        { provide: SocialPragmaticsGymService, useValue: mockSocialGymService },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -162,10 +175,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 73 WebMCP agentic tools on modelContext', () => {
+  it('should register all 74 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(73);
+    expect(registeredTools.size).toBe(74);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -593,10 +606,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 73 WebMCP agentic tools on modelContext', () => {
+  it('should register all 74 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(73);
+    expect(registeredTools.size).toBe(74);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -969,9 +982,22 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('totalQalyGainedPerDecade');
   });
 
+  it('should register tool #74: evaluate_social_conversational_pragmatics', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_social_conversational_pragmatics');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      personaId: 'warm_friend',
+      userStatement: 'Congratulations Maya! Tell me about the exhibition!'
+    });
+    expect(result.content[0].text).toContain('sessionId');
+    expect(result.content[0].text).toContain('Maya');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(73);
+    expect((service as any).mcpControllers.length).toBe(74);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

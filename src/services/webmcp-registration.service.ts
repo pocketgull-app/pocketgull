@@ -53,6 +53,7 @@ import { ClinicalGraphQLService } from './clinical-graphql.service';
 import { ClinicalContextModeService } from './clinical-context-mode.service';
 import { AcademicCitationService } from './academic-citation.service';
 import { GlobalHealthUtilityService } from './global-health-utility.service';
+import { SocialPragmaticsGymService } from './social-pragmatics-gym.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -112,6 +113,7 @@ export class WebMcpRegistrationService {
   private contextModeService = inject(ClinicalContextModeService, { optional: true });
   private citationService = inject(AcademicCitationService, { optional: true });
   private utilityService = inject(GlobalHealthUtilityService, { optional: true });
+  private socialGymService = inject(SocialPragmaticsGymService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2825,6 +2827,45 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(utilTool, { signal: utilCtrl.signal });
     this.mcpControllers.push({ name: utilTool.name, controller: utilCtrl });
+
+    // 74. Evaluate Social Conversational Pragmatics
+    const socialCtrl = new AbortController();
+    const socialTool = {
+      name: 'evaluate_social_conversational_pragmatics',
+      description: 'Evaluates interpersonal social skills, Non-Violent Communication (NVC) adherence, curiosity ratio, empathy depth tier, and unspoken inner monologue reflections across simulated conversational personas.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          personaId: {
+            type: 'string',
+            enum: ['warm_friend', 'busy_colleague', 'defensive_roommate', 'anxious_adolescent', 'setting_boundary'],
+            description: 'The target conversational persona scenario to simulate or evaluate.'
+          },
+          userStatement: {
+            type: 'string',
+            description: 'The user response or statement to evaluate against the active persona scenario.'
+          }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.socialGymService || new SocialPragmaticsGymService();
+        if (params?.personaId) {
+          svc.resetSession(params.personaId);
+        }
+        if (params?.userStatement) {
+          svc.processUserResponse(params.userStatement);
+        }
+        const report = svc.generateTelemetryReport();
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(report, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(socialTool, { signal: socialCtrl.signal });
+    this.mcpControllers.push({ name: socialTool.name, controller: socialCtrl });
   }
 
   /**

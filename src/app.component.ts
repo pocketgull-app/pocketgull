@@ -74,6 +74,7 @@ import { SteeringCommitteeDossierComponent } from './components/steering-committ
 import { ClinicalContextModeSwitcherComponent } from './components/clinical-context-mode-switcher.component';
 import { AcademicCitationDrawerComponent } from './components/academic-citation-drawer.component';
 import { GlobalHealthUtilityFolioComponent } from './components/global-health-utility-folio.component';
+import { SocialPragmaticsGymComponent } from './components/social-pragmatics-gym.component';
 
 @Component({
   selector: 'app-root',
@@ -114,6 +115,7 @@ import { GlobalHealthUtilityFolioComponent } from './components/global-health-ut
     ClinicalContextModeSwitcherComponent,
     AcademicCitationDrawerComponent,
     GlobalHealthUtilityFolioComponent,
+    SocialPragmaticsGymComponent,
     OnboardingTourOverlayComponent,
     SupportTicketModalComponent,
     ApiPricingComponent,
@@ -489,6 +491,7 @@ import { GlobalHealthUtilityFolioComponent } from './components/global-health-ut
           (openSteeringCommittee)="showSteeringCommitteeModal.set(true)"
           (openAcademicCitations)="showAcademicCitationsDrawer.set(true)"
           (openGlobalHealthUtility)="showGlobalHealthUtilityModal.set(true)"
+          (openSocialGym)="showSocialGymModal.set(true)"
           (openZooniverse)="showZooniverseModal.set(true)"
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
@@ -782,6 +785,11 @@ import { GlobalHealthUtilityFolioComponent } from './components/global-health-ut
     <!-- Humanitarian Health Utility & Harm Reduction Folio Modal -->
     @if (showGlobalHealthUtilityModal()) {
       <app-global-health-utility-folio (close)="showGlobalHealthUtilityModal.set(false)"></app-global-health-utility-folio>
+    }
+
+    <!-- Social Pragmatics & Empathetic Communication Gym Modal -->
+    @if (showSocialGymModal()) {
+      <app-social-pragmatics-gym (close)="showSocialGymModal.set(false)"></app-social-pragmatics-gym>
     }
 
     <!-- Preview & Print Modal (Dieter Rams Style) -->
@@ -1136,6 +1144,7 @@ export class AppComponent implements OnDestroy {
   showSteeringCommitteeModal = signal(false);
   showAcademicCitationsDrawer = signal(false);
   showGlobalHealthUtilityModal = signal(false);
+  showSocialGymModal = signal(false);
   showZooniverseModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
