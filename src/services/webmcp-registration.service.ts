@@ -52,6 +52,7 @@ import { ClinicalSteeringCommitteeDossierService } from './clinical-steering-com
 import { ClinicalGraphQLService } from './clinical-graphql.service';
 import { ClinicalContextModeService } from './clinical-context-mode.service';
 import { AcademicCitationService } from './academic-citation.service';
+import { GlobalHealthUtilityService } from './global-health-utility.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -110,6 +111,7 @@ export class WebMcpRegistrationService {
   private graphqlService = inject(ClinicalGraphQLService, { optional: true });
   private contextModeService = inject(ClinicalContextModeService, { optional: true });
   private citationService = inject(AcademicCitationService, { optional: true });
+  private utilityService = inject(GlobalHealthUtilityService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2795,6 +2797,34 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(inspectTool, { signal: inspectCtrl.signal });
     this.mcpControllers.push({ name: inspectTool.name, controller: inspectCtrl });
+
+    // 73. Calculate Global Health and Humanitarian Utility
+    const utilCtrl = new AbortController();
+    const utilTool = {
+      name: 'calculate_global_health_and_humanitarian_utility',
+      description: 'Simulates population-level humanitarian health utility, QALY gains, averted morbidity risk, and clinician hours reclaimed across early multi-system detection, Section 504 school safety, and rare disease odyssey compression.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          cohortSize: {
+            type: 'number',
+            description: 'The number of patients in the cohort to simulate (defaults to 1000).'
+          }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.utilityService || new GlobalHealthUtilityService();
+        const report = svc.evaluateUtility(params?.cohortSize || 1000);
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(report, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(utilTool, { signal: utilCtrl.signal });
+    this.mcpControllers.push({ name: utilTool.name, controller: utilCtrl });
   }
 
   /**

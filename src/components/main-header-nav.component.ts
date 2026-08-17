@@ -137,6 +137,15 @@ import { SessionStateService } from '../services/session-state.service';
             <span>📚 Citations</span>
           </button>
 
+          <!-- Humanitarian Health Utility & Harm Reduction Ledger Button -->
+          <button 
+            type="button" 
+            (click)="openGlobalHealthUtility.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer"
+            title="Humanitarian Health Utility & Harm Reduction Ledger (QALY Maximization & SDoH Alleviation)">
+            <span>🌍 Humanitarian Utility</span>
+          </button>
+
           <!-- Citizen Science & Micro-Annotation Arena Button -->
           <button 
             type="button" 
@@ -359,6 +368,7 @@ export class MainHeaderNavComponent {
   openArchivalGallery = output<void>();
   openSteeringCommittee = output<void>();
   openAcademicCitations = output<void>();
+  openGlobalHealthUtility = output<void>();
   openZooniverse = output<void>();
   openBioNetworkQr = output<void>();
   openBillingDashboard = output<void>();
