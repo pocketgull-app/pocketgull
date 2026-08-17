@@ -164,6 +164,15 @@ import { SessionStateService } from '../services/session-state.service';
             <span>⚖️ Socratic Validator</span>
           </button>
 
+          <!-- Biometric Telemetry & Bluetooth GATT Hub Button -->
+          <button 
+            type="button" 
+            (click)="openBluetoothHub.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-50 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800/60 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-cyan-500/50 outline-none cursor-pointer"
+            title="Biometric Telemetry & Hardware Hub (W3C Web Bluetooth GATT, Apple Health XML & Continuous Sensors)">
+            <span>📡 BLE &amp; HealthKit</span>
+          </button>
+
           <!-- Citizen Science & Micro-Annotation Arena Button -->
           <button 
             type="button" 
@@ -389,6 +398,7 @@ export class MainHeaderNavComponent {
   openGlobalHealthUtility = output<void>();
   openSocialGym = output<void>();
   openSocraticValidator = output<void>();
+  openBluetoothHub = output<void>();
   openZooniverse = output<void>();
   openBioNetworkQr = output<void>();
   openBillingDashboard = output<void>();

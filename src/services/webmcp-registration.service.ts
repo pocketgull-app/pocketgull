@@ -55,6 +55,7 @@ import { AcademicCitationService } from './academic-citation.service';
 import { GlobalHealthUtilityService } from './global-health-utility.service';
 import { SocialPragmaticsGymService } from './social-pragmatics-gym.service';
 import { SocraticEvidenceLiteracyService } from './socratic-evidence-literacy.service';
+import { WebBluetoothTelemetryService } from './hardware/web-bluetooth-telemetry.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -116,6 +117,7 @@ export class WebMcpRegistrationService {
   private utilityService = inject(GlobalHealthUtilityService, { optional: true });
   private socialGymService = inject(SocialPragmaticsGymService, { optional: true });
   private socraticService = inject(SocraticEvidenceLiteracyService, { optional: true });
+  private bleService = inject(WebBluetoothTelemetryService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2897,6 +2899,44 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(socraticTool, { signal: socraticCtrl.signal });
     this.mcpControllers.push({ name: socraticTool.name, controller: socraticCtrl });
+
+    // 76. Connect Bluetooth Biometric Device or Parse HealthKit
+    const bleCtrl = new AbortController();
+    const bleTool = {
+      name: 'connect_bluetooth_biometric_device_or_parse_healthkit',
+      description: 'Manages W3C Web Bluetooth GATT connections to commercial BLE heart rate straps / pulse oximeters and returns live biometric telemetry snapshots (HR, HRV RMSSD, SpO2, Battery).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          action: {
+            type: 'string',
+            enum: ['get_snapshot', 'start_simulation', 'disconnect'],
+            description: 'Action to perform with Bluetooth biometric hardware.'
+          },
+          targetHr: {
+            type: 'number',
+            description: 'Optional baseline heart rate for simulated hardware stream.'
+          }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.bleService || new WebBluetoothTelemetryService();
+        if (params?.action === 'start_simulation') {
+          svc.startSimulatedTelemetry(params?.targetHr || 72);
+        } else if (params?.action === 'disconnect') {
+          svc.disconnect();
+        }
+        const snapshot = svc.getTelemetrySnapshot();
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(snapshot, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(bleTool, { signal: bleCtrl.signal });
+    this.mcpControllers.push({ name: bleTool.name, controller: bleCtrl });
   }
 
   /**

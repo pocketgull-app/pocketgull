@@ -16,8 +16,10 @@ export class BiometricImportService {
             await this.parseJson(text);
         } else if (fileName.endsWith('.csv')) {
             await this.parseCsv(text);
+        } else if (fileName.endsWith('.xml')) {
+            await this.parseAppleHealthXml(text);
         } else {
-            throw new Error('Unsupported file format. Please provide a CSV or JSON file.');
+            throw new Error('Unsupported file format. Please provide an Apple Health XML, CSV, or JSON file.');
         }
     }
 
@@ -102,6 +104,53 @@ export class BiometricImportService {
         } catch (e) {
             console.error('Failed to parse Biometric CSV', e);
             throw new Error('Malformed CSV biometric data.');
+        }
+    }
+
+    private async parseAppleHealthXml(content: string): Promise<void> {
+        try {
+            const entries: IBiometricEntry[] = [];
+            // Regex match for <Record type="..." value="..." startDate="..."/>
+            const recordRegex = /<Record\s+[^>]*type="([^"]+)"[^>]*value="([^"]+)"[^>]*startDate="([^"]+)"[^>]*\/?>/gi;
+            let match: RegExpExecArray | null;
+
+            while ((match = recordRegex.exec(content)) !== null) {
+                const rawType = match[1];
+                const rawVal = match[2];
+                const rawDate = match[3];
+
+                let type: keyof IPatientVitals | null = null;
+                let value: any = rawVal;
+
+                if (rawType.includes('HeartRate')) {
+                    type = 'hr';
+                    value = Math.round(parseFloat(rawVal));
+                } else if (rawType.includes('OxygenSaturation')) {
+                    type = 'spo2';
+                    let num = parseFloat(rawVal);
+                    if (num <= 1.0) num = Math.round(num * 100);
+                    value = num;
+                } else if (rawType.includes('BloodGlucose')) {
+                    type = 'glucose' as any;
+                    value = Math.round(parseFloat(rawVal));
+                }
+
+                if (type) {
+                    entries.push({
+                        timestamp: new Date(rawDate).toISOString(),
+                        type,
+                        value,
+                        source: 'Apple Health Export'
+                    });
+                }
+            }
+
+            if (entries.length > 0) {
+                this.state.addBiometricEntries(entries);
+            }
+        } catch (e) {
+            console.error('Failed to parse Apple Health XML', e);
+            throw new Error('Malformed Apple Health XML data.');
         }
     }
 

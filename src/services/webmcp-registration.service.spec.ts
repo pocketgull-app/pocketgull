@@ -16,6 +16,7 @@ import { AcademicCitationService } from './academic-citation.service';
 import { GlobalHealthUtilityService } from './global-health-utility.service';
 import { SocialPragmaticsGymService } from './social-pragmatics-gym.service';
 import { SocraticEvidenceLiteracyService } from './socratic-evidence-literacy.service';
+import { WebBluetoothTelemetryService } from './hardware/web-bluetooth-telemetry.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -159,6 +160,18 @@ describe('WebMcpRegistrationService', () => {
       })
     };
 
+    const mockBleService = {
+      startSimulatedTelemetry: vi.fn(),
+      disconnect: vi.fn(),
+      getTelemetrySnapshot: vi.fn().mockReturnValue({
+        deviceName: 'Polar H10 BLE Sensor',
+        connected: true,
+        heartRateBpm: 74,
+        hrvRmssdMs: 62,
+        spo2Pct: 98
+      })
+    };
+
     const mockNgZone = {
       run: (fn: Function) => fn()
     };
@@ -178,6 +191,7 @@ describe('WebMcpRegistrationService', () => {
         { provide: GlobalHealthUtilityService, useValue: mockUtilityService },
         { provide: SocialPragmaticsGymService, useValue: mockSocialGymService },
         { provide: SocraticEvidenceLiteracyService, useValue: mockSocraticService },
+        { provide: WebBluetoothTelemetryService, useValue: mockBleService },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -185,10 +199,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 75 WebMCP agentic tools on modelContext', () => {
+  it('should register all 76 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(75);
+    expect(registeredTools.size).toBe(76);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -616,10 +630,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 75 WebMCP agentic tools on modelContext', () => {
+  it('should register all 76 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(75);
+    expect(registeredTools.size).toBe(76);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -1017,9 +1031,19 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('Periodontal-Systemic Cross-Talk (SIBI)');
   });
 
+  it('should register tool #76: connect_bluetooth_biometric_device_or_parse_healthkit', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('connect_bluetooth_biometric_device_or_parse_healthkit');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ action: 'get_snapshot' });
+    expect(result.content[0].text).toContain('Polar H10 BLE Sensor');
+    expect(result.content[0].text).toContain('heartRateBpm');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(75);
+    expect((service as any).mcpControllers.length).toBe(76);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

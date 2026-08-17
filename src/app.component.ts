@@ -76,6 +76,7 @@ import { AcademicCitationDrawerComponent } from './components/academic-citation-
 import { GlobalHealthUtilityFolioComponent } from './components/global-health-utility-folio.component';
 import { SocialPragmaticsGymComponent } from './components/social-pragmatics-gym.component';
 import { SocraticEvidenceValidatorComponent } from './components/socratic-evidence-validator.component';
+import { BiometricBluetoothHubComponent } from './components/biometric-bluetooth-hub.component';
 
 @Component({
   selector: 'app-root',
@@ -118,6 +119,7 @@ import { SocraticEvidenceValidatorComponent } from './components/socratic-eviden
     GlobalHealthUtilityFolioComponent,
     SocialPragmaticsGymComponent,
     SocraticEvidenceValidatorComponent,
+    BiometricBluetoothHubComponent,
     OnboardingTourOverlayComponent,
     SupportTicketModalComponent,
     ApiPricingComponent,
@@ -495,6 +497,7 @@ import { SocraticEvidenceValidatorComponent } from './components/socratic-eviden
           (openGlobalHealthUtility)="showGlobalHealthUtilityModal.set(true)"
           (openSocialGym)="showSocialGymModal.set(true)"
           (openSocraticValidator)="showSocraticValidatorModal.set(true)"
+          (openBluetoothHub)="showBluetoothHubModal.set(true)"
           (openZooniverse)="showZooniverseModal.set(true)"
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
@@ -798,6 +801,11 @@ import { SocraticEvidenceValidatorComponent } from './components/socratic-eviden
     <!-- Socratic Evidence Literacy & Claim Validator Modal -->
     @if (showSocraticValidatorModal()) {
       <app-socratic-evidence-validator (close)="showSocraticValidatorModal.set(false)"></app-socratic-evidence-validator>
+    }
+
+    <!-- Biometric Telemetry & Bluetooth GATT Hub Modal -->
+    @if (showBluetoothHubModal()) {
+      <app-biometric-bluetooth-hub (close)="showBluetoothHubModal.set(false)"></app-biometric-bluetooth-hub>
     }
 
     <!-- Preview & Print Modal (Dieter Rams Style) -->
@@ -1154,6 +1162,7 @@ export class AppComponent implements OnDestroy {
   showGlobalHealthUtilityModal = signal(false);
   showSocialGymModal = signal(false);
   showSocraticValidatorModal = signal(false);
+  showBluetoothHubModal = signal(false);
   showZooniverseModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
