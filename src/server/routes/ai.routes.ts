@@ -167,12 +167,24 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   const { getApiKey, getGcpAccessToken, normalizeAndValidateModel } = deps;
 
   // Lightweight native CORS middleware for cross-origin federated access
-  const ALLOWED_ORIGINS = ['pocketgull.com', 'pocketgull.app'];
   router.use((req, res, next) => {
     const origin = req.headers.origin;
     if (origin) {
-      if (ALLOWED_ORIGINS.some(o => origin.endsWith(o)) || origin.includes('localhost') || origin.includes('127.0.0.1')) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
+      try {
+        const originUrl = new URL(origin);
+        const hostname = originUrl.hostname.toLowerCase();
+        const isAllowed =
+          hostname === 'pocketgull.com' ||
+          hostname === 'pocketgull.app' ||
+          hostname.endsWith('.pocketgull.com') ||
+          hostname.endsWith('.pocketgull.app') ||
+          hostname === 'localhost' ||
+          hostname === '127.0.0.1';
+        if (isAllowed) {
+          res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+      } catch {
+        // Malformed origin header - do not set Access-Control-Allow-Origin
       }
     }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -568,7 +580,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         console.log(`[Gemini Developer API] Chat message model: ${rawModel}`);
         const safeContents = sanitizeApiPayload(session.history);
         const safeSystemInstruction = typeof session.systemInstruction === 'string' ? session.systemInstruction : '';
-        const safeModel = ALLOWED_DEV_MODELS.includes(rawModel) ? rawModel : 'gemini-3.5-flash';
+        const safeModel = ALLOWED_DEV_MODELS.includes(rawModel) ? rawModel : 'gemini-2.5-flash';
 
         response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${safeModel}:generateContent?key=${key}`, {
           method: 'POST',

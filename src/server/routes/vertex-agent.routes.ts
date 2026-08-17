@@ -48,6 +48,12 @@ vertexAgentRouter.post('/search', async (req: Request, res: Response) => {
   try {
     const { query, pageSize = 5, engineId = DEFAULT_ENGINE, filter } = req.body as IVertexSearchRequest;
 
+    const rawEngineId = typeof engineId === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(engineId.trim())
+      ? engineId.trim()
+      : DEFAULT_ENGINE;
+    const validatedEngineId = encodeURIComponent(rawEngineId);
+    const validatedProject = encodeURIComponent(DEFAULT_PROJECT.replace(/[^a-zA-Z0-9_-]/g, ''));
+
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
       return res.status(400).json({ error: 'Query parameter is required and must be non-empty string.' });
     }
@@ -63,7 +69,7 @@ vertexAgentRouter.post('/search', async (req: Request, res: Response) => {
       const client = await auth.getClient();
       const accessToken = await client.getAccessToken();
 
-      const url = `https://discoveryengine.googleapis.com/v1alpha/projects/${DEFAULT_PROJECT}/locations/global/collections/default_collection/engines/${engineId}/servingConfigs/default_search:search`;
+      const url = `https://discoveryengine.googleapis.com/v1alpha/projects/${validatedProject}/locations/global/collections/default_collection/engines/${validatedEngineId}/servingConfigs/default_search:search`;
 
       const response = await fetch(url, {
         method: 'POST',

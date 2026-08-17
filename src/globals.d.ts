@@ -12,3 +12,12 @@ declare namespace NodeJS {
     GEMINI_API_KEY: string;
   }
 }
+
+declare module '@angular/elements' {
+  export function createCustomElement(component: any, config?: any): any;
+}
+
+declare module '@genkit-ai/google-genai' {
+  export function googleAI(config?: any): any;
+}
+

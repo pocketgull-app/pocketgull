@@ -470,7 +470,7 @@ export class TaskFlowComponent {
 
   researchItemText(text: string) {
     if (!text) return;
-    const cleanText = text.replace(/<[^>]*>?/gm, '').trim();
+    const cleanText = text.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').trim();
     this.state.openResearchQuery(cleanText, 'pubmed');
   }
 

@@ -30,6 +30,7 @@ import { SsaDisabilityNavigatorService } from './ssa-disability-navigator.servic
 import { GlobalJurisdictionMatrixService } from './global-jurisdiction-matrix.service';
 import { MandiantClinicalDefenseService } from './mandiant-clinical-defense.service';
 import { ClinicalMandarinateExamService } from './clinical-mandarinate-exam.service';
+import { BrandPackageGeneratorService } from './brand-package-generator.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -66,6 +67,7 @@ export class WebMcpRegistrationService {
   private jurisdictionMatrixService = inject(GlobalJurisdictionMatrixService, { optional: true });
   private mandiantDefenseService = inject(MandiantClinicalDefenseService, { optional: true });
   private mandarinateExamService = inject(ClinicalMandarinateExamService, { optional: true });
+  private brandPackageGeneratorService = inject(BrandPackageGeneratorService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1522,6 +1524,41 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(mandarinateTool, { signal: mandarinateCtrl.signal });
     this.mcpControllers.push({ name: mandarinateTool.name, controller: mandarinateCtrl });
+    // Tool: generate_ai_branding_package
+    const brandPackageCtrl = new AbortController();
+    const brandPackageTool = {
+      name: 'generate_ai_branding_package',
+      description: 'Generates an AI branding package including color palettes, typography, and marketing assets.',
+      parameters: {
+        type: 'object',
+        properties: {
+          brandName: { type: 'string', description: 'Name of the brand or enterprise' },
+          industry: { type: 'string', description: 'Industry or clinical domain' },
+          style: { type: 'string', description: 'Visual style (e.g. Modern, Minimal, Warm, Clinical)' },
+          primaryHex: { type: 'string', description: 'Optional primary brand hex color' }
+        },
+        required: ['brandName']
+      },
+      execute: async (params: any) => {
+        const svc = this.brandPackageGeneratorService || new BrandPackageGeneratorService();
+        const pkg = svc.generateBrandPackage({
+          brandName: params?.brandName || 'PocketGull Enterprise',
+          industry: params?.industry || 'HealthTech & Clinical AI',
+          primaryColorHex: params?.primaryHex || '#0d9488'
+        });
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(pkg, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(brandPackageTool, { signal: brandPackageCtrl.signal });
+    this.mcpControllers.push({ name: brandPackageTool.name, controller: brandPackageCtrl });
+
   }
 
   /**

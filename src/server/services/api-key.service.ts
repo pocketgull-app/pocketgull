@@ -15,6 +15,12 @@ export interface ApiKeyDocument {
   status: 'active' | 'revoked';
 }
 
+const HMAC_PEPPER = process.env['API_KEY_PEPPER'] || 'pocketgull-hmac-sha256-secret-pepper-v1';
+
+function hashApiKey(rawKey: string): string {
+  return crypto.createHmac('sha256', HMAC_PEPPER).update(rawKey).digest('hex');
+}
+
 export class ApiKeyService {
   private collection = db.collection('api_keys');
 
@@ -24,7 +30,7 @@ export class ApiKeyService {
    */
   async generateKey(tenantId: string, name: string): Promise<{ rawKey: string; keyId: string }> {
     const rawKey = 'sk_live_' + crypto.randomBytes(32).toString('base64url');
-    const keyHash = crypto.createHash('sha256').update(rawKey).digest('hex');
+    const keyHash = hashApiKey(rawKey);
     const prefix = rawKey.substring(0, 16) + '...';
 
     const docRef = this.collection.doc();
@@ -49,7 +55,7 @@ export class ApiKeyService {
   async validateKey(rawKey: string): Promise<string | null> {
     if (!rawKey || !rawKey.startsWith('sk_live_')) return null;
 
-    const keyHash = crypto.createHash('sha256').update(rawKey).digest('hex');
+    const keyHash = hashApiKey(rawKey);
     const snapshot = await this.collection
       .where('keyHash', '==', keyHash)
       .where('status', '==', 'active')
