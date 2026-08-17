@@ -199,10 +199,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 80 WebMCP agentic tools on modelContext', () => {
+  it('should register all 81 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(80);
+    expect(registeredTools.size).toBe(81);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -630,10 +630,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 80 WebMCP agentic tools on modelContext', () => {
+  it('should register all 81 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(80);
+    expect(registeredTools.size).toBe(81);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -1092,9 +1092,21 @@ describe('WebMcpRegistrationService', () => {
     expect(resIcd.content[0].text).toContain("Alzheimer's disease");
   });
 
+  it('should register tool #81: generate_ambient_clinical_soap_note_and_diarize', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('generate_ambient_clinical_soap_note_and_diarize');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ scenarioId: 'heart_failure' });
+    expect(result.content[0].text).toContain('HFrEF');
+    expect(result.content[0].text).toContain('I50.22');
+    expect(result.content[0].text).toContain('99214');
+    expect(result.content[0].text).toContain('DocumentReference');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(80);
+    expect((service as any).mcpControllers.length).toBe(81);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

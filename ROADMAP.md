@@ -30,7 +30,7 @@ Pocket Gull is committed to continuous refinement (**Kaizen**) in integrative cl
 - [x] **SMART-on-FHIR Embedded Launch**: Certified SMART-on-FHIR launch hooks for Epic MyChart, Oracle Cerner, and AthenaHealth.
 - [x] **WebGPU Real-Time Organ Digital Twin**: 3D biophysical digital twin models of organ stress, vascular perfusion, and metabolic flux in WebGPU.
 - [x] **Actuarial Risk & ACO Shared Savings Engine**: Real-time ACO shared savings, risk adjustment factor (RAF) scores, HEDIS Star ratings, Da Vinci Prior Auth, and IRMAA/SSA-44 appeal calculations.
-- [ ] **Ambient Multimodal Clinical Scribe**: Multi-speaker real-time ambient conversation transcription into structured SOAP notes with automated ICD-10/CPT crosswalking.
+- [x] **Ambient Multimodal Clinical Scribe**: Multi-speaker real-time ambient conversation transcription into structured SOAP notes with automated ICD-10/CPT crosswalking.
 - [ ] **Decoupled Enterprise Core SDK**: Versioned `@pocketgull/core-sdk` npm package for hospital networks and research institutes.
 
 ---

@@ -58,6 +58,7 @@ import { SocraticEvidenceLiteracyService } from './socratic-evidence-literacy.se
 import { WebBluetoothTelemetryService } from './hardware/web-bluetooth-telemetry.service';
 import { PharmacogenomicsService } from './pharmacogenomics.service';
 import { BrandPackageGeneratorService } from './brand-package-generator.service';
+import { SoapNoteGeneratorService } from './soap-note-generator.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -122,6 +123,7 @@ export class WebMcpRegistrationService {
   private bleService = inject(WebBluetoothTelemetryService, { optional: true });
   private pgxService = inject(PharmacogenomicsService, { optional: true });
   private brandPackageService = inject(BrandPackageGeneratorService, { optional: true });
+  private soapService = inject(SoapNoteGeneratorService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -3149,6 +3151,82 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(crosswalkTool, { signal: crosswalkCtrl.signal });
     this.mcpControllers.push({ name: crosswalkTool.name, controller: crosswalkCtrl });
+
+    // Tool #81: generate_ambient_clinical_soap_note_and_diarize
+    const ambientScribeCtrl = new AbortController();
+    const ambientScribeTool = {
+      name: 'generate_ambient_clinical_soap_note_and_diarize',
+      description: 'Generates real-time multi-speaker diarized clinical dialogue transcripts, synthesizes structured SOAP progress notes (USCDI v4 / LOINC 11506-3), and auto-crosswalks diagnoses to ICD-10-CM, SNOMED-CT, CPT-4, and CMS-HCC V28 risk scores.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          scenarioId: {
+            type: 'string',
+            description: 'Optional clinical scenario to simulate (e.g. "cardiometabolic", "heart_failure", "cognitive_decline", "sdoh_preventive").'
+          },
+          dialogueTurns: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                speaker: { type: 'string', enum: ['CLINICIAN', 'PATIENT', 'CAREGIVER'] },
+                speakerName: { type: 'string' },
+                text: { type: 'string' }
+              },
+              required: ['speaker', 'speakerName', 'text']
+            },
+            description: 'Array of custom multi-speaker dialogue turns to diarize and transcribe.'
+          },
+          patientName: {
+            type: 'string',
+            description: 'Optional patient name.'
+          }
+        }
+      },
+      execute: async (params: any) => {
+        const scribe = this.soapService || new SoapNoteGeneratorService();
+        if (params?.scenarioId) {
+          scribe.loadScenario(params.scenarioId);
+        } else if (params?.dialogueTurns && Array.isArray(params.dialogueTurns)) {
+          scribe.clearSession();
+          for (const turn of params.dialogueTurns) {
+            scribe.addTurn(turn.speaker, turn.speakerName, turn.text);
+          }
+        }
+
+        const raw = scribe.rawSoapNote();
+        const report = scribe.codingAuditReport();
+        const fhirBundle = scribe.generateFhirR4DocumentReference();
+
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              status: 'success',
+              scenario: scribe.selectedScenarioId(),
+              turnCount: scribe.totalTurns(),
+              dialogueDiarization: scribe.diarizedTurns(),
+              soapNote: {
+                subjective: raw.subjective,
+                objective: raw.objective,
+                assessment: raw.assessment,
+                plan: raw.plan
+              },
+              codingCrosswalk: {
+                recommendedEmCode: report?.mdmAudit?.emLevel || '99214',
+                mdmComplexity: report?.mdmAudit?.mdmLevel || 'MODERATE',
+                totalWorkRvu: report?.totalWorkRvu || 2.80,
+                estimatedMedicareReimbursement: report?.totalEstimatedReimbursement || 114.20,
+                detectedCodings: report?.suggestions || []
+              },
+              fhirR4DocumentReference: JSON.parse(fhirBundle)
+            }, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(ambientScribeTool, { signal: ambientScribeCtrl.signal });
+    this.mcpControllers.push({ name: ambientScribeTool.name, controller: ambientScribeCtrl });
   }
 
   /**
