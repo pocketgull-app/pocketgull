@@ -58,6 +58,73 @@ export function createBillingRouter() {
     }
   });
 
+  // Physical Fine Art Wall Art Print Stripe Checkout (One-time Payment with Shipping)
+  router.post('/art-checkout', limiter, express.json(), async (req, res) => {
+    try {
+      const { artId, artTitle, sku, size, frame, priceUsd, imageFileName, customerEmail } = req.body || {};
+
+      if (!artTitle || !priceUsd) {
+        return res.status(400).json({ error: 'Artwork title and priceUsd are required.' });
+      }
+
+      const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
+      const priceInCents = Math.round(Number(priceUsd) * 100);
+      const imageUrl = imageFileName && imageFileName.startsWith('http') ? imageFileName : `${origin}${imageFileName || '/assets/veo-frames/paper/scene3_biophysical_twin.jpg'}`;
+
+      // Check if Stripe key is in test/placeholder mode
+      if (!process.env['STRIPE_SECRET_KEY'] || process.env['STRIPE_SECRET_KEY'] === 'sk_test_placeholder') {
+        return res.json({
+          url: `${origin}/store?order=mock_success&art=${encodeURIComponent(artTitle)}&amount=${priceUsd}&sku=${sku || 'PG-ART'}&frame=${encodeURIComponent(frame || 'unframed')}`,
+          mode: 'mock_demo',
+          message: 'Stripe demo mode: mock checkout session created successfully.'
+        });
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: `PocketGull Fine Art: ${artTitle}`,
+                description: `Museum-Grade Archival Cotton Rag Giclée Print (${size || '18x24 in'} · ${frame || 'Unframed'})`,
+                images: [imageUrl],
+                metadata: {
+                  art_id: artId || 'art-001',
+                  sku: sku || 'PG-ART-001',
+                  size: size || '18x24',
+                  frame: frame || 'unframed'
+                }
+              },
+              unit_amount: priceInCents,
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        shipping_address_collection: {
+          allowed_countries: ['US', 'CA', 'GB', 'AU', 'DE', 'FR', 'IT', 'ES', 'NL', 'SE', 'CH', 'JP', 'NZ'],
+        },
+        success_url: `${origin}/store?checkout=success&session_id={CHECKOUT_SESSION_ID}&art=${encodeURIComponent(artTitle)}`,
+        cancel_url: `${origin}/store?checkout=canceled`,
+        customer_email: customerEmail,
+        metadata: {
+          product_type: 'fine_art_print',
+          art_id: artId || 'art-001',
+          sku: sku || 'PG-ART-001',
+          size: size || '18x24',
+          frame: frame || 'unframed',
+          archival_substrate: '100% Cotton Rag Giclée 310gsm'
+        }
+      });
+
+      res.json({ url: session.url, sessionId: session.id });
+    } catch (err: any) {
+      console.error('[Billing] Error creating fine art checkout session:', err.message);
+      res.status(500).json({ error: 'Failed to create fine art checkout session' });
+    }
+  });
+
   router.post('/portal', limiter, express.json(), async (req, res) => {
     try {
       const { customerEmail } = req.body || {};
