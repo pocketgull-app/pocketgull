@@ -51,6 +51,7 @@ import { Section504AccommodationService } from './section-504-accommodation.serv
 import { ClinicalSteeringCommitteeDossierService } from './clinical-steering-committee-dossier.service';
 import { ClinicalGraphQLService } from './clinical-graphql.service';
 import { ClinicalContextModeService } from './clinical-context-mode.service';
+import { AcademicCitationService } from './academic-citation.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -108,6 +109,7 @@ export class WebMcpRegistrationService {
   private cscDossierService = inject(ClinicalSteeringCommitteeDossierService, { optional: true });
   private graphqlService = inject(ClinicalGraphQLService, { optional: true });
   private contextModeService = inject(ClinicalContextModeService, { optional: true });
+  private citationService = inject(AcademicCitationService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2733,6 +2735,35 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(modeTool, { signal: modeCtrl.signal });
     this.mcpControllers.push({ name: modeTool.name, controller: modeCtrl });
+
+    // 71. Generate Academic Citation Dossier
+    const citeCtrl = new AbortController();
+    const citeTool = {
+      name: 'generate_academic_citation_dossier',
+      description: 'Generates comprehensive AMA, BibTeX, and RIS academic citations and evidence dossiers for any clinical recommendation, legal 504 statute, biophysical codex, or UI component.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          queryTopic: {
+            type: 'string',
+            description: 'The medical condition, component name, legal statute, or clinical keyword to cite (e.g., "Section504FolioComponent", "Type 1 Diabetes", "FDA 520o", "SIBI").'
+          }
+        },
+        required: ['queryTopic']
+      },
+      execute: async (params: any) => {
+        const svc = this.citationService || new AcademicCitationService();
+        const dossier = svc.exportCitationDossier(params?.queryTopic || 'all');
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(dossier, null, 2)
+          }]
+        };
+      }
+    };
+    modelContext.registerTool(citeTool, { signal: citeCtrl.signal });
+    this.mcpControllers.push({ name: citeTool.name, controller: citeCtrl });
   }
 
   /**

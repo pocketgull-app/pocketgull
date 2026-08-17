@@ -4,13 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { ClinicalTrialMatcherService, IClinicalTrialMatch, IEligibilityAssessment } from '../services/clinical-trial-matcher.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
-import { PocketGullBadgeComponent } from './shared/pocket-gull-badge.component';
-import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
-
 @Component({
   selector: 'app-clinical-trial-arena',
   standalone: true,
-  imports: [CommonModule, FormsModule, PocketGullBadgeComponent, PocketGullButtonComponent],
+  imports: [CommonModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-6 bg-slate-900 border border-slate-800 rounded-3xl text-slate-100 space-y-6 shadow-2xl">
