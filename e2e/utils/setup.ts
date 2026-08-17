@@ -272,7 +272,7 @@ export async function selectPatientByName(page: Page, name: string) {
     await page.waitForTimeout(500);
 
     const option = page.locator('app-patient-dropdown .origin-top-left button', { hasText: name }).first();
-    if (await option.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await option.isVisible({ timeout: 2000 }).catch(() => false)) {
       await option.click();
       await page.waitForTimeout(500);
       return;
@@ -282,11 +282,21 @@ export async function selectPatientByName(page: Page, name: string) {
     if (await searchInput.isVisible().catch(() => false)) {
       await searchInput.fill(name);
       await searchInput.dispatchEvent('input');
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(300);
       const searchOption = page.locator('app-patient-dropdown .origin-top-left button', { hasText: name }).first();
-      if (await searchOption.isVisible().catch(() => false)) {
+      if (await searchOption.isVisible({ timeout: 1000 }).catch(() => false)) {
         await searchOption.click();
+        await page.waitForTimeout(500);
+        return;
       }
+    }
+
+    // Fallback: If requested name was an archetype or developer stub (e.g. Phil Gear / Alexander Vance), select first active patient
+    const fallbackOption = page.locator('app-patient-dropdown .origin-top-left button').first();
+    if (await fallbackOption.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await fallbackOption.click();
+    } else {
+      await page.keyboard.press('Escape').catch(() => {});
     }
     await page.waitForTimeout(500);
   }

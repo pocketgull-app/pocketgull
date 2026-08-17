@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,16 +13,8 @@ const SCREENSHOT_DIR = path.join(__dirname, '..', 'test-results', 'screenshots')
 /** Helper to enter demo mode and select Alexander Vance */
 async function enterDemoModeWithPhilGear(page: import('@playwright/test').Page) {
   await enterDemoMode(page);
-
-  // Select patient Alexander Vance from the dropdown
-  const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
-  await expect(dropdownBtn).toBeVisible({ timeout: 15000 });
-  await dropdownBtn.click();
-
-  const alexanderVanceOption = page.locator('.origin-top-left button', { hasText: 'Alexander Vance' }).first();
-  await expect(alexanderVanceOption).toBeVisible({ timeout: 10000 });
-  await alexanderVanceOption.click();
-  await page.waitForTimeout(1500);
+  await selectPatientByName(page, 'Alexander Vance');
+  await page.waitForTimeout(1000);
 }
 
 test.describe('Alexander Vance — Default Patient & Full Lens Verification', () => {

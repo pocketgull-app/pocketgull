@@ -1,33 +1,10 @@
 import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-/** Helper to select a patient by name from the dropdown */
-async function selectPatientByName(page: import('@playwright/test').Page, name: string) {
-  // Click patient dropdown
-  const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
-  await expect(dropdownBtn).toBeVisible({ timeout: 15000 });
-  await dropdownBtn.click();
-  await page.waitForTimeout(500);
-
-  const option = page.locator('app-patient-dropdown button', { hasText: name }).first();
-  if (await option.isVisible({ timeout: 3000 }).catch(() => false)) {
-    await option.click();
-  } else {
-    const searchInput = page.locator('app-patient-dropdown input[placeholder*="Search"]');
-    if (await searchInput.isVisible().catch(() => false)) {
-      await searchInput.fill(name);
-      await searchInput.dispatchEvent('input');
-      await page.waitForTimeout(300);
-      await page.locator('app-patient-dropdown button', { hasText: name }).first().click();
-    }
-  }
-  await page.waitForTimeout(500);
-}
 
 test.describe('Clinical Risk Alerts UI Transitions', () => {
   test.beforeEach(async ({ page }) => {
