@@ -305,6 +305,16 @@ export function renderBusinessSiteHtml(): string {
       <!-- Living Circadian Breathing Sun Glow (Teal to Amber to Coral) -->
       <div class="absolute top-[5%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] sm:w-[950px] sm:h-[950px] rounded-full paper-sun-glow pointer-events-none opacity-40 animate-pulse-slow z-0"></div>
 
+      <!-- Cute & Clean Paper-Art Backdrop: Origami Seagull & Pastel Vagal Waves -->
+      <div class="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-25 overflow-hidden">
+        <img 
+          src="/assets/art/origami_seagull_vagal_waves.png" 
+          alt="Origami Gull & Vagal Wave Art" 
+          class="w-full max-w-6xl h-auto object-cover object-center transform scale-105 animate-pulse-slow"
+          style="mask-image: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.25) 60%, transparent 85%); -webkit-mask-image: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.25) 60%, transparent 85%);"
+        />
+      </div>
+
       <!-- Gliding Origami Seagull Silhouettes -->
       <div class="absolute top-8 left-0 w-full pointer-events-none overflow-hidden z-10 hidden sm:block">
         <div class="animate-bird-glide text-amber-300/40 w-10 h-10">
@@ -1297,8 +1307,17 @@ export function renderBusinessSiteHtml(): string {
     </section>
 
     <!-- ══ SECTION: DIETER RAMS MODEL MC-10 LAZY SUSAN STORY CAROUSEL ═══════ -->
-    <section id="digital-twin" class="py-24 px-4 sm:px-6 border-t border-zinc-200 bg-white">
-      <div class="max-w-7xl mx-auto space-y-12">
+    <section id="digital-twin" class="py-24 px-4 sm:px-6 border-t border-zinc-200 bg-white relative overflow-hidden">
+      
+      <!-- Cute Handcrafted Paper Quilling Ambient Flank Layers -->
+      <div class="absolute -right-20 top-16 w-80 h-96 pointer-events-none z-0 opacity-20 hidden lg:block overflow-hidden rounded-3xl">
+        <img src="/assets/art/quilling_mitochondria_vert.jpg" alt="Paper Quilling Organelle" class="w-full h-full object-cover animate-pulse-slow" style="mask-image: radial-gradient(circle at center, black 40%, transparent 80%); -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);" />
+      </div>
+      <div class="absolute -left-20 bottom-16 w-80 h-96 pointer-events-none z-0 opacity-20 hidden lg:block overflow-hidden rounded-3xl">
+        <img src="/assets/art/quilling_organelle_cell.jpg" alt="Paper Quilling Cell" class="w-full h-full object-cover animate-pulse-slow" style="mask-image: radial-gradient(circle at center, black 40%, transparent 80%); -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);" />
+      </div>
+
+      <div class="max-w-7xl mx-auto space-y-12 relative z-10">
         
         <div class="text-center space-y-4">
           <div class="inline-flex items-center gap-2 text-xs font-mono-code text-amber-800 uppercase tracking-widest px-4 py-1.5 rounded-full bg-amber-50 border border-amber-300 shadow-xs">
@@ -2239,6 +2258,16 @@ export function renderBusinessSiteHtml(): string {
         </div>
       </div>
     </section>
+
+    <!-- Cute & Clean Papercut Beach & Lighthouse Horizon Transition -->
+    <div class="w-full h-32 sm:h-44 overflow-hidden relative opacity-70 pointer-events-none -mb-1 bg-[#f7f7f3]">
+      <img 
+        src="/assets/art/papercut_beach_lighthouse.png" 
+        alt="Papercut Coastal Dunes & Lighthouse Horizon" 
+        class="w-full h-full object-cover object-bottom" 
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
+    </div>
 
   </main>
 
