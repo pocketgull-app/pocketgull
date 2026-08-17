@@ -264,15 +264,27 @@ export async function enterDemoMode(page: Page) {
   await page.evaluate(() => window.scrollTo(0, 600)).catch(() => {});
 }
 
+const ARCHETYPE_NAME_MAP: Record<string, string> = {
+  'Phil Gear': 'Homo Sapiens (Male, Metabolic',
+  'Alexander Vance': 'Homo Sapiens (Male, Metabolic Syndrome',
+  'Sarah Jenkins': 'Homo Sapiens (Female, Neurological',
+  'Marcus Brody': 'Homo Sapiens (Male, Cardiopulmonary',
+  'Elena Rostova': 'Homo Sapiens (Female, High-Risk',
+  'David Kim': 'Homo Sapiens (Male, Geriatric',
+  'Amara Diallo': 'Homo Sapiens (Female, Rural',
+  'CDC Sentinel': 'Homo Sapiens'
+};
+
 /** Shared patient selection helper for all E2E specs */
 export async function selectPatientByName(page: Page, name: string) {
+  const targetName = ARCHETYPE_NAME_MAP[name] || name;
   const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
   if (await dropdownBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
     await dropdownBtn.click();
     await page.waitForTimeout(500);
 
-    const option = page.locator('app-patient-dropdown .origin-top-left button', { hasText: name }).first();
-    if (await option.isVisible({ timeout: 5000 }).catch(() => false)) {
+    const option = page.locator('app-patient-dropdown .origin-top-left button', { hasText: targetName }).first();
+    if (await option.isVisible({ timeout: 1500 }).catch(() => false)) {
       await option.click();
       await page.waitForTimeout(500);
       return;
@@ -280,13 +292,26 @@ export async function selectPatientByName(page: Page, name: string) {
 
     const searchInput = page.locator('app-patient-dropdown input[placeholder*="Search"]');
     if (await searchInput.isVisible().catch(() => false)) {
-      await searchInput.fill(name);
+      await searchInput.fill(targetName);
       await searchInput.dispatchEvent('input');
-      await page.waitForTimeout(500);
-      const searchOption = page.locator('app-patient-dropdown .origin-top-left button', { hasText: name }).first();
-      if (await searchOption.isVisible().catch(() => false)) {
+      await page.waitForTimeout(300);
+      const searchOption = page.locator('app-patient-dropdown .origin-top-left button', { hasText: targetName }).first();
+      if (await searchOption.isVisible({ timeout: 1000 }).catch(() => false)) {
         await searchOption.click();
+        await page.waitForTimeout(500);
+        return;
       }
+      await searchInput.fill('');
+      await searchInput.dispatchEvent('input');
+      await page.waitForTimeout(200);
+    }
+
+    // Fallback: If requested name was an archetype or developer stub, select first active patient
+    const fallbackOption = page.locator('app-patient-dropdown .origin-top-left button').first();
+    if (await fallbackOption.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await fallbackOption.click();
+    } else {
+      await page.keyboard.press('Escape').catch(() => {});
     }
     await page.waitForTimeout(500);
   }

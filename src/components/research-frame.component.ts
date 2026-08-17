@@ -9,6 +9,7 @@ import { IBookmark } from '../services/patient.types';
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { PatientEducationFlipDirective, IPatientEducationFlipData } from '../directives/patient-education-flip.directive';
+import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
   id: string;
@@ -868,7 +869,9 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   saveResultToActiveRoomNotes(res: IPubMedSearchResult) {
-    const cleanTitle = (res.title || '').replace(/<[^>]*>?/gm, '').trim();
+    const hasOwnDefault = Object.prototype.hasOwnProperty.call(DOMPurify, 'default');
+    const purify = (hasOwnDefault ? (DOMPurify as any).default : DOMPurify) as { sanitize: (val: string, opts?: any) => string };
+    const cleanTitle = purify.sanitize(res.title || '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
     const takeaway = res.bottomLineTakeaway || 'Clinical evidence supports therapeutic benefit.';
     const text = `🔬 [Literature Finding]: ${cleanTitle}\n💡 Takeaway: ${takeaway}\n(Source: ${res.source || 'PubMed'}, DOI: ${res.doi || 'N/A'})`;
     
@@ -884,7 +887,9 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   saveResultToActiveRoomTask(res: IPubMedSearchResult) {
-    const cleanTitle = (res.title || '').replace(/<[^>]*>?/gm, '').trim();
+    const hasOwnDefault = Object.prototype.hasOwnProperty.call(DOMPurify, 'default');
+    const purify = (hasOwnDefault ? (DOMPurify as any).default : DOMPurify) as { sanitize: (val: string, opts?: any) => string };
+    const cleanTitle = purify.sanitize(res.title || '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
     const text = `Review ${res.source || 'PubMed'} evidence: ${cleanTitle.substring(0, 85)}...`;
     
     this.patientState.checklist.update(items => [

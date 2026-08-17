@@ -15,6 +15,13 @@ export interface ApiKeyDocument {
   status: 'active' | 'revoked';
 }
 
+const KEY_SALT = process.env['API_KEY_SALT'] || 'pocketgull_clinical_api_key_salt_2026';
+
+function hashApiKey(rawKey: string): string {
+  // Use PBKDF2 with 100,000 iterations and SHA-512 to satisfy CodeQL cryptographically strong hashing requirements
+  return crypto.pbkdf2Sync(rawKey, KEY_SALT, 100000, 64, 'sha512').toString('hex');
+}
+
 export class ApiKeyService {
   private collection = db.collection('api_keys');
 
@@ -24,7 +31,7 @@ export class ApiKeyService {
    */
   async generateKey(tenantId: string, name: string): Promise<{ rawKey: string; keyId: string }> {
     const rawKey = 'sk_live_' + crypto.randomBytes(32).toString('base64url');
-    const keyHash = crypto.createHash('sha256').update(rawKey).digest('hex');
+    const keyHash = hashApiKey(rawKey);
     const prefix = rawKey.substring(0, 16) + '...';
 
     const docRef = this.collection.doc();
@@ -49,7 +56,7 @@ export class ApiKeyService {
   async validateKey(rawKey: string): Promise<string | null> {
     if (!rawKey || !rawKey.startsWith('sk_live_')) return null;
 
-    const keyHash = crypto.createHash('sha256').update(rawKey).digest('hex');
+    const keyHash = hashApiKey(rawKey);
     const snapshot = await this.collection
       .where('keyHash', '==', keyHash)
       .where('status', '==', 'active')

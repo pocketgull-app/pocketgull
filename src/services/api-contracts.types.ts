@@ -1,7 +1,7 @@
 /**
  * Pocket Gull — Auto-Generated API Contract Interfaces
  * Source: pocketgull_api/openapi.yaml
- * Generated at: 2026-08-09T06:03:04.293Z
+ * Generated at: 2026-08-17T22:43:32.615Z
  * DO NOT MANUALLY EDIT THIS FILE DIRECTLY.
  */
 

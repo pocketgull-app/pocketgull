@@ -1,22 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import '@angular/compiler';
 import { BrandPackageGeneratorComponent } from './brand-package-generator.component';
-import { BrandPackageGeneratorService } from '../services/brand-package-generator.service';
 
 describe('BrandPackageGeneratorComponent', () => {
   let component: BrandPackageGeneratorComponent;
-  let fixture: ComponentFixture<BrandPackageGeneratorComponent>;
-  let service: BrandPackageGeneratorService;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [BrandPackageGeneratorComponent],
-      providers: [BrandPackageGeneratorService]
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(BrandPackageGeneratorComponent);
-    component = fixture.componentInstance;
-    service = TestBed.inject(BrandPackageGeneratorService);
-    fixture.detectChanges();
+  beforeEach(() => {
+    component = new BrandPackageGeneratorComponent();
+    component.ngOnInit();
   });
 
   it('should create and initialize default brand package', () => {

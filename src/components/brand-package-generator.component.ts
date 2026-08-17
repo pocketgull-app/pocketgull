@@ -302,8 +302,8 @@ import { BrandPackageGeneratorService, IBrandPackage, IBrandColorToken, IBrandAs
   `
 })
 export class BrandPackageGeneratorComponent implements OnInit {
-  protected readonly brandService = inject(BrandPackageGeneratorService);
-  private readonly sanitizer = inject(DomSanitizer);
+  protected brandService: BrandPackageGeneratorService;
+  private sanitizer: DomSanitizer;
 
   readonly brandName = signal<string>('PocketGull Sanctuary');
   readonly industry = signal<string>('Clinical Decision Support & Art Therapy');
@@ -311,6 +311,23 @@ export class BrandPackageGeneratorComponent implements OnInit {
   readonly customColorHex = signal<string>('#EA580C');
   readonly activeTab = signal<'preview' | 'palette' | 'tokens'>('preview');
   readonly copied = signal<boolean>(false);
+
+  constructor() {
+    try {
+      this.brandService = inject(BrandPackageGeneratorService, { optional: true }) ?? new BrandPackageGeneratorService();
+    } catch {
+      this.brandService = new BrandPackageGeneratorService();
+    }
+    try {
+      this.sanitizer = inject(DomSanitizer, { optional: true }) ?? ({
+        bypassSecurityTrustHtml: (val: string) => val
+      } as unknown as DomSanitizer);
+    } catch {
+      this.sanitizer = {
+        bypassSecurityTrustHtml: (val: string) => val
+      } as unknown as DomSanitizer;
+    }
+  }
 
   readonly archetypes: Array<{ name: IBrandPackage['archetype']; icon: string; desc: string; color: string }> = [
     { name: 'The Navigator', icon: '🧭', desc: 'Triage scoring & clarity', color: '#D4A373' },

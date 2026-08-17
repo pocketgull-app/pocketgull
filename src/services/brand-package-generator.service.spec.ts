@@ -1,14 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import '@angular/compiler';
 import { BrandPackageGeneratorService, IBrandGenerationRequest } from './brand-package-generator.service';
 
 describe('BrandPackageGeneratorService (Google SWE Book & Zero-Waste Architecture)', () => {
   let service: BrandPackageGeneratorService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [BrandPackageGeneratorService]
-    });
-    service = TestBed.inject(BrandPackageGeneratorService);
+    service = new BrandPackageGeneratorService();
   });
 
   it('should initialize with null active package and empty error', () => {

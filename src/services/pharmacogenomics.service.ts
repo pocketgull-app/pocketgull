@@ -36,8 +36,8 @@ export interface IPharmacogenomicProfile {
   providedIn: 'root'
 })
 export class PharmacogenomicsService {
-  private state = (() => { try { return inject(PatientStateService); } catch (e) { return null; } })();
-  private storage = (() => { try { return inject(SecureStorageService); } catch (e) { return null; } })();
+  private state: PatientStateService | null = null;
+  private storage: SecureStorageService | null = null;
 
   readonly activeProfile = signal<IPharmacogenomicProfile | null>(null);
   readonly selectedConcomitantInhibitors = signal<string[]>([]);
@@ -55,8 +55,19 @@ export class PharmacogenomicsService {
   });
 
   constructor() {
+    try {
+      this.state = inject(PatientStateService, { optional: true });
+    } catch {
+      this.state = null;
+    }
+    try {
+      this.storage = inject(SecureStorageService, { optional: true });
+    } catch {
+      this.storage = null;
+    }
     this.initDefaultProfile();
   }
+
 
   public initDefaultProfile(): IPharmacogenomicProfile {
     const defaultVariants: ICypVariant[] = [

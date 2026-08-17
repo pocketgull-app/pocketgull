@@ -1045,21 +1045,24 @@ import { SecureStorageService } from '../services/secure-storage.service';
     }
 
     @keyframes bird-glide {
-      0% { left: -10%; transform: translate(0, 0) scaleX(1); }
-      50% { left: 110%; transform: translate(0, -30px) scaleX(1); }
-      51% { left: 110%; transform: translate(0, -30px) scaleX(-1); }
-      100% { left: -10%; transform: translate(0, 0) scaleX(-1); }
+      0% { transform: translate3d(-10vw, 0, 0) scale3d(1, 1, 1); }
+      50% { transform: translate3d(110vw, -30px, 0) scale3d(1, 1, 1); }
+      51% { transform: translate3d(110vw, -30px, 0) scale3d(-1, 1, 1); }
+      100% { transform: translate3d(-10vw, 0, 0) scale3d(-1, 1, 1); }
     }
     .animate-bird-glide {
+      will-change: transform;
       animation: bird-glide 24s linear infinite;
     }
 
     /* Breezy Sand Gust Particles */
     .sand-breeze-particle {
       position: absolute;
+      left: 0;
       background: rgba(255, 235, 205, 0.4);
       border-radius: 9999px;
       height: 2px;
+      will-change: transform, opacity;
       animation: breezy-sand linear infinite;
       box-shadow: 0 0 6px rgba(255, 248, 220, 0.5);
     }
@@ -1070,11 +1073,12 @@ import { SecureStorageService } from '../services/secure-storage.service';
     .sand-breeze-particle.p5 { top: 35%; width: 75px; animation-duration: 5.2s; animation-delay: 3s; }
 
     @keyframes breezy-sand {
-      0% { left: -20%; opacity: 0; transform: translateY(0) scaleX(0.5); }
+      0% { opacity: 0; transform: translate3d(-20vw, 0, 0) scale3d(0.5, 1, 1); }
       20% { opacity: 0.8; }
       80% { opacity: 0.6; }
-      100% { left: 120%; opacity: 0; transform: translateY(-15px) scaleX(1.5); }
+      100% { opacity: 0; transform: translate3d(120vw, -15px, 0) scale3d(1.5, 1, 1); }
     }
+
 
     /* ─── 7-Second Origami Unfolding & Glowing Heart Sequence ─── */
     .origami-unfold-container {

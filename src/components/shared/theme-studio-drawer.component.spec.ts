@@ -1,51 +1,35 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
-import { Injector, runInInjectionContext, PLATFORM_ID } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { ThemeStudioDrawerComponent } from './theme-studio-drawer.component';
 import { ThemeService } from '../../services/theme.service';
 
-vi.mock('@angular/core', async (importOriginal) => {
-  const original = await importOriginal<any>();
-  return {
-    ...original,
-    effect: () => {
-      return {
-        destroy: () => {}
-      };
-    }
-  };
-});
-
 describe('ThemeStudioDrawerComponent', () => {
+  let component: ThemeStudioDrawerComponent;
 
-  const createStudio = () => {
-    const injector = Injector.create({
-      providers: [
-        { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: ThemeService, useFactory: () => new ThemeService() }
-      ]
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [ThemeStudioDrawerComponent],
+      providers: [ThemeService]
     });
-    return runInInjectionContext(injector, () => new ThemeStudioDrawerComponent());
-  };
+    const fixture = TestBed.createComponent(ThemeStudioDrawerComponent);
+    component = fixture.componentInstance;
+  });
 
   it('should initialize theme options and categories', () => {
-    const studio = createStudio();
-    expect(studio).toBeTruthy();
-    expect(studio.categories.length).toBe(4);
-    expect(studio.themeOptions.length).toBe(14);
+    expect(component).toBeTruthy();
+    expect(component.categories.length).toBe(4);
+    expect(component.themeOptions.length).toBe(14);
   });
 
   it('should filter themes by category cleanly', () => {
-    const studio = createStudio();
-    const clinical = studio.getThemesByCategory('Clinical');
+    const clinical = component.getThemesByCategory('Clinical');
     expect(clinical.length).toBe(3);
     expect(clinical.some(t => t.id === 'light')).toBe(true);
   });
 
   it('should cycle primary themes correctly on fast cycle', () => {
-    const studio = createStudio();
-    studio.themeService.currentTheme.set('light');
-    studio.cyclePrimaryTheme();
-    expect(studio.themeService.currentTheme()).toBe('dark');
+    component.themeService.currentTheme.set('light');
+    component.cyclePrimaryTheme();
+    expect(component.themeService.currentTheme()).toBe('dark');
   });
 });
