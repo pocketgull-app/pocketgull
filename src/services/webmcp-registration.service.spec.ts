@@ -199,10 +199,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 81 WebMCP agentic tools on modelContext', () => {
+  it('should register all 83 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(81);
+    expect(registeredTools.size).toBe(83);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -630,10 +630,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 81 WebMCP agentic tools on modelContext', () => {
+  it('should register all 83 WebMCP agentic tools on modelContext (secondary suite)', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(81);
+    expect(registeredTools.size).toBe(83);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -1104,9 +1104,46 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('DocumentReference');
   });
 
+  it('should register tool #82: evaluate_postpartum_maternal_epds_and_doula_protocol', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_postpartum_maternal_epds_and_doula_protocol');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      patientId: 'p_maternal_test',
+      daysPostpartum: 14,
+      vitals: { systolicBp: 162, diastolicBp: 110, heartRate: 85, spO2Percent: 98, symptoms: { severeHeadacheUnrelievedByMeds: true } },
+      epdsResponses: [1, 0, 1, 1, 0, 1, 0, 0, 0, 0],
+      latchInput: { latch: 2, audibleSwallowing: 2, typeOfNipple: 2, comfort: 2, hold: 2 },
+      infantCircadian: { dailyFeedingCount: 9, longestSleepStretchHours: 4, nightWakeningCount: 2, maternalSleepHours: 6.5 }
+    });
+
+    expect(result.content[0].text).toContain('4th-Trimester Maternal & Doula Companion Protocol');
+    expect(result.content[0].text).toContain('CRITICAL_EMERGENCY');
+    expect(result.content[0].text).toContain('Magnesium Sulfate');
+    expect(result.content[0].text).toContain('Observation');
+  });
+
+  it('should register tool #83: execute_offline_local_gemma_clinical_inference', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('execute_offline_local_gemma_clinical_inference');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      prompt: 'Emergency preeclampsia protocol with BP 162/110',
+      modelId: 'gemma-3-2b',
+      clinicalDomain: 'maternal_preeclampsia'
+    });
+
+    expect(result.content[0].text).toContain('100% Offline Air-Gapped Local Gemma 3 WebGPU Engine');
+    expect(result.content[0].text).toContain('gemma-3-2b');
+    expect(result.content[0].text).toContain('zeroNetworkEgressVerified');
+    expect(result.content[0].text).toContain('Labetalol');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(81);
+    expect((service as any).mcpControllers.length).toBe(83);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
