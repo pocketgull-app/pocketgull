@@ -24,12 +24,18 @@ import { CommonModule } from '@angular/common';
         </div>
 
         <div class="flex items-center gap-2">
-          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            Two-Headed Hydra (Gemini 3.6 Flash + PubGemma 27B) Active
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800 flex items-center gap-1.5 font-mono">
+            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+            Tier 2 Observational CDS Simulation
           </span>
         </div>
       </header>
+
+      <!-- FDA CDS Level 3 Non-Device Disclaimer -->
+      <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-[11px] font-mono flex items-center gap-2">
+        <span class="text-sm shrink-0">🛡️</span>
+        <span><strong>RESEARCH SIMULATION NOTICE:</strong> This sleep twin model generates simulated counterfactual trajectories for educational & clinical decision support exploration. Not a diagnostic medical device; all conformal bounds require independent clinician evaluation.</span>
+      </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
@@ -99,7 +105,7 @@ import { CommonModule } from '@angular/common';
             <!-- Decoupled Risk Gauge Card -->
             <div class="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm flex flex-col justify-center items-center relative overflow-hidden">
               <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500"></div>
-              <h3 class="text-xs font-medium text-slate-500 dark:text-zinc-400 mb-2">Predicted Cognitive Impairment Risk</h3>
+              <h3 class="text-xs font-medium text-slate-500 dark:text-zinc-400 mb-2">Simulated Cognitive Trajectory Risk (Research Model)</h3>
               <div class="flex items-baseline space-x-1">
                 <span [class]="riskScoreColorClass()" class="text-5xl font-black transition-colors duration-300 font-mono">
                   {{ riskScore() }}

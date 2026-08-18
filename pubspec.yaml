@@ -4,8 +4,6 @@ environment:
 
 workspace:
   - pocketgull_flutter
-  - companion-apps/patient_app
-  - companion-apps/provider_app
 
 dev_dependencies:
   melos: ^8.0.0

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { BiomarkerMatrixComponent } from './biomarker-matrix.component';
@@ -10,8 +10,9 @@ import { AndroscogginForagingPhytoncideComponent } from './androscoggin-foraging
 import { VagalBiofeedbackDockComponent } from './vagal-biofeedback-dock.component';
 import { KaggleChallengeCardComponent } from './kaggle-challenge-card.component';
 import { ProviderTreatmentNetworkComponent } from './provider-treatment-network.component';
+import { MedicalSupplyNavigatorComponent } from './medical-supply-navigator.component';
 
-export type DrilldownTarget = 'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'foraging' | 'vagal' | 'kaggle' | 'network' | null;
+export type DrilldownTarget = 'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'foraging' | 'vagal' | 'kaggle' | 'network' | 'supplies' | null;
 export type DrilldownLens = 'evidence' | 'biophysics' | 'epigenetic';
 
 @Component({
@@ -27,7 +28,8 @@ export type DrilldownLens = 'evidence' | 'biophysics' | 'epigenetic';
     AndroscogginForagingPhytoncideComponent,
     VagalBiofeedbackDockComponent,
     KaggleChallengeCardComponent,
-    ProviderTreatmentNetworkComponent
+    ProviderTreatmentNetworkComponent,
+    MedicalSupplyNavigatorComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -149,6 +151,9 @@ export type DrilldownLens = 'evidence' | 'biophysics' | 'epigenetic';
               @case ('network') {
                 <app-provider-treatment-network></app-provider-treatment-network>
               }
+              @case ('supplies') {
+                <app-medical-supply-navigator></app-medical-supply-navigator>
+              }
             }
           </div>
         </div>
@@ -161,6 +166,16 @@ export class ComponentDrilldownUnitComponent {
   readonly activeLens = signal<DrilldownLens>('evidence');
 
   private patientState = inject(PatientStateService);
+
+  constructor() {
+    // Reactively open when patientState.activeDrilldownComponent changes
+    effect(() => {
+      const ext = this.patientState.activeDrilldownComponent();
+      if (ext) {
+        this.open(ext as DrilldownTarget);
+      }
+    });
+  }
 
   readonly patientName = computed(() => this.patientState.patientName() || 'Patient');
 
@@ -175,6 +190,7 @@ export class ComponentDrilldownUnitComponent {
       case 'vagal': return 'Vagal RSA Biofeedback & Entrainment Dock';
       case 'kaggle': return 'Kaggle & PhysioNet 2026 Submission Suite';
       case 'network': return 'Clinician Peer Matchmaker & Treatment Locator';
+      case 'supplies': return 'Medical Supply, Local Store & Tincture Hub';
       default: return 'Component Drill-Down';
     }
   });
@@ -201,5 +217,8 @@ export class ComponentDrilldownUnitComponent {
 
   close(): void {
     this.targetComponent.set(null);
+    if (this.patientState.activeDrilldownComponent()) {
+      this.patientState.activeDrilldownComponent.set(null);
+    }
   }
 }

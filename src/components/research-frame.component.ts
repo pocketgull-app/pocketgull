@@ -2,7 +2,6 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed, effect, v
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
-import { fromEvent, Subscription } from 'rxjs';
 import { PatientManagementService } from '../services/patient-management.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { IBookmark } from '../services/patient.types';
@@ -24,13 +23,52 @@ export interface IPubMedSearchResult {
   patientContextMatch?: string;
 }
 
+export interface IArxivSearchResult {
+  id: string;
+  rawId: string;
+  title: string;
+  summary: string;
+  authors: string;
+  published: string;
+  updated: string;
+  primaryCategory: string;
+  doi?: string;
+  pdfUrl: string;
+  absUrl: string;
+  arxivLabs: {
+    nasaAds?: string;
+    googleScholar?: string;
+    semanticScholar?: string;
+    ar5ivHtml?: string;
+    connectedPapers: string;
+    papersWithCode: string;
+    huggingFace: string;
+    scite: string;
+  };
+}
+
+export interface IEuropePmcSearchResult {
+  id: string;
+  pmid?: string;
+  pmcid?: string;
+  doi?: string;
+  title: string;
+  authors: string;
+  journal: string;
+  pubYear: string;
+  abstractText: string;
+  isOpenAccess: boolean;
+  isPreprint: boolean;
+  fullTextUrl?: string;
+}
+
 @Component({
   selector: 'app-research-frame',
   standalone: true,
   imports: [CommonModule, PocketGullButtonComponent, PocketGullInputComponent, SafeHtmlPipe, PatientEducationFlipDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div id="tour-research-frame-window" class="flex flex-col bg-white dark:bg-[#09090b] shadow-2xl border border-gray-300 dark:border-zinc-800 rounded-none md:rounded-lg overflow-hidden z-40 transition-all"
+    <div id="tour-research-frame-window" class="flex flex-col bg-white dark:bg-[#09090b] shadow-2xl border border-gray-300 dark:border-zinc-800 rounded-none md:rounded-2xl overflow-hidden z-40 transition-all font-mono"
          [class.fixed]="isMobile()"
          [class.inset-0]="isMobile()"
          [class.absolute]="!isMobile()"
@@ -43,28 +81,35 @@ export interface IPubMedSearchResult {
       <!-- Header / Drag Handle -->
       <div (mousedown)="isMobile() ? null : startDrag($event)" 
            [class.cursor-move]="!isMobile()"
-           class="h-10 px-4 flex items-center justify-between bg-gray-100 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 shrink-0 select-none">
-        <div class="flex items-center gap-2">
-          <span class="text-xs">🔬</span>
-          <h3 class="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-zinc-400">Draggable Literature Research Frame</h3>
+           class="h-11 px-4 flex items-center justify-between bg-zinc-900 border-b border-zinc-800 shrink-0 select-none text-zinc-100">
+        <div class="flex items-center gap-2.5">
+          <span class="text-base">🔬</span>
+          <div>
+            <h3 class="text-xs font-extrabold uppercase tracking-widest text-indigo-400">
+              Open Science & ArXivLabs Literature Suite
+            </h3>
+          </div>
         </div>
         <pocket-gull-button variant="ghost" size="sm" (click)="close()" icon="M12 10.586 16.95 5.636a1 1 0 1 1 1.414 1.414L13.414 12l4.95 4.95a1 1 0 0 1-1.414 1.414L12 13.414l-4.95 4.95a1 1 0 0 1-1.414-1.414L10.586 12 5.636 7.05a1 1 0 0 1 1.414-1.414L12 10.586z" title="Close Research Window" ariaLabel="Close Research Window">
         </pocket-gull-button>
       </div>
 
-      <!-- Featured Research Frame Experiences Banner Carousel -->
-      <div class="p-3 bg-gradient-to-r from-indigo-950/80 via-zinc-900 to-purple-950/80 border-b border-zinc-800 text-zinc-100 font-mono text-xs shrink-0 space-y-2">
+      <!-- Featured Experiences Carousel -->
+      <div class="p-3 bg-gradient-to-r from-indigo-950/90 via-zinc-950 to-purple-950/90 border-b border-zinc-800 text-zinc-100 text-xs shrink-0 space-y-2">
         <div class="flex items-center justify-between">
           <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
-            ✨ Available Research Frame Experiences
+            ✨ Open Science & Preprint Hubs
           </span>
           <span class="text-[10px] text-zinc-400 font-sans">Cross-Paradigm Evidence Engines</span>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <!-- Experience 1: PubMed Matrix -->
-          <div (click)="setSearchEngine('pubmed')" class="p-2 rounded-xl bg-zinc-900/90 border border-indigo-500/30 hover:border-indigo-400 cursor-pointer transition-all space-y-1">
+          <!-- Experience 1: PubMed Index -->
+          <div (click)="setSearchEngine('pubmed')"
+            [class.border-indigo-400]="searchEngine() === 'pubmed'"
+            [class.bg-indigo-950/40]="searchEngine() === 'pubmed'"
+            class="p-2 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-indigo-400 cursor-pointer transition-all space-y-1">
             <div class="flex items-center justify-between text-[11px] font-bold text-indigo-300">
               <span>📚 PubMed Index</span>
               <span>24M+</span>
@@ -72,147 +117,173 @@ export interface IPubMedSearchResult {
             <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">MeSH graph & clinical trials</p>
           </div>
 
-          <!-- Experience 2: bioRxiv Preprints -->
-          <div (click)="setSearchEngine('google')" class="p-2 rounded-xl bg-zinc-900/90 border border-purple-500/30 hover:border-purple-400 cursor-pointer transition-all space-y-1">
+          <!-- Experience 2: arXiv & ArXivLabs -->
+          <div (click)="setSearchEngine('arxiv')"
+            [class.border-purple-400]="searchEngine() === 'arxiv'"
+            [class.bg-purple-950/40]="searchEngine() === 'arxiv'"
+            class="p-2 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-purple-400 cursor-pointer transition-all space-y-1">
             <div class="flex items-center justify-between text-[11px] font-bold text-purple-300">
-              <span>🧬 bioRxiv Trial</span>
-              <span>Live</span>
+              <span>🌌 arXivLabs</span>
+              <span>Preprints</span>
             </div>
-            <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">Pre-publication clinical trials</p>
+            <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">Connected Papers & AI Models</p>
           </div>
 
-          <!-- Experience 3: TCM Formulatory -->
-          <div (click)="setSearchEngine('tcm')" class="p-2 rounded-xl bg-zinc-900/90 border border-emerald-500/30 hover:border-emerald-400 cursor-pointer transition-all space-y-1">
+          <!-- Experience 3: Europe PMC -->
+          <div (click)="setSearchEngine('europepmc')"
+            [class.border-emerald-400]="searchEngine() === 'europepmc'"
+            [class.bg-emerald-950/40]="searchEngine() === 'europepmc'"
+            class="p-2 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-emerald-400 cursor-pointer transition-all space-y-1">
             <div class="flex items-center justify-between text-[11px] font-bold text-emerald-300">
-              <span>🌿 TCM Herbology</span>
-              <span>Zang-Fu</span>
+              <span>🧬 Europe PMC</span>
+              <span>OpenAccess</span>
             </div>
-            <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">Herb-drug interaction formulas</p>
+            <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">medRxiv, bioRxiv & full text</p>
           </div>
 
-          <!-- Experience 4: Vedic Samhita Corpus -->
-          <div (click)="setSearchEngine('ayurveda')" class="p-2 rounded-xl bg-zinc-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all space-y-1">
+          <!-- Experience 4: Traditional Medicine -->
+          <div (click)="setSearchEngine(patientState.activePhilosophy() === 'eastern' ? 'tcm' : 'ayurveda')"
+            [class.border-amber-400]="searchEngine() === 'tcm' || searchEngine() === 'ayurveda'"
+            [class.bg-amber-950/40]="searchEngine() === 'tcm' || searchEngine() === 'ayurveda'"
+            class="p-2 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-amber-400 cursor-pointer transition-all space-y-1">
             <div class="flex items-center justify-between text-[11px] font-bold text-amber-300">
-              <span>🧘 Vedic Samhita</span>
-              <span>Dosha</span>
+              <span>🌿 Formulatory</span>
+              <span>TCM / Veda</span>
             </div>
-            <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">Classical Charaka & Sushruta sutras</p>
+            <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">Zang-Fu & Dosha pharmacognosy</p>
           </div>
         </div>
       </div>
 
       <!-- Toolbar -->
-      <div class="p-3 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-[#09090b]/50 shrink-0">
+      <div class="p-3 border-b border-zinc-800 bg-zinc-950/90 shrink-0">
         <div class="flex flex-wrap items-center gap-2 md:flex-nowrap">
           <!-- Search Engine Toggle -->
-          <div class="flex flex-wrap items-center bg-gray-200 dark:bg-zinc-800 rounded-md p-0.5 gap-0.5">
-            <button (click)="setSearchEngine('google')"
-                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
-                    [class.bg-white]="searchEngine() === 'google'"
-                    [class.dark:bg-zinc-600]="searchEngine() === 'google'"
-                    [class.text-gray-800]="searchEngine() === 'google'"
-                    [class.dark:text-white]="searchEngine() === 'google'"
-                    [class.text-gray-500]="searchEngine() !== 'google'"
-                    [class.dark:text-zinc-400]="searchEngine() !== 'google'">
-              P&P
-            </button>
+          <div class="flex flex-wrap items-center bg-zinc-900 rounded-xl p-1 gap-1 border border-zinc-800 text-[11px] font-bold">
             <button (click)="setSearchEngine('pubmed')"
-                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
-                    [class.bg-white]="searchEngine() === 'pubmed'"
-                    [class.dark:bg-zinc-600]="searchEngine() === 'pubmed'"
-                    [class.text-gray-800]="searchEngine() === 'pubmed'"
-                    [class.dark:text-white]="searchEngine() === 'pubmed'"
-                    [class.text-gray-500]="searchEngine() !== 'pubmed'"
-                    [class.dark:text-zinc-400]="searchEngine() !== 'pubmed'">
+              class="px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+              [ngClass]="searchEngine() === 'pubmed' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'">
               PubMed
             </button>
-            @if (patientState.activePhilosophy() === 'ayurvedic') {
-              <button (click)="setSearchEngine('ayurveda')"
-                      class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
-                      [class.bg-white]="searchEngine() === 'ayurveda'"
-                      [class.dark:bg-zinc-600]="searchEngine() === 'ayurveda'"
-                      [class.text-amber-700]="searchEngine() === 'ayurveda'"
-                      [class.dark:text-amber-400]="searchEngine() === 'ayurveda'"
-                      [class.text-gray-500]="searchEngine() !== 'ayurveda'"
-                      [class.dark:text-zinc-400]="searchEngine() !== 'ayurveda'">
-                Ayurveda
-              </button>
-            }
-            @if (patientState.activePhilosophy() === 'eastern') {
-              <button (click)="setSearchEngine('tcm')"
-                      class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
-                      [class.bg-white]="searchEngine() === 'tcm'"
-                      [class.dark:bg-zinc-600]="searchEngine() === 'tcm'"
-                      [class.text-emerald-700]="searchEngine() === 'tcm'"
-                      [class.dark:text-emerald-400]="searchEngine() === 'tcm'"
-                      [class.text-gray-500]="searchEngine() !== 'tcm'"
-                      [class.dark:text-zinc-400]="searchEngine() !== 'tcm'">
-                TCM
-              </button>
-            }
+            <button (click)="setSearchEngine('arxiv')"
+              class="px-2.5 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1"
+              [ngClass]="searchEngine() === 'arxiv' ? 'bg-purple-600 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'">
+              <span>🌌</span> arXivLabs
+            </button>
+            <button (click)="setSearchEngine('europepmc')"
+              class="px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+              [ngClass]="searchEngine() === 'europepmc' ? 'bg-emerald-600 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'">
+              Europe PMC
+            </button>
+            <button (click)="setSearchEngine('google')"
+              class="px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+              [ngClass]="searchEngine() === 'google' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'">
+              Web CSE
+            </button>
           </div>
+
           <!-- Search Input -->
           <div class="w-full md:flex-1 order-last md:order-none mt-2 md:mt-0">
-              <pocket-gull-input 
-                [value]="searchText()"
-                (valueChange)="searchText.set($event)"
-                (keydown.enter)="search()"
-                placeholder="Research patient complaint...">
-              </pocket-gull-input>
+            <pocket-gull-input 
+              [value]="searchText()"
+              (valueChange)="searchText.set($event)"
+              (keydown.enter)="search()"
+              placeholder="Search clinical topics, genes, or trials across arXiv & PubMed...">
+            </pocket-gull-input>
           </div>
+
           <!-- Actions -->
           <pocket-gull-button variant="ghost" size="sm" (click)="search()" icon="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14" title="Execute Search" ariaLabel="Execute Search">
           </pocket-gull-button>
-          <pocket-gull-button variant="ghost" size="sm" (click)="addBookmark()" icon="m12 15.4 3.75 2.6-1-4.35L18 11l-4.45-.4L12 6.5 10.45 10.6 6 11l3.25 2.65-1 4.35z" title="IBookmark current page" ariaLabel="IBookmark current page">
+          <pocket-gull-button variant="ghost" size="sm" (click)="addBookmark()" icon="m12 15.4 3.75 2.6-1-4.35L18 11l-4.45-.4L12 6.5 10.45 10.6 6 11l3.25 2.65-1 4.35z" title="Bookmark current page" ariaLabel="Bookmark current page">
           </pocket-gull-button>
-          <pocket-gull-button variant="ghost" size="sm" (click)="showCitationForm.set(!showCitationForm())" [class.text-gray-800]="showCitationForm()" [class.dark:text-white]="showCitationForm()" icon="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" title="Citation Metadata" ariaLabel="Citation Metadata">
+          <pocket-gull-button variant="ghost" size="sm" (click)="showCitationForm.set(!showCitationForm())" icon="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" title="Citation Exporter" ariaLabel="Citation Exporter">
           </pocket-gull-button>
+          <button (click)="showGrantGenerator.set(!showGrantGenerator())"
+            [class.bg-purple-900/60]="showGrantGenerator()"
+            class="px-2 py-1 text-[11px] font-bold rounded-lg bg-zinc-800 hover:bg-zinc-700 text-purple-300 border border-purple-800/50 transition-all flex items-center gap-1 cursor-pointer">
+            <span>📑</span>
+            <span>Grant Dossier</span>
+          </button>
         </div>
 
-        <!-- Smart Patient Context Chips (Zero-Typing Query Builder) -->
+        <!-- Smart Patient Context Chips -->
         <div class="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          <span class="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest shrink-0 flex items-center gap-1">
+          <span class="text-[10px] font-bold text-teal-400 uppercase tracking-widest shrink-0 flex items-center gap-1">
             <span>⚡</span> Smart Context:
           </span>
           @for (chip of smartContextChips(); track chip.label) {
             <button (click)="appendSmartChip(chip.query)"
-                    class="px-2 py-0.5 text-[11px] font-semibold bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 rounded-full hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-all shrink-0">
+                    class="px-2.5 py-1 text-[11px] font-semibold bg-teal-950/50 text-teal-300 border border-teal-800/60 rounded-full hover:bg-teal-900/60 transition-all shrink-0 cursor-pointer">
               {{ chip.label }}
             </button>
           }
         </div>
 
-        <!-- Leading Biomedical & Citizen Science Research Institutions -->
-        <div class="mt-1.5 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest shrink-0 flex items-center gap-1">
-            <span>🏛️</span> Research Institutions:
-          </span>
-          @for (inst of researchInstitutions(); track inst.name) {
-            <button (click)="searchInstitution(inst)"
-                    [title]="inst.description"
-                    class="px-2 py-0.5 text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-all shrink-0 flex items-center gap-1">
-              <span>{{ inst.icon }}</span>
-              <span>{{ inst.name }}</span>
-            </button>
-          }
-        </div>
+        <!-- Grant Proposal & AI2050 Whitepaper Dossier Panel -->
+        @if (showGrantGenerator()) {
+          <div class="mt-3 p-4 bg-purple-950/30 border border-purple-800/60 rounded-2xl shadow-xl space-y-3 animate-in fade-in slide-in-from-top-1 w-full order-last text-xs">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-sm">📑</span>
+                <div>
+                  <h4 class="text-xs font-bold text-purple-200 uppercase tracking-wider">
+                    Open Science Grant Proposal & AI2050 Pitch Generator
+                  </h4>
+                  <p class="text-[10px] text-zinc-400">Targeted non-dilutive research dossier with Popperian null-hypothesis test evidence</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <select [value]="selectedGrantAgency()" (change)="setGrantAgency($event)"
+                  class="bg-zinc-900 border border-purple-700 text-purple-200 text-[11px] rounded-lg px-2 py-1 outline-none">
+                  <option value="schmidt_ai2050">Schmidt Sciences AI2050</option>
+                  <option value="nih_sbir">NIH SBIR Phase I (CDS Telehealth)</option>
+                  <option value="nsf_convergence">NSF Convergence (Trust in Open AI)</option>
+                </select>
+                <button (click)="copyGrantProposal()" class="px-2.5 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white font-bold cursor-pointer transition-colors shadow">
+                  📋 Copy Proposal Markdown
+                </button>
+              </div>
+            </div>
 
-        <!-- Citation Metadata Form -->
+            <!-- Preview Box -->
+            <div class="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800 font-mono text-[10.5px] text-zinc-300 max-h-48 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+              {{ generatedGrantPitch() }}
+            </div>
+          </div>
+        }
+
+        <!-- Citation Metadata Form & Multi-Format Exporter -->
         @if (showCitationForm()) {
-          <div class="mt-3 p-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-md shadow-inner space-y-2 animate-in fade-in slide-in-from-top-1 w-full order-last">
-            <h4 class="text-[12px] font-bold text-gray-800 dark:text-zinc-100 uppercase tracking-tighter mb-1">Citation Metadata (UKRIO Style)</h4>
+          <div class="mt-3 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl space-y-3 animate-in fade-in slide-in-from-top-1 w-full order-last text-xs">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold text-zinc-100 uppercase tracking-wider">
+                Clinical Citation Formatter & Exporter
+              </h4>
+              <div class="flex gap-1.5 text-[10px]">
+                <button (click)="copyCitation('bibtex')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold cursor-pointer">
+                  📋 BibTeX
+                </button>
+                <button (click)="copyCitation('apa')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold cursor-pointer">
+                  📋 APA 7th
+                </button>
+                <button (click)="copyCitation('ris')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold cursor-pointer">
+                  📋 RIS (Zotero)
+                </button>
+              </div>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
               <pocket-gull-input [value]="authors()" (valueChange)="authors.set($event)" placeholder="Authors (e.g. Smith et al.)" size="sm"></pocket-gull-input>
-              <pocket-gull-input [value]="doi()" (valueChange)="doi.set($event)" placeholder="DOI (e.g. 10.1038/s41586-021-03503-x)" size="sm"></pocket-gull-input>
+              <pocket-gull-input [value]="doi()" (valueChange)="doi.set($event)" placeholder="DOI / arXiv ID (e.g. 2403.12345)" size="sm"></pocket-gull-input>
             </div>
             <div class="flex items-center gap-4">
-              <label for="peer-reviewed-checkbox" class="flex items-center gap-1.5 cursor-pointer">
-                <input id="peer-reviewed-checkbox" type="checkbox" [checked]="isPeerReviewed()" (change)="isPeerReviewed.set(!isPeerReviewed())" class="w-3 h-3 rounded border-gray-300 dark:border-zinc-700 text-gray-800 dark:text-zinc-100 focus:ring-gray-500 dark:focus:ring-zinc-400 bg-white dark:bg-zinc-900">
-                <span class="text-[12px] text-gray-600 dark:text-zinc-400">Peer Reviewed</span>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" [checked]="isPeerReviewed()" (change)="isPeerReviewed.set(!isPeerReviewed())" class="w-3 h-3 rounded border-zinc-700 bg-zinc-900 text-purple-600">
+                <span class="text-zinc-400">Peer Reviewed</span>
               </label>
-              <label for="auto-cite-checkbox" class="flex items-center gap-1.5 cursor-pointer">
-                <input id="auto-cite-checkbox" type="checkbox" [checked]="autoCite()" (change)="autoCite.set(!autoCite())" class="w-3 h-3 rounded border-gray-300 dark:border-zinc-700 text-gray-800 dark:text-zinc-100 focus:ring-gray-500 dark:focus:ring-zinc-400 bg-white dark:bg-zinc-900">
-                <span class="text-[12px] text-gray-600 dark:text-zinc-400">Include in Summary References</span>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" [checked]="autoCite()" (change)="autoCite.set(!autoCite())" class="w-3 h-3 rounded border-zinc-700 bg-zinc-900 text-purple-600">
+                <span class="text-zinc-400">Include in Care Plan References</span>
               </label>
             </div>
           </div>
@@ -221,139 +292,269 @@ export interface IPubMedSearchResult {
 
       <!-- Bookmarks Bar -->
       @if (bookmarks().length > 0) {
-        <div class="p-2 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-[#09090b]/50 shrink-0 flex items-center gap-2 flex-wrap">
-          @for(bookmark of bookmarks(); track bookmark.url) {
+        <div class="p-2 border-b border-zinc-800 bg-zinc-950/60 shrink-0 flex items-center gap-2 flex-wrap">
+          @for (bookmark of bookmarks(); track bookmark.url) {
             <div class="group flex items-center">
-                <button (click)="loadUrl(bookmark.url)" 
-                        class="pl-2 pr-1 py-0.5 text-[12px] font-medium rounded-l-md transition-colors max-w-48 truncate flex items-center gap-1.5"
-                        [class.bg-gray-800]="bookmark.cited"
-                        [class.dark:bg-zinc-700]="bookmark.cited"
-                        [class.text-white]="bookmark.cited"
-                        [class.bg-gray-100]="!bookmark.cited"
-                        [class.dark:bg-zinc-800]="!bookmark.cited"
-                        [class.text-gray-500]="!bookmark.cited"
-                        [class.dark:text-zinc-400]="!bookmark.cited"
-                        [class.hover:bg-gray-200]="!bookmark.cited"
-                        [class.dark:hover:bg-zinc-700]="!bookmark.cited">
-                  @if (bookmark.isPeerReviewed) {
-                    <svg class="w-3 h-3 opacity-80" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-                  }
-                  {{ bookmark.title }}
-                </button>
-                <button (click)="toggleCite(bookmark)"
-                        class="px-1.5 py-0.5 text-[12px] uppercase font-black transition-colors border-r border-gray-200/20 dark:border-zinc-800/50"
-                        [class.bg-gray-900]="bookmark.cited"
-                        [class.dark:bg-zinc-900]="bookmark.cited"
-                        [class.text-white]="bookmark.cited"
-                        [class.bg-gray-50]="!bookmark.cited"
-                        [class.dark:bg-zinc-800]="!bookmark.cited"
-                        [class.text-gray-500]="!bookmark.cited"
-                        [class.dark:text-zinc-400]="!bookmark.cited"
-                        [title]="bookmark.cited ? 'Remove from summary references' : 'Include in summary references'">
-                    {{ bookmark.cited ? 'CITED' : 'CITE' }}
-                </button>
-                <button (click)="removeBookmark(bookmark.url)"
-                        class="px-1 py-0.5 text-gray-500 dark:text-zinc-400 bg-gray-100 dark:bg-zinc-800 hover:bg-red-100 dark:hover:bg-red-900/50 hover:text-red-600 dark:hover:text-red-400 rounded-r-md transition-colors opacity-50 group-hover:opacity-100">
-                    ×
-                </button>
+              <button (click)="loadUrl(bookmark.url)" 
+                class="pl-2.5 pr-1.5 py-1 text-[11px] font-medium rounded-l-lg transition-colors max-w-48 truncate flex items-center gap-1.5"
+                [ngClass]="bookmark.cited ? 'bg-purple-900/60 text-purple-200 border border-purple-500/40' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'">
+                @if (bookmark.isPeerReviewed) {
+                  <span class="text-[9px]">✅</span>
+                }
+                {{ bookmark.title }}
+              </button>
+              <button (click)="toggleCite(bookmark)"
+                class="px-2 py-1 text-[10px] uppercase font-bold transition-colors border-r border-zinc-800"
+                [ngClass]="bookmark.cited ? 'bg-purple-800 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'">
+                {{ bookmark.cited ? 'CITED' : 'CITE' }}
+              </button>
+              <button (click)="removeBookmark(bookmark.url)"
+                class="px-1.5 py-1 text-zinc-500 bg-zinc-900 hover:bg-red-950 hover:text-red-400 rounded-r-lg transition-colors cursor-pointer">
+                ×
+              </button>
             </div>
           }
         </div>
       }
 
-      <!-- IFrame / Native Content -->
-      <div class="flex-1 bg-gray-200 dark:bg-zinc-950 overflow-y-auto relative">
-        @if (sanitizedUrl(); as url) {
-            <iframe #iframeEl credentialless [src]="url" 
-                    (load)="onIframeLoad()"
-                    class="w-full h-full border-none transition-opacity bg-white dark:bg-zinc-950" 
-                    [class.absolute]="searchEngine() === 'google' && googleResults() !== null"
-                    [class.opacity-0]="searchEngine() === 'google' && googleResults() !== null"
-                    [class.pointer-events-none]="searchEngine() === 'google' && googleResults() !== null">
-            </iframe>
-        }
+      <!-- Main Results & Native Feed Container -->
+      <div class="flex-1 bg-zinc-950 overflow-y-auto relative p-4 space-y-4">
 
-        @if ((searchEngine() === 'pubmed' || searchEngine() === 'ayurveda' || searchEngine() === 'tcm') && (pubmedResults() !== null || isLoadingPubmed())) {
-          <div class="p-4 space-y-4 max-w-3xl mx-auto relative z-20">
-            <!-- Cognitive Filter Buckets -->
-            <div class="flex items-center gap-1.5 mb-3 border-b border-gray-200 dark:border-zinc-800 pb-2 overflow-x-auto">
-              <button (click)="evidenceFilterTier.set('ALL')"
-                      [class.bg-teal-600]="evidenceFilterTier() === 'ALL'"
-                      [class.text-white]="evidenceFilterTier() === 'ALL'"
-                      class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 transition-all shrink-0">
-                🌐 All Results
-              </button>
-              <button (click)="evidenceFilterTier.set('LEVEL_A')"
-                      [class.bg-teal-600]="evidenceFilterTier() === 'LEVEL_A'"
-                      [class.text-white]="evidenceFilterTier() === 'LEVEL_A'"
-                      class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 transition-all shrink-0">
-                📊 Level A: Guidelines & RCTs
-              </button>
-              <button (click)="evidenceFilterTier.set('PREPRINTS')"
-                      [class.bg-teal-600]="evidenceFilterTier() === 'PREPRINTS'"
-                      [class.text-white]="evidenceFilterTier() === 'PREPRINTS'"
-                      class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 transition-all shrink-0">
-                🧬 bioRxiv Preprints
-              </button>
-              <button (click)="evidenceFilterTier.set('TRIALS')"
-                      [class.bg-teal-600]="evidenceFilterTier() === 'TRIALS'"
-                      [class.text-white]="evidenceFilterTier() === 'TRIALS'"
-                      class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 transition-all shrink-0">
-                🔬 Active Recruiting Trials
-              </button>
-            </div>
-
-            @if (isLoadingPubmed()) {
-              <div class="flex items-center justify-center p-8 text-gray-500 dark:text-zinc-400">
-                <p class="text-sm font-medium animate-pulse">Searching PubMed & Clinical Evidence Engines...</p>
+        <!-- 1. arXiv & ArXivLabs Native Feed -->
+        @if (searchEngine() === 'arxiv') {
+          <div class="space-y-4 max-w-4xl mx-auto">
+            @if (isLoadingArxiv()) {
+              <div class="flex items-center justify-center p-12 text-zinc-400">
+                <p class="text-sm font-medium animate-pulse flex items-center gap-2">
+                  <span>🌌</span> Querying arXiv Open Science API & ArXivLabs...
+                </p>
               </div>
-            } @else if (filteredPubmedResults()?.length === 0) {
-              <div class="flex items-center justify-center p-8 text-gray-500 dark:text-zinc-400">
-                <p class="text-sm">No results match selected cognitive filter.</p>
+            } @else if (arxivResults()?.length === 0) {
+              <div class="flex items-center justify-center p-12 text-zinc-500 text-sm">
+                No arXiv preprints found for this query. Try broader biomedical terms.
               </div>
             } @else {
-              @for (res of filteredPubmedResults(); track res.id) {
+              @for (paper of arxivResults(); track paper.id) {
+                <div class="p-5 rounded-2xl bg-zinc-900/90 border border-purple-500/30 hover:border-purple-400/60 transition shadow-lg space-y-3">
+                  <!-- Header Badges -->
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        arXiv:{{ paper.id }}
+                      </span>
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        {{ paper.primaryCategory }}
+                      </span>
+                    </div>
+                    <span class="text-[11px] text-zinc-400 font-sans">
+                      {{ paper.published | date:'mediumDate' }}
+                    </span>
+                  </div>
+
+                  <!-- Title -->
+                  <h4 class="font-bold text-zinc-100 text-sm leading-snug">
+                    <a [href]="paper.absUrl" target="_blank" class="hover:text-purple-300 transition">
+                      {{ paper.title }}
+                    </a>
+                  </h4>
+
+                  <!-- Authors -->
+                  <p class="text-xs text-zinc-400 font-medium">{{ paper.authors }}</p>
+
+                  <!-- Abstract -->
+                  <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-[11.5px] text-zinc-300 font-sans leading-relaxed">
+                    {{ paper.summary }}
+                  </div>
+
+                  <!-- ArXivLabs & Scholarly Cross-Ref Badge Tray -->
+                  <div class="pt-1 flex flex-wrap items-center gap-1.5 text-[10px] font-bold">
+                    <span class="text-purple-400 uppercase tracking-widest text-[9px] mr-1">ArXivLabs & Citations:</span>
+                    @if (paper.arxivLabs.nasaAds) {
+                      <a [href]="paper.arxivLabs.nasaAds" target="_blank"
+                        class="px-2 py-0.5 rounded-lg bg-orange-950/70 border border-orange-500/40 text-orange-300 hover:bg-orange-900 transition flex items-center gap-1">
+                        <span>🚀</span> NASA ADS
+                      </a>
+                    }
+                    @if (paper.arxivLabs.googleScholar) {
+                      <a [href]="paper.arxivLabs.googleScholar" target="_blank"
+                        class="px-2 py-0.5 rounded-lg bg-blue-950/70 border border-blue-500/40 text-blue-300 hover:bg-blue-900 transition flex items-center gap-1">
+                        <span>🎓</span> Scholar
+                      </a>
+                    }
+                    @if (paper.arxivLabs.semanticScholar) {
+                      <a [href]="paper.arxivLabs.semanticScholar" target="_blank"
+                        class="px-2 py-0.5 rounded-lg bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900 transition flex items-center gap-1">
+                        <span>🔍</span> Semantic
+                      </a>
+                    }
+                    @if (paper.arxivLabs.ar5ivHtml) {
+                      <a [href]="paper.arxivLabs.ar5ivHtml" target="_blank"
+                        class="px-2 py-0.5 rounded-lg bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900 transition flex items-center gap-1">
+                        <span>🌐</span> ar5iv HTML
+                      </a>
+                    }
+                    <a [href]="paper.arxivLabs.connectedPapers" target="_blank"
+                      class="px-2 py-0.5 rounded-lg bg-indigo-950/70 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-900 transition flex items-center gap-1">
+                      <span>🌲</span> Connected Papers
+                    </a>
+                    <a [href]="paper.arxivLabs.papersWithCode" target="_blank"
+                      class="px-2 py-0.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-300 hover:bg-zinc-700 transition flex items-center gap-1">
+                      <span>💻</span> Code
+                    </a>
+                    <a [href]="paper.arxivLabs.huggingFace" target="_blank"
+                      class="px-2 py-0.5 rounded-lg bg-amber-950/70 border border-amber-500/40 text-amber-300 hover:bg-amber-900 transition flex items-center gap-1">
+                      <span>🤗</span> HF
+                    </a>
+                    <a [href]="paper.arxivLabs.scite" target="_blank"
+                      class="px-2 py-0.5 rounded-lg bg-teal-950/70 border border-teal-500/40 text-teal-300 hover:bg-teal-900 transition flex items-center gap-1">
+                      <span>📊</span> Scite
+                    </a>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="pt-2 flex flex-wrap items-center gap-2 border-t border-zinc-800/80">
+                    <a [href]="paper.pdfUrl" target="_blank"
+                      class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5">
+                      <span>📄</span> View PDF
+                    </a>
+                    <button (click)="addArxivBookmark(paper)"
+                      class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+                      🔖 Bookmark & Cite
+                    </button>
+                    <button (click)="saveArxivToNotes(paper)"
+                      class="px-3 py-1.5 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/40 text-emerald-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+                      📝 + Save to Notes
+                    </button>
+                    <button (click)="drillDownSupplies(paper.title)"
+                      class="px-3 py-1.5 rounded-xl bg-indigo-950/60 hover:bg-indigo-900/60 border border-indigo-500/40 text-indigo-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1">
+                      <span>🛒</span> Locate Supply / Tincture
+                    </button>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        }
+
+        <!-- 2. Europe PMC Open Access Feed -->
+        @else if (searchEngine() === 'europepmc') {
+          <div class="space-y-4 max-w-4xl mx-auto">
+            @if (isLoadingEuropePmc()) {
+              <div class="flex items-center justify-center p-12 text-zinc-400">
+                <p class="text-sm font-medium animate-pulse flex items-center gap-2">
+                  <span>🧬</span> Querying Europe PMC & bioRxiv Preprints...
+                </p>
+              </div>
+            } @else if (europePmcResults()?.length === 0) {
+              <div class="flex items-center justify-center p-12 text-zinc-500 text-sm">
+                No Europe PMC open access results found.
+              </div>
+            } @else {
+              @for (study of europePmcResults(); track study.id) {
+                <div class="p-5 rounded-2xl bg-zinc-900/90 border border-emerald-500/30 hover:border-emerald-400/60 transition shadow-lg space-y-3">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      @if (study.isOpenAccess) {
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          🔓 Open Access
+                        </span>
+                      }
+                      @if (study.isPreprint) {
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                          ⚡ Preprint
+                        </span>
+                      }
+                    </div>
+                    <span class="text-[11px] text-zinc-400 font-sans">{{ study.journal }} ({{ study.pubYear }})</span>
+                  </div>
+
+                  <h4 class="font-bold text-zinc-100 text-sm leading-snug">
+                    {{ study.title }}
+                  </h4>
+                  <p class="text-xs text-zinc-400">{{ study.authors }}</p>
+
+                  @if (study.abstractText) {
+                    <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-[11.5px] text-zinc-300 font-sans leading-relaxed" [innerHTML]="study.abstractText | safeHtml">
+                    </div>
+                  }
+
+                  <div class="pt-2 flex flex-wrap items-center gap-2 border-t border-zinc-800/80">
+                    @if (study.fullTextUrl) {
+                      <a [href]="study.fullTextUrl" target="_blank"
+                        class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5">
+                        <span>📖</span> Open Full Text
+                      </a>
+                    }
+                    <button (click)="addEuropePmcBookmark(study)"
+                      class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+                      🔖 Bookmark & Cite
+                    </button>
+                    <button (click)="drillDownSupplies(study.title)"
+                      class="px-3 py-1.5 rounded-xl bg-indigo-950/60 hover:bg-indigo-900/60 border border-indigo-500/40 text-indigo-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1">
+                      <span>🛒</span> Locate Supply / Tincture
+                    </button>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        }
+
+        <!-- 3. PubMed Feed -->
+        @else if (searchEngine() === 'pubmed' || searchEngine() === 'ayurveda' || searchEngine() === 'tcm') {
+          <div class="space-y-4 max-w-4xl mx-auto">
+            @if (isLoadingPubmed()) {
+              <div class="flex items-center justify-center p-12 text-zinc-400">
+                <p class="text-sm font-medium animate-pulse">Searching PubMed Evidence Engines...</p>
+              </div>
+            } @else if (pubmedResults()?.length === 0) {
+              <div class="flex items-center justify-center p-12 text-zinc-500 text-sm">
+                No PubMed results found.
+              </div>
+            } @else {
+              @for (res of pubmedResults(); track res.id) {
                 <div [appPatientEducationFlip]="generatePatientEduData(res)"
                      [flipElementId]="'paper_' + res.id"
-                     class="bg-white dark:bg-zinc-900 p-4 rounded-md shadow-sm border border-gray-200 dark:border-zinc-800 transition-all hover:border-teal-500/40 relative group cursor-pointer">
-                  
-                  <!-- Evidence Tier Badges -->
-                  <div class="flex items-center justify-between gap-2 mb-2">
+                     class="bg-zinc-900/90 p-5 rounded-2xl shadow-lg border border-zinc-800 hover:border-indigo-500/50 transition relative group cursor-pointer space-y-2">
+                  <div class="flex items-center justify-between gap-2">
                     <div class="flex items-center gap-1.5">
-                      <span class="px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider rounded bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-300">
+                      <span class="px-2 py-0.5 text-[9.5px] font-bold uppercase rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                         {{ res.evidenceTier || 'LEVEL_A (RCT)' }}
                       </span>
-                      <span class="px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                      <span class="px-2 py-0.5 text-[9.5px] font-bold uppercase rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                         RoB 2: {{ res.rob2Risk || 'Low Risk' }}
                       </span>
                     </div>
-                    <span class="text-[10px] font-bold text-teal-600 dark:text-teal-400 opacity-80 group-hover:opacity-100 transition-opacity">
+                    <span class="text-[10px] font-bold text-indigo-400 opacity-80 group-hover:opacity-100 transition-opacity">
                       dblclick 🔄 Patient Lens
                     </span>
                   </div>
 
-                  <h4 class="font-bold text-gray-800 dark:text-zinc-100 text-sm leading-snug mb-1" [innerHTML]="res.title | safeHtml"></h4>
-                  <p class="text-xs text-gray-600 dark:text-zinc-400 mb-1 font-medium">{{ res.authors }}</p>
+                  <h4 class="font-bold text-zinc-100 text-sm leading-snug" [innerHTML]="res.title | safeHtml"></h4>
+                  <p class="text-xs text-zinc-400">{{ res.authors }}</p>
 
-                  <!-- 1-Sentence Point-of-Care Takeaway -->
-                  <div class="my-2.5 p-2 bg-teal-50/60 dark:bg-teal-950/20 border-l-2 border-teal-500 rounded-r text-[11.5px] text-teal-900 dark:text-teal-200 font-sans leading-relaxed">
+                  <div class="my-2 p-2.5 bg-indigo-950/30 border-l-2 border-indigo-500 rounded-r text-[11.5px] text-indigo-200 font-sans leading-relaxed">
                     <span class="font-bold">💡 Point-of-Care Takeaway:</span> {{ res.bottomLineTakeaway || 'Demonstrates significant therapeutic benefit with low risk of adverse cross-reactivity.' }}
                   </div>
 
-                  <div class="text-[12px] text-gray-500 dark:text-zinc-400 flex items-center gap-2 mb-3">
+                  <div class="text-[11px] text-zinc-500 flex items-center gap-2">
                     <span class="font-bold">{{ res.source }}</span> • <span>{{ res.pubdate }}</span>
                     @if (res.doi) {
                       <span>• DOI: {{ res.doi }}</span>
                     }
                   </div>
-                  <div class="flex items-center gap-2">
+
+                  <div class="pt-2 flex flex-wrap items-center gap-2">
                     <pocket-gull-button variant="primary" size="sm" (click)="addPubmedBookmark(res); $event.stopPropagation();" icon="m12 15.4 3.75 2.6-1-4.35L18 11l-4.45-.4L12 6.5 10.45 10.6 6 11l3.25 2.65-1 4.35z">
-                      IBookmark & Cite
+                      Bookmark & Cite
                     </pocket-gull-button>
-                    <button (click)="saveResultToActiveRoomNotes(res); $event.stopPropagation();" class="text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/40 rounded shadow-sm">
-                      <span>📝</span> + Save to Active Room
+                    <button (click)="saveResultToActiveRoomNotes(res); $event.stopPropagation();" class="text-xs font-bold text-emerald-300 hover:text-emerald-100 transition inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-950/60 border border-emerald-500/30 rounded-xl cursor-pointer">
+                      <span>📝</span> + Save to Notes
                     </button>
-                    <button (click)="loadUrl('https://pubmed.ncbi.nlm.nih.gov/' + res.id + '/'); $event.stopPropagation();" class="text-xs font-semibold text-gray-600 dark:text-zinc-300 hover:text-gray-800 dark:hover:text-white transition-colors inline-block px-2 py-1 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 rounded">
+                    <button (click)="drillDownSupplies(res.title); $event.stopPropagation();" class="text-xs font-bold text-indigo-300 hover:text-indigo-100 transition inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-950/60 border border-indigo-500/30 rounded-xl cursor-pointer">
+                      <span>🛒</span> Locate Supply / Tincture
+                    </button>
+                    <button (click)="loadUrl('https://pubmed.ncbi.nlm.nih.gov/' + res.id + '/'); $event.stopPropagation();" class="text-xs font-semibold text-zinc-300 hover:text-white transition px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-xl cursor-pointer">
                       Open in PubMed
                     </button>
                   </div>
@@ -361,50 +562,25 @@ export interface IPubMedSearchResult {
               }
             }
           </div>
-        } @else if (searchEngine() === 'google' && (googleResults() !== null || isLoadingGoogle())) {
-          <div class="p-4 space-y-4 max-w-3xl mx-auto relative z-20">
-            @if (isLoadingGoogle() && googleResults()?.length === 0) {
-              <div class="flex items-center justify-center p-8 text-gray-500 dark:text-zinc-400">
-                <p class="text-sm font-medium animate-pulse">Running Native Google CSE Query...</p>
-              </div>
-            } @else if (googleResults()?.length === 0 && !isLoadingGoogle()) {
-              <div class="flex items-center justify-center p-8 text-gray-500 dark:text-zinc-400">
-                <p class="text-sm">No results found on Google.</p>
-              </div>
-            } @else {
-              @for (res of googleResults(); track res.url) {
-                <div class="bg-white dark:bg-zinc-900 p-4 rounded-md shadow-sm border border-gray-200 dark:border-zinc-800">
-                  <h4 class="font-bold text-gray-800 dark:text-zinc-100 text-[13px] leading-snug mb-1">
-                      <a [href]="res.url" target="_blank" class="hover:underline" [innerHTML]="res.title | safeHtml"></a>
-                  </h4>
-                  <div class="text-[12px] text-green-700 dark:text-[#8bc34a] font-medium mb-1.5 truncate">{{ res.displayUrl || res.url }}</div>
-                  <p class="text-xs text-gray-600 dark:text-zinc-400 mb-4 leading-relaxed whitespace-pre-line" [innerHTML]="res.snippet | safeHtml"></p>
+        }
 
-                  <div class="flex items-center gap-2">
-                    <pocket-gull-button variant="primary" size="sm" (click)="addGseBookmark(res.title, res.url)" icon="m12 15.4 3.75 2.6-1-4.35L18 11l-4.45-.4L12 6.5 10.45 10.6 6 11l3.25 2.65-1 4.35z">
-                      IBookmark & Cite
-                    </pocket-gull-button>
-                    <button (click)="loadUrl(res.url)" class="text-xs font-semibold text-gray-600 dark:text-zinc-300 hover:text-gray-800 dark:hover:text-white transition-colors inline-block px-2 py-1 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 rounded">
-                      Open Document
-                    </button>
-                  </div>
-                </div>
-              }
-            }
-          </div>
-        } @else if (!sanitizedUrl()) {
-          <div class="w-full h-full flex items-center justify-center text-center text-gray-500 dark:text-zinc-400 p-4 relative z-20">
-             <p class="text-xs">Search results and bookmarked pages will appear here.</p>
-          </div>
+        <!-- 4. Google CSE / External URL -->
+        @else if (searchEngine() === 'google') {
+          @if (sanitizedUrl(); as url) {
+            <iframe #iframeEl credentialless [src]="url" 
+              (load)="onIframeLoad()"
+              class="w-full h-full min-h-[400px] border-none rounded-2xl bg-white dark:bg-zinc-950">
+            </iframe>
+          }
         }
       </div>
 
       <!-- Resize Handle -->
       @if (!isMobile()) {
-        <div (mousedown)="startResize($event)" class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize text-gray-300 hover:text-gray-600 transition-colors flex items-end justify-end p-0.5">
-            <svg width="100%" height="100%" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10 0 L10 10 L0 10" stroke="currentColor" stroke-width="2"/>
-            </svg>
+        <div (mousedown)="startResize($event)" class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize text-zinc-600 hover:text-zinc-300 transition-colors flex items-end justify-end p-0.5">
+          <svg width="100%" height="100%" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 0 L10 10 L0 10" stroke="currentColor" stroke-width="2"/>
+          </svg>
         </div>
       }
     </div>
@@ -432,22 +608,18 @@ export class ResearchFrameComponent implements OnDestroy {
       this.loadUrl(event.data.url);
     } else if (event.data && event.data.type === 'BOOKMARK_RESULT') {
       this.addGseBookmark(event.data.title, event.data.url);
-    } else if (event.data && event.data.type === 'GOOGLE_SEARCH_RESULTS') {
-      this.isLoadingGoogle.set(false);
-      const current = this.googleResults() || [];
-      this.googleResults.set([...current, ...event.data.results]);
     }
   }
+
   private sanitizer: DomSanitizer = inject(DomSanitizer);
   private platformId = inject(PLATFORM_ID);
   patientManager = inject(PatientManagementService);
   patientState = inject(PatientStateService);
 
   isMobile = signal(false);
-  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard'>('google');
+  searchEngine = signal<'google' | 'pubmed' | 'arxiv' | 'europepmc' | 'ayurveda' | 'tcm'>('pubmed');
   searchText = signal<string>('');
 
-  // --- Cognitive Load & Evidence Tier Signals ---
   evidenceFilterTier = signal<'ALL' | 'LEVEL_A' | 'PREPRINTS' | 'TRIALS'>('ALL');
 
   smartContextChips = computed(() => {
@@ -467,61 +639,13 @@ export class ResearchFrameComponent implements OnDestroy {
       chips.push({ label: '+ Fasting Glucose > 125', query: 'Hyperglycemia HbA1c trajectory' });
     }
     if (partId === 'head' || partId === 'mouth') {
-      chips.push({ label: '+ FDI Periodontal SIBI', query: 'Periodontitis Systemic Inflammatory Burden' });
+      chips.push({ label: '+ Periodontal SIBI', query: 'Periodontitis Systemic Inflammatory Burden' });
     }
-    chips.push({ label: '+ Lisinopril Renoprotection', query: 'Lisinopril Proteinuria RCT' });
+    chips.push({ label: '+ Non-Coding Variant AI', query: 'AlphaGenome genomic variant regulatory' });
+    chips.push({ label: '+ Postpartum Preeclampsia', query: 'ACOG AIM postpartum preeclampsia' });
 
     return chips;
   });
-
-  filteredPubmedResults = computed(() => {
-    const results = this.pubmedResults() || [];
-    const tier = this.evidenceFilterTier();
-    if (tier === 'ALL') return results;
-    return results.filter(r => (r.evidenceTier || 'LEVEL_A') === tier);
-  });
-
-  researchInstitutions = signal([
-    { name: 'Francis Crick Inst.', domain: 'crick.ac.uk', query: 'site:crick.ac.uk', icon: '🔬', description: 'Cellular ultrastructure, SBF-SEM & cancer metabolomics' },
-    { name: 'Univ. of Oxford', domain: 'ox.ac.uk', query: 'site:ox.ac.uk', icon: '🏛️', description: 'Citizen science data governance & clinical trials' },
-    { name: 'Zooniverse Consort.', domain: 'zooniverse.org', query: 'site:zooniverse.org', icon: '🌌', description: 'Consensus aggregations & Caesar rules' },
-    { name: 'NIH / NLM', domain: 'nih.gov', query: 'site:nih.gov OR site:ncbi.nlm.nih.gov', icon: '📚', description: 'PubMed, MeSH & genomic databases' },
-    { name: 'EMBL-EBI', domain: 'ebi.ac.uk', query: 'site:ebi.ac.uk', icon: '🧬', description: 'ChEMBL, Ensembl & bioactivity databases' },
-    { name: 'Harvard / MGH', domain: 'massgeneral.org', query: 'site:massgeneral.org OR site:hms.harvard.edu', icon: '🏥', description: 'Evidence-based clinical guidelines' },
-    { name: 'Mayo Clinic', domain: 'mayoclinic.org', query: 'site:mayoclinic.org', icon: '🩺', description: 'Practice protocols & patient clinical summaries' }
-  ]);
-
-  appendSmartChip(query: string): void {
-    const current = this.searchText();
-    this.searchText.set(current ? `${current} AND (${query})` : query);
-    this.search();
-  }
-
-  searchInstitution(inst: { name: string; query: string }): void {
-    const current = this.searchText();
-    if (current && !current.includes(inst.query)) {
-      this.searchText.set(`${current} (${inst.query})`);
-    } else {
-      this.searchText.set(inst.query);
-    }
-    this.search();
-  }
-
-  generatePatientEduData(res: IPubMedSearchResult): IPatientEducationFlipData {
-    return {
-      title: res.title,
-      gradeLevel: 'Grade 6.2',
-      diagnosis: `Clinical Study Summary: ${res.title.substring(0, 70)}...`,
-      analogy: 'Think of clinical studies like testing a bridge before letting cars drive across it.',
-      socraticInquiry: 'Would you like to know how this research finding applies to your current treatment plan?',
-      spanishTranslation: 'Estudio de investigación clínica con evidencia directa para su cuidado.',
-      homeCareSteps: [
-        'Review study summary with your care provider',
-        'Follow recommended medication or lifestyle protocol',
-        'Monitor symptoms and report changes'
-      ]
-    };
-  }
 
   private currentUrl = signal<string | null>(null);
   sanitizedUrl = signal<SafeResourceUrl | null>(null);
@@ -529,8 +653,11 @@ export class ResearchFrameComponent implements OnDestroy {
   pubmedResults = signal<IPubMedSearchResult[] | null>(null);
   isLoadingPubmed = signal(false);
 
-  googleResults = signal<any[] | null>(null);
-  isLoadingGoogle = signal(false);
+  arxivResults = signal<IArxivSearchResult[] | null>(null);
+  isLoadingArxiv = signal(false);
+
+  europePmcResults = signal<IEuropePmcSearchResult[] | null>(null);
+  isLoadingEuropePmc = signal(false);
 
   // --- Citation Signals ---
   showCitationForm = signal(false);
@@ -539,9 +666,75 @@ export class ResearchFrameComponent implements OnDestroy {
   isPeerReviewed = signal(false);
   autoCite = signal(true);
 
+  // --- Grant Proposal Dossier Generator State ---
+  showGrantGenerator = signal(false);
+  selectedGrantAgency = signal<'schmidt_ai2050' | 'nih_sbir' | 'nsf_convergence'>('schmidt_ai2050');
+
+  setGrantAgency(event: Event): void {
+    const val = (event.target as HTMLSelectElement).value as any;
+    if (val) this.selectedGrantAgency.set(val);
+  }
+
+  readonly generatedGrantPitch = computed(() => {
+    const agency = this.selectedGrantAgency();
+    const query = this.searchText() || 'Cross-Paradigm Biophysical Edge AI';
+    const patientSummary = typeof this.patientState?.activePatientSummary === 'function' ? this.patientState.activePatientSummary() : 'Representative Multi-System Cohort';
+    const year = new Date().getFullYear();
+
+    if (agency === 'schmidt_ai2050') {
+      return `# Schmidt Sciences AI2050 Early Career Fellow Proposal (${year})
+**Project Title**: Decentralized, Air-Gapped WebGPU Edge AI for Open Clinical Discovery and Socratic Evidence Literacy
+**Principal Investigator**: PocketGull Open Science Consortium
+**Research Focus**: ${query}
+
+### 1. Executive Summary & Hard Problem Solved
+Contemporary clinical AI suffers from centralized privacy extraction, black-box hallucinations, and lack of Popperian null-hypothesis testing. This project establishes an air-gapped, WebGPU-native on-device intelligence runtime that executes quantized foundation models locally in browser memory with Cochrane RoB 2 transparency.
+
+### 2. Specific Aims
+- **Aim 1**: Deploy 100% client-side Gemma 3 2B/7B WebGPU inference pipelines achieving zero cloud egress.
+- **Aim 2**: Integrate ArXivLabs and Europe PMC open access literature engines with automated BibTeX/RIS citation syndication.
+- **Aim 3**: Enforce empirical Popperian null-hypothesis calibration (p < 0.05 thresholds) across biophysical and clinical prediction graphs.
+
+### 3. Societal Impact & Alignment
+Directly advances Schmidt Sciences AI2050 mission of ensuring human-aligned, decentralized open science commons with zero vendor lock-in.`;
+    }
+
+    if (agency === 'nih_sbir') {
+      return `# NIH SBIR Phase I Proposal: Clinical Decision Support & Telehealth
+**Project Title**: Autonomous Real-Time CDS & 4th-Trimester Maternal Health Telemetry Engine
+**Clinical Target**: ${query} | Patient Context: ${patientSummary}
+
+### 1. Specific Aims (Phase I Feasibility)
+- **Aim 1**: Ingest live SMART on FHIR R4 Observations and Conditions across diverse EHR vendors (Epic, Cerner).
+- **Aim 2**: Validate ACOG AIM Maternal Morbidity Sentinel against synthetic postpartum hypertensive crisis cohorts.
+- **Aim 3**: Demonstrate sub-50ms local telemetry calculation and automated SOAP note generation with Grade 6.2 reading level patient flip cards.
+
+### 2. Commercialization Strategy
+B2B SaaS licensing to independent clinics, birth centers, and academic medical centers at $79–$299/seat/month.`;
+    }
+
+    return `# NSF Convergence Accelerator Track Proposal: Trust & Open Science
+**Project Title**: Verifiable WebMCP Open Science Discovery and Epistemic Falsifiability Commons
+**Focus Area**: ${query}
+
+### 1. Convergence Framework
+Bridges Caslon typography, WebGL 3D biophysical anatomy, and decentralized LLM tool calling via WebMCP.
+### 2. Deliverables
+Open-source TypeScript/Angular SDK (@pocketgull/core-sdk) and public ArXivLabs discovery portal.`;
+  });
+
+  copyGrantProposal(): void {
+    const pitch = this.generatedGrantPitch();
+    navigator.clipboard?.writeText(pitch);
+  }
+
+  drillDownSupplies(query?: string): void {
+    this.patientState.activeDrilldownComponent.set('supplies');
+  }
+
   // --- Window State ---
   position = signal({ x: 150, y: 100 });
-  size = signal({ width: 800, height: 600 });
+  size = signal({ width: 840, height: 620 });
 
   private dragging = false;
   private resizing = false;
@@ -564,68 +757,21 @@ export class ResearchFrameComponent implements OnDestroy {
   bookmarks = computed(() => this.selectedPatient()?.bookmarks || []);
 
   constructor() {
-    // Update size based on window
     if (isPlatformBrowser(this.platformId)) {
       const w = window.innerWidth;
-      const h = window.innerHeight;
-      this.position.set({ x: w * 0.45, y: 100 });
-      
+      this.position.set({ x: Math.max(20, w * 0.35), y: 80 });
       this.checkMobileListener();
       window.addEventListener('resize', this.checkMobileListener);
     }
 
-    // --- Special Reference Trigger ---
-    // Automically load reference info for Head & Neck when selected
-    effect(() => {
-      const partId = this.patientState.selectedPartId();
-      const isVisible = this.patientState.isResearchFrameVisible();
-
-      // We only auto-trigger if the frame is NOT already visible or if it's head
-      // to avoid annoying the user if they've closed it.
-      // But for head/neck, the user specifically requested it.
-      if (partId === 'head') {
-        untracked(() => {
-          this.searchText.set('Head and Neck Clinical Anatomy');
-          // Using a reliable scientific search result or landing page
-          this.loadUrl('https://www.ncbi.nlm.nih.gov/pmc/?term=head+and+neck+anatomy');
-          if (!isVisible) {
-            this.patientState.toggleResearchFrame(true);
-          }
-        });
-      }
-    });
-
-    // When the patient changes, reset state for the research frame
-    effect(() => {
-      const goals = this.patientState.patientGoals();
-      // Only set search text if it's different, to avoid overriding user typing
-      untracked(() => {
-        if (this.searchText() !== goals) {
-          this.searchText.set(goals);
-        }
-      });
-    });
-
-    // Effect to handle requests to load a specific URL from outside (e.g., history)
-    effect(() => {
-      const url = this.patientState.requestedResearchUrl();
-      if (url) {
-        this.loadUrl(url);
-        untracked(() => {
-          // Reset the signal after consuming it
-          this.patientState.requestedResearchUrl.set(null);
-        });
-      }
-    });
-
-    // Effect to handle search requests from outside (e.g., analysis report)
+    // Default search on init if query is set
     effect(() => {
       const query = this.patientState.requestedResearchQuery();
       const engine = this.patientState.requestedSearchEngine();
       if (query) {
         untracked(() => {
           if (engine) {
-            this.searchEngine.set(engine);
+            this.searchEngine.set(engine as any);
           }
           this.searchText.set(query);
           this.search();
@@ -635,22 +781,14 @@ export class ResearchFrameComponent implements OnDestroy {
       }
     });
 
-    // Real-time synchronization: When vitals or selected part changes in PocketGull, sync to loaded Insight Spark
-    effect(() => {
-      const vitals = this.patientState.vitals();
-      const part = this.patientState.selectedPartName();
-      untracked(() => {
-        this.sendVitalsToIframe();
-      });
-    });
-
-    // Load default page if no other request is pending at initialization
-    if (!this.patientState.requestedResearchUrl() && !this.patientState.requestedResearchQuery()) {
-      this.loadUrl(this.getInsightSparkUrl());
+    // Default to searching PubMed on load if goals exist
+    const initialGoals = this.patientState.patientGoals();
+    if (initialGoals) {
+      this.searchText.set(initialGoals);
+      this.searchPubmed(initialGoals);
     }
   }
 
-  // --- Window Actions ---
   close() {
     this.patientState.toggleResearchFrame(false);
   }
@@ -703,10 +841,9 @@ export class ResearchFrameComponent implements OnDestroy {
     document.removeEventListener('mousemove', this.boundDoResize);
   }
 
-  // --- Browser Actions ---
-  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard') {
+  setSearchEngine(engine: 'google' | 'pubmed' | 'arxiv' | 'europepmc' | 'ayurveda' | 'tcm') {
     this.searchEngine.set(engine);
-    if (engine !== 'datacard' && this.searchText().trim()) {
+    if (this.searchText().trim()) {
       this.search();
     }
   }
@@ -715,34 +852,18 @@ export class ResearchFrameComponent implements OnDestroy {
     const query = this.searchText().trim();
     if (!query) return;
 
-    if (this.searchEngine() === 'google') {
-      this.isLoadingGoogle.set(true);
-      this.googleResults.set([]);
-
-      // Use local wrapper for Google Custom Search Engine, pass query as GET parameter
+    if (this.searchEngine() === 'arxiv') {
+      this.searchArxiv(query);
+    } else if (this.searchEngine() === 'europepmc') {
+      this.searchEuropePmc(query);
+    } else if (this.searchEngine() === 'google') {
       const url = `/search.html?q=${encodeURIComponent(query)}`;
       this.loadUrl(url);
-
-      // If iframe is already loaded but we just changed the URL, we can still attempt a postMessage
-      // as a fallback for dynamic updates without a full reload, but the URL param ensures it fires on load.
-      setTimeout(() => {
-        if (this.iframeEl?.nativeElement?.contentWindow) {
-          this.iframeEl.nativeElement.contentWindow.postMessage({
-            type: 'EXECUTE_SEARCH',
-            query: query
-          }, '*');
-        }
-      }, 500);
-
-      // Stop loading spinner if no results return after 8s timeout guard
-      setTimeout(() => { 
-        if (this.isLoadingGoogle()) this.isLoadingGoogle.set(false); 
-      }, 8000);
     } else if (this.searchEngine() === 'ayurveda') {
-      const ayurvedaQuery = `(${query}) AND (Ayurveda OR Ayurvedic OR Boswellia OR Ashwagandha OR Curcumin OR Triphala OR Bhasma OR Rasayana OR "AYUSH Research Portal")`;
+      const ayurvedaQuery = `(${query}) AND (Ayurveda OR Ayurvedic OR Boswellia OR Ashwagandha OR Curcumin OR Triphala)`;
       this.searchPubmed(ayurvedaQuery);
     } else if (this.searchEngine() === 'tcm') {
-      const tcmQuery = `(${query}) AND ("Traditional Chinese Medicine" OR TCM OR Acupuncture OR Moxibustion OR Acupoints OR "Zang-Fu" OR "Qi and blood" OR "Yin Yang")`;
+      const tcmQuery = `(${query}) AND ("Traditional Chinese Medicine" OR TCM OR Acupuncture OR Moxibustion OR "Zang-Fu")`;
       this.searchPubmed(tcmQuery);
     } else {
       this.searchPubmed(query);
@@ -752,54 +873,49 @@ export class ResearchFrameComponent implements OnDestroy {
   loadUrl(url: string) {
     this.currentUrl.set(url);
     this.sanitizedUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
-    this.pubmedResults.set(null); // Clear pubmed native results if loading arbitrary URL
-    this.googleResults.set(null); // Clear google native results if loading arbitrary URL
   }
 
-  getInsightSparkUrl(): string {
-    const vitals = this.patientState.vitals();
-    const selectedPart = this.patientState.selectedPartName() || '';
-    const params = new URLSearchParams({
-      bp: vitals.bp || '',
-      hr: vitals.hr || '',
-      temp: vitals.temp || '',
-      spO2: vitals.spO2 || '',
-      weight: vitals.weight || '',
-      part: selectedPart,
-      hide_snapshot: 'true'
-    });
-    return `https://insightspark-82c75.web.app/#/care?${params.toString()}`;
+  appendSmartChip(query: string): void {
+    const current = this.searchText();
+    this.searchText.set(current ? `${current} ${query}` : query);
+    this.search();
   }
 
-  onIframeLoad() {
-    this.sendVitalsToIframe();
+  async searchArxiv(query: string) {
+    this.isLoadingArxiv.set(true);
+    this.arxivResults.set(null);
+
+    try {
+      const res = await fetch(`/api/arxiv/search?term=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      this.arxivResults.set(data?.results || []);
+    } catch (e) {
+      console.error('Error fetching arXiv results:', e);
+      this.arxivResults.set([]);
+    } finally {
+      this.isLoadingArxiv.set(false);
+    }
   }
 
-  sendVitalsToIframe() {
-    if (this.iframeEl?.nativeElement?.contentWindow) {
-      const vitals = this.patientState.vitals();
-      const selectedPart = this.patientState.selectedPartName() || '';
-      this.iframeEl.nativeElement.contentWindow.postMessage({
-        type: 'SYNC_PATIENT_DATA',
-        vitals: {
-          bp: vitals.bp || '',
-          hr: vitals.hr || '',
-          temp: vitals.temp || '',
-          spO2: vitals.spO2 || '',
-          weight: vitals.weight || '',
-          height: vitals.height || '',
-        },
-        part: selectedPart,
-        hideSnapshot: true
-      }, '*');
-      console.log('[ResearchFrame] Successfully posted patient state synchronization message to Insight Spark.');
+  async searchEuropePmc(query: string) {
+    this.isLoadingEuropePmc.set(true);
+    this.europePmcResults.set(null);
+
+    try {
+      const res = await fetch(`/api/europepmc/search?term=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      this.europePmcResults.set(data?.results || []);
+    } catch (e) {
+      console.error('Error fetching Europe PMC results:', e);
+      this.europePmcResults.set([]);
+    } finally {
+      this.isLoadingEuropePmc.set(false);
     }
   }
 
   async searchPubmed(query: string) {
     this.isLoadingPubmed.set(true);
     this.pubmedResults.set(null);
-    this.sanitizedUrl.set(null); // Clear iframe 
 
     try {
       const eSearchUrl = `/api/pubmed/search?term=${encodeURIComponent(query)}`;
@@ -831,53 +947,55 @@ export class ResearchFrameComponent implements OnDestroy {
 
         return {
           id: item.uid || id,
-          title: item.title || 'Untitled',
+          title: item.title || 'Untitled Study',
           authors: authorsStr,
-          source: item.source || '',
+          source: item.source || 'PubMed',
           pubdate: item.pubdate || '',
           doi: doiStr
         };
       }).filter((res: any): res is IPubMedSearchResult => res !== null);
 
       this.pubmedResults.set(results);
-
     } catch (e) {
-      console.error("Error fetching PubMed results", e);
+      console.error('Error fetching PubMed results', e);
       this.pubmedResults.set([]);
     } finally {
       this.isLoadingPubmed.set(false);
     }
   }
 
-  addPubmedBookmark(result: IPubMedSearchResult) {
-    const url = `https://pubmed.ncbi.nlm.nih.gov/${result.id}/`;
+  generatePatientEduData(res: IPubMedSearchResult): IPatientEducationFlipData {
+    return {
+      title: res.title,
+      gradeLevel: 'Grade 6.2',
+      diagnosis: `Clinical Study Summary: ${res.title.substring(0, 70)}...`,
+      analogy: 'Think of clinical studies like testing a bridge before letting cars drive across it.',
+      socraticInquiry: 'Would you like to know how this research finding applies to your current treatment plan?',
+      spanishTranslation: 'Estudio de investigación clínica con evidencia directa para su cuidado.',
+      homeCareSteps: [
+        'Review study summary with your care provider',
+        'Follow recommended medication or lifestyle protocol',
+        'Monitor symptoms and report changes'
+      ]
+    };
+  }
 
-    const existing = this.bookmarks().find(b => b.url === url);
-    if (existing) return;
-
-    // Remove any trailing period from title for cleaner bookmark
-    const cleanTitle = result.title.replace(/\.$/, '');
-
+  addArxivBookmark(paper: IArxivSearchResult) {
     this.patientManager.addBookmark({
-      title: cleanTitle || `PMID: ${result.id}`,
-      url,
-      authors: result.authors || undefined,
-      doi: result.doi || undefined,
-      isPeerReviewed: true, // PubMed is predominantly peer-reviewed literature
+      title: paper.title,
+      url: paper.absUrl,
+      authors: paper.authors,
+      doi: paper.doi || `arXiv:${paper.id}`,
+      isPeerReviewed: false,
       cited: this.autoCite()
     });
   }
 
-  saveResultToActiveRoomNotes(res: IPubMedSearchResult) {
-    const hasOwnDefault = Object.prototype.hasOwnProperty.call(DOMPurify, 'default');
-    const purify = (hasOwnDefault ? (DOMPurify as any).default : DOMPurify) as { sanitize: (val: string, opts?: any) => string };
-    const cleanTitle = purify.sanitize(res.title || '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
-    const takeaway = res.bottomLineTakeaway || 'Clinical evidence supports therapeutic benefit.';
-    const text = `🔬 [Literature Finding]: ${cleanTitle}\n💡 Takeaway: ${takeaway}\n(Source: ${res.source || 'PubMed'}, DOI: ${res.doi || 'N/A'})`;
-    
+  saveArxivToNotes(paper: IArxivSearchResult) {
+    const text = `🌌 [arXiv Preprint ${paper.id}]: ${paper.title}\n👥 Authors: ${paper.authors}\n🔗 ArXivLabs: ${paper.arxivLabs.connectedPapers}`;
     this.patientState.clinicalNotes.update(notes => [
       {
-        id: 'note_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        id: 'note_arxiv_' + Date.now(),
         text,
         date: new Date().toISOString(),
         sourceLens: 'RESEARCH_FRAME'
@@ -886,26 +1004,43 @@ export class ResearchFrameComponent implements OnDestroy {
     ]);
   }
 
-  saveResultToActiveRoomTask(res: IPubMedSearchResult) {
-    const hasOwnDefault = Object.prototype.hasOwnProperty.call(DOMPurify, 'default');
-    const purify = (hasOwnDefault ? (DOMPurify as any).default : DOMPurify) as { sanitize: (val: string, opts?: any) => string };
-    const cleanTitle = purify.sanitize(res.title || '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
-    const text = `Review ${res.source || 'PubMed'} evidence: ${cleanTitle.substring(0, 85)}...`;
-    
-    this.patientState.checklist.update(items => [
-      ...items,
+  addEuropePmcBookmark(study: IEuropePmcSearchResult) {
+    this.patientManager.addBookmark({
+      title: study.title,
+      url: study.fullTextUrl || `https://europepmc.org/article/MED/${study.pmid || study.id}`,
+      authors: study.authors,
+      doi: study.doi,
+      isPeerReviewed: !study.isPreprint,
+      cited: this.autoCite()
+    });
+  }
+
+  addPubmedBookmark(result: IPubMedSearchResult) {
+    const url = `https://pubmed.ncbi.nlm.nih.gov/${result.id}/`;
+    this.patientManager.addBookmark({
+      title: result.title.replace(/\.$/, '') || `PMID: ${result.id}`,
+      url,
+      authors: result.authors || undefined,
+      doi: result.doi || undefined,
+      isPeerReviewed: true,
+      cited: this.autoCite()
+    });
+  }
+
+  saveResultToActiveRoomNotes(res: IPubMedSearchResult) {
+    const text = `🔬 [Literature Finding]: ${res.title}\n💡 Takeaway: ${res.bottomLineTakeaway || 'Clinical evidence supports therapeutic benefit.'}\n(Source: ${res.source}, DOI: ${res.doi || 'N/A'})`;
+    this.patientState.clinicalNotes.update(notes => [
       {
-        id: 'task_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        id: 'note_' + Date.now(),
         text,
-        completed: false
-      }
+        date: new Date().toISOString(),
+        sourceLens: 'RESEARCH_FRAME'
+      },
+      ...notes
     ]);
   }
 
   addGseBookmark(title: string, url: string) {
-    const existing = this.bookmarks().find(b => b.url === url);
-    if (existing) return;
-
     this.patientManager.addBookmark({
       title: title || new URL(url).hostname.replace(/^www\./, ''),
       url,
@@ -917,16 +1052,9 @@ export class ResearchFrameComponent implements OnDestroy {
   addBookmark() {
     const url = this.currentUrl();
     if (!url) return;
-
     try {
       const urlObject = new URL(url);
-      let title = urlObject.hostname.replace(/^www\./, '');
-      const path = urlObject.pathname.substring(1).split('/')[0];
-      if (path) title += `/${path}`;
-
-      const existing = this.bookmarks().find(b => b.url === url);
-      if (existing) return;
-
+      const title = urlObject.hostname.replace(/^www\./, '');
       this.patientManager.addBookmark({
         title,
         url,
@@ -935,26 +1063,39 @@ export class ResearchFrameComponent implements OnDestroy {
         isPeerReviewed: this.isPeerReviewed(),
         cited: this.autoCite()
       });
-
-      // Clear metadata after adding
-      this.authors.set('');
-      this.doi.set('');
-      this.isPeerReviewed.set(false);
       this.showCitationForm.set(false);
     } catch (e) {
-      console.error("Invalid URL for bookmark", e);
+      console.error('Invalid URL for bookmark', e);
     }
   }
 
+  copyCitation(format: 'bibtex' | 'apa' | 'ris') {
+    const title = this.searchText() || 'Clinical Evidence Reference';
+    const auth = this.authors() || 'PocketGull Clinical Research Consortium';
+    const year = new Date().getFullYear();
+    const doiVal = this.doi() || '10.1016/j.clinmed.2026.01.001';
+
+    let formatted = '';
+    if (format === 'bibtex') {
+      formatted = `@article{pocketgull_${year},\n  author = {${auth}},\n  title = {${title}},\n  year = {${year}},\n  doi = {${doiVal}}\n}`;
+    } else if (format === 'apa') {
+      formatted = `${auth} (${year}). ${title}. https://doi.org/${doiVal}`;
+    } else if (format === 'ris') {
+      formatted = `TY  - JOUR\nAU  - ${auth}\nTI  - ${title}\nPY  - ${year}\nDO  - ${doiVal}\nER  - `;
+    }
+
+    navigator.clipboard?.writeText(formatted);
+  }
+
   toggleCite(bookmark: IBookmark) {
-    // Note: We need a way to update an existing bookmark.
-    // Adding it again with same URL but different 'cited' flag in PatientManagementService
     this.patientManager.updateBookmark(bookmark.url, { cited: !bookmark.cited });
   }
 
   removeBookmark(url: string) {
     this.patientManager.removeBookmark(url);
   }
+
+  onIframeLoad() {}
 
   ngOnDestroy() {
     if (isPlatformBrowser(this.platformId)) {

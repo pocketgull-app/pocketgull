@@ -212,6 +212,25 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
           </div>
         </div>
 
+        <!-- Pain Heatmap Scale HUD Legend -->
+        <div class="absolute bottom-4 left-4 z-30 px-3 py-1.5 rounded-xl bg-zinc-950/85 border border-zinc-800/80 backdrop-blur-md font-mono text-[10px] text-zinc-300 flex items-center gap-2 shadow-xl select-none">
+          <span class="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Pain:</span>
+          <div class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block shadow-xs"></span>
+            <span class="text-emerald-400 font-bold">0 Good</span>
+          </div>
+          <span class="text-zinc-600">→</span>
+          <div class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-amber-400 inline-block shadow-xs"></span>
+            <span class="text-amber-300 font-bold">5 Mild</span>
+          </div>
+          <span class="text-zinc-600">→</span>
+          <div class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-rose-500 inline-block shadow-xs"></span>
+            <span class="text-rose-400 font-bold">10 Bad</span>
+          </div>
+        </div>
+
         <!-- Selected Anatomical Node Overlay Card with 3D Double-Click Flip State Machine -->
         @if (state.selectedPartId(); as partId) {
           @let isFlipped = isSelectedPartFlipped();
@@ -242,7 +261,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                     </div>
                     <div class="flex justify-between items-center text-[11px]">
                       <span>Acute Pain Rating:</span>
-                      <span class="font-bold text-rose-400 font-mono">{{ getPartPainLevel(partId) }}/10</span>
+                      <span class="font-bold font-mono px-2 py-0.5 rounded border text-[11px]" [class]="getPartPainBadgeClass(partId)">{{ getPartPainLevel(partId) }}/10</span>
                     </div>
                     <div class="flex justify-between items-center text-[11px]">
                       <span>Reported Issues:</span>
@@ -430,6 +449,14 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
       const issues = this.state.issues()[partId] || [];
       if (issues.length === 0) return 0;
       return Math.max(...issues.map(i => i.painLevel || 0));
+    }
+
+    getPartPainBadgeClass(partId: string): string {
+      const pain = this.getPartPainLevel(partId);
+      if (pain >= 8) return 'text-rose-400 border-rose-500/40 bg-rose-500/20';
+      if (pain >= 6) return 'text-orange-400 border-orange-500/40 bg-orange-500/20';
+      if (pain >= 3) return 'text-amber-300 border-amber-500/40 bg-amber-500/20';
+      return 'text-emerald-400 border-emerald-500/40 bg-emerald-500/20';
     }
 
     getPartNerveInnervation(partId: string): string {
@@ -817,16 +844,16 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             if (this.backLight) { this.backLight.color.setHex(0xe11d48); this.backLight.intensity = 1.2; }
             if (this.bloomPass) this.bloomPass.strength = 0.25;
         } else if (isDarkTheme) {
-            // Dark obsidian spatial canvas
+            // Dark obsidian spatial canvas - Neutral white key & silver rim light
             if (this.ambientLight) { this.ambientLight.color.setHex(0xffffff); this.ambientLight.intensity = 1.8; }
-            if (this.directionalLight) { this.directionalLight.color.setHex(0x38bdf8); this.directionalLight.intensity = 2.0; }
-            if (this.backLight) { this.backLight.color.setHex(0x818cf8); this.backLight.intensity = 1.2; }
+            if (this.directionalLight) { this.directionalLight.color.setHex(0xffffff); this.directionalLight.intensity = 2.0; }
+            if (this.backLight) { this.backLight.color.setHex(0xd4d4d8); this.backLight.intensity = 1.2; }
             if (this.bloomPass) this.bloomPass.strength = 0.15;
         } else {
-            // Light Parchment studio lighting
-            if (this.ambientLight) { this.ambientLight.color.setHex(0xfff8ee); this.ambientLight.intensity = 2.4; }
-            if (this.directionalLight) { this.directionalLight.color.setHex(0xfff5e6); this.directionalLight.intensity = 2.0; }
-            if (this.backLight) { this.backLight.color.setHex(0x38bdf8); this.backLight.intensity = 0.8; }
+            // Light Parchment studio lighting - Clean neutral white illumination
+            if (this.ambientLight) { this.ambientLight.color.setHex(0xffffff); this.ambientLight.intensity = 2.4; }
+            if (this.directionalLight) { this.directionalLight.color.setHex(0xffffff); this.directionalLight.intensity = 2.0; }
+            if (this.backLight) { this.backLight.color.setHex(0xd4d4d8); this.backLight.intensity = 0.8; }
             if (this.bloomPass) this.bloomPass.strength = 0.05;
         }
     }
@@ -1160,52 +1187,52 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
         // Base Layer Materials wrapped with Adobe Firefly Generative Textures
         const skinMaterial = new THREE.MeshStandardMaterial({
-            color: 0x38bdf8, bumpMap: skinTexture, bumpScale: 0.04, roughness: 0.35, metalness: 0.15, emissive: 0x0369a1, emissiveIntensity: 0.15, transparent: true, opacity: 0.92, depthWrite: true
+            color: 0xe4e4e7, bumpMap: skinTexture, bumpScale: 0.03, roughness: 0.35, metalness: 0.12, emissive: 0x18181b, emissiveIntensity: 0.05, transparent: true, opacity: 0.92, depthWrite: true
         });
         const muscleMaterial = new THREE.MeshStandardMaterial({
-            color: 0xbe123c, bumpMap: muscleTexture, bumpScale: 0.08, roughness: 0.65, metalness: 0.1, transparent: true, opacity: 0.0, depthWrite: false
+            color: 0x334155, bumpMap: muscleTexture, bumpScale: 0.06, roughness: 0.65, metalness: 0.1, transparent: true, opacity: 0.0, depthWrite: false
         });
         const boneMaterial = new THREE.MeshStandardMaterial({
-            color: 0xf5f5f4, bumpMap: boneTexture, bumpScale: 0.03, roughness: 0.4, metalness: 0.1, transparent: true, opacity: 0.0, depthWrite: false
+            color: 0xffffff, bumpMap: boneTexture, bumpScale: 0.03, roughness: 0.25, metalness: 0.05, transparent: true, opacity: 0.0, depthWrite: false
         });
 
-        // Organ Layer Materials with Distinct Anatomical Colors & Emissive Highlights
+        // Organ Layer Materials with Distinct Anatomical Grayscale Tiers & Emissive Highlights
         const brainMaterial = new THREE.MeshStandardMaterial({
-            color: 0x9333ea, roughness: 0.3, metalness: 0.2, emissive: 0x6b21a8, emissiveIntensity: 0.2, transparent: true, opacity: 0.0, depthWrite: false
+            color: 0x52525b, roughness: 0.3, metalness: 0.2, emissive: 0x27272a, emissiveIntensity: 0.2, transparent: true, opacity: 0.0, depthWrite: false
         });
         const thyroidMaterial = new THREE.MeshStandardMaterial({
-            color: 0xc084fc, roughness: 0.4, metalness: 0.1, emissive: 0x9333ea, emissiveIntensity: 0.15, transparent: true, opacity: 0.0, depthWrite: false
+            color: 0x71717a, roughness: 0.4, metalness: 0.1, emissive: 0x3f3f46, emissiveIntensity: 0.15, transparent: true, opacity: 0.0, depthWrite: false
         });
         const heartMaterial = new THREE.MeshStandardMaterial({
-            color: 0xef4444, roughness: 0.3, metalness: 0.2, emissive: 0x991b1b, emissiveIntensity: 0.3, transparent: true, opacity: 0.0, depthWrite: false
+            color: 0x64748b, roughness: 0.3, metalness: 0.2, emissive: 0x334155, emissiveIntensity: 0.3, transparent: true, opacity: 0.0, depthWrite: false
         });
         const lungMaterial = new THREE.MeshStandardMaterial({
-            color: 0x38bdf8, roughness: 0.5, metalness: 0.1, emissive: 0x0284c7, emissiveIntensity: 0.15, transparent: true, opacity: 0.0, depthWrite: false
+            color: 0x94a3b8, roughness: 0.5, metalness: 0.1, emissive: 0x475569, emissiveIntensity: 0.15, transparent: true, opacity: 0.0, depthWrite: false
         });
         const liverMaterial = new THREE.MeshStandardMaterial({
-            color: 0xd97706, roughness: 0.4, metalness: 0.1, emissive: 0x92400e, emissiveIntensity: 0.15, transparent: true, opacity: 0.0, depthWrite: false
+            color: 0x475569, roughness: 0.4, metalness: 0.1, emissive: 0x1e293b, emissiveIntensity: 0.15, transparent: true, opacity: 0.0, depthWrite: false
         });
         const stomachMaterial = new THREE.MeshStandardMaterial({
-            color: 0xf59e0b, roughness: 0.4, metalness: 0.1, emissive: 0xb45309, emissiveIntensity: 0.15, transparent: true, opacity: 0.0, depthWrite: false
+            color: 0x52525b, roughness: 0.4, metalness: 0.1, emissive: 0x27272a, emissiveIntensity: 0.15, transparent: true, opacity: 0.0, depthWrite: false
         });
         const kidneyMaterial = new THREE.MeshStandardMaterial({
-            color: 0xe11d48, roughness: 0.4, metalness: 0.1, emissive: 0x9f1239, emissiveIntensity: 0.15, transparent: true, opacity: 0.0, depthWrite: false
+            color: 0x334155, roughness: 0.4, metalness: 0.1, emissive: 0x0f172a, emissiveIntensity: 0.15, transparent: true, opacity: 0.0, depthWrite: false
         });
         const vascularMaterial = new THREE.MeshStandardMaterial({
-            color: 0xd97706, roughness: 0.2, metalness: 0.4, emissive: 0xd97706, emissiveIntensity: 0.4, transparent: true, opacity: 0.0, depthWrite: false
+            color: 0x71717a, roughness: 0.2, metalness: 0.4, emissive: 0x52525b, emissiveIntensity: 0.4, transparent: true, opacity: 0.0, depthWrite: false
         });
 
-        // Enhanced Procedural GLSL Shader Material with Myocardial Ischemia & Cerebral Perfusion Lenses
+        // Enhanced Procedural GLSL Shader Material with High-Contrast Neutral Monochrome Spectrum
         const molecularMaterial = new THREE.ShaderMaterial({
             uniforms: {
                 uPainLevel: { value: 0.0 },
                 uTime: { value: 0.0 },
-                uColor: { value: new THREE.Color(0x00ffff) },
-                uHeatColor: { value: new THREE.Color(0xff0066) },
-                uVascularColor: { value: new THREE.Color(0x38bdf8) },
-                uNerveSignalColor: { value: new THREE.Color(0xfacc15) },
-                uIschemiaColor: { value: new THREE.Color(0xd97706) },
-                uCerebralPerfusionColor: { value: new THREE.Color(0xa855f7) }
+                uColor: { value: new THREE.Color(0xf4f4f5) },
+                uHeatColor: { value: new THREE.Color(0x71717a) },
+                uVascularColor: { value: new THREE.Color(0xa1a1aa) },
+                uNerveSignalColor: { value: new THREE.Color(0xffffff) },
+                uIschemiaColor: { value: new THREE.Color(0x52525b) },
+                uCerebralPerfusionColor: { value: new THREE.Color(0xd4d4d8) }
             },
             vertexShader: `
                 varying vec2 vUv;
@@ -2055,6 +2082,28 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         if (pos.rz) mesh.rotation.z = pos.rz;
     }
 
+    /**
+     * Maps pain severity (0 to 10) to clinical heatmap color:
+     * Green (0/10 Good/Normal) -> Yellow (3-4/10 Mild) -> Orange (6-7/10 Moderate) -> Crimson Red (8-10/10 Severe/Bad)
+     */
+    private getPainSeverityColor(painLevel: number): THREE.Color {
+        const t = Math.max(0, Math.min(10, painLevel)) / 10;
+        const green = new THREE.Color(0x10b981);   // 0 = Good / Healthy (Emerald Green)
+        const yellow = new THREE.Color(0xeab308);  // 4 = Mild / Caution (Gold / Yellow)
+        const orange = new THREE.Color(0xf97316);  // 7 = Moderate (Amber / Orange)
+        const red = new THREE.Color(0xef4444);     // 10 = Severe / Bad (Crimson Red)
+
+        const color = new THREE.Color();
+        if (t < 0.4) {
+            color.lerpColors(green, yellow, t / 0.4);
+        } else if (t < 0.7) {
+            color.lerpColors(yellow, orange, (t - 0.4) / 0.3);
+        } else {
+            color.lerpColors(orange, red, (t - 0.7) / 0.3);
+        }
+        return color;
+    }
+
     private updatePartColors() {
         const selectedId = this.state.selectedPartId();
         const issues = this.state.issues();
@@ -2062,61 +2111,65 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         this.parts.forEach((group, id) => {
             const isSelected = selectedId === id;
             const issuesForPart = issues[id] || [];
-            const maxPain = issuesForPart.reduce((max, issue) => Math.max(max, issue.painLevel), 0);
+            const hasIssue = issuesForPart.length > 0;
+            const maxPain = issuesForPart.reduce((max, issue) => Math.max(max, issue.painLevel ?? 0), 0);
+
+            // Trigger pain heatmap if part has reported issues or is actively selected
+            const hasPainSignal = hasIssue || isSelected;
+            const painLevel = hasPainSignal ? maxPain : 0;
+            const painColor = this.getPainSeverityColor(painLevel);
+            const intensity = painLevel / 10;
 
             group.children.forEach(child => {
                 if (!(child instanceof THREE.Mesh)) return;
                 const material = child.material as THREE.MeshStandardMaterial;
                 const layer = child.userData['layer'];
 
-                if (maxPain > 0) {
-                    const intensity = maxPain / 10;
-                    if (layer === 'skin') (material as THREE.MeshStandardMaterial).color.setRGB(1, 1 - intensity * 0.6, 1 - intensity * 0.6);
-                    if (layer === 'muscle') (material as THREE.MeshStandardMaterial).color.setRGB(0.9, 0.2 - intensity * 0.2, 0.2 - intensity * 0.2);
-                    if (layer === 'bone') {
-                        (material as THREE.MeshStandardMaterial).color.setRGB(0.9, 0.7 - intensity * 0.5, 0.7 - intensity * 0.5);
-                        child.scale.setScalar(1.0 + intensity * 0.15);
+                if (hasPainSignal) {
+                    if (layer === 'skin') {
+                        material.color.copy(painColor);
+                        material.emissive.copy(painColor).multiplyScalar(isSelected ? 0.35 : 0.15);
+                        material.emissiveIntensity = isSelected ? 0.6 : 0.25;
+                    } else if (layer === 'muscle') {
+                        material.color.copy(painColor).multiplyScalar(0.75);
+                        material.emissive.copy(painColor).multiplyScalar(0.2);
+                        material.emissiveIntensity = isSelected ? 0.5 : 0.2;
+                    } else if (layer === 'bone') {
+                        material.color.copy(painColor);
+                        child.scale.setScalar(1.0 + intensity * 0.12);
                         child.userData['painIntensity'] = intensity;
-                    }
-                    if (layer === 'organ') (material as THREE.MeshStandardMaterial).color.setRGB(0.95, 0.2, 0.4);
-                    if (layer === 'molecular' && (material as any).uniforms) {
+                        material.emissive.copy(painColor).multiplyScalar(isSelected ? 0.45 : (intensity > 0.6 ? 0.35 : 0.1));
+                        material.emissiveIntensity = isSelected ? 0.6 : 0.3;
+                    } else if (layer === 'organ') {
+                        material.color.copy(painColor);
+                        material.emissive.copy(painColor).multiplyScalar(0.25);
+                        material.emissiveIntensity = isSelected ? 0.5 : 0.25;
+                    } else if (layer === 'molecular' && (material as any).uniforms) {
                         (material as any).uniforms['uPainLevel'].value = intensity;
                     }
                 } else {
-                    if (layer === 'skin') (material as THREE.MeshStandardMaterial).color.setHex(0x38bdf8);
-                    if (layer === 'muscle') (material as THREE.MeshStandardMaterial).color.setHex(0xbe123c);
-                    if (layer === 'bone') {
-                        (material as THREE.MeshStandardMaterial).color.setHex(0xf5f5f4);
+                    if (layer === 'skin') {
+                        material.color.setHex(0xe4e4e7);
+                        material.emissive.setHex(0x000000);
+                        material.emissiveIntensity = 0;
+                    } else if (layer === 'muscle') {
+                        material.color.setHex(0x334155);
+                        material.emissive.setHex(0x000000);
+                        material.emissiveIntensity = 0;
+                    } else if (layer === 'bone') {
+                        material.color.setHex(0xffffff);
+                        material.emissive.setHex(0x000000);
+                        material.emissiveIntensity = 0;
                         child.scale.setScalar(1.0);
                         child.userData['painIntensity'] = 0;
-                    }
-                    if (layer === 'molecular' && (material as any).uniforms) {
+                    } else if (layer === 'organ') {
+                        material.emissive.setHex(0x27272a);
+                        material.emissiveIntensity = 0.15;
+                    } else if (layer === 'molecular' && (material as any).uniforms) {
                         (material as any).uniforms['uPainLevel'].value = 0.0;
-                    }
-                }
-
-                if (isSelected) {
-                    const philosophy = this.state.activePhilosophy();
-                    const paradigmEmissive = philosophy === 'western' ? 0x0284c7 : (philosophy === 'eastern' ? 0x059669 : 0xd97706);
-                    if (layer === 'skin') {
-                        (material as THREE.MeshStandardMaterial).color.setHex(0x1C1C1C);
-                        (material as THREE.MeshStandardMaterial).emissive.setHex(paradigmEmissive);
-                        (material as THREE.MeshStandardMaterial).emissiveIntensity = 0.4;
                     } else if (layer !== 'molecular') {
-                        (material as THREE.MeshStandardMaterial).emissive.setHex(paradigmEmissive);
-                        (material as THREE.MeshStandardMaterial).emissiveIntensity = 0.5;
-                    }
-                } else {
-                    const philosophy = this.state.activePhilosophy();
-                    const paradigmEmissive = philosophy === 'western' ? 0x0284c7 : (philosophy === 'eastern' ? 0x059669 : 0xd97706);
-                    if (layer === 'organ') {
-                        (material as THREE.MeshStandardMaterial).emissive.setHex(paradigmEmissive);
-                        (material as THREE.MeshStandardMaterial).emissiveIntensity = 0.25;
-                    } else if (layer === 'bone' && maxPain > 0) {
-                        (material as THREE.MeshStandardMaterial).emissive.setHex(0xff3333);
-                    } else if (layer !== 'molecular') {
-                        (material as THREE.MeshStandardMaterial).emissive.setHex(0x000000);
-                        (material as THREE.MeshStandardMaterial).emissiveIntensity = 0;
+                        material.emissive.setHex(0x000000);
+                        material.emissiveIntensity = 0;
                     }
                 }
             });

@@ -9,30 +9,35 @@ import { TriParadigmSwarmService, ITriParadigmDebate } from '../services/tri-par
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full p-5 rounded-3xl bg-zinc-950/90 border border-violet-500/30 text-zinc-100 shadow-xl font-mono backdrop-blur-xl">
-      <!-- Header -->
+      <!-- Header (Collaborative AI Exploration) -->
       <div class="flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-zinc-800/80 pb-4">
         <div class="flex items-center gap-2.5">
           <span class="text-xl">🐝</span>
           <div>
-            <h3 class="text-sm font-extrabold uppercase tracking-widest text-violet-400">
-              Tri-Paradigm Autonomous Swarm Consensus
-            </h3>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-extrabold uppercase tracking-widest text-violet-400">
+                Tri-Paradigm Collaborative Discourse
+              </h3>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-violet-950 text-violet-300 border border-violet-800">
+                AI Exploratory Draft
+              </span>
+            </div>
             <p class="text-[11px] text-zinc-400">
-              Multi-Agent Clinical Debate & Cross-Specialty Differential Diagnostics
+              Multi-Agent Exploratory Differential Discourse • Tier 2/3 Clinical Decision Support Proposal (Requires HCP Review)
             </p>
           </div>
         </div>
 
         <div class="flex items-center gap-3">
           @if (swarm.currentDebate(); as debate) {
-            <span class="text-xs px-2.5 py-1 rounded-full font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-              Consensus: {{ debate.overallConsensusScore }}%
+            <span class="text-xs px-2.5 py-1 rounded-full font-bold bg-violet-500/10 text-violet-300 border border-violet-500/30">
+              Discourse Alignment: {{ debate.overallConsensusScore }}%
             </span>
           }
 
           <button (click)="runDebate()" [disabled]="swarm.isDebating()"
             class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-extrabold text-xs uppercase tracking-wider transition shadow-md disabled:opacity-50 cursor-pointer">
-            {{ swarm.isDebating() ? 'Synthesizing Debate...' : '⚡ Run Swarm Debate' }}
+            {{ swarm.isDebating() ? 'Synthesizing Discourse...' : '⚡ Explore Discourse' }}
           </button>
         </div>
       </div>

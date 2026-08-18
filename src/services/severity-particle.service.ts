@@ -15,10 +15,12 @@ export class SeverityParticleService {
     const colors = new Float32Array(particleCount * 3);
 
     const baseColor = painLevel >= 8
-      ? new THREE.Color(0xf43f5e) // High severity red
-      : painLevel >= 5
-      ? new THREE.Color(0xf97316) // Medium severity orange
-      : new THREE.Color(0xeab308); // Low severity yellow
+      ? new THREE.Color(0xef4444) // Severe / Bad (Red)
+      : painLevel >= 6
+      ? new THREE.Color(0xf97316) // Moderate (Orange)
+      : painLevel >= 3
+      ? new THREE.Color(0xeab308) // Mild (Yellow)
+      : new THREE.Color(0x10b981); // Good / Normal (Green)
 
     for (let i = 0; i < particleCount; i++) {
       const radius = 0.15 + Math.random() * 0.2;

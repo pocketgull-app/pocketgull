@@ -83,13 +83,18 @@ import { CounterfactualSimulationService } from '../services/counterfactual-simu
           </div>
         </div>
 
-        <!-- Action Target Banner -->
+        <!-- Action Target Banner (FDA Non-Device Draft CDS Proposal) -->
         <div class="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/30 flex flex-col justify-between">
-          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
-            Care Plan Handoff
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+              Draft Care Plan Proposal
+            </span>
+            <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 font-bold">
+              Tier 3 Decision Support
+            </span>
           </div>
           <p class="text-[11px] text-zinc-600 dark:text-zinc-300 leading-snug mt-1">
-            Commit counterfactual targets directly to the active patient profile state.
+            Propose counterfactual targets for independent attending clinician evaluation & confirmation.
           </p>
           <button
             type="button"
@@ -97,7 +102,7 @@ import { CounterfactualSimulationService } from '../services/counterfactual-simu
             [disabled]="!sim.hasActiveSimulation()"
             class="mt-2 w-full min-h-[36px] px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white transition rounded-xl disabled:opacity-30 disabled:cursor-not-allowed shadow-md cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98]">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            <span>Apply Target to Care Plan</span>
+            <span>Propose Draft Simulation Target</span>
           </button>
         </div>
 

@@ -17,7 +17,7 @@ export default defineConfig({
   workers: process.env['PLAYWRIGHT_WORKERS'] ? parseInt(process.env['PLAYWRIGHT_WORKERS'], 10) : (process.env['CI'] ? 2 : 4),
   reporter: 'html',
   use: {
-    baseURL: process.env['BASE_URL'] || 'http://127.0.0.1:4000',
+    baseURL: process.env['BASE_URL'] || 'http://localhost:4000',
     trace: 'off',
     bypassCSP: true,
     permissions: ['microphone'],
@@ -30,9 +30,9 @@ export default defineConfig({
   ],
   webServer: process.env['BASE_URL'] ? undefined : {
     command: 'npm run preview',
-    url: 'http://127.0.0.1:4000',
+    url: 'http://localhost:4000',
     reuseExistingServer: true,
-    timeout: 120 * 1000,
+    timeout: 30 * 1000,
     env: {
       PORT: '4000',
       NODE_ENV: 'production',

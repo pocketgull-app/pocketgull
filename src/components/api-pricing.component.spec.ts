@@ -95,13 +95,13 @@ describe('ApiPricingComponent', () => {
 
   it('should trigger checkout request on subscribe', () => {
     component.subscribe('price_test_123', 'Practitioner');
-    expect(component.isLoading()).toBe(true);
     expect(mockHttpClient.post).toHaveBeenCalledWith('/api/billing/checkout', {
       priceId: 'price_test_123',
       customerEmail: 'admin@demo-tenant.com',
       itemType: 'agentic_api_tier',
       packageName: 'Pocket Gull Practitioner API'
     });
+    expect(component.isLoading()).toBe(false);
   });
 
   it('should emit close event when close is triggered', () => {

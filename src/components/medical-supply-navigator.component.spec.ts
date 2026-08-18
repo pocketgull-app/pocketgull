@@ -4,6 +4,7 @@ import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentIn
 import { ProviderTreatmentNetworkService } from '../services/provider-treatment-network.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { MedicalDecoderService } from '../services/medical-decoder.service';
+import { StoreSourcingService } from '../services/store-sourcing.service';
 
 describe('MedicalSupplyNavigatorComponent', () => {
   let component: MedicalSupplyNavigatorComponent;
@@ -30,7 +31,8 @@ describe('MedicalSupplyNavigatorComponent', () => {
     injector = createEnvironmentInjector([
       { provide: ProviderTreatmentNetworkService, useValue: mockNetworkService },
       { provide: PatientStateService, useValue: mockPatientState },
-      { provide: MedicalDecoderService, useValue: mockDecoder }
+      { provide: MedicalDecoderService, useValue: mockDecoder },
+      StoreSourcingService
     ], undefined as any);
 
     runInInjectionContext(injector, () => {
@@ -38,15 +40,26 @@ describe('MedicalSupplyNavigatorComponent', () => {
     });
   });
 
-  it('should initialize with supply list and hospital network', () => {
-    expect(component.supplies().length).toBeGreaterThanOrEqual(5);
+  it('should initialize with supply list, botanical tinctures, and hospital network', () => {
+    expect(component.supplies().length).toBeGreaterThanOrEqual(8);
     expect(component.selectedCategory()).toBe('all');
     expect(component.filteredSupplies().length).toBe(component.supplies().length);
   });
 
-  it('should filter medical supplies by category', () => {
-    component.selectedCategory.set('Diagnostic Vitals');
-    const vitalsItems = component.filteredSupplies();
-    expect(vitalsItems.every(i => i.category === 'Diagnostic Vitals')).toBe(true);
+  it('should filter medical supplies by Botanical Tinctures category', () => {
+    component.selectedCategory.set('Botanical Tinctures & Herbs');
+    const herbalItems = component.filteredSupplies();
+    expect(herbalItems.length).toBeGreaterThanOrEqual(2);
+    expect(herbalItems.every(i => i.category === 'Botanical Tinctures & Herbs')).toBe(true);
+  });
+
+  it('should open and close tincture formulation drawer', () => {
+    expect(component.activeTinctureFormula()).toBeNull();
+    component.openTinctureDrawer('formula-shen-calm');
+    expect(component.activeTinctureFormula()).not.toBeNull();
+    expect(component.activeTinctureFormula()?.title).toContain('Shen');
+
+    component.activeTinctureFormula.set(null);
+    expect(component.activeTinctureFormula()).toBeNull();
   });
 });

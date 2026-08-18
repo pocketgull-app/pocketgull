@@ -59,4 +59,93 @@ describe('SkepticalEpistemologyService', () => {
     expect(questions.length).toBe(2);
     expect(questions[0].id).toContain('socratic-unusual-lens-target');
   });
+
+  it('7. Pools calibrated Log-Likelihood Ratios across four-field evidence tuples and eliminates count-scale drift', () => {
+    const tuples = [
+      {
+        hypothesis: 'Targeted SGLT2i Cardioprotection in HFrEF',
+        reliabilityBucket: 'A_definitive_rct' as const,
+        rationale: 'DAPA-HF multi-center randomized controlled trial demonstrated 26% reduction in cardiovascular death.',
+        provenance: { sourceId: 'NEJM-DAPA-HF-2019', doi: '10.1056/NEJMoa1911303' },
+        direction: 'supports' as const
+      },
+      {
+        hypothesis: 'Targeted SGLT2i Cardioprotection in HFrEF',
+        reliabilityBucket: 'B_validated_cohort' as const,
+        rationale: 'Empagliflozin registry cohort verified sustained eGFR slope preservation across 12,000 ambulatory patients.',
+        provenance: { sourceId: 'EMPA-REG-OUTCOME', doi: '10.1056/NEJMoa1504720' },
+        direction: 'supports' as const
+      }
+    ];
+
+    const result = service.poolCalibratedLogLikelihoodRatios(tuples, 0.15, 0.80);
+
+    expect(result.hypothesis).toBe('Targeted SGLT2i Cardioprotection in HFrEF');
+    expect(result.sourceCount).toBe(2);
+    expect(result.totalLlr).toBeGreaterThan(4.0); // 2.708 + 1.609 = 4.317
+    expect(result.posteriorProbability).toBeGreaterThan(0.85);
+    expect(result.decisionThresholdMet).toBe(true);
+    expect(result.countScaleDriftMitigated).toBe(true);
+  });
+
+  it('8. Correctly down-weights refuting or high-risk-of-bias evidence tuples', () => {
+    const refutingTuples = [
+      {
+        hypothesis: 'Unverified Herbal Extract Reverses Atherosclerosis',
+        reliabilityBucket: 'E_high_risk_bias' as const,
+        rationale: 'Uncontrolled self-reported social media series with high risk of bias.',
+        provenance: { sourceId: 'BLOG-SERIES-2024' },
+        direction: 'supports' as const
+      },
+      {
+        hypothesis: 'Unverified Herbal Extract Reverses Atherosclerosis',
+        reliabilityBucket: 'A_definitive_rct' as const,
+        rationale: 'Double-blind sham-controlled trial showed no significant reduction in CIMT arterial wall thickness.',
+        provenance: { sourceId: 'LANCET-NEGATIVE-RCT-2025' },
+        direction: 'refutes' as const
+      }
+    ];
+
+    const result = service.poolCalibratedLogLikelihoodRatios(refutingTuples, 0.20, 0.75);
+
+    expect(result.totalLlr).toBeLessThan(0); // -0.799 (bucket E) + (-2.708) (refuting A) = -3.507
+    expect(result.posteriorProbability).toBeLessThan(0.02);
+    expect(result.decisionThresholdMet).toBe(false);
+  });
+
+  it('9. Calculates theoretical Count-Scale Drift to prove uncalibrated voting failure modes', () => {
+    const driftSmall = service.calculateCountScaleDrift(2, 1.8);
+    const driftLarge = service.calculateCountScaleDrift(25, 1.8);
+
+    expect(driftSmall.uncalibratedOperatingShift).toBeLessThan(1.0);
+    expect(driftLarge.uncalibratedOperatingShift).toBeGreaterThan(2.5);
+    expect(driftLarge.riskOfFalsePositiveInflation).toBe(true);
+    expect(driftLarge.calibratedStabilityIndex).toBe(1.0);
+  });
+
+  it('10. Exposes the five empirical falsification predictions and negative results', () => {
+    const predictions = service.getEpistemicFalsificationPredictions();
+    const negativeResults = service.getNegativeResults();
+    const confoundedComparisons = service.getConfoundedComparisons();
+
+    expect(predictions.length).toBe(5);
+    expect(predictions[0].id).toBe('FALSIFY-01');
+    expect(predictions[0].verdictIfObserved).toBe('Falsified');
+
+    expect(negativeResults.length).toBe(3);
+    expect(negativeResults[0].approach).toContain('Softmax Attention Pooling');
+
+    expect(confoundedComparisons.length).toBe(3);
+    expect(confoundedComparisons[0].confounder).toBeDefined();
+  });
+
+  it('11. Returns unadjusted baseline and deferral notice when empty evidence tuple list is passed', () => {
+    const result = service.poolCalibratedLogLikelihoodRatios([], 0.10, 0.80);
+
+    expect(result.sourceCount).toBe(0);
+    expect(result.totalLlr).toBe(0);
+    expect(result.posteriorProbability).toBe(0.10);
+    expect(result.decisionThresholdMet).toBe(false);
+    expect(result.falsificationNotice).toContain('No evidence tuples provided');
+  });
 });

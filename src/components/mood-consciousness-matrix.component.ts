@@ -836,11 +836,11 @@ export class MoodConsciousnessMatrixComponent implements OnDestroy {
   visualizerBars = signal<number[]>([40, 65, 80, 50, 90, 70, 45, 85, 60, 95, 30, 75]);
 
   tracksSpec = [
-    { title: '528 Hz Solfeggio Vagal Serenade (Transformation)', solfeggioFreq: 528, tuningName: 'Transformation & DNA Repair', binauralBeatHz: 10, artTheme: 'Bioluminescent Indigo Lotus' },
-    { title: '432 Hz Harmonic Gamma Flow (Prefrontal Gamma)', solfeggioFreq: 432, tuningName: 'Natural Harmonic Balance', binauralBeatHz: 40, artTheme: 'Golden Neural Cortex Matrix' },
-    { title: '639 Hz Heart Coherence Sonnet (Shen Anchoring)', solfeggioFreq: 639, tuningName: 'Interpersonal Harmony', binauralBeatHz: 8, artTheme: 'Rose Gold Heart Aura Mandala' },
-    { title: '174 Hz Deep Delta Glymphatic Lullaby', solfeggioFreq: 174, tuningName: 'Pain & Stress Anesthetic', binauralBeatHz: 2, artTheme: 'Starlight Glymphatic Nebula' },
-    { title: '852 Hz Intuitive Reverie Chants (Anandamide Flow)', solfeggioFreq: 852, tuningName: 'Spiritual Order & Intuition', binauralBeatHz: 6, artTheme: 'Emerald Crystalline Prism' }
+    { title: '528 Hz Acoustic Relaxation Serenade', solfeggioFreq: 528, tuningName: 'Autonomic Relaxation & Down-Regulation', binauralBeatHz: 10, artTheme: 'Bioluminescent Indigo Lotus' },
+    { title: '432 Hz Harmonic Relaxation Flow', solfeggioFreq: 432, tuningName: 'Subjective Stress Reduction', binauralBeatHz: 40, artTheme: 'Golden Neural Cortex Matrix' },
+    { title: '639 Hz Mindful Coherence Meditation', solfeggioFreq: 639, tuningName: 'Mindful Somatic Grounding', binauralBeatHz: 8, artTheme: 'Rose Gold Heart Aura Mandala' },
+    { title: '174 Hz Restorative Evening Lullaby', solfeggioFreq: 174, tuningName: 'Evening Sleep Relaxation Support', binauralBeatHz: 2, artTheme: 'Starlight Glymphatic Nebula' },
+    { title: '852 Hz Mindful Introspection Soundscape', solfeggioFreq: 852, tuningName: 'Cognitive Relaxation & Focus', binauralBeatHz: 6, artTheme: 'Emerald Crystalline Prism' }
   ];
 
   activeJukeboxTrack = signal(this.tracksSpec[0]);

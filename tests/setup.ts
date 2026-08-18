@@ -3,18 +3,24 @@ import 'zone.js';
 import 'zone.js/testing';
 
 const g: any = typeof window !== 'undefined' ? window : globalThis;
-Object.defineProperty(g, 'config', {
-  value: { production: false },
-  writable: true,
-  configurable: true
-});
-g.ng = g.ng || {};
-Object.defineProperty(g.ng, 'config', {
-  value: { production: false },
-  writable: true,
-  configurable: true
-});
+g.config = { production: false };
+g.ng = g.ng || { config: { production: false } };
+g.ng.config = { production: false };
 g.ngDevMode = true;
+
+if (typeof global !== 'undefined') {
+  (global as any).config = { production: false };
+  (global as any).ng = (global as any).ng || { config: { production: false } };
+  (global as any).ng.config = { production: false };
+  (global as any).ngDevMode = true;
+}
+
+if (typeof globalThis !== 'undefined') {
+  (globalThis as any).config = { production: false };
+  (globalThis as any).ng = (globalThis as any).ng || { config: { production: false } };
+  (globalThis as any).ng.config = { production: false };
+  (globalThis as any).ngDevMode = true;
+}
 
 import { getTestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
@@ -41,4 +47,3 @@ if (typeof (globalThis as any).beforeEach === 'function') {
     ensureTestEnvironment();
   });
 }
-

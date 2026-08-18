@@ -741,6 +741,9 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
 const apiLimiter = rateLimit({
   windowMs: 60_000,
   max: isTestingEnv || process.env['NODE_ENV'] !== 'production' ? 100_000 : 100,
@@ -755,7 +758,7 @@ app.use('/api-docs', apiLimiter);
 app.use('/health', apiLimiter);
 
 // CSP Telemetry Violation Reporting (Disabled in production for patient privacy)
-app.post('/api/csp-report', express.json({ type: ['application/json', 'application/csp-report'] }), (req: express.Request, res: express.Response) => {
+app.post('/api/csp-report', (req: express.Request, res: express.Response) => {
   if (process.env['NODE_ENV'] === 'production') {
     return res.status(404).send('Not Found');
   }
@@ -769,9 +772,6 @@ app.post('/api/csp-report', express.json({ type: ['application/json', 'applicati
   console.log('[CSP Violation Report]:', JSON.stringify(safeReport));
   res.status(204).end();
 });
-
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 import { dicomRouter } from './server/dicom';
 import { healthcareRouter, ensureHealthcareStoresExist } from './server/healthcare';

@@ -47,4 +47,12 @@ describe('SmartOnFhirLaunchService Unit Suite', () => {
     expect(params.iss).toBe('https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4');
     expect(params.launch).toBe('token_xyz_123');
   });
+
+  it('4. Generates realistic live FHIR R4 sandbox bundle for instant ingestion', () => {
+    const bundle = service.generateMockEhrBundle('Dr. Rosalind Franklin, Ph.D.', 72, 118, 76);
+    expect(bundle.resourceType).toBe('Bundle');
+    expect(bundle.entry.length).toBeGreaterThanOrEqual(4);
+    expect(bundle.entry[0].resource.resourceType).toBe('Patient');
+    expect(bundle.entry[0].resource.name[0].given[0]).toBe('Dr.');
+  });
 });

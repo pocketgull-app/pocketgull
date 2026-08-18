@@ -9,16 +9,21 @@ import { BiometricSensorFusionService } from '../services/hardware/biometric-sen
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full p-5 rounded-3xl bg-zinc-950/90 border border-sky-500/30 text-zinc-100 shadow-xl font-mono backdrop-blur-xl">
-      <!-- Header -->
+      <!-- Header (Educational Simulation Sandbox) -->
       <div class="flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-zinc-800/80 pb-4">
         <div class="flex items-center gap-2.5">
           <span class="text-xl">🛰️</span>
           <div>
-            <h3 class="text-sm font-extrabold uppercase tracking-widest text-sky-400">
-              Continuous Biometric Sensor Fusion Telemetry
-            </h3>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-extrabold uppercase tracking-widest text-sky-400">
+                Synthetic Biometric Telemetry Sandbox
+              </h3>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
+                Educational Simulation
+              </span>
+            </div>
             <p class="text-[11px] text-zinc-400">
-              Sub-Second PPG HRV, CGM Glucose, & Respiratory Waveform Fusion
+              Synthetic PPG HRV, CGM Glucose, & Respiratory Waveform Sandbox • Not a Diagnostic Medical Device
             </p>
           </div>
         </div>
@@ -26,14 +31,14 @@ import { BiometricSensorFusionService } from '../services/hardware/biometric-sen
         <div class="flex items-center gap-3">
           @if (fusion.isStreaming()) {
             <span class="text-xs px-2.5 py-1 rounded-full font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Live Telemetry Streaming
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Simulation Running
             </span>
           }
 
           <button (click)="toggleStream()"
             class="px-4 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider transition shadow-md cursor-pointer"
             [ngClass]="fusion.isStreaming() ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-sky-600 hover:bg-sky-500 text-white'">
-            {{ fusion.isStreaming() ? '⏸ Pause Stream' : '▶ Start Live Stream' }}
+            {{ fusion.isStreaming() ? '⏸ Pause Simulation' : '▶ Start Simulation' }}
           </button>
         </div>
       </div>

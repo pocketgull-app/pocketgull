@@ -70,6 +70,7 @@ import { TeledentistryOdontogramComponent } from './components/teledentistry-odo
 import { ZooniverseMicroAnnotationComponent } from './components/zooniverse-micro-annotation.component';
 import { Section504FolioComponent } from './components/section-504-folio.component';
 import { ArchivalHealthGalleryComponent } from './components/archival-health-gallery.component';
+import { PatientArtCollectiveStoreComponent } from './components/patient-art-collective-store.component';
 import { SteeringCommitteeDossierComponent } from './components/steering-committee-dossier.component';
 import { ClinicalContextModeSwitcherComponent } from './components/clinical-context-mode-switcher.component';
 import { AcademicCitationDrawerComponent } from './components/academic-citation-drawer.component';
@@ -78,6 +79,8 @@ import { SocialPragmaticsGymComponent } from './components/social-pragmatics-gym
 import { SocraticEvidenceValidatorComponent } from './components/socratic-evidence-validator.component';
 import { BiometricBluetoothHubComponent } from './components/biometric-bluetooth-hub.component';
 import { PharmacogenomicsOptimizerComponent } from './components/pharmacogenomics-optimizer.component';
+import { AgeGateModalComponent } from './components/modals/age-gate-modal.component';
+import { AgeGateService } from './services/age-gate.service';
 
 @Component({
   selector: 'app-root',
@@ -131,7 +134,9 @@ import { PharmacogenomicsOptimizerComponent } from './components/pharmacogenomic
     ZooniverseMicroAnnotationComponent,
     Section504FolioComponent,
     ArchivalHealthGalleryComponent,
-    SteeringCommitteeDossierComponent
+    PatientArtCollectiveStoreComponent,
+    SteeringCommitteeDossierComponent,
+    AgeGateModalComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -142,6 +147,11 @@ import { PharmacogenomicsOptimizerComponent } from './components/pharmacogenomic
     <!-- ACM §1.6: First-run informed consent -->
     @if (!showSplash() && !consentService.hasConsented()) {
       <app-consent-modal></app-consent-modal>
+    }
+
+    <!-- First-run Age Gate & Safety Persona Selector -->
+    @if (!showSplash() && consentService.hasConsented() && (!ageGateService.hasSelectedTier() || showAgeGateModal())) {
+      <app-age-gate-modal (tierSelected)="showAgeGateModal.set(false)"></app-age-gate-modal>
     }
 
     @if (showBillingDashboard()) {
@@ -255,7 +265,8 @@ import { PharmacogenomicsOptimizerComponent } from './components/pharmacogenomic
               ✕
             </button>
           </div>
-          <div class="p-4 sm:p-6">
+          <div class="p-4 sm:p-6 space-y-6">
+            <app-patient-art-collective-store (closeModal)="showArchivalGalleryModal.set(false)"></app-patient-art-collective-store>
             <app-archival-health-gallery></app-archival-health-gallery>
           </div>
         </div>
@@ -483,6 +494,7 @@ import { PharmacogenomicsOptimizerComponent } from './components/pharmacogenomic
         }
 
         <app-main-header-nav
+          (openAgeGate)="showAgeGateModal.set(true)"
           (openCompanionSync)="showCompanionSyncModal.set(true)"
           (openBioNetworkQr)="showCompanionSyncModal.set(true)"
           (openBillingDashboard)="showBillingDashboard.set(true)"
@@ -1226,6 +1238,8 @@ export class AppComponent implements OnDestroy {
   private clinicalIntelligence = inject(ClinicalIntelligenceService);
   network = inject(NetworkStateService);
   consentService = inject(ConsentService);
+  ageGateService = inject(AgeGateService);
+  readonly showAgeGateModal = signal<boolean>(false);
   hardware = inject(HardwareTelemetryService);
   readonly rules = inject(RulesEngineService);
   private aiConfig = inject(AI_CONFIG, { optional: true });

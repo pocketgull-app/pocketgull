@@ -26,10 +26,10 @@ describe('InvestorValuationPortalModalComponent', () => {
   });
 
   it('should calculate live COCOMO II, COSYSMO, and COCOTS replication costs', () => {
-    expect(component.sloc()).toBe(338582);
-    expect(component.cocomoCost()).toBeGreaterThan(10000000);
-    expect(component.totalReplicationCost()).toBeGreaterThan(15000000);
-    expect(component.discountToReplicate()).toBeGreaterThan(50);
+    expect(component.sloc()).toBe(170580);
+    expect(component.cocomoCost()).toBeGreaterThan(5000000);
+    expect(component.totalReplicationCost()).toBeGreaterThan(10000000);
+    expect(component.discountToReplicate()).toBeGreaterThan(40);
   });
 
   it('should switch view modes between pitch deck and multi-model simulator', () => {

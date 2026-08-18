@@ -148,7 +148,7 @@ export class FloatingWaterConsciousnessComponent implements AfterViewInit, OnDes
   ];
 
   floatingWords = signal<IFloatingWord[]>([
-    { id: 'w-1', text: '528 Hz Solfeggio', category: 'frequency', x: 28, y: 48, vx: 0.03, vy: 0.02, scale: 1, phase: 0, emoji: '🎵', details: 'Transformation frequency promoting vagal tone and cellular DNA harmony.' },
+    { id: 'w-1', text: '528 Hz Solfeggio', category: 'frequency', x: 28, y: 48, vx: 0.03, vy: 0.02, scale: 1, phase: 0, emoji: '🎵', details: 'Acoustic frequency promoting vagal tone, parasympathetic activation, and subjective relaxation.' },
     { id: 'w-2', text: 'GABA-A Receptor', category: 'neurotransmitter', x: 58, y: 42, vx: -0.02, vy: 0.03, scale: 1, phase: 1.5, emoji: '🧬', details: 'Primary inhibitory neurotransmitter driving parasympathetic emotional calmness.' },
     { id: 'w-3', text: 'Anandamide Bliss', category: 'neurotransmitter', x: 42, y: 82, vx: 0.02, vy: -0.02, scale: 1, phase: 3, emoji: '✨', details: 'Endocannabinoid molecule associated with creative hypnagogic reverie.' },
     { id: 'w-4', text: 'Shen Anchored', category: 'affirmation', x: 72, y: 55, vx: -0.03, vy: -0.02, scale: 1, phase: 4.5, emoji: '☯️', details: 'TCM energetic state where spirit rests in the Heart Blood without agitation.' },

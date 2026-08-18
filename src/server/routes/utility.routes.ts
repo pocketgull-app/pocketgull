@@ -141,6 +141,121 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
     }
   });
 
+  // ── arXiv & ArXivLabs Proxy ───────────────────────────────────────────
+
+  // GET /arxiv/search
+  router.get('/arxiv/search', async (req: Request, res: Response) => {
+    try {
+      const term = req.query['term'] as string;
+      const category = req.query['category'] as string;
+      if (!term) return res.status(400).json({ error: 'Term is required' });
+
+      let queryStr = `all:${term}`;
+      if (category) {
+        queryStr = `(${queryStr}) AND (cat:${category})`;
+      }
+
+      const arxivUrl = `https://export.arxiv.org/api/query?search_query=${encodeURIComponent(queryStr)}&max_results=15&sortBy=submittedDate&sortOrder=descending`;
+      const response = await fetch(arxivUrl);
+      const xmlText = await response.text();
+
+      const entries: any[] = [];
+      const entryRegex = /<entry>([\s\S]*?)<\/entry>/gi;
+      let match: RegExpExecArray | null;
+
+      while ((match = entryRegex.exec(xmlText)) !== null) {
+        const entryBlock = match[1];
+        const idMatch = /<id>([^<]+)<\/id>/i.exec(entryBlock);
+        const titleMatch = /<title>([^<]+)<\/title>/i.exec(entryBlock);
+        const summaryMatch = /<summary>([\s\S]*?)<\/summary>/i.exec(entryBlock);
+        const publishedMatch = /<published>([^<]+)<\/published>/i.exec(entryBlock);
+        const updatedMatch = /<updated>([^<]+)<\/updated>/i.exec(entryBlock);
+        const primaryCatMatch = /<arxiv:primary_category[^>]*term="([^"]+)"/i.exec(entryBlock);
+        const doiMatch = /<arxiv:doi[^>]*>([^<]+)<\/arxiv:doi>/i.exec(entryBlock);
+
+        const authorMatches = [...entryBlock.matchAll(/<author>\s*<name>([^<]+)<\/name>/gi)].map(m => m[1].trim());
+
+        const rawId = idMatch ? idMatch[1].trim() : '';
+        const cleanId = rawId.replace(/^https?:\/\/arxiv\.org\/abs\//, '').replace(/v\d+$/, '');
+
+        if (cleanId) {
+          entries.push({
+            id: cleanId,
+            rawId,
+            title: titleMatch ? titleMatch[1].replace(/\s+/g, ' ').trim() : 'Untitled arXiv Paper',
+            summary: summaryMatch ? summaryMatch[1].replace(/\s+/g, ' ').trim() : '',
+            authors: authorMatches.join(', ') || 'Unknown Authors',
+            published: publishedMatch ? publishedMatch[1].trim() : '',
+            updated: updatedMatch ? updatedMatch[1].trim() : '',
+            primaryCategory: primaryCatMatch ? primaryCatMatch[1] : 'q-bio',
+            doi: doiMatch ? doiMatch[1].trim() : undefined,
+            pdfUrl: `https://arxiv.org/pdf/${cleanId}.pdf`,
+            absUrl: `https://arxiv.org/abs/${cleanId}`,
+            arxivLabs: {
+              nasaAds: `https://ui.adsabs.harvard.edu/abs/arXiv:${cleanId}`,
+              googleScholar: `https://scholar.google.com/scholar_lookup?arxiv_id=${cleanId}`,
+              semanticScholar: `https://www.semanticscholar.org/paper/arXiv:${cleanId}`,
+              ar5ivHtml: `https://ar5iv.labs.arxiv.org/html/${cleanId}`,
+              connectedPapers: `https://www.connectedpapers.com/main/${cleanId}/arxiv`,
+              papersWithCode: `https://paperswithcode.com/paper/${cleanId}`,
+              huggingFace: `https://huggingface.co/papers/${cleanId}`,
+              scite: `https://scite.ai/reports/arxiv:${cleanId}`
+            }
+          });
+        }
+      }
+
+      res.json({
+        totalResults: entries.length,
+        query: term,
+        results: entries
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'arXiv proxy error';
+      console.error('arXiv Search Proxy Error:', err);
+      res.status(500).json({ error: message });
+    }
+  });
+
+  // ── Europe PMC Open Access Proxy ──────────────────────────────────────
+
+  // GET /europepmc/search
+  router.get('/europepmc/search', async (req: Request, res: Response) => {
+    try {
+      const term = req.query['term'] as string;
+      if (!term) return res.status(400).json({ error: 'Term is required' });
+
+      const epmcUrl = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(term)}&format=json&pageSize=15&resultType=core`;
+      const response = await fetch(epmcUrl);
+      const data = await response.json();
+
+      const results = (data?.resultList?.result || []).map((r: any) => ({
+        id: r.id || r.pmid || r.pmcid,
+        pmid: r.pmid,
+        pmcid: r.pmcid,
+        doi: r.doi,
+        title: r.title ? r.title.replace(/\.$/, '') : 'Untitled Study',
+        authors: r.authorString || 'Unknown Authors',
+        journal: r.journalTitle || r.journalInfo?.journal?.title || 'Europe PMC Repository',
+        pubYear: r.pubYear || '',
+        abstractText: r.abstractText || '',
+        isOpenAccess: r.isOpenAccess === 'Y',
+        isPreprint: r.pubType === 'preprint' || !r.journalTitle,
+        fullTextUrl: r.pmcid ? `https://europepmc.org/articles/${r.pmcid}` : (r.doi ? `https://doi.org/${r.doi}` : undefined)
+      }));
+
+      res.json({
+        hitCount: data?.hitCount || results.length,
+        query: term,
+        results
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Europe PMC proxy error';
+      console.error('Europe PMC Search Proxy Error:', err);
+      res.status(500).json({ error: message });
+    }
+  });
+
   // ── Config ────────────────────────────────────────────────────────────
 
   // GET /config

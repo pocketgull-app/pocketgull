@@ -8,6 +8,47 @@ title: Changelog
 All notable changes to Pocket Gull are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v1.24.0 — 2026-08-18
+
+**OpenType Sanitizer (OTS) TrueType Glyph Security Standardization, Cloud Sync Payload Compression (413 Remediation), Local WebGPU Gemma 3 Air-Gapped CDS Engine, and 5 Natural Business Site Voice Personas**
+
+### Fixed & Security Hardening
+- **[OpenType Sanitizer (OTS) Glyph Flag Compliance & Typography Architecture] (`sanitize-font-flags.mjs`, `public/fonts`, `public/brand/fonts`)**:
+  - Sanitized 134 glyph points across the `PocketGull` typeface superfamily (`PocketGull-Bold.ttf`, `PocketGull-Chiseltip.ttf`, `PocketGull-Fineliner.ttf`, `PocketGullMono-Regular.ttf`) by clearing reserved bit 7 (`0x80`) from all `glyf` table records.
+  - Eliminated browser console OTS font decoding rejections (`OTS parsing error: glyf: Bad glyph flag (178), reserved bit 7 must be set to zero`).
+  - Recalculated `glyf` table checksums and TrueType `head.checkSumAdjustment` to guarantee 100% compliance with OpenType/W3C font standards.
+- **[Cloud Sync Network Payload Optimization & 413 Remediation] (`PatientManagementService`, `src/server.ts`, `server.js`)**:
+  - Elevated Express body-parser size limit (`express.json({ limit: '50mb' })`) to the top of the middleware chain in both SSR Express entrypoints to support high-throughput clinical telemetry and SBAR note drafts.
+  - Hardened `PatientManagementService.syncToCloud()` by stripping transient in-memory binary caches and bounding historical state trees to the 10 most recent visit records, ensuring efficient transmission within strict REST boundaries.
+- **[Hermetic Dependency Injection & Test Suite Stability] (`AdkLiveService`, `DictationService`)**:
+  - Safeguarded Angular 22 `inject()` calls with defensive execution wrappers to eliminate `NG0203` errors during isolated unit testing.
+
+### Added & Enhanced
+- **[Local Edge WebGPU Gemma 3 Offline CDS Engine] (`WebLLMProvider`, `webllm.worker.ts`, `LocalGemmaStudioComponent`)**:
+  - Aligned MLC WebLLM model identifiers to official prebuilts (`gemma3-1b-it-q4f16_1-MLC`, `gemma-2-2b-it-q4f16_1-MLC`, `gemma-2-9b-it-q4f16_1-MLC`).
+  - Repaired dedicated Web Worker message dispatch handler in `webllm.worker.ts` to prevent dropped worker events.
+  - Implemented an instant, air-gapped clinical emergency heuristic CDS fallback engine covering ACOG AIM Preeclampsia, CPIC CYP2D6 pharmacogenomics, Surviving Sepsis Hour-1, Stroke BE-FAST, Anaphylaxis, and Lactation guidance.
+- **[Natural Voice Persona Ribbons & Business Site Voice Synchronization] (`VoicePersonaService`, `DictationService`, `AdkLiveService`, `VoiceAssistantComponent`)**:
+  - Created `VoicePersonaService` managing the 5 canonical Business Site vocal profiles: **🕊️ Aoede** (warm lyrical functional medicine), **⚡ Puck** (rapid British clinical triage scribe), **🦅 Charon** (grounding baritone critical care), **🌿 Kore** (soothing perinatal doula), and **🛡️ Fenrir** (tactical paramedic EMT command).
+  - Integrated neural voice matching into `DictationService` and synced Gemini Live full-duplex HD voice selection in `AdkLiveService`.
+  - Added an interactive Voice Persona Switcher Ribbon and spoken tone preview player in `VoiceAssistantComponent`.
+
+---
+
+## v1.23.0 — 2026-08-17
+
+**AI Branding Package Generator (`design.philgear.dev`), Google SWE Book Zero-Waste Architecture, Deterministic WCAG 2.2 AAA Contrast Engine, Scale-to-Zero Deployment Playbook, and WebMCP Tool #78**
+
+### Added & Enhanced
+- **[AI Branding Package Generator & Zero-Waste Design Engine] (`BrandPackageGeneratorService`, `BrandPackageGeneratorComponent`, WebMCP Tool #78)**:
+  - High-performance, scale-to-zero branding synthesis engine adhering strictly to the Google Software Engineering (SWE Book / Abseil) principles.
+  - Zero-waste token economics using Gemini 2.5 Flash with strict `responseSchema` (structured JSON output), eliminating conversational token bloat by 60–80%.
+  - Deterministic client-side edge generation engine computing WCAG 2.2 AAA relative luminance, 5 Origami Mascot pairings, and rendering pure vector SVG wordmarks, monograms, and telemetry badges.
+- **[Zero-Cost Production Deployment & SWE Book Architecture Playbook] (`docs/DESIGN_PHILGEAR_DEV_DEPLOYMENT.md`)**:
+  - Detailed deployment guide for `design.philgear.dev` configuring Firebase Hosting / Cloudflare Pages for $0.00/mo static delivery.
+
+---
+
 ## v1.7.0 — 2026-07-27
 
 **Container Security Hardening (5 CVE Fixes), Google Cloud Data Agent Proxy Integration, Multiplatform Flutter Web Download Architecture, and Java 21 Toolchain Alignment**

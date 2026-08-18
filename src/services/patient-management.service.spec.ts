@@ -79,6 +79,9 @@ describe('PatientManagementService & Cloud Sync Suite', () => {
     mockThemeService = {
       applyThemeForPatient: vi.fn()
     };
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 
     TestBed.configureTestingModule({
       providers: [

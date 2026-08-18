@@ -12,7 +12,7 @@ if (!fs.existsSync(workspaceTemp)) {
 process.env.TMP = workspaceTemp;
 process.env.TEMP = workspaceTemp;
 
-const shimPath = path.resolve(__dirname, 'scripts/playwright_shim.cjs');
+const shimPath = path.resolve(__dirname, 'scripts/playwright_shim.cjs').replace(/\\/g, '/');
 require(shimPath);
 
 // Ensure all worker threads / child processes inherit the shim

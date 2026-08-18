@@ -4,14 +4,52 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class BionicReadingService {
-  /** Global toggle signal for Bionic Reading Mode across Research Frame and Care Plans. */
+  /** Global toggle signal for Bionic Reading Mode across all components. */
   readonly isBionicReadingEnabled = signal<boolean>(false);
 
   /** Notification signal for assistive screen readers when mode changes. */
   readonly accessibilityNotice = signal<string>('');
 
   constructor() {
+    this.initStoredPreference();
     this.initKeyboardShortcutListener();
+  }
+
+  /**
+   * Reads persistent preference from localStorage if available.
+   */
+  private initStoredPreference(): void {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+    try {
+      const stored = localStorage.getItem('pocketgull_bionic_reading');
+      if (stored === 'true') {
+        this.isBionicReadingEnabled.set(true);
+        this.syncDomState(true);
+      }
+    } catch {
+      // Storage unavailable in private browsing mode
+    }
+  }
+
+  /**
+   * Synchronizes Bionic Focus mode state with DOM root classes and localStorage.
+   */
+  private syncDomState(enabled: boolean): void {
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.toggle('bionic-focus-mode', enabled);
+      document.documentElement.classList.toggle('bionic-reading-active', enabled);
+      if (document.body) {
+        document.body.classList.toggle('bionic-focus-mode', enabled);
+        document.body.classList.toggle('bionic-reading-active', enabled);
+      }
+    }
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem('pocketgull_bionic_reading', String(enabled));
+      } catch {
+        // Ignore storage quota errors
+      }
+    }
   }
 
   /**
@@ -34,12 +72,13 @@ export class BionicReadingService {
   }
 
   /**
-   * Toggles Bionic Reading Mode globally.
+   * Toggles Bionic Reading Mode globally across all components.
    */
   toggleBionicReading(): void {
     const nextState = !this.isBionicReadingEnabled();
     this.isBionicReadingEnabled.set(nextState);
-    this.accessibilityNotice.set(`Bionic Reading mode ${nextState ? 'enabled (40% fixation active)' : 'disabled'}`);
+    this.syncDomState(nextState);
+    this.accessibilityNotice.set(`Bionic Reading mode ${nextState ? 'enabled (40% fixation active across all components)' : 'disabled'}`);
   }
 
   /**
@@ -47,14 +86,15 @@ export class BionicReadingService {
    */
   setBionicReading(enabled: boolean): void {
     this.isBionicReadingEnabled.set(enabled);
-    this.accessibilityNotice.set(`Bionic Reading mode ${enabled ? 'enabled (40% fixation active)' : 'disabled'}`);
+    this.syncDomState(enabled);
+    this.accessibilityNotice.set(`Bionic Reading mode ${enabled ? 'enabled (40% fixation active across all components)' : 'disabled'}`);
   }
 
   /**
    * Converts plain text string or HTML content into Bionic Reading HTML string.
    * Accurately extracts leading non-word prefixes (punctuation, quotes, brackets, parens)
    * and trailing punctuation, bolding the initial 40-50% of characters in each word
-   * for accelerated reading focus and accessibility.
+   * for accelerated reading focus and accessibility across all components.
    *
    * @param text Plain text or HTML string to format
    * @param highlightClass Optional custom Tailwind CSS class for bolded prefix letters
@@ -73,8 +113,8 @@ export class BionicReadingService {
       return match.replace(/[a-zA-Z0-9]+/g, (letters) => {
         if (letters.length <= 1) {
           return highlightClass 
-            ? `<strong class="${highlightClass}">${letters}</strong>`
-            : `<b>${letters}</b>`;
+            ? `<strong class="${highlightClass} bionic-fixation">${letters}</strong>`
+            : `<b class="bionic-fixation">${letters}</b>`;
         }
 
         const boldLen = Math.max(1, Math.ceil(letters.length * 0.45));
@@ -82,8 +122,8 @@ export class BionicReadingService {
         const restPart = letters.slice(boldLen);
 
         return highlightClass
-          ? `<strong class="${highlightClass}">${boldPart}</strong>${restPart}`
-          : `<b>${boldPart}</b>${restPart}`;
+          ? `<strong class="${highlightClass} bionic-fixation">${boldPart}</strong>${restPart}`
+          : `<b class="bionic-fixation">${boldPart}</b>${restPart}`;
       });
     });
   }

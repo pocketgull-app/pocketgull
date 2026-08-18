@@ -3,6 +3,7 @@ import { PatientStateService, BODY_PART_NAMES } from './patient-state.service';
 import { PatientManagementService } from './patient-management.service';
 import { PetAuditoryService } from './pet-auditory.service';
 import { AmbientLightingService } from './ambient-lighting.service';
+import { VoicePersonaService, VoicePersonaId } from './voice-persona.service';
 
 declare var webkitSpeechRecognition: any;
 
@@ -14,6 +15,13 @@ export class DictationService {
   private patientMgmt = inject(PatientManagementService, { optional: true });
   private petAuditory = inject(PetAuditoryService, { optional: true });
   private lighting = inject(AmbientLightingService, { optional: true });
+  public voicePersona = (() => {
+    try {
+      return inject(VoicePersonaService, { optional: true }) || new VoicePersonaService();
+    } catch {
+      return new VoicePersonaService();
+    }
+  })();
 
   readonly isListening = signal(false);
   readonly isModalOpen = signal(false);
@@ -264,34 +272,39 @@ export class DictationService {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     
-    // Configure voice prosody parameters per Avian persona
+    // Map Avian persona to Business Site Voice Persona for high-fidelity prosody
+    let personaId: VoicePersonaId = 'aoede';
     switch (persona) {
       case 'gulliver':
+        personaId = 'aoede';
         utterance.pitch = 1.0;
         utterance.rate = 0.95;
         this.playPersonaAudioFx(880, 'sine');
         break;
       case 'swoop':
-        utterance.pitch = 1.25;
-        utterance.rate = 1.1;
+        personaId = 'puck';
+        utterance.pitch = 1.05;
+        utterance.rate = 1.08;
         this.playPersonaAudioFx(528, 'triangle');
         break;
       case 'sentinel':
-        utterance.pitch = 0.75;
-        utterance.rate = 0.85;
+        personaId = 'fenrir';
+        utterance.pitch = 0.88;
+        utterance.rate = 0.92;
         this.playPersonaAudioFx(110, 'sine');
         break;
       case 'scribes':
-        utterance.pitch = 1.15;
-        utterance.rate = 1.0;
+        personaId = 'kore';
+        utterance.pitch = 1.05;
+        utterance.rate = 0.98;
         this.playPersonaAudioFx(432, 'sine');
         break;
     }
 
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(v => v.lang.startsWith(this.selectedLanguage().split('-')[0])) || voices[0];
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
+    // Select natural/neural voice matching the persona to eliminate robotic artifacts
+    const bestVoice = this.voicePersona.getBestVoiceForPersona(personaId);
+    if (bestVoice) {
+      utterance.voice = bestVoice;
     }
 
     window.speechSynthesis.speak(utterance);
@@ -305,14 +318,15 @@ export class DictationService {
     try {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = Math.min(2.0, Math.max(0.5, rate));
-      utterance.pitch = Math.min(2.0, Math.max(0.5, pitch));
+      const persona = this.voicePersona.currentPersona();
+      
+      utterance.rate = rate !== 1.0 ? Math.min(2.0, Math.max(0.5, rate)) : persona.rate;
+      utterance.pitch = pitch !== 1.0 ? Math.min(2.0, Math.max(0.5, pitch)) : persona.pitch;
       utterance.lang = this.selectedLanguage();
 
-      const voices = window.speechSynthesis.getVoices();
-      const preferredVoice = voices.find(v => v.lang.startsWith(this.selectedLanguage().split('-')[0])) || voices[0];
-      if (preferredVoice) {
-        utterance.voice = preferredVoice;
+      const bestVoice = this.voicePersona.getBestVoiceForPersona();
+      if (bestVoice) {
+        utterance.voice = bestVoice;
       }
 
       window.speechSynthesis.speak(utterance);

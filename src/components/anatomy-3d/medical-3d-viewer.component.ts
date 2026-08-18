@@ -63,12 +63,12 @@ export class Medical3DViewerComponent implements AfterViewInit, OnDestroy {
     readonly webglSupported = signal<boolean>(true);
     readonly webglError = signal<string>('');
 
-    // Industrial Grace palette + Kaizen Severity
+    // Neutral High-Contrast Monochrome Palette + Clinical Severity
     private readonly PALETTE = {
-        background: 0x0a0a0a,
-        wireframe: 0x334155,
-        primary: 0x0ea5e9, // A stark cyan/blue for the main form
-        particles: 0x38bdf8,
+        background: 0x09090b,
+        wireframe: 0x52525b,
+        primary: 0xe4e4e7, // High-contrast neutral monochrome titanium for main form
+        particles: 0xf4f4f5,
         severity: {
             red: 0xef4444,    // Critical / Severe
             yellow: 0xeab308, // Warning / Moderate
@@ -275,17 +275,17 @@ export class Medical3DViewerComponent implements AfterViewInit, OnDestroy {
     private createBaseMaterial(isHighlight = false) {
         const sev = this.severity();
         const mode = this.activeLayerMode();
-        let color = mode === 'acetate' ? 0x2AA4A0 : (mode === 'surface' ? 0xF9F3D9 : this.PALETTE.primary);
+        let color = mode === 'acetate' ? 0xd4d4d8 : (mode === 'surface' ? 0xf4f4f5 : this.PALETTE.primary);
         
         if (sev) {
             color = this.PALETTE.severity[sev];
         } else if (isHighlight) {
-            color = 0xEF6658;
+            color = 0xef4444;
         }
 
         if (mode === 'surface') {
             return new THREE.MeshLambertMaterial({
-                color: 0xF9F3D9,
+                color: 0xf4f4f5,
                 flatShading: true,
                 transparent: false,
             });
@@ -319,7 +319,7 @@ export class Medical3DViewerComponent implements AfterViewInit, OnDestroy {
     private createCoreMaterial() {
         const mode = this.activeLayerMode();
         return new THREE.MeshPhysicalMaterial({
-            color: mode === 'surface' ? 0xF5B98E : 0x1C1C1C,
+            color: mode === 'surface' ? 0x27272a : 0x18181b,
             metalness: 0.2,
             roughness: 0.8,
             wireframe: true,

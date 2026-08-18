@@ -88,7 +88,8 @@ async function main() {
   run(`node "${vitestBin}" run --config "${vitestConfig}"`, 'Vitest Unit & Clinical Specification Suite');
 
   // Step 3: Cloud Build Container Build & Push & Deploy & Traffic Shift
-  run(`gcloud builds submit --config=cloudbuild.yaml . --project=${PROJECT_ID}`, 'Submit Automated Cloud Build');
+  const cloudBuildConfig = resolve(ROOT_DIR, 'cloudbuild.yaml');
+  run(`gcloud builds submit "${ROOT_DIR}" --config="${cloudBuildConfig}" --project=${PROJECT_ID}`, 'Submit Automated Cloud Build');
 
   // Step 4: Live Smoke Test Verification
   await smokeTest();

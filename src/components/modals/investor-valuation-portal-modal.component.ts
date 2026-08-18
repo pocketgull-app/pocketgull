@@ -155,9 +155,10 @@ export interface IPitchSlide {
                 <!-- Summary Info Card -->
                 <div class="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 text-[11px] text-zinc-400 space-y-1.5">
                   <div class="font-bold text-zinc-200 uppercase tracking-wider text-[10px]">Empirical Base Metrics</div>
-                  <div>• Angular 22 Frontend: 90,013 SLOC (26.6%)</div>
-                  <div>• Flutter Companion App: 242,067 SLOC (71.5%)</div>
-                  <div>• Python FastAPI Sidecar: 3,479 SLOC (1.0%)</div>
+                  <div>• Angular 22 Single-Source Web: 156,919 SLOC (92.0%)</div>
+                  <div>• Minimal Flutter Hybrid Shell: 685 SLOC (0.4%)</div>
+                  <div>• Standalone Backend API & Services: 4,757 SLOC (2.8%)</div>
+                  <div>• Tests & Automation Scripts: 8,293 SLOC (4.8%)</div>
                   <div>• 18 COTS APIs: 19,082 lines glue code</div>
                 </div>
               </div>
@@ -283,10 +284,10 @@ export class InvestorValuationPortalModalComponent {
     {
       id: 3,
       title: 'Proprietary Technology Moat & Engineering',
-      subtitle: '338,582 SLOC across 993 files with 18 COTS integrations and 40 WebMCP Clinical Tools.',
+      subtitle: '170,580 SLOC across 968 files with 18 COTS integrations and 40 WebMCP Clinical Tools.',
       category: 'Defensibility',
       keyPoints: [
-        'Dual-Engine Architecture: Angular 22 Standalone Signals frontend + Python FastAPI ML sidecar.',
+        'Single-Source Architecture: Angular 22 Standalone Signals core with lightweight Flutter Hybrid Shell for HealthKit/Biometrics.',
         'Full-Duplex Voice Consults: Gemini Live multimodal audio streaming with Web Speech API integration.',
         'Verified Quality: 198 Vitest spec files (623 tests), 76 Playwright E2E tests, OpenSSF 10/10 score.'
       ]
@@ -297,8 +298,8 @@ export class InvestorValuationPortalModalComponent {
       subtitle: '$5.0M – $8.0M pre-revenue valuation represents a 50%–70% discount to replacement cost.',
       category: 'Financials & Valuation',
       keyPoints: [
-        'COCOMO II Baseline: $15.86M development cost (673 person-months / 56.1 solo-developer years).',
-        'Combined 3-Model Total: $24.92M (COCOMO II + COSYSMO Systems Eng + COCOTS Integration).',
+        'COCOMO II Baseline: $7.62M development cost (324 person-months / 27.0 solo-developer years).',
+        'Combined 3-Model Total: $14.85M (COCOMO II + COSYSMO Systems Eng + COCOTS Integration).',
         'Scale-to-Zero Economics: GCP Cloud Run --min-instances=0 caps baseline cloud overhead at ~$0.20/month.'
       ]
     },
@@ -319,7 +320,7 @@ export class InvestorValuationPortalModalComponent {
     return this.slides.find(s => s.id === this.activeSlideId()) || this.slides[0];
   });
 
-  sloc = computed(() => Math.round(338582 * this.slocMultiplier()));
+  sloc = computed(() => Math.round(170580 * this.slocMultiplier()));
   
   cocomoCost = computed(() => {
     const ksloc = this.sloc() / 1000;

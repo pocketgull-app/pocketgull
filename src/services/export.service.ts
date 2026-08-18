@@ -2364,7 +2364,7 @@ export class ExportService {
             { code: { text: 'Arboristic Canopy Biomass Index' }, valueString: '94.2% Photosynthetic Flux' },
             { code: { text: 'Vehicle Fleet Powertrain Harmonic' }, valueString: '480 Hz Engine Resonance' },
             { code: { text: 'Eastern Clockwork Escapement Cadence' }, valueString: '18,000 bph' },
-            { code: { text: 'Ayurvedic Solfeggio Resonator Tone' }, valueString: '528 Hz DNA Repair' }
+            { code: { text: 'Ayurvedic Solfeggio Resonator Tone' }, valueString: '528 Hz Supportive Relaxation Tone (Tier 3 Wellness)' }
           ]
         }
       });

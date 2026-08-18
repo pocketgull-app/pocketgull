@@ -1,6 +1,4 @@
-// @vitest-environment jsdom
-import '@angular/compiler';
-import { vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { Injector, runInInjectionContext, NgZone } from '@angular/core';
 import { WebMcpRegistrationService } from './webmcp-registration.service';
 import { PatientStateService } from './patient-state.service';
@@ -199,10 +197,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 83 WebMCP agentic tools on modelContext', () => {
+  it('should register all 84 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(83);
+    expect(registeredTools.size).toBe(84);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -633,7 +631,7 @@ describe('WebMcpRegistrationService', () => {
   it('should register all 83 WebMCP agentic tools on modelContext (secondary suite)', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(83);
+    expect(registeredTools.size).toBe(84);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -1141,9 +1139,44 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('Labetalol');
   });
 
+  it('should register tool #84: search_scientific_literature_and_preprints', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        results: [
+          {
+            id: '2403.12345',
+            title: 'Genomic Foundation Models for AlphaGenome',
+            authors: 'Schmidt Sciences & Clinical AI Consortium',
+            published: new Date().toISOString(),
+            primaryCategory: 'q-bio.GN',
+            arxivLabs: {
+              connectedPapers: 'https://www.connectedpapers.com/main/2403.12345/arxiv',
+              papersWithCode: 'https://paperswithcode.com/paper/2403.12345'
+            }
+          }
+        ]
+      })
+    } as any);
+
+    service.registerTools({});
+    const tool = registeredTools.get('search_scientific_literature_and_preprints');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      query: 'AlphaGenome non-coding variant regulatory',
+      engine: 'arxiv',
+      category: 'q-bio.GN'
+    });
+
+    expect(result.content[0].text).toContain('Open Science & ArXivLabs Literature Suite');
+    expect(result.content[0].text).toContain('arxiv');
+    expect(result.content[0].text).toContain('AlphaGenome');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(83);
+    expect((service as any).mcpControllers.length).toBe(84);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

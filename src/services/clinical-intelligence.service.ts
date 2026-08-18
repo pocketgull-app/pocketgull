@@ -19,6 +19,7 @@ import {
     DEMO_ANALYSIS_REPORT_EASTERN,
     DEMO_ANALYSIS_REPORT_AYURVEDIC
 } from '../demo-data';
+import { AgeGateService } from './age-gate.service';
 import { FORMATTING_RULES, PHILOSOPHY_INSTRUCTIONS, SYSTEM_INSTRUCTIONS } from './clinical-prompts';
 import { ISirOdeResult, IGcnInteractionResult } from './patient.types';
 
@@ -64,6 +65,7 @@ export class ClinicalIntelligenceService {
     readonly moeRouter = (() => { try { return inject(ClinicalMoERouterService); } catch (e) { console.debug('[ClinicalIntelligence] ClinicalMoERouterService DI fallback:', (e as Error)?.message); return new ClinicalMoERouterService(); } })();
     private petAuditory = (() => { try { return inject(PetAuditoryService, { optional: true }); } catch (e) { console.debug('[ClinicalIntelligence] PetAuditoryService DI fallback:', (e as Error)?.message); return null; } })();
     private themeService = (() => { try { return inject(ThemeService, { optional: true }); } catch (e) { console.debug('[ClinicalIntelligence] ThemeService DI fallback:', (e as Error)?.message); return null; } })();
+    private ageGate = (() => { try { return inject(AgeGateService, { optional: true }); } catch (e) { console.debug('[ClinicalIntelligence] AgeGateService DI fallback:', (e as Error)?.message); return null; } })();
 
     readonly isLoading = signal<boolean>(false);
     readonly webgpuProgress = this.webgpu.loadingProgress;
@@ -621,6 +623,11 @@ Recommends voluntary pre-conception carrier screening for autosomal recessive tr
                 
                 if (vertexAiGroundingContext) {
                     sysInstruction += vertexAiGroundingContext;
+                }
+
+                const ageGateDirective = this.ageGate?.getAiDirectivePrompt();
+                if (ageGateDirective) {
+                    sysInstruction += '\n\n' + ageGateDirective;
                 }
                 
                 const orcidProfile = this.orcid.orcidProfile();

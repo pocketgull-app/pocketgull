@@ -100,4 +100,69 @@ export class SmartOnFhirLaunchService {
       launch: urlParams['launch'] || null
     };
   }
+
+  /**
+   * Generates a realistic live FHIR R4 Bundle for instant testing and sandbox demonstration.
+   */
+  public generateMockEhrBundle(patientName: string = 'Dr. Jane Doe, Ph.D.', hr: number = 74, bpSystolic: number = 118, bpDiastolic: number = 76): any {
+    return {
+      resourceType: 'Bundle',
+      type: 'searchset',
+      total: 5,
+      entry: [
+        {
+          resource: {
+            resourceType: 'Patient',
+            id: 'smart-patient-001',
+            name: [{ given: [patientName.split(' ')[0]], family: patientName.split(' ').slice(1).join(' ') }],
+            gender: 'female',
+            birthDate: '1988-04-12'
+          }
+        },
+        {
+          resource: {
+            resourceType: 'Observation',
+            id: 'obs-hr-001',
+            code: { coding: [{ system: 'http://loinc.org', code: '8867-4', display: 'Heart rate' }] },
+            valueQuantity: { value: hr, unit: 'beats/minute', system: 'http://unitsofmeasure.org', code: '/min' }
+          }
+        },
+        {
+          resource: {
+            resourceType: 'Observation',
+            id: 'obs-bp-001',
+            code: { coding: [{ system: 'http://loinc.org', code: '85354-9', display: 'Blood pressure panel' }] },
+            component: [
+              {
+                code: { coding: [{ system: 'http://loinc.org', code: '8480-6', display: 'Systolic blood pressure' }] },
+                valueQuantity: { value: bpSystolic, unit: 'mmHg' }
+              },
+              {
+                code: { coding: [{ system: 'http://loinc.org', code: '8462-4', display: 'Diastolic blood pressure' }] },
+                valueQuantity: { value: bpDiastolic, unit: 'mmHg' }
+              }
+            ]
+          }
+        },
+        {
+          resource: {
+            resourceType: 'Observation',
+            id: 'obs-spo2-001',
+            code: { coding: [{ system: 'http://loinc.org', code: '2708-6', display: 'Oxygen saturation in Arterial blood' }] },
+            valueQuantity: { value: 99, unit: '%', system: 'http://unitsofmeasure.org', code: '%' }
+          }
+        },
+        {
+          resource: {
+            resourceType: 'Condition',
+            id: 'cond-001',
+            code: {
+              coding: [{ system: 'http://snomed.info/sct', code: '38341003', display: 'Hypertensive disorder' }],
+              text: 'Essential Hypertension (Stage 1)'
+            }
+          }
+        }
+      ]
+    };
+  }
 }

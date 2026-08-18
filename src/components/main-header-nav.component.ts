@@ -6,25 +6,28 @@ import { ThemeService } from '../services/theme.service';
 import { HardwareTelemetryService } from '../services/hardware/hardware-telemetry.service';
 import { GamificationService } from '../services/gamification.service';
 import { WalkthroughTourService } from '../services/walkthrough-tour.service';
-import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
 import { PathwaysMoeBadgeComponent } from './shared/pathways-moe-badge.component';
-
+import { ClinicalContextModeService, ClinicalPersonaMode, ComplexityLevel } from '../services/clinical-context-mode.service';
 import { SessionStateService } from '../services/session-state.service';
+import { SmartOnFhirLaunchService } from '../services/smart-on-fhir-launch.service';
+import { AgeGateService } from '../services/age-gate.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
 
 @Component({
   selector: 'app-main-header-nav',
   standalone: true,
   imports: [
     CommonModule,
-    PocketgullIconComponent,
     PathwaysMoeBadgeComponent
   ],
   template: `
-    <!-- Navbar: Pure utility & theme harmony -->
-    <nav class="theme-nav-bar h-14 flex items-center justify-between px-3 sm:px-6 shrink-0 z-50 no-print">
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-3">
-          <svg width="42" height="42" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
+    <!-- Navbar: Pure utility & theme harmony with Role & Level Gating -->
+    <nav class="theme-nav-bar h-14 flex items-center justify-between px-3 sm:px-6 shrink-0 z-50 no-print border-b border-zinc-200 dark:border-zinc-800">
+      
+      <!-- Left: Logo & Role Ribbon -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
             <!-- Far Wing (Teal) -->
             <polygon points="50,40 65,15 58,45" fill="#3ebc9e" stroke="#2fa085" stroke-width="0.5" stroke-linejoin="round" />
             <!-- Tail (Light gray paper) -->
@@ -40,300 +43,223 @@ import { SessionStateService } from '../services/session-state.service';
             <!-- Beak (Golden-Amber Orange) -->
             <polygon points="85,38 82,45 95,34" fill="#faa63b" stroke="#e0902c" stroke-width="0.5" stroke-linejoin="round" />
           </svg>
-          <span class="font-bold uppercase tracking-[0.15em] text-sm hidden sm:inline">POCKET GULL</span>
-          <!-- System Status Indicator (Hidden on smallest watches) -->
-          <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all cursor-pointer group relative no-print" 
-               (click)="network.toggleForceOffline()"
-               [title]="network.isOnline() ? 'Click to simulate offline' : 'Click to disable offline override'">
-            <div class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full rounded-full status-dot opacity-75" 
-                    [style.background-color]="network.isOnline() ? 'var(--spectral-stable)' : 'var(--spectral-critical)'"
-                    [class.animate-ping]="network.isOnline()"
-                    style="will-change: transform, opacity;"></span>
-              <span class="relative inline-flex rounded-full status-dot h-2 w-2"
-                    [style.background-color]="network.isOnline() ? 'var(--spectral-stable)' : 'var(--spectral-critical)'"></span>
-            </div>
-            <span class="text-xs font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">{{ network.isOnline() ? 'System Ready' : 'System Offline' }}</span>
-          </div>
+          <span class="font-black uppercase tracking-[0.15em] text-xs hidden md:inline text-zinc-800 dark:text-zinc-100">POCKET GULL</span>
+        </div>
 
-          <!-- Companion App Sync Button -->
-          <button 
-            type="button" 
-            (click)="openCompanionSync.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-indigo-500/50 outline-none cursor-pointer"
-            title="Generate FHIR R4 Smart Launch QR for Patient/Doctor Mobile Companion">
-            <span>📱 Sync Companion</span>
+        <!-- Role Selector Ribbon -->
+        <div class="flex items-center bg-zinc-100 dark:bg-zinc-900 rounded-xl p-0.5 border border-zinc-300 dark:border-zinc-800 text-[11px] font-bold">
+          <button (click)="setRole('open_science')"
+            [ngClass]="contextMode.activeMode() === 'open_science' ? 'bg-purple-600 text-white shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'"
+            class="px-2.5 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer">
+            <span>🔬</span>
+            <span class="hidden sm:inline">Open Science</span>
           </button>
 
-          <!-- Support AI Agent Portal Button -->
-          <button 
-            type="button" 
-            (click)="openSupportTicket.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer"
-            title="Open Autonomous Support AI Portal (support@pocketgull.app)">
-            <span>📬 AI Support</span>
+          <button (click)="setRole('clinical_scribe')"
+            [ngClass]="contextMode.activeMode() === 'clinical_scribe' ? 'bg-indigo-600 text-white shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'"
+            class="px-2.5 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer">
+            <span>🩺</span>
+            <span class="hidden sm:inline">Clinical Scribe</span>
           </button>
 
-          <!-- Clinical Trials Matching Arena Button -->
-          <button 
-            type="button" 
-            (click)="openClinicalTrials.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-blue-500/50 outline-none cursor-pointer"
-            title="Live Decentralized Clinical Trial (DCT) Matching via ClinicalTrials.gov API v2">
-            <span>🧪 Clinical Trials</span>
+          <button (click)="setRole('maternal_doula')"
+            [ngClass]="contextMode.activeMode() === 'maternal_doula' ? 'bg-teal-600 text-white shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'"
+            class="px-2.5 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer">
+            <span>👶</span>
+            <span class="hidden sm:inline">Maternal & Doula</span>
           </button>
 
-          <!-- BigQuery ML Clinical Trajectory Forecaster Button -->
-          <button 
-            type="button" 
-            (click)="openBigQueryAnalytics.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-indigo-500/50 outline-none cursor-pointer"
-            title="BigQuery ML ARIMA_PLUS Clinical Trajectory & QALY Longevity Forecasting">
-            <span>📈 BigQuery ML</span>
+          <button (click)="setRole('patient_family')"
+            [ngClass]="contextMode.activeMode() === 'patient_family' ? 'bg-emerald-600 text-white shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'"
+            class="px-2.5 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer">
+            <span>🌿</span>
+            <span class="hidden sm:inline">Sanctuary</span>
+          </button>
+        </div>
+
+        <!-- Complexity Level Stepper Gate -->
+        <div class="hidden lg:flex items-center bg-zinc-100 dark:bg-zinc-900 rounded-xl p-0.5 border border-zinc-300 dark:border-zinc-800 text-[10px] font-mono font-bold">
+          <button (click)="setLevel(1)"
+            [ngClass]="contextMode.complexityLevel() === 1 ? 'bg-zinc-800 dark:bg-zinc-700 text-white' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'"
+            class="px-2 py-0.5 rounded-md transition cursor-pointer" title="Level 1: Minimalist Essential Tools">
+            L1
+          </button>
+          <button (click)="setLevel(2)"
+            [ngClass]="contextMode.complexityLevel() === 2 ? 'bg-zinc-800 dark:bg-zinc-700 text-white' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'"
+            class="px-2 py-0.5 rounded-md transition cursor-pointer" title="Level 2: Professional Diagnostic Suite">
+            L2
+          </button>
+          <button (click)="setLevel(3)"
+            [ngClass]="contextMode.complexityLevel() === 3 ? 'bg-zinc-800 dark:bg-zinc-700 text-white' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'"
+            class="px-2 py-0.5 rounded-md transition cursor-pointer" title="Level 3: Deep Enterprise & Auditing">
+            L3
+          </button>
+        </div>
+
+        <!-- Live EHR vs Safe Harbor Mock Source Indicator -->
+        <button (click)="toggleLiveEhr()"
+          [ngClass]="state.isLiveConnected() ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-600/30' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700'"
+          class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10.5px] font-bold font-mono transition-all cursor-pointer shadow-2xs"
+          [title]="state.isLiveConnected() ? 'Connected to Live EHR SMART FHIR: ' + (state.liveEhrEndpoint() || 'Sandbox') + ' (Click to reset to Safe Harbor Mock)' : 'Using HIPAA Safe Harbor Synthetic Cohort (Click to load SMART on FHIR Live Pilot)'">
+          <span class="w-1.5 h-1.5 rounded-full" [ngClass]="state.isLiveConnected() ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-400'"></span>
+          <span>{{ state.isLiveConnected() ? 'LIVE EHR' : 'MOCK EHR' }}</span>
+        </button>
+      </div>
+
+      <!-- Center / Role-Filtered Action Buttons -->
+      <div class="hidden md:flex items-center gap-2 overflow-x-auto scrollbar-none px-2">
+        
+        <!-- OPEN SCIENCE ROLE BUTTONS -->
+        @if (contextMode.activeMode() === 'open_science') {
+          <button (click)="state.toggleResearchFrame(true)"
+            class="flex items-center gap-1.5 px-3 py-1 bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+            title="ArXivLabs & Open Science Literature Suite (NASA ADS, Google Scholar, Connected Papers)">
+            <span>🌌 ArXivLabs</span>
           </button>
 
-          <!-- Teledentistry 32-Tooth FDI Odontogram & SIBI Button -->
-          <button 
-            type="button" 
-            (click)="openTeledentistry.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer"
-            title="FDI 32-Tooth Odontogram, TWI Wear Grades, and Systemic Inflammatory Burden (SIBI) Cross-Talk">
-            <span>🦷 Odontogram & SIBI</span>
+          <button (click)="openClinicalTrials.emit()"
+            class="flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+            title="Live ClinicalTrials.gov API v2 Matching">
+            <span>🧪 Trials</span>
           </button>
 
-          <!-- Section 504 School Accommodation Folio Button -->
-          <button 
-            type="button" 
-            (click)="openSection504Folio.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-amber-500/50 outline-none cursor-pointer"
-            title="Section 504 School Accommodation Plan & School Nurse Emergency Action Plan (EAP)">
-            <span>🎒 504 Folio</span>
+          @if (contextMode.complexityLevel() >= 2) {
+            <button (click)="openPgxOptimizer.emit()"
+              class="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+              title="Pharmacogenomics (PGx) & CPIC Drug-Gene Safety Optimizer">
+              <span>🧬 PGx Safety</span>
+            </button>
+
+            <button (click)="openZooniverse.emit()"
+              class="flex items-center gap-1.5 px-3 py-1 bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+              title="Zooniverse Citizen Science Volumetric Annotations">
+              <span>🔬 Citizen Sci</span>
+            </button>
+          }
+
+          @if (contextMode.complexityLevel() >= 3) {
+            <button (click)="openSocraticValidator.emit()"
+              class="flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+              title="Socratic Evidence Literacy (Cochrane RoB 2, Popperian Falsification)">
+              <span>⚖️ Socratic CDS</span>
+            </button>
+          }
+        }
+
+        <!-- CLINICAL SCRIBE ROLE BUTTONS -->
+        @else if (contextMode.activeMode() === 'clinical_scribe') {
+          <button (click)="openCompanionSync.emit()"
+            class="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+            title="Generate FHIR R4 Smart Launch QR for Mobile Scribe">
+            <span>📱 Companion</span>
           </button>
 
-          <!-- Archival Living Health History Gallery Button -->
-          <button 
-            type="button" 
-            (click)="openArchivalGallery.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer"
-            title="Living Archival Health History Gallery & Illuminated Milestone Keepsakes">
+          <button (click)="openTeledentistry.emit()"
+            class="flex items-center gap-1.5 px-3 py-1 bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+            title="32-Tooth FDI Odontogram & Systemic Inflammatory Burden (SIBI)">
+            <span>🦷 Odontogram</span>
+          </button>
+
+          @if (contextMode.complexityLevel() >= 2) {
+            <button (click)="openBigQueryAnalytics.emit()"
+              class="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+              title="BigQuery ML ARIMA_PLUS Trajectory Forecasting">
+              <span>📈 BigQuery ML</span>
+            </button>
+          }
+        }
+
+        <!-- PATIENT SANCTUARY ROLE BUTTONS -->
+        @else if (contextMode.activeMode() === 'patient_family') {
+          <button (click)="openArchivalGallery.emit()"
+            class="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+            title="Living Archival Health History & Keepsakes">
             <span>🖼️ Health Gallery</span>
           </button>
 
-          <!-- Clinical AI Steering Committee Governance Button -->
-          <button 
-            type="button" 
-            (click)="openSteeringCommittee.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-indigo-500/50 outline-none cursor-pointer"
-            title="Clinical AI Steering Committee Governance Dossier (FDA §520(o) & SDoH Parity)">
-            <span>🏛️ Steering Committee</span>
+          <button (click)="openSection504Folio.emit()"
+            class="flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+            title="Section 504 School Accommodation Plan">
+            <span>🎒 504 Folio</span>
+          </button>
+        }
+
+        <!-- MORE TOOLS DROPDOWN TOGGLE -->
+        <div class="relative">
+          <button (click)="isMoreToolsOpen.set(!isMoreToolsOpen())"
+            class="flex items-center gap-1 px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer">
+            <span>✨ More Tools</span>
+            <span class="text-[9px]">▼</span>
           </button>
 
-          <!-- Academic Citations & Evidence Ledger Button -->
-          <button 
-            type="button" 
-            (click)="openAcademicCitations.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer"
-            title="Academic Citation & Evidence Ledger (PubMed PMIDs, Cochrane RoB 2, AMA/BibTeX/RIS Exports)">
-            <span>📚 Citations</span>
-          </button>
-
-          <!-- Humanitarian Health Utility & Harm Reduction Ledger Button -->
-          <button 
-            type="button" 
-            (click)="openGlobalHealthUtility.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer"
-            title="Humanitarian Health Utility & Harm Reduction Ledger (QALY Maximization & SDoH Alleviation)">
-            <span>🌍 Humanitarian Utility</span>
-          </button>
-
-          <!-- Social Pragmatics & Empathetic Communication Gym Button -->
-          <button 
-            type="button" 
-            (click)="openSocialGym.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-indigo-500/50 outline-none cursor-pointer"
-            title="Social Pragmatics & Empathetic Communication Gym (NVC, Active-Constructive Listening, Inner Monologue Mirror)">
-            <span>🤝 Social Gym</span>
-          </button>
-
-          <!-- Socratic Evidence Literacy & Claim Validator Button -->
-          <button 
-            type="button" 
-            (click)="openSocraticValidator.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-amber-500/50 outline-none cursor-pointer"
-            title="Socratic Evidence Literacy & Claim Validator (Cochrane RoB 2, Popperian Falsification, Confounder Auditing)">
-            <span>⚖️ Socratic Validator</span>
-          </button>
-
-          <!-- Biometric Telemetry & Bluetooth GATT Hub Button -->
-          <button 
-            type="button" 
-            (click)="openBluetoothHub.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-50 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800/60 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-cyan-500/50 outline-none cursor-pointer"
-            title="Biometric Telemetry & Hardware Hub (W3C Web Bluetooth GATT, Apple Health XML & Continuous Sensors)">
-            <span>📡 BLE &amp; HealthKit</span>
-          </button>
-
-          <!-- Pharmacogenomics & CPIC Drug-Gene Safety Button -->
-          <button 
-            type="button" 
-            (click)="openPgxOptimizer.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer"
-            title="Pharmacogenomics (PGx) & CPIC Drug-Gene Safety Optimizer (CYP450, Star Alleles & Phenoconversion)">
-            <span>🧬 PGx &amp; CPIC Safety</span>
-          </button>
-
-          <!-- Citizen Science & Micro-Annotation Arena Button -->
-          <button 
-            type="button" 
-            (click)="openZooniverse.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer"
-            title="Zooniverse & Citizen Science Micro-Annotation Arena (2D Slicing + 3D Three.js Volumetric Mesh Viewer)">
-            <span>🔬 Citizen Science</span>
-          </button>
-
-          <!-- Bio-Network QR & Theme Song Studio Button -->
-          <button 
-            type="button" 
-            (click)="openBioNetworkQr.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-purple-500/50 outline-none cursor-pointer"
-            title="Sharable Peer Network QR Code, Personal Bio-Theme Song & Haptic Entrainment">
-            <span>🎵 Bio-Network QR</span>
-          </button>
-
-          <!-- Billing & Subscription Button -->
-          <button 
-            type="button" 
-            (click)="openBillingDashboard.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer"
-            title="Manage Billing and Subscription">
-            <span>💳 Billing & Plan</span>
-          </button>
-
-          <!-- API Pricing Button -->
-          <button 
-            type="button" 
-            (click)="openApiPricing.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60 hover:bg-sky-100 dark:hover:bg-sky-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-sky-500/50 outline-none cursor-pointer"
-            title="View API Pricing & Usage">
-            <span>🔌 API Pricing</span>
-          </button>
-
-          <!-- Patient Telehealth Portal Button -->
-          <button 
-            type="button" 
-            (click)="openPatientPortal.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-blue-500/50 outline-none cursor-pointer"
-            title="Open Patient Self-Service Portal">
-            <span>🩺 Patient Portal</span>
-          </button>
-
-          <!-- Lock Session & View Splash Screen Button -->
-          <button 
-            type="button" 
-            (click)="session.lock()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border border-slate-300 dark:border-zinc-700 hover:bg-slate-300 dark:hover:bg-zinc-700 rounded-md text-xs font-bold uppercase tracking-wider transition outline-none cursor-pointer"
-            title="Lock Session & View Papercraft Secure Splash Screen">
-            <span>🔒 Splash Screen</span>
-          </button>
+          @if (isMoreToolsOpen()) {
+            <div (click)="isMoreToolsOpen.set(false)" 
+                 class="absolute right-0 mt-2 w-64 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-2 z-50 space-y-1 animate-in fade-in slide-in-from-top-1 text-xs">
+              <div class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-400 border-b border-zinc-100 dark:border-zinc-800">
+                Extended Clinical Catalog
+              </div>
+              <button (click)="openSteeringCommittee.emit()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center gap-2 cursor-pointer">
+                <span>🏛️</span> Steering Committee Governance
+              </button>
+              <button (click)="openGlobalHealthUtility.emit()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center gap-2 cursor-pointer">
+                <span>🌍</span> Humanitarian Health Utility
+              </button>
+              <button (click)="openSocialGym.emit()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center gap-2 cursor-pointer">
+                <span>🤝</span> Social Pragmatics Gym
+              </button>
+              <button (click)="openBluetoothHub.emit()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center gap-2 cursor-pointer">
+                <span>📡</span> Bluetooth & HealthKit Hub
+              </button>
+              <button (click)="openBioNetworkQr.emit()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center gap-2 cursor-pointer">
+                <span>🎵</span> Bio-Network QR & Song
+              </button>
+              <button (click)="openBillingDashboard.emit()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center gap-2 cursor-pointer">
+                <span>💳</span> Billing & Subscription
+              </button>
+              <button (click)="openSupportTicket.emit()" class="w-full text-left px-3 py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center gap-2 cursor-pointer">
+                <span>📬</span> AI Support Portal
+              </button>
+            </div>
+          }
         </div>
       </div>
 
+      <!-- Right: Somatic Grounding, Pathways MoE, Theme & Legibility -->
       <div class="flex items-center gap-2">
-        <button (click)="state.toggleLiveAgent(!state.isLiveAgentActive())"
-                id="tour-voice-agent-trigger"
-                aria-label="Toggle Live Agent"
-                class="group shrink-0 flex items-center gap-2 max-sm:px-2 max-sm:py-1.5 px-4 py-2 border transition-colors text-xs font-bold uppercase tracking-widest cursor-pointer"
-                [class.bg-gray-800]="state.isLiveAgentActive()"
-                [class.dark:bg-white]="state.isLiveAgentActive()"
-                [class.border-gray-800]="state.isLiveAgentActive()"
-                [class.dark:border-white]="state.isLiveAgentActive()"
-                [class.text-white]="state.isLiveAgentActive()"
-                [class.dark:text-[#111111]]="state.isLiveAgentActive()"
-                [class.bg-transparent]="!state.isLiveAgentActive()"
-                [class.border-gray-300]="!state.isLiveAgentActive()"
-                [class.dark:border-zinc-700]="!state.isLiveAgentActive()"
-                [class.text-gray-700]="!state.isLiveAgentActive()"
-                [class.dark:text-zinc-300]="!state.isLiveAgentActive()"
-                [class.hover:bg-[#EEEEEE]]="!state.isLiveAgentActive()"
-                [class.dark:hover:bg-zinc-800]="!state.isLiveAgentActive()">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 md:w-4 md:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-            <line x1="12" x2="12" y1="19" y2="22"/>
-          </svg>
-          <span class="hidden sm:inline">Agent</span>
-        </button>
-        
-        <button (click)="state.toggleResearchFrame()"
-                id="tour-research-frame-trigger"
-                aria-label="Research"
-                class="group shrink-0 flex items-center gap-2 max-sm:px-2 max-sm:py-1.5 px-4 py-2 border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-[#EEEEEE] dark:hover:bg-zinc-800 transition-colors cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 md:w-4 md:h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18c-2.29 0-4.43-.78-6.14-2.1C4.6 16.5 4 14.83 4 12c0-1.5.3-2.91.86-4.22L16.22 19.14A7.92 7.92 0 0 1 12 20m7.14-2.1C20.4 16.5 21 14.83 21 12c0-1.5-.3-2.91-.86-4.22L8.78 19.14C10.09 20.7 11.97 21.5 14 21.5c1.47 0 2.87-.42 4.14-1.14Z"/></svg>
-          <span class="hidden sm:inline">Research</span>
-        </button>
-
-        <button (click)="openTypefaceSite.emit()"
-                id="tour-typeface-trigger"
-                aria-label="PocketGull Typeface Specimen Suite"
-                title="Open PocketGull Typeface Specimen Suite"
-                class="group shrink-0 flex items-center gap-2 max-sm:px-2 max-sm:py-1.5 px-4 py-2 border border-amber-500/40 text-amber-700 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer rounded-md">
-          <app-pocketgull-icon name="seagull" />
-          <span class="hidden sm:inline font-pocketgull">Typeface</span>
-        </button>
-        
-        <button (click)="openDocsStudy.emit()"
-           id="tour-docs-trigger"
-           aria-label="Docs"
-           class="group shrink-0 flex items-center gap-2 max-sm:px-2 max-sm:py-1.5 px-4 py-2 border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-[#EEEEEE] dark:hover:bg-zinc-800 transition-colors cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 md:w-4 md:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-          </svg>
-          <span class="hidden sm:inline">Docs</span>
-        </button>
-
-        <!-- Somatic Box-Breathing Grounding (Zamecznik Canvas) -->
+        <!-- Somatic Grounding Button -->
         <button (click)="triggerSomaticGrounding.emit()" 
-                aria-label="Somatic Grounding & Box Breathing"
-                title="Open Somatic Grounding & Box Breathing Canvas"
-                class="group shrink-0 flex items-center gap-1.5 px-3 py-2 border border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-extrabold uppercase tracking-wider transition-colors rounded-md cursor-pointer">
+                aria-label="Trigger 4-7-8 Somatic Grounding Exercise"
+                title="Trigger 4-7-8 Somatic Grounding Exercise"
+                class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer">
           <span>🧘</span>
           <span class="hidden md:inline">Grounding</span>
         </button>
 
+        <!-- Age Tier & Safety Persona Badge -->
+        @if (ageGate.activeTierMetadata(); as meta) {
+          <button (click)="openAgeGate.emit()"
+                  [title]="'Care Persona: ' + meta.title + ' (Click to change age/role)'"
+                  class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10.5px] font-bold font-mono border transition-all cursor-pointer shadow-2xs bg-zinc-100 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-800 hover:border-indigo-500 text-zinc-700 dark:text-zinc-300">
+            <span class="w-1.5 h-1.5 rounded-full" [ngClass]="meta.color === 'emerald' ? 'bg-emerald-400' : meta.color === 'purple' ? 'bg-purple-400' : meta.color === 'amber' ? 'bg-amber-400' : 'bg-indigo-400'"></span>
+            <span>{{ meta.badge }}</span>
+          </button>
+        }
+
         <!-- Pathways MoE Telemetry HUD -->
         <app-pathways-moe-badge />
 
-        <!-- Tour Guide Toggle -->
-        <button (click)="tour.forceStart()" 
-                aria-label="Start Tour Guide"
-                title="Start Tour Guide"
-                class="group shrink-0 p-2 border border-gray-300 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors text-gray-500 dark:text-zinc-400 cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-          </svg>
-        </button>
-        
         <!-- Theme Toggle -->
         <button (click)="theme.cycleTheme()" 
                 id="tour-theme-trigger"
                 aria-label="Toggle Theme"
                 [title]="'Cycle Theme (Current: ' + theme.currentTheme() + ')'"
-                class="group shrink-0 p-2 border border-gray-300 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors text-gray-500 dark:text-zinc-400 cursor-pointer flex items-center gap-1">
+                class="shrink-0 p-2 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition text-zinc-500 dark:text-zinc-400 cursor-pointer flex items-center gap-1">
           @switch (theme.currentTheme()) {
              @case ('dark') {
-               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform group-hover:rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>   
+               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>   
              }
              @case ('light') {
-               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform group-hover:animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-             }
-             @case ('spark') {
-               <span class="text-xs" title="Spark Mode">✨</span>
-             }
-             @case ('system') {
-               <span class="text-xs" title="System Theme">💻</span>
+               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
              }
              @default { <span class="text-xs">🎨</span> }
           }
@@ -343,44 +269,20 @@ import { SessionStateService } from '../services/session-state.service';
         <button (click)="theme.cycleTextSizeScale()"
                 aria-label="Toggle Font Size & Text Legibility Scale"
                 [title]="'Text Size Scale: ' + theme.textSizeScale() + ' (Click to cycle A / A+ / A++)'"
-                class="px-2.5 py-1.5 rounded-lg transition font-mono text-xs font-black cursor-pointer bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center gap-1 shrink-0 shadow-xs">
+                class="px-2.5 py-1.5 rounded-xl font-mono text-xs font-black cursor-pointer bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center gap-1 shrink-0">
           <span>🔤</span>
-          <span>
-            @switch (theme.textSizeScale()) {
-              @case ('standard') { A }
-              @case ('large') { A+ }
-              @case ('extra-large') { A++ }
-              @default { A }
-            }
-          </span>
         </button>
 
-        <div class="hidden sm:flex items-center gap-4 text-xs font-medium text-gray-500 dark:text-zinc-400 pl-4 border-l border-gray-100 dark:border-zinc-800">
-          <div class="relative group tracking-normal">
-            <div class="flex items-center gap-2.5 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800/90 border border-zinc-300 dark:border-zinc-700 hover:border-amber-500 dark:hover:border-amber-500 transition-all cursor-pointer shadow-xs select-none rounded-lg min-h-[36px]">
-              <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" title="K8s Clinical Pod Cluster Status: 100% Healthy"></div>
-              
-              <span class="text-[11px] font-extrabold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
-                {{ game.levelTitle() }} (Lvl {{ game.level() }})
-              </span>
-
-              <span class="text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-400">
-                {{ game.points() }} XP
-              </span>
-
-              <span class="px-1.5 py-0.5 rounded-md bg-sky-500/10 text-sky-700 dark:text-sky-300 text-[10px] font-mono font-bold border border-sky-500/30">
-                ☸️ K8s 3/3
-              </span>
-
-              <div class="w-10 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden shrink-0">
-                <div class="h-full bg-amber-500 transition-all duration-500" [style.width.%]="game.progressPercentage()"></div>
-              </div>
-            </div>
-          </div>
-
-          <span>{{ today | date:'yyyy.MM.dd' }}</span>
-          <span class="text-[#416B1F] dark:text-[#689F38] pr-2">REQ. DR. SMITH</span>
-        </div>
+        <!-- Bionic Focus Universal Toggle -->
+        <button (click)="bionic.toggleBionicReading()"
+                aria-label="Toggle Universal Bionic Focus Fixation (Alt+B)"
+                [title]="'Universal Bionic Focus Fixation (Alt+B) — ' + (bionic.isBionicReadingEnabled() ? 'ENABLED' : 'DISABLED')"
+                [class]="bionic.isBionicReadingEnabled() ? 'bg-amber-500 text-zinc-950 font-black shadow-xs border-amber-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700'"
+                class="px-2.5 py-1.5 rounded-xl font-mono text-xs font-bold transition flex items-center gap-1 shrink-0 cursor-pointer border">
+          <span>📖</span>
+          <span class="hidden xl:inline">Bionic</span>
+          <span class="text-[10px] font-extrabold">{{ bionic.isBionicReadingEnabled() ? 'ON' : 'OFF' }}</span>
+        </button>
       </div>
     </nav>
   `
@@ -393,9 +295,40 @@ export class MainHeaderNavComponent {
   game = inject(GamificationService);
   tour = inject(WalkthroughTourService);
   session = inject(SessionStateService);
+  contextMode = inject(ClinicalContextModeService);
+  bionic = (() => {
+    try {
+      return inject(BionicReadingService, { optional: true }) || new BionicReadingService();
+    } catch {
+      return new BionicReadingService();
+    }
+  })();
+  smartLaunch = inject(SmartOnFhirLaunchService, { optional: true });
 
   today = new Date();
+  isMoreToolsOpen = signal(false);
 
+  toggleLiveEhr(): void {
+    if (this.state.isLiveConnected()) {
+      this.state.switchToMockSafeHarbor();
+    } else {
+      const bundle = this.smartLaunch?.generateMockEhrBundle('Dr. Rosalind Franklin, Ph.D.', 72, 116, 74);
+      if (bundle) {
+        this.state.loadLiveFhirBundle(bundle, 'https://launch.smarthealthit.org/v/r4/fhir');
+      }
+    }
+  }
+
+  setRole(mode: ClinicalPersonaMode) {
+    this.contextMode.setMode(mode);
+  }
+
+  setLevel(level: ComplexityLevel) {
+    this.contextMode.setComplexityLevel(level);
+  }
+
+  public ageGate = inject(AgeGateService);
+  openAgeGate = output<void>();
   openCompanionSync = output<void>();
   openClinicalTrials = output<void>();
   openBigQueryAnalytics = output<void>();

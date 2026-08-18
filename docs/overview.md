@@ -1,7 +1,7 @@
 # PocketGull Clinical Intelligence Engine — Platform Architecture Codex
 
 ## Overview
-PocketGull is an open-source real-time clinical intelligence engine, live multimodal diagnostic co-pilot, and patient state coordinator built on Google Gemini 2.5 Flash / Live audio streaming, Angular 22, and the FHIR R4 Bundle standard.
+PocketGull is an open-source real-time clinical intelligence engine, live multimodal diagnostic co-pilot, and patient state coordinator built on Google Gemini 2.5 Flash / Live audio streaming, on-device WebGPU Gemma 3 edge intelligence, Angular 22, and the FHIR R4 Bundle standard.
 
 ---
 
@@ -9,11 +9,11 @@ PocketGull is an open-source real-time clinical intelligence engine, live multim
 
 ```mermaid
 graph TD
-    CLIENT["Angular 22 Standalone SPA / PWA<br/>• Angular Signals Reactive State<br/>• WebGPU / WebGL Three.js Hologram<br/>• Web Speech & Multimodal Audio WebSocket"]
+    CLIENT["Angular 22 Standalone SPA / PWA<br/>• Angular Signals Reactive State<br/>• WebGPU / WebGL Three.js Hologram<br/>• WebGPU On-Device Gemma 3 Local Edge AI<br/>• 5 Business Site Natural Voice Personas (Aoede, Puck, Charon, Kore, Fenrir)"]
     
-    SERVER["Express SSR & Microservices Gateway<br/>• Node.js v24 LTS<br/>• FHIR R4 Serialization & DOMPurify Sanitization<br/>• WebMCP Tool Catalog (/api/discovery/tools)"]
+    SERVER["Express SSR & Microservices Gateway<br/>• Node.js v24 LTS (50MB Stream Headroom)<br/>• FHIR R4 Serialization & DOMPurify Sanitization<br/>• WebMCP Tool Catalog (/api/discovery/tools)"]
     
-    AI_LAYER["Clinical Intelligence & Agent Swarm Layer<br/>• Gemini 2.5 Flash / Live Full-Duplex Audio<br/>• Genkit Clinical Reasoning Engine<br/>• 64 Dynamic WebMCP Clinical CDS Tools"]
+    AI_LAYER["Clinical Intelligence & Agent Swarm Layer<br/>• Gemini 2.5 Flash / Live Full-Duplex Audio<br/>• Genkit Clinical Reasoning Engine<br/>• 78 Dynamic WebMCP Clinical CDS Tools"]
 
     SIDECAR["Python FastAPI Sidecar & ML Triage<br/>• RSNA Knee & Multi-Organ MRI Scoring<br/>• Pydantic v2 Strict Validation<br/>• Scikit-Learn / PyTorch Inference"]
 
@@ -42,9 +42,9 @@ All patient state, consult transcripts, and serialized FHIR payloads strip all 1
 
 ---
 
-## 3. Dynamic WebMCP Tool Architecture (64 Registered Tools)
+## 3. Dynamic WebMCP Tool Architecture (78 Registered Tools)
 
-PocketGull registers **64 native WebMCP agentic tools** directly on the browser `modelContext`, providing autonomous LLM agents with verifiable clinical capabilities:
+PocketGull registers **78 native WebMCP agentic tools** directly on the browser `modelContext`, providing autonomous LLM agents with verifiable clinical capabilities:
 
 * **Diagnostic & Tri-Paradigm Synthesis**: Hegelian dialectics, Matt Might precision algorithm, and rare disease triage.
 * **Maternal & Women's Health**: 4th-trimester ACOG AIM postpartum sentinel, INOCA cardiac atypical ischemia, and endometriosis delay reducer.
@@ -52,6 +52,8 @@ PocketGull registers **64 native WebMCP agentic tools** directly on the browser 
 * **Youth & Trainee Scaffolding**: Digital dopamine load reset, Kaplan Attention Restoration nature intervals, and medical student diagnostic safety nets.
 * **Clinical Social Work**: Automated SDoH ICD-10 Z-codes (`Z59.0`, `Z59.41`, `Z59.87`, `Z63.6`) and Zarit Caregiver Burden respite scoring.
 * **Future Planning**: 10/20/30-year multi-decade healthspan forecasting, values-based advance care directives (POLST/MOLST), and FHIR R4 `Consent`.
+* **Hardware & Biometrics**: Web Bluetooth GATT biometric streaming (0x180D Heart Rate / HRV RMSSD), Apple Health XML ingestion, and Pharmacogenomics (PGx / CPIC Level A) drug-gene safety checks.
+* **Brand & Creative Sovereignty**: Scale-to-zero AI Branding Package Generator (`generate_ai_branding_package`) producing WCAG 2.2 AAA palettes and SVG mascot vector assets.
 
 ---
 
@@ -62,6 +64,7 @@ PocketGull registers **64 native WebMCP agentic tools** directly on the browser 
 | `/api/health` | `GET` | Telemetry, uptime, registered tool count, and HIPAA compliance probe. |
 | `/api/discovery/tools` | `GET` | Schema.org WebMCP JSON-LD tool catalog for autonomous AI discovery. |
 | `/api/discovery/status` | `GET` | WebGPU, WASM Edge AI, and system health status. |
+| `/api/patients` | `GET`, `POST` | Resilient JSON file-backed patient roster sync with 50MB payload headroom. |
 | `/api/billing/art-checkout` | `POST` | Fine art archival giclée print Stripe Checkout creator. |
 | `/llms.txt` | `GET` | Standardized agent manifest for LLM context crawlers. |
 | `/privacy-policy` | `GET` | HIPAA §164.514 de-identification and data sovereignty charter. |

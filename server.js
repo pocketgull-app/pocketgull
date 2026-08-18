@@ -52,6 +52,8 @@ io.on('connection', (socket) => {
   });
 });
 app.use(compression());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use('/api', cors()); // Enable CORS for API routes so Flutter apps can sync data
 
@@ -562,9 +564,6 @@ app.get('/api/orcid/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch profile from ORCID.' });
   }
 });
-
-// Enable parsing JSON bodies for POST requests
-app.use(express.json({ limit: '50mb' }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

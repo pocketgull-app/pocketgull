@@ -20,6 +20,7 @@ import { Medical3DViewerComponent } from './anatomy-3d/medical-3d-viewer.compone
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
 import { ClinicalIconComponent } from './shared/clinical-icon.component';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -1027,6 +1028,13 @@ export class SummaryNodeComponent implements AfterViewChecked {
   private richMedia = inject(RichMediaService);
   private sanitizer = inject(DomSanitizer);
   private patientState = inject(PatientStateService);
+  private bionicReading = (() => {
+    try {
+      return inject(BionicReadingService, { optional: true }) || new BionicReadingService();
+    } catch {
+      return new BionicReadingService();
+    }
+  })();
 
   safeEmbedUrl(url: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
@@ -1034,8 +1042,20 @@ export class SummaryNodeComponent implements AfterViewChecked {
 
   proposalAccepted = signal(false);
   isRejected = signal(false);
-  rawHtml = computed(() => (this.node() as any).rawHtml || '');
-  listItemHtml = computed(() => (this.node() as any).rawHtml || (this.node() as any).html || '');
+  rawHtml = computed(() => {
+    const content = (this.node() as any).rawHtml || '';
+    if (this.bionicReading.isBionicReadingEnabled()) {
+      return this.bionicReading.formatToBionicHtml(content);
+    }
+    return content;
+  });
+  listItemHtml = computed(() => {
+    const content = (this.node() as any).rawHtml || (this.node() as any).html || '';
+    if (this.bionicReading.isBionicReadingEnabled()) {
+      return this.bionicReading.formatToBionicHtml(content);
+    }
+    return content;
+  });
   hasAcmViolation = computed(() => {
     const issues = this.node().verificationIssues;
     if (!issues) return false;

@@ -19,6 +19,7 @@ import { getStoredApiKey } from '../services/secure-key';
 import { YbocsService } from '../services/ybocs/ybocs.service';
 import { severityQuestions } from '../services/ybocs/data';
 import { BionicReadingService } from '../services/bionic-reading.service';
+import { VoicePersonaService, VoicePersonaId } from '../services/voice-persona.service';
 
 export interface IChatEntry {
     role: 'user' | 'model';
@@ -140,6 +141,26 @@ export interface IChatEntry {
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
+            </div>
+
+            <!-- Voice Persona Switcher (Business Site Voice Models: Aoede, Puck, Charon, Kore, Fenrir) -->
+            <div class="px-4 py-2 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-2 overflow-x-auto text-xs font-mono shrink-0">
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase">Voice Persona:</span>
+                @for (p of voicePersona.allPersonas(); track p.id) {
+                  <button (click)="selectVoicePersona(p.id)"
+                          [class]="voicePersona.activePersonaId() === p.id ? 'bg-indigo-600 text-white font-black shadow-xs' : 'bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800'"
+                          class="px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1">
+                    <span>{{ p.avatar }}</span>
+                    <span>{{ p.name }}</span>
+                  </button>
+                }
+              </div>
+              <button (click)="previewCurrentVoice()" 
+                      class="px-2.5 py-1 bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 rounded-lg font-bold border border-purple-300 dark:border-purple-800 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition cursor-pointer flex items-center gap-1 shrink-0">
+                <span>🔊</span>
+                <span>Preview Spoken Tone</span>
+              </button>
             </div>
 
             <!-- MODE: SELECTION Placeholder -->
@@ -514,6 +535,23 @@ export class VoiceAssistantComponent implements OnDestroy {
       this.dictation.speakAvianPersonaText(text, persona);
     }
     public live = inject(AdkLiveService);
+    public voicePersona = (() => {
+      try {
+        return inject(VoicePersonaService, { optional: true }) || new VoicePersonaService();
+      } catch {
+        return new VoicePersonaService();
+      }
+    })();
+
+    selectVoicePersona(id: VoicePersonaId): void {
+      this.voicePersona.setPersona(id);
+      this.live.selectedVoice.set(this.voicePersona.currentPersona().geminiVoice);
+    }
+
+    previewCurrentVoice(): void {
+      const p = this.voicePersona.currentPersona();
+      this.voicePersona.speakText(`Hello, I am ${p.name}. Ready to assist with clinical strategy.`);
+    }
 
     // Derived signal for UI rendering
     parsedTranscript = computed(() => {

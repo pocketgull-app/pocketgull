@@ -1,29 +1,37 @@
 import '@angular/compiler';
-import { Injector, runInInjectionContext, PLATFORM_ID, ɵChangeDetectionScheduler as ChangeDetectionScheduler } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { ComponentDrilldownUnitComponent } from './component-drilldown-unit.component';
 import { PatientStateService } from '../services/patient-state.service';
 import { ThemeService } from '../services/theme.service';
 import { ActuarialLongevityService } from '../services/actuarial-longevity.service';
 import { StorageService } from '../services/storage.service';
 import { GamificationService } from '../services/gamification.service';
+import { ProviderTreatmentNetworkService } from '../services/provider-treatment-network.service';
+import { MedicalDecoderService } from '../services/medical-decoder.service';
+import { StoreSourcingService } from '../services/store-sourcing.service';
 
 describe('ComponentDrilldownUnitComponent', () => {
   let component: ComponentDrilldownUnitComponent;
+  let patientState: PatientStateService;
 
-  beforeEach(() => {
-    const injector = Injector.create({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [ComponentDrilldownUnitComponent],
       providers: [
-        { provide: ChangeDetectionScheduler, useValue: { schedule: () => {}, notify: () => {} } },
-        { provide: PLATFORM_ID, useValue: 'server' },
         ThemeService,
         StorageService,
         GamificationService,
         ActuarialLongevityService,
         PatientStateService,
-        ComponentDrilldownUnitComponent
+        ProviderTreatmentNetworkService,
+        MedicalDecoderService,
+        StoreSourcingService
       ]
-    });
-    component = runInInjectionContext(injector, () => injector.get(ComponentDrilldownUnitComponent));
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(ComponentDrilldownUnitComponent);
+    component = fixture.componentInstance;
+    patientState = TestBed.inject(PatientStateService);
   });
 
   it('1. Starts closed with null targetComponent', () => {
@@ -42,11 +50,14 @@ describe('ComponentDrilldownUnitComponent', () => {
     expect(component.targetComponent()).toBeNull();
   });
 
-  it('3. Supports opening new Kaggle and Network targets', () => {
+  it('3. Supports opening new Kaggle, Network, and Supplies targets', () => {
     component.open('kaggle');
     expect(component.title()).toContain('Kaggle');
 
     component.open('network');
     expect(component.title()).toContain('Clinician Peer');
+
+    component.open('supplies');
+    expect(component.title()).toContain('Medical Supply');
   });
 });

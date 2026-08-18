@@ -22,24 +22,24 @@ describe('BionicReadingService', () => {
   it('should bold initial 40-50% characters of words correctly', () => {
     const input = 'Clinical Research Strategy';
     const output = service.formatToBionicHtml(input);
-    expect(output).toContain('<b>Clin</b>ical');
-    expect(output).toContain('<b>Rese</b>arch');
-    expect(output).toContain('<b>Stra</b>tegy');
+    expect(output).toContain('<b class="bionic-fixation">Clin</b>ical');
+    expect(output).toContain('<b class="bionic-fixation">Rese</b>arch');
+    expect(output).toContain('<b class="bionic-fixation">Stra</b>tegy');
   });
 
   it('should preserve leading and trailing punctuation, quotes, and parens', () => {
     const input = '(PHQ-9) "Cardiovascular" [Level A]';
     const output = service.formatToBionicHtml(input);
-    expect(output).toContain('(<b>PH</b>Q-<b>9</b>)');
-    expect(output).toContain('"<b>Cardiov</b>ascular"');
-    expect(output).toContain('[<b>Lev</b>el <b>A</b>]');
+    expect(output).toContain('(<b class="bionic-fixation">PH</b>Q-<b class="bionic-fixation">9</b>)');
+    expect(output).toContain('"<b class="bionic-fixation">Cardiov</b>ascular"');
+    expect(output).toContain('[<b class="bionic-fixation">Lev</b>el <b class="bionic-fixation">A</b>]');
   });
 
   it('should support custom Tailwind CSS highlight classes', () => {
     const input = 'Clinical Strategy';
     const output = service.formatToBionicHtml(input, 'font-bold text-amber-600');
-    expect(output).toContain('<strong class="font-bold text-amber-600">Clin</strong>ical');
-    expect(output).toContain('<strong class="font-bold text-amber-600">Stra</strong>tegy');
+    expect(output).toContain('<strong class="font-bold text-amber-600 bionic-fixation">Clin</strong>ical');
+    expect(output).toContain('<strong class="font-bold text-amber-600 bionic-fixation">Stra</strong>tegy');
   });
 
   it('should handle empty input gracefully', () => {

@@ -4,13 +4,13 @@ import { PatientStateService } from '../../services/patient-state.service';
 import { IBodyPartIssue } from '../../services/patient.types';
 import { PatientManagementService } from '../../services/patient-management.service';
 import { Body3DViewerComponent } from './body-3d-viewer.component';
-import { GenesisBiophysicalSubstrateComponent } from './genesis-biophysical-substrate.component';
+import { Holographic3DAnatomyComponent } from './holographic-3d-anatomy.component';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-body-viewer',
   standalone: true,
-  imports: [CommonModule, Body3DViewerComponent, GenesisBiophysicalSubstrateComponent],
+  imports: [CommonModule, Body3DViewerComponent, Holographic3DAnatomyComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `    
     <div class="flex flex-col h-full w-full bg-white/70 dark:bg-zinc-900 backdrop-blur-[12px] text-gray-900 dark:text-zinc-100 rounded-2xl overflow-hidden border border-gray-200 dark:border-zinc-800 shadow-xl font-sans relative pocket-gull-card">
@@ -37,7 +37,7 @@ import { ThemeService } from '../../services/theme.service';
         </div>
 
         <div class="flex items-center gap-2 flex-wrap">
-          <!-- 3D vs 2D vs Genesis Viewport Mode Switcher (Tap-Target Friendly min 44px) -->
+          <!-- 3D vs 2D vs Unified Viewport Mode Switcher (Tap-Target Friendly min 44px) -->
           <div class="flex items-center gap-1 bg-gray-200/80 dark:bg-zinc-950 p-1.5 rounded-lg border border-gray-300/80 dark:border-zinc-800 text-xs font-mono">
             <button (click)="state.bodyViewerMode.set('3d')" 
                     [class.bg-teal-600]="state.bodyViewerMode() === '3d'" 
@@ -55,13 +55,13 @@ import { ThemeService } from '../../services/theme.service';
                     class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1.5">
               <span>🗺️</span> 2D Model
             </button>
-            <button (click)="state.bodyViewerMode.set('genesis')" 
-                    [class.bg-amber-600]="state.bodyViewerMode() === 'genesis'" 
-                    [class.text-white]="state.bodyViewerMode() === 'genesis'" 
-                    [class.text-gray-700]="state.bodyViewerMode() !== 'genesis'" 
-                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'genesis'" 
+            <button (click)="state.bodyViewerMode.set('unified')" 
+                    [class.bg-purple-600]="state.bodyViewerMode() === 'unified'" 
+                    [class.text-white]="state.bodyViewerMode() === 'unified'" 
+                    [class.text-gray-700]="state.bodyViewerMode() !== 'unified'" 
+                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'unified'" 
                     class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1.5">
-              <span>🧬</span> Genesis Substrate
+              <span>🔮</span> Unified View
             </button>
           </div>
 
@@ -135,8 +135,8 @@ import { ThemeService } from '../../services/theme.service';
               <p class="text-sm font-medium uppercase tracking-widest text-zinc-400">Loading 3D Engine...</p>
             </div>
           }
-        } @else if (state.bodyViewerMode() === 'genesis') {
-          <app-genesis-biophysical-substrate class="w-full h-full flex-1 flex flex-col min-h-[540px]"></app-genesis-biophysical-substrate>
+        } @else if (state.bodyViewerMode() === 'unified') {
+          <app-holographic-3d-anatomy class="w-full h-full flex-1 flex flex-col min-h-[540px]"></app-holographic-3d-anatomy>
         } @else {
           <!-- 2D SVG Schematic (Redrawn Holographic Medical Vector Twin) -->
           <div class="h-full w-full flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-b from-slate-900/50 via-zinc-900/40 to-slate-950/60 rounded-xl">
@@ -145,29 +145,29 @@ import { ThemeService } from '../../services/theme.service';
 
             <svg viewBox="0 0 200 450" class="h-full w-auto relative z-10 filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
               <defs>
-                <!-- Skin Gradient -->
+                <!-- Neutral Titanium Skin Gradient -->
                 <linearGradient id="skinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25" />
-                  <stop offset="50%" stop-color="#0284c7" stop-opacity="0.15" />
-                  <stop offset="100%" stop-color="#0369a1" stop-opacity="0.30" />
+                  <stop offset="0%" stop-color="#f4f4f5" stop-opacity="0.30" />
+                  <stop offset="50%" stop-color="#e4e4e7" stop-opacity="0.20" />
+                  <stop offset="100%" stop-color="#71717a" stop-opacity="0.35" />
                 </linearGradient>
 
-                <!-- Muscle Gradient -->
+                <!-- Neutral Slate Muscle Gradient -->
                 <linearGradient id="muscleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#0d9488" stop-opacity="0.6" />
-                  <stop offset="100%" stop-color="#115e59" stop-opacity="0.8" />
+                  <stop offset="0%" stop-color="#64748b" stop-opacity="0.7" />
+                  <stop offset="100%" stop-color="#334155" stop-opacity="0.9" />
                 </linearGradient>
 
-                <!-- Organ Gradients -->
+                <!-- Neutral Monochrome Organ Gradients -->
                 <radialGradient id="heartGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.9" />
-                  <stop offset="70%" stop-color="#e11d48" stop-opacity="0.6" />
-                  <stop offset="100%" stop-color="#881337" stop-opacity="0.2" />
+                  <stop offset="0%" stop-color="#94a3b8" stop-opacity="0.9" />
+                  <stop offset="70%" stop-color="#64748b" stop-opacity="0.6" />
+                  <stop offset="100%" stop-color="#334155" stop-opacity="0.2" />
                 </radialGradient>
 
                 <radialGradient id="lungGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.7" />
-                  <stop offset="100%" stop-color="#0284c7" stop-opacity="0.2" />
+                  <stop offset="0%" stop-color="#cbd5e1" stop-opacity="0.8" />
+                  <stop offset="100%" stop-color="#64748b" stop-opacity="0.2" />
                 </radialGradient>
 
                 <!-- Chakra Glow Filter -->
@@ -181,7 +181,7 @@ import { ThemeService } from '../../services/theme.service';
                 @if (view() === 'front') {
                   <g id="static-anatomy-front">
                     <!-- 1. SKIN BASE CONTOUR (Anatomically Proportional Body Outline) -->
-                    <path class="skin-base fill-[url(#skinGradient)] stroke-sky-400/40 stroke-[1.5] transition-all duration-500" 
+                    <path class="skin-base fill-[url(#skinGradient)] stroke-zinc-400/50 stroke-[1.5] transition-all duration-500" 
                           [attr.d]="fullBodySkinPathFront()" 
                           [class.opacity-20]="state.anatomyViewMode() !== 'skin'" />
 
@@ -190,19 +190,19 @@ import { ThemeService } from '../../services/theme.service';
                        [class.opacity-100]="state.anatomyViewMode() === 'muscle'" 
                        [class.opacity-0]="state.anatomyViewMode() !== 'muscle'">
                       <!-- Deltoids -->
-                      <path d="M 68 70 Q 55 90 62 110 Q 75 105 78 85 Z" fill="url(#muscleGradient)" stroke="#14b8a6" stroke-width="0.75" />
-                      <path d="M 132 70 Q 145 90 138 110 Q 125 105 122 85 Z" fill="url(#muscleGradient)" stroke="#14b8a6" stroke-width="0.75" />
+                      <path d="M 68 70 Q 55 90 62 110 Q 75 105 78 85 Z" fill="url(#muscleGradient)" stroke="#475569" stroke-width="0.75" />
+                      <path d="M 132 70 Q 145 90 138 110 Q 125 105 122 85 Z" fill="url(#muscleGradient)" stroke="#475569" stroke-width="0.75" />
                       <!-- Pectoralis Major -->
-                      <path d="M 78 80 Q 100 85 100 110 Q 82 115 78 95 Z" fill="url(#muscleGradient)" stroke="#14b8a6" stroke-width="0.75" />
-                      <path d="M 122 80 Q 100 85 100 110 Q 118 115 122 95 Z" fill="url(#muscleGradient)" stroke="#14b8a6" stroke-width="0.75" />
+                      <path d="M 78 80 Q 100 85 100 110 Q 82 115 78 95 Z" fill="url(#muscleGradient)" stroke="#475569" stroke-width="0.75" />
+                      <path d="M 122 80 Q 100 85 100 110 Q 118 115 122 95 Z" fill="url(#muscleGradient)" stroke="#475569" stroke-width="0.75" />
                       <!-- Rectus Abdominis Six-Pack -->
-                      <path d="M 88 115 H 112 V 130 H 88 Z M 88 133 H 112 V 148 H 88 Z M 88 151 H 112 V 166 H 88 Z" fill="url(#muscleGradient)" stroke="#14b8a6" stroke-width="0.75" />
+                      <path d="M 88 115 H 112 V 130 H 88 Z M 88 133 H 112 V 148 H 88 Z M 88 151 H 112 V 166 H 88 Z" fill="url(#muscleGradient)" stroke="#475569" stroke-width="0.75" />
                       <!-- Biceps -->
-                      <path d="M 62 112 Q 52 135 60 155 Q 70 150 72 125 Z" fill="url(#muscleGradient)" stroke="#14b8a6" stroke-width="0.75" />
-                      <path d="M 138 112 Q 148 135 140 155 Q 130 150 128 125 Z" fill="url(#muscleGradient)" stroke="#14b8a6" stroke-width="0.75" />
+                      <path d="M 62 112 Q 52 135 60 155 Q 70 150 72 125 Z" fill="url(#muscleGradient)" stroke="#475569" stroke-width="0.75" />
+                      <path d="M 138 112 Q 148 135 140 155 Q 130 150 128 125 Z" fill="url(#muscleGradient)" stroke="#475569" stroke-width="0.75" />
                       <!-- Quadriceps Femoris -->
-                      <path d="M 82 215 Q 75 255 88 290 Q 98 285 96 230 Z" fill="url(#muscleGradient)" stroke="#14b8a6" stroke-width="0.75" />
-                      <path d="M 118 215 Q 125 255 112 290 Q 102 285 104 230 Z" fill="url(#muscleGradient)" stroke="#14b8a6" stroke-width="0.75" />
+                      <path d="M 82 215 Q 75 255 88 290 Q 98 285 96 230 Z" fill="url(#muscleGradient)" stroke="#475569" stroke-width="0.75" />
+                      <path d="M 118 215 Q 125 255 112 290 Q 102 285 104 230 Z" fill="url(#muscleGradient)" stroke="#475569" stroke-width="0.75" />
                     </g>
 
                     <!-- 3. SKELETON LAYER (Cranium, Rib Cage, Spine, Pelvis, Limbs) -->
@@ -210,21 +210,21 @@ import { ThemeService } from '../../services/theme.service';
                        [class.opacity-100]="state.anatomyViewMode() === 'skeleton'" 
                        [class.opacity-20]="state.anatomyViewMode() !== 'skeleton'">
                       <!-- Cranium & Jaw -->
-                      <path class="skeleton-path" d="M 100 18 C 88 18 84 26 84 38 C 84 46 88 52 92 56 C 96 60 104 60 108 56 C 112 52 116 46 116 38 C 116 26 112 18 100 18 Z" stroke="#e2e8f0" stroke-width="1.5" fill="none" />
-                      <path class="skeleton-path" d="M 94 56 L 96 64 H 104 L 106 56" stroke="#cbd5e1" stroke-width="1" fill="none" />
+                      <path class="skeleton-path" d="M 100 18 C 88 18 84 26 84 38 C 84 46 88 52 92 56 C 96 60 104 60 108 56 C 112 52 116 46 116 38 C 116 26 112 18 100 18 Z" stroke="#ffffff" stroke-width="1.5" fill="none" />
+                      <path class="skeleton-path" d="M 94 56 L 96 64 H 104 L 106 56" stroke="#e2e8f0" stroke-width="1" fill="none" />
                       <!-- Cervical & Thoracic Spine -->
-                      <path class="skeleton-path" d="M 100 65 V 205" stroke="#e2e8f0" stroke-dasharray="2,2" stroke-width="2" />
+                      <path class="skeleton-path" d="M 100 65 V 205" stroke="#ffffff" stroke-dasharray="2,2" stroke-width="2" />
                       <!-- Clavicles -->
-                      <path class="skeleton-path" d="M 100 70 Q 82 68 70 72 M 100 70 Q 118 68 130 72" stroke="#e2e8f0" stroke-width="1.8" fill="none" />
+                      <path class="skeleton-path" d="M 100 70 Q 82 68 70 72 M 100 70 Q 118 68 130 72" stroke="#ffffff" stroke-width="1.8" fill="none" />
                       <!-- Sternum & Rib Cage -->
-                      <path class="skeleton-path" d="M 100 75 V 125" stroke="#f8fafc" stroke-width="3" />
+                      <path class="skeleton-path" d="M 100 75 V 125" stroke="#ffffff" stroke-width="3" />
                       <path class="skeleton-path" d="M 80 82 Q 95 86 100 86 Q 105 86 120 82 M 78 92 Q 95 97 100 97 Q 105 97 122 92 M 77 102 Q 95 107 100 107 Q 105 107 123 102 M 78 112 Q 95 117 100 117 Q 105 117 122 112 M 80 122 Q 95 125 100 125 Q 105 125 120 122" stroke="#cbd5e1" stroke-width="1.2" fill="none" />
                       <!-- Pelvic Girdle -->
-                      <path class="skeleton-path" d="M 82 170 Q 75 190 85 205 Q 100 210 100 195 Q 100 210 115 205 Q 125 190 118 170 Z" stroke="#e2e8f0" stroke-width="1.5" fill="none" />
+                      <path class="skeleton-path" d="M 82 170 Q 75 190 85 205 Q 100 210 100 195 Q 100 210 115 205 Q 125 190 118 170 Z" stroke="#ffffff" stroke-width="1.5" fill="none" />
                       <!-- Femurs -->
-                      <path class="skeleton-path" d="M 86 205 L 82 290 M 114 205 L 118 290" stroke="#f1f5f9" stroke-width="2.5" />
+                      <path class="skeleton-path" d="M 86 205 L 82 290 M 114 205 L 118 290" stroke="#ffffff" stroke-width="2.5" />
                       <!-- Tibia / Fibula -->
-                      <path class="skeleton-path" d="M 82 295 L 75 390 M 118 295 L 125 390" stroke="#cbd5e1" stroke-width="2" />
+                      <path class="skeleton-path" d="M 82 295 L 75 390 M 118 295 L 125 390" stroke="#e2e8f0" stroke-width="2" />
                     </g>
 
                     <!-- 4. VISCERAL ORGAN LAYER (Lungs, Heart, Stomach, Liver, Kidneys) -->
@@ -232,17 +232,17 @@ import { ThemeService } from '../../services/theme.service';
                        [class.opacity-100]="state.anatomyViewMode() === 'organs'" 
                        [class.opacity-30]="state.anatomyViewMode() !== 'organs'">
                       <!-- Right & Left Lungs -->
-                      <path d="M 76 80 C 72 95 72 120 88 122 C 94 122 96 100 96 82 C 90 78 80 78 76 80 Z" fill="url(#lungGlow)" stroke="#38bdf8" stroke-width="1" class="cursor-pointer hover:opacity-100 transition-opacity" (click)="select('lungs', 'Pulmonary Lungs')" />
-                      <path d="M 124 80 C 128 95 128 120 112 122 C 106 122 104 100 104 82 C 110 78 120 78 124 80 Z" fill="url(#lungGlow)" stroke="#38bdf8" stroke-width="1" class="cursor-pointer hover:opacity-100 transition-opacity" (click)="select('lungs', 'Pulmonary Lungs')" />
+                      <path d="M 76 80 C 72 95 72 120 88 122 C 94 122 96 100 96 82 C 90 78 80 78 76 80 Z" fill="url(#lungGlow)" stroke="#94a3b8" stroke-width="1" class="cursor-pointer hover:opacity-100 transition-opacity" (click)="select('lungs', 'Pulmonary Lungs')" />
+                      <path d="M 124 80 C 128 95 128 120 112 122 C 106 122 104 100 104 82 C 110 78 120 78 124 80 Z" fill="url(#lungGlow)" stroke="#94a3b8" stroke-width="1" class="cursor-pointer hover:opacity-100 transition-opacity" (click)="select('lungs', 'Pulmonary Lungs')" />
                       <!-- Cardiac Heart (Tilted Left) -->
-                      <path d="M 94 92 C 90 85 100 80 106 90 C 112 80 120 85 116 95 C 112 108 102 116 100 118 C 98 116 92 104 94 92 Z" fill="url(#heartGlow)" stroke="#f43f5e" stroke-width="1.2" class="cursor-pointer animate-pulse" (click)="select('heart', 'Cardiac / Heart')" />
+                      <path d="M 94 92 C 90 85 100 80 106 90 C 112 80 120 85 116 95 C 112 108 102 116 100 118 C 98 116 92 104 94 92 Z" fill="url(#heartGlow)" stroke="#64748b" stroke-width="1.2" class="cursor-pointer animate-pulse" (click)="select('heart', 'Cardiac / Heart')" />
                       <!-- Liver (Right Upper Abdomen) -->
-                      <path d="M 76 126 C 74 135 78 148 98 148 C 102 148 104 135 102 126 C 94 124 82 124 76 126 Z" fill="#b45309" fill-opacity="0.7" stroke="#f59e0b" stroke-width="1" class="cursor-pointer hover:opacity-100 transition-opacity" (click)="select('liver', 'Hepatic / Liver')" />
+                      <path d="M 76 126 C 74 135 78 148 98 148 C 102 148 104 135 102 126 C 94 124 82 124 76 126 Z" fill="#475569" fill-opacity="0.75" stroke="#64748b" stroke-width="1" class="cursor-pointer hover:opacity-100 transition-opacity" (click)="select('liver', 'Hepatic / Liver')" />
                       <!-- Stomach (Left Upper Abdomen) -->
-                      <path d="M 104 126 C 104 136 110 148 122 144 C 126 138 124 128 118 126 Z" fill="#d97706" fill-opacity="0.65" stroke="#fbbf24" stroke-width="1" class="cursor-pointer hover:opacity-100 transition-opacity" (click)="select('stomach', 'Gastric / Stomach')" />
+                      <path d="M 104 126 C 104 136 110 148 122 144 C 126 138 124 128 118 126 Z" fill="#52525b" fill-opacity="0.75" stroke="#71717a" stroke-width="1" class="cursor-pointer hover:opacity-100 transition-opacity" (click)="select('stomach', 'Gastric / Stomach')" />
                       <!-- Bilateral Kidneys -->
-                      <ellipse cx="86" cy="155" rx="5" ry="8" fill="#9f1239" fill-opacity="0.8" stroke="#f43f5e" stroke-width="0.8" class="cursor-pointer" (click)="select('kidneys', 'Renal Kidneys')" />
-                      <ellipse cx="114" cy="155" rx="5" ry="8" fill="#9f1239" fill-opacity="0.8" stroke="#f43f5e" stroke-width="0.8" class="cursor-pointer" (click)="select('kidneys', 'Renal Kidneys')" />
+                      <ellipse cx="86" cy="155" rx="5" ry="8" fill="#334155" fill-opacity="0.85" stroke="#475569" stroke-width="0.8" class="cursor-pointer" (click)="select('kidneys', 'Renal Kidneys')" />
+                      <ellipse cx="114" cy="155" rx="5" ry="8" fill="#334155" fill-opacity="0.85" stroke="#475569" stroke-width="0.8" class="cursor-pointer" (click)="select('kidneys', 'Renal Kidneys')" />
                     </g>
 
                     <!-- 5. EASTERN TCM MERIDIANS & ACUPOINTS OVERLAY -->
@@ -375,7 +375,7 @@ import { ThemeService } from '../../services/theme.service';
           <div class="flex items-center bg-zinc-950 p-1 rounded-xl border border-zinc-800">
             <button (click)="state.bodyViewerMode.set('3d')" [class.bg-indigo-600]="state.bodyViewerMode() === '3d'" [class.text-white]="state.bodyViewerMode() === '3d'" [class.text-zinc-400]="state.bodyViewerMode() !== '3d'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🧊 3D</button>
             <button (click)="state.bodyViewerMode.set('2d')" [class.bg-indigo-600]="state.bodyViewerMode() === '2d'" [class.text-white]="state.bodyViewerMode() === '2d'" [class.text-zinc-400]="state.bodyViewerMode() !== '2d'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🗺️ 2D</button>
-            <button (click)="state.bodyViewerMode.set('genesis')" [class.bg-amber-600]="state.bodyViewerMode() === 'genesis'" [class.text-white]="state.bodyViewerMode() === 'genesis'" [class.text-zinc-400]="state.bodyViewerMode() !== 'genesis'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🧬 Genesis</button>
+            <button (click)="state.bodyViewerMode.set('unified')" [class.bg-purple-600]="state.bodyViewerMode() === 'unified'" [class.text-white]="state.bodyViewerMode() === 'unified'" [class.text-zinc-400]="state.bodyViewerMode() !== 'unified'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🔮 Unified</button>
           </div>
 
           <!-- Layers Strip -->
@@ -393,9 +393,11 @@ import { ThemeService } from '../../services/theme.service';
     :host { display: block; height: 100%; width: 100%; }
     .body-part { fill: transparent; stroke: transparent; cursor: pointer; transition: all 0.3s ease; outline: none; }
     .body-part:hover { fill: rgba(104, 159, 56, 0.1); stroke: rgba(104, 159, 56, 0.3); stroke-width: 1; }
-    .body-part.selected { fill: rgba(104, 159, 56, 0.2); stroke: #689F38; stroke-width: 2; }
-    .body-part.has-issue { fill: rgba(239, 68, 68, 0.1); stroke: rgba(239, 68, 68, 0.4); stroke-width: 1.5; stroke-dasharray: 4 2; }
-    .body-part.has-issue.selected { fill: rgba(239, 68, 68, 0.2); stroke: #EF4444; stroke-width: 2.5; stroke-dasharray: none; }
+    .body-part.selected { fill: rgba(16, 185, 129, 0.2); stroke: #10B981; stroke-width: 2; }
+    .body-part.has-pain-good { fill: rgba(16, 185, 129, 0.18); stroke: #10B981; stroke-width: 1.5; }
+    .body-part.has-pain-mild { fill: rgba(234, 179, 8, 0.18); stroke: #EAB308; stroke-width: 1.5; }
+    .body-part.has-pain-moderate { fill: rgba(249, 115, 22, 0.22); stroke: #F97316; stroke-width: 2; }
+    .body-part.has-pain-severe { fill: rgba(239, 68, 68, 0.25); stroke: #EF4444; stroke-width: 2.5; stroke-dasharray: 4 2; }
     .skin-base { fill: #FDFDFD; stroke: #E0E0E0; stroke-width: 1; transition: opacity 0.5s ease; pointer-events: none; }
     .skeleton-layer { pointer-events: none; transition: opacity 0.5s ease; }
     .skeleton-path { fill: none; stroke: #EEEEEE; stroke-width: 1.5; stroke-linecap: round; }
@@ -592,11 +594,20 @@ export class BodyViewerComponent implements OnDestroy {
   getPartClass(id: string): string {
     const isSelected = this.state.selectedPartId() === id;
     const isAnimating = this.tempSelectedId() === id;
-    const hasIssue = this.state.hasPainfulIssue(id);
+    const issuesForPart = this.state.issues()[id] || [];
+    const hasIssue = issuesForPart.length > 0;
+    const maxPain = issuesForPart.reduce((max, issue) => Math.max(max, issue.painLevel ?? 0), 0);
+
     let classes = 'body-part';
     if (isAnimating) { classes += ' highlight-anim'; }
-    else if (isSelected) { classes += ' selected'; }
-    if (hasIssue) { classes += ' has-issue'; }
+    if (isSelected) { classes += ' selected'; }
+
+    if (hasIssue || isSelected) {
+      if (maxPain >= 8) { classes += ' has-pain-severe'; }
+      else if (maxPain >= 6) { classes += ' has-pain-moderate'; }
+      else if (maxPain >= 3) { classes += ' has-pain-mild'; }
+      else { classes += ' has-pain-good'; }
+    }
     return classes;
   }
 

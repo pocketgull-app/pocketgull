@@ -6,43 +6,51 @@ import { ClinicalMoERouterService, IExpertSubnet } from '../../services/clinical
   selector: 'app-pathways-moe-badge',
   standalone: true,
   imports: [CommonModule],
+  styles: [`
+    :host {
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: middle;
+    }
+  `],
   template: `
-    <div class="relative inline-block text-left font-sans">
+    <div class="relative inline-block text-left font-sans max-w-full">
       <!-- Pathways MoE Telemetry Pill -->
       <button
         type="button"
         (click)="toggleExpanded()"
         [attr.aria-expanded]="isExpanded()"
         aria-label="Pathways MoE Compute Efficiency Status"
-        class="group flex items-center gap-2.5 px-3.5 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md transition-all duration-300 border shadow-sm cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+        class="group flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 min-h-[38px] rounded-full text-xs font-semibold backdrop-blur-md transition-all duration-200 border shadow-2xs cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shrink-0"
         [ngClass]="{
           'bg-emerald-950/40 text-emerald-300 border-emerald-500/30 hover:border-emerald-400/60 shadow-emerald-900/20': savingsPercent() > 20,
           'bg-indigo-950/40 text-indigo-300 border-indigo-500/30 hover:border-indigo-400/60 shadow-indigo-900/20': savingsPercent() <= 20
         }"
       >
         <!-- Pulse Indicator for Active Sub-networks -->
-        <span class="relative flex h-2 w-2">
+        <span class="relative flex h-2 w-2 shrink-0">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
         </span>
 
         <!-- Badge Label & FLOP Savings -->
-        <span class="flex items-center gap-1.5 tracking-wide">
+        <span class="flex items-center gap-1 sm:gap-1.5 tracking-wide shrink-0">
           <span class="text-emerald-400 group-hover:scale-110 transition-transform">⚡</span>
-          <span>Pathways MoE</span>
-          <span class="font-mono text-xs px-1.5 py-0.5 rounded bg-emerald-900/50 text-emerald-200 border border-emerald-500/20">
+          <span class="hidden min-[480px]:inline">Pathways MoE</span>
+          <span class="inline min-[480px]:hidden font-mono text-[11px]">MoE</span>
+          <span class="font-mono text-[11px] sm:text-xs px-1.5 py-0.5 rounded bg-emerald-900/50 text-emerald-200 border border-emerald-500/20 hidden 2xl:inline">
             +{{ savingsPercent() }}% FLOP Savings
           </span>
         </span>
 
         <!-- Active Subnets Count Pill -->
-        <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-zinc-800/80 text-zinc-300 border border-zinc-700">
+        <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-zinc-800/80 text-zinc-300 border border-zinc-700 hidden xl:inline shrink-0">
           {{ activeExperts().length }} {{ activeExperts().length === 1 ? 'Expert' : 'Experts' }}
         </span>
 
         <!-- Chevron Icon -->
         <svg
-          class="w-3.5 h-3.5 transition-transform duration-200 text-zinc-400 group-hover:text-zinc-200"
+          class="w-3.5 h-3.5 transition-transform duration-200 text-zinc-400 group-hover:text-zinc-200 shrink-0"
           [ngClass]="{ 'rotate-180': isExpanded() }"
           fill="none"
           stroke="currentColor"
@@ -55,7 +63,7 @@ import { ClinicalMoERouterService, IExpertSubnet } from '../../services/clinical
       <!-- Sub-network Drawer Popover -->
       @if (isExpanded()) {
         <div
-          class="absolute right-0 mt-2 w-80 rounded-2xl bg-zinc-900/95 border border-zinc-800 text-zinc-100 shadow-2xl backdrop-blur-xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+          class="absolute right-0 mt-2 w-80 max-w-[calc(100vw-24px)] rounded-2xl bg-zinc-900/95 border border-zinc-800 text-zinc-100 shadow-2xl backdrop-blur-xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
         >
           <div class="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800">
             <div>

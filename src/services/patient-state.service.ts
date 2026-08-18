@@ -81,9 +81,9 @@ export class PatientStateService {
       solfeggio: { 
         name: 'Polyphonic Solfeggio & AVS Soundscape Deck', 
         icon: '🎵', 
-        category: 'Acoustic Co-Regulation',
-        personalizedInstruction: `Listen to 528 Hz (DNA/Cellular Repair) paired with 432 Hz to calm sympathetic tone from ${hrVal} bpm.`,
-        suggestedUsage: '15-20 minutes in evening prior to bedtime entrainment.',
+        category: 'Supportive Acoustic Relaxation',
+        personalizedInstruction: `Listen to 528 Hz and 432 Hz acoustic tones for evening autonomic down-regulation and calming sympathetic tone from ${hrVal} bpm (Tier 3 Non-Pharmacological Comfort Measure).`,
+        suggestedUsage: '15-20 minutes in evening prior to bedtime relaxation.',
         patientCareTip: 'Use stereo headphones in a quiet, dark room for optimal brainwave sync.'
       },
       vagal: { 
@@ -278,7 +278,7 @@ export class PatientStateService {
   readonly requestedResearchQuery = signal<string | null>(null);
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
-  readonly bodyViewerMode = signal<'3d' | '2d' | 'genesis'>('3d');
+  readonly bodyViewerMode = signal<'3d' | '2d' | 'unified'>('3d');
   readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic'>('skin');
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
@@ -346,6 +346,11 @@ export class PatientStateService {
   readonly patientAge = signal<number>(0);
   readonly patientGender = signal<string>('');
   readonly patientHistory = signal<HistoryEntry[]>([]);
+
+  // --- Live EHR & SMART on FHIR Ingestion State (Mach 1 Live Flight) ---
+  readonly dataSourceMode = signal<'mock_safe_harbor' | 'smart_on_fhir_live' | 'ble_telemetry_live'>('mock_safe_harbor');
+  readonly liveEhrEndpoint = signal<string | null>(null);
+  readonly isLiveConnected = computed(() => this.dataSourceMode() !== 'mock_safe_harbor');
 
   // --- AVS Neuro-Therapy Synchronized State ---
   readonly isAvsSessionActive = signal<boolean>(false);
@@ -461,7 +466,7 @@ export class PatientStateService {
 
   // --- Clinician Manual Override & Smart Data Presence Computed Signals ---
   readonly showAllInstrumentsOverride = signal<boolean>(false);
-  readonly activeDrilldownComponent = signal<'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'foraging' | 'vagal' | null>(null);
+  readonly activeDrilldownComponent = signal<'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'foraging' | 'vagal' | 'kaggle' | 'network' | 'supplies' | null>(null);
 
   readonly hasOccupationalData = computed(() => {
     const occ = this.occupation();
@@ -519,6 +524,86 @@ export class PatientStateService {
         // Fallback for test injectors without EffectScheduler
       }
     }
+  }
+
+  /**
+   * Loads and ingests a live FHIR R4 Bundle directly into reactive signals.
+   */
+  loadLiveFhirBundle(bundle: any, endpointUrl?: string): void {
+    if (!bundle || !bundle.entry || !Array.isArray(bundle.entry)) return;
+
+    this.dataSourceMode.set('smart_on_fhir_live');
+    if (endpointUrl) {
+      this.liveEhrEndpoint.set(endpointUrl);
+    }
+
+    const newVitals: Partial<IPatientVitals> = {};
+    const newIssues: Record<string, IBodyPartIssue[]> = {};
+
+    for (const entry of bundle.entry) {
+      const res = entry.resource;
+      if (!res) continue;
+
+      if (res.resourceType === 'Patient') {
+        const name = res.name?.[0];
+        const given = name?.given?.join(' ') || '';
+        const family = name?.family || '';
+        const fullName = `${given} ${family}`.trim();
+        if (fullName) {
+          this.patientName.set(fullName);
+          this.activePatientSummary.set(`Live EHR Patient: ${fullName} (${res.gender || 'Unknown'}, DOB: ${res.birthDate || 'N/A'})`);
+        }
+      }
+
+      if (res.resourceType === 'Observation') {
+        const code = res.code?.coding?.[0]?.code;
+        const val = res.valueQuantity?.value;
+        if (code === '8867-4' && val != null) { // Heart Rate
+          newVitals.hr = String(Math.round(val));
+        } else if (code === '2708-6' && val != null) { // SpO2
+          newVitals.spO2 = String(Math.round(val));
+        } else if (code === '2339-0' && val != null) { // Glucose
+          newVitals.cgmGlucoseMgDl = String(Math.round(val));
+        } else if (code === '85354-9') { // Blood Pressure
+          const systolic = res.component?.find((c: any) => c.code?.coding?.[0]?.code === '8480-6')?.valueQuantity?.value;
+          const diastolic = res.component?.find((c: any) => c.code?.coding?.[0]?.code === '8462-4')?.valueQuantity?.value;
+          if (systolic != null && diastolic != null) {
+            newVitals.bp = `${Math.round(systolic)}/${Math.round(diastolic)}`;
+          }
+        }
+      }
+
+      if (res.resourceType === 'Condition') {
+        const text = res.code?.text || res.code?.coding?.[0]?.display || 'Clinical Condition';
+        const part = 'chest'; // Default anatomic mapping
+        newIssues[part] = [
+          ...(newIssues[part] || []),
+          {
+            id: part,
+            noteId: 'live_fhir_' + Math.random().toString(36).substring(2, 9),
+            name: 'Chest',
+            painLevel: 5,
+            description: text,
+            symptoms: [text]
+          }
+        ];
+      }
+    }
+
+    if (Object.keys(newVitals).length > 0) {
+      this.vitals.update(v => ({ ...v, ...newVitals }));
+    }
+    if (Object.keys(newIssues).length > 0) {
+      this.issues.set(newIssues);
+    }
+  }
+
+  /**
+   * Switches data source mode back to HIPAA Safe Harbor Mock Archetypes.
+   */
+  switchToMockSafeHarbor(): void {
+    this.dataSourceMode.set('mock_safe_harbor');
+    this.liveEhrEndpoint.set(null);
   }
 
   // --- Computed State ---

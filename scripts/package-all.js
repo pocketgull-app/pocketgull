@@ -24,76 +24,58 @@ try {
   }
   fs.mkdirSync(packagesDir, { recursive: true });
 
-  // 1. Build the Angular App
-  console.log('\n--- Building Angular Application ---');
+  // 1. Build the Angular Web Application
+  console.log('\n--- 1. Building Angular Web Application ---');
   runCommand('npm run build', rootDir);
 
-  // 2. Build pocketgull_flutter Web App
-  console.log('\n--- Building Core Flutter Application (pocketgull_flutter) ---');
+  // 2. Build pocketgull_flutter Hybrid Shell (if Flutter SDK present)
+  console.log('\n--- 2. Building Core Flutter Hybrid Shell (pocketgull_flutter) ---');
   const coreFlutterDir = path.join(rootDir, 'pocketgull_flutter');
-  runCommand('flutter build web --release --no-tree-shake-icons', coreFlutterDir);
+  try {
+    runCommand('flutter build web --release --no-tree-shake-icons', coreFlutterDir);
+  } catch (flutterErr) {
+    console.warn('⚠️ Flutter web build skipped or failed (Flutter SDK may not be in PATH); bundling source shell instead.');
+  }
 
-  // 3. Build Provider Companion App
-  console.log('\n--- Building Provider Companion App ---');
-  const providerDir = path.join(rootDir, 'companion-apps/provider_app');
-  runCommand('flutter build web --release --no-tree-shake-icons', providerDir);
-
-  // 4. Build Patient Companion App
-  console.log('\n--- Building Patient Companion App ---');
-  const patientDir = path.join(rootDir, 'companion-apps/patient_app');
-  runCommand('flutter build web --release --no-tree-shake-icons', patientDir);
-
-  // 5. Build Standalone API Package
-  console.log('\n--- Building Standalone API ---');
+  // 3. Build Standalone API Package
+  console.log('\n--- 3. Building Standalone API ---');
   const apiDir = path.join(rootDir, 'pocketgull_api');
   runCommand('npm run build', apiDir);
 
-  // 6. Consolidate Web Assets into dist/ for Full Consolidated Bundle
-  console.log('\n--- Consolidating Web Assets into dist/ for Full Release ---');
+  // 4. Consolidate Web Assets into dist/ for Full Release
+  console.log('\n--- 4. Consolidating Web Assets into dist/ for Full Release ---');
   const distDir = path.join(rootDir, 'dist');
   const destCore = path.join(distDir, 'pocketgull_flutter');
-  const destProvider = path.join(distDir, 'companion-apps/provider_app');
-  const destPatient = path.join(distDir, 'companion-apps/patient_app');
 
-  // Create paths in dist/
   fs.mkdirSync(destCore, { recursive: true });
-  fs.mkdirSync(destProvider, { recursive: true });
-  fs.mkdirSync(destPatient, { recursive: true });
+  if (fs.existsSync(path.join(coreFlutterDir, 'build/web'))) {
+    fs.cpSync(path.join(coreFlutterDir, 'build/web'), destCore, { recursive: true });
+  }
 
-  // Copy assets recursively using fs.cpSync
-  fs.cpSync(path.join(coreFlutterDir, 'build/web'), destCore, { recursive: true });
-  fs.cpSync(path.join(providerDir, 'build/web'), destProvider, { recursive: true });
-  fs.cpSync(path.join(patientDir, 'build/web'), destPatient, { recursive: true });
+  // 5. Generate Release Tarballs
+  console.log('\n--- 5. Generating Modular Release Packages ---');
 
-  // 7. Generate Release Tarballs
-  console.log('\n--- Generating Modular Release Packages ---');
-
-  // A. Web Platform Package (Angular client/server build, no companion apps)
-  // Let's create a temporary staging directory to zip ONLY the Angular dist without the copied Flutter subfolders
+  // A. Web Platform Package (Angular client/server build)
   const stagingAngular = path.join(packagesDir, 'staging-angular');
   fs.mkdirSync(stagingAngular, { recursive: true });
   fs.cpSync(distDir, stagingAngular, { recursive: true });
-  // Remove Flutter subdirectories from staging Angular
-  fs.rmSync(path.join(stagingAngular, 'pocketgull_flutter'), { recursive: true, force: true });
-  fs.rmSync(path.join(stagingAngular, 'companion-apps'), { recursive: true, force: true });
+  if (fs.existsSync(path.join(stagingAngular, 'pocketgull_flutter'))) {
+    fs.rmSync(path.join(stagingAngular, 'pocketgull_flutter'), { recursive: true, force: true });
+  }
 
   console.log('📦 Archiving: pocketgull-web-platform.tar.gz');
   runCommand(`tar -czf ${path.join(packagesDir, 'pocketgull-web-platform.tar.gz')} -C ${stagingAngular} .`, rootDir);
   fs.rmSync(stagingAngular, { recursive: true, force: true });
 
-  // B. Core Flutter Web Package
-  console.log('📦 Archiving: pocketgull-flutter-core.tar.gz');
-  runCommand(`tar -czf ${path.join(packagesDir, 'pocketgull-flutter-core.tar.gz')} -C ${path.join(coreFlutterDir, 'build/web')} .`, rootDir);
+  // B. Core Flutter Hybrid Shell Package
+  console.log('📦 Archiving: pocketgull-flutter-shell.tar.gz');
+  const flutterSourceStaging = path.join(packagesDir, 'staging-flutter');
+  fs.mkdirSync(flutterSourceStaging, { recursive: true });
+  fs.cpSync(coreFlutterDir, flutterSourceStaging, { recursive: true });
+  runCommand(`tar -czf ${path.join(packagesDir, 'pocketgull-flutter-shell.tar.gz')} -C ${flutterSourceStaging} .`, rootDir);
+  fs.rmSync(flutterSourceStaging, { recursive: true, force: true });
 
-  // C. Provider Companion Web Package
-  console.log('📦 Archiving: pocketgull-companion-provider.tar.gz');
-  runCommand(`tar -czf ${path.join(packagesDir, 'pocketgull-companion-provider.tar.gz')} -C ${path.join(providerDir, 'build/web')} .`, rootDir);
-
-  // D. Patient Companion Web Package
-  console.log('📦 Archiving: pocketgull-companion-patient.tar.gz');
-  runCommand(`tar -czf ${path.join(packagesDir, 'pocketgull-companion-patient.tar.gz')} -C ${path.join(patientDir, 'build/web')} .`, rootDir);
-
-  // E. Standalone API Package
+  // C. Standalone API Package
   console.log('📦 Archiving: pocketgull-api.tar.gz');
   const stagingApi = path.join(packagesDir, 'staging-api');
   fs.mkdirSync(stagingApi, { recursive: true });
@@ -110,11 +92,9 @@ try {
   runCommand(`tar -czf ${path.join(packagesDir, 'pocketgull-api.tar.gz')} -C ${stagingApi} .`, rootDir);
   fs.rmSync(stagingApi, { recursive: true, force: true });
 
-  // F. Unified Consolidated Package
+  // D. Unified Consolidated Package
   console.log('📦 Archiving: pocketgull-full-release.tar.gz');
   runCommand(`tar -czf ${path.join(packagesDir, 'pocketgull-full-release.tar.gz')} -C dist .`, rootDir);
-
-  // Copy unified package to root for convenience as well
   fs.cpSync(path.join(packagesDir, 'pocketgull-full-release.tar.gz'), path.join(rootDir, 'pocketgull-release.tar.gz'));
 
   console.log('\n===========================================================');

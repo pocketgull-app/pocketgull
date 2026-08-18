@@ -1,6 +1,6 @@
 {
   "name": "pocket-gull",
-  "version": "1.23.0",
+  "version": "1.24.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api"

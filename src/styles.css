@@ -8,11 +8,11 @@
 
 :root {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans: 'Inter', sans-serif;
-  --font-heading: 'PocketGull VF', 'Outfit', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: 'Libre Caslon Text', Georgia, serif;
-  --font-mono: 'PocketGull Mono', 'JetBrains Mono', monospace;
-  --font-rounded: 'PocketGull VF', 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-rounded: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -24,7 +24,7 @@ body, html {
 }
 
 h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: 'PocketGull VF', 'Outfit', 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.25;
@@ -35,12 +35,12 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .font-mono, .ui-monospace, code, kbd, samp, pre {
-  font-family: 'PocketGull Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   font-feature-settings: "zero" 1, "ss01" 1, "ss02" 1;
 }
 
 .font-rounded, .ui-rounded {
-  font-family: 'PocketGull VF', 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 /* ==========================================================================
@@ -1400,17 +1400,30 @@ body.avs-active .rounded-xl.shadow-md {
     }
 }
 
-/* ── Navbar border breath ─────────────────────────────────────── */
+/* ── Navbar border breath (Zero-Jank Hardware Composited) ─────── */
 body.avs-active nav {
     border-bottom-color: rgba(var(--avs-color-primary), 0.2) !important;
-    box-shadow: 0 1px 0 rgba(var(--avs-color-primary), 0.1) !important;
+    position: relative;
+    transition: border-color 1.5s ease;
+}
+
+body.avs-active nav::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(var(--avs-color-primary), 0.25);
+    pointer-events: none;
+    will-change: opacity;
+    transform: translateZ(0);
     animation: avs-nav-breathe var(--avs-breath-duration) ease-in-out infinite;
-    transition: border-color 1.5s ease, box-shadow 1.5s ease;
 }
 
 @keyframes avs-nav-breathe {
-    0%, 100% { box-shadow: 0 1px 0 rgba(var(--avs-color-primary), 0.06); }
-    50%       { box-shadow: 0 1px 0 rgba(var(--avs-color-primary), 0.20); }
+    0%, 100% { opacity: 0.2; }
+    50%      { opacity: 0.85; }
 }
 
 /* ── Background tint on main content area ────────────────────── */
@@ -3272,6 +3285,9 @@ html.text-scale-extra-large {
 
 /* 1. Theme Navigation Bar Bridge */
 .theme-nav-bar {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   background-color: var(--bg-card, #FFFFFF);
   color: var(--text-primary, #0F172A);
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);

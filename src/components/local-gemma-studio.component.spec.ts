@@ -12,7 +12,7 @@ describe('LocalGemmaStudioComponent (100% Offline Local Gemma 3 Edge AI Studio)'
       setModel: vi.fn(),
       sendMessage: vi.fn().mockResolvedValue('[Gemma 3 Local]: Offline protocol evaluated.'),
       selectedModelId: signal('gemma-3-2b'),
-      activeModelName: signal('Gemma 3 2B (Ultra-Light Edge)'),
+      activeModelName: signal('Gemma 3 (1B/2B Ultra-Light Edge)'),
       tokenThroughput: signal(28.4),
       loadingProgress: signal(''),
       isLoadingProgress: signal(false),

@@ -14,9 +14,14 @@ import { PharmacogenomicsService } from '../services/pharmacogenomics.service';
         <div class="flex items-center gap-2.5">
           <span class="text-xl">🧬</span>
           <div>
-            <h3 class="text-sm font-extrabold uppercase tracking-widest text-purple-400">
-              Pharmacogenomics & Spatial eQTL Dosing Safety
-            </h3>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-extrabold uppercase tracking-widest text-purple-400">
+                Pharmacogenomics & Spatial eQTL Dosing Safety
+              </h3>
+              <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700">
+                🟢 Tier 1: Level 1A CPIC Standard of Care
+              </span>
+            </div>
             <p class="text-[11px] text-zinc-400">
               CPIC Level 1A CYP450 Variant Screening & Gene-Drug Toxicity Guard
             </p>

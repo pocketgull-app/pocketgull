@@ -10,6 +10,8 @@ import { HardwareTelemetryService } from '../src/services/hardware/hardware-tele
 import { GamificationService } from '../src/services/gamification.service';
 import { WalkthroughTourService } from '../src/services/walkthrough-tour.service';
 import { SessionStateService } from '../src/services/session-state.service';
+import { ClinicalContextModeService } from '../src/services/clinical-context-mode.service';
+import { AgeGateService } from '../src/services/age-gate.service';
 
 describe('Zooniverse Citizen Science & Multi-Agent Gap Closer E2E Simulation', () => {
   let component: ZooniverseMicroAnnotationComponent;
@@ -23,9 +25,11 @@ describe('Zooniverse Citizen Science & Multi-Agent Gap Closer E2E Simulation', (
         PatientStateService,
         ThemeService,
         HardwareTelemetryService,
+        ClinicalContextModeService,
         GamificationService,
         WalkthroughTourService,
-        SessionStateService
+        SessionStateService,
+        AgeGateService
       ]
     }).compileComponents();
 
@@ -140,8 +144,8 @@ describe('Zooniverse Citizen Science & Multi-Agent Gap Closer E2E Simulation', (
   describe('5. FHIR R4 Bundle & Zooniverse Panoptes Compliance', () => {
     it('should format FHIR R4 DiagnosticReport with LOINC 54568-1 and Bayesian extensions', () => {
       let exportedData: any = null;
-      vi.spyOn(component as any, 'downloadJsonFile').mockImplementation((_filename: string, data: any) => {
-        exportedData = data;
+      vi.spyOn(component as any, 'downloadJsonFile').mockImplementation((...args: any[]) => {
+        exportedData = args[1];
       });
 
       component.exportFhirR4Bundle();
@@ -157,8 +161,8 @@ describe('Zooniverse Citizen Science & Multi-Agent Gap Closer E2E Simulation', (
 
     it('should format Zooniverse Panoptes JSON payload with project metadata', () => {
       let exportedData: any = null;
-      vi.spyOn(component as any, 'downloadJsonFile').mockImplementation((_filename: string, data: any) => {
-        exportedData = data;
+      vi.spyOn(component as any, 'downloadJsonFile').mockImplementation((...args: any[]) => {
+        exportedData = args[1];
       });
 
       component.exportZooniverseJson();
@@ -189,6 +193,16 @@ describe('Zooniverse Citizen Science & Multi-Agent Gap Closer E2E Simulation', (
       };
       const mockTour = { forceStart: vi.fn() };
       const mockSession = { lock: vi.fn(), isLocked: signal(false) };
+      const mockAgeGate = {
+        activeTierMetadata: signal({
+          id: 'adult',
+          title: 'Adult Self-Care',
+          badge: 'Adult 18+',
+          color: 'indigo'
+        }),
+        selectTier: vi.fn(),
+        resetTier: vi.fn()
+      };
 
       const injector = Injector.create({
         providers: [
@@ -198,7 +212,9 @@ describe('Zooniverse Citizen Science & Multi-Agent Gap Closer E2E Simulation', (
           { provide: HardwareTelemetryService, useValue: mockHardware },
           { provide: GamificationService, useValue: mockGame },
           { provide: WalkthroughTourService, useValue: mockTour },
-          { provide: SessionStateService, useValue: mockSession }
+          { provide: SessionStateService, useValue: mockSession },
+          { provide: ClinicalContextModeService, useValue: new ClinicalContextModeService() },
+          { provide: AgeGateService, useValue: mockAgeGate }
         ]
       });
 
@@ -300,8 +316,8 @@ describe('Zooniverse Citizen Science & Multi-Agent Gap Closer E2E Simulation', (
 
     it('should serialize quantitative bio-analytic observations in FHIR R4 export', () => {
       let exportedData: any = null;
-      vi.spyOn(component as any, 'downloadJsonFile').mockImplementation((_filename: string, data: any) => {
-        exportedData = data;
+      vi.spyOn(component as any, 'downloadJsonFile').mockImplementation((...args: any[]) => {
+        exportedData = args[1];
       });
 
       component.exportFhirR4Bundle();

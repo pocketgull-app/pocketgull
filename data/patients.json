@@ -75,6 +75,26 @@
           "issues": {}
         }
       }
+    ],
+    "conditions": [
+      "Essential Hypertension",
+      "Type 2 Diabetes Mellitus",
+      "Obesity (BMI 42)",
+      "Severe Obstructive Sleep Apnea",
+      "Metabolic Syndrome"
+    ],
+    "carePlan": "Discuss CPAP compliance issues and weight management strategies.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "Malondialdehyde (MDA)",
+        "value": "3.8 mol/L"
+      },
+      {
+        "id": "2",
+        "name": "F2-Isoprostanes",
+        "value": "45 pg/mg creatinine"
+      }
     ]
   },
   {
@@ -152,6 +172,26 @@
           }
         }
       }
+    ],
+    "conditions": [
+      "Asthma",
+      "Anxiety Disorder",
+      "Chronic Lower Back Pain",
+      "Opioid Use Disorder (in remission)",
+      "Depression"
+    ],
+    "carePlan": "Seeking alternative pain management options to avoid opioid relapse.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "Malondialdehyde (MDA)",
+        "value": "2.4 mol/L"
+      },
+      {
+        "id": "2",
+        "name": "F2-Isoprostanes",
+        "value": "38 pg/mg creatinine"
+      }
     ]
   },
   {
@@ -185,6 +225,30 @@
           "Precision Nutrients": "### Orthomolecular Matrix\n- **Magnesium L-Threonate**: 1000mg (crosses blood-brain barrier).\n- **Omega-3 DHA**: 1000mg daily (neuronal membrane support).\n- **Vitamin B Complex (Methylated)**: 1 cap daily.",
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Synaptic Waveform & Gait Telemetry\n- **ECG QRS Duration**: 96 ms (Normal)\n- **ST Segment**: Neutral\n- **Gait Asymmetry Index**: 14.2% (Elevated fall risk threshold: > 10%)\n- **Postural Sway Velocity**: 2.8 cm/s"
         }
+      }
+    ],
+    "conditions": [
+      "Ischemic Heart Disease",
+      "Chronic Kidney Disease (Stage 3a)",
+      "Mild Cognitive Impairment / Early Alzheimer's",
+      "Osteoarthritis"
+    ],
+    "carePlan": "Family requested evaluation for increased confusion, recent fall at home, and gait instability.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "8-OHdG",
+        "value": "15 ng/mg creatinine (Elevated)"
+      },
+      {
+        "id": "2",
+        "name": "Lipid Peroxides",
+        "value": "12 nmol/mL (Elevated)"
+      },
+      {
+        "id": "3",
+        "name": "Amyloid-Beta 42/40 Ratio",
+        "value": "0.08 (Sub-optimal)"
       }
     ]
   },
@@ -220,6 +284,30 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Multi-Lead ECG Ischemia & ST-Elevation Telemetry\n- **QRS Interval Duration**: 102 ms\n- **ST Segment Deviation**: +0.08 mV Lead II (Transient ischemic monitoring)\n- **QTc Interval**: 432 ms\n- **Respiratory Rate**: 18 breaths/min"
         }
       }
+    ],
+    "conditions": [
+      "Ischemic Heart Disease (IHD)",
+      "Chronic Obstructive Pulmonary Disease (COPD)",
+      "Type 2 Diabetes Mellitus (T2DM)",
+      "Chronic Kidney Disease (CKD) Stage 3a"
+    ],
+    "carePlan": "Optimize oxygenation, stabilize blood glucose, manage exertional chest tightness, and protect renal function.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "hsCRP",
+        "value": "4.5 mg/L (Elevated)"
+      },
+      {
+        "id": "2",
+        "name": "NT-proBNP",
+        "value": "450 pg/mL (Borderline High)"
+      },
+      {
+        "id": "3",
+        "name": "HbA1c",
+        "value": "7.4%"
+      }
     ]
   },
   {
@@ -253,6 +341,30 @@
           "Precision Nutrients": "### Orthomolecular Matrix\n- **Methylated Folate (L-5-MTHF)**: 1000mcg daily (supports homocysteine clearance).\n- **CoQ10**: 150mg daily (mitochondrial renal endothelial support).\n- **Magnesium Glycinate**: 200mg nightly.",
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Cardiorenal Fluid Retentive Hemodynamic Challenge\n- **QRS Interval Duration**: 98 ms\n- **ST Segment**: Neutral (+0.02 mV)\n- **Pulse Wave Velocity (PWV)**: 11.2 m/s (Elevated arterial stiffness)\n- **Bio-Impedance Fluid Index**: +1.8 L surplus"
         }
+      }
+    ],
+    "conditions": [
+      "Hypertensive Heart Disease",
+      "Type 2 Diabetes Mellitus (T2DM)",
+      "Nephritis / Chronic Kidney Disease (Stage 3b)",
+      "Mild Cognitive Impairment (Early Alzheimer's)"
+    ],
+    "carePlan": "Manage blood pressure, optimize glycemic status, protect renal clearance, and support cognitive function and fall prevention.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "hsCRP",
+        "value": "5.2 mg/L (Elevated)"
+      },
+      {
+        "id": "2",
+        "name": "Serum Creatinine",
+        "value": "1.8 mg/dL"
+      },
+      {
+        "id": "3",
+        "name": "eGFR",
+        "value": "44 mL/min/1.73m (Stage 3b CKD)"
       }
     ]
   },
@@ -288,6 +400,24 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Pediatric Autonomic Airway Reactivity & Dehydration Challenge\n- **Heart Rate**: 112 bpm (Appropriate for age 4)\n- **Respiratory Rate**: 24 breaths/min\n- **SpO2**: 96%\n- **Acoustic Cough Count**: 4 coughs / hour"
         }
       }
+    ],
+    "conditions": [
+      "Preterm Birth History (32 weeks gestation)",
+      "Mild-Intermittent Asthma",
+      "Recent Rotavirus Enteritis (Resolving)"
+    ],
+    "carePlan": "Rehydrate after diarrhoeal episode, reduce airway hyperreactivity, and support pediatric immune health.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "hsCRP",
+        "value": "1.8 mg/L"
+      },
+      {
+        "id": "2",
+        "name": "Serum Electrolytes",
+        "value": "Na 136 mEq/L, K 4.1 mEq/L"
+      }
     ]
   },
   {
@@ -321,6 +451,29 @@
           "Precision Nutrients": "### Orthomolecular Matrix\n- **Ferrous Bisglycinate**: 65mg with 500mg Vitamin C.\n- **Choline**: 450mg daily (fetal neurodevelopment).\n- **DHA**: 300mg daily (fetal brain lipid accretion).",
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Maternal-Fetal Hemodynamic & Uterine Artery Doppler Challenge\n- **Maternal HR**: 90 bpm\n- **Fetal Heart Rate Baseline**: 142 bpm (Normal reactive)\n- **Uterine Artery Pulsatility Index (PI)**: 0.95 (Normal resistance)\n- **Accelerations**: 2 in 20 minutes (Category I Tracing)"
         }
+      }
+    ],
+    "conditions": [
+      "Gestational Hypertension",
+      "Primigravida (32 Weeks Gestation)",
+      "Iron-Deficiency Anemia of Pregnancy"
+    ],
+    "carePlan": "Optimize blood pressure, correct anemia, track fetal movements, and establish a postpartum hemorrhage prevention plan.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "Hemoglobin",
+        "value": "9.8 g/dL (Low)"
+      },
+      {
+        "id": "2",
+        "name": "Serum Ferritin",
+        "value": "12 ng/mL (Deficient)"
+      },
+      {
+        "id": "3",
+        "name": "Urine Protein/Creatinine Ratio",
+        "value": "0.18 (Normal, < 0.3)"
       }
     ]
   },
@@ -356,6 +509,29 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Orthomolecular High-Dose Ascorbate & Lp(a) Binding Challenge\n- **Heart Rate**: 68 bpm\n- **QRS Interval**: 88 ms\n- **ST Segment**: Neutral (+0.01 mV)\n- **Arterial Stiffness Index**: 6.2 m/s (Optimal youthful elasticity)"
         }
       }
+    ],
+    "conditions": [
+      "Prostate Cancer (Sustained Remission)",
+      "Coronary Artery Disease (Pauling Protocol Managed)",
+      "Macular Degeneration"
+    ],
+    "carePlan": "Evaluate high-dose ascorbic acid therapy, Lp(a) binding neutralization, and cellular longevity.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "Malondialdehyde (MDA)",
+        "value": "0.8 mol/L (Ultra-Low)"
+      },
+      {
+        "id": "2",
+        "name": "Lp(a) Lipoprotein",
+        "value": "14 mg/dL (Controlled)"
+      },
+      {
+        "id": "3",
+        "name": "hsCRP",
+        "value": "0.4 mg/L (Minimal)"
+      }
     ]
   },
   {
@@ -386,6 +562,30 @@
           "Nutrition": "### Pancreatic-Sparing & Anti-Cachectic Nutrition\n- **Medium-Chain Triglycerides (MCT)**: 15ml MCT oil daily for direct portal venous absorption bypassing pancreatic lipase.\n- **Hydrolyzed Protein Substrates**: Whey/pea protein isolate (30g/serving) for muscle protein synthesis.\n- **Avoid**: Refined simple sugars, fried high-fat meals, industrial seed oils, and alcohol.",
           "Precision Nutrients": "### Orthomolecular & Botanical Protocols\n- **Curcumin Phytosome (Meriva)**: 1,000mg BID (STAT3 & NF-kB anti-inflammatory modulation).\n- **Vitamin D3 + K2**: 5,000 IU daily (Immune homeostasis & bone mineral retention).\n- **Zinc Carnosine**: 75mg BID (Gastric & intestinal mucosal integrity).\n- **N-Acetylcysteine (NAC)**: 1,200mg BID (Glutathione pool replenishment)."
         }
+      }
+    ],
+    "conditions": [
+      "Pancreatic Ductal Adenocarcinoma (PDAC, Stage III)",
+      "Exocrine Pancreatic Insufficiency (EPI)",
+      "Cancer-Related Cachexia & Muscle Wasting",
+      "New-Onset Pancreatogenic Diabetes (Type 3c)"
+    ],
+    "carePlan": "Manage postprandial epigastric pain radiating to mid-back, optimize nutrient absorption with PERT enzymes, suppress pro-inflammatory cytokine muscle wasting, and stabilize glycemic variability.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "CA 19-9 (Carbohydrate Antigen 19-9)",
+        "value": "1,420 U/mL (Elevated)"
+      },
+      {
+        "id": "2",
+        "name": "Serum Lipase & Amylase",
+        "value": "38 U/L (Low Exocrine Secretion)"
+      },
+      {
+        "id": "3",
+        "name": "hs-CRP (C-Reactive Protein)",
+        "value": "14.2 mg/L (High Systemic Inflammation)"
       }
     ]
   },
@@ -472,6 +672,31 @@
           "dateCreated": "2026-05-19T14:30:00Z"
         }
       }
+    ],
+    "conditions": [
+      "Relapsing-Remitting Multiple Sclerosis (RRMS)",
+      "History of Optic Neuritis (Left Eye, 2024)",
+      "Chronic Fatigue",
+      "Mild Depression (reactive)",
+      "Vitamin D Deficiency"
+    ],
+    "carePlan": "Extend relapse-free interval, manage fatigue without additional sedating medications, preserve cognitive function, and explore integrative approaches alongside DMT.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "hsCRP",
+        "value": "3.2 mg/L (Elevated)"
+      },
+      {
+        "id": "2",
+        "name": "Homocysteine",
+        "value": "14.1 mol/L (Elevated)"
+      },
+      {
+        "id": "3",
+        "name": "Neurofilament Light Chain (NfL)",
+        "value": "18.2 pg/mL (Elevated)"
+      }
     ]
   },
   {
@@ -505,6 +730,26 @@
           "Precision Nutrients": "### Orthomolecular Matrix\n- **PEA (Palmitoylethanolamide)**: 600mg BID (glual microglial anti-inflammatory).\n- **Alpha-Lipoic Acid**: 600mg Daily (diabetic & post-surgical neuropathic support).\n- **Magnesium Glycinate**: 400mg before bed.",
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Neuromuscular Phantom Limb & Central Sensitization Challenge\n- **Heart Rate**: 82 bpm\n- **QRS Interval**: 90 ms\n- **ST Segment**: Neutral\n- **EMG Phantom Spiking Frequency**: 14 spikes/min (Central wind-up active)"
         }
+      }
+    ],
+    "conditions": [
+      "Poliomyelitis (childhood, right leg atrophy)",
+      "Severe streetcar accident trauma (1925)",
+      "Multiple spinal fractures & pelvic fractures",
+      "Right foot amputation (1953)",
+      "Chronic neuropathic pain"
+    ],
+    "carePlan": "Manage chronic, intractable neuropathic pain, support spinal stability, and address severe right leg/foot phantom pain.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "hsCRP",
+        "value": "8.4 mg/L (Severe Inflammation)"
+      },
+      {
+        "id": "2",
+        "name": "Substance P",
+        "value": "220 pg/mL (Elevated Nociception)"
       }
     ]
   },
@@ -540,6 +785,24 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Cervical Vertebral Dislocation & Spinal Shock Challenge\n- **Heart Rate**: 64 bpm (Bradycardic autonomic response)\n- **QRS Duration**: 92 ms\n- **Intracranial Pressure (ICP)**: 16 mmHg (Borderline elevated)\n- **Cervical Alignment Angle**: 12 Kyphotic tilt"
         }
       }
+    ],
+    "conditions": [
+      "Traumatic Skull Fracture",
+      "Meningeal exposure",
+      "Cervical rigidity"
+    ],
+    "carePlan": "Stabilize acute head injury, wound care, and address neck stiffness.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "hsCRP",
+        "value": "12.5 mg/L (Severe Acute Trauma)"
+      },
+      {
+        "id": "2",
+        "name": "WBC Count",
+        "value": "14,200 /L (Leukocytosis)"
+      }
     ]
   },
   {
@@ -574,6 +837,30 @@
           "PhysioNet Telemetry": "### PhysioNet 2026 Challenge: Trypanosoma Cardiac Conduction & Vagal Gastric Dysmotility Challenge\n- **Heart Rate**: 68 bpm\n- **PR Interval**: 198 ms (Borderline 1st degree AV block)\n- **QRS Duration**: 94 ms\n- **Gastric Slow-Wave Frequency**: 2.2 cpm (Tachygastria/Bradygastria dysrhythmia)"
         }
       }
+    ],
+    "conditions": [
+      "Chronic Gastrointestinal Disease",
+      "Cyclic Vomiting Syndrome (suspected)",
+      "Systemic eczema & skin rashes",
+      "Mitochondrial dysfunction / Chagas disease (suspected)"
+    ],
+    "carePlan": "Resolve debilitating chronic fatigue, severe episodic vomiting, flatulence, and chest palpitations.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "Trypanosoma cruzi Antibodies",
+        "value": "Positive (Suspected Chagas exposure 1835)"
+      },
+      {
+        "id": "2",
+        "name": "hsCRP",
+        "value": "3.8 mg/L (Elevated)"
+      },
+      {
+        "id": "3",
+        "name": "Lactate/Pyruvate Ratio",
+        "value": "24 (Mitochondrial Overload)"
+      }
     ]
   },
   {
@@ -600,6 +887,25 @@
           "Nutrition": "### Radioprotective & DNA-Repair Nutrition\n- **Glutathione-Rich Crucifers**: Steamed broccoli sprouts, bok choy, and watercress.\n- **Anthocyanin Berries**: Wild blueberries, dark pomegranates, and aronia berries for vascular endothelial repair.\n- **Avoid**: Pro-inflammatory omega-6 industrial oils and refined simple sugars that accelerate DNA methyltransferase breakdown.",
           "Precision Nutrients": "### Orthomolecular & Botanical Grow Thyself Protocols\n- **Ashwagandha (Withania somnifera)**: 500mg BID (Bone marrow radioprotection & adaptogenic GABAergic support).\n- **Ginkgo biloba Extract**: 120mg BID (Microvascular cutaneous and cerebral perfusion).\n- **Centella asiatica (Gotu Kola)**: 400mg daily (Collagen type I/III synthesis for radiologic skin remodeling)."
         }
+      }
+    ],
+    "conditions": [
+      "Radiologic Aplastic Anemia",
+      "Radiologic Dermatitis",
+      "Bone Marrow Hematopoietic Suppression",
+      "Mitochondrial Oxidative Stress"
+    ],
+    "carePlan": "Regenerate bone marrow hematopoietic stem cells, upregulate Phase II antioxidant Nrf2, and repair radiologic cutaneous burns.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "8-hydroxy-2'-deoxyguanosine (8-OHdG)",
+        "value": "18.4 ng/mg Cr (DNA Oxidative Damage)"
+      },
+      {
+        "id": "2",
+        "name": "Radium-226 Serum Isotope Activity",
+        "value": "Elevated Internal Alpha Emitter"
       }
     ]
   },
@@ -628,11 +934,30 @@
           "Precision Nutrients": "### Botanical Grow Thyself Protocols\n- **Tulsi (Ocimum sanctum / Holy Basil)**: 400mg BID (Vata-Kapha balancing adaptogen & antimicrobial defense).\n- **Zingiber officinale (Ginger)**: 500mg BID (Kindles Agni metabolic fire & disperses TCM Dampness).\n- **Phyllanthus emblica (Amalaki)**: 500mg daily (Pitta-soothing Rasayana for mucosal tissue regeneration)."
         }
       }
+    ],
+    "conditions": [
+      "Hepatic Amoebiasis",
+      "Gastric Malabsorption & Dyspepsia",
+      "Vishamagni (Irregular Metabolic Fire)",
+      "Vata-Pitta Irregularity"
+    ],
+    "carePlan": "Restore gastric Agni metabolic fire, pacify Vata motility irregularity, heal intestinal mucosal barrier, and restore physical energy for mathematical research.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "Fecal Calprotectin",
+        "value": "185 mcg/g (Gut Mucosal Inflammation)"
+      },
+      {
+        "id": "2",
+        "name": "Intestinal Permeability (Zonulin)",
+        "value": "64 ng/mL (Elevated Leaky Gut)"
+      }
     ]
   },
   {
     "id": "p_default_patient",
-    "name": "Alexander Vance",
+    "name": "Homo Sapiens (Male, Metabolic & Executive Stress, 44y)",
     "age": 42,
     "gender": "Male",
     "vitals": {
@@ -680,24 +1005,73 @@
         "systemicDomain": "Circadian & Neuroendocrine"
       }
     ],
+    "history": [],
+    "conditions": [
+      "Hypertension",
+      "Mild Sleep Apnea",
+      "Google Health Integration"
+    ],
+    "carePlan": "Optimize metabolic health, synchronize all personal biometrics from Google Health Connect, and reduce sleep latency.",
+    "metrics": []
+  },
+  {
+    "id": "p010",
+    "name": "Homo Sapiens (Female, Alzheimer's & Parkinson's Dual Overlap, 76y)",
+    "age": 76,
+    "gender": "Female",
+    "vitals": {
+      "bp": "128/78 (Supine) / 102/64 (Standing)",
+      "hr": "68",
+      "temp": "98.1F",
+      "spO2": "97%",
+      "weight": "134 lbs",
+      "height": "5'5\"",
+      "vitD3": "28 ng/mL",
+      "magnesium": "1.9 mg/dL",
+      "b12": "540 pg/mL",
+      "zinc": "72 mcg/dL"
+    },
     "history": [
       {
-        "type": "FinalizedPatientSummary",
+        "type": "AnalysisRun",
         "date": "2026.08.13",
-        "summary": "Patient Summary updated (auto-saved).",
+        "summary": "Alzheimer's & Parkinson's Dual Overlap Integrative Assessment (Western + TCM + Ayurvedic)",
         "report": {
-          "Summary Overview": "### Clinical Assessment\nAlexander Vance is a 42-year-old male presenting for management of active clinical concerns and functional optimization. \n\n### Current Presentation & Vitals\n- **Vitals**: BP: 122/82, HR: 68 bpm, Temp: 98.6F, SpO2: 98%\n- **Active Concerns**:\n- **General Wellness**: No acute physical issues reported.\n\n### Clinical Priorities\n- **Symptom Management**: Focus on non-pharmacological and targeted interventions for general wellness.\n- **Lifestyle Modification**: Circadian alignment, metabolic optimization, and targeted movement.\n- **Patient Goals**: Optimize metabolic health, synchronize all personal biometrics from Google Health Connect, and reduce sleep latency.\n\n### Plan of Care\n- **Short-term**: Optimize daily movement and address acute stressors/pain.\n- **Long-term**: Functional rehabilitation and systemic health optimization.",
-          "Functional Protocols": "### Diagnostic Workup & Lifestyle\n- **Exercise**: Structured moderate-intensity cardiovascular exercise 3x/week.\n- **Posture & Ergonomics**: Regular movement breaks and ergonomic assessment.\n- **Sleep**: Maintain consistent sleep/wake cycle.",
-          "Nutrition": "### Nutritional Interventions\n- **Anti-inflammatory Diet**: Emphasize whole foods, lean proteins, omega-3 fats, and high-fiber vegetables.\n- **Hydration**: Target 2-3 liters of filtered water daily.\n\n### Local & Wild Sourcing\n- **Standard Supermarkets**: Source wild-caught salmon and mackerel in the seafood aisle. Frozen wild blueberries are highly abundant and cost-effective.\n- **Wild Foraging**: Forage for wild dandelions or stinging nettles in organic, pesticide-free meadows (blanch nettles thoroughly to deactivate stingers; they are rich in iron and vitamin C).",
-          "Precision Nutrients": "### Biomarker Matrix & Suggested Supplements\n- **Magnesium Glycinate**: 300-400mg before bed.\n- **Vitamin D3**: Optimize levels to support immune and bone health.\n- **Omega-3 Fatty Acids**: Anti-inflammatory support.",
-          "Monitoring & Follow-up": "### Immediate (24-72 hours) & Clinical Tracking\n- Monitor vitals and symptom logs.\n- Re-assess functional capacity in 4 weeks.",
-          "Patient Education": "### Understanding Your Health Path\nBy focusing on nutrition, movement, sleep, and targeted supplementation, we can address the root functional causes of your symptoms and build a foundation for long-term health.",
-          "Maternal & Postpartum": "### Perinatal Health Assessment\nAlexander Vance is a 42-year-old male evaluated for perinatal functional optimization and maternal autonomic balance. Maternal blood pressure is 122/82 with stable SpO2 at 98%.\n\n### Perinatal Safety Thresholds\n| Metric | Target Range | Frequency | Action Threshold |\n| :--- | :--- | :--- | :--- |\n| Blood Pressure | < 130/80 mmHg | Daily | > 140/90 mmHg (Preeclampsia Rule-out) |\n| Fetal Movement |  10 kicks / 2 hrs | Daily | < 10 kicks in 2 hours |\n| Postpartum Mood | EPDS Score < 9 | Bi-weekly | EPDS  10 |\n\n### Integrated Care Protocol\n- **Western Support**: Pre-eclampsia monitoring, prenatal iron/folate supplementation.\n- **Eastern TCM**: Ren Mai (Conception Vessel) warming & Shen calming.\n- **Ayurvedic Garbhini**: Sattvic diet, warm sesame Abhyanga, Nadi Shodhana breathing.",
-          "Grow-Thyself Education": "### Ecological Cellular & Garden Metaphors\nYour cellular energy system operates like a living garden ecosystem. Nutrients and hydration are your fertile soil; circadian sleep and morning sunlight provide vital solar energy.\n\n### Ancestral Dietary Heritage & Cultural Swaps\n| Cultural Heritage | Traditional Swap | Bio-Individual Benefit | Local Sourcing Tip |\n| :--- | :--- | :--- | :--- |\n| African Heritage | Collard greens & okra broth | High folate, prebiotic fiber | Local farmers market |\n| Latino/Hispanic | Black beans & avocado oil | Stable glycemic index, oleic acid | Standard grocery produce |\n| East/South Asian | Miso & ginger jujube tea | Probiotic enzymes, digestion | Asian specialty market |\n\n### Daily Micro-Habits (Grow-Thyself Quests)\n- ** Morning Circadian Sun Reset**: 15 min morning light.\n- ** Vagal Tone Breathing**: 6.0 bpm resonant breathing.\n- ** Ancestral Mineralization**: Warm herbal mineral infusion.",
-          "Epigenetic Longevity": "### Actuarial Risk & Biological Age Synthesis\nQuantitative Gompertz-Makeham hazard modeling indicates a biological age delta of **-4.5 years** relative to chronological age (42), projecting **+7.2 Quality-Adjusted Life Years (QALY)** gain.\n\n### CDC 4-Driver Hazard Reduction Matrix\n| Mortality Vector | Baseline Risk | Multi-Paradigm Strategy | Projected Hazard Ratio (HR) |\n| :--- | :--- | :--- | :--- |\n| Cardiovascular | Moderate | HRV 6.0 bpm Vagal Tone + CoQ10 | **0.62** (38% Risk Reduction) |\n| Metabolic | Low-Moderate | Sirtuin Activators + Low Glycemic | **0.55** (45% Risk Reduction) |\n| Neurodegenerative | Low | TCM Shen Harmonization + Neti/Nasya | **0.68** (32% Risk Reduction) |\n| Oncological | Low | Autophagic Rasayana & Anti-inflammatory | **0.74** (26% Risk Reduction) |\n\n### Multi-Paradigm Cell Longevity Protocol\n- **Western Epigenetic Support**: Sirtuin activation (NAD+/NMN), AMPK activation, HRV vagal tone.\n- **Eastern TCM Essence**: Zang-Fu meridian balancing, sleep architecture, Jing preservation.\n- **Ayurvedic Rasayana**: Ama detoxification, Agni metabolic fire, adaptogenic rejuvenation.",
-          "Pre-Conception & Family Health": "### Pre-Conception Parental Epigenetic Matrix\n| Optimization Vector | Targeted Biomarker | Parental Protocol | Fetal Healthspan Impact |\n| :--- | :--- | :--- | :--- |\n| Folate Methylation | MTHFR C677T / Homocysteine | L-5-MTHF (800 mcg) + B12 | Neural tube & DNA fidelity |\n| Maternal Mitochondria | CoQ10 Ubiquinol / Fasting Insulin | Ubiquinol (300 mg) + Alpha-Lipoic | High oocyte cleavage ATP |\n| Paternal Spermatogenesis | Sperm DNA DFI / Zinc | Zinc (30 mg) + Selenium + Carnitine | Lower germline mutational load |\n| Environmental Detox | Heavy metals & Endocrine Disruptors | Filtered water & organic whole foods | Reduced epigenetic transgenerational risk |\n\n### Senior & Geriatric Caretaking Strategy\n- **Autonomic Vagal Tone**: HRV SDNN 6.0 bpm resonant breathing sessions to reduce agitation and improve sleep.\n- **TCM Kidney Jing & Shen**: Warm bone broths, Rehmannia, and Gingko Biloba to nourish brain marrow (*Sui Hai*).\n- **Ayurvedic Vata Pacification**: Warm sesame Abhyanga massage & Bacopa Monnieri (Brahmi) for joint/cognitive support.\n\n### Voluntary ACOG/ACMG Carrier Screening Guidance\nRecommends voluntary pre-conception carrier screening for autosomal recessive traits. Pre-conception optimization ensures offspring inherit optimal epigenetic programming while preserving human dignity."
-        },
-        "annotations": {}
+          "Summary Overview": "###  Dual Neurodegenerative Pathology Integrative Assessment\nPatient presents with concurrent Alzheimer's Disease and Parkinson's Disease (Hoehn & Yahr Stage II). Western neuro-pathology indicates dual amyloid-tau plaques and alpha-synuclein Lewy bodies. TCM pattern shows Kidney Essence (Jing) Deficiency & Liver Wind Agitation (*Shen Jing Kiu / Gan Feng*). Ayurvedic diagnosis reveals severe Kampavata (Vata Tremor) with Majja Dhatu Kshaya (Nervous Marrow Wasting).",
+          "Functional Protocols": "### Tri-Paradigm Neuro-Pharmacotherapy & Timing Strategy\n- **Western L-DOPA Protocol**: Carbidopa/Levodopa 25/100mg TID 30 minutes before meals to avoid neutral amino acid BBB transport competition.\n- **TCM Wind-Extinguishing Protocol**: Gastrodia Elata (*Tian Ma*) & Uncaria Rhynchophylla (*Gou Teng*) to pacify internal Liver Wind tremor.\n- **Ayurvedic Medhya Rasayana Protocol**: Bacopa Monnieri (*Brahmi* 450mg QAM) to enhance cholinergic synaptic plasticity, paired with *Kapikacchu* (Mucuna Pruriens 15% natural L-DOPA) co-administration.\n- **Cholinesterase Protection**: Donepezil (10mg QHS) & Memantine XR (28mg QAM).",
+          "Nutrition": "### Neuro-Protective & Vata-Pacifying Nutrition\n- **MCT Ketone Energy Substrate**: 15ml MCT C8 oil daily to provide microglial ATP bypass substrate.\n- **Ayurvedic Warm Vata Diet**: Warm, cooked foods with ghee, sesame oil, and ground spices (cinnamon, nutmeg, turmeric) to calm hyperactive Vata.\n- **Daylight Protein Redistribution**: Consume 70% of protein during evening meals to optimize daytime L-DOPA absorption.",
+          "Precision Nutrients": "### Mitochondrial & Microglial Support\n- **Ubiquinol (CoQ10)**: 200mg QAM (Mitochondrial Complex I electron transport).\n- **Ashwagandha (Withania Somnifera)**: 600mg QHS (Vata-pacifying adaptogen, inhibits alpha-synuclein toxicity).\n- **Curcuminoid Phytosome**: 500mg BID (Cross-BBB microglial anti-inflammatory modulation)."
+        }
+      }
+    ],
+    "conditions": [
+      "Alzheimer's Disease (Early-to-Moderate Stage, MMSE 19/30)",
+      "Parkinson's Disease (Hoehn & Yahr Stage II)",
+      "Dual Neuropathology Overlap (Amyloid-Tau + Alpha-Synuclein Lewy Pathology)",
+      "Neurogenic Orthostatic Hypotension (nOH)",
+      "REM Sleep Behavior Disorder (RBD)"
+    ],
+    "carePlan": "Maintain cognitive autonomy and daily executive memory, reduce nocturnal motor freezing and resting tremor, prevent orthostatic syncope during morning transitions, and optimize dual Carbidopa/Levodopa & Donepezil neuro-pharmacotherapy with integrative TCM and Ayurvedic Medhya Rasayanas.",
+    "metrics": [
+      {
+        "id": "1",
+        "name": "CSF Amyloid-Beta 42/40 Ratio",
+        "value": "0.048 (Abnormal, Amyloid Plaque Deposition)"
+      },
+      {
+        "id": "2",
+        "name": "CSF Phosphorylated Tau (p-Tau 181)",
+        "value": "68.4 pg/mL (Elevated Neurofibrillary Tangles)"
+      },
+      {
+        "id": "3",
+        "name": "Alpha-Synuclein Seed Amplification (SAA)",
+        "value": "Positive (Lewy Body Misfolding Aggregate)"
+      },
+      {
+        "id": "4",
+        "name": "Serum Neurofilament Light (NfL)",
+        "value": "28.4 pg/mL (Axonal Neurodegeneration Marker)"
       }
     ]
   }

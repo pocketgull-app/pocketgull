@@ -845,9 +845,20 @@ export class PatientManagementService implements OnDestroy {
 
     this.saveCurrentPatientState(); // Ensure the latest state is saved
     try {
-      const patientsToSync = this.patients();
+      const patientsToSync = this.patients().map(p => ({
+        id: p.id,
+        name: p.name,
+        age: p.age,
+        gender: p.gender,
+        vitals: p.vitals,
+        symptoms: p.symptoms,
+        history: (p.history || []).slice(0, 10),
+        conditions: p.preexistingConditions,
+        carePlan: p.patientGoals,
+        metrics: p.oxidativeStressMarkers
+      }));
       // Include auth header if PATIENTS_SECRET was surfaced via /api/config or env
-      const secret = (window as any).__PATIENTS_SECRET__ || '';
+      const secret = (typeof window !== 'undefined' && (window as any).__PATIENTS_SECRET__) || '';
       const headers: Record<string, string> = secret
         ? { Authorization: `Bearer ${secret}` }
         : {};

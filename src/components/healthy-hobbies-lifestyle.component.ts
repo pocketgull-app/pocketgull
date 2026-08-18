@@ -154,8 +154,8 @@ export interface IHealthyHobbyOption {
               <span class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">Target Cadence: <strong class="text-zinc-900 dark:text-zinc-100 font-extrabold">{{ hobby.recommendedCadence }}</strong></span>
               
               <button (click)="prescribeHobby(hobby, $event)"
-                      class="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 text-xs sm:text-sm font-extrabold uppercase tracking-wider transition cursor-pointer border border-orange-400/50 shadow-md">
-                📌 Prescribe Decision
+                      class="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 text-xs sm:text-sm font-extrabold uppercase tracking-wider transition cursor-pointer border border-orange-400/50 shadow-md flex items-center gap-1.5">
+                <span>📋</span> Stage for HCP Evaluation
               </button>
             </div>
 
@@ -511,15 +511,15 @@ export class HealthyHobbiesLifestyleComponent {
   prescribeHobby(hobby: IHealthyHobbyOption, event: Event) {
     event.stopPropagation();
     const currentGoals = this.state.patientGoals();
-    const newPrescription = `[Active Hobby Prescribed]: ${hobby.title} — ${hobby.primaryHealthyDecision}`;
-    this.state.updateGoals(currentGoals ? `${currentGoals} | ${newPrescription}` : newPrescription);
+    const newProposal = `[Proposed Lifestyle Measure - Tier 3]: ${hobby.title} — ${hobby.primaryHealthyDecision}`;
+    this.state.updateGoals(currentGoals ? `${currentGoals} | ${newProposal}` : newProposal);
     this.state.addClinicalNote({
       id: `lifestyle-${Date.now()}`,
-      text: `🚲 Prescribed Lifestyle Decision for ${this.activePatientName()}: ${hobby.title} (${hobby.recommendedCadence}). Decision: ${hobby.primaryHealthyDecision}`,
+      text: `🚲 Staged Lifestyle Proposal (Tier 3) for ${this.activePatientName()}: ${hobby.title} (${hobby.recommendedCadence}). Recommendation: ${hobby.primaryHealthyDecision}`,
       sourceLens: 'Lifestyle & Hobbies',
       date: new Date().toISOString().split('T')[0].replace(/-/g, '.')
     });
-    this.toastMessage.set(`Prescribed "${hobby.title}" as a healthy lifestyle decision to ${this.activePatientName()}'s active care plan!`);
+    this.toastMessage.set(`Staged "${hobby.title}" as a proposed supportive lifestyle recommendation for HCP review!`);
     setTimeout(() => this.toastMessage.set(null), 3500);
   }
 

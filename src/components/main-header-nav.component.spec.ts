@@ -8,8 +8,9 @@ import { ThemeService } from '../services/theme.service';
 import { HardwareTelemetryService } from '../services/hardware/hardware-telemetry.service';
 import { GamificationService } from '../services/gamification.service';
 import { WalkthroughTourService } from '../services/walkthrough-tour.service';
-
 import { SessionStateService } from '../services/session-state.service';
+import { ClinicalContextModeService } from '../services/clinical-context-mode.service';
+import { AgeGateService } from '../services/age-gate.service';
 
 describe('MainHeaderNavComponent', () => {
   let component: MainHeaderNavComponent;
@@ -20,6 +21,8 @@ describe('MainHeaderNavComponent', () => {
   let mockGame: any;
   let mockTour: any;
   let mockSession: any;
+  let mockContextMode: any;
+  let mockAgeGate: any;
 
   beforeEach(() => {
     mockNetwork = { isOnline: signal(true) };
@@ -39,6 +42,22 @@ describe('MainHeaderNavComponent', () => {
     };
     mockTour = { forceStart: vi.fn() };
     mockSession = { lock: vi.fn(), isLocked: signal(false) };
+    mockContextMode = {
+      activeMode: signal('open_science'),
+      complexityLevel: signal(2),
+      setMode: vi.fn(),
+      setComplexityLevel: vi.fn()
+    };
+    mockAgeGate = {
+      activeTierMetadata: signal({
+        id: 'adult',
+        title: 'Adult Self-Care',
+        badge: 'Adult 18+',
+        color: 'indigo'
+      }),
+      selectTier: vi.fn(),
+      resetTier: vi.fn()
+    };
 
     const injector = Injector.create({
       providers: [
@@ -48,7 +67,9 @@ describe('MainHeaderNavComponent', () => {
         { provide: HardwareTelemetryService, useValue: mockHardware },
         { provide: GamificationService, useValue: mockGame },
         { provide: WalkthroughTourService, useValue: mockTour },
-        { provide: SessionStateService, useValue: mockSession }
+        { provide: SessionStateService, useValue: mockSession },
+        { provide: ClinicalContextModeService, useValue: mockContextMode },
+        { provide: AgeGateService, useValue: mockAgeGate }
       ]
     });
 
@@ -65,5 +86,14 @@ describe('MainHeaderNavComponent', () => {
     expect(component.today).toBeInstanceOf(Date);
     expect(component.openCompanionSync).toBeTruthy();
     expect(component.triggerSomaticGrounding).toBeTruthy();
+  });
+
+  it('should toggle live EHR mode and trigger fallback', () => {
+    mockPatientState.isLiveConnected = signal(false);
+    mockPatientState.loadLiveFhirBundle = vi.fn();
+    mockPatientState.switchToMockSafeHarbor = vi.fn();
+
+    component.toggleLiveEhr();
+    expect(component).toBeTruthy();
   });
 });

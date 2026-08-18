@@ -11,17 +11,17 @@ export class BodyMeshFactoryService {
   private fireflyTexture = inject(AdobeFireflyTextureService);
 
   /**
-   * Returns Hex PBR color for a given Fitzpatrick skin phototype.
+   * Returns Hex PBR color for a given Fitzpatrick skin phototype using neutral monochrome spectrum.
    */
   getFitzpatrickColor(type: FitzpatrickSkinType): number {
     switch (type) {
-      case 'I': return 0xf7d0b5;
-      case 'II': return 0xf3c5a6;
-      case 'III': return 0xd8a07c;
-      case 'IV': return 0xaa724b;
-      case 'V': return 0x7a4929;
-      case 'VI': return 0x422614;
-      default: return 0x38bdf8;
+      case 'I': return 0xf8fafc; // Titanium Alabaster White
+      case 'II': return 0xe2e8f0; // Platinum Mist Gray
+      case 'III': return 0xcbcfd6; // Neutral Titanium Silver
+      case 'IV': return 0x8a909d; // Slate Medium Gray
+      case 'V': return 0x474c56; // Deep Charcoal Slate
+      case 'VI': return 0x1e2229; // Obsidian Jet Black
+      default: return 0xd4d4d8; // Neutral Titanium Silver
     }
   }
 
@@ -38,37 +38,37 @@ export class BodyMeshFactoryService {
 
     const skinColor = this.getFitzpatrickColor(phototype);
     const skinMaterial = new THREE.MeshStandardMaterial({
-      color: skinColor, bumpMap: skinTexture, bumpScale: 0.04, roughness: 0.35, metalness: 0.15, emissive: 0x0369a1, emissiveIntensity: 0.05, transparent: true, opacity: 0.88, depthWrite: true
+      color: skinColor, bumpMap: skinTexture, bumpScale: 0.03, roughness: 0.35, metalness: 0.12, emissive: 0x18181b, emissiveIntensity: 0.05, transparent: true, opacity: 0.90, depthWrite: true
     });
     const muscleMaterial = new THREE.MeshStandardMaterial({
-      color: 0xbe123c, bumpMap: muscleTexture, bumpScale: 0.08, roughness: 0.65, metalness: 0.1, transparent: true, opacity: 0.75, depthWrite: false
+      color: 0x334155, bumpMap: muscleTexture, bumpScale: 0.06, roughness: 0.65, metalness: 0.1, transparent: true, opacity: 0.75, depthWrite: false
     });
     const boneMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf5f5f4, bumpMap: boneTexture, bumpScale: 0.03, roughness: 0.4, metalness: 0.1, transparent: true, opacity: 0.85, depthWrite: false
+      color: 0xffffff, bumpMap: boneTexture, bumpScale: 0.03, roughness: 0.25, metalness: 0.05, transparent: true, opacity: 0.92, depthWrite: false
     });
     const organMaterial = new THREE.MeshStandardMaterial({
-      color: 0xe11d48, roughness: 0.3, metalness: 0.2, emissive: 0x9f1239, emissiveIntensity: 0.2, transparent: true, opacity: 0.9
+      color: 0x52525b, roughness: 0.3, metalness: 0.2, emissive: 0x27272a, emissiveIntensity: 0.15, transparent: true, opacity: 0.9
     });
     const heartMaterial = new THREE.MeshStandardMaterial({
-      color: 0xd97706, roughness: 0.25, metalness: 0.3, emissive: 0xb45309, emissiveIntensity: 0.3, transparent: true, opacity: 0.95
+      color: 0x64748b, roughness: 0.25, metalness: 0.3, emissive: 0x334155, emissiveIntensity: 0.25, transparent: true, opacity: 0.95
     });
     const lungMaterial = new THREE.MeshStandardMaterial({
-      color: 0x0284c7, roughness: 0.4, metalness: 0.1, emissive: 0x0369a1, emissiveIntensity: 0.2, transparent: true, opacity: 0.85
+      color: 0x94a3b8, roughness: 0.4, metalness: 0.15, emissive: 0x475569, emissiveIntensity: 0.2, transparent: true, opacity: 0.88
     });
     const liverMaterial = new THREE.MeshStandardMaterial({
-      color: 0x854d0e, roughness: 0.45, metalness: 0.15, emissive: 0x713f12, emissiveIntensity: 0.25, transparent: true, opacity: 0.9
+      color: 0x475569, roughness: 0.45, metalness: 0.15, emissive: 0x1e293b, emissiveIntensity: 0.2, transparent: true, opacity: 0.9
     });
     const kidneyMaterial = new THREE.MeshStandardMaterial({
-      color: 0x991b1b, roughness: 0.35, metalness: 0.2, emissive: 0x7f1d1d, emissiveIntensity: 0.2, transparent: true, opacity: 0.9
+      color: 0x334155, roughness: 0.35, metalness: 0.2, emissive: 0x0f172a, emissiveIntensity: 0.2, transparent: true, opacity: 0.9
     });
     const chakraMaterial = new THREE.MeshStandardMaterial({
-      color: 0x8b5cf6, roughness: 0.1, metalness: 0.8, emissive: 0xa855f7, emissiveIntensity: 0.6, transparent: true, opacity: 0.9
+      color: 0xffffff, roughness: 0.1, metalness: 0.9, emissive: 0xf1f5f9, emissiveIntensity: 0.7, transparent: true, opacity: 0.95
     });
     const meridianMaterial = new THREE.MeshStandardMaterial({
-      color: 0x10b981, roughness: 0.1, metalness: 0.5, emissive: 0x34d399, emissiveIntensity: 0.5, transparent: true, opacity: 0.9
+      color: 0xe2e8f0, roughness: 0.1, metalness: 0.6, emissive: 0xcccccc, emissiveIntensity: 0.6, transparent: true, opacity: 0.95
     });
     const toothMaterial = new THREE.MeshStandardMaterial({
-      color: 0xfafaf9, roughness: 0.2, metalness: 0.1, emissive: 0xe7e5e4, emissiveIntensity: 0.1
+      color: 0xffffff, roughness: 0.2, metalness: 0.1, emissive: 0xfafafa, emissiveIntensity: 0.1
     });
 
     const addPart = (id: string, mesh: THREE.Mesh | THREE.Group) => {

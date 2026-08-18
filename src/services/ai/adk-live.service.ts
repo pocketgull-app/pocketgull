@@ -4,6 +4,7 @@
  */
 import { Injectable, signal, NgZone, inject } from '@angular/core';
 import { sanitizeLogInput } from '../../utils/security-helper';
+import { VoicePersonaService } from '../voice-persona.service';
 
 import type { IOccupationalHazardProfile } from '../actuarial-longevity.service';
 
@@ -52,13 +53,21 @@ export class AdkLiveService {
     }
   })();
 
+  private voicePersona = (() => {
+    try {
+      return inject(VoicePersonaService, { optional: true });
+    } catch {
+      return null;
+    }
+  })();
+
   public isConnected = signal(false);
   public isListening = signal(false);
   public isSpeaking = signal(false);
   public latestTranscript = signal('');
   public connectionError = signal<string | null>(null);
   public latencyMs = signal<number>(145); // Sub-200ms streaming latency tracker
-  public selectedVoice = signal<string>('Aoede'); // HD Voice target
+  public selectedVoice = signal<string>(this.voicePersona?.currentPersona().geminiVoice || 'Aoede'); // HD Voice target
   public conversationHistory = signal<{ role: 'user' | 'model'; text: string }[]>([]);
 
   private audioContext: AudioContext | null = null;

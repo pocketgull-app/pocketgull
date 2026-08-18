@@ -239,7 +239,7 @@ export class ActuarialGleeAudioService {
     {
       trackNumber: 6,
       title: 'Telomere Lullaby',
-      subtitle: 'Epigenetic DNA Repair & Protection',
+      subtitle: 'Restorative Sleep & Cellular Vitality Support',
       paradigm: 'longevity',
       duetRoles: { roleA: 'Epigenetic Whisper', roleB: 'Telomerase Echo' },
       keySignature: 'E Minor',
@@ -247,7 +247,7 @@ export class ActuarialGleeAudioService {
       bpm: 65,
       icon: '🧬',
       qalyBonus: 1.6,
-      biologicalMechanism: 'Reduces DNA double-strand break accumulation and maintains TERT telomerase reverse transcriptase activity.',
+      biologicalMechanism: 'Promotes restorative slow-wave sleep physiology and parasympathetic nighttime recovery.',
       lyrics: [
         { time: 0, role: 'A', text: 'Deep restorative nightly sleep, promises our chromosomes keep...' },
         { time: 5, role: 'B', text: 'Protecting caps on every strand, living longer in the land!' },
@@ -419,7 +419,7 @@ export class ActuarialGleeAudioService {
     {
       trackNumber: 6,
       title: 'Telomere Lullaby',
-      subtitle: 'Epigenetic DNA Repair & Protection',
+      subtitle: 'Restorative Sleep & Cellular Vitality Support',
       paradigm: 'longevity',
       duetRoles: { roleA: 'Epigenetic Whisper', roleB: 'Telomerase Echo' },
       keySignature: 'E Minor',
@@ -427,7 +427,7 @@ export class ActuarialGleeAudioService {
       bpm: 65,
       icon: '🧬',
       qalyBonus: 1.6,
-      biologicalMechanism: 'Reduces DNA double-strand break accumulation and maintains TERT telomerase reverse transcriptase activity.',
+      biologicalMechanism: 'Promotes restorative slow-wave sleep physiology and parasympathetic nighttime recovery.',
       lyrics: [
         { time: 0, role: 'A', text: 'Deep restorative nightly sleep, promises our chromosomes keep...' },
         { time: 5, role: 'B', text: 'Protecting caps on every strand, living longer in the land!' },

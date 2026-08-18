@@ -14,7 +14,6 @@ import { GamificationService } from '../services/gamification.service';
 
 import { HumanDignityPactComponent } from './human-dignity-pact.component';
 import { MyChartBriefModalComponent } from './modals/mychart-brief-modal.component';
-import { FamilyTreePedigreeComponent } from './family-tree-pedigree.component';
 import { PatientStoryModalComponent } from './modals/patient-story-modal.component';
 import { PostItNotesComponent } from './shared/post-it-notes.component';
 import { ActuarialGleeAlbumComponent } from './actuarial-glee-album.component';
@@ -23,8 +22,6 @@ import { AmbientLivingSpaceDashboardComponent } from './ambient-living-space-das
 import { GreenRoomLoungeComponent } from './green-room-lounge.component';
 import { DoctorShiftSimulatorComponent } from './doctor-shift-simulator.component';
 import { InvestorValuationPortalModalComponent } from './modals/investor-valuation-portal-modal.component';
-import { Holographic3DAnatomyComponent } from './anatomy-3d/holographic-3d-anatomy.component';
-import { GenesisBiophysicalSubstrateComponent } from './anatomy-3d/genesis-biophysical-substrate.component';
 
 import { DomainSuitesNavigatorComponent } from './suites/domain-suites-navigator.component';
 
@@ -41,7 +38,7 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
   host: {
     'class': 'flex flex-col flex-1 min-h-0 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)]'
   },
-  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, InvestorValuationPortalModalComponent, Holographic3DAnatomyComponent, GenesisBiophysicalSubstrateComponent],
+  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, InvestorValuationPortalModalComponent],
   template: `
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)] bg-[#F3F4F6] dark:bg-zinc-950">
       
@@ -201,15 +198,6 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
                 @if (viewMode() === 'suites') {
                   <app-domain-suites-navigator class="w-full h-auto block overflow-visible" />
                 } @else {
-                  @defer (on viewport; prefetch on idle) {
-                    <app-holographic-3d-anatomy class="w-full mb-6 shrink-0 block" />
-                    <app-genesis-biophysical-substrate class="w-full mb-6 shrink-0 block" />
-                  } @placeholder {
-                    <div class="w-full mb-6 shrink-0 h-48 rounded-2xl bg-slate-100 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 animate-pulse flex items-center justify-center gap-3">
-                      <div class="w-3 h-3 rounded-full bg-cyan-500 animate-ping"></div>
-                      <span class="text-xs font-mono text-slate-500 dark:text-zinc-400">Initializing Holographic 3D Spatial Lens...</span>
-                    </div>
-                  }
                   <app-analysis-report class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" #reportRef (openGleeModal)="showGleeModal.set(true)"></app-analysis-report>
                 }
             </div>
@@ -312,9 +300,6 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
               <button (click)="showMyChartModal.set(true); showToolsMenu.set(false)" class="w-full text-left p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-850 text-zinc-200 border border-zinc-800 transition flex items-center gap-2 cursor-pointer">
                 <span>🏥</span> MyChart Brief
               </button>
-              <button (click)="showPedigreeModal.set(true); showToolsMenu.set(false)" class="w-full text-left p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-850 text-zinc-200 border border-zinc-800 transition flex items-center gap-2 cursor-pointer">
-                <span>🌳</span> Pedigree Tree
-              </button>
               <button (click)="showStoryModal.set(true); showToolsMenu.set(false)" class="w-full text-left p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-850 text-zinc-200 border border-zinc-800 transition flex items-center gap-2 cursor-pointer">
                 <span>📖</span> Patient Story
               </button>
@@ -375,11 +360,6 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
     <!-- Epic MyChart Physician Brief & Longevity Lab Modal -->
     @if (showMyChartModal()) {
       <app-mychart-brief-modal (closeModal)="showMyChartModal.set(false)"></app-mychart-brief-modal>
-    }
-
-    <!-- Family Health Pedigree Tree & Risk Branch Pruning Modal -->
-    @if (showPedigreeModal()) {
-      <app-family-tree-pedigree (closeModal)="showPedigreeModal.set(false)"></app-family-tree-pedigree>
     }
 
     <!-- TED-Style Patient Hero Journey Story Reader Modal -->
@@ -500,7 +480,6 @@ export class AnalysisContainerComponent {
   justGenerated = signal(false);
   showPactModal = signal(false);
   showMyChartModal = signal(false);
-  showPedigreeModal = signal(false);
   showStoryModal = signal(false);
   showPostItModal = signal(false);
   showGleeModal = signal(false);
