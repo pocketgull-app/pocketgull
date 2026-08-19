@@ -20,6 +20,9 @@ import { DifferentialDiagnosisRadarComponent } from './differential-diagnosis-ra
 import { NOf1DesignerComponent } from './n-of-1-designer.component';
 import { AmbientClinicalScribeComponent } from './ambient-clinical-scribe.component';
 import { PresentationModalComponent } from './presentation-modal.component';
+import { RolePathwayDocumentationHubComponent } from './role-pathway-documentation-hub.component';
+import { RoleDemoModalComponent } from './role-demo-modal.component';
+import { HistoricalLuminariesGameComponent } from './historical-luminaries-game.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -67,7 +70,10 @@ export interface IWorkbenchToolStatus {
     DifferentialDiagnosisRadarComponent,
     NOf1DesignerComponent,
     AmbientClinicalScribeComponent,
-    PresentationModalComponent
+    PresentationModalComponent,
+    RolePathwayDocumentationHubComponent,
+    RoleDemoModalComponent,
+    HistoricalLuminariesGameComponent
   ],
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl max-w-7xl mx-auto space-y-6">
@@ -93,6 +99,12 @@ export interface IWorkbenchToolStatus {
             <span class="text-zinc-400">Operational Tools:</span>
             <span class="font-mono font-semibold text-emerald-400">{{ operationalCount() }} / {{ tools().length }}</span>
           </div>
+          <button
+            (click)="showRoleDemoModal.set(true)"
+            class="px-3.5 py-2 text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 rounded-lg shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>✨ Role Demo Mode</span>
+          </button>
           <button
             (click)="runAllDiagnostics()"
             class="px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 rounded-lg shadow-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
@@ -337,6 +349,14 @@ export interface IWorkbenchToolStatus {
         <app-ambient-clinical-scribe />
       } @else if (activeWorkbenchTab() === 'presentation') {
         <app-presentation-modal />
+      } @else if (activeWorkbenchTab() === 'pathwayDocs') {
+        <app-role-pathway-documentation-hub (navigateToTab)="activeWorkbenchTab.set($any($event))" />
+      } @else if (activeWorkbenchTab() === 'luminaries') {
+        <app-historical-luminaries-game />
+      }
+
+      @if (showRoleDemoModal()) {
+        <app-role-demo-modal (closeModal)="showRoleDemoModal.set(false)" (onDemoLaunched)="activeWorkbenchTab.set($any($event))" />
       }
 
     </div>
@@ -346,11 +366,14 @@ export class ClinicalToolWorkbenchComponent {
   readonly stateMachine = inject(DoubleFlipStateMachineService);
   private readonly haptics = inject(BioHapticFeedbackService);
 
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation'>('tools');
+  readonly showRoleDemoModal = signal(false);
+  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries'>('tools');
   readonly intakeDirectiveQuery = signal<string>('');
 
-  readonly workbenchTabs: { id: 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation'; label: string; icon: string; activeClass: string }[] = [
+  readonly workbenchTabs: { id: 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries'; label: string; icon: string; activeClass: string }[] = [
     { id: 'tools', label: 'Diagnostic Tools', icon: '🛠️', activeClass: 'bg-cyan-500 text-zinc-950 shadow-xs' },
+    { id: 'luminaries', label: 'Historical Luminaries Arena', icon: '🏛️', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
+    { id: 'pathwayDocs', label: 'Role & Pathway Docs', icon: '🧭', activeClass: 'bg-indigo-600 text-white shadow-xs' },
     { id: 'osce', label: 'Residency OSCE Trainer', icon: '🎓', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
     { id: 'slack', label: 'Slack Command & Alerts', icon: '💬', activeClass: 'bg-purple-500 text-zinc-950 shadow-xs' },
     { id: 'equity', label: 'Population Health Equity Hub', icon: '🌍', activeClass: 'bg-indigo-500 text-zinc-950 shadow-xs' },
