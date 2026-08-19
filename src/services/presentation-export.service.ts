@@ -244,20 +244,92 @@ Informed consent was obtained using HIPAA §164.514 Safe Harbor standards with z
     `).join('');
 
     return `<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grand Rounds Presentation - ${patient.name || 'Clinical Case'}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #09090b; color: #f4f4f5; margin: 0; padding: 40px; }
-    .slide { max-width: 960px; margin: 0 auto 40px; background: #18181b; border: 1px solid #27272a; border-radius: 24px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); page-break-after: always; }
-    .slide-num { font-family: monospace; font-size: 11px; font-weight: 800; color: #06b6d4; letter-spacing: 1.5px; margin-bottom: 8px; }
-    .slide-title { font-size: 26px; font-weight: 900; margin: 0 0 6px; color: #ffffff; }
-    .slide-sub { font-size: 14px; color: #a1a1aa; margin-bottom: 24px; }
-    .bullets { font-size: 16px; line-height: 1.6; color: #e4e4e7; margin: 0 0 24px 20px; padding: 0; }
-    .bullets li { margin-bottom: 12px; }
-    .badge { display: inline-block; padding: 6px 14px; border-radius: 12px; font-family: monospace; font-size: 13px; font-weight: bold; margin-top: 12px; }
-    .slide-footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid #27272a; font-size: 13px; color: #38bdf8; font-style: italic; }
+    :root {
+      --font-caslon: 'Libre Caslon Text', 'Caslon', 'Newsreader', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: #09090b;
+      color: #f4f4f5;
+      margin: 0;
+      padding: 40px 20px;
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: "cv08" 1, "cv05" 1, "ss02" 1; /* Slashed zero, curved l, serifed capital I */
+    }
+    .slide {
+      max-width: 980px;
+      margin: 0 auto 40px;
+      background: #121215;
+      border: 1px solid #27272a;
+      border-radius: 28px;
+      padding: 48px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      page-break-after: always;
+    }
+    .slide-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      color: #06b6d4;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+    .slide-title {
+      font-family: var(--font-caslon);
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0 0 8px;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+    .slide-sub {
+      font-size: 14px;
+      color: #a1a1aa;
+      margin-bottom: 28px;
+      font-family: var(--font-sans);
+    }
+    .bullets {
+      font-size: 15.5px;
+      line-height: 1.7;
+      color: #e4e4e7;
+      margin: 0 0 28px 24px;
+      padding: 0;
+    }
+    .bullets li {
+      margin-bottom: 14px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 14px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 800;
+      margin-top: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .slide-footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #27272a;
+      font-size: 13.5px;
+      color: #38bdf8;
+      font-family: var(--font-caslon);
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
