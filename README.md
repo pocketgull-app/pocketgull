@@ -87,6 +87,7 @@ Integrated interactive diagnostic tools accessible via the unified **Clinical To
 | **🎙️ Ambient Clinical Scribe** | Ambient Medical Scribing | Multi-modal dialogue transcription synthesizing 4-quadrant structured SOAP encounter notes | ICD-10 (`I10`), SNOMED-CT (`38341003`), FHIR `Encounter` |
 | **📽️ Grand Rounds & CARE Suite** | Academic Presentation | 1-click 7-slide Grand Rounds presentation deck and CARE Guidelines-compliant Case Report Markdown | William Caslon typography, Google Docs & Word export |
 | **🏛️ Historical Luminaries Arena** | Retrospective Clinical Socratic Engine | Epochs of World Leaders & Scientific Pioneers (Alexander, Caesar, Lincoln, Curie, Darwin, Ramanujan, Kahlo) | Blinded Incognito Mode, SHA-256 anti-cheat, 1-click 3D patient load |
+| **🤝 SNO-10 Craft Confidant Studio** | Passion-Based Health Literacy & Lost Buddy AI | Translates SNO-10 diagnoses (SNOMED-CT / ICD-10) into craft dialects (Mechanic, Woodworker, Arborist, Sailor, Musician) with custom memorial companion creation | Dual SNO-10 coding, workshop ergonomics, empathetic memory AI |
 | **🧭 Role & Pathway Docs Hub** | Role-Adaptive Clinical Guidance | 5 dynamic learning pathways (Clinician, Resident, Researcher, Executive, Patient) with 1-click tool actions | Role-tailored CDS workflows and compliance guides |
 
 ### 🩺 Multi-Paradigm Clinical Lenses
