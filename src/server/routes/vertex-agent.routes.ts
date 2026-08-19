@@ -58,18 +58,27 @@ vertexAgentRouter.post('/search', async (req: Request, res: Response) => {
 
     const requestedKey = typeof engineId === 'string' ? engineId.trim() : '';
 
-    // Break SSRF taint chain by mapping to static constant URLs
-    let url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-clinical-docs/servingConfigs/default_search:search';
-    if (requestedKey === 'pocketgull-clinical-agent') {
-      url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-clinical-agent/servingConfigs/default_search:search';
-    } else if (requestedKey === 'pocketgull-datastore-agent') {
-      url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-datastore-agent/servingConfigs/default_search:search';
-    } else if (requestedKey === 'pocketgull-search-engine') {
-      url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-search-engine/servingConfigs/default_search:search';
-    } else if (requestedKey === 'clinical-guidelines-search') {
-      url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/clinical-guidelines-search/servingConfigs/default_search:search';
-    } else if (requestedKey === 'trials-search') {
-      url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/trials-search/servingConfigs/default_search:search';
+    // Break SSRF taint chain: Select endpoint strictly from static constants
+    let targetEndpoint = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-clinical-docs/servingConfigs/default_search:search';
+    switch (requestedKey) {
+      case 'pocketgull-clinical-agent':
+        targetEndpoint = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-clinical-agent/servingConfigs/default_search:search';
+        break;
+      case 'pocketgull-datastore-agent':
+        targetEndpoint = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-datastore-agent/servingConfigs/default_search:search';
+        break;
+      case 'pocketgull-search-engine':
+        targetEndpoint = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-search-engine/servingConfigs/default_search:search';
+        break;
+      case 'clinical-guidelines-search':
+        targetEndpoint = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/clinical-guidelines-search/servingConfigs/default_search:search';
+        break;
+      case 'trials-search':
+        targetEndpoint = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/trials-search/servingConfigs/default_search:search';
+        break;
+      default:
+        targetEndpoint = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-clinical-docs/servingConfigs/default_search:search';
+        break;
     }
 
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
@@ -87,7 +96,7 @@ vertexAgentRouter.post('/search', async (req: Request, res: Response) => {
       const client = await auth.getClient();
       const accessToken = await client.getAccessToken();
 
-      const response = await fetch(url, {
+      const response = await fetch(targetEndpoint, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken.token}`,

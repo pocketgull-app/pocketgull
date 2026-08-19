@@ -845,8 +845,7 @@ app.use(globalLimiter, (req, res, next) => {
  */
 app.use((req, res, next) => {
   // Host routing: Serve the Vertex Gen AI App Builder Business Site for pocketgull.com
-  const rawHost = req.hostname || req.get('host') || '';
-  const cleanHost = rawHost.split(':')[0].toLowerCase();
+  const cleanHost = (req.hostname || '').toLowerCase();
   const isBusinessDomain = (cleanHost === 'pocketgull.com' || cleanHost === 'www.pocketgull.com');
   const isBusinessPath = req.path === '/business' || req.path === '/enterprise' || req.path === '/app-builder' || req.path === '/portal';
 
