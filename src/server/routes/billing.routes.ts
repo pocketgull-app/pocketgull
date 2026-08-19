@@ -105,9 +105,8 @@ export function createBillingRouter() {
       // req.body must be the raw buffer here
       event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err: any) {
-      const errorMessage = err instanceof Error ? err.message : 'Webhook verification failed';
-      console.error(`[Billing] Webhook Error: ${errorMessage}`);
-      return res.status(400).json({ error: 'Webhook Error', message: errorMessage });
+      console.error('[Billing] Webhook signature verification failed');
+      return res.status(400).json({ error: 'Webhook Error', message: 'Webhook signature verification failed.' });
     }
 
     // Handle the event

@@ -312,7 +312,7 @@ export class TaskFlowComponent {
         else if (task.text.includes('[Neurology]')) colorClass = 'border-indigo-500 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-950/20';
       }
 
-      let formattedText = task.text.replace(/\[(.*?)\]/g, (match, inner) => {
+      let formattedText = task.text.replace(/\[(.*?)\]/g, (_match, inner) => {
         let badgeStyle = 'bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 border border-gray-200 dark:border-zinc-700';
         if (colorClass.includes('red')) badgeStyle = 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800';
         else if (colorClass.includes('amber')) badgeStyle = 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800';
@@ -320,7 +320,8 @@ export class TaskFlowComponent {
         else if (colorClass.includes('blue')) badgeStyle = 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800';
         else if (colorClass.includes('rose')) badgeStyle = 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800';
         else if (colorClass.includes('indigo')) badgeStyle = 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800';
-        return `<span class="text-[12px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${badgeStyle} mx-1">${inner}</span>`;
+        const cleanInner = String(inner).replace(/[&<>"']/g, '');
+        return `<span class="text-[12px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${badgeStyle} mx-1">${cleanInner}</span>`;
       });
 
       return { ...task, painScore, colorClass, formattedText };
@@ -350,7 +351,7 @@ export class TaskFlowComponent {
         colorClass = 'border-amber-500 dark:border-amber-400 bg-amber-50 dark:bg-amber-950/20';
       }
 
-      let formattedText = note.text.replace(/\[(.*?)\]/g, (match, inner) => {
+      let formattedText = note.text.replace(/\[(.*?)\]/g, (_match, inner) => {
         let badgeStyle = 'bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 border border-gray-200 dark:border-zinc-700';
         const lInner = inner.toLowerCase();
         // Content-aware badge coloring
@@ -364,11 +365,11 @@ export class TaskFlowComponent {
           // Inherit node vibe
           if (colorClass.includes('red')) badgeStyle = 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800';
           else if (colorClass.includes('amber')) badgeStyle = 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800';
+          else if (colorClass.includes('#416B1F') || colorClass.includes('#689f38')) badgeStyle = 'bg-[#F1F8E9] dark:bg-[#689f38]/30 text-[#416B1F] dark:text-[#689f38] border border-[#416B1F]/30 dark:border-[#689f38]/50';
           else if (colorClass.includes('blue')) badgeStyle = 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800';
-          else if (colorClass.includes('416B1F')) badgeStyle = 'bg-[#F1F8E9] dark:bg-[#689f38]/30 text-[#416B1F] dark:text-[#689f38] border border-[#416B1F]/30 dark:border-[#689f38]/50';
         }
-
-        return `<span class="text-[12px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${badgeStyle} mx-1 mb-1 inline-block">${inner}</span>`;
+        const cleanInner = String(inner).replace(/[&<>"']/g, '');
+        return `<span class="text-[12px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${badgeStyle} mx-1 mb-1 inline-block">${cleanInner}</span>`;
       });
 
       return { ...note, colorClass, formattedText };

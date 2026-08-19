@@ -856,7 +856,8 @@ export class ResearchFrameComponent implements OnDestroy {
     if (existing) return;
 
     // Remove any trailing period from title for cleaner bookmark
-    const cleanTitle = result.title.replace(/\.$/, '');
+    const rawTitle = result.title || '';
+    const cleanTitle = rawTitle.endsWith('.') ? rawTitle.slice(0, -1) : rawTitle;
 
     this.patientManager.addBookmark({
       title: cleanTitle || `PMID: ${result.id}`,
@@ -906,8 +907,11 @@ export class ResearchFrameComponent implements OnDestroy {
     const existing = this.bookmarks().find(b => b.url === url);
     if (existing) return;
 
+    const host = new URL(url).hostname;
+    const cleanHost = host.startsWith('www.') ? host.slice(4) : host;
+
     this.patientManager.addBookmark({
-      title: title || new URL(url).hostname.replace(/^www\./, ''),
+      title: title || cleanHost,
       url,
       isPeerReviewed: false,
       cited: this.autoCite()
@@ -920,7 +924,8 @@ export class ResearchFrameComponent implements OnDestroy {
 
     try {
       const urlObject = new URL(url);
-      let title = urlObject.hostname.replace(/^www\./, '');
+      const host = urlObject.hostname;
+      let title = host.startsWith('www.') ? host.slice(4) : host;
       const path = urlObject.pathname.substring(1).split('/')[0];
       if (path) title += `/${path}`;
 

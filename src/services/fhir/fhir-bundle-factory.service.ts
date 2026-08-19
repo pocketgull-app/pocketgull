@@ -15,16 +15,22 @@ export class FhirBundleFactoryService {
     if (typeof window !== 'undefined' && DOMP && typeof DOMP.sanitize === 'function') {
       return DOMP.sanitize(val);
     }
-    // Headless environment / Node fallback: Single-pass HTML entity encoding
-    const entityMap: Record<string, string> = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#x27;',
-      '/': '&#x2F;',
-    };
-    return String(val).replace(/[&<>"'/]/g, (char) => entityMap[char] || char);
+    // Headless environment / Node fallback: Deterministic character entity encoding
+    let out = '';
+    const str = String(val);
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      switch (ch) {
+        case '&': out += '&amp;'; break;
+        case '<': out += '&lt;'; break;
+        case '>': out += '&gt;'; break;
+        case '"': out += '&quot;'; break;
+        case "'": out += '&#39;'; break;
+        case '/': out += '&#47;'; break;
+        default: out += ch; break;
+      }
+    }
+    return out;
   }
 
   /**

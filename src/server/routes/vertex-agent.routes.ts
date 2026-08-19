@@ -57,8 +57,20 @@ vertexAgentRouter.post('/search', async (req: Request, res: Response) => {
     const { query, pageSize = 5, engineId, filter } = req.body as IVertexSearchRequest;
 
     const requestedKey = typeof engineId === 'string' ? engineId.trim() : '';
-    const safeEngineId = APPROVED_ENGINES[requestedKey] || DEFAULT_ENGINE;
-    const safeProject = DEFAULT_PROJECT;
+
+    // Break SSRF taint chain by mapping to static constant URLs
+    let url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-clinical-docs/servingConfigs/default_search:search';
+    if (requestedKey === 'pocketgull-clinical-agent') {
+      url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-clinical-agent/servingConfigs/default_search:search';
+    } else if (requestedKey === 'pocketgull-datastore-agent') {
+      url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-datastore-agent/servingConfigs/default_search:search';
+    } else if (requestedKey === 'pocketgull-search-engine') {
+      url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/pocketgull-search-engine/servingConfigs/default_search:search';
+    } else if (requestedKey === 'clinical-guidelines-search') {
+      url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/clinical-guidelines-search/servingConfigs/default_search:search';
+    } else if (requestedKey === 'trials-search') {
+      url = 'https://discoveryengine.googleapis.com/v1alpha/projects/gen-lang-client-0540208645/locations/global/collections/default_collection/engines/trials-search/servingConfigs/default_search:search';
+    }
 
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
       return res.status(400).json({ error: 'Query parameter is required and must be non-empty string.' });
@@ -74,8 +86,6 @@ vertexAgentRouter.post('/search', async (req: Request, res: Response) => {
     try {
       const client = await auth.getClient();
       const accessToken = await client.getAccessToken();
-
-      const url = `https://discoveryengine.googleapis.com/v1alpha/projects/${encodeURIComponent(safeProject)}/locations/global/collections/default_collection/engines/${encodeURIComponent(safeEngineId)}/servingConfigs/default_search:search`;
 
       const response = await fetch(url, {
         method: 'POST',
