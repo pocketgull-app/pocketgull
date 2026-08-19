@@ -12,6 +12,11 @@ import { SsaDisabilityNavigatorComponent } from './shared/ssa-disability-navigat
 import { JurisdictionMatrixCardComponent } from './shared/jurisdiction-matrix-card.component';
 import { MandiantCyberDefenseCardComponent } from './shared/mandiant-cyber-defense-card.component';
 import { ClinicalMandarinateExamCardComponent } from './shared/clinical-mandarinate-exam-card.component';
+import { RxGuardLensComponent } from './rx-guard-lens.component';
+import { BiomarkerVelocityCardComponent } from './biomarker-velocity-card.component';
+import { ClinicalTrialsMatcherComponent } from './clinical-trials-matcher.component';
+import { SmsEquityBridgeComponent } from './sms-equity-bridge.component';
+import { DifferentialDiagnosisRadarComponent } from './differential-diagnosis-radar.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -51,7 +56,12 @@ export interface IWorkbenchToolStatus {
     SsaDisabilityNavigatorComponent,
     JurisdictionMatrixCardComponent,
     MandiantCyberDefenseCardComponent,
-    ClinicalMandarinateExamCardComponent
+    ClinicalMandarinateExamCardComponent,
+    RxGuardLensComponent,
+    BiomarkerVelocityCardComponent,
+    ClinicalTrialsMatcherComponent,
+    SmsEquityBridgeComponent,
+    DifferentialDiagnosisRadarComponent
   ],
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl max-w-7xl mx-auto space-y-6">
@@ -221,6 +231,41 @@ export interface IWorkbenchToolStatus {
                 class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
           📜 Keju AI Exam Arena
         </button>
+        <button (click)="activeWorkbenchTab.set('rxguard')"
+                [class.bg-purple-600]="activeWorkbenchTab() === 'rxguard'"
+                [class.text-white]="activeWorkbenchTab() === 'rxguard'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'rxguard'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          🛡️ RxGuard PGx & Botanicals
+        </button>
+        <button (click)="activeWorkbenchTab.set('velocity')"
+                [class.bg-emerald-600]="activeWorkbenchTab() === 'velocity'"
+                [class.text-white]="activeWorkbenchTab() === 'velocity'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'velocity'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          📈 BioTrajectory Velocity
+        </button>
+        <button (click)="activeWorkbenchTab.set('trials')"
+                [class.bg-blue-600]="activeWorkbenchTab() === 'trials'"
+                [class.text-white]="activeWorkbenchTab() === 'trials'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'trials'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          🔬 TrialFinder
+        </button>
+        <button (click)="activeWorkbenchTab.set('sms')"
+                [class.bg-teal-600]="activeWorkbenchTab() === 'sms'"
+                [class.text-white]="activeWorkbenchTab() === 'sms'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'sms'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          💬 SMS Compass Bridge
+        </button>
+        <button (click)="activeWorkbenchTab.set('dxradar')"
+                [class.bg-rose-600]="activeWorkbenchTab() === 'dxradar'"
+                [class.text-white]="activeWorkbenchTab() === 'dxradar'"
+                [class.text-zinc-300]="activeWorkbenchTab() !== 'dxradar'"
+                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
+          🎯 DxRadar Socratic Engine
+        </button>
       </div>
 
       @if (activeWorkbenchTab() === 'tools') {
@@ -368,6 +413,16 @@ export interface IWorkbenchToolStatus {
         <app-mandiant-cyber-defense-card />
       } @else if (activeWorkbenchTab() === 'mandarinate') {
         <app-clinical-mandarinate-exam-card />
+      } @else if (activeWorkbenchTab() === 'rxguard') {
+        <app-rx-guard-lens />
+      } @else if (activeWorkbenchTab() === 'velocity') {
+        <app-biomarker-velocity-card />
+      } @else if (activeWorkbenchTab() === 'trials') {
+        <app-clinical-trials-matcher />
+      } @else if (activeWorkbenchTab() === 'sms') {
+        <app-sms-equity-bridge />
+      } @else if (activeWorkbenchTab() === 'dxradar') {
+        <app-differential-diagnosis-radar />
       }
 
     </div>
@@ -377,7 +432,7 @@ export class ClinicalToolWorkbenchComponent {
   readonly stateMachine = inject(DoubleFlipStateMachineService);
   private readonly haptics = inject(BioHapticFeedbackService);
 
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate'>('tools');
+  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar'>('tools');
   readonly intakeDirectiveQuery = signal<string>('');
 
   readonly tools = signal<IWorkbenchToolStatus[]>([
