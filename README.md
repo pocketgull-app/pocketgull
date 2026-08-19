@@ -115,17 +115,33 @@ Built-in validated clinical instruments integrated directly into patient state:
 | TCM Shi Wen | — | 6 vectors | Ba Gang Qi/Yin/Yang patterns |
 | GROW_THYSELF | — | 0–10 | Life sovereignty & epigenetic vitality |
 
-### 🎨 5 Health Literacy Personas
+### 🦅 6 Multi-Agent Gull Squadron Personas
 
-Users can toggle between cognitive writing styles:
+Specialized Google ADK agents maintaining real-time patient state context:
 
-1. **🔬 Clinical Allopathic** — Formal ICD-10, SNOMED, and PubMed citations
-2. **🌳 Arborist Redwood** — Body systems as dendrochronology and sap velocity
-3. **🏎️ Garage Mechanic** — V8 engine chassis logs and OBD-II DTC codes
-4. **🎩 Extraordinary Gentleman** — Victorian steampunk expedition memoirs
-5. **✨ Inspirational Muse** — Epic symphony with 528 Hz Solfeggio frequencies
+1. **🔭 Gulliver (Overview & Synthesis)** — Holistic care plan strategy, multi-organ crosswalks, and timeline synthesis.
+2. **⚡ Swoop (Interventions & Precision Dosing)** — Targeted pharmacogenomic dosing, CPIC guidelines, and drug-botanical safety.
+3. **🔦 Sentinel (Recovery Vigilance & Trends)** — Continuous biomarker monitoring, Gompertz velocity tracking, and early warning signs.
+4. **📖 Scribes (Patient Translation & Education)** — Plain-language medical translation, health literacy bridging, and compassionate analogies.
+5. **⚡ Skimmer (Flash AI Inference Backbone)** — Sub-second edge triage, instant query routing, and real-time streaming.
+6. **🚨 Samaritan (Emergency Override)** — Offline BLS field guidance, 110 BPM CPR metronome, and first-responder EMT QR handoffs.
 
-Plus **4 adaptive reading modes**: Classic Literary, Bionic Speed, Dyslexic Accessible (OpenDyslexic), and Audiobook Narrator.
+### 🧭 5 Role-Adaptive Clinical & Stakeholder Pathways
+
+Dynamically reconfigures documentation, toolbars, and workflows for each user role:
+
+- **🩺 Attending Physician / Clinician** — High-efficiency CDS, 4-quadrant SOAP scribe, PGx RxGuard, and ICD-10 coding.
+- **🏥 Resident / Fellow** — Board exam differential radar, Socratic teaching pearls, and academic season tiering.
+- **🔬 Clinical Researcher** — $N$-of-1 crossover trial designer, NIH TrialFinder matcher, and FHIR `ResearchStudy` export.
+- **🏛️ Hospital Executive / Health System Leader** — QOF/HEDIS quality metrics, DiGA/FSE compliance, and privacy ROI.
+- **🧑‍🤝‍🧑 Empowered Patient / Caregiver** — Plain-language translation, SMS Compass health bridge, and life sovereignty goals.
+
+### 📖 4 Adaptive Reading & Accessibility Modes
+
+- **Classic Literary** — Clean Caslon typography with optimal baseline grid leading.
+- **Bionic Speed Reading** — Fixation point bolding for rapid optical scanning.
+- **Dyslexic Accessible** — Specialized OpenDyslexic typeface with weighted bottom gravity.
+- **Audiobook Narrator** — Web Speech API bi-directional voice narration.
 
 ### 🚨 Emergency Good Samaritan Mode
 
