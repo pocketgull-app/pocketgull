@@ -87,6 +87,46 @@ export class SnomedIcdCrosswalkService {
       hedisMeasureId: 'HBD',
       semanticEquivalence: 'broader',
       mappingConfidence: 0.95
+    },
+    '81680005': { // Cervicalgia / Forward Head Posture / Upper Crossed Syndrome
+      snomedCode: '81680005',
+      snomedTerm: 'Neck pain (Cervicalgia)',
+      icd10Code: 'M54.2',
+      icd10Title: 'Cervicalgia',
+      cptCodes: ['97110', '97530'], // Therapeutic exercises & kinetic training
+      loincCode: '96767-9', // Neck Disability Index (NDI)
+      semanticEquivalence: 'exact',
+      mappingConfidence: 0.99
+    },
+    '4384001': { // Carpal Tunnel Syndrome & Repetitive Strain Injury
+      snomedCode: '4384001',
+      snomedTerm: 'Carpal tunnel syndrome',
+      icd10Code: 'G56.00',
+      icd10Title: 'Carpal tunnel syndrome, unspecified upper limb',
+      cptCodes: ['95907', '97140'], // Nerve conduction study & manual therapy
+      loincCode: '85732-6', // Boston Carpal Tunnel Questionnaire score
+      semanticEquivalence: 'exact',
+      mappingConfidence: 0.99
+    },
+    '33776007': { // Asthenopia / Digital Eye Strain (Computer Vision Syndrome)
+      snomedCode: '33776007',
+      snomedTerm: 'Asthenopia (Digital Eye Strain)',
+      icd10Code: 'H53.149',
+      icd10Title: 'Visual discomfort (Asthenopia), unspecified eye',
+      cptCodes: ['92012', '99453'], // Intermediate ophthalmological evaluation & RPM setup
+      loincCode: '96768-7', // Computer Vision Syndrome Questionnaire (CVS-Q)
+      semanticEquivalence: 'exact',
+      mappingConfidence: 0.98
+    },
+    '225444004': { // Occupational Burnout & Executive Cognitive Fatigue
+      snomedCode: '225444004',
+      snomedTerm: 'State of exhaustion (Burnout)',
+      icd10Code: 'Z73.0',
+      icd10Title: 'Burn-out (state of vital exhaustion)',
+      cptCodes: ['96156', '99454'], // Health behavior assessment & monthly telemetry
+      loincCode: '75276-6', // Maslach Burnout Inventory (MBI)
+      semanticEquivalence: 'exact',
+      mappingConfidence: 0.97
     }
   };
 
@@ -127,7 +167,13 @@ export class SnomedIcdCrosswalkService {
       '99454': 'RPM Monthly device transmission (16+ days)',
       '99457': 'RPM Clinical management time (first 20 mins)',
       '99490': 'Chronic Care Management (20 mins/month)',
-      '48150': 'Pancreaticoduodenectomy (Whipple Procedure)'
+      '48150': 'Pancreaticoduodenectomy (Whipple Procedure)',
+      '97110': 'Therapeutic exercises to develop strength, endurance, and flexibility',
+      '97530': 'Therapeutic activities, dynamic kinetic retraining',
+      '97140': 'Manual therapy techniques (myofascial release, joint mobilization)',
+      '95907': 'Nerve conduction studies (1-2 studies)',
+      '92012': 'Ophthalmological examination & evaluation (established patient)',
+      '96156': 'Health behavior assessment / re-assessment'
     };
     return cptMap[cptCode] || `CPT ${cptCode} Procedure`;
   }

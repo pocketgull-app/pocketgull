@@ -110,7 +110,63 @@ export class FhirExportStrategyService {
       birthDate: patient.age ? `${new Date().getFullYear() - patient.age}-01-01` : undefined
     };
 
-    const entries: { resource: IFhirResource }[] = [{ resource: patientResource }];
+    const practitionerResource: IFhirResource = {
+      resourceType: 'Practitioner',
+      id: 'practitioner-npi-1487569752',
+      identifier: [
+        {
+          system: 'http://hl7.org/fhir/sid/us-npi',
+          value: '1487569752'
+        }
+      ],
+      name: [
+        {
+          use: 'official',
+          family: 'Gear',
+          given: ['Phillip', 'Arthur'],
+          text: 'Phillip Arthur Gear'
+        }
+      ],
+      qualification: [
+        {
+          code: {
+            coding: [
+              {
+                system: 'http://nucc.org/provider-taxonomy',
+                code: '174400000X',
+                display: 'Specialist'
+              },
+              {
+                system: 'http://nucc.org/provider-taxonomy',
+                code: '171M00000X',
+                display: 'Case Manager/Care Coordinator'
+              },
+              {
+                system: 'http://nucc.org/provider-taxonomy',
+                code: '174H00000X',
+                display: 'Health Educator'
+              }
+            ],
+            text: 'Specialist / Health Educator / Care Coordinator'
+          }
+        }
+      ],
+      address: [
+        {
+          use: 'work',
+          line: ['101 SW Madison St Unit 1664'],
+          city: 'Portland',
+          state: 'OR',
+          postalCode: '97207-2116',
+          country: 'USA'
+        }
+      ]
+    };
+
+    const entries: { resource: IFhirResource }[] = [
+      { resource: patientResource },
+      { resource: practitionerResource }
+    ];
 
     if (patient.vitals) {
       entries.push({
