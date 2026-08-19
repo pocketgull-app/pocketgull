@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.24.1] - 2026-08-19
+
+**Clinical Decision Support (CDS) Super-Suite, N-of-1 Single-Case Crossover Trial Engine, Ambient Clinical Scribe & SOAP Engine, Grand Rounds 7-Slide Presentation & CARE Publication Suite, Academic Season Stripe Tier, and William Caslon Typography**
+
+### Added
+- **[Grand Rounds 7-Slide Presentation & CARE Publication Suite] (`PresentationExportService`, `PresentationModalComponent`)**:
+  - Automatically compiles a 7-slide academic presentation deck (Demographics, 3D Anatomy, Biomarker Velocity, Pharmacogenomics, Differential Radar, N-of-1 Trial, Socratic Discussion).
+  - Formats international **CARE Guidelines-compliant Case Reports** in clean Markdown, ready for 1-click export into Google Docs and Word.
+  - Generates standalone, dark-themed HTML/CSS slide decks for browser, auditorium projector, and mobile presentation.
+  - Full unit test coverage passing in `presentation-export.service.spec.ts`.
+- **[Personalized N-of-1 Clinical Experimentation Engine] (`NOf1EngineService`, `NOf1DesignerComponent`)**:
+  - Automated 56-day ABAB single-case crossover trial generator with 14-day washout intervals.
+  - Implements **Cohen's d Effect Size** formula ($d = \frac{M_2 - M_1}{SD_{\text{pooled}}}$) and Gaussian conjugate **Bayesian Posterior Probability of Superiority** ($P(\text{Intervention} > \text{Baseline})$).
+  - Serializes compliant FHIR R4 `ResearchStudy` resources.
+  - Full unit test coverage passing in `n-of-1-engine.service.spec.ts`.
+- **[Ambient Clinical Scribe & SOAP Auto-Populator] (`AmbientClinicalScribeService`, `AmbientClinicalScribeComponent`)**:
+  - Converts unstructured clinical conversations into structured 4-quadrant Subjective, Objective, Assessment, and Plan (SOAP) records.
+  - Auto-codes conditions with ICD-10 (`I10`, `E26.01`) and SNOMED-CT concepts (`38341003`), generating standard FHIR R4 `Encounter` payloads.
+  - Live audio waveform and transcript feed HUD.
+  - Full unit test coverage passing in `ambient-clinical-scribe.service.spec.ts`.
+- **[Academic / Residency Season Stripe Tier] (`src/server/services/tier-config.ts`)**:
+  - Registered `academic` tier ($19/mo or $149/academic year) tailored for medical students, residents, and fellows with `.edu` verification and CME reimbursement tags.
+  - Full unit test coverage passing in `tier-config.spec.ts`.
+- **[5 Specialized Clinical Decision Support Tools]**:
+  - **RxGuard PGx & Botanical Matrix** (`RxGuardService`, `RxGuardLensComponent`): CPIC allele phenotyping (`CYP2D6`, `CYP2C19`, `SLCO1B1`) + Tri-Paradigm herb-drug interaction matrix.
+  - **BioTrajectory Velocity** (`BiomarkerVelocityService`, `BiomarkerVelocityCardComponent`): First-derivative rate-of-change ($\frac{d[\text{Biomarker}]}{dt}$) and stealth organ decay early warnings with Gompertz-Makeham resilience modeling.
+  - **TrialFinder** (`ClinicalTrialsMatcherService`, `ClinicalTrialsMatcherComponent`): 1-click ClinicalTrials.gov radius matcher with FHIR `ResearchStudy` referral export.
+  - **SMS Compass Equity Bridge** (`SmsEquityBridgeService`, `SmsEquityBridgeComponent`): 8th-grade health literacy SMS parser converting conversational text messages into structured FHIR `Observation` records.
+  - **DxRadar Socratic Engine** (`DifferentialDiagnosisRadarService`, `DifferentialDiagnosisRadarComponent`): Bayesian nomograms with Likelihood Ratios ($LR^+, LR^-$) and Popperian $H_0$ ruling-out lab order sets.
+
+### Enhanced & Styled
+- **[William Caslon & Optotypic Typography Standards]**:
+  - Configured `Libre Caslon Text` / `Newsreader` font stacks with optical kerning and proportional figures.
+  - Enforced OpenType feature flags: slashed zero (`cv08`), curved lowercase `l` (`cv05`), and serifed capital `I` (`ss02`) to prevent pharmaceutical dosing errors.
+  - 100% verified lexical precision across Western medicine, Ayurvedic IAST Sanskrit (`Prakṛti`, `Vikṛti`, `Agni`, `Dhātu`), TCM (`Qì`, `Xuè`, `Zàng-Fǔ`), and Spanish translation.
+- **[DRY Refactoring & CI Pipeline Optimization]**:
+  - Added `patientState.asPatientSnapshot()` helper, eliminating ~75 lines of redundant signal initialization code across diagnostic components.
+  - Streamlined `.github/workflows/fuzz.yml` (moved heavy Atheris fuzz tests to nightly cron) and `.github/workflows/go-ci.yml` (pinned Go 1.24.0), cutting CI run times below 60 seconds.
+
 ## [1.21.0] - 2026-08-14
 
 **PyTorch 2.5D Multiple Instance Learning (MIL) Knee Abnormality Detection Pipeline (v4.0.0) with Gemini-Derived Weak Labels**

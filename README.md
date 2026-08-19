@@ -62,6 +62,21 @@ It is a **living clinical intelligence platform** that synthesizes multimodal in
 - **Raycast tooltips & data cards** — Hover for paradigm badges and pain scores; click for slider input overlays
 - **Method of Loci memory palace** — Anchors clinical consult nodes to 3D spatial coordinates for visual recall
 
+### 🔬 Specialized Clinical Decision Support (CDS) & Research Super-Suite
+
+Integrated interactive diagnostic tools accessible via the unified **Clinical Tool Workbench**:
+
+| Tool / Module | Clinical Domain | Core Mechanism & Methodology | Standards & Output |
+|:---|:---|:---|:---|
+| **🛡️ RxGuard PGx & Botanicals** | Pharmacogenomics & Safety | CPIC allele phenotyping (`CYP2D6`, `CYP2C19`, `SLCO1B1`) + Tri-Paradigm botanical interaction matrix | CPIC Level A/B, FDA Table of PGx Biomarkers |
+| **📈 BioTrajectory Velocity** | Predictive Nephrology & Vitals | First-derivative rate-of-change ($\frac{d[\text{Biomarker}]}{dt}$) detecting stealth organ decay ($\Delta \ge 15\%/\text{yr}$) | Gompertz-Makeham organ resilience curves |
+| **🔬 TrialFinder Matcher** | Clinical Trial Recruitment | Geocoded patient matching against active NIH ClinicalTrials.gov protocols | FHIR R4 `ResearchStudy` referral bundle |
+| **💬 SMS Compass Bridge** | Health Equity & Telehealth | Natural language parser converting 8th-grade SMS text messages to clinical telemetry without app downloads | Direct FHIR R4 `Observation` serialization |
+| **🎯 DxRadar Socratic Engine** | Diagnostic Decision Support | Socratic "Don't Miss" secondary cause differential radar with Bayesian nomograms ($LR^+, LR^-$) | Popperian $H_0$ ruling-out lab order sets |
+| **🧪 N-of-1 Experiment Engine** | Single-Case Clinical Trials | 56-day randomized ABAB crossover trial designer with 14-day washout intervals | Bayesian posterior superiority ($P > 95\%$), Cohen's $d$ |
+| **🎙️ Ambient Clinical Scribe** | Ambient Medical Scribing | Multi-modal dialogue transcription synthesizing 4-quadrant structured SOAP encounter notes | ICD-10 (`I10`), SNOMED-CT (`38341003`), FHIR `Encounter` |
+| **📽️ Grand Rounds & CARE Suite** | Academic Presentation | 1-click 7-slide Grand Rounds presentation deck and CARE Guidelines-compliant Case Report Markdown | William Caslon typography, Google Docs & Word export |
+
 ### 🩺 Multi-Paradigm Clinical Lenses
 
 | Lens | Focus |
