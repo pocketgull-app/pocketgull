@@ -139,8 +139,7 @@ export class ExportService {
   private actuarialService = (() => {
     try {
       return inject(ActuarialLongevityService, { optional: true }) || new ActuarialLongevityService();
-    } catch (e) {
-      console.debug('[ExportService] ActuarialLongevityService DI fallback:', (e as Error)?.message);
+    } catch {
       return new ActuarialLongevityService();
     }
   })();
@@ -148,8 +147,7 @@ export class ExportService {
   private researchLectures = (() => {
     try {
       return inject(ResearchLecturesService, { optional: true }) || new ResearchLecturesService();
-    } catch (e) {
-      console.debug('[ExportService] ResearchLecturesService DI fallback:', (e as Error)?.message);
+    } catch {
       return new ResearchLecturesService();
     }
   })();
@@ -157,8 +155,7 @@ export class ExportService {
   private laafFhir = (() => {
     try {
       return inject(LaafFhirHapticScheduleService, { optional: true });
-    } catch (e) {
-      console.debug('[ExportService] LaafFhirHapticScheduleService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   })();

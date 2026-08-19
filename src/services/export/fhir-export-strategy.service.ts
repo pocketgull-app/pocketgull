@@ -30,8 +30,7 @@ export class FhirExportStrategyService {
   private actuarialService = (() => {
     try {
       return inject(ActuarialLongevityService, { optional: true }) || new ActuarialLongevityService();
-    } catch (e) {
-      console.debug('[FhirExport] ActuarialLongevityService DI fallback:', (e as Error)?.message);
+    } catch {
       return new ActuarialLongevityService();
     }
   })();
@@ -39,8 +38,7 @@ export class FhirExportStrategyService {
   private researchLectures = (() => {
     try {
       return inject(ResearchLecturesService, { optional: true }) || new ResearchLecturesService();
-    } catch (e) {
-      console.debug('[FhirExport] ResearchLecturesService DI fallback:', (e as Error)?.message);
+    } catch {
       return new ResearchLecturesService();
     }
   })();
@@ -48,8 +46,7 @@ export class FhirExportStrategyService {
   private laafFhir = (() => {
     try {
       return inject(LaafFhirHapticScheduleService, { optional: true });
-    } catch (e) {
-      console.debug('[FhirExport] LaafFhirHapticScheduleService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   })();

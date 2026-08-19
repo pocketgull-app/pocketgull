@@ -481,6 +481,7 @@ Recommends voluntary pre-conception carrier screening for autosomal recessive tr
     }
 
     private async fetchClinicalProtocols(query: string): Promise<string> {
+        if (typeof window === 'undefined') return '';
         try {
             const res = await fetch('/api/ai/vertex-search', {
                 method: 'POST',
