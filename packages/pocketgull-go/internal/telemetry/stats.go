@@ -11,12 +11,12 @@ var ErrEmptySample = errors.New("sample slice cannot be empty")
 
 // MetricsResult contains calculated statistical properties for a telemetry window.
 type MetricsResult struct {
-	Mean               float64 `json:"mean"`
-	Variance           float64 `json:"variance"`
-	StdDev             float64 `json:"stdDev"`
-	ZScore             float64 `json:"zScore"`
-	PValueTwoTailed    float64 `json:"pValueTwoTailed"`
-	RejectNullHypothesis bool   `json:"rejectNullHypothesis"`
+	Mean                 float64 `json:"mean"`
+	Variance             float64 `json:"variance"`
+	StdDev               float64 `json:"stdDev"`
+	ZScore               float64 `json:"zScore"`
+	PValueTwoTailed      float64 `json:"pValueTwoTailed"`
+	RejectNullHypothesis bool    `json:"rejectNullHypothesis"`
 }
 
 // CalculateMetrics computes sample mean, variance, standard deviation, and tests against a population baseline (H0).
