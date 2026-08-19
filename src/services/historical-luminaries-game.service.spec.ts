@@ -54,4 +54,18 @@ describe('HistoricalLuminariesGameService - Historical Clinical Mystery Game', (
     const darwinCase = service.getAllCases().find(c => c.id === 'darwin')!;
     expect(darwinCase.patientMockId).toBe('p_charles_darwin');
   });
+
+  it('6. Includes Civilization world leaders with eras and empires', () => {
+    const alexCase = service.getAllCases().find(c => c.id === 'alexander')!;
+    expect(alexCase.civilizationEmpire).toBe('Macedonian Empire');
+    expect(alexCase.civilizationEra).toBe('Classical');
+
+    const caesarCase = service.getAllCases().find(c => c.id === 'caesar')!;
+    expect(caesarCase.civilizationEmpire).toBe('Roman Republic / Empire');
+    expect(caesarCase.civilizationEra).toBe('Classical');
+
+    const lincolnCase = service.getAllCases().find(c => c.id === 'lincoln')!;
+    expect(lincolnCase.civilizationEmpire).toBe('United States of America');
+    expect(lincolnCase.civilizationEra).toBe('Industrial');
+  });
 });

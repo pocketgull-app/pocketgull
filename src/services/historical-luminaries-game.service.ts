@@ -24,6 +24,8 @@ export interface ILuminaryCase {
   luminaryName: string;
   lifeSpan: string;
   fieldOfPioneering: string;
+  civilizationEra?: 'Ancient' | 'Classical' | 'Medieval' | 'Renaissance' | 'Industrial' | 'Modern';
+  civilizationEmpire?: string;
   avatarEmoji: string;
   quote: string;
   historicalContext: string;
@@ -57,6 +59,248 @@ export class HistoricalLuminariesGameService {
   }
 
   private readonly cases: ILuminaryCase[] = [
+    {
+      id: 'alexander',
+      patientMockId: 'p001',
+      luminaryName: 'Alexander the Great',
+      lifeSpan: '356 BC – 323 BC',
+      civilizationEra: 'Classical',
+      civilizationEmpire: 'Macedonian Empire',
+      fieldOfPioneering: 'King of Macedonia, Hegemon of the Hellenic League & Conqueror of the Persian Empire',
+      avatarEmoji: '⚡',
+      quote: 'There is nothing impossible to him who will try.',
+      historicalContext: 'Conquered from Greece to the Punjab by age 30. Collapsed in Nebuchadnezzar’s Palace in Babylon in 323 BC following high fever and progressive flaccid paralysis that left him immobile for 6 days prior to death.',
+      healthQuestNarrative: 'After suffering multiple battle wounds (a chest puncture piercing his lung in Multan and a fractured fibula), Alexander collapsed in Babylon. He developed an acute ascending symmetrical paralysis—unable to move his arms, legs, or speak—while his mind remained sharp and conscious. Embalmers reported his body did not decompose for 6 days because he was actually in a deep comatose, flaccid state of respiratory insufficiency before true biological death.',
+      physicalHardships: [
+        'Rapidly ascending, symmetrical flaccid paralysis progressing over 7 to 10 days from legs to diaphragm.',
+        'Loss of motor speech and bulbar swallowing while maintaining intact sensory perception.',
+        'Accumulated severe military trauma: penetrating chest trauma, arrow extraction, and chronic malaria.'
+      ],
+      societalAndPersonalHardships: [
+        'Unrelenting mutiny threats from exhausted troops along the Hyphasis River in India.',
+        'Devastating grief over the death of his closest companion Hephaestion.',
+        'Intense court paranoia, assassin fears, and drinking binges under extreme imperial pressure.'
+      ],
+      resilienceTriumph: 'Led Macedonian phalanxes across 22,000 miles of uncharted territory without suffering a single tactical defeat, establishing over 20 cities and unifying ancient world trade routes.',
+      clues: [
+        {
+          round: 1,
+          phaseTitle: 'Royal Ephemerides Journal (Babylon, June 323 BC)',
+          sourceDate: 'Palace of Nebuchadnezzar II',
+          excerpt: 'Following a banquet, experienced sudden abdominal pain, joint aching, and high fever. On Day 4, lost ability to rise from his couch.',
+          clinicalSign: 'Prodromal gastrointestinal infection followed by acute motor weakness'
+        },
+        {
+          round: 2,
+          phaseTitle: 'Court Physician Records (Plutarch & Arrian)',
+          sourceDate: 'Day 8 of Illness',
+          excerpt: 'Could recognize his generals and acknowledge them with his eyes, but his vocal cords and limbs were entirely motionless.',
+          clinicalSign: 'Ascending flaccid quadriparesis with preserved ocular motility and mentation'
+        },
+        {
+          round: 3,
+          phaseTitle: 'Modern Neuro-Pathology Retrospective (Dr. Katherine Hall, 2018)',
+          sourceDate: 'The Ancient History Bulletin',
+          excerpt: 'Campylobacter jejuni-induced Guillain-Barré Syndrome (Acute Motor Axonal Neuropathy variant). The 6-day lack of decomposition was due to severe hypoventilation mimicking death.',
+          clinicalSign: 'Guillain-Barré Syndrome (AMAN / AIDP) Polyneuropathy'
+        }
+      ],
+      options: [
+        {
+          id: 'opt_alex_gbs',
+          diagnosisName: 'Guillain-Barré Syndrome (AMAN Variant / Post-Campylobacter Polyneuropathy)',
+          isHistoricallyAccepted: true,
+          scientificRationale: 'Ascending symmetrical flaccid paralysis with preserved sensorium and terminal respiratory arrest perfectly matches acute axonal polyneuropathy.',
+          bayesianPlausibility: 95
+        },
+        {
+          id: 'opt_alex_poison',
+          diagnosisName: 'Acute Strychnine or White Hellebore Poisoning',
+          isHistoricallyAccepted: false,
+          scientificRationale: 'Strychnine causes violent tetanic convulsions and risus sardonicus, completely contradicting the flaccid 6-day paralysis documented by Arrian.',
+          bayesianPlausibility: 32
+        },
+        {
+          id: 'opt_alex_typhoid',
+          diagnosisName: 'Typhoid Fever with Bowel Perforation',
+          isHistoricallyAccepted: false,
+          scientificRationale: 'Bowel perforation causes acute peritonitis, septic shock, and delirium rather than lucid 6-day flaccid paralysis.',
+          bayesianPlausibility: 28
+        },
+        {
+          id: 'opt_alex_malaria',
+          diagnosisName: 'Cerebral Malaria (Plasmodium falciparum)',
+          isHistoricallyAccepted: false,
+          scientificRationale: 'Cerebral malaria results in rapid coma, seizures, and decerebrate posturing, not conscious eye-tracking flaccid quadriparesis.',
+          bayesianPlausibility: 15
+        }
+      ],
+      confirmedHistoricalDiagnosis: 'Guillain-Barré Syndrome (Acute Motor Axonal Neuropathy - AMAN)',
+      clinicalTeachingPearl: 'Neuromuscular emergencies: Guillain-Barré causes rapid ascending paralysis; vital capacity and negative inspiratory force must be monitored continuously to prevent respiratory arrest.',
+      monumentTribute: 'Alexander the Great created the largest empire of the ancient world by age 30, spreading Hellenistic science, medicine, and architecture across three continents.'
+    },
+
+    {
+      id: 'caesar',
+      patientMockId: 'p001',
+      luminaryName: 'Julius Caesar',
+      lifeSpan: '100 BC – 44 BC',
+      civilizationEra: 'Classical',
+      civilizationEmpire: 'Roman Republic / Empire',
+      fieldOfPioneering: 'Dictator Perpetuo of Rome, General, Statesman & Author of the Gallic Wars',
+      avatarEmoji: '🏛️',
+      quote: 'Veni, vidi, vici. (I came, I saw, I conquered.)',
+      historicalContext: 'Transformed the Roman Republic into an Empire. Plagued late in life by sudden drop attacks, limb numbness, severe migraines, and dizziness (*morbus comitialis*) during the African and Spanish civil war campaigns.',
+      healthQuestNarrative: 'While campaigning at Thapsus (46 BC) and Cordoba (45 BC), Caesar suffered sudden collapse episodes where he experienced vertigo, limb jerking, and disorientation. Long believed to be classic grand mal epilepsy, modern neurological reviews indicate he likely suffered from microvascular Transient Ischemic Attacks (TIAs) secondary to atherosclerotic cardiovascular disease or temporal lobe focal seizures.',
+      physicalHardships: [
+        'Sudden, unpredictable drop attacks and syncopal collapses on battlefield command lines.',
+        'Crushing occipital migraines, visual auras, and transient sensory numbness in his extremities.',
+        'Severe chronic insomnia and extreme physical exhaustion during grueling military marches.'
+      ],
+      societalAndPersonalHardships: [
+        'Constant threat of assassination from Senate political rivals and Pompeian loyalists.',
+        'Desperate need to conceal his physical vulnerability and drop attacks to maintain legionary authority.',
+        'The immense psychological burden of reforming the entire calendar, legal system, and grain subsidies of Rome.'
+      ],
+      resilienceTriumph: 'Despite frequent syncopal collapses, he drafted the Julian Calendar, conquered Gaul, unified Roman law, and wrote masterclass military commentaries that survived two millennia.',
+      clues: [
+        {
+          round: 1,
+          phaseTitle: 'Suetonius & Plutarch Historical Chronicles (Thapsus, 46 BC)',
+          sourceDate: 'North Africa Campaign',
+          excerpt: 'Before engaging the Pompeian lines, felt a sudden tremor in his feet, cold numbness ascending his limbs, and was carried from the field dizzy and trembling.',
+          clinicalSign: 'Focal neurological aura & transient ischemic drop attack'
+        },
+        {
+          round: 2,
+          phaseTitle: 'Battle of Cordoba Clinical Notes (45 BC)',
+          sourceDate: 'Hispania Campaign',
+          excerpt: 'Recurring episodes characterized by sudden vertigo, temporal headache, and transient memory lapses without severe tongue biting or post-ictal incontinence.',
+          clinicalSign: 'Transient Ischemic Attacks (TIAs) / Focal Temporal Lobe Seizures'
+        },
+        {
+          round: 3,
+          phaseTitle: 'Modern Vascular Neurology Review (Dr. Galassi & Dr. Ashrafian, 2015)',
+          sourceDate: 'Journal of the Neurological Sciences',
+          excerpt: 'Caesar’s late-onset symptoms (beginning after age 50) and lack of cognitive decline point to cardiovascular cerebrovascular disease and micro-infarcts rather than congenital epilepsy.',
+          clinicalSign: 'Cerebrovascular Microvascular Disease / Transient Ischemic Attacks'
+        }
+      ],
+      options: [
+        {
+          id: 'opt_caesar_tia',
+          diagnosisName: 'Microvascular Transient Ischemic Attacks (TIAs) & Cerebrovascular Disease',
+          isHistoricallyAccepted: true,
+          scientificRationale: 'Late-onset neurological attacks beginning after age 50, absence of severe post-ictal sleep or mental decay, family history of sudden vascular death.',
+          bayesianPlausibility: 93
+        },
+        {
+          id: 'opt_caesar_epilepsy',
+          diagnosisName: 'Idiopathic Generalized Epilepsy (Grand Mal)',
+          isHistoricallyAccepted: false,
+          scientificRationale: 'Classic epilepsy manifests in childhood or adolescence; Caesar’s first documented attacks occurred at age 52 during severe stress.',
+          bayesianPlausibility: 40
+        },
+        {
+          id: 'opt_caesar_meningioma',
+          diagnosisName: 'Parasagittal Cranial Meningioma',
+          isHistoricallyAccepted: false,
+          scientificRationale: 'Meningiomas cause progressive, permanent neurological deficits and papilledema; Caesar’s symptoms resolved rapidly between episodes.',
+          bayesianPlausibility: 25
+        },
+        {
+          id: 'opt_caesar_hypo',
+          diagnosisName: 'Severe Hypoglycemia & Starvation Ketosis',
+          isHistoricallyAccepted: false,
+          scientificRationale: 'Does not explain unilateral sensory numbness and recurring focal neurological aura.',
+          bayesianPlausibility: 15
+        }
+      ],
+      confirmedHistoricalDiagnosis: 'Microvascular Transient Ischemic Attacks (TIAs) & Late-Onset Focal Seizures',
+      clinicalTeachingPearl: 'Cerebrovascular risk in late-onset seizures: Any seizure or drop attack presenting after age 50 must be evaluated for underlying carotid/cerebral vascular atherosclerosis.',
+      monumentTribute: 'Julius Caesar laid the architectural and legal foundations of the Roman Empire, and his Julian Calendar remains the structural ancestor of our global 365-day year.'
+    },
+
+    {
+      id: 'lincoln',
+      patientMockId: 'p001',
+      luminaryName: 'Abraham Lincoln',
+      lifeSpan: '1809 – 1865',
+      civilizationEra: 'Industrial',
+      civilizationEmpire: 'United States of America',
+      fieldOfPioneering: '16th President of the United States, Emancipator & Preserver of the Union',
+      avatarEmoji: '🎩',
+      quote: 'With malice toward none, with charity for all, with firmness in the right, as God gives us to see the right.',
+      historicalContext: 'Steered the nation through the bloodiest war in American history. Exhibited a distinctive 6’4” marfanoid habitus, severe melancholia, chronic constipation, and tremors from mercury-laden "Blue Mass" pills.',
+      healthQuestNarrative: 'Lincoln possessed disproportionately long limbs, spider-like fingers (arachnodactyly), a sunken chest (pectus excavatum), and chronic musculoskeletal pain. Suffering from profound clinical depression (termed "hypochondriasis"), he took daily Blue Mass mercury pills, which induced iatrogenic mercurial poisoning—causing motor tremors, insomnia, and mood swings—before he bravely discontinued them in 1861.',
+      physicalHardships: [
+        'Severe chronic joint hypermobility, flat feet, and Marfanoid/MEN2B musculoskeletal skeletal strain.',
+        'Intractable constipation and abdominal cramping from 19th-century heavy metal medicines.',
+        'Iatrogenic mercury neurotoxicity (tremors, sleep disruption, emotional lability) from Blue Mass.'
+      ],
+      societalAndPersonalHardships: [
+        'Devastating bereavement: Lost his mother at age 9, sister Sarah, first love Ann Rutledge, and sons Eddie and Willie while in the White House.',
+        'Navigating the cataclysm of the American Civil War and 600,000 casualties with unrelenting public hostility.',
+        'Managing the fragile mental health and grief of his wife Mary Todd Lincoln.'
+      ],
+      resilienceTriumph: 'Maintained profound moral clarity, issuing the Emancipation Proclamation and delivering the Gettysburg Address while enduring severe chronic depression and physical pain.',
+      clues: [
+        {
+          round: 1,
+          phaseTitle: 'Physician Notes & Physical Habitus (Dr. Robert Stone, 1861)',
+          sourceDate: 'White House, Washington D.C.',
+          excerpt: 'Stands 6 feet 4 inches, high-arched palate, pectus excavatum, arachnodactyly, cold extremities, and severe bilateral joint laxity.',
+          clinicalSign: 'Connective tissue mutation / Marfanoid phenotype'
+        },
+        {
+          round: 2,
+          phaseTitle: 'Medication Logs & Behavioral Observations (1850s–1861)',
+          sourceDate: 'Springfield, Illinois',
+          excerpt: 'Consumed 3 Blue Mass pills daily (each containing 65mg elemental mercury) for depression and sluggish bowels, developing fine tremors and agitation until self-stopping.',
+          clinicalSign: 'Iatrogenic Mercurialism (Hydrargyria)'
+        },
+        {
+          round: 3,
+          phaseTitle: 'Modern Genetic & Physical Retrospective (Dr. John Sotos, 2008)',
+          sourceDate: 'The Physical Lincoln / Genetic Medicine',
+          excerpt: 'Multiple Endocrine Neoplasia Type 2B (MEN2B) or Marfan Syndrome (FBN1 fibrillin mutation) coupled with severe Major Depressive Disorder and chronic heavy metal exposure.',
+          clinicalSign: 'Marfan Syndrome / MEN2B + Major Depressive Disorder'
+        }
+      ],
+      options: [
+        {
+          id: 'opt_linc_marfan',
+          diagnosisName: 'Marfan Syndrome / MEN2B + Major Depressive Disorder & Iatrogenic Mercurialism',
+          isHistoricallyAccepted: true,
+          scientificRationale: 'Arachnodactyly, pectus excavatum, joint laxity, severe melancholia, and toxic mercury doses in Blue Mass pills.',
+          bayesianPlausibility: 96
+        },
+        {
+          id: 'opt_linc_neurosyphilis',
+          diagnosisName: 'Tertiary Neurosyphilis (Tabes Dorsalis)',
+          isHistoricallyAccepted: false,
+          scientificRationale: 'Completely disproven; Lincoln showed zero Argyll Robertson pupils, dementia, or sensory ataxia, retaining masterclass cognitive oratory until death.',
+          bayesianPlausibility: 12
+        },
+        {
+          id: 'opt_linc_als',
+          diagnosisName: 'Amyotrophic Lateral Sclerosis (ALS)',
+          isHistoricallyAccepted: false,
+          scientificRationale: 'Lincoln never experienced upper or lower motor neuron fasciculations or progressive muscular atrophy over his 56 years.',
+          bayesianPlausibility: 8
+        },
+        {
+          id: 'opt_linc_graves',
+          diagnosisName: 'Severe Graves’ Thyrotoxicosis',
+          isHistoricallyAccepted: false,
+          scientificRationale: 'Thyrotoxicosis does not explain lifelong arachnodactyly, sunken chest, or response to mercury cessation.',
+          bayesianPlausibility: 14
+        }
+      ],
+      confirmedHistoricalDiagnosis: 'Marfanoid Connective Tissue Disorder (FBN1 / MEN2B) + Major Depressive Disorder & Iatrogenic Mercurialism',
+      clinicalTeachingPearl: 'Historical pharmacovigilance: Heavy metal compounds (mercury, arsenic) routinely exacerbated underlying medical conditions; always evaluate historical medication toxicity.',
+      monumentTribute: 'Abraham Lincoln preserved the United States and abolished slavery, demonstrating that physical suffering and clinical depression do not preclude immortal greatness.'
+    },
     {
       id: 'curie',
       patientMockId: 'p_marie_curie',

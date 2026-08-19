@@ -48,10 +48,17 @@ import { HistoricalLuminariesGameService, ILuminaryCase } from '../services/hist
       <div class="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-2 relative overflow-hidden">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800/80 pb-2.5">
           <div>
-            <h4 class="text-base font-black text-white flex items-center gap-2">
-              <span>{{ activeCase().luminaryName }}</span>
-              <span class="text-xs font-mono text-zinc-400 font-normal">({{ activeCase().lifeSpan }})</span>
-            </h4>
+            <div class="flex flex-wrap items-center gap-2">
+              <h4 class="text-base font-black text-white flex items-center gap-2">
+                <span>{{ activeCase().luminaryName }}</span>
+                <span class="text-xs font-mono text-zinc-400 font-normal">({{ activeCase().lifeSpan }})</span>
+              </h4>
+              @if (activeCase().civilizationEmpire) {
+                <span class="px-2 py-0.5 rounded text-[9px] font-mono font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  🏛️ {{ activeCase().civilizationEmpire }} ({{ activeCase().civilizationEra }} Era)
+                </span>
+              }
+            </div>
             <span class="text-xs font-semibold text-amber-400/90">{{ activeCase().fieldOfPioneering }}</span>
           </div>
 
