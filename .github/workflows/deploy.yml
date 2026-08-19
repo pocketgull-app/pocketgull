@@ -76,6 +76,7 @@ jobs:
   test-e2e:
     needs: security-and-lint
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -134,12 +135,12 @@ jobs:
           SKIP_HEALTHCARE_PROVISION: 'true'
 
       - name: Wait for Server
-        run: npx wait-on http://localhost:4000 --timeout 60000
+        run: npx wait-on http://127.0.0.1:4000 --timeout 60000
 
       - name: Verify Preview Server Started
         run: |
           for i in 1 2 3 4 5; do
-            status=$(curl -s -o /tmp/preview.txt -w "%{http_code}" http://localhost:4000 || echo "000")
+            status=$(curl -s -o /tmp/preview.txt -w "%{http_code}" http://127.0.0.1:4000 || echo "000")
             echo "attempt $i -> $status"
             if [ "$status" = "200" ]; then exit 0; fi
             sleep 2
@@ -153,6 +154,8 @@ jobs:
         env:
           CI: true
           PORT: '4000'
+          BASE_URL: 'http://127.0.0.1:4000'
+          PLAYWRIGHT_WORKERS: '4'
           PLAYWRIGHT_TESTING: 'true'
           GEMINI_API_KEY: 'placeholder-key-for-build'
           SKIP_HEALTHCARE_PROVISION: 'true'
