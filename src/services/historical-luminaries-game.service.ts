@@ -24,6 +24,10 @@ export interface ILuminaryCase {
   avatarEmoji: string;
   quote: string;
   historicalContext: string;
+  healthQuestNarrative: string;
+  physicalHardships: string[];
+  societalAndPersonalHardships: string[];
+  resilienceTriumph: string;
   clues: ILuminaryCaseClue[];
   options: ILuminaryDiagnosticOption[];
   confirmedHistoricalDiagnosis: string;
@@ -44,6 +48,18 @@ export class HistoricalLuminariesGameService {
       avatarEmoji: '⚗️',
       quote: 'Nothing in life is to be feared, it is only to be understood. Now is the time to understand more, so that we may fear less.',
       historicalContext: 'Carried test tubes of radium-226 and polonium in her lab coat pockets and operated mobile X-ray radiography units ("Petites Curies") on World War I front lines.',
+      healthQuestNarrative: 'Marie Curie worked for years in a drafty, unheated wooden shed, stirring boiling cauldrons of pitchblende ore with an iron rod as heavy as herself. Unaware of ionizing radiation hazards, she suffered from chronic radiation dermatitis with cracked, bleeding fingertips, severe bilateral cataracts, and profound fatigue, culminating in aplastic bone marrow failure at age 66.',
+      physicalHardships: [
+        'Raw, hyperkeratotic fissures and burns on hands from carrying radioactive test tubes in pockets.',
+        'Early radiation-induced cataracts severely impairing her eyesight in later years.',
+        'Profound aplastic anemia, extreme exhaustion, and chronic bone marrow suppression.'
+      ],
+      societalAndPersonalHardships: [
+        'Tragic loss of her husband Pierre Curie in a 1906 carriage accident, leaving her a widowed mother of two at age 38.',
+        'Vicious xenophobic press smear campaigns in Paris questioning her Polish heritage.',
+        'Denied election to the French Academy of Sciences in 1911 solely because of her gender.'
+      ],
+      resilienceTriumph: 'Personally outfitted and drove 20 mobile radiological vehicles ("Petites Curies") and installed 200 field X-ray units in WWI front-line triage stations, saving over one million wounded soldiers from needless amputations.',
       clues: [
         {
           round: 1,
@@ -110,6 +126,18 @@ export class HistoricalLuminariesGameService {
       avatarEmoji: '🐢',
       quote: 'It is not the strongest of the species that survives, nor the most intelligent, but the one most responsive to change.',
       historicalContext: 'Following his 5-year voyage on HMS Beagle (1831–1836), Darwin suffered for over 40 years from debilitating episodic vomiting, palpitations, extreme fatigue, and eczema.',
+      healthQuestNarrative: 'After contracting Trypanosoma cruzi from a Vinchuca bug bite in Argentina, Darwin lived in constant physical distress. For 40 years at Down House, his working day was restricted to just two or three 45-minute writing sessions between bouts of violent vomiting, stomach spasms, and dizziness.',
+      physicalHardships: [
+        'Over 40 years of daily post-prandial vomiting, severe gastrointestinal colic, and acid reflux.',
+        'Debilitating palpitations, cold tremulousness, and chronic weeping eczema across his face and hands.',
+        'Extremes of vertigo and motion sensitivity that confined him to his quiet home in Kent.'
+      ],
+      societalAndPersonalHardships: [
+        'The crushing grief of losing his beloved 10-year-old daughter Annie in 1851, which broke his heart.',
+        'Terror that his revolutionary theory of evolution would scandalize his deeply religious wife Emma and Victorian society.',
+        'Withheld publication of On the Origin of Species for two decades out of agonizing anxiety and peer fear.'
+      ],
+      resilienceTriumph: 'Despite unrelenting nausea and physical collapse, he meticulously conducted thousands of experiments on barnacles, earthworms, and pigeons, authoring the masterwork that redefined biological science.',
       clues: [
         {
           round: 1,
@@ -176,6 +204,18 @@ export class HistoricalLuminariesGameService {
       avatarEmoji: '♾️',
       quote: 'An equation for me has no meaning unless it expresses a thought of God.',
       historicalContext: 'Arrived at Trinity College, Cambridge in 1914. Fell gravely ill in 1917 amidst wartime rationing, strict vegetarianism, and harsh British winters.',
+      healthQuestNarrative: 'Plunged into freezing Cambridge winters during World War I, Ramanujan cooked his own strictly vegetarian meals on a tiny coal stove due to orthodox religious vows. With wartime food shortages, he suffered extreme malnutrition, and an undiagnosed amoebic liver abscess caused relapsing fever spikes and emaciation, erroneously treated as refractory tuberculosis in English sanatoria.',
+      physicalHardships: [
+        'Relapsing, excruciating right upper quadrant liver abscess fevers reaching 104°F.',
+        'Severe weight loss, emaciation, and gastric pain from wartime British rationing and nutrient deficiencies.',
+        'Confinement to freezing sanitarium solariums in Matlock and Putney under mistaken TB quarantine.'
+      ],
+      societalAndPersonalHardships: [
+        'Traveled 6,000 miles alone from Tamil Nadu, breaking Brahmin orthodox travel bans and facing caste ostracization.',
+        'Severe cultural alienation, loneliness, and racial condescension in pre-WWI Cambridge academia.',
+        'Deprived of fresh vegetables and Indian spices vital to his dietary health.'
+      ],
+      resilienceTriumph: 'While bedridden in drafty sanatoria with high fevers, he filled dozens of notebook pages with modular functions, mock theta functions, and partition formulas that pioneered 21st-century string theory.',
       clues: [
         {
           round: 1,
@@ -242,6 +282,18 @@ export class HistoricalLuminariesGameService {
       avatarEmoji: '🌺',
       quote: 'Feet, what do I need them for if I have wings to fly?',
       historicalContext: 'Survived childhood polio at age 6 and a catastrophic bus collision at age 18 where an iron handrail pierced her pelvis, fracturing her spine and collarbone in multiple places.',
+      healthQuestNarrative: 'After an iron handrail impaled her pelvis at age 18, Frida Kahlo endured over 32 surgeries, bone grafts, and months entombed in rigid plaster and steel body casts. She suffered from chronic Complex Regional Pain Syndrome (CRPS) and burning nerve causalgia, eventually losing her right leg to gangrene, yet transformed her agony into radiant masterpieces of Mexican art.',
+      physicalHardships: [
+        'Over 32 major orthopedic and spinal surgeries with repeated bone grafts.',
+        'Prolonged immobilization in suffocating full-body plaster, leather, and steel corsets.',
+        'Refractory CRPS Type II burning nerve causalgia and below-knee amputation of right leg.'
+      ],
+      societalAndPersonalHardships: [
+        'Lifelong physical disability following childhood polio that left her right leg permanently atrophied.',
+        'Devastating inability to carry children to term due to severe pelvic fractures.',
+        'Volatile, tumultuous marital and emotional tribulations with muralist Diego Rivera.'
+      ],
+      resilienceTriumph: 'Rigged a mirror to the canopy of her four-poster bed and had a custom easel built so she could paint while lying completely immobilized on her back, creating some of the most celebrated self-portraits in human history.',
       clues: [
         {
           round: 1,

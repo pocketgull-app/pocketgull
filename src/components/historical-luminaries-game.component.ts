@@ -67,6 +67,59 @@ import { HistoricalLuminariesGameService, ILuminaryCase } from '../services/hist
         <blockquote class="text-[11px] text-amber-300/80 italic font-serif border-l-2 border-amber-500/40 pl-3 mt-2">
           "{{ activeCase().quote }}"
         </blockquote>
+
+        <!-- HealthQuest & Hardship Chronicles Card -->
+        <div class="mt-4 p-4 rounded-2xl bg-zinc-950/80 border border-amber-500/20 space-y-3">
+          <div class="flex items-center justify-between">
+            <h5 class="text-xs font-mono uppercase font-black tracking-wider text-amber-400 flex items-center gap-1.5">
+              <span>🩺 The HealthQuest & Hardship Chronicle</span>
+            </h5>
+            <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">
+              Heroic Endurance
+            </span>
+          </div>
+
+          <p class="text-xs text-zinc-300 leading-relaxed">
+            {{ activeCase().healthQuestNarrative }}
+          </p>
+
+          <!-- 2-Column Hardships Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+            <!-- Physical & Medical Hardships -->
+            <div class="p-3 rounded-xl bg-zinc-900/90 border border-red-500/20 space-y-1.5">
+              <h6 class="text-[11px] font-mono font-black uppercase text-rose-400 flex items-center gap-1">
+                <span>⚡ Physical Suffering & Illness:</span>
+              </h6>
+              <ul class="text-[11px] text-zinc-300 space-y-1 list-disc list-inside">
+                @for (hardship of activeCase().physicalHardships; track hardship) {
+                  <li>{{ hardship }}</li>
+                }
+              </ul>
+            </div>
+
+            <!-- Societal, Isolation & Personal Battles -->
+            <div class="p-3 rounded-xl bg-zinc-900/90 border border-purple-500/20 space-y-1.5">
+              <h6 class="text-[11px] font-mono font-black uppercase text-purple-400 flex items-center gap-1">
+                <span>🛡️ Societal & Personal Battles:</span>
+              </h6>
+              <ul class="text-[11px] text-zinc-300 space-y-1 list-disc list-inside">
+                @for (battle of activeCase().societalAndPersonalHardships; track battle) {
+                  <li>{{ battle }}</li>
+                }
+              </ul>
+            </div>
+          </div>
+
+          <!-- Resilience & Human Spirit Triumph -->
+          <div class="p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-xs space-y-1">
+            <span class="font-mono font-black uppercase text-emerald-400 text-[10px] block">
+              🌟 Triumph of the Human Spirit:
+            </span>
+            <p class="text-zinc-200 text-[11px] leading-relaxed">
+              {{ activeCase().resilienceTriumph }}
+            </p>
+          </div>
+        </div>
       </div>
 
       <!-- Socratic Clue Rounds (Accordion / Progressive Unfold) -->
