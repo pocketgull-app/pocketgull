@@ -6,7 +6,7 @@ describe('HistoricalLuminariesGameService - Historical Clinical Mystery Game', (
   let service: HistoricalLuminariesGameService;
 
   beforeEach(() => {
-    service = new HistoricalLuminariesGameService();
+    service = new HistoricalLuminariesGameService(null);
   });
 
   it('1. Provides historical luminary clinical mystery cases', () => {
@@ -45,5 +45,13 @@ describe('HistoricalLuminariesGameService - Historical Clinical Mystery Game', (
     expect(service.currentCaseIndex()).toBe(1);
     expect(service.currentClueRound()).toBe(1);
     expect(service.isCaseResolved()).toBe(false);
+  });
+
+  it('5. Maps luminaries to active patient archetypes for clinical workbench loading', () => {
+    const curieCase = service.getAllCases().find(c => c.id === 'curie')!;
+    expect(curieCase.patientMockId).toBe('p_marie_curie');
+
+    const darwinCase = service.getAllCases().find(c => c.id === 'darwin')!;
+    expect(darwinCase.patientMockId).toBe('p_charles_darwin');
   });
 });

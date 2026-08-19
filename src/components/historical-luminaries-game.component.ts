@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HistoricalLuminariesGameService, ILuminaryCase } from '../services/historical-luminaries-game.service';
 
@@ -119,6 +119,26 @@ import { HistoricalLuminariesGameService, ILuminaryCase } from '../services/hist
               {{ activeCase().resilienceTriumph }}
             </p>
           </div>
+
+          <!-- Action Row: Load as Active Patient -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-800">
+            <div class="flex items-center gap-2 text-xs font-mono text-zinc-400">
+              <span>🧬 Linked Patient Archetype:</span>
+              <span class="text-white font-bold">{{ activeCase().patientMockId }}</span>
+            </div>
+
+            <button (click)="loadAsActivePatient()"
+                    class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white text-xs font-mono font-bold transition cursor-pointer shadow-sm flex items-center gap-1.5">
+              <span>🧑‍⚕️ Load {{ activeCase().luminaryName.split(' ')[0] }} as Active Patient →</span>
+            </button>
+          </div>
+
+          @if (patientLoadedToast()) {
+            <div class="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold animate-in fade-in flex items-center justify-between">
+              <span>✓ {{ patientLoadedToast() }}</span>
+              <span class="text-[10px] text-emerald-400">Synchronized with 3D Anatomy</span>
+            </div>
+          }
         </div>
       </div>
 
@@ -250,6 +270,7 @@ export class HistoricalLuminariesGameComponent {
   selectedOptionId = computed(() => this.gameService.selectedOptionId());
   isResolved = computed(() => this.gameService.isCaseResolved());
   score = computed(() => this.gameService.score());
+  patientLoadedToast = signal<string | null>(null);
 
   advanceClue(): void {
     this.gameService.advanceClue();
@@ -263,7 +284,16 @@ export class HistoricalLuminariesGameComponent {
     this.gameService.nextCase();
   }
 
+  loadAsActivePatient(): void {
+    const success = this.gameService.loadLuminaryAsActivePatient();
+    if (success) {
+      this.patientLoadedToast.set(`Loaded ${this.activeCase().luminaryName} into Workbench & 3D Spatial Anatomy!`);
+      setTimeout(() => this.patientLoadedToast.set(null), 4000);
+    }
+  }
+
   resetGame(): void {
     this.gameService.resetGame();
   }
 }
+

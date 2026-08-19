@@ -1,4 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { PatientStateService } from './patient-state.service';
+import { MOCK_PATIENTS } from '../mock-patients';
 
 export interface ILuminaryCaseClue {
   round: number;
@@ -18,6 +20,7 @@ export interface ILuminaryDiagnosticOption {
 
 export interface ILuminaryCase {
   id: string;
+  patientMockId: string;
   luminaryName: string;
   lifeSpan: string;
   fieldOfPioneering: string;
@@ -39,9 +42,24 @@ export interface ILuminaryCase {
   providedIn: 'root'
 })
 export class HistoricalLuminariesGameService {
+  private patientState?: PatientStateService | null;
+
+  constructor(patientState?: PatientStateService | null) {
+    if (patientState !== undefined) {
+      this.patientState = patientState;
+    } else {
+      try {
+        this.patientState = inject(PatientStateService, { optional: true });
+      } catch {
+        this.patientState = null;
+      }
+    }
+  }
+
   private readonly cases: ILuminaryCase[] = [
     {
       id: 'curie',
+      patientMockId: 'p_marie_curie',
       luminaryName: 'Marie Skłodowska Curie',
       lifeSpan: '1867 – 1934',
       fieldOfPioneering: 'Pioneer of Radioactivity, 2x Nobel Laureate (Physics & Chemistry)',
@@ -120,6 +138,7 @@ export class HistoricalLuminariesGameService {
 
     {
       id: 'darwin',
+      patientMockId: 'p_charles_darwin',
       luminaryName: 'Charles Robert Darwin',
       lifeSpan: '1809 – 1882',
       fieldOfPioneering: 'Naturalist & Evolutionary Biologist (On the Origin of Species)',
@@ -198,6 +217,7 @@ export class HistoricalLuminariesGameService {
 
     {
       id: 'ramanujan',
+      patientMockId: 'p_srinivasa_ramanujan',
       luminaryName: 'Srinivasa Ramanujan',
       lifeSpan: '1887 – 1920',
       fieldOfPioneering: 'Mathematical Genius (Number Theory, Infinite Series, Mock Theta Functions)',
@@ -276,6 +296,7 @@ export class HistoricalLuminariesGameService {
 
     {
       id: 'kahlo',
+      patientMockId: 'p_frida_kahlo',
       luminaryName: 'Frida Kahlo',
       lifeSpan: '1907 – 1954',
       fieldOfPioneering: 'Surrealist Painter & Icon of Resilience and Human Identity',
@@ -404,4 +425,36 @@ export class HistoricalLuminariesGameService {
     this.isCaseResolved.set(false);
     this.score.set(0);
   }
+
+  /**
+   * Loads the current or specified luminary into the global PatientStateService
+   */
+  public loadLuminaryAsActivePatient(caseId?: string): boolean {
+    const targetCase = caseId ? (this.cases.find(c => c.id === caseId) || this.getCurrentCase()) : this.getCurrentCase();
+    const mockId = targetCase.patientMockId;
+
+    if (this.patientState) {
+      this.patientState.isDemoMode.set(true);
+      const targetPatient = MOCK_PATIENTS.find(p => p.id === mockId) || MOCK_PATIENTS[0];
+      if (targetPatient) {
+        this.patientState.patientId.set(targetPatient.id);
+        this.patientState.patientName.set(targetPatient.name);
+        this.patientState.patientAge.set(targetPatient.age);
+        this.patientState.patientGender.set(targetPatient.gender || 'Female');
+        this.patientState.patientGoals.set(targetPatient.patientGoals || '');
+        if (targetPatient.vitals) {
+          this.patientState.vitals.set(targetPatient.vitals);
+        }
+        if (targetPatient.issues) {
+          this.patientState.issues.set(targetPatient.issues);
+        }
+        if (targetPatient.history) {
+          this.patientState.patientHistory.set(targetPatient.history as any);
+        }
+        return true;
+      }
+    }
+    return false;
+  }
 }
+
