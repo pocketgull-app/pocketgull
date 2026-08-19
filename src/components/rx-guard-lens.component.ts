@@ -138,19 +138,19 @@ export class RxGuardLensComponent {
   private patientState = inject(PatientStateService, { optional: true });
 
   currentPatient = computed<IPatient>(() => {
-    return {
-      id: this.patientState?.patientId() || 'p001',
-      name: this.patientState?.patientName() || 'Homo Sapiens (Male, Metabolic Syndrome, 58y)',
-      age: this.patientState?.patientAge() || 58,
-      gender: (this.patientState?.patientGender() as any) || 'Male',
+    return this.patientState?.asPatientSnapshot() || {
+      id: 'p001',
+      name: 'Homo Sapiens (Male, Metabolic Syndrome, 58y)',
+      age: 58,
+      gender: 'Male',
       lastVisit: '2026-08-19',
       preexistingConditions: ['Essential Hypertension', 'Type 2 Diabetes'],
       history: [],
       bookmarks: [],
       issues: {},
       patientGoals: '',
-      medications: [{ id: 'm1', name: 'Warfarin 5mg', value: '5mg' }, { id: 'm2', name: 'Metformin 1000mg', value: '1000mg' }, { id: 'm3', name: 'Lisinopril 20mg', value: '20mg' }],
-      dietarySupplements: [{ id: 's1', name: 'Ginkgo Biloba 120mg', value: '120mg' }, { id: 's2', name: 'Ashwagandha 600mg', value: '600mg' }, { id: 's3', name: 'Curcumin BCM-95', value: '500mg' }],
+      medications: [],
+      dietarySupplements: [],
       vitals: { bp: '148/94', hr: '76', spO2: '98%', temp: '36.6', weight: '82', height: '175' }
     };
   });

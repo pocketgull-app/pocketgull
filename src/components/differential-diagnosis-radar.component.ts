@@ -138,11 +138,11 @@ export class DifferentialDiagnosisRadarComponent {
   private patientState = inject(PatientStateService, { optional: true });
 
   currentPatient = computed<IPatient>(() => {
-    return {
-      id: this.patientState?.patientId() || 'p001',
-      name: this.patientState?.patientName() || 'Homo Sapiens (Male, Metabolic Syndrome, 58y)',
-      age: this.patientState?.patientAge() || 58,
-      gender: (this.patientState?.patientGender() as any) || 'Male',
+    return this.patientState?.asPatientSnapshot() || {
+      id: 'p001',
+      name: 'Homo Sapiens (Male, Metabolic Syndrome, 58y)',
+      age: 58,
+      gender: 'Male',
       lastVisit: '2026-08-19',
       preexistingConditions: ['Refractory Hypertension', 'Type 2 Diabetes'],
       history: [],
@@ -151,7 +151,7 @@ export class DifferentialDiagnosisRadarComponent {
       patientGoals: '',
       medications: [],
       dietarySupplements: [],
-      vitals: this.patientState?.vitals() || { bp: '152/96', hr: '78', spO2: '98%', temp: '36.6', weight: '82', height: '175' }
+      vitals: { bp: '152/96', hr: '78', spO2: '98%', temp: '36.6', weight: '82', height: '175' }
     };
   });
 
