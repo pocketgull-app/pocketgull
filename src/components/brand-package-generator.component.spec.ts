@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { BrandPackageGeneratorComponent } from './brand-package-generator.component';
 
 describe('BrandPackageGeneratorComponent', () => {

@@ -144,6 +144,7 @@ gcp-*.json
 **/.pub-cache/
 **/.flutter-plugins
 **/.flutter-plugins-dependencies
+**/ephemeral/
 **/gradle/wrapper/gradle-wrapper.jar
 
 # --- Local PHI & Hive Database Security ---
@@ -224,12 +225,15 @@ contests/
 *.tflite
 *.ckpt
 *.joblib
-models/
+/models/
 trained_models/
 pocketgull_api/models/
 pocketgull_api/*.joblib
 pocketgull_api/*.pkl
 pocketgull_api/*.pt
+!**/lib/models/**
+!**/core/models/**
+!**/src/models/**
 
 # Physio / PhysioNet Signal Telemetry & Trained Models
 physio*/
@@ -284,8 +288,9 @@ pocketgull-v*.tar.gz
 # Temporary scratch files
 scratch/
 
-
-
-
-
-
+# DBT Artifacts
+dbt/target/
+dbt/logs/
+dbt/.user.yml
+**/target/
+**/dbt_packages/

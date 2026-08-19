@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { BrandPackageGeneratorService, IBrandGenerationRequest } from './brand-package-generator.service';
 
 describe('BrandPackageGeneratorService (Google SWE Book & Zero-Waste Architecture)', () => {
