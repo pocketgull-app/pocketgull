@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -18,7 +18,20 @@ process.chdir(workspaceRoot);
 
 console.log('🚀 Running Shift-Left Pre-Commit Validation...\n');
 
-// Helper to run commands and print output/errors nicely
+// Helper to run node scripts directly using process.execPath
+function runNodeScript(scriptPath, args, description) {
+  console.log(`🔹 Running: ${description}...`);
+  try {
+    execFileSync(process.execPath, [scriptPath, ...args], { stdio: 'inherit', cwd: workspaceRoot });
+    console.log(`✅ ${description} passed.\n`);
+    return true;
+  } catch (error) {
+    console.error(`❌ ${description} failed.\n`);
+    return false;
+  }
+}
+
+// Helper to run shell commands and print output/errors nicely
 function runCommand(command, description) {
   console.log(`🔹 Running: ${description}...`);
   try {
@@ -31,14 +44,19 @@ function runCommand(command, description) {
   }
 }
 
+const tscPath = path.resolve(workspaceRoot, 'node_modules', 'typescript', 'lib', 'tsc.js');
+const tsconfigPath = path.resolve(workspaceRoot, 'tsconfig.json');
+const vitestPath = path.resolve(workspaceRoot, 'node_modules', 'vitest', 'vitest.mjs');
+const vitestConfigPath = path.resolve(workspaceRoot, 'vitest.config.ts');
+
 // Check 1: TypeScript compilation check
-const lintPassed = runCommand('npm run lint', 'TypeScript compilation and linting check');
+const lintPassed = runNodeScript(tscPath, ['-p', tsconfigPath, '--noEmit'], 'TypeScript compilation and linting check');
 if (!lintPassed) {
   process.exit(1);
 }
 
 // Check 2: Unit tests check
-const testsPassed = runCommand('npx vitest run', 'Vitest unit tests execution');
+const testsPassed = runNodeScript(vitestPath, ['run', '--config', vitestConfigPath], 'Vitest unit tests execution');
 if (!testsPassed) {
   process.exit(1);
 }
