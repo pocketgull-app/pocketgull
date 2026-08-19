@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { Typographic3dBodyComponent } from './typographic-3d-body.component';

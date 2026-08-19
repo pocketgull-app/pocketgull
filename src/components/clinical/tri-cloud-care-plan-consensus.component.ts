@@ -1,7 +1,7 @@
 /**
- * Big Four Clinical Consensus & Care Plan Component (Quad-Engine CDS).
- * Visualizes multi-cloud treatment consensus across Google Cloud, AWS, Azure, and Apple Health
- * with Popperian p-values, Cochrane Risk of Bias, and quad-paradigm breakdowns.
+ * Big Five Clinical Consensus & Care Plan Component (Pentacloud CDS).
+ * Visualizes multi-cloud treatment consensus across Google Cloud, AWS, Azure, Apple Health, and Meta AI
+ * with Popperian p-values, Cochrane Risk of Bias, and penta-paradigm breakdowns.
  *
  * @module components/clinical/tri-cloud-care-plan-consensus
  */
@@ -15,7 +15,7 @@ import { TriCloudConsensusService, ICloudCareRecommendation } from '../../servic
   imports: [CommonModule],
   template: `
     <div class="space-y-6">
-      <!-- Top Banner: Big Four Health Matrix -->
+      <!-- Top Banner: Big Five Health Matrix -->
       <div class="p-6 bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 text-white rounded-3xl border border-zinc-800 shadow-xl relative overflow-hidden">
         <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -left-10 -top-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -35,13 +35,16 @@ import { TriCloudConsensusService, ICloudCareRecommendation } from '../../servic
               <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-rose-500/20 text-rose-300 rounded-full border border-rose-500/30">
                 🍎 Apple Health &amp; CareKit
               </span>
+              <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 rounded-full border border-indigo-500/30">
+                ♾️ Meta AI &amp; ESM-2
+              </span>
             </div>
 
             <h1 class="text-2xl sm:text-3xl font-black uppercase tracking-tight font-pocketgull text-zinc-100">
-              Big Four Clinical Consensus &amp; Protocol Engine
+              Big Five Clinical Consensus &amp; Protocol Engine
             </h1>
             <p class="text-sm text-zinc-400 mt-1 max-w-2xl">
-              Harmonizing care plans and digital biomarker telemetry across Google Gemini, AWS Bedrock, Azure Health, and Apple CareKit/CoreML to deliver mathematically proven patient care strategies.
+              Harmonizing care plans and digital biomarker telemetry across Google Gemini, AWS Bedrock, Azure Health, Apple CareKit, and Meta ESM-2/LLaMA to deliver mathematically proven patient care strategies.
             </p>
           </div>
 
@@ -53,7 +56,7 @@ import { TriCloudConsensusService, ICloudCareRecommendation } from '../../servic
                 <span class="text-[9px] font-black uppercase tracking-widest text-emerald-300/80 mt-0.5">Agreement</span>
               </div>
               <div>
-                <div class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Big Four Alignment</div>
+                <div class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Pentacloud Alignment</div>
                 <div class="text-sm font-black text-zinc-100">{{ plan.recommendations.length }} Verified Protocols</div>
                 <div class="text-[11px] text-emerald-400 font-medium">All p-values &lt; 0.05 (H₀ Rejected)</div>
               </div>
@@ -113,13 +116,13 @@ import { TriCloudConsensusService, ICloudCareRecommendation } from '../../servic
           </div>
         </div>
 
-        <!-- Synthesized Big Four Protocols -->
+        <!-- Synthesized Big Five Protocols -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
             <h2 class="text-base font-black uppercase tracking-tight text-zinc-900 dark:text-zinc-100 font-pocketgull">
-              Synthesized Big Four Care Recommendations
+              Synthesized Big Five Care Recommendations
             </h2>
-            <span class="text-xs text-zinc-500">Cross-Validated by GCP, AWS, Azure, and Apple CareKit</span>
+            <span class="text-xs text-zinc-500">Cross-Validated by GCP, AWS, Azure, Apple CareKit, and Meta AI</span>
           </div>
 
           <div class="grid grid-cols-1 gap-4">
@@ -144,6 +147,10 @@ import { TriCloudConsensusService, ICloudCareRecommendation } from '../../servic
                       [class.text-rose-600]="rec.provider === 'apple'"
                       [class.dark:text-rose-400]="rec.provider === 'apple'"
                       [class.border-rose-500/20]="rec.provider === 'apple'"
+                      [class.bg-indigo-500/10]="rec.provider === 'meta'"
+                      [class.text-indigo-600]="rec.provider === 'meta'"
+                      [class.dark:text-indigo-400]="rec.provider === 'meta'"
+                      [class.border-indigo-500/20]="rec.provider === 'meta'"
                       class="px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider rounded border"
                     >
                       {{ rec.providerName }}
@@ -193,14 +200,14 @@ import { TriCloudConsensusService, ICloudCareRecommendation } from '../../servic
           <div class="p-6 bg-amber-50/60 dark:bg-amber-950/20 rounded-2xl border border-amber-200 dark:border-amber-900/40 shadow-sm">
             <div class="flex items-center gap-2 mb-2">
               <span class="px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider bg-amber-500 text-white rounded">
-                Big Four Consensus Variance Review
+                Big Five Consensus Variance Review
               </span>
               <h3 class="text-sm font-bold text-amber-900 dark:text-amber-300">{{ disc.field }}</h3>
             </div>
 
             <p class="text-xs text-amber-800 dark:text-amber-300/80 mb-4">{{ disc.description }}</p>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4 text-xs font-mono">
               <div class="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-emerald-200 dark:border-emerald-900/50">
                 <span class="font-bold text-emerald-700 dark:text-emerald-400">Google Cloud (Vertex):</span>
                 <p class="mt-1 text-zinc-600 dark:text-zinc-300 font-sans text-xs">{{ disc.gcpView }}</p>
@@ -216,6 +223,10 @@ import { TriCloudConsensusService, ICloudCareRecommendation } from '../../servic
               <div class="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-rose-200 dark:border-rose-900/50">
                 <span class="font-bold text-rose-700 dark:text-rose-400">Apple (CareKit Prior):</span>
                 <p class="mt-1 text-zinc-600 dark:text-zinc-300 font-sans text-xs">{{ disc.appleView }}</p>
+              </div>
+              <div class="p-3 bg-white dark:bg-zinc-900 rounded-xl border border-indigo-200 dark:border-indigo-900/50">
+                <span class="font-bold text-indigo-700 dark:text-indigo-400">Meta (LLaMA-Med):</span>
+                <p class="mt-1 text-zinc-600 dark:text-zinc-300 font-sans text-xs">{{ disc.metaView }}</p>
               </div>
             </div>
 

@@ -6,6 +6,7 @@ on:
   schedule:
     # Run every Monday at 6:00 AM UTC
     - cron: '0 6 * * 1'
+  workflow_dispatch:
 
 # Required permissions for Scorecard
 permissions:
@@ -38,7 +39,7 @@ jobs:
           results_file: results.sarif
           results_format: sarif
           repo_token: ${{ secrets.SCORECARD_TOKEN || secrets.GITHUB_TOKEN }}
-          publish_results: false
+          publish_results: true
 
       - name: Upload Scorecard Results to Security Tab
         uses: github/codeql-action/upload-sarif@fca7ace96b7d713c7035871441bd52efbe39e27e # v3.28.19

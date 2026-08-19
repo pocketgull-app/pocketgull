@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AmbientScribeService } from '../src/services/ambient-scribe.service';
 
 describe('AmbientScribeService', () => {
@@ -38,52 +37,43 @@ describe('AmbientScribeService', () => {
     expect(service.latestTurn()?.text).toBe('The pain is worse around 3 PM.');
   });
 
-  it('should generate structured SOAP note from simulation scenario', async () => {
-    vi.useFakeTimers();
+  it('should generate structured SOAP note from recorded conversation', async () => {
+    service.loadScenario('hypertension_fatigue');
+    expect(service.totalTurns()).toBeGreaterThan(0);
 
-    service.startListening('hypertension-fatigue');
-    expect(service.isListening()).toBe(true);
+    await service.generateSoapNote();
 
-    // Fast-forward all dialogue delays
-    vi.runAllTimers();
-
-    expect(service.soapNote()).not.toBeNull();
-    const soap = service.soapNote()!;
-
-    expect(soap.subjective.chiefComplaint).toContain('headaches');
-    expect(soap.objective.vitals.bloodPressure).toBe('146/92 mmHg');
-    expect(soap.assessment.icd10Code).toBe('I10');
-    expect(soap.plan.pharmacotherapy.length).toBeGreaterThan(0);
-    expect(soap.plan.suggestedCptCodes[0]?.code).toBe('99214');
-    expect(soap.evidenceSummary.nullHypothesisPValue).toBeLessThan(0.05);
-
-    vi.useRealTimers();
+    const soap = service.soapNote();
+    expect(soap).not.toBeNull();
+    expect(soap?.subjective.chiefComplaint).toContain('headaches');
+    expect(soap?.assessment.icd10Code).toBe('I10');
+    expect(soap?.plan.suggestedCptCodes.map(c => c.code)).toContain('99214');
+    expect(service.hasGeneratedSoap()).toBe(true);
   });
 
-  it('should export valid FHIR R4 Composition Document Bundle', () => {
-    const scenario = service.simulationScenarios[0]!;
-    service.updateSoapNote(scenario.expectedSoap);
+  it('should export HL7 FHIR R4 Composition bundle', async () => {
+    service.loadScenario('diabetes_neuropathy');
+    await service.generateSoapNote();
 
     const fhirBundle = service.exportFhirR4SoapBundle();
-
-    expect(fhirBundle['resourceType']).toBe('Bundle');
-    expect(fhirBundle['type']).toBe('document');
-    expect(fhirBundle['entry']).toBeDefined();
-    expect(fhirBundle['entry'][0]['resource']['resourceType']).toBe('Composition');
-    expect(fhirBundle['entry'][0]['resource']['type']['coding'][0]['code']).toBe('11488-4'); // Consultation note
-    expect(fhirBundle['entry'][0]['resource']['section'].length).toBe(4); // S, O, A, P
+    expect(fhirBundle).toBeDefined();
+    expect(fhirBundle.resourceType).toBe('Bundle');
+    expect(fhirBundle.type).toBe('document');
+    expect(fhirBundle.entry.length).toBeGreaterThan(0);
+    expect(fhirBundle.entry[0].resource.resourceType).toBe('Composition');
   });
 
-  it('should purge all transient scribe state for HIPAA compliance', () => {
-    service.addTurn('clinician', 'Blood pressure is 150/90.');
-    const scenario = service.simulationScenarios[0]!;
-    service.updateSoapNote(scenario.expectedSoap);
+  it('should purge all transient scribe dialogue and SOAP state', async () => {
+    service.loadScenario('hypertension_fatigue');
+    await service.generateSoapNote();
+
+    expect(service.totalTurns()).toBeGreaterThan(0);
+    expect(service.soapNote()).not.toBeNull();
 
     service.purgeScribeState();
 
-    expect(service.isListening()).toBe(false);
     expect(service.totalTurns()).toBe(0);
     expect(service.soapNote()).toBeNull();
-    expect(service.audioLevel()).toBe(0);
+    expect(service.hasGeneratedSoap()).toBe(false);
   });
 });

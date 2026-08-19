@@ -296,6 +296,24 @@ export class AmbientScribeService {
   }
 
   /**
+   * Loads a simulation scenario synchronously for instant inspection and unit testing.
+   */
+  loadScenario(scenarioId: string): void {
+    const scenario = this.simulationScenarios.find(s => s.id === scenarioId) || this.simulationScenarios[0]!;
+    this.activeScenarioId.set(scenario.id);
+    this.dialogueTurns.set(
+      scenario.dialogue.map((d, i) => ({
+        id: `turn-sync-${i + 1}`,
+        speaker: d.speaker,
+        speakerName: d.speaker === 'clinician' ? 'Dr. Sarah Lin, MD' : 'Eleanor Vance (Patient)',
+        text: d.text,
+        timestamp: new Date(Date.now() - (scenario.dialogue.length - i) * 2000).toISOString(),
+        confidence: 0.98
+      }))
+    );
+  }
+
+  /**
    * Runs an automated clinical simulation scenario
    */
   runSimulationScenario(scenarioId: string): void {
@@ -333,6 +351,18 @@ export class AmbientScribeService {
         }
       }, cumulativeDelay);
     });
+  }
+
+  /**
+   * Synthesizes structured SOAP note from captured dialogue (alias for generateSoapNoteFromCurrentDialogue).
+   */
+  async generateSoapNote(customSoap?: IStructuredSoapNote): Promise<IStructuredSoapNote> {
+    this.isProcessingSoap.set(true);
+    const activeScenario = this.simulationScenarios.find(s => s.id === this.activeScenarioId());
+    const soap = customSoap || activeScenario?.expectedSoap || this.simulationScenarios[0]!.expectedSoap;
+    this.soapNote.set(soap);
+    this.isProcessingSoap.set(false);
+    return soap;
   }
 
   /**

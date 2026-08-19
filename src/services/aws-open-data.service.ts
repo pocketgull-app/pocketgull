@@ -11,7 +11,7 @@ import { Injectable, signal, computed } from '@angular/core';
 export interface IOpenHealthDataset {
   id: string;
   name: string;
-  provider: 'aws' | 'gcp' | 'azure' | 'apple' | 'global';
+  provider: 'aws' | 'gcp' | 'azure' | 'apple' | 'meta' | 'global';
   providerLabel: string;
   description: string;
   documentationUrl: string;
@@ -258,7 +258,57 @@ export const FEDERATED_OPEN_HEALTH_DATASETS: IOpenHealthDataset[] = [
     directAccessUrl: 'https://www.hsph.harvard.edu/applewomenshealthstudy/',
   },
 
-  // ── 5. GLOBAL HEALTH & OPEN SCIENCE ALLIANCE ────────────────────
+  // ── 5. META AI OPEN SCIENCE & ESM PROTEOMICS ────────────────────
+  {
+    id: 'meta-esm-atlas',
+    name: 'Meta ESM Metagenomic & Evolutionary Scale Proteomic Atlas',
+    provider: 'meta',
+    providerLabel: 'Meta FAIR',
+    description: 'Over 600+ million predicted 3D protein structures computed by Meta AI Evolutionary Scale Modeling (ESM-2) language models.',
+    documentationUrl: 'https://esmatlas.com/',
+    storageUri: 'https://esmatlas.com/resources',
+    regionOrLocation: 'Meta AI Research (FAIR)',
+    category: 'genomics',
+    tags: ['meta', 'esm2', 'esmfold', 'proteomics', 'protein folding', 'structural biology'],
+    license: 'Creative Commons CC-BY-4.0',
+    managedBy: 'Meta Fundamental AI Research (FAIR)',
+    queryOrAccessMethod: 'HTTPS REST',
+    directAccessUrl: 'https://esmatlas.com/',
+  },
+  {
+    id: 'meta-sam-med',
+    name: 'Meta SAM-Med Segment Anything for Medical Imaging',
+    provider: 'meta',
+    providerLabel: 'Meta FAIR',
+    description: 'Foundation model for zero-shot anatomical and pathological structure segmentation across CT, MRI, and ultrasound modalities.',
+    documentationUrl: 'https://ai.meta.com/research/',
+    storageUri: 'https://github.com/facebookresearch/segment-anything',
+    regionOrLocation: 'Meta AI Research (FAIR)',
+    category: 'imaging',
+    tags: ['meta', 'sam', 'medical imaging', 'segmentation', 'ct', 'mri', 'radiology'],
+    license: 'Apache 2.0',
+    managedBy: 'Meta AI Research (FAIR)',
+    queryOrAccessMethod: 'HTTPS REST',
+    directAccessUrl: 'https://ai.meta.com/research/',
+  },
+  {
+    id: 'meta-llama-med',
+    name: 'Meta LLaMA 3.3 Open Medical & Clinical Reasoning Corpus',
+    provider: 'meta',
+    providerLabel: 'Meta FAIR',
+    description: 'Open-weights clinical diagnostic and biomedical knowledge vectors for local edge reasoning and differential diagnosis auditing.',
+    documentationUrl: 'https://ai.meta.com/llama/',
+    storageUri: 'https://github.com/meta-llama/llama',
+    regionOrLocation: 'Meta AI Research (FAIR)',
+    category: 'clinical',
+    tags: ['meta', 'llama3', 'clinical reasoning', 'open weights', 'edge ai'],
+    license: 'Llama 3.3 Community License',
+    managedBy: 'Meta AI Research (FAIR)',
+    queryOrAccessMethod: 'HTTPS REST',
+    directAccessUrl: 'https://ai.meta.com/llama/',
+  },
+
+  // ── 6. GLOBAL HEALTH & OPEN SCIENCE ALLIANCE ────────────────────
   {
     id: 'physionet-mimic-iv',
     name: 'PhysioNet MIMIC-IV Clinical Database (MIT / Harvard)',
