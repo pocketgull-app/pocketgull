@@ -1,7 +1,8 @@
 /**
- * Multi-Cloud Open Health Data Federation Service.
+ * Big Four Open Health Data Federation Service.
  * Connects PocketGull to open biomedical, genomic, pharmacology, and clinical literature
- * hosted across Amazon Web Services (RODA), Google Cloud (BigQuery/GCS), and Microsoft Azure Open Datasets.
+ * hosted across Amazon Web Services (RODA), Google Cloud (BigQuery/GCS), Microsoft Azure,
+ * and Apple Health Academic Research Studies (Stanford, Harvard, Michigan).
  *
  * @module services/aws-open-data.service
  */
@@ -10,7 +11,7 @@ import { Injectable, signal, computed } from '@angular/core';
 export interface IOpenHealthDataset {
   id: string;
   name: string;
-  provider: 'aws' | 'gcp' | 'azure' | 'nih';
+  provider: 'aws' | 'gcp' | 'azure' | 'apple';
   providerLabel: string;
   description: string;
   documentationUrl: string;
@@ -20,12 +21,12 @@ export interface IOpenHealthDataset {
   tags: string[];
   license: string;
   managedBy: string;
-  queryOrAccessMethod: 'S3 Direct' | 'BigQuery Public' | 'Azure Blob' | 'HTTPS REST';
+  queryOrAccessMethod: 'S3 Direct' | 'BigQuery Public' | 'Azure Blob' | 'HTTPS REST' | 'FHIR / On-Device';
   directAccessUrl?: string;
 }
 
 export const FEDERATED_OPEN_HEALTH_DATASETS: IOpenHealthDataset[] = [
-  // ── AWS RODA DATASETS ──────────────────────────────────────────
+  // ── 1. AWS RODA DATASETS ───────────────────────────────────────
   {
     id: 'nih-pubmed-pmc',
     name: 'NIH PubMed Central Open Access Subset',
@@ -106,24 +107,8 @@ export const FEDERATED_OPEN_HEALTH_DATASETS: IOpenHealthDataset[] = [
     queryOrAccessMethod: 'S3 Direct',
     directAccessUrl: 'https://tcga-2-open.s3.amazonaws.com/',
   },
-  {
-    id: 'aws-covid-19-data-lake',
-    name: 'AWS COVID-19 Public Data Lake',
-    provider: 'aws',
-    providerLabel: 'AWS RODA',
-    description: 'Centralized repository of up-to-date and curated COVID-19 related datasets, epidemiological tracking, and clinical testing metrics worldwide.',
-    documentationUrl: 'https://registry.opendata.aws/aws-covid-19-data-lake/',
-    storageUri: 's3://covid19-lake/',
-    regionOrLocation: 'us-east-1 (AWS)',
-    category: 'epidemiology',
-    tags: ['epidemiology', 'covid-19', 'public health', 'cdc', 'who'],
-    license: 'Various Open Licenses / CC-BY',
-    managedBy: 'Amazon Web Services (AWS)',
-    queryOrAccessMethod: 'S3 Direct',
-    directAccessUrl: 'https://covid19-lake.s3.amazonaws.com/',
-  },
 
-  // ── GOOGLE CLOUD BIGQUERY & GCS DATASETS ───────────────────────
+  // ── 2. GOOGLE CLOUD BIGQUERY & GCS DATASETS ────────────────────
   {
     id: 'gcp-clinical-trials',
     name: 'NIH ClinicalTrials.gov on Google BigQuery',
@@ -173,7 +158,7 @@ export const FEDERATED_OPEN_HEALTH_DATASETS: IOpenHealthDataset[] = [
     directAccessUrl: 'https://console.cloud.google.com/storage/browser/gcp-public-data--gnomad',
   },
 
-  // ── MICROSOFT AZURE & MSR OPEN DATASETS ────────────────────────
+  // ── 3. MICROSOFT AZURE & MSR OPEN DATASETS ─────────────────────
   {
     id: 'azure-open-targets',
     name: 'Open Targets Genomics Platform on Azure',
@@ -221,6 +206,72 @@ export const FEDERATED_OPEN_HEALTH_DATASETS: IOpenHealthDataset[] = [
     managedBy: 'Microsoft Research (MSR)',
     queryOrAccessMethod: 'HTTPS REST',
     directAccessUrl: 'https://msropendata.com/',
+  },
+
+  // ── 4. APPLE HEALTH & ACADEMIC RESEARCH DATASETS ───────────────
+  {
+    id: 'apple-heart-study-stanford',
+    name: 'Stanford Medicine Apple Heart Study Cohort',
+    provider: 'apple',
+    providerLabel: 'Apple & Stanford',
+    description: 'Landmark AFib detection and PPG pulse tachogram dataset across 419,297 participants conducted by Stanford Medicine and Apple.',
+    documentationUrl: 'https://med.stanford.edu/appleheartstudy.html',
+    storageUri: 'https://med.stanford.edu/appleheartstudy.html',
+    regionOrLocation: 'Stanford Medicine / NEJM',
+    category: 'clinical',
+    tags: ['apple health', 'stanford', 'afib', 'ecg', 'ppg', 'cardiology'],
+    license: 'Open Access Research (NEJM)',
+    managedBy: 'Stanford University School of Medicine',
+    queryOrAccessMethod: 'FHIR / On-Device',
+    directAccessUrl: 'https://med.stanford.edu/appleheartstudy.html',
+  },
+  {
+    id: 'apple-carekit-open-source',
+    name: 'Apple CareKit Clinical Care Plan Standard',
+    provider: 'apple',
+    providerLabel: 'Apple Open Source',
+    description: 'Open-source framework for structured patient care plans, outcome tracking, medication adherence, and FHIR synchronization.',
+    documentationUrl: 'https://developer.apple.com/carekit/',
+    storageUri: 'https://github.com/carekit-apple/CareKit',
+    regionOrLocation: 'GitHub Open Source',
+    category: 'clinical',
+    tags: ['carekit', 'care plan', 'medication adherence', 'fhir', 'apple health'],
+    license: 'BSD-3-Clause',
+    managedBy: 'Apple Inc. & CareKit Community',
+    queryOrAccessMethod: 'HTTPS REST',
+    directAccessUrl: 'https://developer.apple.com/carekit/',
+  },
+  {
+    id: 'apple-womens-health-harvard',
+    name: "Harvard Apple Women's Health Study (NIEHS)",
+    provider: 'apple',
+    providerLabel: 'Apple & Harvard',
+    description: 'First-of-its-kind landmark longitudinal study analyzing menstrual health, PCOS, and cardiometabolic markers across 100,000+ participants.',
+    documentationUrl: 'https://www.hsph.harvard.edu/applewomenshealthstudy/',
+    storageUri: 'https://www.hsph.harvard.edu/applewomenshealthstudy/',
+    regionOrLocation: 'Harvard T.H. Chan / NIEHS',
+    category: 'epidemiology',
+    tags: ['womens health', 'harvard', 'niehs', 'pcos', 'endocrinology'],
+    license: 'Academic Open Access',
+    managedBy: 'Harvard T.H. Chan School of Public Health',
+    queryOrAccessMethod: 'HTTPS REST',
+    directAccessUrl: 'https://www.hsph.harvard.edu/applewomenshealthstudy/',
+  },
+  {
+    id: 'apple-hearing-who',
+    name: 'University of Michigan Apple Hearing Study (WHO)',
+    provider: 'apple',
+    providerLabel: 'Apple & Michigan',
+    description: 'Longitudinal environmental sound exposure and audiometric threshold dataset contributing directly to WHO global safe listening standards.',
+    documentationUrl: 'https://sph.umich.edu/applehearingstudy/',
+    storageUri: 'https://sph.umich.edu/applehearingstudy/',
+    regionOrLocation: 'Univ. of Michigan / WHO',
+    category: 'epidemiology',
+    tags: ['audiology', 'hearing', 'who', 'michigan', 'environmental noise'],
+    license: 'WHO / Academic Open Access',
+    managedBy: 'University of Michigan School of Public Health',
+    queryOrAccessMethod: 'HTTPS REST',
+    directAccessUrl: 'https://sph.umich.edu/applehearingstudy/',
   }
 ];
 
@@ -232,11 +283,11 @@ export const CURATED_BIOMEDICAL_DATASETS = FEDERATED_OPEN_HEALTH_DATASETS;
   providedIn: 'root'
 })
 export class AwsOpenDataService {
-  /** All available datasets across AWS, GCP, and Azure */
+  /** All available datasets across AWS, GCP, Azure, and Apple */
   private datasets = signal<IOpenHealthDataset[]>(FEDERATED_OPEN_HEALTH_DATASETS);
 
-  /** Active cloud provider filter */
-  activeProvider = signal<'all' | 'aws' | 'gcp' | 'azure'>('all');
+  /** Active provider filter */
+  activeProvider = signal<'all' | 'aws' | 'gcp' | 'azure' | 'apple'>('all');
 
   /** Active category filter */
   activeCategory = signal<string>('all');
@@ -275,12 +326,12 @@ export class AwsOpenDataService {
   /** Selected dataset for inspection */
   selectedDataset = signal<IOpenHealthDataset | null>(null);
 
-  /** Sets the cloud provider filter */
-  setProvider(provider: 'all' | 'aws' | 'gcp' | 'azure'): void {
+  /** Sets provider filter */
+  setProvider(provider: 'all' | 'aws' | 'gcp' | 'azure' | 'apple'): void {
     this.activeProvider.set(provider);
   }
 
-  /** Sets the category filter */
+  /** Sets category filter */
   setCategory(category: string): void {
     this.activeCategory.set(category);
   }
@@ -290,7 +341,7 @@ export class AwsOpenDataService {
     this.searchQuery.set(query);
   }
 
-  /** Selects a dataset for viewing */
+  /** Selects a dataset */
   selectDataset(dataset: IOpenHealthDataset | null): void {
     this.selectedDataset.set(dataset);
   }

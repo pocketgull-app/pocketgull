@@ -1,7 +1,7 @@
 /**
- * Multi-Cloud Open Health Data Federation Browser Component.
+ * Big Four Open Health Data Federation Browser Component.
  * Interactive Angular 22 Standalone component allowing clinicians and researchers
- * to explore, filter, and inspect open biomedical datasets across AWS, GCP, and Azure.
+ * to explore, filter, and inspect open biomedical datasets across AWS, GCP, Azure, and Apple.
  *
  * @module components/research/aws-open-data-browser
  */
@@ -28,24 +28,27 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
             <span class="px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full border border-blue-500/20">
               Microsoft Azure
             </span>
-            <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Zero-Egress Public Health Data</span>
+            <span class="px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full border border-rose-500/20">
+              Apple Health
+            </span>
+            <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Big Four Open Health Ecosystem</span>
           </div>
           <h2 class="text-xl font-black uppercase tracking-tight text-zinc-900 dark:text-zinc-100 font-pocketgull">
-            Multi-Cloud Open Health Data Federation
+            Big Four Open Health Data Federation
           </h2>
           <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
-            Query open clinical trial literature, genomic variants, bioassays, and oncology datasets across AWS S3, Google BigQuery, and Azure Open Datasets.
+            Query open clinical trial literature, genomic variants, bioassays, oncology, and longitudinal Apple/Stanford cohorts.
           </p>
         </div>
 
-        <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center gap-2 shrink-0 flex-wrap">
           <a
             href="https://registry.opendata.aws/"
             target="_blank"
             rel="noopener noreferrer"
             class="px-2.5 py-1.5 text-[11px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 rounded-lg hover:bg-amber-100 transition-colors"
           >
-            AWS Registry &rarr;
+            AWS RODA &rarr;
           </a>
           <a
             href="https://learn.microsoft.com/en-us/azure/open-datasets/"
@@ -55,12 +58,20 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
           >
             Azure Datasets &rarr;
           </a>
+          <a
+            href="https://developer.apple.com/carekit/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-2.5 py-1.5 text-[11px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 rounded-lg hover:bg-rose-100 transition-colors"
+          >
+            Apple CareKit &rarr;
+          </a>
         </div>
       </div>
 
       <!-- Cloud Provider Filter Bar -->
       <div class="mt-4 flex items-center gap-2 overflow-x-auto pb-1">
-        <span class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mr-1">Provider:</span>
+        <span class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mr-1">Ecosystem:</span>
         <button
           (click)="openData.setProvider('all')"
           [class.bg-zinc-900]="openData.activeProvider() === 'all'"
@@ -73,7 +84,7 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
           [class.dark:text-zinc-400]="openData.activeProvider() !== 'all'"
           class="px-3 py-1 text-xs font-bold rounded-lg transition-all"
         >
-          All Clouds ({{ openData.filteredDatasets().length }})
+          All Ecosystems ({{ openData.filteredDatasets().length }})
         </button>
 
         <button
@@ -86,7 +97,7 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
           [class.dark:text-zinc-400]="openData.activeProvider() !== 'aws'"
           class="px-3 py-1 text-xs font-bold rounded-lg transition-all inline-flex items-center gap-1.5"
         >
-          <span>AWS RODA</span>
+          <span>🟠 AWS RODA</span>
         </button>
 
         <button
@@ -99,7 +110,7 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
           [class.dark:text-zinc-400]="openData.activeProvider() !== 'gcp'"
           class="px-3 py-1 text-xs font-bold rounded-lg transition-all inline-flex items-center gap-1.5"
         >
-          <span>Google Cloud</span>
+          <span>🟢 Google Cloud</span>
         </button>
 
         <button
@@ -112,7 +123,20 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
           [class.dark:text-zinc-400]="openData.activeProvider() !== 'azure'"
           class="px-3 py-1 text-xs font-bold rounded-lg transition-all inline-flex items-center gap-1.5"
         >
-          <span>Microsoft Azure</span>
+          <span>🔵 Microsoft Azure</span>
+        </button>
+
+        <button
+          (click)="openData.setProvider('apple')"
+          [class.bg-rose-600]="openData.activeProvider() === 'apple'"
+          [class.text-white]="openData.activeProvider() === 'apple'"
+          [class.bg-zinc-100]="openData.activeProvider() !== 'apple'"
+          [class.dark:bg-zinc-900]="openData.activeProvider() !== 'apple'"
+          [class.text-zinc-600]="openData.activeProvider() !== 'apple'"
+          [class.dark:text-zinc-400]="openData.activeProvider() !== 'apple'"
+          class="px-3 py-1 text-xs font-bold rounded-lg transition-all inline-flex items-center gap-1.5"
+        >
+          <span>🍎 Apple Health &amp; Studies</span>
         </button>
       </div>
 
@@ -121,7 +145,7 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
         <div class="relative flex-1">
           <input
             type="text"
-            placeholder="Search across all clouds by gene, disease, target, or method..."
+            placeholder="Search across all Big Four ecosystems by gene, condition, trial, or biomarker..."
             [value]="openData.searchQuery()"
             (input)="onSearchInput($event)"
             class="w-full pl-9 pr-4 py-2 text-xs bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
@@ -174,6 +198,10 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
                   [class.text-blue-600]="dataset.provider === 'azure'"
                   [class.dark:text-blue-400]="dataset.provider === 'azure'"
                   [class.border-blue-500/20]="dataset.provider === 'azure'"
+                  [class.bg-rose-500/10]="dataset.provider === 'apple'"
+                  [class.text-rose-600]="dataset.provider === 'apple'"
+                  [class.dark:text-rose-400]="dataset.provider === 'apple'"
+                  [class.border-rose-500/20]="dataset.provider === 'apple'"
                   class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border"
                 >
                   {{ dataset.providerLabel }}
@@ -233,7 +261,7 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
             </p>
 
             <div class="p-3 bg-zinc-100 dark:bg-zinc-950 rounded-xl font-mono text-xs text-zinc-800 dark:text-zinc-200 space-y-1 mb-4">
-              <div><span class="text-zinc-500">Storage URI:</span> {{ ds.storageUri }}</div>
+              <div><span class="text-zinc-500">Storage / URI:</span> {{ ds.storageUri }}</div>
               <div><span class="text-zinc-500">Location:</span> {{ ds.regionOrLocation }}</div>
               <div><span class="text-zinc-500">Managed By:</span> {{ ds.managedBy }}</div>
               @if (ds.directAccessUrl) {
@@ -279,11 +307,11 @@ export class AwsOpenDataBrowserComponent {
 
   categories = [
     { id: 'all', label: 'All Categories' },
-    { id: 'clinical', label: 'Clinical Literature & Trials' },
+    { id: 'clinical', label: 'Clinical Trials & Care Plans' },
     { id: 'genomics', label: 'Genomics & Variants' },
     { id: 'pharmacology', label: 'Pharmacology & Targets' },
     { id: 'imaging', label: 'Oncology & Imaging' },
-    { id: 'epidemiology', label: 'Epidemiology' },
+    { id: 'epidemiology', label: 'Epidemiology & Public Health' },
   ];
 
   onSearchInput(e: Event): void {

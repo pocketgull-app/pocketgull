@@ -1,14 +1,14 @@
 /**
- * Tri-Cloud Clinical Consensus & Care Plan Engine (Big Three CDS).
- * Combines clinical inference models across Google Cloud, Amazon Web Services,
- * and Microsoft Azure to synthesize high-confidence, bias-checked care plans.
+ * Big Four Clinical Consensus & Care Plan Engine (Quad-Cloud CDS).
+ * Combines clinical inference models and population priors across Google Cloud,
+ * Amazon Web Services, Microsoft Azure, and Apple Health & ResearchKit.
  *
  * @module services/clinical-tri-cloud-consensus.service
  */
 import { Injectable, signal, computed } from '@angular/core';
 
 export interface ICloudCareRecommendation {
-  provider: 'gcp' | 'aws' | 'azure';
+  provider: 'gcp' | 'aws' | 'azure' | 'apple';
   providerName: string;
   model: string;
   intervention: string;
@@ -17,8 +17,8 @@ export interface ICloudCareRecommendation {
   evidenceTier: 'Tier A (RCTs)' | 'Tier B (Cohort)' | 'Tier C (Mechanistic / Plausibility)';
   pValue: number;
   riskOfBiasScore: 'Low' | 'Moderate' | 'High';
-  paradigm: 'Western Allopathic' | 'Traditional Chinese Medicine' | 'Ayurvedic Functional';
-  agreedBy: ('gcp' | 'aws' | 'azure')[];
+  paradigm: 'Western Allopathic' | 'Traditional Chinese Medicine' | 'Ayurvedic Functional' | 'On-Device Digital Biomarker';
+  agreedBy: ('gcp' | 'aws' | 'azure' | 'apple')[];
   consensusConfidence: number; // 0 - 100%
   contraindications: string[];
 }
@@ -35,6 +35,7 @@ export interface ITriCloudCarePlan {
     gcpView: string;
     awsView: string;
     azureView: string;
+    appleView: string;
     recommendedClinicianAction: string;
   }[];
   biophysicalProofMatrix: {
@@ -51,12 +52,12 @@ export interface ITriCloudCarePlan {
   providedIn: 'root'
 })
 export class TriCloudConsensusService {
-  /** Active synthesized Tri-Cloud Care Plan */
+  /** Active synthesized Big Four Care Plan */
   readonly activeCarePlan = signal<ITriCloudCarePlan | null>({
     patientId: 'patient-archetype-001',
     timestamp: new Date().toISOString(),
-    primaryDiagnosis: 'Metabolic-Adrenal Dysregulation with Subclinical Thyroid Strain',
-    overallConsensusScore: 94,
+    primaryDiagnosis: 'Metabolic-Adrenal Dysregulation with Autonomic Cardiorespiratory Strain',
+    overallConsensusScore: 96,
     recommendations: [
       {
         provider: 'gcp',
@@ -69,8 +70,8 @@ export class TriCloudConsensusService {
         pValue: 0.004,
         riskOfBiasScore: 'Low',
         paradigm: 'Ayurvedic Functional',
-        agreedBy: ['gcp', 'aws', 'azure'],
-        consensusConfidence: 96,
+        agreedBy: ['gcp', 'aws', 'azure', 'apple'],
+        consensusConfidence: 97,
         contraindications: ['Concurrent thyroid hormone titration without TSH monitoring', 'Severe autoimmune hyperthyroidism']
       },
       {
@@ -84,8 +85,8 @@ export class TriCloudConsensusService {
         pValue: 0.012,
         riskOfBiasScore: 'Low',
         paradigm: 'Western Allopathic',
-        agreedBy: ['gcp', 'aws', 'azure'],
-        consensusConfidence: 92,
+        agreedBy: ['gcp', 'aws', 'azure', 'apple'],
+        consensusConfidence: 94,
         contraindications: ['High-dose warfarin therapy (monitor INR)']
       },
       {
@@ -99,18 +100,34 @@ export class TriCloudConsensusService {
         pValue: 0.031,
         riskOfBiasScore: 'Low',
         paradigm: 'Traditional Chinese Medicine',
-        agreedBy: ['gcp', 'aws', 'azure'],
-        consensusConfidence: 89,
+        agreedBy: ['gcp', 'aws', 'azure', 'apple'],
+        consensusConfidence: 91,
         contraindications: ['Acute febrile illness or acute pathogenic exterior heat syndrome']
+      },
+      {
+        provider: 'apple',
+        providerName: 'Apple Health & Stanford Medicine Prior (CareKit CoreML)',
+        model: 'apple-carekit-coreml-v4',
+        intervention: 'HRV Coherence Biofeedback & Vagal Nerve Parasympathetic Pacing',
+        dosageOrProtocol: '10-minute 0.1 Hz resonant frequency breathing (5.5s inhale / 5.5s exhale) twice daily',
+        rationale: 'Elevates low rMSSD (<30ms) back toward age-matched Stanford baseline (42ms) via baroreceptor reflex activation.',
+        evidenceTier: 'Tier A (RCTs)',
+        pValue: 0.008,
+        riskOfBiasScore: 'Low',
+        paradigm: 'On-Device Digital Biomarker',
+        agreedBy: ['gcp', 'aws', 'azure', 'apple'],
+        consensusConfidence: 98,
+        contraindications: ['Acute respiratory distress requiring supplemental O2']
       }
     ],
     discrepancies: [
       {
         field: 'Vitamin D3 Initial Loading Dose',
-        description: 'Minor variance on initial weekly high-dose loading vs daily steady-state supplementation.',
+        description: 'Minor variance on weekly high-dose loading vs daily steady-state supplementation.',
         gcpView: 'Recommends 5,000 IU daily with K2 (MK-7) to maintain steady 25-OH-D levels without hypercalcemic spikes.',
         awsView: 'Recommends 50,000 IU weekly bolus for 8 weeks based on Endocrine Society guidelines.',
         azureView: 'Recommends 4,000 IU daily combined with dietary magnesium citrate co-factor.',
+        appleView: 'Supports daily 5,000 IU steady-state with CareKit daily medication adherence tracking.',
         recommendedClinicianAction: 'Check baseline serum 25-OH Vitamin D and calcium levels; 5,000 IU daily with K2 is safest default.'
       }
     ],
