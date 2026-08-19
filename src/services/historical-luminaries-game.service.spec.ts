@@ -68,4 +68,19 @@ describe('HistoricalLuminariesGameService - Historical Clinical Mystery Game', (
     expect(lincolnCase.civilizationEmpire).toBe('United States of America');
     expect(lincolnCase.civilizationEra).toBe('Industrial');
   });
+
+  it('7. Supports Blinded Incognito Mode and toggling', () => {
+    expect(service.isIncognitoMode()).toBe(true);
+    service.toggleIncognitoMode();
+    expect(service.isIncognitoMode()).toBe(false);
+  });
+
+  it('8. Embeds cryptographic SHA-256 target hashes on all cases', () => {
+    const cases = service.getAllCases();
+    for (const c of cases) {
+      expect(c.blindedCaseTitle.length).toBeGreaterThan(5);
+      expect(c.blindedSpecialty.length).toBeGreaterThan(5);
+      expect(c.correctOptionHash).toMatch(/^[a-f0-9]{64}$/);
+    }
+  });
 });

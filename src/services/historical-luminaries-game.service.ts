@@ -22,6 +22,8 @@ export interface ILuminaryCase {
   id: string;
   patientMockId: string;
   luminaryName: string;
+  blindedCaseTitle: string;
+  blindedSpecialty: string;
   lifeSpan: string;
   fieldOfPioneering: string;
   civilizationEra?: 'Ancient' | 'Classical' | 'Medieval' | 'Renaissance' | 'Industrial' | 'Modern';
@@ -35,6 +37,7 @@ export interface ILuminaryCase {
   resilienceTriumph: string;
   clues: ILuminaryCaseClue[];
   options: ILuminaryDiagnosticOption[];
+  correctOptionHash: string;
   confirmedHistoricalDiagnosis: string;
   clinicalTeachingPearl: string;
   monumentTribute: string;
@@ -45,6 +48,7 @@ export interface ILuminaryCase {
 })
 export class HistoricalLuminariesGameService {
   private patientState?: PatientStateService | null;
+  readonly isIncognitoMode = signal<boolean>(true);
 
   constructor(patientState?: PatientStateService | null) {
     if (patientState !== undefined) {
@@ -58,11 +62,17 @@ export class HistoricalLuminariesGameService {
     }
   }
 
+  public toggleIncognitoMode(): void {
+    this.isIncognitoMode.update(m => !m);
+  }
+
   private readonly cases: ILuminaryCase[] = [
     {
       id: 'alexander',
       patientMockId: 'p001',
       luminaryName: 'Alexander the Great',
+      blindedCaseTitle: 'Patient Alpha: 32y Imperial Commander (Babylon, 323 BC)',
+      blindedSpecialty: 'Acute Ascending Motor Paralysis & Military Polytrauma',
       lifeSpan: '356 BC – 323 BC',
       civilizationEra: 'Classical',
       civilizationEmpire: 'Macedonian Empire',
@@ -135,6 +145,7 @@ export class HistoricalLuminariesGameService {
           bayesianPlausibility: 15
         }
       ],
+      correctOptionHash: '5390e0724533c9ec3da8b79044772625ab4e637601086679a1d334dfcba73fd1',
       confirmedHistoricalDiagnosis: 'Guillain-Barré Syndrome (Acute Motor Axonal Neuropathy - AMAN)',
       clinicalTeachingPearl: 'Neuromuscular emergencies: Guillain-Barré causes rapid ascending paralysis; vital capacity and negative inspiratory force must be monitored continuously to prevent respiratory arrest.',
       monumentTribute: 'Alexander the Great created the largest empire of the ancient world by age 30, spreading Hellenistic science, medicine, and architecture across three continents.'
@@ -144,6 +155,8 @@ export class HistoricalLuminariesGameService {
       id: 'caesar',
       patientMockId: 'p001',
       luminaryName: 'Julius Caesar',
+      blindedCaseTitle: 'Patient Beta: 55y Roman General & Statesman (Hispania, 45 BC)',
+      blindedSpecialty: 'Late-Onset Episodic Syncope, Focal Seizures & Cerebrovascular Ischemia',
       lifeSpan: '100 BC – 44 BC',
       civilizationEra: 'Classical',
       civilizationEmpire: 'Roman Republic / Empire',
@@ -216,6 +229,7 @@ export class HistoricalLuminariesGameService {
           bayesianPlausibility: 15
         }
       ],
+      correctOptionHash: 'b33978833d395201bab06e8acf5712bdd5c4885efcc06adbe4e1970e9214113a',
       confirmedHistoricalDiagnosis: 'Microvascular Transient Ischemic Attacks (TIAs) & Late-Onset Focal Seizures',
       clinicalTeachingPearl: 'Cerebrovascular risk in late-onset seizures: Any seizure or drop attack presenting after age 50 must be evaluated for underlying carotid/cerebral vascular atherosclerosis.',
       monumentTribute: 'Julius Caesar laid the architectural and legal foundations of the Roman Empire, and his Julian Calendar remains the structural ancestor of our global 365-day year.'
@@ -225,6 +239,8 @@ export class HistoricalLuminariesGameService {
       id: 'lincoln',
       patientMockId: 'p001',
       luminaryName: 'Abraham Lincoln',
+      blindedCaseTitle: 'Patient Gamma: 52y Statesman (Washington D.C., 1861)',
+      blindedSpecialty: 'Marfanoid Habitus, Refractory Melancholia & Heavy Metal Toxicity',
       lifeSpan: '1809 – 1865',
       civilizationEra: 'Industrial',
       civilizationEmpire: 'United States of America',
@@ -297,6 +313,7 @@ export class HistoricalLuminariesGameService {
           bayesianPlausibility: 14
         }
       ],
+      correctOptionHash: '3573639d8156fbb95b1d75e35ec556b0950d25e817fe96b2b1580e813a0739ee',
       confirmedHistoricalDiagnosis: 'Marfanoid Connective Tissue Disorder (FBN1 / MEN2B) + Major Depressive Disorder & Iatrogenic Mercurialism',
       clinicalTeachingPearl: 'Historical pharmacovigilance: Heavy metal compounds (mercury, arsenic) routinely exacerbated underlying medical conditions; always evaluate historical medication toxicity.',
       monumentTribute: 'Abraham Lincoln preserved the United States and abolished slavery, demonstrating that physical suffering and clinical depression do not preclude immortal greatness.'
@@ -305,6 +322,8 @@ export class HistoricalLuminariesGameService {
       id: 'curie',
       patientMockId: 'p_marie_curie',
       luminaryName: 'Marie Skłodowska Curie',
+      blindedCaseTitle: 'Patient Delta: 66y Laboratory Physicist (Paris / Haute-Savoie, 1934)',
+      blindedSpecialty: 'Occupational Radioactivity, Pancytopenia & Marrow Aplasia',
       lifeSpan: '1867 – 1934',
       fieldOfPioneering: 'Pioneer of Radioactivity, 2x Nobel Laureate (Physics & Chemistry)',
       avatarEmoji: '⚗️',
@@ -375,6 +394,7 @@ export class HistoricalLuminariesGameService {
           bayesianPlausibility: 10
         }
       ],
+      correctOptionHash: '9258d1543a92d31d765c662efb96ef4989c40fed1a164794ea1e7f2cc6c77191',
       confirmedHistoricalDiagnosis: 'Aplastic Anemia (Secondary to Unshielded Ionizing Radiation Exposure)',
       clinicalTeachingPearl: 'Occupational radiation safety: Ionizing radiation damages radiosensitive bone marrow progenitor cells; complete blood count monitoring is mandatory in radiopharmaceutical handling.',
       monumentTribute: 'Marie Curie remains the only person to receive Nobel Prizes in two distinct scientific fields. Her discovery of Radium and Polonium laid the foundation of modern oncology.'
@@ -384,6 +404,8 @@ export class HistoricalLuminariesGameService {
       id: 'darwin',
       patientMockId: 'p_charles_darwin',
       luminaryName: 'Charles Robert Darwin',
+      blindedCaseTitle: 'Patient Epsilon: 41y Naturalist & Global Explorer (Kent, 1850)',
+      blindedSpecialty: 'Vector-Borne Visceral Dysautonomia & Gastrointestinal Colic',
       lifeSpan: '1809 – 1882',
       fieldOfPioneering: 'Naturalist & Evolutionary Biologist (On the Origin of Species)',
       avatarEmoji: '🐢',
@@ -454,6 +476,7 @@ export class HistoricalLuminariesGameService {
           bayesianPlausibility: 18
         }
       ],
+      correctOptionHash: 'aa5a231cd1d29aa19bad4f2685a8bb4718fc638348a342c87ed12cb4aa360c11',
       confirmedHistoricalDiagnosis: 'Chronic Chagas Disease (American Trypanosomiasis) with Secondary Lactose Intolerance',
       clinicalTeachingPearl: 'Travel & vector history: Travel exposures decades prior can manifest as late chronic visceral and cardiac dysautonomia.',
       monumentTribute: 'Charles Darwin unlocked the tree of life. Despite 40 years of daily physical suffering, he revolutionized human understanding of biodiversity and natural selection.'
@@ -463,6 +486,8 @@ export class HistoricalLuminariesGameService {
       id: 'ramanujan',
       patientMockId: 'p_srinivasa_ramanujan',
       luminaryName: 'Srinivasa Ramanujan',
+      blindedCaseTitle: 'Patient Zeta: 30y Theoretical Mathematician (Cambridge, 1918)',
+      blindedSpecialty: 'Relapsing Hepatic Abscess, Wartime Malnutrition & Tropical Amoebiasis',
       lifeSpan: '1887 – 1920',
       fieldOfPioneering: 'Mathematical Genius (Number Theory, Infinite Series, Mock Theta Functions)',
       avatarEmoji: '♾️',
@@ -533,6 +558,7 @@ export class HistoricalLuminariesGameService {
           bayesianPlausibility: 12
         }
       ],
+      correctOptionHash: '4828169b335c4b8f2240c04b3972e372e7a9791ea54412a3c740cf210d4e59c8',
       confirmedHistoricalDiagnosis: 'Hepatic Amoebiasis (Extraintestinal Amoebic Liver Abscess)',
       clinicalTeachingPearl: 'Diagnostic anchors & cognitive bias: In 1918 England, TB was the default assumption, blinding physicians to tropical infectious etiologies like amoebic abscesses.',
       monumentTribute: 'Srinivasa Ramanujan produced nearly 3,900 mathematical identities and modular equations. His notebooks continue to inspire string theory, black hole physics, and cryptography.'
@@ -542,6 +568,8 @@ export class HistoricalLuminariesGameService {
       id: 'kahlo',
       patientMockId: 'p_frida_kahlo',
       luminaryName: 'Frida Kahlo',
+      blindedCaseTitle: 'Patient Eta: 33y Mexican Artist & Polytrauma Survivor (Coyoacán, 1940)',
+      blindedSpecialty: 'Refractory CRPS Type II Causalgia, Spinal Instability & Post-Polio',
       lifeSpan: '1907 – 1954',
       fieldOfPioneering: 'Surrealist Painter & Icon of Resilience and Human Identity',
       avatarEmoji: '🌺',
@@ -612,6 +640,7 @@ export class HistoricalLuminariesGameService {
           bayesianPlausibility: 8
         }
       ],
+      correctOptionHash: 'b5585e9f142d237948f82821820a24187b9bde97e6691cee4af7a791d08d2624',
       confirmedHistoricalDiagnosis: 'Complex Regional Pain Syndrome (CRPS Type II) from Sacral Plexus Trauma & Post-Polio Syndrome',
       clinicalTeachingPearl: 'Multimodal pain management: Chronic post-traumatic nerve pain requires integrated neuropathic modulation, physical stabilization, and profound creative psychological catharsis.',
       monumentTribute: 'Frida Kahlo transformed extreme physical suffering into immortal masterworks of art, remaining a global symbol of artistic courage and resilience.'

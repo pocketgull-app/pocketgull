@@ -31,8 +31,19 @@ import { HistoricalLuminariesGameService, ILuminaryCase } from '../services/hist
           </div>
         </div>
 
-        <!-- Score & Progression HUD -->
-        <div class="flex items-center gap-3 self-start md:self-auto">
+        <!-- Score, Mode Toggle & Progression HUD -->
+        <div class="flex flex-wrap items-center gap-3 self-start md:self-auto">
+          <button (click)="toggleIncognito()"
+                  class="px-3.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition cursor-pointer flex items-center gap-1.5"
+                  [class.bg-purple-950/60]="isIncognito()"
+                  [class.border-purple-500/50]="isIncognito()"
+                  [class.text-purple-300]="isIncognito()"
+                  [class.bg-zinc-900]="!isIncognito()"
+                  [class.border-zinc-800]="!isIncognito()"
+                  [class.text-zinc-400]="!isIncognito()">
+            <span>{{ isIncognito() ? '🕶️ Incognito Mode: ON' : '🏛️ Exhibition Mode' }}</span>
+          </button>
+
           <div class="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center gap-2">
             <span class="text-xs text-zinc-400 font-mono">Arena Score:</span>
             <span class="text-sm font-black font-mono text-amber-400">{{ score() }} pts</span>
@@ -49,17 +60,28 @@ import { HistoricalLuminariesGameService, ILuminaryCase } from '../services/hist
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800/80 pb-2.5">
           <div>
             <div class="flex flex-wrap items-center gap-2">
-              <h4 class="text-base font-black text-white flex items-center gap-2">
-                <span>{{ activeCase().luminaryName }}</span>
-                <span class="text-xs font-mono text-zinc-400 font-normal">({{ activeCase().lifeSpan }})</span>
-              </h4>
-              @if (activeCase().civilizationEmpire) {
-                <span class="px-2 py-0.5 rounded text-[9px] font-mono font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  🏛️ {{ activeCase().civilizationEmpire }} ({{ activeCase().civilizationEra }} Era)
+              @if (!isIncognito() || isResolved()) {
+                <h4 class="text-base font-black text-white flex items-center gap-2">
+                  <span>{{ activeCase().luminaryName }}</span>
+                  <span class="text-xs font-mono text-zinc-400 font-normal">({{ activeCase().lifeSpan }})</span>
+                </h4>
+                @if (activeCase().civilizationEmpire) {
+                  <span class="px-2 py-0.5 rounded text-[9px] font-mono font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    🏛️ {{ activeCase().civilizationEmpire }} ({{ activeCase().civilizationEra }} Era)
+                  </span>
+                }
+              } @else {
+                <h4 class="text-base font-black text-purple-300 flex items-center gap-2">
+                  <span>🕶️ {{ activeCase().blindedCaseTitle }}</span>
+                </h4>
+                <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                  🔒 Identity Masked (Anti-Cheat)
                 </span>
               }
             </div>
-            <span class="text-xs font-semibold text-amber-400/90">{{ activeCase().fieldOfPioneering }}</span>
+            <span class="text-xs font-semibold text-amber-400/90">
+              {{ (!isIncognito() || isResolved()) ? activeCase().fieldOfPioneering : activeCase().blindedSpecialty }}
+            </span>
           </div>
 
           <div class="px-3 py-1 rounded-xl bg-zinc-800 text-xs font-mono text-zinc-300 border border-zinc-700">
@@ -67,13 +89,19 @@ import { HistoricalLuminariesGameService, ILuminaryCase } from '../services/hist
           </div>
         </div>
 
-        <p class="text-xs text-zinc-300 leading-relaxed font-sans pt-1">
-          {{ activeCase().historicalContext }}
-        </p>
+        @if (!isIncognito() || isResolved()) {
+          <p class="text-xs text-zinc-300 leading-relaxed font-sans pt-1">
+            {{ activeCase().historicalContext }}
+          </p>
 
-        <blockquote class="text-[11px] text-amber-300/80 italic font-serif border-l-2 border-amber-500/40 pl-3 mt-2">
-          "{{ activeCase().quote }}"
-        </blockquote>
+          <blockquote class="text-[11px] text-amber-300/80 italic font-serif border-l-2 border-amber-500/40 pl-3 mt-2">
+            "{{ activeCase().quote }}"
+          </blockquote>
+        } @else {
+          <div class="p-3 rounded-xl bg-purple-950/20 border border-purple-500/20 text-xs text-purple-200">
+            🔎 <strong>Blinded Clinical Trial Mode:</strong> Formulate the differential diagnosis purely from primary source logs and clinical signs without search engine anchors.
+          </div>
+        }
 
         <!-- HealthQuest & Hardship Chronicles Card -->
         <div class="mt-4 p-4 rounded-2xl bg-zinc-950/80 border border-amber-500/20 space-y-3">
@@ -277,7 +305,12 @@ export class HistoricalLuminariesGameComponent {
   selectedOptionId = computed(() => this.gameService.selectedOptionId());
   isResolved = computed(() => this.gameService.isCaseResolved());
   score = computed(() => this.gameService.score());
+  isIncognito = computed(() => this.gameService.isIncognitoMode());
   patientLoadedToast = signal<string | null>(null);
+
+  toggleIncognito(): void {
+    this.gameService.toggleIncognitoMode();
+  }
 
   advanceClue(): void {
     this.gameService.advanceClue();
@@ -303,4 +336,5 @@ export class HistoricalLuminariesGameComponent {
     this.gameService.resetGame();
   }
 }
+
 
