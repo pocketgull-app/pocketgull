@@ -19,6 +19,7 @@ import { SmsEquityBridgeComponent } from './sms-equity-bridge.component';
 import { DifferentialDiagnosisRadarComponent } from './differential-diagnosis-radar.component';
 import { NOf1DesignerComponent } from './n-of-1-designer.component';
 import { AmbientClinicalScribeComponent } from './ambient-clinical-scribe.component';
+import { PresentationModalComponent } from './presentation-modal.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -65,7 +66,8 @@ export interface IWorkbenchToolStatus {
     SmsEquityBridgeComponent,
     DifferentialDiagnosisRadarComponent,
     NOf1DesignerComponent,
-    AmbientClinicalScribeComponent
+    AmbientClinicalScribeComponent,
+    PresentationModalComponent
   ],
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl max-w-7xl mx-auto space-y-6">
@@ -333,6 +335,8 @@ export interface IWorkbenchToolStatus {
         <app-n-of-1-designer />
       } @else if (activeWorkbenchTab() === 'scribe') {
         <app-ambient-clinical-scribe />
+      } @else if (activeWorkbenchTab() === 'presentation') {
+        <app-presentation-modal />
       }
 
     </div>
@@ -342,10 +346,10 @@ export class ClinicalToolWorkbenchComponent {
   readonly stateMachine = inject(DoubleFlipStateMachineService);
   private readonly haptics = inject(BioHapticFeedbackService);
 
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe'>('tools');
+  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation'>('tools');
   readonly intakeDirectiveQuery = signal<string>('');
 
-  readonly workbenchTabs: { id: 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe'; label: string; icon: string; activeClass: string }[] = [
+  readonly workbenchTabs: { id: 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation'; label: string; icon: string; activeClass: string }[] = [
     { id: 'tools', label: 'Diagnostic Tools', icon: '🛠️', activeClass: 'bg-cyan-500 text-zinc-950 shadow-xs' },
     { id: 'osce', label: 'Residency OSCE Trainer', icon: '🎓', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
     { id: 'slack', label: 'Slack Command & Alerts', icon: '💬', activeClass: 'bg-purple-500 text-zinc-950 shadow-xs' },
@@ -362,7 +366,8 @@ export class ClinicalToolWorkbenchComponent {
     { id: 'sms', label: 'SMS Compass Bridge', icon: '💬', activeClass: 'bg-teal-600 text-white shadow-xs' },
     { id: 'dxradar', label: 'DxRadar Socratic Engine', icon: '🎯', activeClass: 'bg-rose-600 text-white shadow-xs' },
     { id: 'nof1', label: 'N-of-1 Trial Designer', icon: '🧪', activeClass: 'bg-indigo-600 text-white shadow-xs' },
-    { id: 'scribe', label: 'Ambient Clinical Scribe', icon: '🎙️', activeClass: 'bg-teal-600 text-white shadow-xs' }
+    { id: 'scribe', label: 'Ambient Clinical Scribe', icon: '🎙️', activeClass: 'bg-teal-600 text-white shadow-xs' },
+    { id: 'presentation', label: 'Grand Rounds Slides & CARE', icon: '📽️', activeClass: 'bg-cyan-600 text-white shadow-xs' }
   ];
 
   readonly tools = signal<IWorkbenchToolStatus[]>([
