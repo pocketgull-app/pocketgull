@@ -76,6 +76,8 @@ Integrated interactive diagnostic tools accessible via the unified **Clinical To
 | **🧪 N-of-1 Experiment Engine** | Single-Case Clinical Trials | 56-day randomized ABAB crossover trial designer with 14-day washout intervals | Bayesian posterior superiority ($P > 95\%$), Cohen's $d$ |
 | **🎙️ Ambient Clinical Scribe** | Ambient Medical Scribing | Multi-modal dialogue transcription synthesizing 4-quadrant structured SOAP encounter notes | ICD-10 (`I10`), SNOMED-CT (`38341003`), FHIR `Encounter` |
 | **📽️ Grand Rounds & CARE Suite** | Academic Presentation | 1-click 7-slide Grand Rounds presentation deck and CARE Guidelines-compliant Case Report Markdown | William Caslon typography, Google Docs & Word export |
+| **🏛️ Historical Luminaries Arena** | Retrospective Clinical Socratic Engine | Sid Meier's Civilization-style world leaders & pioneers (Alexander, Caesar, Lincoln, Curie, Darwin, Ramanujan, Kahlo) | Blinded Incognito Mode, SHA-256 anti-cheat, 1-click 3D patient load |
+| **🧭 Role & Pathway Docs Hub** | Role-Adaptive Clinical Guidance | 5 dynamic learning pathways (Clinician, Resident, Researcher, Executive, Patient) with 1-click tool actions | Role-tailored CDS workflows and compliance guides |
 
 ### 🩺 Multi-Paradigm Clinical Lenses
 
