@@ -38,6 +38,14 @@ const auth = new GoogleAuth({
 const DEFAULT_PROJECT = process.env['GCP_PROJECT_ID'] || process.env['GOOGLE_CLOUD_PROJECT'] || 'gen-lang-client-0540208645';
 const DEFAULT_ENGINE = process.env['VERTEX_AGENT_ENGINE_ID'] || 'pocketgull-clinical-docs';
 
+const APPROVED_ENGINES: Record<string, string> = {
+  'pocketgull-clinical-agent': 'pocketgull-clinical-agent',
+  'pocketgull-datastore-agent': 'pocketgull-datastore-agent',
+  'pocketgull-search-engine': 'pocketgull-search-engine',
+  'clinical-guidelines-search': 'clinical-guidelines-search',
+  'trials-search': 'trials-search',
+};
+
 export const vertexAgentRouter = Router();
 
 /**
@@ -46,13 +54,11 @@ export const vertexAgentRouter = Router();
  */
 vertexAgentRouter.post('/search', async (req: Request, res: Response) => {
   try {
-    const { query, pageSize = 5, engineId = DEFAULT_ENGINE, filter } = req.body as IVertexSearchRequest;
+    const { query, pageSize = 5, engineId, filter } = req.body as IVertexSearchRequest;
 
-    const rawEngineId = typeof engineId === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(engineId.trim())
-      ? engineId.trim()
-      : DEFAULT_ENGINE;
-    const validatedEngineId = encodeURIComponent(rawEngineId);
-    const validatedProject = encodeURIComponent(DEFAULT_PROJECT.replace(/[^a-zA-Z0-9_-]/g, ''));
+    const requestedKey = typeof engineId === 'string' ? engineId.trim() : '';
+    const safeEngineId = APPROVED_ENGINES[requestedKey] || DEFAULT_ENGINE;
+    const safeProject = DEFAULT_PROJECT;
 
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
       return res.status(400).json({ error: 'Query parameter is required and must be non-empty string.' });
@@ -69,7 +75,7 @@ vertexAgentRouter.post('/search', async (req: Request, res: Response) => {
       const client = await auth.getClient();
       const accessToken = await client.getAccessToken();
 
-      const url = `https://discoveryengine.googleapis.com/v1alpha/projects/${validatedProject}/locations/global/collections/default_collection/engines/${validatedEngineId}/servingConfigs/default_search:search`;
+      const url = `https://discoveryengine.googleapis.com/v1alpha/projects/${encodeURIComponent(safeProject)}/locations/global/collections/default_collection/engines/${encodeURIComponent(safeEngineId)}/servingConfigs/default_search:search`;
 
       const response = await fetch(url, {
         method: 'POST',

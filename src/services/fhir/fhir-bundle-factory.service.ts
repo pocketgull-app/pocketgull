@@ -15,13 +15,16 @@ export class FhirBundleFactoryService {
     if (typeof window !== 'undefined' && DOMP && typeof DOMP.sanitize === 'function') {
       return DOMP.sanitize(val);
     }
-    // Headless environment / Node fallback: HTML entity encoding replaces all special markup characters
-    return String(val)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;');
+    // Headless environment / Node fallback: Single-pass HTML entity encoding
+    const entityMap: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;',
+      '/': '&#x2F;',
+    };
+    return String(val).replace(/[&<>"'/]/g, (char) => entityMap[char] || char);
   }
 
   /**
