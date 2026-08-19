@@ -35,17 +35,17 @@ Pocket Gull is committed to continuous refinement (**Kaizen**) in integrative cl
 - [x] **SMART-on-FHIR Embedded Launch**: Certified SMART-on-FHIR launch hooks for Epic MyChart, Oracle Cerner, and AthenaHealth.
 - [x] **WebGPU Real-Time Organ Digital Twin**: 3D biophysical digital twin models of organ stress, vascular perfusion, and metabolic flux in WebGPU.
 - [x] **Actuarial Risk & ACO Shared Savings Engine**: Real-time ACO shared savings, risk adjustment factor (RAF) scores, HEDIS Star ratings, Da Vinci Prior Auth, and IRMAA/SSA-44 appeal calculations.
-- [ ] **Ambient Multimodal Clinical Scribe**: Multi-speaker real-time ambient conversation transcription into structured SOAP notes with automated ICD-10/CPT crosswalking.
-- [ ] **Decoupled Enterprise Core SDK**: Versioned `@pocketgull/core-sdk` npm package for hospital networks and research institutes.
+- [x] **Ambient Multimodal Clinical Scribe**: Multi-speaker real-time ambient conversation transcription into structured SOAP notes with automated ICD-10/CPT crosswalking.
+- [x] **Decoupled Enterprise Core SDK**: Versioned `@pocketgull/core-sdk` npm package for hospital networks and research institutes.
 - [ ] **Digital Health Equity SMS Bridge**: 2-way SMS health nudges and habit logging for basic mobile devices (flip phones) in rural & low-resource communities.
 
 ---
 
 ## 🌟 H2 2027: Precision Genomics & Ambient Diagnostics
-- [ ] **Genomic Variant Pathogenicity Screening (AlphaGenome / ClinVar / dbSNP)**: Real-time non-coding variant regulatory annotation and clinical significance assessment for precision oncology and rare diseases.
+- [x] **Genomic Variant Pathogenicity Screening (AlphaGenome / ClinVar / dbSNP)**: Real-time non-coding variant regulatory annotation and clinical significance assessment for precision oncology and rare diseases.
 - [ ] **100% Offline Local Gemma 3 Edge AI**: Quantized Local Gemma 3 (2B/7B) via WASM/WebGPU for rural medicine, maritime vessels, and disaster response.
 - [ ] **Multimodal Camera & Voice Live Tele-Consult HUD**: Real-time camera rPPG skin perfusion, pupil reactivity, and vocal tremor analysis in Gemini Live.
-- [ ] **Postpartum Maternal Health & Doula Companion Protocol**: 4th-trimester maternal telemetry, Edinburgh Postnatal Depression Scale (EPDS) tracking, lactation mechanics, and infant sleep-wake circadian synchrony.
+- [x] **Postpartum Maternal Health & Doula Companion Protocol**: 4th-trimester maternal telemetry, Edinburgh Postnatal Depression Scale (EPDS) tracking, lactation mechanics, and infant sleep-wake circadian synchrony.
 
 ---
 

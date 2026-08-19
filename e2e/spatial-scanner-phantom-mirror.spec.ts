@@ -7,7 +7,7 @@ test.describe('Spatial Scanner, 3D Body Viewer & Phantom Mirror Therapy E2E Suit
     await setupE2ePage(page);
   });
 
-  test('Phil Gear Patient - 3D Holographic Body Viewer & HUD Controls', async ({ page }) => {
+  test('Alexander Vance Patient - 3D Holographic Body Viewer & HUD Controls', async ({ page }) => {
     await enterDemoMode(page);
     await page.setViewportSize({ width: 1440, height: 900 });
 

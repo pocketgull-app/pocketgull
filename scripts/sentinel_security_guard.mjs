@@ -103,6 +103,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'apple.com',
   'www.apple.com',
   'developer.apple.com',
+  'adobe.com',
+  'developer.adobe.com',
   'harvard.edu',
   'hsph.harvard.edu',
   'umich.edu',

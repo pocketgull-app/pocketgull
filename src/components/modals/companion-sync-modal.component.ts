@@ -147,7 +147,7 @@ export class CompanionSyncModalComponent {
   copied = signal(false);
 
   currentPatientName = computed(() => {
-    return this.patientState.patientName() || 'Alexander Vance';
+    return this.patientState.patientName() || 'Homo Sapiens';
   });
 
   deepLinkUrl = computed(() => {

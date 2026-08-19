@@ -291,7 +291,7 @@ export async function selectPatientByName(page: Page, name: string) {
       }
     }
 
-    // Fallback: If requested name was an archetype or developer stub (e.g. Phil Gear / Alexander Vance), select first active patient
+    // Fallback: If requested name was an archetype or developer stub (e.g. Alexander Vance), select first active patient
     const fallbackOption = page.locator('app-patient-dropdown .origin-top-left button').first();
     if (await fallbackOption.isVisible({ timeout: 1000 }).catch(() => false)) {
       await fallbackOption.click();

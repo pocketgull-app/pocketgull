@@ -6,7 +6,7 @@ test.describe('3D Body Viewer, Typographic Calligramme & Quad-Philosophy Suite',
     test.setTimeout(90000);
     await setupE2ePage(page);
     await enterDemoMode(page);
-    await selectPatientByName(page, 'Phil Gear');
+    await selectPatientByName(page, 'Alexander Vance');
     await page.setViewportSize({ width: 1440, height: 900 });
   });
 

@@ -11,8 +11,8 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     // 1. Enter Demo Mode cleanly via state-machine setup
     await enterDemoMode(page);
 
-    // 2. Select patient Phil Gear
-    await selectPatientByName(page, 'Phil Gear');
+    // 2. Select patient Homo Sapiens
+    await selectPatientByName(page, 'Homo Sapiens');
 
     // 3. Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.getByTestId('tab-assessments');

@@ -399,7 +399,7 @@ export class GeolocationalHealthRelocationComponent {
       ];
     }
 
-    // Default Blue Zone Longevity destinations for Phil Gear, Linus Pauling, Darwin, etc.
+    // Default Blue Zone Longevity destinations for Alexander Vance, Linus Pauling, Darwin, etc.
     return [
       {
         id: 'dest_loma_linda',

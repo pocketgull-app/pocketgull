@@ -12,13 +12,13 @@ test.describe('Clinical Risk Alerts UI Transitions', () => {
     await setupE2ePage(page);
   });
 
-  test('should dynamically transition clinical risk levels for Alexander Vance', async ({ page }) => {
+  test('should dynamically transition clinical risk levels for Homo Sapiens', async ({ page }) => {
     // 1. Setup & Login
     await enterDemoMode(page);
-    await selectPatientByName(page, 'Alexander Vance');
+    await selectPatientByName(page, 'Homo Sapiens');
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    // 2. Verify Initial State (Alexander Vance default is low risk)
+    // 2. Verify Initial State (Homo Sapiens default is low risk)
     const initialRiskCard = page.locator('text=Clinical Triage Risk');
     await expect(initialRiskCard).toBeVisible({ timeout: 10000 });
     
@@ -79,7 +79,7 @@ test.describe('Clinical Risk Alerts UI Transitions', () => {
 
     // Verify it drops back down to Low Risk
     await expect(lowRiskBadge).toBeVisible({ timeout: 15000 });
-    console.log('[PASS] Phil Gear: Low -> Critical -> Low Risk transitions verified.');
+    console.log('[PASS] Homo Sapiens: Low -> Critical -> Low Risk transitions verified.');
   });
 
   test('should verify triage scoring and containment indicators for CDC Sentinel', async ({ page }) => {

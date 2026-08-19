@@ -10,8 +10,8 @@ test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () =
 
   test('should load Clinical Suite, cycle tabs (PHQ-9, GAD-7, Grow-Thyself), answer questions, and verify atomic score computation', async ({ page }) => {
 
-    // 2. Select patient Alexander Vance
-    await selectPatientByName(page, 'Alexander Vance');
+    // 2. Select patient Homo Sapiens
+    await selectPatientByName(page, 'Homo Sapiens');
 
     // 3. Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.getByTestId('tab-assessments');

@@ -1,14 +1,15 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import type { IPatient } from './patient.types';
 import { ExportService } from './export.service';
 
 describe('ExportService FHIR R4 Tri-Paradigm Bundle Suite', () => {
+  let exportService: ExportService;
 
   const mockPatient: IPatient = {
     id: 'pt-77',
-    name: 'Alexander Vance',
-    age: 38,
+    name: 'Homo Sapiens (Male, 44y)',
+    age: 44,
     gender: 'Male',
     vitals: { hr: '76', bp: '118/76', spO2: '99', temp: '36.6', weight: '75', height: '175' },
     preexistingConditions: ['Mild Tension Headache'],
@@ -19,8 +20,11 @@ describe('ExportService FHIR R4 Tri-Paradigm Bundle Suite', () => {
     lastVisit: '2026-07-23'
   };
 
+  beforeEach(() => {
+    exportService = new ExportService();
+  });
+
   it('validates FHIR R4 Tri-Paradigm Bundle structure', () => {
-    const exportService = new ExportService();
     const bundle = exportService.buildFhirR4Bundle(mockPatient);
 
     expect(bundle.resourceType).toBe('Bundle');
@@ -29,7 +33,7 @@ describe('ExportService FHIR R4 Tri-Paradigm Bundle Suite', () => {
 
     const patientEntry = bundle.entry.find((e: any) => e.resource.resourceType === 'Patient');
     expect(patientEntry).toBeDefined();
-    expect(patientEntry.resource.name[0].text).toBe('Alexander Vance');
+    expect(patientEntry.resource.name[0].text).toBe('Homo Sapiens (Male, 44y)');
 
     const hrObs = bundle.entry.find((e: any) => e.resource.resourceType === 'Observation' && e.resource.code?.coding?.[0]?.code === '8867-4');
     expect(hrObs).toBeDefined();
@@ -60,5 +64,4 @@ describe('ExportService FHIR R4 Tri-Paradigm Bundle Suite', () => {
     expect(fhirResources).toContain('DeviceRequest');
     expect(fhirResources).toContain('NutritionOrder');
   });
-
 });

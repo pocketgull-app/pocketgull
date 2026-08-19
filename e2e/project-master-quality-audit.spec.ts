@@ -70,7 +70,7 @@ test.describe('Master Project Quality & Agentic Readiness Audit', () => {
     await selectPatientByName(page, 'Sarah Jenkins');
     await page.waitForTimeout(500);
 
-    await selectPatientByName(page, 'Phil Gear');
+    await selectPatientByName(page, 'Alexander Vance');
     await page.waitForTimeout(500);
 
     // Cycle through Medicine Paradigms

@@ -534,9 +534,9 @@ export class LensInsightSparkShieldComponent {
 
   activePatientName = computed(() => {
     const pId = this.patientManagement.selectedPatientId();
-    if (!pId) return 'Alexander Vance';
+    if (!pId) return 'Homo Sapiens';
     const patient = this.patientManagement.patients().find(p => p.id === pId);
-    return patient ? patient.name : 'Alexander Vance';
+    return patient ? patient.name : 'Homo Sapiens';
   });
 
   patientCorrelationAlert = computed(() => {

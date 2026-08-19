@@ -46,7 +46,7 @@ export class HipaaPdfExportService {
     const issues = this.patientState.issues();
 
     // DOMPurify Sanitization
-    const sanitizedName = sanitizeText(patientName || 'Alexander Vance');
+    const sanitizedName = sanitizeText(patientName || 'Homo Sapiens (De-identified)');
     const sanitizedBp = sanitizeText(vitals?.bp || '128/82');
     const sanitizedHr = sanitizeText(vitals?.hr || '72');
     const sanitizedSpO2 = sanitizeText(vitals?.spO2 || '98');

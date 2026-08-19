@@ -51,9 +51,12 @@ docs/legal/
 !src/partners/
 
 # Generated Release Packages
-packages/
+packages/*
 !packages/clinical-evidence-grade/
 !packages/pocketgull-github-app/
+!packages/pocketgull-go/
+!packages/core-sdk/
+packages/pocketgull-go/bin/
 pocketgull-release.tar.gz
 
 # Angular & Mobile frameworks

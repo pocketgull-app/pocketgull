@@ -99,7 +99,7 @@ export class AmbientScribeService {
       title: 'Primary Care: Resistant Hypertension & Chrono-Fatigue',
       specialty: 'Cardiovascular & Functional Medicine',
       dialogue: [
-        { speaker: 'clinician', text: "Good morning, Phil. I see you're in today for a blood pressure follow-up and persistent afternoon fatigue. How have you been feeling?", delayMs: 600 },
+        { speaker: 'clinician', text: "Good morning, Alexander. I see you're in today for a blood pressure follow-up and persistent afternoon fatigue. How have you been feeling?", delayMs: 600 },
         { speaker: 'patient', text: "Hi Dr. Roberts. The headaches behind my eyes haven't stopped, especially around 3 PM. My home cuff showed 148 over 94 this morning. I've also had mild ankle swelling after standing all day.", delayMs: 1200 },
         { speaker: 'clinician', text: "Let's check your vitals right now. Blood pressure is 146/92 mmHg, resting pulse is 74 bpm, and oxygen saturation is 98% on room air. Let me examine your ankles—there is mild 1+ bilateral pretibial pitting edema.", delayMs: 1600 },
         { speaker: 'patient', text: "I've been taking the Lisinopril 20mg every morning without missing doses, but my sleep has been broken. I wake up 3 times a night gasping slightly.", delayMs: 1800 },
@@ -333,7 +333,7 @@ export class AmbientScribeService {
         const newTurn: IScribeDialogueTurn = {
           id: `turn-${Date.now()}-${idx}`,
           speaker: turn.speaker,
-          speakerName: turn.speaker === 'clinician' ? 'Dr. Roberts (Attending MD)' : 'Phil G. (Patient)',
+          speakerName: turn.speaker === 'clinician' ? 'Dr. Roberts (Attending MD)' : 'Alexander V. (Patient)',
           text: turn.text,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
           confidence: 0.95 + Math.random() * 0.04

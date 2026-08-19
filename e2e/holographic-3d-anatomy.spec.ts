@@ -11,8 +11,8 @@ test.describe('Holographic 3D Skeletal Anatomy & Spatial Lenses Suite', () => {
     // 1. Enter Demo Mode cleanly
     await enterDemoMode(page);
 
-    // 2. Select patient Phil Gear
-    await selectPatientByName(page, 'Phil Gear');
+    // 2. Select patient Homo Sapiens
+    await selectPatientByName(page, 'Homo Sapiens');
 
     // 3. Ensure core analysis container is loaded
     await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });

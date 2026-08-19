@@ -33,8 +33,8 @@ export class FirestoreSyncService {
 
   getRegisteredClinicians(): IRegisteredClinician[] {
     const defaultList = [
-      { name: 'Phil Gear', email: 'philgear@gmail.com', clinic: 'PocketGull Clinic', pin: '1234' },
-      { name: 'Phil Gear', email: 'dpo@pocketgull.app', clinic: 'PocketGull Clinic', pin: '1234' },
+      { name: 'Clinical Lead', email: 'clinician@pocketgull.app', clinic: 'PocketGull Clinic', pin: '1234' },
+      { name: 'Privacy Officer', email: 'dpo@pocketgull.app', clinic: 'PocketGull Clinic', pin: '1234' },
       { name: 'Admin', email: 'admin@pocketgull.app', clinic: 'PocketGull Admin Vault', pin: '1234' }
     ];
     const stored = this.storage.getJSON<IRegisteredClinician[] | null>('pg_registered_clinicians', null);

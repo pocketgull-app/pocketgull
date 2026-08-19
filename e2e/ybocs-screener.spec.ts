@@ -12,8 +12,8 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     // Enable console logging to see page issues if any
     page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
-    // Select Phil Gear using shared utility (avoids flaky raw locator)
-    await selectPatientByName(page, 'Phil Gear');
+    // Select Alexander Vance using shared utility (avoids flaky raw locator)
+    await selectPatientByName(page, 'Alexander Vance');
 
     // Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.getByTestId('tab-assessments');

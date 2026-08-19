@@ -6,7 +6,7 @@ test.describe('Counterfactual Simulator & Ambient SOAP Note E2E Suite', () => {
     test.setTimeout(60000);
     await setupE2ePage(page);
     await enterDemoMode(page);
-    await selectPatientByName(page, 'Phil Gear');
+    await selectPatientByName(page, 'Homo Sapiens');
     await page.waitForTimeout(2000);
   });
 
