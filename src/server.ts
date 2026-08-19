@@ -210,8 +210,8 @@ app.use((req, res, next) => {
 
 // Fix for Node 20+ undici fetch rejecting 0.0.0.0 host header during SSR
 app.use((req, res, next) => {
-  if (req.headers.host && req.headers.host.includes('0.0.0.0')) {
-    req.headers.host = req.headers.host.replace('0.0.0.0', 'localhost');
+  if (typeof req.headers.host === 'string' && req.headers.host.startsWith('0.0.0.0')) {
+    req.headers.host = req.headers.host.replace(/^0\.0\.0\.0/, 'localhost');
   }
   next();
 });
