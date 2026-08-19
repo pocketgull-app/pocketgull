@@ -1,10 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: API Reference
-description: "Comprehensive documentation for Pocket Gull REST APIs, WebSocket Telemetry, and Python FastAPI ML Triage endpoints."
----
-import DocNode from '../components/DocNode.astro';
-
 # API Reference
 
 **Base Server URL:** `https://api.pocketgull.app` (Production) / `http://localhost:4000` (Local Development)

@@ -1,10 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: Git Roadmap & Clinical Telemetry Matrix
-description: "Interactive Git release history, Gantt charts, TypeScript architecture drill-down, and clinical telemetry measurement standards."
----
-import DocNode from '../components/DocNode.astro';
-
 # Git Roadmap & Clinical Telemetry Matrix
 
 This interactive reference maps Pocket Gull's complete Git release history, component architecture hierarchy, and clinical measurement benchmarks.

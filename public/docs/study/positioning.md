@@ -1,10 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: Valuation & Strategic Positioning
-description: "Market positioning, valuation benchmarks, and community health integration roadmap."
----
-import DocNode from '../components/DocNode.astro';
-
 # Valuation & Strategic Positioning
 
 This page outlines the commercial positioning, target audience segments, key technology moats, and open health strategies for **Pocket Gull**.

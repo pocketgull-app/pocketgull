@@ -1,10 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: "Clinical Paradigms & FHIR"
-description: "Detailed analysis of Eastern, Ayurvedic, and Secular Longevity clinical modes, and HL7 FHIR conversion in Pocket Gull."
----
-import DocNode from '../components/DocNode.astro';
-
 # Clinical Paradigms & FHIR Integration
 
 Pocket Gull bridges the gap between conventional medicine, traditional paradigms, and modern medical data interchange. It translates structured patient context dynamically across healthcare standards and holistic frameworks.

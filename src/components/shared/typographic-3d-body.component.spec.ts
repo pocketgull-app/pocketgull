@@ -1,15 +1,19 @@
 import '@angular/compiler';
-import { Injector, runInInjectionContext } from '@angular/core';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { Typographic3dBodyComponent } from './typographic-3d-body.component';
 
 describe('Typographic3dBodyComponent', () => {
   let component: Typographic3dBodyComponent;
 
   beforeEach(() => {
-    const injector = Injector.create({
-      providers: [Typographic3dBodyComponent]
+    TestBed.configureTestingModule({
+      imports: [Typographic3dBodyComponent],
+      providers: [provideZonelessChangeDetection()]
     });
-    component = runInInjectionContext(injector, () => injector.get(Typographic3dBodyComponent));
+    const fixture = TestBed.createComponent(Typographic3dBodyComponent);
+    component = fixture.componentInstance;
   });
 
   it('should create the Typographic 3D Body component', () => {

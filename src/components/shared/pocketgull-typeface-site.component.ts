@@ -5,6 +5,7 @@ import { MultilingualSpecimenComponent } from './multilingual-specimen.component
 import { PocketgullSansBenchComponent } from './pocketgull-sans-bench.component';
 import { Typographic3dBodyComponent } from './typographic-3d-body.component';
 import { PocketgullIconComponent } from './pocketgull-icon.component';
+import { GlyphForgeStudioComponent } from './glyph-forge-studio.component';
 
 @Component({
   selector: 'app-pocketgull-typeface-site',
@@ -16,6 +17,7 @@ import { PocketgullIconComponent } from './pocketgull-icon.component';
     PocketgullSansBenchComponent,
     Typographic3dBodyComponent,
     PocketgullIconComponent,
+    GlyphForgeStudioComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -59,6 +61,22 @@ import { PocketgullIconComponent } from './pocketgull-icon.component';
 
         <!-- Specimen Navigation Tabs -->
         <div class="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3 overflow-x-auto">
+          <button
+            (click)="activeTab.set('studio')"
+            [class.bg-gradient-to-r]="activeTab() === 'studio'"
+            [class.from-amber-500]="activeTab() === 'studio'"
+            [class.to-rose-500]="activeTab() === 'studio'"
+            [class.text-zinc-950]="activeTab() === 'studio'"
+            [class.shadow-md]="activeTab() === 'studio'"
+            [class.bg-zinc-100]="activeTab() !== 'studio'"
+            [class.dark:bg-zinc-800]="activeTab() !== 'studio'"
+            [class.text-zinc-600]="activeTab() !== 'studio'"
+            [class.dark:text-zinc-300]="activeTab() !== 'studio'"
+            class="px-4 py-2 rounded-xl text-xs font-bold font-mono transition flex items-center gap-2 cursor-pointer shrink-0"
+          >
+            <span>🖋️</span> In-Browser Glyph Studio &amp; Exporter
+          </button>
+
           <button
             (click)="activeTab.set('sans')"
             [class.bg-cyan-500]="activeTab() === 'sans'"
@@ -112,7 +130,7 @@ import { PocketgullIconComponent } from './pocketgull-icon.component';
             [class.dark:text-zinc-300]="activeTab() !== 'marker'"
             class="px-4 py-2 rounded-xl text-xs font-bold font-mono transition flex items-center gap-2 cursor-pointer shrink-0"
           >
-            <span>✍️</span> Felt-Tip Marker Specimen
+            <span>🔤</span> PocketGull Rounded Superfamily
           </button>
 
           <button
@@ -133,6 +151,12 @@ import { PocketgullIconComponent } from './pocketgull-icon.component';
 
       <!-- Tab Content Area -->
       <section class="max-w-7xl mx-auto px-6 pb-16">
+        @if (activeTab() === 'studio') {
+          <div class="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <app-glyph-forge-studio />
+          </div>
+        }
+
         @if (activeTab() === 'sans') {
           <div class="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <app-pocketgull-sans-bench />
@@ -153,16 +177,6 @@ import { PocketgullIconComponent } from './pocketgull-icon.component';
 
         @if (activeTab() === 'marker') {
           <div class="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <!-- Master Specimen Image Card -->
-            <div class="rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-2xl bg-white dark:bg-zinc-900 p-2">
-              <img 
-                src="/images/specimens/dieter_rams_pocketgull_specimen.png" 
-                alt="Dieter Rams Principles PocketGull Type Specimen"
-                class="w-full h-auto rounded-2xl object-cover"
-              />
-            </div>
-
-            <!-- Interactive Marker Specimen Sandbox Engine -->
             <app-pocketgull-typeface-specimen />
           </div>
         }
@@ -199,7 +213,7 @@ import { PocketgullIconComponent } from './pocketgull-icon.component';
   `
 })
 export class PocketgullTypefaceSiteComponent {
-  activeTab = signal<'sans' | '3d-body' | 'multilingual' | 'marker' | 'iconography'>('sans');
+  activeTab = signal<'studio' | 'sans' | '3d-body' | 'multilingual' | 'marker' | 'iconography'>('studio');
   icons: Array<{ name: any; label: string }> = [
     { name: 'seagull', label: 'Mascot' },
     { name: 'heart', label: 'Cardiology' },

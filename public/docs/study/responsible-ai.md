@@ -1,10 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: Responsible AI
-description: "Responsible AI principles and societal impact statement for Pocket Gull."
----
-import DocNode from '../components/DocNode.astro';
-
 # Responsible AI
 
 Pocket Gull is built with a firm commitment to the responsible development and deployment of AI in clinical settings. The following principles guide every design and engineering decision.
@@ -29,7 +22,7 @@ The reasoning lens is visible and categorized (Overview, Interventions, Monitori
 
 Patient data is processed transiently. No personally identifiable clinical information is persisted to a remote database. All session state is stored locally within the clinician's browser.
 
-Data transmitted to <DocNode term="Vertex AI Enterprise" category="Google Cloud" hint="Regional Vertex AI endpoint. Patient context is used for immediate inference only — no data retained for model training." link="https://cloud.google.com/vertex-ai/docs" linkLabel="Vertex AI Docs →" icon="https://www.gstatic.com/devrel-devsite/prod/v0e0f589edd85502a40d78d7d0825db8ea5ef3b99ab4070381571c97ab7df9861/cloud/images/favicons/onecloud/favicon.ico">Vertex AI Enterprise</DocNode> for inference is used solely for generating the immediate clinical response and is not retained for model training by this application.
+Data transmitted to [Vertex AI Enterprise](https://cloud.google.com/vertex-ai/docs "[Google Cloud] Regional Vertex AI endpoint. Patient context is used for immediate inference only — no data retained for model training.") for inference is used solely for generating the immediate clinical response and is not retained for model training by this application.
 
 ### Limitation Awareness
 
@@ -80,13 +73,13 @@ By streamlining complex data ingestion — vitals, history, chief complaint — 
 
 ### Data Integrity
 
-The commitment to <DocNode term="FHIR Standards" category="HL7 International" hint="Fast Healthcare Interoperability Resources — ensuring patient data remains portable, interoperable, and institution-owned." link="https://hl7.org/fhir/R4/" linkLabel="HL7 FHIR R4 →" icon="https://hl7.org/favicon.ico">**FHIR standards**</DocNode> ensures that patient data remains portable, interoperable, and owned by the clinical institution — preventing proprietary data silos.
+The commitment to [**FHIR standards**](https://hl7.org/fhir/R4/ "[HL7 International] Fast Healthcare Interoperability Resources — ensuring patient data remains portable, interoperable, and institution-owned.") ensures that patient data remains portable, interoperable, and owned by the clinical institution — preventing proprietary data silos.
 
 ---
 
 ## Environmental Impact
 
-By facilitating rapid, data-driven synthesis in a paperless environment, Pocket Gull promotes resource efficiency within clinics. The use of efficient models (<DocNode term="Gemini 2.5 Flash" category="Google DeepMind" hint="Google's fast, cost-efficient model variant. Lower computational footprint while maintaining clinical-grade synthesis quality." link="https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini" linkLabel="Vertex AI Model Reference →" icon="https://ai.google.dev/favicon.ico">Gemini 2.5 Flash via Vertex AI</DocNode>) ensures that the computational footprint remains optimized for sustainable growth.
+By facilitating rapid, data-driven synthesis in a paperless environment, Pocket Gull promotes resource efficiency within clinics. The use of efficient models ([Gemini 2.5 Flash via Vertex AI](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini "[Google DeepMind] Google's fast, cost-efficient model variant. Lower computational footprint while maintaining clinical-grade synthesis quality.")) ensures that the computational footprint remains optimized for sustainable growth.
 
 ---
 

@@ -113,12 +113,57 @@
 - **PR vs. Release Isolation**: Production release workflows (`release.yml`) MUST enforce `if: github.event_name != 'pull_request'` at the job level so GHCR package pushes and SLSA attestations trigger only on `main` branch pushes or release tags (`v*`).
 - **Portable Script Paths**: All scripts in `package.json` and `scripts/` MUST use relative paths (`./run-playwright.cjs`, `process.cwd()`) — never hardcoded local machine paths (`c:/Users/philg/...`).
 
-## Agentic & AI Pairing Rules
-- **Empirical Verification Guarantee**: Never declare a task resolved or a bug fixed based solely on code edits. Always gather concrete runtime evidence by executing the explicit TypeScript typecheck (`tsc --noEmit`), Vitest suite (`npm test`), or Angular build (`ng build`).
-- **Context & Symbol Defensiveness**: Never mutate function signatures, interfaces, or dependency overrides from partial/truncated file views. If an imported symbol or type is referenced, inspect its authoritative definition first to prevent broken contract calls across workspace packages.
-- **Sub-Dependency Peer Traceability**: When adding or upgrading a root package override (e.g., `undici`, `esbuild`, `postcss`), always verify peer dependency requirements of consumer dev-tools (such as `jsdom`, `@angular/build`, or `vitest`) using `npm view <package> dependencies` to prevent runtime loader failures in CI.
-- **Strict Pre-Commit Self-Healing**: Husky pre-commit hooks (`lint-staged`, commit-msg 72-char limit, Sentinel security guard) are mandatory. If a pre-commit check fails, read the un-truncated log output, fix the root cause, and re-commit. Never bypass hooks with `--no-verify`.
-- **Token Budget & Research Subagent Isolation**: Offload heavy codebase surveys, log extractions, or multi-file research to background subagents (`research` or `self`). Allow the primary session to maintain clean focus on implementation and verification.
+## Subagent Delegation & Escalation Protocol
+Agents MUST delegate specialized and compute/context-heavy tasks according to the following matrix:
+
+| Subagent Role | Type / Name | Trigger Conditions & Responsibilities | Boundary & Anti-Pattern |
+| :--- | :--- | :--- | :--- |
+| **Broad Research & Log Surveys** | `research` | • Scanning or grepping >5 files.<br>• Reading multi-hundred line log/transcript files.<br>• Investigating 3rd-party library internals or external docs. | **Read-Only**: Must NEVER attempt file writes or execution. Must return structured syntheses to the primary agent in a single turn. |
+| **Experimental & Invasive Changes** | `self` (branch) | • High-risk architectural refactors.<br>• Multi-file migrations where rollback may be necessary.<br>• Testing breaking dependency updates. | Use `Workspace: "branch"`. Isolate changes until hermetic build verification passes. |
+| **Clinical, FHIR & Epistemology Audit** | `clinical-auditor` | • Any modification to patient state signals, PHQ/GAD/C-SSRS clinical scoring, or FHIR R4 schema serialization.<br>• Ensuring HIPAA §164.514 Safe Harbor de-identification.<br>• Cochrane Risk of Bias & $H_0$ p-value verification. | Must be invoked before merging or completing PRs with clinical CDS touchpoints. |
+| **SWE Architecture & Code Review** | `swe-code-reviewer` | • New Angular 22 standalone component additions.<br>• Angular Signal reactive graph design reviews.<br>• Hyrum's Law & Google SWE Book conformance audits. | Verifies single-directional reactive data flow and zero memory leaks. |
+| **Accessibility & Mobile Review** | `flutter_a11y_agent` | • Touch target size validation (<44px hitboxes strictly flagged).<br>• WCAG AAA contrast audits against dark obsidian backgrounds.<br>• ARIA state binding (`[attr.aria-describedby]`, `[attr.aria-invalid]`). | Required for all public-facing UI and mobile screen components. |
+
+### Subagent Escalation Invariants:
+1. **Single-Turn Synthesis**: Subagents must return actionable conclusions, verified diffs, or structured findings in a single response. Prohibit multi-turn ping-pong loops between subagents.
+2. **Context Isolation**: Never pass raw multi-megabyte log files directly to parent context. Have the subagent extract only the exact failing lines and stack traces.
+
+## Hermetic Verification & Proof-of-Work Invariants
+Never declare a task resolved, a bug fixed, or a refactor complete based solely on code edits. Every change requires empirical proof:
+
+### 1. Mandatory Terminal Proof Chain
+Before concluding any implementation turn, execute the explicit workspace commands:
+- **TypeScript Typecheck**:
+  ```powershell
+  node c:\Users\philg\Pocketgull\pocketgull\node_modules\typescript\lib\tsc.js -p c:\Users\philg\Pocketgull\pocketgull\tsconfig.json --noEmit
+  ```
+- **Angular Production Build**:
+  ```powershell
+  node c:\Users\philg\Pocketgull\pocketgull\node_modules\@angular\cli\bin\ng.js build
+  ```
+- **Unit Test Suite**:
+  ```powershell
+  npm test -- --run
+  ```
+
+### 2. Self-Healing Protocol
+- If a build or typecheck fails, inspect the un-truncated compiler diagnostic.
+- Fix root causes directly at the type and interface definitions; do not cast to `any` or suppress errors with `@ts-ignore` unless explicitly authorized.
+- Never bypass git pre-commit hooks using `--no-verify`.
+- Maintain peer dependency traceability: When updating root overrides, verify peer dependencies using `npm view <package> dependencies`.
+
+## Context & Token Hygiene Protocols
+To prevent context window degradation, attention drift, and token exhaustion:
+1. **Search-First Paradigm**:
+   - NEVER call `view_file` on large (>300 line) files without prior targeted search.
+   - Use `grep_search` to pinpoint exact line numbers, then view bounded line ranges (max 100–150 lines per chunk).
+2. **Ephemeral File Hygiene**:
+   - Place scratch data, temporary JSON transformations, and one-off debug scripts strictly inside `<appDataDir>\brain\<conversation-id>/scratch/`.
+   - Proactively delete or prune intermediate artifacts before session completion.
+3. **Structured Response Economy**:
+   - Keep conversational commentary concise, high-signal, and linked to concrete workspace symbols.
+   - Provide clickable file links using GitHub-style markdown: `[file.ts](file:///absolute/path/file.ts)`.
+
 
 ## Data Science & ML Competition Engineering Standards
 1. **Leak-Free Cross-Validation Anchoring (`GroupKFold`)**: In medical imaging datasets where patients have multiple series/scans, group splits strictly by `patient_id` using `GroupKFold(n_splits=5)` to prevent patient-feature leakage between train and validation splits.

@@ -1675,7 +1675,13 @@ export class SecureSplashComponent implements OnInit {
   ngOnDestroy() {
     this.cleanupNodes();
     if (this.audioCtx) {
-      this.audioCtx.close().catch(() => {});
+      const ctx = this.audioCtx;
+      this.audioCtx = null;
+      setTimeout(() => {
+        if (ctx && ctx.state !== 'closed') {
+          ctx.close().catch(() => {});
+        }
+      }, 1200);
     }
     if (this.buoyInterval) {
       clearInterval(this.buoyInterval);
@@ -1685,8 +1691,9 @@ export class SecureSplashComponent implements OnInit {
   // Safe AudioContext getter
   getAudioContext(): AudioContext | null {
     if (!isPlatformBrowser(this.platformId)) return null;
-    if (!this.audioCtx) {
+    if (!this.audioCtx || this.audioCtx.state === 'closed') {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return null;
       this.audioCtx = new AudioContextClass();
     }
     if (this.audioCtx && this.audioCtx.state === 'suspended') {
@@ -1885,27 +1892,32 @@ export class SecureSplashComponent implements OnInit {
   playSuccessChime() {
     if (!isPlatformBrowser(this.platformId)) return;
     const ctx = this.getAudioContext();
-    if (!ctx) return;
+    if (!ctx || ctx.state === 'closed') return;
 
     // Upward pentatonic major sweep: C4, D4, E4, G4, A4, C5
     const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
     notes.forEach((freq, idx) => {
-      const timeOffset = idx * 0.08;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+      if (ctx.state === 'closed') return;
+      try {
+        const timeOffset = idx * 0.08;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
 
-      osc.type = 'triangle'; // Warm, vintage synth tone
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + timeOffset);
+        osc.type = 'triangle'; // Warm, vintage synth tone
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + timeOffset);
 
-      gain.gain.setValueAtTime(0, ctx.currentTime + timeOffset);
-      gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + timeOffset + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + timeOffset + 0.8);
+        gain.gain.setValueAtTime(0, ctx.currentTime + timeOffset);
+        gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + timeOffset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + timeOffset + 0.8);
 
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
 
-      osc.start(ctx.currentTime + timeOffset);
-      osc.stop(ctx.currentTime + timeOffset + 0.85);
+        osc.start(ctx.currentTime + timeOffset);
+        osc.stop(ctx.currentTime + timeOffset + 0.85);
+      } catch {
+        // Safe guard against race conditions
+      }
     });
   }
 

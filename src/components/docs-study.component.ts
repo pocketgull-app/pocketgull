@@ -262,14 +262,36 @@ export class DocsStudyComponent implements OnInit {
   sanitizedContent = computed(() => {
     const raw = this.rawMarkdown();
     if (!raw) return '<p class="text-zinc-500 italic">Document content loading...</p>';
+
+    // 1. Strip YAML frontmatter
+    let clean = raw.replace(/^---[\r\n]+[\s\S]*?[\r\n]+---[\r\n]*/, '');
+
+    // 2. Strip MDX/Astro import statements
+    clean = clean.replace(/^import\s+.*?;\s*[\r\n]*/gm, '');
+
+    // 3. Transform any legacy <DocNode ...> tags
+    clean = clean.replace(/<DocNode\s+([^>]*?)>([\s\S]*?)<\/DocNode>/gi, (_match, attrs, innerText) => {
+      const hintMatch = attrs.match(/hint="([^"]*)"/i);
+      const linkMatch = attrs.match(/link="([^"]*)"/i);
+      const catMatch = attrs.match(/category="([^"]*)"/i);
+      const hint = hintMatch ? hintMatch[1] : '';
+      const link = linkMatch ? linkMatch[1] : '';
+      const cat = catMatch ? catMatch[1] : '';
+      const title = hint ? ` "${cat ? `[${cat}] ` : ''}${hint}"` : '';
+      if (link) {
+        return `[${innerText}](${link}${title})`;
+      }
+      return `**${innerText}**`;
+    });
+
     const purify = (DOMPurify as any).default || DOMPurify;
     const parser = this.markdownService.parser();
     if (parser && typeof parser.parse === 'function') {
-      const html = parser.parse(raw);
+      const html = parser.parse(clean);
       return purify.sanitize(html);
     }
     // Fallback basic renderer if marked is loading
-    return purify.sanitize(raw.replace(/\n/g, '<br/>'));
+    return purify.sanitize(clean.replace(/\n/g, '<br/>'));
   });
 
   toggleTheme() {
