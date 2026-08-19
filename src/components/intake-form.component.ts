@@ -32,13 +32,23 @@ interface INoteTimelineItem extends IBodyPartIssue {
             <span class="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">Assessment Panel</span>
             <pocket-gull-badge label="HIPAA COMPLIANT" severity="success" class="ml-2"></pocket-gull-badge>
           </div>
-          <pocket-gull-button 
-            variant="ghost" 
-            size="sm" 
-            (click)="close()"
-            ariaLabel="Close Assessment Panel"
-            icon="M6 18L18 6M6 6l12 12">
-          </pocket-gull-button>
+          <div class="flex items-center gap-2">
+            <button 
+              type="button"
+              id="btn-socratic-studio-intake-form"
+              (click)="state.toggleSocraticIntake(true)"
+              class="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 rounded-md text-[11px] font-bold uppercase tracking-wider hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition cursor-pointer"
+              title="Launch Socratic Patient Intake Studio">
+              <span>✨ Socratic Studio</span>
+            </button>
+            <pocket-gull-button 
+              variant="ghost" 
+              size="sm" 
+              (click)="close()"
+              ariaLabel="Close Assessment Panel"
+              icon="M6 18L18 6M6 6l12 12">
+            </pocket-gull-button>
+          </div>
         </div>
 
         <div class="flex-1 flex overflow-hidden">

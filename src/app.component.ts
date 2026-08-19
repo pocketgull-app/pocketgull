@@ -64,6 +64,7 @@ import { SupportTicketModalComponent } from './components/modals/support-ticket-
 import { MainHeaderNavComponent } from './components/main-header-nav.component';
 import { IntakeToolbarComponent } from './components/intake-toolbar.component';
 import { OnboardingTourOverlayComponent } from './components/onboarding-tour-overlay.component';
+import { SereneIntakeComponent } from './components/synthesis/serene-intake.component';
 
 @Component({
   selector: 'app-root',
@@ -103,7 +104,8 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
     IntakeToolbarComponent,
     OnboardingTourOverlayComponent,
     SupportTicketModalComponent,
-    ApiPricingComponent
+    ApiPricingComponent,
+    SereneIntakeComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -337,6 +339,7 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
         }
 
         <app-main-header-nav
+          (openSocraticIntake)="state.toggleSocraticIntake(true)"
           (openCompanionSync)="showCompanionSyncModal.set(true)"
           (openBioNetworkQr)="showCompanionSyncModal.set(true)"
           (openBillingDashboard)="showBillingDashboard.set(true)"
@@ -351,6 +354,7 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
 
         <app-intake-toolbar
           [hasReport]="hasReport()"
+          (openSocraticIntake)="state.toggleSocraticIntake(true)"
           (exportPdf)="exportPdf()"
           (exportJson)="exportJson()"
           (exportFhir)="exportFhir()"
@@ -606,6 +610,31 @@ import { OnboardingTourOverlayComponent } from './components/onboarding-tour-ove
             }
         }
 
+
+    <!-- Socratic Patient Intake Studio Modal -->
+    @if (state.isSocraticIntakeVisible()) {
+      <div class="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-300 no-print" role="dialog" aria-modal="true" aria-labelledby="socratic-intake-modal-title">
+        <div class="relative w-full max-w-7xl max-h-[92vh] bg-white dark:bg-zinc-950 rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-y-auto flex flex-col">
+          <div class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
+            <div class="flex items-center gap-3">
+              <span class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 text-lg">✨</span>
+              <div>
+                <h2 id="socratic-intake-modal-title" class="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-100">Socratic Patient Intake Studio</h2>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">Calgary-Cambridge FIFE Model & SNOMED-CT Clinical Extraction</p>
+              </div>
+            </div>
+            <button (click)="state.toggleSocraticIntake(false)" 
+                    aria-label="Close Socratic Intake"
+                    class="px-3.5 py-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-rose-500 hover:text-white rounded-full transition-colors font-bold text-xs cursor-pointer">
+              ✕ Close Studio
+            </button>
+          </div>
+          <div class="p-4 sm:p-6">
+            <app-serene-intake></app-serene-intake>
+          </div>
+        </div>
+      </div>
+    }
 
     <!-- PocketGull Typeface Specimen Suite Modal Site -->
     @if (showTypefaceSite()) {

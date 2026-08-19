@@ -273,6 +273,7 @@ export class PatientStateService {
   readonly liveAgentInput = signal<string>('');
   readonly isResearchFrameVisible = signal<boolean>(false);
   readonly isSynthesisDashboardVisible = signal<boolean>(false);
+  readonly isSocraticIntakeVisible = signal<boolean>(false);
   readonly analysisUpdateRequest = signal(0);
   readonly requestedResearchUrl = signal<string | null>(null);
   readonly requestedResearchQuery = signal<string | null>(null);
@@ -807,6 +808,14 @@ export class PatientStateService {
       this.isSynthesisDashboardVisible.update(v => !v);
     } else {
       this.isSynthesisDashboardVisible.set(visible);
+    }
+  }
+
+  toggleSocraticIntake(visible?: boolean) {
+    if (visible === undefined) {
+      this.isSocraticIntakeVisible.update(v => !v);
+    } else {
+      this.isSocraticIntakeVisible.set(visible);
     }
   }
 
