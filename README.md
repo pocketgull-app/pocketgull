@@ -381,6 +381,19 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. Key conventions:
 
 ---
 
+## 💖 Sponsorship & Enterprise Support
+
+Pocket Gull is an open-source medical intelligence ecosystem. You can back development directly on GitHub:
+
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor_on_GitHub-%E2%99%A5-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/philgear)
+
+### Backing Tiers
+* **🌟 Community Backer ($10 – $25/mo)**: Supporter badge, listed in project release notes, and community vote on upcoming roadmap features.
+* **🩺 Clinical Team & Lab ($100 – $500/mo)**: Priority issue triaging, early access to new AI models, and private roadmap advisory calls.
+* **🏢 Enterprise & Health System ($1,000 – $5,000/mo)**: Dedicated SMART-on-FHIR connector support, custom on-premise deployments, and prominent corporate logo attribution.
+
+---
+
 ## Citation
 
 If you reference Pocket Gull in research, please cite:
