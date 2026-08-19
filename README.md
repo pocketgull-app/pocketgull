@@ -52,8 +52,18 @@ It is a **living clinical intelligence platform** that synthesizes multimodal in
 | **Multi-Agent Reasoning** | Google ADK `InMemoryRunner` with specialized `LlmAgent` experts maintaining patient context memory |
 | **Dynamic Expert Routing** | Pathways-inspired MoE router activating specialized sub-networks (`gulliver-core`, `acoustic-sidecar`, `sibi-bridge`, `dicom-spatial-shader`) |
 | **Voice Consult** | Full-duplex audio streaming via Web Speech API + Express WebSocket proxy with client-side barge-in cancellation |
+| **Semantic Chunking & NLP** | Prosodic respiratory pacing, token boundary preservation for clinical units (`120/80 mmHg`, `CYP2D6*4`), and defensive SSE stream reassembly |
 | **Evidence Grounding** | Real-time PubMed E-utilities and Google Programmable Search for literature-anchored recommendations |
 | **Edge Inference** | WebGPU on-device MedGemma / PubGemma routing for offline and latency-sensitive workloads |
+
+### 🗣️ Natural Language & Semantic Chunking Engine
+
+Pocket-Gull enforces human-first, clinical natural language chunking across text, speech, and live streaming:
+
+- **Prosodic & Respiratory Pacing**: Audio streaming (`AdkLiveService`) buffers high-fidelity 24kHz/16kHz PCM audio in 32KB zero-copy frames (`uint8ArrayToBase64`), with 250–400ms natural conversational pause gating and client-side barge-in cancellation for authentic physician-patient turn-taking.
+- **Clinical Entity & Token Boundary Preservation**: Slicers strictly prevent mid-token fragmentation of complex pharmacogenomic alleles (`CYP2C19*17`), blood pressure vitals (`138/88 mmHg`), lab values (`eGFR 42 mL/min/1.73m²`), and multi-word Latin botanical binomials (*Withania somnifera*).
+- **Defensive SSE Stream Reassembly**: The streaming parser (`GeminiProvider`) dynamically reconstructs Server-Sent Events across packet boundaries, guaranteeing zero dropped tokens during network jitter while streaming clinical reports.
+- **Adaptive Cognitive Chunking**: Automatically fragments dense medical consults into digestible, scan-friendly visual blocks (bulleted pearls, glassmorphic metric cards, and collapsible accordions) mapped to 5 health literacy personas.
 
 ### 📐 3D Spatial Anatomy
 
@@ -76,7 +86,7 @@ Integrated interactive diagnostic tools accessible via the unified **Clinical To
 | **🧪 N-of-1 Experiment Engine** | Single-Case Clinical Trials | 56-day randomized ABAB crossover trial designer with 14-day washout intervals | Bayesian posterior superiority ($P > 95\%$), Cohen's $d$ |
 | **🎙️ Ambient Clinical Scribe** | Ambient Medical Scribing | Multi-modal dialogue transcription synthesizing 4-quadrant structured SOAP encounter notes | ICD-10 (`I10`), SNOMED-CT (`38341003`), FHIR `Encounter` |
 | **📽️ Grand Rounds & CARE Suite** | Academic Presentation | 1-click 7-slide Grand Rounds presentation deck and CARE Guidelines-compliant Case Report Markdown | William Caslon typography, Google Docs & Word export |
-| **🏛️ Historical Luminaries Arena** | Retrospective Clinical Socratic Engine | Sid Meier's Civilization-style world leaders & pioneers (Alexander, Caesar, Lincoln, Curie, Darwin, Ramanujan, Kahlo) | Blinded Incognito Mode, SHA-256 anti-cheat, 1-click 3D patient load |
+| **🏛️ Historical Luminaries Arena** | Retrospective Clinical Socratic Engine | Epochs of World Leaders & Scientific Pioneers (Alexander, Caesar, Lincoln, Curie, Darwin, Ramanujan, Kahlo) | Blinded Incognito Mode, SHA-256 anti-cheat, 1-click 3D patient load |
 | **🧭 Role & Pathway Docs Hub** | Role-Adaptive Clinical Guidance | 5 dynamic learning pathways (Clinician, Resident, Researcher, Executive, Patient) with 1-click tool actions | Role-tailored CDS workflows and compliance guides |
 
 ### 🩺 Multi-Paradigm Clinical Lenses

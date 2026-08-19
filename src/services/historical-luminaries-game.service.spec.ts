@@ -55,7 +55,7 @@ describe('HistoricalLuminariesGameService - Historical Clinical Mystery Game', (
     expect(darwinCase.patientMockId).toBe('p_charles_darwin');
   });
 
-  it('6. Includes Civilization world leaders with eras and empires', () => {
+  it('6. Includes World Leaders across historical epochs and empires', () => {
     const alexCase = service.getAllCases().find(c => c.id === 'alexander')!;
     expect(alexCase.civilizationEmpire).toBe('Macedonian Empire');
     expect(alexCase.civilizationEra).toBe('Classical');
