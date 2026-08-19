@@ -1,7 +1,8 @@
 /**
- * Big Four Open Health Data Federation Browser Component.
+ * Global Open Health Data Federation Browser Component.
  * Interactive Angular 22 Standalone component allowing clinicians and researchers
- * to explore, filter, and inspect open biomedical datasets across AWS, GCP, Azure, and Apple.
+ * to explore, filter, and inspect open biomedical datasets across AWS, GCP, Azure, Apple,
+ * PhysioNet (MIMIC-IV), UK Biobank, Human Protein Atlas, Cochrane, CPIC, and NICE.
  *
  * @module components/research/aws-open-data-browser
  */
@@ -31,13 +32,16 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
             <span class="px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full border border-rose-500/20">
               Apple Health
             </span>
-            <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Big Four Open Health Ecosystem</span>
+            <span class="px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full border border-indigo-500/20">
+              PhysioNet • Cochrane • UKBB
+            </span>
+            <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Global Open Health Alliance</span>
           </div>
           <h2 class="text-xl font-black uppercase tracking-tight text-zinc-900 dark:text-zinc-100 font-pocketgull">
-            Big Four Open Health Data Federation
+            Global Open Health &amp; Clinical Data Federation
           </h2>
           <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
-            Query open clinical trial literature, genomic variants, bioassays, oncology, and longitudinal Apple/Stanford cohorts.
+            Query open clinical trials, ICU physiologic waveforms (MIMIC-IV), 500k UK Biobank GWAS, tissue proteomics, and CPIC pharmacogenomics.
           </p>
         </div>
 
@@ -51,20 +55,20 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
             AWS RODA &rarr;
           </a>
           <a
-            href="https://learn.microsoft.com/en-us/azure/open-datasets/"
+            href="https://physionet.org/"
             target="_blank"
             rel="noopener noreferrer"
-            class="px-2.5 py-1.5 text-[11px] font-bold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 rounded-lg hover:bg-blue-100 transition-colors"
+            class="px-2.5 py-1.5 text-[11px] font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 rounded-lg hover:bg-indigo-100 transition-colors"
           >
-            Azure Datasets &rarr;
+            PhysioNet &rarr;
           </a>
           <a
-            href="https://developer.apple.com/carekit/"
+            href="https://www.cochranelibrary.com/"
             target="_blank"
             rel="noopener noreferrer"
-            class="px-2.5 py-1.5 text-[11px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 rounded-lg hover:bg-rose-100 transition-colors"
+            class="px-2.5 py-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 rounded-lg hover:bg-emerald-100 transition-colors"
           >
-            Apple CareKit &rarr;
+            Cochrane EBM &rarr;
           </a>
         </div>
       </div>
@@ -84,7 +88,20 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
           [class.dark:text-zinc-400]="openData.activeProvider() !== 'all'"
           class="px-3 py-1 text-xs font-bold rounded-lg transition-all"
         >
-          All Ecosystems ({{ openData.filteredDatasets().length }})
+          All ({{ openData.filteredDatasets().length }})
+        </button>
+
+        <button
+          (click)="openData.setProvider('global')"
+          [class.bg-indigo-600]="openData.activeProvider() === 'global'"
+          [class.text-white]="openData.activeProvider() === 'global'"
+          [class.bg-zinc-100]="openData.activeProvider() !== 'global'"
+          [class.dark:bg-zinc-900]="openData.activeProvider() !== 'global'"
+          [class.text-zinc-600]="openData.activeProvider() !== 'global'"
+          [class.dark:text-zinc-400]="openData.activeProvider() !== 'global'"
+          class="px-3 py-1 text-xs font-bold rounded-lg transition-all inline-flex items-center gap-1.5"
+        >
+          <span>🏛️ Global Science &amp; EBM</span>
         </button>
 
         <button
@@ -136,7 +153,7 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
           [class.dark:text-zinc-400]="openData.activeProvider() !== 'apple'"
           class="px-3 py-1 text-xs font-bold rounded-lg transition-all inline-flex items-center gap-1.5"
         >
-          <span>🍎 Apple Health &amp; Studies</span>
+          <span>🍎 Apple Health</span>
         </button>
       </div>
 
@@ -145,7 +162,7 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
         <div class="relative flex-1">
           <input
             type="text"
-            placeholder="Search across all Big Four ecosystems by gene, condition, trial, or biomarker..."
+            placeholder="Search across all global health databases by gene, drug, biomarker, or protocol..."
             [value]="openData.searchQuery()"
             (input)="onSearchInput($event)"
             class="w-full pl-9 pr-4 py-2 text-xs bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
@@ -202,11 +219,15 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
                   [class.text-rose-600]="dataset.provider === 'apple'"
                   [class.dark:text-rose-400]="dataset.provider === 'apple'"
                   [class.border-rose-500/20]="dataset.provider === 'apple'"
+                  [class.bg-indigo-500/10]="dataset.provider === 'global'"
+                  [class.text-indigo-600]="dataset.provider === 'global'"
+                  [class.dark:text-indigo-400]="dataset.provider === 'global'"
+                  [class.border-indigo-500/20]="dataset.provider === 'global'"
                   class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border"
                 >
                   {{ dataset.providerLabel }}
                 </span>
-                <span class="text-[11px] text-zinc-400 font-mono truncate max-w-[170px]">{{ dataset.storageUri }}</span>
+                <span class="text-[11px] text-zinc-400 font-mono truncate max-w-[160px]">{{ dataset.storageUri }}</span>
               </div>
 
               <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-snug mb-1">
@@ -262,7 +283,7 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
 
             <div class="p-3 bg-zinc-100 dark:bg-zinc-950 rounded-xl font-mono text-xs text-zinc-800 dark:text-zinc-200 space-y-1 mb-4">
               <div><span class="text-zinc-500">Storage / URI:</span> {{ ds.storageUri }}</div>
-              <div><span class="text-zinc-500">Location:</span> {{ ds.regionOrLocation }}</div>
+              <div><span class="text-zinc-500">Location / Entity:</span> {{ ds.regionOrLocation }}</div>
               <div><span class="text-zinc-500">Managed By:</span> {{ ds.managedBy }}</div>
               @if (ds.directAccessUrl) {
                 <div class="truncate"><span class="text-zinc-500">Public URL:</span> <a [href]="ds.directAccessUrl" target="_blank" class="text-amber-500 underline">{{ ds.directAccessUrl }}</a></div>
@@ -308,6 +329,7 @@ export class AwsOpenDataBrowserComponent {
   categories = [
     { id: 'all', label: 'All Categories' },
     { id: 'clinical', label: 'Clinical Trials & Care Plans' },
+    { id: 'physiometry', label: 'Physiometry & Waveforms' },
     { id: 'genomics', label: 'Genomics & Variants' },
     { id: 'pharmacology', label: 'Pharmacology & Targets' },
     { id: 'imaging', label: 'Oncology & Imaging' },

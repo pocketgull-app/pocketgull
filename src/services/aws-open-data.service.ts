@@ -1,8 +1,8 @@
 /**
- * Big Four Open Health Data Federation Service.
- * Connects PocketGull to open biomedical, genomic, pharmacology, and clinical literature
- * hosted across Amazon Web Services (RODA), Google Cloud (BigQuery/GCS), Microsoft Azure,
- * and Apple Health Academic Research Studies (Stanford, Harvard, Michigan).
+ * Global Open Health Data Alliance Service.
+ * Connects PocketGull to the world's leading open biomedical, genomic, physiological,
+ * and clinical literature repositories across AWS RODA, Google Cloud, Microsoft Azure,
+ * Apple Health, PhysioNet/MIMIC-IV, UK Biobank, Human Protein Atlas, Cochrane, CPIC, and NICE.
  *
  * @module services/aws-open-data.service
  */
@@ -11,17 +11,17 @@ import { Injectable, signal, computed } from '@angular/core';
 export interface IOpenHealthDataset {
   id: string;
   name: string;
-  provider: 'aws' | 'gcp' | 'azure' | 'apple';
+  provider: 'aws' | 'gcp' | 'azure' | 'apple' | 'global';
   providerLabel: string;
   description: string;
   documentationUrl: string;
   storageUri: string;
   regionOrLocation: string;
-  category: 'clinical' | 'genomics' | 'pharmacology' | 'imaging' | 'epidemiology';
+  category: 'clinical' | 'genomics' | 'pharmacology' | 'imaging' | 'epidemiology' | 'physiometry';
   tags: string[];
   license: string;
   managedBy: string;
-  queryOrAccessMethod: 'S3 Direct' | 'BigQuery Public' | 'Azure Blob' | 'HTTPS REST' | 'FHIR / On-Device';
+  queryOrAccessMethod: 'S3 Direct' | 'BigQuery Public' | 'Azure Blob' | 'HTTPS REST' | 'FHIR / On-Device' | 'PhysioNet Open Access';
   directAccessUrl?: string;
 }
 
@@ -257,21 +257,103 @@ export const FEDERATED_OPEN_HEALTH_DATASETS: IOpenHealthDataset[] = [
     queryOrAccessMethod: 'HTTPS REST',
     directAccessUrl: 'https://www.hsph.harvard.edu/applewomenshealthstudy/',
   },
+
+  // ── 5. GLOBAL HEALTH & OPEN SCIENCE ALLIANCE ────────────────────
   {
-    id: 'apple-hearing-who',
-    name: 'University of Michigan Apple Hearing Study (WHO)',
-    provider: 'apple',
-    providerLabel: 'Apple & Michigan',
-    description: 'Longitudinal environmental sound exposure and audiometric threshold dataset contributing directly to WHO global safe listening standards.',
-    documentationUrl: 'https://sph.umich.edu/applehearingstudy/',
-    storageUri: 'https://sph.umich.edu/applehearingstudy/',
-    regionOrLocation: 'Univ. of Michigan / WHO',
-    category: 'epidemiology',
-    tags: ['audiology', 'hearing', 'who', 'michigan', 'environmental noise'],
-    license: 'WHO / Academic Open Access',
-    managedBy: 'University of Michigan School of Public Health',
+    id: 'physionet-mimic-iv',
+    name: 'PhysioNet MIMIC-IV Clinical Database (MIT / Harvard)',
+    provider: 'global',
+    providerLabel: 'PhysioNet (MIT)',
+    description: 'De-identified electronic health records and high-frequency continuous physiological waveforms from over 40,000 intensive care unit (ICU) admissions.',
+    documentationUrl: 'https://physionet.org/content/mimiciv/2.2/',
+    storageUri: 'https://physionet.org/files/mimiciv/2.2/',
+    regionOrLocation: 'MIT Laboratory for Computational Physiology',
+    category: 'physiometry',
+    tags: ['physionet', 'mimic', 'icu', 'vitals', 'telemetry', 'ecg', 'abp'],
+    license: 'PhysioNet Credentialed Data Use Agreement (Open Academic)',
+    managedBy: 'MIT & Beth Israel Deaconess Medical Center',
+    queryOrAccessMethod: 'PhysioNet Open Access',
+    directAccessUrl: 'https://physionet.org/content/mimiciv/',
+  },
+  {
+    id: 'uk-biobank-pan-ukbb',
+    name: 'UK Biobank & Pan-UKBB Open Summary Statistics',
+    provider: 'global',
+    providerLabel: 'UK Biobank',
+    description: 'Phenome-wide genetic association (GWAS) and biomarker summary statistics across 500,000 UK participants for demographic baseline calibrations.',
+    documentationUrl: 'https://www.ukbiobank.ac.uk/',
+    storageUri: 'https://pan.ukbb.broadinstitute.org/',
+    regionOrLocation: 'Oxford, UK / Broad Institute',
+    category: 'genomics',
+    tags: ['uk biobank', 'gwas', 'phenome', 'biomarkers', 'population genetics'],
+    license: 'Open Access CC-BY 4.0',
+    managedBy: 'UK Biobank & Broad Institute',
     queryOrAccessMethod: 'HTTPS REST',
-    directAccessUrl: 'https://sph.umich.edu/applehearingstudy/',
+    directAccessUrl: 'https://www.ukbiobank.ac.uk/',
+  },
+  {
+    id: 'human-protein-atlas',
+    name: 'Human Protein Atlas (HPA) Tissue Proteomics',
+    provider: 'global',
+    providerLabel: 'Human Protein Atlas',
+    description: 'Spatial subcellular distribution and quantitative protein expression profiles across 44 human tissues and organs for mechanism validation.',
+    documentationUrl: 'https://www.proteinatlas.org/',
+    storageUri: 'https://www.proteinatlas.org/download/',
+    regionOrLocation: 'KTH Royal Institute of Technology / SciLifeLab',
+    category: 'pharmacology',
+    tags: ['protein atlas', 'proteomics', 'immunohistochemistry', 'receptors', 'tissues'],
+    license: 'Creative Commons Attribution-ShareAlike 4.0 (CC-BY-SA 4.0)',
+    managedBy: 'KTH & Karolinska Institute',
+    queryOrAccessMethod: 'HTTPS REST',
+    directAccessUrl: 'https://www.proteinatlas.org/',
+  },
+  {
+    id: 'cochrane-systematic-reviews',
+    name: 'Cochrane Library Systematic Reviews & RoB 2 Matrix',
+    provider: 'global',
+    providerLabel: 'Cochrane EBM',
+    description: 'Gold-standard independent systematic reviews, meta-analyses, and Cochrane Risk of Bias (RoB 2) assessments evaluating randomized clinical trials.',
+    documentationUrl: 'https://www.cochranelibrary.com/',
+    storageUri: 'https://www.cochranelibrary.com/cdsr/reviews',
+    regionOrLocation: 'London, UK (Cochrane Collaboration)',
+    category: 'clinical',
+    tags: ['cochrane', 'meta-analysis', 'rct', 'risk of bias', 'evidence-based medicine'],
+    license: 'Cochrane Open Access / Creative Commons',
+    managedBy: 'The Cochrane Collaboration',
+    queryOrAccessMethod: 'HTTPS REST',
+    directAccessUrl: 'https://www.cochranelibrary.com/',
+  },
+  {
+    id: 'cpic-pharmacogenomics-matrix',
+    name: 'CPIC Pharmacogenomic Gene-Drug Dosing Guidelines',
+    provider: 'global',
+    providerLabel: 'CPIC Consortium',
+    description: 'Peer-reviewed clinical guidelines mapping CYP450 polymorphisms (CYP2D6, CYP2C19, SLCO1B1) to actionable pharmaceutical & botanical dosing adjustments.',
+    documentationUrl: 'https://cpicpgx.org/guidelines/',
+    storageUri: 'https://cpicpgx.org/api/',
+    regionOrLocation: 'St. Jude Children’s Research Hospital / Stanford',
+    category: 'pharmacology',
+    tags: ['cpic', 'pharmacogenomics', 'cyp2d6', 'cyp2c19', 'gene drug interaction'],
+    license: 'CC0 1.0 Universal / Public Domain',
+    managedBy: 'Clinical Pharmacogenetics Implementation Consortium',
+    queryOrAccessMethod: 'HTTPS REST',
+    directAccessUrl: 'https://cpicpgx.org/',
+  },
+  {
+    id: 'nice-clinical-pathways',
+    name: 'NICE Evidence-Based Clinical Guidance Pathways',
+    provider: 'global',
+    providerLabel: 'NICE (UK)',
+    description: 'Comprehensive evidence-based clinical recommendations and cost-effectiveness pathways produced by the National Institute for Health and Care Excellence.',
+    documentationUrl: 'https://www.nice.org.uk/guidance',
+    storageUri: 'https://www.nice.org.uk/guidance',
+    regionOrLocation: 'National Institute for Health and Care Excellence (UK)',
+    category: 'clinical',
+    tags: ['nice', 'clinical guidance', 'pathways', 'standard of care', 'public health'],
+    license: 'UK Open Government Licence (OGL v3.0)',
+    managedBy: 'National Institute for Health and Care Excellence',
+    queryOrAccessMethod: 'HTTPS REST',
+    directAccessUrl: 'https://www.nice.org.uk/',
   }
 ];
 
@@ -283,11 +365,11 @@ export const CURATED_BIOMEDICAL_DATASETS = FEDERATED_OPEN_HEALTH_DATASETS;
   providedIn: 'root'
 })
 export class AwsOpenDataService {
-  /** All available datasets across AWS, GCP, Azure, and Apple */
+  /** All available datasets across AWS, GCP, Azure, Apple, and Global Open Health Science */
   private datasets = signal<IOpenHealthDataset[]>(FEDERATED_OPEN_HEALTH_DATASETS);
 
   /** Active provider filter */
-  activeProvider = signal<'all' | 'aws' | 'gcp' | 'azure' | 'apple'>('all');
+  activeProvider = signal<'all' | 'aws' | 'gcp' | 'azure' | 'apple' | 'global'>('all');
 
   /** Active category filter */
   activeCategory = signal<string>('all');
@@ -327,7 +409,7 @@ export class AwsOpenDataService {
   selectedDataset = signal<IOpenHealthDataset | null>(null);
 
   /** Sets provider filter */
-  setProvider(provider: 'all' | 'aws' | 'gcp' | 'azure' | 'apple'): void {
+  setProvider(provider: 'all' | 'aws' | 'gcp' | 'azure' | 'apple' | 'global'): void {
     this.activeProvider.set(provider);
   }
 
