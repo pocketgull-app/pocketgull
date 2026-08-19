@@ -159,4 +159,33 @@
 - **Explicit Tool Contracts**: Every browser tool exposed to AI model contexts MUST be registered via `WebMcpRegistrationService`, declare strict JSON Schema inputs, and provide an explicit `AbortController` cancellation signal.
 - **Mandatory Spec Coverage**: Any addition or modification to registered WebMCP tools MUST include corresponding unit tests in `webmcp-registration.service.spec.ts` verifying registration, execution, and error handling.
 
+## Clinical, Ophthalmological & Optotypic Quality Standards (WCAG AAA & HIPAA Safe Harbor)
+1. **Zero Orthographic & Typographic Spelling Errors (100% Lexical Precision)**:
+   - All text, graphics, labels, image generation prompts, code comments, and UI strings MUST adhere to strictly verified medical, pharmacological, and anatomical spellings.
+   - Canonical spellings mandatory:
+     * `HIPAA` (Health Insurance Portability and Accountability Act) — NEVER `HIPPA`.
+     * `Ophthalmology` / `Ophthalmic` / `Optotypic` — NEVER `Optimological` or `Opthamology`.
+     * `Ayurvedic` (`आयुर्वेद`) / `Tridosha` (`त्रिदोष`) — NEVER `Avyerdic`.
+     * `Variable Font` / `Visualization` — NEVER `Vadiabe` or `Islsualization`.
+     * `Nomina Anatomica` Latin: `Cerebrum`, `Myocardium`, `Hepar`, `Oculus`, `Ren`, `Pulmo`.
+2. **Ophthalmological / Optotypic Visual Acuity (LogMAR 0.0 & Snellen 20/20)**:
+   - Design text hierarchies to resolve clearly at a 5-arcminute total visual angle with 1-arcminute stroke details at $50\text{--}70\text{ cm}$ surgical/ICU monitor viewing distance.
+   - Maintain an elevated x-height to cap-height ratio ($0.70\text{--}0.74$) with wide, un-constricted counterforms (`c`, `e`, `a`, `o`, `s`, `6`, `8`, `9`) to prevent astigmatic letter collision.
+   - Maintain strict WCAG AAA contrast ratio ($\ge 7:1$) against `#020617` / `#09090b` obsidian backgrounds.
+3. **ISMP & FDA Clinical Drug Dosage Disambiguation**:
+   - Enforce slashed zero (`cv08` / `zero`) to distinguish `0` from capital `O`.
+   - Enforce curved lowercase `l` with exit spur (`cv05`) vs. capital `I` with bilateral serifs (`ss02`) vs. numeral `1` with sharp top flag.
+   - Enforce tabular figures (`tnum`) for jitter-free real-time ICU telemetry metrics.
+   - Enforce mandatory leading zeros (`0.5 mg`, NEVER `.5 mg`) and strictly prohibit trailing zeros (`1 mg`, NEVER `1.0 mg`).
+4. **HIPAA §164.514 Safe Harbor & FHIR R4 Research Conformance**:
+   - All research datasets, mock profiles, and case studies MUST strip all 18 direct/indirect HIPAA identifiers.
+   - Sanitize all I/O via DOMPurify and ensure strict FHIR R4 Bundle schema conformance for patient observations and clinical crosswalks.
+5. **Quad-Philosophy Diagnostic Integrity (Ayurvedic, TCM, Allopathic, Osteopathic)**:
+   - When modeling human biology across paradigms, preserve authentic nomenclature:
+     * **Ayurvedic**: Sanskrit Devanagari ligatures (`हृदयम्`, `शिरस्`, `आलोचक पित्त`).
+     * **TCM**: Traditional/Simplified Hanzi & Kampo Kanji (`心`, `肝开窍于目`, `任脉`, `足三里`).
+     * **Allopathic**: Latin *Nomina Anatomica* with ICD-10/SNOMED-CT codes and hemodynamic formulas ($CO = HR \times SV$, $MAP$).
+     * **Osteopathic**: Somatic dysfunction T.A.R.T. criteria (Tissue, Asymmetry, Restriction, Tenderness) and Craniosacral PRM ($8\text{--}12\text{ cpm}$).
+
+
 

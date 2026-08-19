@@ -9,6 +9,7 @@ export interface IDicomStudy {
   studyDate?: string;
   studyDescription?: string;
   modalities?: string[];
+  seriesCount?: number;
 }
 
 export interface IDicomSeries {

@@ -211,3 +211,75 @@ export const GROW_THYSELF_TIERS: ISeverityTier[] = [
   { min: 6, max: 10, label: 'Developing Growth — Emerging Sovereignty', colorClass: 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30', recommendation: 'Optimize circadian timing, phytoncide foraging, and cognitive focus blocks.' },
   { min: 11, max: 15, label: 'Flourishing Sovereign — High Resilience', colorClass: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30', recommendation: 'Master level alignment across purpose, somatic resilience, and epigenetic vitality.' }
 ];
+
+// MONTREAL COGNITIVE ASSESSMENT (MoCA) / MINI-COG RAPID SCREENER
+export const MOCA_QUESTIONS: IQuestionItem[] = [
+  { id: 1, question: 'Visuospatial & Executive: Clock Drawing & Alternating Trail Making Test', options: [{ label: 'Incorrect / Impaired (0)', value: 0 }, { label: 'Partially Accurate (1)', value: 1 }, { label: 'Intact & Exact (2)', value: 2 }] },
+  { id: 2, question: 'Naming: Animal Identification (Lion, Rhinoceros, Dromedary Camel)', options: [{ label: '0-1 Correct (0)', value: 0 }, { label: '2 Correct (1)', value: 1 }, { label: 'All 3 Correct (2)', value: 2 }] },
+  { id: 3, question: 'Attention: Forward & Backward Digit Span (5-digits forward, 3-digits backward)', options: [{ label: 'Failed (0)', value: 0 }, { label: 'Passed 1 Span (1)', value: 1 }, { label: 'Passed Both Spans (2)', value: 2 }] },
+  { id: 4, question: 'Language: Repetition of Complex Sentences & 1-Minute Phonemic Fluency', options: [{ label: 'Impaired (<11 words) (0)', value: 0 }, { label: 'Mild Delay (1)', value: 1 }, { label: 'Intact (>11 words) (2)', value: 2 }] },
+  { id: 5, question: 'Delayed Recall: 5-Word Uncued Memory Recall (Face, Velvet, Church, Daisy, Red)', options: [{ label: '0-1 Words (0)', value: 0 }, { label: '2-3 Words (1)', value: 1 }, { label: '4-5 Words (2)', value: 2 }] },
+  { id: 6, question: 'Orientation: Date, Month, Year, Day, Place, and City Precision', options: [{ label: 'Disoriented (0)', value: 0 }, { label: 'Partial Orientation (1)', value: 1 }, { label: 'Fully Oriented (2)', value: 2 }] }
+];
+
+export const MOCA_TIERS: ISeverityTier[] = [
+  { min: 0, max: 4, label: 'Severe Cognitive Impairment', colorClass: 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30', recommendation: 'Comprehensive neuropsychological battery & structural neuroimaging required.' },
+  { min: 5, max: 8, label: 'Mild Cognitive Impairment (MCI)', colorClass: 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30', recommendation: 'Cardiovascular risk factor management, Mediterranean-DASH diet, and cognitive rehabilitation.' },
+  { min: 9, max: 12, label: 'Normal Cognitive Function', colorClass: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30', recommendation: 'Maintain lifelong cognitive enrichment, aerobic exercise, and sleep hygiene.' }
+];
+
+// AUDIT-C (ALCOHOL USE DISORDERS IDENTIFICATION TEST-CONCISE)
+export const AUDITC_QUESTIONS: IQuestionItem[] = [
+  { id: 1, question: 'How often do you have a drink containing alcohol?', options: [{ label: 'Never (0)', value: 0 }, { label: 'Monthly or less (1)', value: 1 }, { label: '2-4 times a month (2)', value: 2 }, { label: '2-3 times a week (3)', value: 3 }, { label: '4+ times a week (4)', value: 4 }] },
+  { id: 2, question: 'How many standard drinks containing alcohol do you have on a typical day when you are drinking?', options: [{ label: '1 or 2 (0)', value: 0 }, { label: '3 or 4 (1)', value: 1 }, { label: '5 or 6 (2)', value: 2 }, { label: '7 to 9 (3)', value: 3 }, { label: '10 or more (4)', value: 4 }] },
+  { id: 3, question: 'How often do you have six or more drinks on one occasion?', options: [{ label: 'Never (0)', value: 0 }, { label: 'Less than monthly (1)', value: 1 }, { label: 'Monthly (2)', value: 2 }, { label: 'Weekly (3)', value: 3 }, { label: 'Daily or almost daily (4)', value: 4 }] }
+];
+
+export const AUDITC_TIERS: ISeverityTier[] = [
+  { min: 0, max: 2, label: 'Low Risk / Abstinent', colorClass: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30', recommendation: 'Standard lifestyle counseling and hepatic metabolic maintenance.' },
+  { min: 3, max: 4, label: 'Moderate Risk / Hazardous Drinking', colorClass: 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30', recommendation: 'Brief intervention counseling, alcohol reduction goals, and liver enzymes (GGT, ALT) tracking.' },
+  { min: 5, max: 12, label: 'High Risk / Possible Dependence', colorClass: 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30', recommendation: 'Referral for specialized addiction medicine evaluation and supervised medical detoxification if indicated.' }
+];
+
+// SARC-F (SARCOPENIA & PHYSICAL FRAILTY SCREENER)
+export const SARCF_QUESTIONS: IQuestionItem[] = [
+  { id: 1, question: 'Strength: How much difficulty do you have lifting and carrying 10 pounds (e.g., heavy grocery bag)?', options: [{ label: 'None (0)', value: 0 }, { label: 'Some (1)', value: 1 }, { label: 'A lot or unable (2)', value: 2 }] },
+  { id: 2, question: 'Assistance in Walking: How much difficulty do you have walking across a room?', options: [{ label: 'None (0)', value: 0 }, { label: 'Some (1)', value: 1 }, { label: 'A lot, use cane/walker, or unable (2)', value: 2 }] },
+  { id: 3, question: 'Rise from a Chair: How much difficulty do you have transferring from a chair or bed without arm support?', options: [{ label: 'None (0)', value: 0 }, { label: 'Some (1)', value: 1 }, { label: 'A lot or unable (2)', value: 2 }] },
+  { id: 4, question: 'Climb Stairs: How much difficulty do you have climbing a flight of 10 stairs?', options: [{ label: 'None (0)', value: 0 }, { label: 'Some (1)', value: 1 }, { label: 'A lot or unable (2)', value: 2 }] },
+  { id: 5, question: 'Falls: How many times have you fallen in the past 1 year?', options: [{ label: 'None (0)', value: 0 }, { label: '1 to 3 falls (1)', value: 1 }, { label: '4 or more falls (2)', value: 2 }] }
+];
+
+export const SARCF_TIERS: ISeverityTier[] = [
+  { min: 0, max: 3, label: 'Normal Muscle Function', colorClass: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30', recommendation: 'Maintain progressive resistance training and adequate dietary leucine/protein (1.2-1.5 g/kg).' },
+  { min: 4, max: 10, label: 'Predictive of Sarcopenia & Frailty', colorClass: 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30', recommendation: 'Dual-energy X-ray absorptiometry (DEXA) body composition scan, physical therapy, and fall risk mitigation.' }
+];
+
+// DN4 (DOULEUR NEUROPATHIQUE 4 PAIN SCREENER)
+export const DN4_QUESTIONS: IQuestionItem[] = [
+  { id: 1, question: 'Pain Qualities: Does the pain have burning, painful cold, or electric shock sensations?', options: YES_NO },
+  { id: 2, question: 'Associated Symptoms: Is the pain associated with tingling, pins and needles, numbness, or itching in the same area?', options: YES_NO },
+  { id: 3, question: 'Physical Examination: Is the pain located in an area with touch hypoesthesia or pinprick hypoesthesia?', options: YES_NO },
+  { id: 4, question: 'Mechanical Allodynia: Can the pain be caused or increased by brushing with a soft cotton swab?', options: YES_NO }
+];
+
+export const DN4_TIERS: ISeverityTier[] = [
+  { min: 0, max: 1, label: 'Likely Nociceptive / Somatic Pain', colorClass: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30', recommendation: 'Standard musculoskeletal therapy, NSAIDs/topicals, and biomechanical posture correction.' },
+  { min: 2, max: 4, label: 'Neuropathic Pain Component Confirmed', colorClass: 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30', recommendation: 'Neuropathic pharmacological evaluation (Gabapentinoids, SNRIs) & neuro-meridian electroacupuncture.' }
+];
+
+// SIBI (SYSTEMIC INFLAMMATORY BURDEN & TELEDENTISTRY INDEX)
+export const SIBI_QUESTIONS: IQuestionItem[] = [
+  { id: 1, question: 'Periodontal Probing Depth: Presence of periodontal pockets >= 4mm across FDI quadrants', options: [{ label: 'None (0)', value: 0 }, { label: 'Localized 1-2 sites (1)', value: 1 }, { label: 'Generalized >= 3 sites (2)', value: 2 }] },
+  { id: 2, question: 'Smith & Knight Tooth Wear Index (TWI): Enamel loss or dentin exposure (Grades 0-4)', options: [{ label: 'Grade 0-1 Minimal (0)', value: 0 }, { label: 'Grade 2 Enamel/Dentin (1)', value: 1 }, { label: 'Grade 3-4 Severe/Pulp (2)', value: 2 }] },
+  { id: 3, question: 'Bleeding on Probing (BOP): Gingival marginal bleeding index', options: [{ label: '<10% Normal (0)', value: 0 }, { label: '10-30% Moderate Gingivitis (1)', value: 1 }, { label: '>30% Severe Periodontitis (2)', value: 2 }] },
+  { id: 4, question: 'Cardiovascular Cross-Talk: Comorbid elevated hs-CRP (>= 2.0 mg/L) or hypertension', options: YES_NO },
+  { id: 5, question: 'Masticatory Myofascial Strain: Nocturnal bruxism, masseter hypertrophy, or TMJ crepitus', options: YES_NO }
+];
+
+export const SIBI_TIERS: ISeverityTier[] = [
+  { min: 0, max: 2, label: 'Low Systemic Inflammatory Burden', colorClass: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30', recommendation: 'Routine teledentistry hygiene and preventive fluoride/hydroxyapatite care.' },
+  { min: 3, max: 5, label: 'Moderate Systemic Inflammatory Cross-Talk', colorClass: 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30', recommendation: 'Full-mouth ultrasonic debridement, occlusal splint for TWI, and systemic metabolic monitoring.' },
+  { min: 6, max: 8, label: 'High Endothelial & Cardiovascular Inflammatory Burden', colorClass: 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30', recommendation: 'Urgent interdisciplinary periodontal-cardiovascular co-management to mitigate atheroma risk.' }
+];
+

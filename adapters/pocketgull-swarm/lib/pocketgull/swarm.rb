@@ -11,7 +11,7 @@ module Pocketgull
         # Eastern TCM Zang-Fu Agent (Swoop)
         tcm_focus = "Identify Zang-Fu disharmony, Pulse qualities (Wiry/Slippery), and Tongue body coating."
 
-        # Functional Medicine Bio-Hacking Agent (Sentinel)
+        # Functional Medicine Bio-Stacking Agent (Sentinel)
         functional_focus = "Optimize mitochondrial respiration, gut microbiome permeability, and chronobiology sleep windows."
 
         # Consensus score & points of agreement

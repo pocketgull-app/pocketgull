@@ -1,4 +1,19 @@
-export type AssessmentType = 'phq9' | 'gad7' | 'isi' | 'cssrs' | 'ros14' | 'phq15' | 'prapare' | 'ayurveda' | 'tcm' | 'growthyself';
+export type AssessmentType = 
+  | 'phq9' 
+  | 'gad7' 
+  | 'isi' 
+  | 'cssrs' 
+  | 'ros14' 
+  | 'phq15' 
+  | 'prapare' 
+  | 'ayurveda' 
+  | 'tcm' 
+  | 'growthyself'
+  | 'moca'
+  | 'auditc'
+  | 'sarcf'
+  | 'dn4'
+  | 'sibi';
 
 export interface IQuestionItem {
   id: number;

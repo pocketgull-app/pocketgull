@@ -1,0 +1,54 @@
+version: 2
+
+sources:
+  - name: pocketgull_raw
+    database: gen-lang-client-0540208645
+    schema: pocketgull_analytics
+    tables:
+      - name: fhir_observations_raw
+        description: "Raw landing table receiving FHIR R4 JSON payloads."
+      - name: vitals_telemetry_stream
+        description: "Raw streaming telemetry landing table from wearable sensors and clinical devices."
+
+models:
+  - name: stg_fhir_observations
+    description: "Parsed and flattened FHIR R4 observations."
+    columns:
+      - name: observation_id
+        description: "Unique FHIR Observation resource identifier."
+        tests:
+          - unique
+          - not_null
+      - name: patient_id
+        description: "De-identified patient ID (Safe Harbor §164.514 compliant)."
+        tests:
+          - not_null
+
+  - name: stg_vitals_telemetry
+    description: "Normalized time-series biometric streams with alert tiering."
+    columns:
+      - name: patient_id
+        tests:
+          - not_null
+      - name: metric_type
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['glucose_cgm', 'blood_pressure_sbp', 'heart_rate_variability', 'sibi_inflammation', 'spo2', 'hr']
+      - name: measured_value
+        tests:
+          - not_null
+
+  - name: fct_patient_trajectories
+    description: "Aggregated daily vitals with rolling 7-day and 30-day moving averages."
+    columns:
+      - name: patient_id
+        tests:
+          - not_null
+      - name: reading_date
+        tests:
+          - not_null
+      - name: avg_daily_value
+        tests:
+          - not_null

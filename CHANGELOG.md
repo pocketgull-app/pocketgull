@@ -225,7 +225,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added & Enhanced
 - **[Clinical AI / Multi-Agent Swarm] Tri-Paradigm Autonomous Swarm Consensus Engine (`tri-paradigm-swarm.service.ts`)**:
-  - Engineered parallel multi-agent clinical consensus debate execution across Western Allopathic (Gulliver), Eastern TCM Zang-Fu (Swoop), and Functional Medicine Bio-Hacking (Sentinel) specialists.
+  - Engineered parallel multi-agent clinical consensus debate execution across Western Allopathic (Gulliver), Eastern TCM Zang-Fu (Swoop), and Functional Medicine Bio-Stacking (Sentinel) specialists.
   - Generates cross-paradigm points of agreement, divergent diagnostic risk flags, and unified 3-phase action plans.
   - Built `TriParadigmSwarmCardComponent` with real-time consensus telemetry scoring.
 - **[Genomics / Safety] Pharmacogenomics & Spatial eQTL Dosing Safety (`pharmacogenomics.service.ts`)**:

@@ -198,7 +198,7 @@ export class UniversityLeagueService {
     },
     {
       id: 'quest-002',
-      title: 'Inter-Collegiate SIBI Inflammatory Reduction Hackathon',
+      title: 'Inter-Collegiate SIBI Inflammatory Reduction Innovation Sprint',
       participatingSchools: ['MIT', 'Harvard Medical', 'Foothill College', 'De Anza College'],
       description: 'Collaborative trial evaluating 14-day anti-inflammatory nutrition and daily 10-min AVS grounding.',
       totalXpPool: 7500,

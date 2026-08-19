@@ -67,7 +67,7 @@ export class ClinicalActLensMapperService {
                 western: 'Act III: Allopathic & Functional Interventions',
                 eastern: 'Act III: Acupoint & Thermal-Energetic Protocols',
                 ayurvedic: 'Act III: Dinacharya & Panchakarma Protocols',
-                longevity: 'Act III: Biohacking & Cellular Entrainment'
+                longevity: 'Act III: Biostacking & Cellular Entrainment'
             },
             proposalFocus: 'Targeted therapeutic execution, vagal tone co-regulation, micro-climate selection, and allergen elimination.',
             actsSequenceStage: 'Proposal Act 3 of 5 • Active Interventions'

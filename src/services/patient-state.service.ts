@@ -279,8 +279,8 @@ export class PatientStateService {
   readonly requestedResearchQuery = signal<string | null>(null);
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
-  readonly bodyViewerMode = signal<'3d' | '2d' | 'genesis'>('3d');
-  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic'>('skin');
+  readonly bodyViewerMode = signal<'3d' | '2d' | 'cellular' | 'quad' | 'tme' | 'awcim' | 'genesis'>('3d');
+  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic'>('skin');
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
   readonly draftSummaryItems = signal<IDraftSummaryItem[]>([]);

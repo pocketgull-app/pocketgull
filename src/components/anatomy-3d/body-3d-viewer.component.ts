@@ -15,6 +15,8 @@ import { AdobeFireflyTextureService } from '../../services/adobe-firefly-texture
 import { BodyMeshFactoryService } from '../../services/body-mesh-factory.service';
 import { RaycastSelectionService } from '../../services/raycast-selection.service';
 import { SeverityParticleService } from '../../services/severity-particle.service';
+import { SocraticComorbidityRadarService } from '../../services/socratic-comorbidity-radar.service';
+import { RadialPieMenuComponent, RadialPieAction } from './radial-pie-menu.component';
 import { IBodyPartIssue } from '../../services/patient.types';
 
 const PART_NAMES: Record<string, string> = {
@@ -69,7 +71,7 @@ const PART_NAMES: Record<string, string> = {
     'chakra_muladhara': 'Muladhara (Root Earth Base Support Chakra)'
 };
 
-export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'orch_or';
+export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'orch_or' | 'typographic';
 
 @Component({
     selector: 'app-body-3d-viewer',
@@ -77,7 +79,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
     host: {
         'ngSkipHydration': 'true'
     },
-    imports: [CommonModule],
+    imports: [CommonModule, RadialPieMenuComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
     <div class="flex flex-col flex-1 h-full w-full min-h-[540px] bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl overflow-hidden font-sans thematic-3d-container">
@@ -281,6 +283,51 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             </div>
           </div>
         }
+
+        <!-- 3D Fitts's Law Radial Pie Menu -->
+        @if (showRadialPieMenu()) {
+          <app-radial-pie-menu
+            [x]="pieMenuX()"
+            [y]="pieMenuY()"
+            [partId]="pieMenuPartId()"
+            [partName]="pieMenuPartName()"
+            [partIcon]="pieMenuPartIcon()"
+            (actionSelected)="handleRadialAction($event)"
+            (close)="showRadialPieMenu.set(false)" />
+        }
+
+        <!-- 🪢 Socratic Comorbidity Referral Radar HUD -->
+        @if (activeReferrals(); as referrals) {
+          @if (referrals.length > 0) {
+            <div class="absolute top-3 right-3 z-30 flex flex-col gap-2 max-w-xs w-full pointer-events-auto font-mono text-xs select-none animate-in fade-in slide-in-from-right-3 duration-200">
+              @for (ref of referrals; track ref.id) {
+                <div class="p-3 rounded-xl bg-zinc-950/95 border border-amber-500/50 shadow-2xl backdrop-blur-md text-white flex flex-col gap-1.5">
+                  <div class="flex items-center justify-between gap-1 text-[11px] font-bold text-amber-300">
+                    <span class="flex items-center gap-1">
+                      <span class="animate-pulse">⚠️</span>
+                      <span class="truncate">{{ ref.title }}</span>
+                    </span>
+                    <button (click)="dismissReferral(ref.id)" 
+                            class="p-0.5 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white"
+                            title="Dismiss Referral Radar">
+                      ✕
+                    </button>
+                  </div>
+                  <p class="text-[10px] text-zinc-300 leading-snug font-sans">
+                    {{ ref.mechanism }}
+                  </p>
+                  <div class="flex items-center justify-between pt-1 border-t border-zinc-800 text-[9.5px]">
+                    <span class="text-amber-400/80">{{ ref.evidenceLevel }}</span>
+                    <button (click)="state.selectPart(ref.targetPartId); setCameraPreset('visceral')" 
+                            class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-200 hover:bg-amber-500/40 border border-amber-500/40 font-bold uppercase transition-colors cursor-pointer">
+                      Target {{ ref.targetPartName }} &rarr;
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        }
       </div>
     </div>
   `,
@@ -295,8 +342,23 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     protected readonly themeService = inject(ThemeService);
     protected readonly envTelemetry = inject(EnvironmentalTelemetryService);
     protected readonly fireflyTexture = inject(AdobeFireflyTextureService);
+    protected readonly radarService = inject(SocraticComorbidityRadarService, { optional: true });
     private readonly platformId = inject(PLATFORM_ID);
     private readonly canvasContainer = viewChild<ElementRef<HTMLDivElement>>('canvasContainer');
+
+    // 🪢 Socratic Referral Radar Computed List
+    readonly activeReferrals = computed(() => this.radarService?.activeReferrals() ?? []);
+    dismissReferral(id: string): void {
+      this.radarService?.dismissReferral(id);
+    }
+
+    // 🖱️ 3D Fitts's Law Radial Pie Menu State
+    readonly showRadialPieMenu = signal<boolean>(false);
+    readonly pieMenuX = signal<number>(200);
+    readonly pieMenuY = signal<number>(200);
+    readonly pieMenuPartId = signal<string>('heart');
+    readonly pieMenuPartName = signal<string>('Heart & Cardiovascular');
+    readonly pieMenuPartIcon = signal<string>('🫀');
 
     private ambientLight?: THREE.AmbientLight;
     private directionalLight?: THREE.DirectionalLight;
@@ -566,11 +628,13 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 this.hoveredPartPain.set(maxPain);
                 this.hoveredPartNotes.set(desc);
                 this.showHoverTooltip.set(true);
+                this.state.hoveredPartIdForOverlay.set(hit.hitPartId);
                 return;
             }
 
             container.style.cursor = 'grab';
             this.showHoverTooltip.set(false);
+            this.state.hoveredPartIdForOverlay.set(null);
         };
 
         const onPointerDown = (e: MouseEvent) => {
@@ -596,8 +660,50 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             }
         };
 
+        const onContextMenu = (e: MouseEvent) => {
+            e.preventDefault();
+            const rect = container.getBoundingClientRect();
+            const mouse = this.raycastService.getNormalizedMouse(e.clientX, e.clientY, rect);
+            const hit = this.raycastService.pickObject(mouse, this.camera, this.mannequinGroup);
+
+            const targetPartId = hit ? hit.hitPartId : (this.state.selectedPartId() || 'heart');
+            const targetName = hit ? hit.partName : (PART_NAMES[targetPartId] || targetPartId);
+            const targetIcon = this.getPartIcon(targetPartId);
+
+            this.pieMenuX.set(e.clientX);
+            this.pieMenuY.set(e.clientY);
+            this.pieMenuPartId.set(targetPartId);
+            this.pieMenuPartName.set(targetName);
+            this.pieMenuPartIcon.set(targetIcon);
+            this.showRadialPieMenu.set(true);
+        };
+
         container.addEventListener('pointermove', onPointerMove);
         container.addEventListener('pointerdown', onPointerDown);
+        container.addEventListener('contextmenu', onContextMenu);
+    }
+
+    handleRadialAction(event: { action: RadialPieAction; partId: string }): void {
+        this.showRadialPieMenu.set(false);
+        const partId = event.partId;
+        const name = PART_NAMES[partId] || partId;
+        this.state.selectPart(partId);
+        this.partSelected.emit({ id: partId, name });
+
+        switch (event.action) {
+            case 'logSymptom':
+                this.scrollToIntakeForm();
+                break;
+            case 'orderLab':
+                this.saveQuickIssueNote();
+                break;
+            case 'checkDrugs':
+                this.state.selectedPartId.set(partId);
+                break;
+            case 'launchWhatIf':
+                this.state.selectedPartId.set(partId);
+                break;
+        }
     }
 
     getSelectedPartName(): string {

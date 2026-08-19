@@ -10,7 +10,12 @@ import {
   PRAPARE_QUESTIONS, PRAPARE_TIERS,
   AYURVEDA_QUESTIONS, AYURVEDA_TIERS,
   TCM_QUESTIONS, TCM_TIERS,
-  GROW_THYSELF_QUESTIONS, GROW_THYSELF_TIERS
+  GROW_THYSELF_QUESTIONS, GROW_THYSELF_TIERS,
+  MOCA_QUESTIONS, MOCA_TIERS,
+  AUDITC_QUESTIONS, AUDITC_TIERS,
+  SARCF_QUESTIONS, SARCF_TIERS,
+  DN4_QUESTIONS, DN4_TIERS,
+  SIBI_QUESTIONS, SIBI_TIERS
 } from './data';
 import { PatientManagementService } from '../patient-management.service';
 import { PatientStateService } from '../patient-state.service';
@@ -37,6 +42,11 @@ export class ClinicalAssessmentsService {
   readonly ayurvedaAnswers = signal<Record<number, number>>({});
   readonly tcmAnswers = signal<Record<number, number>>({});
   readonly growThyselfAnswers = signal<Record<number, number>>({});
+  readonly mocaAnswers = signal<Record<number, number>>({});
+  readonly auditcAnswers = signal<Record<number, number>>({});
+  readonly sarcfAnswers = signal<Record<number, number>>({});
+  readonly dn4Answers = signal<Record<number, number>>({});
+  readonly sibiAnswers = signal<Record<number, number>>({});
 
   // Computed Scores
   readonly phq9Score = computed(() => Object.values(this.phq9Answers()).reduce((a, b) => a + b, 0));
@@ -49,6 +59,11 @@ export class ClinicalAssessmentsService {
   readonly ayurvedaScore = computed(() => Object.values(this.ayurvedaAnswers()).reduce((a, b) => a + b, 0));
   readonly tcmScore = computed(() => Object.values(this.tcmAnswers()).reduce((a, b) => a + b, 0));
   readonly growThyselfScore = computed(() => Object.values(this.growThyselfAnswers()).reduce((a, b) => a + b, 0));
+  readonly mocaScore = computed(() => Object.values(this.mocaAnswers()).reduce((a, b) => a + b, 0));
+  readonly auditcScore = computed(() => Object.values(this.auditcAnswers()).reduce((a, b) => a + b, 0));
+  readonly sarcfScore = computed(() => Object.values(this.sarcfAnswers()).reduce((a, b) => a + b, 0));
+  readonly dn4Score = computed(() => Object.values(this.dn4Answers()).reduce((a, b) => a + b, 0));
+  readonly sibiScore = computed(() => Object.values(this.sibiAnswers()).reduce((a, b) => a + b, 0));
 
   // Ayurvedic Doshic Breakdown (Vata, Pitta, Kapha)
   readonly doshaBreakdown = computed(() => {
@@ -145,6 +160,31 @@ export class ClinicalAssessmentsService {
     return GROW_THYSELF_TIERS.find(t => s >= t.min && s <= t.max) || GROW_THYSELF_TIERS[0];
   });
 
+  readonly mocaTier = computed<ISeverityTier>(() => {
+    const s = this.mocaScore();
+    return MOCA_TIERS.find(t => s >= t.min && s <= t.max) || MOCA_TIERS[0];
+  });
+
+  readonly auditcTier = computed<ISeverityTier>(() => {
+    const s = this.auditcScore();
+    return AUDITC_TIERS.find(t => s >= t.min && s <= t.max) || AUDITC_TIERS[0];
+  });
+
+  readonly sarcfTier = computed<ISeverityTier>(() => {
+    const s = this.sarcfScore();
+    return SARCF_TIERS.find(t => s >= t.min && s <= t.max) || SARCF_TIERS[0];
+  });
+
+  readonly dn4Tier = computed<ISeverityTier>(() => {
+    const s = this.dn4Score();
+    return DN4_TIERS.find(t => s >= t.min && s <= t.max) || DN4_TIERS[0];
+  });
+
+  readonly sibiTier = computed<ISeverityTier>(() => {
+    const s = this.sibiScore();
+    return SIBI_TIERS.find(t => s >= t.min && s <= t.max) || SIBI_TIERS[0];
+  });
+
   setAnswer(type: AssessmentType, questionId: number, value: number) {
     if (type === 'phq9') this.phq9Answers.update(prev => ({ ...prev, [questionId]: value }));
     else if (type === 'gad7') this.gad7Answers.update(prev => ({ ...prev, [questionId]: value }));
@@ -168,6 +208,11 @@ export class ClinicalAssessmentsService {
       this.growThyselfAnswers.update(prev => ({ ...prev, [questionId]: value }));
       this.syncGrowThyselfToSkelly(questionId, value);
     }
+    else if (type === 'moca') this.mocaAnswers.update(prev => ({ ...prev, [questionId]: value }));
+    else if (type === 'auditc') this.auditcAnswers.update(prev => ({ ...prev, [questionId]: value }));
+    else if (type === 'sarcf') this.sarcfAnswers.update(prev => ({ ...prev, [questionId]: value }));
+    else if (type === 'dn4') this.dn4Answers.update(prev => ({ ...prev, [questionId]: value }));
+    else if (type === 'sibi') this.sibiAnswers.update(prev => ({ ...prev, [questionId]: value }));
   }
 
   resetAssessment(type: AssessmentType) {
@@ -181,6 +226,11 @@ export class ClinicalAssessmentsService {
     if (type === 'ayurveda') this.ayurvedaAnswers.set({});
     if (type === 'tcm') this.tcmAnswers.set({});
     if (type === 'growthyself') this.growThyselfAnswers.set({});
+    if (type === 'moca') this.mocaAnswers.set({});
+    if (type === 'auditc') this.auditcAnswers.set({});
+    if (type === 'sarcf') this.sarcfAnswers.set({});
+    if (type === 'dn4') this.dn4Answers.set({});
+    if (type === 'sibi') this.sibiAnswers.set({});
   }
 
   private syncRos14ToSkelly(questionId: number, value: number) {
@@ -324,6 +374,36 @@ export class ClinicalAssessmentsService {
       maxScore = 15;
       tier = this.growThyselfTier();
       growThyselfBreakdown = this.growThyselfBreakdown();
+    } else if (type === 'moca') {
+      title = 'MoCA / Mini-Cog Rapid Cognitive Screener';
+      answers = this.mocaAnswers();
+      totalScore = this.mocaScore();
+      maxScore = 12;
+      tier = this.mocaTier();
+    } else if (type === 'auditc') {
+      title = 'AUDIT-C Alcohol Metabolic Screener';
+      answers = this.auditcAnswers();
+      totalScore = this.auditcScore();
+      maxScore = 12;
+      tier = this.auditcTier();
+    } else if (type === 'sarcf') {
+      title = 'SARC-F Sarcopenia & Frailty Index';
+      answers = this.sarcfAnswers();
+      totalScore = this.sarcfScore();
+      maxScore = 10;
+      tier = this.sarcfTier();
+    } else if (type === 'dn4') {
+      title = 'DN4 Neuropathic Pain Screener';
+      answers = this.dn4Answers();
+      totalScore = this.dn4Score();
+      maxScore = 4;
+      tier = this.dn4Tier();
+    } else if (type === 'sibi') {
+      title = 'SIBI Systemic Inflammatory Burden Index';
+      answers = this.sibiAnswers();
+      totalScore = this.sibiScore();
+      maxScore = 8;
+      tier = this.sibiTier();
     }
 
     const payload: IAssessmentPayload = {

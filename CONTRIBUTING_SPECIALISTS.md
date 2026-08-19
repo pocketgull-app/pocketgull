@@ -38,7 +38,7 @@ This document outlines the standard operating procedures, repository boundaries,
 
 ### B. Frontend & Spatial Computing Specialists (`src/` & `pocketgull-web`)
 * **Node & Angular**: Node.js v24.x, Angular 22 Standalone Components with Signals.
-* **Styling**: TailwindCSS with curated color tokens. Avoid ad-hoc utility hacks.
+* **Styling**: TailwindCSS with curated color tokens. Avoid ad-hoc utility workarounds.
 * **Three.js Graphics**: Biophysical PBR texture shaders with WebGL fallback and responsive resize observers.
 * **Execution**:
   ```bash

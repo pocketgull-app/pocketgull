@@ -32,5 +32,5 @@
 ## 🌐 Endpoints & Specimen
 
 - Web Specimen: https://typeface.pocketgull.app
-- Repository: https://github.com/philgear/PocketGull-typeface
+- Repository: https://github.com/pocketgull-app/PocketGull-typeface
 - License: SIL Open Font License 1.1 (OFL)

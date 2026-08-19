@@ -17,8 +17,18 @@ export * from './pocket-gull-badge.component';
 export * from './pocket-gull-button.component';
 export * from './pocket-gull-card.component';
 export * from './pocket-gull-input.component';
+export * from './multilingual-specimen.component';
+export * from './pocketgull-sans-bench.component';
+export * from './typographic-3d-body.component';
 export * from './theme-studio-drawer.component';
 export * from './zamecznik-canvas.component';
+export * from './quad-philosophy-matrix.component';
+export * from './cellular-biophysics-viewer.component';
+export * from './awcim-integrative-prescriber.component';
+export * from './immuno-oncology-tme-viewer.component';
+export * from './alpha-stem-viewer.component';
+export * from './electroacupuncture-viewer.component';
+export * from './practice-roi-calculator.component';
 
 /**
  * Shared Pocketgull UI components array.
@@ -36,3 +46,4 @@ export const SHARED_POCKETGULL_COMPONENTS = [
   ThemeStudioDrawerComponent,
   ZamecznikCanvasComponent,
 ] as const;
+
