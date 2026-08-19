@@ -9,7 +9,15 @@ allow-licenses:
   - ISC
   - Unlicense
   - CC0-1.0
+  - CC-BY-4.0
   - MPL-2.0
+  - Python-2.0
+  - 0BSD
+  - BlueOak-1.0.0
+  - PSF-2.0
+  - AFL-2.1
+  - AFL-3.0
+  - MITNFA
 
 # Exclude specific dependencies from license checks (using purl format)
 allow-dependencies-licenses:
@@ -23,12 +31,18 @@ allow-dependencies-licenses:
   - pkg:npm/@img/sharp-libvips-linux-x64
   - pkg:npm/pako
   - pkg:npm/argparse
+  - pkg:npm/bowser
   - pkg:npm/caniuse-lite
   - pkg:npm/chownr
   - pkg:npm/common-ancestor-path
+  - pkg:npm/esprima
   - pkg:npm/glob
+  - pkg:npm/import-in-the-middle
   - pkg:npm/jackspeak
   - pkg:npm/jsonify
+  - pkg:npm/json-schema
+  - pkg:npm/lodash-es
+  - pkg:npm/lodash.mapvalues
   - pkg:npm/minipass
   - pkg:npm/minipass-flush
   - pkg:npm/package-json-from-dist
@@ -37,8 +51,18 @@ allow-dependencies-licenses:
   - pkg:npm/spdx-exceptions
   - pkg:npm/tar
   - pkg:npm/tslib
+  - pkg:npm/uglify-js
   - pkg:npm/uri-templates
   - pkg:npm/url-template
   - pkg:npm/@google-cloud/agones-sdk
+  - pkg:npm/@aws-sdk/types
+  - pkg:npm/@aws-sdk/client-bedrock-runtime
+  - pkg:npm/@aws-sdk/client-healthlake
+  - pkg:npm/@aws-sdk/credential-provider-node
+  - pkg:npm/@aws-sdk/protocol-http
+  - pkg:npm/@aws-sdk/signature-v4
+  - pkg:npm/@aws-sdk/signature-v4-multi-region
+  - pkg:npm/@aws-sdk/token-providers
+  - pkg:npm/@aws-sdk/xml-builder
   - pkg:github/actions/checkout
   - pkg:github/actions/setup-node

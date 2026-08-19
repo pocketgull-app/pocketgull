@@ -113,7 +113,7 @@ html.dark .bionic-pocketgull-marker b {
 
 /* 🖋️ Marker Heavy Bold Emphasis */
 .marker-bold-emphasis {
-  font-family: 'PocketGull', 'Permanent Marker', sans-serif;
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
   font-weight: 900;
   background: linear-gradient(120deg, rgba(251, 146, 60, 0.25) 0%, rgba(249, 115, 22, 0.35) 100%);
   border-radius: 4px;
