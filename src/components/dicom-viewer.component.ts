@@ -269,6 +269,7 @@ export type TSlicePlane = 'axial' | 'sagittal' | 'coronal';
                     type="range" min="1" [max]="totalSlices()" step="1" 
                     [value]="currentSlice()" 
                     (input)="updateSlice($event)"
+                    aria-label="DICOM Slice Index Navigator"
                     class="flex-1 accent-orange-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
                   />
                   <span class="text-orange-400 font-bold text-[11px] w-12 text-right">{{ currentSlice() }} / {{ totalSlices() }}</span>

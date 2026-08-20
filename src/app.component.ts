@@ -382,20 +382,20 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
                   <button (click)="mobileActiveTab.set('chart')" 
                           class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
                           [class.bg-white]="mobileActiveTab() === 'chart'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'chart'" [class.text-black]="mobileActiveTab() === 'chart'" [class.dark:text-white]="mobileActiveTab() === 'chart'"
-                          [class.text-gray-500]="mobileActiveTab() !== 'chart'" [class.dark:text-zinc-400]="mobileActiveTab() !== 'chart'">
+                          [class.text-gray-700]="mobileActiveTab() !== 'chart'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'chart'">
                     🩺 Chart
                   </button>
                   <button (click)="mobileActiveTab.set('analysis')"
                           class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
                           [class.bg-white]="mobileActiveTab() === 'analysis'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'analysis'" [class.text-black]="mobileActiveTab() === 'analysis'" [class.dark:text-white]="mobileActiveTab() === 'analysis'"
-                          [class.text-gray-500]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-400]="mobileActiveTab() !== 'analysis'">
+                          [class.text-gray-700]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'analysis'">
                     📊 Analysis
                   </button>
                   @if (state.selectedPartId()) {
                     <button (click)="mobileActiveTab.set('tasks')"
                             class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
                             [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
-                            [class.text-gray-500]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-400]="mobileActiveTab() !== 'tasks'">
+                            [class.text-gray-700]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'tasks'">
                       📋 Tasks
                     </button>
                   }

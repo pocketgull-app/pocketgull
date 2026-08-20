@@ -13,7 +13,6 @@ import { ClinicalMoERouterService, IExpertSubnet } from '../../services/clinical
         type="button"
         (click)="toggleExpanded()"
         [attr.aria-expanded]="isExpanded()"
-        aria-label="Pathways MoE Compute Efficiency Status"
         class="group flex items-center gap-2.5 px-3.5 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md transition-all duration-300 border shadow-sm cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
         [ngClass]="{
           'bg-emerald-950/40 text-emerald-300 border-emerald-500/30 hover:border-emerald-400/60 shadow-emerald-900/20': savingsPercent() > 20,
@@ -30,7 +29,7 @@ import { ClinicalMoERouterService, IExpertSubnet } from '../../services/clinical
         <span class="flex items-center gap-1.5 tracking-wide">
           <span class="text-emerald-400 group-hover:scale-110 transition-transform">⚡</span>
           <span>Pathways MoE</span>
-          <span class="font-mono text-xs px-1.5 py-0.5 rounded bg-emerald-900/50 text-emerald-200 border border-emerald-500/20">
+          <span class="font-mono text-xs px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40">
             +{{ savingsPercent() }}% FLOP Savings
           </span>
         </span>

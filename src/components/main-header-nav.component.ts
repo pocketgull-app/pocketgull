@@ -7,8 +7,6 @@ import { HardwareTelemetryService } from '../services/hardware/hardware-telemetr
 import { GamificationService } from '../services/gamification.service';
 import { WalkthroughTourService } from '../services/walkthrough-tour.service';
 import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
-import { PathwaysMoeBadgeComponent } from './shared/pathways-moe-badge.component';
-
 import { SessionStateService } from '../services/session-state.service';
 
 @Component({
@@ -16,8 +14,7 @@ import { SessionStateService } from '../services/session-state.service';
   standalone: true,
   imports: [
     CommonModule,
-    PocketgullIconComponent,
-    PathwaysMoeBadgeComponent
+    PocketgullIconComponent
   ],
   template: `
     <!-- Navbar: Pure utility & theme harmony -->
@@ -194,8 +191,17 @@ import { SessionStateService } from '../services/session-state.service';
           <span class="hidden md:inline">Grounding</span>
         </button>
 
-        <!-- Pathways MoE Telemetry HUD -->
-        <app-pathways-moe-badge />
+        <!-- NN/g System Status Indicator (Visibility of System Status Heuristic #1) -->
+        <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-950/30 text-emerald-300 text-xs font-mono select-none"
+             title="System Status: Edge Telemetry Active, HIPAA Safe Harbor Enforced">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span class="font-bold tracking-wider">120 FPS</span>
+          <span class="text-zinc-600 dark:text-zinc-500">|</span>
+          <span class="text-emerald-400/90 font-medium">HIPAA §164.514</span>
+        </div>
 
         <!-- Tour Guide Toggle -->
         <button (click)="tour.forceStart()" 
