@@ -1,7 +1,7 @@
 <?php
 /**
  * Front Page Template for WordPress Theme (pocketgull.com)
- * High-Converting B2B SaaS Sales Engine + Comprehensive Preventive Medicine Hub
+ * Enhanced with DESIGN.md & GREATER_GOOD_CHARTER.md Systems
  *
  * @package PocketGull_Articles
  */
@@ -10,24 +10,29 @@ get_header(); ?>
 
 <main class="relative z-10 flex-grow space-y-24 py-12 px-4 sm:px-6 max-w-7xl mx-auto">
 
-  <!-- ══ 1. Commercial SaaS & Prevention Hero Section ═══════════════════════════ -->
+  <!-- ══ 1. Hero & Handcrafted GEARARTS Card with Rams Grill ════════════════════ -->
   <section class="text-center max-w-5xl mx-auto pt-6 pb-8">
     
     <!-- Top Announcement Pill -->
-    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-pocketgull-mono font-bold mb-8 shadow-sm">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-mono font-bold mb-8 shadow-sm">
       <span class="animate-pulse">✨</span>
       <span>Enterprise Clinical Intelligence SaaS • 14-Day Free Pilot</span>
       <span class="text-stone-500">|</span>
-      <span class="text-teal-400">Preventive Medicine &amp; FHIR R4 Ready</span>
+      <span class="text-teal-400">HIPAA Safe Harbor &amp; FHIR R4</span>
     </div>
 
-    <!-- Handcrafted GEARARTS Card with Official Origami Seagull Logo -->
-    <div class="max-w-xl mx-auto mb-10 text-center">
+    <!-- Handcrafted GEARARTS Card with Dieter Rams Precision Grill -->
+    <div class="max-w-xl mx-auto mb-10 text-center relative">
       <div class="geararts-card p-8 rounded-3xl relative overflow-hidden text-stone-950 shadow-2xl border-4 border-amber-300/50">
         
+        <!-- Dieter Rams Slotted Grill Homage -->
+        <div class="rams-grill">
+          <div></div><div></div><div></div><div></div>
+        </div>
+
         <!-- Banner inside card -->
-        <div class="bg-gradient-to-r from-teal-600 to-rose-500 text-white rounded-xl p-3 mb-6 text-center shadow-md border border-white/20">
-          <div class="font-bold text-2xl tracking-wider uppercase font-pocketgull">GEARARTS</div>
+        <div class="bg-gradient-to-r from-teal-600 to-rose-500 text-white rounded-xl p-3 mb-6 text-center shadow-md border border-white/20 mt-1">
+          <div class="font-bold text-2xl tracking-wider uppercase">GEARARTS</div>
           <div class="text-[10px] tracking-tight uppercase font-semibold">Creating a Sustainable Future Through Art and Technology</div>
         </div>
 
@@ -42,38 +47,39 @@ get_header(); ?>
           </svg>
         </div>
 
-        <div class="text-3xl font-extrabold text-stone-950 uppercase tracking-tight font-pocketgull">
+        <!-- Wordmark with Authentic MarkerFont -->
+        <div class="text-4xl sm:text-5xl font-bold text-stone-950 tracking-tight font-pocketgull-marker">
           PocketGull
         </div>
-        <div class="text-xs font-bold text-stone-800 uppercase tracking-widest mt-1 font-pocketgull-mono">
+        <div class="text-xs font-bold text-stone-800 uppercase tracking-widest mt-1 font-mono">
           Clinical Intelligence &amp; Preventive Strategy Engine
         </div>
       </div>
     </div>
 
-    <!-- Main Value Proposition Headline -->
-    <h1 class="text-4xl sm:text-7xl font-extrabold font-pocketgull tracking-tight text-white mb-6 leading-tight max-w-4xl mx-auto">
-      Where <span class="text-teal-400 marker-underline">Preventive Health</span> Meets <span class="text-rose-400">Clinical AI Intelligence</span>.
+    <!-- Main Value Proposition Headline (UI Sans-Serif) -->
+    <h1 class="text-4xl sm:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight max-w-4xl mx-auto">
+      Reclaim <span class="text-teal-400 marker-underline">2.4 Hours</span> Every Day with the Clinical AI Co-Pilot.
     </h1>
 
-    <p class="text-lg sm:text-2xl text-stone-300 mb-10 max-w-3xl mx-auto leading-relaxed font-sans font-normal">
-      PocketGull empowers physicians, clinics, and everyday caregivers with real-time diagnostic intelligence, ambient charting, and proactive prevention strategies that keep patients out of the hospital.
+    <p class="text-lg sm:text-2xl text-stone-300 mb-10 max-w-3xl mx-auto leading-relaxed font-normal">
+      PocketGull automates EHR charting, ambient patient scribing, and complex care plans using <strong class="text-amber-300">Google Gemini 2.5</strong> and the <strong class="text-teal-300">PocketGull Typeface</strong>—slashing administrative burnout by <strong class="text-rose-400">42%</strong>.
     </p>
 
     <!-- Primary Conversion CTA Buttons -->
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-      <a href="https://pocketgull.app" class="w-full sm:w-auto px-8 py-4 rounded-2xl geararts-card font-pocketgull text-lg text-stone-950 font-extrabold transition-all hover:scale-105 hover:shadow-amber-500/50 flex items-center justify-center gap-2 shadow-xl cursor-pointer">
+      <a href="https://pocketgull.app" class="w-full sm:w-auto px-8 py-4 rounded-2xl geararts-card text-lg text-stone-950 font-extrabold transition-all hover:scale-105 hover:shadow-amber-500/50 flex items-center justify-center gap-2 shadow-xl cursor-pointer">
         <span>Start 14-Day Clinical Pilot</span>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
       </a>
-      <a href="#prevention-avenues" class="w-full sm:w-auto px-7 py-4 rounded-2xl glass-card-dark text-stone-200 font-pocketgull text-lg font-bold hover:text-white hover:border-amber-400/60 transition-all flex items-center justify-center gap-2">
+      <a href="#prevention-avenues" class="w-full sm:w-auto px-7 py-4 rounded-2xl glass-card-dark text-stone-200 text-lg font-bold hover:text-white hover:border-amber-400/60 transition-all flex items-center justify-center gap-2">
         <span>Explore Preventive Avenues</span>
         <span>↓</span>
       </a>
     </div>
 
     <!-- Trust Badges & Metrics -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left font-pocketgull-mono text-xs">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left font-mono text-xs">
       <div class="p-4 rounded-2xl bg-stone-900/80 border border-stone-800 space-y-1">
         <div class="text-2xl font-bold text-amber-300">42%</div>
         <div class="text-stone-400">Less Charting Time</div>
@@ -97,13 +103,13 @@ get_header(); ?>
   <!-- ══ 2. 5 Core Avenues of Preventive Medicine ════════════════════════════════ -->
   <section id="prevention-avenues" class="space-y-12 py-6">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-300 text-xs font-pocketgull-mono font-bold">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-300 text-xs font-mono font-bold">
         <span>🌿 Proactive &amp; Grassroots Care</span>
       </div>
-      <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-white">
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
         Five Avenues of Preventive Health
       </h2>
-      <p class="text-stone-300 text-sm sm:text-base font-sans leading-relaxed">
+      <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
         Empowering providers, individuals, and families to address root causes before they turn into costly hospitalizations.
       </p>
     </div>
@@ -111,97 +117,103 @@ get_header(); ?>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       
       <!-- Avenue 1: Cardiovascular & Exertion Safety -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-rose-500/30 hover:border-rose-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
-        <div class="space-y-3">
+      <div class="glass-card-dark p-8 rounded-3xl border border-rose-500/30 hover:border-rose-400 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
           <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-2xl">
             ❤️
           </div>
-          <h3 class="text-2xl font-bold font-pocketgull text-white">Cardiovascular &amp; Intimacy Safety</h3>
-          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+          <h3 class="text-2xl font-bold text-white">Cardiovascular &amp; Intimacy Safety</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
             Applies Princeton Consensus III cardiology benchmarks (2 flights of stairs / 4 METs) so patients can safely return to physical connection and daily exercise after a cardiac event.
           </p>
         </div>
-        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-rose-300 font-semibold">
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-rose-300 font-semibold">
           • MET Capacity Stratification &bull; Pacing Budgets
         </div>
       </div>
 
       <!-- Avenue 2: Renal Protection & Blood Pressure -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-amber-500/30 hover:border-amber-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
-        <div class="space-y-3">
+      <div class="glass-card-dark p-8 rounded-3xl border border-amber-500/30 hover:border-amber-400 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
           <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl">
             🫘
           </div>
-          <h3 class="text-2xl font-bold font-pocketgull text-white">Renal Protection ($100k Dialysis Aversion)</h3>
-          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+          <h3 class="text-2xl font-bold text-white">Renal Protection ($100k Dialysis Aversion)</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
             Catches hypertension and glomerular microvascular strain early—protecting kidney filtration and preventing the catastrophic $100k/year burden of Medicare dialysis.
           </p>
         </div>
-        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-amber-300 font-semibold">
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-amber-300 font-semibold">
           • ICD-10 I10 &bull; Glomerular Health
         </div>
       </div>
 
       <!-- Avenue 3: Occupational & Trade Ergonomics -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-teal-500/30 hover:border-teal-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
-        <div class="space-y-3">
+      <div class="glass-card-dark p-8 rounded-3xl border border-teal-500/30 hover:border-teal-400 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
           <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-2xl">
             🛠️
           </div>
-          <h3 class="text-2xl font-bold font-pocketgull text-white">Workshop &amp; Joint Ergonomics</h3>
-          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+          <h3 class="text-2xl font-bold text-white">Workshop &amp; Joint Ergonomics</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
             Helps carpenters, mechanics, and gardeners with osteoarthritis (M17.9) or post-joint replacement modify their physical setups to keep doing their crafts pain-free.
           </p>
         </div>
-        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-teal-300 font-semibold">
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-teal-300 font-semibold">
           • Occupational Therapy &bull; Adaptive Grips
         </div>
       </div>
 
       <!-- Avenue 4: Polypharmacy & Drug-Herb Interlocks -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-purple-500/30 hover:border-purple-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
-        <div class="space-y-3">
+      <div class="glass-card-dark p-8 rounded-3xl border border-purple-500/30 hover:border-purple-400 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
           <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-2xl">
             🛡️
           </div>
-          <h3 class="text-2xl font-bold font-pocketgull text-white">RxGuard Polypharmacy Safety</h3>
-          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+          <h3 class="text-2xl font-bold text-white">RxGuard Polypharmacy Safety</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
             Guards against dangerous botanical-drug interactions (such as Nitrates + PDE-5 inhibitors or St. John's Wort + SSRIs) and CYP450 metabolism collisions.
           </p>
         </div>
-        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-purple-300 font-semibold">
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-purple-300 font-semibold">
           • Rule dhi-007 &bull; Washout Intervals
         </div>
       </div>
 
       <!-- Avenue 5: Bereavement & Craft Continuity -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-emerald-500/30 hover:border-emerald-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
-        <div class="space-y-3">
+      <div class="glass-card-dark p-8 rounded-3xl border border-emerald-500/30 hover:border-emerald-400 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
           <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-2xl">
             🤝
           </div>
-          <h3 class="text-2xl font-bold font-pocketgull text-white">Craft Confidants &amp; Social Prescribing</h3>
-          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+          <h3 class="text-2xl font-bold text-white">Craft Confidants &amp; Social Prescribing</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
             Supports individuals experiencing grief or loneliness by encouraging craft continuity, picking up a loved one's tools, and connecting with local Men's Sheds and community gardens.
           </p>
         </div>
-        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-emerald-300 font-semibold">
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-emerald-300 font-semibold">
           • SNOMED 399269003 &bull; Social Health
         </div>
       </div>
 
       <!-- Avenue 6: Plain-Language Patient Health Literacy -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-blue-500/30 hover:border-blue-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
-        <div class="space-y-3">
+      <div class="glass-card-dark p-8 rounded-3xl border border-blue-500/30 hover:border-blue-400 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
           <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-2xl">
             📖
           </div>
-          <h3 class="text-2xl font-bold font-pocketgull text-white">Grade 6.2 Health Literacy</h3>
-          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+          <h3 class="text-2xl font-bold text-white">Grade 6.2 Health Literacy</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
             Translates complex lab values and discharge summaries into crystal-clear plain language, Socratic inquiries, and Section 1557 ACA multilingual instructions.
           </p>
         </div>
-        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-blue-300 font-semibold">
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-blue-300 font-semibold">
           • Optotypic Legibility &bull; WCAG AAA
         </div>
       </div>
@@ -209,110 +221,62 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 3. The 5-Font PocketGull Typeface Superfamily Showcase ═════════════════ -->
-  <section id="typeface" class="py-12 border-t border-stone-800 space-y-12">
-    <div class="text-center space-y-3 max-w-3xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-pocketgull-mono font-bold">
-        <span>🖋️ SIL Open Font License 1.1</span>
-      </div>
-      <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-white">
-        The PocketGull Typeface Superfamily (5 Cuts)
-      </h2>
-      <p class="text-stone-300 text-sm sm:text-base font-sans leading-relaxed">
-        Engineered specifically for clinical decision support, medical telemetry HUDs, and papercraft aesthetics. Designed with unambiguous optical legibility and WCAG 2.1 AAA contrast.
-      </p>
-    </div>
-
-    <!-- Master Specimen Card -->
-    <div class="bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 p-6 sm:p-10 rounded-3xl shadow-2xl border-2 border-amber-400/40 max-w-5xl mx-auto">
-      <div class="bg-[#FDFBF7] text-stone-950 rounded-2xl p-8 sm:p-12 text-center shadow-xl border-2 border-amber-700/20 relative overflow-hidden">
-        <div class="bg-[#EA580C] text-white px-5 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-widest inline-block shadow-md mb-6">
-          POCKETGULL TYPEFACE SPECIMEN
+  <!-- ══ 3. Greater Good Charter: 50-30-20 Philanthropic Split ═════════════════ -->
+  <section class="glass-card-dark rounded-3xl p-8 sm:p-12 border-2 border-emerald-500/40 shadow-2xl relative overflow-hidden">
+    <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+    <div class="max-w-4xl mx-auto space-y-8 pt-2">
+      <div class="text-center space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">
+          <span>🏛️ Public Benefit &amp; Ethical Governance</span>
         </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+          The Greater Good Charter &amp; 50-30-20 Covenant
+        </h2>
+        <p class="text-sm sm:text-base text-stone-400">
+          We believe health intelligence belongs to humanity. Every SaaS subscription dollar is automatically shared through our philanthropic split:
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 text-left">
         
-        <div class="text-4xl sm:text-6xl font-extrabold text-stone-900 tracking-tight font-pocketgull-marker my-2">
-          PocketGull
+        <div class="p-6 rounded-2xl bg-stone-900/80 border border-stone-800 space-y-2">
+          <div class="text-3xl font-black text-emerald-400">50%</div>
+          <div class="font-bold text-white text-base">Open Science &amp; Public Health R&amp;D</div>
+          <p class="text-xs text-stone-400 leading-relaxed">
+            Direct funding for open-source clinical AI models, PubMed meta-analyses, and public health research.
+          </p>
         </div>
 
-        <div class="text-rose-700 text-sm sm:text-base font-bold font-mono tracking-wide mt-4">
-          Handcrafted Felt-Tip Marker Typography &amp; Clinical Legibility Engine
+        <div class="p-6 rounded-2xl bg-stone-900/80 border border-stone-800 space-y-2">
+          <div class="text-3xl font-black text-teal-400">30%</div>
+          <div class="font-bold text-white text-base">Underserved Access Fund</div>
+          <p class="text-xs text-stone-400 leading-relaxed">
+            Subsidizes PocketGull clinical licenses for rural clinics, free community health centers, and uninsured patients globally.
+          </p>
         </div>
 
-        <div class="text-stone-700 font-mono text-xs sm:text-sm tracking-widest mt-6 font-semibold border-t border-amber-900/10 pt-4">
-          Aa Bb Cc Dd Ee 0123456789 • Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ ☤ ⚕ ✚ ñ é ü  æ ç α β Ω
+        <div class="p-6 rounded-2xl bg-stone-900/80 border border-stone-800 space-y-2">
+          <div class="text-3xl font-black text-amber-400">20%</div>
+          <div class="font-bold text-white text-base">Platform Resilience &amp; Ops</div>
+          <p class="text-xs text-stone-400 leading-relaxed">
+            Covers green scale-to-zero GCP infrastructure, independent security audits, and developer stewardship.
+          </p>
         </div>
 
-        <div class="text-stone-500 font-mono text-[11px] mt-4 opacity-85">
-          SIL Open Font License 1.1 • Certified WCAG 2.1 AAA Contrast Ratio (v1.0.1)
-        </div>
       </div>
-    </div>
-
-    <!-- 5 Distinct Font Cuts Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 max-w-6xl mx-auto text-left">
-      
-      <!-- Cut 1: Fineliner -->
-      <div class="glass-card-dark p-6 rounded-2xl border border-teal-500/30 flex flex-col justify-between">
-        <div>
-          <div class="text-[11px] font-mono font-bold text-teal-400 uppercase mb-2">400 • Fineliner</div>
-          <div class="font-pocketgull-marker text-2xl text-stone-100 mb-3">Aa Bb 123</div>
-          <h4 class="text-sm font-bold text-white mb-1">Fineliner</h4>
-          <p class="text-[11px] text-stone-400 leading-relaxed font-sans">0.8mm wet felt-tip stroke simulating organic clinical notes.</p>
-        </div>
-      </div>
-
-      <!-- Cut 2: Bold -->
-      <div class="glass-card-dark p-6 rounded-2xl border border-amber-500/30 flex flex-col justify-between">
-        <div>
-          <div class="text-[11px] font-mono font-bold text-amber-400 uppercase mb-2">700 • Bold</div>
-          <div class="font-pocketgull-marker font-bold text-2xl text-amber-300 mb-3">PocketGull</div>
-          <h4 class="text-sm font-bold text-white mb-1">Master Bold</h4>
-          <p class="text-[11px] text-stone-400 leading-relaxed font-sans">Cap Height (P=78.22 UPM) trace for prominent headers.</p>
-        </div>
-      </div>
-
-      <!-- Cut 3: Chiseltip -->
-      <div class="glass-card-dark p-6 rounded-2xl border border-rose-500/30 flex flex-col justify-between">
-        <div>
-          <div class="text-[11px] font-mono font-bold text-rose-400 uppercase mb-2">900 • Chiseltip</div>
-          <div class="font-pocketgull-chisel text-2xl text-rose-300 mb-3">GEARARTS</div>
-          <h4 class="text-sm font-bold text-white mb-1">Chiseltip</h4>
-          <p class="text-[11px] text-stone-400 leading-relaxed font-sans">-4.0° calligraphic chisel tilt for brand badges.</p>
-        </div>
-      </div>
-
-      <!-- Cut 4: Mono -->
-      <div class="glass-card-dark p-6 rounded-2xl border border-stone-700 flex flex-col justify-between">
-        <div>
-          <div class="text-[11px] font-mono font-bold text-stone-400 uppercase mb-2">Mono • Regular</div>
-          <div class="font-pocketgull-mono text-xl text-teal-300 mb-3">FHIR { }</div>
-          <h4 class="text-sm font-bold text-white mb-1">PocketGull Mono</h4>
-          <p class="text-[11px] text-stone-400 leading-relaxed font-sans">Tabular alignment for FHIR R4 JSON &amp; ECG signals.</p>
-        </div>
-      </div>
-
-      <!-- Cut 5: Antigravity -->
-      <div class="glass-card-dark p-6 rounded-2xl border border-indigo-500/30 flex flex-col justify-between">
-        <div>
-          <div class="text-[11px] font-mono font-bold text-indigo-400 uppercase mb-2">Display • Space</div>
-          <div class="text-xl text-indigo-300 font-bold mb-3 tracking-widest uppercase" style="font-family: 'PocketGull Antigravity', sans-serif;">ORBIT 3D</div>
-          <h4 class="text-sm font-bold text-white mb-1">Antigravity</h4>
-          <p class="text-[11px] text-stone-400 leading-relaxed font-sans">Futuristic spatial HUD display for 3D holographic telemetry.</p>
-        </div>
-      </div>
-
     </div>
   </section>
 
   <!-- ══ 4. Interactive SaaS ROI Calculator ════════════════════════════════════ -->
-  <section class="glass-card-dark rounded-3xl p-8 sm:p-12 border-2 border-amber-500/40 shadow-2xl">
-    <div class="max-w-4xl mx-auto space-y-8">
+  <section class="glass-card-dark rounded-3xl p-8 sm:p-12 border-2 border-amber-500/40 shadow-2xl relative overflow-hidden">
+    <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+    <div class="max-w-4xl mx-auto space-y-8 pt-2">
       <div class="text-center space-y-2">
-        <div class="text-xs font-bold text-amber-400 uppercase tracking-widest font-pocketgull">Economic Impact</div>
-        <h2 class="text-3xl sm:text-4xl font-extrabold font-pocketgull text-white">
+        <div class="text-xs font-bold text-amber-400 uppercase tracking-widest font-mono">Economic Impact</div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
           Calculate Your Clinic's Annual ROI
         </h2>
-        <p class="text-sm sm:text-base text-stone-400 font-sans">
+        <p class="text-sm sm:text-base text-stone-400">
           See how much clinical revenue and unbilled charting hours PocketGull saves your practice.
         </p>
       </div>
@@ -321,7 +285,7 @@ get_header(); ?>
         <!-- Sliders -->
         <div class="space-y-6">
           <div>
-            <div class="flex justify-between text-xs font-pocketgull-mono text-stone-300 mb-2">
+            <div class="flex justify-between text-xs font-mono text-stone-300 mb-2">
               <span>Number of Clinicians in Practice:</span>
               <strong id="clinicianCountDisplay" class="text-amber-300 text-sm">3 Providers</strong>
             </div>
@@ -329,7 +293,7 @@ get_header(); ?>
           </div>
 
           <div>
-            <div class="flex justify-between text-xs font-pocketgull-mono text-stone-300 mb-2">
+            <div class="flex justify-between text-xs font-mono text-stone-300 mb-2">
               <span>Avg. Daily Patient Encounters per Provider:</span>
               <strong id="patientCountDisplay" class="text-teal-300 text-sm">18 Patients/day</strong>
             </div>
@@ -339,11 +303,11 @@ get_header(); ?>
 
         <!-- Calculated Output Card -->
         <div class="geararts-card rounded-2xl p-6 sm:p-8 text-stone-950 space-y-4 shadow-xl border border-amber-200/60">
-          <div class="text-xs font-bold uppercase tracking-wider opacity-80 font-pocketgull">Projected Annual Practice Savings</div>
-          <div id="totalSavingsDisplay" class="text-4xl sm:text-5xl font-black font-pocketgull tracking-tight">
+          <div class="text-xs font-bold uppercase tracking-wider opacity-80">Projected Annual Practice Savings</div>
+          <div id="totalSavingsDisplay" class="text-4xl sm:text-5xl font-black tracking-tight">
             $194,400 / yr
           </div>
-          <div class="text-xs font-medium space-y-1 opacity-90 font-sans border-t border-stone-950/20 pt-3">
+          <div class="text-xs font-medium space-y-1 opacity-90 border-t border-stone-950/20 pt-3">
             <div>⏱️ Reclaims <strong id="hoursReclaimedDisplay">1,728 hours</strong> of personal time annually.</div>
             <div>📋 Eliminates ~<strong id="chartsAutomatedDisplay">12,960 charting steps</strong>.</div>
           </div>
@@ -352,14 +316,14 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 4. Commercial SaaS Pricing & Packaging ═════════════════════════════════ -->
+  <!-- ══ 5. Commercial SaaS Pricing & Packaging ═════════════════════════════════ -->
   <section id="pricing" class="space-y-12 py-8">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
-      <div class="text-xs font-bold text-amber-400 uppercase tracking-widest font-pocketgull">Transparent SaaS Subscriptions</div>
-      <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-white">
+      <div class="text-xs font-bold text-amber-400 uppercase tracking-widest font-mono">Transparent SaaS Subscriptions</div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
         Simple, Predictable Plans for Every Practice
       </h2>
-      <p class="text-stone-300 text-sm sm:text-base font-sans">
+      <p class="text-stone-300 text-sm sm:text-base">
         All plans include a 14-day free trial, ambient scribing, and HIPAA Safe Harbor de-identification.
       </p>
     </div>
@@ -367,19 +331,20 @@ get_header(); ?>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
       
       <!-- Tier 1: Solo Clinician -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-stone-800 flex flex-col justify-between space-y-8 shadow-xl">
-        <div class="space-y-4">
-          <div class="text-xs font-bold text-stone-400 uppercase font-pocketgull-mono">Solo Practitioner</div>
-          <h3 class="text-2xl font-bold text-white font-pocketgull">Practice Starter</h3>
+      <div class="glass-card-dark p-8 rounded-3xl border border-stone-800 flex flex-col justify-between space-y-8 shadow-xl relative overflow-hidden">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-4 pt-2">
+          <div class="text-xs font-bold text-stone-400 uppercase font-mono">Solo Practitioner</div>
+          <h3 class="text-2xl font-bold text-white">Practice Starter</h3>
           <div class="flex items-baseline gap-1">
-            <span class="text-4xl font-extrabold text-white font-pocketgull">$99</span>
+            <span class="text-4xl font-extrabold text-white">$99</span>
             <span class="text-xs text-stone-400 font-mono">/ provider / month</span>
           </div>
           <p class="text-xs text-stone-400 leading-relaxed">
             Ideal for independent physicians, integrative therapists, and solo functional medicine providers.
           </p>
 
-          <ul class="space-y-2.5 text-xs text-stone-300 font-sans border-t border-stone-800 pt-4">
+          <ul class="space-y-2.5 text-xs text-stone-300 border-t border-stone-800 pt-4">
             <li class="flex items-center gap-2">✓ Unlimited Ambient Scribe Consults</li>
             <li class="flex items-center gap-2">✓ Gemini 2.5 Flash Live Streaming</li>
             <li class="flex items-center gap-2">✓ SNO-10 Patient Education Cards</li>
@@ -387,29 +352,30 @@ get_header(); ?>
           </ul>
         </div>
 
-        <a href="https://pocketgull.app" class="w-full py-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-center font-bold text-xs font-pocketgull transition block">
+        <a href="https://pocketgull.app" class="w-full py-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-center font-bold text-xs transition block">
           Start Solo Pilot
         </a>
       </div>
 
       <!-- Tier 2: Group Clinic (Featured) -->
-      <div class="glass-card-dark p-8 sm:p-10 rounded-3xl border-2 border-amber-400 flex flex-col justify-between space-y-8 shadow-2xl relative">
-        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full geararts-card text-stone-950 text-[10px] font-bold uppercase tracking-wider font-pocketgull shadow-md">
+      <div class="glass-card-dark p-8 sm:p-10 rounded-3xl border-2 border-amber-400 flex flex-col justify-between space-y-8 shadow-2xl relative overflow-hidden">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full geararts-card text-stone-950 text-[10px] font-bold uppercase tracking-wider shadow-md">
           Most Popular for Clinics
         </div>
 
-        <div class="space-y-4">
-          <div class="text-xs font-bold text-amber-300 uppercase font-pocketgull-mono">Group Practices &amp; Clinics</div>
-          <h3 class="text-3xl font-extrabold text-white font-pocketgull">Practice Pro</h3>
+        <div class="space-y-4 pt-4">
+          <div class="text-xs font-bold text-amber-300 uppercase font-mono">Group Practices &amp; Clinics</div>
+          <h3 class="text-3xl font-extrabold text-white">Practice Pro</h3>
           <div class="flex items-baseline gap-1">
-            <span class="text-5xl font-black text-amber-300 font-pocketgull">$349</span>
+            <span class="text-5xl font-black text-amber-300">$349</span>
             <span class="text-xs text-stone-300 font-mono">/ clinic / month</span>
           </div>
           <p class="text-xs text-stone-300 leading-relaxed">
             Covers up to 5 clinicians with shared colleague consult rooms, RxGuard, and prior-auth acceleration.
           </p>
 
-          <ul class="space-y-2.5 text-xs text-stone-200 font-sans border-t border-stone-800 pt-4">
+          <ul class="space-y-2.5 text-xs text-stone-200 border-t border-stone-800 pt-4">
             <li class="flex items-center gap-2">✓ Everything in Practice Starter</li>
             <li class="flex items-center gap-2">✓ Up to 5 Provider Seats Included</li>
             <li class="flex items-center gap-2">✓ RxGuard PGx &amp; Herbal Contraindications</li>
@@ -418,25 +384,26 @@ get_header(); ?>
           </ul>
         </div>
 
-        <a href="https://pocketgull.app" class="w-full py-3.5 rounded-xl geararts-card text-stone-950 text-center font-black text-sm font-pocketgull transition hover:scale-105 shadow-xl block">
+        <a href="https://pocketgull.app" class="w-full py-3.5 rounded-xl geararts-card text-stone-950 text-center font-black text-sm transition hover:scale-105 shadow-xl block">
           Get Started with Pro
         </a>
       </div>
 
       <!-- Tier 3: Enterprise Health System -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-stone-800 flex flex-col justify-between space-y-8 shadow-xl">
-        <div class="space-y-4">
-          <div class="text-xs font-bold text-teal-400 uppercase font-pocketgull-mono">Health Systems &amp; ACOs</div>
-          <h3 class="text-2xl font-bold text-white font-pocketgull">Enterprise System</h3>
+      <div class="glass-card-dark p-8 rounded-3xl border border-stone-800 flex flex-col justify-between space-y-8 shadow-xl relative overflow-hidden">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-4 pt-2">
+          <div class="text-xs font-bold text-teal-400 uppercase font-mono">Health Systems &amp; ACOs</div>
+          <h3 class="text-2xl font-bold text-white">Enterprise System</h3>
           <div class="flex items-baseline gap-1">
-            <span class="text-4xl font-extrabold text-teal-300 font-pocketgull">Custom</span>
+            <span class="text-4xl font-extrabold text-teal-300">Custom</span>
             <span class="text-xs text-stone-400 font-mono">/ annual contract</span>
           </div>
           <p class="text-xs text-stone-400 leading-relaxed">
             For hospital networks, ACOs, and residency programs requiring custom EHR integration and dedicated VPCs.
           </p>
 
-          <ul class="space-y-2.5 text-xs text-stone-300 font-sans border-t border-stone-800 pt-4">
+          <ul class="space-y-2.5 text-xs text-stone-300 border-t border-stone-800 pt-4">
             <li class="flex items-center gap-2">✓ Unlimited Clinicians &amp; Departments</li>
             <li class="flex items-center gap-2">✓ Direct Epic / Cerner / Athena FHIR Sync</li>
             <li class="flex items-center gap-2">✓ Dedicated GCP Cloud Run VPC &amp; BAA</li>
@@ -445,7 +412,7 @@ get_header(); ?>
           </ul>
         </div>
 
-        <a href="mailto:enterprise@pocketgull.com" class="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-center font-bold text-xs font-pocketgull transition block">
+        <a href="mailto:enterprise@pocketgull.com" class="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-center font-bold text-xs transition block">
           Contact Enterprise Sales
         </a>
       </div>
@@ -453,18 +420,18 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 5. Inbound Knowledge Base & Articles by Phil ═══════════════════════════ -->
+  <!-- ══ 6. Inbound Knowledge Base & Articles by Phil ═══════════════════════════ -->
   <section id="articles" class="space-y-8 border-t border-stone-800 pt-16">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-800 pb-5">
       <div>
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-pocketgull-mono font-bold">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">
           <span>📰 Inbound Clinical Knowledge Hub</span>
         </div>
-        <h2 class="text-2xl sm:text-4xl font-extrabold text-white font-pocketgull mt-2">
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-white mt-2">
           Latest Health Literacy &amp; Prevention Articles
         </h2>
       </div>
-      <span class="text-xs text-stone-400 font-pocketgull-mono">Authored by Phil</span>
+      <span class="text-xs text-stone-400 font-mono">Authored by Phil</span>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -476,22 +443,23 @@ get_header(); ?>
 
       if ( $recent_posts->have_posts() ) :
         while ( $recent_posts->have_posts() ) : $recent_posts->the_post(); ?>
-          <article class="glass-card-dark p-7 rounded-3xl transition duration-300 hover:border-amber-400/60 flex flex-col justify-between space-y-6 group shadow-xl">
-            <div class="space-y-4">
-              <div class="flex items-center justify-between text-xs font-pocketgull-mono">
+          <article class="glass-card-dark p-7 rounded-3xl transition duration-300 hover:border-amber-400/60 flex flex-col justify-between space-y-6 group shadow-xl relative overflow-hidden">
+            <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+            <div class="space-y-4 pt-2">
+              <div class="flex items-center justify-between text-xs font-mono">
                 <span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold">
                   SNO-10 Guide
                 </span>
                 <span class="text-stone-400">⏱️ <?php echo pocketgull_get_reading_time( get_the_ID() ); ?>m read</span>
               </div>
-              <h3 class="text-xl font-bold text-white group-hover:text-amber-300 transition font-pocketgull leading-snug">
+              <h3 class="text-xl font-bold text-white group-hover:text-amber-300 transition leading-snug">
                 <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
               </h3>
-              <p class="text-sm text-stone-300 leading-relaxed font-sans line-clamp-3">
+              <p class="text-sm text-stone-300 leading-relaxed line-clamp-3">
                 <?php echo wp_trim_words( get_the_excerpt(), 25 ); ?>
               </p>
             </div>
-            <div class="pt-5 border-t border-stone-800 flex items-center justify-between text-xs font-pocketgull-mono">
+            <div class="pt-5 border-t border-stone-800 flex items-center justify-between text-xs font-mono">
               <span class="text-stone-200 font-bold">✍️ Phil</span>
               <span class="text-stone-400"><?php echo get_the_date( 'M j, Y' ); ?></span>
             </div>

@@ -12,12 +12,9 @@
       theme: {
         extend: {
           fontFamily: {
-            'pocketgull': ['"PocketGull Sans"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
             'pocketgull-marker': ['PocketGull', 'cursive', 'sans-serif'],
-            'pocketgull-chisel': ['PocketGull', 'cursive', 'sans-serif'],
-            'pocketgull-mono': ['"PocketGull Mono"', '"JetBrains Mono"', 'monospace'],
-            'sans': ['"PocketGull Sans"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-            'mono': ['"PocketGull Mono"', '"JetBrains Mono"', 'monospace']
+            'sans': ['ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+            'mono': ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"JetBrains Mono"', 'monospace']
           },
           colors: {
             amberCard: '#f59e0b',
@@ -33,30 +30,8 @@
     }
   </script>
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
-  
   <style>
-    /* 🔬 PocketGull Sans (Clinical Neo-Grotesque OpenType Stack) */
-    @font-face {
-      font-family: 'PocketGull Sans';
-      font-style: normal;
-      font-weight: 300 900;
-      font-display: swap;
-      src: local('PocketGull Sans'),
-           url('<?php echo get_template_directory_uri(); ?>/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2') format('woff2');
-    }
-
-    /* 🖋️ Official Open-Source PocketGull Felt-Tip Marker Superfamily */
-    @font-face {
-      font-family: 'PocketGull';
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGull-Fineliner.ttf') format('truetype');
-    }
-
+    /* 🖋️ Handcrafted PocketGull Felt-Tip Marker for Wordmark Only */
     @font-face {
       font-family: 'PocketGull';
       font-style: normal;
@@ -65,62 +40,43 @@
       src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGull-Bold.ttf') format('truetype');
     }
 
-    @font-face {
-      font-family: 'PocketGull';
-      font-style: normal;
-      font-weight: 900;
-      font-display: swap;
-      src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGull-Chiseltip.ttf') format('truetype');
-    }
-
-    @font-face {
-      font-family: 'PocketGull Antigravity';
-      font-style: normal;
-      font-weight: 700;
-      font-display: swap;
-      src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGull-Antigravity.ttf') format('truetype');
-    }
-
-    @font-face {
-      font-family: 'PocketGull Mono';
-      font-style: normal;
-      font-weight: 400 700;
-      font-display: swap;
-      src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGullMono-Regular.ttf') format('truetype');
-    }
-
     body {
       background-color: #0c0a09;
-      font-family: 'PocketGull Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       text-rendering: optimizeLegibility;
       overflow-x: hidden;
       color: #f5f5f4;
-      font-feature-settings: "cv08", "cv05", "ss02", "zero";
     }
 
-    /* 🖋️ Headers & Display Typography — PocketGull Sans */
-    h1, h2, h3, h4, h5, h6, .font-pocketgull, .font-heading {
-      font-family: 'PocketGull Sans', 'Inter', -apple-system, sans-serif !important;
+    /* 🖋️ Headers & Titles — Clean UI Sans-Serif */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
       font-weight: 800;
       letter-spacing: -0.02em;
       line-height: 1.25;
-      font-feature-settings: "cv08", "cv05", "ss02", "zero";
     }
 
-    /* 🖋️ Handcrafted Felt-Tip Marker */
+    /* 🖋️ MarkerFont Reserved strictly for Brand Wordmark */
     .font-pocketgull-marker {
       font-family: 'PocketGull', cursive, sans-serif !important;
     }
 
-    .font-pocketgull-chisel {
-      font-family: 'PocketGull', cursive, sans-serif !important;
-      font-weight: 900;
-      letter-spacing: -0.025em;
+    /* 📐 Dieter Rams Functional Grill Homage */
+    .rams-grill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      display: flex;
+      gap: 3px;
+      padding: 0 1.5rem;
+      opacity: 0.35;
     }
-
-    .font-pocketgull-mono {
-      font-family: 'PocketGull Mono', 'JetBrains Mono', monospace !important;
-      font-feature-settings: "zero", "ss01", "ss02";
+    .rams-grill > div {
+      flex: 1;
+      background-color: #71717a;
+      border-radius: 2px;
     }
 
     .geararts-card {
