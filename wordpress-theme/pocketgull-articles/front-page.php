@@ -1,7 +1,7 @@
 <?php
 /**
  * Front Page Template for WordPress Theme (pocketgull.com)
- * The Master Clinical Intelligence, Multi-Agent Swarm, Digital Twin & SaaS Business Portal
+ * Clinical Intelligence, Multi-Agent Swarm, Digital Twin & SaaS Business Portal
  *
  * @package PocketGull_Articles
  */
@@ -35,10 +35,10 @@ get_header(); ?>
 
 <main class="relative z-10 flex-grow space-y-28 py-12 px-4 sm:px-6 max-w-7xl mx-auto">
 
-  <!-- ══ 1. MASTER HERO & GEARARTS CARD ═════════════════════════════════════════ -->
+  <!-- ══ 1. HERO & GEARARTS BRAND CARD ═════════════════════════════════════════ -->
   <section class="text-center max-w-5xl mx-auto pt-4 pb-6">
     
-    <!-- GEARARTS Master Card with Dieter Rams Grill -->
+    <!-- GEARARTS Brand Card with Dieter Rams Grill -->
     <div class="max-w-xl mx-auto mb-10 text-center relative">
       <div class="geararts-card p-8 rounded-3xl relative overflow-hidden text-stone-950 shadow-2xl border-4 border-amber-300/50">
         
@@ -440,13 +440,13 @@ get_header(); ?>
   <section id="academy" class="space-y-12 py-6">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
       <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold">
-        <span>🎓 Clinical Academy &amp; CME Masterclasses</span>
+        <span>🎓 Clinical Academy &amp; CME Courses</span>
       </div>
       <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
         Learn the Strategies Behind Preventive Healthcare
       </h2>
       <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
-        High-yield masterclasses designed for physicians, residents, nurse practitioners, caregivers, and everyday craftspeople:
+        High-yield clinical courses and practical workshops designed for physicians, residents, nurse practitioners, caregivers, and everyday craftspeople:
       </p>
     </div>
 
@@ -462,7 +462,7 @@ get_header(); ?>
           </div>
           <h3 class="text-xl font-bold text-white">Ambient AI Clinical Scribing &amp; FHIR R4</h3>
           <p class="text-xs text-stone-300 leading-relaxed">
-            Master full-duplex voice dictation with Gemini 2.5 Flash, automated SOAP note generation, and cut charting time by 42%.
+            Implement full-duplex voice dictation with Gemini 2.5 Flash, automated SOAP note generation, and cut charting time by 42%.
           </p>
         </div>
         <div class="space-y-3 border-t border-stone-800 pt-4">
@@ -471,7 +471,7 @@ get_header(); ?>
             <span class="text-lg font-bold text-white">$199</span>
           </div>
           <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full py-2.5 rounded-xl geararts-card font-bold text-xs text-stone-950 hover:scale-[1.02] transition shadow-md cursor-pointer">
-            Enroll in Masterclass →
+            Enroll in Course →
           </button>
         </div>
       </div>
@@ -495,7 +495,7 @@ get_header(); ?>
             <span class="text-lg font-bold text-white">$149</span>
           </div>
           <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full py-2.5 rounded-xl geararts-card font-bold text-xs text-stone-950 hover:scale-[1.02] transition shadow-md cursor-pointer">
-            Enroll in Masterclass →
+            Enroll in Course →
           </button>
         </div>
       </div>
@@ -519,7 +519,7 @@ get_header(); ?>
             <span class="text-lg font-bold text-white">$99</span>
           </div>
           <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full py-2.5 rounded-xl geararts-card font-bold text-xs text-stone-950 hover:scale-[1.02] transition shadow-md cursor-pointer">
-            Enroll in Masterclass →
+            Enroll in Course →
           </button>
         </div>
       </div>
@@ -543,7 +543,7 @@ get_header(); ?>
             <span class="text-lg font-bold text-white">$129</span>
           </div>
           <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full py-2.5 rounded-xl geararts-card font-bold text-xs text-stone-950 hover:scale-[1.02] transition shadow-md cursor-pointer">
-            Enroll in Masterclass →
+            Join Workshop →
           </button>
         </div>
       </div>
