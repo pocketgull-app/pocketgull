@@ -3,16 +3,25 @@ Theme Name: Pocket-Gull Articles & Clinical Knowledge
 Theme URI: https://pocketgull.com/articles
 Author: Phil (GEARARTS)
 Author URI: https://pocketgull.com
-Description: Official PocketGull Typography matching localhost:4000 and pocketgull.app (Outfit headings, Inter body, JetBrains Mono code, and MarkerFont wordmarks).
+Description: Official PocketGull Typography with PocketGull Sans, JetBrains Mono, and authentic Felt-Tip Marker wordmarks.
 Version: 1.24.0
 License: Apache License 2.0 & SIL OFL 1.1
 Text Domain: pocketgull-articles
 */
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   🖋️ OFFICIAL POCKETGULL FELT-TIP MARKER (HEADER/FOOTER WORDMARK ONLY)
+   🔬 OFFICIAL POCKETGULL SANS (CLINICAL NEO-GROTESQUE VARIABLE FONT)
    ══════════════════════════════════════════════════════════════════════════════ */
 
+@font-face {
+  font-family: 'PocketGull Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2') format('woff2');
+}
+
+/* 🖋️ Official Open-Source PocketGull Felt-Tip Marker (Header/Footer Wordmark Only) */
 @font-face {
   font-family: 'PocketGull';
   font-style: normal;
@@ -22,7 +31,7 @@ Text Domain: pocketgull-articles
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   🎨 DESIGN TOKENS & TYPOGRAPHY HIERARCHY (MATCHING LOCALHOST:4000)
+   🎨 DESIGN TOKENS & TYPOGRAPHY HIERARCHY
    ══════════════════════════════════════════════════════════════════════════════ */
 
 :root {
@@ -33,8 +42,8 @@ Text Domain: pocketgull-articles
   --pocketgull-teal: #0d9488;
   --pocketgull-coral: #f43f5e;
   
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Outfit', 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-sans: 'PocketGull Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'PocketGull Sans', 'Outfit', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-marker: 'PocketGull', cursive, sans-serif;
 }
@@ -49,14 +58,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
   letter-spacing: -0.01em;
+  font-feature-settings: "cv08", "cv05", "ss02", "zero";
 }
 
-/* 🖋️ Headers & Display Typography — Matching localhost:4000 Outfit stack */
+/* 🖋️ Headers & Display Typography — PocketGull Sans */
 h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: var(--font-heading) !important;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.25;
+  font-feature-settings: "cv08", "cv05", "ss02", "zero";
 }
 
 /* 🖋️ Handcrafted Felt-Tip Marker for Header/Footer Wordmark Only */
@@ -64,7 +75,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: var(--font-marker) !important;
 }
 
-/* 📟 Clinical Telemetry & Code — JetBrains Mono from localhost:4000 */
+/* 📟 Clinical Telemetry & Code — JetBrains Mono */
 code, kbd, samp, pre, .font-mono, .font-pocketgull-mono {
   font-family: var(--font-mono) !important;
   font-feature-settings: "zero", "ss01", "ss02";

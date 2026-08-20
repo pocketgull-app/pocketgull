@@ -13,8 +13,8 @@
         extend: {
           fontFamily: {
             'pocketgull-marker': ['PocketGull', 'cursive', 'sans-serif'],
-            'sans': ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-            'heading': ['Outfit', 'Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            'sans': ['"PocketGull Sans"', 'Inter', '-apple-system', 'sans-serif'],
+            'heading': ['"PocketGull Sans"', 'Outfit', 'sans-serif'],
             'mono': ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
           },
           colors: {
@@ -36,6 +36,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
   
   <style>
+    /* 🔬 Official PocketGull Sans Variable Font */
+    @font-face {
+      font-family: 'PocketGull Sans';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('<?php echo get_template_directory_uri(); ?>/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2') format('woff2');
+    }
+
     /* 🖋️ Official Open-Source PocketGull Felt-Tip Marker for Header/Footer Wordmarks */
     @font-face {
       font-family: 'PocketGull';
@@ -47,20 +56,22 @@
 
     body {
       background-color: #0c0a09;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'PocketGull Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       text-rendering: optimizeLegibility;
       overflow-x: hidden;
       color: #f5f5f4;
       line-height: 1.6;
       letter-spacing: -0.01em;
+      font-feature-settings: "cv08", "cv05", "ss02", "zero";
     }
 
-    /* 🖋️ Headers & Titles — Exact localhost:4000 Outfit / Inter stack */
+    /* 🖋️ Headers & Titles — PocketGull Sans */
     h1, h2, h3, h4, h5, h6, .font-heading {
-      font-family: 'Outfit', 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+      font-family: 'PocketGull Sans', 'Outfit', sans-serif !important;
       font-weight: 800;
       letter-spacing: -0.02em;
       line-height: 1.25;
+      font-feature-settings: "cv08", "cv05", "ss02", "zero";
     }
 
     /* 🖋️ MarkerFont Reserved strictly for Header/Footer Brand Wordmark */
@@ -68,7 +79,7 @@
       font-family: 'PocketGull', cursive, sans-serif !important;
     }
 
-    /* 📟 Clinical Telemetry & Code — JetBrains Mono from localhost:4000 */
+    /* 📟 Clinical Telemetry & Code — JetBrains Mono */
     code, kbd, samp, pre, .font-mono {
       font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
       font-feature-settings: "zero", "ss01", "ss02";
