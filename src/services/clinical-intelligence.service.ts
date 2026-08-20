@@ -20,7 +20,9 @@ import {
     DEMO_ANALYSIS_REPORT_AYURVEDIC
 } from '../demo-data';
 import { FORMATTING_RULES, PHILOSOPHY_INSTRUCTIONS, SYSTEM_INSTRUCTIONS } from './clinical-prompts';
+import { ClinicalAssessmentsService } from './clinical-assessments/clinical-assessments.service';
 import { ISirOdeResult, IGcnInteractionResult } from './patient.types';
+
 
 export interface ITranscriptEntry {
     role: 'user' | 'model';
@@ -64,8 +66,10 @@ export class ClinicalIntelligenceService {
     readonly moeRouter = inject(ClinicalMoERouterService, { optional: true }) || new ClinicalMoERouterService();
     private petAuditory = inject(PetAuditoryService, { optional: true });
     private themeService = inject(ThemeService, { optional: true });
+    private assessments = inject(ClinicalAssessmentsService, { optional: true });
 
     readonly isLoading = signal<boolean>(false);
+
     readonly webgpuProgress = this.webgpu.loadingProgress;
     readonly webgpuIsLoading = this.webgpu.isLoadingProgress;
     readonly error = signal<string | null>(null);
@@ -214,7 +218,43 @@ export class ClinicalIntelligenceService {
         return { complexity: 6, stability: 7, certainty: 8 };
     }
 
+    public formatAssessmentsContext(): string {
+        if (!this.assessments) return '';
+        const summaries: string[] = [];
+        try {
+            if (this.assessments.phq9Score() > 0) {
+                summaries.push(`- PHQ-9 Depression: ${this.assessments.phq9Score()}/27 (${this.assessments.phq9Tier().label})`);
+            }
+            if (this.assessments.gad7Score() > 0) {
+                summaries.push(`- GAD-7 Anxiety: ${this.assessments.gad7Score()}/21 (${this.assessments.gad7Tier().label})`);
+            }
+            if (this.assessments.cvsqScore() > 0) {
+                summaries.push(`- CVS-Q Digital Eye Strain: ${this.assessments.cvsqScore()}/32 (${this.assessments.cvsqTier().label})`);
+            }
+            if (this.assessments.mbiScore() > 0) {
+                const mbi = this.assessments.mbiBreakdown();
+                summaries.push(`- MBI Burnout: ${this.assessments.mbiScore()}/132 (${this.assessments.mbiTier().label} | EE:${mbi.ee}, DP:${mbi.dp}, PA:${mbi.pa})`);
+            }
+            if (this.assessments.isiScore() > 0) {
+                summaries.push(`- ISI Insomnia: ${this.assessments.isiScore()}/28 (${this.assessments.isiTier().label})`);
+            }
+            if (this.assessments.sarcfScore() > 0) {
+                summaries.push(`- SARC-F Sarcopenia: ${this.assessments.sarcfScore()}/10 (${this.assessments.sarcfTier().label})`);
+            }
+            if (this.assessments.mocaScore() > 0) {
+                summaries.push(`- MoCA Cognitive: ${this.assessments.mocaScore()}/30 (${this.assessments.mocaTier().label})`);
+            }
+            if (this.assessments.prapareScore() > 0) {
+                summaries.push(`- PRAPARE SDOH: ${this.assessments.prapareScore()} points (${this.assessments.prapareTier().label})`);
+            }
+        } catch {
+            // Ignore in non-injected mock runs
+        }
+        return summaries.length > 0 ? `\n\n### Clinical Assessment Battery Findings:\n${summaries.join('\n')}` : '';
+    }
+
     private generateDynamicMockReport(name: string, philosophy: 'western' | 'eastern' | 'ayurvedic'): Partial<Record<AnalysisLens, string>> {
+
         const age = this.patientState.patientAge();
         const gender = this.patientState.patientGender();
         const vitals = this.patientState.vitals();
@@ -259,7 +299,8 @@ ${name} is a ${age}-year-old ${gender.toLowerCase()} presenting with ${tcmPatter
 
 ### Goals
 - **Short-term (2 weeks)**: Stagnation-induced pain reduction. Improved sleep quality and Shen stability.
-- **Long-term (3 months)**: Complete harmonization of Yin-Yang balance and restoration of normal Qi flow.`,
+- **Long-term (3 months)**: Complete harmonization of Yin-Yang balance and restoration of normal Qi flow.${this.formatAssessmentsContext()}`,
+
 
                 'Functional Protocols': `### Lifestyle & Qi Gong
 - **Tai Chi or Qi Gong**: 15 minutes daily to promote smooth flow of Liver Qi.
@@ -328,7 +369,7 @@ ${name} is a ${age}-year-old ${gender.toLowerCase()} presenting with ${doshaImba
 
 ### Goals
 - **Short-term (2 weeks)**: Agni normalization and reduction of acute symptoms.
-- **Long-term (3 months)**: Stable Dhatu (tissue) health and complete balance of Vata/Pitta/Kapha.`,
+- **Long-term (3 months)**: Stable Dhatu (tissue) health and complete balance of Vata/Pitta/Kapha.${this.formatAssessmentsContext()}`,
 
                 'Functional Protocols': `### Daily Routine (Dinacharya)
 - **Abhyanga**: Self-massage before bath.
@@ -388,7 +429,8 @@ ${issuesStr}
 
 ### Plan of Care
 - **Short-term**: Optimize daily movement and address acute stressors/pain.
-- **Long-term**: Functional rehabilitation and systemic health optimization.`,
+- **Long-term**: Functional rehabilitation and systemic health optimization.${this.formatAssessmentsContext()}`,
+
 
                 'Functional Protocols': `### Diagnostic Workup & Lifestyle
 - **Exercise**: Structured moderate-intensity cardiovascular exercise 3x/week.
@@ -634,6 +676,12 @@ ${orcidProfile.works.map(w => `- "${w.title}" (${w.year || 'N/A'}) - ${w.type ||
 
 When formulating recommendations, you should dynamically draw inspiration from their research areas and published works if they are clinically relevant to the patient's state.`;
                 }
+
+                const assessmentsCtx = this.formatAssessmentsContext();
+                if (assessmentsCtx) {
+                    sysInstruction += `\n\nPATIENT STANDARDIZED ASSESSMENT BATTERY:${assessmentsCtx}`;
+                }
+
 
                 if (isEmergency) {
                     sysInstruction = `EMERGENCY FIRST AID MODE: You are assisting a bystander under the Good Samaritan law.

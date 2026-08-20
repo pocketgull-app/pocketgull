@@ -148,8 +148,10 @@ def test_biomarker_velocity_model_exists_and_predicts():
         'hba1c_current': 9.8,
         'hba1c_annual_slope': 1.2,
         'hscrp_current': 8.4,
-        'sbp_current': 165.0
+        'sbp_current': 165.0,
+        'age': 72.0
     }])
+
     prob = model.predict_proba(sample_df)[0, 1]
     assert 0.0 <= prob <= 1.0
     assert prob > 0.5

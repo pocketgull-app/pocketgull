@@ -236,6 +236,7 @@ export class ExportService {
     ];
 
     if (this.clinicalAssessments) {
+      // 1. GAD-7 Anxiety Score
       entries.push({
         resource: {
           resourceType: 'Observation',
@@ -249,6 +250,7 @@ export class ExportService {
         }
       });
 
+      // 2. PHQ-9 Depression Score
       entries.push({
         resource: {
           resourceType: 'Observation',
@@ -261,7 +263,107 @@ export class ExportService {
           interpretation: [{ text: this.clinicalAssessments.phq9Tier().label }]
         }
       });
+
+      // 3. CVS-Q (Computer Vision Syndrome Questionnaire)
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `cvsq-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '96556-6', display: 'Computer Vision Syndrome Questionnaire (CVS-Q) digital eye strain score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.cvsqScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.cvsqTier().label }]
+        }
+      });
+
+      // 4. MBI (Maslach Burnout Inventory) with Subscale Components
+      const mbiBreakdown = this.clinicalAssessments.mbiBreakdown();
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `mbi-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '89264-6', display: 'Maslach Burnout Inventory (MBI) total score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.mbiScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.mbiTier().label }],
+          component: [
+            {
+              code: { coding: [{ system: 'http://loinc.org', code: '89265-3', display: 'Emotional Exhaustion (EE) subscale' }] },
+              valueQuantity: { value: mbiBreakdown.ee, unit: '{score}' }
+            },
+            {
+              code: { coding: [{ system: 'http://loinc.org', code: '89266-1', display: 'Depersonalization (DP) subscale' }] },
+              valueQuantity: { value: mbiBreakdown.dp, unit: '{score}' }
+            },
+            {
+              code: { coding: [{ system: 'http://loinc.org', code: '89267-9', display: 'Personal Accomplishment (PA) subscale' }] },
+              valueQuantity: { value: mbiBreakdown.pa, unit: '{score}' }
+            }
+          ]
+        }
+      });
+
+      // 5. ISI (Insomnia Severity Index)
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `isi-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '89260-4', display: 'Insomnia Severity Index (ISI) score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.isiScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.isiTier().label }]
+        }
+      });
+
+      // 6. SARC-F (Sarcopenia Risk Screen)
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `sarcf-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '89261-2', display: 'SARC-F Screen for Sarcopenia score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.sarcfScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.sarcfTier().label }]
+        }
+      });
+
+      // 7. MoCA (Montreal Cognitive Assessment)
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `moca-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '72133-2', display: 'Montreal Cognitive Assessment (MoCA) total score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.mocaScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.mocaTier().label }]
+        }
+      });
+
+      // 8. PRAPARE (Social Determinants of Health)
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `prapare-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '93025-5', display: 'Protocol for Responding to and Assessing Patient Assets, Risks, and Experiences (PRAPARE) total score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.prapareScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.prapareTier().label }]
+        }
+      });
     }
+
 
     if (this.ybocsService) {
       entries.push({
