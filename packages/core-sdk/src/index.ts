@@ -6,3 +6,5 @@
 export * from './assessments/index.js';
 export * from './stats/index.js';
 export * from './fhir/index.js';
+export * from './api-client.js';
+
