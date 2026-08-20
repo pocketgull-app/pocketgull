@@ -7,6 +7,7 @@ export const SAMPLE_ARTICLES = [
   {
     title: 'Keeping Their Craft Alive: How to Honor Someone You Miss by Picking Up Their Tools',
     slug: 'keeping-their-craft-alive',
+    author: 'Phil',
     domain: 'Occupational Therapy & Bereavement',
     sno10Code: 'SNOMED 399269003 (Wellness & Craft Continuity)',
     bodyHtml: `

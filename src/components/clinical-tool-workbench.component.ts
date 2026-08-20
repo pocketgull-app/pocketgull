@@ -25,6 +25,7 @@ import { RoleDemoModalComponent } from './role-demo-modal.component';
 import { HistoricalLuminariesGameComponent } from './historical-luminaries-game.component';
 import { HobbyDomainCompanionComponent } from './hobby-domain-companion.component';
 import { IntimacyRelationshipVitalityComponent } from './intimacy-relationship-vitality.component';
+import { ArticlesReaderComponent } from './articles-reader.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -234,92 +235,126 @@ export interface IWorkbenchToolStatus {
                   </h3>
 
                   @if (tool.isAutopilotSurfaced && tool.autopilotReason) {
-                    <div class="my-2 p-2 rounded bg-teal-950/40 border border-teal-500/30 text-[11px] text-teal-200 leading-snug">
-                      <strong>AI Dispatch Rationale:</strong> {{ tool.autopilotReason }}
-                    </div>
-                  }
-
-                  <p class="text-xs text-zinc-400 mt-1.5 leading-relaxed">
-                    {{ tool.description }}
-                  </p>
-                </div>
-
-                <div class="pt-3 border-t border-zinc-800/60 flex items-center justify-between text-[11px] text-zinc-500">
-                  <span class="font-mono">Latency: <span class="text-zinc-300">{{ tool.latencyMs }}ms</span></span>
-                  <button type="button" (click)="onCardDblClick(tool.id); $event.stopPropagation()"
-                          class="text-amber-400 hover:text-amber-300 font-medium cursor-pointer transition flex items-center gap-1">
-                    Double-click for Patient Lens 🔄
-                  </button>
-                </div>
-              } @else {
-                <!-- BACK SIDE: Patient Education Lens (Double-Flip Patient-Facing View) -->
-                <div class="space-y-2.5">
-                  <div class="flex items-center justify-between text-xs pb-1.5 border-b border-emerald-500/30">
-                    <span class="font-bold text-emerald-400 flex items-center gap-1">
-                      🌿 Patient Education Lens
-                    </span>
-                    <span class="px-1.5 py-0.5 rounded font-mono text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                      {{ tool.patientEducation?.gradeLevel || 'Grade 6.2' }}
-                    </span>
-                  </div>
-
-                  <!-- Plain Language Diagnosis -->
-                  <div>
-                    <div class="text-[11px] font-semibold text-zinc-200">
-                      {{ tool.patientEducation?.plainLanguageTitle || tool.name }}
-                    </div>
-                    <p class="text-xs text-zinc-300 mt-0.5 leading-relaxed font-sans">
-                      {{ tool.patientEducation?.plainLanguageDiagnosis || tool.cognitiveInsight }}
-                    </p>
-                  </div>
-
-                  <!-- Biophysical Analogy Callout -->
-                  @if (tool.patientEducation?.biophysicalAnalogy) {
-                    <div class="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-[11px] text-emerald-200 leading-snug">
-                      <strong class="text-emerald-300">💡 Everyday Analogy:</strong>
-                      <p class="mt-0.5 text-zinc-300 font-sans">
-                        {{ tool.patientEducation?.biophysicalAnalogy }}
-                      </p>
-                    </div>
-                  }
-
-                  <!-- Socratic Health Literacy Question -->
-                  @if (tool.patientEducation?.socraticInquiry) {
-                    <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-[11px] text-cyan-200 leading-snug">
-                      <strong class="text-cyan-300">❓ Socratic Inquiry:</strong>
-                      <p class="mt-0.5 text-zinc-300 italic font-sans">
-                        "{{ tool.patientEducation?.socraticInquiry }}"
-                      </p>
-                    </div>
-                  }
-
-                  <!-- Section 1557 ACA Spanish Badge -->
-                  @if (tool.patientEducation?.spanishTranslation) {
-                    <div class="text-[10px] text-teal-400 font-mono flex items-center gap-1">
-                      <span class="px-1 py-0.5 rounded bg-teal-500/10 border border-teal-500/20">Section 1557 ACA</span>
-                      <span class="truncate">{{ tool.patientEducation?.spanishTranslation }}</span>
-                    </div>
-                  }
-                </div>
-
-                <div class="pt-2 border-t border-zinc-800 flex items-center justify-between text-[11px]">
-                  <button
-                    (click)="testSingleTool(tool.id); $event.stopPropagation()"
-                    class="px-2.5 py-1 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-medium transition-colors cursor-pointer"
-                  >
-                    ⚡ Test Audio/Print
-                  </button>
-                  <button type="button" (click)="onCardDblClick(tool.id); $event.stopPropagation()"
-                          class="text-zinc-400 hover:text-zinc-200 text-[10px] cursor-pointer">
-                    Return to Clinician ↩️
-                  </button>
-                </div>
-              }
+        <!-- Diagnostics Grid -->
+        <div class="space-y-4">
+          <!-- Search & Filter Ribbon -->
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80">
+            <div class="flex items-center gap-2 flex-1 max-w-md">
+              <span class="text-zinc-400 text-sm">🔍</span>
+              <input type="text"
+                     [ngModel]="intakeDirectiveQuery()"
+                     (ngModelChange)="intakeDirectiveQuery.set($event)"
+                     placeholder="Filter tools by capability, category, or latency..."
+                     class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-hidden focus:border-cyan-500 font-mono transition" />
             </div>
-          }
+            <div class="text-[11px] font-mono text-zinc-400">
+              Showing {{ tools().length }} tools
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (tool of tools(); track tool.id) {
+              <!-- Front / Back Card Container -->
+              <div
+                (dblclick)="onCardDblClick(tool.id)"
+                class="p-4 rounded-xl border transition-all duration-300 flex flex-col justify-between space-y-3 cursor-pointer select-none"
+                [class.bg-zinc-900/40]="!tool.isFlipped"
+                [class.border-zinc-800]="!tool.isFlipped"
+                [class.hover:border-zinc-700]="!tool.isFlipped"
+                [class.bg-emerald-950/20]="tool.isFlipped"
+                [class.border-emerald-500/40]="tool.isFlipped"
+                [class.shadow-emerald-950/30]="tool.isFlipped"
+                [class.ring-1]="tool.isFlipped"
+                [class.ring-emerald-500/30]="tool.isFlipped"
+              >
+                @if (!tool.isFlipped) {
+                  <!-- FRONT SIDE: Clinician View -->
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-mono font-bold text-white flex items-center gap-1.5">
+                        <span>{{ tool.name }}</span>
+                        @if (tool.isAutopilotSurfaced) {
+                          <span class="px-1.5 py-0.2 rounded text-[9px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 animate-pulse">
+                            AUTOPILOT
+                          </span>
+                        }
+                      </span>
+                      <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-cyan-400">{{ tool.category }}</span>
+                    </div>
+
+                    <p class="text-xs text-zinc-400">{{ tool.description }}</p>
+
+                    <div class="p-2 rounded-lg bg-zinc-950/60 border border-zinc-800/80 text-[11px] font-mono text-zinc-300">
+                      <span class="text-amber-400 font-semibold">Cognitive Insight:</span>
+                      {{ tool.cognitiveInsight }}
+                    </div>
+                  </div>
+
+                  <div class="pt-2 border-t border-zinc-800 flex items-center justify-between text-[11px] font-mono">
+                    <span class="text-emerald-400">⚡ {{ tool.latencyMs }}ms</span>
+                    <button type="button" (click)="onCardDblClick(tool.id); $event.stopPropagation()"
+                            class="text-amber-400 hover:text-amber-300 font-medium cursor-pointer transition flex items-center gap-1">
+                      Double-click for Patient Lens 🔄
+                    </button>
+                  </div>
+                } @else {
+                  <!-- BACK SIDE: Patient Education Lens -->
+                  <div class="space-y-2.5">
+                    <div class="flex items-center justify-between text-xs pb-1.5 border-b border-emerald-500/30">
+                      <span class="font-bold text-emerald-400 flex items-center gap-1">
+                        🌿 Patient Education Lens
+                      </span>
+                      <span class="px-1.5 py-0.5 rounded font-mono text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        {{ tool.patientEducation?.gradeLevel || 'Grade 6.2' }}
+                      </span>
+                    </div>
+
+                    <div>
+                      <div class="text-[11px] font-semibold text-zinc-200">
+                        {{ tool.patientEducation?.plainLanguageTitle || tool.name }}
+                      </div>
+                      <p class="text-xs text-zinc-300 mt-0.5 leading-relaxed font-sans">
+                        {{ tool.patientEducation?.plainLanguageDiagnosis || tool.cognitiveInsight }}
+                      </p>
+                    </div>
+
+                    @if (tool.patientEducation?.biophysicalAnalogy) {
+                      <div class="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-[11px] text-emerald-200 leading-snug">
+                        <strong class="text-emerald-300">💡 Everyday Analogy:</strong>
+                        <p class="mt-0.5 text-zinc-300 font-sans">
+                          {{ tool.patientEducation?.biophysicalAnalogy }}
+                        </p>
+                      </div>
+                    }
+
+                    @if (tool.patientEducation?.socraticInquiry) {
+                      <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-[11px] text-cyan-200 leading-snug">
+                        <strong class="text-cyan-300">❓ Socratic Inquiry:</strong>
+                        <p class="mt-0.5 text-zinc-300 italic font-sans">
+                          "{{ tool.patientEducation?.socraticInquiry }}"
+                        </p>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="pt-2 border-t border-zinc-800 flex items-center justify-between text-[11px]">
+                    <button
+                      (click)="testSingleTool(tool.id); $event.stopPropagation()"
+                      class="px-2.5 py-1 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-medium transition-colors cursor-pointer"
+                    >
+                      ⚡ Test Audio/Print
+                    </button>
+                    <button type="button" (click)="onCardDblClick(tool.id); $event.stopPropagation()"
+                            class="text-zinc-400 hover:text-zinc-200 text-[10px] cursor-pointer">
+                      Return to Clinician ↩️
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
         </div>
-      </div>
-    } @else if (activeWorkbenchTab() === 'osce') {
+      } @else if (activeWorkbenchTab() === 'osce') {
         <app-residency-osce-simulator />
       } @else if (activeWorkbenchTab() === 'slack') {
         <app-slack-integration-card />
@@ -361,6 +396,8 @@ export interface IWorkbenchToolStatus {
         <app-hobby-domain-companion />
       } @else if (activeWorkbenchTab() === 'intimacy') {
         <app-intimacy-relationship-vitality />
+      } @else if (activeWorkbenchTab() === 'articles') {
+        <app-articles-reader />
       }
 
       @if (showRoleDemoModal()) {
@@ -375,11 +412,12 @@ export class ClinicalToolWorkbenchComponent {
   private readonly haptics = inject(BioHapticFeedbackService);
 
   readonly showRoleDemoModal = signal(false);
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy'>('tools');
+  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('tools');
   readonly intakeDirectiveQuery = signal<string>('');
 
-  readonly workbenchTabs: { id: 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy'; label: string; icon: string; activeClass: string }[] = [
+  readonly workbenchTabs: { id: 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
     { id: 'tools', label: 'Diagnostic Tools', icon: '🛠️', activeClass: 'bg-cyan-500 text-zinc-950 shadow-xs' },
+    { id: 'articles', label: 'Health Literacy Guides (Articles)', icon: '📰', activeClass: 'bg-emerald-500 text-zinc-950 shadow-xs' },
     { id: 'intimacy', label: 'Couples Vitality & Cardiac Safety (Princeton III)', icon: '❤️', activeClass: 'bg-rose-600 text-white shadow-xs' },
     { id: 'companion', label: 'Craft & Passion Confidants (SNO-10)', icon: '🤝', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
     { id: 'luminaries', label: 'Historical Luminaries Arena', icon: '🏛️', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },

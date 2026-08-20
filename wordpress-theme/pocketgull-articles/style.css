@@ -22,9 +22,10 @@ Tags: medical, health-literacy, dark-mode, clean, typography, accessibility-read
   --pocketgull-accent-blue: #4285F4;
   --pocketgull-accent-amber: #FBBC05;
   --pocketgull-accent-rose: #f43f5e;
-  --font-serif: "Caslon Pro", "Libre Caslon Text", "Baskerville", "Georgia", serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Cinzel', 'Libre Caslon Text', 'Georgia', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body {
@@ -36,12 +37,26 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  letter-spacing: -0.01em;
+  font-feature-settings: "cv08", "cv05", "ss02"; /* Slashed zero, curved l, serifed I */
 }
 
-/* Caslon Editorial Prose */
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+}
+
+.font-mono, code, pre {
+  font-family: var(--font-mono);
+  font-feature-settings: "zero", "ss01", "ss02";
+}
+
+/* PocketGull Editorial Prose */
 .prose-editorial {
-  font-family: var(--font-serif);
-  font-size: 1.18rem;
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
   line-height: 1.8;
   color: #e4e4e7;
   max-width: 48rem;
@@ -51,10 +66,10 @@ body {
 .prose-editorial h1,
 .prose-editorial h2,
 .prose-editorial h3 {
-  font-family: var(--font-serif);
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-weight: 800;
   color: #ffffff;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
   margin-top: 2rem;
   margin-bottom: 0.8rem;
 }
