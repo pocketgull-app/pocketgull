@@ -27,7 +27,9 @@ from pathlib import Path
 from typing import Any, AsyncGenerator, Optional
 
 import numpy as np
+import pandas as pd
 from fastapi import FastAPI, HTTPException, Query, Request
+
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
@@ -1447,5 +1449,149 @@ async def predict_rsna_knee_abnormalities(payload: RsnaKneePredictInput) -> Rsna
     )
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# ADVANCED CLINICAL ML ENGINES (SURVIVAL, CAUSAL, 1D-CNN, GRAPH SYNERGY, BAYESIAN)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class SurvivalCurveRequest(BaseModel):
+    age: float = Field(default=68.0, description="Patient age in years")
+    egfr_current: float = Field(default=42.0, description="Current eGFR (mL/min/1.73m2)")
+    egfr_annual_slope: float = Field(default=-4.5, description="Annual eGFR velocity slope")
+    uacr_mg_g: float = Field(default=280.0, description="Urine Albumin-to-Creatinine Ratio (mg/g)")
+    sbp_current: float = Field(default=148.0, description="Current Systolic Blood Pressure (mmHg)")
+    hba1c_current: float = Field(default=8.2, description="Current Glycated Hemoglobin (%)")
+    horizons_days: list[int] = Field(default=[30, 90, 180, 365, 730], description="Projection horizons in days")
 
 
+class SurvivalCurveResponse(BaseModel):
+    patient_partial_hazard_ratio: float
+    projected_median_event_free_days: int
+    curves: dict[str, Any]
+
+
+@app.post("/api/ml/survival-curve", tags=["Advanced Clinical ML"], response_model=SurvivalCurveResponse)
+async def predict_survival_curve(payload: SurvivalCurveRequest) -> SurvivalCurveResponse:
+    """Predict dynamic multi-horizon time-to-event survival curves using Breslow baseline estimation."""
+    from pocketgull_api.survival_analysis_engine import CoxSurvivalEstimator
+    
+    model_path = os.path.join(os.path.dirname(__file__), 'models', 'survival_ckd_decompensation_model.joblib')
+    if os.path.exists(model_path):
+        import joblib
+        model: CoxSurvivalEstimator = joblib.load(model_path)
+    else:
+        from pocketgull_api.survival_analysis_engine import train_ckd_decompensation_survival_model
+        model = train_ckd_decompensation_survival_model()
+
+    df = pd.DataFrame([{
+        'age': payload.age,
+        'egfr_current': payload.egfr_current,
+        'egfr_annual_slope': payload.egfr_annual_slope,
+        'uacr_mg_g': payload.uacr_mg_g,
+        'sbp_current': payload.sbp_current,
+        'hba1c_current': payload.hba1c_current
+    }])
+
+    res = model.predict_survival_curve(df, payload.horizons_days)[0]
+    return SurvivalCurveResponse(
+        patient_partial_hazard_ratio=res["partial_hazard_ratio"],
+        projected_median_event_free_days=res["projected_median_event_free_days"],
+        curves=res["horizons"]
+    )
+
+
+class CausalTreatmentRequest(BaseModel):
+    age: float = Field(default=55.0, description="Patient age")
+    baseline_sbp: float = Field(default=144.0, description="Baseline Systolic Blood Pressure")
+    baseline_rmssd: float = Field(default=22.0, description="Baseline HRV RMSSD")
+    isi_score: float = Field(default=18.0, description="Insomnia Severity Index Score (0-28)")
+
+
+class CausalTreatmentResponse(BaseModel):
+    individual_treatment_effect_point: float
+    conformal_95_ci: list[float]
+    propensity_score: float
+    statistically_significant_benefit: bool
+    effect_direction: str
+
+
+@app.post("/api/ml/causal-treatment-effect", tags=["Advanced Clinical ML"], response_model=CausalTreatmentResponse)
+async def predict_causal_treatment_effect(payload: CausalTreatmentRequest) -> CausalTreatmentResponse:
+    """Predict counterfactual heterogeneous treatment effects with conformal 95% uncertainty bounds."""
+    from pocketgull_api.causal_treatment_engine import XLearnerCausalEstimator
+    
+    model_path = os.path.join(os.path.dirname(__file__), 'models', 'causal_treatment_optimizer.joblib')
+    if os.path.exists(model_path):
+        import joblib
+        model: XLearnerCausalEstimator = joblib.load(model_path)
+    else:
+        from pocketgull_api.causal_treatment_engine import train_vagal_breathing_causal_model
+        model = train_vagal_breathing_causal_model()
+
+    df = pd.DataFrame([{
+        'age': payload.age,
+        'baseline_sbp': payload.baseline_sbp,
+        'baseline_rmssd': payload.baseline_rmssd,
+        'isi_score': payload.isi_score
+    }])
+
+    res = model.estimate_treatment_effect(df)[0]
+    return CausalTreatmentResponse(**res)
+
+
+class WaveformClassifyRequest(BaseModel):
+    signal: list[float] = Field(description="10-second 250Hz single-lead ECG/PPG array (up to 2500 samples)")
+
+
+class WaveformClassifyResponse(BaseModel):
+    predicted_rhythm: str
+    confidence: float
+    class_probabilities: dict[str, float]
+    telemetry: dict[str, float]
+    clinical_significance: str
+
+
+@app.post("/api/ml/classify-waveform", tags=["Advanced Clinical ML"], response_model=WaveformClassifyResponse)
+async def classify_raw_waveform(payload: WaveformClassifyRequest) -> WaveformClassifyResponse:
+    """Classify 10-second ECG/PPG physiological waveforms with 1D-CNN temporal features."""
+    from pocketgull_api.waveform_1d_cnn import Waveform1DCNNClassifier
+    clf = Waveform1DCNNClassifier()
+    res = clf.classify_waveform(np.array(payload.signal))
+    return WaveformClassifyResponse(**res)
+
+
+class DrugHerbSynergyRequest(BaseModel):
+    drugs: list[str] = Field(default=["Warfarin", "Sertraline"], description="List of active pharmaceutical prescriptions")
+    botanicals: list[str] = Field(default=["Curcumin", "St. John's Wort"], description="List of botanical/nutritional supplements")
+
+
+class DrugHerbSynergyResponse(BaseModel):
+    regimen_summary: dict[str, Any]
+    interactions: list[dict[str, Any]]
+
+
+@app.post("/api/ml/drug-herb-synergy", tags=["Advanced Clinical ML"], response_model=DrugHerbSynergyResponse)
+async def evaluate_drug_herb_synergy(payload: DrugHerbSynergyRequest) -> DrugHerbSynergyResponse:
+    """Evaluate CYP450 enzyme and P-gp transport interactions across multi-drug multi-herb regimens."""
+    from pocketgull_api.graph_synergy_engine import PharmacokineticGraphSynergyEngine
+    engine = PharmacokineticGraphSynergyEngine()
+    res = engine.evaluate_regimen(payload.drugs, payload.botanicals)
+    return DrugHerbSynergyResponse(**res)
+
+
+class ComorbidityPropagationRequest(BaseModel):
+    active_positive_instruments: list[str] = Field(default=["cvsq", "isi"], description="List of active positive instrument codes")
+
+
+class ComorbidityPropagationResponse(BaseModel):
+    input_active_screens: list[str]
+    posterior_comorbidity_probabilities: dict[str, float]
+    anatomical_tension_hotspots: list[dict[str, Any]]
+
+
+@app.post("/api/ml/comorbidity-propagation", tags=["Advanced Clinical ML"], response_model=ComorbidityPropagationResponse)
+async def propagate_comorbidities(payload: ComorbidityPropagationRequest) -> ComorbidityPropagationResponse:
+    """Calculate multi-morbid conditional risk propagation and 3D anatomical tension hotspots."""
+    from pocketgull_api.cooccurrence_prior_engine import BayesianCooccurrenceEngine
+    engine = BayesianCooccurrenceEngine()
+    res = engine.propagate_risks(payload.active_positive_instruments)
+    return ComorbidityPropagationResponse(**res)
