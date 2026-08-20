@@ -915,6 +915,44 @@ export function renderBusinessSiteHtml(): string {
       </div>
     </section>
 
+    <!-- 👤 Creator & Principal AI Systems Architect Section -->
+    <section id="architect" class="py-16 px-6 border-t border-stone-800 bg-stone-950/90">
+      <div class="max-w-4xl mx-auto glass-card-dark rounded-3xl p-8 sm:p-10 border border-stone-800 shadow-2xl relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row items-center gap-8">
+          <div class="relative shrink-0">
+            <img src="/assets/phil-gear-portrait.jpg" 
+                 alt="Phil Gear — Creator & Principal Systems Architect of PocketGull" 
+                 class="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl object-cover border-2 border-amber-400/40 shadow-2xl shadow-amber-500/10" />
+            <div class="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full bg-stone-900 border border-amber-500/50 text-[10px] font-mono font-bold text-amber-400 shadow-md">
+              GEARARTS
+            </div>
+          </div>
+          <div class="space-y-3 text-center sm:text-left">
+            <div class="inline-flex items-center gap-2 text-xs font-bold text-teal-400 uppercase tracking-widest font-pocketgull px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30">
+              <span>🔬</span> Founder &amp; Principal AI Architect
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-extrabold font-pocketgull text-stone-100">
+              Phil Gear
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-sans">
+              Creator of <strong>PocketGull</strong> and founder of <strong>GEARARTS</strong>. Pioneering real-time clinical AI systems, biophysical digital twins, FHIR R4 interoperability, and the open-source PocketGull clinical typography family.
+            </p>
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 pt-2 text-xs">
+              <a href="https://developers.google.com/profile/philgear" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-amber-400 border border-stone-700 font-mono transition flex items-center gap-1.5">
+                <span>Google Developer Profile</span>
+              </a>
+              <a href="https://orcid.org/0009-0008-1372-5381" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-teal-400 border border-stone-700 font-mono transition flex items-center gap-1.5">
+                <span>ORCID: 0009-0008-1372-5381</span>
+              </a>
+              <a href="https://github.com/pocketgull-app/pocketgull" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 border border-stone-700 font-mono transition flex items-center gap-1.5">
+                <span>GitHub Monorepo</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Call to Action Card -->
     <section class="py-20 px-6 text-center">
       <div class="max-w-4xl mx-auto geararts-card rounded-3xl p-12 text-stone-950 shadow-2xl relative overflow-hidden border-4 border-amber-200/50">
@@ -938,7 +976,7 @@ export function renderBusinessSiteHtml(): string {
 
       <div class="flex items-center gap-6 text-sm">
         <a href="https://pocketgull.app" class="hover:text-amber-400 transition-colors font-bold font-pocketgull">pocketgull.app</a>
-        <a href="https://github.com/philgear/pocketgull" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">GitHub</a>
+        <a href="https://github.com/pocketgull-app/pocketgull" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">GitHub</a>
         <a href="https://developers.google.com/profile/philgear" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">Google Dev</a>
         <a href="https://orcid.org/0009-0008-1372-5381" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">ORCID iD</a>
       </div>
