@@ -23,20 +23,21 @@ import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component'
         </div>
 
         <div class="flex items-center gap-2">
-          <button (click)="activeParadigmView.set('all')" [class.bg-cyan-600]="activeParadigmView() === 'all'" class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition">
-            Unified Tri-View
+          <button (click)="selectView('all')" [class.bg-cyan-600]="activeParadigmView() === 'all'" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition flex items-center gap-1">
+            <span>🏛️</span> Unified Tri-View
           </button>
-          <button (click)="activeParadigmView.set('tcm')" [class.bg-emerald-600]="activeParadigmView() === 'tcm'" class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition">
-            TCM Wu-Xing
+          <button (click)="selectView('tcm')" [class.bg-emerald-600]="activeParadigmView() === 'tcm'" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition flex items-center gap-1">
+            <span>☯️</span> TCM 3D
           </button>
-          <button (click)="activeParadigmView.set('ayurveda')" [class.bg-amber-600]="activeParadigmView() === 'ayurveda'" class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition">
-            Ayurvedic Doshas
+          <button (click)="selectView('ayurveda')" [class.bg-amber-600]="activeParadigmView() === 'ayurveda'" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition flex items-center gap-1">
+            <span>🌿</span> Ayurveda 3D
           </button>
-          <button (click)="activeParadigmView.set('allopathic')" [class.bg-indigo-600]="activeParadigmView() === 'allopathic'" class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition">
-            CYP450 Bridge
+          <button (click)="selectView('allopathic')" [class.bg-indigo-600]="activeParadigmView() === 'allopathic'" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition flex items-center gap-1">
+            <span>🔬</span> Molecular Bridge
           </button>
         </div>
       </div>
+
 
       <!-- 3-Column Paradigm Cockpit -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -247,4 +248,20 @@ export class TriParadigmIntegrativeLensTabComponent {
     pitta: 32.5,
     kapha: 21.0
   });
+
+  selectView(view: 'all' | 'tcm' | 'ayurveda' | 'allopathic'): void {
+    this.activeParadigmView.set(view);
+    if (view === 'tcm') {
+      this.state.bodyViewerMode.set('3d');
+      this.state.selectPhilosophy('eastern');
+    } else if (view === 'ayurveda') {
+      this.state.bodyViewerMode.set('3d');
+      this.state.selectPhilosophy('ayurvedic');
+    } else if (view === 'allopathic') {
+      this.state.bodyViewerMode.set('3d');
+      this.state.selectPhilosophy('western');
+    } else if (view === 'all') {
+      this.state.bodyViewerMode.set('quad');
+    }
+  }
 }

@@ -285,7 +285,15 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
                 class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
                 <span>🧬</span> Functional Matrix
               </button>
+
+              <button (click)="changeLens('Tri-Paradigm Medicine')"
+                data-testid="tab-tri-paradigm"
+                [class]="activeLens() === 'Tri-Paradigm Medicine' ? '!bg-gradient-to-r from-emerald-600 to-indigo-600 !text-white border-emerald-500 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-emerald-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
+                <span>☯️</span> Tri-Paradigm
+              </button>
             </div>
+
 
             <!-- Scroll Right Arrow -->
             <button type="button" (click)="scrollLensBar('right')" 
@@ -609,7 +617,10 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
             <app-interventions-lens-tab class="block my-6"></app-interventions-lens-tab>
           } @else if (activeLens() === 'Monitoring & Follow-up') {
             <app-diagnostics-lens-tab class="block my-6"></app-diagnostics-lens-tab>
+          } @else if (activeLens() === 'Tri-Paradigm Medicine') {
+            <app-tri-paradigm-integrative-lens-tab class="block my-6"></app-tri-paradigm-integrative-lens-tab>
           } @else {
+
           <!-- ACM §1.3: AI-Generated Content Disclosure -->
           @if (hasAnyReport() && !state.isEmergencyMode()) {
             <div class="mb-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-violet-100 dark:bg-violet-950/60 border border-violet-300 dark:border-violet-700">
@@ -3549,11 +3560,16 @@ export class AnalysisReportComponent implements OnDestroy {
     this.collapsedSections.set({});
     this.selectedMobileSectionTab.set('all');
 
+    if (lens === 'Tri-Paradigm Medicine') {
+      this.state.bodyViewerMode.set('3d');
+    }
+
     const el = this.contentArea()?.nativeElement;
     if (el) {
       el.scrollTop = 0;
     }
   }
+
 
   toggleCprMetronome() {
     if (this.isCprMetronomeActive()) {
