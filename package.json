@@ -76,6 +76,7 @@
     "postinstall": "npx --no-install patch-package || true",
     "dev": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
     "dev:all": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
+    "wp:publish": "node scripts/publish_article_to_wordpress.mjs",
     "models:retrain": "node scripts/retrain-models.mjs",
     "sentinel:audit": "node scripts/sentinel_security_guard.mjs",
     "clamav:scan": "node scripts/daily-clamav-scan.mjs",
