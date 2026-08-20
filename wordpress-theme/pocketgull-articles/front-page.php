@@ -209,7 +209,102 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 3. Interactive SaaS ROI Calculator ════════════════════════════════════ -->
+  <!-- ══ 3. The 5-Font PocketGull Typeface Superfamily Showcase ═════════════════ -->
+  <section id="typeface" class="py-12 border-t border-stone-800 space-y-12">
+    <div class="text-center space-y-3 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-pocketgull-mono font-bold">
+        <span>🖋️ SIL Open Font License 1.1</span>
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-white">
+        The PocketGull Typeface Superfamily (5 Cuts)
+      </h2>
+      <p class="text-stone-300 text-sm sm:text-base font-sans leading-relaxed">
+        Engineered specifically for clinical decision support, medical telemetry HUDs, and papercraft aesthetics. Designed with unambiguous optical legibility and WCAG 2.1 AAA contrast.
+      </p>
+    </div>
+
+    <!-- Master Specimen Card -->
+    <div class="bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 p-6 sm:p-10 rounded-3xl shadow-2xl border-2 border-amber-400/40 max-w-5xl mx-auto">
+      <div class="bg-[#FDFBF7] text-stone-950 rounded-2xl p-8 sm:p-12 text-center shadow-xl border-2 border-amber-700/20 relative overflow-hidden">
+        <div class="bg-[#EA580C] text-white px-5 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-widest inline-block shadow-md mb-6">
+          POCKETGULL TYPEFACE SPECIMEN
+        </div>
+        
+        <div class="text-4xl sm:text-6xl font-extrabold text-stone-900 tracking-tight font-pocketgull-marker my-2">
+          PocketGull
+        </div>
+
+        <div class="text-rose-700 text-sm sm:text-base font-bold font-mono tracking-wide mt-4">
+          Handcrafted Felt-Tip Marker Typography &amp; Clinical Legibility Engine
+        </div>
+
+        <div class="text-stone-700 font-mono text-xs sm:text-sm tracking-widest mt-6 font-semibold border-t border-amber-900/10 pt-4">
+          Aa Bb Cc Dd Ee 0123456789 • Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ ☤ ⚕ ✚ ñ é ü  æ ç α β Ω
+        </div>
+
+        <div class="text-stone-500 font-mono text-[11px] mt-4 opacity-85">
+          SIL Open Font License 1.1 • Certified WCAG 2.1 AAA Contrast Ratio (v1.0.1)
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 Distinct Font Cuts Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 max-w-6xl mx-auto text-left">
+      
+      <!-- Cut 1: Fineliner -->
+      <div class="glass-card-dark p-6 rounded-2xl border border-teal-500/30 flex flex-col justify-between">
+        <div>
+          <div class="text-[11px] font-mono font-bold text-teal-400 uppercase mb-2">400 • Fineliner</div>
+          <div class="font-pocketgull-marker text-2xl text-stone-100 mb-3">Aa Bb 123</div>
+          <h4 class="text-sm font-bold text-white mb-1">Fineliner</h4>
+          <p class="text-[11px] text-stone-400 leading-relaxed font-sans">0.8mm wet felt-tip stroke simulating organic clinical notes.</p>
+        </div>
+      </div>
+
+      <!-- Cut 2: Bold -->
+      <div class="glass-card-dark p-6 rounded-2xl border border-amber-500/30 flex flex-col justify-between">
+        <div>
+          <div class="text-[11px] font-mono font-bold text-amber-400 uppercase mb-2">700 • Bold</div>
+          <div class="font-pocketgull-marker font-bold text-2xl text-amber-300 mb-3">PocketGull</div>
+          <h4 class="text-sm font-bold text-white mb-1">Master Bold</h4>
+          <p class="text-[11px] text-stone-400 leading-relaxed font-sans">Cap Height (P=78.22 UPM) trace for prominent headers.</p>
+        </div>
+      </div>
+
+      <!-- Cut 3: Chiseltip -->
+      <div class="glass-card-dark p-6 rounded-2xl border border-rose-500/30 flex flex-col justify-between">
+        <div>
+          <div class="text-[11px] font-mono font-bold text-rose-400 uppercase mb-2">900 • Chiseltip</div>
+          <div class="font-pocketgull-chisel text-2xl text-rose-300 mb-3">GEARARTS</div>
+          <h4 class="text-sm font-bold text-white mb-1">Chiseltip</h4>
+          <p class="text-[11px] text-stone-400 leading-relaxed font-sans">-4.0° calligraphic chisel tilt for brand badges.</p>
+        </div>
+      </div>
+
+      <!-- Cut 4: Mono -->
+      <div class="glass-card-dark p-6 rounded-2xl border border-stone-700 flex flex-col justify-between">
+        <div>
+          <div class="text-[11px] font-mono font-bold text-stone-400 uppercase mb-2">Mono • Regular</div>
+          <div class="font-pocketgull-mono text-xl text-teal-300 mb-3">FHIR { }</div>
+          <h4 class="text-sm font-bold text-white mb-1">PocketGull Mono</h4>
+          <p class="text-[11px] text-stone-400 leading-relaxed font-sans">Tabular alignment for FHIR R4 JSON &amp; ECG signals.</p>
+        </div>
+      </div>
+
+      <!-- Cut 5: Antigravity -->
+      <div class="glass-card-dark p-6 rounded-2xl border border-indigo-500/30 flex flex-col justify-between">
+        <div>
+          <div class="text-[11px] font-mono font-bold text-indigo-400 uppercase mb-2">Display • Space</div>
+          <div class="text-xl text-indigo-300 font-bold mb-3 tracking-widest uppercase" style="font-family: 'PocketGull Antigravity', sans-serif;">ORBIT 3D</div>
+          <h4 class="text-sm font-bold text-white mb-1">Antigravity</h4>
+          <p class="text-[11px] text-stone-400 leading-relaxed font-sans">Futuristic spatial HUD display for 3D holographic telemetry.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ 4. Interactive SaaS ROI Calculator ════════════════════════════════════ -->
   <section class="glass-card-dark rounded-3xl p-8 sm:p-12 border-2 border-amber-500/40 shadow-2xl">
     <div class="max-w-4xl mx-auto space-y-8">
       <div class="text-center space-y-2">

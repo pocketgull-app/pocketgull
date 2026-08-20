@@ -56,6 +56,14 @@
     }
 
     @font-face {
+      font-family: 'PocketGull Antigravity';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGull-Antigravity.ttf') format('truetype');
+    }
+
+    @font-face {
       font-family: 'PocketGull Mono';
       font-style: normal;
       font-weight: 400 700;
