@@ -24,6 +24,7 @@ import { RolePathwayDocumentationHubComponent } from './role-pathway-documentati
 import { RoleDemoModalComponent } from './role-demo-modal.component';
 import { HistoricalLuminariesGameComponent } from './historical-luminaries-game.component';
 import { HobbyDomainCompanionComponent } from './hobby-domain-companion.component';
+import { IntimacyRelationshipVitalityComponent } from './intimacy-relationship-vitality.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -317,7 +318,8 @@ export interface IWorkbenchToolStatus {
             </div>
           }
         </div>
-      } @else if (activeWorkbenchTab() === 'osce') {
+      </div>
+    } @else if (activeWorkbenchTab() === 'osce') {
         <app-residency-osce-simulator />
       } @else if (activeWorkbenchTab() === 'slack') {
         <app-slack-integration-card />
@@ -357,6 +359,8 @@ export interface IWorkbenchToolStatus {
         <app-historical-luminaries-game />
       } @else if (activeWorkbenchTab() === 'companion') {
         <app-hobby-domain-companion />
+      } @else if (activeWorkbenchTab() === 'intimacy') {
+        <app-intimacy-relationship-vitality />
       }
 
       @if (showRoleDemoModal()) {
@@ -371,11 +375,12 @@ export class ClinicalToolWorkbenchComponent {
   private readonly haptics = inject(BioHapticFeedbackService);
 
   readonly showRoleDemoModal = signal(false);
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion'>('tools');
+  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy'>('tools');
   readonly intakeDirectiveQuery = signal<string>('');
 
-  readonly workbenchTabs: { id: 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion'; label: string; icon: string; activeClass: string }[] = [
+  readonly workbenchTabs: { id: 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy'; label: string; icon: string; activeClass: string }[] = [
     { id: 'tools', label: 'Diagnostic Tools', icon: '🛠️', activeClass: 'bg-cyan-500 text-zinc-950 shadow-xs' },
+    { id: 'intimacy', label: 'Couples Vitality & Cardiac Safety (Princeton III)', icon: '❤️', activeClass: 'bg-rose-600 text-white shadow-xs' },
     { id: 'companion', label: 'Craft & Passion Confidants (SNO-10)', icon: '🤝', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
     { id: 'luminaries', label: 'Historical Luminaries Arena', icon: '🏛️', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
     { id: 'pathwayDocs', label: 'Role & Pathway Docs', icon: '🧭', activeClass: 'bg-indigo-600 text-white shadow-xs' },

@@ -115,6 +115,17 @@ export class RxGuardService {
       clinicalConsequence: 'Increased systemic statin AUC; potential myalgia susceptibility in SLCO1B1 slow alleles.',
       managementRecommendation: 'Limit Curcumin to <= 1000mg/day; check baseline serum CK if muscle aches occur.',
       evidenceGrade: 'Level C (In Vitro/Observational)'
+    },
+    {
+      id: 'dhi-007',
+      drug: 'Nitroglycerin / Isosorbide (Nitrates)',
+      herbOrNutrient: 'Sildenafil / Tadalafil (PDE-5 Inhibitors)',
+      paradigm: 'Western',
+      severity: 'CONTRAINDICATED',
+      mechanism: 'Synergistic cGMP accumulation causing profound, refractory vasodilation and coronary hypoperfusion.',
+      clinicalConsequence: 'Severe life-threatening systemic hypotension, syncope, myocardial infarction, and cardiovascular collapse.',
+      managementRecommendation: 'Absolute contraindication. Minimum 24h separation for Sildenafil; minimum 48h separation for Tadalafil before any nitrate administration.',
+      evidenceGrade: 'Level A (CPIC/FDA)'
     }
   ];
 
