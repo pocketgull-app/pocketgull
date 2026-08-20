@@ -27,14 +27,14 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
   
   <style>
     /* 🖋️ Official Open-Source PocketGull Typeface Superfamily */
     @font-face {
       font-family: 'PocketGull';
       font-style: normal;
-      font-weight: 300 500;
+      font-weight: 400;
       font-display: swap;
       src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGull-Fineliner.ttf') format('truetype');
     }
@@ -42,7 +42,7 @@
     @font-face {
       font-family: 'PocketGull';
       font-style: normal;
-      font-weight: 600 800;
+      font-weight: 700;
       font-display: swap;
       src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGull-Bold.ttf') format('truetype');
     }
@@ -79,20 +79,27 @@
       color: #f5f5f4;
     }
 
-    /* 🖋️ Marker Typography for Brand & Display Accents */
-    .font-pocketgull, .font-pocketgull-marker {
-      font-family: 'PocketGull', 'Outfit', 'Inter', sans-serif !important;
-      letter-spacing: -0.01em;
+    /* 🖋️ Headers & Display Typography matching pocketgull.app */
+    h1, h2, h3, h4, h5, h6, .font-pocketgull, .font-heading {
+      font-family: 'Outfit', 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    /* 🖋️ Marker Specimen Accents */
+    .font-pocketgull-marker {
+      font-family: 'PocketGull', 'Outfit', cursive, sans-serif !important;
     }
 
     .font-pocketgull-chisel {
-      font-family: 'PocketGull', 'Outfit', 'Inter', sans-serif !important;
+      font-family: 'PocketGull', 'Outfit', cursive, sans-serif !important;
       font-weight: 900;
       letter-spacing: -0.025em;
     }
 
     .font-pocketgull-mono {
-      font-family: 'PocketGull Mono', 'JetBrains Mono', monospace !important;
+      font-family: 'JetBrains Mono', 'PocketGull Mono', monospace !important;
     }
 
     .geararts-card {
