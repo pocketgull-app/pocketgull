@@ -4,6 +4,23 @@
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#09090b">
+    <script>
+      tailwind = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                green: '#34A853',
+                blue: '#4285F4',
+                amber: '#FBBC05',
+                red: '#EA4335'
+              }
+            }
+          }
+        }
+      }
+    </script>
     <?php wp_head(); ?>
 </head>
 <body <?php body_class( 'bg-zinc-950 text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-zinc-950' ); ?>>
