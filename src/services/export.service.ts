@@ -163,8 +163,7 @@ export class ExportService {
   private clinicalAssessments = (() => {
     try {
       return inject(ClinicalAssessmentsService, { optional: true });
-    } catch (e) {
-      console.debug('[ExportService] ClinicalAssessmentsService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   })();
@@ -172,8 +171,7 @@ export class ExportService {
   private ybocsService = (() => {
     try {
       return inject(YbocsService, { optional: true });
-    } catch (e) {
-      console.debug('[ExportService] YbocsService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   })();
@@ -181,11 +179,11 @@ export class ExportService {
   private acronymService = (() => {
     try {
       return inject(AcronymExpanderService, { optional: true });
-    } catch (e) {
-      console.debug('[ExportService] AcronymExpanderService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   })();
+
 
   public sanitizeForExport(inputStr: string): string {
     if (!inputStr) return '';
@@ -663,11 +661,11 @@ export class ExportService {
   private get markdownService(): MarkdownService | null {
     try {
       return inject(MarkdownService, { optional: true });
-    } catch (e) {
-      console.debug('[ExportService] MarkdownService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   }
+
 
   // ─── PDF / Print Export ────────────────────────────────────
 

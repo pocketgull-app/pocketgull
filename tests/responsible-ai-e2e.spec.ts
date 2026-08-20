@@ -1,9 +1,11 @@
 import '@angular/compiler';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ExportService } from '../src/services/export.service';
 import { RulesEngineService } from '../src/services/rules-engine.service';
 import { FORMATTING_RULES, SYSTEM_INSTRUCTIONS } from '../src/services/clinical-prompts';
 
 describe('Responsible AI & E2E Safety Test Suite', () => {
+
   let exportService: ExportService;
   let rulesEngine: RulesEngineService;
 
