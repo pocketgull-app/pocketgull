@@ -125,10 +125,10 @@ import { SecureStorageService } from '../services/secure-storage.service';
 
       <!-- HIPAA Lock Status Header (Visible only when locked) -->
       @if (isLocked()) {
-        <div class="absolute shadow-sm top-8 left-1/2 -translate-x-1/2 flex flex-col items-center mb-8 mt-2 animate-in slide-in-from-top-4-centered duration-500 z-30">
-            <div class="flex items-center gap-3 bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md px-5 py-3 rounded-full border border-zinc-200/50 dark:border-zinc-800/80 shadow-2xl">
-                <div class="w-2.5 h-2.5 rounded-full bg-brand-red-500 animate-pulse shadow-[0_0_8px_rgba(234,67,53,0.6)]"></div>
-                <span class="text-[12px] font-bold uppercase tracking-[0.2em] text-zinc-700 dark:text-zinc-300">HIPAA Security Lock Active (§ 164.312)</span>
+        <div class="mb-3 flex justify-center z-30 animate-in fade-in duration-300">
+            <div class="flex items-center gap-2 bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-zinc-200/60 dark:border-zinc-800 shadow-md">
+                <div class="w-2 h-2 rounded-full bg-brand-red-500 animate-pulse shadow-[0_0_6px_rgba(234,67,53,0.6)]"></div>
+                <span class="text-[10.5px] font-bold uppercase tracking-[0.15em] text-zinc-700 dark:text-zinc-300">HIPAA Security Lock Active (§ 164.312)</span>
             </div>
         </div>
       }
