@@ -30,20 +30,53 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   
   <style>
+    /* 🖋️ Official Open-Source PocketGull Typeface Superfamily */
+    @font-face {
+      font-family: 'PocketGull';
+      font-style: normal;
+      font-weight: 300 500;
+      font-display: swap;
+      src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGull-Fineliner.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'PocketGull';
+      font-style: normal;
+      font-weight: 600 800;
+      font-display: swap;
+      src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGull-Bold.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'PocketGull';
+      font-style: normal;
+      font-weight: 900;
+      font-display: swap;
+      src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGull-Chiseltip.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'PocketGull Mono';
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+      src: url('<?php echo get_template_directory_uri(); ?>/fonts/PocketGullMono-Regular.ttf') format('truetype');
+    }
+
     body {
       background-color: #0c0a09;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'PocketGull', 'Inter', -apple-system, sans-serif;
       text-rendering: optimizeLegibility;
       overflow-x: hidden;
     }
 
     .font-pocketgull {
-      font-family: 'Outfit', 'Inter', sans-serif;
+      font-family: 'PocketGull', 'Inter', sans-serif !important;
       letter-spacing: -0.01em;
     }
 
     .font-pocketgull-mono {
-      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-family: 'PocketGull Mono', 'JetBrains Mono', monospace !important;
     }
 
     .geararts-card {

@@ -1,64 +1,130 @@
 /*
 Theme Name: Pocket-Gull Articles & Clinical Knowledge
 Theme URI: https://pocketgull.com/articles
-Author: Pocket-Gull Open-Source Contributors
+Author: Phil (GEARARTS)
 Author URI: https://pocketgull.com
-Description: Industrial Grace, William Caslon typography, and SNO-10 clinical health literacy theme for pocketgull.com/articles. Designed to empower everyday people with actionable, empathetic health guides.
-Version: 1.0.0
-License: Apache License 2.0
-License URI: https://www.apache.org/licenses/LICENSE-2.0
+Description: Official PocketGull Variable Typeface superfamily and B2B clinical intelligence theme for pocketgull.com.
+Version: 1.24.0
+License: Apache License 2.0 & SIL OFL 1.1
 Text Domain: pocketgull-articles
-Tags: medical, health-literacy, dark-mode, clean, typography, accessibility-ready, block-patterns, fast
 */
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   🖋️ OFFICIAL POCKETGULL TYPEFACE SUPERFAMILY (SIL OFL 1.1)
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* PocketGull Regular / Fineliner (Weight 400) */
+@font-face {
+  font-family: 'PocketGull';
+  font-style: normal;
+  font-weight: 300 500;
+  font-display: swap;
+  src: url('fonts/PocketGull-Fineliner.ttf') format('truetype');
+}
+
+/* PocketGull Bold (Weight 600 - 700) */
+@font-face {
+  font-family: 'PocketGull';
+  font-style: normal;
+  font-weight: 600 800;
+  font-display: swap;
+  src: url('fonts/PocketGull-Bold.ttf') format('truetype');
+}
+
+/* PocketGull Chiseltip / Heavy (Weight 900) */
+@font-face {
+  font-family: 'PocketGull';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('fonts/PocketGull-Chiseltip.ttf') format('truetype');
+}
+
+/* PocketGull Mono (Tabular Clinical Telemetry) */
+@font-face {
+  font-family: 'PocketGull Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('fonts/PocketGullMono-Regular.ttf') format('truetype');
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   🎨 DESIGN TOKENS & TYPOGRAPHY SYSTEM
+   ══════════════════════════════════════════════════════════════════════════════ */
+
 :root {
-  --pocketgull-bg: #09090b;
-  --pocketgull-surface: #18181b;
-  --pocketgull-surface-elevated: #27272a;
-  --pocketgull-border: #3f3f46;
-  --pocketgull-text-primary: #f4f4f5;
-  --pocketgull-text-secondary: #a1a1aa;
-  --pocketgull-accent-green: #34A853;
-  --pocketgull-accent-blue: #4285F4;
-  --pocketgull-accent-amber: #FBBC05;
-  --pocketgull-accent-rose: #f43f5e;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-heading: 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-serif: 'Cinzel', 'Libre Caslon Text', 'Georgia', serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --pocketgull-bg: #0c0a09;
+  --pocketgull-surface: #1c1917;
+  --pocketgull-amber: #f59e0b;
+  --pocketgull-amber-light: #fbbf24;
+  --pocketgull-teal: #0d9488;
+  --pocketgull-coral: #f43f5e;
+  
+  --font-primary: 'PocketGull', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'PocketGull Mono', 'JetBrains Mono', monospace;
 }
 
 body {
   margin: 0;
   padding: 0;
   background-color: var(--pocketgull-bg);
-  color: var(--pocketgull-text-primary);
-  font-family: var(--font-sans);
+  color: #f5f5f4;
+  font-family: var(--font-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
   letter-spacing: -0.01em;
-  font-feature-settings: "cv08", "cv05", "ss02"; /* Slashed zero, curved l, serifed I */
+  font-feature-settings: "cv08", "cv05", "ss02";
 }
 
-h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: var(--font-heading);
+h1, h2, h3, h4, h5, h6, .font-pocketgull {
+  font-family: 'PocketGull', 'Inter', sans-serif !important;
   font-weight: 800;
-  letter-spacing: -0.025em;
-  color: #ffffff;
+  letter-spacing: -0.02em;
 }
 
-.font-mono, code, pre {
-  font-family: var(--font-mono);
+code, kbd, samp, pre, .font-pocketgull-mono {
+  font-family: 'PocketGull Mono', 'JetBrains Mono', monospace !important;
   font-feature-settings: "zero", "ss01", "ss02";
 }
 
-/* PocketGull Editorial Prose */
+/* GEARARTS Brand Elements */
+.geararts-card {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 60%, #d97706 100%);
+  color: #0c0a09;
+  box-shadow: 0 20px 40px -10px rgba(245, 158, 11, 0.4);
+}
+
+.glass-card-dark {
+  background: rgba(28, 25, 23, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+}
+
+.marker-underline {
+  position: relative;
+  display: inline-block;
+}
+.marker-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 2px;
+  width: 100%;
+  height: 8px;
+  background-color: rgba(245, 158, 11, 0.4);
+  border-radius: 4px;
+  z-index: -1;
+  transform: rotate(-0.5deg);
+}
+
+/* Editorial Reading Prose */
 .prose-editorial {
-  font-family: var(--font-sans);
+  font-family: var(--font-primary);
   font-size: 1.15rem;
-  line-height: 1.8;
-  color: #e4e4e7;
+  line-height: 1.85;
+  color: #e7e5e4;
   max-width: 48rem;
   margin: 0 auto;
 }
@@ -66,10 +132,9 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .prose-editorial h1,
 .prose-editorial h2,
 .prose-editorial h3 {
-  font-family: var(--font-heading);
+  font-family: 'PocketGull', sans-serif;
   font-weight: 800;
   color: #ffffff;
-  letter-spacing: -0.02em;
   margin-top: 2rem;
   margin-bottom: 0.8rem;
 }
@@ -79,31 +144,19 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .prose-editorial blockquote {
-  border-left: 3px solid var(--pocketgull-accent-green);
-  padding-left: 1.25rem;
-  font-style: italic;
-  color: #d4d4d8;
-  background: rgba(52, 168, 83, 0.05);
+  border-left: 3px solid var(--pocketgull-amber);
   padding: 1rem 1.25rem;
+  font-style: italic;
+  color: #fef08a;
+  background: rgba(245, 158, 11, 0.08);
   border-radius: 0 0.75rem 0.75rem 0;
   margin: 1.75rem 0;
 }
 
-/* SNO-10 Callout Box */
 .sno10-analogy-box {
-  background: rgba(251, 188, 5, 0.07);
-  border: 1px solid rgba(251, 188, 5, 0.3);
-  border-radius: 1rem;
+  background: rgba(13, 148, 136, 0.08);
+  border: 1px solid rgba(13, 148, 136, 0.35);
+  border-radius: 1.25rem;
   padding: 1.25rem;
   margin: 2rem 0;
-}
-
-.sno10-analogy-box .badge {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #fde047;
-  display: inline-block;
-  margin-bottom: 0.5rem;
 }
