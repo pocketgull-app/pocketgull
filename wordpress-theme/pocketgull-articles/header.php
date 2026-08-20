@@ -65,14 +65,22 @@
 
     body {
       background-color: #0c0a09;
-      font-family: 'PocketGull', 'Inter', -apple-system, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       text-rendering: optimizeLegibility;
       overflow-x: hidden;
+      color: #f5f5f4;
     }
 
-    .font-pocketgull {
-      font-family: 'PocketGull', 'Inter', sans-serif !important;
+    /* 🖋️ Marker Typography for Brand & Display Accents */
+    .font-pocketgull, .font-pocketgull-marker {
+      font-family: 'PocketGull', 'Outfit', 'Inter', sans-serif !important;
       letter-spacing: -0.01em;
+    }
+
+    .font-pocketgull-chisel {
+      font-family: 'PocketGull', 'Outfit', 'Inter', sans-serif !important;
+      font-weight: 900;
+      letter-spacing: -0.025em;
     }
 
     .font-pocketgull-mono {
