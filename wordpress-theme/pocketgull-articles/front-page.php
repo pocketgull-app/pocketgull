@@ -1,24 +1,24 @@
 <?php
 /**
  * Front Page Template for WordPress Theme (pocketgull.com)
- * Enhanced with DESIGN.md & GREATER_GOOD_CHARTER.md Systems
+ * All-Out Interactive B2B SaaS Sales Engine & Clinical Demonstration Hub
  *
  * @package PocketGull_Articles
  */
 
 get_header(); ?>
 
-<main class="relative z-10 flex-grow space-y-24 py-12 px-4 sm:px-6 max-w-7xl mx-auto">
+<main class="relative z-10 flex-grow space-y-28 py-12 px-4 sm:px-6 max-w-7xl mx-auto">
 
   <!-- ══ 1. Hero & Handcrafted GEARARTS Card with Rams Grill ════════════════════ -->
   <section class="text-center max-w-5xl mx-auto pt-6 pb-8">
     
-    <!-- Top Announcement Pill -->
+    <!-- Top Circadian Resonance Indicator -->
     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-mono font-bold mb-8 shadow-sm">
-      <span class="animate-pulse">✨</span>
-      <span>Enterprise Clinical Intelligence SaaS • 14-Day Free Pilot</span>
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+      <span>Live AI Clinical Intelligence • 14-Day Free Practice Pilot</span>
       <span class="text-stone-500">|</span>
-      <span class="text-teal-400">HIPAA Safe Harbor &amp; FHIR R4</span>
+      <span class="text-teal-400">HIPAA §164.514 &amp; FHIR R4 Compliant</span>
     </div>
 
     <!-- Handcrafted GEARARTS Card with Dieter Rams Precision Grill -->
@@ -52,29 +52,29 @@ get_header(); ?>
           PocketGull
         </div>
         <div class="text-xs font-bold text-stone-800 uppercase tracking-widest mt-1 font-mono">
-          Clinical Intelligence &amp; Preventive Strategy Engine
+          Clinical Intelligence Strategy Engine
         </div>
       </div>
     </div>
 
-    <!-- Main Value Proposition Headline (UI Sans-Serif) -->
+    <!-- Main Value Proposition Headline -->
     <h1 class="text-4xl sm:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight max-w-4xl mx-auto">
       Reclaim <span class="text-teal-400 marker-underline">2.4 Hours</span> Every Day with the Clinical AI Co-Pilot.
     </h1>
 
     <p class="text-lg sm:text-2xl text-stone-300 mb-10 max-w-3xl mx-auto leading-relaxed font-normal">
-      PocketGull automates EHR charting, ambient patient scribing, and complex care plans using <strong class="text-amber-300">Google Gemini 2.5</strong> and the <strong class="text-teal-300">PocketGull Typeface</strong>—slashing administrative burnout by <strong class="text-rose-400">42%</strong>.
+      PocketGull automates ambient scribing, EHR charting, and preventive care strategies using <strong class="text-amber-300">Google Gemini 2.5</strong> and the <strong class="text-teal-300">PocketGull Typeface</strong>—slashing administrative burnout by <strong class="text-rose-400">42%</strong>.
     </p>
 
     <!-- Primary Conversion CTA Buttons -->
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-      <a href="https://pocketgull.app" class="w-full sm:w-auto px-8 py-4 rounded-2xl geararts-card text-lg text-stone-950 font-extrabold transition-all hover:scale-105 hover:shadow-amber-500/50 flex items-center justify-center gap-2 shadow-xl cursor-pointer">
+      <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full sm:w-auto px-8 py-4 rounded-2xl geararts-card text-lg text-stone-950 font-extrabold transition-all hover:scale-105 hover:shadow-amber-500/50 flex items-center justify-center gap-2 shadow-xl cursor-pointer">
         <span>Start 14-Day Clinical Pilot</span>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-      </a>
-      <a href="#prevention-avenues" class="w-full sm:w-auto px-7 py-4 rounded-2xl glass-card-dark text-stone-200 text-lg font-bold hover:text-white hover:border-amber-400/60 transition-all flex items-center justify-center gap-2">
-        <span>Explore Preventive Avenues</span>
-        <span>↓</span>
+      </button>
+      <a href="#interactive-simulator" class="w-full sm:w-auto px-7 py-4 rounded-2xl glass-card-dark text-stone-200 text-lg font-bold hover:text-white hover:border-amber-400/60 transition-all flex items-center justify-center gap-2">
+        <span>Try Live AI Simulator</span>
+        <span>⚡</span>
       </a>
     </div>
 
@@ -100,7 +100,200 @@ get_header(); ?>
 
   </section>
 
-  <!-- ══ 2. 5 Core Avenues of Preventive Medicine ════════════════════════════════ -->
+  <!-- ══ 2. INTERACTIVE LIVE EXAM ROOM AI SCRIBE SIMULATOR ═══════════════════════ -->
+  <section id="interactive-simulator" class="glass-card-dark rounded-3xl p-8 sm:p-12 border-2 border-teal-500/40 shadow-2xl relative overflow-hidden space-y-8">
+    <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+    
+    <div class="max-w-4xl mx-auto text-center space-y-3 pt-2">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-mono font-bold">
+        <span>⚡ Interactive Live Demonstration</span>
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
+        Experience the Ambient Clinical Scribe
+      </h2>
+      <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
+        Click a clinical encounter below to simulate Gemini 2.5 Flash listening, extracting clinical entities, checking RxGuard drug safety, and creating a structured FHIR R4 care plan in real time:
+      </p>
+    </div>
+
+    <!-- Scenario Selector Buttons -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+      <button id="scenarioBtn1" class="scenario-btn active p-4 rounded-2xl bg-stone-900/90 border-2 border-teal-400 text-left transition cursor-pointer flex flex-col justify-between space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xl">❤️</span>
+          <span class="text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded">Princeton III</span>
+        </div>
+        <div class="font-bold text-white text-sm">Cardiac &amp; Exertion Safety</div>
+        <div class="text-[11px] text-stone-400">4 METs / 2 flights of stairs</div>
+      </button>
+
+      <button id="scenarioBtn2" class="scenario-btn p-4 rounded-2xl bg-stone-900/90 border border-stone-800 text-left transition cursor-pointer flex flex-col justify-between space-y-2 hover:border-amber-400">
+        <div class="flex items-center justify-between">
+          <span class="text-xl">🫘</span>
+          <span class="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded">Nephrology</span>
+        </div>
+        <div class="font-bold text-white text-sm">Renal &amp; BP Protection</div>
+        <div class="text-[11px] text-stone-400">$100k Dialysis Aversion</div>
+      </button>
+
+      <button id="scenarioBtn3" class="scenario-btn p-4 rounded-2xl bg-stone-900/90 border border-stone-800 text-left transition cursor-pointer flex flex-col justify-between space-y-2 hover:border-teal-400">
+        <div class="flex items-center justify-between">
+          <span class="text-xl">🛠️</span>
+          <span class="text-[10px] font-mono font-bold bg-teal-500/20 text-teal-300 px-2 py-0.5 rounded">Ergonomics</span>
+        </div>
+        <div class="font-bold text-white text-sm">Joint &amp; Craft Continuity</div>
+        <div class="text-[11px] text-stone-400">Osteoarthritis M17.9</div>
+      </button>
+    </div>
+
+    <!-- Live Scribe Output Console -->
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 bg-stone-950/90 p-6 sm:p-8 rounded-2xl border border-stone-800 text-xs">
+      
+      <!-- Left: Audio Stream & Transcription -->
+      <div class="space-y-4 border-b md:border-b-0 md:border-r border-stone-800 pb-6 md:pb-0 md:pr-6">
+        <div class="flex items-center justify-between font-mono">
+          <div class="flex items-center gap-2 text-teal-400 font-bold">
+            <span class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse"></span>
+            <span>LIVE AUDIO TRANSCRIPT</span>
+          </div>
+          <span id="scribeTimer" class="text-stone-500">00:08s</span>
+        </div>
+
+        <!-- Audio Waveform Mockup -->
+        <div class="flex items-center gap-1 h-6 px-3 bg-stone-900 rounded-lg overflow-hidden">
+          <div class="w-1 bg-teal-400 h-2 animate-bounce"></div>
+          <div class="w-1 bg-teal-400 h-4 animate-bounce" style="animation-delay: 0.1s"></div>
+          <div class="w-1 bg-teal-400 h-6 animate-bounce" style="animation-delay: 0.2s"></div>
+          <div class="w-1 bg-teal-400 h-3 animate-bounce" style="animation-delay: 0.15s"></div>
+          <div class="w-1 bg-teal-400 h-5 animate-bounce" style="animation-delay: 0.3s"></div>
+          <div class="w-1 bg-teal-400 h-2 animate-bounce" style="animation-delay: 0.25s"></div>
+          <div class="w-1 bg-teal-400 h-4 animate-bounce" style="animation-delay: 0.05s"></div>
+        </div>
+
+        <div id="scribeTranscript" class="text-stone-200 leading-relaxed font-sans text-sm min-h-[110px] italic">
+          "Doctor, I had a stent placed 6 months ago. My wife and I want to know when it is physically safe to resume intimacy and climb stairs without putting stress on my heart."
+        </div>
+      </div>
+
+      <!-- Right: Structured Clinical Extraction -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between font-mono">
+          <div class="flex items-center gap-2 text-amber-400 font-bold">
+            <span>📋</span>
+            <span>STRUCTURED CDS EXTRACTION</span>
+          </div>
+          <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono">Gemini 2.5 Flash</span>
+        </div>
+
+        <div id="scribeExtraction" class="space-y-2.5">
+          <div class="p-3 bg-stone-900 rounded-xl border border-stone-800 space-y-1">
+            <div class="text-[11px] font-bold text-amber-300 font-mono">Cardiovascular Capacity (Princeton III)</div>
+            <div class="text-stone-300 text-xs">Patient satisfies intermediate 4 MET threshold. Exertion equivalent to climbing 2 flights of stairs safely.</div>
+          </div>
+          <div class="p-3 bg-stone-900 rounded-xl border border-rose-900/50 text-rose-300 space-y-1">
+            <div class="text-[11px] font-bold font-mono flex items-center gap-1">
+              <span>🛡️ RxGuard Interlock Triggered:</span>
+            </div>
+            <div class="text-xs">Patient taking Isosorbide Mononitrate (Nitrates). Co-prescription of PDE-5 inhibitors is strictly contraindicated (Severe Hypotension Risk).</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ 3. INTERACTIVE SNO-10 ANALOGY FLIP CARDS ═══════════════════════════════ -->
+  <section class="space-y-12">
+    <div class="text-center space-y-3 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold">
+        <span>📖 SNO-10 Cognitive Translation</span>
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
+        Medical Jargon ➔ Plain Workshop English
+      </h2>
+      <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
+        Click any card to flip between the official clinical SNOMED-CT/ICD-10 terminology and PocketGull's intuitive craft analogies:
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      
+      <!-- Flip Card 1 -->
+      <div class="flip-card h-64 cursor-pointer" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner relative w-full h-full text-left rounded-3xl transition-transform duration-500">
+          <!-- Front -->
+          <div class="flip-card-front absolute inset-0 glass-card-dark p-7 rounded-3xl border border-rose-500/30 flex flex-col justify-between">
+            <div class="space-y-2">
+              <span class="text-xs font-mono font-bold text-rose-400">ICD-10 I10 &bull; Cardiology</span>
+              <h3 class="text-xl font-bold text-white">Essential Primary Hypertension</h3>
+              <p class="text-xs text-stone-400">Arterial pressure continuously exceeding 130/80 mmHg with microvascular endothelial sheer stress.</p>
+            </div>
+            <div class="text-[11px] font-mono text-amber-400">🔄 Click to Flip to Patient Analogy →</div>
+          </div>
+          <!-- Back -->
+          <div class="flip-card-back absolute inset-0 geararts-card p-7 rounded-3xl text-stone-950 flex flex-col justify-between shadow-2xl">
+            <div class="space-y-2">
+              <span class="text-xs font-mono font-bold opacity-80">🛠️ Workshop Analogy</span>
+              <h3 class="text-xl font-black">High PSI in a Copper Air Line</h3>
+              <p class="text-xs font-medium leading-relaxed">Like running your shop compressor at 150 PSI instead of 90 PSI. It doesn't break today, but it wears down the regulator and hoses until a leak blows.</p>
+            </div>
+            <div class="text-[11px] font-mono font-bold">🔄 Click to Flip Back</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flip Card 2 -->
+      <div class="flip-card h-64 cursor-pointer" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner relative w-full h-full text-left rounded-3xl transition-transform duration-500">
+          <!-- Front -->
+          <div class="flip-card-front absolute inset-0 glass-card-dark p-7 rounded-3xl border border-teal-500/30 flex flex-col justify-between">
+            <div class="space-y-2">
+              <span class="text-xs font-mono font-bold text-teal-400">ICD-10 M17.9 &bull; Orthopedics</span>
+              <h3 class="text-xl font-bold text-white">Degenerative Joint Disease (Knee)</h3>
+              <p class="text-xs text-stone-400">Progressive loss of articular cartilage, subchondral sclerosis, and osteophyte formation causing mechanical friction.</p>
+            </div>
+            <div class="text-[11px] font-mono text-amber-400">🔄 Click to Flip to Patient Analogy →</div>
+          </div>
+          <!-- Back -->
+          <div class="flip-card-back absolute inset-0 geararts-card p-7 rounded-3xl text-stone-950 flex flex-col justify-between shadow-2xl">
+            <div class="space-y-2">
+              <span class="text-xs font-mono font-bold opacity-80">🛠️ Workshop Analogy</span>
+              <h3 class="text-xl font-black">Worn Wooden Bushing on a Lathe</h3>
+              <p class="text-xs font-medium leading-relaxed">When grease runs dry on a spindle, wood rubs metal. You don't scrap the tool—you lubricate with movement, reduce heavy torque, and pace your cuts.</p>
+            </div>
+            <div class="text-[11px] font-mono font-bold">🔄 Click to Flip Back</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flip Card 3 -->
+      <div class="flip-card h-64 cursor-pointer" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner relative w-full h-full text-left rounded-3xl transition-transform duration-500">
+          <!-- Front -->
+          <div class="flip-card-front absolute inset-0 glass-card-dark p-7 rounded-3xl border border-purple-500/30 flex flex-col justify-between">
+            <div class="space-y-2">
+              <span class="text-xs font-mono font-bold text-purple-400">SNOMED 399269003 &bull; Mental Health</span>
+              <h3 class="text-xl font-bold text-white">Bereavement &amp; Complicated Grief</h3>
+              <p class="text-xs text-stone-400">Prolonged psychological adjustment disorder resulting from the loss of a significant companion with somatic fatigue.</p>
+            </div>
+            <div class="text-[11px] font-mono text-amber-400">🔄 Click to Flip to Patient Analogy →</div>
+          </div>
+          <!-- Back -->
+          <div class="flip-card-back absolute inset-0 geararts-card p-7 rounded-3xl text-stone-950 flex flex-col justify-between shadow-2xl">
+            <div class="space-y-2">
+              <span class="text-xs font-mono font-bold opacity-80">🛠️ Workshop Analogy</span>
+              <h3 class="text-xl font-black">Inheriting a Master's Hand Plane</h3>
+              <p class="text-xs font-medium leading-relaxed">Grief is having an empty bench. Healing is picking up their favorite hand plane, sharpening the blade, and finishing the project they started in their honor.</p>
+            </div>
+            <div class="text-[11px] font-mono font-bold">🔄 Click to Flip Back</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ 4. 5 Core Avenues of Preventive Medicine ════════════════════════════════ -->
   <section id="prevention-avenues" class="space-y-12 py-6">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
       <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-300 text-xs font-mono font-bold">
@@ -221,7 +414,7 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 3. Greater Good Charter: 50-30-20 Philanthropic Split ═════════════════ -->
+  <!-- ══ 5. Greater Good Charter: 50-30-20 Philanthropic Split ═════════════════ -->
   <section class="glass-card-dark rounded-3xl p-8 sm:p-12 border-2 border-emerald-500/40 shadow-2xl relative overflow-hidden">
     <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
     <div class="max-w-4xl mx-auto space-y-8 pt-2">
@@ -267,7 +460,7 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 4. Interactive SaaS ROI Calculator ════════════════════════════════════ -->
+  <!-- ══ 6. Interactive SaaS ROI Calculator ════════════════════════════════════ -->
   <section class="glass-card-dark rounded-3xl p-8 sm:p-12 border-2 border-amber-500/40 shadow-2xl relative overflow-hidden">
     <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
     <div class="max-w-4xl mx-auto space-y-8 pt-2">
@@ -316,7 +509,7 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 5. Commercial SaaS Pricing & Packaging ═════════════════════════════════ -->
+  <!-- ══ 7. Commercial SaaS Pricing & Packaging ═════════════════════════════════ -->
   <section id="pricing" class="space-y-12 py-8">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
       <div class="text-xs font-bold text-amber-400 uppercase tracking-widest font-mono">Transparent SaaS Subscriptions</div>
@@ -352,9 +545,9 @@ get_header(); ?>
           </ul>
         </div>
 
-        <a href="https://pocketgull.app" class="w-full py-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-center font-bold text-xs transition block">
+        <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full py-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-center font-bold text-xs transition block cursor-pointer">
           Start Solo Pilot
-        </a>
+        </button>
       </div>
 
       <!-- Tier 2: Group Clinic (Featured) -->
@@ -384,9 +577,9 @@ get_header(); ?>
           </ul>
         </div>
 
-        <a href="https://pocketgull.app" class="w-full py-3.5 rounded-xl geararts-card text-stone-950 text-center font-black text-sm transition hover:scale-105 shadow-xl block">
+        <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full py-3.5 rounded-xl geararts-card text-stone-950 text-center font-black text-sm transition hover:scale-105 shadow-xl block cursor-pointer">
           Get Started with Pro
-        </a>
+        </button>
       </div>
 
       <!-- Tier 3: Enterprise Health System -->
@@ -420,7 +613,7 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 6. Inbound Knowledge Base & Articles by Phil ═══════════════════════════ -->
+  <!-- ══ 8. Inbound Knowledge Base & Articles by Phil ═══════════════════════════ -->
   <section id="articles" class="space-y-8 border-t border-stone-800 pt-16">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-800 pb-5">
       <div>
@@ -472,9 +665,52 @@ get_header(); ?>
 
 </main>
 
-<!-- Interactive ROI Calculator Script -->
+<!-- ══ 9. 14-Day Free Clinical Pilot Booking Modal ════════════════════════════ -->
+<div id="pilotModal" class="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+  <div class="glass-card-dark rounded-3xl max-w-lg w-full p-8 border-2 border-amber-400 shadow-2xl relative overflow-hidden space-y-6">
+    <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+    
+    <div class="flex justify-between items-center pt-2">
+      <div>
+        <div class="text-xs font-mono font-bold text-amber-400 uppercase">14-Day Practice Pilot</div>
+        <h3 class="text-2xl font-bold text-white">Start Your Free Pilot</h3>
+      </div>
+      <button onclick="document.getElementById('pilotModal').classList.add('hidden')" class="text-stone-400 hover:text-white text-xl cursor-pointer">✕</button>
+    </div>
+
+    <form class="space-y-4" onsubmit="event.preventDefault(); alert('Pilot request received! Welcome to PocketGull.'); document.getElementById('pilotModal').classList.add('hidden');">
+      <div>
+        <label class="block text-xs font-mono text-stone-300 mb-1">Your Full Name &amp; Title</label>
+        <input type="text" required placeholder="Dr. Jane Smith, MD" class="w-full bg-stone-900 border border-stone-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-amber-400 focus:outline-hidden" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono text-stone-300 mb-1">Work / Clinical Email</label>
+        <input type="email" required placeholder="jane@clinicpractice.com" class="w-full bg-stone-900 border border-stone-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-amber-400 focus:outline-hidden" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono text-stone-300 mb-1">Practice Size &amp; Specialty</label>
+        <select class="w-full bg-stone-900 border border-stone-700 rounded-xl px-4 py-2.5 text-stone-300 text-sm focus:border-amber-400 focus:outline-hidden">
+          <option>Solo Practice (1 Provider)</option>
+          <option>Group Practice (2–5 Providers)</option>
+          <option>Multi-Specialty Clinic (6–20 Providers)</option>
+          <option>Health System / Residency Program</option>
+        </select>
+      </div>
+
+      <button type="submit" class="w-full py-3 rounded-xl geararts-card font-bold text-stone-950 text-sm hover:scale-[1.02] transition shadow-lg cursor-pointer">
+        Activate 14-Day Free Pilot →
+      </button>
+      <div class="text-[10px] text-center text-stone-400 font-mono">Zero credit card required &bull; HIPAA Safe Harbor compliant</div>
+    </form>
+  </div>
+</div>
+
+<!-- Interactive Scripts: ROI Calculator & AI Scribe Simulator -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    // 1. ROI Calculator
     const clinicianSlider = document.getElementById('clinicianSlider');
     const patientSlider = document.getElementById('patientSlider');
     const clinicianDisplay = document.getElementById('clinicianCountDisplay');
@@ -483,28 +719,104 @@ get_header(); ?>
     const hoursReclaimed = document.getElementById('hoursReclaimedDisplay');
     const chartsAutomated = document.getElementById('chartsAutomatedDisplay');
 
-    if (!clinicianSlider || !patientSlider || !totalSavings) return;
-
-    function recalculate() {
-      const clinicians = parseInt(clinicianSlider.value, 10);
-      const patientsPerDay = parseInt(patientSlider.value, 10);
-
-      clinicianDisplay.textContent = clinicians === 1 ? '1 Provider' : `${clinicians} Providers`;
-      patientDisplay.textContent = `${patientsPerDay} Patients/day`;
-
-      const annualHoursSavedPerDoc = 2.4 * 240;
-      const totalHours = Math.round(annualHoursSavedPerDoc * clinicians);
-      const annualDollarSavings = totalHours * 150;
-      const totalCharts = Math.round(clinicians * patientsPerDay * 240);
-
-      totalSavings.textContent = `$${annualDollarSavings.toLocaleString()} / yr`;
-      hoursReclaimed.textContent = `${totalHours.toLocaleString()} hours`;
-      chartsAutomated.textContent = `${totalCharts.toLocaleString()} encounters`;
+    if (clinicianSlider && patientSlider && totalSavings) {
+      function recalculate() {
+        const clinicians = parseInt(clinicianSlider.value, 10);
+        const patientsPerDay = parseInt(patientSlider.value, 10);
+        clinicianDisplay.textContent = clinicians === 1 ? '1 Provider' : `${clinicians} Providers`;
+        patientDisplay.textContent = `${patientsPerDay} Patients/day`;
+        const totalHours = Math.round(2.4 * 240 * clinicians);
+        const annualDollarSavings = totalHours * 150;
+        const totalCharts = Math.round(clinicians * patientsPerDay * 240);
+        totalSavings.textContent = `$${annualDollarSavings.toLocaleString()} / yr`;
+        hoursReclaimed.textContent = `${totalHours.toLocaleString()} hours`;
+        chartsAutomated.textContent = `${totalCharts.toLocaleString()} encounters`;
+      }
+      clinicianSlider.addEventListener('input', recalculate);
+      patientSlider.addEventListener('input', recalculate);
     }
 
-    clinicianSlider.addEventListener('input', recalculate);
-    patientSlider.addEventListener('input', recalculate);
+    // 2. AI Scribe Simulator
+    const scenarioData = {
+      1: {
+        transcript: '"Doctor, I had a stent placed 6 months ago. My wife and I want to know when it is physically safe to resume intimacy and climb stairs without putting stress on my heart."',
+        extraction: `
+          <div class="p-3 bg-stone-900 rounded-xl border border-stone-800 space-y-1">
+            <div class="text-[11px] font-bold text-amber-300 font-mono">Cardiovascular Capacity (Princeton III)</div>
+            <div class="text-stone-300 text-xs">Patient satisfies intermediate 4 MET threshold. Exertion equivalent to climbing 2 flights of stairs safely.</div>
+          </div>
+          <div class="p-3 bg-stone-900 rounded-xl border border-rose-900/50 text-rose-300 space-y-1">
+            <div class="text-[11px] font-bold font-mono">🛡️ RxGuard Interlock Triggered:</div>
+            <div class="text-xs">Patient taking Isosorbide Mononitrate (Nitrates). Co-prescription of PDE-5 inhibitors is strictly contraindicated (Severe Hypotension Risk).</div>
+          </div>`
+      },
+      2: {
+        transcript: '"My blood pressure has been running around 145 over 95 in the mornings. I feel fine, but my brother had kidney failure and had to go on dialysis, and I want to make sure I protect my kidneys."',
+        extraction: `
+          <div class="p-3 bg-stone-900 rounded-xl border border-stone-800 space-y-1">
+            <div class="text-[11px] font-bold text-amber-300 font-mono">ICD-10 I10 &bull; Stage 2 Hypertension</div>
+            <div class="text-stone-300 text-xs">Elevated glomerular capillary pressure detected. Recommend morning home BP logging + eGFR/uACR screening.</div>
+          </div>
+          <div class="p-3 bg-stone-900 rounded-xl border border-teal-900/50 text-teal-300 space-y-1">
+            <div class="text-[11px] font-bold font-mono">🫘 $100k Dialysis Prevention Pathway:</div>
+            <div class="text-xs">Early tight BP regulation (<130/80) halts microvascular nephron destruction and averts catastrophic ESRD costs.</div>
+          </div>`
+      },
+      3: {
+        transcript: '"I work in my woodworking shop 4 hours a day, but my right knee swells up when I stand at the workbench or use the foot pedal on my scroll saw."',
+        extraction: `
+          <div class="p-3 bg-stone-900 rounded-xl border border-stone-800 space-y-1">
+            <div class="text-[11px] font-bold text-amber-300 font-mono">ICD-10 M17.9 &bull; Knee Osteoarthritis</div>
+            <div class="text-stone-300 text-xs">Mechanical cartilage load fatigue with joint effusion during prolonged static weight bearing.</div>
+          </div>
+          <div class="p-3 bg-stone-900 rounded-xl border border-teal-900/50 text-teal-300 space-y-1">
+            <div class="text-[11px] font-bold font-mono">🛠️ Workshop Ergonomic Modifications:</div>
+            <div class="text-xs">Introduce anti-fatigue matting, raise workbench 3 inches to avoid knee flexion torque, and switch to hand-switch controls.</div>
+          </div>`
+      }
+    };
+
+    [1, 2, 3].forEach(id => {
+      const btn = document.getElementById(`scenarioBtn${id}`);
+      if (btn) {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.scenario-btn').forEach(b => {
+            b.classList.remove('border-teal-400', 'border-amber-400', 'border-rose-400', 'border-2');
+            b.classList.add('border-stone-800', 'border');
+          });
+          btn.classList.remove('border-stone-800', 'border');
+          btn.classList.add('border-teal-400', 'border-2');
+
+          const transcriptEl = document.getElementById('scribeTranscript');
+          const extractionEl = document.getElementById('scribeExtraction');
+          if (transcriptEl && extractionEl && scenarioData[id]) {
+            transcriptEl.textContent = scenarioData[id].transcript;
+            extractionEl.innerHTML = scenarioData[id].extraction;
+          }
+        });
+      }
+    });
   });
 </script>
+
+<style>
+  /* 3D Flip Card Styles */
+  .flip-card {
+    perspective: 1000px;
+  }
+  .flip-card-inner {
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-card-front, .flip-card-back {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .flip-card-back {
+    transform: rotateY(180deg);
+  }
+</style>
 
 <?php get_footer(); ?>
