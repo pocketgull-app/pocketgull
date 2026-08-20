@@ -166,27 +166,27 @@
   <header class="relative z-10 border-b border-stone-800/80 bg-stone-950/80 backdrop-blur-xl sticky top-0">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
       
-      <!-- Brand Logo Wordmark with Official Origami Seagull Icon -->
+      <!-- Brand Logo Wordmark with Official 400x400 Icon -->
       <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center gap-3 group">
-        <div class="w-11 h-11 rounded-2xl bg-stone-900 border border-stone-800 group-hover:border-amber-400/50 flex items-center justify-center transition shadow-md">
-          <svg viewBox="0 0 100 100" class="w-7 h-7 transform group-hover:scale-110 transition drop-shadow-sm">
-            <polygon points="50,15 85,55 50,45" fill="#FFFFFF" opacity="0.95" />
-            <polygon points="50,15 15,55 50,45" fill="#E6F0FA" opacity="0.9" />
-            <polygon points="50,45 85,55 50,85" fill="#C5D9ED" opacity="0.85" />
-            <polygon points="50,45 15,55 50,85" fill="#A8C7E0" opacity="0.8" />
-            <polygon points="50,15 56,10 50,18" fill="#34A853" /> <!-- Origami Green Beak -->
-          </svg>
+        <div class="w-11 h-11 rounded-2xl bg-stone-900 border border-stone-800 group-hover:border-amber-400/50 flex items-center justify-center transition shadow-md overflow-hidden p-1">
+          <img src="<?php echo get_template_directory_uri(); ?>/images/icon-400x400.png" alt="PocketGull Logo" class="w-full h-full object-contain transform group-hover:scale-110 transition drop-shadow-sm" />
         </div>
         <div>
           <span class="text-2xl font-bold tracking-tight text-white flex items-center gap-1.5 font-pocketgull-marker">
-            PocketGull <span class="text-xs font-mono font-normal text-amber-400">/articles</span>
+            PocketGull
           </span>
-          <span class="text-[10px] text-stone-400 block font-mono">Clinical Intelligence &amp; Preventive Health</span>
+          <span class="text-[10px] text-stone-400 block font-mono">Clinical Intelligence &amp; Digital Twin</span>
         </div>
       </a>
 
       <!-- Header Actions -->
       <nav class="flex items-center gap-4 text-xs font-mono">
+        <a href="#store" class="text-stone-300 hover:text-white transition hidden md:flex items-center gap-1">
+          <span>🖼️ Art Store</span>
+        </a>
+        <a href="#digital-twin" class="text-stone-300 hover:text-white transition hidden sm:flex items-center gap-1">
+          <span>🕊️ Model MC-10</span>
+        </a>
         <a href="https://pocketgull.com" class="text-stone-300 hover:text-white transition flex items-center gap-1">
           <span>←</span> <span class="hidden sm:inline">PocketGull.com</span>
         </a>

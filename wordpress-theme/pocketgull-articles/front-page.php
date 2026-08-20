@@ -53,15 +53,9 @@ get_header(); ?>
           <div class="text-[10px] tracking-tight uppercase font-semibold">Creating a Sustainable Future Through Art and Technology</div>
         </div>
 
-        <!-- Official Geometric Origami Seagull Icon Centerpiece -->
-        <div class="w-32 h-32 mx-auto my-4 rounded-2xl bg-stone-950 p-4 shadow-inner flex items-center justify-center relative overflow-hidden border-2 border-stone-800">
-          <svg viewBox="0 0 100 100" class="w-20 h-20 drop-shadow-md">
-            <polygon points="50,15 85,55 50,45" fill="#FFFFFF" opacity="0.95" />
-            <polygon points="50,15 15,55 50,45" fill="#E6F0FA" opacity="0.9" />
-            <polygon points="50,45 85,55 50,85" fill="#C5D9ED" opacity="0.85" />
-            <polygon points="50,45 15,55 50,85" fill="#A8C7E0" opacity="0.8" />
-            <polygon points="50,15 56,10 50,18" fill="#34A853" /> <!-- Origami Green Beak -->
-          </svg>
+        <!-- Official 400x400 App Icon Centerpiece -->
+        <div class="w-32 h-32 mx-auto my-4 rounded-3xl bg-stone-950 p-2 shadow-2xl flex items-center justify-center relative overflow-hidden border-2 border-stone-800">
+          <img src="<?php echo get_template_directory_uri(); ?>/images/icon-400x400.png" alt="PocketGull 400 Icon" class="w-full h-full object-contain drop-shadow-md" />
         </div>
 
         <!-- Wordmark with Authentic MarkerFont -->
@@ -287,7 +281,165 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 3. CLINICAL TRIALS (DCT) & EPISTEMOLOGY FRAMEWORKS ═════════════════════ -->
+  <!-- ══ 3. THE MODEL MC-10 5-STAGE VITALITY TURNTABLE ══════════════════════════ -->
+  <section id="digital-twin" class="glass-card-dark rounded-3xl p-8 sm:p-12 border-2 border-amber-500/40 shadow-2xl relative overflow-hidden space-y-8">
+    <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+    
+    <div class="max-w-4xl mx-auto text-center space-y-3 pt-2">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold">
+        <span>🕊️ Personal Health Console &bull; Model MC-10</span>
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
+        Your Body Tells a Story. Turn the Dial to Understand It.
+      </h2>
+      <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
+        No confusing medical jargon. PocketGull translates your daily sleep, continuous blood sugar, heart rate, and labs into 5 simple vitality engines:
+      </p>
+    </div>
+
+    <!-- 5-Stage Rotary Dial Console -->
+    <div class="max-w-4xl mx-auto bg-stone-950/90 rounded-2xl p-6 sm:p-8 border border-stone-800 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      
+      <!-- Turntable Dial Buttons -->
+      <div class="space-y-3 font-mono text-xs">
+        <div class="text-[10px] text-stone-500 uppercase tracking-wider">Select Engine Stage:</div>
+        
+        <button id="dialBtn1" class="dial-btn active w-full p-3.5 rounded-xl bg-stone-900 border-2 border-amber-400 text-left text-white flex items-center justify-between cursor-pointer transition">
+          <span class="font-bold">01 • Daily Energy &amp; Focus</span>
+          <span class="text-amber-400">MITOCHONDRIA</span>
+        </button>
+
+        <button id="dialBtn2" class="dial-btn w-full p-3.5 rounded-xl bg-stone-900 border border-stone-800 text-left text-stone-300 flex items-center justify-between cursor-pointer transition hover:border-teal-400">
+          <span class="font-bold">02 • Heart Rate &amp; Vagal Tone</span>
+          <span class="text-teal-400">AUTONOMIC</span>
+        </button>
+
+        <button id="dialBtn3" class="dial-btn w-full p-3.5 rounded-xl bg-stone-900 border border-stone-800 text-left text-stone-300 flex items-center justify-between cursor-pointer transition hover:border-rose-400">
+          <span class="font-bold">03 • Glucose Time-in-Range</span>
+          <span class="text-rose-400">METABOLISM</span>
+        </button>
+
+        <button id="dialBtn4" class="dial-btn w-full p-3.5 rounded-xl bg-stone-900 border border-stone-800 text-left text-stone-300 flex items-center justify-between cursor-pointer transition hover:border-purple-400">
+          <span class="font-bold">04 • Renal Microvascular Health</span>
+          <span class="text-purple-400">NEPHRONS</span>
+        </button>
+
+        <button id="dialBtn5" class="dial-btn w-full p-3.5 rounded-xl bg-stone-900 border border-stone-800 text-left text-stone-300 flex items-center justify-between cursor-pointer transition hover:border-emerald-400">
+          <span class="font-bold">05 • Workshop &amp; Joint Ergonomics</span>
+          <span class="text-emerald-400">MOBILITY</span>
+        </button>
+      </div>
+
+      <!-- Active Stage Output Shadowbox -->
+      <div id="dialOutput" class="geararts-card rounded-2xl p-6 sm:p-8 text-stone-950 space-y-4 shadow-xl border border-amber-200/60">
+        <div class="flex justify-between items-center text-xs font-mono font-bold opacity-80">
+          <span>ENGINE [01/05]</span>
+          <span>POWER: ON</span>
+        </div>
+        <h3 id="dialTitle" class="text-2xl font-black">Daily Energy &amp; Focus</h3>
+        <p id="dialQuestion" class="text-xs font-semibold text-stone-900 italic">
+          "Why do I crash or feel brain fog at 2 PM?"
+        </p>
+        <p id="dialDesc" class="text-xs leading-relaxed opacity-95">
+          Your mitochondria turn food and oxygen into clean daily stamina. When your meals prevent rapid blood sugar spikes, your cells create steady, crash-free energy all day long.
+        </p>
+        <div class="pt-3 border-t border-stone-950/20 text-xs font-bold">
+          ✨ One Simple Habit: <span id="dialHabit" class="font-normal">Eat protein &amp; veggies first; take a 10-minute walk after meals.</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ 4. CELL BIOLOGY ART GALLERY & STORE ════════════════════════════════════ -->
+  <section id="store" class="space-y-12 py-6">
+    <div class="text-center space-y-3 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-mono font-bold">
+        <span>🖼️ Museum-Grade Archival Cotton Rag Giclée Prints</span>
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
+        Cell Biology Art Gallery &amp; Amazon Store
+      </h2>
+      <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
+        Bridging microscopic cytology and tactile 3D paper quilling. Available with real-time 3D shadowbox framing, instant 1-Click Amazon Buy, and direct Stripe Checkout:
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      
+      <!-- Art Print 1 -->
+      <div class="glass-card-dark p-7 rounded-3xl border border-amber-500/30 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
+          <div class="flex justify-between items-center text-xs font-mono">
+            <span class="text-amber-400 font-bold">SKU: PG-ART-CELL-001</span>
+            <span class="text-white font-bold text-sm">From $38.00</span>
+          </div>
+          <div class="h-44 rounded-2xl bg-gradient-to-br from-amber-500/20 via-purple-500/20 to-teal-500/20 border border-stone-800 flex items-center justify-center text-5xl shadow-inner group-hover:scale-[1.02] transition">
+            🔬
+          </div>
+          <h3 class="text-xl font-bold text-white">Eukaryotic Cell Macro</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
+            Full-bleed macro cellular landscape featuring glowing golden mitochondria, violet endoplasmic reticulum with ribosomal beads, and swirling indigo cytoplasm.
+          </p>
+        </div>
+        <div class="space-y-2 pt-4 border-t border-stone-800">
+          <a href="https://www.amazon.com/s?k=cell+biology+paper+quilling+wall+art+print+poster&tag=pgdpo-20" target="_blank" rel="noopener" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 transition shadow-md">
+            <span>🛒 1-Click Buy on Amazon (Prime)</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Art Print 2 -->
+      <div class="glass-card-dark p-7 rounded-3xl border border-teal-500/30 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
+          <div class="flex justify-between items-center text-xs font-mono">
+            <span class="text-teal-400 font-bold">SKU: PG-ART-SYNAPSE-002</span>
+            <span class="text-white font-bold text-sm">From $38.00</span>
+          </div>
+          <div class="h-44 rounded-2xl bg-gradient-to-br from-teal-500/20 via-indigo-500/20 to-rose-500/20 border border-stone-800 flex items-center justify-center text-5xl shadow-inner group-hover:scale-[1.02] transition">
+            ⚡
+          </div>
+          <h3 class="text-xl font-bold text-white">Synaptic Transmission</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
+            Full-bleed neural synapse depicting electrical and chemical neurotransmission with glowing amber vesicle coils and turquoise neurotransmitter flow into the synaptic cleft.
+          </p>
+        </div>
+        <div class="space-y-2 pt-4 border-t border-stone-800">
+          <a href="https://www.amazon.com/s?k=neuroscience+synapse+wall+art+brain+print+poster&tag=pgdpo-20" target="_blank" rel="noopener" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 transition shadow-md">
+            <span>🛒 1-Click Buy on Amazon (Prime)</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Art Print 3 -->
+      <div class="glass-card-dark p-7 rounded-3xl border border-rose-500/30 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
+          <div class="flex justify-between items-center text-xs font-mono">
+            <span class="text-rose-400 font-bold">SKU: PG-ART-MITO-003</span>
+            <span class="text-white font-bold text-sm">From $38.00</span>
+          </div>
+          <div class="h-44 rounded-2xl bg-gradient-to-br from-rose-500/20 via-amber-500/20 to-teal-500/20 border border-stone-800 flex items-center justify-center text-5xl shadow-inner group-hover:scale-[1.02] transition">
+            ✨
+          </div>
+          <h3 class="text-xl font-bold text-white">Mitochondrial Cristae</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
+            Macro focus on the mitochondrial inner membrane foldings and ATP synthase motors rendered with paper quilling coils and metallic gold foil accents.
+          </p>
+        </div>
+        <div class="space-y-2 pt-4 border-t border-stone-800">
+          <a href="https://www.amazon.com/s?k=mitochondria+powerhouse+of+the+cell+wall+art+poster&tag=pgdpo-20" target="_blank" rel="noopener" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 transition shadow-md">
+            <span>🛒 1-Click Buy on Amazon (Prime)</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ 5. CLINICAL TRIALS (DCT) & EPISTEMOLOGY FRAMEWORKS ═════════════════════ -->
   <section id="trials" class="space-y-12 py-6">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
       <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-mono font-bold">
@@ -366,77 +518,7 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 4. EMPIRICAL REAL-WORLD CASE STUDIES ═══════════════════════════════════ -->
-  <section id="cases" class="space-y-12 py-6">
-    <div class="text-center space-y-3 max-w-3xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold">
-        <span>📊 Empirical Clinical Case Studies</span>
-      </div>
-      <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
-        Evidence &amp; Health Trajectories in Action
-      </h2>
-      <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
-        Examining how PocketGull's multi-agent swarm and digital twin telemetry transform diagnostic resolution across complex multi-system conditions:
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-      
-      <!-- Case 1 -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-stone-800 space-y-4">
-        <div class="flex justify-between items-center text-xs font-mono">
-          <span class="text-amber-400 font-bold">Case Study 01</span>
-          <span class="text-stone-400">Endocrine &amp; Autonomic</span>
-        </div>
-        <h3 class="text-xl font-bold text-white">Metabolic &amp; Autonomic Crisis Interception</h3>
-        <div class="text-xs text-stone-400">Patient: Female, 48y &bull; Type 2 Diabetes &amp; Post-Viral POTS</div>
-        <p class="text-xs text-stone-300 leading-relaxed">
-          Suffered reactive hypoglycemia and severe postural tachycardia (HR spiking 68 ➔ 112 bpm on standing). Dr. Chronos cross-referenced raw CGM stream with meal logs, catching autonomic collapse.
-        </p>
-        <div class="p-3 bg-stone-900 rounded-xl border border-stone-800 space-y-1 text-xs font-mono">
-          <div class="text-emerald-400 font-bold">CGM Time-in-Range: 54% ➔ 91% (6 wks)</div>
-          <div class="text-stone-400">Acute Care Savings: $18,400 (2 ER visits averted)</div>
-        </div>
-      </div>
-
-      <!-- Case 2 -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-stone-800 space-y-4">
-        <div class="flex justify-between items-center text-xs font-mono">
-          <span class="text-teal-400 font-bold">Case Study 02</span>
-          <span class="text-stone-400">Cardio &amp; Teledentistry</span>
-        </div>
-        <h3 class="text-xl font-bold text-white">Systemic Inflammatory Burden Cross-Talk</h3>
-        <div class="text-xs text-stone-400">Patient: Male, 56y &bull; Refractory HTN &amp; Periodontitis</div>
-        <p class="text-xs text-stone-300 leading-relaxed">
-          Presented with refractory hypertension (148/94 mmHg) and elevated hs-CRP (4.8 mg/L). Dr. Vesalius rendered a 32-tooth odontogram uncovering oral P. gingivalis endotoxemia driving vascular stiffness.
-        </p>
-        <div class="p-3 bg-stone-900 rounded-xl border border-stone-800 space-y-1 text-xs font-mono">
-          <div class="text-emerald-400 font-bold">hs-CRP Reduction: 4.8 ➔ 1.1 mg/L (90 days)</div>
-          <div class="text-stone-400">Blood Pressure: Normalized to 122/78 mmHg</div>
-        </div>
-      </div>
-
-      <!-- Case 3 -->
-      <div class="glass-card-dark p-8 rounded-3xl border border-stone-800 space-y-4">
-        <div class="flex justify-between items-center text-xs font-mono">
-          <span class="text-purple-400 font-bold">Case Study 03</span>
-          <span class="text-stone-400">Genomics &amp; Pain</span>
-        </div>
-        <h3 class="text-xl font-bold text-white">Pharmacogenomic Root Cause &amp; Neuro-Modulation</h3>
-        <div class="text-xs text-stone-400">Patient: Female, 39y &bull; Refractory Fibromyalgia</div>
-        <p class="text-xs text-stone-300 leading-relaxed">
-          6-year history of debilitating widespread pain and severe adverse toxicities across 4 successive antidepressants. Alex unified 12 years of records into FHIR R4, identifying CYP2D6 null alleles (*4/*4).
-        </p>
-        <div class="p-3 bg-stone-900 rounded-xl border border-stone-800 space-y-1 text-xs font-mono">
-          <div class="text-emerald-400 font-bold">Widespread Pain Index: 14/19 ➔ 3/19</div>
-          <div class="text-stone-400">Annual Rx Savings: $8,200/yr in failed drugs</div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ══ 5. CLINICAL ACADEMY & CONTINUING EDUCATION ═════════════════════════════ -->
+  <!-- ══ 6. CLINICAL ACADEMY & CONTINUING EDUCATION ═════════════════════════════ -->
   <section id="academy" class="space-y-12 py-6">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
       <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold">
@@ -551,7 +633,7 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 6. PHIL GEAR :) — SOLO CREATOR & OPEN SCIENCE ARCHITECT ════════════════ -->
+  <!-- ══ 7. PHIL GEAR :) — SOLO CREATOR & OPEN SCIENCE ARCHITECT ════════════════ -->
   <section id="developer" class="glass-card-dark p-8 sm:p-12 rounded-3xl border-2 border-amber-500/40 shadow-2xl relative overflow-hidden max-w-5xl mx-auto space-y-8">
     <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
     
@@ -602,7 +684,7 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 7. INBOUND KNOWLEDGE BASE & ARTICLES BY PHIL ═══════════════════════════ -->
+  <!-- ══ 8. INBOUND KNOWLEDGE BASE & ARTICLES BY PHIL ═══════════════════════════ -->
   <section id="articles" class="space-y-8 border-t border-stone-800 pt-16">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-800 pb-5">
       <div>
@@ -654,7 +736,7 @@ get_header(); ?>
 
 </main>
 
-<!-- ══ 8. 14-DAY FREE CLINICAL PILOT BOOKING MODAL ════════════════════════════ -->
+<!-- ══ 9. 14-DAY FREE CLINICAL PILOT BOOKING MODAL ════════════════════════════ -->
 <div id="pilotModal" class="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
   <div class="glass-card-dark rounded-3xl max-w-lg w-full p-8 border-2 border-amber-400 shadow-2xl relative overflow-hidden space-y-6">
     <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
@@ -695,5 +777,70 @@ get_header(); ?>
     </form>
   </div>
 </div>
+
+<!-- Interactive Turntable Dial Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dialData = {
+      1: {
+        stage: 'ENGINE [01/05]',
+        title: 'Daily Energy & Focus',
+        question: '"Why do I crash or feel brain fog at 2 PM?"',
+        desc: 'Your mitochondria turn food and oxygen into clean daily stamina. When your meals prevent rapid blood sugar spikes, your cells create steady, crash-free energy all day long.',
+        habit: 'Eat protein & veggies first; take a 10-minute walk after meals.'
+      },
+      2: {
+        stage: 'ENGINE [02/05]',
+        title: 'Heart Rate & Vagal Tone',
+        question: '"How do I know if my heart is actually recovering?"',
+        desc: 'Vagal nerve tone governs your parasympathetic resting state. Deep sleep and slow 5.5 BPM breathing trigger nitric oxide release and restore cardiovascular elasticity.',
+        habit: 'Practice 5 minutes of 5.5 BPM resonant breathing before bed.'
+      },
+      3: {
+        stage: 'ENGINE [03/05]',
+        title: 'Glucose Time-in-Range',
+        question: '"Does blood sugar matter if I am not diabetic?"',
+        desc: 'Continuous glucose stability prevents silent vascular inflammation. Keeping Time-in-Range above 90% protects your brain capillaries and reduces chronic fatigue.',
+        habit: 'Pair high-glycemic carbohydrates with healthy fats and fiber.'
+      },
+      4: {
+        stage: 'ENGINE [04/05]',
+        title: 'Renal Microvascular Health',
+        question: '"How do I protect my kidneys long-term?"',
+        desc: 'Tight blood pressure pacing prevents glomerular sheer damage, protecting kidney filtration and averting catastrophic future dialysis burdens.',
+        habit: 'Log morning resting BP and stay hydrated with mineral electrolytes.'
+      },
+      5: {
+        stage: 'ENGINE [05/05]',
+        title: 'Workshop & Joint Ergonomics',
+        question: '"Can I keep woodworking or gardening with arthritis?"',
+        desc: 'Adaptive workbench heights and tool grip modifications distribute mechanical load, protecting cartilage and enabling lifelong craft continuity.',
+        habit: 'Raise workbenches 3 inches and use padded anti-vibration tool grips.'
+      }
+    };
+
+    [1, 2, 3, 4, 5].forEach(id => {
+      const btn = document.getElementById(`dialBtn${id}`);
+      if (btn) {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.dial-btn').forEach(b => {
+            b.classList.remove('border-amber-400', 'border-teal-400', 'border-rose-400', 'border-purple-400', 'border-emerald-400', 'border-2', 'text-white');
+            b.classList.add('border-stone-800', 'border', 'text-stone-300');
+          });
+          btn.classList.remove('border-stone-800', 'border', 'text-stone-300');
+          btn.classList.add('border-amber-400', 'border-2', 'text-white');
+
+          const d = dialData[id];
+          if (d) {
+            document.getElementById('dialTitle').textContent = d.title;
+            document.getElementById('dialQuestion').textContent = d.question;
+            document.getElementById('dialDesc').textContent = d.desc;
+            document.getElementById('dialHabit').textContent = d.habit;
+          }
+        });
+      }
+    });
+  });
+</script>
 
 <?php get_footer(); ?>
