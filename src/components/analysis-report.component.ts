@@ -192,122 +192,44 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
             <button type="button" (click)="scrollLensBar('left')" 
               class="px-1.5 py-1 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-white/80 dark:bg-zinc-900/80 rounded border border-zinc-200 dark:border-zinc-800 shrink-0 cursor-pointer shadow-xs transition" title="Scroll Lenses Left">
               ◀
-            </button>
-
-            <div #lensBarContainer (wheel)="onLensBarWheel($event)" class="flex items-center gap-1.5 overflow-x-auto scroll-smooth hide-scrollbar flex-1">
+                      <div #lensBarContainer class="flex items-center gap-2 overflow-x-auto scroll-smooth hide-scrollbar flex-1">
               <button (click)="changeLens('Summary Overview')"
                 data-testid="tab-overview"
                 [class]="activeLens() === 'Summary Overview' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>📋</span> Overview
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>📋</span> 1. Summary Overview
               </button>
 
-              <button (click)="changeLens('RSNA Knee Abnormality')"
-                data-testid="tab-rsna-knee"
-                [class]="activeLens() === 'RSNA Knee Abnormality' ? '!bg-cyan-600 !text-white border-cyan-500 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-900/60 hover:bg-cyan-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🦵</span> RSNA Knee AI
-              </button>
- 
               <button (click)="changeLens('Treatment Matrix')"
                 data-testid="tab-treatment-matrix"
                 [class]="activeLens() === 'Treatment Matrix' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>💊</span> Treatment Matrix
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>💊</span> 2. Treatment & Tri-Paradigm
               </button>
- 
+
               <button (click)="changeLens('Functional Protocols')"
                 data-testid="tab-functional-protocols"
-                [class]="activeLens() === 'Functional Protocols' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🧠</span> Functional Protocols
+                [class]="(activeLens() === 'Functional Protocols' || activeLens() === 'Nutrition' || activeLens() === 'Precision Nutrients') ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>🧠</span> 3. Functional & Nutrition
               </button>
- 
-              <button (click)="changeLens('Nutrition')"
-                data-testid="tab-nutrition"
-                [class]="activeLens() === 'Nutrition' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🥗</span> Nutrition
-              </button>
- 
-              <button (click)="changeLens('Precision Nutrients')"
-                data-testid="tab-precision-nutrients"
-                [class]="activeLens() === 'Precision Nutrients' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🧬</span> Precision Nutrients
-              </button>
- 
+
               <button (click)="changeLens('Monitoring & Follow-up')"
                 data-testid="tab-monitoring-follow-up"
                 [class]="activeLens() === 'Monitoring & Follow-up' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>📊</span> Monitoring & Follow-up
-              </button>
- 
-              <button (click)="changeLens('Patient Education')"
-                data-testid="tab-patient-education"
-                [class]="activeLens() === 'Patient Education' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>📖</span> Patient Education
-              </button>
- 
-              <button (click)="changeLens('ASSESSMENTS')"
-                data-testid="tab-assessments"
-                [class]="activeLens() === 'ASSESSMENTS' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>⚡</span> ASSESSMENTS
-              </button>
- 
-              <button (click)="changeLens('Maternal & Postpartum')"
-                data-testid="tab-maternal-postpartum"
-                [class]="activeLens() === 'Maternal & Postpartum' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🤱</span> Maternal & Postpartum
-              </button>
- 
-              <button (click)="changeLens('Epigenetic Longevity')"
-                data-testid="tab-epigenetic-longevity"
-                [class]="activeLens() === 'Epigenetic Longevity' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>⏳</span> Epigenetic Longevity
-              </button>
- 
-              <button (click)="changeLens('Chronobiology Matrix')"
-                data-testid="tab-chronobiology"
-                [class]="activeLens() === 'Chronobiology Matrix' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>⏰</span> Chronobiology
-              </button>
- 
-              <button (click)="changeLens('Functional Medicine Matrix')"
-                data-testid="tab-functional-matrix"
-                [class]="activeLens() === 'Functional Medicine Matrix' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🧬</span> Functional Matrix
-              </button>
-
-              <button (click)="changeLens('Tri-Paradigm Medicine')"
-                data-testid="tab-tri-paradigm"
-                [class]="activeLens() === 'Tri-Paradigm Medicine' ? '!bg-gradient-to-r from-emerald-600 to-indigo-600 !text-white border-emerald-500 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-emerald-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>☯️</span> Tri-Paradigm
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>📊</span> 4. Monitoring & Longevity
               </button>
             </div>
 
-
-            <!-- Scroll Right Arrow -->
-            <button type="button" (click)="scrollLensBar('right')" 
-              class="px-1.5 py-1 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-white/80 dark:bg-zinc-900/80 rounded border border-zinc-200 dark:border-zinc-800 shrink-0 cursor-pointer shadow-xs transition" title="Scroll Lenses Right">
-              ▶
-            </button>
-
-            <!-- Compact Dropdown for All Secondary Lenses -->
+            <!-- Compact Dropdown for All Specialized Deep Dives -->
             <div class="relative shrink-0">
               <button (click)="showAllLensesMenu.set(!showAllLensesMenu())"
-                class="py-1.5 px-3 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-purple-300 border border-purple-500/40 text-[11px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1">
-                <span class="text-purple-300">🔍 All Lenses ({{ availableLenses.length }})</span>
-                <span class="text-purple-300">▾</span>
+                class="py-2 px-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-purple-300 border border-purple-500/40 text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5">
+                <span class="text-purple-300">🔬 Subsystem Vault</span>
+                <span class="text-purple-300 text-[10px]">▾</span>
               </button>
+
 
               @if (showAllLensesMenu()) {
                 <div class="absolute right-0 top-full mt-1.5 w-64 p-2 rounded-2xl bg-zinc-950 border border-purple-500/40 shadow-2xl z-50 flex flex-col gap-1 max-h-80 overflow-y-auto">
@@ -615,11 +537,14 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
             <app-assessments-lens-tab class="block my-6"></app-assessments-lens-tab>
           } @else if (activeLens() === 'Treatment Matrix') {
             <app-interventions-lens-tab class="block my-6"></app-interventions-lens-tab>
+            <app-tri-paradigm-integrative-lens-tab class="block my-6"></app-tri-paradigm-integrative-lens-tab>
           } @else if (activeLens() === 'Monitoring & Follow-up') {
             <app-diagnostics-lens-tab class="block my-6"></app-diagnostics-lens-tab>
+            <app-epigenetic-longevity-lens-tab class="block my-6"></app-epigenetic-longevity-lens-tab>
           } @else if (activeLens() === 'Tri-Paradigm Medicine') {
             <app-tri-paradigm-integrative-lens-tab class="block my-6"></app-tri-paradigm-integrative-lens-tab>
           } @else {
+
 
           <!-- ACM §1.3: AI-Generated Content Disclosure -->
           @if (hasAnyReport() && !state.isEmergencyMode()) {
