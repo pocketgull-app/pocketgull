@@ -351,91 +351,107 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 4. CELL BIOLOGY ART GALLERY & STORE ════════════════════════════════════ -->
+  <!-- ══ 4. CELL BIOLOGY ART GALLERY & PAPER QUILLING SHOWCASE ═══════════════ -->
   <section id="store" class="space-y-12 py-6">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
       <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-mono font-bold">
-        <span>🖼️ Museum-Grade Archival Cotton Rag Giclée Prints</span>
+        <span>🎨 GEARARTS Archival Biological Paper Art</span>
       </div>
       <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
-        Cell Biology Art Gallery &amp; Amazon Store
+        Cell Biology Art Gallery
       </h2>
       <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
-        Bridging microscopic cytology and tactile 3D paper quilling. Available with real-time 3D shadowbox framing, instant 1-Click Amazon Buy, and direct Stripe Checkout:
+        Bridging microscopic cytology and tactile 3D paper quilling. Handcrafted biological structures celebrating the intricate machinery of human life:
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
       
-      <!-- Art Print 1 -->
-      <div class="glass-card-dark p-7 rounded-3xl border border-amber-500/30 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+      <!-- Art Piece 1: Eukaryotic Cell Macro -->
+      <div class="glass-card-dark p-6 sm:p-7 rounded-3xl border border-amber-500/30 flex flex-col justify-between space-y-6 shadow-2xl relative overflow-hidden group">
         <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
-        <div class="space-y-3 pt-2">
+        <div class="space-y-4 pt-2">
           <div class="flex justify-between items-center text-xs font-mono">
-            <span class="text-amber-400 font-bold">SKU: PG-ART-CELL-001</span>
-            <span class="text-white font-bold text-sm">From $38.00</span>
+            <span class="text-amber-400 font-bold">GEARARTS • CYTOLOGY</span>
+            <span class="text-stone-400">Archival 3D Quilling</span>
           </div>
-          <div class="h-44 rounded-2xl bg-gradient-to-br from-amber-500/20 via-purple-500/20 to-teal-500/20 border border-stone-800 flex items-center justify-center text-5xl shadow-inner group-hover:scale-[1.02] transition">
-            🔬
+          
+          <!-- Actual High-Res Image -->
+          <div class="aspect-[3/4] rounded-2xl overflow-hidden border border-stone-800 shadow-2xl relative group-hover:border-amber-400/50 transition">
+            <img src="<?php echo get_template_directory_uri(); ?>/images/eukaryotic_cell_art.jpg" alt="Eukaryotic Cell Macro Paper Quilling Art" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
           </div>
+
           <h3 class="text-xl font-bold text-white">Eukaryotic Cell Macro</h3>
-          <p class="text-xs text-stone-300 leading-relaxed">
-            Full-bleed macro cellular landscape featuring glowing golden mitochondria, violet endoplasmic reticulum with ribosomal beads, and swirling indigo cytoplasm.
+          <p class="text-xs text-stone-300 leading-relaxed font-normal">
+            Intricate paper quilled cellular landscape featuring glowing golden mitochondria, violet endoplasmic reticulum with pearl ribosomal beads, and swirling indigo cytoplasm.
           </p>
         </div>
-        <div class="space-y-2 pt-4 border-t border-stone-800">
-          <a href="https://www.amazon.com/s?k=cell+biology+paper+quilling+wall+art+print+poster&tag=pgdpo-20" target="_blank" rel="noopener" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 transition shadow-md">
-            <span>🛒 1-Click Buy on Amazon (Prime)</span>
-          </a>
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-amber-300 flex items-center justify-between">
+          <span>✨ 3D Paper Sculpture</span>
+          <span>By Phil Gear :)</span>
         </div>
       </div>
 
-      <!-- Art Print 2 -->
-      <div class="glass-card-dark p-7 rounded-3xl border border-teal-500/30 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+      <!-- Art Piece 2: Synaptic Transmission -->
+      <div class="glass-card-dark p-6 sm:p-7 rounded-3xl border border-teal-500/30 flex flex-col justify-between space-y-6 shadow-2xl relative overflow-hidden group">
         <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
-        <div class="space-y-3 pt-2">
+        <div class="space-y-4 pt-2">
           <div class="flex justify-between items-center text-xs font-mono">
-            <span class="text-teal-400 font-bold">SKU: PG-ART-SYNAPSE-002</span>
-            <span class="text-white font-bold text-sm">From $38.00</span>
+            <span class="text-teal-400 font-bold">GEARARTS • NEUROSCIENCE</span>
+            <span class="text-stone-400">Archival 3D Quilling</span>
           </div>
-          <div class="h-44 rounded-2xl bg-gradient-to-br from-teal-500/20 via-indigo-500/20 to-rose-500/20 border border-stone-800 flex items-center justify-center text-5xl shadow-inner group-hover:scale-[1.02] transition">
-            ⚡
+          
+          <!-- Actual High-Res Image -->
+          <div class="aspect-[3/4] rounded-2xl overflow-hidden border border-stone-800 shadow-2xl relative group-hover:border-teal-400/50 transition">
+            <img src="<?php echo get_template_directory_uri(); ?>/images/synaptic_transmission_art.jpg" alt="Synaptic Transmission Paper Quilling Art" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
           </div>
+
           <h3 class="text-xl font-bold text-white">Synaptic Transmission</h3>
-          <p class="text-xs text-stone-300 leading-relaxed">
-            Full-bleed neural synapse depicting electrical and chemical neurotransmission with glowing amber vesicle coils and turquoise neurotransmitter flow into the synaptic cleft.
+          <p class="text-xs text-stone-300 leading-relaxed font-normal">
+            Neural synapse depicting electrical and chemical neurotransmission with glowing magenta vesicle coils and turquoise neurotransmitter flow into the synaptic cleft.
           </p>
         </div>
-        <div class="space-y-2 pt-4 border-t border-stone-800">
-          <a href="https://www.amazon.com/s?k=neuroscience+synapse+wall+art+brain+print+poster&tag=pgdpo-20" target="_blank" rel="noopener" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 transition shadow-md">
-            <span>🛒 1-Click Buy on Amazon (Prime)</span>
-          </a>
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-teal-300 flex items-center justify-between">
+          <span>✨ 3D Paper Sculpture</span>
+          <span>By Phil Gear :)</span>
         </div>
       </div>
 
-      <!-- Art Print 3 -->
-      <div class="glass-card-dark p-7 rounded-3xl border border-rose-500/30 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+      <!-- Art Piece 3: Mitochondrial Cristae -->
+      <div class="glass-card-dark p-6 sm:p-7 rounded-3xl border border-rose-500/30 flex flex-col justify-between space-y-6 shadow-2xl relative overflow-hidden group">
         <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
-        <div class="space-y-3 pt-2">
+        <div class="space-y-4 pt-2">
           <div class="flex justify-between items-center text-xs font-mono">
-            <span class="text-rose-400 font-bold">SKU: PG-ART-MITO-003</span>
-            <span class="text-white font-bold text-sm">From $38.00</span>
+            <span class="text-rose-400 font-bold">GEARARTS • BIOENERGETICS</span>
+            <span class="text-stone-400">Archival 3D Quilling</span>
           </div>
-          <div class="h-44 rounded-2xl bg-gradient-to-br from-rose-500/20 via-amber-500/20 to-teal-500/20 border border-stone-800 flex items-center justify-center text-5xl shadow-inner group-hover:scale-[1.02] transition">
-            ✨
+          
+          <!-- Actual High-Res Image -->
+          <div class="aspect-[3/4] rounded-2xl overflow-hidden border border-stone-800 shadow-2xl relative group-hover:border-rose-400/50 transition">
+            <img src="<?php echo get_template_directory_uri(); ?>/images/mitochondrial_cristae_art.jpg" alt="Mitochondrial Cristae Paper Quilling Art" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
           </div>
+
           <h3 class="text-xl font-bold text-white">Mitochondrial Cristae</h3>
-          <p class="text-xs text-stone-300 leading-relaxed">
-            Macro focus on the mitochondrial inner membrane foldings and ATP synthase motors rendered with paper quilling coils and metallic gold foil accents.
+          <p class="text-xs text-stone-300 leading-relaxed font-normal">
+            Macro perspective on the inner membrane foldings and ATP synthase motors, rendered with concentric paper quilling coils and turquoise proton gradient channels.
           </p>
         </div>
-        <div class="space-y-2 pt-4 border-t border-stone-800">
-          <a href="https://www.amazon.com/s?k=mitochondria+powerhouse+of+the+cell+wall+art+poster&tag=pgdpo-20" target="_blank" rel="noopener" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 transition shadow-md">
-            <span>🛒 1-Click Buy on Amazon (Prime)</span>
-          </a>
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-rose-300 flex items-center justify-between">
+          <span>✨ 3D Paper Sculpture</span>
+          <span>By Phil Gear :)</span>
         </div>
       </div>
 
+    </div>
+
+    <!-- Art Portfolio Note -->
+    <div class="max-w-4xl mx-auto p-5 bg-stone-900/80 rounded-2xl border border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-stone-300">
+      <div>
+        🎨 Handcrafted paper sculptures by <strong class="text-amber-300">Phil Gear :)</strong> at GEARARTS.
+      </div>
+      <a href="mailto:leads@pocketgull.app?subject=GEARARTS%20Biological%20Art%20Inquiry" class="px-4 py-2 rounded-xl geararts-card font-bold text-stone-950 hover:scale-105 transition shadow-md whitespace-nowrap">
+        Inquire About Art Portfolio →
+      </a>
     </div>
   </section>
 
