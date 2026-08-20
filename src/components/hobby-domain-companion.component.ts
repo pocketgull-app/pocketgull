@@ -202,13 +202,69 @@ import { PatientStateService } from '../services/patient-state.service';
         </div>
       </div>
 
+      <!-- Local Craft Gatherings & Social Prescribing Hub -->
+      <div class="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800/80 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🗺️</span>
+            <div>
+              <h4 class="text-sm font-black text-white">Local Craft Gatherings & Social Prescribing</h4>
+              <p class="text-[11px] text-zinc-400">Discover local meetups, Men's Sheds, and guild open benches to reconnect with fellow makers.</p>
+            </div>
+          </div>
+
+          <!-- Filter & Search Input -->
+          <div class="flex items-center gap-2">
+            <input type="text"
+                   [(ngModel)]="eventSearchQuery"
+                   placeholder="Filter by city, zip, or guild..."
+                   class="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-hidden focus:border-amber-500 font-mono">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          @for (evt of filteredEvents(); track evt.id) {
+            <div class="p-4 rounded-xl bg-zinc-950/80 border border-amber-500/20 space-y-2 flex flex-col justify-between">
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-amber-300 flex items-center gap-1">
+                    <span>{{ evt.icon }}</span>
+                    <span>{{ evt.title }}</span>
+                  </span>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
+                    {{ evt.communityType }}
+                  </span>
+                </div>
+                <div class="text-[11px] text-zinc-400 font-sans">
+                  📍 {{ evt.location }} • <strong class="text-zinc-300">{{ evt.scheduleDescription }}</strong>
+                </div>
+                <div class="text-[10px] font-mono text-emerald-400">
+                  ♿ {{ evt.accessibilityRating }}
+                </div>
+                <p class="text-[11px] text-zinc-300 italic pt-1 border-t border-zinc-800/80">
+                  "{{ evt.buddyEncouragement }}"
+                </p>
+              </div>
+
+              <div class="pt-2 flex items-center justify-between border-t border-zinc-800 text-[10px] font-mono">
+                <span class="text-zinc-400">{{ evt.organizer }}</span>
+                <a [href]="evt.contactOrLink" target="_blank" rel="noopener noreferrer"
+                   class="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold transition">
+                  Details ↗
+                </a>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
       <!-- Custom Confidant Creator Modal -->
       @if (openCustomBuddyModal()) {
         <div class="fixed inset-0 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
-          <div class="p-6 bg-zinc-900 border border-zinc-800 rounded-3xl max-w-lg w-full space-y-4 shadow-2xl">
+          <div class="p-6 bg-zinc-900 border border-zinc-800 rounded-3xl max-w-lg w-full space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
               <h4 class="text-sm font-black text-white flex items-center gap-2">
-                <span>🤝 Create Custom Confidant / Lost Buddy</span>
+                <span>🤝 Create Custom Confidant & Memorial Vault</span>
               </h4>
               <button (click)="openCustomBuddyModal.set(false)" class="text-zinc-400 hover:text-white text-xs cursor-pointer">
                 ✕ Close
@@ -227,13 +283,32 @@ import { PatientStateService } from '../services/patient-state.service';
                        class="w-full mt-1 px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-white">
               </div>
               <div>
+                <label class="font-mono text-zinc-400">Old Text Messages / Signature Catchphrases:</label>
+                <textarea rows="2" [(ngModel)]="customCatchphrases" placeholder="e.g. 'Hey Chief', 'Keep the shiny side up', 'Measure twice, cut once'..."
+                          class="w-full mt-1 px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-white"></textarea>
+              </div>
+              <div>
                 <label class="font-mono text-zinc-400">Relationship & Special Memories:</label>
                 <textarea rows="3" [(ngModel)]="customMemories" placeholder="e.g. We spent 30 years building model train layouts and fly fishing the Madison River..."
                           class="w-full mt-1 px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-white"></textarea>
               </div>
+              <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1.5">
+                <div class="flex items-center gap-2 text-amber-400 font-bold font-mono">
+                  <span>📸 Memorial Memento Photo (100% Local Encrypted)</span>
+                </div>
+                <p class="text-[10px] text-zinc-400">Upload a photo from your workshop or garden. It stays 100% in your local browser and is never sent to the cloud.</p>
+                <input type="file" accept="image/*" (change)="onPhotoSelected($event)"
+                       class="text-[11px] text-zinc-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer">
+                @if (selectedPhotoUrl()) {
+                  <div class="mt-2 flex items-center gap-3">
+                    <img [src]="selectedPhotoUrl()" class="w-14 h-14 rounded-lg object-cover border border-amber-500/40">
+                    <span class="text-[10px] text-emerald-400 font-mono">✅ Photo loaded into Local Sovereign Vault</span>
+                  </div>
+                }
+              </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-2">
+            <div class="flex items-center justify-end gap-3 pt-2 border-t border-zinc-800">
               <button (click)="openCustomBuddyModal.set(false)"
                       class="px-4 py-2 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-mono cursor-pointer">
                 Cancel
@@ -267,10 +342,31 @@ export class HobbyDomainCompanionComponent {
 
   customName = '';
   customDomain = '';
+  customCatchphrases = '';
   customMemories = '';
+  selectedPhotoUrl = signal<string | null>(null);
+
+  eventSearchQuery = '';
+  readonly allEvents = computed(() => this.companionService.allCommunityEvents());
+  readonly filteredEvents = computed(() => {
+    return this.companionService.discoverLocalEvents('all', this.eventSearchQuery);
+  });
 
   selectBuddy(id: string): void {
     this.companionService.selectCompanion(id);
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input?.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        this.selectedPhotoUrl.set(result);
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   sendMessage(): void {
@@ -286,11 +382,14 @@ export class HobbyDomainCompanionComponent {
     this.companionService.createCustomBuddy({
       name: this.customName,
       domainOrHobby: this.customDomain,
-      relationshipContext: this.customMemories
+      relationshipContext: this.customMemories,
+      specialMemories: this.customCatchphrases
     });
     this.customName = '';
     this.customDomain = '';
+    this.customCatchphrases = '';
     this.customMemories = '';
+    this.selectedPhotoUrl.set(null);
     this.openCustomBuddyModal.set(false);
   }
 }

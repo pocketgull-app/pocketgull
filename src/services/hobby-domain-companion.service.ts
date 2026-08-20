@@ -54,6 +54,20 @@ export interface ICompanionChatMessage {
   ergonomicTip?: string;
 }
 
+export interface ILocalCraftEvent {
+  id: string;
+  domainCategory: 'auto' | 'gardening' | 'woodworking' | 'music' | 'sailing' | 'crafts' | 'general';
+  title: string;
+  organizer: string;
+  location: string;
+  scheduleDescription: string;
+  communityType: 'Cars & Coffee' | "Men's Sheds" | 'Guild Meeting' | 'Community Garden' | 'Jam Session' | 'Makerspace' | 'Volunteer Circle';
+  accessibilityRating: 'ADA Accessible / Low-Mobility Friendly' | 'Seated Workshop' | 'Light Walking';
+  contactOrLink: string;
+  buddyEncouragement: string;
+  icon: string;
+}
+
 /**
  * Standard SNO-10 (SNOMED-CT + ICD-10) Crosswalk Reference
  */
@@ -577,5 +591,96 @@ export class HobbyDomainCompanionService {
       snoBadge,
       ergonomicTip: ergoTip
     };
+  }
+
+  // Pre-curated directory of real-world social prescribing and craft gathering models
+  private communityEvents = signal<ILocalCraftEvent[]>([
+    {
+      id: 'evt_01',
+      domainCategory: 'auto',
+      title: 'Saturday Morning Vintage Cars & Coffee',
+      organizer: 'Classic Auto Restorers & Veterans Garage Alliance',
+      location: 'Local Community Square / Diner Parking Lot',
+      scheduleDescription: 'Every Saturday, 8:00 AM – 11:00 AM',
+      communityType: 'Cars & Coffee',
+      accessibilityRating: 'ADA Accessible / Low-Mobility Friendly',
+      contactOrLink: 'https://pocketgull.app/community/cars-and-coffee',
+      buddyEncouragement: 'Grab a thermos of black coffee and walk the rows of small-blocks. The guys would love to talk carburetors with you!',
+      icon: '🏎️'
+    },
+    {
+      id: 'evt_02',
+      domainCategory: 'woodworking',
+      title: 'Community Men’s Shed & Woodworking Open Bench',
+      organizer: 'US & Global Men’s Sheds Association',
+      location: 'Regional Makerspace & Craft Tool Library',
+      scheduleDescription: 'Tuesdays & Thursdays, 10:00 AM – 2:00 PM',
+      communityType: "Men's Sheds",
+      accessibilityRating: 'Seated Workshop',
+      contactOrLink: 'https://pocketgull.app/community/mens-sheds',
+      buddyEncouragement: 'They’ve got hydraulic lift benches and sharp chisels. A great crew to share woodworking jigs and laughter with.',
+      icon: '🪵'
+    },
+    {
+      id: 'evt_03',
+      domainCategory: 'gardening',
+      title: 'Heirloom Seed Swap & Raised-Bed Volunteer Morning',
+      organizer: 'Master Gardeners County Extension & Botanical Garden',
+      location: 'Community Botanical Conservatory & Heritage Grove',
+      scheduleDescription: '1st & 3rd Saturday of the month, 9:00 AM – 12:00 PM',
+      communityType: 'Community Garden',
+      accessibilityRating: 'Light Walking',
+      contactOrLink: 'https://pocketgull.app/community/master-gardeners',
+      buddyEncouragement: 'The heirloom tomatoes need trellising. Perfect chance to get some morning sunlight and talk soil ecology.',
+      icon: '🌱'
+    },
+    {
+      id: 'evt_04',
+      domainCategory: 'music',
+      title: 'Acoustic Chamber Reading & Senior Orchestra Rehearsal',
+      organizer: 'Civic Symphonic Society & Community Arts Guild',
+      location: 'Municipal Auditorium / Music Academy Hall',
+      scheduleDescription: 'Wednesday evenings, 6:30 PM – 8:30 PM',
+      communityType: 'Jam Session',
+      accessibilityRating: 'Seated Workshop',
+      contactOrLink: 'https://pocketgull.app/community/orchestra',
+      buddyEncouragement: 'No auditions pressure—just wonderful sight-reading and warm camaraderie. Bring your instrument and let the music lift your spirits.',
+      icon: '🎻'
+    },
+    {
+      id: 'evt_05',
+      domainCategory: 'sailing',
+      title: 'Wooden Boat Restoration & Dockside Coffee Meetup',
+      organizer: 'Maritime Heritage Society & Community Boating Co-op',
+      location: 'Harbor Marina Pier & Boatbuilding Shed',
+      scheduleDescription: 'Sunday mornings, 9:00 AM – 12:00 PM',
+      communityType: 'Volunteer Circle',
+      accessibilityRating: 'Light Walking',
+      contactOrLink: 'https://pocketgull.app/community/wooden-boats',
+      buddyEncouragement: 'Smell the sea air and fresh pine tar! Come help the crew sand down the old schooner hull.',
+      icon: '⛵'
+    }
+  ]);
+
+  readonly allCommunityEvents = computed(() => this.communityEvents());
+
+  /**
+   * Discovers local craft events filtered by domain category or location query.
+   */
+  public discoverLocalEvents(category?: string, query?: string): ILocalCraftEvent[] {
+    let list = this.communityEvents();
+    if (category && category !== 'all') {
+      list = list.filter(e => e.domainCategory === category || e.domainCategory === 'general');
+    }
+    if (query && query.trim()) {
+      const q = query.toLowerCase();
+      list = list.filter(e =>
+        e.title.toLowerCase().includes(q) ||
+        e.location.toLowerCase().includes(q) ||
+        e.organizer.toLowerCase().includes(q) ||
+        e.communityType.toLowerCase().includes(q)
+      );
+    }
+    return list;
   }
 }

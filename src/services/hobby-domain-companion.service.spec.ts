@@ -77,4 +77,19 @@ describe('HobbyDomainCompanionService - SNO-10 Passion & Lost Buddy Companion En
     expect(latestReply.text).toContain('miss those days in the shop');
     expect(latestReply.text).toContain('craft alive');
   });
+
+  it('6. Discovers and filters local craft community events and social prescribing meetups', () => {
+    const allEvents = service.allCommunityEvents();
+    expect(allEvents.length).toBeGreaterThanOrEqual(5);
+
+    const autoEvents = service.discoverLocalEvents('auto');
+    expect(autoEvents.some(e => e.communityType === 'Cars & Coffee')).toBe(true);
+
+    const shedEvents = service.discoverLocalEvents('woodworking');
+    expect(shedEvents.some(e => e.communityType === "Men's Sheds")).toBe(true);
+
+    const queryEvents = service.discoverLocalEvents('all', 'Seed Swap');
+    expect(queryEvents.length).toBe(1);
+    expect(queryEvents[0].title).toContain('Heirloom Seed Swap');
+  });
 });
