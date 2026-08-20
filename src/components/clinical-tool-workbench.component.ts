@@ -1,5 +1,6 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { DoubleFlipStateMachineService, DoubleClickState } from '../services/double-flip-state-machine.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { BioHapticFeedbackService, SolfeggioTone } from '../services/hardware/bio-haptic-feedback.service';
@@ -57,6 +58,7 @@ export interface IWorkbenchToolStatus {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ResidencyOsceSimulatorComponent,
     SlackIntegrationCardComponent,
     PopulationHealthEquityHubComponent,
@@ -77,8 +79,11 @@ export interface IWorkbenchToolStatus {
     RolePathwayDocumentationHubComponent,
     RoleDemoModalComponent,
     HistoricalLuminariesGameComponent,
-    HobbyDomainCompanionComponent
+    HobbyDomainCompanionComponent,
+    IntimacyRelationshipVitalityComponent,
+    ArticlesReaderComponent
   ],
+
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl max-w-7xl mx-auto space-y-6">
       
@@ -191,52 +196,10 @@ export interface IWorkbenchToolStatus {
           </button>
         }
       </div>
-
       @if (activeWorkbenchTab() === 'tools') {
-        <!-- Workbench Interactive Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          @for (tool of tools(); track tool.id) {
-            <div
-              (dblclick)="onCardDblClick(tool.id)"
-              class="relative min-h-[260px] rounded-xl border transition-all duration-300 cursor-pointer select-none group perspective-1000 p-4 flex flex-col justify-between"
-              [ngClass]="{
-                'bg-zinc-900/80 border-zinc-800 hover:border-teal-500/50 hover:shadow-lg hover:shadow-teal-950/30': !tool.isFlipped && !tool.isAutopilotSurfaced,
-                'bg-zinc-900 border-teal-500/80 shadow-lg shadow-teal-950/50 ring-2 ring-teal-500/30': !tool.isFlipped && tool.isAutopilotSurfaced,
-                'bg-zinc-900 border-emerald-500/60 shadow-xl shadow-emerald-950/40 ring-1 ring-emerald-500/30': tool.isFlipped
-              }"
-            >
-              <!-- FRONT SIDE: Clinician Control Panel -->
-              @if (!tool.isFlipped) {
-                <div>
-                  <div class="flex items-center justify-between text-xs mb-2">
-                    <span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono">{{ tool.category }}</span>
-                    
-                    <div class="flex items-center gap-1.5">
-                      @if (tool.isAutopilotSurfaced) {
-                        <span class="px-1.5 py-0.5 rounded font-mono font-bold text-[9px] bg-teal-500/20 text-teal-300 border border-teal-500/40 animate-pulse">
-                          ✨ {{ tool.autopilotPriority }} SURFACED
-                        </span>
-                      }
-                      <span
-                        class="px-2 py-0.5 rounded font-mono font-semibold text-[10px]"
-                        [ngClass]="{
-                          'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20': tool.status === 'PASS',
-                          'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20': tool.status === 'OPERATIONAL',
-                          'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse': tool.status === 'TESTING'
-                        }"
-                      >
-                        {{ tool.status }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <h3 class="text-sm font-semibold text-zinc-100 group-hover:text-teal-400 transition-colors">
-                    {{ tool.name }}
-                  </h3>
-
-                  @if (tool.isAutopilotSurfaced && tool.autopilotReason) {
         <!-- Diagnostics Grid -->
         <div class="space-y-4">
+
           <!-- Search & Filter Ribbon -->
           <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-zinc-900/60 rounded-xl border border-zinc-800/80">
             <div class="flex items-center gap-2 flex-1 max-w-md">

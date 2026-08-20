@@ -3,6 +3,8 @@ export type AssessmentType =
   | 'gad7' 
   | 'isi' 
   | 'cssrs' 
+  | 'cvsq'
+  | 'mbi'
   | 'ros14' 
   | 'phq15' 
   | 'prapare' 
@@ -24,6 +26,7 @@ export interface IQuestionItem {
   doshaVector?: 'vata' | 'pitta' | 'kapha';
   tcmVector?: 'yin' | 'yang' | 'qi' | 'blood' | 'heat' | 'cold';
   growDomain?: 'purpose' | 'somatic' | 'nutrition' | 'emotional' | 'cognitive';
+  mbiVector?: 'ee' | 'dp' | 'pa';
   options: { label: string; value: number }[];
 }
 
@@ -50,4 +53,25 @@ export interface IAssessmentPayload {
   doshaBreakdown?: { vata: number; pitta: number; kapha: number };
   tcmBreakdown?: { yin: number; yang: number; qi: number; heat: number; cold: number };
   growThyselfBreakdown?: { purpose: number; somatic: number; nutrition: number; emotional: number; cognitive: number };
+  mbiBreakdown?: { ee: number; dp: number; pa: number };
 }
+export interface IAssessmentDefinition<TBreakdown = any> {
+  id: AssessmentType;
+  title: string;
+  shortName: string;
+  badge: string;
+  icon?: string;
+  category?: string;
+  patientEducation: string;
+  citation?: string;
+  loincCode?: string;
+  maxScore: number;
+  questions: IQuestionItem[];
+  tiers: ISeverityTier[];
+  calculateScore: (answers: Record<number, number>) => number;
+  calculateBreakdown?: (answers: Record<number, number>) => TBreakdown;
+  mapToAnatomyPart?: (questionId: number, value: number) => string | null;
+  motivationalPrompt?: (score: number, tier: ISeverityTier) => string;
+}
+
+
