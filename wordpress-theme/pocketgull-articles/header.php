@@ -154,20 +154,20 @@
           </svg>
         </div>
         <div>
-          <span class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5 font-pocketgull">
+          <span class="text-2xl font-bold tracking-tight text-white flex items-center gap-1.5 font-pocketgull-marker">
             PocketGull <span class="text-xs font-mono font-normal text-amber-400">/articles</span>
           </span>
-          <span class="text-[10px] text-stone-400 block font-pocketgull-mono">Clinical Intelligence &amp; Preventive Health</span>
+          <span class="text-[10px] text-stone-400 block font-mono">Clinical Intelligence &amp; Preventive Health</span>
         </div>
       </a>
 
       <!-- Header Actions -->
-      <nav class="flex items-center gap-4 text-xs font-pocketgull-mono">
+      <nav class="flex items-center gap-4 text-xs font-mono">
         <a href="https://pocketgull.com" class="text-stone-300 hover:text-white transition flex items-center gap-1">
           <span>←</span> <span class="hidden sm:inline">PocketGull.com</span>
         </a>
-        <a href="https://pocketgull.com" class="geararts-card px-4 py-2 rounded-xl text-stone-950 font-extrabold font-sans transition hover:scale-105 shadow-md flex items-center gap-1.5">
-          <span>Launch Consult</span> 🚀
+        <a href="https://pocketgull.app" class="geararts-card px-4 py-2 rounded-xl text-stone-950 font-extrabold font-sans transition hover:scale-105 shadow-md flex items-center gap-1.5 cursor-pointer">
+          <span>Launch Clinical Suite</span> 🚀
         </a>
       </nav>
     </div>
