@@ -1,13 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, ElementRef, viewChild, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
-import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { PocketGullBadgeComponent } from './shared/pocket-gull-badge.component';
 
 @Component({
   selector: 'app-contactless-vitals-scanner',
   standalone: true,
-  imports: [CommonModule, PocketGullButtonComponent, PocketGullBadgeComponent],
+  imports: [CommonModule, PocketGullBadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-200">

@@ -148,33 +148,51 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
 
     <!-- Emergency Mode Dedicated Header & Lens Bar -->
     @if (state.isEmergencyMode()) {
-      <div class="px-4 sm:px-8 py-3 no-print w-full bg-red-955/90 border-b border-red-800/80 font-mono text-zinc-100">
-        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="px-4 sm:px-8 py-3 no-print w-full bg-gradient-to-r from-red-950/90 via-zinc-950/95 to-red-950/90 border-b-2 border-red-700/80 font-pocketgull-mono text-zinc-100 shadow-xl">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           
-          <div class="flex items-center gap-2">
-            <span class="text-xl animate-pulse">🚨</span>
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-red-600/30 border border-red-500/50 flex items-center justify-center text-red-400 text-lg animate-pulse shadow-md">
+              🚨
+            </div>
             <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-red-400 block">Offline Emergency First Aid Active</span>
-              <span class="text-[10px] text-zinc-400 font-sans">Bystander 911 protocol & real-time telemetry</span>
+              <div class="flex items-center gap-2">
+                <span class="font-pocketgull text-xs sm:text-sm font-black uppercase tracking-wider text-red-300 block">
+                  Offline Emergency First Aid Suite
+                </span>
+                <span class="px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 text-[10px] font-bold border border-red-500/40">
+                  Priority 1
+                </span>
+              </div>
+              <span class="text-[11px] text-zinc-400 font-pocketgull-inter">
+                Bystander 911 dispatch, real-time CPR coach &amp; telemetry
+              </span>
             </div>
           </div>
 
-          <div class="flex items-center gap-2">
+          <!-- Emergency Lens Switcher -->
+          <div class="flex items-center gap-2 overflow-x-auto max-w-full pb-1 hide-scrollbar">
             <button type="button" (click)="changeLens('EMT Handoff')"
-                    [class]="activeLens() === 'EMT Handoff' ? 'bg-red-600 text-white font-extrabold shadow-md border-red-400' : 'bg-zinc-900 text-red-300 border border-red-900/60 hover:bg-zinc-800'"
-                    class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border">
-              <span>🚑</span> First Aid & CPR
+                    [class]="activeLens() === 'EMT Handoff' ? 'bg-red-600 text-white font-black shadow-lg border-red-400 scale-105' : 'bg-zinc-900 text-red-300 border border-red-900/60 hover:bg-zinc-800'"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
+              <span>🚑</span> 1. First Aid &amp; CPR
             </button>
 
             <button type="button" (click)="changeLens('PhysioNet Telemetry')"
-                    [class]="activeLens() === 'PhysioNet Telemetry' ? 'bg-sky-600 text-white font-extrabold shadow-md border-sky-400' : 'bg-zinc-900 text-sky-300 border border-sky-900/60 hover:bg-zinc-800'"
-                    class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border">
-              <span>📡</span> PhysioNet Waveforms
+                    [class]="activeLens() === 'PhysioNet Telemetry' ? 'bg-sky-600 text-white font-black shadow-lg border-sky-400 scale-105' : 'bg-zinc-900 text-sky-300 border border-sky-900/60 hover:bg-zinc-800'"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
+              <span>📡</span> 2. Waveforms &amp; Vitals
+            </button>
+
+            <button type="button" (click)="changeLens('Summary Overview')"
+                    [class]="activeLens() === 'Summary Overview' ? 'bg-amber-600 text-white font-black shadow-lg border-amber-400 scale-105' : 'bg-zinc-900 text-amber-300 border border-amber-900/60 hover:bg-zinc-800'"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
+              <span>📋</span> 3. Clinical Summary
             </button>
 
             <button type="button" (click)="state.isEmergencyMode.set(false)"
-                    class="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 text-xs font-bold uppercase tracking-wider transition cursor-pointer ml-2">
-              ✕ Exit Emergency
+                    class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer shrink-0 ml-1">
+              ✕ Exit
             </button>
           </div>
 
@@ -192,7 +210,9 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
             <button type="button" (click)="scrollLensBar('left')" 
               class="px-1.5 py-1 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-white/80 dark:bg-zinc-900/80 rounded border border-zinc-200 dark:border-zinc-800 shrink-0 cursor-pointer shadow-xs transition" title="Scroll Lenses Left">
               ◀
-                      <div #lensBarContainer class="flex items-center gap-2 overflow-x-auto scroll-smooth hide-scrollbar flex-1">
+            </button>
+
+            <div #lensBarContainer class="flex items-center gap-2 overflow-x-auto scroll-smooth hide-scrollbar flex-1">
               <button (click)="changeLens('Summary Overview')"
                 data-testid="tab-overview"
                 [class]="activeLens() === 'Summary Overview' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"

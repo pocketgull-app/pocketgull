@@ -1570,4 +1570,41 @@ export class WebMcpRegistrationService {
     }
     this.mcpControllers = [];
   }
+
+  /**
+   * Retrieves all registered WebMCP tools from document.modelContext / navigator.modelContext,
+   * safely normalizing inputSchema to a JavaScript object regardless of browser version (supporting
+   * both legacy DOMString returns and updated native JavaScript object returns).
+   */
+  public async getRegisteredTools(): Promise<any[]> {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return [];
+    const modelContext = (document as any).modelContext || (navigator as any).modelContext;
+    if (!modelContext || typeof modelContext.getTools !== 'function') return [];
+    try {
+      const tools = await modelContext.getTools();
+      return (tools || []).map((tool: any) => ({
+        ...tool,
+        inputSchema: normalizeToolInputSchema(tool.inputSchema),
+      }));
+    } catch {
+      return [];
+    }
+  }
 }
+
+/**
+ * Helper to normalize WebMCP RegisteredTool inputSchema across browser implementations.
+ * Handles both stringified DOMString schemas and native JS Object schemas (Chrome Model Context API update).
+ */
+export function normalizeToolInputSchema(schema: unknown): Record<string, any> {
+  if (!schema) return { type: 'object', properties: {} };
+  if (typeof schema === 'string') {
+    try {
+      return JSON.parse(schema);
+    } catch {
+      return { type: 'object', properties: {} };
+    }
+  }
+  return typeof schema === 'object' ? (schema as Record<string, any>) : { type: 'object', properties: {} };
+}
+

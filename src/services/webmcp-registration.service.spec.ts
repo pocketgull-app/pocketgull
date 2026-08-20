@@ -2,7 +2,7 @@
 import '@angular/compiler';
 import { vi, expect } from 'vitest';
 import { Injector, runInInjectionContext, NgZone } from '@angular/core';
-import { WebMcpRegistrationService } from './webmcp-registration.service';
+import { WebMcpRegistrationService, normalizeToolInputSchema } from './webmcp-registration.service';
 import { PatientStateService } from './patient-state.service';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';
 import { ExportService } from './export.service';
@@ -568,5 +568,48 @@ describe('WebMcpRegistrationService', () => {
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
+  });
+
+  describe('normalizeToolInputSchema & getRegisteredTools (Chrome Model Context API update)', () => {
+    it('should normalize native Object schema directly', () => {
+      const nativeSchema = { type: 'object', properties: { patientId: { type: 'string' } } };
+      const normalized = normalizeToolInputSchema(nativeSchema);
+      expect(normalized).toEqual(nativeSchema);
+      expect(typeof normalized).toBe('object');
+    });
+
+    it('should safely parse stringified JSON schema (DOMString backward compatibility)', () => {
+      const stringifiedSchema = JSON.stringify({ type: 'object', properties: { text: { type: 'string' } } });
+      const normalized = normalizeToolInputSchema(stringifiedSchema);
+      expect(normalized).toEqual({ type: 'object', properties: { text: { type: 'string' } } });
+      expect(typeof normalized).toBe('object');
+    });
+
+    it('should return fallback object for null or invalid schema', () => {
+      expect(normalizeToolInputSchema(null)).toEqual({ type: 'object', properties: {} });
+      expect(normalizeToolInputSchema('invalid-json{')).toEqual({ type: 'object', properties: {} });
+    });
+
+    it('should retrieve registered tools and normalize inputSchema objects', async () => {
+      mockModelContext.getTools = vi.fn().mockResolvedValue([
+        {
+          name: 'tool_with_object_schema',
+          description: 'Tool with native object schema',
+          inputSchema: { type: 'object', properties: { q: { type: 'string' } } }
+        },
+        {
+          name: 'tool_with_string_schema',
+          description: 'Tool with DOMString schema',
+          inputSchema: '{"type":"object","properties":{"id":{"type":"number"}}}'
+        }
+      ]);
+
+      const tools = await service.getRegisteredTools();
+      expect(tools.length).toBe(2);
+      expect(typeof tools[0].inputSchema).toBe('object');
+      expect(tools[0].inputSchema.properties.q.type).toBe('string');
+      expect(typeof tools[1].inputSchema).toBe('object');
+      expect(tools[1].inputSchema.properties.id.type).toBe('number');
+    });
   });
 });

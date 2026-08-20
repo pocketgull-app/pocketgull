@@ -1,18 +1,16 @@
+import '@angular/compiler';
+
 const defaultNg = { config: { production: false } };
 const defaultConfig = { production: false };
 
 function ensureGlobals(target: any) {
   if (!target) return;
   try {
-    if (!target.ng) {
-      target.ng = { config: { production: false } };
-    } else if (!target.ng.config) {
+    target.ng = target.ng || { config: { production: false } };
+    if (!target.ng.config) {
       target.ng.config = { production: false };
     }
-
-    if (!target.config) {
-      target.config = { production: false };
-    }
+    target.config = target.config || { production: false };
     target.ngDevMode = true;
   } catch {
     // Ignore read-only properties

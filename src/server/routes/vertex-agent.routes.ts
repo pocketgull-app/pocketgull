@@ -5,8 +5,9 @@
  * @module server/routes/vertex-agent.routes
  */
 import { Router } from 'express';
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { GoogleAuth } from 'google-auth-library';
+import { rateLimit } from 'express-rate-limit';
 
 export interface IVertexSearchRequest {
   query: string;
@@ -46,7 +47,82 @@ const APPROVED_ENGINES: Record<string, string> = {
   'trials-search': 'trials-search',
 };
 
+const ALLOWED_ORIGINS = [
+  'https://pocketgull.app',
+  'https://pocketgull.com',
+  'https://www.pocketgull.com',
+];
+
+/**
+ * Anti-scraping rate limiter for Vertex Agent Builder.
+ * Limits to 10 search queries per minute per IP.
+ */
+const agentBuilderRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: {
+    error: 'Rate limit exceeded. Maximum 10 Agent Builder search requests per minute per IP.',
+    code: 'RATE_LIMIT_EXCEEDED',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/**
+ * Strict domain security validator.
+ * Ensures GenAI Agent Builder queries only originate from authorized PocketGull domains.
+ */
+function verifyAgentBuilderDomain(req: Request, res: Response, next: NextFunction) {
+  if (process.env['NODE_ENV'] !== 'production' || process.env['POCKETGULL_LIVE_DEMO'] === 'true') {
+    return next();
+  }
+
+  const origin = req.headers['origin'] as string | undefined;
+  const referer = req.headers['referer'] as string | undefined;
+  const host = req.headers['host'] as string | undefined;
+
+  const isAllowed = (urlStr: string) => {
+    try {
+      const parsed = new URL(urlStr);
+      return ALLOWED_ORIGINS.some(allowed => 
+        parsed.origin === allowed || 
+        parsed.hostname.endsWith('pocketgull.app') || 
+        parsed.hostname.endsWith('pocketgull.com')
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  if (origin && !isAllowed(origin)) {
+    return res.status(403).json({
+      error: 'Access Denied: Vertex Agent Builder requests must originate from pocketgull.app or pocketgull.com',
+      code: 'UNAUTHORIZED_ORIGIN',
+    });
+  }
+
+  if (referer && !isAllowed(referer)) {
+    return res.status(403).json({
+      error: 'Access Denied: Invalid referer for Vertex Agent Builder.',
+      code: 'UNAUTHORIZED_REFERER',
+    });
+  }
+
+  if (!origin && !referer && host && !ALLOWED_ORIGINS.some(allowed => allowed.includes(host))) {
+    return res.status(403).json({
+      error: 'Access Denied: Direct programmatic bot queries without origin headers are prohibited.',
+      code: 'MISSING_REQUIRED_HEADERS',
+    });
+  }
+
+  next();
+}
+
 export const vertexAgentRouter = Router();
+
+// Mount security middleware
+vertexAgentRouter.use(agentBuilderRateLimiter);
+vertexAgentRouter.use(verifyAgentBuilderDomain);
 
 /**
  * POST /api/v1/agent-builder/search

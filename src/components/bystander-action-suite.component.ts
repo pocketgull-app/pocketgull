@@ -18,72 +18,72 @@ export interface IBystanderTask {
   imports: [CommonModule, PocketGullBadgeComponent, EmergencySupplyFinderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="w-full p-5 rounded-2xl bg-red-950/40 border border-red-800/80 backdrop-blur-md shadow-2xl font-mono text-zinc-100 mb-6">
+    <div class="w-full p-6 rounded-3xl bg-gradient-to-b from-red-950/60 via-zinc-950/90 to-zinc-950 border-2 border-red-700/80 backdrop-blur-md shadow-2xl font-pocketgull-inter text-zinc-100 mb-6">
       
       <!-- Call 911 Primary Action Banner -->
-      <div class="p-4 rounded-xl bg-gradient-to-r from-red-650 via-red-700 to-red-800 border border-red-400/50 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-        <div class="flex items-center gap-3 text-center sm:text-left">
-          <span class="text-3xl animate-bounce">🚨</span>
+      <div class="p-5 rounded-2xl bg-gradient-to-r from-red-700 via-red-600 to-rose-700 border-2 border-red-400/60 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-3.5 text-center sm:text-left">
+          <span class="text-4xl animate-bounce shrink-0">🚨</span>
           <div>
-            <div class="flex items-center justify-center sm:justify-start gap-2">
-              <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-red-200">First Priority Protocol</span>
+            <div class="flex items-center justify-center sm:justify-start gap-2 mb-1">
+              <span class="text-xs font-pocketgull-mono font-bold uppercase tracking-widest text-red-200">First Priority Protocol</span>
               <pocket-gull-badge label="911 Emergency Dispatch" severity="warning"></pocket-gull-badge>
             </div>
-            <h3 class="text-base sm:text-lg font-black text-white tracking-tight mt-0.5">Step 1: Call 911 Immediately</h3>
-            <p class="text-xs text-red-100 font-sans mt-0.5">
+            <h3 class="text-lg sm:text-xl font-pocketgull font-black text-white tracking-tight">Step 1: Call 911 Immediately</h3>
+            <p class="text-xs sm:text-sm text-red-100 font-sans mt-0.5 leading-relaxed">
               Assign a dedicated bystander to call 911 and place the phone on speakerphone next to the patient.
             </p>
           </div>
         </div>
 
         <a href="tel:911"
-           class="px-5 py-3 rounded-xl bg-white text-red-950 font-black text-sm uppercase tracking-wider transition hover:bg-red-50 border-2 border-white shadow-xl flex items-center gap-2 shrink-0 active:scale-95 no-underline cursor-pointer">
+           class="px-6 py-3.5 rounded-2xl bg-white hover:bg-red-50 text-red-950 font-pocketgull font-black text-base uppercase tracking-wider transition border-2 border-white shadow-2xl flex items-center gap-2.5 shrink-0 active:scale-95 no-underline cursor-pointer min-h-[48px]">
           <span class="animate-pulse">📞</span> CALL 911 NOW
         </a>
       </div>
 
       <!-- 911 Dispatch Speakerphone Script -->
-      <div class="p-4 rounded-xl bg-zinc-950/80 border border-red-900/40 mb-6">
-        <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-red-400 mb-2 flex items-center gap-2">
+      <div class="p-5 rounded-2xl bg-zinc-950/90 border border-red-900/50 mb-6 font-pocketgull-mono shadow-inner">
+        <h4 class="text-xs sm:text-sm font-pocketgull font-black uppercase tracking-wider text-red-400 mb-2.5 flex items-center gap-2">
           <span>📢</span> What to Tell 911 Dispatch:
         </h4>
-        <ul class="text-xs text-zinc-300 font-sans space-y-1.5 list-disc list-inside leading-relaxed">
-          <li><strong class="text-white">Location:</strong> State exact street address, floor number, or nearest landmark.</li>
-          <li><strong class="text-white">Status:</strong> Tell operator: <em>"Unresponsive patient, CPR in progress."</em> or <em>"Severe trauma/choking."</em></li>
-          <li><strong class="text-white">Speakerphone:</strong> Keep line open. Dispatchers provide real-time CPR beat coaching over speaker.</li>
+        <ul class="text-xs sm:text-sm text-zinc-300 font-pocketgull-inter space-y-2 list-disc list-inside leading-relaxed">
+          <li><strong class="text-white font-pocketgull">Location:</strong> State exact street address, floor number, or nearest landmark.</li>
+          <li><strong class="text-white font-pocketgull">Status:</strong> Tell operator: <em>"Unresponsive patient, CPR in progress."</em> or <em>"Severe trauma/choking."</em></li>
+          <li><strong class="text-white font-pocketgull">Speakerphone:</strong> Keep line open. Dispatchers provide real-time CPR beat coaching over speaker.</li>
         </ul>
       </div>
 
       <!-- Bystander Role Assignments & Task Checklist -->
-      <div class="mb-6">
-        <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-zinc-300 mb-3 flex items-center justify-between">
+      <div class="mb-6 font-pocketgull-mono">
+        <h4 class="text-xs sm:text-sm font-pocketgull font-black uppercase tracking-wider text-zinc-200 mb-3.5 flex items-center justify-between">
           <span class="flex items-center gap-2"><span>👥</span> Immediate Bystander Role Checklist</span>
-          <span class="text-[10px] text-zinc-500 font-mono">Check off completed actions</span>
+          <span class="text-[11px] text-zinc-400 font-normal">Check off completed actions</span>
         </h4>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           @for (task of tasks(); track task.id) {
             <div (click)="toggleTask(task.id)"
-                 class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3"
-                 [class.bg-emerald-950\/30]="task.completed"
-                 [class.border-emerald-500\/40]="task.completed"
-                 [class.bg-zinc-900\/80]="!task.completed"
+                 class="p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-3.5 min-h-[48px]"
+                 [class.bg-emerald-950\/40]="task.completed"
+                 [class.border-emerald-500\/50]="task.completed"
+                 [class.bg-zinc-900\/90]="!task.completed"
                  [class.border-zinc-800]="!task.completed">
               
               <input type="checkbox"
                      [checked]="task.completed"
-                     class="mt-1 rounded border-zinc-700 bg-zinc-800 text-emerald-500 focus:ring-emerald-500 cursor-pointer" />
+                     class="mt-1 w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-emerald-500 focus:ring-emerald-500 cursor-pointer" />
 
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2">
-                  <span class="text-base">{{ task.icon }}</span>
-                  <span class="text-xs font-bold font-mono uppercase tracking-wider"
+                  <span class="text-lg">{{ task.icon }}</span>
+                  <span class="text-xs sm:text-sm font-pocketgull font-bold uppercase tracking-wider"
                         [class.text-emerald-400]="task.completed"
                         [class.text-white]="!task.completed">
                     {{ task.role }}
                   </span>
                 </div>
-                <p class="text-[11.5px] font-sans text-zinc-400 mt-1 leading-relaxed"
+                <p class="text-xs font-pocketgull-inter text-zinc-300 mt-1 leading-relaxed"
                    [class.line-through]="task.completed"
                    [class.text-zinc-500]="task.completed">
                   {{ task.assignedAction }}
@@ -98,44 +98,44 @@ export interface IBystanderTask {
       <app-emergency-supply-finder />
 
       <!-- Quick 1-Tap Bystander Event Logger -->
-      <div>
-        <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-zinc-300 mb-2 flex items-center gap-2">
+      <div class="font-pocketgull-mono pt-2">
+        <h4 class="text-xs sm:text-sm font-pocketgull font-black uppercase tracking-wider text-zinc-200 mb-2.5 flex items-center gap-2">
           <span>⏱️</span> Log Bystander Action Timeline (for Incoming EMTs):
         </h4>
 
-        <div class="flex flex-wrap gap-2 mb-3">
+        <div class="flex flex-wrap gap-2.5 mb-3.5">
           <button (click)="logEvent('Call 911 Placed & Dispatch Notified')"
-                  class="px-2.5 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 text-[11px] font-bold uppercase tracking-wider transition cursor-pointer">
+                  class="px-3 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/50 text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer min-h-[44px]">
             📌 911 Placed
           </button>
           
           <button (click)="logEvent('CPR Compressions Started')"
-                  class="px-2.5 py-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border border-orange-500/40 text-[11px] font-bold uppercase tracking-wider transition cursor-pointer">
+                  class="px-3 py-2 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border border-orange-500/50 text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer min-h-[44px]">
             📌 CPR Started
           </button>
 
           <button (click)="logEvent('AED Arrived & Shock Delivered')"
-                  class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[11px] font-bold uppercase tracking-wider transition cursor-pointer">
+                  class="px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer min-h-[44px]">
             📌 AED Shock
           </button>
 
           <button (click)="logEvent('Naloxone (Narcan) Administered')"
-                  class="px-2.5 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 text-[11px] font-bold uppercase tracking-wider transition cursor-pointer">
+                  class="px-3 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/50 text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer min-h-[44px]">
             📌 Naloxone Given
           </button>
 
           <button (click)="logEvent('Paramedics Arrived on Scene')"
-                  class="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold uppercase tracking-wider transition cursor-pointer">
+                  class="px-3 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/50 text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer min-h-[44px]">
             📌 Paramedics Arrived
           </button>
         </div>
 
         <!-- Logged Bystander Action History -->
         @if (state.clinicalNotes().length > 0) {
-          <div class="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800 max-h-36 overflow-y-auto space-y-1.5 font-mono text-[11px]">
+          <div class="p-3.5 rounded-2xl bg-zinc-950/90 border border-zinc-800 max-h-40 overflow-y-auto space-y-1.5 font-pocketgull-mono text-xs">
             @for (note of state.clinicalNotes(); track note.id) {
-              <div class="flex items-center justify-between text-zinc-300 border-b border-zinc-900 pb-1">
-                <span class="text-orange-400 font-bold">[{{ note.date }}]</span>
+              <div class="flex items-center justify-between text-zinc-300 border-b border-zinc-900 pb-1.5">
+                <span class="text-amber-400 font-bold">[{{ note.date }}]</span>
                 <span class="truncate ml-2 flex-1 text-zinc-200">{{ note.text }}</span>
               </div>
             }

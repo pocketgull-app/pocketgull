@@ -7,10 +7,11 @@ import { gaapAccountingService } from '../services/gaap-accounting.service';
 
 const db = new Firestore();
 
-// Make sure to set STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET in your .env
-const stripe = new Stripe(process.env['STRIPE_SECRET_KEY'] || 'sk_test_placeholder', {
-  apiVersion: '2024-06-20' as any, // Use the latest stable version or match existing
-});
+function getStripe(): Stripe {
+  return new Stripe(process.env['STRIPE_SECRET_KEY'] || 'sk_test_placeholder', {
+    apiVersion: '2024-06-20' as any,
+  });
+}
 
 export function createBillingRouter() {
   const router = Router();
@@ -32,7 +33,7 @@ export function createBillingRouter() {
       const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
 
       // Create a Stripe Checkout Session with dynamic payment methods and philanthropic revenue metadata
-      const session = await stripe.checkout.sessions.create({
+      const session = await getStripe().checkout.sessions.create({
         line_items: [
           {
             price: priceId,
@@ -79,7 +80,7 @@ export function createBillingRouter() {
       const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
 
       // Create a Customer Portal Session
-      const portalSession = await stripe.billingPortal.sessions.create({
+      const portalSession = await getStripe().billingPortal.sessions.create({
         customer: stripeCustomerId,
         return_url: `${origin}/`,
       });
@@ -103,7 +104,7 @@ export function createBillingRouter() {
       if (!endpointSecret) throw new Error('No webhook secret configured.');
       if (!sig) throw new Error('No signature provided.');
       // req.body must be the raw buffer here
-      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+      event = getStripe().webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err: any) {
       console.error('[Billing] Webhook signature verification failed');
       return res.status(400).json({ error: 'Webhook Error', message: 'Webhook signature verification failed.' });
@@ -119,7 +120,7 @@ export function createBillingRouter() {
         let resolvedTier = 'explorer';
         if (checkoutSession.subscription) {
           try {
-            const subscription = await stripe.subscriptions.retrieve(checkoutSession.subscription as string);
+            const subscription = await getStripe().subscriptions.retrieve(checkoutSession.subscription as string);
             const priceId = subscription.items?.data?.[0]?.price?.id || '';
             resolvedTier = resolveTierFromPriceId(priceId);
           } catch (subErr: any) {

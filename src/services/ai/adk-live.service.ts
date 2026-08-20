@@ -142,7 +142,7 @@ Occupational Healthspan & Precision Strategy Context:
 - Choral Vocal Resonance & Glee Protocol: ${prof.vocalResonanceProtocol || 'N/A'}`;
   }
 
-  async connect(apiKey: string, systemInstruction: string, voiceName: string = 'Aoede', modelName: string = 'models/gemini-3.5-flash', occupationalProfile?: IOccupationalHazardProfile | null) {
+  async connect(apiKey: string = '', systemInstruction: string, voiceName: string = 'Aoede', modelName: string = 'models/gemini-3.5-flash', occupationalProfile?: IOccupationalHazardProfile | null) {
     if (this.isConnected()) return;
     this.connectionError.set(null);
 
@@ -163,11 +163,10 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
 - Gentleman & Muse Entrainment: Synchronize clockwork escapement rhythm and 528 Hz solfeggio audio tones.`;
 
     try {
-      // We use the standard WebSocket approach directly to the Gemini API since the 
-      // `@google/genai` types are sometimes missing browser specific live features depending on the beta version.
-      // We route this through our backend proxy to securely affix the Referer headers required by restricted API keys.
+      // We route this through our backend WebSocket proxy which securely handles Vertex AI IAM / ADC
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      let url = `${protocol}//${window.location.host}/ws/gemini-live?key=${apiKey}`;
+      const keyParam = apiKey ? `?key=${encodeURIComponent(apiKey)}` : '';
+      let url = `${protocol}//${window.location.host}/ws/gemini-live${keyParam}`;
       // 4. Setup Audio Playback
       this.playbackContext = new AudioContext({ sampleRate: 24000 });
 

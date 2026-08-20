@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { SecureStorageService } from './secure-storage.service';
+import { getStoredApiKey } from './secure-key';
 import { MarkdownService } from './markdown.service';
 import * as DOMPurify from 'dompurify';
 import { marked } from 'marked';
@@ -2723,7 +2724,7 @@ export class ExportService {
       'Content-Type': 'application/json'
     };
     if (typeof window !== 'undefined') {
-      const userKey = this.storage.getItem('GEMINI_API_KEY') || (window as any).GEMINI_API_KEY;
+      const userKey = this.storage.getItem('GEMINI_API_KEY') || getStoredApiKey(this.storage);
       if (userKey) {
         headers['X-Gemini-API-Key'] = userKey.trim();
       }

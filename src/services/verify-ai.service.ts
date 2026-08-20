@@ -34,7 +34,7 @@ export class VerifyAiService {
 
     private async getAi(): Promise<any> {
         if (!this._ai) {
-            let initialKey = (window as any).GEMINI_API_KEY || this.config.apiKey;
+            let initialKey = this.config.apiKey;
             if (!initialKey) {
                 try {
                     initialKey = getStoredApiKey(this.storage);

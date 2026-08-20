@@ -38,16 +38,16 @@ function run(cmd, options = {}) {
 // 0. Mandatory Pre-Flight Verification Chain (Unit Tests, Lint, Security, SBOM)
 console.log('\n🧪 Step 0/5: Running mandatory pre-flight test & verification chain...');
 console.log('• TypeScript Compilation (tsc --noEmit)...');
-run(`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`);
+run(`node "${join(rootDir, 'node_modules/typescript/lib/tsc.js')}" -p "${join(rootDir, 'tsconfig.json')}" --noEmit`);
 
 console.log('• Vitest Unit Test Suite...');
-run(`npx vitest run`);
+run(`node "${join(rootDir, 'node_modules/vitest/vitest.mjs')}" run --config "${join(rootDir, 'vitest.config.ts')}"`);
 
 console.log('• Sentinel Network & Egress Security Guard...');
-run(`node scripts/sentinel_security_guard.mjs`);
+run(`node "${join(rootDir, 'scripts/sentinel_security_guard.mjs')}"`);
 
 console.log('• CycloneDX 1.6 SBOM Verification...');
-run(`node scripts/generate_cyclonedx_sbom.mjs`);
+run(`node "${join(rootDir, 'scripts/generate_cyclonedx_sbom.mjs')}"`);
 
 console.log('✅ All pre-flight tests passed successfully. Proceeding with deployment.');
 
@@ -61,7 +61,7 @@ const tmpDir = join(rootDir, 'tmp');
 const archivePath = join(tmpDir, 'deploy_source.tar.gz');
 
 try {
-  run(`node scripts/package-deploy-source.mjs`);
+  run(`node "${join(rootDir, 'scripts/package-deploy-source.mjs')}"`);
 } catch (e) {
   console.warn('⚠️ Fallback to direct directory upload...');
 }
@@ -77,7 +77,7 @@ if (existsSync(sourceTar)) {
 }
 
 // 4. Deploy to Google Cloud Run
-console.log('\n🚀 Step 4/5: Deploying image to Google Cloud Run (Scale-to-Zero)...');
+console.log('\n🚀 Step 4/5: Deploying image to Google Cloud Run (Scale-to-Zero & Zero Secret Injections)...');
 run(
   `gcloud run deploy ${SERVICE_NAME} ` +
   `--image ${IMAGE_TAG} ` +
@@ -89,15 +89,15 @@ run(
   `--cpu 2 ` +
   `--min-instances 0 ` +
   `--max-instances 2 ` +
-  `--set-secrets="GEMINI_API_KEY=GEMINI_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest,AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID:latest,AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY:latest,AWS_HEALTHLAKE_ENDPOINT=AWS_HEALTHLAKE_ENDPOINT:latest" ` +
-  `--update-env-vars=OTEL_SDK_DISABLED=true ` +
+  `--clear-secrets ` +
+  `--update-env-vars=OTEL_SDK_DISABLED=true,GOOGLE_CLOUD_PROJECT=${TARGET_PROJECT} ` +
   `--quiet`
 );
 
 // 5. Apply Lifecycle & Cost Controls
 console.log('\n🧹 Step 5/5: Applying storage lifecycle and cost control policies...');
 try {
-  run(`node scripts/apply-gcp-lifecycle-policies.mjs`);
+  run(`node "${join(rootDir, 'scripts/apply-gcp-lifecycle-policies.mjs')}"`);
 } catch (e) {
   console.warn('⚠️ Lifecycle policy application notice:', e.message);
 }

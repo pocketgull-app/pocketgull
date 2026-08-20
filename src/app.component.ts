@@ -177,20 +177,45 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
         </app-secure-splash>
       } @else {
         @if (state.isEmergencyMode()) {
-          <main class="flex-1 flex flex-col min-w-0 min-h-0 relative bg-[#F9FAFB] dark:bg-[#09090b] p-4 sm:p-6 overflow-y-auto">
-            <div class="mb-4 flex items-center justify-between no-print">
-              <button (click)="state.isEmergencyMode.set(false); session.isLocked.set(true)" class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-900 dark:hover:text-zinc-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-                Exit Emergency Mode
-              </button>
-              <div class="flex items-center gap-2 px-3 py-1 bg-red-500/10 dark:bg-red-500/20 border border-red-500/30 rounded-full">
-                <div class="relative flex h-2 w-2">
+          <main class="flex-1 flex flex-col min-w-0 min-h-0 relative bg-zinc-950 text-zinc-100 overflow-hidden font-pocketgull-inter">
+            <!-- 🚨 Emergency Mode Top Critical Command Bar -->
+            <div class="px-4 py-2.5 bg-gradient-to-r from-red-950 via-zinc-950 to-red-950 border-b-2 border-red-600/80 shadow-2xl flex flex-wrap items-center justify-between gap-3 shrink-0 no-print z-30 font-pocketgull-mono">
+              
+              <!-- Left: Pulsing Beacon & Mode Title -->
+              <div class="flex items-center gap-3">
+                <div class="relative flex h-3.5 w-3.5 shrink-0">
                   <span class="absolute inline-flex h-full w-full rounded-full opacity-75 bg-red-500 animate-ping"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                  <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-600 shadow-[0_0_12px_rgba(239,68,68,0.9)]"></span>
                 </div>
-                <span class="text-[12px] font-bold text-red-655 dark:text-red-400 uppercase tracking-widest">First Aid Mode</span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-pocketgull-chiseltip text-sm sm:text-base font-black tracking-wider text-red-100 uppercase">
+                      CODE BLUE • EMERGENCY TRIAGE ACTIVE
+                    </span>
+                    <span class="hidden sm:inline px-2 py-0.5 rounded-md bg-red-500/20 text-red-300 text-[10px] font-bold border border-red-500/40">
+                      OFFLINE FIRST AID
+                    </span>
+                  </div>
+                  <span class="text-[11px] text-zinc-400 font-sans block">
+                    Zero-latency bystander CPR, EMT handoff telemetry &amp; rapid emergency guides
+                  </span>
+                </div>
               </div>
+
+              <!-- Right: Direct 911 Dialer & Exit Control -->
+              <div class="flex items-center gap-2.5 ml-auto">
+                <a href="tel:911" class="px-4 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-pocketgull font-bold text-xs uppercase tracking-wider transition shadow-lg flex items-center gap-1.5 active:scale-95 border border-red-400 no-underline cursor-pointer">
+                  <span class="animate-bounce">📞</span> CALL 911
+                </a>
+                <button type="button" (click)="state.isEmergencyMode.set(false); session.isLocked.set(true)" 
+                        class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 font-pocketgull font-bold text-xs uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer">
+                  <span>✕</span> Exit Emergency Mode
+                </button>
+              </div>
+
             </div>
+
+            <!-- Main Analysis Container in Emergency Mode -->
             <app-analysis-container class="flex flex-col flex-1 min-h-0 h-full w-full overflow-hidden"></app-analysis-container>
           </main>
         } @else {

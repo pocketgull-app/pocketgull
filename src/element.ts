@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { AI_CONFIG, IAiProviderConfig } from './services/ai-provider.types';
 import { IntelligenceProviderToken } from './services/ai/intelligence.provider.token';
 import { HybridProvider } from './services/ai/hybrid.provider';
+import { getStoredApiKey } from './services/secure-key';
 
 async function bootstrapCustomElement() {
   const app = await createApplication({
@@ -15,7 +16,7 @@ async function bootstrapCustomElement() {
       {
         provide: AI_CONFIG,
         useFactory: () => ({
-          apiKey: (window as any).GEMINI_API_KEY || '',
+          apiKey: getStoredApiKey() || '',
           defaultModel: { modelId: 'gemini-3.5-flash', temperature: 0.1 },
           verificationModel: { modelId: 'gemini-3.5-flash', temperature: 0.0 }
         } as IAiProviderConfig)

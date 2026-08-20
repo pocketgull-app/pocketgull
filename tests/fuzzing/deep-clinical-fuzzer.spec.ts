@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
+import { expect } from 'vitest';
 import { ALL_ASSESSMENTS, getAssessment } from '../../src/services/clinical-assessments/assessment-registry';
 import { AssessmentType } from '../../src/services/clinical-assessments/types';
 import { ExportService } from '../../src/services/export.service';

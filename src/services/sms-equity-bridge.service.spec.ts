@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { expect } from 'vitest';
 import { SmsEquityBridgeService } from './sms-equity-bridge.service';
 import { IPatient } from './patient.types';
 

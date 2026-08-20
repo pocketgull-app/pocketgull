@@ -231,6 +231,6 @@ To prevent context window degradation, attention drift, and token exhaustion:
      * **TCM**: Traditional/Simplified Hanzi & Kampo Kanji (`心`, `肝开窍于目`, `任脉`, `足三里`).
      * **Allopathic**: Latin *Nomina Anatomica* with ICD-10/SNOMED-CT codes and hemodynamic formulas ($CO = HR \times SV$, $MAP$).
      * **Osteopathic**: Somatic dysfunction T.A.R.T. criteria (Tissue, Asymmetry, Restriction, Tenderness) and Craniosacral PRM ($8\text{--}12\text{ cpm}$).
-
-
-
+6. **Marker Font & Brand Lettering Governance Standard**:
+   - The custom handwritten/display Marker Font (`font-pocketgull-handwritten`, `.marker-bold-emphasis`, `.bionic-pocketgull-marker`, marker SVG paths) MUST **ONLY** be utilized when displaying the official **Brand Lettering ("PocketGull")** and **Copyright / Legal Footer imprint** lines.
+   - All clinical UI, research frame literature, telemetric navigation, data HUDs, vitals tables, and reading frames MUST strictly utilize the clean, high-legibility clinical typography stacks (`font-pocketgull-sans-clinical`, `font-pocketgull-inter`, `font-pocketgull-mono`, `font-pocketgull-notofu`) to guarantee zero dosage misinterpretation and optimal optical legibility.

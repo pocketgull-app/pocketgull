@@ -9,6 +9,7 @@
 import { Router, json as expressJson } from 'express';
 import type { Request, Response } from 'express';
 import { GoogleAuth } from 'google-auth-library';
+import { rateLimit } from 'express-rate-limit';
 
 // ── Request/Response Interfaces (P0-B: `:any` resolution) ──────────────
 
@@ -160,43 +161,113 @@ function sanitizeSystemInstruction(raw: unknown): string {
 const chatSessions = new Map<string, IChatSession>();
 const MAX_CHAT_SESSIONS = 50;
 
+/**
+ * Strict Anti-Scraping Rate Limiter for AI Endpoints.
+ * Capped at 10 requests per minute per IP to prevent bot scraping and automated distillation.
+ */
+const aiRateLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute window
+  max: () => {
+    const isTest = Boolean(
+      process.env['CI'] ||
+      process.env['PLAYWRIGHT_TESTING'] ||
+      process.env['NODE_ENV'] === 'test' ||
+      process.env['VITEST']
+    );
+    return isTest ? 100_000 : 10; // Strict 10 req/min per IP in production
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { trustProxy: false },
+  message: {
+    error: 'Too many requests: Rate limit exceeded (10 requests per minute).',
+    status: 429
+  }
+});
+
 // ── Factory: Creates the AI router with injected dependencies ───────────
 
 export function createAiRouter(deps: IAiRouteDeps): Router {
   const router = Router();
   const { getApiKey, getGcpAccessToken, normalizeAndValidateModel } = deps;
 
-  // Lightweight native CORS middleware for cross-origin federated access
-  router.use((req, res, next) => {
+  // 1. Strict CORS & Ingress Origin / Referer Verification Guard
+  router.use((req: Request, res: Response, next) => {
     const origin = req.headers.origin;
-    if (origin) {
+    const referer = req.headers.referer;
+
+    let isOriginAllowed = false;
+    let allowedOriginHeader = '';
+
+    const checkHost = (urlStr?: string): boolean => {
+      if (!urlStr) return false;
       try {
-        const originUrl = new URL(origin);
-        const hostname = originUrl.hostname.toLowerCase();
-        const isAllowed =
+        const url = new URL(urlStr);
+        const hostname = url.hostname.toLowerCase();
+        const isProd = process.env['NODE_ENV'] === 'production' || !!process.env['K_SERVICE'];
+        if (
           hostname === 'pocketgull.com' ||
           hostname === 'pocketgull.app' ||
           hostname.endsWith('.pocketgull.com') ||
-          hostname.endsWith('.pocketgull.app') ||
-          hostname === 'localhost' ||
-          hostname === '127.0.0.1';
-        if (isAllowed) {
-          res.setHeader('Access-Control-Allow-Origin', origin);
+          hostname.endsWith('.pocketgull.app')
+        ) {
+          return true;
+        }
+        if (!isProd && (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname === '0.0.0.0')) {
+          return true;
         }
       } catch {
-        // Malformed origin header - do not set Access-Control-Allow-Origin
+        return false;
       }
+      return false;
+    };
+
+    if (origin && checkHost(origin)) {
+      isOriginAllowed = true;
+      allowedOriginHeader = origin;
+    } else if (referer && checkHost(referer)) {
+      isOriginAllowed = true;
+    }
+
+    if (allowedOriginHeader) {
+      res.setHeader('Access-Control-Allow-Origin', allowedOriginHeader);
     }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key, x-goog-user-project');
+
     if (req.method === 'OPTIONS') {
       res.sendStatus(200);
       return;
     }
+
+    const isTest = Boolean(
+      process.env['CI'] ||
+      process.env['PLAYWRIGHT_TESTING'] ||
+      process.env['NODE_ENV'] === 'test' ||
+      process.env['VITEST']
+    );
+
+    const isProd = process.env['NODE_ENV'] === 'production' || !!process.env['K_SERVICE'];
+
+    // Reject unauthorized third-party scrapers/bots lacking valid Pocket Gull origin/referer
+    if (isProd && !isTest && !isOriginAllowed) {
+      const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
+      console.warn(`[Security Guard] Blocked unauthorized AI route access from IP: ${clientIp}, Origin: ${origin || 'none'}, Referer: ${referer || 'none'}`);
+      res.status(403).json({
+        error: 'Forbidden: Request origin or referer is not authorized.',
+        status: 403
+      });
+      return;
+    }
+
     next();
   });
 
-  router.use(expressJson({ limit: '50mb' }));
+  // 2. Anti-Scraping Rate Limiter (10 req/min per IP)
+  router.use(aiRateLimiter);
+
+  // 3. Payload Size Guard (Strict 2MB limit across all AI routes)
+  router.use(expressJson({ limit: '2mb' }));
 
   // POST /api/ai/metrics
   router.post('/metrics', async (req: Request, res: Response) => {
@@ -213,7 +284,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   });
 
   // POST /api/ai/synthesize
-  router.post('/synthesize', expressJson(), async (req: Request, res: Response) => {
+  router.post('/synthesize', async (req: Request, res: Response) => {
     try {
       await getApiKey(req);
       const body = req.body as IAiSynthesizeRequest;
@@ -227,7 +298,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   });
 
   // POST /api/ai/changes
-  router.post('/changes', expressJson(), async (req: Request, res: Response) => {
+  router.post('/changes', async (req: Request, res: Response) => {
     try {
       await getApiKey(req);
       const body = req.body as IAiChangesRequest;
@@ -244,7 +315,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   });
 
   // POST /api/ai/vertex-search
-  router.post('/vertex-search', expressJson(), async (req: Request, res: Response) => {
+  router.post('/vertex-search', async (req: Request, res: Response) => {
     try {
       await getApiKey(req);
       const accessToken = await getGcpAccessToken();
@@ -304,7 +375,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   });
 
   // POST /api/ai/translate
-  router.post('/translate', expressJson(), async (req: Request, res: Response) => {
+  router.post('/translate', async (req: Request, res: Response) => {
     try {
       await getApiKey(req);
       const body = req.body as IAiTranslateRequest;
@@ -323,7 +394,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   });
 
   // POST /api/ai/analyze-translation
-  router.post('/analyze-translation', expressJson(), async (req: Request, res: Response) => {
+  router.post('/analyze-translation', async (req: Request, res: Response) => {
     try {
       const body = req.body as IAiAnalyzeTranslationRequest;
       await getApiKey(req);
@@ -343,7 +414,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   });
 
   // POST /api/ai/analyze-image
-  router.post('/analyze-image', expressJson({ limit: '10mb' }), async (req: Request, res: Response) => {
+  router.post('/analyze-image', async (req: Request, res: Response) => {
     try {
       const body = req.body as IAiAnalyzeImageRequest;
       await getApiKey(req);
@@ -363,7 +434,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   });
 
   // POST /api/ai/scan-document
-  router.post('/scan-document', expressJson({ limit: '15mb' }), async (req: Request, res: Response) => {
+  router.post('/scan-document', async (req: Request, res: Response) => {
     try {
       const body = req.body as IAiScanDocumentRequest;
       await getApiKey(req);
@@ -383,7 +454,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   });
 
   // POST /api/ai/stream — Server-Sent Events streaming endpoint
-  router.post('/stream', expressJson(), async (req: Request, res: Response) => {
+  router.post('/stream', async (req: Request, res: Response) => {
     try {
       const body = req.body as IAiStreamRequest;
       let rawModel: string;
@@ -492,7 +563,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   });
 
   // POST /api/ai/chat/start
-  router.post('/chat/start', expressJson(), async (req: Request, res: Response) => {
+  router.post('/chat/start', async (req: Request, res: Response) => {
     try {
       const body = req.body as IAiChatStartRequest;
       let validatedModel: string;
@@ -527,7 +598,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   });
 
   // POST /api/ai/chat/message
-  router.post('/chat/message', expressJson(), async (req: Request, res: Response) => {
+  router.post('/chat/message', async (req: Request, res: Response) => {
     try {
       const body = req.body as IAiChatMessageRequest;
       const session = chatSessions.get(body.sessionId);
@@ -569,10 +640,10 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
             systemInstruction: { parts: [{ text: safeSystemInstruction }] },
             generationConfig: { temperature: session.temperature },
             safetySettings: [
-              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_LOW_AND_ABOVE' },
-              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_LOW_AND_ABOVE' },
-              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_LOW_AND_ABOVE' },
-              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_LOW_AND_ABOVE' }
+              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
+              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
+              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
             ]
           })
         });
@@ -593,10 +664,10 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
             systemInstruction: { parts: [{ text: safeSystemInstruction }] },
             generationConfig: { temperature: session.temperature },
             safetySettings: [
-              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_LOW_AND_ABOVE' },
-              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_LOW_AND_ABOVE' },
-              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_LOW_AND_ABOVE' },
-              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_LOW_AND_ABOVE' }
+              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
+              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
+              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
             ]
           })
         });

@@ -6,6 +6,7 @@ import { IClinicalMetrics } from '../clinical-intelligence.service';
 import { IVerificationIssue } from '../../components/analysis-report.types';
 import { VerifyAiService } from '../verify-ai.service';
 import { SecureStorageService } from '../secure-storage.service';
+import { getStoredApiKey } from '../secure-key';
 
 
 @Injectable({
@@ -25,7 +26,7 @@ export class GeminiProvider implements IIntelligenceProvider {
         const headers: Record<string, string> = {
             'Content-Type': 'application/json'
         };
-        const userKey = this.storage.getItem('GEMINI_API_KEY') || (typeof window !== 'undefined' ? (window as any).GEMINI_API_KEY : null);
+        const userKey = this.storage.getItem('GEMINI_API_KEY') || getStoredApiKey(this.storage);
         if (userKey) {
             headers['X-Gemini-API-Key'] = userKey.trim();
         }

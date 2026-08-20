@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, Injector } from '@angular/core';
 import { AssessmentType, IAssessmentPayload, ISeverityTier, IAssessmentDefinition } from './types';
 import { getAssessment } from './assessment-registry';
 import { PatientManagementService } from '../patient-management.service';
@@ -10,7 +10,7 @@ import { HistoryEntry } from '../patient.types';
   providedIn: 'root'
 })
 export class ClinicalAssessmentsService {
-  private patientMgmt = inject(PatientManagementService);
+  private injector = inject(Injector);
   private patientState = inject(PatientStateService);
   private storage = inject(StorageService);
 
@@ -149,8 +149,9 @@ export class ClinicalAssessmentsService {
   }
 
   commitToTimeline(type: AssessmentType): IAssessmentPayload | null {
-    const patientId = this.patientMgmt.selectedPatientId();
-    const patient = this.patientMgmt.selectedPatient();
+    const patientMgmt = this.injector.get(PatientManagementService);
+    const patientId = patientMgmt.selectedPatientId();
+    const patient = patientMgmt.selectedPatient();
     if (!patientId || !patient) return null;
 
     const def = getAssessment(type);

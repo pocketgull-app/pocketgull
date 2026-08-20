@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { expect } from 'vitest';
 import { RxGuardService } from './rx-guard.service';
 import { IPatient } from './patient.types';
 

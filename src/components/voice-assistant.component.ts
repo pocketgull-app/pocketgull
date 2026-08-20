@@ -775,14 +775,8 @@ Only include a rich-media block when the user explicitly requests visual or rese
                 console.warn("Background chat session initialization failed:", e);
             });
             
-            // Initialize ADK Live Service with user's actual token (from API key context)
-            // Check window (SSR inject) first, then fallback to local storage
-            const apiKey = (window as any).GEMINI_API_KEY || getStoredApiKey(this.secureStorage) || '';
-            if (!apiKey) {
-                 console.error("AdkLiveService Error: No GEMINI_API_KEY found in window or SecureStorageService.");
-                 this.permissionError.set('Missing API Key. Please re-enter it on the home screen.');
-                 return;
-            }
+            // Initialize ADK Live Service (uses server Vertex/Secret Manager proxy or user's stored BYOK)
+            const apiKey = getStoredApiKey(this.secureStorage) || '';
 
             // Hook up AdkLiveService callbacks
             this.live.onMessage = (msg) => {
@@ -1085,7 +1079,7 @@ Only include a rich-media block when the user explicitly requests visual or rese
         this._appendUser(message, userDisplayHtml);
 
         try {
-            if (this.state.isDemoMode() || !(window as any).GEMINI_API_KEY) {
+            if (this.state.isDemoMode()) {
                 const responseText = this.getDemoMockResponse(message);
                 this._accumulateModelText(responseText);
                 this._finalizeModelTurn();

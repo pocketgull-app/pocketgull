@@ -23,14 +23,16 @@ export default defineConfig({
             'packages/**/*.spec.ts'
         ],
         exclude: [
+            '**/node_modules/**',
+            '**/dist/**',
             '**/AppData/**',
             '**/Local Settings/**',
+            '**/Application Data/**',
             '**/Steam/**',
             '**/Google/**',
             '**/pg2/**',
             '**/Pocketgull/pg2/**',
             'e2e/**',
-            'node_modules/**',
             'pocketgull_flutter/**',
             'companion-apps/**'
         ],

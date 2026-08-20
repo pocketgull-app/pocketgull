@@ -37,7 +37,7 @@ import { SessionStateService } from '../services/session-state.service';
             <!-- Beak (Golden-Amber Orange) -->
             <polygon points="85,38 82,45 95,34" fill="#faa63b" stroke="#e0902c" stroke-width="0.5" stroke-linejoin="round" />
           </svg>
-          <span class="font-bold uppercase tracking-[0.15em] text-sm hidden sm:inline">POCKET GULL</span>
+          <span class="font-pocketgull-handwritten text-orange-600 dark:text-orange-400 font-black text-lg tracking-tight hidden sm:inline">PocketGull</span>
           <!-- System Status Indicator (Hidden on smallest watches) -->
           <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all cursor-pointer group relative no-print" 
                (click)="network.toggleForceOffline()"

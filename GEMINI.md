@@ -86,3 +86,7 @@ export class MetricCardComponent {
 - **ISMP / FDA Disambiguation**: Enforce slashed zero (`cv08`), curved lowercase `l` (`cv05`), and serifed capital `I` (`ss02`).
 - **WCAG AAA Compliance**: Minimum 7:1 contrast ratio against dark obsidian backgrounds.
 - **HIPAA Safe Harbor**: All research and mock datasets must strip all 18 direct/indirect identifiers.
+
+## Marker Font & Brand Lettering Governance Standard
+- **Exclusive Brand & Copyright Boundary**: The custom handwritten/display Marker Font (`font-pocketgull-handwritten`, `.marker-bold-emphasis`, `.bionic-pocketgull-marker`, marker SVG strokes) MUST **ONLY** be utilized when displaying the official **Brand Lettering ("PocketGull")** and **Copyright / Legal Footer imprint** lines.
+- **Universal Clinical Legibility**: All clinical UI, research frame literature, telemetric navigation, data HUDs, vitals tables, and reading frames MUST strictly utilize the clean, high-legibility clinical typography stacks (`font-pocketgull-sans-clinical`, `font-pocketgull-inter`, `font-pocketgull-mono`, `font-pocketgull-notofu`) to guarantee zero dosage misinterpretation and optimal optical legibility.

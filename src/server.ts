@@ -427,7 +427,13 @@ const discoveryRouter = createDiscoveryRouter();
 app.use(manifestRateLimiter, discoveryRouter);
 
 app.get('/api/config', manifestRateLimiter, (req, res) => {
-  res.json({ apiKey: process.env['GEMINI_API_KEY'] || '' });
+  const isConfigured = !!(geminiApiKeyCached || process.env['GEMINI_API_KEY'] || process.env['GOOGLE_APPLICATION_CREDENTIALS'] || process.env['K_SERVICE']);
+  res.json({
+    hasKey: isConfigured,
+    authMode: 'server-proxy',
+    status: 'ok',
+    apiKey: '' // Sanitized: Never expose plaintext API keys to the browser
+  });
 });
 
 app.post('/api/audit', manifestRateLimiter, (req, res) => {
@@ -456,59 +462,85 @@ app.use(express.static(publicFolder, { maxAge: '1d', index: false }));
 
 
 
-async function fetchGeminiApiKey() {
-  if (process.env['GEMINI_API_KEY']) {
-    console.log('[Secrets] Using GEMINI_API_KEY from environment.');
-    return process.env['GEMINI_API_KEY'];
+const secretCache = new Map<string, string>();
+let secretClient: SecretManagerServiceClient | null = null;
+
+export async function fetchSecretFromSecretManager(secretName: string): Promise<string> {
+  if (secretCache.has(secretName)) {
+    return secretCache.get(secretName)!;
   }
 
-  // Search the Angular project root first, then fall back to sibling pocketgull_api dir
-  // so a single .env in either location satisfies all services in the monorepo.
-  const envFiles = ['.env.local', '.env', 'pocketgull_api/.env.local', 'pocketgull_api/.env'];
+  if (process.env[secretName]) {
+    secretCache.set(secretName, process.env[secretName]!);
+    return process.env[secretName]!;
+  }
 
+  // Local development file fallback (.env / .env.local)
+  const envFiles = ['.env.local', '.env', 'pocketgull_api/.env.local', 'pocketgull_api/.env'];
   for (const file of envFiles) {
     const joinedPath = join(rootDir, file);
     const envPath = normalize(joinedPath);
     if (!envPath.startsWith(rootDir)) continue;
     try {
       const localEnv = fs.readFileSync(envPath, 'utf8');
-      const match = localEnv.match(/GEMINI_API_KEY=["']?([^"'\n]+)["']?/);
+      const regex = new RegExp(`${secretName}=["']?([^"'\r\n]+)["']?`);
+      const match = localEnv.match(regex);
       if (match) {
-        console.log(`[Secrets] Manual load success: ${envPath}`);
-        return match[1].trim();
+        const val = match[1].trim();
+        secretCache.set(secretName, val);
+        process.env[secretName] = val;
+        return val;
       }
-    } catch (e) { /* file not found, try next */ }
+    } catch { /* try next */ }
   }
 
+  // Dynamic GCP Secret Manager Runtime Fetch (Keyless IAM Workload Identity)
   try {
-    const client = new SecretManagerServiceClient();
-    let projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'];
-
-    if (!projectId) {
-      if (process.env['NODE_ENV'] !== 'production' && !process.env['K_SERVICE']) {
-          console.warn('[WARN] Not running in GCP (no K_SERVICE). Skipping Secret Manager to prevent auth crash.');
-          return '';
-      }
-      console.log('[Secrets] GOOGLE_CLOUD_PROJECT not set, attempting to resolve automatically...');
-      projectId = await client.getProjectId();
+    if (!secretClient) {
+      secretClient = new SecretManagerServiceClient();
     }
+    const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
 
-    if (!projectId) {
-      console.warn('[WARN] Could not determine project ID. Returning empty string.');
-      return '';
-    }
-
-    console.log(`[Secrets] Fetching GEMINI_API_KEY from GCP Secret Manager for project ${projectId}...`);
-    const [version] = await client.accessSecretVersion({
-      name: `projects/${projectId}/secrets/GEMINI_API_KEY/versions/latest`,
+    console.log(`[Secrets] Dynamically pulling ${secretName} from GCP Secret Manager (projects/${projectId})...`);
+    const [version] = await secretClient.accessSecretVersion({
+      name: `projects/${projectId}/secrets/${secretName}/versions/latest`,
     });
-    const payload = version.payload?.data ? Buffer.from(version.payload.data).toString('utf8') : '';
-    console.log('[Secrets] Successfully fetched GEMINI_API_KEY from GCP.');
-    return payload;
+    const payload = version.payload?.data ? Buffer.from(version.payload.data).toString('utf8').trim() : '';
+    if (payload) {
+      console.log(`[Secrets] Successfully fetched ${secretName} from GCP Secret Manager.`);
+      secretCache.set(secretName, payload);
+      process.env[secretName] = payload;
+      return payload;
+    }
   } catch (err: unknown) {
-    console.warn(`[WARN] Failed to fetch secret GEMINI_API_KEY from GCP. Returning empty string. Error: ${(err as Error)?.message}`);
-    return '';
+    console.warn(`[WARN] Failed to fetch secret ${secretName} from GCP Secret Manager: ${(err as Error)?.message}`);
   }
+
+  return '';
+}
+
+export async function fetchGeminiApiKey(): Promise<string> {
+  return fetchSecretFromSecretManager('GEMINI_API_KEY');
+}
+
+/**
+ * Pre-warms runtime secrets from Google Cloud Secret Manager on server initialization.
+ */
+export async function initializeRuntimeSecrets(): Promise<void> {
+  const essentialSecrets = [
+    'GEMINI_API_KEY',
+    'STRIPE_SECRET_KEY',
+    'STRIPE_WEBHOOK_SECRET',
+    'AWS_ACCESS_KEY_ID',
+    'AWS_SECRET_ACCESS_KEY',
+    'AWS_HEALTHLAKE_ENDPOINT',
+    'ATHENAHEALTH_CLIENT_ID',
+    'ORACLE_CERNER_CLIENT_ID',
+    'GOOGLE_HEALTH_CLIENT_SECRET'
+  ];
+
+  console.log('[Secrets] Initializing runtime Secret Manager client (Zero container secret injections)...');
+  await Promise.allSettled(essentialSecrets.map(s => fetchSecretFromSecretManager(s)));
 }
 
 const googleAuth = new GoogleAuth({
@@ -672,6 +704,7 @@ import { createUtilityRouter } from './server/routes/utility.routes';
 import { slackRouter } from './server/routes/slack.routes';
 import { createApiKeysRouter } from './server/routes/api-keys.routes';
 import { createBillingRouter } from './server/routes/billing.routes';
+import { createAuthRouter } from './server/routes/auth.routes';
 import { apiKeyService } from './server/services/api-key.service';
 
 app.use('/api/slack', slackRouter);
@@ -695,6 +728,7 @@ app.use('/api/python', createProxyMiddleware({
 // ── Mount Extracted Routers ────────────────────────────────────────────────
 const routeDeps = { getApiKey, getGcpAccessToken, normalizeAndValidateModel };
 
+app.use('/api/auth', createAuthRouter());
 app.use('/api/ai', createAiRouter(routeDeps));
 app.use('/api/patients', createPatientsRouter());
 app.use('/api/keys', createApiKeysRouter());
@@ -954,6 +988,9 @@ if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERV
       console.log(`Node Express server listening on http://0.0.0.0:${port}`);
     });
     
+    // Pre-warm secrets dynamically from GCP Secret Manager (Zero static injections)
+    initializeRuntimeSecrets().catch(console.error);
+
     // Auto-provision Cloud Healthcare API datasets and stores
     ensureHealthcareStoresExist().catch(console.error);
 
@@ -1126,7 +1163,7 @@ if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERV
           } catch (e) {}
           
           setupPromise = Promise.resolve();
-          connectToVertex(new URL(request.url || '', 'http://localhost').searchParams.get('key') || '');
+          connectToVertex(new URL(request.url || '', 'http://localhost').searchParams.get('key') || process.env['GEMINI_API_KEY'] || '');
         }
 
         // Handle all non-setup messages sequentially after setup completes

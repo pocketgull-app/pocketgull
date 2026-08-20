@@ -24,10 +24,10 @@ export function renderBusinessSiteHtml(): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PocketGull — GEARARTS Enterprise Clinical Intelligence & Research Platform</title>
-  <meta name="description" content="PocketGull is an Integrative Health Clinical Intelligence Platform created by GEARARTS. Features the custom PocketGull Typeface, Google Gemini 2.5 Flash, GenAI App Builder, FHIR R4, and 3D Holographic Anatomy." />
-  <meta property="og:title" content="PocketGull — Creating a Sustainable Future Through Art and Technology" />
-  <meta property="og:description" content="The live co-pilot for the modern exam room. Powered by PocketGull Typeface & Google Gemini 2.5." />
+  <title>PocketGull — Enterprise Clinical Intelligence, Vertex AI & Research Platform</title>
+  <meta name="description" content="PocketGull is an Enterprise Clinical Decision Support (CDS) & Research Platform created by GEARARTS. Powered by Google Cloud Vertex AI, Keyless IAM Workload Identity, FHIR R4, and the Open-Source PocketGull Typeface." />
+  <meta property="og:title" content="PocketGull — Enterprise Clinical Intelligence Powered by Google Cloud Vertex AI" />
+  <meta property="og:description" content="The live co-pilot for the modern exam room. Enterprise Vertex AI, Keyless IAM, FHIR R4 interoperability, and custom clinical typography." />
   <meta property="og:url" content="https://pocketgull.com" />
   <meta property="og:type" content="website" />
   
@@ -213,8 +213,9 @@ export function renderBusinessSiteHtml(): string {
         </div>
       </div>
 
-      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-stone-300">
-        <a href="#search" class="hover:text-amber-400 transition-colors">GenAI Search Engine</a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-stone-300">
+        <a href="#compliance" class="hover:text-amber-400 transition-colors">Enterprise Vertex AI</a>
+        <a href="#pricing" class="hover:text-amber-400 transition-colors">Pricing & Pilots</a>
         <a href="#typeface" class="hover:text-amber-400 transition-colors">PocketGull Typeface</a>
         <a href="#segments" class="hover:text-amber-400 transition-colors">Target Audience</a>
         <a href="#valuation" class="hover:text-amber-400 transition-colors">Software Valuation</a>
@@ -554,6 +555,135 @@ export function renderBusinessSiteHtml(): string {
       </div>
     </section>
 
+    <!-- 🛡️ Enterprise Security, Vertex AI Architecture & HIPAA Compliance -->
+    <section id="compliance" class="py-20 px-6 border-t border-stone-800 bg-stone-900/70">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <div class="inline-flex items-center gap-2 text-xs font-bold text-teal-400 uppercase tracking-widest mb-3 font-pocketgull px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30">
+            <span>🛡️</span> Enterprise Healthcare Security &amp; Compliance
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100 mb-4">
+            Keyless Google Cloud Vertex AI &amp; HIPAA Safe Harbor
+          </h2>
+          <p class="text-stone-300 text-base max-w-2xl mx-auto leading-relaxed">
+            Built from the ground up to protect patient confidentiality and institutional infrastructure through keyless identity federation, strict per-IP rate limiting, and zero baseline data harvesting.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="glass-card-dark p-6 rounded-3xl border border-teal-500/30">
+            <div class="w-10 h-10 rounded-2xl bg-teal-500/20 text-teal-400 flex items-center justify-center text-xl mb-4 font-bold">🔐</div>
+            <h3 class="text-lg font-bold font-pocketgull text-stone-100 mb-2">Keyless Workload Identity</h3>
+            <p class="text-xs text-stone-400 leading-relaxed">Eliminates static API keys. Uses Google Cloud Application Default Credentials (ADC) and short-lived IAM OAuth2 bearer tokens.</p>
+          </div>
+
+          <div class="glass-card-dark p-6 rounded-3xl border border-rose-500/30">
+            <div class="w-10 h-10 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl mb-4 font-bold">🏥</div>
+            <h3 class="text-lg font-bold font-pocketgull text-stone-100 mb-2">HIPAA Safe Harbor (§164.514)</h3>
+            <p class="text-xs text-stone-400 leading-relaxed">Automatic client-side scrubbing of all 18 HIPAA direct identifiers before clinical CDS reasoning or FHIR serialization.</p>
+          </div>
+
+          <div class="glass-card-dark p-6 rounded-3xl border border-amber-500/30">
+            <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl mb-4 font-bold">⚖️</div>
+            <h3 class="text-lg font-bold font-pocketgull text-stone-100 mb-2">FDA 21 CFR §520(o) CDS</h3>
+            <p class="text-xs text-stone-400 leading-relaxed">Non-device Clinical Decision Support architecture with full physician explainability, Socratic reasoning chains, and literature citations.</p>
+          </div>
+
+          <div class="glass-card-dark p-6 rounded-3xl border border-emerald-500/30">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl mb-4 font-bold">⚡</div>
+            <h3 class="text-lg font-bold font-pocketgull text-stone-100 mb-2">Scale-to-Zero Cloud Run</h3>
+            <p class="text-xs text-stone-400 leading-relaxed">Serverless GCP deployment scaling to 0 when idle. Eliminates unnecessary baseline cloud spend while auto-scaling to thousands of concurrent clinicians.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 💳 Practice Tiering & Health System Pilot Deployments -->
+    <section id="pricing" class="py-20 px-6 border-t border-stone-800 bg-stone-950/80">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <div class="inline-flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-widest mb-3 font-pocketgull px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">
+            <span>💳</span> Transparent Deployment Models
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100 mb-4">
+            Practice Tiers &amp; Health System Pilots
+          </h2>
+          <p class="text-stone-300 text-base max-w-2xl mx-auto leading-relaxed">
+            From open-source community research to enterprise hospital network integration with SMART-on-FHIR Epic/Cerner connectors.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+          
+          <!-- Community Tier -->
+          <div class="glass-card-dark p-8 rounded-3xl border border-stone-700 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 font-pocketgull">Open Access</div>
+              <h3 class="text-2xl font-bold font-pocketgull text-stone-100 mb-1">Community Research</h3>
+              <div class="text-3xl font-extrabold font-pocketgull text-stone-200 my-4">$0 <span class="text-xs text-stone-500 font-normal">/ forever</span></div>
+              <p class="text-xs text-stone-400 mb-6">Designed for independent medical researchers, residents, and open health contributors.</p>
+              
+              <ul class="text-xs text-stone-300 space-y-2.5 font-medium border-t border-stone-800 pt-6">
+                <li class="flex items-center gap-2 text-teal-400">✓ <span>Full Open-Source PocketGull Typeface (SIL OFL 1.1)</span></li>
+                <li class="flex items-center gap-2 text-teal-400">✓ <span>Client-Side WebAssembly &amp; WebGPU Offline Fallback</span></li>
+                <li class="flex items-center gap-2 text-teal-400">✓ <span>Standard FHIR R4 Patient Export</span></li>
+                <li class="flex items-center gap-2 text-stone-500">✕ <span>Real-time Gemini 2.5 Voice Consult Streaming</span></li>
+              </ul>
+            </div>
+            <a href="https://pocketgull.app" class="mt-8 py-3 px-4 bg-stone-800 hover:bg-stone-700 text-stone-200 text-center font-bold text-sm rounded-2xl transition font-pocketgull">
+              Launch Free Web App
+            </a>
+          </div>
+
+          <!-- Clinician Pro Tier -->
+          <div class="geararts-card p-8 rounded-3xl flex flex-col justify-between relative shadow-2xl border-4 border-amber-300 transform md:-translate-y-2">
+            <div class="absolute -top-3.5 right-6 bg-stone-950 text-amber-300 text-[10px] font-mono uppercase font-bold py-1 px-3 rounded-full border border-amber-400 shadow-md">
+              MOST POPULAR
+            </div>
+            <div>
+              <div class="text-xs font-bold text-stone-900 uppercase tracking-wider mb-2 font-pocketgull">Practicing Provider</div>
+              <h3 class="text-2xl font-bold font-pocketgull text-stone-950 mb-1">Clinician Pro</h3>
+              <div class="text-4xl font-extrabold font-pocketgull text-stone-950 my-4">$49 <span class="text-xs text-stone-800 font-normal">/ provider / month</span></div>
+              <p class="text-xs text-stone-900 mb-6 font-medium">The live AI co-pilot for solo practitioners and outpatient specialty clinics.</p>
+              
+              <ul class="text-xs text-stone-950 space-y-2.5 font-semibold border-t border-amber-700/20 pt-6">
+                <li class="flex items-center gap-2">✓ <span>Full-Duplex Gemini 2.5 Live Voice Assistant</span></li>
+                <li class="flex items-center gap-2">✓ <span>Automated SOAP Note Generation &amp; ICD-10 Coding</span></li>
+                <li class="flex items-center gap-2">✓ <span>Interactive 3D Three.js Anatomy &amp; Organ Digital Twins</span></li>
+                <li class="flex items-center gap-2">✓ <span>Bionic Focus Cognitive Reading Mode (Alt+B)</span></li>
+                <li class="flex items-center gap-2">✓ <span>Multi-Format Clinical Export (FHIR R4, PDF, HL7 v2)</span></li>
+              </ul>
+            </div>
+            <a href="https://pocketgull.app" class="mt-8 py-3.5 px-4 bg-stone-950 hover:bg-stone-900 text-amber-400 text-center font-bold text-sm rounded-2xl transition shadow-xl font-pocketgull hover:scale-105">
+              Start 14-Day Free Clinical Trial
+            </a>
+          </div>
+
+          <!-- Enterprise Health System -->
+          <div class="glass-card-dark p-8 rounded-3xl border border-teal-500/40 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold text-teal-400 uppercase tracking-wider mb-2 font-pocketgull">Health Systems &amp; ACOs</div>
+              <h3 class="text-2xl font-bold font-pocketgull text-stone-100 mb-1">Enterprise Health Network</h3>
+              <div class="text-3xl font-extrabold font-pocketgull text-teal-300 my-4">Custom Pilot <span class="text-xs text-stone-500 font-normal">/ institutional BAA</span></div>
+              <p class="text-xs text-stone-400 mb-6">Designed for multi-site hospital networks, ACOs, and academic clinical trials.</p>
+              
+              <ul class="text-xs text-stone-300 space-y-2.5 font-medium border-t border-stone-800 pt-6">
+                <li class="flex items-center gap-2 text-teal-400">✓ <span>Dedicated Regional Vertex AI Cloud Run Cluster</span></li>
+                <li class="flex items-center gap-2 text-teal-400">✓ <span>SMART-on-FHIR Epic / Cerner EHR Bi-Directional Sync</span></li>
+                <li class="flex items-center gap-2 text-teal-400">✓ <span>Custom Institutional BAA &amp; SOC 2 Type II Attestation</span></li>
+                <li class="flex items-center gap-2 text-teal-400">✓ <span>Multi-Modal Telemedicine Rooms &amp; Remote Colleague Audio</span></li>
+                <li class="flex items-center gap-2 text-teal-400">✓ <span>24/7 Dedicated Clinical Informatics Engineering Support</span></li>
+              </ul>
+            </div>
+            <a href="mailto:leads@pocketgull.app?subject=PocketGull%20Enterprise%20Health%20System%20Pilot" class="mt-8 py-3 px-4 bg-teal-600 hover:bg-teal-500 text-white text-center font-bold text-sm rounded-2xl transition font-pocketgull">
+              Inquire for Health System Pilot →
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
     <!-- Software Valuation & COCOMO II Benchmarks -->
     <section id="valuation" class="py-20 px-6 border-t border-stone-800 bg-stone-900/40">
       <div class="max-w-7xl mx-auto">
@@ -582,6 +712,132 @@ export function renderBusinessSiteHtml(): string {
             <p class="text-xs text-stone-400">High-margin B2B health system deployment, value-based care prior-auth efficiency, and Scale-to-Zero cloud operations.</p>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- 🎨 Kinetic Innovation Article: 6th-Grade Friendly Story & Showcase -->
+    <section id="kinetic-innovation" class="py-20 px-6 border-t border-stone-800 bg-stone-950/80">
+      <div class="max-w-6xl mx-auto">
+        
+        <!-- Header & Friendly Badge -->
+        <div class="text-center mb-14">
+          <div class="inline-flex items-center gap-2 text-xs font-bold text-teal-400 uppercase tracking-widest mb-3 font-pocketgull px-3.5 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/30">
+            <span>🎨</span> Simple, Fun &amp; Friendly Healing
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100 mb-4 tracking-tight">
+            The Magic of Drawing: Turning Shaky Lines into Beautiful Art
+          </h2>
+          <p class="text-stone-300 text-base sm:text-lg max-w-3xl mx-auto leading-relaxed">
+            When doctors and patients draw on PocketGull, something wonderful happens. Shaky hands become ocean waves, hospital rooms connect like a giant glowing garden, and walking trails come to life!
+          </p>
+        </div>
+
+        <!-- 3 Big Simple Ideas Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          
+          <!-- 1. Magic Living Walls -->
+          <div class="glass-card-dark p-8 rounded-3xl border border-teal-500/30 flex flex-col justify-between hover:border-teal-400/60 transition shadow-xl">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-2xl mb-5 border border-teal-500/30">
+                🌟
+              </div>
+              <div class="text-xs font-bold text-teal-400 uppercase tracking-wider mb-1.5 font-pocketgull">Magic Living Walls</div>
+              <h3 class="text-xl font-bold font-pocketgull text-stone-100 mb-3">Friends Across the Hallway</h3>
+              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed">
+                Staying in a hospital bed can feel lonely. With PocketGull, if a patient in Room 1 draws a green leaf on their tablet, and someone in Room 2 draws blue water, both drawings meet on a big glowing screen in the hallway! The leaf floats on the water. Nobody sees your name or private information—just happy art that says: <em>"You are not alone."</em>
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-stone-800 text-xs text-teal-400 font-bold flex items-center gap-1.5 font-pocketgull">
+              <span>🛡️</span> 100% Private &amp; Safe
+            </div>
+          </div>
+
+          <!-- 2. Step Inside the Drawing -->
+          <div class="glass-card-dark p-8 rounded-3xl border border-amber-500/30 flex flex-col justify-between hover:border-amber-400/60 transition shadow-xl">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-2xl mb-5 border border-amber-500/30">
+                🚶
+              </div>
+              <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1.5 font-pocketgull">Walking Nature Trails</div>
+              <h3 class="text-xl font-bold font-pocketgull text-stone-100 mb-3">Step Inside the Art</h3>
+              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed">
+                When a doctor draws a smooth circle or a gentle wave on their screen, our computer can turn that line into a giant 3D sidewalk in the garden! People recovering from an illness can walk right along the glowing path while listening to happy ocean music. The bright line helps people take steady, confident steps without getting stuck.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-stone-800 text-xs text-amber-400 font-bold flex items-center gap-1.5 font-pocketgull">
+              <span>🗺️</span> Fun 3D Walking Paths
+            </div>
+          </div>
+
+          <!-- 3. Turning Shakes into Waves -->
+          <div class="glass-card-dark p-8 rounded-3xl border border-rose-500/30 flex flex-col justify-between hover:border-rose-400/60 transition shadow-xl">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-300 flex items-center justify-center text-2xl mb-5 border border-rose-500/30">
+                🌊
+              </div>
+              <div class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-1.5 font-pocketgull">Caring for Hands</div>
+              <h3 class="text-xl font-bold font-pocketgull text-stone-100 mb-3">Every Line Is Beautiful</h3>
+              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed">
+                Sometimes hands shake when people get older or have illnesses like Parkinson's disease. Instead of saying a line is "messy" or "wrong," our app turns tiny shakes into gentle ripples on the sea. Doctors can see how your muscles are doing, while you have fun painting bright colors and relaxing!
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-stone-800 text-xs text-rose-400 font-bold flex items-center gap-1.5 font-pocketgull">
+              <span>🎯</span> Helping Hands Heal
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 4 Fun Brushes & Earth-Friendly Tech Card -->
+        <div class="glass-card-dark rounded-3xl p-8 border-2 border-teal-500/40 text-left shadow-2xl relative overflow-hidden">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-stone-800">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 font-pocketgull">Easy for Everyone</span>
+              <h3 class="text-xl font-bold text-stone-100 font-pocketgull">4 Fun Magic Brushes</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full text-xs font-mono font-bold">
+                🌱 100% Eco-Friendly
+              </span>
+              <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-mono font-bold">
+                🔒 100% Private &amp; Safe
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800">
+              <div class="text-2xl mb-1">🖌️</div>
+              <div class="font-bold text-stone-200 text-sm font-pocketgull">Ink Master</div>
+              <p class="text-xs text-stone-400 mt-1">Acts like real paint. Press down gently for thin lines, or press down firmly for bold, thick strokes.</p>
+            </div>
+            <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800">
+              <div class="text-2xl mb-1">🌈</div>
+              <div class="font-bold text-stone-200 text-sm font-pocketgull">Rainbow Magic</div>
+              <p class="text-xs text-stone-400 mt-1">Changes colors like a prism in the sun when you tilt your stylus pen left and right.</p>
+            </div>
+            <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800">
+              <div class="text-2xl mb-1">✨</div>
+              <div class="font-bold text-stone-200 text-sm font-pocketgull">Star Sand</div>
+              <p class="text-xs text-stone-400 mt-1">Sprinkles sparkling golden sand particles that shimmer and dance across the screen.</p>
+            </div>
+            <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800">
+              <div class="text-2xl mb-1">🌊</div>
+              <div class="font-bold text-stone-200 text-sm font-pocketgull">Ocean Waves</div>
+              <p class="text-xs text-stone-400 mt-1">Draws gentle, calming water ripples that help your breathing slow down to a peaceful rhythm.</p>
+            </div>
+          </div>
+
+          <div class="p-4 bg-stone-950/80 rounded-2xl border border-stone-800 text-xs sm:text-sm text-stone-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <p class="leading-relaxed">
+              <strong class="text-amber-400">Pure Imagination &amp; Care:</strong> Whether doodling from a cozy bedside table or walking an outdoor garden path, every line brings people closer together, protects our earth, and keeps you safe.
+            </p>
+            <a href="/app" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded-xl whitespace-nowrap transition text-xs font-pocketgull shrink-0 shadow-lg">
+              ✨ Try Drawing in the App →
+            </a>
+          </div>
+        </div>
+
       </div>
     </section>
 

@@ -16,6 +16,8 @@ import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
 import { PapercraftBackdropComponent } from './papercraft-backdrop.component';
 import { SecureStorageService } from '../services/secure-storage.service';
+import { WacomCryptoInkService } from '../services/wacom-crypto-ink.service';
+import { AuthSsoService } from '../services/auth-sso.service';
 
 @Component({
   selector: 'app-secure-splash',
@@ -202,14 +204,36 @@ import { SecureStorageService } from '../services/secure-storage.service';
           }
           <!-- Gesture Unlock Flow -->
           @else if (viewState() === 'gesture' || (isLocked() && viewState() !== 'kss' && viewState() !== 'ethics')) {
-            <div class="flex flex-col items-center justify-center gap-3 mt-2 mb-2 w-full animate-in fade-in duration-500">
-               <div class="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 rounded-full shadow-xs">
-                 <span class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">🎨 Draw Your Way In</span>
+            <div class="flex flex-col items-center justify-center gap-2 mt-1 mb-2 w-full animate-in fade-in duration-500">
+               <div class="flex items-center justify-between w-full max-w-[260px] px-1">
+                 <div class="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 rounded-full shadow-xs">
+                   <span class="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">🎨 Draw Your Way In</span>
+                 </div>
+                 <div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-mono text-emerald-600 dark:text-emerald-400" title="Green Computing: 100% Client-Side Edge Execution, Zero Idle Emissions">
+                   <span>🌱 Edge 0g CO₂</span>
+                 </div>
                </div>
+
                <p class="text-[12px] text-zinc-600 dark:text-zinc-300 uppercase tracking-widest font-semibold text-center max-w-[260px]">
                  {{ todayBeachItem().prompt }}
                </p>
-               
+
+               <!-- Fun Dexterity Brush Palette & Live Agility Rating -->
+               <div class="flex items-center justify-between w-full max-w-[240px] px-0.5 gap-1">
+                 <div class="flex items-center gap-0.5 bg-zinc-200/90 dark:bg-zinc-800/90 p-0.5 rounded-xl border border-zinc-300 dark:border-zinc-700 shadow-2xs">
+                   <button type="button" (click)="wacomInk.activeBrushMode.set('sumi-calligraphy')" [class.bg-emerald-600]="wacomInk.activeBrushMode() === 'sumi-calligraphy'" [class.text-white]="wacomInk.activeBrushMode() === 'sumi-calligraphy'" class="px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer hover:scale-105" title="Sumi Calligraphy (Tapered Nib)">🖌️</button>
+                   <button type="button" (click)="wacomInk.activeBrushMode.set('prismatic-rainbow')" [class.bg-purple-600]="wacomInk.activeBrushMode() === 'prismatic-rainbow'" [class.text-white]="wacomInk.activeBrushMode() === 'prismatic-rainbow'" class="px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer hover:scale-105" title="Prismatic Rainbow (Tilt Responsive)">🌈</button>
+                   <button type="button" (click)="wacomInk.activeBrushMode.set('sparkle-sand')" [class.bg-amber-500]="wacomInk.activeBrushMode() === 'sparkle-sand'" [class.text-white]="wacomInk.activeBrushMode() === 'sparkle-sand'" class="px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer hover:scale-105" title="Sparkling Sand Dunes (Bio-Luminescent)">✨</button>
+                   <button type="button" (click)="wacomInk.activeBrushMode.set('ocean-wave')" [class.bg-cyan-600]="wacomInk.activeBrushMode() === 'ocean-wave'" [class.text-white]="wacomInk.activeBrushMode() === 'ocean-wave'" class="px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer hover:scale-105" title="Ocean Ripple Waves">🌊</button>
+                 </div>
+
+                 <!-- Live Dexterity Score Badge -->
+                 <div class="flex items-center gap-1 px-2 py-1 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-bold text-emerald-700 dark:text-emerald-300 shadow-2xs" title="Dexterity Motor Smoothness & Dynamic Agility">
+                   <span>{{ wacomInk.dexterity().rankGrade }}</span>
+                   <span class="font-mono">{{ wacomInk.dexterity().score }}%</span>
+                 </div>
+               </div>
+
                <!-- Raw Fiber Hemp Paper Pad with Glow & Emerald Accent Border -->
                <div class="relative w-[240px] h-[240px] flex items-center justify-center paper-hemp-panel rounded-3xl p-1 overflow-hidden border-2 border-emerald-500/40 dark:border-emerald-400/40 shadow-xl hover:shadow-emerald-500/15 transition-all">
                   <!-- Guidelines background SVG (Dynamic Daily Beach Item guide) -->
@@ -236,28 +260,145 @@ import { SecureStorageService } from '../services/secure-storage.service';
                    (mouseleave)="stopDrawing($event)"
                    (touchstart)="startDrawing($event)"
                    (touchmove)="draw($event)"
-                   (touchend)="stopDrawing($event)"
-                 ></canvas>
-               </div>
+                   (touchend)="stopDrawing($event)"></canvas>
+                </div>
 
-               <!-- Gesture Pad Controls & Express Entry -->
-               <div class="flex items-center justify-center gap-2.5 mt-1 w-full max-w-[260px] z-30">
-                 <button 
-                   type="button"
-                   (click)="clearDrawing()" 
-                   [disabled]="isChecking() || (strokes.length === 0 && currentStroke.length === 0)"
-                   class="flex-1 min-h-[42px] px-3 py-2 text-[11px] uppercase font-bold tracking-widest bg-white/80 dark:bg-zinc-800/90 hover:bg-white dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 transition rounded-xl disabled:opacity-30 disabled:cursor-not-allowed shadow-xs flex items-center justify-center cursor-pointer">
-                   Clear Pad
-                 </button>
-                 <button 
-                   type="button"
-                   (click)="handleUnlockSession()" 
-                   class="flex-1 min-h-[42px] px-4 py-2 flex justify-center items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-[#3ebc9e] to-[#2fa085] hover:brightness-110 text-white transition-all rounded-xl shadow-md active:scale-[0.98] cursor-pointer">
-                   <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                   <span>Enter Suite</span>
-                 </button>
-               </div>
+                <!-- Wacom Digital Ink (WILL 3.0) & Pressure-Tilt Dynamic Telemetry Badge -->
+                <div class="flex items-center justify-between w-full max-w-[240px] px-2.5 py-1 rounded-lg bg-zinc-900/80 text-white dark:bg-black/60 border border-emerald-500/30 text-[9.5px] font-mono shadow-xs backdrop-blur-md">
+                  <span class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full" [class.bg-emerald-400]="wacomInk.isStylusActive()" [class.bg-amber-400]="!wacomInk.isStylusActive()" [class.animate-pulse]="wacomInk.isStylusActive()"></span>
+                    <span>{{ wacomInk.activeDigitizer() }}</span>
+                  </span>
+                  <span class="text-zinc-400">P: <strong class="text-emerald-400">{{ (wacomInk.currentPressure() * 100).toFixed(0) }}%</strong></span>
+                  <span class="text-zinc-400">Tilt: <strong class="text-indigo-300">{{ wacomInk.currentTilt().x }}°</strong></span>
+                  <span class="px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[8px] font-bold">WILL 3.0</span>
+                </div>
 
+                <!-- Gesture Pad Controls & Express Entry -->
+                <div class="flex items-center justify-center gap-2.5 mt-1 w-full max-w-[260px] z-30">
+                  <button 
+                    type="button"
+                    (click)="clearDrawing()" 
+                    [disabled]="isChecking() || (strokes.length === 0 && currentStroke.length === 0)"
+                    class="flex-1 min-h-[42px] px-3 py-2 text-[11px] uppercase font-bold tracking-widest bg-white/80 dark:bg-zinc-800/90 hover:bg-white dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 transition rounded-xl disabled:opacity-30 disabled:cursor-not-allowed shadow-xs flex items-center justify-center cursor-pointer">
+                    Clear Pad
+                  </button>
+                  <button 
+                    type="button"
+                    (click)="handleUnlockSession()" 
+                    class="flex-1 min-h-[42px] px-4 py-2 flex justify-center items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-[#3ebc9e] to-[#2fa085] hover:brightness-110 text-white transition-all rounded-xl shadow-md active:scale-[0.98] cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    <span>Enter Suite</span>
+                  </button>
+                </div>
+
+                <!-- Multi-Provider Enterprise Single Sign-On (SSO) Clinical Gateway -->
+                <div class="mt-2 w-full max-w-xs p-3 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm flex flex-col gap-2.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10.5px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5 font-pocketgull-inter">
+                      🔐 Single Sign-On (SSO)
+                    </span>
+                    <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                      Workload Identity
+                    </span>
+                  </div>
+
+                  <!-- SSO Provider Switcher Pills -->
+                  <div class="grid grid-cols-3 gap-1 p-0.5 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl text-[9.5px] font-bold">
+                    <button type="button" (click)="selectedSsoProvider.set('google')"
+                            [class.bg-white]="selectedSsoProvider() === 'google'"
+                            [class.dark:bg-zinc-700]="selectedSsoProvider() === 'google'"
+                            [class.shadow-xs]="selectedSsoProvider() === 'google'"
+                            [class.text-zinc-900]="selectedSsoProvider() === 'google'"
+                            [class.dark:text-white]="selectedSsoProvider() === 'google'"
+                            class="py-1 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
+                      Google IAM
+                    </button>
+                    <button type="button" (click)="selectedSsoProvider.set('smart-fhir')"
+                            [class.bg-white]="selectedSsoProvider() === 'smart-fhir'"
+                            [class.dark:bg-zinc-700]="selectedSsoProvider() === 'smart-fhir'"
+                            [class.shadow-xs]="selectedSsoProvider() === 'smart-fhir'"
+                            [class.text-zinc-900]="selectedSsoProvider() === 'smart-fhir'"
+                            [class.dark:text-white]="selectedSsoProvider() === 'smart-fhir'"
+                            class="py-1 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
+                      FHIR EHR
+                    </button>
+                    <button type="button" (click)="selectedSsoProvider.set('webauthn')"
+                            [class.bg-white]="selectedSsoProvider() === 'webauthn'"
+                            [class.dark:bg-zinc-700]="selectedSsoProvider() === 'webauthn'"
+                            [class.shadow-xs]="selectedSsoProvider() === 'webauthn'"
+                            [class.text-zinc-900]="selectedSsoProvider() === 'webauthn'"
+                            [class.dark:text-white]="selectedSsoProvider() === 'webauthn'"
+                            class="py-1 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
+                      Passkey
+                    </button>
+                  </div>
+
+                  <!-- Role Selector -->
+                  <div class="flex items-center justify-between gap-1.5">
+                    <label for="splash-iam-role-select" class="text-[9.5px] font-semibold text-zinc-600 dark:text-zinc-400">Clinical Role:</label>
+                    <select 
+                      id="splash-iam-role-select"
+                      [(ngModel)]="selectedIamRole" 
+                      class="text-[10px] bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-1.5 py-0.5 text-zinc-800 dark:text-zinc-200">
+                      <option value="roles/aiplatform.user">Attending Clinician (CDS)</option>
+                      <option value="roles/healthcare.datasetAdmin">Medical Director (Admin)</option>
+                      <option value="roles/bigquery.jobUser">Clinical Researcher (Trials)</option>
+                      <option value="roles/viewer">Sovereign Patient (Self)</option>
+                    </select>
+                  </div>
+
+                  @if (selectedSsoProvider() === 'google') {
+                    <button
+                      type="button"
+                      (click)="loginWithGoogleCloudIamSso()"
+                      [disabled]="isChecking()"
+                      class="w-full py-2.5 px-3 flex items-center justify-center gap-2 bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-sm transition active:scale-[0.98] cursor-pointer disabled:opacity-50 font-pocketgull-inter">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                      </svg>
+                      <span>Sign In with Google IAM</span>
+                    </button>
+                  } @else if (selectedSsoProvider() === 'smart-fhir') {
+                    <div class="flex flex-col gap-1.5">
+                      <select 
+                        [ngModel]="selectedHospitalIssuer()"
+                        (ngModelChange)="selectedHospitalIssuer.set($event)"
+                        class="text-[10px] bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-1.5 py-1 text-zinc-800 dark:text-zinc-200">
+                        <option value="Epic Systems MyChart">🏥 Epic Systems MyChart</option>
+                        <option value="Oracle Cerner Millennium">🏥 Oracle Cerner Millennium</option>
+                        <option value="AthenaHealth Enterprise">🏥 AthenaHealth Portal</option>
+                        <option value="Apple HealthKit FHIR">🍏 Apple HealthKit FHIR Sync</option>
+                      </select>
+                      <button
+                        type="button"
+                        (click)="loginWithSmartFhirSso()"
+                        [disabled]="isChecking()"
+                        class="w-full py-2.5 px-3 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-sm transition active:scale-[0.98] cursor-pointer disabled:opacity-50 font-pocketgull-inter">
+                        <span>Launch SMART-on-FHIR</span>
+                      </button>
+                    </div>
+                  } @else {
+                    <button
+                      type="button"
+                      (click)="loginWithWebAuthnPasskey()"
+                      [disabled]="isChecking()"
+                      class="w-full py-2.5 px-3 flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-sm transition active:scale-[0.98] cursor-pointer disabled:opacity-50 font-pocketgull-inter">
+                      <span>🔑 Biometric Passkey Login</span>
+                    </button>
+                  }
+                  
+                  <div class="flex items-center justify-between text-[8.5px] text-zinc-500 dark:text-zinc-400 pt-0.5 font-pocketgull-mono">
+                    <span class="flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      DEA EPCS &amp; FDA 21 CFR §11
+                    </span>
+                    <span>gen-lang-client-0540208645</span>
+                  </div>
+                </div>
 
                 <!-- Washi Rice Paper Daily Medical Quote Banner -->
                 <div class="mt-1 px-4 py-2.5 paper-rice-panel rounded-xl text-center max-w-xs transition-all hover:scale-[1.02] shadow-xs">
@@ -1211,7 +1352,13 @@ export class SecureSplashComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
   readonly isBrowser = signal<boolean>(isPlatformBrowser(this.platformId));
   private secureStorage = inject(SecureStorageService);
+  readonly authSso = inject(AuthSsoService);
   readonly appVersion = APP_VERSION;
+
+  // --- Enterprise Single Sign-On (SSO) State ---
+  selectedIamRole = 'roles/aiplatform.user';
+  selectedSsoProvider = signal<'google' | 'smart-fhir' | 'webauthn'>('google');
+  selectedHospitalIssuer = signal<string>('Epic Systems MyChart');
 
   readonly telemetryGradient = computed(() => {
     const t = this.envTelemetryService.telemetry();
@@ -1396,7 +1543,12 @@ export class SecureSplashComponent implements OnInit {
 
   pinInputRef = viewChild<ElementRef<HTMLInputElement>>('pinInput');
 
-  // Gesture Unlock State
+  // Gesture Unlock State & Wacom Digital Ink (WILL 3.0)
+  public wacomInk = inject(WacomCryptoInkService);
+  ssoProviderStatus = signal<'ready' | 'authenticating' | 'authenticated'>('ready');
+  lastKineticProof = signal<any>(null);
+  private currentWacomPoints: any[] = [];
+
   gestureCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('gestureCanvas');
   private ctx: CanvasRenderingContext2D | null = null;
   isDrawing = false;
@@ -1993,36 +2145,78 @@ export class SecureSplashComponent implements OnInit {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    const brushMode = this.wacomInk.activeBrushMode();
     const isDark = document.documentElement.classList.contains('dark');
-    const strokeStyle = isDark ? '#10b981' : '#059669';
-    const shadowColor = isDark ? '#34d399' : '#10b981';
 
-    const drawPoints = (points: Array<{x: number, y: number, pressure: number}>) => {
+    const drawPoints = (points: Array<{x: number, y: number, pressure: number, tiltX?: number, tiltY?: number}>) => {
       if (points.length === 0) return;
       
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.strokeStyle = strokeStyle;
-      ctx.shadowColor = shadowColor;
-      ctx.shadowBlur = 6;
+
+      if (brushMode === 'prismatic-rainbow') {
+        ctx.shadowBlur = 8;
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const hue = ((i * 14) + (curr.tiltX || 0) * 2 + 180) % 360;
+          ctx.strokeStyle = `hsl(${hue}, 95%, ${isDark ? 65 : 45}%)`;
+          ctx.shadowColor = `hsl(${hue}, 95%, 55%)`;
+          ctx.lineWidth = 2.5 + curr.pressure * 8;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(curr.x, curr.y);
+          ctx.stroke();
+        }
+      } else if (brushMode === 'sparkle-sand') {
+        ctx.strokeStyle = isDark ? '#fbbf24' : '#d97706';
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 10;
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          ctx.lineWidth = 2 + curr.pressure * 6;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(curr.x, curr.y);
+          ctx.stroke();
+        }
+      } else if (brushMode === 'ocean-wave') {
+        ctx.strokeStyle = isDark ? '#38bdf8' : '#0284c7';
+        ctx.shadowColor = '#0ea5e9';
+        ctx.shadowBlur = 8;
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const rippleOffset = Math.sin(i * 0.8) * 1.5;
+          ctx.lineWidth = 2.5 + curr.pressure * 7;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y + rippleOffset);
+          ctx.lineTo(curr.x, curr.y + rippleOffset);
+          ctx.stroke();
+        }
+      } else {
+        // Sumi Calligraphy (Default)
+        ctx.strokeStyle = isDark ? '#10b981' : '#059669';
+        ctx.shadowColor = isDark ? '#34d399' : '#10b981';
+        ctx.shadowBlur = 6;
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          ctx.lineWidth = 2.5 + curr.pressure * 8;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(curr.x, curr.y);
+          ctx.stroke();
+        }
+      }
 
       if (points.length === 1) {
         const radius = 3 + points[0].pressure * 6;
         ctx.beginPath();
         ctx.arc(points[0].x, points[0].y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = strokeStyle;
+        ctx.fillStyle = ctx.strokeStyle;
         ctx.fill();
-      } else {
-        for (let i = 1; i < points.length; i++) {
-          const prev = points[i - 1];
-          const curr = points[i];
-          const segLineWidth = 2.5 + curr.pressure * 7;
-          ctx.beginPath();
-          ctx.lineWidth = segLineWidth;
-          ctx.moveTo(prev.x, prev.y);
-          ctx.lineTo(curr.x, curr.y);
-          ctx.stroke();
-        }
       }
     };
 
@@ -2071,6 +2265,13 @@ export class SecureSplashComponent implements OnInit {
     
     const pos = this.getCanvasCoords(e);
     this.currentStroke = [pos];
+
+    if (e.clientX !== undefined) {
+      const rect = canvas.getBoundingClientRect();
+      const wacomPt = this.wacomInk.extractInkPoint(e, rect);
+      this.currentWacomPoints = [wacomPt];
+    }
+
     this.playKeyPressChime();
     this.redrawCanvas();
   }
@@ -2079,6 +2280,16 @@ export class SecureSplashComponent implements OnInit {
     if (!this.isDrawing) return;
     const pos = this.getCanvasCoords(e);
     this.currentStroke.push(pos);
+
+    if (e.clientX !== undefined) {
+      const canvas = this.gestureCanvasRef()?.nativeElement;
+      if (canvas) {
+        const rect = canvas.getBoundingClientRect();
+        const wacomPt = this.wacomInk.extractInkPoint(e, rect);
+        this.currentWacomPoints.push(wacomPt);
+      }
+    }
+
     this.addDrawParticle(pos.x, pos.y);
     this.redrawCanvas();
   }
@@ -2100,6 +2311,12 @@ export class SecureSplashComponent implements OnInit {
       this.strokes.push([...this.currentStroke]);
       this.currentStroke = [];
     }
+
+    if (this.currentWacomPoints.length > 0) {
+      this.wacomInk.finalizeStroke(this.currentWacomPoints);
+      this.currentWacomPoints = [];
+    }
+
     this.redrawCanvas();
     
     if (this.verificationTimeoutId) {
@@ -2113,6 +2330,8 @@ export class SecureSplashComponent implements OnInit {
   clearDrawing() {
     this.strokes = [];
     this.currentStroke = [];
+    this.currentWacomPoints = [];
+    this.wacomInk.reset();
     if (this.verificationTimeoutId) {
       clearTimeout(this.verificationTimeoutId);
       this.verificationTimeoutId = null;
@@ -2120,6 +2339,108 @@ export class SecureSplashComponent implements OnInit {
     this.gestureError.set(false);
     this.errorMsg.set('');
     this.redrawCanvas();
+  }
+
+  /**
+   * Google Cloud Single Sign-On (SSO) & IAM Workload Identity Authentication
+   * Combines OAuth2 / GIS credentials with Wacom WILL 3.0 kinetic biometric attestation.
+   */
+  async loginWithGoogleCloudIamSso() {
+    this.isChecking.set(true);
+    this.ssoProviderStatus.set('authenticating');
+
+    try {
+      let zkpKineticHash: string | undefined;
+      // 1. If strokes exist, generate Wacom WILL 3.0 Zero-Knowledge Kinetic Proof (ZKP)
+      if (this.wacomInk.strokeHistory().length > 0) {
+        const proof = await this.wacomInk.generateKineticEntropyProof(
+          this.wacomInk.strokeHistory(),
+          'clinician@pocketgull.app'
+        );
+        this.lastKineticProof.set(proof);
+        zkpKineticHash = proof.zkpKineticHash;
+        console.log('[IAM SSO] Attaching Wacom WILL 3.0 kinetic proof:', proof.zkpKineticHash);
+      }
+
+      await this.authSso.signInWithGoogle(this.selectedIamRole, {
+        email: 'clinician@pocketgull.app',
+        name: 'Dr. Gulliver (Attending Clinician)',
+        zkpKineticHash
+      });
+
+      this.triggerParticleBurst(110, 110, '#3ebc9e', 35);
+      this.playSuccessChime();
+      this.ssoProviderStatus.set('authenticated');
+
+      setTimeout(() => {
+        this.isAuthorized.set(true);
+        this.session.isLocked.set(false);
+        this.session.resetIdleTimer();
+        this.handleUnlockSession();
+        this.isChecking.set(false);
+      }, 400);
+    } catch (err) {
+      console.error('[IAM SSO] Google Cloud IAM SSO error:', err);
+      this.isChecking.set(false);
+      this.ssoProviderStatus.set('ready');
+    }
+  }
+
+  /**
+   * SMART-on-FHIR Hospital EHR Single Sign-On (Epic, Cerner, AthenaHealth)
+   */
+  async loginWithSmartFhirSso(issuer?: string) {
+    this.isChecking.set(true);
+    this.ssoProviderStatus.set('authenticating');
+
+    try {
+      const selectedIssuer = issuer || this.selectedHospitalIssuer();
+      await this.authSso.signInWithSmartFhir(selectedIssuer, 'patient-curie-2026', this.selectedIamRole);
+
+      this.triggerParticleBurst(110, 110, '#6366f1', 35);
+      this.playSuccessChime();
+      this.ssoProviderStatus.set('authenticated');
+
+      setTimeout(() => {
+        this.isAuthorized.set(true);
+        this.session.isLocked.set(false);
+        this.session.resetIdleTimer();
+        this.handleUnlockSession();
+        this.isChecking.set(false);
+      }, 400);
+    } catch (err) {
+      console.error('[SMART-on-FHIR SSO] Error:', err);
+      this.isChecking.set(false);
+      this.ssoProviderStatus.set('ready');
+    }
+  }
+
+  /**
+   * FIDO2 / WebAuthn Biometric Passkey SSO
+   */
+  async loginWithWebAuthnPasskey() {
+    this.isChecking.set(true);
+    this.ssoProviderStatus.set('authenticating');
+
+    try {
+      await this.authSso.signInWithPasskey();
+
+      this.triggerParticleBurst(110, 110, '#06b6d4', 35);
+      this.playSuccessChime();
+      this.ssoProviderStatus.set('authenticated');
+
+      setTimeout(() => {
+        this.isAuthorized.set(true);
+        this.session.isLocked.set(false);
+        this.session.resetIdleTimer();
+        this.handleUnlockSession();
+        this.isChecking.set(false);
+      }, 400);
+    } catch (err) {
+      console.error('[Passkey SSO] Error:', err);
+      this.isChecking.set(false);
+      this.ssoProviderStatus.set('ready');
+    }
   }
 
   verifyGesture() {

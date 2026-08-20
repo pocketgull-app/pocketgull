@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { expect } from 'vitest';
 import { WordPressArticlesService, FALLBACK_SEED_ARTICLES } from './wordpress-articles.service';
 
 describe('WordPressArticlesService - WordPress REST API & Offline Articles Sync', () => {

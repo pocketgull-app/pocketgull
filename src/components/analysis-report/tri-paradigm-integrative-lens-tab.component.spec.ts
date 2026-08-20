@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { expect, vi } from 'vitest';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { TriParadigmIntegrativeLensTabComponent } from './tri-paradigm-integrative-lens-tab.component';
 import { PatientStateService } from '../../services/patient-state.service';
