@@ -1,0 +1,94 @@
+/*
+Theme Name: Pocket-Gull Articles & Clinical Knowledge
+Theme URI: https://pocketgull.com/articles
+Author: Pocket-Gull Open-Source Contributors
+Author URI: https://pocketgull.com
+Description: Industrial Grace, William Caslon typography, and SNO-10 clinical health literacy theme for pocketgull.com/articles. Designed to empower everyday people with actionable, empathetic health guides.
+Version: 1.0.0
+License: Apache License 2.0
+License URI: https://www.apache.org/licenses/LICENSE-2.0
+Text Domain: pocketgull-articles
+Tags: medical, health-literacy, dark-mode, clean, typography, accessibility-ready, block-patterns, fast
+*/
+
+:root {
+  --pocketgull-bg: #09090b;
+  --pocketgull-surface: #18181b;
+  --pocketgull-surface-elevated: #27272a;
+  --pocketgull-border: #3f3f46;
+  --pocketgull-text-primary: #f4f4f5;
+  --pocketgull-text-secondary: #a1a1aa;
+  --pocketgull-accent-green: #34A853;
+  --pocketgull-accent-blue: #4285F4;
+  --pocketgull-accent-amber: #FBBC05;
+  --pocketgull-accent-rose: #f43f5e;
+  --font-serif: "Caslon Pro", "Libre Caslon Text", "Baskerville", "Georgia", serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--pocketgull-bg);
+  color: var(--pocketgull-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+/* Caslon Editorial Prose */
+.prose-editorial {
+  font-family: var(--font-serif);
+  font-size: 1.18rem;
+  line-height: 1.8;
+  color: #e4e4e7;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.prose-editorial h1,
+.prose-editorial h2,
+.prose-editorial h3 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.015em;
+  margin-top: 2rem;
+  margin-bottom: 0.8rem;
+}
+
+.prose-editorial p {
+  margin-bottom: 1.5rem;
+}
+
+.prose-editorial blockquote {
+  border-left: 3px solid var(--pocketgull-accent-green);
+  padding-left: 1.25rem;
+  font-style: italic;
+  color: #d4d4d8;
+  background: rgba(52, 168, 83, 0.05);
+  padding: 1rem 1.25rem;
+  border-radius: 0 0.75rem 0.75rem 0;
+  margin: 1.75rem 0;
+}
+
+/* SNO-10 Callout Box */
+.sno10-analogy-box {
+  background: rgba(251, 188, 5, 0.07);
+  border: 1px solid rgba(251, 188, 5, 0.3);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  margin: 2rem 0;
+}
+
+.sno10-analogy-box .badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fde047;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}

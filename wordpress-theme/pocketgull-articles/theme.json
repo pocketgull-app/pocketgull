@@ -1,0 +1,59 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 2,
+  "settings": {
+    "color": {
+      "palette": [
+        {
+          "slug": "bg-dark",
+          "color": "#09090b",
+          "name": "Obsidian Ground"
+        },
+        {
+          "slug": "surface",
+          "color": "#18181b",
+          "name": "Surface Card"
+        },
+        {
+          "slug": "emerald-green",
+          "color": "#34A853",
+          "name": "Origami Beak Green"
+        },
+        {
+          "slug": "google-blue",
+          "color": "#4285F4",
+          "name": "Google Blue"
+        },
+        {
+          "slug": "amber-warning",
+          "color": "#FBBC05",
+          "name": "Amber Craft Badge"
+        },
+        {
+          "slug": "rose-cardiac",
+          "color": "#f43f5e",
+          "name": "Cardiac Safety Rose"
+        }
+      ]
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "fontFamily": "\"Libre Caslon Text\", \"Caslon Pro\", Georgia, serif",
+          "slug": "caslon",
+          "name": "William Caslon Editorial"
+        },
+        {
+          "fontFamily": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+          "slug": "mono",
+          "name": "JetBrains / Consolas Mono"
+        },
+        {
+          "fontFamily": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          "slug": "sans",
+          "name": "Modern Clean Sans"
+        }
+      ]
+    }
+  }
+}
