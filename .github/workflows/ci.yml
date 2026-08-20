@@ -43,6 +43,9 @@ jobs:
       - name: Sentinel Security & Log Injection Audit
         run: npm run sentinel:audit
 
+      - name: Generate CycloneDX SBOM (EU CRA Compliance)
+        run: npm run sbom
+
       - name: Run Tests (Vitest)
         run: npx vitest run
 

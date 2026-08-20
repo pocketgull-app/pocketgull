@@ -1,0 +1,13 @@
+# PocketGull Coordinated Vulnerability Disclosure Policy
+# Conforming to RFC 9116 & EU Cyber Resilience Act (Regulation EU 2024/2847)
+
+Contact: mailto:security@pocketgull.app
+Contact: https://github.com/pocketgull-app/pocketgull/security/advisories/new
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://pocketgull.com/.well-known/security.txt
+Canonical: https://pocketgull.app/.well-known/security.txt
+Policy: https://github.com/pocketgull-app/pocketgull/blob/main/SECURITY.md
+Acknowledgments: https://github.com/pocketgull-app/pocketgull/blob/main/SECURITY.md#vulnerability-handling
+Hiring: https://pocketgull.com/#developer
+CSAF: https://pocketgull.com/.well-known/csaf/provider-metadata.json
