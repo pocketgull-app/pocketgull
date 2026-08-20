@@ -3813,6 +3813,51 @@ textarea:focus-visible {
   outline-offset: 2px !important;
 }
 
+/* ==========================================================================
+   📱 MOBILE JANK ERADICATION & 120 FPS COMPOSITING ACCELERATION
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* 1. Prevent CPU full-page repainting on touch scroll by switching fixed backgrounds to scroll */
+  html.papercraft-mode,
+  html.papercraft-rice body,
+  html.papercraft-rice app-root,
+  html.papercraft-hemp body,
+  html.papercraft-hemp app-root,
+  html.papercraft-construction body,
+  html.papercraft-construction app-root,
+  html.papercraft-pocketgull-geararts body,
+  html.papercraft-pocketgull-geararts app-root {
+    background-attachment: scroll !important;
+  }
+
+  /* 2. Hardware-accelerated smooth touch momentum scrolling */
+  body, html, main, .overflow-y-auto, .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    overscroll-behavior-y: contain;
+  }
+
+  /* 3. Promote sticky headers & fixed HUDs to dedicated GPU layers to prevent layout jitter */
+  header, nav, .sticky, [class*="fixed"] {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  /* 4. Optimize backdrop blur for mobile GPUs (eliminates fragment shader pipeline stalls) */
+  .backdrop-blur-xl, .backdrop-blur-2xl, .backdrop-blur-3xl {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+
+  /* 5. Defer offscreen rendering of complex cards */
+  .content-visibility-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 300px;
+  }
+}
+
+
 
 
 

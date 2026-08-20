@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, effect, viewChild, ElementRef, OnDestroy, AfterViewInit, output, input, PLATFORM_ID } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, effect, viewChild, ElementRef, OnDestroy, AfterViewInit, output, input, PLATFORM_ID, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -807,6 +807,9 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     private composer!: EffectComposer;
     private bloomPass!: UnrealBloomPass;
     private timer = new THREE.Timer();
+    private ngZone = inject(NgZone, { optional: true });
+    private intersectionObserver: IntersectionObserver | null = null;
+    private isViewerVisible = true;
     private resizeObserver: ResizeObserver | null = null;
 
     private handleResize = () => {
@@ -827,6 +830,9 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         }
         if (this.renderer) {
             this.renderer.setSize(w, h);
+            const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+            const maxDpr = isMobile ? 1.5 : 2;
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
         }
         if (this.composer) {
             this.composer.setSize(w, h);
@@ -956,6 +962,12 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 this.resizeObserver = new ResizeObserver(() => this.handleResize());
                 this.resizeObserver.observe(container);
             }
+            if (typeof IntersectionObserver !== 'undefined' && container) {
+                this.intersectionObserver = new IntersectionObserver((entries) => {
+                    this.isViewerVisible = entries.some(e => e.isIntersecting);
+                }, { threshold: 0.05 });
+                this.intersectionObserver.observe(container);
+            }
             window.addEventListener('resize', this.handleResize);
 
             requestAnimationFrame(() => this.handleResize());
@@ -980,6 +992,10 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             if (this.resizeObserver) {
                 this.resizeObserver.disconnect();
                 this.resizeObserver = null;
+            }
+            if (this.intersectionObserver) {
+                this.intersectionObserver.disconnect();
+                this.intersectionObserver = null;
             }
         }
         if (this.animationFrameId) {
@@ -1199,7 +1215,9 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             throw new Error('WebGL is not supported in this environment.');
         }
         this.renderer.setSize(width, height);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+        const maxDpr = isMobile ? 1.5 : 2;
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
         container.appendChild(this.renderer.domElement);
 
         // Setup Post-processing (Bloom)
@@ -2312,11 +2330,17 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     private startAnimation() {
         if (!isPlatformBrowser(this.platformId)) return;
         
-        const animate = () => {
-            if (!this.renderer || !this.scene || !this.camera) return;
-            this.animationFrameId = requestAnimationFrame(animate);
+        const runLoop = () => {
+            const animate = () => {
+                if (!this.renderer || !this.scene || !this.camera) return;
+                this.animationFrameId = requestAnimationFrame(animate);
 
-            if (this.controls) this.controls.update();
+                // Skip computation & WebGL draw calls when viewer is scrolled off-screen or tab is backgrounded
+                if (!this.isViewerVisible || (typeof document !== 'undefined' && document.hidden)) {
+                    return;
+                }
+
+                if (this.controls) this.controls.update();
             
             if (this.molecularScienceGroup && this.molecularScienceGroup.visible) {
                 this.molecularScienceGroup.rotation.y += 0.012;
@@ -2538,5 +2562,12 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             }
         };
         animate();
+    };
+
+    if (this.ngZone) {
+        this.ngZone.runOutsideAngular(runLoop);
+    } else {
+        runLoop();
     }
+}
 }

@@ -1,6 +1,6 @@
 import '@angular/compiler';
 import { expect, vi } from 'vitest';
-import { Injector, runInInjectionContext, PLATFORM_ID, signal } from '@angular/core';
+import { Injector, runInInjectionContext, PLATFORM_ID, signal, NgZone } from '@angular/core';
 import { Body3DViewerComponent } from './body-3d-viewer.component';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PatientManagementService } from '../../services/patient-management.service';
@@ -45,7 +45,8 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
         { provide: BodyMeshFactoryService, useValue: {} },
         { provide: RaycastSelectionService, useValue: {} },
         { provide: SeverityParticleService, useValue: {} },
-        { provide: AdobeFireflyTextureService, useValue: {} }
+        { provide: AdobeFireflyTextureService, useValue: {} },
+        { provide: NgZone, useValue: { runOutsideAngular: (fn: any) => fn() } }
       ]
     });
     return runInInjectionContext(injector, () => new Body3DViewerComponent());
