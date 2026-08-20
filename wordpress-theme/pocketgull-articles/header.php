@@ -109,16 +109,22 @@
   <header class="relative z-10 border-b border-stone-800/80 bg-stone-950/80 backdrop-blur-xl sticky top-0">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
       
-      <!-- Brand Logo Wordmark -->
+      <!-- Brand Logo Wordmark with Official Origami Seagull Icon -->
       <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-xl shadow-xs group-hover:scale-105 transition">
-          🕊️
+        <div class="w-11 h-11 rounded-2xl bg-stone-900 border border-stone-800 group-hover:border-amber-400/50 flex items-center justify-center transition shadow-md">
+          <svg viewBox="0 0 100 100" class="w-7 h-7 transform group-hover:scale-110 transition drop-shadow-sm">
+            <polygon points="50,15 85,55 50,45" fill="#FFFFFF" opacity="0.95" />
+            <polygon points="50,15 15,55 50,45" fill="#E6F0FA" opacity="0.9" />
+            <polygon points="50,45 85,55 50,85" fill="#C5D9ED" opacity="0.85" />
+            <polygon points="50,45 15,55 50,85" fill="#A8C7E0" opacity="0.8" />
+            <polygon points="50,15 56,10 50,18" fill="#34A853" /> <!-- Origami Green Beak -->
+          </svg>
         </div>
         <div>
           <span class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5 font-pocketgull">
             PocketGull <span class="text-xs font-mono font-normal text-amber-400">/articles</span>
           </span>
-          <span class="text-[10px] text-stone-400 block font-pocketgull-mono">Actionable Health Literacy by Phil</span>
+          <span class="text-[10px] text-stone-400 block font-pocketgull-mono">Clinical Intelligence &amp; Preventive Health</span>
         </div>
       </a>
 

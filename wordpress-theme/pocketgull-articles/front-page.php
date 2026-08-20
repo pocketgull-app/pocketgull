@@ -1,7 +1,7 @@
 <?php
 /**
  * Front Page Template for WordPress Theme (pocketgull.com)
- * High-Converting Commercial B2B SaaS Sales Portal & Clinical Platform
+ * High-Converting B2B SaaS Sales Engine + Comprehensive Preventive Medicine Hub
  *
  * @package PocketGull_Articles
  */
@@ -10,7 +10,7 @@ get_header(); ?>
 
 <main class="relative z-10 flex-grow space-y-24 py-12 px-4 sm:px-6 max-w-7xl mx-auto">
 
-  <!-- ══ 1. Commercial SaaS Hero & Conversion Engine ════════════════════════════ -->
+  <!-- ══ 1. Commercial SaaS & Prevention Hero Section ═══════════════════════════ -->
   <section class="text-center max-w-5xl mx-auto pt-6 pb-8">
     
     <!-- Top Announcement Pill -->
@@ -18,16 +18,46 @@ get_header(); ?>
       <span class="animate-pulse">✨</span>
       <span>Enterprise Clinical Intelligence SaaS • 14-Day Free Pilot</span>
       <span class="text-stone-500">|</span>
-      <span class="text-teal-400">HIPAA &amp; FHIR R4 Ready</span>
+      <span class="text-teal-400">Preventive Medicine &amp; FHIR R4 Ready</span>
+    </div>
+
+    <!-- Handcrafted GEARARTS Card with Official Origami Seagull Logo -->
+    <div class="max-w-xl mx-auto mb-10 text-center">
+      <div class="geararts-card p-8 rounded-3xl relative overflow-hidden text-stone-950 shadow-2xl border-4 border-amber-300/50">
+        
+        <!-- Banner inside card -->
+        <div class="bg-gradient-to-r from-teal-600 to-rose-500 text-white rounded-xl p-3 mb-6 text-center shadow-md border border-white/20">
+          <div class="font-bold text-2xl tracking-wider uppercase font-pocketgull">GEARARTS</div>
+          <div class="text-[10px] tracking-tight uppercase font-semibold">Creating a Sustainable Future Through Art and Technology</div>
+        </div>
+
+        <!-- Official Geometric Origami Seagull Icon Centerpiece -->
+        <div class="w-32 h-32 mx-auto my-4 rounded-2xl bg-stone-950 p-4 shadow-inner flex items-center justify-center relative overflow-hidden border-2 border-stone-800">
+          <svg viewBox="0 0 100 100" class="w-20 h-20 drop-shadow-md">
+            <polygon points="50,15 85,55 50,45" fill="#FFFFFF" opacity="0.95" />
+            <polygon points="50,15 15,55 50,45" fill="#E6F0FA" opacity="0.9" />
+            <polygon points="50,45 85,55 50,85" fill="#C5D9ED" opacity="0.85" />
+            <polygon points="50,45 15,55 50,85" fill="#A8C7E0" opacity="0.8" />
+            <polygon points="50,15 56,10 50,18" fill="#34A853" /> <!-- Origami Green Beak -->
+          </svg>
+        </div>
+
+        <div class="text-3xl font-extrabold text-stone-950 uppercase tracking-tight font-pocketgull">
+          PocketGull
+        </div>
+        <div class="text-xs font-bold text-stone-800 uppercase tracking-widest mt-1 font-pocketgull-mono">
+          Clinical Intelligence &amp; Preventive Strategy Engine
+        </div>
+      </div>
     </div>
 
     <!-- Main Value Proposition Headline -->
     <h1 class="text-4xl sm:text-7xl font-extrabold font-pocketgull tracking-tight text-white mb-6 leading-tight max-w-4xl mx-auto">
-      Reclaim <span class="text-teal-400 marker-underline">2.4 Hours</span> Every Day with the Clinical AI Co-Pilot.
+      Where <span class="text-teal-400 marker-underline">Preventive Health</span> Meets <span class="text-rose-400">Clinical AI Intelligence</span>.
     </h1>
 
     <p class="text-lg sm:text-2xl text-stone-300 mb-10 max-w-3xl mx-auto leading-relaxed font-sans font-normal">
-      PocketGull automates EHR charting, ambient patient scribing, and complex care plans using <strong class="text-amber-300">Google Gemini 2.5</strong> and the <strong class="text-teal-300">PocketGull Typeface</strong>—slashing administrative burnout by <strong class="text-rose-400">42%</strong>.
+      PocketGull empowers physicians, clinics, and everyday caregivers with real-time diagnostic intelligence, ambient charting, and proactive prevention strategies that keep patients out of the hospital.
     </p>
 
     <!-- Primary Conversion CTA Buttons -->
@@ -36,8 +66,8 @@ get_header(); ?>
         <span>Start 14-Day Clinical Pilot</span>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
       </a>
-      <a href="#pricing" class="w-full sm:w-auto px-7 py-4 rounded-2xl glass-card-dark text-stone-200 font-pocketgull text-lg font-bold hover:text-white hover:border-amber-400/60 transition-all flex items-center justify-center gap-2">
-        <span>View SaaS Pricing</span>
+      <a href="#prevention-avenues" class="w-full sm:w-auto px-7 py-4 rounded-2xl glass-card-dark text-stone-200 font-pocketgull text-lg font-bold hover:text-white hover:border-amber-400/60 transition-all flex items-center justify-center gap-2">
+        <span>Explore Preventive Avenues</span>
         <span>↓</span>
       </a>
     </div>
@@ -57,20 +87,135 @@ get_header(); ?>
         <div class="text-stone-400">Saved per Provider</div>
       </div>
       <div class="p-4 rounded-2xl bg-stone-900/80 border border-stone-800 space-y-1">
-        <div class="text-2xl font-bold text-emerald-300">WCAG AAA</div>
-        <div class="text-stone-400">Zero-Error Typeface</div>
+        <div class="text-2xl font-bold text-emerald-300">SNO-10</div>
+        <div class="text-stone-400">Preventive Crosswalks</div>
       </div>
     </div>
 
   </section>
 
-  <!-- ══ 2. Interactive SaaS ROI Calculator ════════════════════════════════════ -->
+  <!-- ══ 2. 5 Core Avenues of Preventive Medicine ════════════════════════════════ -->
+  <section id="prevention-avenues" class="space-y-12 py-6">
+    <div class="text-center space-y-3 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-300 text-xs font-pocketgull-mono font-bold">
+        <span>🌿 Proactive &amp; Grassroots Care</span>
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-white">
+        Five Avenues of Preventive Health
+      </h2>
+      <p class="text-stone-300 text-sm sm:text-base font-sans leading-relaxed">
+        Empowering providers, individuals, and families to address root causes before they turn into costly hospitalizations.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      
+      <!-- Avenue 1: Cardiovascular & Exertion Safety -->
+      <div class="glass-card-dark p-8 rounded-3xl border border-rose-500/30 hover:border-rose-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
+        <div class="space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-2xl">
+            ❤️
+          </div>
+          <h3 class="text-2xl font-bold font-pocketgull text-white">Cardiovascular &amp; Intimacy Safety</h3>
+          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+            Applies Princeton Consensus III cardiology benchmarks (2 flights of stairs / 4 METs) so patients can safely return to physical connection and daily exercise after a cardiac event.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-rose-300 font-semibold">
+          • MET Capacity Stratification &bull; Pacing Budgets
+        </div>
+      </div>
+
+      <!-- Avenue 2: Renal Protection & Blood Pressure -->
+      <div class="glass-card-dark p-8 rounded-3xl border border-amber-500/30 hover:border-amber-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
+        <div class="space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl">
+            🫘
+          </div>
+          <h3 class="text-2xl font-bold font-pocketgull text-white">Renal Protection ($100k Dialysis Aversion)</h3>
+          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+            Catches hypertension and glomerular microvascular strain early—protecting kidney filtration and preventing the catastrophic $100k/year burden of Medicare dialysis.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-amber-300 font-semibold">
+          • ICD-10 I10 &bull; Glomerular Health
+        </div>
+      </div>
+
+      <!-- Avenue 3: Occupational & Trade Ergonomics -->
+      <div class="glass-card-dark p-8 rounded-3xl border border-teal-500/30 hover:border-teal-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
+        <div class="space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-2xl">
+            🛠️
+          </div>
+          <h3 class="text-2xl font-bold font-pocketgull text-white">Workshop &amp; Joint Ergonomics</h3>
+          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+            Helps carpenters, mechanics, and gardeners with osteoarthritis (M17.9) or post-joint replacement modify their physical setups to keep doing their crafts pain-free.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-teal-300 font-semibold">
+          • Occupational Therapy &bull; Adaptive Grips
+        </div>
+      </div>
+
+      <!-- Avenue 4: Polypharmacy & Drug-Herb Interlocks -->
+      <div class="glass-card-dark p-8 rounded-3xl border border-purple-500/30 hover:border-purple-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
+        <div class="space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-2xl">
+            🛡️
+          </div>
+          <h3 class="text-2xl font-bold font-pocketgull text-white">RxGuard Polypharmacy Safety</h3>
+          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+            Guards against dangerous botanical-drug interactions (such as Nitrates + PDE-5 inhibitors or St. John's Wort + SSRIs) and CYP450 metabolism collisions.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-purple-300 font-semibold">
+          • Rule dhi-007 &bull; Washout Intervals
+        </div>
+      </div>
+
+      <!-- Avenue 5: Bereavement & Craft Continuity -->
+      <div class="glass-card-dark p-8 rounded-3xl border border-emerald-500/30 hover:border-emerald-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
+        <div class="space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-2xl">
+            🤝
+          </div>
+          <h3 class="text-2xl font-bold font-pocketgull text-white">Craft Confidants &amp; Social Prescribing</h3>
+          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+            Supports individuals experiencing grief or loneliness by encouraging craft continuity, picking up a loved one's tools, and connecting with local Men's Sheds and community gardens.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-emerald-300 font-semibold">
+          • SNOMED 399269003 &bull; Social Health
+        </div>
+      </div>
+
+      <!-- Avenue 6: Plain-Language Patient Health Literacy -->
+      <div class="glass-card-dark p-8 rounded-3xl border border-blue-500/30 hover:border-blue-400 transition-all flex flex-col justify-between space-y-6 shadow-xl">
+        <div class="space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-2xl">
+            📖
+          </div>
+          <h3 class="text-2xl font-bold font-pocketgull text-white">Grade 6.2 Health Literacy</h3>
+          <p class="text-xs text-stone-300 leading-relaxed font-sans">
+            Translates complex lab values and discharge summaries into crystal-clear plain language, Socratic inquiries, and Section 1557 ACA multilingual instructions.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-stone-800 text-[11px] font-pocketgull-mono text-blue-300 font-semibold">
+          • Optotypic Legibility &bull; WCAG AAA
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ 3. Interactive SaaS ROI Calculator ════════════════════════════════════ -->
   <section class="glass-card-dark rounded-3xl p-8 sm:p-12 border-2 border-amber-500/40 shadow-2xl">
     <div class="max-w-4xl mx-auto space-y-8">
       <div class="text-center space-y-2">
         <div class="text-xs font-bold text-amber-400 uppercase tracking-widest font-pocketgull">Economic Impact</div>
         <h2 class="text-3xl sm:text-4xl font-extrabold font-pocketgull text-white">
-          Calculate Your Clinic's Annual Return on Investment (ROI)
+          Calculate Your Clinic's Annual ROI
         </h2>
         <p class="text-sm sm:text-base text-stone-400 font-sans">
           See how much clinical revenue and unbilled charting hours PocketGull saves your practice.
@@ -112,79 +257,6 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 3. SaaS Feature Matrix: The 4 Core Clinical Pillars ════════════════════ -->
-  <section id="features" class="space-y-12">
-    <div class="text-center space-y-3 max-w-3xl mx-auto">
-      <div class="text-xs font-bold text-teal-400 uppercase tracking-widest font-pocketgull">Enterprise Capabilities</div>
-      <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-white">
-        Everything Your Practice Needs in One Intelligent Suite
-      </h2>
-      <p class="text-stone-300 text-sm sm:text-base font-sans leading-relaxed">
-        Built natively for clinicians who value accuracy, aesthetics, and patient relationships over tedious administrative data entry.
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      
-      <!-- Feature 1 -->
-      <div class="glass-card-dark p-7 rounded-3xl border border-teal-500/30 hover:border-teal-400 transition-all flex flex-col justify-between space-y-4 shadow-xl">
-        <div class="space-y-3">
-          <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-2xl">
-            🎙️
-          </div>
-          <h3 class="text-xl font-bold font-pocketgull text-white">Ambient Clinical Scribe</h3>
-          <p class="text-xs text-stone-400 leading-relaxed font-sans">
-            Listens naturally during patient visits, extracts SOAP notes in real time, and formats instant FHIR R4 care plans.
-          </p>
-        </div>
-        <div class="text-[11px] font-pocketgull-mono text-teal-300 font-semibold">Gemini 2.5 Full-Duplex Audio</div>
-      </div>
-
-      <!-- Feature 2 -->
-      <div class="glass-card-dark p-7 rounded-3xl border border-amber-500/30 hover:border-amber-400 transition-all flex flex-col justify-between space-y-4 shadow-xl">
-        <div class="space-y-3">
-          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl">
-            🛡️
-          </div>
-          <h3 class="text-xl font-bold font-pocketgull text-white">RxGuard &amp; Drug Safety</h3>
-          <p class="text-xs text-stone-400 leading-relaxed font-sans">
-            Real-time pharmacogenomic (PGx) interlocks, herbal-drug contraindication checkers (e.g. Nitrates + PDE-5 inhibitors), and dosing guards.
-          </p>
-        </div>
-        <div class="text-[11px] font-pocketgull-mono text-amber-300 font-semibold">Instant Interlock Rules</div>
-      </div>
-
-      <!-- Feature 3 -->
-      <div class="glass-card-dark p-7 rounded-3xl border border-rose-500/30 hover:border-rose-400 transition-all flex flex-col justify-between space-y-4 shadow-xl">
-        <div class="space-y-3">
-          <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-2xl">
-            🧬
-          </div>
-          <h3 class="text-xl font-bold font-pocketgull text-white">SNO-10 Patient Education</h3>
-          <p class="text-xs text-stone-400 leading-relaxed font-sans">
-            Bridges dense SNOMED-CT / ICD-10 medical terminology with intuitive Grade 6.2 craft analogies that patients actually understand.
-          </p>
-        </div>
-        <div class="text-[11px] font-pocketgull-mono text-rose-300 font-semibold">Cochrane RoB 2 &amp; Epistemology</div>
-      </div>
-
-      <!-- Feature 4 -->
-      <div class="glass-card-dark p-7 rounded-3xl border border-indigo-500/30 hover:border-indigo-400 transition-all flex flex-col justify-between space-y-4 shadow-xl">
-        <div class="space-y-3">
-          <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-2xl">
-            🫁
-          </div>
-          <h3 class="text-xl font-bold font-pocketgull text-white">3D Holographic Anatomy</h3>
-          <p class="text-xs text-stone-400 leading-relaxed font-sans">
-            Procedural Three.js anatomical skeletal modeling with tri-paradigm spatial lenses for surgical and rehabilitation consultations.
-          </p>
-        </div>
-        <div class="text-[11px] font-pocketgull-mono text-indigo-300 font-semibold">WebGL &amp; Edge Compute</div>
-      </div>
-
-    </div>
-  </section>
-
   <!-- ══ 4. Commercial SaaS Pricing & Packaging ═════════════════════════════════ -->
   <section id="pricing" class="space-y-12 py-8">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
@@ -193,7 +265,7 @@ get_header(); ?>
         Simple, Predictable Plans for Every Practice
       </h2>
       <p class="text-stone-300 text-sm sm:text-base font-sans">
-        All plans include 14-day free pilot, unlimited ambient scribing, and HIPAA Safe Harbor de-identification.
+        All plans include a 14-day free trial, ambient scribing, and HIPAA Safe Harbor de-identification.
       </p>
     </div>
 
@@ -357,9 +429,6 @@ get_header(); ?>
       clinicianDisplay.textContent = clinicians === 1 ? '1 Provider' : `${clinicians} Providers`;
       patientDisplay.textContent = `${patientsPerDay} Patients/day`;
 
-      // Calculation model:
-      // ~2.4 hours saved per day per provider * 240 clinical workdays/yr
-      // Value per clinical hour estimated at $150/hr
       const annualHoursSavedPerDoc = 2.4 * 240;
       const totalHours = Math.round(annualHoursSavedPerDoc * clinicians);
       const annualDollarSavings = totalHours * 150;
