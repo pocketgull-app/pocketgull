@@ -35,12 +35,28 @@ function run(cmd, options = {}) {
   }
 }
 
+// 0. Mandatory Pre-Flight Verification Chain (Unit Tests, Lint, Security, SBOM)
+console.log('\n🧪 Step 0/5: Running mandatory pre-flight test & verification chain...');
+console.log('• TypeScript Compilation (tsc --noEmit)...');
+run(`node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit`);
+
+console.log('• Vitest Unit Test Suite...');
+run(`npx vitest run`);
+
+console.log('• Sentinel Network & Egress Security Guard...');
+run(`node scripts/sentinel_security_guard.mjs`);
+
+console.log('• CycloneDX 1.6 SBOM Verification...');
+run(`node scripts/generate_cyclonedx_sbom.mjs`);
+
+console.log('✅ All pre-flight tests passed successfully. Proceeding with deployment.');
+
 // 1. Verify Project Config
-console.log('\n🔍 Step 1/4: Verifying gcloud project configuration...');
+console.log('\n🔍 Step 1/5: Verifying gcloud project configuration...');
 run(`gcloud config set project ${TARGET_PROJECT}`);
 
 // 2. Package Clean Deployment Source Archive
-console.log('\n📦 Step 2/4: Packaging clean source archive for Cloud Build...');
+console.log('\n📦 Step 2/5: Packaging clean source archive for Cloud Build...');
 const tmpDir = join(rootDir, 'tmp');
 const archivePath = join(tmpDir, 'deploy_source.tar.gz');
 
@@ -51,7 +67,7 @@ try {
 }
 
 // 3. Submit Cloud Build
-console.log('\n🏗️ Step 3/4: Building container image via Google Cloud Build...');
+console.log('\n🏗️ Step 3/5: Building container image via Google Cloud Build...');
 const sourceTar = join(rootDir, 'deploy_source.tar.gz');
 if (existsSync(sourceTar)) {
   console.log(`Found clean source archive (${(statSync(sourceTar).size / 1024 / 1024).toFixed(2)} MB). Submitting to Cloud Build...`);
@@ -61,7 +77,7 @@ if (existsSync(sourceTar)) {
 }
 
 // 4. Deploy to Google Cloud Run
-console.log('\n🚀 Step 4/4: Deploying image to Google Cloud Run (Scale-to-Zero)...');
+console.log('\n🚀 Step 4/5: Deploying image to Google Cloud Run (Scale-to-Zero)...');
 run(
   `gcloud run deploy ${SERVICE_NAME} ` +
   `--image ${IMAGE_TAG} ` +
@@ -79,7 +95,7 @@ run(
 );
 
 // 5. Apply Lifecycle & Cost Controls
-console.log('\n🧹 Applying storage lifecycle and cost control policies...');
+console.log('\n🧹 Step 5/5: Applying storage lifecycle and cost control policies...');
 try {
   run(`node scripts/apply-gcp-lifecycle-policies.mjs`);
 } catch (e) {
