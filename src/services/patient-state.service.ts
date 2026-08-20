@@ -36,6 +36,11 @@ export class PatientStateService {
   // --- UI State & Clinical Tool Prescription State Machine ---
   readonly isPlainLanguageMode = computed(() => this.themeService.isPlainLanguageMode());
   readonly toolStates = signal<Record<string, 'unassigned' | 'prescribed' | 'hidden'>>({});
+  readonly showContactlessScanner = signal<boolean>(false);
+
+  toggleContactlessScanner(open?: boolean): void {
+    this.showContactlessScanner.update(current => open !== undefined ? open : !current);
+  }
 
   // --- Patient 3D Spatial Anatomic Profile & LiDAR Custom Mesh ---
   readonly anatomicProfile = signal<IPatientAnatomicProfile>({
@@ -43,6 +48,7 @@ export class PatientStateService {
     phantomLimbPain: [],
     customLiDARScanUrl: null
   });
+
 
   readonly hasActiveIssues = computed(() => {
     const issues = this.issues();

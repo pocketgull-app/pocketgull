@@ -2010,5 +2010,80 @@ async def generate_patient_article(payload: GenerateArticleRequest) -> dict[str,
     return engine.generate_article(topic_key=payload.topic_key, target_audience=payload.target_audience)
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# TRI-PARADIGM INTEGRATIVE ENGINES (TCM, Ayurveda, Allopathic Molecular Bridge)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class TcmMeridianRequest(BaseModel):
+    stress_irritability_level: float = Field(default=7.0, description="0-10 Liver Qi Stagnation scale")
+    fatigue_postprandial_heaviness: float = Field(default=6.5, description="0-10 Spleen Qi Deficiency scale")
+    insomnia_palpitations: float = Field(default=5.0, description="0-10 Heart Blood/Shen scale")
+    lumbar_soreness_cold_aversion: float = Field(default=4.0, description="0-10 Kidney Essence/Yang scale")
+    cough_dry_throat: float = Field(default=2.0, description="0-10 Lung Qi scale")
+    tongue_body_color: str = Field(default="pale_pink_teethmarks", description="Tongue body color")
+    tongue_coating: str = Field(default="white_greasy", description="Tongue coat description")
+    radial_pulse_type: str = Field(default="wiry_and_slippery", description="Radial pulse classification")
+
+
+@app.post("/api/ml/tcm-meridian-evaluate", tags=["Tri-Paradigm Integrative Medicine"])
+async def evaluate_tcm_meridian(payload: TcmMeridianRequest) -> dict[str, Any]:
+    """Evaluate 5-Element Wu Xing balance, 12 Jing-Luo meridians, Zang-Fu disharmony, and Acupoints."""
+    from pocketgull_api.engines.tcm_meridian_engine import TcmMeridianEngine
+    engine = TcmMeridianEngine()
+    return engine.evaluate_tcm_profile(
+        stress_irritability_level=payload.stress_irritability_level,
+        fatigue_postprandial_heaviness=payload.fatigue_postprandial_heaviness,
+        insomnia_palpitations=payload.insomnia_palpitations,
+        lumbar_soreness_cold_aversion=payload.lumbar_soreness_cold_aversion,
+        cough_dry_throat=payload.cough_dry_throat,
+        tongue_body_color=payload.tongue_body_color,
+        tongue_coating=payload.tongue_coating,
+        radial_pulse_type=payload.radial_pulse_type
+    )
+
+
+class AyurvedicTridoshaRequest(BaseModel):
+    vata_symptoms_score: float = Field(default=65.0, description="Vata symptoms score (0-100)")
+    pitta_symptoms_score: float = Field(default=52.0, description="Pitta symptoms score (0-100)")
+    kapha_symptoms_score: float = Field(default=40.0, description="Kapha symptoms score (0-100)")
+    bowel_regularity_index: float = Field(default=6.0, description="Bowel regularity index (1-10)")
+    tongue_ama_coating: str = Field(default="moderate_white", description="Tongue Ama coating")
+    energy_stability: float = Field(default=5.5, description="Energy stability rating (1-10)")
+
+
+@app.post("/api/ml/ayurvedic-tridosha-evaluate", tags=["Tri-Paradigm Integrative Medicine"])
+async def evaluate_ayurvedic_tridosha(payload: AyurvedicTridoshaRequest) -> dict[str, Any]:
+    """Evaluate Ayurvedic Tridosha (V-P-K), 7 Dhatu tissue ladder, Agni fire, Ama toxins, and Rasayana therapy."""
+    from pocketgull_api.engines.ayurvedic_tridosha_engine import AyurvedicTridoshaEngine
+    engine = AyurvedicTridoshaEngine()
+    return engine.evaluate_ayurvedic_profile(
+        vata_symptoms_score=payload.vata_symptoms_score,
+        pitta_symptoms_score=payload.pitta_symptoms_score,
+        kapha_symptoms_score=payload.kapha_symptoms_score,
+        bowel_regularity_index=payload.bowel_regularity_index,
+        tongue_ama_coating=payload.tongue_ama_coating,
+        energy_stability=payload.energy_stability
+    )
+
+
+class AllopathicBridgeRequest(BaseModel):
+    current_allopathic_drugs: list[str] = Field(default=["Metformin", "Amlodipine"], description="Allopathic pharmaceutical regimen")
+    candidate_tcm_herbs: list[str] = Field(default=["Huang Lian (Berberine)"], description="TCM botanicals under consideration")
+    candidate_ayurvedic_rasayanas: list[str] = Field(default=["Ashwagandha", "Curcumin (Turmeric)"], description="Ayurvedic Rasayanas under consideration")
+
+
+@app.post("/api/ml/allopathic-integrative-bridge", tags=["Tri-Paradigm Integrative Medicine"])
+async def evaluate_allopathic_integrative_bridge(payload: AllopathicBridgeRequest) -> dict[str, Any]:
+    """Cross-triangulate Allopathic pharmaceuticals with TCM and Ayurvedic botanicals (CYP450, P-gp, Thermal)."""
+    from pocketgull_api.engines.allopathic_integrative_bridge_engine import AllopathicIntegrativeBridgeEngine
+    engine = AllopathicIntegrativeBridgeEngine()
+    return engine.evaluate_tri_paradigm_safety(
+        current_allopathic_drugs=payload.current_allopathic_drugs,
+        candidate_tcm_herbs=payload.candidate_tcm_herbs,
+        candidate_ayurvedic_rasayanas=payload.candidate_ayurvedic_rasayanas
+    )
+
+
+
 
 

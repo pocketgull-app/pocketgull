@@ -17,6 +17,7 @@ import { RaycastSelectionService } from '../../services/raycast-selection.servic
 import { SeverityParticleService } from '../../services/severity-particle.service';
 import { SocraticComorbidityRadarService } from '../../services/socratic-comorbidity-radar.service';
 import { RadialPieMenuComponent, RadialPieAction } from './radial-pie-menu.component';
+import { BiophysicalTwinTimelineComponent } from './biophysical-twin-timeline.component';
 import { IBodyPartIssue } from '../../services/patient.types';
 
 const PART_NAMES: Record<string, string> = {
@@ -79,8 +80,9 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
     host: {
         'ngSkipHydration': 'true'
     },
-    imports: [CommonModule, RadialPieMenuComponent],
+    imports: [CommonModule, RadialPieMenuComponent, BiophysicalTwinTimelineComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
+
     template: `
     <div class="flex flex-col flex-1 h-full w-full min-h-[540px] bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl overflow-hidden font-sans thematic-3d-container">
 
@@ -284,6 +286,52 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
           </div>
         }
 
+        <!-- 🚦 Kaizen Continuous Improvement Traffic-Light Legend HUD -->
+        <div class="absolute top-3 left-3 z-30 flex flex-col gap-1.5 p-2.5 rounded-xl bg-slate-900/90 dark:bg-zinc-950/90 border border-slate-700/80 dark:border-zinc-800 shadow-2xl backdrop-blur-md text-white font-mono text-[10.5px] select-none">
+          <div class="flex items-center justify-between gap-2 pb-1 border-b border-slate-700/60 dark:border-zinc-800 text-[10px] font-bold text-slate-300">
+            <span class="flex items-center gap-1"><span>🚦</span> <span>KAIZEN HEALTH TRIAGE</span></span>
+            <span class="text-[9px] px-1 rounded bg-slate-800 text-cyan-400">LIVE INTAKE</span>
+          </div>
+
+          <div class="flex flex-col gap-1 text-[10px]">
+            <div class="flex items-center justify-between gap-3">
+              <span class="flex items-center gap-1.5 text-emerald-400 font-bold">
+                <span class="h-2 w-2 rounded-full bg-emerald-500"></span> Grade A (Optimal 0)
+              </span>
+              <span class="font-bold font-mono px-1.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/40">
+                {{ kaizenCounts().gradeA }}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between gap-3">
+              <span class="flex items-center gap-1.5 text-amber-400 font-bold">
+                <span class="h-2 w-2 rounded-full bg-amber-500"></span> Grade B (Mild 1-4)
+              </span>
+              <span class="font-bold font-mono px-1.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800/40">
+                {{ kaizenCounts().gradeB }}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between gap-3">
+              <span class="flex items-center gap-1.5 text-orange-400 font-bold">
+                <span class="h-2 w-2 rounded-full bg-orange-500"></span> Grade C (Mod 5-7)
+              </span>
+              <span class="font-bold font-mono px-1.5 rounded bg-orange-950/80 text-orange-300 border border-orange-800/40">
+                {{ kaizenCounts().gradeC }}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between gap-3">
+              <span class="flex items-center gap-1.5 text-rose-400 font-bold">
+                <span class="h-2 w-2 rounded-full bg-rose-500 animate-pulse"></span> Grade D (Urgent 8-10)
+              </span>
+              <span class="font-bold font-mono px-1.5 rounded bg-rose-950/80 text-rose-300 border border-rose-800/40">
+                {{ kaizenCounts().gradeD }}
+              </span>
+            </div>
+          </div>
+        </div>
+
         <!-- 3D Fitts's Law Radial Pie Menu -->
         @if (showRadialPieMenu()) {
           <app-radial-pie-menu
@@ -298,6 +346,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
 
         <!-- 🪢 Socratic Comorbidity Referral Radar HUD -->
         @if (activeReferrals(); as referrals) {
+
           @if (referrals.length > 0) {
             <div class="absolute top-3 right-3 z-30 flex flex-col gap-2 max-w-xs w-full pointer-events-auto font-mono text-xs select-none animate-in fade-in slide-in-from-right-3 duration-200">
               @for (ref of referrals; track ref.id) {
@@ -329,8 +378,13 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
           }
         }
       </div>
+
+      <!-- 🧬 24-Hour Predictive Biophysical Twin Timeline Scrubber Ribbon -->
+      <app-biophysical-twin-timeline />
+
     </div>
   `,
+
     styles: [`
     :host { display: flex; flex-direction: column; flex: 1 1 0%; height: 100%; min-height: 540px; width: 100%; }
     canvas { outline: none; display: block; width: 100% !important; height: 100% !important; }
@@ -351,6 +405,23 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     dismissReferral(id: string): void {
       this.radarService?.dismissReferral(id);
     }
+
+    // 🚦 Kaizen Continuous Improvement Traffic Light Counts
+    readonly kaizenCounts = computed(() => {
+      const issues = this.state.issues();
+      let gradeA = 0, gradeB = 0, gradeC = 0, gradeD = 0;
+      const allParts = Object.keys(PART_NAMES);
+      allParts.forEach(p => {
+        const list = issues[p] || [];
+        const maxP = list.reduce((m, i) => Math.max(m, i.painLevel || 0), 0);
+        if (maxP === 0) gradeA++;
+        else if (maxP <= 4) gradeB++;
+        else if (maxP <= 7) gradeC++;
+        else gradeD++;
+      });
+      return { gradeA, gradeB, gradeC, gradeD, total: allParts.length };
+    });
+
 
     // 🖱️ 3D Fitts's Law Radial Pie Menu State
     readonly showRadialPieMenu = signal<boolean>(false);
@@ -2177,19 +2248,34 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
                 if (maxPain > 0) {
                     const intensity = maxPain / 10;
-                    if (layer === 'skin') (material as THREE.MeshStandardMaterial).color.setRGB(1, 1 - intensity * 0.6, 1 - intensity * 0.6);
-                    if (layer === 'muscle') (material as THREE.MeshStandardMaterial).color.setRGB(0.9, 0.2 - intensity * 0.2, 0.2 - intensity * 0.2);
+                    // Kaizen Traffic-Light Color Grades:
+                    // Grade B (Mild 1-4): Amber/Gold (0xf59e0b)
+                    // Grade C (Moderate 5-7): Vibrant Orange (0xf97316)
+                    // Grade D (Severe 8-10): Crimson Red (0xef4444)
+                    const kaizenHex = maxPain <= 4 ? 0xf59e0b : (maxPain <= 7 ? 0xf97316 : 0xef4444);
+                    
+                    if (layer === 'skin') {
+                        (material as THREE.MeshStandardMaterial).color.setHex(kaizenHex);
+                        (material as THREE.MeshStandardMaterial).emissive.setHex(kaizenHex);
+                        (material as THREE.MeshStandardMaterial).emissiveIntensity = 0.2 + intensity * 0.3;
+                    }
+                    if (layer === 'muscle') (material as THREE.MeshStandardMaterial).color.setHex(kaizenHex);
                     if (layer === 'bone') {
-                        (material as THREE.MeshStandardMaterial).color.setRGB(0.9, 0.7 - intensity * 0.5, 0.7 - intensity * 0.5);
+                        (material as THREE.MeshStandardMaterial).color.setHex(kaizenHex);
                         child.scale.setScalar(1.0 + intensity * 0.15);
                         child.userData['painIntensity'] = intensity;
                     }
-                    if (layer === 'organ') (material as THREE.MeshStandardMaterial).color.setRGB(0.95, 0.2, 0.4);
+                    if (layer === 'organ') (material as THREE.MeshStandardMaterial).color.setHex(kaizenHex);
                     if (layer === 'molecular' && (material as any).uniforms) {
                         (material as any).uniforms['uPainLevel'].value = intensity;
                     }
                 } else {
-                    if (layer === 'skin') (material as THREE.MeshStandardMaterial).color.setHex(0x38bdf8);
+                    // Kaizen Grade A (Optimal / Homeostasis / 0 Pain): Emerald / Sky Blue Sheen
+                    if (layer === 'skin') {
+                        (material as THREE.MeshStandardMaterial).color.setHex(0x10b981);
+                        (material as THREE.MeshStandardMaterial).emissive.setHex(0x047857);
+                        (material as THREE.MeshStandardMaterial).emissiveIntensity = 0.1;
+                    }
                     if (layer === 'muscle') (material as THREE.MeshStandardMaterial).color.setHex(0xbe123c);
                     if (layer === 'bone') {
                         (material as THREE.MeshStandardMaterial).color.setHex(0xf5f5f4);
@@ -2200,6 +2286,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                         (material as any).uniforms['uPainLevel'].value = 0.0;
                     }
                 }
+
 
                 if (isSelected) {
                     const philosophy = this.state.activePhilosophy();

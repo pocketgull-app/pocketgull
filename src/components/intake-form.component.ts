@@ -11,6 +11,7 @@ import { IBodyPartIssue, BODY_PART_NAMES, BODY_PART_MAPPING, HistoryEntry } from
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { PocketGullBadgeComponent } from './shared/pocket-gull-badge.component';
+import { ContactlessVitalsScannerComponent } from './contactless-vitals-scanner.component';
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
 
 interface INoteTimelineItem extends IBodyPartIssue {
@@ -20,7 +21,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
 
 @Component({
   selector: 'app-intake-form',
-  imports: [CommonModule, PocketGullButtonComponent, PocketGullInputComponent, PocketGullBadgeComponent, SafeHtmlPipe],
+  imports: [CommonModule, PocketGullButtonComponent, PocketGullInputComponent, PocketGullBadgeComponent, ContactlessVitalsScannerComponent, SafeHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="h-full flex flex-col bg-[#F9FAFB] dark:bg-zinc-950">
@@ -33,6 +34,14 @@ interface INoteTimelineItem extends IBodyPartIssue {
             <pocket-gull-badge label="HIPAA COMPLIANT" severity="success" class="ml-2"></pocket-gull-badge>
           </div>
           <div class="flex items-center gap-2">
+            <button 
+              type="button"
+              id="btn-scan-vitals-intake-form"
+              (click)="state.toggleContactlessScanner(true)"
+              class="flex items-center gap-1 px-2.5 py-1 bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800 rounded-md text-[11px] font-bold uppercase tracking-wider hover:bg-cyan-100 dark:hover:bg-cyan-900/40 transition cursor-pointer"
+              title="Launch Contactless Optical rPPG & Vocal Vitals Scanner">
+              <span>📹 Scan Vitals</span>
+            </button>
             <button 
               type="button"
               id="btn-socratic-studio-intake-form"
@@ -50,6 +59,11 @@ interface INoteTimelineItem extends IBodyPartIssue {
             </pocket-gull-button>
           </div>
         </div>
+
+        @if (state.showContactlessScanner()) {
+          <app-contactless-vitals-scanner />
+        }
+
 
         <div class="flex-1 flex overflow-hidden">
           <div class="flex-1 overflow-y-auto p-6 bg-[#F9FAFB] dark:bg-zinc-950">

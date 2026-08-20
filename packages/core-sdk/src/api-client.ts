@@ -392,6 +392,99 @@ export interface IEpigeneticLineageResponse {
   clinical_lineage_guidance: string;
 }
 
+export interface ITcmMeridianRequest {
+  stress_irritability_level?: number;
+  fatigue_postprandial_heaviness?: number;
+  insomnia_palpitations?: number;
+  lumbar_soreness_cold_aversion?: number;
+  cough_dry_throat?: number;
+  tongue_body_color?: string;
+  tongue_coating?: string;
+  radial_pulse_type?: string;
+}
+
+export interface ITcmMeridianResponse {
+  tcm_diagnostic_summary: {
+    primary_zang_fu_pattern: string;
+    tongue_diagnosis: string;
+    radial_pulse_synthesis: string;
+    classical_herbal_formula: string;
+  };
+  wu_xing_5_element_balance: {
+    wood_liver_gallbladder: number;
+    fire_heart_small_intestine: number;
+    earth_spleen_stomach: number;
+    metal_lung_large_intestine: number;
+    water_kidney_urinary_bladder: number;
+  };
+  prescribed_acupoint_protocol: Array<{
+    code: string;
+    location: string;
+    function: string;
+  }>;
+  dietary_thermal_guidance: string;
+}
+
+export interface IAyurvedicTridoshaRequest {
+  vata_symptoms_score?: number;
+  pitta_symptoms_score?: number;
+  kapha_symptoms_score?: number;
+  bowel_regularity_index?: number;
+  tongue_ama_coating?: string;
+  energy_stability?: number;
+}
+
+export interface IAyurvedicTridoshaResponse {
+  tridosha_vikriti_distribution: {
+    vata_pct: number;
+    pitta_pct: number;
+    kapha_pct: number;
+    predominant_imbalance: string;
+  };
+  metabolic_agni_state: {
+    classification: string;
+    clinical_description: string;
+    ama_endotoxin_score: number;
+    ama_tier: string;
+  };
+  seven_dhatu_tissue_cascade: Array<{
+    dhatu: string;
+    status: string;
+    biomarker: string;
+  }>;
+  ojas_vitality_reserve_score: number;
+  prescribed_rasayana_protocol: string;
+  dinacharya_lifestyle_guidance: string;
+}
+
+export interface IAllopathicBridgeRequest {
+  current_allopathic_drugs?: string[];
+  candidate_tcm_herbs?: string[];
+  candidate_ayurvedic_rasayanas?: string[];
+}
+
+export interface IAllopathicBridgeResponse {
+  cyp450_pharmacokinetic_interactions: Array<{
+    drug: string;
+    botanical: string;
+    affected_enzymes: string[];
+    effect: string;
+    severity: string;
+  }>;
+  pharmacodynamic_synergies_and_warnings: Array<{
+    interaction: string;
+    mechanism: string;
+    clinical_significance: string;
+    action_plan: string;
+  }>;
+  thermal_energetic_harmonization: string[];
+  hour_by_hour_dosing_schedule: Array<{
+    time: string;
+    items: string;
+  }>;
+  overall_safety_tier: string;
+}
+
 export class PocketGullApiClient {
   private baseUrl: string;
 
@@ -476,5 +569,17 @@ export class PocketGullApiClient {
 
   async evaluateEpigeneticLineage(req: IEpigeneticLineageRequest): Promise<IEpigeneticLineageResponse> {
     return this.postJson<IEpigeneticLineageRequest, IEpigeneticLineageResponse>('/ml/epigenetic-lineage', req);
+  }
+
+  async evaluateTcmMeridian(req: ITcmMeridianRequest): Promise<ITcmMeridianResponse> {
+    return this.postJson<ITcmMeridianRequest, ITcmMeridianResponse>('/ml/tcm-meridian-evaluate', req);
+  }
+
+  async evaluateAyurvedicTridosha(req: IAyurvedicTridoshaRequest): Promise<IAyurvedicTridoshaResponse> {
+    return this.postJson<IAyurvedicTridoshaRequest, IAyurvedicTridoshaResponse>('/ml/ayurvedic-tridosha-evaluate', req);
+  }
+
+  async evaluateAllopathicBridge(req: IAllopathicBridgeRequest): Promise<IAllopathicBridgeResponse> {
+    return this.postJson<IAllopathicBridgeRequest, IAllopathicBridgeResponse>('/ml/allopathic-integrative-bridge', req);
   }
 }
