@@ -293,7 +293,127 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 4. 5 Core Avenues of Preventive Medicine ════════════════════════════════ -->
+  <!-- ══ 4. POCKETGULL CLINICAL ACADEMY & HEALTHCARE MASTERCLASSES ═══════════════ -->
+  <section id="academy" class="space-y-12 py-6">
+    <div class="text-center space-y-3 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold">
+        <span>🎓 Clinical Academy &amp; CME Masterclasses</span>
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
+        Learn the Strategies Behind Preventive Healthcare
+      </h2>
+      <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
+        High-yield masterclasses designed for physicians, residents, nurse practitioners, caregivers, and everyday craftspeople. Master modern AI charting, cardiac safety, and chronic disease prevention.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+      
+      <!-- Course 1 -->
+      <div class="glass-card-dark p-7 rounded-3xl border border-teal-500/30 hover:border-teal-400 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">🎙️</span>
+            <span class="text-[10px] font-mono font-bold bg-teal-500/20 text-teal-300 px-2 py-0.5 rounded">4 CME Credits</span>
+          </div>
+          <h3 class="text-xl font-bold text-white group-hover:text-amber-300 transition">Ambient AI Clinical Scribing &amp; FHIR R4</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
+            Master full-duplex voice dictation with Gemini 2.5 Flash, automated SOAP note generation, and cut charting time by 42%.
+          </p>
+        </div>
+        <div class="space-y-3 border-t border-stone-800 pt-4">
+          <div class="flex items-baseline justify-between text-xs font-mono">
+            <span class="text-stone-400">4-Week Cohort</span>
+            <span class="text-lg font-bold text-white">$199</span>
+          </div>
+          <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full py-2.5 rounded-xl geararts-card font-bold text-xs text-stone-950 hover:scale-[1.02] transition shadow-md cursor-pointer">
+            Enroll in Masterclass →
+          </button>
+        </div>
+      </div>
+
+      <!-- Course 2 -->
+      <div class="glass-card-dark p-7 rounded-3xl border border-rose-500/30 hover:border-rose-400 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">❤️</span>
+            <span class="text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded">Clinical Protocol</span>
+          </div>
+          <h3 class="text-xl font-bold text-white group-hover:text-amber-300 transition">Grassroots Cardiology &amp; Princeton III</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
+            Step-by-step protocols for intimacy clearance, 4-MET stair exertion testing, and post-cardiac event recovery for couples.
+          </p>
+        </div>
+        <div class="space-y-3 border-t border-stone-800 pt-4">
+          <div class="flex items-baseline justify-between text-xs font-mono">
+            <span class="text-stone-400">2-Week Intensive</span>
+            <span class="text-lg font-bold text-white">$149</span>
+          </div>
+          <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full py-2.5 rounded-xl geararts-card font-bold text-xs text-stone-950 hover:scale-[1.02] transition shadow-md cursor-pointer">
+            Enroll in Masterclass →
+          </button>
+        </div>
+      </div>
+
+      <!-- Course 3 -->
+      <div class="glass-card-dark p-7 rounded-3xl border border-amber-500/30 hover:border-amber-400 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">🫘</span>
+            <span class="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded">Nephrology Focus</span>
+          </div>
+          <h3 class="text-xl font-bold text-white group-hover:text-amber-300 transition">Renal Protection &amp; $100k Dialysis Aversion</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
+            Early microvascular screening, tight morning BP pacing, and dietary strategies to halt nephron decline before dialysis.
+          </p>
+        </div>
+        <div class="space-y-3 border-t border-stone-800 pt-4">
+          <div class="flex items-baseline justify-between text-xs font-mono">
+            <span class="text-stone-400">Self-Paced Video</span>
+            <span class="text-lg font-bold text-white">$99</span>
+          </div>
+          <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full py-2.5 rounded-xl geararts-card font-bold text-xs text-stone-950 hover:scale-[1.02] transition shadow-md cursor-pointer">
+            Enroll in Masterclass →
+          </button>
+        </div>
+      </div>
+
+      <!-- Course 4 -->
+      <div class="glass-card-dark p-7 rounded-3xl border border-purple-500/30 hover:border-purple-400 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">🛠️</span>
+            <span class="text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded">Trades &amp; Craft</span>
+          </div>
+          <h3 class="text-xl font-bold text-white group-hover:text-amber-300 transition">Workshop Ergonomics &amp; Joint Health (M17.9)</h3>
+          <p class="text-xs text-stone-300 leading-relaxed">
+            Custom bench heights, adaptive grip aids, and pacing methods to keep carpenters, gardeners, and mechanics working pain-free.
+          </p>
+        </div>
+        <div class="space-y-3 border-t border-stone-800 pt-4">
+          <div class="flex items-baseline justify-between text-xs font-mono">
+            <span class="text-stone-400">3-Week Workshop</span>
+            <span class="text-lg font-bold text-white">$129</span>
+          </div>
+          <button onclick="document.getElementById('pilotModal').classList.remove('hidden')" class="w-full py-2.5 rounded-xl geararts-card font-bold text-xs text-stone-950 hover:scale-[1.02] transition shadow-md cursor-pointer">
+            Enroll in Masterclass →
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Academy Trust Note -->
+    <div class="max-w-4xl mx-auto p-4 bg-stone-900/60 rounded-2xl border border-stone-800 text-center text-xs text-stone-400 font-mono">
+      ✨ All masterclasses are included for free with <strong class="text-amber-300">Practice Pro</strong> and <strong class="text-teal-300">Enterprise System</strong> subscriptions!
+    </div>
+  </section>
+
+  <!-- ══ 5. 5 Core Avenues of Preventive Medicine ════════════════════════════════ -->
   <section id="prevention-avenues" class="space-y-12 py-6">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
       <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-300 text-xs font-mono font-bold">
