@@ -240,6 +240,158 @@ export interface ITransgenerationalStewardshipResponse {
   seven_generations_stewardship_protocol: string[];
 }
 
+export interface IBiophysicalTwinRequest {
+  baseline_resting_hr?: number;
+  baseline_rmssd_ms?: number;
+  habitual_wake_hour?: number;
+  habitual_sleep_hour?: number;
+  caffeine_intake_hour?: number;
+  caffeine_mg?: number;
+  resonance_breathing_hour?: number;
+  resonance_breathing_minutes?: number;
+  blue_light_cutoff_hour?: number;
+}
+
+export interface IBiophysicalTwinResponse {
+  simulation_horizon_hours: number;
+  hourly_biophysical_twin: Array<{
+    clock_hour: string;
+    sleep_pressure_process_s: number;
+    cortisol_index: number;
+    melatonin_pg_ml: number;
+    projected_rmssd_ms: number;
+    cognitive_reaction_speed_pvt_ms: number;
+    active_caffeine_mg: number;
+  }>;
+  key_physiological_milestones: {
+    projected_peak_cognitive_alertness_window: string;
+    projected_circadian_dip: string;
+    bedtime_active_caffeine_mg: number;
+    projected_slow_wave_deep_sleep_pct: number;
+    vagal_resonance_protective_gain_ms: number;
+  };
+  counterfactual_summary: string;
+}
+
+export interface IContactlessBiomarkersRequest {
+  rgb_mean_signals?: number[][];
+  audio_waveform_sample?: number[];
+  sampling_rate_hz?: number;
+}
+
+export interface IContactlessBiomarkersResponse {
+  optical_rppg_telemetry: {
+    estimated_heart_rate_bpm: number;
+    rppg_signal_quality_snr_db: number;
+    confidence_tier: string;
+  };
+  vocal_acoustic_biomarkers: {
+    fundamental_frequency_f0_hz: number;
+    acoustic_jitter_pct: number;
+    acoustic_shimmer_pct: number;
+    harmonic_to_noise_ratio_hnr_db: number;
+    speech_pause_ratio: number;
+    vocal_affective_strain_score: number;
+  };
+  clinical_inference: string;
+}
+
+export interface IDeprescribingRequest {
+  current_medications?: string[];
+  candidate_deprescribe_drugs?: string[];
+  patient_age?: number;
+  baseline_egfr?: number;
+}
+
+export interface IDeprescribingResponse {
+  regimen_analysis: {
+    total_current_medications: number;
+    simulated_taper_targets: string[];
+    detected_prescribing_cascades: Array<{
+      trigger_drug: string;
+      cascade_drug: string;
+      mechanism: string;
+      recommended_unwind_strategy: string;
+    }>;
+  };
+  cognitive_and_fall_metrics: {
+    baseline_anticholinergic_burden_acb: number;
+    simulated_post_taper_acb: number;
+    baseline_annual_fall_risk_pct: number;
+    simulated_post_taper_fall_risk_pct: number;
+    absolute_fall_risk_reduction_pct: number;
+  };
+  renal_preservation_trajectory: {
+    baseline_egfr: number;
+    projected_1year_egfr_with_taper: number;
+    renal_hemodynamic_benefit: string;
+  };
+  deprescribing_schedule_directive: string[];
+}
+
+export interface INof1TrialRequest {
+  intervention_name?: string;
+  target_outcome_metric?: string;
+  baseline_phase_a_data?: number[];
+  intervention_phase_b_data?: number[];
+  block_duration_days?: number;
+  washout_duration_days?: number;
+}
+
+export interface INof1TrialResponse {
+  n_of_1_trial_metadata: {
+    intervention: string;
+    target_metric: string;
+    design_architecture: string;
+    sample_days_analyzed: number;
+  };
+  empirical_statistical_analysis: {
+    baseline_phase_a_mean: number;
+    intervention_phase_b_mean: number;
+    individual_treatment_effect_delta: number;
+    cohens_d_effect_size: number;
+    empirical_two_sided_p_value: number;
+    bayesian_probability_of_true_benefit: number;
+    statistically_conclusive: boolean;
+  };
+  protocol_schedule: Array<{
+    phase: string;
+    duration: string;
+    action: string;
+  }>;
+  scientific_verdict: string;
+}
+
+export interface IEpigeneticLineageRequest {
+  g1_grandparent_cardiometabolic_history?: boolean;
+  g1_grandparent_toxic_industrial_exposure?: boolean;
+  g2_parent_current_edc_burden_score?: number;
+  g2_parent_homocysteine?: number;
+  g2_parent_folate_repletion_active?: boolean;
+  days_in_preconception_protocol?: number;
+}
+
+export interface IEpigeneticLineageResponse {
+  '3_generation_epigenetic_tree': Array<{
+    generation: string;
+
+    epigenetic_heritage_vector: string;
+    imprinting_burden_score?: number;
+    active_xenobiotic_modulation?: string;
+    "1_carbon_methylation_fidelity"?: string;
+    baseline_inherited_vulnerability_pct?: number;
+    optimized_post_protocol_vulnerability_pct?: number;
+    transgenerational_protection_status?: string;
+  }>;
+  germline_fidelity_metrics: {
+    raw_inherited_vulnerability_score: number;
+    optimized_vulnerability_score: number;
+    relative_risk_reduction_pct: number;
+    preconception_window_completion_pct: number;
+  };
+  clinical_lineage_guidance: string;
+}
+
 export class PocketGullApiClient {
   private baseUrl: string;
 
@@ -304,5 +456,25 @@ export class PocketGullApiClient {
 
   async evaluateTransgenerationalStewardship(req: ITransgenerationalStewardshipRequest): Promise<ITransgenerationalStewardshipResponse> {
     return this.postJson<ITransgenerationalStewardshipRequest, ITransgenerationalStewardshipResponse>('/ml/transgenerational-stewardship', req);
+  }
+
+  async simulateBiophysicalTwin(req: IBiophysicalTwinRequest): Promise<IBiophysicalTwinResponse> {
+    return this.postJson<IBiophysicalTwinRequest, IBiophysicalTwinResponse>('/ml/biophysical-twin-simulate', req);
+  }
+
+  async extractContactlessBiomarkers(req: IContactlessBiomarkersRequest): Promise<IContactlessBiomarkersResponse> {
+    return this.postJson<IContactlessBiomarkersRequest, IContactlessBiomarkersResponse>('/ml/contactless-biomarkers', req);
+  }
+
+  async simulateDeprescribing(req: IDeprescribingRequest): Promise<IDeprescribingResponse> {
+    return this.postJson<IDeprescribingRequest, IDeprescribingResponse>('/ml/deprescribing-simulation', req);
+  }
+
+  async designNof1Trial(req: INof1TrialRequest): Promise<INof1TrialResponse> {
+    return this.postJson<INof1TrialRequest, INof1TrialResponse>('/ml/nof1-trial-design', req);
+  }
+
+  async evaluateEpigeneticLineage(req: IEpigeneticLineageRequest): Promise<IEpigeneticLineageResponse> {
+    return this.postJson<IEpigeneticLineageRequest, IEpigeneticLineageResponse>('/ml/epigenetic-lineage', req);
   }
 }

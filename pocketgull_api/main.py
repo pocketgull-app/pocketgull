@@ -1877,3 +1877,138 @@ async def evaluate_transgenerational_stewardship_lens(payload: Transgenerational
     )
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# BREAKTHROUGH INNOVATION ENGINES (Biophysical Twin, rPPG, De-Prescribing, N-of-1, Lineage)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class BiophysicalTwinRequest(BaseModel):
+    baseline_resting_hr: float = Field(default=68.0, description="Resting heart rate in bpm")
+    baseline_rmssd_ms: float = Field(default=38.0, description="Resting RMSSD in ms")
+    habitual_wake_hour: float = Field(default=6.5, description="Habitual wake time (e.g. 6.5 = 06:30)")
+    habitual_sleep_hour: float = Field(default=23.0, description="Habitual bedtime (e.g. 23.0 = 23:00)")
+    caffeine_intake_hour: float = Field(default=14.0, description="Clock hour of caffeine intake")
+    caffeine_mg: float = Field(default=150.0, description="Dose of caffeine in mg")
+    resonance_breathing_hour: float = Field(default=13.5, description="Clock hour of 0.1Hz breathing exercise")
+    resonance_breathing_minutes: float = Field(default=15.0, description="Duration of breathing session in minutes")
+    blue_light_cutoff_hour: float = Field(default=21.0, description="Clock hour of evening blue-light screen cutoff")
+
+
+@app.post("/api/ml/biophysical-twin-simulate", tags=["Breakthrough Innovations"])
+async def simulate_biophysical_twin(payload: BiophysicalTwinRequest) -> dict[str, Any]:
+    """Run in-silico 24-hour predictive biophysical twin simulation across sleep pressure, cortisol, and alertness."""
+    from pocketgull_api.engines.biophysical_twin_engine import BiophysicalTwinEngine
+    engine = BiophysicalTwinEngine()
+    return engine.simulate_24h_twin(
+        baseline_resting_hr=payload.baseline_resting_hr,
+        baseline_rmssd_ms=payload.baseline_rmssd_ms,
+        habitual_wake_hour=payload.habitual_wake_hour,
+        habitual_sleep_hour=payload.habitual_sleep_hour,
+        caffeine_intake_hour=payload.caffeine_intake_hour,
+        caffeine_mg=payload.caffeine_mg,
+        resonance_breathing_hour=payload.resonance_breathing_hour,
+        resonance_breathing_minutes=payload.resonance_breathing_minutes,
+        blue_light_cutoff_hour=payload.blue_light_cutoff_hour
+    )
+
+
+class ContactlessBiomarkersRequest(BaseModel):
+    rgb_mean_signals: list[list[float]] = Field(default=[], description="Array of [R, G, B] frame means across 30fps video")
+    audio_waveform_sample: list[float] = Field(default=[], description="16kHz raw audio waveform float array")
+    sampling_rate_hz: int = Field(default=30, description="Video optical frame rate in Hz")
+
+
+@app.post("/api/ml/contactless-biomarkers", tags=["Breakthrough Innovations"])
+async def extract_contactless_biomarkers(payload: ContactlessBiomarkersRequest) -> dict[str, Any]:
+    """Extract contactless optical rPPG pulse telemetry and vocal acoustic jitter/stress biomarkers."""
+    from pocketgull_api.engines.edge_contactless_biomarkers_engine import ContactlessBiomarkersEngine
+    engine = ContactlessBiomarkersEngine()
+    return engine.extract_rppg_and_vocal_biomarkers(
+        rgb_mean_signals=payload.rgb_mean_signals if len(payload.rgb_mean_signals) > 0 else None,
+        audio_waveform_sample=payload.audio_waveform_sample if len(payload.audio_waveform_sample) > 0 else None,
+        sampling_rate_hz=payload.sampling_rate_hz
+    )
+
+
+class DeprescribingRequest(BaseModel):
+    current_medications: list[str] = Field(default=["Amlodipine", "Furosemide", "Omeprazole", "Diphenhydramine"], description="Current medication regimen")
+    candidate_deprescribe_drugs: list[str] = Field(default=["Furosemide", "Diphenhydramine"], description="Drugs proposed for tapering")
+    patient_age: float = Field(default=74.0, description="Patient age in years")
+    baseline_egfr: float = Field(default=48.0, description="Baseline eGFR in mL/min/1.73m2")
+
+
+@app.post("/api/ml/deprescribing-simulation", tags=["Breakthrough Innovations"])
+async def simulate_deprescribing(payload: DeprescribingRequest) -> dict[str, Any]:
+    """Simulate de-prescribing scenarios, prescribing cascade unwinding, ACB burden, and fall risk reduction."""
+    from pocketgull_api.engines.deprescribing_sandbox_engine import DeprescribingSandboxEngine
+    engine = DeprescribingSandboxEngine()
+    return engine.simulate_deprescribing(
+        current_medications=payload.current_medications,
+        candidate_deprescribe_drugs=payload.candidate_deprescribe_drugs,
+        patient_age=payload.patient_age,
+        baseline_egfr=payload.baseline_egfr
+    )
+
+
+class Nof1TrialRequest(BaseModel):
+    intervention_name: str = Field(default="Resonance Frequency Breathing 10 min daily", description="Name of intervention")
+    target_outcome_metric: str = Field(default="Nocturnal HRV RMSSD (ms)", description="Outcome biomarker")
+    baseline_phase_a_data: list[float] = Field(default=[], description="Telemetry array during Phase A (Baseline)")
+    intervention_phase_b_data: list[float] = Field(default=[], description="Telemetry array during Phase B (Intervention)")
+    block_duration_days: int = Field(default=14, description="Days per trial block")
+    washout_duration_days: int = Field(default=7, description="Days per washout interval")
+
+
+@app.post("/api/ml/nof1-trial-design", tags=["Breakthrough Innovations"])
+async def design_nof1_trial(payload: Nof1TrialRequest) -> dict[str, Any]:
+    """Design randomized A-B-A-B crossover N-of-1 trial protocol and calculate empirical Bayesian efficacy."""
+    from pocketgull_api.engines.nof1_trial_designer_engine import Nof1TrialDesignerEngine
+    engine = Nof1TrialDesignerEngine()
+    return engine.design_and_analyze_nof1_trial(
+        intervention_name=payload.intervention_name,
+        target_outcome_metric=payload.target_outcome_metric,
+        baseline_phase_a_data=payload.baseline_phase_a_data if len(payload.baseline_phase_a_data) > 0 else None,
+        intervention_phase_b_data=payload.intervention_phase_b_data if len(payload.intervention_phase_b_data) > 0 else None,
+        block_duration_days=payload.block_duration_days,
+        washout_duration_days=payload.washout_duration_days
+    )
+
+
+class EpigeneticLineageRequest(BaseModel):
+    g1_grandparent_cardiometabolic_history: bool = Field(default=True, description="Grandparent history of cardiometabolic disease")
+    g1_grandparent_toxic_industrial_exposure: bool = Field(default=True, description="Grandparent occupational toxicant exposure")
+    g2_parent_current_edc_burden_score: float = Field(default=58.0, description="Parent EDC burden score (0-100)")
+    g2_parent_homocysteine: float = Field(default=11.2, description="Parent plasma homocysteine in umol/L")
+    g2_parent_folate_repletion_active: bool = Field(default=True, description="True if parent is on 5-MTHF folate optimization")
+    days_in_preconception_protocol: int = Field(default=45, description="Days completed in 90-day gametogenesis protocol")
+
+
+@app.post("/api/ml/epigenetic-lineage", tags=["Breakthrough Innovations"])
+async def evaluate_epigenetic_lineage(payload: EpigeneticLineageRequest) -> dict[str, Any]:
+    """Model 3-generation transgenerational epigenetic lineage tree and germline transmission interruption."""
+    from pocketgull_api.engines.epigenetic_lineage_engine import EpigeneticLineageEngine
+    engine = EpigeneticLineageEngine()
+    return engine.evaluate_lineage_tree(
+        g1_grandparent_cardiometabolic_history=payload.g1_grandparent_cardiometabolic_history,
+        g1_grandparent_toxic_industrial_exposure=payload.g1_grandparent_toxic_industrial_exposure,
+        g2_parent_current_edc_burden_score=payload.g2_parent_current_edc_burden_score,
+        g2_parent_homocysteine=payload.g2_parent_homocysteine,
+        g2_parent_folate_repletion_active=payload.g2_parent_folate_repletion_active,
+        days_in_preconception_protocol=payload.days_in_preconception_protocol
+    )
+
+
+class GenerateArticleRequest(BaseModel):
+    topic_key: str = Field(default="circadian", description="Topic identifier (circadian, vagal_coherence, oral_systemic, epigenetic_longevity)")
+    target_audience: str = Field(default="Patients and Wellness Seekers", description="Intended reading demographic")
+
+
+@app.post("/api/ml/generate-patient-article", tags=["Clinical Publishing"])
+async def generate_patient_article(payload: GenerateArticleRequest) -> dict[str, Any]:
+    """Generate patient-centered, evidence-grounded educational article with SEO schema and action plan."""
+    from pocketgull_api.engines.clinical_publishing_engine import ClinicalPublishingEngine
+    engine = ClinicalPublishingEngine()
+    return engine.generate_article(topic_key=payload.topic_key, target_audience=payload.target_audience)
+
+
+
+
