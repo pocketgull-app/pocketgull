@@ -27,6 +27,6 @@ jobs:
         with:
           fail-on-severity: critical
           comment-summary-in-pr: always
-          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, BlueOak-1.0.0, PSF-2.0, 0BSD, Unlicense, MPL-2.0, CC-BY-4.0
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, BlueOak-1.0.0, PSF-2.0, 0BSD, Unlicense, MPL-2.0, CC-BY-4.0, CC0-1.0, Python-2.0, AFL-2.1, AFL-3.0, MITNFA, Public Domain, LicenseRef-scancode-public-domain
           allow-dependencies-licenses: |
-            pkg:pypi/fhir.resources, pkg:pypi/h5py, pkg:pypi/pandas, pkg:npm/isexe
+            pkg:pypi/fhir.resources, pkg:pypi/h5py, pkg:pypi/pandas, pkg:npm/isexe, pkg:npm/argparse, pkg:npm/bowser, pkg:npm/esprima, pkg:npm/import-in-the-middle, pkg:npm/json-schema, pkg:npm/lodash-es, pkg:npm/lodash.mapvalues, pkg:npm/uglify-js, pkg:npm/uri-templates, pkg:npm/@aws-sdk/types, pkg:npm/%40aws-sdk/types

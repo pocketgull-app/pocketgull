@@ -146,8 +146,14 @@ try {
   if (fs.existsSync(openApiPath)) {
     swaggerDocument = JSON.parse(fs.readFileSync(openApiPath, 'utf8'));
     const swaggerAuth = (req, res, next) => {
-      const username = process.env.SWAGGER_USERNAME || 'dev-pocketgull';
-      const password = process.env.SWAGGER_PASSWORD || 'admin-secure-pocketgull-2026';
+      const username = process.env.SWAGGER_USERNAME;
+      const password = process.env.SWAGGER_PASSWORD;
+
+      if (!username || !password) {
+        if (process.env.NODE_ENV !== 'production' || process.env.POCKETGULL_LIVE_DEMO === 'true') {
+          return next();
+        }
+      }
 
       const authHeader = req.headers['authorization'];
       if (!authHeader) {
@@ -156,16 +162,15 @@ try {
       }
 
       const [type, credentials] = authHeader.split(' ');
-      if (type === 'Basic' && credentials) {
+      if (type === 'Basic' && credentials && username && password) {
         const decoded = Buffer.from(credentials, 'base64').toString('utf8');
         const [u, p] = decoded.split(':');
         if (u === username && p === password) {
           return next();
         }
       }
-
       res.setHeader('WWW-Authenticate', 'Basic realm="Pocket Gull Secure Docs"');
-      return res.status(401).send('Invalid credentials.');
+      return res.status(403).send('Invalid credentials.');
     };
 
     // Mount the Swagger UI under /api-docs

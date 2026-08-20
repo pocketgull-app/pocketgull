@@ -23,8 +23,17 @@ export class SentinelSurveillanceService {
   // Angular 22 Declarative Async Resource for CDC NWSS & WHO EWARS Telemetry
   readonly telemetryResource = resource({
     params: () => ({ region: this.activeRegion(), pathogen: this.selectedPathogenFilter() }),
-    loader: async ({ params }) => {
-      await new Promise(res => setTimeout(res, 80));
+    loader: async ({ params, abortSignal }: any) => {
+      if (abortSignal?.aborted) {
+        return {
+          timestamp: new Date().toISOString(),
+          networkStatus: 'ONLINE_ACTIVE',
+          activeNodesCount: 142,
+          surgeIndex: 0.42,
+          matchedRegion: '',
+          matchedPathogen: ''
+        };
+      }
       return {
         timestamp: new Date().toISOString(),
         networkStatus: 'ONLINE_ACTIVE',

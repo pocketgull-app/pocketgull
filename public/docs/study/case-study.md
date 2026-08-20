@@ -1,9 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: "Case Study: Engineering Pocket Gull"
-description: "A professional case study evaluating the performance, architecture, and workflow improvements achieved by Pocket Gull."
----
-
 # Case Study: Engineering Pocket Gull
 
 > Insight beneath the surface.

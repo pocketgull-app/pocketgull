@@ -15,8 +15,22 @@ export class FhirBundleFactoryService {
     if (typeof window !== 'undefined' && DOMP && typeof DOMP.sanitize === 'function') {
       return DOMP.sanitize(val);
     }
-    // Headless environment / Node fallback tag stripping
-    return val.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').replace(/<[^>]+>/g, '');
+    // Headless environment / Node fallback: Deterministic character entity encoding
+    let out = '';
+    const str = String(val);
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      switch (ch) {
+        case '&': out += '&amp;'; break;
+        case '<': out += '&lt;'; break;
+        case '>': out += '&gt;'; break;
+        case '"': out += '&quot;'; break;
+        case "'": out += '&#39;'; break;
+        case '/': out += '&#47;'; break;
+        default: out += ch; break;
+      }
+    }
+    return out;
   }
 
   /**

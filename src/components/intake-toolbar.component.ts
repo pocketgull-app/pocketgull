@@ -17,6 +17,17 @@ import { FitbitService } from '../services/hardware/fitbit.service';
       <div class="h-4 w-px bg-gray-300 dark:bg-zinc-700 hidden sm:block"></div>
       <div id="tour-patient-dropdown"><app-patient-dropdown></app-patient-dropdown></div>
 
+      <!-- Socratic Intake Studio Launcher -->
+      <button 
+        type="button"
+        id="btn-socratic-intake-toolbar"
+        (click)="openSocraticIntake.emit()"
+        aria-label="Open Socratic Patient Intake Studio"
+        class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 border border-emerald-500/30 dark:border-emerald-500/40 text-[12px] font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 rounded-md cursor-pointer transition-all shadow-xs">
+        <span class="text-xs">✨</span>
+        <span class="hidden sm:inline">Socratic Intake</span>
+      </button>
+
       <div class="flex items-center gap-2 pr-2 pb-1 pt-1 -mb-1 -mt-1 ml-auto">
         <!-- EXPORT DROPDOWN -->
         <div class="relative group dropdown-container" (mouseenter)="exportMenuOpen.set(true)" (mouseleave)="exportMenuOpen.set(false)">
@@ -128,6 +139,8 @@ export class IntakeToolbarComponent {
   exportJson = output<void>();
   exportFhir = output<void>();
   exportLaafHapticFhir = output<void>();
+
+  openSocraticIntake = output<void>();
 
   connectEpic = output<void>();
   connectAwsHealth = output<void>();

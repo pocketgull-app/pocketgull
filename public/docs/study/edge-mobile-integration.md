@@ -1,10 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: Mobile & Edge Integration Guide
-description: "Comprehensive guide for running Pocket-Gull on Google Pixel Experimental Linux (AVF) and iOS Pyodide WebAssembly."
----
-import DocNode from '../components/DocNode.astro';
-
 # Mobile & Edge Integration Guide
 
 Pocket-Gull features zero-friction edge execution support across mobile platforms. Whether deploying on a **Google Pixel running Experimental Linux (AVF/crosvm)** or an **Apple iOS device running in-browser Pyodide WebAssembly**, Pocket-Gull enables HIPAA-compliant, zero-latency clinical intelligence without requiring external cloud connectivity.

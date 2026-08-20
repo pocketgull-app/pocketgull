@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/api/api_client.dart';
-import '../../../../core/models/patient.dart';
+import 'package:patient_app/core/api/api_client.dart';
+import 'package:patient_app/core/models/patient.dart';
 
 class PatientDashboard extends StatefulWidget {
   final Patient patient;

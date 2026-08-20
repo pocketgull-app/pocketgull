@@ -10,8 +10,9 @@ import {
 
 describe('TierConfig Service', () => {
   describe('TIER_DEFINITIONS', () => {
-    it('should define all three subscription tiers with correct monthly prices', () => {
+    it('should define all subscription tiers with correct monthly prices', () => {
       expect(TIER_DEFINITIONS.explorer.priceMonthlyUsd).toBe(0);
+      expect(TIER_DEFINITIONS.academic.priceMonthlyUsd).toBe(19);
       expect(TIER_DEFINITIONS.practitioner.priceMonthlyUsd).toBe(49);
       expect(TIER_DEFINITIONS.institution.priceMonthlyUsd).toBe(299);
     });
@@ -23,6 +24,10 @@ describe('TierConfig Service', () => {
       expect(TIER_DEFINITIONS.explorer.quotas.discovery_probe).toBe(25);
       expect(TIER_DEFINITIONS.explorer.quotas.tool_execution).toBe(0);
       expect(TIER_DEFINITIONS.explorer.quotas.pipeline_graph).toBe(0);
+
+      // Academic / Resident tier
+      expect(TIER_DEFINITIONS.academic.quotas.discovery_resolve).toBe(500);
+      expect(TIER_DEFINITIONS.academic.quotas.tool_execution).toBe(2500);
 
       // Practitioner
       expect(TIER_DEFINITIONS.practitioner.quotas.discovery_resolve).toBe(1000);
@@ -37,20 +42,32 @@ describe('TierConfig Service', () => {
   describe('meetsMinimumTier', () => {
     it('should correctly evaluate tier requirements', () => {
       expect(meetsMinimumTier('explorer', 'explorer')).toBe(true);
+      expect(meetsMinimumTier('explorer', 'academic')).toBe(false);
       expect(meetsMinimumTier('explorer', 'practitioner')).toBe(false);
       expect(meetsMinimumTier('explorer', 'institution')).toBe(false);
 
+      expect(meetsMinimumTier('academic', 'explorer')).toBe(true);
+      expect(meetsMinimumTier('academic', 'academic')).toBe(true);
+      expect(meetsMinimumTier('academic', 'practitioner')).toBe(false);
+
       expect(meetsMinimumTier('practitioner', 'explorer')).toBe(true);
+      expect(meetsMinimumTier('practitioner', 'academic')).toBe(true);
       expect(meetsMinimumTier('practitioner', 'practitioner')).toBe(true);
       expect(meetsMinimumTier('practitioner', 'institution')).toBe(false);
 
       expect(meetsMinimumTier('institution', 'explorer')).toBe(true);
+      expect(meetsMinimumTier('institution', 'academic')).toBe(true);
       expect(meetsMinimumTier('institution', 'practitioner')).toBe(true);
       expect(meetsMinimumTier('institution', 'institution')).toBe(true);
     });
   });
 
   describe('resolveTierFromPriceId', () => {
+    it('should resolve academic stripe price IDs', () => {
+      const academicPriceId = TIER_DEFINITIONS.academic.stripePriceIds[0];
+      expect(resolveTierFromPriceId(academicPriceId)).toBe('academic');
+    });
+
     it('should resolve practitioner stripe price IDs', () => {
       const practitionerPriceId = TIER_DEFINITIONS.practitioner.stripePriceIds[0];
       expect(resolveTierFromPriceId(practitionerPriceId)).toBe('practitioner');

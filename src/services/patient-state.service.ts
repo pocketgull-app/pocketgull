@@ -273,13 +273,14 @@ export class PatientStateService {
   readonly liveAgentInput = signal<string>('');
   readonly isResearchFrameVisible = signal<boolean>(false);
   readonly isSynthesisDashboardVisible = signal<boolean>(false);
+  readonly isSocraticIntakeVisible = signal<boolean>(false);
   readonly analysisUpdateRequest = signal(0);
   readonly requestedResearchUrl = signal<string | null>(null);
   readonly requestedResearchQuery = signal<string | null>(null);
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
-  readonly bodyViewerMode = signal<'3d' | '2d' | 'genesis'>('3d');
-  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic'>('skin');
+  readonly bodyViewerMode = signal<'3d' | '2d' | 'cellular' | 'quad' | 'tme' | 'awcim' | 'genesis'>('3d');
+  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic'>('skin');
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
   readonly draftSummaryItems = signal<IDraftSummaryItem[]>([]);
@@ -527,6 +528,43 @@ export class PatientStateService {
     console.log('[PatientStateService] hasIssues computed val =', val, 'issues count =', Object.keys(this.issues()).length, 'goals len =', this.patientGoals().length);
     return val;
   });
+
+  /**
+   * Returns a complete, fully-hydrated IPatient snapshot from active reactive signals
+   * with defensive fallbacks for missing demographics.
+   */
+  public asPatientSnapshot(): import('./patient.types').IPatient {
+    return {
+      id: this.patientId() || 'p001',
+      name: this.patientName() || 'Homo Sapiens (Male, Metabolic Syndrome, 58y)',
+      age: this.patientAge() || 58,
+      gender: (this.patientGender() as any) || 'Male',
+      lastVisit: new Date().toISOString().split('T')[0],
+      preexistingConditions: ['Essential Hypertension', 'Type 2 Diabetes'],
+      history: this.patientHistory() || [],
+      bookmarks: [],
+      issues: this.issues() || {},
+      patientGoals: this.patientGoals() || '',
+      medications: this.medications()?.length ? this.medications() : [
+        { id: 'm1', name: 'Warfarin 5mg', value: '5mg' },
+        { id: 'm2', name: 'Metformin 1000mg', value: '1000mg' },
+        { id: 'm3', name: 'Lisinopril 20mg', value: '20mg' }
+      ],
+      dietarySupplements: this.dynamicNutrients()?.length ? this.dynamicNutrients() : [
+        { id: 's1', name: 'Ginkgo Biloba 120mg', value: '120mg' },
+        { id: 's2', name: 'Ashwagandha 600mg', value: '600mg' },
+        { id: 's3', name: 'Curcumin BCM-95', value: '500mg' }
+      ],
+      vitals: this.vitals()?.bp ? this.vitals() : {
+        bp: '148/94',
+        hr: '76',
+        temp: '36.6',
+        spO2: '98%',
+        weight: '82',
+        height: '175'
+      }
+    };
+  }
 
   readonly inferredAyurvedicTriage = computed(() => {
     const manual = this.ayurvedicStatus();
@@ -807,6 +845,14 @@ export class PatientStateService {
       this.isSynthesisDashboardVisible.update(v => !v);
     } else {
       this.isSynthesisDashboardVisible.set(visible);
+    }
+  }
+
+  toggleSocraticIntake(visible?: boolean) {
+    if (visible === undefined) {
+      this.isSocraticIntakeVisible.update(v => !v);
+    } else {
+      this.isSocraticIntakeVisible.set(visible);
     }
   }
 

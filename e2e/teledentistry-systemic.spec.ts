@@ -10,8 +10,8 @@ test.describe('Teledentistry & Systemic Health Cross-Talk Suite', () => {
 
   test('should render 32-Tooth Odontogram, update TWI grade, and recalculate SIBI score', async ({ page }) => {
 
-    // 2. Select patient Phil Gear
-    await selectPatientByName(page, 'Phil Gear');
+    // 2. Select patient Alexander Vance
+    await selectPatientByName(page, 'Alexander Vance');
 
     // 3. Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.getByTestId('tab-assessments');

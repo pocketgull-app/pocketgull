@@ -139,8 +139,7 @@ export class ExportService {
   private actuarialService = (() => {
     try {
       return inject(ActuarialLongevityService, { optional: true }) || new ActuarialLongevityService();
-    } catch (e) {
-      console.debug('[ExportService] ActuarialLongevityService DI fallback:', (e as Error)?.message);
+    } catch {
       return new ActuarialLongevityService();
     }
   })();
@@ -148,8 +147,7 @@ export class ExportService {
   private researchLectures = (() => {
     try {
       return inject(ResearchLecturesService, { optional: true }) || new ResearchLecturesService();
-    } catch (e) {
-      console.debug('[ExportService] ResearchLecturesService DI fallback:', (e as Error)?.message);
+    } catch {
       return new ResearchLecturesService();
     }
   })();
@@ -157,8 +155,7 @@ export class ExportService {
   private laafFhir = (() => {
     try {
       return inject(LaafFhirHapticScheduleService, { optional: true });
-    } catch (e) {
-      console.debug('[ExportService] LaafFhirHapticScheduleService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   })();
@@ -814,7 +811,7 @@ export class ExportService {
   <title>Pocket Gull Clinical Report — ${patientName}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Permanent+Marker&family=Caveat:wght@700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -830,7 +827,7 @@ export class ExportService {
       --amber: #D97706;
       --violet: #7C3AED;
       --radius: 10px;
-      --font-display: 'Permanent Marker', 'Caveat', cursive, sans-serif;
+      --font-display: 'Outfit', 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
       --font-clinical: 'Inter', system-ui, -apple-system, sans-serif;
       --font-mono: 'Fira Code', monospace;
       --font: var(--font-clinical);

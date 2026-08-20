@@ -24,7 +24,7 @@ export async function fetchWorldHealthBaselines() {
         if (rows && rows.length > 0) {
             bqStats = rows[0];
             isRealBigQuery = true;
-            console.log('[World Health Analytics] BigQuery query successful (including Phil Gear)! Total patients:', bqStats.total_patients, 'Avg age:', bqStats.avg_age);
+            console.log('[World Health Analytics] BigQuery query successful (including De-identified Archetype)! Total patients:', bqStats.total_patients, 'Avg age:', bqStats.avg_age);
         }
     } catch (e: any) {
         console.warn('[World Health Analytics Warning] BigQuery execution failed (likely local ADC/Permissions). Safely continuing with cached offline baselines. Error:', e.message);

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const projectItems = [
+  'main.ts',
   'Dockerfile',
   'package.json',
   'package-lock.json',
@@ -13,6 +14,9 @@ const projectItems = [
   'tsconfig.json',
   'tsconfig.app.json',
   'proxy.conf.mjs',
+  'proxy.conf.json',
+  'tailwind.config.js',
+  'ngsw-config.json',
   'index.html',
   'manifest.webmanifest',
   'favicon.svg',

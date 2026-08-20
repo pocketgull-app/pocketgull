@@ -7,7 +7,7 @@
 
 // ── Subscription Tiers ──────────────────────────────────────────────────
 
-export type SubscriptionTier = 'explorer' | 'practitioner' | 'institution';
+export type SubscriptionTier = 'explorer' | 'academic' | 'practitioner' | 'institution';
 
 /** Usage category identifiers for metering. */
 export type UsageCategory =
@@ -56,6 +56,31 @@ export const TIER_DEFINITIONS: Record<SubscriptionTier, ITierDefinition> = {
       'Limited entity resolution (50/mo)',
       'Limited capability probing (25/mo)',
       'Community support'
+    ]
+  },
+  academic: {
+    name: 'academic',
+    label: 'Resident & Academic ($19/mo or $149/yr)',
+    priceMonthlyUsd: 19,
+    quotas: {
+      discovery_read: -1,
+      discovery_resolve: 500,
+      discovery_probe: 250,
+      tool_execution: 2500,
+      pipeline_graph: 100
+    },
+    stripePriceIds: [
+      process.env['STRIPE_PRICE_ACADEMIC_LIVE'] || '',
+      process.env['STRIPE_PRICE_ACADEMIC'] || '',
+      'price_1U4AcademicResidencyPass2026'
+    ].filter(Boolean),
+    features: [
+      'Residency OSCE Clinical Simulator & ACGME Scoring',
+      'Keju AI Board Exam Arena & Socratic DxRadar',
+      'Ambient Clinical Scribe (10 hrs/mo training)',
+      'N-of-1 Clinical Experiment Designer',
+      'CME / GME Expense Receipt Generator',
+      '.edu verified student & resident pricing'
     ]
   },
   practitioner: {
@@ -115,7 +140,7 @@ export const TIER_DEFINITIONS: Record<SubscriptionTier, ITierDefinition> = {
 // ── Helpers ─────────────────────────────────────────────────────────────
 
 /** Ordered tier hierarchy for comparison. */
-const TIER_ORDER: SubscriptionTier[] = ['explorer', 'practitioner', 'institution'];
+const TIER_ORDER: SubscriptionTier[] = ['explorer', 'academic', 'practitioner', 'institution'];
 
 /**
  * Returns true if `actual` tier meets or exceeds `required` tier.

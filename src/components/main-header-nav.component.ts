@@ -56,6 +56,16 @@ import { SessionStateService } from '../services/session-state.service';
             <span class="text-xs font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">{{ network.isOnline() ? 'System Ready' : 'System Offline' }}</span>
           </div>
 
+          <!-- Socratic Intake Studio Button -->
+          <button 
+            type="button" 
+            id="btn-socratic-intake-nav"
+            (click)="openSocraticIntake.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer"
+            title="Open Socratic Patient Intake Studio & FIFE Question Generator">
+            <span>✨ Socratic Intake</span>
+          </button>
+
           <!-- Companion App Sync Button -->
           <button 
             type="button" 
@@ -279,6 +289,7 @@ export class MainHeaderNavComponent {
 
   today = new Date();
 
+  openSocraticIntake = output<void>();
   openCompanionSync = output<void>();
   openBioNetworkQr = output<void>();
   openBillingDashboard = output<void>();

@@ -61,9 +61,9 @@ export class ClinicalIntelligenceService {
     private orcid = inject(OrcidService);
     private webgpu = inject(WebLLMProvider);
     readonly guardrails = inject(DefensiveGuardrailsService);
-    readonly moeRouter = (() => { try { return inject(ClinicalMoERouterService); } catch (e) { console.debug('[ClinicalIntelligence] ClinicalMoERouterService DI fallback:', (e as Error)?.message); return new ClinicalMoERouterService(); } })();
-    private petAuditory = (() => { try { return inject(PetAuditoryService, { optional: true }); } catch (e) { console.debug('[ClinicalIntelligence] PetAuditoryService DI fallback:', (e as Error)?.message); return null; } })();
-    private themeService = (() => { try { return inject(ThemeService, { optional: true }); } catch (e) { console.debug('[ClinicalIntelligence] ThemeService DI fallback:', (e as Error)?.message); return null; } })();
+    readonly moeRouter = inject(ClinicalMoERouterService, { optional: true }) || new ClinicalMoERouterService();
+    private petAuditory = inject(PetAuditoryService, { optional: true });
+    private themeService = inject(ThemeService, { optional: true });
 
     readonly isLoading = signal<boolean>(false);
     readonly webgpuProgress = this.webgpu.loadingProgress;
@@ -481,6 +481,7 @@ Recommends voluntary pre-conception carrier screening for autosomal recessive tr
     }
 
     private async fetchClinicalProtocols(query: string): Promise<string> {
+        if (typeof window === 'undefined') return '';
         try {
             const res = await fetch('/api/ai/vertex-search', {
                 method: 'POST',

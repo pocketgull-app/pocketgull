@@ -9,6 +9,7 @@ import { IBookmark } from '../services/patient.types';
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { PatientEducationFlipDirective, IPatientEducationFlipData } from '../directives/patient-education-flip.directive';
+import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
   id: string;
@@ -171,12 +172,27 @@ export interface IPubMedSearchResult {
         <!-- Smart Patient Context Chips (Zero-Typing Query Builder) -->
         <div class="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           <span class="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest shrink-0 flex items-center gap-1">
-            <span>⚡</span> Smart Context Chips:
+            <span>⚡</span> Smart Context:
           </span>
           @for (chip of smartContextChips(); track chip.label) {
             <button (click)="appendSmartChip(chip.query)"
                     class="px-2 py-0.5 text-[11px] font-semibold bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 rounded-full hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-all shrink-0">
               {{ chip.label }}
+            </button>
+          }
+        </div>
+
+        <!-- Leading Biomedical & Citizen Science Research Institutions -->
+        <div class="mt-1.5 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest shrink-0 flex items-center gap-1">
+            <span>🏛️</span> Research Institutions:
+          </span>
+          @for (inst of researchInstitutions(); track inst.name) {
+            <button (click)="searchInstitution(inst)"
+                    [title]="inst.description"
+                    class="px-2 py-0.5 text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-all shrink-0 flex items-center gap-1">
+              <span>{{ inst.icon }}</span>
+              <span>{{ inst.name }}</span>
             </button>
           }
         </div>
@@ -465,9 +481,29 @@ export class ResearchFrameComponent implements OnDestroy {
     return results.filter(r => (r.evidenceTier || 'LEVEL_A') === tier);
   });
 
+  researchInstitutions = signal([
+    { name: 'Francis Crick Inst.', domain: 'crick.ac.uk', query: 'site:crick.ac.uk', icon: '🔬', description: 'Cellular ultrastructure, SBF-SEM & cancer metabolomics' },
+    { name: 'Univ. of Oxford', domain: 'ox.ac.uk', query: 'site:ox.ac.uk', icon: '🏛️', description: 'Citizen science data governance & clinical trials' },
+    { name: 'Zooniverse Consort.', domain: 'zooniverse.org', query: 'site:zooniverse.org', icon: '🌌', description: 'Consensus aggregations & Caesar rules' },
+    { name: 'NIH / NLM', domain: 'nih.gov', query: 'site:nih.gov OR site:ncbi.nlm.nih.gov', icon: '📚', description: 'PubMed, MeSH & genomic databases' },
+    { name: 'EMBL-EBI', domain: 'ebi.ac.uk', query: 'site:ebi.ac.uk', icon: '🧬', description: 'ChEMBL, Ensembl & bioactivity databases' },
+    { name: 'Harvard / MGH', domain: 'massgeneral.org', query: 'site:massgeneral.org OR site:hms.harvard.edu', icon: '🏥', description: 'Evidence-based clinical guidelines' },
+    { name: 'Mayo Clinic', domain: 'mayoclinic.org', query: 'site:mayoclinic.org', icon: '🩺', description: 'Practice protocols & patient clinical summaries' }
+  ]);
+
   appendSmartChip(query: string): void {
     const current = this.searchText();
     this.searchText.set(current ? `${current} AND (${query})` : query);
+    this.search();
+  }
+
+  searchInstitution(inst: { name: string; query: string }): void {
+    const current = this.searchText();
+    if (current && !current.includes(inst.query)) {
+      this.searchText.set(`${current} (${inst.query})`);
+    } else {
+      this.searchText.set(inst.query);
+    }
     this.search();
   }
 
@@ -820,7 +856,8 @@ export class ResearchFrameComponent implements OnDestroy {
     if (existing) return;
 
     // Remove any trailing period from title for cleaner bookmark
-    const cleanTitle = result.title.replace(/\.$/, '');
+    const rawTitle = result.title || '';
+    const cleanTitle = rawTitle.endsWith('.') ? rawTitle.slice(0, -1) : rawTitle;
 
     this.patientManager.addBookmark({
       title: cleanTitle || `PMID: ${result.id}`,
@@ -833,7 +870,9 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   saveResultToActiveRoomNotes(res: IPubMedSearchResult) {
-    const cleanTitle = (res.title || '').replace(/<[^>]*>?/gm, '').trim();
+    const hasOwnDefault = Object.prototype.hasOwnProperty.call(DOMPurify, 'default');
+    const purify = (hasOwnDefault ? (DOMPurify as any).default : DOMPurify) as { sanitize: (val: string, opts?: any) => string };
+    const cleanTitle = purify.sanitize(res.title || '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
     const takeaway = res.bottomLineTakeaway || 'Clinical evidence supports therapeutic benefit.';
     const text = `🔬 [Literature Finding]: ${cleanTitle}\n💡 Takeaway: ${takeaway}\n(Source: ${res.source || 'PubMed'}, DOI: ${res.doi || 'N/A'})`;
     
@@ -849,7 +888,9 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   saveResultToActiveRoomTask(res: IPubMedSearchResult) {
-    const cleanTitle = (res.title || '').replace(/<[^>]*>?/gm, '').trim();
+    const hasOwnDefault = Object.prototype.hasOwnProperty.call(DOMPurify, 'default');
+    const purify = (hasOwnDefault ? (DOMPurify as any).default : DOMPurify) as { sanitize: (val: string, opts?: any) => string };
+    const cleanTitle = purify.sanitize(res.title || '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
     const text = `Review ${res.source || 'PubMed'} evidence: ${cleanTitle.substring(0, 85)}...`;
     
     this.patientState.checklist.update(items => [
@@ -866,8 +907,11 @@ export class ResearchFrameComponent implements OnDestroy {
     const existing = this.bookmarks().find(b => b.url === url);
     if (existing) return;
 
+    const host = new URL(url).hostname;
+    const cleanHost = host.startsWith('www.') ? host.slice(4) : host;
+
     this.patientManager.addBookmark({
-      title: title || new URL(url).hostname.replace(/^www\./, ''),
+      title: title || cleanHost,
       url,
       isPeerReviewed: false,
       cited: this.autoCite()
@@ -880,7 +924,8 @@ export class ResearchFrameComponent implements OnDestroy {
 
     try {
       const urlObject = new URL(url);
-      let title = urlObject.hostname.replace(/^www\./, '');
+      const host = urlObject.hostname;
+      let title = host.startsWith('www.') ? host.slice(4) : host;
       const path = urlObject.pathname.substring(1).split('/')[0];
       if (path) title += `/${path}`;
 

@@ -2,7 +2,7 @@
 
 [![SIL OFL 1.1](https://img.shields.io/badge/License-SIL%20OFL%201.1-amber.svg)](https://scripts.sil.org/OFL)
 [![WCAG 2.1 AAA](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AAA-emerald.svg)](file:///c:/Users/philg/Pocketgull/pocketgull/e2e/pocketgull-typeface-wcag.spec.ts)
-[![GitHub Pages](https://img.shields.io/badge/Live%20Specimen-github.io-blue.svg)](https://philgear.github.io/PocketGull-typeface)
+[![GitHub Pages](https://img.shields.io/badge/Live%20Specimen-github.io-blue.svg)](https://pocketgull-app.github.io/PocketGull-typeface)
 
 **PocketGull** is an open-source felt-tip marker and high-contrast clinical typeface suite designed for digital health applications, papercraft UI branding, and zero-error ICU medical chart readouts.
 

@@ -1,0 +1,27 @@
+name: 'HIPAA Safe Harbor PHI/PII Scanner'
+description: 'Automated GitHub Action to scan repositories, PR diffs, and datasets for the 18 HIPAA §164.514 Safe Harbor de-identification violations.'
+author: 'Phil Gear (PocketGull Project)'
+inputs:
+  scan-path:
+    description: 'Path or glob pattern to scan (defaults to repository root)'
+    required: false
+    default: '.'
+  fail-on-violation:
+    description: 'Whether to fail the CI build if potential PHI/PII is detected'
+    required: false
+    default: 'true'
+  ignore-paths:
+    description: 'Comma-separated list of glob patterns to ignore'
+    required: false
+    default: 'node_modules/**,dist/**,.git/**,.venv/**,package-lock.json'
+outputs:
+  violations-found:
+    description: 'Total number of suspected PHI/PII violations found'
+  scan-report:
+    description: 'Detailed JSON summary of scan results'
+runs:
+  using: 'node20'
+  main: 'index.js'
+branding:
+  icon: 'shield'
+  color: 'blue'

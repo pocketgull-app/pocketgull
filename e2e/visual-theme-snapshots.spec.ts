@@ -93,7 +93,7 @@ test.describe('Automated Theme & Persona Visual Snapshot Suite', () => {
     // Toggle Macro Fleet Sentinel Scope
     const macroBtn = page.locator('button', { hasText: 'Macro Fleet' }).first();
     if (await macroBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await macroBtn.click();
+      await macroBtn.click({ force: true });
       await page.waitForTimeout(500);
     }
   });

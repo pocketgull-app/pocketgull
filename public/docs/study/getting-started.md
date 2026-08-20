@@ -1,10 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: Getting Started
-description: "How to clone, install, run, and deploy Pocket Gull."
----
-import DocNode from '../components/DocNode.astro';
-
 # Getting Started
 
 **Developer Profile:** [developers.google.com/profile/philgear](https://developers.google.com/profile/philgear)
@@ -14,9 +7,9 @@ import DocNode from '../components/DocNode.astro';
 
 ## Prerequisites
 
-- <DocNode term="Node.js" category="OpenJS Foundation" hint="JavaScript runtime built on Chrome's V8 engine. Originally created by Ryan Dahl in 2009. Pocket Gull requires v20+." link="https://nodejs.org/en/docs" linkLabel="nodejs.org →" icon="https://nodejs.org/favicon.ico">Node.js</DocNode> ≥ 20.0.0
+- [Node.js](https://nodejs.org/en/docs "[OpenJS Foundation] JavaScript runtime built on Chrome's V8 engine. Originally created by Ryan Dahl in 2009. Pocket Gull requires v20+.") ≥ 20.0.0
 - npm
-- A <DocNode term="Gemini API Key" category="Google DeepMind" hint="Personal API key from Google AI Studio. Used for local development. In production, Vertex AI Enterprise via Application Default Credentials is used instead." link="https://aistudio.google.com/apikey" linkLabel="Get API Key →" icon="https://ai.google.dev/favicon.ico">Gemini API key</DocNode> for local development — **or** <DocNode term="Google Cloud ADC" category="Google Cloud" hint="Application Default Credentials. In production and Cloud Run, Pocket Gull authenticates to Vertex AI Enterprise automatically via ADC — no API key required." link="https://cloud.google.com/docs/authentication/application-default-credentials" linkLabel="ADC Docs →" icon="https://www.gstatic.com/devrel-devsite/prod/v0e0f589edd85502a40d78d7d0825db8ea5ef3b99ab4070381571c97ab7df9861/cloud/images/favicons/onecloud/favicon.ico">Google Cloud ADC</DocNode> for production/Cloud Run
+- A [Gemini API key](https://aistudio.google.com/apikey "[Google DeepMind] Personal API key from Google AI Studio. Used for local development. In production, Vertex AI Enterprise via Application Default Credentials is used instead.") for local development — **or** [Google Cloud ADC](https://cloud.google.com/docs/authentication/application-default-credentials "[Google Cloud] Application Default Credentials. In production and Cloud Run, Pocket Gull authenticates to Vertex AI Enterprise automatically via ADC — no API key required.") for production/Cloud Run
 
 ---
 
@@ -53,7 +46,7 @@ npm run build
 npm run preview
 ```
 
-The production build outputs to `dist/` with full <DocNode term="Angular SSR" category="Google · Angular Team" hint="Server-Side Rendering — Angular renders the initial page on the Express.js server, then hydrates client-side. Faster first paint and SEO." link="https://angular.dev/guide/ssr" linkLabel="SSR Guide →" icon="https://angular.dev/favicon.ico">SSR</DocNode> support.
+The production build outputs to `dist/` with full [SSR](https://angular.dev/guide/ssr "[Google · Angular Team] Server-Side Rendering — Angular renders the initial page on the Express.js server, then hydrates client-side. Faster first paint and SEO.") support.
 
 ```mermaid
 sequenceDiagram
@@ -105,7 +98,7 @@ npx vitest run tests/safety.spec.ts
 
 ## Deployment
 
-Pocket Gull is architecturally designed to deploy to <DocNode term="Google Cloud Run" category="Google Cloud" hint="Fully managed serverless container platform. Auto-scales from zero. Pocket Gull deploys as a Docker container with Express.js + Angular SSR." link="https://cloud.google.com/run/docs" linkLabel="Cloud Run Docs →" icon="https://www.gstatic.com/devrel-devsite/prod/v0e0f589edd85502a40d78d7d0825db8ea5ef3b99ab4070381571c97ab7df9861/cloud/images/favicons/onecloud/favicon.ico">**Google Cloud Run**</DocNode>.
+Pocket Gull is architecturally designed to deploy to [**Google Cloud Run**](https://cloud.google.com/run/docs "[Google Cloud] Fully managed serverless container platform. Auto-scales from zero. Pocket Gull deploys as a Docker container with Express.js + Angular SSR.").
 
 ### Live Deployment
 
@@ -126,8 +119,8 @@ This runs `npm run build` followed by `gcloud run deploy` targeting the `gen-lan
 
 | File | Purpose |
 |---|---|
-| <DocNode term="Dockerfile" category="Docker · Solomon Hykes" hint="Container build configuration. Docker was created by Solomon Hykes at dotCloud (now Docker, Inc.)." link="https://docs.docker.com/reference/dockerfile/" linkLabel="Dockerfile Reference →" icon="https://www.docker.com/favicon.ico">`Dockerfile`</DocNode> | Container build — Node.js production image |
-| `src/server.ts` | <DocNode term="Express.js" category="OpenJS Foundation" hint="Minimal Node.js web framework by TJ Holowaychuk. Handles SSR, API proxy, WebSocket live streaming, and static serving." link="https://expressjs.com/" linkLabel="expressjs.com →" icon="https://expressjs.com/images/favicon.png">Express.js</DocNode> backend — SSR, Vertex AI proxy, WebSocket live audio, static serving |
+| [`Dockerfile`](https://docs.docker.com/reference/dockerfile/ "[Docker · Solomon Hykes] Container build configuration. Docker was created by Solomon Hykes at dotCloud (now Docker, Inc.).") | Container build — Node.js production image |
+| `src/server.ts` | [Express.js](https://expressjs.com/ "[OpenJS Foundation] Minimal Node.js web framework by TJ Holowaychuk. Handles SSR, API proxy, WebSocket live streaming, and static serving.") backend — SSR, Vertex AI proxy, WebSocket live audio, static serving |
 | `src/server/dicom.ts` | DICOM proxy router (QIDO-RS / WADO-RS / STOW-RS) |
 | `src/server/healthcare.ts` | FHIR R4 Healthcare API router |
 | `src/server/fitbit.ts` | Google Health API OAuth + biometric sync router |

@@ -6,7 +6,7 @@ test.describe('Cohort Triage Matrix, HIPAA PDF Export & Card Ergonomics E2E Suit
     test.setTimeout(60000);
     await setupE2ePage(page);
     await enterDemoMode(page);
-    await selectPatientByName(page, 'Phil Gear');
+    await selectPatientByName(page, 'Homo Sapiens');
 
     // Scroll down to trigger Angular @defer (on viewport) block for analysis container toolbar
     await page.evaluate(() => window.scrollTo(0, 1500));
@@ -32,7 +32,7 @@ test.describe('Cohort Triage Matrix, HIPAA PDF Export & Card Ergonomics E2E Suit
     await page.waitForTimeout(500);
 
     // Verify patient rows rendered in table
-    const patientRows = page.locator('tr').filter({ hasText: /Homo Sapiens|Phil Gear/i });
+    const patientRows = page.locator('tr').filter({ hasText: /Homo Sapiens/i });
     expect(await patientRows.count()).toBeGreaterThan(0);
   });
 

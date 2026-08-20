@@ -6,6 +6,7 @@ on:
   schedule:
     # Run every Monday at 6:00 AM UTC
     - cron: '0 6 * * 1'
+  workflow_dispatch:
 
 # Required permissions for Scorecard
 permissions:
@@ -37,6 +38,7 @@ jobs:
         with:
           results_file: results.sarif
           results_format: sarif
+          repo_token: ${{ secrets.SCORECARD_TOKEN || secrets.GITHUB_TOKEN }}
           publish_results: true
 
       - name: Upload Scorecard Results to Security Tab

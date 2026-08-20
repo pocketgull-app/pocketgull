@@ -132,6 +132,10 @@ export class StorageService {
     });
   }
 
+  private get hasIndexedDb(): boolean {
+    return this.isBrowser && typeof window !== 'undefined' && !!window.indexedDB;
+  }
+
   async saveState(id: string, state: IPatientState): Promise<void> {
     if (!this.isBrowser) return;
     if (this.isE2e) {
@@ -140,6 +144,7 @@ export class StorageService {
       this.memDb.set(id, current);
       return;
     }
+    if (!this.hasIndexedDb) return;
     try {
       const db = await this.initDB();
       const existing = await this.idbGet(db, this.STORE_NAME, id);
@@ -172,6 +177,7 @@ export class StorageService {
       this.memDb.set(id, current);
       return;
     }
+    if (!this.hasIndexedDb) return;
     try {
       const db = await this.initDB();
       const existing = await this.idbGet(db, this.STORE_NAME, id);
@@ -197,7 +203,7 @@ export class StorageService {
   }
 
   async loadState(id: string): Promise<{ state: IPatientState, chatHistory: any[] } | null> {
-    if (!this.isBrowser) return null;
+    if (!this.isBrowser || !this.hasIndexedDb) return null;
     if (this.isE2e) {
       const data = this.memDb.get(id);
       if (data) return data;
@@ -225,7 +231,7 @@ export class StorageService {
 
   // --- Patient Roster Operations ---
   async loadPatients(): Promise<any[]> {
-    if (!this.isBrowser) return [];
+    if (!this.isBrowser || !this.hasIndexedDb) return [];
     if (this.isE2e) {
       const roster = this.memDb.get('roster') || [];
       return roster;

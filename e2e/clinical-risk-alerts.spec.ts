@@ -1,33 +1,10 @@
 import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-/** Helper to select a patient by name from the dropdown */
-async function selectPatientByName(page: import('@playwright/test').Page, name: string) {
-  // Click patient dropdown
-  const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
-  await expect(dropdownBtn).toBeVisible({ timeout: 15000 });
-  await dropdownBtn.click();
-  await page.waitForTimeout(500);
-
-  const option = page.locator('app-patient-dropdown button', { hasText: name }).first();
-  if (await option.isVisible({ timeout: 3000 }).catch(() => false)) {
-    await option.click();
-  } else {
-    const searchInput = page.locator('app-patient-dropdown input[placeholder*="Search"]');
-    if (await searchInput.isVisible().catch(() => false)) {
-      await searchInput.fill(name);
-      await searchInput.dispatchEvent('input');
-      await page.waitForTimeout(300);
-      await page.locator('app-patient-dropdown button', { hasText: name }).first().click();
-    }
-  }
-  await page.waitForTimeout(500);
-}
 
 test.describe('Clinical Risk Alerts UI Transitions', () => {
   test.beforeEach(async ({ page }) => {
@@ -35,13 +12,13 @@ test.describe('Clinical Risk Alerts UI Transitions', () => {
     await setupE2ePage(page);
   });
 
-  test('should dynamically transition clinical risk levels for Alexander Vance', async ({ page }) => {
+  test('should dynamically transition clinical risk levels for Homo Sapiens', async ({ page }) => {
     // 1. Setup & Login
     await enterDemoMode(page);
-    await selectPatientByName(page, 'Alexander Vance');
+    await selectPatientByName(page, 'Homo Sapiens');
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    // 2. Verify Initial State (Alexander Vance default is low risk)
+    // 2. Verify Initial State (Homo Sapiens default is low risk)
     const initialRiskCard = page.locator('text=Clinical Triage Risk');
     await expect(initialRiskCard).toBeVisible({ timeout: 10000 });
     
@@ -102,7 +79,7 @@ test.describe('Clinical Risk Alerts UI Transitions', () => {
 
     // Verify it drops back down to Low Risk
     await expect(lowRiskBadge).toBeVisible({ timeout: 15000 });
-    console.log('[PASS] Phil Gear: Low -> Critical -> Low Risk transitions verified.');
+    console.log('[PASS] Homo Sapiens: Low -> Critical -> Low Risk transitions verified.');
   });
 
   test('should verify triage scoring and containment indicators for CDC Sentinel', async ({ page }) => {

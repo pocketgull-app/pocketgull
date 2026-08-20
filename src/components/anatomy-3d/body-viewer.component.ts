@@ -6,11 +6,24 @@ import { PatientManagementService } from '../../services/patient-management.serv
 import { Body3DViewerComponent } from './body-3d-viewer.component';
 import { GenesisBiophysicalSubstrateComponent } from './genesis-biophysical-substrate.component';
 import { ThemeService } from '../../services/theme.service';
+import { TypographicAnatomyService } from '../../services/typographic-anatomy.service';
+import { CellularBiophysicsViewerComponent } from '../shared/cellular-biophysics-viewer.component';
+import { QuadPhilosophyMatrixComponent } from '../shared/quad-philosophy-matrix.component';
+import { ImmunoOncologyTmeViewerComponent } from '../shared/immuno-oncology-tme-viewer.component';
+import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative-prescriber.component';
 
 @Component({
   selector: 'app-body-viewer',
   standalone: true,
-  imports: [CommonModule, Body3DViewerComponent, GenesisBiophysicalSubstrateComponent],
+  imports: [
+    CommonModule, 
+    Body3DViewerComponent, 
+    GenesisBiophysicalSubstrateComponent,
+    CellularBiophysicsViewerComponent,
+    QuadPhilosophyMatrixComponent,
+    ImmunoOncologyTmeViewerComponent,
+    AwcimIntegrativePrescriberComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `    
     <div class="flex flex-col h-full w-full bg-white/70 dark:bg-zinc-900 backdrop-blur-[12px] text-gray-900 dark:text-zinc-100 rounded-2xl overflow-hidden border border-gray-200 dark:border-zinc-800 shadow-xl font-sans relative pocket-gull-card">
@@ -31,36 +44,68 @@ import { ThemeService } from '../../services/theme.service';
         <div class="flex items-center gap-2">
           <span class="text-lg">👤</span>
           <div>
-            <h3 class="text-sm font-extrabold text-gray-900 dark:text-zinc-100 uppercase tracking-wide">Interactive Body Twin</h3>
-            <p class="text-[10px] text-gray-500 dark:text-zinc-400 font-mono">Biophysical Subsurface Scattering & Spatial Anatomy</p>
+            <h3 class="text-sm font-extrabold text-gray-900 dark:text-zinc-100 uppercase tracking-wide">Interactive Body Twin &amp; Multi-Scale Suite</h3>
+            <p class="text-[10px] text-gray-500 dark:text-zinc-400 font-mono">Macro Anatomy • Cellular Biophysics • Quad-Tradition Crosswalk • Immuno-Oncology</p>
           </div>
         </div>
 
         <div class="flex items-center gap-2 flex-wrap">
-          <!-- 3D vs 2D vs Genesis Viewport Mode Switcher (Tap-Target Friendly min 44px) -->
-          <div class="flex items-center gap-1 bg-gray-200/80 dark:bg-zinc-950 p-1.5 rounded-lg border border-gray-300/80 dark:border-zinc-800 text-xs font-mono">
+          <!-- Multi-Scale Viewport Mode Switcher (Tap-Target Friendly min 44px) -->
+          <div class="flex items-center gap-1 bg-gray-200/80 dark:bg-zinc-950 p-1.5 rounded-xl border border-gray-300/80 dark:border-zinc-800 text-xs font-mono flex-wrap">
             <button (click)="state.bodyViewerMode.set('3d')" 
                     [class.bg-teal-600]="state.bodyViewerMode() === '3d'" 
                     [class.text-white]="state.bodyViewerMode() === '3d'" 
                     [class.text-gray-700]="state.bodyViewerMode() !== '3d'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== '3d'" 
-                    class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1.5">
-              <span>🧊</span> 3D Model
+                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+              <span>🧊</span> 3D Whole-Body
             </button>
             <button (click)="state.bodyViewerMode.set('2d')" 
                     [class.bg-sky-600]="state.bodyViewerMode() === '2d'" 
                     [class.text-white]="state.bodyViewerMode() === '2d'" 
                     [class.text-gray-700]="state.bodyViewerMode() !== '2d'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== '2d'" 
-                    class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1.5">
-              <span>🗺️</span> 2D Model
+                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+              <span>🗺️</span> 2D Atlas
+            </button>
+            <button (click)="state.bodyViewerMode.set('cellular')" 
+                    [class.bg-cyan-600]="state.bodyViewerMode() === 'cellular'" 
+                    [class.text-white]="state.bodyViewerMode() === 'cellular'" 
+                    [class.text-gray-700]="state.bodyViewerMode() !== 'cellular'" 
+                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'cellular'" 
+                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+              <span>🔬</span> Cellular 3D
+            </button>
+            <button (click)="state.bodyViewerMode.set('quad')" 
+                    [class.bg-purple-600]="state.bodyViewerMode() === 'quad'" 
+                    [class.text-white]="state.bodyViewerMode() === 'quad'" 
+                    [class.text-gray-700]="state.bodyViewerMode() !== 'quad'" 
+                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'quad'" 
+                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+              <span>🏛️</span> 4-Way Matrix
+            </button>
+            <button (click)="state.bodyViewerMode.set('tme')" 
+                    [class.bg-rose-600]="state.bodyViewerMode() === 'tme'" 
+                    [class.text-white]="state.bodyViewerMode() === 'tme'" 
+                    [class.text-gray-700]="state.bodyViewerMode() !== 'tme'" 
+                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'tme'" 
+                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+              <span>🎯</span> Immuno-Oncology
+            </button>
+            <button (click)="state.bodyViewerMode.set('awcim')" 
+                    [class.bg-emerald-600]="state.bodyViewerMode() === 'awcim'" 
+                    [class.text-white]="state.bodyViewerMode() === 'awcim'" 
+                    [class.text-gray-700]="state.bodyViewerMode() !== 'awcim'" 
+                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'awcim'" 
+                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+              <span>🌿</span> AWCIM Lab
             </button>
             <button (click)="state.bodyViewerMode.set('genesis')" 
                     [class.bg-amber-600]="state.bodyViewerMode() === 'genesis'" 
                     [class.text-white]="state.bodyViewerMode() === 'genesis'" 
                     [class.text-gray-700]="state.bodyViewerMode() !== 'genesis'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'genesis'" 
-                    class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1.5">
+                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🧬</span> Genesis Substrate
             </button>
           </div>
@@ -135,8 +180,33 @@ import { ThemeService } from '../../services/theme.service';
               <p class="text-sm font-medium uppercase tracking-widest text-zinc-400">Loading 3D Engine...</p>
             </div>
           }
+        } @else if (state.bodyViewerMode() === 'cellular') {
+          <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
+            <app-cellular-biophysics-viewer class="w-full block"></app-cellular-biophysics-viewer>
+          </div>
+        } @else if (state.bodyViewerMode() === 'quad') {
+          <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
+            <app-quad-philosophy-matrix class="w-full block"></app-quad-philosophy-matrix>
+          </div>
+        } @else if (state.bodyViewerMode() === 'tme') {
+          <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
+            <app-immuno-oncology-tme-viewer class="w-full block"></app-immuno-oncology-tme-viewer>
+          </div>
+        } @else if (state.bodyViewerMode() === 'awcim') {
+          <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
+            <app-awcim-integrative-prescriber class="w-full block"></app-awcim-integrative-prescriber>
+          </div>
         } @else if (state.bodyViewerMode() === 'genesis') {
-          <app-genesis-biophysical-substrate class="w-full h-full flex-1 flex flex-col min-h-[540px]"></app-genesis-biophysical-substrate>
+          <div class="w-full h-full flex-1 flex flex-col min-h-[540px]">
+            <div class="p-3 bg-amber-950/40 border-b border-amber-500/30 text-amber-200 text-xs font-mono flex items-center justify-between gap-2 shrink-0">
+              <div class="flex items-center gap-2">
+                <span>🧬</span>
+                <span><strong>Genesis Biophysical Substrate Lens:</strong> PBR Optical Physics &amp; Microscopic Tissue Simulation (Bone Trabeculae $\\Delta$BMD, Endothelial Shear Stress, Dental SIBI).</span>
+              </div>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 uppercase">Edwin Smith Codex</span>
+            </div>
+            <app-genesis-biophysical-substrate class="w-full h-full flex-1 flex flex-col"></app-genesis-biophysical-substrate>
+          </div>
         } @else {
           <!-- 2D SVG Schematic (Redrawn Holographic Medical Vector Twin) -->
           <div class="h-full w-full flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-b from-slate-900/50 via-zinc-900/40 to-slate-950/60 rounded-xl">
@@ -175,6 +245,11 @@ import { ThemeService } from '../../services/theme.service';
                   <feGaussianBlur stdDeviation="2" result="blur" />
                   <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
+
+                <!-- 🔤 Typographic Anatomy Text Paths -->
+                @for (part of typographicAnatomy.parts; track part.id) {
+                  <path [attr.id]="'typo-path-' + part.id" [attr.d]="part.pathD" fill="none" />
+                }
               </defs>
 
               <g [attr.transform]="bodyTransform()">
@@ -183,7 +258,8 @@ import { ThemeService } from '../../services/theme.service';
                     <!-- 1. SKIN BASE CONTOUR (Anatomically Proportional Body Outline) -->
                     <path class="skin-base fill-[url(#skinGradient)] stroke-sky-400/40 stroke-[1.5] transition-all duration-500" 
                           [attr.d]="fullBodySkinPathFront()" 
-                          [class.opacity-20]="state.anatomyViewMode() !== 'skin'" />
+                          [class.opacity-20]="state.anatomyViewMode() !== 'skin' && state.anatomyViewMode() !== 'typographic'"
+                          [class.opacity-10]="state.anatomyViewMode() === 'typographic'" />
 
                     <!-- 2. MUSCLE LAYER (Pectoralis, Abdominals, Quadriceps, Deltoids) -->
                     <g class="muscle-layer transition-opacity duration-500" 
@@ -360,10 +436,45 @@ import { ThemeService } from '../../services/theme.service';
                             (mousemove)="showTooltip($event, 'Right Foot & Ankle')" 
                             (mouseleave)="hideTooltip()"/>
                     </g>
+
+                    <!-- 8. TYPOGRAPHIC CALLIGRAMME ANATOMY LAYER (Every Human Body Part in Vector Type) -->
+                    <g class="typographic-layer transition-opacity duration-500" 
+                       [class.opacity-100]="state.anatomyViewMode() === 'typographic'" 
+                       [class.opacity-0]="state.anatomyViewMode() !== 'typographic'">
+                      @for (part of typographicAnatomy.parts; track part.id) {
+                        <text 
+                          [attr.font-size]="part.fontSize"
+                          [attr.font-weight]="part.weight"
+                          [attr.fill]="typographicAnatomy.isPartAlerted(part) ? part.alertColor : part.defaultColor"
+                          class="font-pocketgull-sans cursor-pointer hover:opacity-100 transition-all select-none drop-shadow-sm"
+                          [class.animate-pulse]="typographicAnatomy.isPartAlerted(part)"
+                          (click)="select(part.id, typographicAnatomy.getLabelForPart(part))"
+                          (mousemove)="showTooltip($event, typographicAnatomy.getLabelForPart(part) + ' • ' + part.clinicalDescription)"
+                          (mouseleave)="hideTooltip()">
+                          <textPath 
+                            [attr.href]="'#typo-path-' + part.id"
+                            [attr.startOffset]="part.startOffset || '50%'"
+                            [attr.text-anchor]="part.textAnchor || 'middle'">
+                            {{ typographicAnatomy.getLabelForPart(part) }}
+                          </textPath>
+                        </text>
+                      }
+                    </g>
                   </g>
                 }
               </g>
             </svg>
+
+            <!-- Floating Typographic Language Switcher Overlay -->
+            @if (state.anatomyViewMode() === 'typographic') {
+              <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
+                <button 
+                  (click)="typographicAnatomy.cycleLanguage()"
+                  class="px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 rounded-xl text-xs font-mono font-bold shadow-xl transition flex items-center gap-1.5 cursor-pointer backdrop-blur-md">
+                  <span>🌐 Nomina: {{ typographicAnatomy.languageMode().toUpperCase() }}</span>
+                </button>
+              </div>
+            }
           </div>
         }
       </div>
@@ -384,6 +495,7 @@ import { ThemeService } from '../../services/theme.service';
             <button (click)="state.anatomyViewMode.set('muscle')" [class.bg-teal-600]="state.anatomyViewMode() === 'muscle'" [class.text-white]="state.anatomyViewMode() === 'muscle'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'muscle'" [class.text-zinc-300]="state.anatomyViewMode() !== 'muscle'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🦾 Muscle</button>
             <button (click)="state.anatomyViewMode.set('skeleton')" [class.bg-rose-600]="state.anatomyViewMode() === 'skeleton'" [class.text-white]="state.anatomyViewMode() === 'skeleton'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'skeleton'" [class.text-zinc-300]="state.anatomyViewMode() !== 'skeleton'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🦴 Skeleton</button>
             <button (click)="state.anatomyViewMode.set('organs')" [class.bg-purple-600]="state.anatomyViewMode() === 'organs'" [class.text-white]="state.anatomyViewMode() === 'organs'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'organs'" [class.text-zinc-300]="state.anatomyViewMode() !== 'organs'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🫀 Organ</button>
+            <button (click)="state.anatomyViewMode.set('typographic')" [class.bg-cyan-600]="state.anatomyViewMode() === 'typographic'" [class.text-white]="state.anatomyViewMode() === 'typographic'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'typographic'" [class.text-zinc-300]="state.anatomyViewMode() !== 'typographic'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🔤 Typo</button>
           </div>
         </div>
       </div>
@@ -407,6 +519,7 @@ export class BodyViewerComponent implements OnDestroy {
   state = inject(PatientStateService);
   patientManagement = inject(PatientManagementService);
   themeService = inject(ThemeService);
+  typographicAnatomy = inject(TypographicAnatomyService);
 
   view = signal<'front' | 'back' | 'side_right' | 'side_left'>('front');
 

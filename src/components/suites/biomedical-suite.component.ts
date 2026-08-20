@@ -1,13 +1,14 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { BiomarkerMatrixComponent } from '../biomarker-matrix.component';
 import { PatientVitalsChartComponent } from '../patient-vitals-chart.component';
+import { TeledentistryOdontogramComponent } from '../teledentistry-odontogram.component';
 
 @Component({
   selector: 'app-biomedical-suite',
   standalone: true,
-  imports: [CommonModule, BiomarkerMatrixComponent, PatientVitalsChartComponent],
+  imports: [CommonModule, BiomarkerMatrixComponent, PatientVitalsChartComponent, TeledentistryOdontogramComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl space-y-6">
@@ -46,6 +47,12 @@ import { PatientVitalsChartComponent } from '../patient-vitals-chart.component';
           <app-patient-vitals-chart [history]="history()" />
         </div>
       </div>
+
+      <!-- Teledentistry FDI Odontogram & SIBI Systemic Cross-Talk Section -->
+      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 font-mono">FDI Odontogram & Systemic Inflammatory Burden (SIBI)</h4>
+        <app-teledentistry-odontogram />
+      </div>
     </div>
   `
 })
@@ -54,3 +61,4 @@ export class BiomedicalSuiteComponent {
   vitals = this.patientState.vitals;
   history = this.patientState.patientHistory;
 }
+

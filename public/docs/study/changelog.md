@@ -1,8 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: Changelog
----
-
 # Changelog
 
 All notable changes to Pocket Gull are documented here.

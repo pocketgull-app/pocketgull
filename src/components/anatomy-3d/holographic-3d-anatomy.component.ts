@@ -294,80 +294,234 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
   private heartMaterial?: THREE.MeshPhysicalMaterial;
 
   private buildProceduralSkeletalMesh() {
-    // Spine vertebrae & ribs (Western Cyan #00E5FF)
-    const boneMaterial = new THREE.MeshPhysicalMaterial({ 
-      color: 0x00e5ff, 
-      transmission: 0.85, 
-      transparent: true, 
-      opacity: 0.9, 
-      roughness: 0.2, 
-      metalness: 0.1, 
-      ior: 1.45, 
-      thickness: 1.2, 
-      clearcoat: 1.0, 
-      clearcoatRoughness: 0.1, 
-      emissive: 0x0284c7, 
-      emissiveIntensity: 0.25 
-    });
-    
-    // Spine column
-    for (let i = 0; i < 12; i++) {
-      const vert = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.12), boneMaterial);
-      vert.position.set(0, 0.4 + i * 0.1, 0);
-      this.skeletalGroup.add(vert);
-    }
-
-    // Skull sphere
-    const skull = new THREE.Mesh(new THREE.SphereGeometry(0.28, 24, 24), boneMaterial);
-    skull.position.set(0, 1.75, 0);
-    this.skeletalGroup.add(skull);
-
-    // SIGGRAPH Neural Volumetric Cardiac Mesh (Dual-stage atrial/ventricular contraction)
-    this.heartMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xef4444,
-      emissive: 0x991b1b,
-      emissiveIntensity: 0.4,
-      roughness: 0.15,
+    // ==========================================
+    // 1. Translucent Human Body Silhouette Membrane
+    // ==========================================
+    const bodyMembraneMat = new THREE.MeshPhysicalMaterial({
+      color: 0x06b6d4,
+      emissive: 0x083344,
+      emissiveIntensity: 0.35,
+      roughness: 0.2,
       metalness: 0.1,
       clearcoat: 1.0,
-      clearcoatRoughness: 0.05,
-      transmission: 0.6,
+      clearcoatRoughness: 0.1,
+      transmission: 0.85,
       transparent: true,
-      thickness: 1.5
+      opacity: 0.45,
+      ior: 1.35,
+      thickness: 2.0
     });
 
-    const heartGeo = new THREE.SphereGeometry(0.14, 24, 24);
-    // Deform sphere to anatomically emulate ventricular apex
-    const pos = heartGeo.attributes.position;
-    for (let i = 0; i < pos.count; i++) {
-      let y = pos.getY(i);
-      if (y < 0) {
-        pos.setX(i, pos.getX(i) * 0.7);
-        pos.setZ(i, pos.getZ(i) * 0.7);
+    // Torso capsule
+    const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 0.85, 16, 24), bodyMembraneMat);
+    torso.position.set(0, 0.95, 0);
+    this.skeletalGroup.add(torso);
+
+    // ==========================================
+    // 2. Cerebral Cortex, Brainstem & Descending Pain Modulatory Axis
+    // ==========================================
+    const brainMat = new THREE.MeshPhysicalMaterial({
+      color: 0x38bdf8,
+      emissive: 0x0284c7,
+      emissiveIntensity: 0.5,
+      roughness: 0.25,
+      metalness: 0.1,
+      clearcoat: 1.0,
+      transmission: 0.4,
+      transparent: true,
+      opacity: 0.95
+    });
+
+    // Sagittal Cerebral Hemispheres (Convoluted surface)
+    const leftHemi = new THREE.Mesh(new THREE.IcosahedronGeometry(0.18, 3), brainMat);
+    leftHemi.position.set(-0.09, 1.82, 0.02);
+    leftHemi.scale.set(0.9, 1.1, 1.3);
+    this.skeletalGroup.add(leftHemi);
+
+    const rightHemi = new THREE.Mesh(new THREE.IcosahedronGeometry(0.18, 3), brainMat);
+    rightHemi.position.set(0.09, 1.82, 0.02);
+    rightHemi.scale.set(0.9, 1.1, 1.3);
+    this.skeletalGroup.add(rightHemi);
+
+    // Brainstem & Periaqueductal Gray (PAG)
+    const pagMat = new THREE.MeshPhysicalMaterial({
+      color: 0xf59e0b,
+      emissive: 0xd97706,
+      emissiveIntensity: 0.8,
+      roughness: 0.1
+    });
+    const pagNode = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 16), pagMat);
+    pagNode.position.set(0, 1.68, 0.04);
+    this.skeletalGroup.add(pagNode);
+
+    // ==========================================
+    // 3. Spinal Column & Descending Inhibitory Pathway
+    // ==========================================
+    const boneMaterial = new THREE.MeshPhysicalMaterial({ 
+      color: 0xe2e8f0, 
+      roughness: 0.35, 
+      metalness: 0.05, 
+      clearcoat: 0.8, 
+      clearcoatRoughness: 0.15, 
+      emissive: 0x0284c7, 
+      emissiveIntensity: 0.2 
+    });
+    
+    // 16 Vertebral segments with intervertebral discs
+    for (let i = 0; i < 16; i++) {
+      const y = 0.28 + i * 0.085;
+      const vert = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.07, 0.055, 12), boneMaterial);
+      vert.position.set(0, y, -0.04);
+      this.skeletalGroup.add(vert);
+
+      // Glowing Dorsal Horn Spinal Gate Core
+      const gateMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+      const gateNode = new THREE.Mesh(new THREE.SphereGeometry(0.02, 8, 8), gateMat);
+      gateNode.position.set(0, y, 0.01);
+      this.skeletalGroup.add(gateNode);
+    }
+
+    // ==========================================
+    // 4. Volumetric Solid Internal Organs
+    // ==========================================
+    
+    // Bilateral Pleural Lungs (Lobar textures)
+    const lungMat = new THREE.MeshPhysicalMaterial({
+      color: 0x0284c7,
+      emissive: 0x0369a1,
+      emissiveIntensity: 0.3,
+      roughness: 0.3,
+      metalness: 0.05,
+      clearcoat: 0.9,
+      transmission: 0.6,
+      transparent: true,
+      opacity: 0.85
+    });
+
+    const leftLung = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 0.26, 12, 16), lungMat);
+    leftLung.position.set(-0.16, 1.18, 0.02);
+    leftLung.rotation.z = 0.12;
+    this.skeletalGroup.add(leftLung);
+
+    const rightLung = new THREE.Mesh(new THREE.CapsuleGeometry(0.12, 0.28, 12, 16), lungMat);
+    rightLung.position.set(0.16, 1.18, 0.02);
+    rightLung.rotation.z = -0.12;
+    this.skeletalGroup.add(rightLung);
+
+    // Anatomical Muscular Heart with Coronary Vasculature
+    this.heartMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xef4444,
+      emissive: 0xb91c1c,
+      emissiveIntensity: 0.6,
+      roughness: 0.2,
+      metalness: 0.15,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.05
+    });
+
+    const heartGeo = new THREE.DodecahedronGeometry(0.11, 2);
+    this.heartMesh = new THREE.Mesh(heartGeo, this.heartMaterial);
+    this.heartMesh.position.set(-0.04, 1.14, 0.1);
+    this.skeletalGroup.add(this.heartMesh);
+
+    // Aortic Arch & Coronary Vessels
+    const aortaCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-0.04, 1.16, 0.1),
+      new THREE.Vector3(-0.02, 1.32, 0.08),
+      new THREE.Vector3(0.04, 1.34, 0.02),
+      new THREE.Vector3(0.02, 1.1, -0.02),
+      new THREE.Vector3(0.01, 0.7, -0.03),
+      new THREE.Vector3(-0.08, 0.25, -0.02),
+    ]);
+    const aortaTube = new THREE.Mesh(
+      new THREE.TubeGeometry(aortaCurve, 32, 0.022, 8, false),
+      new THREE.MeshPhysicalMaterial({ color: 0xef4444, emissive: 0x991b1b, emissiveIntensity: 0.5, roughness: 0.2 })
+    );
+    this.skeletalGroup.add(aortaTube);
+
+    // Hepatic Lobe (Liver)
+    const liverMat = new THREE.MeshPhysicalMaterial({
+      color: 0x92400e,
+      emissive: 0x78350f,
+      emissiveIntensity: 0.35,
+      roughness: 0.3,
+      clearcoat: 0.8
+    });
+    const liver = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.18, 8, 16), liverMat);
+    liver.position.set(0.12, 0.88, 0.06);
+    liver.rotation.z = Math.PI / 4;
+    this.skeletalGroup.add(liver);
+
+    // Gastric Visceral Tract (Stomach & Enteric Plexus)
+    const stomachMat = new THREE.MeshPhysicalMaterial({
+      color: 0xd97706,
+      emissive: 0xb45309,
+      emissiveIntensity: 0.3,
+      roughness: 0.35,
+      clearcoat: 0.7
+    });
+    const stomach = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.045, 12, 24, Math.PI * 1.3), stomachMat);
+    stomach.position.set(-0.1, 0.86, 0.06);
+    stomach.rotation.z = -0.4;
+    this.skeletalGroup.add(stomach);
+
+    // ==========================================
+    // 5. Sympathetic Autonomic Chain & Somatovisceral Axis
+    // ==========================================
+    const sympMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+    const sympPositions = [-0.08, 0.08];
+    for (const sx of sympPositions) {
+      for (let s = 0; s < 10; s++) {
+        const sy = 0.55 + s * 0.075;
+        const ganglion = new THREE.Mesh(new THREE.SphereGeometry(0.016, 8, 8), sympMat);
+        ganglion.position.set(sx, sy, -0.01);
+        this.skeletalGroup.add(ganglion);
       }
     }
-    heartGeo.computeVertexNormals();
-
-    this.heartMesh = new THREE.Mesh(heartGeo, this.heartMaterial);
-    this.heartMesh.position.set(-0.06, 1.15, 0.08);
-    this.skeletalGroup.add(this.heartMesh);
   }
 
   private buildTCMMeridians() {
-    // 12 Jing-Luo Meridian spline curves & Acupoints (Jade Emerald #10B981)
-    const meridianMat = new THREE.LineBasicMaterial({ color: 0x10b981 });
-    const points: THREE.Vector3[] = [];
-    for (let t = 0; t <= Math.PI * 2; t += 0.2) {
-      points.push(new THREE.Vector3(Math.sin(t) * 0.4, 0.4 + (t / (Math.PI * 2)) * 1.2, Math.cos(t) * 0.2));
-    }
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const line = new THREE.Line(geometry, meridianMat);
-    this.tcmMeridianGroup.add(line);
+    // 12 Jing-Luo Meridian spline curves & Shen-Qi Flux (Jade Emerald #10B981)
+    const renDuPoints: THREE.Vector3[] = [
+      new THREE.Vector3(0, 0.25, 0.18),
+      new THREE.Vector3(0, 0.5, 0.22),
+      new THREE.Vector3(0, 0.85, 0.22),
+      new THREE.Vector3(0, 1.15, 0.2),
+      new THREE.Vector3(0, 1.5, 0.16),
+      new THREE.Vector3(0, 1.82, 0.18),
+      new THREE.Vector3(0, 1.95, 0),
+      new THREE.Vector3(0, 1.8, -0.16),
+      new THREE.Vector3(0, 1.2, -0.12),
+      new THREE.Vector3(0, 0.4, -0.1),
+    ];
+    const renDuCurve = new THREE.CatmullRomCurve3(renDuPoints, true);
+    const renDuTube = new THREE.Mesh(
+      new THREE.TubeGeometry(renDuCurve, 64, 0.012, 8, true),
+      new THREE.MeshPhysicalMaterial({ color: 0x10b981, emissive: 0x059669, emissiveIntensity: 0.9, transparent: true, opacity: 0.85 })
+    );
+    this.tcmMeridianGroup.add(renDuTube);
 
-    // ST-36 Acupoint Sphere
-    const acupointMat = new THREE.MeshPhysicalMaterial({ color: 0x10b981, emissive: 0x059669, emissiveIntensity: 0.6, roughness: 0.1 });
-    const st36 = new THREE.Mesh(new THREE.SphereGeometry(0.04, 12, 12), acupointMat);
-    st36.position.set(0.15, 0.5, 0.1);
+    // Classical Acupoints along Channel (Baihui, Shanzhong, Guanyuan, ST-36)
+    const acupointMat = new THREE.MeshPhysicalMaterial({ color: 0x34d399, emissive: 0x10b981, emissiveIntensity: 1.2, roughness: 0.1 });
+    
+    // Baihui (DU-20 - Crown)
+    const baihui = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 12), acupointMat);
+    baihui.position.set(0, 1.96, 0);
+    this.tcmMeridianGroup.add(baihui);
+
+    // Shanzhong (RN-17 - Mid-Chest)
+    const shanzhong = new THREE.Mesh(new THREE.SphereGeometry(0.032, 12, 12), acupointMat);
+    shanzhong.position.set(0, 1.18, 0.2);
+    this.tcmMeridianGroup.add(shanzhong);
+
+    // Guanyuan (RN-4 - Lower Dan Tian)
+    const guanyuan = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 12), acupointMat);
+    guanyuan.position.set(0, 0.62, 0.22);
+    this.tcmMeridianGroup.add(guanyuan);
+
+    // Zusanli (ST-36 - Leg)
+    const st36 = new THREE.Mesh(new THREE.SphereGeometry(0.032, 12, 12), acupointMat);
+    st36.position.set(0.18, 0.1, 0.1);
     this.tcmMeridianGroup.add(st36);
   }
 
@@ -389,28 +543,28 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
       const point = intersects[0].point;
       this.hoverPos.set({ x: event.clientX, y: event.clientY });
 
-      let name = 'Lumbar Vertebrae L4-L5';
+      let name = 'Lumbar Vertebrae & Gate Control';
       let snomedCode = 'SNOMED 249688008';
       let tcmClock = 'Kidney (5pm - 7pm)';
       let pranaFreq = 'Muladhara (396 Hz)';
 
-      if (point.y > 1.6) {
-        name = 'Cervical Spine C3-C5 & TMJ';
+      if (point.y > 1.65) {
+        name = 'Descending Inhibitory Cortex & PAG';
         snomedCode = 'SNOMED 122495006';
         tcmClock = 'Gallbladder (11pm - 1am)';
-        pranaFreq = 'Vishuddha (741 Hz)';
-      } else if (point.y > 1.2) {
-        name = 'Cardiac & Thoracic Complex';
+        pranaFreq = 'Sahasrara (963 Hz)';
+      } else if (point.y > 1.1) {
+        name = 'Cardiac & Pulmonary Complex';
         snomedCode = 'SNOMED 80891009';
         tcmClock = 'Heart (11am - 1pm)';
         pranaFreq = 'Anahata (639 Hz)';
-      } else if (point.y > 0.8) {
-        name = 'Lumbar Spine L4-L5';
-        snomedCode = 'SNOMED 249688008';
-        tcmClock = 'Kidney (5pm - 7pm)';
+      } else if (point.y > 0.75) {
+        name = 'Enteric Visceral Plexus & Liver';
+        snomedCode = 'SNOMED 302553009';
+        tcmClock = 'Liver (1am - 3am)';
         pranaFreq = 'Manipura (528 Hz)';
-      } else if (point.y > 0.4) {
-        name = 'Pelvic Girdle & Sacroiliac Joint';
+      } else if (point.y > 0.35) {
+        name = 'Pelvic Saccral Axis & SIBI Cross-Talk';
         snomedCode = 'SNOMED 279549004';
         tcmClock = 'Urinary Bladder (3pm - 5pm)';
         pranaFreq = 'Svadhisthana (417 Hz)';
@@ -423,13 +577,40 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
   }
 
   private buildAyurvedicChakras() {
-    // 7 Sushumna Chakra vortex spheres (Violet #8B5CF6 & Gold #F59E0B)
-    const colors = [0x8b5cf6, 0x6366f1, 0x06b6d4, 0x10b981, 0xeab308, 0xf97316, 0xef4444];
-    colors.forEach((col, idx) => {
-      const mat = new THREE.MeshPhysicalMaterial({ color: col, emissive: col, emissiveIntensity: 0.5, wireframe: true });
-      const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.06 + idx * 0.005, 16, 16), mat);
-      sphere.position.set(0, 0.4 + idx * 0.2, 0);
-      this.ayurvedicChakraGroup.add(sphere);
+    // 7 Sushumna Chakra Toroidal Vortices & Prana Resonance Cores
+    const chakraData = [
+      { name: 'Muladhara', col: 0xef4444, freq: '396 Hz', y: 0.32 },
+      { name: 'Svadhisthana', col: 0xf97316, freq: '417 Hz', y: 0.58 },
+      { name: 'Manipura', col: 0xeab308, freq: '528 Hz', y: 0.85 },
+      { name: 'Anahata', col: 0x10b981, freq: '639 Hz', y: 1.15 },
+      { name: 'Vishuddha', col: 0x06b6d4, freq: '741 Hz', y: 1.48 },
+      { name: 'Ajna', col: 0x6366f1, freq: '852 Hz', y: 1.76 },
+      { name: 'Sahasrara', col: 0x8b5cf6, freq: '963 Hz', y: 1.96 }
+    ];
+
+    chakraData.forEach((chakra) => {
+      // Outer Vortex Torus
+      const torusMat = new THREE.MeshPhysicalMaterial({
+        color: chakra.col,
+        emissive: chakra.col,
+        emissiveIntensity: 0.8,
+        roughness: 0.15,
+        metalness: 0.2,
+        clearcoat: 1.0,
+        transmission: 0.5,
+        transparent: true,
+        opacity: 0.75
+      });
+      const torus = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.02, 12, 24), torusMat);
+      torus.position.set(0, chakra.y, 0.05);
+      torus.rotation.x = Math.PI / 2;
+      this.ayurvedicChakraGroup.add(torus);
+
+      // Inner Luminous Core Sphere
+      const coreMat = new THREE.MeshBasicMaterial({ color: chakra.col });
+      const core = new THREE.Mesh(new THREE.SphereGeometry(0.04, 16, 16), coreMat);
+      core.position.set(0, chakra.y, 0.05);
+      this.ayurvedicChakraGroup.add(core);
     });
   }
 
@@ -448,6 +629,7 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
   resetCameraView() {
     if (this.camera && this.controls) {
       this.camera.position.set(0, 1.2, 3.2);
+
       this.controls.target.set(0, 1.0, 0);
       this.controls.update();
     }

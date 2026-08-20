@@ -1,0 +1,23 @@
+name: 'HL7 FHIR R4 Bundle Validator'
+description: 'Automated GitHub Action to validate JSON fixtures, test payloads, and API mock responses against the HL7 FHIR R4 Bundle and Resource standards.'
+author: 'Phil Gear (PocketGull Project)'
+inputs:
+  schema-path:
+    description: 'Path or directory containing FHIR JSON files to validate'
+    required: false
+    default: '.'
+  fail-on-invalid:
+    description: 'Fail the build if an invalid FHIR resource is encountered'
+    required: false
+    default: 'true'
+outputs:
+  valid-resources:
+    description: 'Total number of valid FHIR resources checked'
+  invalid-resources:
+    description: 'Total number of schema validation errors'
+runs:
+  using: 'node20'
+  main: 'index.js'
+branding:
+  icon: 'check-circle'
+  color: 'green'

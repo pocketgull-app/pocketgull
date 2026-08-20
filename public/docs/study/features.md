@@ -1,10 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: Features
-description: "Complete feature reference for Pocket Gull — a voice-first clinical co-pilot."
----
-import DocNode from '../components/DocNode.astro';
-
 # Features
 
 Every feature in Pocket Gull serves a clinical purpose. Nothing decorative, nothing superfluous.
@@ -15,7 +8,7 @@ Every feature in Pocket Gull serves a clinical purpose. Nothing decorative, noth
 
 ### Live AI Consult & Multi-Agent Orchestration
 
-Powered by <DocNode term="@google/adk" category="Google · Agent Development Kit" hint="Open-source TypeScript/Python framework for building multi-agent AI systems. Supports LlmAgent, SequentialAgent, and LoopAgent patterns with tool management." link="https://google.github.io/adk-docs/" linkLabel="ADK Docs →" icon="https://ai.google.dev/favicon.ico">`@google/adk`</DocNode> and the <DocNode term="Web Speech API" category="W3C · Web Platform" hint="W3C specification for speech recognition and synthesis in browsers. Chrome implementation by Google." link="https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API" linkLabel="MDN Reference →" icon="https://developer.mozilla.org/favicon-48x48.png">Web Speech API</DocNode> via <DocNode term="Vertex AI Enterprise" category="Google Cloud" hint="Google Cloud's enterprise-grade AI platform. Provides regional endpoints, IAM-based authentication (ADC), custom safety thresholds, and SLA-backed infrastructure." link="https://cloud.google.com/vertex-ai" linkLabel="Vertex AI Docs →" icon="https://www.gstatic.com/devrel-devsite/prod/v0e0f589edd85502a40d78d7d0825db8ea5ef3b99ab4070381571c97ab7df9861/cloud/images/favicons/onecloud/favicon.ico">Vertex AI Enterprise</DocNode>. Specialized <DocNode term="LlmAgent" category="Google · Agent Development Kit" hint="Core agent class from @google/adk. Configured with a Gemini model, system prompt, and optional tools. Each focuses on a diagnostic lens." link="https://google.github.io/adk-docs/agents/" linkLabel="Agent Reference →" icon="https://ai.google.dev/favicon.ico">`LlmAgent`</DocNode> experts — each focused on a diagnostic lens (Overview, Interventions, Monitoring, Education) — synthesize clinical data into actionable insights through an interruptible, natural conversational UI.
+Powered by [`@google/adk`](https://google.github.io/adk-docs/ "[Google · Agent Development Kit] Open-source TypeScript/Python framework for building multi-agent AI systems. Supports LlmAgent, SequentialAgent, and LoopAgent patterns with tool management.") and the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API "[W3C · Web Platform] W3C specification for speech recognition and synthesis in browsers. Chrome implementation by Google.") via [Vertex AI Enterprise](https://cloud.google.com/vertex-ai "[Google Cloud] Google Cloud's enterprise-grade AI platform. Provides regional endpoints, IAM-based authentication (ADC), custom safety thresholds, and SLA-backed infrastructure."). Specialized [`LlmAgent`](https://google.github.io/adk-docs/agents/ "[Google · Agent Development Kit] Core agent class from @google/adk. Configured with a Gemini model, system prompt, and optional tools. Each focuses on a diagnostic lens.") experts — each focused on a diagnostic lens (Overview, Interventions, Monitoring, Education) — synthesize clinical data into actionable insights through an interruptible, natural conversational UI.
 
 The system maintains **context-aware memory** of recently discussed report nodes, enabling inline follow-up queries without re-stating context.
 
@@ -90,7 +83,7 @@ An offline emergency override mode engineered to maximize **Information Relevanc
 * **Imperative Resuscitation Directives:** Replaces complex medical jargon with 5-word physical action imperatives (*"PUSH HARD & FAST AT CENTER OF CHEST"*, *"TILT HEAD BACK, LIFT CHIN"*).
 * **Visual & Haptic 110 BPM CPR Metronome:** Flashes high-visibility rhythmic cues matching AHA Basic Life Support (BLS) compression rate guidelines.
 * **On-Device Zero-Latency AI (`window.ai` / Gemini Nano):** Operates 100% offline with full OpenTelemetry (OTel) network suppression, guaranteeing zero token latency during cellular blackouts.
-* **EMT Hand-off QR Code Serialization (`lean-qr`):** Encodes emergency vitals, resuscitation timestamps, critical allergies, and anticoagulant warnings into an instant-scannable <DocNode term="FHIR R4" category="HL7 International" hint="Fast Healthcare Interoperability Resources — the current standard for electronic health data exchange." link="https://hl7.org/fhir/R4/" linkLabel="HL7 FHIR R4 →" icon="https://hl7.org/favicon.ico">FHIR R4</DocNode> Emergency Bundle.
+* **EMT Hand-off QR Code Serialization (`lean-qr`):** Encodes emergency vitals, resuscitation timestamps, critical allergies, and anticoagulant warnings into an instant-scannable [FHIR R4](https://hl7.org/fhir/R4/ "[HL7 International] Fast Healthcare Interoperability Resources — the current standard for electronic health data exchange.") Emergency Bundle.
 
 ### Client-Side Speech Barge-In
 
@@ -98,7 +91,7 @@ Local `onspeechstart` interruption tuning across all clinical dialog and voice a
 
 ### Cognition & Multilingual Care Plans
 
-Seamlessly translate Care Plans into dyslexia-friendly or pediatric formats, or professionally translate them into **Spanish, German, French, Japanese, or Hindi** (aligned with global medical research exchange). Outputted to PDF using <DocNode term="jsPDF" category="James Hall · Parallax" hint="Client-side PDF generation library for JavaScript. Created by James Hall. Generates printable clinical stationery and accessible export formats." link="https://github.com/parallax/jsPDF" linkLabel="GitHub →" icon="https://github.com/favicon.ico">jsPDF</DocNode> with refined Dieter Rams "carousel informatics" typography. Designed for patient-facing communication where reading accessibility and cultural localization is critical.
+Seamlessly translate Care Plans into dyslexia-friendly or pediatric formats, or professionally translate them into **Spanish, German, French, Japanese, or Hindi** (aligned with global medical research exchange). Outputted to PDF using [jsPDF](https://github.com/parallax/jsPDF "[James Hall · Parallax] Client-side PDF generation library for JavaScript. Created by James Hall. Generates printable clinical stationery and accessible export formats.") with refined Dieter Rams "carousel informatics" typography. Designed for patient-facing communication where reading accessibility and cultural localization is critical.
 
 ---
 
@@ -106,7 +99,7 @@ Seamlessly translate Care Plans into dyslexia-friendly or pediatric formats, or 
 
 ### 3D Medical Imagery
 
-Precise anatomical selection using a <DocNode term="Three.js" category="Ricardo Cabello (mrdoob)" hint="JavaScript 3D library built on WebGL. Created by Ricardo Cabello. v0.183 powers the procedural skeletal/surface anatomy with severity particles." link="https://threejs.org/docs/" linkLabel="threejs.org →" icon="https://threejs.org/favicon.ico">Three.js</DocNode>-powered skeletal and surface model, including detailed **procedural spine geometry**. Dynamic particle systems highlight diagnostic severity in real-time, giving clinicians an immediate visual read on patient condition.
+Precise anatomical selection using a [Three.js](https://threejs.org/docs/ "[Ricardo Cabello (mrdoob)] JavaScript 3D library built on WebGL. Created by Ricardo Cabello. v0.183 powers the procedural skeletal/surface anatomy with severity particles.")-powered skeletal and surface model, including detailed **procedural spine geometry**. Dynamic particle systems highlight diagnostic severity in real-time, giving clinicians an immediate visual read on patient condition.
 
 ### Scans & Diagnostics Library
 
@@ -118,7 +111,7 @@ CSS Grid-optimized, multi-page physical printouts featuring **Halftone body maps
 
 ### Longitudinal Vitals Timelines
 
-Embedded directly within the AI Assessment panel, historical patient vitals (Weight, Systolic BP, Diastolic BP) are dynamically graphed over time using <DocNode term="Chart.js" category="Chart.js contributors" hint="Simple yet flexible JavaScript charting libraries for designers & developers." link="https://www.chartjs.org/" linkLabel="Chart.js Docs →" icon="https://www.chartjs.org/favicon.ico">Chart.js</DocNode>. This provides practitioners with immediate longitudinal context without navigating away from the active Care Plan.
+Embedded directly within the AI Assessment panel, historical patient vitals (Weight, Systolic BP, Diastolic BP) are dynamically graphed over time using [Chart.js](https://www.chartjs.org/ "[Chart.js contributors] Simple yet flexible JavaScript charting libraries for designers & developers."). This provides practitioners with immediate longitudinal context without navigating away from the active Care Plan.
 
 ### Method of Loci (Clinical Memory Palace)
 
@@ -180,7 +173,7 @@ A dynamic clinical protection and hypothesis generator dynamically tailored to t
 
 ### FHIR-Standard Data Portability
 
-Real-time persistence with visual "Saving…" / "Saved ✔" indicators. Patient data is exported via <DocNode term="FHIR R4 Bundles" category="HL7 International" hint="Fast Healthcare Interoperability Resources Release 4 — the international standard for electronic health data exchange. Bundles atomically group Patient, Condition, and Observation resources." link="https://hl7.org/fhir/R4/bundle.html" linkLabel="HL7 FHIR R4 →" icon="https://hl7.org/favicon.ico">**Unicode-safe Base64 encoded FHIR Bundles**</DocNode>, ensuring interoperability with compliant healthcare systems.
+Real-time persistence with visual "Saving…" / "Saved ✔" indicators. Patient data is exported via [**Unicode-safe Base64 encoded FHIR Bundles**](https://hl7.org/fhir/R4/bundle.html "[HL7 International] Fast Healthcare Interoperability Resources Release 4 — the international standard for electronic health data exchange. Bundles atomically group Patient, Condition, and Observation resources."), ensuring interoperability with compliant healthcare systems.
 
 ### Patient Management System
 
@@ -248,11 +241,11 @@ Engineered to meet the highest performance and compliance standards, achieving a
 
 ### PubMed E-utilities
 
-Direct integration with <DocNode term="NCBI PubMed" category="NIH · National Library of Medicine" hint="The world's largest biomedical literature database. E-utilities provide programmatic access for querying abstracts and metadata." link="https://www.ncbi.nlm.nih.gov/books/NBK25501/" linkLabel="E-utilities Docs →" icon="https://www.ncbi.nlm.nih.gov/favicon.ico">NCBI PubMed</DocNode> for querying peer-reviewed medical literature and abstracts. XML responses are parsed server-side and returned as structured JSON.
+Direct integration with [NCBI PubMed](https://www.ncbi.nlm.nih.gov/books/NBK25501/ "[NIH · National Library of Medicine] The world's largest biomedical literature database. E-utilities provide programmatic access for querying abstracts and metadata.") for querying peer-reviewed medical literature and abstracts. XML responses are parsed server-side and returned as structured JSON.
 
 ### Google Programmable Search Engine
 
-Surfaces relevant differential diagnostic information and treatment pathways from indexed medical domains via <DocNode term="Google CSE" category="Google" hint="Google Programmable Search Engine — a customizable search engine for specific domains. Renders results in a sandboxed Research Frame." link="https://programmablesearchengine.google.com/" linkLabel="CSE Console →" icon="https://www.google.com/favicon.ico">Google CSE</DocNode>. Rendered in a dedicated Research Frame within the application.
+Surfaces relevant differential diagnostic information and treatment pathways from indexed medical domains via [Google CSE](https://programmablesearchengine.google.com/ "[Google] Google Programmable Search Engine — a customizable search engine for specific domains. Renders results in a sandboxed Research Frame."). Rendered in a dedicated Research Frame within the application.
 
 > All queries sent to external research sources are anonymized and stripped of protected health information (PHI) prior to transmission.
 
@@ -262,7 +255,7 @@ Surfaces relevant differential diagnostic information and treatment pathways fro
 
 ### Vertex AI Enterprise Migration
 
-The AI intelligence layer runs on regional <DocNode term="Vertex AI Enterprise" category="Google Cloud" hint="Google Cloud's enterprise-grade AI platform with IAM/ADC authentication, regional endpoints, custom safety thresholds, and SLA guarantees." link="https://cloud.google.com/vertex-ai" linkLabel="Vertex AI Docs →" icon="https://www.gstatic.com/devrel-devsite/prod/v0e0f589edd85502a40d78d7d0825db8ea5ef3b99ab4070381571c97ab7df9861/cloud/images/favicons/onecloud/favicon.ico">Google Cloud Vertex AI Enterprise</DocNode>, replacing the developer Gemini API. This provides automatic Application Default Credentials (ADC) token resolution, configurable safety thresholds above the default API limits, and enterprise-grade IAM-backed access control.
+The AI intelligence layer runs on regional [Google Cloud Vertex AI Enterprise](https://cloud.google.com/vertex-ai "[Google Cloud] Google Cloud's enterprise-grade AI platform with IAM/ADC authentication, regional endpoints, custom safety thresholds, and SLA guarantees."), replacing the developer Gemini API. This provides automatic Application Default Credentials (ADC) token resolution, configurable safety thresholds above the default API limits, and enterprise-grade IAM-backed access control.
 
 ### Tink Envelope Cryptography & Post-Quantum Safeguards
 

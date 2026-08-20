@@ -54,7 +54,7 @@ test.describe('HIPAA Compliance & Privacy Guardrails E2E Suite', () => {
         
         // Evaluate direct FHIR R4 serialization standard in page runtime
         const mockPatient = {
-          name: 'Phil Gear <script>alert(1)</script>',
+          name: 'Homo Sapiens <script>alert(1)</script>',
           age: 42,
           gender: 'Male',
           issues: ['Hypertension', 'Tinnitus'],

@@ -595,33 +595,19 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
 
           @if (activeLens() === 'Seven Generations Stewardship') {
             <app-seven-generations-stewardship-lens-tab class="block my-6"></app-seven-generations-stewardship-lens-tab>
-          }
-
-          @if (activeLens() === 'Summary Overview') {
+          } @else if (activeLens() === 'Summary Overview') {
             <app-summary-overview-lens-tab class="block my-6"></app-summary-overview-lens-tab>
-          }
-
-          @if (activeLens() === 'Epigenetic Longevity') {
+          } @else if (activeLens() === 'Epigenetic Longevity') {
             <app-epigenetic-longevity-lens-tab class="block my-6"></app-epigenetic-longevity-lens-tab>
-          }
-
-          @if (activeLens() === 'Patient Education') {
+          } @else if (activeLens() === 'Patient Education') {
             <app-patient-education-lens-tab class="block my-6"></app-patient-education-lens-tab>
-          }
-
-          @if (activeLens() === 'Teledentistry & Systemic Health') {
+          } @else if (activeLens() === 'Teledentistry & Systemic Health') {
             <app-teledentistry-systemic-lens class="block my-6"></app-teledentistry-systemic-lens>
-          }
-
-          @if (activeLens() === 'ASSESSMENTS') {
-            <app-assessments-lens-tab></app-assessments-lens-tab>
-          }
-
-          @if (activeLens() === 'Treatment Matrix') {
+          } @else if (activeLens() === 'ASSESSMENTS') {
+            <app-assessments-lens-tab class="block my-6"></app-assessments-lens-tab>
+          } @else if (activeLens() === 'Treatment Matrix') {
             <app-interventions-lens-tab class="block my-6"></app-interventions-lens-tab>
-          }
-
-          @if (activeLens() === 'Monitoring & Follow-up') {
+          } @else if (activeLens() === 'Monitoring & Follow-up') {
             <app-diagnostics-lens-tab class="block my-6"></app-diagnostics-lens-tab>
           } @else {
           <!-- ACM §1.3: AI-Generated Content Disclosure -->

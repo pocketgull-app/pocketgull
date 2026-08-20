@@ -1,8 +1,3 @@
----
-layout: '../layouts/DocsLayout.astro'
-title: 'Design System & Gull Squadron Personas'
----
-
 # Pocket Gull — Design System
 **Industrial Grace, Tactile Papercraft & Avian Personas**
 

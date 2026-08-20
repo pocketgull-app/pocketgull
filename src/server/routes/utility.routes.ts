@@ -76,9 +76,17 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
   }
 
   // ── Swagger Auth Middleware ───────────────────────────────────────────
+  // Ensure credentials come strictly from environment variables without hardcoded defaults
   const swaggerAuth = (req: Request, res: Response, next: NextFunction) => {
-    const username = process.env['SWAGGER_USERNAME'] || 'dev-pocketgull';
-    const password = process.env['SWAGGER_PASSWORD'] || 'admin-secure-pocketgull-2026';
+    const username = process.env['SWAGGER_USERNAME'];
+    const password = process.env['SWAGGER_PASSWORD'];
+
+    // In non-production environments without explicit Swagger credentials, permit access or require auth
+    if (!username || !password) {
+      if (process.env['NODE_ENV'] !== 'production' || process.env['POCKETGULL_LIVE_DEMO'] === 'true') {
+        return next();
+      }
+    }
 
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
@@ -87,7 +95,7 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
     }
 
     const [type, credentials] = authHeader.split(' ');
-    if (type === 'Basic' && credentials) {
+    if (type === 'Basic' && credentials && username && password) {
       const decoded = Buffer.from(credentials, 'base64').toString('utf8');
       const [u, p] = decoded.split(':');
       if (u === username && p === password) {

@@ -9,6 +9,7 @@ export interface IDicomStudy {
   studyDate?: string;
   studyDescription?: string;
   modalities?: string[];
+  seriesCount?: number;
 }
 
 export interface IDicomSeries {
@@ -42,7 +43,7 @@ export class DicomService {
   mockStudies: IDicomStudy[] = [
     {
       studyInstanceUid: '1.2.840.113619.2.134.1.phil.1',
-      patientName: 'Alexander Vance',
+      patientName: 'Homo Sapiens (Male, 44y)',
       patientId: 'p_default_patient',
       studyDate: '20260716',
       studyDescription: 'Lumbar Spine MRI (L4-L5 herniation check)',

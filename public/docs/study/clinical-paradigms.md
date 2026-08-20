@@ -1,10 +1,3 @@
----
-layout: ../layouts/DocsLayout.astro
-title: "Clinical Paradigms & FHIR"
-description: "Detailed analysis of Eastern, Ayurvedic, and Secular Longevity clinical modes, and HL7 FHIR conversion in Pocket Gull."
----
-import DocNode from '../components/DocNode.astro';
-
 # Clinical Paradigms & FHIR Integration
 
 Pocket Gull bridges the gap between conventional medicine, traditional paradigms, and modern medical data interchange. It translates structured patient context dynamically across healthcare standards and holistic frameworks.
@@ -81,7 +74,7 @@ Focuses on mitochondrial health, cortisol dynamics, autonomic nervous system bal
 ### Secular Integration Translator
 Pocket Gull actively strips theological or dogmatic language from clinical findings, translating ancient world frameworks into physiological and psychological domains:
 - **Enso (Zen)** → Translates to somatic mindfulness and psychological self-compassion for chronic conditions.
-- **Golden Mean (Aristotle)** → Translates to moderation in diet/biohacking, preventing toxic over-supplementation.
+- **Golden Mean (Aristotle)** → Translates to moderation in diet/biostacking, preventing toxic over-supplementation.
 - **Hygge (Danish)** → Translates to down-regulating the sympathetic nervous system via cozy rest spaces.
 - **Ikigai (Japanese)** → Translates to long-term physical activation, cognitive engagement, and sense of purpose.
 - **Mizan (Islamic)** → Translates to systemic bodily homeostasis and clean, wholesome (Tayyib) nutrition.
@@ -147,7 +140,7 @@ graph TD
 |---|---|---|---|---|
 | **Act I: Baseline Synthesis** | Baseline Vitals & Triage | Zang-Fu Qi & Blood Overture | Tridosha & Agni Synthesis | Circadian & Hormetic Baseline |
 | **Act II: Diagnostic Probing** | Laboratory & Diagnostic Matrix | Meridian & Pulse Diagnostic Grid | Srotas & Dhatu Diagnostic Matrix | Orthomolecular & Biomarker Matrix |
-| **Act III: Active Interventions** | Allopathic & Functional Protocols | Acupoint & Thermal-Energetic | Dinacharya & Panchakarma | Biohacking & Cellular Entrainment |
+| **Act III: Active Interventions** | Allopathic & Functional Protocols | Acupoint & Thermal-Energetic | Dinacharya & Panchakarma | Biostacking & Cellular Entrainment |
 | **Act IV: Longitudinal Telemetry** | High-Frequency ECG & Biomarkers | Channel Circulation & Stasis | Manovaha & Ojas Trajectory | HRV & Autonomic Telemetry |
 | **Act V: Care Continuity** | UK RIO Evidence & Care Passport | Taoist Longevity Education | Svasthavritta Health Passport | Empirical Longevity Passport |
 

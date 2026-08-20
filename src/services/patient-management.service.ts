@@ -183,7 +183,7 @@ export class PatientManagementService implements OnDestroy {
               }
             }
             this.patients.set(merged);
-            const defaultId = merged.find(p => p.id === 'p_mara_santos')?.id || merged.find(p => p.name === 'Alexander Vance')?.id || merged[0]?.id || null;
+            const defaultId = merged.find(p => p.id === 'p_mara_santos')?.id || merged.find(p => p.id === 'p_default_patient')?.id || merged[0]?.id || null;
             const currentId = this.selectedPatientId();
             if (!currentId || !merged.some(p => p.id === currentId)) {
               this.selectedPatientId.set(defaultId);

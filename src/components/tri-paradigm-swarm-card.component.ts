@@ -79,7 +79,7 @@ import { TriParadigmSwarmService, ITriParadigmDebate } from '../services/tri-par
             </div>
           </div>
 
-          <!-- Functional Bio-Hacker -->
+          <!-- Functional Bio-Stacker -->
           <div class="p-4 rounded-2xl bg-zinc-900/90 border border-emerald-500/30 space-y-2.5">
             <div class="flex items-center gap-2 border-b border-zinc-800 pb-2">
               <span class="text-lg">{{ debate.perspectives.functional.avatarIcon }}</span>

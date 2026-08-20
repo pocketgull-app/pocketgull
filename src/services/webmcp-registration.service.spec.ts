@@ -128,7 +128,7 @@ describe('WebMcpRegistrationService', () => {
   it('should register all 46 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(46);
+    expect(registeredTools.size).toBe(47);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -540,7 +540,7 @@ describe('WebMcpRegistrationService', () => {
   it('should register all 46 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(46);
+    expect(registeredTools.size).toBe(47);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -564,7 +564,7 @@ describe('WebMcpRegistrationService', () => {
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(46);
+    expect((service as any).mcpControllers.length).toBe(47);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

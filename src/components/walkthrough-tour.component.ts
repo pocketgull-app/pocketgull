@@ -316,8 +316,27 @@ interface IRect { top: number; left: number; width: number; height: number; }
             </div>
           </div>
 
+          <!-- Pathway Selector Chips -->
+          <div style="display: flex; gap: 4px; padding: 8px 16px 4px; flex-wrap: wrap; background: rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.06);">
+            @for (path of tour.availablePathways; track path.id) {
+              <button 
+                (click)="tour.setPathway(path.id)"
+                style="font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 9999px; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;"
+                [style.background]="tour.activePathway() === path.id ? '#0d9488' : 'rgba(120,120,120,0.15)'"
+                [style.color]="tour.activePathway() === path.id ? '#ffffff' : 'inherit'">
+                <span>{{ path.icon }}</span>
+                <span>{{ path.title.split(' ')[0] }}</span>
+              </button>
+            }
+          </div>
+
           <!-- Body -->
           <div class="tour-body">
+            @if (stepDef()!.badge) {
+              <span style="font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 4px; background: rgba(13,148,136,0.15); color: #0d9488; display: inline-block; margin-bottom: 6px;">
+                {{ stepDef()!.badge }}
+              </span>
+            }
             <p class="tour-body-text">{{ stepDef()!.body }}</p>
           </div>
 

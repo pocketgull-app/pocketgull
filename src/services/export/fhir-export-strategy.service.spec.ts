@@ -32,14 +32,19 @@ describe('FhirExportStrategyService Suite', () => {
     expect(cleanStr).not.toContain('<script>');
   });
 
-  it('generates a valid FHIR R4 collection bundle', () => {
+  it('generates a valid FHIR R4 collection bundle with Practitioner NPI provenance', () => {
     const bundle = service.generateFhirBundle(mockPatient);
     expect(bundle.resourceType).toBe('Bundle');
     expect(bundle.type).toBe('collection');
-    expect(bundle.entry.length).toBeGreaterThan(0);
+    expect(bundle.entry.length).toBeGreaterThan(1);
 
     const patientResource = bundle.entry[0].resource;
     expect(patientResource.resourceType).toBe('Patient');
     expect(patientResource.gender).toBe('female');
+
+    const practitionerResource = bundle.entry.find(e => e.resource.resourceType === 'Practitioner')?.resource;
+    expect(practitionerResource).toBeDefined();
+    expect((practitionerResource?.identifier as any)?.[0]?.value).toBe('1487569752');
+    expect((practitionerResource?.name as any)?.[0]?.family).toBe('Gear');
   });
 });

@@ -81,7 +81,7 @@ export const p_default_patient: IPatient = {
     activeCalories: 540,
     restingHeartRate: 58
   },
-  aiSummary: "Alexander Vance demonstrates strong baseline metabolic stability with excellent glycemic control (HbA1c 5.4%, CGM TIR 96%) and balanced Zang-Fu/Samagni physiology. Primary opportunities include optimizing sleep architecture and managing executive stress response.",
+  aiSummary: "The patient demonstrates strong baseline metabolic stability with excellent glycemic control (HbA1c 5.4%, CGM TIR 96%) and balanced Zang-Fu/Samagni physiology. Primary opportunities include optimizing sleep architecture and managing executive stress response.",
   clinicalRoadmap: [
     { phase: "Phase 1: Circadian Entrainment", objective: "Anchor sleep onset with timed morning sunlight exposure and 400mg nocturnal Magnesium Glycinate.", status: "Active" },
     { phase: "Phase 2: HRV Recovery Optimization", objective: "Incorporate bi-weekly vagal breathwork sessions to elevate RMSSD above 50ms.", status: "Scheduled" }

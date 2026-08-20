@@ -1,0 +1,19 @@
+{
+  "name": "@pocketgull/github-app",
+  "version": "1.0.0",
+  "description": "Automated Clinical Evidence, Oxford CEBM Leveling & ONC HTI-2 Compliance Reviewer for GitHub Pull Requests",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "keywords": [
+    "github-app",
+    "clinical-ai",
+    "probot",
+    "evidence-based-medicine",
+    "onc-hti2"
+  ],
+  "author": "Pocket-Gull Health Technologies (https://pocketgull.app)",
+  "license": "MIT"
+}

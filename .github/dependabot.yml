@@ -71,3 +71,16 @@ updates:
       prefix: "chore(py-deps)"
     reviewers:
       - "philgear"
+
+  # Go — High-performance sidecar
+  - package-ecosystem: "gomod"
+    directory: "/packages/pocketgull-go"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(go-deps)"
+    reviewers:
+      - "philgear"
+

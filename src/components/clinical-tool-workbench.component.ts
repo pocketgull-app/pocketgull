@@ -12,6 +12,19 @@ import { SsaDisabilityNavigatorComponent } from './shared/ssa-disability-navigat
 import { JurisdictionMatrixCardComponent } from './shared/jurisdiction-matrix-card.component';
 import { MandiantCyberDefenseCardComponent } from './shared/mandiant-cyber-defense-card.component';
 import { ClinicalMandarinateExamCardComponent } from './shared/clinical-mandarinate-exam-card.component';
+import { RxGuardLensComponent } from './rx-guard-lens.component';
+import { BiomarkerVelocityCardComponent } from './biomarker-velocity-card.component';
+import { ClinicalTrialsMatcherComponent } from './clinical-trials-matcher.component';
+import { SmsEquityBridgeComponent } from './sms-equity-bridge.component';
+import { DifferentialDiagnosisRadarComponent } from './differential-diagnosis-radar.component';
+import { NOf1DesignerComponent } from './n-of-1-designer.component';
+import { AmbientClinicalScribeComponent } from './ambient-clinical-scribe.component';
+import { PresentationModalComponent } from './presentation-modal.component';
+import { RolePathwayDocumentationHubComponent } from './role-pathway-documentation-hub.component';
+import { RoleDemoModalComponent } from './role-demo-modal.component';
+import { HistoricalLuminariesGameComponent } from './historical-luminaries-game.component';
+import { HobbyDomainCompanionComponent } from './hobby-domain-companion.component';
+import { IntimacyRelationshipVitalityComponent } from './intimacy-relationship-vitality.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -51,7 +64,19 @@ export interface IWorkbenchToolStatus {
     SsaDisabilityNavigatorComponent,
     JurisdictionMatrixCardComponent,
     MandiantCyberDefenseCardComponent,
-    ClinicalMandarinateExamCardComponent
+    ClinicalMandarinateExamCardComponent,
+    RxGuardLensComponent,
+    BiomarkerVelocityCardComponent,
+    ClinicalTrialsMatcherComponent,
+    SmsEquityBridgeComponent,
+    DifferentialDiagnosisRadarComponent,
+    NOf1DesignerComponent,
+    AmbientClinicalScribeComponent,
+    PresentationModalComponent,
+    RolePathwayDocumentationHubComponent,
+    RoleDemoModalComponent,
+    HistoricalLuminariesGameComponent,
+    HobbyDomainCompanionComponent
   ],
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl max-w-7xl mx-auto space-y-6">
@@ -77,6 +102,12 @@ export interface IWorkbenchToolStatus {
             <span class="text-zinc-400">Operational Tools:</span>
             <span class="font-mono font-semibold text-emerald-400">{{ operationalCount() }} / {{ tools().length }}</span>
           </div>
+          <button
+            (click)="showRoleDemoModal.set(true)"
+            class="px-3.5 py-2 text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 rounded-lg shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>✨ Role Demo Mode</span>
+          </button>
           <button
             (click)="runAllDiagnostics()"
             class="px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 rounded-lg shadow-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
@@ -144,83 +175,20 @@ export interface IWorkbenchToolStatus {
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
+      <!-- Navigation Tabs (DRY Loop) -->
       <div class="flex flex-wrap items-center gap-2 p-1.5 bg-zinc-900 rounded-xl border border-zinc-800 text-xs font-bold font-mono">
-        <button (click)="activeWorkbenchTab.set('tools')"
-                [class.bg-cyan-500]="activeWorkbenchTab() === 'tools'"
-                [class.text-zinc-950]="activeWorkbenchTab() === 'tools'"
-                [class.text-zinc-300]="activeWorkbenchTab() !== 'tools'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer flex items-center gap-1.5">
-          🛠️ Diagnostic Tools
-          @if (surfacedCount() > 0) {
-            <span class="px-1.5 py-0.5 text-[10px] rounded-full bg-teal-400 text-zinc-950 font-bold animate-pulse">
-              {{ surfacedCount() }} surfaced
-            </span>
-          }
-        </button>
-        <button (click)="activeWorkbenchTab.set('osce')"
-                [class.bg-amber-500]="activeWorkbenchTab() === 'osce'"
-                [class.text-zinc-950]="activeWorkbenchTab() === 'osce'"
-                [class.text-zinc-300]="activeWorkbenchTab() !== 'osce'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer">
-          🎓 Residency OSCE Trainer
-        </button>
-        <button (click)="activeWorkbenchTab.set('slack')"
-                [class.bg-purple-500]="activeWorkbenchTab() === 'slack'"
-                [class.text-zinc-950]="activeWorkbenchTab() === 'slack'"
-                [class.text-zinc-300]="activeWorkbenchTab() !== 'slack'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer">
-          💬 Slack Command & Alerts
-        </button>
-        <button (click)="activeWorkbenchTab.set('equity')"
-                [class.bg-indigo-500]="activeWorkbenchTab() === 'equity'"
-                [class.text-zinc-950]="activeWorkbenchTab() === 'equity'"
-                [class.text-zinc-300]="activeWorkbenchTab() !== 'equity'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer">
-          🌍 Population Health Equity Hub
-        </button>
-        <button (click)="activeWorkbenchTab.set('dental')"
-                [class.bg-teal-500]="activeWorkbenchTab() === 'dental'"
-                [class.text-zinc-950]="activeWorkbenchTab() === 'dental'"
-                [class.text-zinc-300]="activeWorkbenchTab() !== 'dental'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer">
-          🦷 Teledentistry & Odontogram
-        </button>
-        <button (click)="activeWorkbenchTab.set('joy')"
-                [class.bg-amber-500]="activeWorkbenchTab() === 'joy'"
-                [class.text-zinc-950]="activeWorkbenchTab() === 'joy'"
-                [class.text-zinc-300]="activeWorkbenchTab() !== 'joy'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer">
-          ☀️ Joy & Play Matrix
-        </button>
-        <button (click)="activeWorkbenchTab.set('ssa')"
-                [class.bg-blue-600]="activeWorkbenchTab() === 'ssa'"
-                [class.text-white]="activeWorkbenchTab() === 'ssa'"
-                [class.text-zinc-300]="activeWorkbenchTab() !== 'ssa'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
-          🏛️ SSA Disability Navigator
-        </button>
-        <button (click)="activeWorkbenchTab.set('jurisdiction')"
-                [class.bg-indigo-600]="activeWorkbenchTab() === 'jurisdiction'"
-                [class.text-white]="activeWorkbenchTab() === 'jurisdiction'"
-                [class.text-zinc-300]="activeWorkbenchTab() !== 'jurisdiction'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
-          🌐 Global & State Compliance
-        </button>
-        <button (click)="activeWorkbenchTab.set('mandiant')"
-                [class.bg-red-600]="activeWorkbenchTab() === 'mandiant'"
-                [class.text-white]="activeWorkbenchTab() === 'mandiant'"
-                [class.text-zinc-300]="activeWorkbenchTab() !== 'mandiant'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
-          🛡️ Mandiant Threat Defense
-        </button>
-        <button (click)="activeWorkbenchTab.set('mandarinate')"
-                [class.bg-amber-600]="activeWorkbenchTab() === 'mandarinate'"
-                [class.text-zinc-950]="activeWorkbenchTab() === 'mandarinate'"
-                [class.text-zinc-300]="activeWorkbenchTab() !== 'mandarinate'"
-                class="px-3.5 py-2 rounded-lg transition cursor-pointer font-bold">
-          📜 Keju AI Exam Arena
-        </button>
+        @for (tab of workbenchTabs; track tab.id) {
+          <button (click)="activeWorkbenchTab.set(tab.id)"
+                  [ngClass]="activeWorkbenchTab() === tab.id ? tab.activeClass : 'text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60'"
+                  class="px-3.5 py-2 rounded-lg transition cursor-pointer flex items-center gap-1.5">
+            <span>{{ tab.icon }} {{ tab.label }}</span>
+            @if (tab.id === 'tools' && surfacedCount() > 0) {
+              <span class="px-1.5 py-0.5 text-[10px] rounded-full bg-teal-400 text-zinc-950 font-bold animate-pulse">
+                {{ surfacedCount() }} surfaced
+              </span>
+            }
+          </button>
+        }
       </div>
 
       @if (activeWorkbenchTab() === 'tools') {
@@ -350,7 +318,8 @@ export interface IWorkbenchToolStatus {
             </div>
           }
         </div>
-      } @else if (activeWorkbenchTab() === 'osce') {
+      </div>
+    } @else if (activeWorkbenchTab() === 'osce') {
         <app-residency-osce-simulator />
       } @else if (activeWorkbenchTab() === 'slack') {
         <app-slack-integration-card />
@@ -368,6 +337,34 @@ export interface IWorkbenchToolStatus {
         <app-mandiant-cyber-defense-card />
       } @else if (activeWorkbenchTab() === 'mandarinate') {
         <app-clinical-mandarinate-exam-card />
+      } @else if (activeWorkbenchTab() === 'rxguard') {
+        <app-rx-guard-lens />
+      } @else if (activeWorkbenchTab() === 'velocity') {
+        <app-biomarker-velocity-card />
+      } @else if (activeWorkbenchTab() === 'trials') {
+        <app-clinical-trials-matcher />
+      } @else if (activeWorkbenchTab() === 'sms') {
+        <app-sms-equity-bridge />
+      } @else if (activeWorkbenchTab() === 'dxradar') {
+        <app-differential-diagnosis-radar />
+      } @else if (activeWorkbenchTab() === 'nof1') {
+        <app-n-of-1-designer />
+      } @else if (activeWorkbenchTab() === 'scribe') {
+        <app-ambient-clinical-scribe />
+      } @else if (activeWorkbenchTab() === 'presentation') {
+        <app-presentation-modal />
+      } @else if (activeWorkbenchTab() === 'pathwayDocs') {
+        <app-role-pathway-documentation-hub (navigateToTab)="activeWorkbenchTab.set($any($event))" />
+      } @else if (activeWorkbenchTab() === 'luminaries') {
+        <app-historical-luminaries-game />
+      } @else if (activeWorkbenchTab() === 'companion') {
+        <app-hobby-domain-companion />
+      } @else if (activeWorkbenchTab() === 'intimacy') {
+        <app-intimacy-relationship-vitality />
+      }
+
+      @if (showRoleDemoModal()) {
+        <app-role-demo-modal (closeModal)="showRoleDemoModal.set(false)" (onDemoLaunched)="activeWorkbenchTab.set($any($event))" />
       }
 
     </div>
@@ -377,8 +374,34 @@ export class ClinicalToolWorkbenchComponent {
   readonly stateMachine = inject(DoubleFlipStateMachineService);
   private readonly haptics = inject(BioHapticFeedbackService);
 
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate'>('tools');
+  readonly showRoleDemoModal = signal(false);
+  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy'>('tools');
   readonly intakeDirectiveQuery = signal<string>('');
+
+  readonly workbenchTabs: { id: 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy'; label: string; icon: string; activeClass: string }[] = [
+    { id: 'tools', label: 'Diagnostic Tools', icon: '🛠️', activeClass: 'bg-cyan-500 text-zinc-950 shadow-xs' },
+    { id: 'intimacy', label: 'Couples Vitality & Cardiac Safety (Princeton III)', icon: '❤️', activeClass: 'bg-rose-600 text-white shadow-xs' },
+    { id: 'companion', label: 'Craft & Passion Confidants (SNO-10)', icon: '🤝', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
+    { id: 'luminaries', label: 'Historical Luminaries Arena', icon: '🏛️', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
+    { id: 'pathwayDocs', label: 'Role & Pathway Docs', icon: '🧭', activeClass: 'bg-indigo-600 text-white shadow-xs' },
+    { id: 'osce', label: 'Residency OSCE Trainer', icon: '🎓', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
+    { id: 'slack', label: 'Slack Command & Alerts', icon: '💬', activeClass: 'bg-purple-500 text-zinc-950 shadow-xs' },
+    { id: 'equity', label: 'Population Health Equity Hub', icon: '🌍', activeClass: 'bg-indigo-500 text-zinc-950 shadow-xs' },
+    { id: 'dental', label: 'Teledentistry & Odontogram', icon: '🦷', activeClass: 'bg-teal-500 text-zinc-950 shadow-xs' },
+    { id: 'joy', label: 'Joy & Play Matrix', icon: '☀️', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
+    { id: 'ssa', label: 'SSA Disability Navigator', icon: '🏛️', activeClass: 'bg-blue-600 text-white shadow-xs' },
+    { id: 'jurisdiction', label: 'Global & State Compliance', icon: '🌐', activeClass: 'bg-indigo-600 text-white shadow-xs' },
+    { id: 'mandiant', label: 'Mandiant Threat Defense', icon: '🛡️', activeClass: 'bg-red-600 text-white shadow-xs' },
+    { id: 'mandarinate', label: 'Keju AI Exam Arena', icon: '📜', activeClass: 'bg-amber-600 text-zinc-950 shadow-xs' },
+    { id: 'rxguard', label: 'RxGuard PGx & Botanicals', icon: '🛡️', activeClass: 'bg-purple-600 text-white shadow-xs' },
+    { id: 'velocity', label: 'BioTrajectory Velocity', icon: '📈', activeClass: 'bg-emerald-600 text-white shadow-xs' },
+    { id: 'trials', label: 'TrialFinder', icon: '🔬', activeClass: 'bg-blue-600 text-white shadow-xs' },
+    { id: 'sms', label: 'SMS Compass Bridge', icon: '💬', activeClass: 'bg-teal-600 text-white shadow-xs' },
+    { id: 'dxradar', label: 'DxRadar Socratic Engine', icon: '🎯', activeClass: 'bg-rose-600 text-white shadow-xs' },
+    { id: 'nof1', label: 'N-of-1 Trial Designer', icon: '🧪', activeClass: 'bg-indigo-600 text-white shadow-xs' },
+    { id: 'scribe', label: 'Ambient Clinical Scribe', icon: '🎙️', activeClass: 'bg-teal-600 text-white shadow-xs' },
+    { id: 'presentation', label: 'Grand Rounds Slides & CARE', icon: '📽️', activeClass: 'bg-cyan-600 text-white shadow-xs' }
+  ];
 
   readonly tools = signal<IWorkbenchToolStatus[]>([
     {

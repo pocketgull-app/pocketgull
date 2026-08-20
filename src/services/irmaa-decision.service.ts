@@ -61,6 +61,78 @@ const JOINT_TIERS: IIrmaaTier[] = [
   { tier: 5, label: 'Tier 5 (Maximum)', magiMin: 750000, magiMax: Infinity, partBSurchargeMonthly: 419.90, partDSurchargeMonthly: 85.80, totalMonthlySurcharge: 505.70, totalAnnualSurcharge: 6068.40 }
 ];
 
+/**
+ * Pure calculation function for IRMAA analysis without mutating any signals.
+ */
+export function calculateIrmaa(magi: number, status: TaxFilingStatus = 'single', events: LifeChangingEvent[] = []): IIrmaaAnalysisResult {
+  const magiValue = Math.max(0, magi);
+  const tiers = status === 'joint' ? JOINT_TIERS : SINGLE_TIERS;
+  let currentTierIndex = 0;
+
+  for (let i = 0; i < tiers.length; i++) {
+    if (magiValue >= tiers[i].magiMin && (magiValue < tiers[i].magiMax || tiers[i].magiMax === Infinity)) {
+      currentTierIndex = i;
+      break;
+    }
+  }
+
+  const currentTier = tiers[currentTierIndex];
+  const nextTier = currentTierIndex < tiers.length - 1 ? tiers[currentTierIndex + 1] : null;
+  const cliffBufferDistance = nextTier ? nextTier.magiMin - magiValue : Infinity;
+
+  // SSA-44 Appeal Evaluation
+  const isEligible = events.length > 0 && currentTier.tier > 0;
+  const estimatedAnnualSavings = isEligible ? currentTier.totalAnnualSurcharge : 0;
+
+  const requiredDocs: string[] = [];
+  if (events.includes('WORK_STOPPAGE') || events.includes('WORK_REDUCTION')) {
+    requiredDocs.push('Employer Statement or Pay Stub showing income reduction date');
+  }
+  if (events.includes('DEATH_OF_SPOUSE')) {
+    requiredDocs.push('Certified Death Certificate');
+  }
+  if (events.includes('MARRIAGE') || events.includes('DIVORCE_OR_ANNULMENT')) {
+    requiredDocs.push('Marriage / Divorce Decree Certificate');
+  }
+  if (events.includes('INCOME_PROPERTY_LOSS') || events.includes('PENSION_PORTFOLIO_LOSS')) {
+    requiredDocs.push('Insurance Claim or Financial Statement of Loss');
+  }
+
+  const appealAssessment: ISsa44AppealResult = {
+    isEligible,
+    qualifyingEvents: events,
+    estimatedAnnualSavings,
+    recommendationDirective: isEligible
+      ? `Submit Social Security Form SSA-44 with current year MAGI estimate. Potential savings: $${estimatedAnnualSavings.toFixed(2)}/yr.`
+      : `No active Life-Changing Event or current MAGI is below IRMAA Tier 1 threshold ($${tiers[1].magiMin.toLocaleString()}).`,
+    requiredDocuments: requiredDocs
+  };
+
+  // Clinical & Financial Directives
+  const directives: string[] = [];
+  if (cliffBufferDistance > 0 && cliffBufferDistance <= 5000 && nextTier) {
+    directives.push(`⚠️ TAX CLIFF ALERT: You are within $${cliffBufferDistance.toLocaleString()} of Tier ${nextTier.tier} (+$${(nextTier.totalAnnualSurcharge - currentTier.totalAnnualSurcharge).toFixed(2)}/yr surcharge). Consider HSA/401(k) deductions or tax-loss harvesting.`);
+  }
+
+  if (currentTier.tier > 0) {
+    directives.push(`Medicare Part B surcharge: +$${currentTier.partBSurchargeMonthly.toFixed(2)}/mo | Part D surcharge: +$${currentTier.partDSurchargeMonthly.toFixed(2)}/mo.`);
+    directives.push(`Optimize Part D formulary choices & check Patient Assistance Programs (PAPs) for biologic therapies.`);
+  } else {
+    directives.push(`✅ Standard Medicare Rate: Your MAGI ($${magiValue.toLocaleString()}) is below the Tier 1 IRMAA threshold.`);
+  }
+
+  return {
+    filingStatus: status,
+    magi: magiValue,
+    currentTier,
+    nextTier,
+    cliffBufferDistance,
+    annualSurcharge: currentTier.totalAnnualSurcharge,
+    appealAssessment,
+    clinicalFinancialDirectives: directives
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -76,95 +148,13 @@ export class IrmaaDecisionService {
 
   /** Reactive IRMAA Analysis Output */
   public analysis = computed<IIrmaaAnalysisResult>(() => {
-    const status = this.filingStatus();
-    const magiValue = Math.max(0, this.magi());
-    const events = this.activeEvents();
-
-    const tiers = status === 'joint' ? JOINT_TIERS : SINGLE_TIERS;
-    let currentTierIndex = 0;
-
-    for (let i = 0; i < tiers.length; i++) {
-      if (magiValue >= tiers[i].magiMin && (magiValue < tiers[i].magiMax || tiers[i].magiMax === Infinity)) {
-        currentTierIndex = i;
-        break;
-      }
-    }
-
-    const currentTier = tiers[currentTierIndex];
-    const nextTier = currentTierIndex < tiers.length - 1 ? tiers[currentTierIndex + 1] : null;
-    const cliffBufferDistance = nextTier ? nextTier.magiMin - magiValue : Infinity;
-
-    // SSA-44 Appeal Evaluation
-    const isEligible = events.length > 0 && currentTier.tier > 0;
-    const estimatedAnnualSavings = isEligible ? currentTier.totalAnnualSurcharge : 0;
-
-    const requiredDocs: string[] = [];
-    if (events.includes('WORK_STOPPAGE') || events.includes('WORK_REDUCTION')) {
-      requiredDocs.push('Employer Statement or Pay Stub showing income reduction date');
-    }
-    if (events.includes('DEATH_OF_SPOUSE')) {
-      requiredDocs.push('Certified Death Certificate');
-    }
-    if (events.includes('MARRIAGE') || events.includes('DIVORCE_OR_ANNULMENT')) {
-      requiredDocs.push('Marriage / Divorce Decree Certificate');
-    }
-    if (events.includes('INCOME_PROPERTY_LOSS') || events.includes('PENSION_PORTFOLIO_LOSS')) {
-      requiredDocs.push('Insurance Claim or Financial Statement of Loss');
-    }
-
-    const appealAssessment: ISsa44AppealResult = {
-      isEligible,
-      qualifyingEvents: events,
-      estimatedAnnualSavings,
-      recommendationDirective: isEligible
-        ? `Submit Social Security Form SSA-44 with current year MAGI estimate. Potential savings: $${estimatedAnnualSavings.toFixed(2)}/yr.`
-        : `No active Life-Changing Event or current MAGI is below IRMAA Tier 1 threshold ($${tiers[1].magiMin.toLocaleString()}).`,
-      requiredDocuments: requiredDocs
-    };
-
-    // Clinical & Financial Directives
-    const directives: string[] = [];
-    if (cliffBufferDistance > 0 && cliffBufferDistance <= 5000 && nextTier) {
-      directives.push(`⚠️ TAX CLIFF ALERT: You are within $${cliffBufferDistance.toLocaleString()} of Tier ${nextTier.tier} (+$${(nextTier.totalAnnualSurcharge - currentTier.totalAnnualSurcharge).toFixed(2)}/yr surcharge). Consider HSA/401(k) deductions or tax-loss harvesting.`);
-    }
-
-    if (currentTier.tier > 0) {
-      directives.push(`Medicare Part B surcharge: +$${currentTier.partBSurchargeMonthly.toFixed(2)}/mo | Part D surcharge: +$${currentTier.partDSurchargeMonthly.toFixed(2)}/mo.`);
-      directives.push(`Optimize Part D formulary choices & check Patient Assistance Programs (PAPs) for biologic therapies.`);
-    } else {
-      directives.push(`✅ Standard Medicare Rate: Your MAGI ($${magiValue.toLocaleString()}) is below the Tier 1 IRMAA threshold.`);
-    }
-
-    return {
-      filingStatus: status,
-      magi: magiValue,
-      currentTier,
-      nextTier,
-      cliffBufferDistance,
-      annualSurcharge: currentTier.totalAnnualSurcharge,
-      appealAssessment,
-      clinicalFinancialDirectives: directives
-    };
+    return calculateIrmaa(this.magi(), this.filingStatus(), this.activeEvents());
   });
 
   /**
-   * Directly evaluates IRMAA surcharges for arbitrary parameters.
+   * Directly evaluates IRMAA surcharges for arbitrary parameters (pure function call, safe inside computed).
    */
   public evaluateIrmaa(magi: number, status: TaxFilingStatus = 'single', events: LifeChangingEvent[] = []): IIrmaaAnalysisResult {
-    const originalMagi = this.magi();
-    const originalStatus = this.filingStatus();
-    const originalEvents = this.activeEvents();
-
-    this.magi.set(magi);
-    this.filingStatus.set(status);
-    this.activeEvents.set(events);
-
-    const res = this.analysis();
-
-    this.magi.set(originalMagi);
-    this.filingStatus.set(originalStatus);
-    this.activeEvents.set(originalEvents);
-
-    return res;
+    return calculateIrmaa(magi, status, events);
   }
 }

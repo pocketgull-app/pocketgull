@@ -53,7 +53,7 @@ export function renderBusinessSiteHtml(): string {
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=Nunito:wght@700;800;900&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
   
   <style>
     /* 🖋️ Official Open-Source PocketGull Typeface Declarations (SIL OFL 1.1) */
@@ -101,12 +101,12 @@ export function renderBusinessSiteHtml(): string {
     }
 
     .font-pocketgull {
-      font-family: 'PocketGull', 'Outfit', 'Nunito', sans-serif;
+      font-family: 'PocketGull', 'Outfit', 'Inter', sans-serif;
       letter-spacing: -0.01em;
     }
 
     .font-pocketgull-chisel {
-      font-family: 'PocketGull', 'Outfit', sans-serif;
+      font-family: 'PocketGull', 'Outfit', 'Inter', sans-serif;
       font-weight: 900;
       letter-spacing: -0.025em;
     }

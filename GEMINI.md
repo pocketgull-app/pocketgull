@@ -70,6 +70,13 @@ export class MetricCardComponent {
   value = signal(72);
   trend = signal(2.5);
 
-  displayValue = computed(() => \`\${this.value()} bpm\`);
+  displayValue = computed(() => `${this.value()} bpm`);
 }
 ```
+
+## Clinical & Ophthalmological (WCAG AAA & HIPAA Safe Harbor) Standards
+- **Zero Spelling Errors**: All medical terms, anatomical nomenclature, and drug names MUST be verified for 100% lexical precision (`HIPAA`, `Ophthalmological`, `Ayurvedic`, `LogMAR`).
+- **Optotypic Legibility (LogMAR 0.0 / Snellen 20/20)**: Text must resolve clearly at 5-arcminute visual angle with 1-arcminute stroke details at 50–70 cm viewing distances.
+- **ISMP / FDA Disambiguation**: Enforce slashed zero (`cv08`), curved lowercase `l` (`cv05`), and serifed capital `I` (`ss02`).
+- **WCAG AAA Compliance**: Minimum 7:1 contrast ratio against dark obsidian backgrounds.
+- **HIPAA Safe Harbor**: All research and mock datasets must strip all 18 direct/indirect identifiers.

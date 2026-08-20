@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,48 +10,40 @@ const __dirname = path.dirname(__filename);
 // Screenshot output directory
 const SCREENSHOT_DIR = path.join(__dirname, '..', 'test-results', 'screenshots');
 
-/** Helper to enter demo mode and select Alexander Vance */
-async function enterDemoModeWithPhilGear(page: import('@playwright/test').Page) {
+/** Helper to enter demo mode and select Homo Sapiens default patient */
+async function enterDemoModeWithDefaultPatient(page: import('@playwright/test').Page) {
   await enterDemoMode(page);
-
-  // Select patient Alexander Vance from the dropdown
-  const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
-  await expect(dropdownBtn).toBeVisible({ timeout: 15000 });
-  await dropdownBtn.click();
-
-  const alexanderVanceOption = page.locator('.origin-top-left button', { hasText: 'Alexander Vance' }).first();
-  await expect(alexanderVanceOption).toBeVisible({ timeout: 10000 });
-  await alexanderVanceOption.click();
-  await page.waitForTimeout(1500);
+  await selectPatientByName(page, 'Homo Sapiens');
+  await page.waitForTimeout(1000);
 }
 
-test.describe('Alexander Vance — Default Patient & Full Lens Verification', () => {
+test.describe('Homo Sapiens — Default Patient & Full Lens Verification', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(90000);
     await setupE2ePage(page);
     await enterDemoMode(page);
   });
 
-  test('Alexander Vance can be selected and loaded', async ({ page }) => {
+  test('Homo Sapiens default patient can be selected and loaded', async ({ page }) => {
     page.on('console', msg => {
       if (msg.type() === 'error') console.log('PAGE ERROR:', msg.text());
     });
 
-    await enterDemoModeWithPhilGear(page);
+    await enterDemoModeWithDefaultPatient(page);
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    // The analysis report component should be present (loaded for Alexander Vance)
+    // The analysis report component should be present (loaded for Homo Sapiens)
     await expect(page.locator('app-analysis-container, app-analysis-report').first()).toBeVisible({ timeout: 20000 });
 
     // await page.screenshot({
-    //   path: path.join(SCREENSHOT_DIR, 'alexander_vance_default_patient.png'),
+    //   path: path.join(SCREENSHOT_DIR, 'homo_sapiens_default_patient.png'),
     //   fullPage: false,
     // });
-    console.log('[PASS] Alexander Vance loaded as default patient.');
+    console.log('[PASS] Homo Sapiens loaded as default patient.');
   });
 
-  test('Alexander Vance — all 6 analysis lens tabs are visible and populated', async ({ page }) => {
-    await enterDemoModeWithPhilGear(page);
+  test('Homo Sapiens — all 6 analysis lens tabs are visible and populated', async ({ page }) => {
+    await enterDemoModeWithDefaultPatient(page);
     await page.setViewportSize({ width: 1440, height: 900 });
 
     const reportEl = page.locator('app-analysis-container, app-analysis-report').first();
@@ -137,11 +129,11 @@ test.describe('Alexander Vance — Default Patient & Full Lens Verification', ()
     // await page.screenshot({
     //   path: path.join(SCREENSHOT_DIR, 'phil_gear_all_lenses.png'),
     // });
-    console.log('[PASS] All 6 lenses verified for Phil Gear.');
+    console.log('[PASS] All 6 lenses verified for Homo Sapiens.');
   });
 
-  test('Phil Gear — Orthomolecular Profiling shows correct biomarker data across paradigms', async ({ page }) => {
-    await enterDemoModeWithPhilGear(page);
+  test('Homo Sapiens — Orthomolecular Profiling shows correct biomarker data across paradigms', async ({ page }) => {
+    await enterDemoModeWithDefaultPatient(page);
     await page.setViewportSize({ width: 1440, height: 900 });
 
     const reportEl = page.locator('app-analysis-report');
@@ -168,7 +160,7 @@ test.describe('Alexander Vance — Default Patient & Full Lens Verification', ()
     await page.waitForTimeout(1000);
     await expect(page.locator('text=/Magnesium/i').first()).toBeVisible({ timeout: 10000 });
     // await page.screenshot({
-    //   path: path.join(SCREENSHOT_DIR, 'phil_gear_ortho_western.png'),
+    //   path: path.join(SCREENSHOT_DIR, 'homo_sapiens_ortho_western.png'),
     // });
     console.log('[PASS] Western Orthomolecular Profiling verified.');
 
@@ -179,7 +171,7 @@ test.describe('Alexander Vance — Default Patient & Full Lens Verification', ()
     await page.waitForTimeout(1000);
     await expect(page.locator('text=/Magnesium|Biomarker|Nutrient/i').first()).toBeVisible({ timeout: 10000 });
     // await page.screenshot({
-    //   path: path.join(SCREENSHOT_DIR, 'phil_gear_ortho_eastern.png'),
+    //   path: path.join(SCREENSHOT_DIR, 'homo_sapiens_ortho_eastern.png'),
     // });
     console.log('[PASS] Eastern Orthomolecular Profiling verified.');
 
@@ -190,10 +182,10 @@ test.describe('Alexander Vance — Default Patient & Full Lens Verification', ()
     await page.waitForTimeout(1000);
     await expect(page.locator('text=/Magnesium|Biomarker|Nutrient|dryness/i').first()).toBeVisible({ timeout: 10000 });
     // await page.screenshot({
-    //   path: path.join(SCREENSHOT_DIR, 'phil_gear_ortho_ayurvedic.png'),
+    //   path: path.join(SCREENSHOT_DIR, 'homo_sapiens_ortho_ayurvedic.png'),
     // });
     console.log('[PASS] Ayurvedic Orthomolecular Profiling verified.');
 
-    console.log('[COMPLETE] All 3 paradigms verified for Phil Gear Orthomolecular Profiling.');
+    console.log('[COMPLETE] All 3 paradigms verified for Homo Sapiens Orthomolecular Profiling.');
   });
 });

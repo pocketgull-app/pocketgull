@@ -5,7 +5,8 @@ import { AssessmentType, IQuestionItem, ISeverityTier } from '../services/clinic
 import { 
   PHQ9_QUESTIONS, GAD7_QUESTIONS, ISI_QUESTIONS, CSSRS_QUESTIONS, 
   ROS14_QUESTIONS, PHQ15_QUESTIONS, PRAPARE_QUESTIONS,
-  AYURVEDA_QUESTIONS, TCM_QUESTIONS, GROW_THYSELF_QUESTIONS 
+  AYURVEDA_QUESTIONS, TCM_QUESTIONS, GROW_THYSELF_QUESTIONS,
+  MOCA_QUESTIONS, AUDITC_QUESTIONS, SARCF_QUESTIONS, DN4_QUESTIONS, SIBI_QUESTIONS
 } from '../services/clinical-assessments/data';
 
 @Component({
@@ -186,6 +187,51 @@ import {
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
           <span>☯️ TCM (Shi Wen)</span>
         </button>
+
+        <button (click)="svc.activeTab.set('moca')"
+          [class.border-b-2]="svc.activeTab() === 'moca'"
+          [class.border-cyan-500]="svc.activeTab() === 'moca'"
+          [class.text-cyan-600]="svc.activeTab() === 'moca'"
+          [class.text-zinc-400]="svc.activeTab() !== 'moca'"
+          class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+          <span>🧩 MoCA (Cognition)</span>
+        </button>
+
+        <button (click)="svc.activeTab.set('auditc')"
+          [class.border-b-2]="svc.activeTab() === 'auditc'"
+          [class.border-amber-500]="svc.activeTab() === 'auditc'"
+          [class.text-amber-600]="svc.activeTab() === 'auditc'"
+          [class.text-zinc-400]="svc.activeTab() !== 'auditc'"
+          class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+          <span>🍷 AUDIT-C (Alcohol)</span>
+        </button>
+
+        <button (click)="svc.activeTab.set('sarcf')"
+          [class.border-b-2]="svc.activeTab() === 'sarcf'"
+          [class.border-emerald-500]="svc.activeTab() === 'sarcf'"
+          [class.text-emerald-600]="svc.activeTab() === 'sarcf'"
+          [class.text-zinc-400]="svc.activeTab() !== 'sarcf'"
+          class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+          <span>💪 SARC-F (Sarcopenia)</span>
+        </button>
+
+        <button (click)="svc.activeTab.set('dn4')"
+          [class.border-b-2]="svc.activeTab() === 'dn4'"
+          [class.border-rose-500]="svc.activeTab() === 'dn4'"
+          [class.text-rose-600]="svc.activeTab() === 'dn4'"
+          [class.text-zinc-400]="svc.activeTab() !== 'dn4'"
+          class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+          <span>⚡ DN4 (Neuropathic Pain)</span>
+        </button>
+
+        <button (click)="svc.activeTab.set('sibi')"
+          [class.border-b-2]="svc.activeTab() === 'sibi'"
+          [class.border-orange-500]="svc.activeTab() === 'sibi'"
+          [class.text-orange-600]="svc.activeTab() === 'sibi'"
+          [class.text-zinc-400]="svc.activeTab() !== 'sibi'"
+          class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+          <span>🦷 SIBI (Teledentistry &amp; Cardio)</span>
+        </button>
       </div>
 
       <!-- Action Control Row -->
@@ -363,7 +409,12 @@ export class ClinicalAssessmentsSuiteComponent {
     if (t === 'phq15') return 'PHQ-15 Somatic Symptoms';
     if (t === 'prapare') return 'PRAPARE SDOH Protocol';
     if (t === 'ayurveda') return 'Ayurveda Tridosha';
-    return 'TCM Shi Wen 10-Questions';
+    if (t === 'tcm') return 'TCM Shi Wen 10-Questions';
+    if (t === 'moca') return 'MoCA / Mini-Cog Cognitive';
+    if (t === 'auditc') return 'AUDIT-C Alcohol Risk';
+    if (t === 'sarcf') return 'SARC-F Sarcopenia & Frailty';
+    if (t === 'dn4') return 'DN4 Neuropathic Pain';
+    return 'SIBI Teledentistry & Cardio';
   });
 
   readonly currentQuestions = computed<IQuestionItem[]>(() => {
@@ -377,7 +428,12 @@ export class ClinicalAssessmentsSuiteComponent {
     if (t === 'phq15') return PHQ15_QUESTIONS;
     if (t === 'prapare') return PRAPARE_QUESTIONS;
     if (t === 'ayurveda') return AYURVEDA_QUESTIONS;
-    return TCM_QUESTIONS;
+    if (t === 'tcm') return TCM_QUESTIONS;
+    if (t === 'moca') return MOCA_QUESTIONS;
+    if (t === 'auditc') return AUDITC_QUESTIONS;
+    if (t === 'sarcf') return SARCF_QUESTIONS;
+    if (t === 'dn4') return DN4_QUESTIONS;
+    return SIBI_QUESTIONS;
   });
 
   readonly currentScore = computed(() => {
@@ -391,7 +447,12 @@ export class ClinicalAssessmentsSuiteComponent {
     if (t === 'phq15') return this.svc.phq15Score();
     if (t === 'prapare') return this.svc.prapareScore();
     if (t === 'ayurveda') return this.svc.ayurvedaScore();
-    return this.svc.tcmScore();
+    if (t === 'tcm') return this.svc.tcmScore();
+    if (t === 'moca') return this.svc.mocaScore();
+    if (t === 'auditc') return this.svc.auditcScore();
+    if (t === 'sarcf') return this.svc.sarcfScore();
+    if (t === 'dn4') return this.svc.dn4Score();
+    return this.svc.sibiScore();
   });
 
   readonly currentMaxScore = computed(() => {
@@ -405,7 +466,12 @@ export class ClinicalAssessmentsSuiteComponent {
     if (t === 'phq15') return 30;
     if (t === 'prapare') return 11;
     if (t === 'ayurveda') return 6;
-    return 6;
+    if (t === 'tcm') return 6;
+    if (t === 'moca') return 12;
+    if (t === 'auditc') return 12;
+    if (t === 'sarcf') return 10;
+    if (t === 'dn4') return 4;
+    return 8;
   });
 
   readonly currentTier = computed<ISeverityTier>(() => {
@@ -419,7 +485,12 @@ export class ClinicalAssessmentsSuiteComponent {
     if (t === 'phq15') return this.svc.phq15Tier();
     if (t === 'prapare') return this.svc.prapareTier();
     if (t === 'ayurveda') return this.svc.ayurvedaTier();
-    return this.svc.tcmTier();
+    if (t === 'tcm') return this.svc.tcmTier();
+    if (t === 'moca') return this.svc.mocaTier();
+    if (t === 'auditc') return this.svc.auditcTier();
+    if (t === 'sarcf') return this.svc.sarcfTier();
+    if (t === 'dn4') return this.svc.dn4Tier();
+    return this.svc.sibiTier();
   });
 
   getAnswer(questionId: number): number | undefined {
@@ -433,7 +504,12 @@ export class ClinicalAssessmentsSuiteComponent {
     if (t === 'phq15') return this.svc.phq15Answers()[questionId];
     if (t === 'prapare') return this.svc.prapareAnswers()[questionId];
     if (t === 'ayurveda') return this.svc.ayurvedaAnswers()[questionId];
-    return this.svc.tcmAnswers()[questionId];
+    if (t === 'tcm') return this.svc.tcmAnswers()[questionId];
+    if (t === 'moca') return this.svc.mocaAnswers()[questionId];
+    if (t === 'auditc') return this.svc.auditcAnswers()[questionId];
+    if (t === 'sarcf') return this.svc.sarcfAnswers()[questionId];
+    if (t === 'dn4') return this.svc.dn4Answers()[questionId];
+    return this.svc.sibiAnswers()[questionId];
   }
 
   commitAssessment() {

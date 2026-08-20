@@ -44,7 +44,7 @@ export class TriParadigmSwarmService {
 
   /**
    * Executes a multi-agent clinical consensus debate across Western Allopathic,
-   * Eastern TCM Zang-Fu, and Functional Medicine Bio-Hacking paradigms.
+   * Eastern TCM Zang-Fu, and Functional Medicine Bio-Stacking paradigms.
    */
   public executeSwarmDebate(symptomsOverride?: string[]): ITriParadigmDebate {
     this.isDebating.set(true);
@@ -89,10 +89,10 @@ export class TriParadigmSwarmService {
       confidenceScore: 85
     };
 
-    // 3. Functional Medicine Bio-Hacker Perspective (Sentinel)
+    // 3. Functional Medicine Bio-Stacker Perspective (Sentinel)
     const functional: IParadigmPerspective = {
       paradigm: 'functional',
-      specialistName: 'Dr. Sentinel (Functional Medicine & Cellular Bio-Hacker)',
+      specialistName: 'Dr. Sentinel (Functional Medicine & Cellular Bio-Stacker)',
       avatarIcon: '🧬',
       primaryDiagnosis: `Mitochondrial ATP turnover deficit coupled with zonulin-mediated intestinal hyperpermeability.`,
       keyInterventions: [
