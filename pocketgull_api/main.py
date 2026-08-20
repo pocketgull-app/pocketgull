@@ -1724,3 +1724,156 @@ async def stream_live_telemetry(
         }
     )
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CLINICAL LENS ENGINES (Chronobiology, Longevity, Perinatal, Oral, Stewardship)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class ChronobiologyRequest(BaseModel):
+    wake_time_workday: str = Field(default="06:30", description="Workday wake time (HH:MM)")
+    sleep_time_workday: str = Field(default="23:00", description="Workday sleep time (HH:MM)")
+    wake_time_weekend: str = Field(default="08:30", description="Weekend wake time (HH:MM)")
+    sleep_time_weekend: str = Field(default="00:30", description="Weekend sleep time (HH:MM)")
+    screen_cutoff_minutes_before_bed: int = Field(default=20, description="Minutes before bed screens are stopped")
+    morning_outdoor_lux_minutes: int = Field(default=10, description="Minutes of outdoor morning sunlight exposure")
+    isi_insomnia_score: int = Field(default=12, description="ISI Insomnia Severity Index score (0-28)")
+
+
+@app.post("/api/ml/chronobiology-matrix", tags=["Clinical Lenses"])
+async def evaluate_chronobiology_lens(payload: ChronobiologyRequest) -> dict[str, Any]:
+    """Calculate circadian oscillator phase, DLMO clock time, T_min, and social jetlag protocol."""
+    from pocketgull_api.engines.chronobiology_engine import ChronobiologyMatrixEngine
+    engine = ChronobiologyMatrixEngine()
+    return engine.evaluate_chronobiology(
+        wake_time_workday=payload.wake_time_workday,
+        sleep_time_workday=payload.sleep_time_workday,
+        wake_time_weekend=payload.wake_time_weekend,
+        sleep_time_weekend=payload.sleep_time_weekend,
+        screen_cutoff_minutes_before_bed=payload.screen_cutoff_minutes_before_bed,
+        morning_outdoor_lux_minutes=payload.morning_outdoor_lux_minutes,
+        isi_insomnia_score=payload.isi_insomnia_score
+    )
+
+
+class EpigeneticLongevityRequest(BaseModel):
+    chronological_age: float = Field(default=45.0, description="Chronological age in years")
+    albumin_g_dl: float = Field(default=4.5, description="Serum albumin in g/dL")
+    creatinine_mg_dl: float = Field(default=0.95, description="Serum creatinine in mg/dL")
+    glucose_mg_dl: float = Field(default=92.0, description="Fasting plasma glucose in mg/dL")
+    crp_mg_l: float = Field(default=0.8, description="High-sensitivity C-Reactive Protein (hs-CRP) in mg/L")
+    lymphocyte_pct: float = Field(default=32.0, description="Lymphocyte percentage of WBC")
+    mean_cell_volume_fl: float = Field(default=88.0, description="Mean Corpuscular Volume (MCV) in fL")
+    red_cell_distribution_width_pct: float = Field(default=12.5, description="RDW in %")
+    alkaline_phosphatase_u_l: float = Field(default=65.0, description="ALP in U/L")
+    white_blood_cell_k_ul: float = Field(default=6.2, description="WBC count in 10^3/uL")
+    resting_rmssd_ms: float = Field(default=42.0, description="Resting nocturnal HRV RMSSD in ms")
+    systolic_bp: float = Field(default=122.0, description="Resting systolic blood pressure in mmHg")
+
+
+@app.post("/api/ml/epigenetic-longevity", tags=["Clinical Lenses"])
+async def evaluate_epigenetic_longevity_lens(payload: EpigeneticLongevityRequest) -> dict[str, Any]:
+    """Calculate multi-system PhenoAge, Delta Age, 5-organ senescence velocity, and QALY extensions."""
+    from pocketgull_api.engines.epigenetic_longevity_engine import EpigeneticLongevityEngine
+    engine = EpigeneticLongevityEngine()
+    return engine.compute_phenoage(
+        chronological_age=payload.chronological_age,
+        albumin_g_dl=payload.albumin_g_dl,
+        creatinine_mg_dl=payload.creatinine_mg_dl,
+        glucose_mg_dl=payload.glucose_mg_dl,
+        crp_mg_l=payload.crp_mg_l,
+        lymphocyte_pct=payload.lymphocyte_pct,
+        mean_cell_volume_fl=payload.mean_cell_volume_fl,
+        red_cell_distribution_width_pct=payload.red_cell_distribution_width_pct,
+        alkaline_phosphatase_u_l=payload.alkaline_phosphatase_u_l,
+        white_blood_cell_k_ul=payload.white_blood_cell_k_ul,
+        resting_rmssd_ms=payload.resting_rmssd_ms,
+        systolic_bp=payload.systolic_bp
+    )
+
+
+class PerinatalTrajectoryRequest(BaseModel):
+    gestational_age_weeks: float = Field(default=28.0, description="Gestational age in weeks")
+    is_postpartum: bool = Field(default=False, description="True if patient is postpartum")
+    postpartum_weeks: float = Field(default=0.0, description="Weeks postpartum")
+    systolic_bp: float = Field(default=124.0, description="Systolic blood pressure in mmHg")
+    diastolic_bp: float = Field(default=78.0, description="Diastolic blood pressure in mmHg")
+    current_epds_score: int = Field(default=8, description="Current Edinburgh Postnatal Depression Scale score (0-30)")
+    prior_epds_score: int = Field(default=6, description="Previous EPDS score from baseline")
+    days_between_epds_screens: int = Field(default=30, description="Days elapsed between EPDS screens")
+    is_lactating: bool = Field(default=True, description="True if actively breastfeeding/lactating")
+    serum_ferritin_ug_l: float = Field(default=35.0, description="Serum ferritin level in ug/L")
+
+
+@app.post("/api/ml/perinatal-trajectory", tags=["Clinical Lenses"])
+async def evaluate_perinatal_trajectory_lens(payload: PerinatalTrajectoryRequest) -> dict[str, Any]:
+    """Calculate maternal Mean Arterial Pressure (MAP), preeclampsia risk, EPDS slope, and lactation needs."""
+    from pocketgull_api.engines.perinatal_trajectory_engine import PerinatalTrajectoryEngine
+    engine = PerinatalTrajectoryEngine()
+    return engine.evaluate_maternal_trajectory(
+        gestational_age_weeks=payload.gestational_age_weeks,
+        is_postpartum=payload.is_postpartum,
+        postpartum_weeks=payload.postpartum_weeks,
+        systolic_bp=payload.systolic_bp,
+        diastolic_bp=payload.diastolic_bp,
+        current_epds_score=payload.current_epds_score,
+        prior_epds_score=payload.prior_epds_score,
+        days_between_epds_screens=payload.days_between_epds_screens,
+        is_lactating=payload.is_lactating,
+        serum_ferritin_ug_l=payload.serum_ferritin_ug_l
+    )
+
+
+class PeriodontalBridgeRequest(BaseModel):
+    bleeding_on_probing_pct: float = Field(default=28.0, description="Bleeding on probing percentage of sites")
+    mean_probing_depth_mm: float = Field(default=4.2, description="Average periodontal probing depth in mm")
+    deep_pockets_count_over_5mm: int = Field(default=8, description="Number of clinical sites with pocket depth > 5mm")
+    has_periodontitis_diagnosis: bool = Field(default=True, description="True if diagnosed with Stage II-IV Periodontitis")
+    baseline_hscrp_mg_l: float = Field(default=2.4, description="Baseline serum hs-CRP in mg/L")
+    baseline_hba1c_pct: float = Field(default=6.2, description="Baseline HbA1c in %")
+
+
+@app.post("/api/ml/periodontal-systemic-bridge", tags=["Clinical Lenses"])
+async def evaluate_periodontal_bridge_lens(payload: PeriodontalBridgeRequest) -> dict[str, Any]:
+    """Calculate Periodontal Inflammatory Surface Area (PISA), systemic bacteremia spillover, and CIMT risk."""
+    from pocketgull_api.engines.periodontal_systemic_bridge_engine import PeriodontalSystemicBridgeEngine
+    engine = PeriodontalSystemicBridgeEngine()
+    return engine.evaluate_oral_systemic_axis(
+        bleeding_on_probing_pct=payload.bleeding_on_probing_pct,
+        mean_probing_depth_mm=payload.mean_probing_depth_mm,
+        deep_pockets_count_over_5mm=payload.deep_pockets_count_over_5mm,
+        has_periodontitis_diagnosis=payload.has_periodontitis_diagnosis,
+        baseline_hscrp_mg_l=payload.baseline_hscrp_mg_l,
+        baseline_hba1c_pct=payload.baseline_hba1c_pct
+    )
+
+
+class TransgenerationalStewardshipRequest(BaseModel):
+    tap_water_unfiltered: bool = Field(default=True, description="True if consuming unfiltered municipal tap water")
+    canned_food_weekly_servings: int = Field(default=4, description="Servings of epoxy-lined canned foods per week")
+    synthetic_fragrance_exposure_daily: bool = Field(default=True, description="Daily exposure to synthetic fragrances/phthalates")
+    pesticide_organic_food_pct: float = Field(default=40.0, description="Percentage of weekly produce certified organic")
+    homocysteine_umol_l: float = Field(default=11.5, description="Plasma total homocysteine in umol/L")
+    serum_folate_ng_ml: float = Field(default=9.2, description="Serum folate in ng/mL")
+    glutathione_peroxidase_u_g_hb: float = Field(default=38.0, description="Erythrocyte GPx activity in U/g Hb")
+    heavy_metals_risk_score: float = Field(default=0.35, description="Heavy metals exposure risk score (0-1)")
+    days_until_target_conception: int = Field(default=90, description="Target conception horizon in days")
+
+
+@app.post("/api/ml/transgenerational-stewardship", tags=["Clinical Lenses"])
+async def evaluate_transgenerational_stewardship_lens(payload: TransgenerationalStewardshipRequest) -> dict[str, Any]:
+    """Calculate cumulative EDC xenobiotic index, parental germline resilience, and 90-day gamete countdown."""
+    from pocketgull_api.engines.transgenerational_stewardship_engine import TransgenerationalStewardshipEngine
+    engine = TransgenerationalStewardshipEngine()
+    return engine.evaluate_stewardship_profile(
+        tap_water_unfiltered=payload.tap_water_unfiltered,
+        canned_food_weekly_servings=payload.canned_food_weekly_servings,
+        synthetic_fragrance_exposure_daily=payload.synthetic_fragrance_exposure_daily,
+        pesticide_organic_food_pct=payload.pesticide_organic_food_pct,
+        homocysteine_umol_l=payload.homocysteine_umol_l,
+        serum_folate_ng_ml=payload.serum_folate_ng_ml,
+        glutathione_peroxidase_u_g_hb=payload.glutathione_peroxidase_u_g_hb,
+        heavy_metals_risk_score=payload.heavy_metals_risk_score,
+        days_until_target_conception=payload.days_until_target_conception
+    )
+
+
