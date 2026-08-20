@@ -33,6 +33,48 @@ if (typeof window !== 'undefined') {
     window.scrollTo = (options?: ScrollToOptions | number, y?: number) => {};
     window.scroll = (options?: ScrollToOptions | number, y?: number) => {};
 
+    // Stateful location mock to prevent JSDOM "navigation to another Document"
+    let currentUrl = 'http://localhost:4000/';
+    try {
+      delete (window as any).location;
+      (window as any).location = {
+        get href() { return currentUrl; },
+        set href(val: string) { currentUrl = val; },
+        assign: (url: string) => { currentUrl = url; },
+        replace: (url: string) => { currentUrl = url; },
+        reload: () => {},
+        origin: 'http://localhost:4000',
+        protocol: 'http:',
+        host: 'localhost:4000',
+        hostname: 'localhost',
+        port: '4000',
+        pathname: '/',
+        search: '',
+        hash: ''
+      };
+    } catch {
+      // If location is read-only, define property
+      Object.defineProperty(window, 'location', {
+        value: {
+          get href() { return currentUrl; },
+          set href(val: string) { currentUrl = val; },
+          assign: (url: string) => { currentUrl = url; },
+          replace: (url: string) => { currentUrl = url; },
+          reload: () => {},
+          origin: 'http://localhost:4000',
+          protocol: 'http:',
+          host: 'localhost:4000',
+          hostname: 'localhost',
+          port: '4000',
+          pathname: '/',
+          search: '',
+          hash: ''
+        },
+        writable: true,
+        configurable: true
+      });
+    }
+
     // Prevent jsdom "navigation to another Document" by capturing link and form navigations
     if (typeof document !== 'undefined') {
       document.addEventListener('click', (e: MouseEvent) => {
@@ -49,6 +91,7 @@ if (typeof window !== 'undefined') {
   } catch {
     // Ignore setup in non-DOM contexts
   }
+
 }
 if (typeof global !== 'undefined') {
   ensureGlobals(global);
