@@ -3,16 +3,26 @@ Theme Name: Pocket-Gull Articles & Clinical Knowledge
 Theme URI: https://pocketgull.com/articles
 Author: Phil (GEARARTS)
 Author URI: https://pocketgull.com
-Description: Official PocketGull Geometric Display & Clinical Typography theme matching pocketgull.app.
+Description: Official PocketGull Sans Neo-Grotesque & Clinical Typography theme matching pocketgull.app.
 Version: 1.24.0
 License: Apache License 2.0 & SIL OFL 1.1
 Text Domain: pocketgull-articles
 */
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   🖋️ OFFICIAL POCKETGULL TYPEFACE SYSTEM (MATCHING POCKETGULL.APP)
+   🔬 POCKETGULL SANS (CLINICAL NEO-GROTESQUE VARIABLE STACK)
    ══════════════════════════════════════════════════════════════════════════════ */
 
+@font-face {
+  font-family: 'PocketGull Sans';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: local('PocketGull Sans'),
+       url('fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2') format('woff2');
+}
+
+/* 🖋️ PocketGull Felt-Tip Marker Superfamily */
 @font-face {
   font-family: 'PocketGull';
   font-style: normal;
@@ -57,10 +67,9 @@ Text Domain: pocketgull-articles
   --pocketgull-teal: #0d9488;
   --pocketgull-coral: #f43f5e;
   
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Outfit', 'Plus Jakarta Sans', 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', 'PocketGull Mono', monospace;
-  --font-marker: 'PocketGull', 'Outfit', cursive, sans-serif;
+  --font-pocketgull-sans: 'PocketGull Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-pocketgull-mono: 'PocketGull Mono', 'JetBrains Mono', monospace;
+  --font-pocketgull-marker: 'PocketGull', cursive, sans-serif;
 }
 
 body {
@@ -68,36 +77,37 @@ body {
   padding: 0;
   background-color: var(--pocketgull-bg);
   color: #f5f5f4;
-  font-family: var(--font-sans);
+  font-family: var(--font-pocketgull-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
   letter-spacing: -0.01em;
-  font-feature-settings: "cv08", "cv05", "ss02";
+  font-feature-settings: "cv08", "cv05", "ss02", "zero";
 }
 
-/* 🖋️ Headers & Display Typography matching pocketgull.app */
+/* 🖋️ Headers & Display Typography — PocketGull Sans */
 h1, h2, h3, h4, h5, h6, .font-pocketgull, .font-heading {
-  font-family: var(--font-heading) !important;
+  font-family: var(--font-pocketgull-sans) !important;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.25;
+  font-feature-settings: "cv08", "cv05", "ss02", "zero";
 }
 
-/* 🖋️ Marker Specimen Accents */
+/* 🖋️ Handcrafted Felt-Tip Marker */
 .font-pocketgull-marker {
-  font-family: var(--font-marker) !important;
+  font-family: var(--font-pocketgull-marker) !important;
 }
 
 .font-pocketgull-chisel {
-  font-family: var(--font-marker) !important;
+  font-family: var(--font-pocketgull-marker) !important;
   font-weight: 900;
   letter-spacing: -0.025em;
 }
 
 /* 📟 Clinical Telemetry & Code */
 code, kbd, samp, pre, .font-pocketgull-mono, .font-mono {
-  font-family: var(--font-mono) !important;
+  font-family: var(--font-pocketgull-mono) !important;
   font-feature-settings: "zero", "ss01", "ss02";
 }
 
@@ -133,7 +143,7 @@ code, kbd, samp, pre, .font-pocketgull-mono, .font-mono {
 
 /* Editorial Reading Prose */
 .prose-editorial {
-  font-family: var(--font-sans);
+  font-family: var(--font-pocketgull-sans);
   font-size: 1.15rem;
   line-height: 1.85;
   color: #e7e5e4;
@@ -144,7 +154,7 @@ code, kbd, samp, pre, .font-pocketgull-mono, .font-mono {
 .prose-editorial h1,
 .prose-editorial h2,
 .prose-editorial h3 {
-  font-family: var(--font-heading);
+  font-family: var(--font-pocketgull-sans);
   font-weight: 800;
   color: #ffffff;
   margin-top: 2rem;

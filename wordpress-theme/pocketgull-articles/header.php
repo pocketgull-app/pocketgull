@@ -11,6 +11,14 @@
       darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            'pocketgull': ['"PocketGull Sans"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            'pocketgull-marker': ['PocketGull', 'cursive', 'sans-serif'],
+            'pocketgull-chisel': ['PocketGull', 'cursive', 'sans-serif'],
+            'pocketgull-mono': ['"PocketGull Mono"', '"JetBrains Mono"', 'monospace'],
+            'sans': ['"PocketGull Sans"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            'mono': ['"PocketGull Mono"', '"JetBrains Mono"', 'monospace']
+          },
           colors: {
             amberCard: '#f59e0b',
             amberCardLight: '#fbbf24',
@@ -30,7 +38,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
   
   <style>
-    /* 🖋️ Official Open-Source PocketGull Typeface Superfamily */
+    /* 🔬 PocketGull Sans (Clinical Neo-Grotesque OpenType Stack) */
+    @font-face {
+      font-family: 'PocketGull Sans';
+      font-style: normal;
+      font-weight: 300 900;
+      font-display: swap;
+      src: local('PocketGull Sans'),
+           url('<?php echo get_template_directory_uri(); ?>/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2') format('woff2');
+    }
+
+    /* 🖋️ Official Open-Source PocketGull Felt-Tip Marker Superfamily */
     @font-face {
       font-family: 'PocketGull';
       font-style: normal;
@@ -73,33 +91,36 @@
 
     body {
       background-color: #0c0a09;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'PocketGull Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       text-rendering: optimizeLegibility;
       overflow-x: hidden;
       color: #f5f5f4;
+      font-feature-settings: "cv08", "cv05", "ss02", "zero";
     }
 
-    /* 🖋️ Headers & Display Typography matching pocketgull.app */
+    /* 🖋️ Headers & Display Typography — PocketGull Sans */
     h1, h2, h3, h4, h5, h6, .font-pocketgull, .font-heading {
-      font-family: 'Outfit', 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+      font-family: 'PocketGull Sans', 'Inter', -apple-system, sans-serif !important;
       font-weight: 800;
       letter-spacing: -0.02em;
       line-height: 1.25;
+      font-feature-settings: "cv08", "cv05", "ss02", "zero";
     }
 
-    /* 🖋️ Marker Specimen Accents */
+    /* 🖋️ Handcrafted Felt-Tip Marker */
     .font-pocketgull-marker {
-      font-family: 'PocketGull', 'Outfit', cursive, sans-serif !important;
+      font-family: 'PocketGull', cursive, sans-serif !important;
     }
 
     .font-pocketgull-chisel {
-      font-family: 'PocketGull', 'Outfit', cursive, sans-serif !important;
+      font-family: 'PocketGull', cursive, sans-serif !important;
       font-weight: 900;
       letter-spacing: -0.025em;
     }
 
     .font-pocketgull-mono {
-      font-family: 'JetBrains Mono', 'PocketGull Mono', monospace !important;
+      font-family: 'PocketGull Mono', 'JetBrains Mono', monospace !important;
+      font-feature-settings: "zero", "ss01", "ss02";
     }
 
     .geararts-card {
