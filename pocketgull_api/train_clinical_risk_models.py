@@ -286,6 +286,189 @@ def train_sarcopenia_frailty_model():
     joblib.dump(calibrated_clf, path)
     print(f"Saved: {path}")
 
+def train_vagal_coherence_model():
+    print("\n--- Training Vagal Coherence & Resonance Breathing Model ---")
+    np.random.seed(48)
+    n_samples = 4000
+
+    rmssd = np.random.uniform(10.0, 120.0, n_samples)
+    sdnn = np.random.uniform(15.0, 150.0, n_samples)
+    pnn50 = np.random.uniform(0.0, 50.0, n_samples)
+    resp_rate = np.random.uniform(8.0, 24.0, n_samples)
+    hf_power_pct = np.random.uniform(5.0, 60.0, n_samples)
+    isi_score = np.random.randint(0, 29, n_samples)
+
+    # Coherence rebound probability under 0.1 Hz paced breathing
+    risk = (
+        (rmssd / 45.0) * 0.9 +
+        (sdnn / 60.0) * 0.7 +
+        (pnn50 / 20.0) * 0.6 +
+        (hf_power_pct / 30.0) * 0.8 -
+        ((resp_rate - 14.0) / 6.0) ** 2 * 0.4 -
+        (isi_score / 14.0) * 0.5 - 0.2
+    )
+    prob = 1.0 / (1.0 + np.exp(-risk))
+    y = (prob > 0.50).astype(int)
+
+    X = pd.DataFrame({
+        'rmssd': rmssd,
+        'sdnn': sdnn,
+        'pnn50': pnn50,
+        'resp_rate': resp_rate,
+        'hf_power_pct': hf_power_pct,
+        'isi_score': isi_score
+    })
+
+    base_clf = HistGradientBoostingClassifier(max_iter=150, learning_rate=0.08, random_state=48)
+    calibrated_clf = CalibratedClassifierCV(estimator=base_clf, method='sigmoid', cv=5)
+    calibrated_clf.fit(X, y)
+
+    y_probs = calibrated_clf.predict_proba(X)[:, 1]
+    auc = roc_auc_score(y, y_probs)
+    brier = brier_score_loss(y, y_probs)
+    print(f"[OK] Vagal Coherence Model Trained | ROC-AUC: {auc:.4f} | Brier: {brier:.4f}")
+
+    path = os.path.join(MODELS_DIR, 'vagal_coherence_model.joblib')
+    joblib.dump(calibrated_clf, path)
+    print(f"Saved: {path}")
+
+def train_biomarker_velocity_model():
+    print("\n--- Training Biomarker Velocity & Organ Decline Model ---")
+    np.random.seed(49)
+    n_samples = 4000
+
+    egfr_current = np.random.uniform(15.0, 120.0, n_samples)
+    egfr_annual_slope = np.random.uniform(-12.0, 3.0, n_samples)
+    hba1c_current = np.random.uniform(4.8, 13.5, n_samples)
+    hba1c_annual_slope = np.random.uniform(-1.5, 2.5, n_samples)
+    hscrp_current = np.random.uniform(0.2, 18.0, n_samples)
+    sbp_current = np.random.uniform(95.0, 195.0, n_samples)
+
+    risk = (
+        ((60.0 - egfr_current) / 25.0) * 1.0 -
+        (egfr_annual_slope / 3.0) * 1.2 +
+        ((hba1c_current - 6.5) / 2.0) * 0.8 +
+        (hba1c_annual_slope / 1.0) * 0.6 +
+        (hscrp_current / 5.0) * 0.7 +
+        ((sbp_current - 130.0) / 25.0) * 0.5 - 1.0
+    )
+    prob = 1.0 / (1.0 + np.exp(-risk))
+    y = (prob > 0.50).astype(int)
+
+    X = pd.DataFrame({
+        'egfr_current': egfr_current,
+        'egfr_annual_slope': egfr_annual_slope,
+        'hba1c_current': hba1c_current,
+        'hba1c_annual_slope': hba1c_annual_slope,
+        'hscrp_current': hscrp_current,
+        'sbp_current': sbp_current
+    })
+
+    base_clf = HistGradientBoostingClassifier(max_iter=150, learning_rate=0.08, random_state=49)
+    calibrated_clf = CalibratedClassifierCV(estimator=base_clf, method='sigmoid', cv=5)
+    calibrated_clf.fit(X, y)
+
+    y_probs = calibrated_clf.predict_proba(X)[:, 1]
+    auc = roc_auc_score(y, y_probs)
+    brier = brier_score_loss(y, y_probs)
+    print(f"[OK] Biomarker Velocity Model Trained | ROC-AUC: {auc:.4f} | Brier: {brier:.4f}")
+
+    path = os.path.join(MODELS_DIR, 'biomarker_velocity_model.joblib')
+    joblib.dump(calibrated_clf, path)
+    print(f"Saved: {path}")
+
+def train_neurocognitive_moca_model():
+    print("\n--- Training Neurocognitive MoCA Decline Model ---")
+    np.random.seed(50)
+    n_samples = 4000
+
+    moca_visuospatial = np.random.randint(0, 6, n_samples)
+    moca_executive = np.random.randint(0, 6, n_samples)
+    moca_memory_delay = np.random.randint(0, 6, n_samples)
+    moca_attention = np.random.randint(0, 7, n_samples)
+    age = np.random.uniform(50.0, 95.0, n_samples)
+    phq9_depression = np.random.randint(0, 28, n_samples)
+    isi_sleep = np.random.randint(0, 29, n_samples)
+
+    risk = (
+        (5 - moca_memory_delay) * 0.9 +
+        (5 - moca_executive) * 0.8 +
+        (5 - moca_visuospatial) * 0.6 +
+        (age / 75.0) * 0.8 -
+        (phq9_depression / 15.0) * 0.3 +
+        (isi_sleep / 14.0) * 0.4 - 2.0
+    )
+    prob = 1.0 / (1.0 + np.exp(-risk))
+    y = (prob > 0.50).astype(int)
+
+    X = pd.DataFrame({
+        'moca_visuospatial': moca_visuospatial,
+        'moca_executive': moca_executive,
+        'moca_memory_delay': moca_memory_delay,
+        'moca_attention': moca_attention,
+        'age': age,
+        'phq9_depression': phq9_depression,
+        'isi_sleep': isi_sleep
+    })
+
+    base_clf = HistGradientBoostingClassifier(max_iter=150, learning_rate=0.08, random_state=50)
+    calibrated_clf = CalibratedClassifierCV(estimator=base_clf, method='sigmoid', cv=5)
+    calibrated_clf.fit(X, y)
+
+    y_probs = calibrated_clf.predict_proba(X)[:, 1]
+    auc = roc_auc_score(y, y_probs)
+    brier = brier_score_loss(y, y_probs)
+    print(f"[OK] Neurocognitive MoCA Model Trained | ROC-AUC: {auc:.4f} | Brier: {brier:.4f}")
+
+    path = os.path.join(MODELS_DIR, 'neurocognitive_moca_model.joblib')
+    joblib.dump(calibrated_clf, path)
+    print(f"Saved: {path}")
+
+def train_drug_nutrient_synergy_model():
+    print("\n--- Training Drug-Nutrient CYP450 Synergy Model ---")
+    np.random.seed(51)
+    n_samples = 4000
+
+    cyp3a4_substrate_count = np.random.randint(0, 6, n_samples)
+    cyp2d6_substrate_count = np.random.randint(0, 5, n_samples)
+    curcumin_dosage_mg = np.random.uniform(0.0, 2000.0, n_samples)
+    berberine_dosage_mg = np.random.uniform(0.0, 1500.0, n_samples)
+    ashwagandha_dosage_mg = np.random.uniform(0.0, 1200.0, n_samples)
+    egfr_clearance = np.random.uniform(20.0, 120.0, n_samples)
+
+    risk = (
+        cyp3a4_substrate_count * 0.7 +
+        cyp2d6_substrate_count * 0.6 +
+        (curcumin_dosage_mg / 1000.0) * 0.8 +
+        (berberine_dosage_mg / 800.0) * 0.9 +
+        (ashwagandha_dosage_mg / 600.0) * 0.5 -
+        (egfr_clearance / 60.0) * 0.7 - 0.5
+    )
+    prob = 1.0 / (1.0 + np.exp(-risk))
+    y = (prob > 0.50).astype(int)
+
+    X = pd.DataFrame({
+        'cyp3a4_substrate_count': cyp3a4_substrate_count,
+        'cyp2d6_substrate_count': cyp2d6_substrate_count,
+        'curcumin_dosage_mg': curcumin_dosage_mg,
+        'berberine_dosage_mg': berberine_dosage_mg,
+        'ashwagandha_dosage_mg': ashwagandha_dosage_mg,
+        'egfr_clearance': egfr_clearance
+    })
+
+    base_clf = HistGradientBoostingClassifier(max_iter=150, learning_rate=0.08, random_state=51)
+    calibrated_clf = CalibratedClassifierCV(estimator=base_clf, method='sigmoid', cv=5)
+    calibrated_clf.fit(X, y)
+
+    y_probs = calibrated_clf.predict_proba(X)[:, 1]
+    auc = roc_auc_score(y, y_probs)
+    brier = brier_score_loss(y, y_probs)
+    print(f"[OK] Drug-Nutrient Synergy Model Trained | ROC-AUC: {auc:.4f} | Brier: {brier:.4f}")
+
+    path = os.path.join(MODELS_DIR, 'drug_nutrient_synergy_model.joblib')
+    joblib.dump(calibrated_clf, path)
+    print(f"Saved: {path}")
+
 if __name__ == '__main__':
     train_icu_mortality_model()
     train_readmission_model()
@@ -293,5 +476,10 @@ if __name__ == '__main__':
     train_cvsq_asthenopia_model()
     train_mbi_burnout_model()
     train_sarcopenia_frailty_model()
-    print("\n[COMPLETE] All 6 Clinical Risk Models Trained & Serialized Successfully!")
+    train_vagal_coherence_model()
+    train_biomarker_velocity_model()
+    train_neurocognitive_moca_model()
+    train_drug_nutrient_synergy_model()
+    print("\n[COMPLETE] All 10 Clinical Risk Models Trained & Serialized Successfully!")
+
 
