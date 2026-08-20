@@ -13,8 +13,9 @@
         extend: {
           fontFamily: {
             'pocketgull-marker': ['PocketGull', 'cursive', 'sans-serif'],
-            'sans': ['ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
-            'mono': ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"JetBrains Mono"', 'monospace']
+            'sans': ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+            'heading': ['Outfit', 'Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            'mono': ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
           },
           colors: {
             amberCard: '#f59e0b',
@@ -30,8 +31,12 @@
     }
   </script>
   
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
+  
   <style>
-    /* 🖋️ Handcrafted PocketGull Felt-Tip Marker for Wordmark Only */
+    /* 🖋️ Official Open-Source PocketGull Felt-Tip Marker for Header/Footer Wordmarks */
     @font-face {
       font-family: 'PocketGull';
       font-style: normal;
@@ -42,23 +47,31 @@
 
     body {
       background-color: #0c0a09;
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       text-rendering: optimizeLegibility;
       overflow-x: hidden;
       color: #f5f5f4;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
     }
 
-    /* 🖋️ Headers & Titles — Clean UI Sans-Serif */
-    h1, h2, h3, h4, h5, h6 {
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    /* 🖋️ Headers & Titles — Exact localhost:4000 Outfit / Inter stack */
+    h1, h2, h3, h4, h5, h6, .font-heading {
+      font-family: 'Outfit', 'Plus Jakarta Sans', 'Inter', sans-serif !important;
       font-weight: 800;
       letter-spacing: -0.02em;
       line-height: 1.25;
     }
 
-    /* 🖋️ MarkerFont Reserved strictly for Brand Wordmark */
+    /* 🖋️ MarkerFont Reserved strictly for Header/Footer Brand Wordmark */
     .font-pocketgull-marker {
       font-family: 'PocketGull', cursive, sans-serif !important;
+    }
+
+    /* 📟 Clinical Telemetry & Code — JetBrains Mono from localhost:4000 */
+    code, kbd, samp, pre, .font-mono {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+      font-feature-settings: "zero", "ss01", "ss02";
     }
 
     /* 📐 Dieter Rams Functional Grill Homage */
