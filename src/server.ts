@@ -216,7 +216,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.set('trust proxy', true);
+// Trust single reverse proxy hop on Google Cloud Run to prevent IP spoofing while enabling secure rate-limiting
+app.set('trust proxy', 1);
 
 // Explicit preview endpoints for business site
 app.get(['/business', '/preview'], (_req, res) => {
@@ -708,8 +709,7 @@ import { createAuthRouter } from './server/routes/auth.routes';
 import { apiKeyService } from './server/services/api-key.service';
 
 app.use('/api/slack', slackRouter);
-
-// Load OpenAPI specification dynamically for Swagger UI
+ 
 // ── Python Biosignal & Data Bridge Proxy ───────────────────────────────────
 // Routes /api/python/* → FastAPI sidecar on :8001 (dev) or PYTHON_API_URL (prod).
 const pythonApiTarget = process.env['PYTHON_API_URL'] ?? 'http://localhost:8001';
@@ -895,8 +895,14 @@ app.use((req, res, next) => {
   engine
     .handle(req)
     .then(async (response: Response | null) => {
-      if (!response) {
-        return next();
+      if (!response || response.status === 404) {
+        const indexPath = join(browserDistFolder, 'index.html');
+        if (fs.existsSync(indexPath) && ((req.headers.accept || '').includes('text/html') || !extname(req.path))) {
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+          return res.status(200).sendFile(indexPath);
+        }
+        if (!response) return next();
       }
 
       const contentType = response.headers.get('content-type') || '';
@@ -935,7 +941,16 @@ app.use((req, res, next) => {
         writeResponseToNodeResponse(response, res);
       }
     })
-    .catch(next);
+    .catch((err) => {
+      console.warn('[Server] SSR render fallback to client index.html:', (err as Error)?.message);
+      const indexPath = join(browserDistFolder, 'index.html');
+      if (fs.existsSync(indexPath) && ((req.headers.accept || '').includes('text/html') || !extname(req.path))) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        return res.status(200).sendFile(indexPath);
+      }
+      next(err);
+    });
 });
 
 /**

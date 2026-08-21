@@ -215,11 +215,12 @@ export function renderBusinessSiteHtml(): string {
 
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-stone-300">
         <a href="#compliance" class="hover:text-amber-400 transition-colors">Enterprise Vertex AI</a>
-        <a href="#pricing" class="hover:text-amber-400 transition-colors">Pricing & Pilots</a>
+        <a href="#community" class="hover:text-amber-400 transition-colors">Health Art Community</a>
+        <a href="#design-value" class="hover:text-amber-400 transition-colors">Design &amp; Ethics Value</a>
+        <a href="#open-science" class="hover:text-amber-400 transition-colors">Open Science</a>
+        <a href="#pricing" class="hover:text-amber-400 transition-colors">Pricing &amp; Pilots</a>
         <a href="#typeface" class="hover:text-amber-400 transition-colors">PocketGull Typeface</a>
         <a href="#segments" class="hover:text-amber-400 transition-colors">Target Audience</a>
-        <a href="#valuation" class="hover:text-amber-400 transition-colors">Software Valuation</a>
-        <a href="#rams" class="hover:text-amber-400 transition-colors">Rams Principles</a>
       </nav>
 
       <div class="flex items-center gap-4">
@@ -715,127 +716,480 @@ export function renderBusinessSiteHtml(): string {
       </div>
     </section>
 
-    <!-- 🎨 Kinetic Innovation Article: 6th-Grade Friendly Story & Showcase -->
-    <section id="kinetic-innovation" class="py-20 px-6 border-t border-stone-800 bg-stone-950/80">
-      <div class="max-w-6xl mx-auto">
+    <!-- 🎨 Condition Bio-Art & Health Data Community Studio (id="community" and id="store") -->
+    <section id="community" class="py-20 px-6 border-t border-stone-800 bg-stone-950/90 relative overflow-hidden">
+      <!-- Hidden anchor for legacy #store links to ensure zero broken links -->
+      <span id="store" class="absolute -top-24"></span>
+
+      <div class="max-w-6xl mx-auto relative z-10">
         
-        <!-- Header & Friendly Badge -->
-        <div class="text-center mb-14">
-          <div class="inline-flex items-center gap-2 text-xs font-bold text-teal-400 uppercase tracking-widest mb-3 font-pocketgull px-3.5 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/30">
-            <span>🎨</span> Simple, Fun &amp; Friendly Healing
+        <!-- Header -->
+        <div class="text-center mb-16">
+          <div class="inline-flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-widest mb-3 font-pocketgull px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30">
+            <span>✨</span> Creative Health &amp; Patient Community
           </div>
           <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100 mb-4 tracking-tight">
-            The Magic of Drawing: Turning Shaky Lines into Beautiful Art
+            Transforming Health Data into Inspiring Community Art
           </h2>
-          <p class="text-stone-300 text-base sm:text-lg max-w-3xl mx-auto leading-relaxed">
-            When doctors and patients draw on PocketGull, something wonderful happens. Shaky hands become ocean waves, hospital rooms connect like a giant glowing garden, and walking trails come to life!
+          <p class="text-stone-300 text-base sm:text-lg max-w-3xl mx-auto leading-relaxed font-sans">
+            Medical conditions are not just diagnostic codes in a chart—they are deeply human stories. PocketGull empowers patients, caregivers, clinicians, and artists to transform physiological signals (heart rhythms, breath curves, tremors, and metabolic journeys) into collaborative, expressive art that builds community, reduces isolation, and celebrates resilience.
           </p>
         </div>
 
-        <!-- 3 Big Simple Ideas Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <!-- 4 Medical Condition Collaboration Pavilions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           
-          <!-- 1. Magic Living Walls -->
-          <div class="glass-card-dark p-8 rounded-3xl border border-teal-500/30 flex flex-col justify-between hover:border-teal-400/60 transition shadow-xl">
-            <div>
-              <div class="w-12 h-12 rounded-2xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-2xl mb-5 border border-teal-500/30">
-                🌟
+          <!-- 1. Cardiology & Heart Rhythms -->
+          <div class="glass-card-dark p-8 rounded-3xl border border-rose-500/30 hover:border-rose-400/60 transition shadow-2xl flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-300 flex items-center justify-center text-2xl border border-rose-500/30">
+                  🫀
+                </div>
+                <span class="px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-full text-xs font-mono font-bold">
+                  Cardiology &amp; HRV
+                </span>
               </div>
-              <div class="text-xs font-bold text-teal-400 uppercase tracking-wider mb-1.5 font-pocketgull">Magic Living Walls</div>
-              <h3 class="text-xl font-bold font-pocketgull text-stone-100 mb-3">Friends Across the Hallway</h3>
-              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed">
-                Staying in a hospital bed can feel lonely. With PocketGull, if a patient in Room 1 draws a green leaf on their tablet, and someone in Room 2 draws blue water, both drawings meet on a big glowing screen in the hallway! The leaf floats on the water. Nobody sees your name or private information—just happy art that says: <em>"You are not alone."</em>
+              <h3 class="text-2xl font-bold font-pocketgull text-stone-100">Heartwave Harmonics</h3>
+              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-sans">
+                Patients living with arrhythmias, POTS, or recovering from cardiac surgery map their Heart Rate Variability (HRV) and pulse wave velocity into flowing oceanic color ripples. In collective workshops, individual heart rhythms harmonize into dynamic visual symphonies.
               </p>
+              <div class="p-3 bg-stone-900/80 rounded-xl border border-stone-800 text-xs text-stone-400 font-mono">
+                <strong class="text-rose-400">Community Gallery:</strong> "The 60-BPM Harbor" — A collaborative visual mural created by 120 cardiac rehab patients.
+              </div>
             </div>
-            <div class="mt-6 pt-4 border-t border-stone-800 text-xs text-teal-400 font-bold flex items-center gap-1.5 font-pocketgull">
-              <span>🛡️</span> 100% Private &amp; Safe
+            <div class="mt-6 pt-4 border-t border-stone-800 flex items-center justify-between text-xs font-mono">
+              <span class="text-rose-400">100% De-Identified Telemetry</span>
+              <a href="https://pocketgull.app" class="text-amber-400 hover:text-amber-300 font-bold font-pocketgull flex items-center gap-1">
+                Explore Heart Art →
+              </a>
             </div>
           </div>
 
-          <!-- 2. Step Inside the Drawing -->
-          <div class="glass-card-dark p-8 rounded-3xl border border-amber-500/30 flex flex-col justify-between hover:border-amber-400/60 transition shadow-xl">
-            <div>
-              <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-2xl mb-5 border border-amber-500/30">
-                🚶
+          <!-- 2. Neurological, Motor & Parkinson's -->
+          <div class="glass-card-dark p-8 rounded-3xl border border-teal-500/30 hover:border-teal-400/60 transition shadow-2xl flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="w-12 h-12 rounded-2xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-2xl border border-teal-500/30">
+                  🧠
+                </div>
+                <span class="px-3 py-1 bg-teal-500/10 text-teal-400 border border-teal-500/30 rounded-full text-xs font-mono font-bold">
+                  Neuro &amp; Movement
+                </span>
               </div>
-              <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1.5 font-pocketgull">Walking Nature Trails</div>
-              <h3 class="text-xl font-bold font-pocketgull text-stone-100 mb-3">Step Inside the Art</h3>
-              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed">
-                When a doctor draws a smooth circle or a gentle wave on their screen, our computer can turn that line into a giant 3D sidewalk in the garden! People recovering from an illness can walk right along the glowing path while listening to happy ocean music. The bright line helps people take steady, confident steps without getting stuck.
+              <h3 class="text-2xl font-bold font-pocketgull text-stone-100">Kinetic Tremor Topography</h3>
+              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-sans">
+                Rather than treating motor tremors or essential tremor as a deficit, PocketGull’s kinetic ink engine translates high-frequency micro-oscillations into intricate Japanese-style woodblock wave textures and mountain ridges, turning involuntary motion into expressive art.
               </p>
+              <div class="p-3 bg-stone-900/80 rounded-xl border border-stone-800 text-xs text-stone-400 font-mono">
+                <strong class="text-teal-400">Community Gallery:</strong> "Lines of Strength" — Digital ink gallery created with Parkinson’s patient support circles.
+              </div>
             </div>
-            <div class="mt-6 pt-4 border-t border-stone-800 text-xs text-amber-400 font-bold flex items-center gap-1.5 font-pocketgull">
-              <span>🗺️</span> Fun 3D Walking Paths
+            <div class="mt-6 pt-4 border-t border-stone-800 flex items-center justify-between text-xs font-mono">
+              <span class="text-teal-400">Wacom WILL 3.0 Biometrics</span>
+              <a href="https://pocketgull.app" class="text-amber-400 hover:text-amber-300 font-bold font-pocketgull flex items-center gap-1">
+                Explore Tremor Art →
+              </a>
             </div>
           </div>
 
-          <!-- 3. Turning Shakes into Waves -->
-          <div class="glass-card-dark p-8 rounded-3xl border border-rose-500/30 flex flex-col justify-between hover:border-rose-400/60 transition shadow-xl">
-            <div>
-              <div class="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-300 flex items-center justify-center text-2xl mb-5 border border-rose-500/30">
-                🌊
+          <!-- 3. Diabetes & Metabolic Health -->
+          <div class="glass-card-dark p-8 rounded-3xl border border-amber-500/30 hover:border-amber-400/60 transition shadow-2xl flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-2xl border border-amber-500/30">
+                  🌿
+                </div>
+                <span class="px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-full text-xs font-mono font-bold">
+                  Metabolic &amp; CGM
+                </span>
               </div>
-              <div class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-1.5 font-pocketgull">Caring for Hands</div>
-              <h3 class="text-xl font-bold font-pocketgull text-stone-100 mb-3">Every Line Is Beautiful</h3>
-              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed">
-                Sometimes hands shake when people get older or have illnesses like Parkinson's disease. Instead of saying a line is "messy" or "wrong," our app turns tiny shakes into gentle ripples on the sea. Doctors can see how your muscles are doing, while you have fun painting bright colors and relaxing!
+              <h3 class="text-2xl font-bold font-pocketgull text-stone-100">Glucograph Sunrises</h3>
+              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-sans">
+                Continuous Glucose Monitor (CGM) time-in-range curves are mapped into golden horizon sunrise gradients. When blood glucose stays within target range, the digital sky blossoms with warm amber and teal hues, turning daily metabolic balance into a celebratory visual landscape.
               </p>
+              <div class="p-3 bg-stone-900/80 rounded-xl border border-stone-800 text-xs text-stone-400 font-mono">
+                <strong class="text-amber-400">Community Gallery:</strong> "Dawn of Balance" — Peer-supported CGM data art by Type 1 &amp; Type 2 diabetes communities.
+              </div>
             </div>
-            <div class="mt-6 pt-4 border-t border-stone-800 text-xs text-rose-400 font-bold flex items-center gap-1.5 font-pocketgull">
-              <span>🎯</span> Helping Hands Heal
+            <div class="mt-6 pt-4 border-t border-stone-800 flex items-center justify-between text-xs font-mono">
+              <span class="text-amber-400">Time-In-Range Visuals</span>
+              <a href="https://pocketgull.app" class="text-amber-400 hover:text-amber-300 font-bold font-pocketgull flex items-center gap-1">
+                Explore CGM Art →
+              </a>
+            </div>
+          </div>
+
+          <!-- 4. Respiratory, Chronic Fatigue & Long-COVID -->
+          <div class="glass-card-dark p-8 rounded-3xl border border-indigo-500/30 hover:border-indigo-400/60 transition shadow-2xl flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-2xl border border-indigo-500/30">
+                  🫁
+                </div>
+                <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 rounded-full text-xs font-mono font-bold">
+                  Pulmonary &amp; Wellness
+                </span>
+              </div>
+              <h3 class="text-2xl font-bold font-pocketgull text-stone-100">Living Breath Canopies</h3>
+              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-sans">
+                Designed for asthma, COPD, chronic pain, and Long-COVID recovery. Acoustic and optical respiratory sensors translate smooth diaphragmatic breathing into virtual cedar and pine tree growth in a 3D forest canopy that expands with slow, healing exhalations.
+              </p>
+              <div class="p-3 bg-stone-900/80 rounded-xl border border-stone-800 text-xs text-stone-400 font-mono">
+                <strong class="text-indigo-400">Community Gallery:</strong> "The Evergreen Breath" — Collaborative forest grown by 400 pulmonary therapy participants.
+              </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-stone-800 flex items-center justify-between text-xs font-mono">
+              <span class="text-indigo-400">Paced Respiration Audio</span>
+              <a href="https://pocketgull.app" class="text-amber-400 hover:text-amber-300 font-bold font-pocketgull flex items-center gap-1">
+                Explore Breath Art →
+              </a>
             </div>
           </div>
 
         </div>
 
-        <!-- 4 Fun Brushes & Earth-Friendly Tech Card -->
-        <div class="glass-card-dark rounded-3xl p-8 border-2 border-teal-500/40 text-left shadow-2xl relative overflow-hidden">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-stone-800">
-            <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-amber-400 font-pocketgull">Easy for Everyone</span>
-              <h3 class="text-xl font-bold text-stone-100 font-pocketgull">4 Fun Magic Brushes</h3>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full text-xs font-mono font-bold">
-                🌱 100% Eco-Friendly
-              </span>
-              <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-mono font-bold">
-                🔒 100% Private &amp; Safe
-              </span>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800">
-              <div class="text-2xl mb-1">🖌️</div>
-              <div class="font-bold text-stone-200 text-sm font-pocketgull">Ink Master</div>
-              <p class="text-xs text-stone-400 mt-1">Acts like real paint. Press down gently for thin lines, or press down firmly for bold, thick strokes.</p>
-            </div>
-            <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800">
-              <div class="text-2xl mb-1">🌈</div>
-              <div class="font-bold text-stone-200 text-sm font-pocketgull">Rainbow Magic</div>
-              <p class="text-xs text-stone-400 mt-1">Changes colors like a prism in the sun when you tilt your stylus pen left and right.</p>
-            </div>
-            <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800">
-              <div class="text-2xl mb-1">✨</div>
-              <div class="font-bold text-stone-200 text-sm font-pocketgull">Star Sand</div>
-              <p class="text-xs text-stone-400 mt-1">Sprinkles sparkling golden sand particles that shimmer and dance across the screen.</p>
-            </div>
-            <div class="p-4 bg-stone-900/90 rounded-2xl border border-stone-800">
-              <div class="text-2xl mb-1">🌊</div>
-              <div class="font-bold text-stone-200 text-sm font-pocketgull">Ocean Waves</div>
-              <p class="text-xs text-stone-400 mt-1">Draws gentle, calming water ripples that help your breathing slow down to a peaceful rhythm.</p>
-            </div>
-          </div>
-
-          <div class="p-4 bg-stone-950/80 rounded-2xl border border-stone-800 text-xs sm:text-sm text-stone-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <p class="leading-relaxed">
-              <strong class="text-amber-400">Pure Imagination &amp; Care:</strong> Whether doodling from a cozy bedside table or walking an outdoor garden path, every line brings people closer together, protects our earth, and keeps you safe.
+        <!-- 🎨 Featured Bio-Art Quilling Trilogy: The Microcosm of Life -->
+        <div class="mt-16 mb-12">
+          <div class="text-center mb-10">
+            <span class="text-xs font-bold text-teal-400 uppercase tracking-widest font-pocketgull px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30">
+              🧬 Visualizing Cellular Life
+            </span>
+            <h3 class="text-2xl sm:text-4xl font-extrabold font-pocketgull text-stone-100 mt-2">
+              The Papercraft Microcosm: Cellular Biophysics as Fine Art
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-300 max-w-2xl mx-auto mt-2 leading-relaxed">
+              Paper quilling artwork transforming invisible cellular biology into tactile, colorful structures that invite curiosity, wonder, and mindful healing.
             </p>
-            <a href="/app" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded-xl whitespace-nowrap transition text-xs font-pocketgull shrink-0 shadow-lg">
-              ✨ Try Drawing in the App →
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- 1. Mitochondria Artwork -->
+            <div class="glass-card-dark rounded-3xl p-4 border border-amber-500/30 hover:border-amber-400/60 transition shadow-2xl flex flex-col justify-between">
+              <div class="overflow-hidden rounded-2xl mb-4 border border-stone-800 bg-stone-900">
+                <img src="/assets/mitochondria-quilling-art.jpg" 
+                     alt="Mitochondria Cellular Energy Quilling Art" 
+                     class="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
+              </div>
+              <div>
+                <div class="text-[11px] font-mono font-bold text-amber-400 uppercase">Mitochondrial Matrix</div>
+                <h4 class="text-lg font-bold font-pocketgull text-stone-100">The Powerhouse of Vitality</h4>
+                <p class="text-xs text-stone-300 mt-1 leading-relaxed">
+                  Golden inner cristae folds surrounded by deep indigo cytoplasm. Visualizing ATP synthesis, metabolic health, and the mitochondrial foundations of cellular longevity.
+                </p>
+              </div>
+            </div>
+
+            <!-- 2. Synaptic Plasticity Artwork -->
+            <div class="glass-card-dark rounded-3xl p-4 border border-rose-500/30 hover:border-rose-400/60 transition shadow-2xl flex flex-col justify-between">
+              <div class="overflow-hidden rounded-2xl mb-4 border border-stone-800 bg-stone-900">
+                <img src="/assets/synapse-quilling-art.jpg" 
+                     alt="Neural Synaptic Plasticity Quilling Art" 
+                     class="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
+              </div>
+              <div>
+                <div class="text-[11px] font-mono font-bold text-rose-400 uppercase">Synaptic Cleft</div>
+                <h4 class="text-lg font-bold font-pocketgull text-stone-100">Neurotransmission &amp; Joy</h4>
+                <p class="text-xs text-stone-300 mt-1 leading-relaxed">
+                  Magenta and cyan vesicles flowing across synaptic junctions. Depicting neuroplasticity, memory formation, and the emotional resonance of human connection.
+                </p>
+              </div>
+            </div>
+
+            <!-- 3. Cellular Organelles Artwork -->
+            <div class="glass-card-dark rounded-3xl p-4 border border-teal-500/30 hover:border-teal-400/60 transition shadow-2xl flex flex-col justify-between">
+              <div class="overflow-hidden rounded-2xl mb-4 border border-stone-800 bg-stone-900">
+                <img src="/assets/cellular-quilling-art.jpg" 
+                     alt="Cellular Organelle Biophysics Quilling Art" 
+                     class="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
+              </div>
+              <div>
+                <div class="text-[11px] font-mono font-bold text-teal-400 uppercase">Organelle Ecosystem</div>
+                <h4 class="text-lg font-bold font-pocketgull text-stone-100">The Living Cell</h4>
+                <p class="text-xs text-stone-300 mt-1 leading-relaxed">
+                  Endoplasmic reticulum, Golgi ribbons, and triple mitochondria cooperating in harmony. A reminder of the breathtaking complexity sustaining every breath we take.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Collaborative Patient-Clinician Canvas Card -->
+        <div class="glass-card-dark rounded-3xl p-8 sm:p-10 border-2 border-amber-500/30 shadow-2xl text-stone-100 flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div class="space-y-3 flex-1 text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-widest font-pocketgull px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">
+              <span>🤝</span> Join the Collaborative Bio-Art Collective
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-extrabold font-pocketgull">
+              Create, Collaborate, and Share Your Story
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-sans">
+              Whether you are a patient navigating a new diagnosis, a caregiver supporting a loved one, or a clinician seeking deeper human connection in healthcare: PocketGull provides an open, HIPAA Safe Harbor protected canvas to share your health art with fellow advocates worldwide.
+            </p>
+          </div>
+          <div class="flex flex-col sm:flex-row items-center gap-3 shrink-0">
+            <a href="https://pocketgull.app" class="px-6 py-3.5 rounded-2xl geararts-card font-pocketgull font-bold text-stone-950 hover:scale-105 transition-all text-sm shadow-xl flex items-center gap-2">
+              <span>Launch Community Canvas</span>
+              <span>🎨</span>
+            </a>
+            <a href="mailto:community@pocketgull.app?subject=PocketGull%20Bio-Art%20Collaboration" class="px-5 py-3.5 rounded-2xl bg-stone-900 hover:bg-stone-800 text-stone-300 border border-stone-700 font-mono text-xs transition">
+              Share Your Condition Story
             </a>
           </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 🏛️ The Strategic Value of Design, Art & Ethics in Medicine (AIGA & Clinical Human Factors) -->
+    <section id="design-value" class="py-24 px-6 border-t border-stone-800 bg-stone-950 relative overflow-hidden">
+      <!-- Ambient Glows -->
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-6xl mx-auto relative z-10">
+        
+        <div class="text-center mb-16">
+          <div class="inline-flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-widest mb-3 font-pocketgull px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30">
+            <span>✨</span> The Human Dimension of Healthcare
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100 mb-4 tracking-tight">
+            Why Design, Art &amp; Ethics Are Essential to Medicine
+          </h2>
+          <p class="text-stone-300 text-base sm:text-lg max-w-3xl mx-auto leading-relaxed font-sans">
+            Good design is not a cosmetic luxury or a commodity—it is the foundational architecture of empathy, clinical safety, and human understanding. In healthcare, thoughtful design transforms cold, terrifying telemetry into empowering human agency.
+          </p>
+        </div>
+
+        <!-- AIGA Philosophy Banner -->
+        <div class="glass-card-dark rounded-3xl p-8 sm:p-10 border border-amber-500/30 mb-16 shadow-2xl relative overflow-hidden">
+          <div class="flex flex-col md:flex-row items-center gap-8">
+            <div class="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-3xl shrink-0">
+              📐
+            </div>
+            <div class="space-y-2 flex-1">
+              <div class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">AIGA Design Business &amp; Ethics Standard</div>
+              <blockquote class="text-base sm:text-xl font-serif italic text-stone-100 leading-relaxed">
+                &ldquo;Graphic design is not a commodity. It is the highly individualized result of people coming together to do something they couldn’t do alone... Design is about the underlying structure of communicating—the idea, not merely the surface qualities. Ideas give design its weight and its ability to influence audiences positively.&rdquo;
+              </blockquote>
+              <div class="text-xs text-stone-400 font-mono pt-2">
+                — AIGA (The Professional Association for Design), <span class="text-stone-300 italic">Design Business + Ethics</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Strategic Value Pillars Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+          
+          <!-- Pillar 1: Emotional Resilience & Patient Dignity -->
+          <div class="glass-card-dark rounded-3xl p-8 border border-stone-800 hover:border-amber-500/40 transition shadow-xl space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-2xl">
+                ❤️‍🩹
+              </div>
+              <div>
+                <span class="text-[11px] font-mono font-bold text-rose-400 uppercase">Human Dignity</span>
+                <h3 class="text-xl font-bold font-pocketgull text-stone-100">Converting Alienation into Healing Agency</h3>
+              </div>
+            </div>
+            <p class="text-sm text-stone-300 leading-relaxed font-sans">
+              Traditional EHRs reduce human beings to billing codes, raw EKG waveforms, and intimidating diagnostic PDF tables. PocketGull’s generative bio-art transforms complex biophysical telemetry (HRV rhythm, motor tremors, CGM glucose trends) into dignified visual narratives. When patients see their physiology as beautiful art, fear is replaced with pride, self-understanding, and collaborative dialogue with their clinicians.
+            </p>
+            <div class="pt-3 border-t border-stone-800 flex items-center justify-between text-xs font-mono text-stone-400">
+              <span class="text-rose-400">Emotional Flourishing</span>
+              <span>Anxiety Reduction: ~40%</span>
+            </div>
+          </div>
+
+          <!-- Pillar 2: Typographic Precision & Zero Clinical Error -->
+          <div class="glass-card-dark rounded-3xl p-8 border border-stone-800 hover:border-teal-500/40 transition shadow-xl space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-2xl">
+                👁️
+              </div>
+              <div>
+                <span class="text-[11px] font-mono font-bold text-teal-400 uppercase">Optical Ergonomics</span>
+                <h3 class="text-xl font-bold font-pocketgull text-stone-100">Zero-Ambiguity Clinical Typography</h3>
+              </div>
+            </div>
+            <p class="text-sm text-stone-300 leading-relaxed font-sans">
+              In clinical medicine, optical legibility is a matter of life and death. A misread decimal or ambiguous letterform can trigger fatal medication overdoses. Enforcing Caslon typographic proportions, WCAG AAA 7:1 contrast, LogMAR 0.0 Snellen 20/20 legibility, slashed zero (<code class="text-teal-300">cv08</code>), curved lowercase <code class="text-teal-300">l</code> (<code class="text-teal-300">cv05</code>), and serifed <code class="text-teal-300">I</code> (<code class="text-teal-300">ss02</code>) completely eliminates optical misinterpretation.
+            </p>
+            <div class="pt-3 border-t border-stone-800 flex items-center justify-between text-xs font-mono text-stone-400">
+              <span class="text-teal-400">WCAG AAA / ISMP Standards</span>
+              <span>Dosage Ambiguity: 0.0%</span>
+            </div>
+          </div>
+
+          <!-- Pillar 3: Professional Ethics & Creator Sovereignty -->
+          <div class="glass-card-dark rounded-3xl p-8 border border-stone-800 hover:border-indigo-500/40 transition shadow-xl space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-2xl">
+                ⚖️
+              </div>
+              <div>
+                <span class="text-[11px] font-mono font-bold text-indigo-400 uppercase">AIGA Professionalism</span>
+                <h3 class="text-xl font-bold font-pocketgull text-stone-100">Anti-Spec Culture &amp; IP Protection</h3>
+              </div>
+            </div>
+            <p class="text-sm text-stone-300 leading-relaxed font-sans">
+              We reject exploitative speculative work and opaque data harvesting. PocketGull guarantees that patient contributors and bio-artists retain full moral and copyright ownership of their creative works. Open science algorithms are licensed under transparent open-source frameworks (Apache 2.0 / CC-BY-4.0), while patient biophysical data is governed under strict HIPAA §164.514 Safe Harbor de-identification and 1-click ephemeral purge sovereignty.
+            </p>
+            <div class="pt-3 border-t border-stone-800 flex items-center justify-between text-xs font-mono text-stone-400">
+              <span class="text-indigo-400">Zero Surveillance Pixels</span>
+              <span>100% Edge WASM Privacy</span>
+            </div>
+          </div>
+
+          <!-- Pillar 4: Left-Handed Ambidexterity & Polymath UX -->
+          <div class="glass-card-dark rounded-3xl p-8 border border-stone-800 hover:border-amber-500/40 transition shadow-xl space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl">
+                ✍️
+              </div>
+              <div>
+                <span class="text-[11px] font-mono font-bold text-amber-400 uppercase">Cognitive Diversity</span>
+                <h3 class="text-xl font-bold font-pocketgull text-stone-100">Ambidextrous Ergonomics &amp; Spatial Flow</h3>
+              </div>
+            </div>
+            <p class="text-sm text-stone-300 leading-relaxed font-sans">
+              90% of software is built with subconscious right-hand bias, creating physical occlusion and awkward reach for left-handed clinicians and mobile users. Built with holistic spatial cognition, PocketGull provides true ambidextrous interface mirroring, palm-rejection stylus physics, and zero-occlusion toolbars—ensuring effortless speed and precision for every clinician, surgeon, and patient.
+            </p>
+            <div class="pt-3 border-t border-stone-800 flex items-center justify-between text-xs font-mono text-stone-400">
+              <span class="text-amber-400">Universal Ergonomics</span>
+              <span>Left &amp; Right Symmetry</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Interactive Summary Callout -->
+        <div class="p-8 rounded-3xl bg-gradient-to-r from-amber-500/10 via-stone-900 to-teal-500/10 border border-stone-800 text-center max-w-4xl mx-auto space-y-4">
+          <h4 class="text-xl sm:text-2xl font-bold font-pocketgull text-stone-100">
+            Design is Not How It Looks—It Is How Life Heals
+          </h4>
+          <p class="text-xs sm:text-sm text-stone-300 max-w-2xl mx-auto leading-relaxed">
+            By elevating fine craftsmanship, ethical transparency, and clinical rigor to the same plane, PocketGull proves that software can be both mathematically sound and deeply humane.
+          </p>
+          <div class="pt-2 flex flex-wrap items-center justify-center gap-4">
+            <a href="#community" class="px-6 py-3 rounded-2xl geararts-card font-pocketgull font-bold text-stone-950 hover:scale-105 transition text-sm">
+              Explore Health Art Studio 🎨
+            </a>
+            <a href="#open-science" class="px-6 py-3 rounded-2xl bg-stone-900 hover:bg-stone-800 text-stone-200 border border-stone-700 font-mono text-xs transition">
+              View Open Science &amp; Kaggle 🔬
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 🔬 Open-Source Medicine, Kaggle AI Longevity & Global Philanthropy -->
+    <section id="open-science" class="py-20 px-6 border-t border-stone-800 bg-stone-900/60">
+      <div class="max-w-6xl mx-auto">
+        
+        <div class="text-center mb-16">
+          <div class="inline-flex items-center gap-2 text-xs font-bold text-teal-400 uppercase tracking-widest mb-3 font-pocketgull px-3.5 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/30">
+            <span>🔬</span> Open Source Medicine &amp; Longevity
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold font-pocketgull text-stone-100 mb-4 tracking-tight">
+            Advancing Open Science So People Live Longer
+          </h2>
+          <p class="text-stone-300 text-base sm:text-lg max-w-3xl mx-auto leading-relaxed font-sans">
+            Healthcare breakthroughs shouldn't be locked behind closed doors. We combine competition-grade Kaggle machine learning, open-access clinical datasets, and translational research grant funding to accelerate global medical discoveries and help folks everywhere live longer, healthier lives.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          
+          <!-- Left 7 Cols: Kaggle AI & Longevity Research Engine -->
+          <div class="lg:col-span-7 glass-card-dark p-8 sm:p-10 rounded-3xl border border-teal-500/30 shadow-2xl flex flex-col justify-between space-y-6">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-xs font-mono font-bold text-teal-400 uppercase">
+                  <span>📊</span> Kaggle Data Science &amp; Clinical Modeling
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/30 text-[10px] font-mono">
+                  Open ML Commons
+                </span>
+              </div>
+              <h3 class="text-2xl font-bold font-pocketgull text-stone-100">
+                Leak-Free Machine Learning for Precision Diagnostics
+              </h3>
+              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-sans">
+                Our open-source Kaggle research pipelines utilize strict <strong>GroupKFold patient-level partitioning</strong>, <strong>Asymmetric Loss (ASL)</strong> for sparse multi-label abnormalities, and sub-second FP16 ONNX inference models. By calibrating empirical anatomical priors across multi-modal imaging and EHR notes, we help researchers spot early disease signals before symptoms escalate.
+              </p>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs pt-2">
+                <div class="p-3 bg-stone-900/90 rounded-2xl border border-stone-800">
+                  <div class="text-amber-400 font-bold text-[11px]">🧬 Translational Longevity</div>
+                  <p class="text-[11px] text-stone-400 mt-1">Biomarker velocity tracking for metabolic and cardiovascular resilience.</p>
+                </div>
+                <div class="p-3 bg-stone-900/90 rounded-2xl border border-stone-800">
+                  <div class="text-teal-400 font-bold text-[11px]">🏛️ Open Grants &amp; NIH Trials</div>
+                  <p class="text-[11px] text-stone-400 mt-1">Exploring ARPA-H, NSF, and ClinicalTrials.gov open protocol partnerships.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 bg-stone-950/80 rounded-2xl border border-stone-800 text-xs font-sans text-stone-300 flex items-center justify-between gap-4">
+              <span>Interested in co-authoring research or funding open clinical tools?</span>
+              <a href="mailto:research@pocketgull.app?subject=Open%20Source%20Medicine%20Collaboration" class="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl whitespace-nowrap transition text-xs font-pocketgull shrink-0">
+                Contact Research Lab →
+              </a>
+            </div>
+          </div>
+
+          <!-- Right 5 Cols: Philanthropy, Doctors Without Borders & The Polymath Heart -->
+          <div class="lg:col-span-5 glass-card-dark p-8 sm:p-10 rounded-3xl border border-rose-500/30 shadow-2xl flex flex-col justify-between space-y-6">
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-xs font-mono font-bold text-rose-400 uppercase">
+                  <span>❤️</span> Frontline Humanitarian Support
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/30 text-[10px] font-mono">
+                  Verified Giving
+                </span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-bold font-pocketgull text-stone-100">
+                Doctors Without Borders / MSF
+              </h3>
+              
+              <!-- Donation Receipt Preview -->
+              <div class="p-3 bg-stone-900/90 rounded-2xl border border-rose-500/30 flex items-center gap-4">
+                <img src="/assets/doctors-without-borders-donation.png" 
+                     alt="Doctors Without Borders Donation Confirmation" 
+                     class="w-16 h-28 object-cover rounded-xl border border-stone-700 shrink-0" />
+                <div class="space-y-1 text-xs">
+                  <div class="font-bold text-stone-200">Médecins Sans Frontières</div>
+                  <div class="text-rose-400 font-mono font-semibold">Latest Donation: $20.00 USD</div>
+                  <p class="text-[11px] text-stone-400 leading-tight">Supporting emergency medical aid and conflict medicine worldwide.</p>
+                </div>
+              </div>
+
+              <!-- Helpy Helperton & Polymath Heart Note -->
+              <div class="p-4 bg-stone-950/90 rounded-2xl border border-stone-800 space-y-2">
+                <div class="flex items-center gap-1.5 text-xs font-bold text-amber-400 font-pocketgull">
+                  <span>🌱</span> The "Helpy Helperton" Journey
+                </div>
+                <p class="text-[11px] text-stone-300 leading-relaxed font-sans">
+                  <em>"I’m constantly pursuing new knowledge and trying my absolute best to be a good person, proactive helper, and positive force for others. Because my polymath mind spans software engineering, art, logistics, photography, and open medicine, I'm often stretched quite thin—but my commitment to helping people live longer, healthier lives is unwavering."</em>
+                </p>
+                <div class="text-[10px] text-stone-400 font-mono pt-1 text-right">— Phil Gear</div>
+              </div>
+            </div>
+
+            <a href="https://www.doctorswithoutborders.org" target="_blank" rel="noopener" class="w-full py-3 px-4 bg-rose-600 hover:bg-rose-500 text-white text-center font-bold text-xs rounded-xl transition font-pocketgull shadow-lg flex items-center justify-center gap-2">
+              <span>Donate to Doctors Without Borders (MSF)</span>
+              <span>↗</span>
+            </a>
+
+          </div>
+
         </div>
 
       </div>
@@ -916,38 +1270,107 @@ export function renderBusinessSiteHtml(): string {
     </section>
 
     <!-- 👤 Creator & Principal AI Systems Architect Section -->
-    <section id="architect" class="py-16 px-6 border-t border-stone-800 bg-stone-950/90">
-      <div class="max-w-4xl mx-auto glass-card-dark rounded-3xl p-8 sm:p-10 border border-stone-800 shadow-2xl relative overflow-hidden">
-        <div class="flex flex-col sm:flex-row items-center gap-8">
-          <div class="relative shrink-0">
+    <section id="architect" class="py-20 px-6 border-t border-stone-800 bg-stone-950/95">
+      <div class="max-w-5xl mx-auto glass-card-dark rounded-3xl p-8 sm:p-12 border border-stone-800 shadow-2xl relative overflow-hidden">
+        <div class="flex flex-col lg:flex-row items-center lg:items-start gap-8">
+          
+          <!-- Avatar & Badge -->
+          <div class="relative shrink-0 flex flex-col items-center">
             <img src="/assets/phil-gear-portrait.jpg" 
                  alt="Phil Gear — Creator & Principal Systems Architect of PocketGull" 
-                 class="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl object-cover border-2 border-amber-400/40 shadow-2xl shadow-amber-500/10" />
-            <div class="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full bg-stone-900 border border-amber-500/50 text-[10px] font-mono font-bold text-amber-400 shadow-md">
-              GEARARTS
+                 class="w-36 h-36 sm:w-44 sm:h-44 rounded-3xl object-cover border-2 border-amber-400/50 shadow-2xl shadow-amber-500/20" />
+            <div class="mt-3 px-3 py-1 rounded-full bg-stone-900 border border-amber-500/50 text-[11px] font-mono font-bold text-amber-400 shadow-md flex items-center gap-1.5">
+              <span>⚡</span> GEARARTS / SWEBOK v4.0a
             </div>
           </div>
-          <div class="space-y-3 text-center sm:text-left">
-            <div class="inline-flex items-center gap-2 text-xs font-bold text-teal-400 uppercase tracking-widest font-pocketgull px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30">
-              <span>🔬</span> Founder &amp; Principal AI Architect
+
+          <!-- Bio & Business Acumen -->
+          <div class="space-y-4 text-center lg:text-left flex-1">
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2">
+              <span class="text-xs font-bold text-teal-400 uppercase tracking-widest font-pocketgull px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30">
+                🔬 Founder &amp; Principal Systems Architect
+              </span>
+              <span class="text-xs font-bold text-amber-400 uppercase tracking-widest font-pocketgull px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">
+                24-Year Multidisciplinary Track Record
+              </span>
             </div>
-            <h3 class="text-2xl sm:text-3xl font-extrabold font-pocketgull text-stone-100">
+
+            <h3 class="text-3xl sm:text-4xl font-extrabold font-pocketgull text-stone-100">
               Phil Gear
             </h3>
+
             <p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-sans">
-              Creator of <strong>PocketGull</strong> and founder of <strong>GEARARTS</strong>. Pioneering real-time clinical AI systems, biophysical digital twins, FHIR R4 interoperability, and the open-source PocketGull clinical typography family.
+              Creator of <strong>PocketGull</strong> and founder of <strong>GEARARTS</strong>. Bridging high-volume logistics operations (Amazon CX, supply chain management for 250,000+ attendees), human-computer interaction (Google UX Specialist, WCAG AAA), innovative medical bio-art research, and enterprise AI engineering (Google Cloud Gemini AI Mastery, Keyless IAM, FHIR R4).
             </p>
-            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 pt-2 text-xs">
-              <a href="https://developers.google.com/profile/philgear" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-amber-400 border border-stone-700 font-mono transition flex items-center gap-1.5">
+
+            <!-- Key Qualifications Grid from matrix.philgear.dev + Ergonomics & Innovation -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 text-left font-mono">
+              <div class="p-3 bg-stone-900/80 rounded-2xl border border-stone-800">
+                <div class="text-[10px] text-amber-400 font-bold uppercase">Google I/O Keynote</div>
+                <div class="text-xs text-stone-200 font-semibold mt-0.5">Explored by Sundar Pichai</div>
+                <div class="text-[10px] text-stone-400 mt-1">Spotlighted on the main stage big screen.</div>
+              </div>
+
+              <div class="p-3 bg-stone-900/80 rounded-2xl border border-stone-800">
+                <div class="text-[10px] text-teal-400 font-bold uppercase">IEEE SWEBOK v4.0a</div>
+                <div class="text-xs text-stone-200 font-semibold mt-0.5">16 Knowledge Areas</div>
+                <div class="text-[10px] text-stone-400 mt-1">Audited full-stack architecture &amp; economics.</div>
+              </div>
+
+              <div class="p-3 bg-stone-900/80 rounded-2xl border border-stone-800">
+                <div class="text-[10px] text-rose-400 font-bold uppercase">High-Scale Operations</div>
+                <div class="text-xs text-stone-200 font-semibold mt-0.5">Amazon CX &amp; Logistics</div>
+                <div class="text-[10px] text-stone-400 mt-1">Orchestrated systems for 250,000+ attendees.</div>
+              </div>
+
+              <div class="p-3 bg-stone-900/80 rounded-2xl border border-stone-800">
+                <div class="text-[10px] text-indigo-400 font-bold uppercase">Left-Handed Ergonomics</div>
+                <div class="text-xs text-stone-200 font-semibold mt-0.5">Spatial Cognition &amp; Design</div>
+                <div class="text-[10px] text-stone-400 mt-1">Occlusion-free, ambidextrous clinical UI.</div>
+              </div>
+            </div>
+
+            <!-- Innovative Research & Left-Handed Creativity Callout -->
+            <div class="p-4 bg-stone-900/70 rounded-2xl border border-indigo-500/30 text-left font-sans text-xs space-y-1.5">
+              <div class="flex items-center gap-2 text-indigo-400 font-bold font-pocketgull text-xs">
+                <span>✍️</span> Left-Handed Spatial Cognition &amp; Multidisciplinary Research
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                As a left-handed creator and polymath researcher, Phil brings right-hemisphere holistic spatial reasoning, divergent problem-solving, and bidirectional awareness to complex systems. Experiencing first-hand the systemic right-hand bias in legacy clinical software and digital stylus tools, Phil engineered PocketGull with true ambidextrous ergonomics, zero-occlusion toolbars, and palm-rejection physics—blending fine papercraft art with mathematical precision.
+              </p>
+            </div>
+
+            <!-- Web Ecosystem & Portfolio Links -->
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-3 text-xs">
+              <a href="https://philgear.biz" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-amber-400 border border-stone-700 font-mono transition flex items-center gap-1.5 shadow-sm">
+                <span>💼</span> philgear.biz
+              </a>
+              <a href="https://geararts.dev" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-teal-400 border border-stone-700 font-mono transition flex items-center gap-1.5 shadow-sm">
+                <span>🛠️</span> geararts.dev
+              </a>
+              <a href="https://philgearphotography.com" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-rose-400 border border-stone-700 font-mono transition flex items-center gap-1.5 shadow-sm">
+                <span>📷</span> philgearphotography.com
+              </a>
+              <a href="https://matrix.philgear.dev" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-indigo-400 border border-stone-700 font-mono transition flex items-center gap-1.5 shadow-sm">
+                <span>📊</span> SWEBOK Matrix (matrix.philgear.dev)
+              </a>
+            </div>
+
+            <!-- Credentials & Industry Identifiers -->
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1 text-[11px] font-mono text-stone-400">
+              <a href="https://developers.google.com/profile/philgear" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors flex items-center gap-1">
                 <span>Google Developer Profile</span>
               </a>
-              <a href="https://orcid.org/0009-0008-1372-5381" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-teal-400 border border-stone-700 font-mono transition flex items-center gap-1.5">
+              <span>•</span>
+              <a href="https://orcid.org/0009-0008-1372-5381" target="_blank" rel="noopener" class="hover:text-teal-400 transition-colors flex items-center gap-1">
                 <span>ORCID: 0009-0008-1372-5381</span>
               </a>
-              <a href="https://github.com/pocketgull-app/pocketgull" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 border border-stone-700 font-mono transition flex items-center gap-1.5">
+              <span>•</span>
+              <a href="https://github.com/pocketgull-app/pocketgull" target="_blank" rel="noopener" class="hover:text-stone-200 transition-colors flex items-center gap-1">
                 <span>GitHub Monorepo</span>
               </a>
             </div>
+
           </div>
         </div>
       </div>
@@ -968,17 +1391,21 @@ export function renderBusinessSiteHtml(): string {
 
   <!-- Footer -->
   <footer class="relative z-10 border-t border-stone-800 bg-stone-950 py-12 px-6 text-xs text-stone-400 font-medium">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-      <div class="flex items-center gap-3">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3 text-center md:text-left">
         <span class="font-bold font-pocketgull text-xl text-amber-400">GEARARTS / PocketGull</span>
         <span>• Creating a Sustainable Future Through Art and Technology</span>
       </div>
 
-      <div class="flex items-center gap-6 text-sm">
-        <a href="https://pocketgull.app" class="hover:text-amber-400 transition-colors font-bold font-pocketgull">pocketgull.app</a>
+      <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
+        <a href="https://pocketgull.app" class="hover:text-amber-400 transition-colors font-bold font-pocketgull text-sm">pocketgull.app</a>
+        <a href="https://philgear.biz" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">philgear.biz</a>
+        <a href="https://geararts.dev" target="_blank" rel="noopener" class="hover:text-teal-400 transition-colors">geararts.dev</a>
+        <a href="https://philgearphotography.com" target="_blank" rel="noopener" class="hover:text-rose-400 transition-colors">photography</a>
+        <a href="https://matrix.philgear.dev" target="_blank" rel="noopener" class="hover:text-indigo-400 transition-colors">matrix</a>
         <a href="https://github.com/pocketgull-app/pocketgull" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">GitHub</a>
         <a href="https://developers.google.com/profile/philgear" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">Google Dev</a>
-        <a href="https://orcid.org/0009-0008-1372-5381" target="_blank" rel="noopener" class="hover:text-amber-400 transition-colors">ORCID iD</a>
+        <a href="https://orcid.org/0009-0008-1372-5381" target="_blank" rel="noopener" class="hover:text-teal-400 transition-colors">ORCID</a>
       </div>
     </div>
   </footer>

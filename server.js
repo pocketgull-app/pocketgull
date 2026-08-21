@@ -74,7 +74,8 @@ function sanitizeLogInput(val) {
   return str.replace(/[\r\n\u2028\u2029]+/g, ' _ ').replace(/[\x00-\x1F\x7F]+/g, ' ').slice(0, 2000);
 }
 
-app.set('trust proxy', true);
+// Trust single reverse proxy hop on Google Cloud Run
+app.set('trust proxy', 1);
 
 // Primary Business Site Handler for pocketgull.com & www.pocketgull.com
 app.use((req, res, next) => {

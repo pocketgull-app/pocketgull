@@ -10,6 +10,7 @@ const __dirname = dirname(__filename);
 export default defineConfig({
     root: __dirname,
     test: {
+        root: __dirname,
         dir: __dirname,
         globals: true,
         environment: 'jsdom',
@@ -30,6 +31,9 @@ export default defineConfig({
             '**/Application Data/**',
             '**/Steam/**',
             '**/Google/**',
+            '**/.antigravity/**',
+            '**/.codex/**',
+            '**/go/**',
             '**/pg2/**',
             '**/Pocketgull/pg2/**',
             'e2e/**',
