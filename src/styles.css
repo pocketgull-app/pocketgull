@@ -3830,32 +3830,47 @@ textarea:focus-visible {
     background-attachment: scroll !important;
   }
 
-  /* 2. Hardware-accelerated smooth touch momentum scrolling */
+  /* 2. Hardware-accelerated smooth touch momentum scrolling & eliminate 300ms tap lag */
   body, html, main, .overflow-y-auto, .overflow-x-auto {
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
+    touch-action: manipulation;
     overscroll-behavior-y: contain;
   }
 
-  /* 3. Promote sticky headers & fixed HUDs to dedicated GPU layers to prevent layout jitter */
-  header, nav, .sticky, [class*="fixed"] {
-    transform: translateZ(0);
+  button, a, select, input, [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* 3. Promote sticky headers, fixed HUDs, and SVGs to GPU compositing layers */
+  header, nav, .sticky, [class*="fixed"], svg.wave-layer, .origami-unfold-container {
+    transform: translate3d(0, 0, 0);
     will-change: transform;
     backface-visibility: hidden;
   }
 
   /* 4. Optimize backdrop blur for mobile GPUs (eliminates fragment shader pipeline stalls) */
   .backdrop-blur-xl, .backdrop-blur-2xl, .backdrop-blur-3xl {
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
   }
 
-  /* 5. Defer offscreen rendering of complex cards */
+  /* 5. Clamp extreme blur gradients to prevent Mali/Adreno mobile GPU overload */
+  .blur-\[100px\], .blur-\[120px\], .blur-\[90px\] {
+    filter: blur(24px) !important;
+  }
+
+  /* 6. Defer offscreen rendering of complex cards and tabs */
   .content-visibility-auto {
     content-visibility: auto;
     contain-intrinsic-size: 1px 300px;
   }
+
+  /* 7. Zero layout shifts on mobile input focus */
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents iOS/Android auto-zoom shift */
+  }
 }
+
 
 
 

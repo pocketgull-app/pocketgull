@@ -25,7 +25,7 @@ import { AuthSsoService } from '../services/auth-sso.service';
   imports: [CommonModule, FormsModule, PocketgullIconComponent, SafeHtmlPipe, PapercraftBackdropComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <main [style.background]="telemetryGradient()" class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-center p-2 sm:p-4 backdrop-blur-3xl secure-splash-main animate-in fade-in duration-[800ms] overflow-hidden">
+    <main [style.background]="telemetryGradient()" class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 backdrop-blur-xl sm:backdrop-blur-3xl secure-splash-main animate-in fade-in duration-[800ms] overflow-y-auto overscroll-contain">
       <app-papercraft-backdrop [wavePeriod]="wavePeriod()"></app-papercraft-backdrop>
       
       <!-- Papercraft Layered Living Breathing Landscape Backdrop -->
