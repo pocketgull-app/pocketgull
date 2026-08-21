@@ -33,6 +33,22 @@ import { HistoricalLuminariesGameService, ILuminaryCase } from '../services/hist
 
         <!-- Score, Mode Toggle & Progression HUD -->
         <div class="flex flex-wrap items-center gap-3 self-start md:self-auto">
+          <button (click)="toggleStoryMode()"
+                  class="px-3.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition cursor-pointer flex items-center gap-1.5"
+                  [class.bg-emerald-950/70]="isStoryMode()"
+                  [class.border-emerald-500/60]="isStoryMode()"
+                  [class.text-emerald-300]="isStoryMode()"
+                  [class.bg-zinc-900]="!isStoryMode()"
+                  [class.border-zinc-800]="!isStoryMode()"
+                  [class.text-zinc-400]="!isStoryMode()">
+            <span>{{ isStoryMode() ? '📖 Storybook (All Ages): ON' : '📖 Storybook Mode' }}</span>
+          </button>
+
+          <button (click)="speakStory()"
+                  class="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-amber-500/50 text-amber-300 hover:text-amber-200 text-xs font-mono transition cursor-pointer flex items-center gap-1">
+            <span>{{ isSpeaking() ? '⏹️ Stop Voice' : '🔊 Read Aloud' }}</span>
+          </button>
+
           <button (click)="toggleIncognito()"
                   class="px-3.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition cursor-pointer flex items-center gap-1.5"
                   [class.bg-purple-950/60]="isIncognito()"
@@ -41,11 +57,11 @@ import { HistoricalLuminariesGameService, ILuminaryCase } from '../services/hist
                   [class.bg-zinc-900]="!isIncognito()"
                   [class.border-zinc-800]="!isIncognito()"
                   [class.text-zinc-400]="!isIncognito()">
-            <span>{{ isIncognito() ? '🕶️ Incognito Mode: ON' : '🏛️ Exhibition Mode' }}</span>
+            <span>{{ isIncognito() ? '🕶️ Incognito: ON' : '🏛️ Exhibition' }}</span>
           </button>
 
           <div class="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center gap-2">
-            <span class="text-xs text-zinc-400 font-mono">Arena Score:</span>
+            <span class="text-xs text-zinc-400 font-mono">Score:</span>
             <span class="text-sm font-black font-mono text-amber-400">{{ score() }} pts</span>
           </div>
           <button (click)="resetGame()"
@@ -54,6 +70,26 @@ import { HistoricalLuminariesGameService, ILuminaryCase } from '../services/hist
           </button>
         </div>
       </div>
+
+      <!-- Storybook Mode Banner (When Active) -->
+      @if (isStoryMode()) {
+        <div class="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 text-xs space-y-2 animate-in fade-in">
+          <div class="flex items-center justify-between font-bold">
+            <span class="flex items-center gap-2">
+              <span class="text-base">🌈</span>
+              <span>All-Ages Relaxed Explorer Mode Active — Zero Timers, Zero Pressure, Big Friendly Cards!</span>
+            </span>
+            <button (click)="toggleStoryHint()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-mono text-[11px] cursor-pointer">
+              {{ showStoryHint() ? '🙈 Hide Clue Hint' : '💡 Show Easy Clue Hint' }}
+            </button>
+          </div>
+          @if (showStoryHint()) {
+            <div class="p-3 rounded-xl bg-black/40 border border-emerald-500/30 text-stone-200 text-[11px] font-sans">
+              🌟 <strong>Easy Hint:</strong> Notice how this luminary overcame challenges with resilience. Look closely at their symptoms and how modern medicine can help them today!
+            </div>
+          }
+        </div>
+      }
 
       <!-- Luminary Profile Banner -->
       <div class="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-2 relative overflow-hidden">
@@ -307,6 +343,43 @@ export class HistoricalLuminariesGameComponent {
   score = computed(() => this.gameService.score());
   isIncognito = computed(() => this.gameService.isIncognitoMode());
   patientLoadedToast = signal<string | null>(null);
+
+  // All-Ages Story Mode & Audio Accessibility
+  isStoryMode = signal<boolean>(false);
+  showStoryHint = signal<boolean>(false);
+  isSpeaking = signal<boolean>(false);
+
+  toggleStoryMode(): void {
+    this.isStoryMode.update((v) => !v);
+  }
+
+  toggleStoryHint(): void {
+    this.showStoryHint.update((v) => !v);
+  }
+
+  speakStory(): void {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      return;
+    }
+
+    if (this.isSpeaking()) {
+      window.speechSynthesis.cancel();
+      this.isSpeaking.set(false);
+      return;
+    }
+
+    const luminary = this.activeCase();
+    const textToRead = `${luminary.luminaryName}. ${luminary.historicalContext}. Clue: ${luminary.healthQuestNarrative}`;
+    const utterance = new SpeechSynthesisUtterance(textToRead);
+    utterance.rate = 0.9; // Friendly relaxed cadence for all ages
+    utterance.pitch = 1.0;
+
+    utterance.onend = () => this.isSpeaking.set(false);
+    utterance.onerror = () => this.isSpeaking.set(false);
+
+    this.isSpeaking.set(true);
+    window.speechSynthesis.speak(utterance);
+  }
 
   toggleIncognito(): void {
     this.gameService.toggleIncognitoMode();

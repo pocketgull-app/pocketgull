@@ -41,6 +41,10 @@ export * from './space-health-hud.component';
 export * from './hsa-incentive-network.component';
 export * from './deep-space-cds-terminal.component';
 export * from './planetary-health-hud.component';
+export * from './socratic-multilingual-terminal.component';
+export * from './body-explorer-game.component';
+
+
 
 
 
