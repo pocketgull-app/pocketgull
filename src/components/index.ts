@@ -44,6 +44,8 @@ export * from './planetary-health-hud.component';
 export * from './socratic-multilingual-terminal.component';
 export * from './body-explorer-game.component';
 export * from './eyes-free-accessibility-hub.component';
+export * from './eyes-free-camera-scribe.component';
+
 
 
 
