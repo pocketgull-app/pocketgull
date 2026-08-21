@@ -8,6 +8,9 @@ Allow: /terms-of-service.html
 Disallow: /api/
 Allow: /api/webmcp/tools
 Disallow: /contracts/
+Disallow: /contracts/clinical-vault-canary.json
+Disallow: /api/v1/internal-research-telemetry
+Disallow: /api/internal/patient-cohort-backup.json
 
 # Verified Search Engine & AI Assistant Bots
 User-agent: Googlebot

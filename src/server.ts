@@ -709,12 +709,14 @@ import { createAuthRouter } from './server/routes/auth.routes';
 import { smsRouter } from './server/routes/sms.routes';
 import { hsaRouter } from './server/routes/hsa.routes';
 import { amazonRouter } from './server/routes/amazon.routes';
+import { createCanaryRouter } from './server/routes/canary.routes';
 import { apiKeyService } from './server/services/api-key.service';
 
 app.use('/api/slack', slackRouter);
 app.use('/api/sms', smsRouter);
 app.use('/api/hsa', hsaRouter);
 app.use('/api/amazon', amazonRouter);
+app.use(createCanaryRouter());
  
 // ── Python Biosignal & Data Bridge Proxy ───────────────────────────────────
 // Routes /api/python/* → FastAPI sidecar on :8001 (dev) or PYTHON_API_URL (prod).
