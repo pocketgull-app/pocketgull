@@ -194,11 +194,11 @@ export function renderBusinessSiteHtml(): string {
     </svg>
   </div>
   
-  <!-- GEARARTS Top Banner -->
-  <div class="relative z-10 bg-gradient-to-r from-teal-700 via-rose-600 to-amber-600 text-stone-950 font-bold text-xs uppercase tracking-widest py-2 px-4 text-center flex items-center justify-center gap-2 shadow-md">
-    <span>🎨 GEARARTS</span>
+  <!-- PocketGull Enterprise Top Banner -->
+  <div class="relative z-10 bg-gradient-to-r from-teal-700 via-stone-900 to-amber-600 text-stone-100 font-bold text-xs uppercase tracking-widest py-2 px-4 text-center flex items-center justify-center gap-2 shadow-md">
+    <span>⚡ POCKETGULL</span>
     <span class="opacity-40">•</span>
-    <span class="font-medium tracking-normal capitalize">Creating a Sustainable Future Through Art and Technology</span>
+    <span class="font-medium tracking-normal text-amber-300">Google Cloud Vertex AI Agent Builder &amp; Enterprise Grounding Hub</span>
   </div>
 
   <!-- Navigation Header -->
@@ -207,25 +207,26 @@ export function renderBusinessSiteHtml(): string {
       
       <!-- Brand Logo featuring Official Vector Marker Wordmark -->
       <div class="flex items-center gap-3">
-        <div class="geararts-card px-4 py-2 rounded-xl font-bold flex items-center gap-3 shadow-md">
-          <div class="w-6 h-6 rounded-lg split-badge flex items-center justify-center text-white text-xs font-mono font-bold">GA</div>
+        <a href="/" class="geararts-card px-4 py-2 rounded-xl font-bold flex items-center gap-3 shadow-md">
+          <div class="w-6 h-6 rounded-lg split-badge flex items-center justify-center text-white text-xs font-mono font-bold">PG</div>
           ${getPocketgullWordmarkSvg('h-7 w-auto text-stone-950')}
-        </div>
+        </a>
       </div>
 
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-stone-300">
+      <nav class="hidden md:flex items-center gap-6 font-medium text-stone-300 font-mono text-xs">
         <a href="#compliance" class="hover:text-amber-400 transition-colors">Enterprise Vertex AI</a>
-        <a href="#community" class="hover:text-amber-400 transition-colors">Health Art Community</a>
-        <a href="#design-value" class="hover:text-amber-400 transition-colors">Design &amp; Ethics Value</a>
+        <a href="https://pocketgull.com" class="hover:text-teal-300 transition-colors">Clinical Articles (.com)</a>
+        <a href="#design-value" class="hover:text-amber-400 transition-colors">Design &amp; Ethics</a>
         <a href="#open-science" class="hover:text-amber-400 transition-colors">Open Science</a>
         <a href="#pricing" class="hover:text-amber-400 transition-colors">Pricing &amp; Pilots</a>
-        <a href="#typeface" class="hover:text-amber-400 transition-colors">PocketGull Typeface</a>
-        <a href="#segments" class="hover:text-amber-400 transition-colors">Target Audience</a>
       </nav>
 
       <div class="flex items-center gap-4">
+        <a href="https://pocketgull.com" class="text-xs font-mono text-stone-400 hover:text-white transition hidden sm:inline">
+          ← Research Codex
+        </a>
         <a href="https://pocketgull.app" class="px-5 py-2.5 rounded-xl geararts-card font-pocketgull text-lg text-stone-950 transition-all hover:scale-105 hover:shadow-amber-500/50 flex items-center gap-2">
-          <span>Launch App</span>
+          <span>Launch Suite</span>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
         </a>
       </div>

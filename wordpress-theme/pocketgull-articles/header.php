@@ -166,7 +166,7 @@
   </div>
 
   <!-- Global Header Navigation -->
-  <header class="relative z-10 border-b border-stone-800/80 bg-stone-950/80 backdrop-blur-xl sticky top-0">
+  <header class="sticky top-0 z-10 border-b border-stone-800/80 bg-stone-950/80 backdrop-blur-xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
       
       <!-- Brand Logo Wordmark with Official 400x400 Icon -->
@@ -189,6 +189,9 @@
         </a>
         <a href="#digital-twin" class="text-stone-300 hover:text-white transition hidden sm:flex items-center gap-1">
           <span>🕊️ Model MC-10</span>
+        </a>
+        <a href="https://pocketgull.app/app-builder" class="text-amber-300 hover:text-white transition hidden md:flex items-center gap-1">
+          <span>⚡ Vertex AI App Builder</span>
         </a>
         <a href="https://pocketgull.com" class="text-stone-300 hover:text-white transition flex items-center gap-1">
           <span>←</span> <span class="hidden sm:inline">PocketGull.com</span>

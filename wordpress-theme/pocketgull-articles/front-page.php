@@ -264,6 +264,27 @@ get_header(); ?>
         </div>
       </div>
 
+      <!-- Agent 8: Vertex AI Agent Builder -->
+      <div class="glass-card-dark p-7 rounded-3xl border border-teal-500/30 flex flex-col justify-between space-y-4 shadow-xl relative overflow-hidden">
+        <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+        <div class="space-y-2 pt-2">
+          <div class="flex items-center justify-between font-mono text-[10px]">
+            <span class="text-teal-400 font-bold bg-teal-500/20 px-2 py-0.5 rounded">VERTEX AI</span>
+            <span class="text-stone-400">Discovery Engine</span>
+          </div>
+          <h3 class="text-xl font-bold text-white">Vertex Agent Builder</h3>
+          <div class="text-xs text-teal-300 font-mono">Enterprise RAG • Clinical Grounding</div>
+          <p class="text-xs text-stone-300 leading-relaxed">
+            Directly indexes multi-terabyte hospital corpora, PubMed archives, and CMS policy manuals for instant, zero-hallucination semantic search.
+          </p>
+        </div>
+        <div class="pt-3 border-t border-stone-800 flex items-center justify-between text-[11px] font-mono">
+          <a href="https://pocketgull.app/app-builder" class="text-teal-300 hover:text-white font-bold flex items-center gap-1">
+            <span>Explore App Builder →</span>
+          </a>
+        </div>
+      </div>
+
       <!-- Live Consult Bus Link -->
       <div class="geararts-card p-7 rounded-3xl text-stone-950 flex flex-col justify-between space-y-4 shadow-2xl">
         <div class="space-y-2">
@@ -753,7 +774,7 @@ get_header(); ?>
 </main>
 
 <!-- ══ 9. 14-DAY FREE CLINICAL PILOT BOOKING MODAL ════════════════════════════ -->
-<div id="pilotModal" class="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+<div id="pilotModal" class="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-md items-center justify-center p-4 hidden [&:not(.hidden)]:flex">
   <div class="glass-card-dark rounded-3xl max-w-lg w-full p-8 border-2 border-amber-400 shadow-2xl relative overflow-hidden space-y-6">
     <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
     
