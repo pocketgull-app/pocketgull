@@ -136,9 +136,9 @@ import { AuthSsoService } from '../services/auth-sso.service';
       }
 
       <!-- Unified Origami Unfolding Seagull Mascot & Papercraft Heart -->
-      <div class="origami-seagull-container group drop-shadow-xl relative z-20 pointer-events-none mb-2 sm:mb-3 avs-breathing-mascot origami-unfold-container">
+      <div class="origami-seagull-container group drop-shadow-xl relative z-20 pointer-events-none mb-1 sm:mb-3 avs-breathing-mascot origami-unfold-container shrink-0">
         <svg
-          class="w-14 h-14 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 hover:scale-105 active:scale-95 transition-transform origami-unfold-svg" 
+          class="w-12 h-12 xs:w-14 xs:h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 hover:scale-105 active:scale-95 transition-transform origami-unfold-svg" 
           viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
           <g>
             <!-- Far Wing (Teal) -->
@@ -160,7 +160,7 @@ import { AuthSsoService } from '../services/auth-sso.service';
 
         <!-- Glowing Papercraft Origami Heart (Emerges at 4.5s mark) -->
         <div class="origami-heart-container">
-          <svg class="w-5 h-5 sm:w-7 sm:h-7" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-4 h-4 sm:w-7 sm:h-7" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <polygon points="50,85 15,45 25,20 50,35" fill="#ef6658" stroke="#df5648" stroke-width="0.5" stroke-linejoin="round" />
             <polygon points="50,85 50,35 75,20 85,45" fill="#faa63b" stroke="#e0902c" stroke-width="0.5" stroke-linejoin="round" />
             <polygon points="50,35 25,20 50,15" fill="#f48479" stroke="#df5648" stroke-width="0.5" stroke-linejoin="round" />
@@ -171,7 +171,7 @@ import { AuthSsoService } from '../services/auth-sso.service';
 
       <div class="w-full max-w-sm relative z-10 flex flex-col items-center">
         <!-- Dynamic Entry Panel (Pocket-Like Layered Papercraft Container) -->
-        <div id="seagull-safe-zone" class="w-full relative paper-pocket-container rounded-3xl p-3 xs:p-5 sm:p-6 animate-in fade-in duration-300 backdrop-blur-2xl transition-all overflow-y-auto min-h-[420px] max-h-[85vh] hide-scrollbar" style="contain: layout;">
+        <div id="seagull-safe-zone" class="w-full relative paper-pocket-container rounded-3xl p-3 xs:p-4 sm:p-6 animate-in fade-in duration-300 backdrop-blur-2xl transition-all overflow-y-auto min-h-0 max-h-[85vh] sm:max-h-[88vh] hide-scrollbar" style="contain: layout;">
           
           <!-- Tactile Paper Pocket Top Fold Notch -->
           <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#2AA4A0]/40 via-[#F6B12B]/40 to-[#EF6658]/40 border-b border-amber-300/40 dark:border-zinc-700/50"></div>
@@ -586,7 +586,7 @@ import { AuthSsoService } from '../services/auth-sso.service';
                   type="button" 
                   (click)="handleGoogleAuth()"
                   [disabled]="isChecking() || !signinEmailInput()"
-                  class="w-full py-4 bg-brand-blue-600 hover:bg-brand-blue-700 text-white text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(37,99,235,0.15)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.25)] active:scale-[0.98] disabled:opacity-50"
+                  class="w-full min-h-[48px] py-3 sm:py-3.5 bg-brand-blue-600 hover:bg-brand-blue-700 text-white text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(37,99,235,0.15)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.25)] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                 >
                   <span>Clinician Sign-in</span>
                 </button>
@@ -595,7 +595,7 @@ import { AuthSsoService } from '../services/auth-sso.service';
                 <button 
                   type="button" 
                   (click)="handleSandboxDemo()"
-                  class="w-full py-4 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800/90 border border-zinc-200/80 dark:border-zinc-700/50 text-zinc-950 dark:text-zinc-200 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98]"
+                  class="w-full min-h-[48px] py-3 sm:py-3.5 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800/90 border border-zinc-200/80 dark:border-zinc-700/50 text-zinc-950 dark:text-zinc-200 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-500 dark:text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                   <span>Explore Sandbox Demo</span>
@@ -605,7 +605,7 @@ import { AuthSsoService } from '../services/auth-sso.service';
                 <button 
                   type="button" 
                   (click)="viewState.set('gesture'); errorMsg.set('');"
-                  class="w-full py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+                  class="w-full min-h-[44px] py-2.5 sm:py-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
                 >
                   <span>🎨 Draw Gesture Lock</span>
                 </button>

@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { MainHeaderNavComponent } from './main-header-nav.component';
 import { NetworkStateService } from '../services/network-state.service';
@@ -66,4 +66,13 @@ describe('MainHeaderNavComponent', () => {
     expect(component.openCompanionSync).toBeTruthy();
     expect(component.triggerSomaticGrounding).toBeTruthy();
   });
+
+  it('should toggle mobile menu drawer state correctly for Fitts Law accessibility', () => {
+    expect(component.isMobileMenuOpen()).toBe(false);
+    component.isMobileMenuOpen.set(true);
+    expect(component.isMobileMenuOpen()).toBe(true);
+    component.isMobileMenuOpen.set(false);
+    expect(component.isMobileMenuOpen()).toBe(false);
+  });
 });
+
