@@ -72,8 +72,9 @@ async function runAudit() {
   
   report += `---\n*Automated via Pocket Gull Security Audit Script*`;
 
-  await fs.writeFile('security-report.md', report);
-  console.log('Security report generated successfully at security-report.md');
+  const reportPath = new URL('../security-report.md', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+  await fs.writeFile(reportPath, report);
+  console.log(`Security report generated successfully at ${reportPath}`);
 }
 
 runAudit().catch(console.error);

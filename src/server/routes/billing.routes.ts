@@ -24,38 +24,92 @@ export function createBillingRouter() {
 
   router.post('/checkout', limiter, express.json(), async (req, res) => {
     try {
-      const { priceId, successUrl, cancelUrl, customerEmail, endowmentFund, revenueSplit } = req.body || {};
-
-      if (!priceId) {
-        return res.status(400).json({ error: 'A priceId is required.' });
-      }
-
+      const { priceId, tier, successUrl, cancelUrl, customerEmail, endowmentFund, revenueSplit } = req.body || {};
       const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
 
-      // Create a Stripe Checkout Session with dynamic payment methods and philanthropic revenue metadata
-      const session = await getStripe().checkout.sessions.create({
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
+      let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+      let mode: Stripe.Checkout.SessionCreateParams.Mode = 'subscription';
+
+      if (priceId) {
+        lineItems = [{ price: priceId, quantity: 1 }];
+      } else if (tier === 'pilot') {
+        mode = 'subscription';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Independent Clinic Pilot License',
+              description: 'Ambient Clinical Scribe + SOAP notes, RxGuard PGx & herb-drug screening, Socratic patient intake triage (Up to 3 clinicians)',
+            },
+            unit_amount: 29900, // $299.00
+            recurring: { interval: 'month' },
           },
-        ],
-        mode: 'subscription',
+          quantity: 1,
+        }];
+      } else if (tier === 'sprint') {
+        mode = 'payment';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Clinical AI Implementation & FHIR Sprint',
+              description: 'Turnkey 2-week implementation: HIPAA §164.514 Safe Harbor setup, Custom LoRA model fine-tuning, FHIR R4 / GA4GH Phenopackets pipeline integration',
+            },
+            unit_amount: 350000, // $3,500.00
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'academic') {
+        mode = 'subscription';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Academic Lab & Residency Hub License',
+              description: 'GA4GH Phenopackets v2 rare disease pipelines, 11-paradigm open science datasets, unlimited OSCE simulation training seats',
+            },
+            unit_amount: 120000, // $1,200.00 / yr
+            recurring: { interval: 'year' },
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'enterprise') {
+        mode = 'subscription';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Health System Enterprise Tier',
+              description: 'Unlimited clinician seats, Google SAIF Level 3 defense, dedicated Vertex AI endpoint deployment, priority SLA',
+            },
+            unit_amount: 99900, // $999.00 / mo
+            recurring: { interval: 'month' },
+          },
+          quantity: 1,
+        }];
+      } else {
+        return res.status(400).json({ error: 'A valid priceId or tier (pilot, sprint, academic, enterprise) is required.' });
+      }
+
+      // Create a Stripe Checkout Session
+      const session = await getStripe().checkout.sessions.create({
+        line_items: lineItems,
+        mode: mode,
         success_url: successUrl || `${origin}/?billing=success&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: cancelUrl || `${origin}/?billing=canceled`,
         customer_email: customerEmail,
         metadata: {
+          tier: tier || 'custom',
           endowment_fund: endowmentFund || 'Alumni Health & Research Endowment',
           revenue_split: revenueSplit || '50-30-20',
-          philanthropic_pledge: 'true',
           founder_dispensation: 'true'
         }
       });
 
-      res.json({ url: session.url });
+      res.json({ url: session.url, sessionId: session.id });
     } catch (err: any) {
       console.error('[Billing] Error creating checkout session:', err.message);
-      res.status(500).json({ error: 'Failed to create checkout session' });
+      res.status(500).json({ error: 'Failed to create checkout session', detail: err.message });
     }
   });
 

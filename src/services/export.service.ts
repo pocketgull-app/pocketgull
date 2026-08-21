@@ -20,6 +20,7 @@ import { PdfExportStrategyService } from './export/pdf-export-strategy.service';
 import { NativeJsonExportStrategyService } from './export/native-json-export-strategy.service';
 import { CsvExportStrategyService } from './export/csv-export-strategy.service';
 import { Hl7v2ExportStrategyService } from './export/hl7v2-export-strategy.service';
+import { Ga4ghPhenopacketService, IGa4ghPhenopacketV2 } from './ga4gh-phenopacket.service';
 
 /** Shape of the native JSON export file. */
 export interface INativePatientExport {
@@ -112,9 +113,22 @@ export class ExportService {
     }
   })();
 
+  public phenopacketService = (() => {
+    try {
+      return inject(Ga4ghPhenopacketService, { optional: true }) || new Ga4ghPhenopacketService();
+    } catch {
+      return new Ga4ghPhenopacketService();
+    }
+  })();
+
   public exportFHIR(patient?: IPatient): Record<string, any> {
     const targetPatient = patient || ({ id: 'patient-001', name: 'Homo Sapiens (De-identified Patient Archetype)' } as IPatient);
     return this.fhirStrategy.generateFhirBundle(targetPatient);
+  }
+
+  public exportPhenopacket(patient?: IPatient): IGa4ghPhenopacketV2 {
+    const targetPatient = patient || ({ id: 'patient-001', name: 'Homo Sapiens (De-identified Patient Archetype)' } as IPatient);
+    return this.phenopacketService.generatePhenopacket(targetPatient);
   }
   private htmlStrategy = (() => {
     try {

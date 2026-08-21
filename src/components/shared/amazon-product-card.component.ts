@@ -124,7 +124,7 @@ import { IAmazonProductItem } from '../../services/amazon-creators-api.service';
         }
 
         <p class="text-[8.5px] text-slate-400 dark:text-zinc-500 leading-tight font-sans text-center">
-          Amazon Associate link (tag: pgdpo-20) • Supports non-profit health research
+          As an Amazon Associate, PocketGull earns from qualifying purchases. Supportive clinical tool, not a direct prescription.
         </p>
       </div>
     </div>

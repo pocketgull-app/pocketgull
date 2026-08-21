@@ -1,12 +1,12 @@
 {
   "name": "pocket-gull",
-  "version": "1.23.0",
+  "version": "1.25.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api"
   ],
   "description": "Insight beneath the surface. Real-time medical Care Plan Strategy and Live AI Consult engine powered by Google Gemini.",
-  "author": "Phil Gear <leads@pocketgull.app> (https://github.com/philgear)",
+  "author": "Phillip Gear <leads@pocketgull.app> (PocketGull LLC)",
   "keywords": [
     "ai",
     "healthcare",
@@ -78,7 +78,9 @@
     "dev:all": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
     "wp:publish": "node scripts/publish_article_to_wordpress.mjs",
     "models:retrain": "node scripts/retrain-models.mjs",
+    "dataset:export": "node scripts/export_fine_tuning_dataset.mjs",
     "sentinel:audit": "node scripts/sentinel_security_guard.mjs",
+    "evals:clinical": "node scripts/run-clinical-evals.mjs",
     "clamav:scan": "node scripts/daily-clamav-scan.mjs",
     "sbom": "node scripts/generate_cyclonedx_sbom.mjs",
     "sbom:generate": "node scripts/generate_cyclonedx_sbom.mjs",
@@ -86,6 +88,8 @@
     "build": "node scripts/build-all.mjs",
     "deploy": "node scripts/deploy-production.mjs",
     "gcp:prune-storage": "node ./scripts/apply-gcp-lifecycle-policies.mjs",
+    "grants:sbir": "node ./scripts/generate_sbir_grant_binder.mjs",
+    "models:hub-export": "node ./scripts/huggingface_model_hub_export.mjs",
     "contracts:generate": "node ./scripts/generate-api-contracts.mjs",
     "lint": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
     "preview": "node scripts/build-if-missing.cjs && node dist/server/server.mjs",

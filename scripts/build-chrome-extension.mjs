@@ -12,7 +12,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const EXT_DIR = path.join(ROOT_DIR, 'extension');
-const OUTPUT_ZIP = path.join(ROOT_DIR, 'pocketgull-chrome-extension-v1.16.0.zip');
+const pkg = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'package.json'), 'utf8'));
+const OUTPUT_ZIP = path.join(ROOT_DIR, `pocketgull-chrome-extension-v${pkg.version}.zip`);
 
 export async function packageChromeExtension() {
   console.log('📦 Packaging Pocket-Gull Chrome Web Store Extension...');

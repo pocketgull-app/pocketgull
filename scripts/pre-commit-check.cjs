@@ -17,8 +17,11 @@ const workspaceRoot = getWorkspaceRoot();
 process.chdir(workspaceRoot);
 
 const cleanEnv = { ...process.env };
-delete cleanEnv.npm_package_json;
-delete cleanEnv.npm_config_prefix;
+for (const key of Object.keys(cleanEnv)) {
+  if (key.startsWith('npm_') || key.startsWith('NPM_')) {
+    delete cleanEnv[key];
+  }
+}
 cleanEnv.INIT_CWD = workspaceRoot;
 cleanEnv.PWD = workspaceRoot;
 
@@ -60,13 +63,13 @@ const vitestPath = path.resolve(workspaceRoot, 'node_modules', 'vitest', 'vitest
 const vitestConfigPath = path.resolve(workspaceRoot, 'vitest.config.ts');
 
 // Check 1: TypeScript compilation check
-const lintPassed = runCommand(`"${process.execPath}" "${tscPath}" -p "${tsconfigPath}" --noEmit`, 'TypeScript compilation and linting check');
+const lintPassed = runNodeScript(tscPath, ['-p', tsconfigPath, '--noEmit'], 'TypeScript compilation and linting check');
 if (!lintPassed) {
   process.exit(1);
 }
 
 // Check 2: Unit tests check
-const testsPassed = runCommand(`"${process.execPath}" "${vitestPath}" run --config "${vitestConfigPath}"`, 'Vitest unit tests execution');
+const testsPassed = runNodeScript(vitestPath, ['run', '--config', vitestConfigPath], 'Vitest unit tests execution');
 if (!testsPassed) {
   process.exit(1);
 }
@@ -319,7 +322,8 @@ if (process.platform === 'win32') {
   }
 }
 // Check 6: Sentinel Network Egress & High-Entropy Security Guard
-const sentinelPassed = runCommand('node scripts/sentinel_security_guard.mjs', 'Sentinel Network & Egress Security Guard');
+const sentinelScript = path.resolve(workspaceRoot, 'scripts/sentinel_security_guard.mjs');
+const sentinelPassed = runNodeScript(sentinelScript, [], 'Sentinel Network & Egress Security Guard');
 if (!sentinelPassed) {
   process.exit(1);
 }

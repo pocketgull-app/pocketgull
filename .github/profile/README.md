@@ -85,5 +85,5 @@ Domain experts and contractors can spin up an isolated, GPU-enabled cloud develo
 ---
 
 <p align="center">
-  <sub>© 2026 Pocket-Gull Engineering Organization. Distributed under the MIT and Apache-2.0 Licenses.</sub>
+  <sub>© 2026 PocketGull LLC. Distributed under the MIT and Apache-2.0 Licenses.</sub>
 </p>

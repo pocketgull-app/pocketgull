@@ -1,23 +1,30 @@
 {
-  "title": "Pocket-Gull: Living Medical Intelligence Engine",
+  "title": "Pocket-Gull: Living Medical Intelligence Engine & Open Clinical Science Suite",
   "upload_type": "software",
-  "description": "Pocket-Gull is a real-time medical Care Plan Strategy and Live AI Consult engine powered by Google Gemini, Angular 22 Standalone Components, Three.js 3D spatial anatomy, and FHIR R4/R5 interoperability.",
+  "description": "Pocket-Gull is a real-time medical Care Plan Strategy, Clinical Decision Support (CDS), and Live AI Consult engine powered by Google Gemini, Gemma 3 LoRA/DPO fine-tuning adapters, Angular 22 Standalone Components, Three.js 3D spatial anatomy, FHIR R4/R5 bundles, and GA4GH Phenopackets v2 schema for rare disease research (Harvard UDN / OHSU OCTRI CTSA Hub).",
   "creators": [
     {
-      "name": "Gear, Phil",
+      "name": "Gear, Phillip",
       "orcid": "0009-0008-1372-5381",
-      "affiliation": "Pocket Gull Open Science Research"
+      "affiliation": "PocketGull LLC"
     }
   ],
   "access_right": "open",
   "license": "MIT",
-  "publication_date": "2026-07-24",
-  "version": "1.15.0",
+  "publication_date": "2026-08-21",
+  "version": "1.25.0",
   "keywords": [
     "clinical-decision-support",
     "google-gemini",
+    "gemma-3-lora",
+    "dpo-preference-optimization",
     "angular-22",
     "fhir-r4",
+    "ga4gh-phenopackets-v2",
+    "harvard-udn-rare-disease",
+    "ohsu-octri-ctsa",
+    "physionet-cinc-2026",
+    "cms-0057-f-prior-auth",
     "three-js",
     "medical-ai",
     "open-science",
@@ -30,6 +37,16 @@
       "relation": "isIdenticalTo",
       "identifier": "https://doi.org/10.5281/zenodo.20647514",
       "resource_type": "software"
+    },
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://npiregistry.cms.hhs.gov/provider-view/1487569752",
+      "resource_type": "other"
+    },
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://orcid.org/0009-0008-1372-5381",
+      "resource_type": "other"
     }
   ]
 }

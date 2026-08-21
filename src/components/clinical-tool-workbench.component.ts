@@ -27,6 +27,10 @@ import { HistoricalLuminariesGameComponent } from './historical-luminaries-game.
 import { HobbyDomainCompanionComponent } from './hobby-domain-companion.component';
 import { IntimacyRelationshipVitalityComponent } from './intimacy-relationship-vitality.component';
 import { ArticlesReaderComponent } from './articles-reader.component';
+import { SaifSecurityPostureCardComponent } from './shared/saif-security-posture-card.component';
+import { ClinicalModelStudioCardComponent } from './shared/clinical-model-studio-card.component';
+import { Ga4ghPhenopacketsCardComponent } from './shared/ga4gh-phenopackets-card.component';
+import { ClinicalCommercialHubComponent } from './shared/clinical-commercial-hub.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -81,7 +85,11 @@ export interface IWorkbenchToolStatus {
     HistoricalLuminariesGameComponent,
     HobbyDomainCompanionComponent,
     IntimacyRelationshipVitalityComponent,
-    ArticlesReaderComponent
+    ArticlesReaderComponent,
+    SaifSecurityPostureCardComponent,
+    ClinicalModelStudioCardComponent,
+    Ga4ghPhenopacketsCardComponent,
+    ClinicalCommercialHubComponent
   ],
 
   template: `
@@ -361,6 +369,14 @@ export interface IWorkbenchToolStatus {
         <app-intimacy-relationship-vitality />
       } @else if (activeWorkbenchTab() === 'articles') {
         <app-articles-reader />
+      } @else if (activeWorkbenchTab() === 'saif') {
+        <app-saif-security-posture-card />
+      } @else if (activeWorkbenchTab() === 'modelStudio') {
+        <app-clinical-model-studio-card />
+      } @else if (activeWorkbenchTab() === 'phenopackets') {
+        <app-ga4gh-phenopackets-card />
+      } @else if (activeWorkbenchTab() === 'commercial') {
+        <app-clinical-commercial-hub />
       }
 
       @if (showRoleDemoModal()) {
@@ -375,11 +391,15 @@ export class ClinicalToolWorkbenchComponent {
   private readonly haptics = inject(BioHapticFeedbackService);
 
   readonly showRoleDemoModal = signal(false);
-  readonly activeWorkbenchTab = signal<'jurisdiction' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('jurisdiction');
+  readonly activeWorkbenchTab = signal<'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('commercial');
   readonly intakeDirectiveQuery = signal<string>('');
 
-  readonly workbenchTabs: { id: 'jurisdiction' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
+  readonly workbenchTabs: { id: 'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
+    { id: 'commercial', label: 'Commercial & Revenue Hub ($299/mo - $3,500)', icon: '💼', activeClass: 'bg-emerald-600 text-white shadow-xs' },
     { id: 'jurisdiction', label: 'Jurisdictional Governance Matrix (US / EU / UK Compliance)', icon: '🌐', activeClass: 'bg-indigo-600 text-white shadow-xs' },
+    { id: 'saif', label: 'Google SAIF (Secure AI Framework)', icon: '🛡️', activeClass: 'bg-emerald-600 text-white shadow-xs' },
+    { id: 'modelStudio', label: 'Clinical Model Studio & LoRA/DPO', icon: '🤖', activeClass: 'bg-purple-600 text-white shadow-xs' },
+    { id: 'phenopackets', label: 'GA4GH Phenopackets v2 (Harvard UDN / OCTRI)', icon: '🧬', activeClass: 'bg-emerald-600 text-white shadow-xs' },
     { id: 'tools', label: 'Diagnostic Tools', icon: '🛠️', activeClass: 'bg-cyan-500 text-zinc-950 shadow-xs' },
     { id: 'articles', label: 'Health Literacy Guides (Articles)', icon: '📰', activeClass: 'bg-emerald-500 text-zinc-950 shadow-xs' },
     { id: 'intimacy', label: 'Couples Vitality & Cardiac Safety (Princeton III)', icon: '❤️', activeClass: 'bg-rose-600 text-white shadow-xs' },
