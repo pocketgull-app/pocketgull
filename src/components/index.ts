@@ -40,7 +40,7 @@ export * from './anatomy-3d/medical-3d-viewer.component';
 export * from './space-health-hud.component';
 export * from './hsa-incentive-network.component';
 export * from './deep-space-cds-terminal.component';
-export * from './shared/antislop-seal-badge.component';
+
 
 
 
