@@ -25,6 +25,9 @@ export function classifyThreatActor(userAgent: string, route: string): ICanaryTh
   if (ua.includes('gptbot') || ua.includes('claudebot') || ua.includes('bytespider') || ua.includes('ccbot') || ua.includes('diffbot')) {
     return 'ROGUE_LLM_SCRAPER';
   }
+  if (ua.includes('redditbot') || ua.includes('reddit')) {
+    return 'AUTOMATED_RECON_BOT';
+  }
   if (route.includes('cohort-backup') || route.includes('vault-canary')) {
     return 'EXPLOIT_SCANNER';
   }

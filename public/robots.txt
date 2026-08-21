@@ -34,7 +34,7 @@ Allow: /
 Disallow: /api/
 Disallow: /contracts/
 
-# Aggressive Bulk Scrapers & Model Harvesters
+# Aggressive Bulk Scrapers, Social Crawlers & Model Harvesters
 User-agent: CCBot
 Disallow: /
 
@@ -45,6 +45,12 @@ User-agent: Diffbot
 Disallow: /
 
 User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: RedditBot
+Disallow: /
+
+User-agent: redditbot
 Disallow: /
 
 Sitemap: https://pocketgull.app/sitemap.xml

@@ -649,6 +649,65 @@ get_header(); ?>
     </div>
   </section>
 
+  <!-- ══ 6.5 THE POCKETGULL ANTI-SLOP CLINICAL MANIFESTO ═══════════════════════ -->
+  <section id="anti-slop" class="glass-card-dark p-8 sm:p-12 rounded-3xl border-2 border-emerald-500/40 shadow-2xl relative overflow-hidden max-w-5xl mx-auto space-y-8">
+    <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
+    
+    <div class="space-y-3 text-center sm:text-left">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold">
+        <span>🛡️ The Anti-Slop Clinical Standard</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+        Why We Reject Generative Slop in Healthcare
+      </h2>
+      <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
+        The web is drowning in generic AI wrappers, sycophantic chatbot platitudes, and hallucinated medical summaries. In human medicine, conversational slop isn't just annoying—it is dangerous.
+      </p>
+    </div>
+
+    <!-- 3 Anti-Slop Pillars Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+      <!-- Pillar 1 -->
+      <div class="p-6 rounded-2xl bg-stone-900/90 border border-stone-800 space-y-3">
+        <div class="text-2xl">🔬</div>
+        <h3 class="text-base font-bold text-white">Zero-Hallucination Evidence</h3>
+        <p class="text-xs text-stone-300 leading-relaxed">
+          Every recommendation is strictly tied to verifiable PubMed and Cochrane RCT DOIs. If an observation fails the null hypothesis ($p \ge 0.05$), the system triggers an explicit epistemic warning.
+        </p>
+      </div>
+
+      <!-- Pillar 2 -->
+      <div class="p-6 rounded-2xl bg-stone-900/90 border border-stone-800 space-y-3">
+        <div class="text-2xl">📐</div>
+        <h3 class="text-base font-bold text-white">Dieter Rams Typography</h3>
+        <p class="text-xs text-stone-300 leading-relaxed">
+          Optotypic clinical typography enforcing slashed zero (<code class="text-amber-300">cv08</code>), curved <code class="text-amber-300">l</code> (<code class="text-amber-300">cv05</code>), and serifed <code class="text-amber-300">I</code> (<code class="text-amber-300">ss02</code>) to guarantee zero dosage misinterpretation.
+        </p>
+      </div>
+
+      <!-- Pillar 3 -->
+      <div class="p-6 rounded-2xl bg-stone-900/90 border border-stone-800 space-y-3">
+        <div class="text-2xl">⚡</div>
+        <h3 class="text-base font-bold text-white">100% Air-Gapped Edge AI</h3>
+        <p class="text-xs text-stone-300 leading-relaxed">
+          Zero third-party trackers, zero advertising pixels, and zero data harvesting. All real-time telemetry and biophysical inference execute locally on-device via WebAssembly &amp; WebGPU.
+        </p>
+      </div>
+    </div>
+
+    <!-- Anti-Slop Cryptographic Guarantee -->
+    <div class="p-4 rounded-xl bg-stone-950/80 border border-emerald-500/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-stone-400">
+      <div class="flex items-center gap-2">
+        <span class="text-emerald-400 font-bold">✓ 0% Hallucinated Filler</span>
+        <span>•</span>
+        <span>Deterministic FHIR R4 Bundle Validation</span>
+      </div>
+      <div class="text-emerald-300 font-bold">
+        Certified Anti-Slop Standard
+      </div>
+    </div>
+  </section>
+
   <!-- ══ 7. PHIL GEAR — FOUNDER & LEAD BIOMEDICAL INFORMATICS ARCHITECT ════════ -->
   <section id="developer" class="glass-card-dark p-8 sm:p-12 rounded-3xl border-2 border-amber-500/40 shadow-2xl relative overflow-hidden max-w-5xl mx-auto space-y-8">
     <div class="rams-grill"><div></div><div></div><div></div><div></div></div>

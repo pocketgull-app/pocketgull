@@ -10,6 +10,7 @@ describe('Canary Honeypot Router Suite', () => {
   it('1. Correctly classifies scraper threat actor types based on user-agent and path', () => {
     expect(classifyThreatActor('Python-urllib/3.10', '/contracts/clinical-vault-canary.json')).toBe('SUSPICIOUS_CURL_PROBER');
     expect(classifyThreatActor('Mozilla/5.0 (compatible; Bytespider/2.0)', '/api/v1/internal-research-telemetry')).toBe('ROGUE_LLM_SCRAPER');
+    expect(classifyThreatActor('RedditBot/2.1', '/api/v1/internal-research-telemetry')).toBe('AUTOMATED_RECON_BOT');
     expect(classifyThreatActor('Mozilla/5.0 (Windows NT 10.0)', '/api/internal/patient-cohort-backup.json')).toBe('EXPLOIT_SCANNER');
     expect(classifyThreatActor('Custom-Scanner/1.0', '/other-path')).toBe('AUTOMATED_RECON_BOT');
   });
