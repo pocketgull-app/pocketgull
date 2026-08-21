@@ -156,13 +156,13 @@
     </svg>
   </div>
   
-  <!-- GEARARTS Top Banner -->
-  <div class="relative z-10 bg-gradient-to-r from-teal-700 via-rose-600 to-amber-600 text-stone-950 font-bold text-xs uppercase tracking-widest py-2 px-4 text-center flex items-center justify-center gap-2 shadow-md">
-    <span>🎨 GEARARTS</span>
+  <!-- Top Clinical Banner -->
+  <div class="relative z-10 bg-gradient-to-r from-teal-800 via-stone-900 to-amber-800 text-stone-200 font-semibold text-xs tracking-wider py-1.5 px-4 text-center flex items-center justify-center gap-2 border-b border-stone-800">
+    <span class="text-amber-400 font-bold">POCKETGULL</span>
     <span class="opacity-40">•</span>
-    <span>Clinical Intelligence & Research Hub</span>
+    <span>Open Science &amp; Clinical Informatics Hub</span>
     <span class="opacity-40">•</span>
-    <span class="text-stone-900 bg-amber-300/80 px-2 py-0.5 rounded text-[10px] font-mono">Articles Portal</span>
+    <span class="text-teal-300 font-mono text-[11px]">FHIR R4 &amp; USCDI v4 Grounded</span>
   </div>
 
   <!-- Global Header Navigation -->
@@ -184,8 +184,8 @@
 
       <!-- Header Actions -->
       <nav class="flex items-center gap-4 text-xs font-mono">
-        <a href="#store" class="text-stone-300 hover:text-white transition hidden md:flex items-center gap-1">
-          <span>🖼️ Art Store</span>
+        <a href="#cytology" class="text-stone-300 hover:text-white transition hidden md:flex items-center gap-1">
+          <span>🔬 Visual Cytology</span>
         </a>
         <a href="#digital-twin" class="text-stone-300 hover:text-white transition hidden sm:flex items-center gap-1">
           <span>🕊️ Model MC-10</span>

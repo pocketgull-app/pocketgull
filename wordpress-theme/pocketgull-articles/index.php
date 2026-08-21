@@ -21,7 +21,7 @@ get_header(); ?>
     </h1>
     
     <p class="text-base sm:text-lg text-stone-300 leading-relaxed font-sans max-w-2xl mx-auto">
-      Clear, honest medical guides written by Phil. No complex jargon or terrifying searches—just practical advice, everyday analogies, and actionable steps to stay healthy.
+      Evidence-grounded clinical summaries and preventive health literacy guides. Practical clinical analogies, peer-reviewed trial references, and actionable protocols to optimize long-term health.
     </p>
   </div>
 
@@ -70,7 +70,7 @@ get_header(); ?>
               <div class="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xs text-amber-300 font-bold font-sans">
                 P
               </div>
-              <span class="text-stone-200 font-bold">Phil</span>
+              <span class="text-stone-200 font-bold">Phil Gear</span>
             </div>
             <span class="text-stone-400"><?php echo get_the_date( 'M j, Y' ); ?></span>
           </div>

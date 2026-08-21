@@ -80,11 +80,11 @@ get_header(); ?>
             </div>
             <div>
               <div class="text-sm font-bold text-white flex items-center gap-1.5">
-                <span>Phil Gear :)</span>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">Author</span>
+                <span>Phil Gear</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">Lead Author</span>
               </div>
               <div class="text-xs text-stone-400 font-mono">
-                Solo Creator • Health Literacy &amp; Preventive Strategy
+                Biomedical Informatics &amp; Health Literacy Researcher
               </div>
             </div>
           </div>

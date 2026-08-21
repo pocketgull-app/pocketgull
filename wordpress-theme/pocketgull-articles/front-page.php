@@ -351,106 +351,106 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 4. CELL BIOLOGY ART GALLERY & PAPER QUILLING SHOWCASE ═══════════════ -->
-  <section id="store" class="space-y-12 py-6">
+  <!-- ══ 4. VISUAL CELLULAR CYTOLOGY & BIOPHYSICS ARCHITECTURE ═══════════════ -->
+  <section id="cytology" class="space-y-12 py-6">
     <div class="text-center space-y-3 max-w-3xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-mono font-bold">
-        <span>🎨 GEARARTS Archival Biological Paper Art</span>
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-mono font-bold">
+        <span>🔬 Visual Cellular Cytology &amp; Biophysics Architecture</span>
       </div>
       <h2 class="text-3xl sm:text-5xl font-extrabold text-white">
-        Cell Biology Art Gallery
+        Nanoscale Cellular Architecture
       </h2>
       <p class="text-stone-300 text-sm sm:text-base leading-relaxed">
-        Bridging microscopic cytology and tactile 3D paper quilling. Handcrafted biological structures celebrating the intricate machinery of human life:
+        High-fidelity visual cytology and tactile 3D models illustrating the biophysical machinery, organelle dynamics, and neurotransmitter pathways of human physiology:
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
       
-      <!-- Art Piece 1: Eukaryotic Cell Macro -->
+      <!-- Cytology Model 1: Eukaryotic Cell Macro -->
       <div class="glass-card-dark p-6 sm:p-7 rounded-3xl border border-amber-500/30 flex flex-col justify-between space-y-6 shadow-2xl relative overflow-hidden group">
         <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
         <div class="space-y-4 pt-2">
           <div class="flex justify-between items-center text-xs font-mono">
-            <span class="text-amber-400 font-bold">GEARARTS • CYTOLOGY</span>
-            <span class="text-stone-400">Archival 3D Quilling</span>
+            <span class="text-amber-400 font-bold">POCKETGULL • CYTOLOGY</span>
+            <span class="text-stone-400">3D Cellular Topology</span>
           </div>
           
           <!-- Actual High-Res Image -->
           <div class="aspect-[3/4] rounded-2xl overflow-hidden border border-stone-800 shadow-2xl relative group-hover:border-amber-400/50 transition">
-            <img src="<?php echo get_template_directory_uri(); ?>/images/eukaryotic_cell_art.jpg" alt="Eukaryotic Cell Macro Paper Quilling Art" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+            <img src="<?php echo get_template_directory_uri(); ?>/images/eukaryotic_cell_art.jpg" alt="Eukaryotic Cell Macro Visual Cytology Model" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
           </div>
 
           <h3 class="text-xl font-bold text-white">Eukaryotic Cell Macro</h3>
           <p class="text-xs text-stone-300 leading-relaxed font-normal">
-            Intricate paper quilled cellular landscape featuring glowing golden mitochondria, violet endoplasmic reticulum with pearl ribosomal beads, and swirling indigo cytoplasm.
+            Intricate microscopic cellular landscape featuring golden mitochondria, endoplasmic reticulum with ribosomal synthesis complexes, and cytosolic transport pathways.
           </p>
         </div>
         <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-amber-300 flex items-center justify-between">
-          <span>✨ 3D Paper Sculpture</span>
-          <span>By Phil Gear :)</span>
+          <span>🔬 3D Cytology Model</span>
+          <span>Phil Gear</span>
         </div>
       </div>
 
-      <!-- Art Piece 2: Synaptic Transmission -->
+      <!-- Cytology Model 2: Synaptic Transmission -->
       <div class="glass-card-dark p-6 sm:p-7 rounded-3xl border border-teal-500/30 flex flex-col justify-between space-y-6 shadow-2xl relative overflow-hidden group">
         <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
         <div class="space-y-4 pt-2">
           <div class="flex justify-between items-center text-xs font-mono">
-            <span class="text-teal-400 font-bold">GEARARTS • NEUROSCIENCE</span>
-            <span class="text-stone-400">Archival 3D Quilling</span>
+            <span class="text-teal-400 font-bold">POCKETGULL • NEUROSCIENCE</span>
+            <span class="text-stone-400">Synaptic Vesicle Dynamics</span>
           </div>
           
           <!-- Actual High-Res Image -->
           <div class="aspect-[3/4] rounded-2xl overflow-hidden border border-stone-800 shadow-2xl relative group-hover:border-teal-400/50 transition">
-            <img src="<?php echo get_template_directory_uri(); ?>/images/synaptic_transmission_art.jpg" alt="Synaptic Transmission Paper Quilling Art" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+            <img src="<?php echo get_template_directory_uri(); ?>/images/synaptic_transmission_art.jpg" alt="Synaptic Transmission Visual Neuroscience Model" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
           </div>
 
           <h3 class="text-xl font-bold text-white">Synaptic Transmission</h3>
           <p class="text-xs text-stone-300 leading-relaxed font-normal">
-            Neural synapse depicting electrical and chemical neurotransmission with glowing magenta vesicle coils and turquoise neurotransmitter flow into the synaptic cleft.
+            Neural synapse depicting electrical and chemical neurotransmission with neurotransmitter vesicle fusion and ion channel flux across the synaptic cleft.
           </p>
         </div>
         <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-teal-300 flex items-center justify-between">
-          <span>✨ 3D Paper Sculpture</span>
-          <span>By Phil Gear :)</span>
+          <span>🔬 3D Neuro Model</span>
+          <span>Phil Gear</span>
         </div>
       </div>
 
-      <!-- Art Piece 3: Mitochondrial Cristae -->
+      <!-- Cytology Model 3: Mitochondrial Cristae -->
       <div class="glass-card-dark p-6 sm:p-7 rounded-3xl border border-rose-500/30 flex flex-col justify-between space-y-6 shadow-2xl relative overflow-hidden group">
         <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
         <div class="space-y-4 pt-2">
           <div class="flex justify-between items-center text-xs font-mono">
-            <span class="text-rose-400 font-bold">GEARARTS • BIOENERGETICS</span>
-            <span class="text-stone-400">Archival 3D Quilling</span>
+            <span class="text-rose-400 font-bold">POCKETGULL • BIOENERGETICS</span>
+            <span class="text-stone-400">Inner Membrane Cristae</span>
           </div>
           
           <!-- Actual High-Res Image -->
           <div class="aspect-[3/4] rounded-2xl overflow-hidden border border-stone-800 shadow-2xl relative group-hover:border-rose-400/50 transition">
-            <img src="<?php echo get_template_directory_uri(); ?>/images/mitochondrial_cristae_art.jpg" alt="Mitochondrial Cristae Paper Quilling Art" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+            <img src="<?php echo get_template_directory_uri(); ?>/images/mitochondrial_cristae_art.jpg" alt="Mitochondrial Cristae Visual Bioenergetics Model" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
           </div>
 
           <h3 class="text-xl font-bold text-white">Mitochondrial Cristae</h3>
           <p class="text-xs text-stone-300 leading-relaxed font-normal">
-            Macro perspective on the inner membrane foldings and ATP synthase motors, rendered with concentric paper quilling coils and turquoise proton gradient channels.
+            Nanoscale perspective on inner mitochondrial membrane foldings, electron transport chain complexes, and ATP synthase rotary kinetics driving bioenergetic output.
           </p>
         </div>
         <div class="pt-4 border-t border-stone-800 text-[11px] font-mono text-rose-300 flex items-center justify-between">
-          <span>✨ 3D Paper Sculpture</span>
-          <span>By Phil Gear :)</span>
+          <span>🔬 3D Bioenergetics Model</span>
+          <span>Phil Gear</span>
         </div>
       </div>
 
     </div>
 
-    <!-- Art Portfolio Note -->
+    <!-- Cellular Biophysics Digital Twin Bridge -->
     <div class="max-w-4xl mx-auto p-5 bg-stone-900/80 rounded-2xl border border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-stone-300">
       <div>
-        🎨 Handcrafted paper sculptures by <strong class="text-amber-300">Phil Gear :)</strong> at GEARARTS.
+        🔬 High-resolution visual cytology integrated directly into the <strong class="text-teal-300">PocketGull Physiological Digital Twin</strong>.
       </div>
-      <a href="mailto:leads@pocketgull.app?subject=GEARARTS%20Biological%20Art%20Inquiry" class="px-4 py-2 rounded-xl geararts-card font-bold text-stone-950 hover:scale-105 transition shadow-md whitespace-nowrap">
-        Inquire About Art Portfolio →
+      <a href="#digital-twin" class="px-4 py-2 rounded-xl geararts-card font-bold text-stone-950 hover:scale-105 transition shadow-md whitespace-nowrap">
+        Explore Physiological Digital Twin (Model MC-10) →
       </a>
     </div>
   </section>
@@ -649,34 +649,34 @@ get_header(); ?>
     </div>
   </section>
 
-  <!-- ══ 7. PHIL GEAR :) — SOLO CREATOR & OPEN SCIENCE ARCHITECT ════════════════ -->
+  <!-- ══ 7. PHIL GEAR — FOUNDER & LEAD BIOMEDICAL INFORMATICS ARCHITECT ════════ -->
   <section id="developer" class="glass-card-dark p-8 sm:p-12 rounded-3xl border-2 border-amber-500/40 shadow-2xl relative overflow-hidden max-w-5xl mx-auto space-y-8">
     <div class="rams-grill"><div></div><div></div><div></div><div></div></div>
     
     <div class="space-y-4 pt-2 text-center sm:text-left">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-mono font-bold">
-        <span>🌿 The Human Element Behind the Code</span>
+        <span>🏥 Biomedical Informatics &amp; Open Health Systems</span>
       </div>
       <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
-        Built by a Solo Developer with Care
+        Built with Uncompromising Clinical Integrity
       </h2>
       <div class="text-stone-400 text-sm font-mono">
-        Phil Gear :) &bull; Founder, Solo Engineer &amp; Open Science Researcher
+        Phil Gear &bull; Founder &amp; Lead Biomedical Informatics Architect
       </div>
     </div>
 
-    <!-- Personal Quote Callout -->
+    <!-- Professional Quote Callout -->
     <blockquote class="p-6 bg-stone-900/90 rounded-2xl border-l-4 border-amber-400 text-stone-200 text-base sm:text-lg italic leading-relaxed">
-      "I built PocketGull because I just wanted to help others—even if it cost me just about everything. True medical intelligence and human healing should never be gated behind corporate bureaucracy or predatory paywalls."
-      <span class="block mt-2 text-xs font-mono not-italic text-amber-300">— Phil Gear :)</span>
+      "PocketGull was built on a foundational commitment to open science, clinical precision, and patient-centered sovereignty. Advanced medical intelligence and evidence-grounded care strategy must be transparent, verifiable, and engineered with uncompromising clinical integrity."
+      <span class="block mt-2 text-xs font-mono not-italic text-amber-300">— Phil Gear, Lead Biomedical Informatics Architect</span>
     </blockquote>
 
     <div class="text-stone-300 text-sm leading-relaxed space-y-3 font-normal">
       <p>
-        When someone is navigating a frightening diagnosis or when a clinician is drowning in after-hours charting, they don't need another noisy 40-tab enterprise dashboard. They need quiet clarity, rigorous Level A trial evidence, and technology that listens without getting in the way of human empathy.
+        PocketGull unifies multimodal clinical telemetry, FHIR R4 interoperability, and evidence-grounded AI into a cohesive care plan and physiological digital twin engine. By integrating Level A randomized controlled trial literature with real-time biometric and cellular biophysics data, the platform bridges clinical decision support with actionable lifestyle, occupational, and integrative interventions.
       </p>
       <p>
-        I am working on this with the best of intentions: to help people live longer, healthier lives, discover daily joy, and have the vitality and peace of mind to create art.
+        Engineered with strict HIPAA Safe Harbor de-identification, zero-trust cryptographic attestations, and full compliance with ONC §170.315(b)(10) and USCDI v4 standards, PocketGull empowers patients and multidisciplinary care teams with autonomous, explainable clinical intelligence.
       </p>
     </div>
 
