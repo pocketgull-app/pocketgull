@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AndroscogginForagingPhytoncideComponent } from '../androscoggin-foraging-phytoncide.component';
 import { GrowThyselfLegacyVaultComponent } from '../grow-thyself-legacy-vault.component';
+import { TribalHealthSovereigntyCardComponent } from '../shared/tribal-health-sovereignty-card.component';
 
 @Component({
   selector: 'app-seven-generations-stewardship-lens-tab',
@@ -9,7 +10,8 @@ import { GrowThyselfLegacyVaultComponent } from '../grow-thyself-legacy-vault.co
   imports: [
     CommonModule,
     AndroscogginForagingPhytoncideComponent,
-    GrowThyselfLegacyVaultComponent
+    GrowThyselfLegacyVaultComponent,
+    TribalHealthSovereigntyCardComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -19,7 +21,7 @@ import { GrowThyselfLegacyVaultComponent } from '../grow-thyself-legacy-vault.co
           <div class="flex items-center gap-2">
             <span class="text-2xl">🌲</span>
             <div>
-              <h3 class="text-lg font-bold text-zinc-100">Seven Generations Environmental & Sovereign Legacy Stewardship</h3>
+              <h3 class="text-lg font-bold text-zinc-100">Seven Generations Environmental &amp; Sovereign Legacy Stewardship</h3>
               <p class="text-xs text-zinc-400">Multi-generational epigenetic lineage protection, Grow Thyself purpose reflection, and posthumous open-science data directives.</p>
             </div>
           </div>
@@ -28,6 +30,9 @@ import { GrowThyselfLegacyVaultComponent } from '../grow-thyself-legacy-vault.co
           </span>
         </div>
       </div>
+
+      <!-- Tribal Health Sovereignty, CARE Principles & Indigenous Herbal Codex -->
+      <app-tribal-health-sovereignty-card></app-tribal-health-sovereignty-card>
 
       <!-- Grow Thyself Lifelong Vitality & Legacy Vault Component -->
       <app-grow-thyself-legacy-vault></app-grow-thyself-legacy-vault>

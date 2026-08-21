@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClinicOnboardingWizardComponent } from './clinic-onboarding-wizard.component';
 import { CdiscRweCardComponent } from './cdisc-rwe-card.component';
@@ -276,6 +276,13 @@ import { CdiscRweCardComponent } from './cdisc-rwe-card.component';
               >
                 🌲 Academic CTSA Hubs
               </button>
+              <button
+                type="button"
+                (click)="selectedOutreach.set('tribal')"
+                [class]="selectedOutreach() === 'tribal' ? 'px-2.5 py-1 rounded bg-zinc-800 text-amber-400 text-xs font-bold' : 'px-2.5 py-1 text-xs text-zinc-400 hover:text-white'"
+              >
+                🪶 Tribal Health &amp; 638 Clinics
+              </button>
             </div>
           </div>
 
@@ -320,15 +327,94 @@ import { CdiscRweCardComponent } from './cdisc-rwe-card.component';
 })
 export class ClinicalCommercialHubComponent {
   readonly activeTab = signal<'onboarding' | 'tiers' | 'rwe' | 'outreach' | 'sow'>('onboarding');
-  readonly selectedOutreach = signal<'clinic' | 'digitalHealth' | 'academic'>('clinic');
+  readonly selectedOutreach = signal<'clinic' | 'digitalHealth' | 'academic' | 'tribal'>('clinic');
   readonly loadingTier = signal<string | null>(null);
   readonly copiedOutreach = signal(false);
 
-  readonly currentSubject = signal(
-    'Eliminating 2 hours of EHR charting daily with zero-cloud PHI egress'
-  );
+  readonly currentSubject = computed(() => {
+    switch (this.selectedOutreach()) {
+      case 'digitalHealth':
+        return 'Accelerating FHIR R4 & Edge CDS with Zero-Cloud PHI Egress Sprints';
+      case 'academic':
+        return 'Open-Science Clinical Trial Matching & CDISC SDTM Pipeline for CTSA Hubs';
+      case 'tribal':
+        return 'Zero-Cost Public Service License & Offline Clinical Scribe for Tribal Health Centers (CARE Principles)';
+      case 'clinic':
+      default:
+        return 'Eliminating 2 hours of EHR charting daily with zero-cloud PHI egress';
+    }
+  });
 
-  readonly currentBody = signal(`Hi [Practice Manager / Dr. Name],
+  readonly currentBody = computed(() => {
+    switch (this.selectedOutreach()) {
+      case 'digitalHealth':
+        return `Hi [Engineering / Clinical Lead],
+
+I noticed your team is building scalable digital health infrastructure. Balancing rapid AI-assisted clinical workflows with strict HIPAA Safe Harbor de-identification and FHIR R4 interoperability often adds months to product roadmaps.
+
+PocketGull (CMS NPI: 1487569752) offers a 2-Week Implementation Sprint ($3,500 fixed fee) where we deliver:
+1. In-browser client-side HIPAA §164.514 sanitizer (stripping all 18 direct/indirect identifiers).
+2. Custom Gemma 3 LoRA adapter fine-tuned on your specialty clinical templates.
+3. Turnkey FHIR R4 and GA4GH Phenopackets v2 serialization for automated EHR export.
+4. Statutory Business Associate Agreement (BAA) with zero foundation model training on your data.
+
+Are you open to a brief 10-minute technical sync this week?
+
+Best regards,
+
+Phil Gear
+Founder & Health Informatics Lead, PocketGull LLC
+CMS NPI: 1487569752 | ORCID: 0009-0008-1372-5381
+leads@pocketgull.app | https://pocketgull.com`;
+
+      case 'academic':
+        return `Dear Dr. [Principal Investigator / Dean],
+
+I am writing regarding the open-science translational medicine tools developed at PocketGull (Zenodo DOI: 10.5281/zenodo.20647514).
+
+Our platform provides academic medical centers and CTSA hubs with:
+- Automated Point-of-Care Clinical Trial Matching via ClinicalTrials.gov APIv2.
+- 1-Click CDISC SDTM v2.0 Dataset Package generation (DM, VS, CM domains) with FDA 21 CFR Part 11 electronic signature seals.
+- Bayesian N-of-1 single-case crossover trial protocol designer with automated washout modeling.
+- Zero-cost academic research licenses with complete export to R and Python pipelines.
+
+We would be honored to provide an institutional walkthrough for your research fellows and clinical informatics faculty.
+
+Sincerely,
+
+Phillip Gear
+Health Informatics Lead, PocketGull LLC
+CMS NPI: 1487569752 | ORCID: 0009-0008-1372-5381
+research@pocketgull.app | https://pocketgull.com`;
+
+      case 'tribal':
+        return `To: The Tribal Health Director & Medical Leadership Team
+Regarding: Formal Zero-Cost Public Service License & Offline Edge Scribing for Tribal Health Centers
+
+Dear Tribal Health Leadership,
+
+On behalf of PocketGull LLC (Oregon Registry: 258869891 | CMS NPI: 1487569752), I am writing to formally offer a perpetual, zero-cost Enterprise Public Service License for your Indian Health Service (IHS) facility, P.L. 93-638 Tribally Operated Health Center, or Urban Indian Health Program.
+
+PocketGull is architected in strict adherence to Indigenous Data Sovereignty and the CARE Principles (Collective Benefit, Authority to Control, Responsibility, Ethics):
+1. 100% Offline Edge Computation: Ambient clinical scribing, vitals tracking, and pharmacogenomics run locally in-browser via WebAssembly with ZERO cloud egress. Patient data never leaves the reservation or tribal clinic.
+2. Traditional Botanical Codex: Integrative screening for traditional remedies (Devil's Club, Sweetgrass, Cedar, Wild Willow, Chaga) with Cytochrome P450 drug interaction checks.
+3. The Sacred First 1,000 Days: Epigenetic maternal-infant support protocols designed to protect lineage health across the next Seven Generations.
+4. Mobile CHR Support: Fully functional offline on tablets for remote home visits and rural elder wellness checks.
+5. Zero Software Licensing Fees: No subscription charges, fees, or vendor lock-in.
+
+We welcome the opportunity to meet with your Tribal Health Committee or Health Board at your convenience to provide a demonstration.
+
+With highest respect and solidarity,
+
+Phillip Gear
+Founder & Health Informatics Lead, PocketGull LLC
+CMS NPI: 1487569752 | ORCID: 0009-0008-1372-5381
+101 SW Madison St #1664, Portland, OR 97207
+tribal@pocketgull.app | https://pocketgull.com`;
+
+      case 'clinic':
+      default:
+        return `Hi [Practice Manager / Dr. Name],
 
 I noticed your clinic specializes in comprehensive patient care. Most clinicians are losing 1.5 to 2 hours every evening completing EHR charts and checking complex polypharmacy drug-herb interactions.
 
@@ -346,7 +432,9 @@ Best regards,
 Phil Gear
 Founder & Clinical Informatics Lead, PocketGull
 CMS NPI: 1487569752 | ORCID: 0009-0008-1372-5381
-leads@pocketgull.app | https://pocketgull.com`);
+leads@pocketgull.app | https://pocketgull.com`;
+    }
+  });
 
   readonly sowText = `# STATEMENT OF WORK (SOW) & BUSINESS ASSOCIATE AGREEMENT (BAA)
 
