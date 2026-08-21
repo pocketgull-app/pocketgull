@@ -101,12 +101,26 @@ import { SocraticMultilingualTranslatorService, ILanguageSpec } from '../service
             <div class="flex items-center gap-2">
               <span class="text-lg">{{ activeLang().flagEmoji }}</span>
               <strong class="text-white">{{ activeLang().name }} ({{ activeLang().nativeName }})</strong>
+              @if (isNeuralActive()) {
+                <span class="px-2 py-0.5 rounded text-[10px] bg-teal-500/20 text-teal-300 border border-teal-500/40 font-bold">
+                  ⚡ Gemini Neural Prose
+                </span>
+              }
             </div>
-            <span class="text-teal-400 text-[11px]">{{ translation().readingGradeLevel }}</span>
+            <div class="flex items-center gap-2">
+              <button 
+                (click)="requestAiTranslation()"
+                [disabled]="translator.isAiTranslating()"
+                class="px-2.5 py-1 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/40 text-[11px] font-bold transition cursor-pointer disabled:opacity-50 flex items-center gap-1"
+              >
+                <span>{{ translator.isAiTranslating() ? '⏳ Translating...' : '⚡ Live AI Translate' }}</span>
+              </button>
+              <span class="text-teal-400 text-[11px]">{{ translation().readingGradeLevel }}</span>
+            </div>
           </div>
 
           <div class="text-sm leading-relaxed text-stone-100 font-sans">
-            {{ translation().translatedText }}
+            {{ displayTranslationText() }}
           </div>
 
           <!-- Phonetic Speech Cue -->
@@ -155,6 +169,7 @@ export class SocraticMultilingualTerminalComponent {
 
   readonly activeLang = this.translator.activeLanguage;
   readonly activeCode = this.translator.selectedLanguageCode;
+  readonly neuralTranslatedText = signal<string | null>(null);
 
   readonly filteredLanguages = computed<ILanguageSpec[]>(() => {
     const reg = this.selectedRegion();
@@ -168,7 +183,22 @@ export class SocraticMultilingualTerminalComponent {
     return this.translator.translateClinicalContent(this.inputText(), this.activeCode());
   });
 
+  readonly isNeuralActive = computed(() => this.neuralTranslatedText() !== null);
+
+  readonly displayTranslationText = computed(() => {
+    return this.neuralTranslatedText() || this.translation().translatedText;
+  });
+
   selectLanguage(code: string): void {
+    this.neuralTranslatedText.set(null);
     this.translator.setLanguage(code);
   }
+
+  async requestAiTranslation(): Promise<void> {
+    const result = await this.translator.translateWithAi(this.inputText(), this.activeCode());
+    if (result && result.translatedText) {
+      this.neuralTranslatedText.set(result.translatedText);
+    }
+  }
 }
+

@@ -49,4 +49,12 @@ describe('SocraticMultilingualTranslatorService Unit Suite', () => {
     expect(result.translatedText).toContain('Yá’át’ééh');
     expect(result.culturalNote).toContain('Hózhǫ́');
   });
+
+  it('5. Executes translateWithAi with graceful fallback if offline/mock', async () => {
+    const result = await service.translateWithAi('Check blood glucose daily.', 'sw');
+    expect(result).toBeTruthy();
+    expect(result.targetLanguage.code).toBe('sw');
+    expect(result.translatedText).toContain('Kiswahili');
+  });
 });
+

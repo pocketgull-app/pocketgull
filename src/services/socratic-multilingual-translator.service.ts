@@ -116,6 +116,8 @@ export class SocraticMultilingualTranslatorService {
 
   readonly isRtl = computed<boolean>(() => this.activeLanguage().direction === 'rtl');
 
+  readonly isAiTranslating = signal<boolean>(false);
+
   /**
    * Translates and Socrates-simplifies complex clinical text into the target language.
    */
@@ -161,9 +163,53 @@ export class SocraticMultilingualTranslatorService {
     };
   }
 
+  /**
+   * Live Gemini 2.5 Flash neural prose translation across 50+ languages with graceful local fallback.
+   */
+  async translateWithAi(
+    sourceText: string,
+    targetCode: string = this.selectedLanguageCode()
+  ): Promise<ISocraticTranslationResult> {
+    const baseResult = this.translateClinicalContent(sourceText, targetCode);
+    this.isAiTranslating.set(true);
+
+    try {
+      const response = await fetch('/api/ai/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: baseResult.simplifiedSourceText,
+          language: baseResult.targetLanguage.name,
+          cognitiveLevel: 'simplified'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.text) {
+          let cleaned = data.text
+            .replace(/^### \[START CARE PLAN\]\s*/i, '')
+            .replace(/\s*### \[END CARE PLAN\]$/i, '')
+            .trim();
+          
+          if (cleaned.length > 0) {
+            baseResult.translatedText = cleaned;
+          }
+        }
+      }
+    } catch {
+      // Graceful fallback to deterministic Socratic crosswalk dictionary
+    } finally {
+      this.isAiTranslating.set(false);
+    }
+
+    return baseResult;
+  }
+
   setLanguage(code: string): void {
     if (this.supportedLanguages().some((l) => l.code === code)) {
       this.selectedLanguageCode.set(code);
     }
   }
 }
+
