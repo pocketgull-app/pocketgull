@@ -12,6 +12,7 @@ export * from './walkthrough-tour.component';
 export * from './secure-splash.component';
 export * from './patient-directory.component';
 export * from './fhir-callback.component';
+export * from './hsa-incentive-network.component';
 
 // Shared Components Barrel Export
 export * from './shared/risk-tier-badge.component';
@@ -19,6 +20,8 @@ export * from './shared/clinical-gauge-svg.component';
 export * from './shared/clinical-tool-card.component';
 export * from './shared/pathways-moe-badge.component';
 export * from './shared/pocketgull-icon.component';
+export * from './shared/amazon-product-card.component';
+export * from './bibliotherapy-hobby-prescriber.component';
 
 // Modal Components Barrel Export
 export * from './modals/dictation-modal.component';

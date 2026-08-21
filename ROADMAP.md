@@ -37,14 +37,14 @@ Pocket Gull is committed to continuous refinement (**Kaizen**) in integrative cl
 - [x] **Actuarial Risk & ACO Shared Savings Engine**: Real-time ACO shared savings, risk adjustment factor (RAF) scores, HEDIS Star ratings, Da Vinci Prior Auth, and IRMAA/SSA-44 appeal calculations.
 - [x] **Ambient Multimodal Clinical Scribe**: Multi-speaker real-time ambient conversation transcription into structured SOAP notes with automated ICD-10/CPT crosswalking.
 - [x] **Decoupled Enterprise Core SDK**: Versioned `@pocketgull/core-sdk` npm package for hospital networks and research institutes.
-- [ ] **Digital Health Equity SMS Bridge**: 2-way SMS health nudges and habit logging for basic mobile devices (flip phones) in rural & low-resource communities.
+- [x] **Digital Health Equity SMS Bridge**: 2-way SMS health nudges and habit logging for basic mobile devices (flip phones) in rural & low-resource communities.
 
 ---
 
 ## 🌟 H2 2027: Precision Genomics & Ambient Diagnostics
 - [x] **Genomic Variant Pathogenicity Screening (AlphaGenome / ClinVar / dbSNP)**: Real-time non-coding variant regulatory annotation and clinical significance assessment for precision oncology and rare diseases.
-- [ ] **100% Offline Local Gemma 3 Edge AI**: Quantized Local Gemma 3 (2B/7B) via WASM/WebGPU for rural medicine, maritime vessels, and disaster response.
-- [ ] **Multimodal Camera & Voice Live Tele-Consult HUD**: Real-time camera rPPG skin perfusion, pupil reactivity, and vocal tremor analysis in Gemini Live.
+- [x] **100% Offline Local Gemma 3 Edge AI**: Quantized Local Gemma 3 (2B/7B) via WASM/WebGPU for rural medicine, maritime vessels, and disaster response.
+- [x] **Multimodal Camera & Voice Live Tele-Consult HUD**: Real-time camera rPPG skin perfusion, pupil reactivity, and vocal tremor analysis in Gemini Live.
 - [x] **Postpartum Maternal Health & Doula Companion Protocol**: 4th-trimester maternal telemetry, Edinburgh Postnatal Depression Scale (EPDS) tracking, lactation mechanics, and infant sleep-wake circadian synchrony.
 
 ---
@@ -52,7 +52,7 @@ Pocket Gull is committed to continuous refinement (**Kaizen**) in integrative cl
 ## 🌌 H1 2028: Space Health & Extreme Environment Telemedicine
 - [ ] **Spaceflight Biophysics & Microgravity Adaptation (TRISH / NASA Guidelines)**: Telemetry tracking for cephalad fluid shifts, spaceflight-associated neuro-ocular syndrome (SANS), bone mineral density loss, and radiation biomarker tracking.
 - [ ] **Autonomous Clinical Decision Support for Deep-Space Exploration**: Fully air-gapped, zero-latency diagnostic reasoning engine for exploration-class missions.
-- [ ] **Clinical Game Theory HSA Incentive Network**: Direct integration of Stackelberg/Nash equilibrium adherence rebates ($r^*$) with patient HSA/FSA debit cards.
+- [x] **Clinical Game Theory HSA Incentive Network**: Direct integration of Stackelberg/Nash equilibrium adherence rebates ($r^*$) with patient HSA/FSA debit cards & IIAS §213(d) qualified medical expenses.
 
 ---
 

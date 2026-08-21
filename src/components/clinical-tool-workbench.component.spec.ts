@@ -42,7 +42,7 @@ describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite',
   });
 
   it('should switch between new enterprise studio tabs (ssa, jurisdiction, mandiant, mandarinate)', () => {
-    expect(component.activeWorkbenchTab()).toBe('tools');
+    expect(component.activeWorkbenchTab()).toBe('jurisdiction');
 
     component.activeWorkbenchTab.set('ssa');
     expect(component.activeWorkbenchTab()).toBe('ssa');

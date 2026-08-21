@@ -375,10 +375,11 @@ export class ClinicalToolWorkbenchComponent {
   private readonly haptics = inject(BioHapticFeedbackService);
 
   readonly showRoleDemoModal = signal(false);
-  readonly activeWorkbenchTab = signal<'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('tools');
+  readonly activeWorkbenchTab = signal<'jurisdiction' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('jurisdiction');
   readonly intakeDirectiveQuery = signal<string>('');
 
-  readonly workbenchTabs: { id: 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'jurisdiction' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
+  readonly workbenchTabs: { id: 'jurisdiction' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
+    { id: 'jurisdiction', label: 'Jurisdictional Governance Matrix (US / EU / UK Compliance)', icon: '🌐', activeClass: 'bg-indigo-600 text-white shadow-xs' },
     { id: 'tools', label: 'Diagnostic Tools', icon: '🛠️', activeClass: 'bg-cyan-500 text-zinc-950 shadow-xs' },
     { id: 'articles', label: 'Health Literacy Guides (Articles)', icon: '📰', activeClass: 'bg-emerald-500 text-zinc-950 shadow-xs' },
     { id: 'intimacy', label: 'Couples Vitality & Cardiac Safety (Princeton III)', icon: '❤️', activeClass: 'bg-rose-600 text-white shadow-xs' },
@@ -391,7 +392,6 @@ export class ClinicalToolWorkbenchComponent {
     { id: 'dental', label: 'Teledentistry & Odontogram', icon: '🦷', activeClass: 'bg-teal-500 text-zinc-950 shadow-xs' },
     { id: 'joy', label: 'Joy & Play Matrix', icon: '☀️', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
     { id: 'ssa', label: 'SSA Disability Navigator', icon: '🏛️', activeClass: 'bg-blue-600 text-white shadow-xs' },
-    { id: 'jurisdiction', label: 'Global & State Compliance', icon: '🌐', activeClass: 'bg-indigo-600 text-white shadow-xs' },
     { id: 'mandiant', label: 'Mandiant Threat Defense', icon: '🛡️', activeClass: 'bg-red-600 text-white shadow-xs' },
     { id: 'mandarinate', label: 'Keju AI Exam Arena', icon: '📜', activeClass: 'bg-amber-600 text-zinc-950 shadow-xs' },
     { id: 'rxguard', label: 'RxGuard PGx & Botanicals', icon: '🛡️', activeClass: 'bg-purple-600 text-white shadow-xs' },

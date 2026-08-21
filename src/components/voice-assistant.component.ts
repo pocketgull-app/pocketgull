@@ -19,6 +19,8 @@ import { getStoredApiKey } from '../services/secure-key';
 import { YbocsService } from '../services/ybocs/ybocs.service';
 import { severityQuestions } from '../services/ybocs/data';
 import { BionicReadingService } from '../services/bionic-reading.service';
+import { OcularVocalTelemetryService } from '../services/ocular-vocal-telemetry.service';
+import { OpticalCameraVisionService } from '../services/optical-camera-vision.service';
 
 export interface IChatEntry {
     role: 'user' | 'model';
@@ -108,10 +110,22 @@ export interface IChatEntry {
             
             <!-- Minimal Pocket Header -->
             <div class="flex items-center justify-between px-4 py-2 shrink-0 z-20 relative bg-white dark:bg-[#09090b] border-b border-gray-100 dark:border-zinc-800/50">
-                <div class="flex items-center pointer-events-none pl-2">
+                <div class="flex items-center pointer-events-none pl-2 gap-2">
                     <span class="font-bold text-gray-400 dark:text-zinc-500 tracking-[0.2em] text-[12px] uppercase">Live Session</span>
+                    @if (telemetryService.isHudActive()) {
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 animate-pulse">
+                            LIVE TELEMETRY HUD ACTIVE (Score: {{ telemetryService.overallNeuroVascularScore() }}/100)
+                        </span>
+                    }
                 </div>
                 <div class="flex items-center gap-2">
+                    <button
+                        (click)="telemetryService.toggleHud()"
+                        [ngClass]="telemetryService.isHudActive() ? 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/40 shadow-sm' : 'bg-gray-50 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 border-gray-200 dark:border-zinc-700'"
+                        class="flex items-center gap-1.5 transition-all px-2.5 py-1.5 rounded-lg border text-[11px] font-bold cursor-pointer"
+                        title="Toggle Multimodal Camera & Voice Live Tele-Consult HUD">
+                        <span>👁️🎙️</span> <span>Tele-HUD</span>
+                    </button>
                     <button
                         (click)="dispatchDiscordTranscript()"
                         class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 flex items-center gap-1.5 transition-all px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-[11px] font-bold"
@@ -141,6 +155,87 @@ export interface IChatEntry {
                     </button>
                 </div>
             </div>
+
+            <!-- MULTIMODAL CAMERA & VOICE LIVE TELE-CONSULT HUD OVERLAY -->
+            @if (telemetryService.isHudActive()) {
+                <div class="px-4 py-3 bg-zinc-950/95 border-b border-cyan-500/30 text-zinc-100 font-mono shadow-2xl backdrop-blur-xl shrink-0 space-y-3 animate-in fade-in slide-in-from-top duration-300">
+                    <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="text-cyan-400 font-bold uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                                <span>👁️🎙️</span> Multimodal Tele-Consult Cockpit HUD
+                            </span>
+                            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                                60 FPS Edge Vision
+                            </span>
+                        </div>
+
+                        <!-- Mode Switcher -->
+                        <div class="flex items-center gap-1.5 text-[10px]">
+                            <button (click)="telemetryService.setTelemetryMode('ALL')" [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'ALL'" class="px-2 py-1 rounded bg-zinc-800 text-zinc-200 hover:bg-zinc-700">ALL</button>
+                            <button (click)="telemetryService.setTelemetryMode('OCULAR')" [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'OCULAR'" class="px-2 py-1 rounded bg-zinc-800 text-zinc-200 hover:bg-zinc-700">OCULAR</button>
+                            <button (click)="telemetryService.setTelemetryMode('VOCAL')" [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'VOCAL'" class="px-2 py-1 rounded bg-zinc-800 text-zinc-200 hover:bg-zinc-700">VOCAL</button>
+                            <button (click)="telemetryService.setTelemetryMode('RPPG')" [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'RPPG'" class="px-2 py-1 rounded bg-zinc-800 text-zinc-200 hover:bg-zinc-700">rPPG</button>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry Meters Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <!-- 1. Pupillometry & Neuro-Safety -->
+                        <div class="p-3 rounded-2xl bg-zinc-900/90 border border-cyan-500/20 space-y-1">
+                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                                <span class="uppercase font-bold text-cyan-300">Pupillometry</span>
+                                <span class="font-bold text-emerald-400">L:{{ telemetryService.ocular().leftPupilDiameterMm }}mm / R:{{ telemetryService.ocular().rightPupilDiameterMm }}mm</span>
+                            </div>
+                            <div class="text-xs font-bold text-zinc-100 flex items-center justify-between">
+                                <span>Asymmetry: {{ telemetryService.ocular().anisocoriaAsymmetryPct }}%</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">{{ telemetryService.ocular().isPupilSymmetric ? 'Symmetric' : 'Anisocoria Flag' }}</span>
+                            </div>
+                            <div class="text-[10px] text-zinc-400 font-sans">Blink Rate: {{ telemetryService.ocular().blinkRatePerMin }}/min &bull; Saccade: {{ telemetryService.ocular().saccadicStabilityScore }}%</div>
+                        </div>
+
+                        <!-- 2. Vocal Acoustics & Micro-Tremor -->
+                        <div class="p-3 rounded-2xl bg-zinc-900/90 border border-purple-500/20 space-y-1">
+                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                                <span class="uppercase font-bold text-purple-300">Vocal Acoustics</span>
+                                <span class="font-bold text-amber-300">F0: {{ telemetryService.vocal().fundamentalFrequencyHz }} Hz</span>
+                            </div>
+                            <div class="text-xs font-bold text-zinc-100 flex items-center justify-between">
+                                <span>Jitter: {{ telemetryService.vocal().microTremorJitterPct }}%</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">HNR: {{ telemetryService.vocal().harmonicToNoiseRatioDb }} dB</span>
+                            </div>
+                            <div class="text-[10px] text-zinc-400 font-sans truncate">{{ telemetryService.vocal().acousticNote }}</div>
+                        </div>
+
+                        <!-- 3. rPPG Capillary Pulse & Perfusion -->
+                        <div class="p-3 rounded-2xl bg-zinc-900/90 border border-rose-500/20 space-y-1">
+                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                                <span class="uppercase font-bold text-rose-300">rPPG Perfusion</span>
+                                <span class="font-bold text-rose-400">{{ telemetryService.rppg().heartRateBpm }} BPM</span>
+                            </div>
+                            <div class="text-xs font-bold text-zinc-100 flex items-center justify-between">
+                                <span>HRV RMSSD: {{ telemetryService.rppg().hrvRmssdMs }} ms</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">PWV: {{ telemetryService.rppg().pulseWaveVelocityMps }} m/s</span>
+                            </div>
+                            <div class="text-[10px] text-zinc-400 font-sans">Capillary SNR: {{ telemetryService.rppg().signalToNoiseRatioDb }} dB &bull; Quality: {{ telemetryService.rppg().perfusionQualityIndex }}%</div>
+                        </div>
+
+                        <!-- 4. Neuro-Vascular Synthesis Score -->
+                        <div class="p-3 rounded-2xl bg-zinc-900/90 border border-amber-500/20 space-y-1">
+                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                                <span class="uppercase font-bold text-amber-300">Autonomic Index</span>
+                                <span class="font-bold text-amber-400">{{ telemetryService.overallNeuroVascularScore() }} / 100</span>
+                            </div>
+                            <div class="w-full bg-zinc-800 rounded-full h-2 overflow-hidden mt-1">
+                                <div class="bg-gradient-to-r from-teal-500 via-cyan-400 to-indigo-500 h-2 rounded-full transition-all duration-500" [style.width.%]="telemetryService.overallNeuroVascularScore()"></div>
+                            </div>
+                            <div class="text-[10px] text-emerald-400 font-sans flex items-center justify-between pt-0.5">
+                                <span>WebRTC Sync: Sub-200ms</span>
+                                <span>Zero PHI Egress</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
 
             <!-- MODE: SELECTION Placeholder -->
             @if (panelMode() === 'selection') {
@@ -448,6 +543,8 @@ export class VoiceAssistantComponent implements OnDestroy {
     storage = inject(StorageService);
     secureStorage = inject(SecureStorageService);
     bionicReading = inject(BionicReadingService);
+    telemetryService = inject(OcularVocalTelemetryService);
+    opticalVision = inject(OpticalCameraVisionService);
 
     getFormattedChatText(entry: IChatEntry): string {
       const rawContent = entry.htmlContent || entry.text;

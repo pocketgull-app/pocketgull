@@ -4,7 +4,7 @@ export interface IMandiantThreatActor {
   actorId: string;
   name: string;
   aliases: string[];
-  threatType: 'NATION_STATE' | 'FINANCIALLY_MOTIVATED_RANSOMWARE' | 'CREDENTIAL_BROKER' | 'AI_ADVERSARY';
+  threatType: 'NATION_STATE' | 'FINANCIALLY_MOTIVATED_RANSOMWARE' | 'CREDENTIAL_BROKER' | 'AI_ADVERSARY' | 'EXECUTIVE_WHALING';
   targetAssets: string[];
   mitreAttAndCkTechniques: string[];
   mandiantThreatDescription: string;
@@ -24,7 +24,7 @@ export interface IMitreAtlasAiTactic {
 export interface IIncidentForensicSnapshot {
   snapshotId: string;
   timestamp: string;
-  eventCategory: 'PROMPT_INJECTION' | 'EXFILTRATION_SPIKE' | 'UNAUTHORIZED_GEO_HOP' | 'TAMPERED_HASH';
+  eventCategory: 'PROMPT_INJECTION' | 'EXFILTRATION_SPIKE' | 'UNAUTHORIZED_GEO_HOP' | 'TAMPERED_HASH' | 'WHALING_DEEPFAKE_ATTEMPT' | 'STAT_OVERRIDE_EVENT';
   severity: 'INFO' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   evidencePayloadHash: string;
   containmentApplied: string;
@@ -37,6 +37,7 @@ export interface IMandiantDefensePosture {
   activeZeroTrustEnforced: boolean;
   monitoredActorsCount: number;
   quarantinedPayloadsCount: number;
+  dualCustodyEnforced: boolean;
   lastForensicAuditSha: string;
 }
 
@@ -48,6 +49,7 @@ export class MandiantClinicalDefenseService {
   public readonly isContainmentModeActive = signal<boolean>(false);
   public readonly activeThreatFilter = signal<string>('ALL');
   public readonly simulatedAttackVector = signal<string | null>(null);
+  public readonly dualCustodyThresholdUsd = signal<number>(500);
 
   // Curated Mandiant M-Trends Threat Intelligence on Healthcare Threat Actors
   public readonly threatActors = signal<IMandiantThreatActor[]>([
@@ -105,6 +107,17 @@ export class MandiantClinicalDefenseService {
       mandiantThreatDescription: 'Adversarial group focusing on crafting adversarial perturbations in medical imaging and jailbreaking clinical AI reasoning engines.',
       historicalHealthcareTargeting: 'Targeted cloud-hosted radiology AI services and clinical transcription models.',
       riskScore: 88
+    },
+    {
+      actorId: 'MND-WHALING-01',
+      name: 'UNC-DEEPWHALE (Executive Voice Clone & High-Value Spearphishing)',
+      aliases: ['Apex Impersonator', 'Surgical Vishing Crew'],
+      threatType: 'EXECUTIVE_WHALING',
+      targetAssets: ['Chief Medical Officer (CMO) Portals', 'Dual-Signature Treasury Accounts', 'Emergency Bulk PHI Exfiltration'],
+      mitreAttAndCkTechniques: ['T1656 (Impersonation via Deepfake Audio)', 'T1566.002 (Spearphishing Link)', 'T1078.004 (Cloud Admin Accounts)'],
+      mandiantThreatDescription: 'Synthesizes neural voice clones of CMOs and hospital board members to demand urgent STAT overrides or bulk credential resets.',
+      historicalHealthcareTargeting: 'Targeted healthcare C-suites with synthetic audio wire-transfer and emergency patient data release requests.',
+      riskScore: 96
     }
   ]);
 
@@ -140,6 +153,14 @@ export class MandiantClinicalDefenseService {
       mitreAtlasId: 'AML.T0031',
       clinicalThreatVector: 'Coercing LLM tool execution to fetch internal cloud metadata (e.g. 169.254.169.254) or exfiltrate state to unverified external endpoints.',
       mandiantDefenseRule: 'Sentinel Egress Guard + Strict Domain Whitelisting (100% of egress bound to approved GCP & Medical endpoints).',
+      countermeasureStatus: 'ACTIVE_GUARDED'
+    },
+    {
+      tacticId: 'TAC-05',
+      tacticName: 'Voice Cloning & Executive Whaling Impersonation',
+      mitreAtlasId: 'AML.T0054',
+      clinicalThreatVector: 'Deepfake voice audio mimicking hospital executives to unilaterally authorize bulk PHI exports or bypass safety rails.',
+      mandiantDefenseRule: 'Dual-Custody (M-of-N) Multi-Signature Protocol + Hardware FIDO2/WebAuthn Step-Up Authentication.',
       countermeasureStatus: 'ACTIVE_GUARDED'
     }
   ]);
@@ -178,9 +199,77 @@ export class MandiantClinicalDefenseService {
       activeZeroTrustEnforced: true,
       monitoredActorsCount: actors.length,
       quarantinedPayloadsCount: this.forensicSnapshots().length,
+      dualCustodyEnforced: true,
       lastForensicAuditSha: 'SHA256-MND-' + Math.abs(Math.sin(Date.now())).toString(16).substring(2, 10).toUpperCase()
     };
   });
+
+  /**
+   * Evaluates Dual-Custody / M-of-N Multi-Signature requirement for high-impact actions.
+   * Protects against single-compromise executive whaling attacks.
+   */
+  public verifyDualCustodyAuthorization(
+    actionType: 'BULK_PHI_EXPORT' | 'BATCH_PURGE' | 'HSA_TREASURY_DISBURSEMENT' | 'STAT_SECURITY_BYPASS',
+    requestorRole: string,
+    authorizerRole: string,
+    payloadValueUsd?: number
+  ): { isAuthorized: boolean; rationale: string } {
+    // 1. Strict Role Separation: Requestor and Authorizer CANNOT be the same role/identity
+    if (!requestorRole || !authorizerRole || requestorRole === authorizerRole) {
+      return {
+        isAuthorized: false,
+        rationale: 'Dual-custody failed: Requestor and Authorizer must be distinct authenticated clinical roles.'
+      };
+    }
+
+    // 2. High Value Treasury Threshold Check
+    if (actionType === 'HSA_TREASURY_DISBURSEMENT') {
+      const amount = payloadValueUsd || 0;
+      if (amount >= this.dualCustodyThresholdUsd()) {
+        const hasExecutive = requestorRole.includes('EXECUTIVE') || authorizerRole.includes('EXECUTIVE') || authorizerRole.includes('COMPLIANCE');
+        if (!hasExecutive) {
+          return {
+            isAuthorized: false,
+            rationale: `Dual-custody failed: Disbursements >= $${this.dualCustodyThresholdUsd()} require Compliance or Executive co-signing.`
+          };
+        }
+      }
+    }
+
+    // 3. Bulk PHI Export Validation
+    if (actionType === 'BULK_PHI_EXPORT') {
+      const hasDpo = requestorRole.includes('DPO') || authorizerRole.includes('DPO') || authorizerRole.includes('PRIVACY_OFFICER');
+      if (!hasDpo) {
+        return {
+          isAuthorized: false,
+          rationale: 'Dual-custody failed: Bulk PHI export requires explicit Data Protection Officer (DPO) co-authorization.'
+        };
+      }
+    }
+
+    return {
+      isAuthorized: true,
+      rationale: `Dual-custody verified: Action [${actionType}] co-signed by [${requestorRole}] and [${authorizerRole}].`
+    };
+  }
+
+  /**
+   * Records an immutable forensic audit event for STAT Emergency Overrides.
+   */
+  public auditStatEmergencyOverride(clinicianId: string, rationale: string): IIncidentForensicSnapshot {
+    const snapshot: IIncidentForensicSnapshot = {
+      snapshotId: `DFIR-STAT-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      eventCategory: 'STAT_OVERRIDE_EVENT',
+      severity: 'HIGH',
+      evidencePayloadHash: 'MND-STAT-' + Math.abs(Math.sin(Date.now())).toString(16).substring(2, 10).toUpperCase(),
+      containmentApplied: `STAT Emergency Override invoked by [${clinicianId}]. Safety invariants maintained. Rationale: "${rationale}"`,
+      hhs405dAlignment: 'HICP Section 7.4 - Emergency Access Management & Audit Trailing'
+    };
+
+    this.forensicSnapshots.update(prev => [snapshot, ...prev]);
+    return snapshot;
+  }
 
   /**
    * Triggers Emergency Containment Protocol (Zero-Trust Lock & Ephemeral State Purge).

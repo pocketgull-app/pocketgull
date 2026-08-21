@@ -706,9 +706,15 @@ import { slackRouter } from './server/routes/slack.routes';
 import { createApiKeysRouter } from './server/routes/api-keys.routes';
 import { createBillingRouter } from './server/routes/billing.routes';
 import { createAuthRouter } from './server/routes/auth.routes';
+import { smsRouter } from './server/routes/sms.routes';
+import { hsaRouter } from './server/routes/hsa.routes';
+import { amazonRouter } from './server/routes/amazon.routes';
 import { apiKeyService } from './server/services/api-key.service';
 
 app.use('/api/slack', slackRouter);
+app.use('/api/sms', smsRouter);
+app.use('/api/hsa', hsaRouter);
+app.use('/api/amazon', amazonRouter);
  
 // ── Python Biosignal & Data Bridge Proxy ───────────────────────────────────
 // Routes /api/python/* → FastAPI sidecar on :8001 (dev) or PYTHON_API_URL (prod).

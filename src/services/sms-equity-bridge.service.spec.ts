@@ -43,6 +43,7 @@ describe('SmsEquityBridgeService - Health Equity SMS Bridge Suite', () => {
     expect(parsed.urgencyLevel).toBe('ELEVATED');
     expect(parsed.fhirObservationResource).toBeDefined();
     expect(parsed.fhirObservationResource?.['resourceType']).toBe('Observation');
+    expect(parsed.adherencePointsEarned).toBe(15);
   });
 
   it('3. Triggers critical emergency response for severe chest pain text', () => {
@@ -51,5 +52,24 @@ describe('SmsEquityBridgeService - Health Equity SMS Bridge Suite', () => {
 
     expect(parsed.urgencyLevel).toBe('CRITICAL_CALL_911');
     expect(parsed.automatedResponseText).toContain('EMERGENCY ALERT');
+    expect(parsed.adherencePointsEarned).toBe(0);
+  });
+
+  it('4. Generates localized prompts across multiple languages (Spanish, German, Japanese)', () => {
+    const spanishPlan = service.getBridgePlan(mockPatient, 'es');
+    expect(spanishPlan.dailyPrompts[0].messageBody).toContain('presión');
+
+    const germanPlan = service.getBridgePlan(mockPatient, 'de');
+    expect(germanPlan.dailyPrompts[0].messageBody).toContain('Blutdruck');
+
+    const japanesePlan = service.getBridgePlan(mockPatient, 'ja');
+    expect(japanesePlan.dailyPrompts[0].messageBody).toContain('血圧');
+  });
+
+  it('5. Awards game theory adherence points on medication confirmation', () => {
+    const inbound = 'MED YES took morning pills with breakfast';
+    const parsed = service.parseInboundSms(inbound, 'p001');
+    expect(parsed.adherencePointsEarned).toBe(15);
+    expect(parsed.automatedResponseText).toContain('Medication adherence logged');
   });
 });

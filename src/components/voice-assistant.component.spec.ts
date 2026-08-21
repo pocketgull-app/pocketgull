@@ -23,6 +23,9 @@ import { SecureStorageService } from '../services/secure-storage.service';
 import { YbocsService } from '../services/ybocs/ybocs.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
 
+import { OcularVocalTelemetryService } from '../services/ocular-vocal-telemetry.service';
+import { OpticalCameraVisionService } from '../services/optical-camera-vision.service';
+
 describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Controls', () => {
   let component: VoiceAssistantComponent;
   let mockPatientState: any;
@@ -35,6 +38,8 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
   let mockStorage: any;
   let mockSecureStorage: any;
   let mockYbocs: any;
+  let mockTelemetry: any;
+  let mockOpticalVision: any;
 
   beforeEach(() => {
     mockPatientState = {
@@ -97,6 +102,44 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
       scores: signal({})
     };
 
+    mockTelemetry = {
+      isHudActive: signal(false),
+      toggleHud: vi.fn(),
+      setTelemetryMode: vi.fn(),
+      selectedTelemetryMode: signal('ALL'),
+      overallNeuroVascularScore: signal(91),
+      ocular: signal({
+        leftPupilDiameterMm: 3.4,
+        rightPupilDiameterMm: 3.5,
+        anisocoriaAsymmetryPct: 2.9,
+        blinkRatePerMin: 16,
+        saccadicStabilityScore: 94,
+        isPupilSymmetric: true,
+        neuroAlertNotice: null
+      }),
+      vocal: signal({
+        fundamentalFrequencyHz: 124.5,
+        microTremorJitterPct: 0.62,
+        shimmerLocalPct: 1.85,
+        harmonicToNoiseRatioDb: 24.2,
+        vocalStressIndex: 18,
+        isVocalTremorDetected: false,
+        acousticNote: 'Normal stability'
+      }),
+      rppg: signal({
+        heartRateBpm: 72,
+        hrvRmssdMs: 44.5,
+        pulseWaveVelocityMps: 6.8,
+        signalToNoiseRatioDb: 18.5,
+        perfusionQualityIndex: 92
+      })
+    };
+
+    mockOpticalVision = {
+      currentLens: signal('RPPG_PULSE'),
+      isCameraActive: signal(false)
+    };
+
     const injector = Injector.create({
       providers: [
         { provide: PatientStateService, useValue: mockPatientState },
@@ -109,6 +152,8 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
         { provide: StorageService, useValue: mockStorage },
         { provide: SecureStorageService, useValue: mockSecureStorage },
         { provide: YbocsService, useValue: mockYbocs },
+        { provide: OcularVocalTelemetryService, useValue: mockTelemetry },
+        { provide: OpticalCameraVisionService, useValue: mockOpticalVision },
         BionicReadingService
       ]
     });
@@ -116,8 +161,15 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
     component = runInInjectionContext(injector, () => new VoiceAssistantComponent());
   });
 
-  it('should instantiate successfully with empty message text signal', () => {
+  it('1. Instantiates successfully with empty message text signal', () => {
     expect(component).toBeTruthy();
     expect(component.messageText()).toBe('');
+  });
+
+  it('2. Integrates with OcularVocalTelemetryService for Tele-Consult HUD', () => {
+    expect(component.telemetryService).toBeTruthy();
+    expect(component.telemetryService.overallNeuroVascularScore()).toBe(91);
+    component.telemetryService.toggleHud();
+    expect(component.telemetryService.toggleHud).toHaveBeenCalled();
   });
 });

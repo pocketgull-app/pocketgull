@@ -11,6 +11,7 @@ export interface ISmsCarePrompt {
   fleschKincaidGradeLevel: number;
   primaryDomain: 'Medication Adherence' | 'Vitals Check' | 'Symptom Logging' | 'Vagal Breathing';
   callToAction: string;
+  language?: string;
 }
 
 export interface IParsedSmsResponse {
@@ -25,6 +26,7 @@ export interface IParsedSmsResponse {
   urgencyLevel: 'ROUTINE' | 'ELEVATED' | 'CRITICAL_CALL_911';
   fhirObservationResource?: Record<string, unknown>;
   automatedResponseText: string;
+  adherencePointsEarned?: number;
 }
 
 export interface ISmsBridgePlan {
@@ -35,6 +37,54 @@ export interface ISmsBridgePlan {
   dailyPrompts: ISmsCarePrompt[];
   inboundHistory: IParsedSmsResponse[];
 }
+
+export const MULTILINGUAL_SMS_PROMPTS: Record<string, { morning: string; afternoon: string; evening: string }> = {
+  en: {
+    morning: 'Good morning! Please take your BP sitting down after resting 5m. Text back numbers like "120/80".',
+    afternoon: 'Midday check: Did you take your prescribed medication? Drink a glass of water. Reply "YES" or "HELP".',
+    evening: 'Evening check: Did you do 15m of gentle walking today? Reply 1 (Yes), 2 (Rested), 3 (Joint pain).'
+  },
+  es: {
+    morning: '¡Buenos días! Mida su presión sentado tras 5m de reposo. Envíe sus números como "120/80".',
+    afternoon: 'Recordatorio del mediodía: ¿Tomó su medicina? Beba un vaso de agua. Responda "SI" o "AYUDA".',
+    evening: 'Revisión nocturna: ¿Caminó 15m hoy? Responda 1 (Sí), 2 (Descansé), 3 (Dolor articular).'
+  },
+  fr: {
+    morning: 'Bonjour! Mesurez votre tension assis après 5m de repos. Répondez avec vos chiffres ex: "120/80".',
+    afternoon: 'Rappel midi: Avez-vous pris votre médicament? Buvez un verre d’eau. Répondez "OUI" ou "AIDE".',
+    evening: 'Soirée: Avez-vous fait 15m de marche douce? Répondez 1 (Oui), 2 (Repos), 3 (Douleurs).'
+  },
+  de: {
+    morning: 'Guten Morgen! Bitte messen Sie Ihren Blutdruck nach 5 Min Ruhe. Antworten Sie z.B. "120/80".',
+    afternoon: 'Mittags-Check: Haben Sie Ihre Medikamente eingenommen? Trinken Sie Wasser. Antworten Sie "JA" oder "HILFE".',
+    evening: 'Abend-Check: Heute 15 Min spazieren gegangen? Antworten Sie 1 (Ja), 2 (Ausgeruht), 3 (Gelenkschmerzen).'
+  },
+  zh: {
+    morning: '早上好！静坐休息5分钟后测量血压。请回复您的读数，例如 "120/80"。',
+    afternoon: '午间提醒：您按时服药了吗？喝一杯温水。回复 "是" 或 "帮助"。',
+    evening: '晚间记录：今天是否有15分钟温和散步？回复 1(是)，2(休息)，3(关节不适)。'
+  },
+  ja: {
+    morning: 'おはようございます。5分間安静にした後、血圧を測り「120/80」のように返信してください。',
+    afternoon: '昼の確認：お薬は飲みましたか？お水を一杯お飲みください。「はい」または「ヘルプ」と返信。',
+    evening: '夜の確認：本日15分ほど歩きましたか？ 1(はい), 2(休養), 3(関節痛) で返信。'
+  },
+  hi: {
+    morning: 'नमस्ते! 5 मिनट आराम के बाद अपना बीपी नापें। "120/80" जैसे नंबर लिखकर भेजें।',
+    afternoon: 'दोपहर की याद: क्या आपने अपनी दवा ली? एक गिलास पानी पिएं। "हाँ" या "मदद" लिखकर भेजें।',
+    evening: 'शाम की जाँच: क्या आज 15 मिनट टहले? 1 (हाँ), 2 (आराम किया), 3 (दर्द था) लिखकर भेजें।'
+  },
+  ar: {
+    morning: 'صباح الخير! يرجى قياس ضغط الدم بعد راحة 5 دقائق وإرسال الأرقام مثل "120/80".',
+    afternoon: 'تذكير الظهر: هل تناولت دواءك؟ اشرب كوب ماء. أجب بـ "نعم" أو "مساعدة".',
+    evening: 'فحص المساء: هل مشيت 15 دقيقة اليوم؟ أجب بـ 1 (نعم)، 2 (راحة)، 3 (ألم مفاصل).'
+  },
+  pt: {
+    morning: 'Bom dia! Meça sua pressão sentado após 5m de repouso. Envie os números como "120/80".',
+    afternoon: 'Lembrete do meio-dia: Tomou seu remédio? Beba um copo de água. Responda "SIM" ou "AJUDA".',
+    evening: 'Checagem noturna: Fez 15m de caminhada hoje? Responda 1 (Sim), 2 (Descansei), 3 (Dor articular).'
+  }
+};
 
 @Injectable({
   providedIn: 'root'
@@ -57,7 +107,7 @@ export class SmsEquityBridgeService {
     if (!text) return 5.0;
     const words = text.trim().split(/\s+/).length;
     const sentences = (text.match(/[.!?]+/g) || []).length || 1;
-    const syllables = words * 1.3; // Approximation heuristic for clinical health literacy
+    const syllables = words * 1.3;
 
     const grade = 0.39 * (words / sentences) + 11.8 * (syllables / words) - 15.59;
     return +Math.max(3.0, Math.min(12.0, grade)).toFixed(1);
@@ -66,76 +116,43 @@ export class SmsEquityBridgeService {
   /**
    * Generates tailored, 8th-grade-reading-level SMS daily care prompts
    */
-  public generateCarePrompts(patient: IPatient): ISmsCarePrompt[] {
-    const name = (patient.name || '').toLowerCase();
-    const conds = (patient.preexistingConditions || []).join(' ').toLowerCase();
+  public generateCarePrompts(patient: IPatient, lang = 'en'): ISmsCarePrompt[] {
+    const langKey = MULTILINGUAL_SMS_PROMPTS[lang] ? lang : 'en';
+    const localized = MULTILINGUAL_SMS_PROMPTS[langKey];
 
-    if (name.includes('postpartum') || conds.includes('postpartum') || patient.id === 'p007') {
-      return [
-        {
-          id: 'sms-m01',
-          daySequence: 1,
-          timeSlot: 'Morning (08:00)',
-          messageBody: 'Good morning! How did you sleep last night? Reply 1 (Good), 2 (Woke up often), or 3 (Hardly slept). We are here with you.',
-          charCount: 122,
-          fleschKincaidGradeLevel: 4.8,
-          primaryDomain: 'Symptom Logging',
-          callToAction: 'Reply with number 1, 2, or 3'
-        },
-        {
-          id: 'sms-m02',
-          daySequence: 1,
-          timeSlot: 'Afternoon (14:00)',
-          messageBody: 'Time for your 3-minute 4-7-8 breathing reset. Inhale 4s, hold 7s, exhale 8s. Reply "DONE" after 4 cycles to log vagal rest.',
-          charCount: 127,
-          fleschKincaidGradeLevel: 5.2,
-          primaryDomain: 'Vagal Breathing',
-          callToAction: 'Reply "DONE"'
-        },
-        {
-          id: 'sms-m03',
-          daySequence: 1,
-          timeSlot: 'Evening (19:00)',
-          messageBody: 'Reminder: Take your prenatal nutrient and drink a glass of water. Any mood changes today? Text us how you feel anytime.',
-          charCount: 124,
-          fleschKincaidGradeLevel: 4.5,
-          primaryDomain: 'Medication Adherence',
-          callToAction: 'Reply with your current mood or questions'
-        }
-      ];
-    }
-
-    // Default Cardiovascular & Metabolic prompts
     return [
       {
-        id: 'sms-c01',
+        id: `sms-${langKey}-01`,
         daySequence: 1,
         timeSlot: 'Morning (08:00)',
-        messageBody: 'Good morning! Please take your morning BP sitting down after resting 5 mins. Text back your numbers like "128/82".',
-        charCount: 119,
-        fleschKincaidGradeLevel: 5.4,
+        messageBody: localized.morning,
+        charCount: localized.morning.length,
+        fleschKincaidGradeLevel: 5.2,
         primaryDomain: 'Vitals Check',
-        callToAction: 'Text back numbers like "120/80"'
+        callToAction: 'Text back numbers like "120/80"',
+        language: langKey
       },
       {
-        id: 'sms-c02',
+        id: `sms-${langKey}-02`,
         daySequence: 1,
         timeSlot: 'Afternoon (14:00)',
-        messageBody: 'Midday check: Did you take your Lisinopril with lunch? Drink a tall glass of water. Reply "YES" or "HELP".',
-        charCount: 108,
-        fleschKincaidGradeLevel: 4.2,
+        messageBody: localized.afternoon,
+        charCount: localized.afternoon.length,
+        fleschKincaidGradeLevel: 4.5,
         primaryDomain: 'Medication Adherence',
-        callToAction: 'Reply "YES" or "HELP"'
+        callToAction: 'Reply "YES" or "HELP"',
+        language: langKey
       },
       {
-        id: 'sms-c03',
+        id: `sms-${langKey}-03`,
         daySequence: 1,
         timeSlot: 'Evening (19:00)',
-        messageBody: 'Evening walk check: Did you hit 20 minutes of gentle movement today? Reply 1 (Yes), 2 (No, rested), or 3 (Had joint pain).',
-        charCount: 127,
-        fleschKincaidGradeLevel: 5.1,
+        messageBody: localized.evening,
+        charCount: localized.evening.length,
+        fleschKincaidGradeLevel: 5.0,
         primaryDomain: 'Symptom Logging',
-        callToAction: 'Reply with number 1, 2, or 3'
+        callToAction: 'Reply with number 1, 2, or 3',
+        language: langKey
       }
     ];
   }
@@ -163,19 +180,26 @@ export class SmsEquityBridgeService {
 
     // Urgency calculation
     let urgency: 'ROUTINE' | 'ELEVATED' | 'CRITICAL_CALL_911' = 'ROUTINE';
-    let autoResponse = 'Thank you! Your reading has been logged into your doctor’s chart. Have a wonderful day.';
+    let autoResponse = 'Thank you! Your reading has been logged into your doctor’s chart. (+10 Adherence Points).';
+    let points = 10;
 
     if (lower.includes('chest pain') || (bpMatch && parseInt(bpMatch[1], 10) >= 180)) {
       urgency = 'CRITICAL_CALL_911';
-      autoResponse = 'EMERGENCY ALERT: Your blood pressure or symptoms are in the critical range. Please call 911 or visit the nearest Emergency Room immediately.';
+      autoResponse = '🚨 EMERGENCY ALERT: Your symptoms/BP require immediate care. Please call 911 or visit the nearest Emergency Room.';
+      points = 0;
     } else if (detectedSymptoms.length > 0 || (bpMatch && parseInt(bpMatch[1], 10) >= 145)) {
       urgency = 'ELEVATED';
       autoResponse = `Logged: ${bp ? 'BP ' + bp : ''} ${detectedSymptoms.join(', ')}. Your care team has been notified. Please sit down and rest.`;
+      points = 15;
+    } else if (lower.startsWith('med') || lower.includes('taken') || lower.includes('yes')) {
+      points = 15;
+      autoResponse = '✅ Pocket Gull: Medication adherence logged (+15 pts Game Theory Rebate). Keep up the great streak!';
     }
 
     // FHIR R4 Observation
     const fhirObservationResource = bp ? {
       resourceType: 'Observation',
+      id: `obs-sms-${Date.now().toString(36)}`,
       status: 'final',
       code: {
         coding: [{ system: 'http://loinc.org', code: '85354-9', display: 'Blood pressure panel' }]
@@ -196,20 +220,40 @@ export class SmsEquityBridgeService {
       detectedSymptoms,
       urgencyLevel: urgency,
       fhirObservationResource,
-      automatedResponseText: autoResponse
+      automatedResponseText: autoResponse,
+      adherencePointsEarned: points
     };
+  }
+
+  /**
+   * Dispatches inbound SMS test payload to the backend Express /api/sms/inbound endpoint
+   */
+  public async dispatchInboundWebhook(text: string, phone = '+15550192834'): Promise<any> {
+    try {
+      const res = await fetch('/api/sms/inbound', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: phone, body: text })
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Return client fallback
+    }
+    return this.parseInboundSms(text);
   }
 
   /**
    * Builds the complete SMS equity bridge plan
    */
-  public getBridgePlan(patient: IPatient): ISmsBridgePlan {
-    const prompts = this.generateCarePrompts(patient);
+  public getBridgePlan(patient: IPatient, lang = 'en'): ISmsBridgePlan {
+    const prompts = this.generateCarePrompts(patient, lang);
     const avgGrade = +(prompts.reduce((acc, p) => acc + p.fleschKincaidGradeLevel, 0) / prompts.length).toFixed(1);
 
     const mockInboundHistory: IParsedSmsResponse[] = [
-      this.parseInboundSms('Morning BP was 138/86 and HR 74. Feeling a little dizzy after waking up.', patient.id || 'p001'),
-      this.parseInboundSms('YES took my Lisinopril and drank 24oz water.', patient.id || 'p001')
+      this.parseInboundSms('Morning BP was 128/82 and HR 72. Feeling energized.', patient.id || 'p001'),
+      this.parseInboundSms('MED YES took morning prescription and drank water.', patient.id || 'p001')
     ];
 
     return {
