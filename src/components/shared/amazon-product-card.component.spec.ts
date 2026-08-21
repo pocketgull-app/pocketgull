@@ -44,4 +44,12 @@ describe('AmazonProductCardComponent', () => {
     const ergoComp = createComponent({ ...mockProduct, category: 'ergonomics' });
     expect(ergoComp.categoryLabel()).toBe('Physical Ergonomics');
   });
+
+  it('4. Computes effective Walmart search URL and related clinical article guide', () => {
+    const comp = createComponent(mockProduct);
+    expect(comp.effectiveWalmartUrl()).toContain('walmart.com/search?q=');
+    expect(comp.effectiveWalmartUrl()).toContain('wmlspartner=pocketgull');
+    expect(comp.relatedArticleSlug()).toBe('home-blood-pressure-ecg-monitors-guide');
+    expect(comp.relatedArticleTitle()).toContain('FDA 510(k)');
+  });
 });

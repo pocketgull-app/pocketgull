@@ -45,6 +45,9 @@ export * from './socratic-multilingual-terminal.component';
 export * from './body-explorer-game.component';
 export * from './eyes-free-accessibility-hub.component';
 export * from './eyes-free-camera-scribe.component';
+export * from './nng-usability-hud.component';
+export * from './clinical-ux-evaluation-hub.component';
+export * from './anatomy-3d/instant-body-care-plan-sheet.component';
 
 
 

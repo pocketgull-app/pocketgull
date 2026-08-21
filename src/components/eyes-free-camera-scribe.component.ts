@@ -8,7 +8,7 @@ import { EyesFreeCameraScribeService, VisionScribeMode } from '../services/eyes-
   imports: [CommonModule],
   template: `
     <div 
-      class="glass-card-dark rounded-3xl p-6 sm:p-8 border-2 border-violet-500/40 shadow-2xl relative overflow-hidden space-y-6"
+      class="glass-card-dark rounded-3xl p-4 sm:p-8 border-2 border-violet-500/40 shadow-2xl relative overflow-hidden space-y-5"
       role="region"
       aria-label="Eyes-Free Smartphone Camera Vision Scribe"
     >
@@ -20,7 +20,7 @@ import { EyesFreeCameraScribeService, VisionScribeMode } from '../services/eyes-
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-mono font-bold">
             <span>👁️ Phone-As-Your-Eyes • Multimodal Vision Scribe</span>
           </div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
+          <h2 class="text-xl sm:text-3xl font-extrabold text-white">
             Eyes-Free Camera Vision Scribe
           </h2>
           <p class="text-xs sm:text-sm text-stone-300">
@@ -31,7 +31,7 @@ import { EyesFreeCameraScribeService, VisionScribeMode } from '../services/eyes-
         <!-- Camera Power Toggle -->
         <button 
           (click)="toggleCamera()"
-          class="px-5 py-3 rounded-2xl font-bold font-mono text-xs uppercase tracking-wider transition border-2 cursor-pointer flex items-center gap-2 shadow-xl"
+          class="min-h-[48px] px-5 py-3 rounded-2xl font-bold font-mono text-xs uppercase tracking-wider transition border-2 cursor-pointer flex items-center justify-center gap-2 shadow-xl active:scale-[0.98]"
           [ngClass]="{
             'bg-rose-500 text-white border-rose-300 shadow-rose-500/30': service.isCameraStreaming(),
             'bg-violet-600 text-white border-violet-400 hover:bg-violet-500': !service.isCameraStreaming()
@@ -48,7 +48,7 @@ import { EyesFreeCameraScribeService, VisionScribeMode } from '../services/eyes-
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 font-mono text-xs">
         <button 
           (click)="selectMode('MEDICATION_IDENTIFIER')"
-          class="p-3 rounded-2xl border transition text-left cursor-pointer flex items-center gap-2.5"
+          class="min-h-[48px] p-3 rounded-2xl border transition text-left cursor-pointer flex items-center gap-2.5 active:scale-[0.98]"
           [ngClass]="{
             'bg-violet-950/80 border-violet-400 text-white shadow-lg': service.activeMode() === 'MEDICATION_IDENTIFIER',
             'bg-stone-900/60 border-stone-800 text-stone-400 hover:text-white': service.activeMode() !== 'MEDICATION_IDENTIFIER'
@@ -64,7 +64,7 @@ import { EyesFreeCameraScribeService, VisionScribeMode } from '../services/eyes-
 
         <button 
           (click)="selectMode('ROOM_NAVIGATION')"
-          class="p-3 rounded-2xl border transition text-left cursor-pointer flex items-center gap-2.5"
+          class="min-h-[48px] p-3 rounded-2xl border transition text-left cursor-pointer flex items-center gap-2.5 active:scale-[0.98]"
           [ngClass]="{
             'bg-violet-950/80 border-violet-400 text-white shadow-lg': service.activeMode() === 'ROOM_NAVIGATION',
             'bg-stone-900/60 border-stone-800 text-stone-400 hover:text-white': service.activeMode() !== 'ROOM_NAVIGATION'
@@ -80,7 +80,7 @@ import { EyesFreeCameraScribeService, VisionScribeMode } from '../services/eyes-
 
         <button 
           (click)="selectMode('DOCUMENT_READER')"
-          class="p-3 rounded-2xl border transition text-left cursor-pointer flex items-center gap-2.5"
+          class="min-h-[48px] p-3 rounded-2xl border transition text-left cursor-pointer flex items-center gap-2.5 active:scale-[0.98]"
           [ngClass]="{
             'bg-violet-950/80 border-violet-400 text-white shadow-lg': service.activeMode() === 'DOCUMENT_READER',
             'bg-stone-900/60 border-stone-800 text-stone-400 hover:text-white': service.activeMode() !== 'DOCUMENT_READER'
@@ -96,7 +96,7 @@ import { EyesFreeCameraScribeService, VisionScribeMode } from '../services/eyes-
 
         <button 
           (click)="selectMode('LIGHT_AND_COLOR')"
-          class="p-3 rounded-2xl border transition text-left cursor-pointer flex items-center gap-2.5"
+          class="min-h-[48px] p-3 rounded-2xl border transition text-left cursor-pointer flex items-center gap-2.5 active:scale-[0.98]"
           [ngClass]="{
             'bg-violet-950/80 border-violet-400 text-white shadow-lg': service.activeMode() === 'LIGHT_AND_COLOR',
             'bg-stone-900/60 border-stone-800 text-stone-400 hover:text-white': service.activeMode() !== 'LIGHT_AND_COLOR'

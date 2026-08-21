@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, OnDestroy, effect, viewChild, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnDestroy, effect, viewChild, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { IBodyPartIssue } from '../../services/patient.types';
@@ -11,6 +11,7 @@ import { CellularBiophysicsViewerComponent } from '../shared/cellular-biophysics
 import { QuadPhilosophyMatrixComponent } from '../shared/quad-philosophy-matrix.component';
 import { ImmunoOncologyTmeViewerComponent } from '../shared/immuno-oncology-tme-viewer.component';
 import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative-prescriber.component';
+import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-sheet.component';
 
 @Component({
   selector: 'app-body-viewer',
@@ -22,7 +23,8 @@ import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative
     CellularBiophysicsViewerComponent,
     QuadPhilosophyMatrixComponent,
     ImmunoOncologyTmeViewerComponent,
-    AwcimIntegrativePrescriberComponent
+    AwcimIntegrativePrescriberComponent,
+    InstantBodyCarePlanSheetComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `    
@@ -109,6 +111,13 @@ import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative
               <span>🧬</span> Genesis Substrate
             </button>
           </div>
+
+          <!-- ⚡ 1-Tap Instant 4-Lens Care Plan Launch Button -->
+          <button (click)="openInstantCarePlan()" 
+                  title="Tap or speak to generate instant Quad-Philosophy care plan"
+                  class="min-h-[40px] px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer bg-gradient-to-r from-teal-600 via-indigo-600 to-purple-600 hover:from-teal-500 hover:to-purple-500 text-white shadow-md flex items-center justify-center gap-1.5 shrink-0">
+            <span>⚡</span> Instant 4-Lens Plan
+          </button>
 
           <!-- Search Bar with Keyboard & Autocomplete -->
           <div class="relative flex items-center bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded-xl px-3 py-1.5 w-full sm:w-72 shadow-xs focus-within:border-emerald-500 transition-colors">
@@ -606,6 +615,9 @@ import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative
           </div>
         </div>
       </div>
+
+      <!-- ⚡ Instant 4-Lens Care Plan Bottom Sheet -->
+      <app-instant-body-care-plan-sheet #instantSheet />
     </div>
   `,
   styles: [`
@@ -623,6 +635,8 @@ import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative
   `]
 })
 export class BodyViewerComponent implements OnDestroy {
+  @ViewChild('instantSheet') instantSheet?: InstantBodyCarePlanSheetComponent;
+
   state = inject(PatientStateService);
   patientManagement = inject(PatientManagementService);
   themeService = inject(ThemeService);
@@ -641,6 +655,12 @@ export class BodyViewerComponent implements OnDestroy {
   isSearchOpen = signal<boolean>(false);
   activeSystemFilter = signal<string>('all');
   selectedAutocompleteIndex = signal<number>(-1);
+
+  openInstantCarePlan(bodyPartName?: string) {
+    const selectedId = this.state.selectedPartId();
+    const part = bodyPartName || (selectedId ? this.allParts.find(p => p.id === selectedId)?.name : null) || 'Full Body';
+    this.instantSheet?.openForBodyPart(part);
+  }
 
   constructor() {
     effect(() => {

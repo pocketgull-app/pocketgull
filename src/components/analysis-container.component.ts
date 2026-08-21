@@ -34,6 +34,7 @@ import { CounterfactualSimulatorComponent } from './counterfactual-simulator.com
 import { SoapNoteGeneratorComponent } from './soap-note-generator.component';
 import { CohortTriageMatrixComponent } from './cohort-triage-matrix.component';
 import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
+import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,7 +43,7 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
   host: {
     'class': 'flex flex-col flex-1 min-h-0 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)]'
   },
-  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, DoctorShiftSalesDemoComponent, InvestorValuationPortalModalComponent, Holographic3DAnatomyComponent, GenesisBiophysicalSubstrateComponent],
+  imports: [CommonModule, CounterfactualSimulatorComponent, SoapNoteGeneratorComponent, CohortTriageMatrixComponent, HipaaPdfExportComponent, AnalysisReportComponent, DomainSuitesNavigatorComponent, ComponentDrilldownUnitComponent, HumanDignityPactComponent, MyChartBriefModalComponent, FamilyTreePedigreeComponent, PatientStoryModalComponent, PostItNotesComponent, ActuarialGleeAlbumComponent, AmbientLivingSpaceDashboardComponent, GreenRoomLoungeComponent, DoctorShiftSimulatorComponent, DoctorShiftSalesDemoComponent, InvestorValuationPortalModalComponent, Holographic3DAnatomyComponent, GenesisBiophysicalSubstrateComponent, ClinicalUxEvaluationHubComponent],
   template: `
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)] bg-[#F3F4F6] dark:bg-zinc-950">
       
@@ -278,11 +279,19 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
                   </div>
 
                   <!-- Isolated Clear Cache Button (Moved far down from Refresh Analysis) -->
-                  <button type="button" (click)="intelligence.clearCache()"
-                    title="Clear AI completion cache and force model re-inference"
-                    class="mt-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400 hover:text-red-400 opacity-60 hover:opacity-100 transition flex items-center gap-1 cursor-pointer">
-                    <span>🗑️ Clear AI Cache</span>
-                  </button>
+                  <div class="flex items-center gap-3 mt-2">
+                    <button type="button" (click)="showEvaluationHubModal.set(true)"
+                      title="Inspect NN/g 10 Usability Heuristics, Shannon ID, and Differential Privacy Telemetry"
+                      class="text-[10px] font-bold uppercase tracking-wider text-indigo-500 hover:text-indigo-400 opacity-75 hover:opacity-100 transition flex items-center gap-1 cursor-pointer">
+                      <span>📐 NN/g Usability HUD</span>
+                    </button>
+                    <span class="text-zinc-500 text-[10px]">•</span>
+                    <button type="button" (click)="intelligence.clearCache()"
+                      title="Clear AI completion cache and force model re-inference"
+                      class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 hover:text-red-400 opacity-60 hover:opacity-100 transition flex items-center gap-1 cursor-pointer">
+                      <span>🗑️ Clear AI Cache</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -357,6 +366,9 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
               <button (click)="showInvestorPortalModal.set(true); showToolsMenu.set(false)" class="w-full text-left p-2.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 hover:bg-purple-500 hover:text-zinc-950 transition flex items-center gap-2 cursor-pointer font-bold">
                 <span>💎</span> Investor & Valuation Portal
               </button>
+              <button (click)="showEvaluationHubModal.set(true); showToolsMenu.set(false)" class="w-full text-left p-2.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500 hover:text-zinc-950 transition flex items-center gap-2 cursor-pointer font-bold">
+                <span>📐</span> NN/g Usability & Evaluation Hub
+              </button>
               <button (click)="syncGcpHealthcare(); showToolsMenu.set(false)" class="w-full text-left p-2.5 rounded-xl bg-zinc-950 hover:bg-zinc-850 text-zinc-200 border border-zinc-800 transition flex items-center gap-2 cursor-pointer">
                 <span>☁️</span> GCP Healthcare Sync
               </button>
@@ -430,6 +442,11 @@ import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
     @if (showInvestorPortalModal()) {
       <app-investor-valuation-portal-modal (closeModal)="showInvestorPortalModal.set(false)"></app-investor-valuation-portal-modal>
     }
+
+    <!-- NN/g Usability & Clinical Evaluation Hub Modal -->
+    @if (showEvaluationHubModal()) {
+      <app-clinical-ux-evaluation-hub (closed)="showEvaluationHubModal.set(false)"></app-clinical-ux-evaluation-hub>
+    }
   `,
   styles: [`
     :host { display: block; height: 100%; width: 100%; }
@@ -485,6 +502,7 @@ export class AnalysisContainerComponent {
   showCohortMatrixModal = signal(false);
   showHipaaPdfModal = signal(false);
   showInvestorPortalModal = signal(false);
+  showEvaluationHubModal = signal(false);
 
   constructor() {
     // Re-trigger 3D slide-in animation whenever a patient is selected or analysis completes

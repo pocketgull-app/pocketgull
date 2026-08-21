@@ -6,16 +6,9 @@ import { SpaceBiophysicsService } from '../services/space-biophysics.service';
 
 describe('SpaceHealthHudComponent Unit Suite', () => {
   let component: SpaceHealthHudComponent;
-  let spaceService: SpaceBiophysicsService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [SpaceHealthHudComponent],
-      providers: [SpaceBiophysicsService],
-    });
-
-    spaceService = TestBed.inject(SpaceBiophysicsService);
-    component = TestBed.createComponent(SpaceHealthHudComponent).componentInstance;
+    component = new SpaceHealthHudComponent();
   });
 
   it('1. Initializes and renders default space mission telemetry', () => {

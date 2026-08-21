@@ -16,13 +16,23 @@ const workspaceRoot = getWorkspaceRoot();
 // Programmatically switch process working directory to workspace root
 process.chdir(workspaceRoot);
 
+const cleanEnv = { ...process.env };
+delete cleanEnv.npm_package_json;
+delete cleanEnv.npm_config_prefix;
+cleanEnv.INIT_CWD = workspaceRoot;
+cleanEnv.PWD = workspaceRoot;
+
 console.log('🚀 Running Shift-Left Pre-Commit Validation...\n');
 
-// Helper to run node scripts directly using process.execPath
+// Helper to run node scripts directly using process.execPath in workspaceRoot
 function runNodeScript(scriptPath, args, description) {
   console.log(`🔹 Running: ${description}...`);
   try {
-    execFileSync(process.execPath, [scriptPath, ...args], { stdio: 'inherit', cwd: workspaceRoot });
+    execFileSync(process.execPath, [scriptPath, ...args], { 
+      stdio: 'inherit', 
+      cwd: workspaceRoot,
+      env: cleanEnv
+    });
     console.log(`✅ ${description} passed.\n`);
     return true;
   } catch (error) {
@@ -35,7 +45,7 @@ function runNodeScript(scriptPath, args, description) {
 function runCommand(command, description) {
   console.log(`🔹 Running: ${description}...`);
   try {
-    execSync(command, { stdio: 'inherit', cwd: workspaceRoot });
+    execSync(command, { stdio: 'inherit', cwd: workspaceRoot, env: cleanEnv });
     console.log(`✅ ${description} passed.\n`);
     return true;
   } catch (error) {
@@ -50,13 +60,13 @@ const vitestPath = path.resolve(workspaceRoot, 'node_modules', 'vitest', 'vitest
 const vitestConfigPath = path.resolve(workspaceRoot, 'vitest.config.ts');
 
 // Check 1: TypeScript compilation check
-const lintPassed = runNodeScript(tscPath, ['-p', tsconfigPath, '--noEmit'], 'TypeScript compilation and linting check');
+const lintPassed = runCommand(`"${process.execPath}" "${tscPath}" -p "${tsconfigPath}" --noEmit`, 'TypeScript compilation and linting check');
 if (!lintPassed) {
   process.exit(1);
 }
 
 // Check 2: Unit tests check
-const testsPassed = runNodeScript(vitestPath, ['run', '--config', vitestConfigPath], 'Vitest unit tests execution');
+const testsPassed = runCommand(`"${process.execPath}" "${vitestPath}" run --config "${vitestConfigPath}"`, 'Vitest unit tests execution');
 if (!testsPassed) {
   process.exit(1);
 }

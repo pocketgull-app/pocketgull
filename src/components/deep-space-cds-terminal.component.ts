@@ -164,12 +164,17 @@ import { DeepSpaceCdsService, IDeepSpaceTriageResult, DeepSpaceProtocolId } from
   `,
 })
 export class DeepSpaceCdsTerminalComponent {
-  private cdsService = inject(DeepSpaceCdsService);
-
-  formulary = this.cdsService.flightFormulary;
+  cdsService: DeepSpaceCdsService;
+  formulary: any;
   activeTriage = signal<IDeepSpaceTriageResult | null>(null);
 
   constructor() {
+    try {
+      this.cdsService = inject(DeepSpaceCdsService, { optional: true }) || new DeepSpaceCdsService();
+    } catch {
+      this.cdsService = new DeepSpaceCdsService();
+    }
+    this.formulary = this.cdsService.flightFormulary;
     // Initialize with standard SANS case
     this.triggerEmergency('ACUTE_SANS_DISC_EDEMA');
   }

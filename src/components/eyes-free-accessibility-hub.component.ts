@@ -8,7 +8,7 @@ import { EyesFreeAccessibilityService, ITactileMedicationGuide } from '../servic
   imports: [CommonModule],
   template: `
     <div 
-      class="glass-card-dark rounded-3xl p-6 sm:p-8 border-2 border-indigo-500/40 shadow-2xl relative overflow-hidden space-y-6"
+      class="glass-card-dark rounded-3xl p-4 sm:p-8 border-2 border-indigo-500/40 shadow-2xl relative overflow-hidden space-y-5"
       role="region"
       aria-label="Eyes-Free Audio and Tactile Accessibility Hub"
     >
@@ -29,7 +29,7 @@ import { EyesFreeAccessibilityService, ITactileMedicationGuide } from '../servic
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-mono font-bold">
             <span>🦯 WCAG 2.2 AAA • Eyes-Free &amp; Sonification</span>
           </div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
+          <h2 class="text-xl sm:text-3xl font-extrabold text-white">
             Eyes-Free Audio &amp; Tactile Accessibility Hub
           </h2>
           <p class="text-xs sm:text-sm text-stone-300">
@@ -39,7 +39,7 @@ import { EyesFreeAccessibilityService, ITactileMedicationGuide } from '../servic
 
         <button 
           (click)="service.toggleEyesFreeMode()"
-          class="px-5 py-3 rounded-2xl font-bold font-mono text-xs uppercase tracking-wider transition border-2 cursor-pointer flex items-center gap-2 shadow-xl"
+          class="min-h-[48px] px-5 py-3 rounded-2xl font-bold font-mono text-xs uppercase tracking-wider transition border-2 cursor-pointer flex items-center justify-center gap-2 shadow-xl active:scale-[0.98]"
           [ngClass]="{
             'bg-indigo-500 text-stone-950 border-indigo-300 shadow-indigo-500/30': service.isEyesFreeModeActive(),
             'bg-stone-900 text-indigo-300 border-indigo-500/40 hover:bg-stone-800': !service.isEyesFreeModeActive()
@@ -73,7 +73,7 @@ import { EyesFreeAccessibilityService, ITactileMedicationGuide } from '../servic
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <button 
             (click)="sonifyHeartRate()"
-            class="p-4 rounded-2xl bg-rose-950/40 border border-rose-500/40 hover:bg-rose-900/50 text-left transition cursor-pointer space-y-1 group"
+            class="min-h-[48px] p-4 rounded-2xl bg-rose-950/40 border border-rose-500/40 hover:bg-rose-900/50 text-left transition cursor-pointer space-y-1 group active:scale-[0.98]"
             aria-label="Sonify Heart Rate: 72 beats per minute"
           >
             <div class="flex items-center justify-between">
@@ -86,7 +86,7 @@ import { EyesFreeAccessibilityService, ITactileMedicationGuide } from '../servic
 
           <button 
             (click)="sonifyGlucose()"
-            class="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 hover:bg-cyan-900/50 text-left transition cursor-pointer space-y-1 group"
+            class="min-h-[48px] p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 hover:bg-cyan-900/50 text-left transition cursor-pointer space-y-1 group active:scale-[0.98]"
             aria-label="Sonify Blood Glucose: 115 milligrams per deciliter"
           >
             <div class="flex items-center justify-between">
@@ -99,7 +99,7 @@ import { EyesFreeAccessibilityService, ITactileMedicationGuide } from '../servic
 
           <button 
             (click)="sonifyRespiration()"
-            class="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 hover:bg-emerald-900/50 text-left transition cursor-pointer space-y-1 group"
+            class="min-h-[48px] p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 hover:bg-emerald-900/50 text-left transition cursor-pointer space-y-1 group active:scale-[0.98]"
             aria-label="Sonify Respiration: 14 breaths per minute"
           >
             <div class="flex items-center justify-between">

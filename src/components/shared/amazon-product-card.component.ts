@@ -86,20 +86,45 @@ import { IAmazonProductItem } from '../../services/amazon-creators-api.service';
         }
       </div>
 
-      <!-- Action Button & FTC Tag -->
-      <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-zinc-800/80 flex flex-col gap-1.5">
-        <a
-          [href]="product().detailPageUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="min-h-[44px] w-full px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-zinc-950 font-black text-xs uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-2 shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500">
-          <span>🛒</span>
-          <span>View on Amazon</span>
-          <span class="text-[10px] font-mono opacity-80">↗</span>
-        </a>
+      <!-- Action Buttons & FTC Tag -->
+      <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-zinc-800/80 flex flex-col gap-2">
+        <div [class.grid]="showWalmartOption()" [class.grid-cols-1]="showWalmartOption()" [class.sm:grid-cols-2]="showWalmartOption()" [class.gap-2]="showWalmartOption()">
+          <!-- Amazon Action Button (Primary) -->
+          <a
+            [href]="product().detailPageUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="min-h-[44px] w-full px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-zinc-950 font-black text-xs uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-1.5 shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500">
+            <span>🛒</span>
+            <span>View on Amazon (Prime)</span>
+            <span class="text-[10px] font-mono opacity-80">↗</span>
+          </a>
+
+          <!-- Walmart Alternative Button (Optional / When Enabled) -->
+          @if (showWalmartOption()) {
+            <a
+              [href]="effectiveWalmartUrl()"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="min-h-[44px] w-full px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-1.5 shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+              <span>🏪</span>
+              <span>Walmart</span>
+              <span class="text-[10px] font-mono opacity-80">↗</span>
+            </a>
+          }
+        </div>
+
+        @if (relatedArticleSlug()) {
+          <div class="flex items-center justify-center pt-0.5">
+            <span class="text-[10.5px] font-medium text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
+              <span>📖</span>
+              <span>Evidence Guide: {{ relatedArticleTitle() }}</span>
+            </span>
+          </div>
+        }
 
         <p class="text-[8.5px] text-slate-400 dark:text-zinc-500 leading-tight font-sans text-center">
-          Affiliate link (tag: pgdpo-20) • Supports non-profit health research
+          Amazon Associate link (tag: pgdpo-20) • Supports non-profit health research
         </p>
       </div>
     </div>
@@ -112,6 +137,30 @@ export class AmazonProductCardComponent {
   product = input.required<IAmazonProductItem>();
   showClinicalContext = input<boolean>(true);
   compact = input<boolean>(false);
+  showWalmartOption = input<boolean>(false);
+  walmartUrl = input<string | null>(null);
+
+  effectiveWalmartUrl = computed(() => {
+    if (this.walmartUrl()) return this.walmartUrl()!;
+    const titleEncoded = encodeURIComponent(this.product()?.title || '');
+    return `https://www.walmart.com/search?q=${titleEncoded}&wmlspartner=pocketgull`;
+  });
+
+  relatedArticleSlug = computed(() => {
+    const cat = this.product()?.category;
+    if (cat === 'medical_device') return 'home-blood-pressure-ecg-monitors-guide';
+    if (cat === 'supplements') return 'science-of-sleep-magnesium-glycinate';
+    if (cat === 'books_bibliotherapy') return 'keeping-their-craft-alive';
+    return 'the-100000-dollar-oil-change';
+  });
+
+  relatedArticleTitle = computed(() => {
+    const cat = this.product()?.category;
+    if (cat === 'medical_device') return 'FDA 510(k) Monitor Clinical Validation';
+    if (cat === 'supplements') return 'Magnesium Glycinate & Sleep Architecture';
+    if (cat === 'books_bibliotherapy') return 'Craft & Neuro-Proprioception';
+    return 'Preventive Self-Care Economics';
+  });
 
   categoryLabel = computed(() => {
     const cat = this.product()?.category;

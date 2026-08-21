@@ -79,5 +79,17 @@ describe('GcpHealthcareApiService', () => {
     expect(res.message).toContain('gen-lang-client-0540208645');
     expect(res.fhirBundle).toBeDefined();
   });
+
+  it('9. Synchronizes to AWS HealthLake via Bring-Your-Own-Infrastructure (BYOI) zero-cost model', async () => {
+    const defaultRes = await service.syncToAwsHealthLake();
+    expect(defaultRes.success).toBe(true);
+    expect(defaultRes.isByoi).toBe(false);
+    expect(defaultRes.message).toContain('Scale-to-Zero');
+
+    const customRes = await service.syncToAwsHealthLake('https://healthlake.us-east-1.amazonaws.com/datastore/clinic-123');
+    expect(customRes.success).toBe(true);
+    expect(customRes.isByoi).toBe(true);
+    expect(customRes.message).toContain('clinic-123');
+  });
 });
 

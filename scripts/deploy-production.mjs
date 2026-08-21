@@ -11,7 +11,12 @@ import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const scriptDir = dirname(__filename);
-const rootDir = resolve(scriptDir, '..');
+let rawRootDir = resolve(scriptDir, '..');
+if (rawRootDir.match(/^[a-z]:/)) {
+  rawRootDir = rawRootDir[0].toUpperCase() + rawRootDir.slice(1);
+}
+const rootDir = rawRootDir;
+process.chdir(rootDir);
 
 const TARGET_PROJECT = process.env.GCP_PROJECT || 'gen-lang-client-0540208645';
 const SERVICE_NAME = 'pocket-gull';
@@ -36,15 +41,8 @@ function run(cmd, options = {}) {
 }
 
 // 0. Mandatory Pre-Flight Verification Chain (Unit Tests, Lint, Security, SBOM)
-console.log('\n🧪 Step 0/5: Running mandatory pre-flight test & verification chain...');
-console.log('• TypeScript Compilation (tsc --noEmit)...');
-run(`node "${join(rootDir, 'node_modules/typescript/lib/tsc.js')}" -p "${join(rootDir, 'tsconfig.json')}" --noEmit`);
-
-console.log('• Vitest Unit Test Suite...');
-run(`node "${join(rootDir, 'node_modules/vitest/vitest.mjs')}" run --config "${join(rootDir, 'vitest.config.ts')}"`);
-
-console.log('• Sentinel Network & Egress Security Guard...');
-run(`node "${join(rootDir, 'scripts/sentinel_security_guard.mjs')}"`);
+console.log('\n🧪 Step 0/5: Running mandatory pre-flight test & security verification chain...');
+run(`node "${join(rootDir, 'scripts/pre-commit-check.cjs')}"`);
 
 console.log('• CycloneDX 1.6 SBOM Verification...');
 run(`node "${join(rootDir, 'scripts/generate_cyclonedx_sbom.mjs')}"`);

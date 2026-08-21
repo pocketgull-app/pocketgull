@@ -231,12 +231,24 @@ import { SpaceBiophysicsService, ISpaceCrewTelemetry } from '../services/space-b
   `,
 })
 export class SpaceHealthHudComponent {
-  private spaceService = inject(SpaceBiophysicsService);
+  spaceService: SpaceBiophysicsService;
 
-  telemetry = this.spaceService.activeCrewTelemetry;
-  sansRisk = this.spaceService.sansRiskLevel;
-  pelUsed = this.spaceService.radiationPelUsagePercent;
-  plan = this.spaceService.countermeasurePlan;
+  telemetry: any;
+  sansRisk: any;
+  pelUsed: any;
+  plan: any;
+
+  constructor() {
+    try {
+      this.spaceService = inject(SpaceBiophysicsService, { optional: true }) || new SpaceBiophysicsService();
+    } catch {
+      this.spaceService = new SpaceBiophysicsService();
+    }
+    this.telemetry = this.spaceService.activeCrewTelemetry;
+    this.sansRisk = this.spaceService.sansRiskLevel;
+    this.pelUsed = this.spaceService.radiationPelUsagePercent;
+    this.plan = this.spaceService.countermeasurePlan;
+  }
 
   simulateScenario(scenario: 'NOMINAL_LEO' | 'MARS_SANS_MODERATE' | 'SOLAR_STORM_SPE'): void {
     if (scenario === 'NOMINAL_LEO') {

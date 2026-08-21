@@ -125,16 +125,6 @@ import { AuthSsoService } from '../services/auth-sso.service';
         <div class="absolute inset-0 bg-noise opacity-[0.08] pointer-events-none mix-blend-overlay"></div>
       </div>
 
-      <!-- HIPAA Lock Status Header (Visible only when locked) -->
-      @if (isLocked()) {
-        <div class="mb-3 flex justify-center z-30 animate-in fade-in duration-300">
-            <div class="flex items-center gap-2 bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-zinc-200/60 dark:border-zinc-800 shadow-md">
-                <div class="w-2 h-2 rounded-full bg-brand-red-500 animate-pulse shadow-[0_0_6px_rgba(234,67,53,0.6)]"></div>
-                <span class="text-[10.5px] font-bold uppercase tracking-[0.15em] text-zinc-700 dark:text-zinc-300">HIPAA Security Lock Active (§ 164.312)</span>
-            </div>
-        </div>
-      }
-
       <!-- Unified Origami Unfolding Seagull Mascot & Papercraft Heart -->
       <div class="origami-seagull-container group drop-shadow-xl relative z-20 pointer-events-none mb-1 sm:mb-3 avs-breathing-mascot origami-unfold-container shrink-0">
         <svg

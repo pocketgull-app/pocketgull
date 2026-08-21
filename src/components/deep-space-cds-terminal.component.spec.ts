@@ -8,12 +8,7 @@ describe('DeepSpaceCdsTerminalComponent Unit Suite', () => {
   let component: DeepSpaceCdsTerminalComponent;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [DeepSpaceCdsTerminalComponent],
-      providers: [DeepSpaceCdsService],
-    });
-
-    component = TestBed.createComponent(DeepSpaceCdsTerminalComponent).componentInstance;
+    component = new DeepSpaceCdsTerminalComponent();
   });
 
   it('1. Initializes and renders default autonomous SANS triage state', () => {
