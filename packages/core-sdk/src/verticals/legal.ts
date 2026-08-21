@@ -32,6 +32,15 @@ export const LEGAL_VERTICAL_PROFILE: IIndustryVerticalProfile = {
       description: 'Business judgment rule, anti-money laundering (AML/BSA), dual-custody treasury verification, and conflict-of-interest screening.',
       coreMetrics: ['DualCustodySignatureCompleteness', 'AMLDisbursementRiskScore', 'SanctionedEntityMatchDist'],
       diagnosticOntology: 'Delaware General Corporation Law (DGCL) / FinCEN SAR Taxonomy'
+    },
+    {
+      id: 'eminent_domain_land_rights',
+      name: 'Eminent Domain, Inverse Condemnation & GIS Land Rights',
+      shortName: 'Land Rights & Takings',
+      lensType: 'empirical',
+      description: 'Fifth Amendment public use analysis, just compensation severance damage appraisal, Penn Central regulatory takings balancing, and 3D geospatial easement overlays.',
+      coreMetrics: ['SeveranceDamageRatio', 'EconomicDeprivationPct', 'AppraisalDisparityDelta'],
+      diagnosticOntology: 'Uniform Relocation Act (49 CFR Part 24) / Uniform Appraisal Standards for Federal Land Acquisitions (Yellow Book)'
     }
   ],
   epistemology: {
@@ -47,18 +56,27 @@ export const LEGAL_VERTICAL_PROFILE: IIndustryVerticalProfile = {
   sovereignty: {
     defaultJurisdiction: 'US_FEDERAL_COURT',
     enforceZeroEgress: true,
-    supportedSilos: ['ATTORNEY_CLIENT_PRIVILEGED', 'SEALED_GRAND_JURY', 'ESCROW_TREASURY', 'ARBITRATION_CONFIDENTIAL'],
+    supportedSilos: ['ATTORNEY_CLIENT_PRIVILEGED', 'SEALED_GRAND_JURY', 'ESCROW_TREASURY', 'ARBITRATION_CONFIDENTIAL', 'EMINENT_DOMAIN_CONDEMNATION'],
     deterministicSealAlgorithm: 'SHA-256'
   },
   spatialTwin: {
     coordinateSpace: 'GEOSPATIAL_GPS',
-    defaultLenses: ['JurisdictionalCourtBoundaries', 'ContractEntityNetworkGraph', 'LitigationTimelineTrack'],
+    defaultLenses: [
+      'ParcelBoundaryCadastralMap',
+      'EasementRightOfWayCorridor',
+      'JurisdictionalCourtBoundaries',
+      'ContractEntityNetworkGraph',
+      'LitigationTimelineTrack'
+    ],
     telemetryStreamFormat: 'JSON_TIME_SERIES'
   },
   sampleUseCases: [
     'Real-Time Deposition Ambient Scribing & Fact-Claim Extraction',
+    'Eminent Domain Just Compensation & Severance Damage Calculation',
+    'Regulatory Taking vs Police Power Penn Central Three-Factor Balancing',
     'Multi-Jurisdictional Cross-Statute GDPR vs CCPA Compliance Crosswalk',
     'Dual-Custody M-of-N Escrow Disbursement Attestation ($500+)',
-    'Precedent Citation Shepardizing & Negative History Verification'
+    'Precedent Citation Shepardizing & Negative History Verification',
+    'Uniform Relocation Act (URA) 49 CFR Part 24 Compliance Dossier Scribing'
   ]
 };
