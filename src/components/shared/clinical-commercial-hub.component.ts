@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClinicOnboardingWizardComponent } from './clinic-onboarding-wizard.component';
+import { CdiscRweCardComponent } from './cdisc-rwe-card.component';
 
 @Component({
   selector: 'app-clinical-commercial-hub',
   standalone: true,
-  imports: [CommonModule, ClinicOnboardingWizardComponent],
+  imports: [CommonModule, ClinicOnboardingWizardComponent, CdiscRweCardComponent],
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl space-y-6">
       
@@ -57,6 +58,15 @@ import { ClinicOnboardingWizardComponent } from './clinic-onboarding-wizard.comp
         </button>
         <button
           type="button"
+          (click)="activeTab.set('rwe')"
+          [class]="activeTab() === 'rwe' 
+            ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-teal-600 text-white shadow-sm' 
+            : 'px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'"
+        >
+          🔬 Clinical Research &amp; CDISC SDTM
+        </button>
+        <button
+          type="button"
           (click)="activeTab.set('outreach')"
           [class]="activeTab() === 'outreach' 
             ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white shadow-sm' 
@@ -78,6 +88,11 @@ import { ClinicOnboardingWizardComponent } from './clinic-onboarding-wizard.comp
       <!-- Tab 0: 60-Sec Clinic Onboarding & Sandbox -->
       @if (activeTab() === 'onboarding') {
         <app-clinic-onboarding-wizard></app-clinic-onboarding-wizard>
+      }
+
+      <!-- Tab RWE: Clinical Research & CDISC SDTM Dossier -->
+      @if (activeTab() === 'rwe') {
+        <app-cdisc-rwe-card></app-cdisc-rwe-card>
       }
 
       <!-- Tab 1: Commercial Tiers & Stripe Checkout -->
@@ -304,7 +319,7 @@ import { ClinicOnboardingWizardComponent } from './clinic-onboarding-wizard.comp
   `
 })
 export class ClinicalCommercialHubComponent {
-  readonly activeTab = signal<'onboarding' | 'tiers' | 'outreach' | 'sow'>('onboarding');
+  readonly activeTab = signal<'onboarding' | 'tiers' | 'rwe' | 'outreach' | 'sow'>('onboarding');
   readonly selectedOutreach = signal<'clinic' | 'digitalHealth' | 'academic'>('clinic');
   readonly loadingTier = signal<string | null>(null);
   readonly copiedOutreach = signal(false);
