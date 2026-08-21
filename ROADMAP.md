@@ -50,8 +50,8 @@ Pocket Gull is committed to continuous refinement (**Kaizen**) in integrative cl
 ---
 
 ## 🌌 H1 2028: Space Health & Extreme Environment Telemedicine
-- [ ] **Spaceflight Biophysics & Microgravity Adaptation (TRISH / NASA Guidelines)**: Telemetry tracking for cephalad fluid shifts, spaceflight-associated neuro-ocular syndrome (SANS), bone mineral density loss, and radiation biomarker tracking.
-- [ ] **Autonomous Clinical Decision Support for Deep-Space Exploration**: Fully air-gapped, zero-latency diagnostic reasoning engine for exploration-class missions.
+- [x] **Spaceflight Biophysics & Microgravity Adaptation (TRISH / NASA Guidelines)**: Telemetry tracking for cephalad fluid shifts, spaceflight-associated neuro-ocular syndrome (SANS), bone mineral density loss, and radiation biomarker tracking.
+- [x] **Autonomous Clinical Decision Support for Deep-Space Exploration**: Fully air-gapped, zero-latency diagnostic reasoning engine for exploration-class missions (Mars transit / Lunar Gateway) with offline Gemma 3 inference, POCUS guidance, and telemetry bursts.
 - [x] **Clinical Game Theory HSA Incentive Network**: Direct integration of Stackelberg/Nash equilibrium adherence rebates ($r^*$) with patient HSA/FSA debit cards & IIAS §213(d) qualified medical expenses.
 
 ---

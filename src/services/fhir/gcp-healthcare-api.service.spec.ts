@@ -8,7 +8,8 @@ describe('GcpHealthcareApiService', () => {
     const fhirUrl = service.getFhirStoreBaseUrl();
     expect(fhirUrl).toContain('gen-lang-client-0540208645');
     expect(fhirUrl).toContain('us-central1');
-    expect(fhirUrl).toContain('pocketgull-fhir-r4-store/fhir');
+    expect(fhirUrl).toContain('pocket_gull_clinical');
+    expect(fhirUrl).toContain('fhir_primary/fhir');
   });
 
   it('2. Formats FHIR payload for GCP Healthcare API ingestion', () => {

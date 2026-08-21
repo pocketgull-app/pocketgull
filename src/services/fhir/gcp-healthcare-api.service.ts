@@ -31,9 +31,9 @@ export class GcpHealthcareApiService {
   readonly config = signal<IGcpHealthcareConfig>({
     projectId: 'gen-lang-client-0540208645',
     location: 'us-central1',
-    datasetId: 'pocketgull-clinical-dataset',
-    fhirStoreId: 'pocketgull-fhir-r4-store',
-    dicomStoreId: 'pocketgull-dicom-store',
+    datasetId: 'pocket_gull_clinical',
+    fhirStoreId: 'fhir_primary',
+    dicomStoreId: 'dicom_primary',
     apiEndpoint: 'https://healthcare.googleapis.com/v1'
   });
 

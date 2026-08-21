@@ -35,3 +35,10 @@ export * from './modals/caregiver-bridge-modal.component';
 export * from './anatomy-3d/body-3d-viewer.component';
 export * from './anatomy-3d/body-viewer.component';
 export * from './anatomy-3d/medical-3d-viewer.component';
+
+// Space Health & HSA Incentive Barrel Exports
+export * from './space-health-hud.component';
+export * from './hsa-incentive-network.component';
+export * from './deep-space-cds-terminal.component';
+
+
