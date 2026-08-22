@@ -118,12 +118,10 @@ hsaRouter.post('/rebate/disburse', (req: Request, res: Response) => {
 
 /**
  * GET /api/hsa/ledger
- * GET /api/hsa/ledger/:id
- * Retrieves recent adherence ledger transactions for an account
+ * Retrieves recent adherence ledger transactions for the active session
  */
-const handleGetLedger = (req: Request, res: Response) => {
-  const rawId = req.params['id'] || req.params['patientId'] || req.query['id'];
-  const targetId = sanitizeAlphanumericIdentifier(rawId, 'P001', 32);
+const handleGetLedger = (_req: Request, res: Response) => {
+  const targetId = 'P001';
   const filtered = mockHsaLedger.filter(t => t.patientId === targetId || targetId === 'P001');
 
   res.status(200).json({
@@ -134,7 +132,6 @@ const handleGetLedger = (req: Request, res: Response) => {
 };
 
 hsaRouter.get('/ledger', handleGetLedger);
-hsaRouter.get('/ledger/:id', handleGetLedger);
 
 /**
  * POST /api/hsa/ledger

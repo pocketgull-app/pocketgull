@@ -67,9 +67,22 @@ describe('Express HSA Incentive Router (/api/hsa)', () => {
     expect(body.fhirClaimResponse.resourceType).toBe('ClaimResponse');
   });
 
-  it('3. GET /api/hsa/ledger/:patientId returns patient transaction history', () => {
-    const { req, res } = createMockReqRes({}, { patientId: 'P001' }, 'GET');
+  const postLedgerHandler = (hsaRouter.stack.find((layer: any) => layer.route?.path === '/ledger' && layer.route?.methods?.post)?.route?.stack[0] as any)?.handle;
+
+  it('3. GET /api/hsa/ledger returns active session transaction history', () => {
+    const { req, res } = createMockReqRes({}, {}, 'GET');
     ledgerHandler(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    const body = res.getJson();
+    expect(body.patientId).toBe('P001');
+    expect(body.count).toBeGreaterThan(0);
+    expect(Array.isArray(body.ledger)).toBe(true);
+  });
+
+  it('4. POST /api/hsa/ledger returns parameterized patient transaction history securely', () => {
+    const { req, res } = createMockReqRes({ patientId: 'P001' }, {}, 'POST');
+    postLedgerHandler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(200);
     const body = res.getJson();
