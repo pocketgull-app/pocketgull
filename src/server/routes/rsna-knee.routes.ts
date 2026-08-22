@@ -186,28 +186,40 @@ export function extractNlpProbabilities(reportText: string): Record<string, numb
     };
   }
 
-  // NLP matching patterns (bilateral order)
-  if (/(anterior cruciate|acl).*(tear|ruptur|disrupt|deficient)|(tear|ruptur|disrupt|deficien).*(anterior cruciate|acl)/i.test(text)) probs['acl'] = 0.95;
-  if (/(medial collateral|mcl).*(tear|sprain|edema)|(tear|sprain|edema).*(medial collateral|mcl)/i.test(text)) probs['mcl'] = 0.88;
-  if (/medial meniscus.*(tear|macerat|flap|root)|(tear|macerat|flap|root).*medial meniscus/i.test(text)) probs['medial_meniscus'] = 0.96;
-  if (/lateral meniscus.*(tear|macerat|flap)|(tear|macerat|flap).*lateral meniscus/i.test(text)) probs['lateral_meniscus'] = 0.92;
-  if (/medial (compartment )?(osteoarthritis|cartilage loss|joint space loss|oa)/i.test(text)) probs['medial_oa'] = 0.94;
-  if (/lateral (compartment )?(osteoarthritis|cartilage loss|oa)/i.test(text)) probs['lateral_oa'] = 0.91;
-  if (/patellofemoral.*(oa|osteoarthritis|cartilage loss|chondromalacia)/i.test(text)) probs['pf_oa'] = 0.95;
-  if (/(joint )?effusion|fluid collection|hydrarthrosis/i.test(text)) probs['effusion'] = 0.92;
-  if (/synovitis|synovial (thickening|hypertrophy|inflammation)/i.test(text)) probs['synovitis'] = 0.93;
-  if (/baker('s)? cyst|popliteal cyst/i.test(text)) probs['bakers_cyst'] = 0.89;
-  if (/bone (contusion|bruise|marrow edema|marrow lesion)|(contusion|bruise|edema).*condyle/i.test(text)) probs['contusion'] = 0.94;
-  if (/fracture|cortical break|trabecular fracture/i.test(text)) probs['fracture'] = 0.96;
+  const lowerText = text.toLowerCase();
+  const hasSub = (sub: string) => lowerText.includes(sub);
+  const hasAny = (subs: string[]) => subs.some(s => lowerText.includes(s));
+
+  const hasAcl = hasSub('anterior cruciate') || hasSub('acl');
+  const hasMcl = hasSub('medial collateral') || hasSub('mcl');
+  const hasTear = hasAny(['tear', 'ruptur', 'disrupt', 'deficien']);
+  const hasCollateralInjury = hasAny(['tear', 'sprain', 'edema']);
+  const hasMeniscusDamage = hasAny(['tear', 'macerat', 'flap', 'root']);
+
+  // NLP matching patterns
+  if (hasAcl && hasTear) probs['acl'] = 0.95;
+  if (hasMcl && hasCollateralInjury) probs['mcl'] = 0.88;
+  if (hasSub('medial meniscus') && hasMeniscusDamage) probs['medial_meniscus'] = 0.96;
+  if (hasSub('lateral meniscus') && hasMeniscusDamage) probs['lateral_meniscus'] = 0.92;
+  if (hasSub('medial') && hasAny(['osteoarthritis', 'cartilage loss', 'joint space loss', 'oa'])) probs['medial_oa'] = 0.94;
+  if (hasSub('lateral') && hasAny(['osteoarthritis', 'cartilage loss', 'oa'])) probs['lateral_oa'] = 0.91;
+  if (hasSub('patellofemoral') && hasAny(['oa', 'osteoarthritis', 'cartilage loss', 'chondromalacia'])) probs['pf_oa'] = 0.95;
+  if (hasAny(['effusion', 'fluid collection', 'hydrarthrosis'])) probs['effusion'] = 0.92;
+  if (hasAny(['synovitis', 'synovial thickening', 'synovial hypertrophy', 'synovial inflammation'])) probs['synovitis'] = 0.93;
+  if (hasAny(["baker's cyst", 'bakers cyst', 'popliteal cyst'])) probs['bakers_cyst'] = 0.89;
+  if (hasAny(['bone contusion', 'bone bruise', 'marrow edema', 'marrow lesion']) || (hasAny(['contusion', 'bruise', 'edema']) && hasSub('condyle'))) probs['contusion'] = 0.94;
+  if (hasAny(['fracture', 'cortical break', 'trabecular fracture'])) probs['fracture'] = 0.96;
 
   // Negations
-  if (/no (evidence of |acute )?.*(acl|anterior cruciate)|acl intact|cruciate.*intact/i.test(text)) probs['acl'] = 0.03;
-  if (/no (evidence of |acute )?.*menisc(us|al|i)|menisc(us|al|i).*intact/i.test(text)) {
-    probs['medial_meniscus'] = 0.03;
-    probs['lateral_meniscus'] = 0.03;
+  if (hasSub('no ') || hasSub('intact') || hasSub('without') || hasSub('negative') || hasSub('absent')) {
+    if (hasAcl && (hasSub('no ') || hasSub('intact') || hasSub('negative'))) probs['acl'] = 0.03;
+    if ((hasSub('menisc') || hasSub('menisci')) && (hasSub('no ') || hasSub('intact') || hasSub('negative'))) {
+      probs['medial_meniscus'] = 0.03;
+      probs['lateral_meniscus'] = 0.03;
+    }
+    if (hasSub('effusion') && (hasSub('no ') || hasSub('absent') || hasSub('without'))) probs['effusion'] = 0.04;
+    if (hasSub('fracture') && (hasSub('no ') || hasSub('without') || hasSub('negative'))) probs['fracture'] = 0.01;
   }
-  if (/no (joint )?effusion|effusion.*absent/i.test(text)) probs['effusion'] = 0.04;
-  if (/no (evidence of |acute )?.*fracture|without fracture|no.*fracture/i.test(text)) probs['fracture'] = 0.01;
 
   return probs;
 }

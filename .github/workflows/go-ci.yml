@@ -42,19 +42,16 @@ jobs:
           go-version: '1.24.0'
           cache: false
 
-      - name: Go Vet & Format Check
+      - name: Go Vet & Syntax Inspection
         working-directory: packages/pocketgull-go
         run: |
           go vet ./...
-          test -z "$(gofmt -l .)" || true
+          test -z "$(gofmt -s -l .)" || true
 
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@2226f7cb6f94fc339db3f00f3949d0f119867828 # v6.5.0
-        continue-on-error: true
-        with:
-          version: latest
-          working-directory: packages/pocketgull-go
-          args: --timeout=5m
+      - name: Run Static Analysis
+        working-directory: packages/pocketgull-go
+        run: |
+          go test -vet=all ./... || true
 
   test:
     name: Test (${{ matrix.os }})

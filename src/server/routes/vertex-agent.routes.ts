@@ -84,10 +84,13 @@ function verifyAgentBuilderDomain(req: Request, res: Response, next: NextFunctio
   const isAllowed = (urlStr: string) => {
     try {
       const parsed = new URL(urlStr);
+      const hostname = parsed.hostname.toLowerCase();
+      const isBaseOrSubdomain = (baseDomain: string) =>
+        hostname === baseDomain || hostname.endsWith(`.${baseDomain}`);
       return ALLOWED_ORIGINS.some(allowed => 
         parsed.origin === allowed || 
-        parsed.hostname.endsWith('pocketgull.app') || 
-        parsed.hostname.endsWith('pocketgull.com')
+        isBaseOrSubdomain('pocketgull.app') || 
+        isBaseOrSubdomain('pocketgull.com')
       );
     } catch {
       return false;

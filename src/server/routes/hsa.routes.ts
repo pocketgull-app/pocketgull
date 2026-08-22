@@ -120,11 +120,30 @@ hsaRouter.post('/rebate/disburse', (req: Request, res: Response) => {
  * Retrieves recent adherence ledger transactions for a patient
  */
 hsaRouter.get('/ledger/:patientId', (req: Request, res: Response) => {
-  const { patientId } = req.params;
-  const filtered = mockHsaLedger.filter(t => !patientId || t.patientId === patientId || patientId === 'P001');
+  const rawId = req.params['patientId'];
+  const sanitizedId = typeof rawId === 'string' ? rawId.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32) : 'P001';
+  const targetId = sanitizedId || 'P001';
+  const filtered = mockHsaLedger.filter(t => t.patientId === targetId || targetId === 'P001');
 
   res.status(200).json({
-    patientId: patientId || 'P001',
+    patientId: targetId,
+    count: filtered.length,
+    ledger: filtered
+  });
+});
+
+/**
+ * POST /api/hsa/ledger
+ * Secure body-based ledger retrieval
+ */
+hsaRouter.post('/ledger', (req: Request, res: Response) => {
+  const { patientId } = req.body || {};
+  const sanitizedId = typeof patientId === 'string' ? patientId.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32) : 'P001';
+  const targetId = sanitizedId || 'P001';
+  const filtered = mockHsaLedger.filter(t => t.patientId === targetId || targetId === 'P001');
+
+  res.status(200).json({
+    patientId: targetId,
     count: filtered.length,
     ledger: filtered
   });

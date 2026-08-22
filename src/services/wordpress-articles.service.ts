@@ -115,6 +115,17 @@ export interface IWordPressPost {
   longitudinal3dConfig?: ILongitudinal3dConfig;
 }
 
+export function stripHtmlTags(input: string): string {
+  if (!input) return '';
+  let prev = '';
+  let curr = input;
+  while (curr !== prev) {
+    prev = curr;
+    curr = curr.replace(/<[^>]*>/g, '');
+  }
+  return curr.trim();
+}
+
 /**
  * Master Breakthrough Article Template Builder
  * Provides a standardized, turnkey format for researchers & clinicians to author new articles.
@@ -1150,7 +1161,7 @@ export class WordPressArticlesService {
             slug: p.slug || 'article-' + p.id,
             contentHtml: p.content?.rendered || '',
             contentGrade6Html: existingSeed?.contentGrade6Html || p.content?.rendered || '',
-            excerpt: (p.excerpt?.rendered || '').replace(/<[^>]*>?/gm, '').trim(),
+            excerpt: stripHtmlTags(p.excerpt?.rendered || ''),
             date: p.date || new Date().toISOString(),
             authorName: p._embedded?.author?.[0]?.name || 'Pocket-Gull Editorial',
             readingTimeMinutes: p.reading_time_minutes || Math.ceil((p.content?.rendered || '').split(/\s+/).length / 200),
