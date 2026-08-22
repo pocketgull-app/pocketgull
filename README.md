@@ -22,6 +22,7 @@
   <img src="https://img.shields.io/badge/IEEE_Member-101083329-00629B?style=flat-square&logo=ieee&logoColor=white" alt="IEEE 101083329">
   <img src="https://img.shields.io/badge/ACM_Ambassador-6179454-0085CA?style=flat-square&logo=associationforcomputingmachinery&logoColor=white" alt="ACM 6179454">
   <img src="https://img.shields.io/badge/AIGA_Member-0513247-EE3124?style=flat-square&logo=aiga&logoColor=white" alt="AIGA 0513247">
+  <img src="https://img.shields.io/badge/RSA_Member-8192283-005A9C?style=flat-square&logoColor=white" alt="RSA 8192283">
   <img src="https://img.shields.io/badge/ASU-Fulton_Engineering-8C1D40?style=flat-square" alt="ASU">
   <a href="https://doi.org/10.5281/zenodo.20647514"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20647514.svg" alt="DOI"></a>
 </p>
@@ -490,13 +491,14 @@ If you reference Pocket Gull in research, please cite:
 ## Author
 
 **Phil Gear** — Lead Systems Architect & Creator  
-*Member, IEEE (#101083329) · ACM Ambassador (#6179454) · Member, AIGA (#0513247)*  
+*Member, IEEE (#101083329) · ACM Ambassador (#6179454) · Member, AIGA (#0513247) · Member, RSA (#8192283)*  
 *Arizona State University*
 
 [![ORCID](https://img.shields.io/badge/ORCID-0009--0008--1372--5381-A6C900?style=flat-square&logo=orcid&logoColor=white)](https://orcid.org/0009-0008-1372-5381)
 [![IEEE](https://img.shields.io/badge/IEEE-101083329-00629B?style=flat-square&logo=ieee&logoColor=white)](https://www.ieee.org)
 [![ACM](https://img.shields.io/badge/ACM_Ambassador-6179454-0085CA?style=flat-square&logo=associationforcomputingmachinery&logoColor=white)](https://www.acm.org)
 [![AIGA](https://img.shields.io/badge/AIGA-0513247-EE3124?style=flat-square&logo=aiga&logoColor=white)](https://www.aiga.org)
+[![RSA](https://img.shields.io/badge/RSA_Member-8192283-005A9C?style=flat-square&logoColor=white)](https://www.thersa.org)
 [![GitHub](https://img.shields.io/badge/GitHub-philgear-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/philgear)
 [![Google Dev](https://img.shields.io/badge/Google_Dev-philgear-4285F4?style=flat-square&logo=google&logoColor=white)](https://developers.google.com/profile/philgear)
 [![Email](https://img.shields.io/badge/Contact-leads%40pocketgull.app-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:leads@pocketgull.app)
