@@ -115,15 +115,10 @@ export interface IWordPressPost {
   longitudinal3dConfig?: ILongitudinal3dConfig;
 }
 
+import { stripHtmlToText } from '../utils/security-sanitizer';
+
 export function stripHtmlTags(input: string): string {
-  if (!input) return '';
-  let prev = '';
-  let curr = input;
-  while (curr !== prev) {
-    prev = curr;
-    curr = curr.replace(/<[^>]*>/g, '');
-  }
-  return curr.trim();
+  return stripHtmlToText(input);
 }
 
 /**

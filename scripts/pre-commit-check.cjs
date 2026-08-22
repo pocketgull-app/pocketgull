@@ -361,6 +361,34 @@ if (boundaryViolations > 0) {
   console.log('✅ Monorepo Package Boundary validation passed.\n');
 }
 
+// Check 8: Static ReDoS & Catastrophic Backtracking Prevention Audit
+console.log('🔹 Running: Static ReDoS & Regular Expression Security Audit...');
+let redosViolations = 0;
+const srcDir = path.join(workspaceRoot, 'src');
+const codeFiles = [];
+walkDir(srcDir, '.ts', codeFiles);
+
+const dangerousRegexPatterns = [
+  { name: 'Nested Quantifier (a+)+', regex: /\/[^\/\n]*\([^)\n]*(\+|\*)[^)\n]*\)(\+|\*)[^\/\n]*\//g },
+  { name: 'Unbounded Wildcard Alternation', regex: /\/[^\/\n]*\.\*[^\/\n]*\([^\/\n]*\|[^\/\n]*\)[^\/\n]*\.\*[^\/\n]*\//g }
+];
+
+for (const file of codeFiles) {
+  if (file.includes('.spec.') || file.includes('test')) continue;
+  try {
+    const content = fs.readFileSync(file, 'utf8');
+    for (const pat of dangerousRegexPatterns) {
+      pat.regex.lastIndex = 0;
+      let match;
+      while ((match = pat.regex.exec(content)) !== null) {
+        console.warn(`⚠️  [${path.relative(workspaceRoot, file)}]: Potential ReDoS pattern (${pat.name}): "${match[0]}"`);
+        // We warn rather than abort to allow verified safe fixtures while flagging dangerous code
+      }
+    }
+  } catch (e) {}
+}
+console.log('✅ Static ReDoS & Regex Security Audit completed.\n');
+
 console.log('🎉 All pre-commit validation checks passed successfully. Safe to commit!\n');
 process.exit(0);
 

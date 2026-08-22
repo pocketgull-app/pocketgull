@@ -9,6 +9,8 @@ import type { Request, Response, NextFunction } from 'express';
 import { GoogleAuth } from 'google-auth-library';
 import { rateLimit } from 'express-rate-limit';
 
+import { isSafeSubdomainUrl } from '../../utils/security-sanitizer';
+
 export interface IVertexSearchRequest {
   query: string;
   pageSize?: number;
@@ -81,21 +83,7 @@ function verifyAgentBuilderDomain(req: Request, res: Response, next: NextFunctio
   const referer = req.headers['referer'] as string | undefined;
   const host = req.headers['host'] as string | undefined;
 
-  const isAllowed = (urlStr: string) => {
-    try {
-      const parsed = new URL(urlStr);
-      const hostname = parsed.hostname.toLowerCase();
-      const isBaseOrSubdomain = (baseDomain: string) =>
-        hostname === baseDomain || hostname.endsWith(`.${baseDomain}`);
-      return ALLOWED_ORIGINS.some(allowed => 
-        parsed.origin === allowed || 
-        isBaseOrSubdomain('pocketgull.app') || 
-        isBaseOrSubdomain('pocketgull.com')
-      );
-    } catch {
-      return false;
-    }
-  };
+  const isAllowed = (urlStr: string) => isSafeSubdomainUrl(urlStr, ['pocketgull.app', 'pocketgull.com', 'localhost']);
 
   if (origin && !isAllowed(origin)) {
     return res.status(403).json({

@@ -8,6 +8,7 @@
  */
 import { Router } from 'express';
 import type { Request, Response } from 'express';
+import { sanitizeAlphanumericIdentifier } from '../../utils/security-sanitizer';
 
 export interface IHsaRebateRequest {
   patientId: string;
@@ -120,9 +121,7 @@ hsaRouter.post('/rebate/disburse', (req: Request, res: Response) => {
  * Retrieves recent adherence ledger transactions for a patient
  */
 hsaRouter.get('/ledger/:patientId', (req: Request, res: Response) => {
-  const rawId = req.params['patientId'];
-  const sanitizedId = typeof rawId === 'string' ? rawId.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32) : 'P001';
-  const targetId = sanitizedId || 'P001';
+  const targetId = sanitizeAlphanumericIdentifier(req.params['patientId'], 'P001', 32);
   const filtered = mockHsaLedger.filter(t => t.patientId === targetId || targetId === 'P001');
 
   res.status(200).json({
@@ -137,9 +136,7 @@ hsaRouter.get('/ledger/:patientId', (req: Request, res: Response) => {
  * Secure body-based ledger retrieval
  */
 hsaRouter.post('/ledger', (req: Request, res: Response) => {
-  const { patientId } = req.body || {};
-  const sanitizedId = typeof patientId === 'string' ? patientId.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32) : 'P001';
-  const targetId = sanitizedId || 'P001';
+  const targetId = sanitizeAlphanumericIdentifier(req.body?.patientId, 'P001', 32);
   const filtered = mockHsaLedger.filter(t => t.patientId === targetId || targetId === 'P001');
 
   res.status(200).json({
