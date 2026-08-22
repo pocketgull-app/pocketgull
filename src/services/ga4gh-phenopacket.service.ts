@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { IPatient, IPatientVitals } from './patient.types';
-import * as DOMPurify from 'dompurify';
+import { stripHtmlToText } from '../utils/security-sanitizer';
 
 export interface IHpoOntologyClass {
   id: string;
@@ -109,21 +109,8 @@ export class Ga4ghPhenopacketService {
     weight_loss: { id: 'HP:0001824', label: 'Weight loss' }
   };
 
-  /**
-   * Sanitizes text strings using DOMPurify
-   */
   private sanitize(input?: string): string {
-    if (!input) return '';
-    try {
-      const purifyObj = DOMPurify as unknown as { default?: { sanitize?: (s: string) => string }; sanitize?: (s: string) => string };
-      const fn = purifyObj.default?.sanitize || purifyObj.sanitize;
-      if (typeof fn === 'function') {
-        return fn(input);
-      }
-    } catch {
-      // Fallback
-    }
-    return input.replace(/<[^>]*>/g, '');
+    return stripHtmlToText(input);
   }
 
   /**

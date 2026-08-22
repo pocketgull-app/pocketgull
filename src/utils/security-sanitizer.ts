@@ -26,15 +26,18 @@ export function stripHtmlToText(input: string | null | undefined): string {
     iterations++;
   }
   
-  // Unescape common HTML entities
-  return curr
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-    .trim();
+  // Single-pass unescaping of common HTML entities (prevents double-unescaping vulnerabilities)
+  const entityMap: Record<string, string> = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#039;': "'",
+    '&apos;': "'",
+    '&nbsp;': ' '
+  };
+
+  return curr.replace(/&(?:amp|lt|gt|quot|#039|apos|nbsp);/g, match => entityMap[match] || match).trim();
 }
 
 /**
@@ -117,8 +120,7 @@ export function isSafeRegexPattern(pattern: string): { isSafe: boolean; warning?
   }
 
   // Detect wildcard followed by alternations like .*(a|b).*
-  const wildcardAlternation = /\.\*.*\(.*\|.*\).*\.\*/;
-  if (wildcardAlternation.test(pattern)) {
+  if (pattern.includes('.*') && pattern.includes('|') && pattern.includes('(')) {
     return {
       isSafe: false,
       warning: 'Polynomial Backtracking Risk: Unbounded wildcard with alternation detected.'

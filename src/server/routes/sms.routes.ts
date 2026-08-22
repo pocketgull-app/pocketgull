@@ -82,8 +82,8 @@ function parseClinicalSms(rawText: string, fromPhone: string): {
   else if (lower.includes('bp') || lower.includes('pulse') || lower.includes('hr') || lower.includes('glucose') || lower.includes('sugar')) {
     commandType = 'VITALS_LOG';
     const bpMatch = text.match(/\b(\d{2,3})\s*\/\s*(\d{2,3})\b/);
-    const hrMatch = text.match(/\b(?:hr|pulse|heart rate)\s*[:=]?\s*(\d{2,3})\b/i) || text.match(/\b(\d{2,3})\s*(?:bpm)\b/i);
-    const glucoseMatch = text.match(/\b(?:glucose|sugar)\s*[:=]?\s*(\d{2,3})\b/i);
+    const hrMatch = text.match(/\b(?:hr|pulse|heart rate)[\s:=]+(\d{2,3})\b/i) || text.match(/\b(\d{2,3})\s*bpm\b/i);
+    const glucoseMatch = text.match(/\b(?:glucose|sugar)[\s:=]+(\d{2,3})\b/i);
 
     const bp = bpMatch ? `${bpMatch[1]}/${bpMatch[2]}` : undefined;
     const hr = hrMatch ? Number(hrMatch[1]) : undefined;

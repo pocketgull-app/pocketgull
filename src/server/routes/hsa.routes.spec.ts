@@ -31,7 +31,7 @@ function createMockReqRes(body: Record<string, unknown> = {}, params: Record<str
 describe('Express HSA Incentive Router (/api/hsa)', () => {
   const linkHandler = (hsaRouter.stack.find((layer: any) => layer.route?.path === '/cards/link')?.route?.stack[0] as any)?.handle;
   const disburseHandler = (hsaRouter.stack.find((layer: any) => layer.route?.path === '/rebate/disburse')?.route?.stack[0] as any)?.handle;
-  const ledgerHandler = (hsaRouter.stack.find((layer: any) => layer.route?.path === '/ledger/:patientId')?.route?.stack[0] as any)?.handle;
+  const ledgerHandler = (hsaRouter.stack.find((layer: any) => layer.route?.path?.startsWith('/ledger'))?.route?.stack[0] as any)?.handle;
 
   it('1. POST /api/hsa/cards/link tokens and links card', () => {
     const { req, res } = createMockReqRes({
