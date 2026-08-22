@@ -182,4 +182,8 @@ if __name__ == '__main__':
     t = np.linspace(0, 10, 2500)
     ecg_synthetic = np.sin(2 * np.pi * 1.2 * t) + 0.5 * np.sin(2 * np.pi * 2.4 * t)
     res = clf.classify_waveform(ecg_synthetic)
-    print(json.dumps(res, indent=2))
+    safe_res = {
+        "predicted_rhythm": res["predicted_rhythm"],
+        "confidence": res["confidence"]
+    }
+    print(json.dumps(safe_res, indent=2))
