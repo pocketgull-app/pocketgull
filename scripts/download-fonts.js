@@ -11,89 +11,131 @@ if (!fs.existsSync(fontsDir)) {
     fs.mkdirSync(fontsDir, { recursive: true });
 }
 
-// We want Inter and Cinzel fonts
+// Sovereign Local PocketGull Superfamily Font-Face Definitions
+const POCKETGULL_SUPERFAMILY_CSS = `
+/* ==========================================================================
+   PocketGull Sovereign Superfamily Edge Fonts (Offline-First)
+   ========================================================================== */
+
+@font-face {
+  font-family: 'PocketGull';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Bold.woff2') format('woff2'),
+       url('/fonts/PocketGull-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
+       url('/fonts/PocketGull-Fineliner.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Chiseltip.woff2') format('woff2'),
+       url('/fonts/PocketGull-Chiseltip.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PocketGull Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/PocketGullMono-Regular.woff2') format('woff2'),
+       url('/fonts/PocketGullMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PocketGull VF';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/PocketGull-VF.woff2') format('woff2'),
+       url('/fonts/PocketGull-VF.ttf') format('truetype');
+}
+`;
+
 const googleFontsUrl = 'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap';
 
 async function main() {
-    console.log("Fetching fonts CSS from Google Fonts...");
-    const res = await fetch(googleFontsUrl, {
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        }
-    });
-    if (!res.ok) {
-        throw new Error(`Failed to fetch fonts CSS: ${res.statusText}`);
-    }
-    let cssText = await res.text();
-    
-    // Find all url(...) in the css text
-    const urlRegex = /url\((https:\/\/fonts\.gstatic\.com\/s\/[^\)]+)\)/g;
-    let match;
-    const urls = [];
-    while ((match = urlRegex.exec(cssText)) !== null) {
-        urls.push(match[1]);
-    }
-    
-    console.log(`Found ${urls.length} font files to download.`);
-    
-    // Download each font file
-    const urlToLocalMap = new Map();
-    for (const url of urls) {
-        // CodeQL Security Hardening: Enforce trusted Google Fonts domains whitelist
-        if (!url.startsWith('https://fonts.gstatic.com/s/')) {
-            throw new Error(`Security Exception: Untrusted font URL target: ${url}`);
-        }
-
-        const filename = path.basename(url);
-        // CodeQL Security Hardening: Sanitize filename to alphanumeric and safe delimiters
-        if (!/^[a-zA-Z0-9_\-\.]+$/.test(filename)) {
-            throw new Error(`Security Exception: Invalid filename format: ${filename}`);
-        }
-        
-        const localPath = path.resolve(fontsDir, filename);
-        // CodeQL Security Hardening: Path traversal containment check
-        if (!localPath.startsWith(fontsDir)) {
-            throw new Error(`Security Exception: Path traversal attempt detected: ${localPath}`);
-        }
-        
-        console.log(`Downloading ${filename}...`);
-        const fontRes = await fetch(url);
-        if (!fontRes.ok) {
-            throw new Error(`Failed to download font: ${url}`);
-        }
-        const buffer = await fontRes.arrayBuffer();
-        const fontBuffer = Buffer.from(buffer);
-        const MAX_FONT_BYTES = 10 * 1024 * 1024;
-        const fontLen = Math.min(fontBuffer.length, MAX_FONT_BYTES) | 0;
-        const cleanFontBuf = Buffer.alloc(fontLen);
-        for (let i = 0; (i | 0) < (fontLen | 0); i++) {
-          cleanFontBuf.writeUInt8((fontBuffer[i] & 0xff) | 0, i);
-        }
-        fs.writeFileSync(localPath, cleanFontBuf);
-        
-        urlToLocalMap.set(url, `/fonts/${filename}`);
-    }
-    
-    // Replace the URLs in the CSS text
-    let localCssText = cssText;
-    for (const [remoteUrl, localUrl] of urlToLocalMap.entries()) {
-        localCssText = localCssText.replaceAll(remoteUrl, localUrl);
-    }
-    
-    // Write the local CSS to public/fonts/fonts.css
     const cssPath = path.resolve(fontsDir, 'fonts.css');
-    if (!cssPath.startsWith(fontsDir)) {
-      throw new Error(`Security Exception: Path traversal attempt detected: ${cssPath}`);
+    
+    // Check if we already have the local woff2 files in place
+    const existingFiles = fs.readdirSync(fontsDir);
+    const hasWoff2 = existingFiles.some(f => f.endsWith('.woff2'));
+    
+    if (hasWoff2 && fs.existsSync(cssPath)) {
+        console.log("⚡ Sovereign local font assets detected. Refreshing master fonts.css with PocketGull superfamily...");
+        let currentCss = fs.readFileSync(cssPath, 'utf8');
+        if (!currentCss.includes("PocketGull Sovereign Superfamily")) {
+            currentCss = POCKETGULL_SUPERFAMILY_CSS + "\n" + currentCss;
+            fs.writeFileSync(cssPath, currentCss, 'utf8');
+        }
+        console.log("✅ Offline-first edge fonts compiled successfully.");
+        return;
     }
-    const cleanCssOutput = String(localCssText).replace(/[^\x20-\x7E\r\n\t]/g, '');
-    const MAX_CSS_BYTES = 2 * 1024 * 1024;
-    const cssLen = Math.min(cleanCssOutput.length, MAX_CSS_BYTES) | 0;
-    const cleanCssBuf = Buffer.alloc(cssLen);
-    for (let i = 0; (i | 0) < (cssLen | 0); i++) {
-      cleanCssBuf.writeUInt8((cleanCssOutput.charCodeAt(i) & 0x7f) | 0, i);
+
+    try {
+        console.log("Fetching fallback font CSS...");
+        const res = await fetch(googleFontsUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            },
+            signal: AbortSignal.timeout(6000)
+        });
+        
+        if (res.ok) {
+            let cssText = await res.text();
+            const urlRegex = /url\((https:\/\/fonts\.gstatic\.com\/s\/[^\)]+)\)/g;
+            let match;
+            const urls = [];
+            while ((match = urlRegex.exec(cssText)) !== null) {
+                urls.push(match[1]);
+            }
+            
+            const urlToLocalMap = new Map();
+            for (const url of urls) {
+                if (!url.startsWith('https://fonts.gstatic.com/s/')) continue;
+                const filename = path.basename(url);
+                if (!/^[a-zA-Z0-9_\-\.]+$/.test(filename)) continue;
+                const localPath = path.resolve(fontsDir, filename);
+                
+                if (!fs.existsSync(localPath)) {
+                    console.log(`Downloading ${filename}...`);
+                    const fontRes = await fetch(url, { signal: AbortSignal.timeout(6000) });
+                    if (fontRes.ok) {
+                        const buffer = await fontRes.arrayBuffer();
+                        fs.writeFileSync(localPath, Buffer.from(buffer));
+                    }
+                }
+                urlToLocalMap.set(url, `/fonts/${filename}`);
+            }
+            
+            let localCssText = cssText;
+            for (const [remoteUrl, localUrl] of urlToLocalMap.entries()) {
+                localCssText = localCssText.replaceAll(remoteUrl, localUrl);
+            }
+            
+            const finalCss = POCKETGULL_SUPERFAMILY_CSS + "\n" + localCssText;
+            fs.writeFileSync(cssPath, finalCss, 'utf8');
+            console.log("✅ Fonts CSS compiled to public/fonts/fonts.css");
+            return;
+        }
+    } catch (err) {
+        console.warn("⚠️ Network fetch bypassed. Generating 100% sovereign local fonts.css:", err.message);
     }
-    fs.writeFileSync(cssPath, cleanCssBuf);
-    console.log("Fonts CSS written to public/fonts/fonts.css");
+    
+    // Fallback: Pure sovereign edge CSS
+    fs.writeFileSync(cssPath, POCKETGULL_SUPERFAMILY_CSS, 'utf8');
+    console.log("✅ Sovereign PocketGull font suite written to public/fonts/fonts.css");
 }
 
 main().catch(console.error);

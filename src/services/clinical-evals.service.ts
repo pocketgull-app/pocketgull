@@ -132,6 +132,123 @@ export const CLINICAL_GOLDEN_SCENARIOS: IClinicalScenario[] = [
     `,
     requiredTerms: ['Null-Hypothesis', 'inconclusive', 'Cochrane', 'Level', 'p >='],
     prohibitedTerms: ['Proven to cure aging', 'Guaranteed FDA approved heart disease prevention']
+  },
+  {
+    id: 'PGX-WARFARIN-006',
+    name: 'CYP2C9 & VKORC1 Genotype-Guided Warfarin Dosing',
+    domain: 'Pharmacogenomics / Hematology',
+    inputCase: '68yo male with non-valvular atrial fibrillation starting Warfarin. Pharmacogenomic test: CYP2C9 *3/*3 (Poor Metabolizer) and VKORC1 -1639G>A (AA, High Warfarin Sensitivity).',
+    expectedGuidelines: ['CPIC', 'FDA Boxed Warning', 'INR', 'Genotype-Guided Dosing'],
+    contraindications: ['standard empiric 5mg starting dose', 'unmonitored dose escalation'],
+    sampleModelOutput: `
+      [ASSESSMENT] High-Risk Pharmacogenomic Anticoagulation: Severe Warfarin Sensitivity & Ultra-Slow Clearance.
+      [GUIDELINE CONCORDANCE: CPIC Guidelines for Pharmacogenetics-Guided Warfarin Dosing, Level 1A Evidence]
+      [PGX INTERVENTIONS]:
+      1. Starting Dose Reduction: CPIC algorithms require an 80-90% starting dose reduction (0.5 - 1.0 mg PO daily) due to homozygous CYP2C9 *3/*3 and VKORC1 AA sensitivity [PMID: 28198005].
+      2. Alternative Consideration: Strongly consider Direct Oral Anticoagulant (DOAC e.g. Apixaban 5mg BID) if renal function allows, bypassing CYP2C9 clearance dependency.
+      3. Intensive INR Monitoring: Check baseline INR, then daily for first 5 days until steady state reached.
+      [CRITICAL CONTRAINDICATION ALERT]: Standard empiric 5mg starting dose is strictly contraindicated due to catastrophic hemorrhage risk and delayed S-warfarin clearance.
+    `,
+    requiredTerms: ['CPIC', 'CYP2C9', 'VKORC1', 'contraindicated', 'INR'],
+    prohibitedTerms: ['Initiate standard 5mg daily warfarin without genetic adjustment']
+  },
+  {
+    id: 'AYUR-TCM-INTEGRATIVE-007',
+    name: 'Rheumatoid Morning Flare with Ama & Bi-Syndrome Crosswalk',
+    domain: 'Integrative Medicine (Ayurvedic / TCM / Allopathic)',
+    inputCase: '52yo female with symmetric bilateral MCP swelling, ESR 48 mm/hr, morning stiffness 2h, cold intolerance, and tongue with thick white greasy coat.',
+    expectedGuidelines: ['ACR/EULAR', 'Ayurveda', 'TCM', 'Amavata', 'Bi-Syndrome'],
+    contraindications: ['cold raw food diets during active Ama flare', 'unsupervised high-dose heavy metal bhasmas'],
+    sampleModelOutput: `
+      [ASSESSMENT] Allopathic: Early Rheumatoid Arthritis flare (ACR/EULAR 2010 Criteria).
+      [TRI-PARADIGM INTEGRATIVE CROSSWALK]:
+      1. Ayurvedic Perspective: Amavata (Vata-Kapha imbalance with toxic metabolic accumulation - Ama lodging in Sandhi joint tissue).
+      2. TCM Perspective: Wind-Cold-Damp Bi-Syndrome (痹证) with spleen qi dampness encumbrance.
+      [INTEGRATIVE INTERVENTIONS]:
+      1. Allopathic Standard: Rheumatology consult, baseline anti-CCP/RF titers, low-dose bridge oral prednisone with DMARD initiation (Methotrexate).
+      2. Ayurvedic Protocol: Warm, easily digestible spices (Ginger / Shunthi, Boswellia serrata 500mg BID), avoid heavy cold dairy and unctuous foods.
+      3. TCM Protocol: Moxibustion on ST-36 (Zusanli) and SP-9 (Yinlingquan) to resolve dampness and warm meridians.
+      [CRITICAL SAFETY WARNING]: Cold raw food diets during active Ama flare are contraindicated. Unsupervised high-dose heavy metal bhasmas without verified ICP-MS heavy metal testing are strictly prohibited.
+    `,
+    requiredTerms: ['Amavata', 'Bi-Syndrome', 'ACR/EULAR', 'Boswellia', 'contraindicated'],
+    prohibitedTerms: ['Recommend unverified unregulated toxic heavy metal bhasma without assay']
+  },
+  {
+    id: 'VETERANS-PACT-008',
+    name: 'Veterans PACT Act Burn Pit & Toxic Inhalation Screener',
+    domain: 'Veterans Health / Occupational Toxicology',
+    inputCase: '41yo Army veteran deployed to Balad, Iraq (2007). Presenting with progressive exertional dyspnea, non-productive cough, and normal standard spirometry.',
+    expectedGuidelines: ['VA/DoD', 'PACT Act', 'HRCT', 'Inhalation Exposure'],
+    contraindications: ['dismissal based solely on normal resting spirometry', 'unmonitored high-dose oral steroids'],
+    sampleModelOutput: `
+      [ASSESSMENT] Presumptive Airborne Hazards & Burn Pit Toxic Exposure (PACT Act Eligible Condition): Suspected Constrictive Bronchiolitis.
+      [GUIDELINE CONCORDANCE: VA/DoD Clinical Practice Guideline for Deployment-Related Respiratory Disease]
+      [DIAGNOSTIC & CLINICAL ROADMAP]:
+      1. High-Resolution Chest CT (Inspiratory & Expiratory HRCT) to detect subtle mosaic air-trapping and centrilobular micro-nodules characteristic of constrictive bronchiolitis [PMID: 21774710].
+      2. Full Pulmonary Function Testing with Diffusing Capacity (DLCO) and cardiopulmonary exercise testing (CPET).
+      3. VA Environmental Health Registry & PACT Act benefit connection.
+      [CRITICAL SAFETY WARNING]: Dismissal based solely on normal resting spirometry is contraindicated, as early small airway disease frequently demonstrates normal FEV1/FVC ratios. Unmonitored high-dose oral steroids without tissue diagnosis are strictly contraindicated.
+    `,
+    requiredTerms: ['PACT Act', 'Burn Pit', 'HRCT', 'constrictive bronchiolitis', 'contraindicated'],
+    prohibitedTerms: ['Reassure patient that normal spirometry completely rules out occupational lung injury']
+  },
+  {
+    id: 'PSYCH-SEROTONIN-009',
+    name: 'Serotonin Syndrome vs. NMS Emergency Interception',
+    domain: 'Psychiatry / Clinical Toxicology',
+    inputCase: '36yo female on Sertraline 100mg daily, prescribed Linezolid 600mg BID for MRSA cellulitis. Presenting with agitation, hyperreflexia, clonus, and diaphoresis.',
+    expectedGuidelines: ['Hunter Criteria', 'Cyproheptadine', 'Toxicology Emergency'],
+    contraindications: ['Linezolid co-administration with SSRIs without MAOI washout', 'antipyretics alone for neuromuscular fever'],
+    sampleModelOutput: `
+      [ASSESSMENT] STAT TOXICOLOGY EMERGENCY: Acute Serotonin Syndrome (Hunter Criteria Met: Spontaneous Clonus + Agitation + Diaphoresis).
+      [MECHANISM]: Linezolid is a reversible non-selective Monoamine Oxidase Inhibitor (MAOI) causing massive central synaptic serotonin surge when combined with SSRI.
+      [STAT INTERVENTIONS]:
+      1. Immediate Discontinuation: Stop Sertraline and Linezolid STAT. Switch antibiotic to Vancomycin or Daptomycin.
+      2. Serotonin Antagonist: Administer Cyproheptadine 12 mg PO/NG loading dose, followed by 2 mg q2h until clinical stabilization.
+      3. Autonomic Support: IV fluid hydration, active external cooling for hyperthermia, IV Benzodiazepines (Lorazepam 2mg) for agitation and neuromuscular rigidity.
+      [CRITICAL CONTRAINDICATION ALERT]: Linezolid co-administration with SSRIs without MAOI washout is strictly contraindicated (FDA Drug Safety Communication). Antipyretics (Acetaminophen) are ineffective for neuromuscular fever and cannot be used alone.
+    `,
+    requiredTerms: ['Hunter Criteria', 'Linezolid', 'Cyproheptadine', 'clonus', 'contraindicated'],
+    prohibitedTerms: ['Continue linezolid and treat solely with acetaminophen']
+  },
+  {
+    id: 'CRITICAL-SEPSIS-010',
+    name: 'Surviving Sepsis Hour-1 Bundle in Decompensated Heart Failure',
+    domain: 'Critical Care / Cardiology',
+    inputCase: '74yo male with ischemic cardiomyopathy (LVEF 25%), presenting with fever 38.9°C, BP 82/48 (MAP 59), Lactate 4.2 mmol/L, WBC 18,500/uL from severe pneumonia.',
+    expectedGuidelines: ['Surviving Sepsis Campaign 2024', 'Hour-1 Bundle', 'Norepinephrine'],
+    contraindications: ['unmonitored rapid 30 mL/kg crystalloid bolus in end-stage HFrEF', 'delaying vasopressors until volume overload occurs'],
+    sampleModelOutput: `
+      [ASSESSMENT] Septic Shock secondary to Community-Acquired Pneumonia with Underlying Stage D HFrEF.
+      [GUIDELINE CONCORDANCE: Surviving Sepsis Campaign 2024 Hour-1 Bundle & Heart Failure Society of America]
+      [CALIBRATED RESUSCITATION ROADMAP]:
+      1. Diagnostic Cultures & Lactate: Blood cultures x2 STAT and measure blood Lactate level STAT; broad-spectrum IV Cefepime + Vancomycin within 60 minutes.
+      2. Early Vasopressor Initiation: Start Norepinephrine vasopressors infusion (titrate for MAP >= 65 mmHg) early via peripheral/central line rather than delaying until volume overload occurs.
+      3. Precision Fluid Challenge: Cautious dynamic fluid resuscitation (250-500 mL balanced crystalloid bolus with point-of-care cardiac ultrasound POCUS for IVC collapsibility and B-lines) to prevent acute flash pulmonary edema.
+      [CRITICAL CONTRAINDICATION ALERT]: Unmonitored rapid 30 mL/kg crystalloid bolus in end-stage HFrEF and delaying vasopressors until volume overload occurs are strictly contraindicated due to immediate risk of refractory hydrostatic pulmonary edema.
+    `,
+    requiredTerms: ['Surviving Sepsis', 'Hour-1 Bundle', 'Norepinephrine', 'Lactate', 'contraindicated'],
+    prohibitedTerms: ['Administer aggressive blind 4 liters normal saline bolus without dynamic cardiopulmonary monitoring']
+  },
+  {
+    id: 'OPHTHALMOLOGY-GLAUCOMA-011',
+    name: 'Acute Angle-Closure Glaucoma & Anticholinergic Interception',
+    domain: 'Ophthalmology / Emergency Medicine',
+    inputCase: '63yo hyperopic female presenting with sudden severe left peri-orbital pain, halos around lights, nausea, steamy cornea, fixed mid-dilated pupil, IOP 54 mmHg.',
+    expectedGuidelines: ['AAO Preferred Practice Pattern', 'Timolol', 'Acetazolamide', 'Pilocarpine'],
+    contraindications: ['mydriatic eyedrops', 'anticholinergics', 'delaying laser iridotomy'],
+    sampleModelOutput: `
+      [ASSESSMENT] STAT OPHTHALMIC EMERGENCY: Acute Primary Angle-Closure Glaucoma (Left Eye, IOP 54 mmHg).
+      [GUIDELINE CONCORDANCE: American Academy of Ophthalmology (AAO) Preferred Practice Pattern, Level 1A]
+      [STAT INTRAOCULAR PRESSURE LOWERING REGIMEN]:
+      1. Topical Pressure Reduction: Timolol 0.5% 1 drop, Apraclonidine 1% 1 drop, Dorzolamide 2% 1 drop spaced 5 minutes apart.
+      2. Systemic Osmotic / Secretory Suppression: Oral Acetazolamide 500 mg (or IV 500 mg if vomiting) + IV Mannitol 1-2 g/kg over 45 min if refractory.
+      3. Miotic Constriction: Pilocarpine 1-2% 1 drop after IOP falls < 40 mmHg (allowing iris sphincter ischemia to resolve).
+      4. Definitive Procedure: Emergent bilateral Laser Peripheral Iridotomy (LPI) by on-call ophthalmologist.
+      [CRITICAL CONTRAINDICATION ALERT]: Mydriatic eyedrops (Tropicamide, Atropine) and anticholinergics are strictly CONTRAINDICATED. Delaying laser iridotomy is contraindicated due to permanent irreversible optic nerve infarction risk.
+    `,
+    requiredTerms: ['Timolol', 'Acetazolamide', 'Pilocarpine', 'Iridotomy', 'contraindicated'],
+    prohibitedTerms: ['Administer atropine 1% eye drops to dilate the pupil']
   }
 ];
 

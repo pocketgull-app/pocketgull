@@ -69,14 +69,14 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
             <span>✨ Socratic Intake</span>
           </button>
 
-          <!-- Socratic Intake Studio Button -->
+          <!-- Vertex AI Model Garden Button -->
           <button 
             type="button" 
-            id="btn-socratic-intake-nav"
-            (click)="openSocraticIntake.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer"
-            title="Open Socratic Patient Intake Studio & FIFE Question Generator">
-            <span>✨ Socratic Intake</span>
+            id="btn-model-garden-nav"
+            (click)="openModelGarden.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer shrink-0"
+            title="Open Vertex AI Model Garden & Clinical Model Registry">
+            <span>🌿 Model Garden</span>
           </button>
 
           <!-- Companion App Sync Button -->
@@ -106,14 +106,6 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
             <span>🎵 Bio-Network</span>
           </button>
 
-          <!-- Billing & Subscription Button -->
-          <button 
-            type="button" 
-            (click)="openBillingDashboard.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer shrink-0"
-            title="Manage Billing and Subscription">
-            <span>💳 Billing</span>
-          </button>
 
           <!-- Zero-Knowledge Encrypted Vault Button -->
           <button 
@@ -329,12 +321,20 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
               <span class="text-base">🩺</span> <span>Patient Self-Service Portal</span>
             </button>
 
+            <button type="button" (click)="openModelGarden.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🌿</span> <span>Vertex AI Model Garden</span>
+            </button>
+
             <button type="button" (click)="openSupportTicket.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">📬</span> <span>Autonomous AI Support</span>
             </button>
 
             <button type="button" (click)="openBioNetworkQr.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-800 dark:text-purple-200 border border-purple-200 dark:border-purple-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🎵</span> <span>Bio-Network &amp; Audio HUD</span>
+            </button>
+
+            <button type="button" (click)="openTalentHrPortal.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🤝</span> <span>Join Team &amp; Talent Hub</span>
             </button>
 
             <button type="button" (click)="openBillingDashboard.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
@@ -402,6 +402,8 @@ export class MainHeaderNavComponent {
   showAmbientPlayer = signal<boolean>(false);
 
   openSocraticIntake = output<void>();
+  openModelGarden = output<void>();
+  openTalentHrPortal = output<void>();
   openCompanionSync = output<void>();
   openBioNetworkQr = output<void>();
   openBillingDashboard = output<void>();
@@ -417,4 +419,6 @@ export class MainHeaderNavComponent {
   openArticles = output<void>();
   triggerSomaticGrounding = output<void>();
 }
+
+
 

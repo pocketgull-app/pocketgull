@@ -642,24 +642,40 @@ def load_dataset_for_paradigm(paradigm: str, custom_path: Optional[str] = None) 
     directive = PARADIGM_DIRECTIVES.get(paradigm, PARADIGM_DIRECTIVES["clinical_cot"])
     raw_samples = []
 
-    if custom_path and os.path.exists(custom_path):
-        logger.info(f"Loading custom dataset from {custom_path}")
-        with open(custom_path, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.strip():
-                    raw_samples.append(json.loads(line))
+    if custom_path:
+        path_to_try = os.path.expanduser(custom_path.strip().strip('"').strip("'"))
+        if not os.path.exists(path_to_try) and len(path_to_try) > 2 and path_to_try[1] == ':':
+            drive = path_to_try[0].lower()
+            rest = path_to_try[2:].replace('\\', '/')
+            path_to_try = f"/mnt/{drive}{rest}"
+
+        if os.path.exists(path_to_try):
+            logger.info(f"Loading custom dataset from {path_to_try}")
+            with open(path_to_try, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        raw_samples.append(json.loads(line))
+        else:
+            logger.warning(f"Custom path '{custom_path}' not found. Falling back to synthetic samples.")
+            raw_samples = SAMPLE_DATASETS.get(paradigm, SAMPLE_DATASETS["clinical_cot"])
     else:
         logger.info(f"Using pre-packaged synthetic dataset samples for paradigm '{paradigm}'")
         raw_samples = SAMPLE_DATASETS.get(paradigm, SAMPLE_DATASETS["clinical_cot"])
 
     formatted_samples = []
     for sample in raw_samples:
-        text = format_gemma_prompt(
-            system_directive=directive,
-            user_input=sample["input"],
-            model_response=sample.get("output", ""),
-        )
-        formatted_samples.append({"text": text})
+        if "text" in sample:
+            formatted_samples.append({"text": sample["text"]})
+        elif "input" in sample:
+            instr = sample.get("instruction", "").strip()
+            inp = sample.get("input", "").strip()
+            combined_input = f"{instr}\n\n{inp}".strip() if instr else inp
+            text = format_gemma_prompt(
+                system_directive=directive,
+                user_input=combined_input,
+                model_response=sample.get("output", ""),
+            )
+            formatted_samples.append({"text": text})
 
     return formatted_samples
 
@@ -741,26 +757,44 @@ def train_with_huggingface(args: argparse.Namespace, dataset_samples: List[Dict[
         import torch
         from datasets import Dataset
         from peft import LoraConfig, get_peft_model
-        from transformers import AutoModelForCausalVLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments
-        from trl import SFTTrainer
+        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+        from trl import SFTConfig, SFTTrainer
     except ImportError as e:
         logger.error(f"Missing required Hugging Face dependency: {e}")
         logger.error("Install dependencies via: pip install torch transformers peft trl datasets bitsandbytes")
         sys.exit(1)
 
-    logger.info(f"Initializing Hugging Face model with BitsAndBytes 4-bit: {args.model_name}")
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.float16,
-    )
+    logger.info(f"Initializing model for fine-tuning: {args.model_name}")
+    import os
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+    
+    use_cuda = torch.cuda.is_available()
+    logger.info(f"Compute Backend Detected: {'CUDA/ROCm GPU' if use_cuda else 'Multi-Core CPU (Intel i7)'}")
+
+    if use_cuda:
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.float16,
+        )
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model_name,
+            quantization_config=bnb_config,
+            device_map="auto",
+            low_cpu_mem_usage=True,
+        )
+    else:
+        # Load in bfloat16 on CPU to cut memory from 11GB down to 3GB
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model_name,
+            torch_dtype=torch.bfloat16,
+            low_cpu_mem_usage=True,
+        )
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
-    model = AutoModelForCausalVLM.from_pretrained(
-        args.model_name,
-        quantization_config=bnb_config,
-        device_map="auto",
-    )
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
 
     peft_config = LoraConfig(
         r=args.r,
@@ -772,32 +806,78 @@ def train_with_huggingface(args: argparse.Namespace, dataset_samples: List[Dict[
     )
 
     model = get_peft_model(model, peft_config)
+    if use_cuda and hasattr(model, "gradient_checkpointing_enable"):
+        model.gradient_checkpointing_enable()
+
     dataset = Dataset.from_list(dataset_samples)
+    effective_grad_accum = min(args.grad_accum, max(1, len(dataset_samples)))
+
+    training_args = SFTConfig(
+        dataset_text_field="text",
+        max_length=args.max_seq_length,
+        per_device_train_batch_size=args.batch_size,
+        gradient_accumulation_steps=effective_grad_accum,
+        warmup_steps=1,
+        max_steps=args.max_steps if args.max_steps > 0 else len(dataset_samples) * args.epochs,
+        learning_rate=args.lr,
+        fp16=use_cuda,
+        bf16=not use_cuda,
+        use_cpu=not use_cuda,
+        logging_steps=1,
+        output_dir=args.output_dir,
+        gradient_checkpointing=use_cuda,
+        optim="paged_adamw_8bit" if use_cuda else "adamw_torch",
+        dataloader_pin_memory=False,
+        max_grad_norm=0.3,
+    )
+
+    from transformers import TrainerCallback
+    import time
+    import gc
+
+    class ThermalCooldownCallback(TrainerCallback):
+        """Inserts intermittent cooling breaks during long-running training runs."""
+        def __init__(self, cooldown_seconds: int = 45, step_frequency: int = 15):
+            self.cooldown_seconds = cooldown_seconds
+            self.step_frequency = step_frequency
+
+        def on_step_end(self, args, state, control, **kwargs):
+            if state.global_step > 0 and state.global_step % self.step_frequency == 0:
+                logger.info(f"🌬️ [Thermal Cooldown] Step {state.global_step}: Pausing for {self.cooldown_seconds}s to cool CPU/GPU cores & flush cache...")
+                gc.collect()
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                time.sleep(self.cooldown_seconds)
+                logger.info("⚡ [Thermal Cooldown] Cooldown complete. Resuming training with fresh thermal headroom.")
+
+        def on_epoch_end(self, args, state, control, **kwargs):
+            logger.info(f"🌬️ [Thermal Cooldown] Epoch complete: Pausing for {self.cooldown_seconds * 2}s inter-epoch thermal rest...")
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            time.sleep(self.cooldown_seconds * 2)
+            logger.info("⚡ [Thermal Cooldown] Inter-epoch cooling complete. Resuming next epoch.")
+
+    cooldown_cb = ThermalCooldownCallback(
+        cooldown_seconds=args.cooldown_seconds,
+        step_frequency=args.cooldown_steps
+    )
 
     trainer = SFTTrainer(
         model=model,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         train_dataset=dataset,
-        dataset_text_field="text",
-        max_seq_length=args.max_seq_length,
-        args=TrainingArguments(
-            per_device_train_batch_size=args.batch_size,
-            gradient_accumulation_steps=args.grad_accum,
-            warmup_steps=5,
-            max_steps=args.max_steps if args.max_steps > 0 else len(dataset_samples) * args.epochs,
-            learning_rate=args.lr,
-            fp16=True,
-            logging_steps=1,
-            output_dir=args.output_dir,
-        ),
+        args=training_args,
+        callbacks=[cooldown_cb] if args.cooldown_seconds > 0 else None,
     )
 
-    logger.info("Starting LoRA fine-tuning with Hugging Face PEFT...")
+    logger.info(f"Starting LoRA fine-tuning (Accumulation: {effective_grad_accum}, Device: {'GPU' if use_cuda else 'CPU'}, Thermal Breaks: {args.cooldown_seconds}s every {args.cooldown_steps} steps)...")
     trainer.train()
 
     logger.info(f"Saving fine-tuned LoRA adapter to {args.output_dir}")
     model.save_pretrained(args.output_dir)
     tokenizer.save_pretrained(args.output_dir)
+    logger.info("✅ Fine-tuning completed successfully and adapter weights saved.")
 
 
 # -----------------------------------------------------------------------------
@@ -811,8 +891,8 @@ def main() -> None:
     parser.add_argument(
         "--model_name",
         type=str,
-        default="unsloth/gemma-2-9b-it",
-        help="Base Gemma model repository ID on Hugging Face",
+        default="unsloth/gemma-2-2b-it",
+        help="Base Gemma model repository ID on Hugging Face (default: 2B parameter low-memory)",
     )
     parser.add_argument(
         "--paradigm",
@@ -857,11 +937,35 @@ def main() -> None:
     parser.add_argument("--r", type=int, default=16, help="LoRA rank parameter")
     parser.add_argument("--alpha", type=int, default=32, help="LoRA alpha scaling parameter")
     parser.add_argument("--lr", type=float, default=2e-4, help="Learning rate")
-    parser.add_argument("--batch_size", type=int, default=2, help="Per-device train batch size")
-    parser.add_argument("--grad_accum", type=int, default=4, help="Gradient accumulation steps")
+    parser.add_argument("--batch_size", type=int, default=1, help="Per-device train batch size (default: 1 for 8GB VRAM safety)")
+    parser.add_argument("--grad_accum", type=int, default=8, help="Gradient accumulation steps")
     parser.add_argument("--epochs", type=int, default=3, help="Training epoch count")
     parser.add_argument("--max_steps", type=int, default=-1, help="Max training steps (-1 uses epochs)")
-    parser.add_argument("--max_seq_length", type=int, default=2048, help="Maximum sequence token length")
+    parser.add_argument("--max_seq_length", type=int, default=1024, help="Maximum sequence token length (default: 1024 for low-VRAM)")
+    parser.add_argument(
+        "--cooldown_seconds",
+        type=int,
+        default=45,
+        help="Seconds to pause for thermal cooling and memory garbage collection between steps/epochs",
+    )
+    parser.add_argument(
+        "--cooldown_steps",
+        type=int,
+        default=15,
+        help="Step frequency to trigger thermal cooling pauses",
+    )
+    parser.add_argument(
+        "--low_mem",
+        action="store_true",
+        default=True,
+        help="Enforce ultra low-VRAM guardrails (batch_size=1, grad_accum=8, paged_adamw_8bit, max_seq=1024)",
+    )
+    parser.add_argument(
+        "--lemonade_url",
+        type=str,
+        default="http://localhost:13305/api/v1",
+        help="Local Lemonade Server OpenAI API endpoint for evaluation and dataset distillation",
+    )
     parser.add_argument(
         "--export_gguf",
         type=str,

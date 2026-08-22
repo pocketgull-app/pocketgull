@@ -259,10 +259,15 @@ To prevent context window degradation, attention drift, and token exhaustion:
      * **Australia**: Privacy Act 1988 (APPs), My Health Record Act 2012, TGA SaMD, FHIR AU Base, Lifeline 13 11 14.
      * **New Zealand**: Health Information Privacy Code 2020 (HIPC), NZ HISO 10029/10064, FHIR NZ Base, 1737 Need to Talk.
 11. **Institutional Thin-Client & Multi-Device Resilience Standard**:
-   - **Cross-Form Factor Parity**: Every clinical interface MUST render with zero horizontal blowout and full feature parity across:
-     * `mobile-iphone` (iOS WebKit / Safari viewport dynamics)
-     * `mobile-chrome` (Android Pixel 7)
-     * `tablet-ipad-exam-room` (810x1080 exam room swivel mounts)
-     * `chromebook-school-library` (1366x768 constrained touch kiosks)
-     * `clinical-cow-workstation` (1280x1024 5:4 ratio Citrix/COW workstations)
-   - **Defensive Permission Fallback**: If microphone, camera, or Web Audio permissions are restricted by institutional group policy, the UI MUST gracefully transition to keyboard/text input and visual telemetry without throwing unhandled exceptions.
+    - **Cross-Form Factor Parity**: Every clinical interface MUST render with zero horizontal blowout and full feature parity across:
+      * `mobile-iphone` (iOS WebKit / Safari viewport dynamics)
+      * `mobile-chrome` (Android Pixel 7)
+      * `tablet-ipad-exam-room` (810x1080 exam room swivel mounts)
+      * `chromebook-school-library` (1366x768 constrained touch kiosks)
+      * `clinical-cow-workstation` (1280x1024 5:4 ratio Citrix/COW workstations)
+    - **Defensive Permission Fallback**: If microphone, camera, or Web Audio permissions are restricted by institutional group policy, the UI MUST gracefully transition to keyboard/text input and visual telemetry without throwing unhandled exceptions.
+12. **Domain Encapsulation & "Tell, Don't Ask" Architecture Standard (Anti-Getter Business Logic Bolting)**:
+    - **Prohibition of Bolting External Logic on Getters**: NEVER reuse or query an existing getter simply to extract raw state and bolt new business logic, domain calculations, or state mutations externally on the caller side.
+    - **"Tell, Don't Ask" Principle**: Direct objects to perform domain actions and calculate their own results. Move operations to the entity, model, or domain service that owns the relevant data and business invariants.
+    - **Intent-Revealing Domain Methods**: When new business capabilities or workflows arise, create explicit, purpose-built domain methods directly on the owning class rather than chaining logic around generic property accessors.
+    - **Prevent Feature Envy & Anemic Domain Models**: Encapsulate validation, invariants, and multi-field transformations within domain boundaries rather than scattering raw getter computations across UI components and callers.

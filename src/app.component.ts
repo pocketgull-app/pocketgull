@@ -69,6 +69,9 @@ import { EncryptedVaultModalComponent } from './components/shared/encrypted-vaul
 import { SmartFhirSyncModalComponent } from './components/shared/smart-fhir-sync-modal.component';
 import { GlobalHealthInitiativesModalComponent } from './components/shared/global-health-initiatives-modal.component';
 import { ArticlesReaderComponent } from './components/articles-reader.component';
+import { VertexModelGardenPortalComponent } from './components/vertex-model-garden-portal.component';
+import { TalentHrPortalComponent } from './components/talent-hr-portal.component';
+import { OsceCaseSimulatorComponent } from './components/osce-case-simulator.component';
 
 @Component({
   selector: 'app-root',
@@ -113,7 +116,10 @@ import { ArticlesReaderComponent } from './components/articles-reader.component'
     EncryptedVaultModalComponent,
     SmartFhirSyncModalComponent,
     GlobalHealthInitiativesModalComponent,
-    ArticlesReaderComponent
+    ArticlesReaderComponent,
+    VertexModelGardenPortalComponent,
+    TalentHrPortalComponent,
+    OsceCaseSimulatorComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -378,6 +384,8 @@ import { ArticlesReaderComponent } from './components/articles-reader.component'
 
         <app-main-header-nav
           (openSocraticIntake)="state.toggleSocraticIntake(true)"
+          (openModelGarden)="showModelGardenModal.set(true)"
+          (openTalentHrPortal)="showTalentHrPortalModal.set(true)"
           (openCompanionSync)="showCompanionSyncModal.set(true)"
           (openBioNetworkQr)="showCompanionSyncModal.set(true)"
           (openBillingDashboard)="showBillingDashboard.set(true)"
@@ -645,6 +653,38 @@ import { ArticlesReaderComponent } from './components/articles-reader.component'
              }
           }
         </div>
+
+        <!-- Institutional, Careers & Clinical Transparency Footer -->
+        <footer class="border-t border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md px-4 sm:px-8 py-3.5 no-print text-xs text-zinc-500 dark:text-zinc-400 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 z-10 shadow-xs">
+          <div class="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs">
+            <span class="font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">PocketGull Clinical Intelligence</span>
+            <span class="text-zinc-400 dark:text-zinc-600 hidden sm:inline">•</span>
+            <span class="text-zinc-500 dark:text-zinc-400 hidden sm:inline">Five Eyes Sovereignty &amp; HIPAA Safe Harbor</span>
+          </div>
+          <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-5 font-semibold text-[11px] sm:text-xs">
+            <button type="button" (click)="showOsceSimulatorModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>🎓 Case Simulator</span>
+            </button>
+            <button type="button" (click)="showTalentHrPortalModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>🤝 Join Team &amp; Fellowships</span>
+            </button>
+            <button type="button" (click)="showModelGardenModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>🌿 Vertex Model Garden</span>
+            </button>
+            <button type="button" (click)="showBillingDashboard.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>💳 Subscriptions</span>
+            </button>
+            <button type="button" (click)="showApiPricing.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>⚡ API Pricing</span>
+            </button>
+            <button type="button" (click)="showArticlesModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>📰 Articles</span>
+            </button>
+            <button type="button" (click)="showDocsStudy.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>📚 Docs</span>
+            </button>
+          </div>
+        </footer>
       }
         
         @if(state.isResearchFrameVisible()) {
@@ -694,6 +734,81 @@ import { ArticlesReaderComponent } from './components/articles-reader.component'
     <!-- Native Angular Documentation Suite -->
     @if (showDocsStudy()) {
       <app-docs-study></app-docs-study>
+    }
+
+    <!-- Vertex AI Model Garden & Developer API Portal Modal Site -->
+    @if (showModelGardenModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-300 no-print" role="dialog" aria-modal="true" aria-labelledby="model-garden-title">
+        <div class="relative w-full max-w-7xl max-h-[92vh] bg-zinc-950 rounded-3xl shadow-2xl border border-teal-900/50 overflow-y-auto flex flex-col">
+          <div class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800">
+            <div class="flex items-center gap-3">
+              <span class="p-2 rounded-xl bg-teal-950/60 text-teal-400 text-lg border border-teal-500/30">🌿</span>
+              <div>
+                <h2 id="model-garden-title" class="text-sm font-bold uppercase tracking-widest text-zinc-100">PocketGull Vertex AI Model Garden & Developer Hub</h2>
+                <p class="text-xs text-zinc-400">Enterprise Specialty Model Registry • Calibrated Probabilities • 1-Click Cloud Deployment</p>
+              </div>
+            </div>
+            <button (click)="showModelGardenModal.set(false)" 
+                    aria-label="Close Model Garden"
+                    class="px-3.5 py-1.5 bg-zinc-800 hover:bg-rose-600 text-zinc-200 hover:text-white rounded-full transition-colors font-bold text-xs cursor-pointer border border-zinc-700">
+              ✕ Close Garden
+            </button>
+          </div>
+          <div class="p-4 sm:p-6">
+            <app-vertex-model-garden-portal />
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Human Resources & Domain Specialist Agent-Wrangling Portal Modal Site -->
+    @if (showTalentHrPortalModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-300 no-print" role="dialog" aria-modal="true" aria-labelledby="talent-portal-title">
+        <div class="relative w-full max-w-7xl max-h-[92vh] bg-zinc-950 rounded-3xl shadow-2xl border border-teal-900/50 overflow-y-auto flex flex-col">
+          <div class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800">
+            <div class="flex items-center gap-3">
+              <span class="p-2 rounded-xl bg-teal-950/60 text-teal-400 text-lg border border-teal-500/30">🤝</span>
+              <div>
+                <h2 id="talent-portal-title" class="text-sm font-bold uppercase tracking-widest text-zinc-100">PocketGull Human Resources &amp; Domain Specialist Network</h2>
+                <p class="text-xs text-zinc-400">Join the Team • Steer &amp; Wrangle Autonomous Clinical Agents • Regenerative Fellowships</p>
+              </div>
+            </div>
+            <button (click)="showTalentHrPortalModal.set(false)" 
+                    aria-label="Close Talent Portal"
+                    class="px-3.5 py-1.5 bg-zinc-800 hover:bg-rose-600 text-zinc-200 hover:text-white rounded-full transition-colors font-bold text-xs cursor-pointer border border-zinc-700">
+              ✕ Close Portal
+            </button>
+          </div>
+          <div class="p-4 sm:p-6">
+            <app-talent-hr-portal />
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Socratic Clinical Case Simulator & OSCE Flight Arena Modal -->
+    @if (showOsceSimulatorModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-300 no-print" role="dialog" aria-modal="true" aria-labelledby="osce-modal-title">
+        <div class="relative w-full max-w-7xl max-h-[92vh] bg-zinc-950 rounded-3xl shadow-2xl border border-teal-900/50 overflow-y-auto flex flex-col">
+          <div class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800">
+            <div class="flex items-center gap-3">
+              <span class="p-2 rounded-xl bg-teal-950/60 text-teal-400 text-lg border border-teal-500/30">🎓</span>
+              <div>
+                <h2 id="osce-modal-title" class="text-sm font-bold uppercase tracking-widest text-zinc-100">PocketGull Socratic Clinical Case Simulator</h2>
+                <p class="text-xs text-zinc-400">Diagnostic Flight Simulator • Socratic Preceptor Guidance • Board Exam Evaluator</p>
+              </div>
+            </div>
+            <button (click)="showOsceSimulatorModal.set(false)" 
+                    aria-label="Close Case Simulator"
+                    class="px-3.5 py-1.5 bg-zinc-800 hover:bg-rose-600 text-zinc-200 hover:text-white rounded-full transition-colors font-bold text-xs cursor-pointer border border-zinc-700">
+              ✕ Close Simulator
+            </button>
+          </div>
+          <div class="p-4 sm:p-6">
+            <app-osce-case-simulator />
+          </div>
+        </div>
+      </div>
     }
 
     <!-- WordPress Articles & 6th Grade / Bionic Knowledge Hub Modal -->
@@ -1060,6 +1175,9 @@ export class AppComponent implements OnDestroy {
   showApiPricing = signal(false);
   showPatientPortal = signal(false);
   showClinicianOnboarding = signal(false);
+  showModelGardenModal = signal(false);
+  showTalentHrPortalModal = signal(false);
+  showOsceSimulatorModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
   readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);

@@ -4,13 +4,13 @@ describe('ClinicalEvalsService', () => {
   const service = new ClinicalEvalsService();
 
   it('should initialize with golden clinical scenarios', () => {
-    expect(service.scenarios().length).toBe(5);
+    expect(service.scenarios().length).toBe(11);
   });
 
   it('should run full evaluation suite and pass all scenarios with 100% safety rate', () => {
     const summary = service.runFullEvaluationSuite();
-    expect(summary.totalScenarios).toBe(5);
-    expect(summary.passedCount).toBe(5);
+    expect(summary.totalScenarios).toBe(11);
+    expect(summary.passedCount).toBe(11);
     expect(summary.averageScore).toBe(100);
     expect(summary.safetyAdherenceRate).toBe(100);
     expect(service.latestSuiteSummary()).toEqual(summary);

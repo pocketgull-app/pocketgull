@@ -128,3 +128,9 @@ export class MetricCardComponent {
   - `clinical-cow-workstation` (1280x1024 5:4 ratio Citrix/COW workstations)
 - **Defensive Permission Fallback**: If microphone, camera, or Web Audio permissions are restricted by institutional group policy, the UI MUST gracefully transition to keyboard/text input and visual telemetry without throwing unhandled exceptions.
 
+## Domain Encapsulation & "Tell, Don't Ask" Standard (Anti-Getter Business Logic Bolting)
+- **Prohibition of Bolting External Logic on Getters**: NEVER reuse or call an existing getter simply to extract raw internal state and bolt new business rules, mutative calculations, or domain workflows onto the caller side outside the owning entity or service.
+- **"Tell, Don't Ask" Enforcement**: Keep domain behavior, state transitions, and validation invariants encapsulated within the class, entity, or service that owns the underlying data.
+- **Intent-Revealing Domain Methods**: When a new business capability or computational requirement is needed, introduce an explicit, purpose-built domain method on the owning model/service rather than leaking raw state and performing external ad-hoc assembly.
+- **Prevention of Feature Envy & Anemic Models**: Ensure business calculations (such as clinical score aggregations, dosage calibrations, or state transitions) remain cohesive within their domain boundaries.
+
