@@ -22,16 +22,72 @@ export function createBillingRouter() {
     message: { error: 'Too many billing requests.' }
   });
 
-  router.post('/checkout', limiter, express.json(), async (req, res) => {
+  const handleCheckoutRequest = async (req: express.Request, res: express.Response) => {
     try {
-      const { priceId, tier, successUrl, cancelUrl, customerEmail, endowmentFund, revenueSplit } = req.body || {};
+      const isGet = req.method === 'GET';
+      const params = isGet ? req.query : req.body;
+      const { priceId, tier, successUrl, cancelUrl, customerEmail, endowmentFund, revenueSplit } = params || {};
       const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
 
       let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
       let mode: Stripe.Checkout.SessionCreateParams.Mode = 'subscription';
 
       if (priceId) {
-        lineItems = [{ price: priceId, quantity: 1 }];
+        lineItems = [{ price: String(priceId), quantity: 1 }];
+      } else if (tier === 'founder_lifetime' || tier === 'founder' || tier === 'lifetime') {
+        mode = 'payment';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Lifetime Solo Founder License',
+              description: '100% on-device offline AI scribing forever, standard SOAP templates, EHR export, and lifetime software updates (Zero recurring monthly fees).',
+            },
+            unit_amount: 29900, // $299.00
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'clinic_annual' || tier === 'annual') {
+        mode = 'subscription';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Clinic Pro (Annual Pass - 2 Months Free)',
+              description: 'Ambient AI voice scribing, custom specialty note templates, medication & herb-drug safety screening, priority clinician support & onboarding.',
+            },
+            unit_amount: 49000, // $490.00 / yr
+            recurring: { interval: 'year' },
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'clinic_onboarding' || tier === 'onboarding') {
+        mode = 'payment';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Clinic Turnkey Onboarding & Custom EHR Integration',
+              description: 'Up to 5 clinician licenses, white-glove EHR template customization, 1-on-1 workflow integration, dedicated HIPAA BAA.',
+            },
+            unit_amount: 125000, // $1,250.00
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'clinic_pro_monthly' || tier === 'practitioner' || tier === 'monthly') {
+        mode = 'subscription';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Clinic Pro (Monthly)',
+              description: 'Ambient AI voice scribing, custom specialty templates, medication & herb-drug safety checker, priority support.',
+            },
+            unit_amount: 4900, // $49.00 / mo
+            recurring: { interval: 'month' },
+          },
+          quantity: 1,
+        }];
       } else if (tier === 'pilot') {
         mode = 'subscription';
         lineItems = [{
@@ -88,30 +144,46 @@ export function createBillingRouter() {
           quantity: 1,
         }];
       } else {
-        return res.status(400).json({ error: 'A valid priceId or tier (pilot, sprint, academic, enterprise) is required.' });
+        return res.status(400).json({ error: 'A valid priceId or tier (founder_lifetime, clinic_annual, clinic_onboarding, clinic_pro_monthly, academic, enterprise) is required.' });
       }
 
-      // Create a Stripe Checkout Session
+      // Check if Stripe key is configured or in simulated mode
+      const stripeKey = process.env['STRIPE_SECRET_KEY'];
+      if (!stripeKey || stripeKey === 'sk_test_placeholder') {
+        const fallbackUrl = `https://pocketgull.app/?checkout_tier=${encodeURIComponent(String(tier || 'pro'))}&status=simulated_checkout`;
+        if (isGet) {
+          return res.redirect(303, fallbackUrl);
+        }
+        return res.json({ url: fallbackUrl, sessionId: 'cs_simulated_' + Date.now() });
+      }
+
+      // Create a live Stripe Checkout Session
       const session = await getStripe().checkout.sessions.create({
         line_items: lineItems,
         mode: mode,
-        success_url: successUrl || `${origin}/?billing=success&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: cancelUrl || `${origin}/?billing=canceled`,
-        customer_email: customerEmail,
+        success_url: String(successUrl || `${origin}/?billing=success&session_id={CHECKOUT_SESSION_ID}`),
+        cancel_url: String(cancelUrl || `${origin}/?billing=canceled`),
+        customer_email: customerEmail ? String(customerEmail) : undefined,
         metadata: {
-          tier: tier || 'custom',
-          endowment_fund: endowmentFund || 'Alumni Health & Research Endowment',
-          revenue_split: revenueSplit || '50-30-20',
+          tier: String(tier || 'custom'),
+          endowment_fund: String(endowmentFund || 'Alumni Health & Research Endowment'),
+          revenue_split: String(revenueSplit || '50-30-20'),
           founder_dispensation: 'true'
         }
       });
 
+      if (isGet) {
+        return res.redirect(303, session.url!);
+      }
       res.json({ url: session.url, sessionId: session.id });
     } catch (err: any) {
       console.error('[Billing] Error creating checkout session:', err.message);
       res.status(500).json({ error: 'Failed to create checkout session', detail: err.message });
     }
-  });
+  };
+
+  router.post('/checkout', limiter, express.json(), handleCheckoutRequest);
+  router.get('/checkout', limiter, handleCheckoutRequest);
 
   router.post('/portal', limiter, express.json(), async (req, res) => {
     try {

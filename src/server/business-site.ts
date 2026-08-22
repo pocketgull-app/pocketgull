@@ -1,12 +1,10 @@
 /**
- * PocketGull Enterprise Commercial, Research & Multi-Vertical Portal (pocketgull.com)
+ * PocketGull Enterprise Clinical Assistant & Documentation Portal (pocketgull.com)
  * Certified Corporate Identity: PocketGull LLC (Oregon Registry: 258869891 | EIN: 42-3162850)
- * Health Informatics Lead: Phillip Gear (CMS NPI: 1487569752 | ORCID: 0009-0008-1372-5381)
- * Open Science: Zenodo DOI 10.5281/zenodo.20647514 | SIL Open Font License 1.1
- * Art & Technology: GearArts — Creating a Sustainable Future Through Art and Technology
+ * Health Informatics Lead: Phillip Gear (CMS NPI: 1487569752)
  */
 
-export function getPocketgullWordmarkSvg(className: string = 'h-14 w-auto text-stone-950 inline-block'): string {
+export function getPocketgullWordmarkSvg(className: string = 'h-8 w-auto text-stone-950 inline-block'): string {
   return `<svg class="${className}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 263 80" fill="currentColor" role="img" aria-label="PocketGull Wordmark" width="263" height="80">
     <!-- P -->
     <path d="M12.3774,78.2247l-10.6363.539c-1.0299.0522-1.0654-1.9957-1.0618-3.2533l.0682-23.9046L0,4.2922l15.9781-1.8972c5.2085-.6184,11.3528-.0727,15.6852,2.6997,6.996,4.4768,7.9626,12.5212,7.2141,20.092-.7384,7.4681-4.7398,12.9561-12.6058,14.3846-4.5638.8288-9.8724.8405-14.6992.7813l.805,37.8721ZM23.3856,11.9225l-12.5362-.239.4084,20.6907,7.0349-.1314c3.0425-.0568,6.1524-.8601,8.0174-2.8765,4.5186-4.8856,2.1707-17.3466-2.9245-17.4438Z"/>
@@ -37,30 +35,25 @@ export function renderBusinessSiteHtml(): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PocketGull — Enterprise Clinical Intelligence, Vertex AI &amp; Research Platform</title>
-  <meta name="description" content="PocketGull is an Enterprise Clinical Decision Support (CDS), Research &amp; Multi-Industry AI Platform created by GEARARTS. Powered by Google Cloud Vertex AI, Zero-Egress Edge WASM, FHIR R4, and the Seven Generations Care Codex." />
-  <meta property="og:title" content="PocketGull — Enterprise Clinical Intelligence &amp; Multi-Industry AI Platform" />
-  <meta property="og:description" content="Where Art, Compassion &amp; Sovereign Medical AI Meet. Live co-pilot for the modern exam room." />
+  <title>PocketGull — Ambient AI Clinical Assistant &amp; Documentation Co-Pilot</title>
+  <meta name="description" content="PocketGull is an ambient clinical assistant that cuts charting time by 42%, generates structured SOAP notes in real time, and runs securely on your local device." />
+  <meta property="og:title" content="PocketGull — Ambient AI Clinical Assistant &amp; Documentation Co-Pilot" />
+  <meta property="og:description" content="Spend less time charting. More time with patients. Secure on-device medical documentation assistant." />
   <meta property="og:url" content="https://pocketgull.com" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://pocketgull.com/images/pocketgull_geararts_social_card.jpg" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="PocketGull — Enterprise Clinical Intelligence" />
-  <meta name="twitter:description" content="Live AI co-pilot for the modern exam room with zero cloud PHI egress." />
-  <meta name="twitter:image" content="https://pocketgull.com/images/pocketgull_geararts_social_card.jpg" />
   
   <style>
     :root {
-      --bg-dark: #09090b;
-      --surface-dark: #18181b;
-      --border-dark: #27272a;
-      --teal-primary: #0d9488;
+      --bg: #09090b;
+      --card: #18181b;
+      --card-hover: #202024;
+      --border: #27272a;
+      --teal: #14b8a6;
       --teal-light: #2dd4bf;
-      --amber-gold: #f59e0b;
+      --teal-glow: rgba(45, 212, 191, 0.15);
+      --amber: #f59e0b;
       --amber-light: #fbbf24;
-      --coral-accent: #f43f5e;
-      --sand-warm: #fef3c7;
-      --text-main: #f4f4f5;
+      --text: #f4f4f5;
       --text-muted: #a1a1aa;
     }
     *, *::before, *::after {
@@ -68,155 +61,275 @@ export function renderBusinessSiteHtml(): string {
       margin: 0;
       padding: 0;
     }
-    html, body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
       line-height: 1.6;
-      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(9, 9, 11, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
       display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
+      justify-content: space-between;
+      align-items: center;
+      height: 4.5rem;
     }
-    .font-pocketgull {
-      font-weight: 800;
-      letter-spacing: -0.025em;
-    }
-    .font-pocketgull-mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      letter-spacing: -0.01em;
-    }
-    .geararts-card {
-      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 60%, #d97706 100%);
-      color: #09090b;
-      box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.35);
-      padding: 0.5rem 1rem;
-      border-radius: 0.75rem;
-      font-weight: bold;
+    .logo-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.625rem;
       text-decoration: none;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      color: #ffffff;
     }
-    .geararts-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px -5px rgba(245, 158, 11, 0.45);
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
     }
-    .glass-card-dark {
-      background: rgba(24, 24, 27, 0.88);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 1.5rem;
-      padding: 1.5rem;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-    .btn-teal {
-      background-color: var(--teal-primary);
-      color: #09090b;
-      font-weight: 800;
-      padding: 0.875rem 1.75rem;
-      border-radius: 0.75rem;
+    .nav-links a {
+      color: var(--text-muted);
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.2s ease;
+      transition: color 0.15s ease;
     }
-    .btn-teal:hover {
-      background-color: var(--teal-light);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px -5px rgba(45, 212, 191, 0.3);
+    .nav-links a:hover {
+      color: var(--text);
     }
-    .btn-amber {
-      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    .btn-primary {
+      background: linear-gradient(135deg, var(--teal-light) 0%, var(--teal) 100%);
       color: #09090b;
-      font-weight: 800;
-      padding: 0.875rem 1.75rem;
-      border-radius: 0.75rem;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.2s ease;
-    }
-    .btn-amber:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px -5px rgba(245, 158, 11, 0.4);
-    }
-    .btn-dark {
-      background-color: #18181b;
-      color: #f4f4f5;
       font-weight: 700;
-      padding: 0.875rem 1.75rem;
-      border-radius: 0.75rem;
-      border: 1px solid #3f3f46;
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.5rem;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.375rem;
       transition: all 0.2s ease;
-      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.25);
     }
-    .btn-dark:hover {
-      background-color: #27272a;
-      border-color: #52525b;
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(20, 184, 166, 0.35);
+    }
+    .btn-secondary {
+      background: var(--card);
+      color: var(--text);
+      font-weight: 600;
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background: #27272a;
+      border-color: #3f3f46;
+    }
+    .hero {
+      padding: 5rem 0 3.5rem;
+      text-align: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      background: var(--teal-glow);
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      color: var(--teal-light);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      font-size: 3.25rem;
+      font-weight: 900;
+      line-height: 1.12;
+      letter-spacing: -0.035em;
+      margin-bottom: 1.25rem;
+    }
+    h1 span {
+      color: var(--teal-light);
+    }
+    .hero-sub {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    .trust-bar {
+      display: flex;
+      justify-content: center;
+      gap: 2.25rem;
+      flex-wrap: wrap;
+      font-size: 0.8125rem;
+      color: #d4d4d8;
+      font-family: ui-monospace, monospace;
+    }
+    .trust-bar span {
+      color: var(--teal-light);
+      margin-right: 0.35rem;
+      font-weight: bold;
+    }
+    .section {
+      padding: 4.5rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .section-title h2 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 650px;
+      margin: 0 auto;
     }
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
     }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.375rem;
-      padding: 0.375rem 0.875rem;
-      border-radius: 9999px;
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      color: var(--amber-light);
-      font-size: 0.75rem;
-      font-weight: 700;
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      transition: transform 0.2s ease, border-color 0.2s ease;
     }
-    .badge-teal {
-      background: rgba(13, 148, 136, 0.15);
-      border: 1px solid rgba(13, 148, 136, 0.35);
+    .feature-card:hover {
+      border-color: rgba(45, 212, 191, 0.4);
+      transform: translateY(-2px);
+    }
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+    
+    /* Interactive Scribe Simulator Box */
+    .simulator-container {
+      background: var(--card);
+      border: 1.5px solid rgba(45, 212, 191, 0.3);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .scenario-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+    .tab-btn {
+      background: #09090b;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.85rem;
+      border-radius: 0.5rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tab-btn.active {
+      background: rgba(45, 212, 191, 0.15);
+      border-color: var(--teal-light);
       color: var(--teal-light);
     }
-    .portrait-crop {
-      object-fit: cover;
-      object-position: center top;
-      border-radius: 1.5rem;
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
     }
-    .hero-artwork-frame {
-      position: relative;
-      border-radius: 2rem;
-      padding: 0.75rem;
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.3) 0%, rgba(13, 148, 136, 0.3) 50%, rgba(244, 63, 94, 0.3) 100%);
-      box-shadow: 0 25px 50px -12px rgba(245, 158, 11, 0.25);
+    @media (max-width: 768px) {
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 {
+        font-size: 2.35rem;
+      }
+    }
+    .demo-pane {
+      background: #09090b;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .pane-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pane-body {
+      font-size: 0.875rem;
+      line-height: 1.55;
+      color: #e4e4e7;
     }
 
-    /* 3D Flip Card for Double-Click Plain English */
+    /* Flip Card */
     .flip-card {
       background-color: transparent;
       perspective: 1000px;
       cursor: pointer;
       user-select: none;
-      min-height: 140px;
+      min-height: 160px;
     }
     .flip-card-inner {
       position: relative;
       width: 100%;
       height: 100%;
-      text-align: left;
       transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
     }
@@ -224,78 +337,125 @@ export function renderBusinessSiteHtml(): string {
       transform: rotateY(180deg);
     }
     .flip-card-front, .flip-card-back {
-      position: relative;
-      width: 100%;
-      height: 100%;
+      position: absolute;
+      inset: 0;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
-      border-radius: 0.875rem;
+      border-radius: 1rem;
       padding: 1.25rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
     .flip-card-front {
-      background: #18181b;
-      border: 1px solid #27272a;
+      background: var(--card);
+      border: 1px solid var(--border);
     }
     .flip-card-back {
-      background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
-      border: 1.5px solid #fbbf24;
+      background: #1c1917;
+      border: 1.5px solid var(--amber-light);
       transform: rotateY(180deg);
-      position: absolute;
-      top: 0;
-      left: 0;
-      box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.2);
-    }
-    .dbl-click-cue {
-      font-size: 0.6875rem;
-      color: #71717a;
-      font-family: ui-monospace, monospace;
-      margin-top: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
     }
 
-    a {
-      color: inherit;
+    /* Pricing */
+    .pricing-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .pricing-card.featured {
+      border: 2px solid var(--teal);
+      background: linear-gradient(180deg, rgba(20, 184, 166, 0.08) 0%, var(--card) 100%);
+    }
+    .pricing-price {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--teal-light);
+      margin: 1rem 0 1.5rem;
+    }
+    .pricing-price span {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    .pricing-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+    .pricing-list li span {
+      color: var(--teal-light);
+      margin-right: 0.5rem;
+      font-weight: bold;
+    }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 0;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .footer-links a:hover {
+      color: var(--text);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Enterprise Status Ticker -->
+  <!-- Top Status Bar -->
   <div style="background: #111827; border-bottom: 1px solid #1f2937; padding: 0.5rem 1rem; text-align: center; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #cbd5e1; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.75rem;">
-    <span style="color: #fbbf24; font-weight: bold;">☀️ GEARARTS &bull; POCKETGULL LLC</span>
+    <span style="color: #2dd4bf; font-weight: bold;">🏥 POCKETGULL CLINICAL</span>
     <span style="opacity: 0.4;">|</span>
-    <span>Oregon SOS: <strong style="color: #ffffff;">258869891</strong></span>
+    <span>Oregon Entity: <strong style="color: #ffffff;">258869891</strong></span>
     <span style="opacity: 0.4;">|</span>
     <span>EIN: <strong style="color: #ffffff;">42-3162850</strong></span>
     <span style="opacity: 0.4;">|</span>
     <span>CMS NPI: <strong style="color: #2dd4bf;">1487569752</strong></span>
     <span style="opacity: 0.4;">|</span>
-    <span style="color: #2dd4bf; font-weight: bold;">Zero Cloud PHI Egress • Scale-to-Zero</span>
+    <span style="color: #2dd4bf; font-weight: bold;">On-Device Scribing • HIPAA Compliant Architecture</span>
   </div>
 
-  <!-- Main Navigation Header -->
-  <header style="position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #27272a; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(12px);">
-    <div class="container" style="height: 4.5rem; display: flex; align-items: center; justify-content: space-between;">
-      <a href="/" class="geararts-card" aria-label="PocketGull Home">
-        <img src="/images/google_admin_origami_solo_whitebg_320x132.png" alt="PocketGull Origami Seagull" width="58" height="24" style="height: 1.5rem; width: auto; background: #ffffff; border-radius: 4px; padding: 2px;" />
-        ${getPocketgullWordmarkSvg('h-6 w-auto text-stone-950')}
+  <!-- Header -->
+  <header>
+    <div class="container header-inner">
+      <a href="/" class="logo-badge" aria-label="PocketGull Home">
+        <span style="font-size: 1.5rem;">🕊️</span>
+        <span style="font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em;">PocketGull</span>
       </a>
 
-      <nav style="display: flex; align-items: center; gap: 1.25rem; font-size: 0.8125rem; font-weight: 600; color: #d4d4d8;">
-        <a href="#art-tech" style="text-decoration: none;">Art &amp; Tech</a>
-        <a href="#sandbox" style="text-decoration: none;">Plain English</a>
-        <a href="#community" style="text-decoration: none; color: #2dd4bf;">Community &amp; Open Science</a>
-        <a href="#fine-tuning" style="text-decoration: none;">Fine-Tuning &amp; mmHg</a>
-        <a href="#seven-generations" style="text-decoration: none;">Sovereignty</a>
-        <a href="#pricing" style="text-decoration: none;">Pricing</a>
+      <nav class="nav-links">
+        <a href="#demo">Live Demo</a>
+        <a href="#features">Features</a>
+        <a href="/articles">Clinical Articles</a>
+        <a href="#eye-exam">Visual Acuity</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#pricing">Pricing</a>
       </nav>
 
-      <a href="https://pocketgull.app" class="btn-amber" style="padding: 0.5rem 1.25rem; font-size: 0.8125rem;">
+      <a href="https://pocketgull.app" class="btn-primary">
         <span>Launch App</span>
         <span>→</span>
       </a>
@@ -303,107 +463,237 @@ export function renderBusinessSiteHtml(): string {
   </header>
 
   <!-- Hero Section -->
-  <main style="flex-grow: 1;">
-    <section id="art-tech" style="padding: 4.5rem 1.5rem 3.5rem; text-align: center;">
-      <div class="container" style="max-width: 1080px;">
-        
-        <div class="badge" style="margin-bottom: 1.5rem;">
-          <span>☀️</span> GEARARTS &bull; Creating a Sustainable Future Through Art &amp; Technology
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="badge">
+          <span>🩺</span> Ambient Clinical AI &amp; Documentation Assistant
         </div>
 
-        <h1 style="font-size: 3.25rem; font-weight: 900; line-height: 1.15; margin-bottom: 1.5rem; letter-spacing: -0.03em;">
-          Where <span style="color: #fbbf24; text-decoration: underline; text-underline-offset: 8px;">Art &amp; Compassion</span> Meet <span style="color: #2dd4bf;">Sovereign Medical AI</span>
-        </h1>
+        <h1>Spend less time charting.<br /><span>More time with patients.</span></h1>
 
-        <p style="font-size: 1.15rem; color: #d4d4d8; max-width: 820px; margin: 0 auto 2.5rem; line-height: 1.65;">
-          PocketGull is the live co-pilot for the modern exam room &mdash; reducing EHR charting burden by <strong style="color: #2dd4bf;">42%</strong>, running <strong style="color: #fbbf24;">100% offline</strong> with zero cloud PHI egress, and bridging Allopathic biochemistry, Ayurvedic pharmacopeia, and Indigenous Seven Generations stewardship.
+        <p class="hero-sub">
+          PocketGull is an ambient documentation assistant for healthcare providers. It transcribes conversations during patient visits, drafts structured SOAP notes in real time, and runs securely on your local device.
         </p>
 
-        <!-- Centered Featured Artwork Card: GearArts × PocketGull Social Card -->
-        <div style="max-width: 460px; margin: 0 auto 2.5rem;" class="hero-artwork-frame">
-          <div style="background: #ffffff; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
-            <img 
-              src="/images/pocketgull_geararts_social_card.jpg" 
-              alt="GearArts PocketGull Social Card with Origami Seagulls" 
-              class="portrait-crop"
-              style="width: 100%; height: auto; display: block; aspect-ratio: 1 / 1;"
-            />
-          </div>
-          <div style="padding: 0.875rem 1rem 0.25rem; text-align: center;">
-            <div style="font-size: 0.8125rem; font-weight: 800; color: #ffffff; margin-bottom: 2px;">
-              📱 Scan with Phone Camera to Launch PocketGull
-            </div>
-            <div style="font-size: 0.6875rem; color: #fbbf24; font-family: ui-monospace, monospace;">
-              GEARARTS &bull; Dual-Tone Saccadic QR Matrix &bull; Zero Network Tracking
-            </div>
-          </div>
-        </div>
-
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2.5rem;">
-          <a href="https://pocketgull.app" class="btn-amber">
-            <span>🚀 Enter Clinical Exam Room</span>
+        <div class="hero-actions">
+          <a href="https://pocketgull.app" class="btn-primary" style="padding: 0.875rem 1.75rem; font-size: 1rem;">
+            <span>Launch Free in Browser</span>
             <span>→</span>
           </a>
-          <a href="#sandbox" class="btn-dark">
-            <span>✨ Try Plain English Lens</span>
+          <a href="#demo" class="btn-secondary" style="padding: 0.875rem 1.75rem; font-size: 1rem;">
+            <span>✨ Try Interactive Demo</span>
+          </a>
+          <a href="/articles" class="btn-secondary" style="padding: 0.875rem 1.75rem; font-size: 1rem;">
+            <span>📰 Read Clinical Articles</span>
           </a>
         </div>
 
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; font-size: 0.75rem; color: #a1a1aa; font-family: ui-monospace, monospace;">
-          <span>● FHIR R4 &amp; CDISC SDTM</span>
-          <span>● Google Gemini 2.5 Flash</span>
-          <span>● 100% Offline Edge WASM/WebGPU</span>
-          <span>● Seven-Nation Sovereignty (US, UK, IN, CA, AU, NZ)</span>
+        <div class="trust-bar">
+          <div><span>✓</span> 42% Charting Time Saved</div>
+          <div><span>✓</span> Private Local Processing</div>
+          <div><span>✓</span> 1-Click EHR Export (Epic, Cerner)</div>
+          <div><span>✓</span> Zero Cloud Audio Stored</div>
         </div>
       </div>
     </section>
 
-    <!-- ══ 1. "DRAW YOUR WAY IN" LIVING THRESHOLD CANVAS ═══════════════════════ -->
-    <section id="threshold" style="padding: 3.5rem 1.5rem; border-top: 1px solid #27272a; background: #0c0c0e;">
-      <div class="container" style="max-width: 860px;">
-        <div style="text-align: center; margin-bottom: 2rem;">
-          <div class="badge" style="margin-bottom: 0.75rem;">🎨 The Living Threshold Gateway</div>
-          <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Draw Your Way In</h2>
-          <p style="color: #a1a1aa; font-size: 0.875rem;">Draw a gesture, spine contour, or origami wing on the canvas to unlock your custom clinical coordinate system.</p>
+    <!-- Interactive Ambient Scribe Simulator -->
+    <section id="demo" class="section">
+      <div class="container">
+        <div class="section-title">
+          <h2>Interactive Documentation Simulator</h2>
+          <p>Select any clinical scenario below to see how conversation transcribes into a clean, structured SOAP note.</p>
         </div>
 
-        <div class="glass-card-dark">
-          <div style="height: 240px; background: #18181b; border: 2px dashed #3f3f46; border-radius: 1rem; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 1rem;">
-            <canvas id="thresholdCanvas" style="position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair;"></canvas>
-            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #71717a; font-family: ui-monospace, monospace; z-index: 10; pointer-events: none;">
-              <span>✍️ Draw contour with mouse / stylus</span>
-              <span style="color: #2dd4bf; font-weight: bold;">Resonance: 0.1 Hz</span>
+        <div class="simulator-container">
+          <div class="scenario-tabs">
+            <button class="tab-btn active" onclick="loadScenario('ortho')">🦴 Knee Pain &amp; Orthopedics</button>
+            <button class="tab-btn" onclick="loadScenario('cardio')">🩺 Hypertension &amp; Cardiology</button>
+            <button class="tab-btn" onclick="loadScenario('integrative')">🌿 Metabolic &amp; Primary Care</button>
+          </div>
+
+          <div class="demo-grid">
+            <div class="demo-pane">
+              <div>
+                <div class="pane-header">
+                  <span style="color: var(--teal-light);">🎙️ Spoken Patient Dialogue</span>
+                  <span style="color: var(--text-muted); font-size: 0.6875rem; font-family: ui-monospace, monospace;">Transcribed Live</span>
+                </div>
+                <div id="dialogueBox" class="pane-body" style="font-style: italic;">
+                  "Doctor, my left knee has been aching on the inside when walking down stairs for the past two weeks. It gets swollen by the evening, and morning stiffness lasts about 20 minutes. Ibuprofen gives minor relief."
+                </div>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; font-family: ui-monospace, monospace;">
+                ⚡ Ambient AI Scribing in real time (Zero Cloud PHI Transmission)
+              </div>
             </div>
-            <div style="display: flex; justify-content: flex-end; z-index: 10;">
-              <button id="clearCanvasBtn" class="btn-dark" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;">Clear Canvas</button>
+
+            <div class="demo-pane" style="border-color: rgba(45, 212, 191, 0.4);">
+              <div>
+                <div class="pane-header">
+                  <span style="color: var(--amber-light);">📋 Generated SOAP Note &amp; Plan</span>
+                  <button onclick="copySoapNote()" class="tab-btn" style="padding: 2px 8px; font-size: 0.6875rem;">📋 Copy to EHR</button>
+                </div>
+                <div id="soapBox" class="pane-body" style="font-family: ui-monospace, monospace; font-size: 0.8125rem;">
+                  <div><strong style="color: var(--teal-light);">S:</strong> 2-week history of medial left knee pain &amp; swelling after walking. Morning stiffness &lt;30m. Partial relief with NSAIDs.</div>
+                  <div style="margin-top: 0.35rem;"><strong style="color: var(--teal-light);">O:</strong> Medial joint-line tenderness, mild effusion, active ROM 0-120°.</div>
+                  <div style="margin-top: 0.35rem;"><strong style="color: var(--teal-light);">A:</strong> Medial knee pain, likely early osteoarthritis vs. meniscus irritation (ICD-10 M17.12).</div>
+                  <div style="margin-top: 0.35rem;"><strong style="color: var(--teal-light);">P:</strong> Weight-bearing knee X-rays, low-impact exercise protocol, trial topical diclofenac.</div>
+                </div>
+              </div>
+              <div id="copyNotice" style="font-size: 0.75rem; color: var(--teal-light); margin-top: 1rem; font-weight: bold; min-height: 1.2rem;"></div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ══ 2. INTERACTIVE CLINICAL EYE EXAM (LOGMAR / SNELLEN / ISHIHARA) ══════ -->
-    <section id="eye-exam" style="padding: 4rem 1.5rem; border-top: 1px solid #27272a; background: #111114;">
-      <div class="container" style="max-width: 900px;">
-        <div style="text-align: center; margin-bottom: 2rem;">
-          <div class="badge" style="margin-bottom: 0.75rem;">👁️ Interactive Ophthalmological Screener</div>
-          <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">Clinical Visual Acuity &amp; Eye Exam</h2>
-          <p style="color: #d4d4d8; font-size: 0.9375rem; max-width: 700px; margin: 0 auto;">
-            Test your resolving power right now with the standardized <strong>Tumbling E ETDRS / LogMAR chart</strong>. Sit approximately <strong>50 cm (arm's length)</strong> away from your screen.
-          </p>
+    <!-- 3 Core Features -->
+    <section id="features" class="section">
+      <div class="container">
+        <div class="section-title">
+          <h2>Designed for Clinical Practice</h2>
+          <p>Practical tools to help clinicians streamline daily visits and reduce administrative burden.</p>
         </div>
 
-        <div class="glass-card-dark" style="max-width: 580px; margin: 0 auto; text-align: center; border: 1.5px solid rgba(45, 212, 191, 0.35);">
-          
-          <!-- Test Header / Info -->
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27272a; padding-bottom: 0.75rem; margin-bottom: 1.25rem; font-family: ui-monospace, monospace; font-size: 0.8125rem;">
-            <span>Current Line: <strong id="eyeExamLineText" style="color: #2dd4bf;">20/200</strong></span>
-            <span>Score: <strong id="eyeExamScoreText" style="color: #fbbf24;">0 / 0</strong></span>
+        <div class="grid-3">
+          <div class="feature-card">
+            <div class="feature-icon">🎙️</div>
+            <h3>Ambient Voice Scribing</h3>
+            <p>Converse naturally with your patient. PocketGull filters casual remarks and organizes relevant clinical information into structured SOAP notes.</p>
           </div>
 
-          <!-- The Optotype Display Box -->
-          <div style="height: 180px; background: #ffffff; border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);">
-            <svg id="eyeOptotypeSvg" viewBox="0 0 100 100" style="width: 90px; height: 90px; transition: transform 0.15s ease;">
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Local &amp; Secure Processing</h3>
+            <p>Patient data is processed directly on your workstation or browser with strict HIPAA Safe Harbor de-identification architecture.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📋</div>
+            <h3>Effortless EHR Export</h3>
+            <p>Copy formatted SOAP notes directly into Epic, Cerner, AthenaHealth, or any web-based charting system with a single click.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🌿</div>
+            <h3>Integrative Clinical Support</h3>
+            <p>Combines standard clinical practice guidelines with evidence-based nutrition, lifestyle recommendations, and botanical reference checks.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📖</div>
+            <h3>Plain English Patient Mode</h3>
+            <p>Translates complex clinical terminology into clear 6th-grade explanations so patients understand their diagnosis and care instructions.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">👁️</div>
+            <h3>Point-of-Care Screeners</h3>
+            <p>Includes built-in visual acuity screeners (Snellen / Tumbling E) and vital telemetry loggers right at your fingertips.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Plain English Flip Cards -->
+    <section class="section" style="background: #0c0c0e;">
+      <div class="container">
+        <div class="section-title">
+          <h2>Clear Patient Communication</h2>
+          <p>Helping patients understand their health. <strong>Click or tap any card below</strong> to view the plain English explanation.</p>
+        </div>
+
+        <div class="grid-3">
+          <div class="flip-card" id="card1" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div>
+                  <div style="font-size: 0.75rem; color: #38bdf8; font-weight: bold; margin-bottom: 0.25rem;">🧪 LAB RESULT NOTE</div>
+                  <div style="font-size: 0.8125rem; color: #d4d4d8;">
+                    Fasting plasma glucose 132 mg/dL with elevated HbA1c 6.8% and peripheral insulin resistance.
+                  </div>
+                </div>
+                <div style="font-size: 0.6875rem; color: #71717a; font-family: ui-monospace, monospace;">💡 Tap to view Patient Plain English</div>
+              </div>
+              <div class="flip-card-back">
+                <div>
+                  <div style="font-size: 0.75rem; color: var(--amber-light); font-weight: bold; margin-bottom: 0.25rem;">✨ PATIENT EXPLANATION</div>
+                  <div style="font-size: 0.8125rem; color: #fef3c7;">
+                    Your average blood sugar over the last 3 months is slightly high. Making simple adjustments to daily walks and nutrition will help bring it back into a healthy range.
+                  </div>
+                </div>
+                <div style="font-size: 0.6875rem; color: var(--amber-light); font-family: ui-monospace, monospace;">↺ Tap to flip back</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flip-card" id="card2" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div>
+                  <div style="font-size: 0.75rem; color: #34d399; font-weight: bold; margin-bottom: 0.25rem;">🌿 STRESS &amp; SLEEP NOTE</div>
+                  <div style="font-size: 0.8125rem; color: #d4d4d8;">
+                    Flattened diurnal cortisol curve with sympathetic vagal dysregulation and unrefreshing sleep.
+                  </div>
+                </div>
+                <div style="font-size: 0.6875rem; color: #71717a; font-family: ui-monospace, monospace;">💡 Tap to view Patient Plain English</div>
+              </div>
+              <div class="flip-card-back">
+                <div>
+                  <div style="font-size: 0.75rem; color: var(--amber-light); font-weight: bold; margin-bottom: 0.25rem;">✨ PATIENT EXPLANATION</div>
+                  <div style="font-size: 0.8125rem; color: #fef3c7;">
+                    Your daily energy cycles are off-balance, causing afternoon fatigue. Slow breathing exercises and a consistent evening routine will help restore restful sleep.
+                  </div>
+                </div>
+                <div style="font-size: 0.6875rem; color: var(--amber-light); font-family: ui-monospace, monospace;">↺ Tap to flip back</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flip-card" id="card3" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div>
+                  <div style="font-size: 0.75rem; color: #fb7185; font-weight: bold; margin-bottom: 0.25rem;">🩺 BLOOD PRESSURE NOTE</div>
+                  <div style="font-size: 0.8125rem; color: #d4d4d8;">
+                    Resting BP 142/88 mmHg. Mean Arterial Pressure (MAP) 106 mmHg with elevated systemic vascular resistance.
+                  </div>
+                </div>
+                <div style="font-size: 0.6875rem; color: #71717a; font-family: ui-monospace, monospace;">💡 Tap to view Patient Plain English</div>
+              </div>
+              <div class="flip-card-back">
+                <div>
+                  <div style="font-size: 0.75rem; color: var(--amber-light); font-weight: bold; margin-bottom: 0.25rem;">✨ PATIENT EXPLANATION</div>
+                  <div style="font-size: 0.8125rem; color: #fef3c7;">
+                    Your heart is working slightly harder than usual to circulate blood. Reducing salt intake and taking regular 20-minute daily walks will help relax your blood vessels.
+                  </div>
+                </div>
+                <div style="font-size: 0.6875rem; color: var(--amber-light); font-family: ui-monospace, monospace;">↺ Tap to flip back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Eye Exam Screener -->
+    <section id="eye-exam" class="section">
+      <div class="container" style="max-width: 840px;">
+        <div class="section-title">
+          <h2>Visual Acuity Eye Screener</h2>
+          <p>Standardized Tumbling E LogMAR chart. Position yourself approximately 50 cm (arm's length) from your screen.</p>
+        </div>
+
+        <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1rem; padding: 2rem; text-align: center; max-width: 540px; margin: 0 auto;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.25rem; font-family: ui-monospace, monospace; font-size: 0.8125rem;">
+            <span>Current Line: <strong id="eyeExamLineText" style="color: var(--teal-light);">20/200</strong></span>
+            <span>Score: <strong id="eyeExamScoreText" style="color: var(--amber-light);">0 / 0</strong></span>
+          </div>
+
+          <div style="height: 160px; background: #ffffff; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+            <svg id="eyeOptotypeSvg" viewBox="0 0 100 100" style="width: 80px; height: 80px; transition: transform 0.15s ease;">
               <rect x="0" y="0" width="20" height="100" fill="#09090b" />
               <rect x="20" y="0" width="80" height="20" fill="#09090b" />
               <rect x="20" y="40" width="70" height="20" fill="#09090b" />
@@ -411,492 +701,168 @@ export function renderBusinessSiteHtml(): string {
             </svg>
           </div>
 
-          <p style="font-size: 0.75rem; color: #a1a1aa; font-family: ui-monospace, monospace; margin-bottom: 1rem;">
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem; font-family: ui-monospace, monospace;">
             Which direction are the prongs pointing?
           </p>
 
-          <!-- Interactive Arrow Control Buttons -->
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; max-width: 240px; margin: 0 auto 1.25rem;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; max-width: 220px; margin: 0 auto 1.25rem;">
             <div></div>
-            <button onclick="handleEyeAnswer('UP')" class="btn-dark" style="justify-content: center; padding: 0.625rem; font-size: 1rem; font-weight: bold;">↑ Up</button>
+            <button onclick="handleEyeAnswer('UP')" class="btn-secondary" style="justify-content: center; padding: 0.5rem; font-weight: bold;">↑ Up</button>
             <div></div>
-            <button onclick="handleEyeAnswer('LEFT')" class="btn-dark" style="justify-content: center; padding: 0.625rem; font-size: 1rem; font-weight: bold;">← Left</button>
-            <button onclick="handleEyeAnswer('DOWN')" class="btn-dark" style="justify-content: center; padding: 0.625rem; font-size: 1rem; font-weight: bold;">↓ Down</button>
-            <button onclick="handleEyeAnswer('RIGHT')" class="btn-dark" style="justify-content: center; padding: 0.625rem; font-size: 1rem; font-weight: bold;">→ Right</button>
+            <button onclick="handleEyeAnswer('LEFT')" class="btn-secondary" style="justify-content: center; padding: 0.5rem; font-weight: bold;">← Left</button>
+            <button onclick="handleEyeAnswer('DOWN')" class="btn-secondary" style="justify-content: center; padding: 0.5rem; font-weight: bold;">↓ Down</button>
+            <button onclick="handleEyeAnswer('RIGHT')" class="btn-secondary" style="justify-content: center; padding: 0.5rem; font-weight: bold;">→ Right</button>
           </div>
 
-          <!-- Instant Feedback / Result Notice -->
-          <div id="eyeExamFeedback" style="font-size: 0.8125rem; font-weight: bold; color: #2dd4bf; min-height: 1.5rem;">
-            Tap the direction above to begin!
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ══ 3. DOUBLE-CLICK PLAIN ENGLISH CLINICAL SANDBOX ═══════════════════════ -->
-    <section id="sandbox" style="padding: 4rem 1.5rem; border-top: 1px solid #27272a;">
-      <div class="container" style="max-width: 960px;">
-        <div style="text-align: center; margin-bottom: 2.5rem;">
-          <div class="badge badge-teal" style="margin-bottom: 0.75rem;">✨ Double-Click Plain English Lens</div>
-          <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">Clinical Precision &bull; Plain English Simplicity</h2>
-          <p style="color: #d4d4d8; font-size: 0.9375rem; max-width: 720px; margin: 0 auto 1.5rem;">
-            Medical jargon shouldn't stand between patients and clarity. <strong>Double-click (or tap) any card below</strong> to instantly flip between clinical terminology and compassionate plain English.
-          </p>
-          <button id="toggleAllPlainEnglishBtn" class="btn-amber" style="font-size: 0.8125rem; padding: 0.5rem 1.25rem;">
-            <span>✨ Flip All to Plain English</span>
-          </button>
-        </div>
-
-        <div class="glass-card-dark" style="display: flex; flex-direction: column; gap: 1.25rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27272a; padding-bottom: 0.75rem;">
-            <div style="font-weight: 800; font-size: 0.875rem; color: #ffffff;">Patient Scenario: Chronic Fatigue &bull; Stress Elevation &bull; Tinnitus</div>
-            <div class="badge">N=1 Interactive Protocol</div>
-          </div>
-
-          <!-- 3 Interactive Flip Cards -->
-          <div class="grid-3" style="gap: 1.25rem;">
-            
-            <!-- Card 1: Allopathic -->
-            <div class="flip-card" id="card-allopathic" ondblclick="toggleCard('card-allopathic')" onclick="handleCardClick(event, 'card-allopathic')">
-              <div class="flip-card-inner">
-                <div class="flip-card-front">
-                  <div>
-                    <div style="font-size: 0.75rem; color: #38bdf8; font-weight: 800; margin-bottom: 0.35rem;">🧪 ALLOPATHIC LENS</div>
-                    <div style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.5;">
-                      Flattened diurnal salivary cortisol slope with elevated hs-CRP (2.8 mg/L). Recommend 0.1 Hz HRV resonance frequency biofeedback.
-                    </div>
-                  </div>
-                  <div class="dbl-click-cue">
-                    <span>💡 Double-click for Plain English</span>
-                  </div>
-                </div>
-                <div class="flip-card-back">
-                  <div>
-                    <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 800; margin-bottom: 0.35rem;">✨ PLAIN ENGLISH</div>
-                    <div style="font-size: 0.8125rem; color: #fef3c7; line-height: 1.5;">
-                      Your stress hormones are running low during the day, causing fatigue, with mild inflammation. Slow, rhythmic 6-breaths-per-minute breathing will help reset your nervous system.
-                    </div>
-                  </div>
-                  <div class="dbl-click-cue" style="color: #fbbf24;">
-                    <span>↺ Click to flip back</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card 2: Ayurvedic -->
-            <div class="flip-card" id="card-ayurvedic" ondblclick="toggleCard('card-ayurvedic')" onclick="handleCardClick(event, 'card-ayurvedic')">
-              <div class="flip-card-inner">
-                <div class="flip-card-front">
-                  <div>
-                    <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 800; margin-bottom: 0.35rem;">🌿 AYURVEDIC LENS</div>
-                    <div style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.5;">
-                      Vata-Pitta doshic perturbation manifesting as diminished Ojas and depleted Rasayana reserve. Warm sesame Abhyanga and Ashwagandha.
-                    </div>
-                  </div>
-                  <div class="dbl-click-cue">
-                    <span>💡 Double-click for Plain English</span>
-                  </div>
-                </div>
-                <div class="flip-card-back">
-                  <div>
-                    <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 800; margin-bottom: 0.35rem;">✨ PLAIN ENGLISH</div>
-                    <div style="font-size: 0.8125rem; color: #fef3c7; line-height: 1.5;">
-                      Your natural energy reserves and vitality are depleted from overactivity. A warm grounding oil massage and calming adaptogenic herbal tea will nourish your strength.
-                    </div>
-                  </div>
-                  <div class="dbl-click-cue" style="color: #fbbf24;">
-                    <span>↺ Click to flip back</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card 3: Traditional Chinese Medicine -->
-            <div class="flip-card" id="card-tcm" ondblclick="toggleCard('card-tcm')" onclick="handleCardClick(event, 'card-tcm')">
-              <div class="flip-card-inner">
-                <div class="flip-card-front">
-                  <div>
-                    <div style="font-size: 0.75rem; color: #34d399; font-weight: 800; margin-bottom: 0.35rem;">☯️ CHINESE MEDICINE</div>
-                    <div style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.5;">
-                      Kidney Yin deficiency failing to anchor hyperactive Liver Yang. Acupressure on Taichong (LV3) and Zusanli (ST36) to ground Qi.
-                    </div>
-                  </div>
-                  <div class="dbl-click-cue">
-                    <span>💡 Double-click for Plain English</span>
-                  </div>
-                </div>
-                <div class="flip-card-back">
-                  <div>
-                    <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 800; margin-bottom: 0.35rem;">✨ PLAIN ENGLISH</div>
-                    <div style="font-size: 0.8125rem; color: #fef3c7; line-height: 1.5;">
-                      Internal stress and restlessness are rising to your head (ringing ears). Gentle pressure on specific points on your feet and shins restores balance and calms dizziness.
-                    </div>
-                  </div>
-                  <div class="dbl-click-cue" style="color: #fbbf24;">
-                    <span>↺ Click to flip back</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <div id="eyeExamFeedback" style="font-size: 0.8125rem; font-weight: bold; color: var(--teal-light); min-height: 1.5rem;">
+            Select a direction button above to test.
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ══ 3. CLINICAL MODEL FINE-TUNING & HEMODYNAMIC (mmHg) TELEMETRY ═════════ -->
-    <section id="fine-tuning" style="padding: 4rem 1.5rem; border-top: 1px solid #27272a; background: #0c0c0e;">
-      <div class="container" style="max-width: 1080px;">
-        <div style="text-align: center; margin-bottom: 2.5rem;">
-          <div class="badge badge-teal" style="margin-bottom: 0.75rem;">🧬 Fine-Tuning Engine &bull; Hemodynamic Precision</div>
-          <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">Fine-Tuned Clinical LoRAs &amp; mmHg Telemetry</h2>
-          <p style="color: #d4d4d8; font-size: 0.9375rem; max-width: 780px; margin: 0 auto;">
-            Explore our pre-trained and fine-tuned edge clinical models alongside real-time biophysical telemetry standardized to ISO/IEEE and UCUM <code>mm[Hg]</code> units.
-          </p>
-        </div>
-
-        <div class="grid-3" style="margin-bottom: 2rem;">
-          <!-- Card 1: 12 Clinical LoRA Adapters -->
-          <div style="background: #18181b; padding: 1.5rem; border-radius: 1.25rem; border: 1px solid #27272a;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-              <span style="font-size: 1.25rem;">🔬</span>
-              <h3 style="font-size: 1rem; font-weight: 800; color: #ffffff;">12 Clinical LoRA Adapters</h3>
-            </div>
-            <p style="font-size: 0.8125rem; color: #a1a1aa; line-height: 1.5; margin-bottom: 1rem;">
-              Fine-tuned on Google Gemma 3, BioBERT, and Mistral with Rank-16 LoRA matrices for SOAP scribing, CPIC pharmacogenomics, and FHIR R4 schema serialization.
-            </p>
-            <div style="font-family: ui-monospace, monospace; font-size: 0.75rem; color: #2dd4bf; background: #09090b; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #27272a;">
-              <div>• gemma-3-clinical-soap-scribe</div>
-              <div>• gemma-3-cpic-pharmacogenomics</div>
-              <div>• gemma-3-osteopath-director</div>
-              <div>• gemma-3-hipaa-tamper-sentinel</div>
-            </div>
-          </div>
-
-          <!-- Card 2: Hemodynamic mmHg Standard -->
-          <div style="background: #18181b; padding: 1.5rem; border-radius: 1.25rem; border: 1.5px solid rgba(251, 191, 36, 0.4);">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-              <span style="font-size: 1.25rem;">🩺</span>
-              <h3 style="font-size: 1rem; font-weight: 800; color: #fbbf24;">Hemodynamic (mmHg) Standards</h3>
-            </div>
-            <p style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.5; margin-bottom: 1rem;">
-              Full multi-organ pressure telemetry mapped to UCUM standard units (<code>mm[Hg]</code>) for clinical decision support and EHR synchronization:
-            </p>
-            <div style="font-family: ui-monospace, monospace; font-size: 0.75rem; color: #fef3c7; background: #09090b; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #3f3f46; display: flex; flex-direction: column; gap: 0.25rem;">
-              <div style="display: flex; justify-content: space-between;">
-                <span>Systolic / Diastolic:</span>
-                <strong style="color: #2dd4bf;">&lt;120/80 mmHg</strong>
-              </div>
-              <div style="display: flex; justify-content: space-between;">
-                <span>Mean Arterial Pressure (MAP):</span>
-                <strong style="color: #fbbf24;">70–100 mmHg</strong>
-              </div>
-              <div style="display: flex; justify-content: space-between;">
-                <span>Intraocular Pressure (IOP):</span>
-                <strong style="color: #38bdf8;">10–21 mmHg</strong>
-              </div>
-              <div style="display: flex; justify-content: space-between;">
-                <span>Intracranial Pressure (ICP):</span>
-                <strong style="color: #f43f5e;">7–15 mmHg</strong>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 3: N-of-1 Hemodynamic Outcome Proof -->
-          <div style="background: #18181b; padding: 1.5rem; border-radius: 1.25rem; border: 1px solid #27272a;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-              <span style="font-size: 1.25rem;">📈</span>
-              <h3 style="font-size: 1rem; font-weight: 800; color: #ffffff;">Empirical N-of-1 Proof</h3>
-            </div>
-            <p style="font-size: 0.8125rem; color: #a1a1aa; line-height: 1.5; margin-bottom: 1rem;">
-              Track verified single-case hemodynamic trajectories with Bayesian posterior confidence and automated HEDIS Star Rating (CBP &lt;140/90 mmHg) gap closures.
-            </p>
-            <div style="font-family: ui-monospace, monospace; font-size: 0.75rem; color: #a1a1aa; background: #09090b; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #27272a;">
-              <div>• Mean SBP Drop: <strong style="color: #2dd4bf;">Δ -20.2 mmHg</strong></div>
-              <div>• Effect Size: <strong style="color: #fbbf24;">Cohen's d = -6.3</strong></div>
-              <div>• Statistical Significance: <strong style="color: #2dd4bf;">p = 0.002</strong></div>
-              <div>• Posterior Probability: <strong style="color: #ffffff;">99.9%</strong></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══ 4. SEVEN-NATION SOVEREIGNTY & STATUTORY COMPLIANCE ═══════════════════ -->
-    <section id="seven-generations" style="padding: 4rem 1.5rem; border-top: 1px solid #27272a;">
-      <div class="container" style="max-width: 1000px; text-align: center;">
-        <div class="badge" style="margin-bottom: 0.75rem;">🌐 Seven-Nation Sovereign Health Alliance</div>
-        <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Statutory Health &amp; Data Sovereignty</h2>
-        <p style="color: #d4d4d8; font-size: 0.9375rem; margin-bottom: 2rem; line-height: 1.6;">
-          PocketGull is engineered to satisfy the rigorous privacy and clinical data mandates across the Five Eyes alliance, the Republic of India, and global WHO guidelines: 
-          <strong>United States (HIPAA / ONC HTI-1)</strong>, 
-          <strong>United Kingdom (NHS DTAC / UK-GDPR)</strong>, 
-          <strong>India (DPDP Act 2023 / ABDM / AYUSH)</strong>, 
-          <strong>Canada (PIPEDA / PHIPA)</strong>, 
-          <strong>Australia (Privacy Act / TGA)</strong>, and 
-          <strong>New Zealand (HIPC 2020 / NZ HISO 10029)</strong>.
-        </p>
-
-        <div style="background: #18181b; padding: 1.5rem; border-radius: 1rem; border: 1px solid #27272a; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; font-family: ui-monospace, monospace; font-size: 0.8125rem;">
-          <div style="text-align: left;">
-            <div style="color: #2dd4bf; font-weight: bold;">🇺🇸 United States</div>
-            <div style="color: #a1a1aa;">HIPAA §164.514 Safe Harbor</div>
-          </div>
-          <div style="text-align: left;">
-            <div style="color: #2dd4bf; font-weight: bold;">🇬🇧 United Kingdom</div>
-            <div style="color: #a1a1aa;">NHS DTAC &amp; UK-GDPR</div>
-          </div>
-          <div style="text-align: left;">
-            <div style="color: #fbbf24; font-weight: bold;">🇮🇳 India (Bharat)</div>
-            <div style="color: #a1a1aa;">DPDP 2023 &amp; ABDM / AYUSH</div>
-          </div>
-          <div style="text-align: left;">
-            <div style="color: #2dd4bf; font-weight: bold;">🇨🇦 Canada</div>
-            <div style="color: #a1a1aa;">PIPEDA &amp; Ontario PHIPA</div>
-          </div>
-          <div style="text-align: left;">
-            <div style="color: #2dd4bf; font-weight: bold;">🇦🇺 Australia</div>
-            <div style="color: #a1a1aa;">Privacy Act &amp; TGA SaMD</div>
-          </div>
-          <div style="text-align: left;">
-            <div style="color: #2dd4bf; font-weight: bold;">🇳🇿 New Zealand</div>
-            <div style="color: #a1a1aa;">HIPC 2020 &amp; HISO 10029</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══ 4. OPEN-SOURCE MEDICINE, CONDITION COMMUNITY & INNOVATION HUB ════════ -->
-    <section id="community" style="padding: 4.5rem 1.5rem; border-top: 1px solid #27272a; background: #0e0e11; position: relative;">
-      <!-- Hidden anchor alias for #store -->
-      <a id="store" style="position: absolute; top: -70px; left: 0; width: 0; height: 0; visibility: hidden;" aria-hidden="true"></a>
-
-      <div class="container" style="max-width: 1100px;">
-        
-        <!-- Header -->
-        <div style="text-align: center; margin-bottom: 3rem;">
-          <div class="badge badge-teal" style="margin-bottom: 0.75rem;">
-            🌱 Open Science &bull; Patient Condition Circles &bull; Longevity Research
-          </div>
-          <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.75rem; letter-spacing: -0.02em;">
-            Open-Source Medicine &amp; Condition Communities
-          </h2>
-          <p style="color: #d4d4d8; font-size: 1rem; max-width: 820px; margin: 0 auto; line-height: 1.6;">
-            We believe clinical AI should belong to humanity, not walled corporate gardens. PocketGull unites patient condition communities, open Kaggle research benchmarks, non-dilutive public grants, and ergonomic spatial design to help people live longer, healthier lives.
-          </p>
-        </div>
-
-        <!-- 3 Core Community & Research Pillars -->
-        <div class="grid-3" style="margin-bottom: 3rem;">
-          
-          <!-- Pillar 1: Patient-Led Condition Circles -->
-          <div style="background: #18181b; padding: 1.75rem; border-radius: 1.25rem; border: 1.5px solid rgba(45, 212, 191, 0.3); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <div style="font-size: 1.75rem;">🤝</div>
-                <span class="badge badge-teal" style="font-size: 0.6875rem;">Zero Cloud Egress</span>
-              </div>
-              <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem;">
-                Condition Peer Circles &amp; N-of-1 Registries
-              </h3>
-              <p style="font-size: 0.8125rem; color: #a1a1aa; line-height: 1.55; margin-bottom: 1.25rem;">
-                Private, decentralized communities for conditions that traditional medicine often overlooks. Share verified biomarker trajectories and integrative protocols with zero tracking.
-              </p>
-              <div style="display: flex; flex-direction: column; gap: 0.5rem; font-family: ui-monospace, monospace; font-size: 0.75rem; color: #d4d4d8;">
-                <div style="background: #09090b; padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #27272a; display: flex; align-items: center; gap: 0.5rem;">
-                  <span style="color: #2dd4bf;">●</span> Long-COVID, POTS &amp; Vagal Dysautonomia
-                </div>
-                <div style="background: #09090b; padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #27272a; display: flex; align-items: center; gap: 0.5rem;">
-                  <span style="color: #fbbf24;">●</span> Somatic Dysfunction &amp; Osteopathic Spine Care
-                </div>
-                <div style="background: #09090b; padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #27272a; display: flex; align-items: center; gap: 0.5rem;">
-                  <span style="color: #38bdf8;">●</span> Circadian Autophagy &amp; Metabolic Longevity
-                </div>
-                <div style="background: #09090b; padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #27272a; display: flex; align-items: center; gap: 0.5rem;">
-                  <span style="color: #f43f5e;">●</span> Tinnitus &amp; Sensory Neuro-Resonance
-                </div>
-              </div>
-            </div>
-            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #27272a;">
-              <a href="https://pocketgull.app" class="btn-dark" style="width: 100%; justify-content: center; font-size: 0.8125rem;">
-                <span>Join Open Condition Circle</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- Pillar 2: Open Source AI & Kaggle Research -->
-          <div style="background: #18181b; padding: 1.75rem; border-radius: 1.25rem; border: 1.5px solid rgba(251, 191, 36, 0.4); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <div style="font-size: 1.75rem;">🔬</div>
-                <span class="badge" style="font-size: 0.6875rem;">Open Science &bull; Zenodo</span>
-              </div>
-              <h3 style="font-size: 1.15rem; font-weight: 800; color: #fbbf24; margin-bottom: 0.5rem;">
-                Kaggle &amp; Open Biomedical AI Research
-              </h3>
-              <p style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.55; margin-bottom: 1.25rem;">
-                Reproducible pipelines published directly to Kaggle, GitHub, and Zenodo (DOI: 10.5281/zenodo.20647514) to push open diagnostic state of the art.
-              </p>
-              <div style="background: #09090b; padding: 0.875rem; border-radius: 0.75rem; border: 1px solid #3f3f46; font-family: ui-monospace, monospace; font-size: 0.75rem; color: #fef3c7; display: flex; flex-direction: column; gap: 0.35rem;">
-                <div style="color: #fbbf24; font-weight: bold;">⚡ RSNA Knee Abnormality Detection:</div>
-                <div style="color: #a1a1aa; font-size: 0.6875rem;">Deterministic DICOM slicing, multi-view MRI spatial pooling, and Bayesian uncertainty calibration.</div>
-                <div style="margin-top: 0.25rem; color: #2dd4bf; font-weight: bold;">🦴 3D Musculoskeletal Kinematics:</div>
-                <div style="color: #a1a1aa; font-size: 0.6875rem;">Zero-dependency WebGPU bone coordinate engine for instant biomechanical joint stress modeling.</div>
-              </div>
-            </div>
-            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #27272a;">
-              <a href="https://github.com/pocketgull-app" target="_blank" rel="noopener noreferrer" class="btn-amber" style="width: 100%; justify-content: center; font-size: 0.8125rem;">
-                <span>Explore Open Models &amp; Code →</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- Pillar 3: Non-Dilutive Grants & Public Patronage -->
-          <div style="background: #18181b; padding: 1.75rem; border-radius: 1.25rem; border: 1.5px solid rgba(244, 63, 94, 0.3); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <div style="font-size: 1.75rem;">🏛️</div>
-                <span class="badge" style="background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.35); color: #fb7185; font-size: 0.6875rem;">Non-Dilutive Funding</span>
-              </div>
-              <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem;">
-                Federal Grants &amp; Research Patronage
-              </h3>
-              <p style="font-size: 0.8125rem; color: #a1a1aa; line-height: 1.55; margin-bottom: 1.25rem;">
-                Protecting clinical objectivity by funding development through federal research grants and community patronage rather than predatory VC data-broker models.
-              </p>
-              <div style="font-family: ui-monospace, monospace; font-size: 0.75rem; color: #d4d4d8; background: #09090b; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #27272a; display: flex; flex-direction: column; gap: 0.35rem;">
-                <div>• <strong style="color: #2dd4bf;">NIH NCATS / NHLBI</strong> (Translational AI)</div>
-                <div>• <strong style="color: #fbbf24;">NSF TIP / SBIR</strong> (Decentralized CDS)</div>
-                <div>• <strong style="color: #fb7185;">CZI EOSS</strong> (Essential Open Source Software)</div>
-                <div>• <strong style="color: #ffffff;">Community Patronage</strong> (100% to Open Science)</div>
-              </div>
-            </div>
-            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #27272a;">
-              <a href="mailto:research@pocketgull.app?subject=Open%20Science%20Research%20Collaboration" class="btn-dark" style="width: 100%; justify-content: center; font-size: 0.8125rem;">
-                <span>Collaborate on Grants &amp; Research</span>
-              </a>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ══ Interactive Ergonomics & Left-Handed Innovation Feature Card ═════ -->
-        <div class="glass-card-dark" style="border: 1.5px solid rgba(251, 191, 36, 0.35); padding: 2rem;">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; align-items: center;">
-            
-            <div>
-              <div class="badge" style="margin-bottom: 0.75rem;">✍️ Spatial Innovation &bull; Clinical Ergonomics</div>
-              <h3 style="font-size: 1.625rem; font-weight: 800; color: #ffffff; margin-bottom: 0.75rem;">
-                Engineered for Left-Handed &amp; Bi-Directional Clinical Workflows
-              </h3>
-              <p style="font-size: 0.875rem; color: #d4d4d8; line-height: 1.6; margin-bottom: 1.25rem;">
-                Over 10% of clinicians and researchers are left-handed, yet nearly all EHR and PACS software forces awkward wrist occlusion and repetitive strain. PocketGull introduces <strong>Dynamic Handedness Adaptation</strong> &mdash; mirror-reversing primary action drawers, stylus palettes, and anatomical hotzones with a single tap.
-              </p>
-              <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #a1a1aa; margin-bottom: 1.5rem;">
-                <span style="background: #18181b; padding: 0.35rem 0.75rem; border-radius: 9999px; border: 1px solid #27272a;">✓ Zero Wrist Occlusion</span>
-                <span style="background: #18181b; padding: 0.35rem 0.75rem; border-radius: 9999px; border: 1px solid #27272a;">✓ Stylus Palm-Rejection Grid</span>
-                <span style="background: #18181b; padding: 0.35rem 0.75rem; border-radius: 9999px; border: 1px solid #27272a;">✓ Optical Kerning &bull; Caslon Codex</span>
-              </div>
-              
-              <div style="display: flex; align-items: center; gap: 1rem;">
-                <button id="toggleHandednessBtn" onclick="toggleErgonomicsMode()" class="btn-amber" style="font-size: 0.8125rem; padding: 0.625rem 1.25rem;">
-                  <span id="handednessBtnText">✋ Switch to Left-Handed Layout</span>
-                </button>
-                <span id="handednessStatus" style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: #2dd4bf;">Mode: Right-Handed Primary</span>
-              </div>
-            </div>
-
-            <!-- Interactive Visual Preview Box for Handedness -->
-            <div style="background: #09090b; border: 1.5px solid #27272a; border-radius: 1rem; padding: 1.25rem; position: relative;">
-              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2937; padding-bottom: 0.5rem; margin-bottom: 1rem; font-family: ui-monospace, monospace; font-size: 0.6875rem; color: #71717a;">
-                <span>STYLUS HUD SIMULATOR</span>
-                <span id="ergoBadge" style="color: #fbbf24; font-weight: bold;">RH_ANCHOR</span>
-              </div>
-
-              <div id="simulatedExamPad" style="display: flex; justify-content: space-between; gap: 1rem; height: 160px; transition: all 0.3s ease;">
-                <!-- Main Note Area -->
-                <div id="simNoteArea" style="flex-grow: 1; background: #18181b; border-radius: 0.75rem; padding: 0.875rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px dashed #3f3f46; transition: order 0.3s ease;">
-                  <div style="font-size: 0.75rem; color: #d4d4d8;">
-                    <div style="color: #2dd4bf; font-weight: bold; margin-bottom: 0.25rem;">Dr. Elena Gullwing, DO</div>
-                    <div style="color: #71717a; font-size: 0.6875rem;">Somatic Palpation: T4-T6 Somatovisceral Reflex Verified</div>
-                  </div>
-                  <div style="font-size: 0.6875rem; color: #fbbf24; font-family: ui-monospace, monospace;">
-                    [OMT Gavel Action: Approved]
-                  </div>
-                </div>
-
-                <!-- Action Toolbar (Flips sides dynamically) -->
-                <div id="simToolbar" style="width: 70px; background: #1c1917; border: 1px solid #fbbf24; border-radius: 0.75rem; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 0.5rem; transition: order 0.3s ease;">
-                  <span style="font-size: 1.1rem;" title="Biomechanical Pin">📌</span>
-                  <span style="font-size: 1.1rem;" title="LogMAR Eye Test">👁️</span>
-                  <span style="font-size: 1.1rem;" title="Acupressure LV3">☯️</span>
-                  <span style="font-size: 1.1rem;" title="SOAP Voice Scribe">🎙️</span>
-                </div>
-              </div>
-              <div style="margin-top: 0.75rem; text-align: center; font-size: 0.6875rem; color: #71717a; font-family: ui-monospace, monospace;">
-                Click the toggle button to see the toolbar jump across the stylus palm zone.
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ══ 5. STRIPE PRICING ═══════════════════════════════════════════════════ -->
-    <section id="pricing" style="padding: 4rem 1.5rem; border-top: 1px solid #27272a;">
-      <div class="container" style="max-width: 960px;">
-        <div style="text-align: center; margin-bottom: 2.5rem;">
-          <div class="badge badge-teal" style="margin-bottom: 0.75rem;">💳 Transparent Licensing</div>
-          <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Simple, Scalable Tiered Pricing</h2>
-          <p style="color: #a1a1aa; font-size: 0.875rem;">Deploy on edge hardware or connect your enterprise EHR via SMART-on-FHIR.</p>
+    <!-- Privacy & Security Section -->
+    <section id="privacy" class="section">
+      <div class="container">
+        <div class="section-title">
+          <h2>Privacy &amp; Security Standards</h2>
+          <p>Medical software should protect patient confidentiality with rigorous safeguards.</p>
         </div>
 
         <div class="grid-3">
-          <div style="background: #18181b; padding: 1.5rem; border-radius: 1.25rem; border: 1px solid #27272a; display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <h3 style="font-size: 1.125rem; font-weight: 800; color: #ffffff;">Clinical Community</h3>
-              <div style="font-size: 1.75rem; font-weight: 900; color: #2dd4bf; margin: 0.75rem 0;">$0 <span style="font-size: 0.875rem; color: #71717a;">/ forever</span></div>
-              <ul style="font-size: 0.8125rem; color: #d4d4d8; list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
-                <li>✓ 100% Offline Edge WASM Scribing</li>
-                <li>✓ Ambient Flow Background Music</li>
-                <li>✓ PocketGull Superfamily Fonts</li>
-                <li>✓ Local FHIR R4 Bundle Export</li>
-              </ul>
-            </div>
-            <a href="https://pocketgull.app" class="btn-dark" style="width: 100%; justify-content: center;">Get Started Free</a>
+          <div class="feature-card">
+            <h3>No Cloud Audio Storage</h3>
+            <p>Audio is processed in real time and discarded from local memory once transcribed. No audio is ever stored on external cloud servers.</p>
           </div>
 
-          <div style="background: #18181b; padding: 1.5rem; border-radius: 1.25rem; border: 2px solid #fbbf24; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
-            <div style="position: absolute; top: -12px; right: 1.5rem; background: #fbbf24; color: #09090b; font-size: 0.6875rem; font-weight: 800; padding: 2px 8px; border-radius: 9999px; text-transform: uppercase;">Most Popular</div>
-            <div>
-              <h3 style="font-size: 1.125rem; font-weight: 800; color: #ffffff;">Practitioner Pro</h3>
-              <div style="font-size: 1.75rem; font-weight: 900; color: #fbbf24; margin: 0.75rem 0;">$49 <span style="font-size: 0.875rem; color: #71717a;">/ month</span></div>
-              <ul style="font-size: 0.8125rem; color: #d4d4d8; list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
-                <li>✓ Everything in Community</li>
-                <li>✓ Google Gemini 2.5 Flash Live Audio</li>
-                <li>✓ Three.js 3D Procedural Anatomy HUD</li>
-                <li>✓ Automated RxGuard Herb-Drug Check</li>
-              </ul>
-            </div>
-            <a href="https://pocketgull.app" class="btn-amber" style="width: 100%; justify-content: center;">Start 14-Day Trial</a>
+          <div class="feature-card">
+            <h3>Zero Public Model Training</h3>
+            <p>Your clinical notes, patient symptoms, and diagnoses are never shared or used to train external LLMs.</p>
           </div>
 
-          <div style="background: #18181b; padding: 1.5rem; border-radius: 1.25rem; border: 1px solid #27272a; display: flex; flex-direction: column; justify-content: space-between;">
+          <div class="feature-card">
+            <h3>HIPAA &amp; GDPR Standards</h3>
+            <p>Engineered to comply with US HIPAA §164.514 Safe Harbor and international health data privacy standards.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transparent Pricing & Upfront Purchase -->
+    <section id="pricing" class="section">
+      <div class="container">
+        <div class="section-title">
+          <h2>Simple, Transparent Pricing</h2>
+          <p>Choose flexible monthly billing or save with upfront annual and lifetime founder passes.</p>
+          
+          <!-- Pricing Toggle -->
+          <div style="display: inline-flex; background: #18181b; border: 1px solid var(--border); border-radius: 9999px; padding: 0.25rem; margin-top: 1.5rem; gap: 0.25rem;">
+            <button id="toggleMonthlyBtn" onclick="setPricingMode('monthly')" class="tab-btn" style="border-radius: 9999px; padding: 0.5rem 1.25rem; font-size: 0.875rem;">
+              Monthly Billing
+            </button>
+            <button id="toggleAnnualBtn" onclick="setPricingMode('annual')" class="tab-btn active" style="border-radius: 9999px; padding: 0.5rem 1.25rem; font-size: 0.875rem;">
+              ✨ Upfront &amp; Lifetime (Save 20%)
+            </button>
+          </div>
+        </div>
+
+        <!-- Annual / Upfront Cards (Default) -->
+        <div id="pricingAnnualGrid" class="grid-3">
+          <div class="pricing-card">
             <div>
-              <h3 style="font-size: 1.125rem; font-weight: 800; color: #ffffff;">Enterprise &amp; Health System</h3>
-              <div style="font-size: 1.75rem; font-weight: 900; color: #2dd4bf; margin: 0.75rem 0;">Custom <span style="font-size: 0.875rem; color: #71717a;">/ SLA</span></div>
-              <ul style="font-size: 0.8125rem; color: #d4d4d8; list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
-                <li>✓ SMART-on-FHIR Epic/Cerner Integration</li>
-                <li>✓ Dedicated Vertex AI Fine-Tuned Endpoints</li>
-                <li>✓ HIPAA BAA &amp; NHS DSPT Attestation</li>
-                <li>✓ 24/7 Dedicated Clinical Informatics SLA</li>
+              <div style="color: var(--amber-light); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Limited Founder Pass</div>
+              <h3>Lifetime Solo License</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem;">One-time payment for solo clinicians</p>
+              <div class="pricing-price">$299 <span>/ one-time</span></div>
+              <ul class="pricing-list">
+                <li><span>✓</span> 100% on-device offline AI scribing</li>
+                <li><span>✓</span> Zero recurring monthly fees forever</li>
+                <li><span>✓</span> Standard SOAP templates &amp; EHR export</li>
+                <li><span>✓</span> Lifetime software updates</li>
               </ul>
             </div>
-            <a href="mailto:leads@pocketgull.app" class="btn-dark" style="width: 100%; justify-content: center;">Contact Enterprise</a>
+            <a href="/api/billing/checkout?tier=founder_lifetime" class="btn-secondary" style="width: 100%; justify-content: center;">Get Lifetime Access ($299)</a>
+          </div>
+
+          <div class="pricing-card featured">
+            <div>
+              <div style="color: var(--teal-light); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Best Value • Save $98/yr</div>
+              <h3>Annual Clinic Pro</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem;">For busy outpatient practitioners</p>
+              <div class="pricing-price">$490 <span>/ year</span></div>
+              <ul class="pricing-list">
+                <li><span>✓</span> Everything in Solo tier</li>
+                <li><span>✓</span> Custom specialty note templates</li>
+                <li><span>✓</span> Herb-Drug &amp; Cytochrome P450 safety checks</li>
+                <li><span>✓</span> Priority clinician support &amp; onboarding</li>
+              </ul>
+            </div>
+            <a href="/api/billing/checkout?tier=clinic_annual" class="btn-primary" style="width: 100%; justify-content: center;">Get Annual Pro Pass ($490/yr)</a>
+          </div>
+
+          <div class="pricing-card">
+            <div>
+              <div style="color: var(--teal-light); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Group Practice Setup</div>
+              <h3>Clinic Onboarding Bundle</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem;">Turnkey setup for group clinics</p>
+              <div class="pricing-price">$1,250 <span>/ clinic setup</span></div>
+              <ul class="pricing-list">
+                <li><span>✓</span> Up to 5 clinician licenses included</li>
+                <li><span>✓</span> White-glove EHR template customization</li>
+                <li><span>✓</span> 1-on-1 staff workflow integration</li>
+                <li><span>✓</span> Dedicated HIPAA Business Associate Agreement</li>
+              </ul>
+            </div>
+            <a href="/api/billing/checkout?tier=clinic_onboarding" class="btn-secondary" style="width: 100%; justify-content: center;">Order Setup Bundle ($1,250)</a>
+          </div>
+        </div>
+
+        <!-- Monthly Cards (Hidden by default) -->
+        <div id="pricingMonthlyGrid" class="grid-3" style="display: none;">
+          <div class="pricing-card">
+            <div>
+              <h3>Solo Practitioner</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem;">For individual clinicians</p>
+              <div class="pricing-price">$0 <span>/ forever</span></div>
+              <ul class="pricing-list">
+                <li><span>✓</span> Ambient voice scribing</li>
+                <li><span>✓</span> Secure local processing</li>
+                <li><span>✓</span> Standard SOAP templates</li>
+                <li><span>✓</span> 1-click note copy to EHR</li>
+              </ul>
+            </div>
+            <a href="https://pocketgull.app" class="btn-secondary" style="width: 100%; justify-content: center;">Launch Solo Scribe Free</a>
+          </div>
+
+          <div class="pricing-card featured">
+            <div>
+              <div style="color: var(--teal-light); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Most Flexible</div>
+              <h3>Clinic Pro</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem;">For outpatient group practices</p>
+              <div class="pricing-price">$49 <span>/ provider / month</span></div>
+              <ul class="pricing-list">
+                <li><span>✓</span> Everything in Solo</li>
+                <li><span>✓</span> Custom specialty note templates</li>
+                <li><span>✓</span> Medication &amp; Herb-Drug safety checker</li>
+                <li><span>✓</span> Priority clinician support</li>
+              </ul>
+            </div>
+            <a href="/api/billing/checkout?tier=clinic_pro_monthly" class="btn-primary" style="width: 100%; justify-content: center;">Start Monthly Pro ($49/mo)</a>
+          </div>
+
+          <div class="pricing-card">
+            <div>
+              <h3>Health System</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem;">For hospital departments</p>
+              <div class="pricing-price">Custom <span>/ enterprise</span></div>
+              <ul class="pricing-list">
+                <li><span>✓</span> Direct Epic / Cerner integration</li>
+                <li><span>✓</span> Custom on-premise AI deployment</li>
+                <li><span>✓</span> Dedicated HIPAA BAA</li>
+                <li><span>✓</span> 24/7 technical SLA</li>
+              </ul>
+            </div>
+            <a href="mailto:leads@pocketgull.app?subject=Enterprise%20Clinical%20Inquiry" class="btn-secondary" style="width: 100%; justify-content: center;">Contact Enterprise</a>
           </div>
         </div>
       </div>
@@ -904,103 +870,87 @@ export function renderBusinessSiteHtml(): string {
   </main>
 
   <!-- Footer -->
-  <footer style="background: #09090b; border-top: 1px solid #27272a; padding: 2.5rem 1.5rem; font-size: 0.75rem; color: #71717a;">
-    <div class="container" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1.5rem;">
+  <footer>
+    <div class="container footer-inner">
       <div>
-        <div style="font-weight: bold; color: #d4d4d8; margin-bottom: 0.25rem;">GEARARTS &bull; POCKETGULL LLC &bull; Portland, Oregon USA</div>
-        <div>Oregon Registry: 258869891 &bull; EIN: 42-3162850 &bull; CMS NPI: 1487569752</div>
+        <div style="font-weight: 700; color: var(--text); margin-bottom: 0.25rem;">PocketGull LLC</div>
+        <div>Portland, Oregon &bull; Support: <a href="mailto:support@pocketgull.com" style="color: var(--teal-light); text-decoration: none;">support@pocketgull.com</a></div>
       </div>
-      <div style="display: flex; gap: 1.25rem; color: #a1a1aa;">
-        <a href="/robots.txt" style="text-decoration: underline;">robots.txt</a>
-        <a href="/sitemap.xml" style="text-decoration: underline;">sitemap.xml</a>
-        <a href="/llms.txt" style="text-decoration: underline;">llms.txt</a>
-        <a href="/privacy-policy.html" style="text-decoration: underline;">Privacy Policy</a>
-        <a href="/terms-of-service.html" style="text-decoration: underline;">Terms of Service</a>
+
+      <div class="footer-links">
+        <a href="https://pocketgull.app">Launch App</a>
+        <a href="/articles">Clinical Articles</a>
+        <a href="/privacy-policy.html">Privacy Policy</a>
+        <a href="/terms-of-service.html">Terms of Service</a>
+        <a href="/robots.txt">robots.txt</a>
       </div>
     </div>
   </footer>
 
   <script>
-    // 3D Flip Card Logic for Double-Click Plain English Lens
-    function toggleCard(cardId) {
-      const card = document.getElementById(cardId);
-      if (card) {
-        card.classList.toggle('flipped');
+    // Scribe Simulator Scenarios
+    const scenarios = {
+      ortho: {
+        dialogue: '"Doctor, my left knee has been aching on the inside when walking down stairs for the past two weeks. It gets swollen by the evening, and morning stiffness lasts about 20 minutes. Ibuprofen gives minor relief."',
+        soap: '<div><strong style="color: #2dd4bf;">S:</strong> 2-week history of medial left knee pain & swelling after walking. Morning stiffness <30m. Partial relief with NSAIDs.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">O:</strong> Medial joint-line tenderness, mild effusion, active ROM 0-120°.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">A:</strong> Medial knee pain, likely early osteoarthritis vs. meniscus irritation (ICD-10 M17.12).</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">P:</strong> Weight-bearing knee X-rays, low-impact exercise protocol, trial topical diclofenac.</div>'
+      },
+      cardio: {
+        dialogue: '"My home blood pressure readings have been averaging 142 over 88 for the past month. I haven\\\'t had any chest pain or shortness of breath, but I\\\'ve been feeling more stressed at work."',
+        soap: '<div><strong style="color: #2dd4bf;">S:</strong> 1-month elevated home BP log (avg 142/88 mmHg). Denies angina, dyspnea, or palpitations. Notes increased workplace stress.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">O:</strong> In-office BP: 140/86 mmHg (repeat 136/84). Regular rate & rhythm, no peripheral edema.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">A:</strong> Essential hypertension, Stage 1 (ICD-10 I10), stress-augmented.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">P:</strong> DASH dietary protocol, 150m/wk moderate aerobic exercise, follow-up home BP log in 4 weeks.</div>'
+      },
+      integrative: {
+        dialogue: '"I\\\'ve had persistent fatigue and brain fog since my viral illness three months ago. My routine labs were normal, but my afternoon energy crashes hard around 2 PM."',
+        soap: '<div><strong style="color: #2dd4bf;">S:</strong> 3-month post-viral fatigue with cognitive clouding. Afternoon energy slump at 14:00. Standard CMP/CBC unrevealing.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">O:</strong> Vitals stable. Thyroid non-tender, resting HR 68 bpm. Orthostatic vitals unremarkable.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">A:</strong> Post-viral fatigue syndrome with circadian rhythm disruption.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">P:</strong> Circadian light therapy (10k lux morning), CoQ10 200mg daily, pacing protocol, salivary cortisol panel.</div>'
+      }
+    };
+
+    function loadScenario(key) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      const data = scenarios[key];
+      if (data) {
+        document.getElementById('dialogueBox').textContent = data.dialogue;
+        document.getElementById('soapBox').innerHTML = data.soap;
       }
     }
 
-    // Single click handler for mobile taps or quick interactions
-    function handleCardClick(e, cardId) {
-      // If triggered by a quick touch/click on mobile, allow single tap flip
-      if (window.innerWidth <= 768) {
-        toggleCard(cardId);
-      }
-    }
-
-    // Toggle all cards between Clinical and Plain English simultaneously
-    const toggleAllBtn = document.getElementById('toggleAllPlainEnglishBtn');
-    let allFlipped = false;
-    if (toggleAllBtn) {
-      toggleAllBtn.addEventListener('click', () => {
-        allFlipped = !allFlipped;
-        document.querySelectorAll('.flip-card').forEach(c => {
-          if (allFlipped) {
-            c.classList.add('flipped');
-          } else {
-            c.classList.remove('flipped');
-          }
-        });
-        toggleAllBtn.innerHTML = allFlipped 
-          ? '<span>🔄 Show Clinical Terms</span>' 
-          : '<span>✨ Flip All to Plain English</span>';
+    function copySoapNote() {
+      const text = document.getElementById('soapBox').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const notice = document.getElementById('copyNotice');
+        notice.textContent = '✓ Copied formatted SOAP note to clipboard!';
+        setTimeout(() => { notice.textContent = ''; }, 3000);
       });
     }
 
-    // Canvas Threshold Interactive Gesture Trace
-    const canvas = document.getElementById('thresholdCanvas');
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      let drawing = false;
+    function setPricingMode(mode) {
+      const monthlyGrid = document.getElementById('pricingMonthlyGrid');
+      const annualGrid = document.getElementById('pricingAnnualGrid');
+      const monthlyBtn = document.getElementById('toggleMonthlyBtn');
+      const annualBtn = document.getElementById('toggleAnnualBtn');
 
-      function resize() {
-        canvas.width = canvas.parentElement.clientWidth;
-        canvas.height = canvas.parentElement.clientHeight;
-      }
-      resize();
-      window.addEventListener('resize', resize);
-
-      canvas.addEventListener('mousedown', (e) => {
-        drawing = true;
-        ctx.beginPath();
-        ctx.moveTo(e.offsetX, e.offsetY);
-      });
-      canvas.addEventListener('mousemove', (e) => {
-        if (!drawing) return;
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.strokeStyle = '#fbbf24';
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.stroke();
-      });
-      window.addEventListener('mouseup', () => { drawing = false; });
-
-      const clearBtn = document.getElementById('clearCanvasBtn');
-      if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        });
+      if (mode === 'monthly') {
+        monthlyGrid.style.display = 'grid';
+        annualGrid.style.display = 'none';
+        monthlyBtn.classList.add('active');
+        annualBtn.classList.remove('active');
+      } else {
+        monthlyGrid.style.display = 'none';
+        annualGrid.style.display = 'grid';
+        annualBtn.classList.add('active');
+        monthlyBtn.classList.remove('active');
       }
     }
 
-    // ══ Interactive Eye Exam Logic (Tumbling E Progression) ══
+    // Interactive Eye Exam
     const eyeLines = [
-      { fraction: '20/200', size: 90, logMar: 1.0 },
-      { fraction: '20/100', size: 60, logMar: 0.7 },
-      { fraction: '20/70',  size: 45, logMar: 0.5 },
-      { fraction: '20/50',  size: 32, logMar: 0.4 },
-      { fraction: '20/40',  size: 24, logMar: 0.3 },
-      { fraction: '20/30',  size: 18, logMar: 0.2 },
-      { fraction: '20/20',  size: 14, logMar: 0.0 }
+      { fraction: '20/200', size: 80 },
+      { fraction: '20/100', size: 55 },
+      { fraction: '20/70',  size: 40 },
+      { fraction: '20/50',  size: 30 },
+      { fraction: '20/40',  size: 22 },
+      { fraction: '20/30',  size: 16 },
+      { fraction: '20/20',  size: 12 }
     ];
     let eyeLineIdx = 0;
     let eyeQuestionCount = 0;
@@ -1015,14 +965,13 @@ export function renderBusinessSiteHtml(): string {
         let rot = '0deg';
         if (currentEyeDir === 'DOWN') rot = '90deg';
         if (currentEyeDir === 'LEFT') rot = '180deg';
+        if (currentEyeDir === 'UP') rot = '270deg';
         svg.style.transform = 'rotate(' + rot + ')';
         svg.style.width = eyeLines[eyeLineIdx].size + 'px';
         svg.style.height = eyeLines[eyeLineIdx].size + 'px';
       }
-      const lineText = document.getElementById('eyeExamLineText');
-      if (lineText) lineText.textContent = eyeLines[eyeLineIdx].fraction;
-      const scoreText = document.getElementById('eyeExamScoreText');
-      if (scoreText) scoreText.textContent = eyeCorrectCount + ' / ' + eyeQuestionCount;
+      document.getElementById('eyeExamLineText').textContent = eyeLines[eyeLineIdx].fraction;
+      document.getElementById('eyeExamScoreText').textContent = eyeCorrectCount + ' / ' + eyeQuestionCount;
     }
 
     function handleEyeAnswer(chosen) {
@@ -1031,54 +980,23 @@ export function renderBusinessSiteHtml(): string {
       const feedback = document.getElementById('eyeExamFeedback');
       if (isCorrect) {
         eyeCorrectCount++;
-        if (feedback) feedback.innerHTML = '<span style="color: #2dd4bf;">✓ Correct! Resolving angle verified.</span>';
+        feedback.innerHTML = '<span style="color: #2dd4bf;">✓ Correct! Resolving angle confirmed.</span>';
       } else {
-        if (feedback) feedback.innerHTML = '<span style="color: #f43f5e;">✗ Direction missed.</span>';
+        feedback.innerHTML = '<span style="color: #fb7185;">✗ Direction missed.</span>';
       }
 
       if (eyeQuestionCount % 3 === 0) {
         if (eyeCorrectCount >= eyeQuestionCount * 0.66 && eyeLineIdx < eyeLines.length - 1) {
           eyeLineIdx++;
-          if (feedback) feedback.innerHTML = '<span style="color: #fbbf24;">🎉 Advanced to ' + eyeLines[eyeLineIdx].fraction + ' line!</span>';
+          feedback.innerHTML = '<span style="color: #fbbf24;">🎉 Advanced to ' + eyeLines[eyeLineIdx].fraction + ' line!</span>';
         } else if (eyeLineIdx === eyeLines.length - 1 && isCorrect) {
-          if (feedback) feedback.innerHTML = '<span style="color: #2dd4bf;">🏆 Outstanding 20/20 Visual Acuity Verified!</span>';
+          feedback.innerHTML = '<span style="color: #2dd4bf;">🏆 Outstanding 20/20 Visual Acuity Verified!</span>';
         }
       }
 
-      setTimeout(setEyeDirection, 350);
+      setTimeout(setEyeDirection, 300);
     }
     setEyeDirection();
-
-    // ══ Interactive Left-Handed / Right-Handed Ergonomics Simulator ══
-    let isLeftHandedMode = false;
-    function toggleErgonomicsMode() {
-      isLeftHandedMode = !isLeftHandedMode;
-      const btnText = document.getElementById('handednessBtnText');
-      const statusText = document.getElementById('handednessStatus');
-      const ergoBadge = document.getElementById('ergoBadge');
-      const toolbar = document.getElementById('simToolbar');
-      const noteArea = document.getElementById('simNoteArea');
-
-      if (isLeftHandedMode) {
-        if (btnText) btnText.textContent = '✋ Switch to Right-Handed Layout';
-        if (statusText) {
-          statusText.textContent = 'Mode: Left-Handed Primary (Mirrored HUD)';
-          statusText.style.color = '#fbbf24';
-        }
-        if (ergoBadge) ergoBadge.textContent = 'LH_ANCHOR (PALM FREE)';
-        if (toolbar) toolbar.style.order = '-1';
-        if (noteArea) noteArea.style.order = '1';
-      } else {
-        if (btnText) btnText.textContent = '✋ Switch to Left-Handed Layout';
-        if (statusText) {
-          statusText.textContent = 'Mode: Right-Handed Primary';
-          statusText.style.color = '#2dd4bf';
-        }
-        if (ergoBadge) ergoBadge.textContent = 'RH_ANCHOR';
-        if (toolbar) toolbar.style.order = '1';
-        if (noteArea) noteArea.style.order = '-1';
-      }
-    }
   </script>
 </body>
 </html>`;

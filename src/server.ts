@@ -251,7 +251,7 @@ app.use((req, res, next) => {
     /(^|\.)pocketgull\.com$/.test(rawHost);
 
   if (isBusinessSite) {
-    if (req.path === '/health' || req.path.startsWith('/api/')) {
+    if (req.path === '/health' || req.path.startsWith('/api/') || req.path === '/articles' || req.path.startsWith('/articles/')) {
       return next();
     }
     const cleanPath = req.path.split('?')[0];
