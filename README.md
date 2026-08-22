@@ -12,9 +12,18 @@
 <p align="center">
   <a href="https://pocketgull.app"><img src="https://img.shields.io/badge/Live_App-pocketgull.app-0ea5e9?style=flat-square&logo=google-cloud&logoColor=white" alt="Live App"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-orange?style=flat-square" alt="License: MIT"></a>
-  <img src="https://img.shields.io/badge/version-v1.25.0-blue?style=flat-square" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.27.0-blue?style=flat-square" alt="Version">
   <a href="https://github.com/pocketgull-app/pocketgull/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/pocketgull-app/pocketgull/deploy.yml?style=flat-square&label=deploy" alt="Deploy"></a>
-  <a href="https://github.com/pocketgull-app/pocketgull/actions/workflows/codeql-analysis.yml"><img src="https://img.shields.io/github/actions/workflow/status/pocketgull-app/pocketgull/codeql-analysis.yml?style=flat-square&label=CodeQL" alt="CodeQL"></a>
+  <a href="https://github.com/pocketgull-app/pocketgull/actions/workflows/codeql.yml"><img src="https://img.shields.io/github/actions/workflow/status/pocketgull-app/pocketgull/codeql.yml?style=flat-square&label=CodeQL" alt="CodeQL"></a>
+</p>
+
+<p align="center">
+  <a href="https://orcid.org/0009-0008-1372-5381"><img src="https://img.shields.io/badge/ORCID-0009--0008--1372--5381-A6C900?style=flat-square&logo=orcid&logoColor=white" alt="ORCID"></a>
+  <img src="https://img.shields.io/badge/IEEE_Member-101083329-00629B?style=flat-square&logo=ieee&logoColor=white" alt="IEEE 101083329">
+  <img src="https://img.shields.io/badge/ACM_Ambassador-6179454-0085CA?style=flat-square&logo=associationforcomputingmachinery&logoColor=white" alt="ACM 6179454">
+  <img src="https://img.shields.io/badge/AIGA_Member-0513247-EE3124?style=flat-square&logo=aiga&logoColor=white" alt="AIGA 0513247">
+  <img src="https://img.shields.io/badge/ASU-Fulton_Engineering-8C1D40?style=flat-square" alt="ASU">
+  <a href="https://doi.org/10.5281/zenodo.20647514"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20647514.svg" alt="DOI"></a>
 </p>
 
 <p align="center">
@@ -25,8 +34,6 @@
   <a href="https://bestpractices.coreinfrastructure.org/projects/13644"><img src="https://img.shields.io/badge/CII-passing-brightgreen?style=flat-square" alt="CII Best Practices"></a>
   <a href="https://securityscorecards.dev/viewer/?uri=github.com/pocketgull-app/pocketgull"><img src="https://img.shields.io/badge/OpenSSF-10%2F10-blueviolet?style=flat-square" alt="OpenSSF Scorecard"></a>
   <a href="https://github.com/pocketgull-app/pocketgull"><img src="https://img.shields.io/badge/SLSA-Level_3-blueviolet?style=flat-square&logo=googlecloud" alt="SLSA 3"></a>
-  <a href="https://doi.org/10.5281/zenodo.20647514"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20647514.svg" alt="DOI"></a>
-  <a href="https://orcid.org/0009-0008-1372-5381"><img src="https://img.shields.io/badge/ORCID-0009--0008--1372--5381-A6C900?style=flat-square&logo=orcid&logoColor=white" alt="ORCID"></a>
 </p>
 
 ---
@@ -343,15 +350,29 @@ pocketgull/
 Pocket Gull is built for clinical contexts with strict security posture:
 
 - **Zero PHI persistence** — all patient state is transient (Angular Signals) or encrypted locally (Google Tink AEAD)
-- **Sentinel Security Guard** — pre-commit egress domain whitelist enforcement
-- **Shannon Entropy Scanner** — detects high-entropy secrets before commit
-- **CodeQL 100% remediation** — hardened against SSRF, path traversal, prototype pollution, command injection, ReDoS
+- **Shift-Left Global Taint-Tracking** — AST-level TypeScript Compiler API Data Flow Graph analyzer (`scripts/taint-analysis-guard.mjs`) verifying 0 un-sanitized source-to-sink flows
+- **Sentinel Security Guard** — pre-commit egress domain whitelist enforcement and Shannon entropy secret scanning
+- **Polynomial ReDoS Prevention** — static regular expression analyzer ensuring $O(N)$ non-backtracking parsing
+- **CodeQL 100% Remediation** — hardened against SSRF, path traversal, prototype pollution, command injection, double-unescaping, and URL spoofing
 - **OpenSSF Scorecard: 10/10** — full supply chain security compliance
 - **SLSA Level 3 provenance** — attested build artifacts
 - **CSP headers** — strict Content Security Policy with nonce-based script isolation
 - **1-click state purge** — ephemeral data sovereignty per HIPAA Safe Harbor §164.514
 
 See [SECURITY.md](SECURITY.md) for full vulnerability reporting policy.
+
+---
+
+## 🏛️ Academic Research & Standards Alignment
+
+Pocket Gull is architected as an empirical, peer-reviewed clinical intelligence testbed bridging engineering, computing, design, and health equity:
+
+| Domain & Society | Standard / Framework | Implementation in Pocket Gull |
+| :--- | :--- | :--- |
+| **IEEE Biomedical Engineering** | IEEE 11073-10101, IEEE 2621, IEEE P7003 | • 1D Dilated CNN ECG/PPG Waveform Arrhythmia Classifier (`pocketgull_api/waveform_1d_cnn.py`)<br>• Real-time WebGPU Biosignal Shaders (`src/services/webgpu-bio-signal.service.ts`)<br>• Biometric Sensor Fusion & CGM Time-in-Range ($70-180\text{ mg/dL}$) Telemetry |
+| **ACM Computing & Ethics** | ACM Code of Ethics §1.2 & §1.4, ACM HEALTH | • AST Global Taint-Tracking Engine (`scripts/taint-analysis-guard.mjs`)<br>• Stanford HCI Calibrated Confidence HUD (`src/components/ai-confidence-hud.component.ts`)<br>• Socratic "Don't Miss" Differential Radar with Bayesian Nomograms ($LR^+, LR^-$) |
+| **AIGA Design & Typography** | Evidence-Based Clinical Communication | • Bionic Reading Saccadic Fixation (`src/components/shared/bionic-focus-benchmark.component.ts`)<br>• Custom *PocketGull Marker* & Caslon Medical Typography<br>• 3D Longitudinal Trajectory Comparison Slider (WebGL Three.js) |
+| **ASU & NIH/NSF Translational** | NIH CTSA, NSF SBIR, SDOH Equity | • Automated SBIR Phase I Grant Binder Generator (`npm run grants:sbir`)<br>• PRAPARE SDOH & Population Health Equity Engine (`src/services/population-health-equity.service.ts`)<br>• Tribal Health Sovereignty & Cryptographically Sealed Patient Consent Logs |
 
 ---
 
@@ -382,7 +403,7 @@ All patient data serialized across API boundaries conforms to the **FHIR R4 Bund
 ## Monorepo Workspaces
 
 | Workspace | Language | Purpose |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | `pocketgull` (root) | TypeScript | Angular 22 + Express SSR main application |
 | `companion-apps/avs-therapy` | TypeScript | AVS Therapy companion app |
 | `companion-apps/patient_app` | Dart/Flutter | Patient-facing mobile app |
@@ -410,7 +431,7 @@ npm run deploy
 ## Documentation
 
 | Document | Description |
-|:---|:---|
+| :--- | :--- |
 | [Architecture](docs/study/src/pages/architecture.mdx) | System design & data flow |
 | [Changelog](CHANGELOG.md) | Complete release history |
 | [Clinical Paradigms](docs/study/src/pages/clinical-paradigms.mdx) | Western, TCM, Ayurvedic frameworks |
@@ -430,7 +451,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. Key conventions:
 
 - **Conventional Commits**: `<type>(<scope>): <description>` (72-char max subject)
 - **Standalone Components**: No NgModules — Angular Signals over RxJS
-- **Pre-commit hooks**: Husky enforces lint-staged, Sentinel guard, and commit-msg format
+- **Pre-commit hooks**: Husky enforces lint-staged, Sentinel guard, ReDoS audit, Global Taint-Tracking, and commit-msg format
 
 ---
 
@@ -458,7 +479,7 @@ If you reference Pocket Gull in research, please cite:
   month     = jul,
   year      = 2026,
   publisher = {Zenodo},
-  version   = {v0.10.0},
+  version   = {v1.27.0},
   doi       = {10.5281/zenodo.20647514},
   url       = {https://doi.org/10.5281/zenodo.20647514}
 }
@@ -468,11 +489,16 @@ If you reference Pocket Gull in research, please cite:
 
 ## Author
 
-**Phil Gear** — Lead Systems Architect & Creator
+**Phil Gear** — Lead Systems Architect & Creator  
+*Member, IEEE (#101083329) · ACM Ambassador (#6179454) · Member, AIGA (#0513247)*  
+*Arizona State University*
 
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0008--1372--5381-A6C900?style=flat-square&logo=orcid&logoColor=white)](https://orcid.org/0009-0008-1372-5381)
+[![IEEE](https://img.shields.io/badge/IEEE-101083329-00629B?style=flat-square&logo=ieee&logoColor=white)](https://www.ieee.org)
+[![ACM](https://img.shields.io/badge/ACM_Ambassador-6179454-0085CA?style=flat-square&logo=associationforcomputingmachinery&logoColor=white)](https://www.acm.org)
+[![AIGA](https://img.shields.io/badge/AIGA-0513247-EE3124?style=flat-square&logo=aiga&logoColor=white)](https://www.aiga.org)
 [![GitHub](https://img.shields.io/badge/GitHub-philgear-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/philgear)
 [![Google Dev](https://img.shields.io/badge/Google_Dev-philgear-4285F4?style=flat-square&logo=google&logoColor=white)](https://developers.google.com/profile/philgear)
-[![ORCID](https://img.shields.io/badge/ORCID-0009--0008--1372--5381-A6C900?style=flat-square&logo=orcid&logoColor=white)](https://orcid.org/0009-0008-1372-5381)
 [![Email](https://img.shields.io/badge/Contact-leads%40pocketgull.app-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:leads@pocketgull.app)
 
 ---
