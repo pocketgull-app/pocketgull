@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, describe, it, beforeEach } from 'vitest';
 import { DeepSpaceCdsService } from './deep-space-cds.service';
 
 describe('DeepSpaceCdsService Unit Suite', () => {

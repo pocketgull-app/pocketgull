@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, vi } from 'vitest';
 import { WebLLMProvider, AVAILABLE_GEMMA_MODELS } from './webllm.provider';
 
 describe('WebLLMProvider (WebGPU Local Gemma 3)', () => {

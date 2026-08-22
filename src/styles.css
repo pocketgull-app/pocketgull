@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Atkinson+Hyperlegible+Next:ital,wght@0,400..800;1,400..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap');
 @import './styles/pocketgull-marker-font.css';
 @import './styles/pocketgull-icon-font.css';
 
@@ -7,31 +7,71 @@
 @tailwind utilities;
 
 :root {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: 'Cinzel', 'Georgia', serif;
+  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  --font-serif: 'Cinzel', 'Libre Caslon Text', 'Georgia', serif;
+  --font-caslon: 'Libre Caslon Text', 'Georgia', serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --font-rounded: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-rounded: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body, html {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.6;
-  letter-spacing: -0.01em;
+  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.65;
+  letter-spacing: -0.012em;
 }
 
+.font-caslon, .caslon-prose {
+  font-family: var(--font-caslon);
+  line-height: 1.65;
+  letter-spacing: -0.012em;
+}
+
+/* Zero-Jank & High-Performance Rendering Primitives */
+.cv-auto, .clinical-card-virtualized {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 380px;
+}
+
+.font-pocketgull-tabular, .tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+.gpu-layer, .will-change-transform {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Optimized Portrait & Avatar Cropping */
+.portrait-crop, .avatar-portrait, img.avatar {
+  object-fit: cover;
+  object-position: center 25%;
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+}
+
+.portrait-card-img {
+  object-fit: cover;
+  object-position: center top;
+  aspect-ratio: 4 / 5;
+  border-radius: 1rem;
+}
+
+
 h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', 'Inter', sans-serif;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   line-height: 1.25;
 }
 
 .font-sans, .ui-sans-serif {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .font-mono, .ui-monospace, code, kbd, samp, pre {
@@ -40,7 +80,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .font-rounded, .ui-rounded {
-  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+  font-family: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
 }
 
 /* ==========================================================================

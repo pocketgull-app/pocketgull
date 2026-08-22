@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { IntimacyRelationshipVitalityService } from './intimacy-relationship-vitality.service';
 
 describe('IntimacyRelationshipVitalityService - Couples Relationship & Cardiovascular Safety Engine', () => {

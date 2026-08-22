@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { HedisStarRatingService } from './hedis-star-rating.service';
 
 describe('HedisStarRatingService Unit Suite', () => {

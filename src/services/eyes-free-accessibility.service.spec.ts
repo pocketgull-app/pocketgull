@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { EyesFreeAccessibilityService } from './eyes-free-accessibility.service';
 
 describe('EyesFreeAccessibilityService Unit Suite', () => {

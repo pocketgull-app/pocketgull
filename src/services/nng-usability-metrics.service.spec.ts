@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { NngUsabilityMetricsService } from './nng-usability-metrics.service';
 
 describe('NngUsabilityMetricsService Unit Suite', () => {

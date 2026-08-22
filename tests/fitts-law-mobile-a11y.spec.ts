@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 
 /**
  * Fitts's Law ($T = a + b \log_2(1 + D/W)$) & Mobile Ergonomics Audit Suite.

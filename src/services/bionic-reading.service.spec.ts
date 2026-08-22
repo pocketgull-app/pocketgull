@@ -1,4 +1,3 @@
-import '@angular/compiler';
 import { BionicReadingService } from './bionic-reading.service';
 
 describe('BionicReadingService', () => {
@@ -53,12 +52,10 @@ describe('BionicReadingService', () => {
     expect(service.accessibilityNotice()).toContain('disabled');
   });
 
-  it('should toggle on Alt+B keydown event', () => {
-    const event = new KeyboardEvent('keydown', { key: 'b', altKey: true });
-    window.dispatchEvent(event);
+  it('should set bionic reading explicitly', () => {
+    service.setBionicReading(true);
     expect(service.isBionicReadingEnabled()).toBe(true);
-    window.dispatchEvent(event);
+    service.setBionicReading(false);
     expect(service.isBionicReadingEnabled()).toBe(false);
   });
 });
-

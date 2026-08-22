@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { createCanaryRouter, recordCanaryHit, getCanaryThreatLedger, clearCanaryThreatLedger, classifyThreatActor } from './canary.routes';
 import { Request } from 'express';
 

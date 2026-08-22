@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, describe, it } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { AmazonProductCardComponent } from './amazon-product-card.component';
 import { IAmazonProductItem } from '../../services/amazon-creators-api.service';

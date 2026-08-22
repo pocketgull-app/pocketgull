@@ -137,6 +137,22 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
             }
           </div>
 
+          @if (focusedHotzoneFeedback()) {
+            <div class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-mono font-bold animate-pulse flex items-center gap-1.5 shrink-0">
+              <span>{{ focusedHotzoneFeedback() }}</span>
+            </div>
+          }
+
+          <!-- 🫲 Dual-Handed / Left-Handed Clinical Ergonomics Button -->
+          <button (click)="toggleHandedness()" 
+                  [class.bg-purple-600]="handednessMode() === 'left'"
+                  [class.text-white]="handednessMode() === 'left'"
+                  [class.border-purple-400]="handednessMode() === 'left'"
+                  class="min-h-[40px] px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 shadow-xs flex items-center gap-1.5 shrink-0"
+                  title="Toggle Left-Handed / Right-Handed Ergonomic Layout (Mirror Floating Controls & Stylus Palette)">
+            <span>{{ handednessMode() === 'left' ? '🫲 Left-Handed' : '🫱 Right-Handed' }}</span>
+          </button>
+
           <!-- Paradigm Lens Selector Bar (Tap-Target Friendly & Dual Light/Dark Theme) -->
           <div class="flex items-center gap-1.5 bg-gray-200/80 dark:bg-zinc-950 p-1.5 rounded-lg border border-gray-300/80 dark:border-zinc-800 text-xs font-mono">
             <button (click)="state.selectPhilosophy('western')" [class.bg-sky-600]="state.activePhilosophy() === 'western'" [class.text-white]="state.activePhilosophy() === 'western'" [class.text-gray-700]="state.activePhilosophy() !== 'western'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'western'" class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
@@ -655,6 +671,11 @@ export class BodyViewerComponent implements OnDestroy {
   isSearchOpen = signal<boolean>(false);
   activeSystemFilter = signal<string>('all');
   selectedAutocompleteIndex = signal<number>(-1);
+  handednessMode = signal<'right' | 'left'>('right');
+
+  toggleHandedness(): void {
+    this.handednessMode.update(h => h === 'right' ? 'left' : 'right');
+  }
 
   openInstantCarePlan(bodyPartName?: string) {
     const selectedId = this.state.selectedPartId();
@@ -750,22 +771,193 @@ export class BodyViewerComponent implements OnDestroy {
     { id: 'osteopathic_pelvic_diaphragm', name: 'Pelvic Diaphragm & Levator Ani', secondaryName: 'Sacrotuberous Ligament & Pudendal Canal', paradigm: 'osteopathic', system: 'osteopathic', icon: '🦴', symptoms: ['pelvic floor dysfunction', 'sacral shear', 'pudendal nerve irritation', 'tailbone pain'], clinicalFocus: 'Restores reciprocity between thoracic and pelvic diaphragmatic pumps' }
   ];
 
+  focusedHotzoneFeedback = signal<string | null>(null);
+
+  /**
+   * Fast Levenshtein distance for medical term and symptom typo tolerance.
+   */
+  private levenshteinDistance(a: string, b: string): number {
+    if (a === b) return 0;
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+    const matrix: number[][] = [];
+    for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+    for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+    for (let i = 1; i <= b.length; i++) {
+      for (let j = 1; j <= a.length; j++) {
+        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+    return matrix[b.length][a.length];
+  }
+
+  private readonly clinicalAliases: Record<string, string[]> = {
+    'migraine': ['head', 'brain', 'acupoint_gv20', 'acupoint_li4_r', 'acupoint_li4_l', 'osteopathic_cranium'],
+    'headache': ['head', 'brain', 'acupoint_gv20', 'acupoint_li4_r', 'acupoint_li4_l', 'osteopathic_cranium'],
+    'htn': ['heart', 'kidneys', 'acupoint_lr3_r', 'acupoint_lr3_l', 'acupoint_gv20'],
+    'hypertension': ['heart', 'kidneys', 'acupoint_lr3_r', 'acupoint_lr3_l'],
+    'gerd': ['stomach', 'abdomen', 'acupoint_cv12', 'osteopathic_respiratory_diaphragm'],
+    'acid reflux': ['stomach', 'acupoint_cv12', 'abdomen'],
+    'sciatica': ['spine_lumbar', 'dermatome_l4_l5', 'acupoint_bl40_r', 'pelvis'],
+    'lumbago': ['spine_lumbar', 'acupoint_bl23_r', 'acupoint_bl40_r'],
+    'sibo': ['abdomen', 'stomach', 'marma_nabhi'],
+    'ibs': ['abdomen', 'stomach', 'marma_nabhi'],
+    'pots': ['brain', 'heart', 'cellular_mitochondria'],
+    'dysautonomia': ['brain', 'heart', 'osteopathic_respiratory_diaphragm'],
+    'tmj': ['head', 'osteopathic_cranium', 'acupoint_li4_r', 'acupoint_li4_l'],
+    'tinnitus': ['head', 'brain', 'acupoint_gb20_r', 'acupoint_bl23_r'],
+    'atp': ['cellular_mitochondria'],
+    'mitochondria': ['cellular_mitochondria'],
+    'fatigue': ['cellular_mitochondria', 'acupoint_st36_r', 'acupoint_st36_l', 'thyroid', 'brain'],
+    'omt': ['osteopathic_cranium', 'osteopathic_thoracic_inlet', 'osteopathic_respiratory_diaphragm', 'osteopathic_pelvic_diaphragm'],
+    'tcm': ['acupoint_gv20', 'acupoint_cv17', 'acupoint_cv12', 'acupoint_st36_r', 'acupoint_li4_r', 'acupoint_sp6_r', 'acupoint_pc6_r', 'acupoint_lr3_r', 'acupoint_ki1_r', 'acupoint_gb20_r', 'acupoint_bl23_r', 'acupoint_bl40_r'],
+    'marma': ['marma_adhipati', 'marma_sthapani', 'marma_hridaya', 'marma_nabhi', 'marma_basti', 'marma_kshipra', 'marma_talahridaya'],
+    'chakra': ['marma_adhipati', 'marma_sthapani', 'marma_hridaya', 'marma_nabhi', 'marma_basti', 'marma_kshipra', 'marma_talahridaya'],
+    'knee': ['leg_left', 'leg_right', 'acupoint_st36_r', 'acupoint_st36_l', 'acupoint_bl40_r'],
+    'back pain': ['spine_lumbar', 'spine_thoracic', 'spine_cervical', 'acupoint_bl23_r', 'acupoint_bl40_r'],
+    'neck': ['spine_cervical', 'osteopathic_thoracic_inlet', 'acupoint_gb20_r', 'head']
+  };
+
+  private calculateFuzzyMatchScore(query: string, part: (typeof this.allParts)[number]): number {
+    const q = query.toLowerCase().trim();
+    if (!q) return 0;
+
+    let score = 0;
+    const nameLower = part.name.toLowerCase();
+    const secNameLower = (part.secondaryName || '').toLowerCase();
+    const idLower = part.id.toLowerCase();
+    const focusLower = part.clinicalFocus.toLowerCase();
+    const symptomsLower = part.symptoms.map(s => s.toLowerCase());
+
+    // 1. Clinical acronym / alias exact match
+    if (this.clinicalAliases[q]?.includes(part.id)) {
+      score += 450;
+    }
+
+    // 2. Exact match on ID, Name, or Secondary Name
+    if (idLower === q || nameLower === q || secNameLower === q) {
+      score += 500;
+    } else if (nameLower.startsWith(q) || idLower.startsWith(q)) {
+      score += 350;
+    } else if (nameLower.includes(q)) {
+      score += 250;
+    } else if (secNameLower.includes(q)) {
+      score += 200;
+    }
+
+    // 3. Exact or substring match in symptoms
+    if (symptomsLower.includes(q)) {
+      score += 300;
+    } else if (symptomsLower.some(s => s.includes(q))) {
+      score += 180;
+    }
+
+    // 4. Clinical focus or system match
+    if (focusLower.includes(q)) {
+      score += 120;
+    }
+    if (part.system.toLowerCase().includes(q) || part.paradigm.toLowerCase().includes(q)) {
+      score += 140;
+    }
+
+    // 5. Multi-token and fuzzy typo tolerance
+    const tokens = q.split(/\s+/).filter(t => t.length > 0);
+    const searchableWords = [
+      ...nameLower.split(/[\s,()•-]+/),
+      ...secNameLower.split(/[\s,()•-]+/),
+      ...symptomsLower.flatMap(s => s.split(/[\s,()•-]+/))
+    ].filter(w => w.length > 2);
+
+    for (const token of tokens) {
+      if (searchableWords.some(w => w === token)) {
+        score += 120;
+      } else if (searchableWords.some(w => w.startsWith(token))) {
+        score += 80;
+      } else if (token.length >= 4) {
+        // Fuzzy distance comparison for typos
+        for (const word of searchableWords) {
+          const dist = this.levenshteinDistance(token, word);
+          if (dist === 1) {
+            score += 100;
+            break;
+          } else if (dist === 2 && token.length >= 6) {
+            score += 50;
+            break;
+          }
+        }
+      }
+    }
+
+    return score;
+  }
+
+  getHotzoneCameraPreset(partId: string): 'cranial' | 'visceral' | 'spinal' | 'peripheral' | 'front' {
+    const id = partId.toLowerCase();
+    if (
+      id.includes('head') || id.includes('brain') || id.includes('cranial') ||
+      id.includes('thyroid') || id.includes('cervical') || id.includes('gv20') ||
+      id.includes('adhipati') || id.includes('sthapani') || id.includes('sahasrara') ||
+      id.includes('ajna') || id.includes('vishuddha') || id.includes('oral_fdi')
+    ) {
+      return 'cranial';
+    }
+    if (
+      id.includes('heart') || id.includes('lung') || id.includes('chest') ||
+      id.includes('stomach') || id.includes('liver') || id.includes('kidney') ||
+      id.includes('abdo') || id.includes('cv17') || id.includes('cv12') ||
+      id.includes('hridaya') || id.includes('nabhi') || id.includes('anahata') ||
+      id.includes('manipura') || id.includes('respiratory') || id.includes('mitochondria') ||
+      id.includes('cellular')
+    ) {
+      return 'visceral';
+    }
+    if (
+      id.includes('thoracic') || id.includes('lumbar') || id.includes('sacral') ||
+      id.includes('spine') || id.includes('pelvis') || id.includes('dermatome_l4') ||
+      id.includes('bl23') || id.includes('bl40') || id.includes('basti') ||
+      id.includes('svadhisthana') || id.includes('muladhara') || id.includes('diaphragm')
+    ) {
+      return 'spinal';
+    }
+    if (
+      id.includes('shoulder') || id.includes('arm') || id.includes('hand') ||
+      id.includes('leg') || id.includes('thigh') || id.includes('shin') ||
+      id.includes('foot') || id.includes('dermatome_c6') || id.includes('st36') ||
+      id.includes('li4') || id.includes('sp6') || id.includes('pc6') ||
+      id.includes('lr3') || id.includes('ki1') || id.includes('gb20') ||
+      id.includes('kshipra') || id.includes('talahridaya')
+    ) {
+      return 'peripheral';
+    }
+    return 'front';
+  }
+
   filteredParts = computed(() => {
     const q = this.searchQuery().toLowerCase().trim();
     const system = this.activeSystemFilter();
-    return this.allParts.filter(p => {
-      const matchesQuery = !q || 
-        p.name.toLowerCase().includes(q) || 
-        (p.secondaryName && p.secondaryName.toLowerCase().includes(q)) || 
-        p.id.toLowerCase().includes(q) || 
-        p.system.toLowerCase().includes(q) ||
-        p.paradigm.toLowerCase().includes(q) ||
-        p.symptoms.some(s => s.toLowerCase().includes(q)) ||
-        p.clinicalFocus.toLowerCase().includes(q);
 
-      const matchesSystem = system === 'all' || p.paradigm === system || p.system === system;
-      return matchesQuery && matchesSystem;
-    });
+    if (!q) {
+      return this.allParts.filter(p => system === 'all' || p.paradigm === system || p.system === system);
+    }
+
+    return this.allParts
+      .map(part => {
+        const matchesSystem = system === 'all' || part.paradigm === system || part.system === system;
+        if (!matchesSystem) return { part, score: 0 };
+        const score = this.calculateFuzzyMatchScore(q, part);
+        return { part, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(item => item.part);
   });
 
   onSearchInput(event: Event) {
@@ -823,8 +1015,15 @@ export class BodyViewerComponent implements OnDestroy {
       this.state.bodyViewerMode.set('3d');
     }
 
-    // 2. Select the anatomical target in the shared state
+    // 2. Select the anatomical target in the shared state & trigger hotzone auto-focus
     this.select(part.id, part.name);
+    
+    const preset = this.getHotzoneCameraPreset(part.id);
+    this.focusedHotzoneFeedback.set(`🎯 Auto-Focused ${part.name} (${preset.toUpperCase()} Sentinel View)`);
+    setTimeout(() => {
+      this.focusedHotzoneFeedback.set(null);
+    }, 4000);
+
     this.searchQuery.set('');
     this.isSearchOpen.set(false);
     this.selectedAutocompleteIndex.set(-1);

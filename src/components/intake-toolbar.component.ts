@@ -52,6 +52,9 @@ import { FitbitService } from '../services/hardware/fitbit.service';
                 <button (click)="exportFhir.emit(); exportMenuOpen.set(false)" [disabled]="!hasReport()" class="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800 disabled:opacity-50 flex items-center gap-2 border-t border-gray-100 dark:border-zinc-800 cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> As FHIR
                 </button>
+                <button (click)="exportFhirR4Bundle.emit(); exportMenuOpen.set(false)" class="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:bg-gray-50 dark:hover:bg-zinc-800 flex items-center gap-2 border-t border-gray-100 dark:border-zinc-800 cursor-pointer">
+                  <span>📄 HL7 FHIR R4 Bundle</span>
+                </button>
                 <button (click)="exportLaafHapticFhir.emit(); exportMenuOpen.set(false)" class="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-widest text-sky-600 dark:text-sky-400 hover:bg-gray-50 dark:hover:bg-zinc-800 flex items-center gap-2 border-t border-gray-100 dark:border-zinc-800 cursor-pointer">
                   <span>⚡ LAAF Haptic FHIR</span>
                 </button>
@@ -138,6 +141,7 @@ export class IntakeToolbarComponent {
   exportPdf = output<void>();
   exportJson = output<void>();
   exportFhir = output<void>();
+  exportFhirR4Bundle = output<void>();
   exportLaafHapticFhir = output<void>();
 
   openSocraticIntake = output<void>();

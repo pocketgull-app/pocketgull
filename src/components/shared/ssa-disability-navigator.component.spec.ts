@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SsaDisabilityNavigatorComponent } from './ssa-disability-navigator.component';
 import { SsaDisabilityNavigatorService } from '../../services/ssa-disability-navigator.service';

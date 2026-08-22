@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, describe, it, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { SpaceHealthHudComponent } from './space-health-hud.component';
 import { SpaceBiophysicsService } from '../services/space-biophysics.service';

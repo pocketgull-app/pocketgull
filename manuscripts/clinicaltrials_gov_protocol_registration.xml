@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<clinical_study rank="1">
+  <!-- ========================================================================= -->
+  <!-- ClinicalTrials.gov / WHO ICTRP Protocol Registration XML                  -->
+  <!-- PocketGull Clinical Trial Suite (Option A: Toxicology, Option B: PFAS)   -->
+  <!-- ========================================================================= -->
+  <required_header>
+    <download_date>ClinicalTrials.gov Protocol Export 2026-08-22</download_date>
+    <link_text>Link to the current ClinicalTrials.gov record.</link_text>
+    <url>https://clinicaltrials.gov/show/NCT06924810</url>
+  </required_header>
+
+  <id_info>
+    <org_study_id>PG-CDS-TOX-2026-01</org_study_id>
+    <secondary_id>WHO-ICTRP-2026-PG01</secondary_id>
+    <nct_id>NCT06924810</nct_id>
+  </id_info>
+
+  <brief_title>Zero-Latency Clinical Decision Support for Acute Poisoning and Toxidromes in Emergency Care (POCKET-TOX)</brief_title>
+  <acronym>POCKET-TOX</acronym>
+  <official_title>A Multi-Center, Stepped-Wedge Cluster Randomized Trial Evaluating a Zero-Latency Multi-Paradigm Clinical Decision Support System for Acute Toxidrome Triage and Antidote Protocolization</official_title>
+
+  <sponsors>
+    <lead_sponsor>
+      <agency>PocketGull Clinical Intelligence Consortium</agency>
+      <agency_class>Other</agency_class>
+    </lead_sponsor>
+    <collaborator>
+      <agency>World Health Organization Programme on Chemical Safety</agency>
+      <agency_class>Global</agency_class>
+    </collaborator>
+  </sponsors>
+
+  <oversight_info>
+    <has_dmc>Yes</has_dmc>
+    <is_fda_regulated_drug>No</is_fda_regulated_drug>
+    <is_fda_regulated_device>No</is_fda_regulated_device>
+  </oversight_info>
+
+  <brief_summary>
+    <textblock>
+      This stepped-wedge cluster randomized controlled trial evaluates whether the PocketGull zero-latency Clinical Decision Support (CDS) engine accelerates definitive antidote administration, prevents harmful home decontamination practices, and reduces 30-day mortality among patients presenting with acute toxic exposures (organophosphates, plant alkaloid cardiotoxins, opioids, anticholinergics).
+    </textblock>
+  </brief_summary>
+
+  <overall_status>Not yet recruiting</overall_status>
+  <start_date type="Anticipated">October 1, 2026</start_date>
+  <completion_date type="Anticipated">October 1, 2028</completion_date>
+  <primary_completion_date type="Anticipated">April 1, 2028</primary_completion_date>
+  <phase>Phase 3 / Implementation Science</phase>
+  <study_type>Interventional</study_type>
+  <has_expanded_access>No</has_expanded_access>
+
+  <study_design_info>
+    <allocation>Randomized</allocation>
+    <intervention_model>Factorial / Stepped-Wedge Cluster</intervention_model>
+    <primary_purpose>Health Services Research / Decision Support</primary_purpose>
+    <masking>None (Open Label with Blinded Central Adjudication)</masking>
+  </study_design_info>
+
+  <primary_outcome>
+    <measure>Time-to-Definitive Antidote Administration (T_antidote)</measure>
+    <time_frame>From emergency triage registration to first antidote administration (up to 6 hours)</time_frame>
+    <description>Elapsed minutes to verified intravenous Atropine, Pralidoxime (2-PAM), Naloxone, or Magnesium administration.</description>
+  </primary_outcome>
+
+  <secondary_outcome>
+    <measure>30-Day All-Cause Case-Fatality Rate</measure>
+    <time_frame>30 days post-exposure</time_frame>
+    <description>Proportion of patients deceased from acute poisoning complications within 30 days of index presentation.</description>
+  </secondary_outcome>
+
+  <secondary_outcome>
+    <measure>Incidence of Harmful Non-Guideline Folk Decontamination</measure>
+    <time_frame>During acute pre-hospital and emergency encounter</time_frame>
+    <description>Documentation of forced caustic emesis, unregulated herbal antidote tea delays, or gastric lavage without airway protection.</description>
+  </secondary_outcome>
+
+  <enrollment type="Anticipated">2400</enrollment>
+  <condition>Acute Organophosphate Poisoning</condition>
+  <condition>Aconite Poisoning</condition>
+  <condition>Opioid Overdose</condition>
+  <condition>Anticholinergic Syndrome</condition>
+
+  <intervention>
+    <intervention_type>Device (Non-Device CDS 21 U.S.C. 360j(o))</intervention_type>
+    <intervention_name>PocketGull Emergency Toxicology CDS</intervention_name>
+    <description>Client-side zero-latency clinical decision support providing toxidrome triage, weight-adjusted antidote dosing endpoints, and contraindication guardrails.</description>
+  </intervention>
+
+  <eligibility>
+    <criteria>
+      <textblock>
+        Inclusion Criteria:
+        - Age >= 12 years
+        - Presenting within 6 hours of known or suspected acute toxic ingestion or inhalational exposure
+        - Triage vitals recorded
+
+        Exclusion Criteria:
+        - Out-of-hospital cardiac arrest without ROSC prior to arrival
+        - Terminal chronic illness under active hospice care
+      </textblock>
+    </criteria>
+    <gender>All</gender>
+    <minimum_age>12 Years</minimum_age>
+    <maximum_age>N/A</maximum_age>
+    <healthy_volunteers>No</healthy_volunteers>
+  </eligibility>
+
+</clinical_study>

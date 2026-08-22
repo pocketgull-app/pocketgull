@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { FhirPriorAuthService } from './fhir-prior-auth.service';
 
 describe('FhirPriorAuthService Unit Suite', () => {

@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-sheet.component';
 
 describe('InstantBodyCarePlanSheetComponent Unit Suite', () => {

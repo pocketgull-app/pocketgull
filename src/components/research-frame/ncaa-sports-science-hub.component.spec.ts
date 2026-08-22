@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, describe, it, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { NcaaSportsScienceHubComponent } from './ncaa-sports-science-hub.component';
 import { NcaaSportsScienceService } from '../../services/ncaa-sports-science.service';

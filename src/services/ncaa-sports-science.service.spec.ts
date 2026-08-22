@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, describe, it, beforeEach } from 'vitest';
 import { NcaaSportsScienceService } from './ncaa-sports-science.service';
 
 describe('NcaaSportsScienceService Suite', () => {

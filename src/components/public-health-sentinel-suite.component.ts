@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SentinelSurveillanceService } from '../services/sentinel-surveillance.service';
+import { EnvironmentalExposomicsToxicologyComponent } from './environmental-exposomics-toxicology.component';
 
 @Component({
   selector: 'app-public-health-sentinel-suite',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EnvironmentalExposomicsToxicologyComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-6 bg-zinc-950/60 backdrop-blur-md rounded-2xl border border-zinc-800/80 shadow-2xl space-y-6">
@@ -238,6 +239,9 @@ import { SentinelSurveillanceService } from '../services/sentinel-surveillance.s
         </div>
 
       </div>
+
+      <!-- Acute Toxidrome Triage & PFAS Environmental Exposomics Module -->
+      <app-environmental-exposomics-toxicology class="block mt-6" />
 
     </div>
   `,

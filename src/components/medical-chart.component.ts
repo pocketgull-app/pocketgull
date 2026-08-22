@@ -13,6 +13,9 @@ import { DicomViewerComponent } from './dicom-viewer.component';
 import { BiometricHistoryChartComponent } from './biometric-history-chart.component';
 import { SentinelTriageComponent } from './sentinel-triage.component';
 import { SentinelTelemetryPlotterComponent } from './sentinel-telemetry-plotter.component';
+import { LongitudinalTrendSparklineComponent } from './shared/longitudinal-trend-sparkline.component';
+import { GlobalHealthInitiativesService } from '../services/global-health-initiatives.service';
+import { EnvironmentalExposomicsToxicologyComponent } from './environmental-exposomics-toxicology.component';
 
 @Component({
   selector: 'app-medical-chart',
@@ -27,7 +30,9 @@ import { SentinelTelemetryPlotterComponent } from './sentinel-telemetry-plotter.
     DicomViewerComponent, 
     BiometricHistoryChartComponent,
     SentinelTriageComponent,
-    SentinelTelemetryPlotterComponent
+    SentinelTelemetryPlotterComponent,
+    LongitudinalTrendSparklineComponent,
+    EnvironmentalExposomicsToxicologyComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -89,6 +94,114 @@ import { SentinelTelemetryPlotterComponent } from './sentinel-telemetry-plotter.
         <app-sentinel-telemetry-plotter class="block w-full"></app-sentinel-telemetry-plotter>
       }
 
+      <!-- Multi-Paradigm Longitudinal Vitals & WHO SDG 3.4 Card -->
+      <pocket-gull-card 
+        title="Multi-Paradigm Longitudinal Vitals &amp; WHO SDG 3.4" 
+        [icon]="sparklineIcon"
+        [noPadding]="false">
+        
+        <div right-action (click)="isSparklinesExpanded.set(!isSparklinesExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isSparklinesExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+        </div>
+
+        @if(isSparklinesExpanded()) {
+          <div class="space-y-4 pt-1">
+            
+            <!-- WHO 10-Year CVD Risk & ICD-11 Dual-Codes Ribbon -->
+            @if(whoRisk(); as risk) {
+              <div class="p-3.5 rounded-xl bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-900/50 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-base">🌍</span>
+                  <div>
+                    <span class="font-bold text-zinc-900 dark:text-zinc-100 font-mono text-[11px] uppercase tracking-wider">
+                      WHO SDG 3.4 10-Year CVD Risk Profile:
+                    </span>
+                    <span class="ml-1.5 font-black font-mono" [ngClass]="risk.color">{{ risk.riskScorePercent }}% ({{ risk.riskTier }})</span>
+                  </div>
+                </div>
+
+                <!-- ICD-11 Dual-Codes Chips -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  @for (code of whoIcd11Codes(); track $index) {
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-white dark:bg-zinc-900 border border-sky-300 dark:border-sky-800 text-sky-800 dark:text-sky-300 shadow-2xs">
+                      {{ code.icd11Tm1Code }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- 4 Multi-Paradigm Sparklines Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <app-longitudinal-trend-sparkline
+                metricTitle="HRV rMSSD"
+                unit="ms"
+                paradigm="western"
+                [dataPoints]="[
+                  { date: 'May 1', value: 38 },
+                  { date: 'Jun 1', value: 41 },
+                  { date: 'Jul 1', value: 40 },
+                  { date: 'Jul 15', value: 44 },
+                  { date: 'Aug 1', value: 48 },
+                  { date: 'Aug 15', value: 52 },
+                  { date: 'Aug 21', value: 55 }
+                ]"
+                [targetRange]="{ min: 45, max: 65 }">
+              </app-longitudinal-trend-sparkline>
+
+              <app-longitudinal-trend-sparkline
+                metricTitle="Spleen Qi Index"
+                unit="pts"
+                paradigm="tcm"
+                [dataPoints]="[
+                  { date: 'May 1', value: 60 },
+                  { date: 'Jun 1', value: 62 },
+                  { date: 'Jul 1', value: 65 },
+                  { date: 'Jul 15', value: 68 },
+                  { date: 'Aug 1', value: 72 },
+                  { date: 'Aug 15', value: 74 },
+                  { date: 'Aug 21', value: 78 }
+                ]"
+                [targetRange]="{ min: 70, max: 90 }">
+              </app-longitudinal-trend-sparkline>
+
+              <app-longitudinal-trend-sparkline
+                metricTitle="Vata Stability"
+                unit="pts"
+                paradigm="ayurveda"
+                [dataPoints]="[
+                  { date: 'May 1', value: 40 },
+                  { date: 'Jun 1', value: 45 },
+                  { date: 'Jul 1', value: 52 },
+                  { date: 'Jul 15', value: 58 },
+                  { date: 'Aug 1', value: 64 },
+                  { date: 'Aug 15', value: 70 },
+                  { date: 'Aug 21', value: 75 }
+                ]"
+                [targetRange]="{ min: 65, max: 85 }">
+              </app-longitudinal-trend-sparkline>
+
+              <app-longitudinal-trend-sparkline
+                metricTitle="Somatic Strain"
+                unit="pts"
+                paradigm="osteopathic"
+                [dataPoints]="[
+                  { date: 'May 1', value: 75 },
+                  { date: 'Jun 1', value: 70 },
+                  { date: 'Jul 1', value: 68 },
+                  { date: 'Jul 15', value: 62 },
+                  { date: 'Aug 1', value: 55 },
+                  { date: 'Aug 15', value: 48 },
+                  { date: 'Aug 21', value: 42 }
+                ]"
+                [targetRange]="{ min: 20, max: 45 }">
+              </app-longitudinal-trend-sparkline>
+            </div>
+
+          </div>
+        }
+      </pocket-gull-card>
+
       <!-- Biometric Trends Card -->
       <pocket-gull-card 
         title="Biometric Trends" 
@@ -102,6 +215,23 @@ import { SentinelTelemetryPlotterComponent } from './sentinel-telemetry-plotter.
         @if(isBiometricExpanded()) {
           <div class="h-[250px] overflow-hidden bg-white dark:bg-black/20 shrink-0 p-4">
              <app-biometric-history-chart></app-biometric-history-chart>
+          </div>
+        }
+      </pocket-gull-card>
+
+      <!-- Environmental Exposomics & Acute Toxicology Card -->
+      <pocket-gull-card 
+        title="Environmental Exposomics &amp; Acute Toxicology" 
+        [icon]="toxicologyIcon"
+        [noPadding]="false">
+        
+        <div right-action (click)="isToxicologyExpanded.set(!isToxicologyExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isToxicologyExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+        </div>
+
+        @if(isToxicologyExpanded()) {
+          <div class="pt-2">
+            <app-environmental-exposomics-toxicology></app-environmental-exposomics-toxicology>
           </div>
         }
       </pocket-gull-card>
@@ -203,23 +333,21 @@ export class MedicalChartComponent {
   state = inject(PatientStateService);
   patientManager = inject(PatientManagementService);
   dictation = inject(DictationService);
+  globalHealth = inject(GlobalHealthInitiativesService);
 
   historyContainer = viewChild<ElementRef<HTMLDivElement>>('historyContainer');
 
-  el = inject(ElementRef);
-  platformId = inject(PLATFORM_ID);
-
-  constructor() {
-    effect(() => {
-      // depend on history but do NOT force scroll on load to avoid jarring layout jumps
-      const history = this.filteredHistory();
-      // Unwanted scroll logic removed: The user wants to view the Medical Summary & 3D Viewer at the top upon load.
-    });
-  }
+  el = inject(ElementRef, { optional: true });
+  platformId = inject(PLATFORM_ID, { optional: true });
 
   viewerIcon = `
     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-5.25v9" />
+    </svg>
+  `;
+  sparklineIcon = `
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
     </svg>
   `;
   biometricIcon = `
@@ -242,10 +370,17 @@ export class MedicalChartComponent {
       <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
     </svg>
   `;
+  toxicologyIcon = `
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.942A4.5 4.5 0 0115.89 16.5H8.11a4.5 4.5 0 01-2.34-.658L4.2 14.9" />
+    </svg>
+  `;
 
   // --- Accordion State ---
   isViewerExpanded = signal(true);
+  isSparklinesExpanded = signal(true);
   isBiometricExpanded = signal(true);
+  isToxicologyExpanded = signal(true);
   isSummaryExpanded = signal(true);
   isHistoryExpanded = signal(true);
   isScansExpanded = signal(true);
@@ -256,6 +391,19 @@ export class MedicalChartComponent {
     const selectedId = this.patientManager.selectedPatientId();
     if (!selectedId) return null;
     return this.patientManager.patients().find(p => p.id === selectedId);
+  });
+
+  whoRisk = computed(() => {
+    const patient = this.selectedPatient();
+    return patient ? this.globalHealth.calculateWhoCvdRisk(patient) : null;
+  });
+
+  whoIcd11Codes = computed(() => {
+    const patient = this.selectedPatient();
+    if (!patient) return [];
+    const conditions = patient.preexistingConditions || [];
+    const issueDescriptions = Object.values(patient.issues || {}).flat().map(i => i.description || '');
+    return this.globalHealth.mapToWhoIcd11Chapter26([...conditions, ...issueDescriptions]);
   });
 
   patientScans = computed(() => this.selectedPatient()?.scans || []);

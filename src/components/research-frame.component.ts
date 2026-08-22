@@ -56,8 +56,7 @@ export interface IPubMedSearchResult {
            class="h-11 px-4 flex items-center justify-between bg-zinc-900 border-b border-zinc-800 shrink-0 select-none font-pocketgull-inter">
         <div class="flex items-center gap-2.5">
           <span class="text-sm">🔬</span>
-          <!-- Exclusive Brand Lettering using Marker/Handwritten Font -->
-          <span class="font-pocketgull-handwritten text-orange-500 dark:text-orange-400 font-black text-sm tracking-tight">
+          <span class="font-bold text-teal-400 font-pocketgull-inter text-xs tracking-wide">
             PocketGull
           </span>
           <span class="text-xs text-zinc-600">/</span>
@@ -215,30 +214,27 @@ export interface IPubMedSearchResult {
                     [class.dark:text-zinc-400]="searchEngine() !== 'international'">
               🌐 Global
             </button>
-            @if (patientState.activePhilosophy() === 'ayurvedic') {
-              <button (click)="setSearchEngine('ayurveda')"
-                      class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
-                      [class.bg-white]="searchEngine() === 'ayurveda'"
-                      [class.dark:bg-zinc-600]="searchEngine() === 'ayurveda'"
-                      [class.text-amber-700]="searchEngine() === 'ayurveda'"
-                      [class.dark:text-amber-400]="searchEngine() === 'ayurveda'"
-                      [class.text-gray-500]="searchEngine() !== 'ayurveda'"
-                      [class.dark:text-zinc-400]="searchEngine() !== 'ayurveda'">
-                Ayurveda
-              </button>
-            }
-            @if (patientState.activePhilosophy() === 'eastern') {
-              <button (click)="setSearchEngine('tcm')"
-                      class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
-                      [class.bg-white]="searchEngine() === 'tcm'"
-                      [class.dark:bg-zinc-600]="searchEngine() === 'tcm'"
-                      [class.text-emerald-700]="searchEngine() === 'tcm'"
-                      [class.dark:text-emerald-400]="searchEngine() === 'tcm'"
-                      [class.text-gray-500]="searchEngine() !== 'tcm'"
-                      [class.dark:text-zinc-400]="searchEngine() !== 'tcm'">
-                TCM
-              </button>
-            }
+            <button (click)="setSearchEngine('ayurveda')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    [class.bg-white]="searchEngine() === 'ayurveda'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'ayurveda'"
+                    [class.text-amber-700]="searchEngine() === 'ayurveda'"
+                    [class.dark:text-amber-400]="searchEngine() === 'ayurveda'"
+                    [class.text-gray-500]="searchEngine() !== 'ayurveda'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'ayurveda'">
+              🧘 AYUSH
+            </button>
+            <button (click)="setSearchEngine('tcm')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    [class.bg-white]="searchEngine() === 'tcm'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'tcm'"
+                    [class.text-emerald-700]="searchEngine() === 'tcm'"
+                    [class.dark:text-emerald-400]="searchEngine() === 'tcm'"
+                    [class.text-gray-500]="searchEngine() !== 'tcm'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'tcm'">
+              🌿 TCM
+            </button>
+
           </div>
           <!-- Search Input -->
           <div class="w-full md:flex-1 order-last md:order-none mt-2 md:mt-0">

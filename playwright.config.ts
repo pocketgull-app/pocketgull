@@ -24,8 +24,38 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'chromium',
+      name: 'desktop-chrome',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 7'] },
+    },
+    {
+      name: 'mobile-iphone',
+      use: { ...devices['iPhone 14'] },
+    },
+    {
+      name: 'tablet-ipad-exam-room',
+      use: { ...devices['iPad (gen 7)'] },
+    },
+    {
+      name: 'chromebook-school-library',
+      use: {
+        viewport: { width: 1366, height: 768 },
+        userAgent: 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        isMobile: false,
+        hasTouch: true,
+      },
+    },
+    {
+      name: 'clinical-cow-workstation',
+      use: {
+        viewport: { width: 1280, height: 1024 },
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        isMobile: false,
+        hasTouch: false,
+      },
     },
   ],
   webServer: {

@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { RoleDemoLauncherService } from './role-demo-launcher.service';
 import { RolePathwayDocsService } from './role-pathway-docs.service';
 

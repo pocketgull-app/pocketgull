@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { ClinicalSupportAgentService } from './clinical-support-agent.service';
 
 describe('ClinicalSupportAgentService', () => {

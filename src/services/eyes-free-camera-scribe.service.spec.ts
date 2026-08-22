@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { EyesFreeCameraScribeService } from './eyes-free-camera-scribe.service';
 
 describe('EyesFreeCameraScribeService Unit Suite', () => {

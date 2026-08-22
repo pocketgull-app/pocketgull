@@ -469,6 +469,32 @@ def train_drug_nutrient_synergy_model():
     joblib.dump(calibrated_clf, path)
     print(f"Saved: {path}")
 
+def train_who_sdg_cardiometabolic_model():
+    print("\n--- Training WHO SDG 3.4 & NHANES Empirical Cardiometabolic Model ---")
+    data_path = os.path.join(os.path.dirname(__file__), 'data', 'real_public_cohort.csv')
+    
+    if not os.path.exists(data_path):
+        from ingest_public_health_data import generate_cdc_nhanes_empirical_cohort
+        df = generate_cdc_nhanes_empirical_cohort()
+    else:
+        df = pd.read_csv(data_path)
+
+    X = df[['age', 'systolic_bp', 'diastolic_bp', 'fasting_glucose_mg_dl', 'heart_rate_bpm', 'hrv_rmssd_ms']]
+    y = df['high_cvd_risk_target']
+
+    base_clf = HistGradientBoostingClassifier(max_iter=150, learning_rate=0.08, random_state=42)
+    calibrated_clf = CalibratedClassifierCV(estimator=base_clf, method='sigmoid', cv=5)
+    calibrated_clf.fit(X, y)
+
+    y_probs = calibrated_clf.predict_proba(X)[:, 1]
+    auc = roc_auc_score(y, y_probs)
+    brier = brier_score_loss(y, y_probs)
+    print(f"[OK] WHO SDG 3.4 Cardiometabolic Model Trained on Empirical Cohort ({len(df)} rows) | ROC-AUC: {auc:.4f} | Brier: {brier:.4f}")
+
+    path = os.path.join(MODELS_DIR, 'who_sdg_cardiometabolic_model.joblib')
+    joblib.dump(calibrated_clf, path)
+    print(f"Saved: {path}")
+
 if __name__ == '__main__':
     train_icu_mortality_model()
     train_readmission_model()
@@ -480,6 +506,7 @@ if __name__ == '__main__':
     train_biomarker_velocity_model()
     train_neurocognitive_moca_model()
     train_drug_nutrient_synergy_model()
-    print("\n[COMPLETE] All 10 Clinical Risk Models Trained & Serialized Successfully!")
+    train_who_sdg_cardiometabolic_model()
+    print("\n[COMPLETE] All 11 Clinical Risk Models (including Empirical WHO/CDC Cohort) Trained & Serialized Successfully!")
 
 

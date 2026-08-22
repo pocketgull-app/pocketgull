@@ -6,38 +6,27 @@ import { ThemeService } from '../services/theme.service';
 import { HardwareTelemetryService } from '../services/hardware/hardware-telemetry.service';
 import { GamificationService } from '../services/gamification.service';
 import { WalkthroughTourService } from '../services/walkthrough-tour.service';
-import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
 import { SessionStateService } from '../services/session-state.service';
+import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
+import { PocketgullBrandMarkComponent } from './shared/pocketgull-brand-mark.component';
+import { AmbientFlowPlayerComponent } from './shared/ambient-flow-player.component';
+import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscape.service';
 
 @Component({
   selector: 'app-main-header-nav',
   standalone: true,
   imports: [
     CommonModule,
-    PocketgullIconComponent
+    PocketgullIconComponent,
+    PocketgullBrandMarkComponent,
+    AmbientFlowPlayerComponent
   ],
   template: `
     <!-- Navbar: Pure utility & theme harmony -->
     <nav class="theme-nav-bar h-14 flex items-center justify-between px-3 sm:px-6 shrink-0 z-50 no-print relative">
       <div class="flex items-center gap-3 min-w-0">
         <a href="/" class="flex items-center gap-2.5 shrink-0 cursor-pointer group select-none">
-          <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="shrink-0 transform group-hover:scale-105 transition-transform">
-            <!-- Far Wing (Teal) -->
-            <polygon points="50,40 65,15 58,45" fill="#3ebc9e" stroke="#2fa085" stroke-width="0.5" stroke-linejoin="round" />
-            <!-- Tail (Light gray paper) -->
-            <polygon points="20,50 50,40 10,35" fill="#e5e5e5" stroke="#d5d5d5" stroke-width="0.5" stroke-linejoin="round" />
-            <!-- Body Base (White paper) -->
-            <polygon points="20,50 50,40 58,45 75,55 50,65" fill="#f4f4f4" stroke="#e0e0e0" stroke-width="0.5" stroke-linejoin="round" />
-            <!-- Near Wing Upper (Coral) -->
-            <polygon points="50,40 58,45 35,85" fill="#ef6658" stroke="#df5648" stroke-width="0.5" stroke-linejoin="round" />
-            <!-- Near Wing Fold (Darker Coral) -->
-            <polygon points="50,40 35,85 20,50" fill="#d85547" stroke="#c84537" stroke-width="0.5" stroke-linejoin="round" />
-            <!-- Neck/Head (White paper) -->
-            <polygon points="75,55 58,45 85,38" fill="#ffffff" stroke="#f0f0f0" stroke-width="0.5" stroke-linejoin="round" />
-            <!-- Beak (Golden-Amber Orange) -->
-            <polygon points="85,38 82,45 95,34" fill="#faa63b" stroke="#e0902c" stroke-width="0.5" stroke-linejoin="round" />
-          </svg>
-          <span class="font-pocketgull-handwritten text-orange-600 dark:text-orange-400 font-black text-lg tracking-tight">PocketGull</span>
+          <app-pocketgull-brand-mark size="sm" [showSubtext]="false" />
         </a>
 
         <!-- System Status Indicator (Hidden on small screens) -->
@@ -57,6 +46,19 @@ import { SessionStateService } from '../services/session-state.service';
 
         <!-- Desktop Quick Utility Bar (Hidden on mobile / tablet) -->
         <div class="hidden xl:flex items-center gap-2 overflow-hidden">
+          <!-- Ambient Flow Background Music Toggle Button -->
+          <button 
+            type="button" 
+            (click)="showAmbientPlayer.set(!showAmbientPlayer())"
+            [class.bg-teal-500/20]="soundscapeService.isPlaying()"
+            [class.text-teal-700]="soundscapeService.isPlaying()"
+            [class.dark:text-teal-300]="soundscapeService.isPlaying()"
+            [class.border-teal-500/50]="soundscapeService.isPlaying()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer shrink-0"
+            title="Toggle Ambient Flow Soundscape & Offline Binaural Focus Music">
+            <span>{{ soundscapeService.isPlaying() ? '🎶 Flow Active' : '🎵 Ambient Flow' }}</span>
+          </button>
+
           <!-- Socratic Intake Studio Button -->
           <button 
             type="button" 
@@ -103,6 +105,33 @@ import { SessionStateService } from '../services/session-state.service';
             <span>💳 Billing</span>
           </button>
 
+          <!-- Zero-Knowledge Encrypted Vault Button -->
+          <button 
+            type="button" 
+            (click)="openEncryptedVault.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer shrink-0"
+            title="Zero-Knowledge AES-GCM-256 Client-Side Encrypted Patient Vault">
+            <span>🔐 Vault</span>
+          </button>
+
+          <!-- SMART on FHIR EHR Bridge Button -->
+          <button 
+            type="button" 
+            (click)="openSmartFhirSync.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60 hover:bg-sky-100 dark:hover:bg-sky-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-sky-500/50 outline-none cursor-pointer shrink-0"
+            title="SMART on FHIR R4 EHR Synchronizer (Epic, Cerner, HAPI)">
+            <span>🏥 FHIR Sync</span>
+          </button>
+
+          <!-- WHO / NIH / NSF Global Health Strategic Suite Button -->
+          <button 
+            type="button" 
+            (click)="openGlobalHealth.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-purple-500/50 outline-none cursor-pointer shrink-0"
+            title="WHO SDG 3.4, ICD-11 Chapter 26 TCIM Dual-Coding & NIH Geroscience Suite">
+            <span>🌐 Global Health</span>
+          </button>
+
           <!-- Patient Telehealth Portal Button -->
           <button 
             type="button" 
@@ -110,6 +139,15 @@ import { SessionStateService } from '../services/session-state.service';
             class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-blue-500/50 outline-none cursor-pointer shrink-0"
             title="Open Patient Self-Service Portal">
             <span>🩺 Patient Portal</span>
+          </button>
+
+          <!-- Articles & Knowledge Hub Button -->
+          <button 
+            type="button" 
+            (click)="openArticles.emit()"
+            class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-amber-500/50 outline-none cursor-pointer shrink-0"
+            title="Open Articles, SNO-10 Craft Analogies & 6th Grade Knowledge Hub">
+            <span>📰 Articles</span>
           </button>
         </div>
       </div>
@@ -167,6 +205,26 @@ import { SessionStateService } from '../services/session-state.service';
                   class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 border border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-extrabold uppercase tracking-wider transition-colors rounded-lg cursor-pointer">
             <span>🧘</span>
             <span>Grounding</span>
+          </button>
+
+          <!-- Ambient Flow State Soundscape Trigger -->
+          <button (click)="showAmbientPlayer.set(!showAmbientPlayer())"
+                  id="tour-ambient-flow-trigger"
+                  aria-label="Toggle Ambient Flow State Soundscape"
+                  title="Toggle Ambient Flow State Soundscape (432 Hz, Pacific Surf, 528 Hz, 40 Hz Gamma)"
+                  class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 border transition-all rounded-lg cursor-pointer text-xs font-black uppercase tracking-wider"
+                  [class.bg-teal-500/20]="soundscapeService.isPlaying()"
+                  [class.border-teal-400]="soundscapeService.isPlaying()"
+                  [class.text-teal-300]="soundscapeService.isPlaying()"
+                  [class.border-teal-500/30]="!soundscapeService.isPlaying()"
+                  [class.bg-teal-500/10]="!soundscapeService.isPlaying()"
+                  [class.text-teal-700]="!soundscapeService.isPlaying()"
+                  [class.dark:text-teal-400]="!soundscapeService.isPlaying()"
+                  [class.hover:bg-teal-500/20]="!soundscapeService.isPlaying()">
+            <span [class.animate-pulse]="soundscapeService.isPlaying()">
+              {{ soundscapeService.isPlaying() ? '🎵' : '🌊' }}
+            </span>
+            <span>{{ soundscapeService.isPlaying() ? 'Flow: ' + soundscapeService.activePreset().carrierFreqHz + 'Hz' : 'Flow State' }}</span>
           </button>
 
           <!-- Theme Toggle -->
@@ -235,7 +293,7 @@ import { SessionStateService } from '../services/session-state.service';
           <div class="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
             <div class="flex items-center gap-2">
               <app-pocketgull-icon name="seagull" />
-              <span class="font-pocketgull-handwritten text-lg font-bold text-orange-600 dark:text-orange-400">PocketGull Menu</span>
+              <span class="text-base font-bold text-zinc-900 dark:text-zinc-100 font-pocketgull-inter">PocketGull Navigation</span>
             </div>
             <button type="button" (click)="isMobileMenuOpen.set(false)" class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white active:scale-95 cursor-pointer" aria-label="Close Mobile Menu">
               ✕
@@ -244,6 +302,11 @@ import { SessionStateService } from '../services/session-state.service';
 
           <!-- Clinical Navigation Links (Fitts's Law 48px+ touch targets) -->
           <div class="space-y-2.5">
+            <!-- Ambient Flow Background Music Player -->
+            <button type="button" (click)="showAmbientPlayer.set(true); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🎵</span> <span>Ambient Flow Music Player</span>
+            </button>
+
             <button type="button" (click)="openSocraticIntake.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">✨</span> <span>Socratic Intake Studio</span>
             </button>
@@ -295,6 +358,23 @@ import { SessionStateService } from '../services/session-state.service';
         </div>
       </div>
     }
+
+    <!-- Floating Ambient Flow Player Popover -->
+    @if (showAmbientPlayer()) {
+      <div class="fixed top-16 right-4 sm:right-6 z-[9999] animate-in fade-in slide-in-from-top-2 duration-200 max-w-[92vw]">
+        <div class="relative">
+          <button 
+            type="button"
+            (click)="showAmbientPlayer.set(false)"
+            class="absolute -top-2 -right-2 z-10 w-7 h-7 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center text-xs font-bold border border-zinc-700 cursor-pointer shadow-lg"
+            title="Close Player"
+          >
+            ✕
+          </button>
+          <app-ambient-flow-player />
+        </div>
+      </div>
+    }
   `
 })
 export class MainHeaderNavComponent {
@@ -305,9 +385,11 @@ export class MainHeaderNavComponent {
   game = inject(GamificationService);
   tour = inject(WalkthroughTourService);
   session = inject(SessionStateService);
+  soundscapeService = inject(AmbientFlowSoundscapeService);
 
   today = new Date();
   isMobileMenuOpen = signal<boolean>(false);
+  showAmbientPlayer = signal<boolean>(false);
 
   openSocraticIntake = output<void>();
   openCompanionSync = output<void>();
@@ -319,6 +401,10 @@ export class MainHeaderNavComponent {
   openTypefaceSite = output<void>();
   openDocsStudy = output<void>();
   openSupportTicket = output<void>();
+  openEncryptedVault = output<void>();
+  openSmartFhirSync = output<void>();
+  openGlobalHealth = output<void>();
+  openArticles = output<void>();
   triggerSomaticGrounding = output<void>();
 }
 

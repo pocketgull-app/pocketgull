@@ -1,4 +1,3 @@
-import { expect } from 'vitest';
 import { AlphaGenomeRegulatoryService } from './alphagenome-regulatory.service';
 
 describe('AlphaGenomeRegulatoryService', () => {

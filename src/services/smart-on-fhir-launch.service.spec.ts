@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { SmartOnFhirLaunchService } from './smart-on-fhir-launch.service';
 
 describe('SmartOnFhirLaunchService Unit Suite', () => {

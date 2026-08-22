@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { UniversalLivingWillService } from './universal-living-will.service';
 
 describe('UniversalLivingWillService Unit Suite', () => {

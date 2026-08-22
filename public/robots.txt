@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Allow: /business
 Allow: /llms.txt
 Allow: /.well-known/agent.json
 Allow: /search.html
@@ -53,4 +54,5 @@ Disallow: /
 User-agent: redditbot
 Disallow: /
 
+Sitemap: https://pocketgull.com/sitemap.xml
 Sitemap: https://pocketgull.app/sitemap.xml

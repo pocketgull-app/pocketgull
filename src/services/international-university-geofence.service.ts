@@ -1,21 +1,23 @@
 import { Injectable, signal, computed } from '@angular/core';
 
 export type InternationalJurisdiction = 
-  | 'US_NCAA'          // United States (HIPAA, NCAA CSMAS, FDA CDS)
-  | 'UK_EU_GDPR'        // United Kingdom & EU (GDPR Art. 9, UKRIO, NHS UK Core, WADA/UKAD)
-  | 'APAC_CROSS_BORDER' // Asia-Pacific (APEC CBPR, PMDA Japan, TGA Australia, AIS)
-  | 'CA_PIPEDA'         // Canada (PIPEDA, Health Canada, U Sports, CCES)
+  | 'US_NCAA'          // United States (HIPAA, NCAA CSMAS, FDA CDS, ONC HTI-1)
+  | 'UK_EU_GDPR'        // United Kingdom & EU (GDPR Art. 9, NHS DTAC, NHS UK Core, UKAD/WADA)
+  | 'APAC_CROSS_BORDER' // Australia & APAC (Privacy Act 1988, TGA SaMD, Sport Integrity Australia)
+  | 'CA_PIPEDA'         // Canada (PIPEDA, Ontario PHIPA, Health Canada, CCES)
+  | 'NZ_HIPC'           // New Zealand (HIPC 2020, NZ HISO 10029, Te Mana Raraunga)
+  | 'INDIA_AYUSH_ABDM'  // India (DPDP Act 2023, ABDM / UHI, Ministry of AYUSH, CDSCO)
   | 'GLOBAL_WHO';       // Global South & WHO (WHO AFRO/EMRO/SEARO, Low-Bandwidth Edge)
 
 export interface IInternationalUniversityPartner {
   id: string;
   name: string;
   country: string;
-  region: 'North America' | 'Europe / UK' | 'Asia-Pacific' | 'Global South';
+  region: 'North America' | 'Europe / UK' | 'Asia-Pacific' | 'South Asia / India' | 'Global South';
   jurisdiction: InternationalJurisdiction;
   flagshipLab: string;
   regulatoryFramework: string;
-  antiDopingAuthority: 'WADA' | 'USADA / NCAA' | 'UKAD' | 'Sport Integrity Australia' | 'CCES' | 'JADA';
+  antiDopingAuthority: 'WADA' | 'USADA / NCAA' | 'UKAD' | 'Sport Integrity Australia' | 'CCES' | 'JADA' | 'NADA India' | 'Drug Free Sport NZ';
   geofencedCloudRegion: string;
   dataSovereigntyProtocol: string;
 }
@@ -40,7 +42,7 @@ export class InternationalUniversityGeofenceService {
   readonly activeJurisdiction = signal<InternationalJurisdiction>('US_NCAA');
   readonly selectedUniversityId = signal<string>('uw_huskies');
 
-  // --- Siloed International University Registry ---
+  // --- Siloed International University & Research Partner Registry ---
   readonly internationalPartners = signal<IInternationalUniversityPartner[]>([
     // United States (NCAA / R1)
     {
@@ -88,7 +90,7 @@ export class InternationalUniversityGeofenceService {
       region: 'Europe / UK',
       jurisdiction: 'UK_EU_GDPR',
       flagshipLab: 'Nuffield Department of Medicine & Oxford Orthopaedic Engineering',
-      regulatoryFramework: 'UK GDPR / Data Protection Act 2018 / NHS FHIR UK Core',
+      regulatoryFramework: 'UK GDPR / Data Protection Act 2018 / NHS DTAC & FHIR UK Core',
       antiDopingAuthority: 'UKAD',
       geofencedCloudRegion: 'europe-west2 (London Sovereign Cluster)',
       dataSovereigntyProtocol: 'Strict GDPR Art. 9 Special Category Pinned Storage'
@@ -106,7 +108,7 @@ export class InternationalUniversityGeofenceService {
       dataSovereigntyProtocol: 'EU-Only Data Residency (Schrems II Hard Boundary)'
     },
 
-    // Asia-Pacific (Australia / Japan / Singapore)
+    // Australia & Asia-Pacific (Privacy Act 1988 / APEC CBPR / TGA)
     {
       id: 'unimelb_medicine',
       name: 'University of Melbourne (Melbourne Medical School & AIS)',
@@ -114,37 +116,37 @@ export class InternationalUniversityGeofenceService {
       region: 'Asia-Pacific',
       jurisdiction: 'APAC_CROSS_BORDER',
       flagshipLab: 'Centre for Health, Exercise and Sports Medicine (CHESM)',
-      regulatoryFramework: 'Privacy Act 1988 (APPs) / TGA Medical Software Guidelines',
+      regulatoryFramework: 'Privacy Act 1988 (APPs) / TGA Class IIa SaMD / FHIR AU Base',
       antiDopingAuthority: 'Sport Integrity Australia',
       geofencedCloudRegion: 'australia-southeast1 (Sydney Edge Node)',
       dataSovereigntyProtocol: 'Australian Health Data Residency Guarantee'
     },
     {
       id: 'nus_medicine',
-      name: 'National University of Singapore (Yong Loo Lin Medicine)',
+      name: 'National University of Singapore (Yong Loo Lin School of Medicine)',
       country: 'Singapore',
       region: 'Asia-Pacific',
       jurisdiction: 'APAC_CROSS_BORDER',
-      flagshipLab: 'Bishan Sports Performance & Translational Immunology Lab',
-      regulatoryFramework: 'Personal Data Protection Act (PDPA) / HSA Singapore',
+      flagshipLab: 'Centre for Healthy Longevity & Sports Medicine Lab',
+      regulatoryFramework: 'PDPA Singapore / MOH Singapore SaMD / APEC CBPR',
       antiDopingAuthority: 'WADA',
-      geofencedCloudRegion: 'asia-southeast1 (Singapore Sovereign Edge)',
-      dataSovereigntyProtocol: 'APEC Cross-Border Privacy Rules (CBPR) Enforcement'
+      geofencedCloudRegion: 'asia-southeast1 (Singapore Sovereign Node)',
+      dataSovereigntyProtocol: 'APEC Cross-Border Privacy Rules (CBPR) System'
     },
     {
       id: 'utokyo_medicine',
-      name: 'University of Tokyo (Graduate School of Medicine)',
+      name: 'University of Tokyo (Graduate School of Medicine & RIKEN)',
       country: 'Japan',
       region: 'Asia-Pacific',
       jurisdiction: 'APAC_CROSS_BORDER',
-      flagshipLab: 'Integrative Kampo Medicine & Robotic Biomechanics',
-      regulatoryFramework: 'APPI (Act on the Protection of Personal Information) / PMDA',
+      flagshipLab: 'Department of Orthopaedic Surgery & Sports Science Institute',
+      regulatoryFramework: 'APPI Japan / PMDA Class IIa SaMD',
       antiDopingAuthority: 'JADA',
-      geofencedCloudRegion: 'asia-northeast1 (Tokyo Edge Node)',
-      dataSovereigntyProtocol: 'Japanese Sovereign Cloud & Kampo Evidence Isolation'
+      geofencedCloudRegion: 'asia-northeast1 (Tokyo Sovereign Node)',
+      dataSovereigntyProtocol: 'Japan APPI & APEC CBPR Bilateral Trust Mesh'
     },
 
-    // Canada (PIPEDA / U15)
+    // Canada (PIPEDA / PHIPA)
     {
       id: 'utoronto_medicine',
       name: 'University of Toronto (Temerty Faculty of Medicine)',
@@ -152,10 +154,52 @@ export class InternationalUniversityGeofenceService {
       region: 'North America',
       jurisdiction: 'CA_PIPEDA',
       flagshipLab: 'Goldring Centre for High Performance Sport & Vector Institute',
-      regulatoryFramework: 'PIPEDA / PHIPA Ontario / Health Canada Class I SaMD',
+      regulatoryFramework: 'PIPEDA / PHIPA Ontario / FHIR CA Baseline',
       antiDopingAuthority: 'CCES',
       geofencedCloudRegion: 'northamerica-northeast1 (Montreal/Toronto Zone)',
       dataSovereigntyProtocol: 'Canadian In-Country Health Residency (Zero US Cloud Transit)'
+    },
+
+    // New Zealand (HIPC 2020 / Te Mana Raraunga)
+    {
+      id: 'uauckland_medicine',
+      name: 'University of Auckland (Faculty of Medical & Health Sciences)',
+      country: 'New Zealand',
+      region: 'Asia-Pacific',
+      jurisdiction: 'NZ_HIPC',
+      flagshipLab: 'Liggins Institute & Te Mana Raraunga Māori Data Sovereignty Hub',
+      regulatoryFramework: 'Health Information Privacy Code 2020 (HIPC) / NZ HISO 10029',
+      antiDopingAuthority: 'Drug Free Sport NZ',
+      geofencedCloudRegion: 'australia-southeast2 (NZ Edge Sovereign Cluster)',
+      dataSovereigntyProtocol: 'Te Mana Raraunga CARE Indigenous Data Boundary'
+    },
+
+    // India (Bharat - Ministry of AYUSH & ABDM)
+    {
+      id: 'aiia_aiims_delhi',
+      name: 'All India Institute of Ayurveda (AIIA) & AIIMS New Delhi',
+      country: 'India (Bharat)',
+      region: 'South Asia / India',
+      jurisdiction: 'INDIA_AYUSH_ABDM',
+      flagshipLab: 'Centre for Integrative Oncology & CCRAS Pharmacopeia Lab',
+      regulatoryFramework: 'DPDP Act 2023 / ABDM FHIR Standard / CDSCO SaMD 2017',
+      antiDopingAuthority: 'NADA India',
+      geofencedCloudRegion: 'asia-south1 (Mumbai / Delhi Sovereign Edge)',
+      dataSovereigntyProtocol: 'Ayushman Bharat UHI & AYUSH Research Integrity Protocol'
+    },
+
+    // Global South / Offline WASM
+    {
+      id: 'who_global_hub',
+      name: 'WHO Global Centre for Traditional Medicine (WHO-GCTM Jamnagar)',
+      country: 'International / Global South',
+      region: 'Global South',
+      jurisdiction: 'GLOBAL_WHO',
+      flagshipLab: 'WHO-GCTM Jamnagar & Global Evidence Synthesis Network',
+      regulatoryFramework: 'WHO Global Digital Health Strategy & Open Science Codex',
+      antiDopingAuthority: 'WADA',
+      geofencedCloudRegion: 'Local Client Device (Zero-Egress WASM)',
+      dataSovereigntyProtocol: 'Offline Decentralized Edge Compute Sovereign Node'
     }
   ]);
 
@@ -164,21 +208,29 @@ export class InternationalUniversityGeofenceService {
     const jur = this.activeJurisdiction();
     
     let sovereignRegion = 'us-west1 (Oregon / Local Zone)';
-    let reg = 'HIPAA §164.514 Safe Harbor & NCAA CSMAS';
+    let reg = 'HIPAA §164.514 Safe Harbor, ONC HTI-1 & NCAA CSMAS';
     let doping = 'USADA / NCAA Banned Substance List';
 
     if (jur === 'UK_EU_GDPR') {
       sovereignRegion = 'europe-west2 (London Sovereign Cluster)';
-      reg = 'UK/EU GDPR Art. 9 & NHS UK Core Standards';
+      reg = 'UK/EU GDPR Art. 9, NHS DTAC (DCB0129) & FHIR UK Core';
       doping = 'WADA / UKAD Code 2026';
     } else if (jur === 'APAC_CROSS_BORDER') {
-      sovereignRegion = 'asia-southeast1 / australia-southeast1 (APAC Edge)';
-      reg = 'APEC Cross-Border Privacy Rules & TGA/PMDA';
-      doping = 'Sport Integrity Australia & JADA';
+      sovereignRegion = 'australia-southeast1 (Sydney Edge Node)';
+      reg = 'Privacy Act 1988 (APPs), APEC CBPR, TGA Class IIa SaMD & FHIR AU Base';
+      doping = 'Sport Integrity Australia (WADA Accredited)';
     } else if (jur === 'CA_PIPEDA') {
       sovereignRegion = 'northamerica-northeast1 (Canada Sovereign)';
-      reg = 'PIPEDA & PHIPA Ontario Health Data Act';
+      reg = 'PIPEDA, Ontario PHIPA & FHIR CA Baseline';
       doping = 'Canadian Centre for Ethics in Sport (CCES)';
+    } else if (jur === 'NZ_HIPC') {
+      sovereignRegion = 'australia-southeast2 (NZ Sovereign Cluster)';
+      reg = 'Health Information Privacy Code 2020 (HIPC) & NZ HISO 10029';
+      doping = 'Drug Free Sport New Zealand';
+    } else if (jur === 'INDIA_AYUSH_ABDM') {
+      sovereignRegion = 'asia-south1 (Mumbai / Delhi Sovereign Edge)';
+      reg = 'DPDP Act 2023, Ayushman Bharat Digital Mission (ABDM) & Ministry of AYUSH';
+      doping = 'National Anti-Doping Agency (NADA India)';
     } else if (jur === 'GLOBAL_WHO') {
       sovereignRegion = 'Local Device Only (Offline WASM Zero-Egress)';
       reg = 'WHO Essential Health Telemetry & Global Digital Health Guidelines';
@@ -209,6 +261,10 @@ export class InternationalUniversityGeofenceService {
   // --- Silo Switching Methods ---
   setJurisdiction(jurisdiction: InternationalJurisdiction): void {
     this.activeJurisdiction.set(jurisdiction);
+    const uni = this.internationalPartners().find(p => p.jurisdiction === jurisdiction);
+    if (uni) {
+      this.selectedUniversityId.set(uni.id);
+    }
   }
 
   selectUniversity(id: string): void {

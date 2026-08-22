@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { ClinicalAssessmentsService } from './clinical-assessments.service';
 import { PatientManagementService } from '../patient-management.service';

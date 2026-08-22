@@ -48,10 +48,10 @@
     "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-sdoh-equity-compass"
   },
   {
-    "id": "gemma-3-mandiant-defense-auditor",
-    "name": "PocketGull Gemma 3 Mandiant Clinical Cyber Defense Guard",
-    "hub_repo": "pocketgull-llc/gemma-3-mandiant-defense-auditor",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-mandiant-defense-auditor"
+    "id": "gemma-3-hipaa-tamper-sentinel",
+    "name": "PocketGull Gemma 3 HIPAA Safe Harbor & Clinical Integrity Sentinel",
+    "hub_repo": "pocketgull-llc/gemma-3-hipaa-tamper-sentinel",
+    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-hipaa-tamper-sentinel"
   },
   {
     "id": "gemma-3-ophthalmology-retina-cds",
@@ -64,5 +64,11 @@
     "name": "PocketGull Gemma 3 Grand Rounds 7-Slide & CARE Case Publisher",
     "hub_repo": "pocketgull-llc/gemma-3-grand-rounds-care-presenter",
     "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-grand-rounds-care-presenter"
+  },
+  {
+    "id": "gemma-3-osteopathic-rounds-director",
+    "name": "PocketGull Gemma 3 Dr. Elena Gullwing, DO Osteopathic Rounds Director",
+    "hub_repo": "pocketgull-llc/gemma-3-osteopathic-rounds-director",
+    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-osteopathic-rounds-director"
   }
 ]

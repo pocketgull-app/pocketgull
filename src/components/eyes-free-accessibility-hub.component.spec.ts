@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { EyesFreeAccessibilityHubComponent } from './eyes-free-accessibility-hub.component';
 import { EyesFreeAccessibilityService } from '../services/eyes-free-accessibility.service';

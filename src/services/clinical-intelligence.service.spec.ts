@@ -9,7 +9,6 @@ import { RulesEngineService } from './rules-engine.service';
 import { PatientStateService } from './patient-state.service';
 import { OrcidService } from './orcid.service';
 import { WebLLMProvider } from './ai/webllm.provider';
-import { vi } from 'vitest';
 
 describe('ClinicalIntelligenceService - Philosophy Modes', () => {
   let service: ClinicalIntelligenceService;

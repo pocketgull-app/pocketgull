@@ -1,6 +1,6 @@
 {
   "name": "pocket-gull",
-  "version": "1.25.0",
+  "version": "1.26.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api"
@@ -77,10 +77,13 @@
     "dev": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
     "dev:all": "node --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
     "wp:publish": "node scripts/publish_article_to_wordpress.mjs",
+    "data:ingest": "node scripts/ingest-public-data.mjs",
+    "infer": "node scripts/run_local_inference.mjs",
     "models:retrain": "node scripts/retrain-models.mjs",
     "dataset:export": "node scripts/export_fine_tuning_dataset.mjs",
     "sentinel:audit": "node scripts/sentinel_security_guard.mjs",
     "evals:clinical": "node scripts/run-clinical-evals.mjs",
+    "doctor:wsl": "node scripts/wsl_ai_doctor.mjs",
     "clamav:scan": "node scripts/daily-clamav-scan.mjs",
     "sbom": "node scripts/generate_cyclonedx_sbom.mjs",
     "sbom:generate": "node scripts/generate_cyclonedx_sbom.mjs",

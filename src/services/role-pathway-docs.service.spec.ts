@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { RolePathwayDocsService, ClinicalRolePathway } from './role-pathway-docs.service';
 
 describe('RolePathwayDocsService - Dynamic Role-Based Pathways & Documentation', () => {

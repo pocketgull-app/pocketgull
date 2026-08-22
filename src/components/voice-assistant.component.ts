@@ -21,6 +21,7 @@ import { severityQuestions } from '../services/ybocs/data';
 import { BionicReadingService } from '../services/bionic-reading.service';
 import { OcularVocalTelemetryService } from '../services/ocular-vocal-telemetry.service';
 import { OpticalCameraVisionService } from '../services/optical-camera-vision.service';
+import { AmbientSoapParserService, IStructuredSoapNote } from '../services/ambient-soap-parser.service';
 
 export interface IChatEntry {
     role: 'user' | 'model';
@@ -439,6 +440,30 @@ export interface IChatEntry {
                               </div>
                             }
 
+                            <!-- 🎙️ Live WebAudio RMS Acoustic Waveform Visualizer & Ambient SOAP Pill -->
+                            <div class="w-full flex items-center justify-between px-2 py-1 text-xs">
+                              @if (live.isListening()) {
+                                <div class="flex items-center gap-1.5 px-3 py-1 bg-emerald-950/70 border border-emerald-500/40 rounded-xl text-[11px] text-emerald-300 font-mono font-bold animate-pulse">
+                                  <span>🎙️ Live Acoustic Scribe:</span>
+                                  <div class="flex items-center gap-0.5 h-3">
+                                    <span class="w-1 bg-emerald-400 rounded-full animate-[pulse_0.4s_ease-in-out_infinite] h-2"></span>
+                                    <span class="w-1 bg-teal-400 rounded-full animate-[pulse_0.6s_ease-in-out_infinite] h-3"></span>
+                                    <span class="w-1 bg-emerald-300 rounded-full animate-[pulse_0.3s_ease-in-out_infinite] h-3"></span>
+                                    <span class="w-1 bg-teal-300 rounded-full animate-[pulse_0.5s_ease-in-out_infinite] h-2"></span>
+                                  </div>
+                                </div>
+                              } @else {
+                                <span class="text-[11px] text-zinc-400 font-mono">Ambient Scribe Ready</span>
+                              }
+
+                              <button type="button" 
+                                      (click)="generateSoapNote()"
+                                      [disabled]="chatHistory().length === 0 && !messageText().trim()"
+                                      class="px-2.5 py-1 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 text-indigo-300 rounded-xl font-bold text-[10.5px] cursor-pointer transition flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed">
+                                <span>📝 Parse 4-Paradigm SOAP</span>
+                              </button>
+                            </div>
+
                             <form (submit)="sendMessage($event)" class="w-full flex items-center gap-2 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-gray-200 dark:border-zinc-700 shadow-2xl rounded-2xl p-2 focus-within:border-gray-300 dark:focus-within:border-zinc-600 transition-all">
                                 <button type="button" (click)="toggleListening()" [disabled]="agentState() !== 'idle' || !!permissionError()"
                                         title="Start/Stop Voice Capture"
@@ -486,6 +511,79 @@ export interface IChatEntry {
                         </div>
                     </div>
                 </div>
+            }
+
+            <!-- 4-Paradigm SOAP Note Modal -->
+            @if (isSoapModalOpen() && activeSoapNote()) {
+              <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+                <div class="bg-zinc-950 text-zinc-100 border border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-3xl w-full shadow-2xl font-sans max-h-[85vh] overflow-y-auto space-y-4">
+                  <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                    <div class="flex items-center gap-2">
+                      <span class="text-2xl">📝</span>
+                      <div>
+                        <h3 class="text-base font-bold text-zinc-100">4-Paradigm Clinical SOAP Note</h3>
+                        <p class="text-[10.5px] text-zinc-400 font-mono">Ambient Voice Scribe Extraction</p>
+                      </div>
+                    </div>
+                    <button type="button" (click)="isSoapModalOpen.set(false)" class="text-zinc-400 hover:text-white text-lg font-bold cursor-pointer">✕</button>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <!-- Subjective -->
+                    <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-1.5">
+                      <div class="font-bold text-emerald-400 uppercase tracking-wide text-[11px]">1. Subjective (S)</div>
+                      <div class="text-zinc-300 text-[11px] space-y-1">
+                        <div><strong>🩺 Western:</strong> {{ activeSoapNote()?.subjective?.western?.join(' ') }}</div>
+                        <div><strong>🌿 TCM:</strong> {{ activeSoapNote()?.subjective?.eastern?.join(' ') }}</div>
+                        <div><strong>🪷 Ayurvedic:</strong> {{ activeSoapNote()?.subjective?.ayurvedic?.join(' ') }}</div>
+                        <div><strong>🦴 Osteopathic:</strong> {{ activeSoapNote()?.subjective?.osteopathic?.join(' ') }}</div>
+                      </div>
+                    </div>
+
+                    <!-- Objective -->
+                    <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-1.5">
+                      <div class="font-bold text-sky-400 uppercase tracking-wide text-[11px]">2. Objective (O)</div>
+                      <div class="text-zinc-300 text-[11px] space-y-1">
+                        <div><strong>🩺 Western:</strong> {{ activeSoapNote()?.objective?.western?.join(' ') }}</div>
+                        <div><strong>🌿 TCM:</strong> {{ activeSoapNote()?.objective?.eastern?.join(' ') }}</div>
+                        <div><strong>🪷 Ayurvedic:</strong> {{ activeSoapNote()?.objective?.ayurvedic?.join(' ') }}</div>
+                        <div><strong>🦴 Osteopathic:</strong> {{ activeSoapNote()?.objective?.osteopathic?.join(' ') }}</div>
+                      </div>
+                    </div>
+
+                    <!-- Assessment -->
+                    <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-1.5">
+                      <div class="font-bold text-amber-400 uppercase tracking-wide text-[11px]">3. Assessment (A)</div>
+                      <div class="text-zinc-300 text-[11px] space-y-1">
+                        <div><strong>🩺 Western:</strong> {{ activeSoapNote()?.assessment?.western?.join(' ') }}</div>
+                        <div><strong>🌿 TCM:</strong> {{ activeSoapNote()?.assessment?.eastern?.join(' ') }}</div>
+                        <div><strong>🪷 Ayurvedic:</strong> {{ activeSoapNote()?.assessment?.ayurvedic?.join(' ') }}</div>
+                        <div><strong>🦴 Osteopathic:</strong> {{ activeSoapNote()?.assessment?.osteopathic?.join(' ') }}</div>
+                      </div>
+                    </div>
+
+                    <!-- Plan -->
+                    <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-1.5">
+                      <div class="font-bold text-purple-400 uppercase tracking-wide text-[11px]">4. Plan (P)</div>
+                      <div class="text-zinc-300 text-[11px] space-y-1">
+                        <div><strong>🩺 Western:</strong> {{ activeSoapNote()?.plan?.western?.join(' ') }}</div>
+                        <div><strong>🌿 TCM:</strong> {{ activeSoapNote()?.plan?.eastern?.join(' ') }}</div>
+                        <div><strong>🪷 Ayurvedic:</strong> {{ activeSoapNote()?.plan?.ayurvedic?.join(' ') }}</div>
+                        <div><strong>🦴 Osteopathic:</strong> {{ activeSoapNote()?.plan?.osteopathic?.join(' ') }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex justify-end gap-2 pt-2 border-t border-zinc-800">
+                    <button type="button" (click)="copySoapMarkdown()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs rounded-xl cursor-pointer transition">
+                      📋 Copy Markdown
+                    </button>
+                    <button type="button" (click)="isSoapModalOpen.set(false)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl cursor-pointer transition">
+                      ✓ Done
+                    </button>
+                  </div>
+                </div>
+              </div>
             }
 
             <!-- Anchor Modal -->
@@ -557,6 +655,31 @@ export class VoiceAssistantComponent implements OnDestroy {
     ybocsService = inject(YbocsService);
     voiceAssistantMode = signal<'standard' | 'ybocs' | 'chrono' | 'avs'>('standard');
     ybocsQuestionIndex = signal<number>(-1);
+
+    soapParser = inject(AmbientSoapParserService, { optional: true });
+    activeSoapNote = signal<IStructuredSoapNote | null>(null);
+    isSoapModalOpen = signal<boolean>(false);
+
+    generateSoapNote(): void {
+      const messages = this.chatHistory().map(c => `${c.role}: ${c.text}`).join('\n');
+      const input = this.messageText().trim();
+      const fullTranscript = messages + (input ? `\nuser: ${input}` : '');
+      
+      const parser = this.soapParser || new AmbientSoapParserService();
+      const note = parser.parseTranscript(fullTranscript);
+      this.activeSoapNote.set(note);
+      this.isSoapModalOpen.set(true);
+    }
+
+    copySoapMarkdown(): void {
+      const note = this.activeSoapNote();
+      if (!note) return;
+      const parser = this.soapParser || new AmbientSoapParserService();
+      const md = parser.formatAsMarkdown(note);
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        navigator.clipboard.writeText(md);
+      }
+    }
 
 
     panelMode = signal<'selection' | 'chat' | 'dictation'>('chat');

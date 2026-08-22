@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { PlanDifferentialInspectorComponent } from './plan-differential-inspector.component';
 

@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { SummaryOverviewLensTabComponent } from './summary-overview-lens-tab.component';
 import { PatientStateService } from '../../services/patient-state.service';

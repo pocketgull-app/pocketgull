@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
 import { BioHapticFeedbackService } from './bio-haptic-feedback.service';
 
 describe('BioHapticFeedbackService', () => {

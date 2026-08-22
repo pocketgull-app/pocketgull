@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { WebgpuBioSignalService } from './webgpu-bio-signal.service';
 
 describe('WebgpuBioSignalService Unit Suite', () => {

@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
 import { Injector, runInInjectionContext, PLATFORM_ID, signal } from '@angular/core';
 import { BodyViewerComponent } from './body-viewer.component';
 import { PatientStateService } from '../../services/patient-state.service';
@@ -172,6 +171,81 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
     expect(viewer.isSearchOpen()).toBe(false);
   });
 
+  it('should support fuzzy matching with typo tolerance', () => {
+    // 1. Typo in migraine ("miggraine") -> matches head and GV-20
+    viewer.searchQuery.set('miggraine');
+    const typoMigraine = viewer.filteredParts();
+    expect(typoMigraine.length).toBeGreaterThan(0);
+    expect(typoMigraine.some(p => p.id === 'head' || p.id === 'acupoint_gv20')).toBe(true);
+
+    // 2. Typo in stomach ("stomaach") -> matches stomach
+    viewer.searchQuery.set('stomaach');
+    const typoStomach = viewer.filteredParts();
+    expect(typoStomach.some(p => p.id === 'stomach')).toBe(true);
+
+    // 3. Typo in sciatica ("sciatca") -> matches sciatica / lumbar
+    viewer.searchQuery.set('sciatca');
+    const typoSciatica = viewer.filteredParts();
+    expect(typoSciatica.some(p => p.id === 'dermatome_l4_l5' || p.id === 'spine_lumbar')).toBe(true);
+  });
+
+  it('should resolve medical acronyms (HTN, GERD, POTS, TMJ, SIBO, ATP, OMT)', () => {
+    // 1. HTN -> Heart / Kidneys / LR3
+    viewer.searchQuery.set('htn');
+    expect(viewer.filteredParts().some(p => p.id === 'heart')).toBe(true);
+
+    // 2. GERD -> Stomach / Abdomen / CV-12
+    viewer.searchQuery.set('gerd');
+    expect(viewer.filteredParts().some(p => p.id === 'stomach' || p.id === 'acupoint_cv12')).toBe(true);
+
+    // 3. POTS -> Brain / Heart / Mitochondria
+    viewer.searchQuery.set('pots');
+    expect(viewer.filteredParts().some(p => p.id === 'brain' || p.id === 'heart')).toBe(true);
+
+    // 4. TMJ -> Head / Cranium
+    viewer.searchQuery.set('tmj');
+    expect(viewer.filteredParts().some(p => p.id === 'head' || p.id === 'osteopathic_cranium')).toBe(true);
+
+    // 5. ATP -> Mitochondria
+    viewer.searchQuery.set('atp');
+    expect(viewer.filteredParts().some(p => p.id === 'cellular_mitochondria')).toBe(true);
+
+    // 6. OMT -> Osteopathic landmarks
+    viewer.searchQuery.set('omt');
+    expect(viewer.filteredParts().some(p => p.id === 'osteopathic_cranium' || p.id === 'osteopathic_thoracic_inlet')).toBe(true);
+  });
+
+  it('should map anatomical hotzones to correct 3D camera presets and trigger auto-focus feedback', () => {
+    // 1. Cranial hotzones -> cranial preset
+    expect(viewer.getHotzoneCameraPreset('head')).toBe('cranial');
+    expect(viewer.getHotzoneCameraPreset('brain')).toBe('cranial');
+    expect(viewer.getHotzoneCameraPreset('acupoint_gv20')).toBe('cranial');
+    expect(viewer.getHotzoneCameraPreset('marma_adhipati')).toBe('cranial');
+
+    // 2. Visceral hotzones -> visceral preset
+    expect(viewer.getHotzoneCameraPreset('heart')).toBe('visceral');
+    expect(viewer.getHotzoneCameraPreset('lungs')).toBe('visceral');
+    expect(viewer.getHotzoneCameraPreset('stomach')).toBe('visceral');
+    expect(viewer.getHotzoneCameraPreset('marma_hridaya')).toBe('visceral');
+
+    // 3. Spinal hotzones -> spinal preset
+    expect(viewer.getHotzoneCameraPreset('spine_lumbar')).toBe('spinal');
+    expect(viewer.getHotzoneCameraPreset('spine_thoracic')).toBe('spinal');
+    expect(viewer.getHotzoneCameraPreset('pelvis')).toBe('spinal');
+    expect(viewer.getHotzoneCameraPreset('acupoint_bl23_r')).toBe('spinal');
+
+    // 4. Peripheral hotzones -> peripheral preset
+    expect(viewer.getHotzoneCameraPreset('hand_left')).toBe('peripheral');
+    expect(viewer.getHotzoneCameraPreset('leg_right')).toBe('peripheral');
+    expect(viewer.getHotzoneCameraPreset('foot_left')).toBe('peripheral');
+    expect(viewer.getHotzoneCameraPreset('acupoint_st36_r')).toBe('peripheral');
+
+    // 5. Selecting part activates auto-focus feedback signal
+    viewer.onPartSearchResultClick({ id: 'heart', name: 'Heart & Cardiovascular System', paradigm: 'western' });
+    expect(viewer.focusedHotzoneFeedback()).toContain('Heart & Cardiovascular System');
+    expect(viewer.focusedHotzoneFeedback()).toContain('VISCERAL');
+  });
+
   it('should automatically switch philosophy and 3D mode when selecting multi-paradigm targets', () => {
     mockPatientState.selectPhilosophy = vi.fn();
 
@@ -186,5 +260,13 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
     // 3. Select Cellular Target -> switches body viewer mode to cellular
     viewer.onPartSearchResultClick({ id: 'cellular_mitochondria', name: 'Mitochondria', paradigm: 'cellular' });
     expect(mockPatientState.bodyViewerMode()).toBe('cellular');
+  });
+
+  it('should toggle between right-handed and left-handed clinical ergonomic modes', () => {
+    expect(viewer.handednessMode()).toBe('right');
+    viewer.toggleHandedness();
+    expect(viewer.handednessMode()).toBe('left');
+    viewer.toggleHandedness();
+    expect(viewer.handednessMode()).toBe('right');
   });
 });

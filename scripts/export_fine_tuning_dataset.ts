@@ -12,7 +12,10 @@ export type FineTuningParadigm =
   | 'seo_medical_journalism'
   | 'voice_multimodal_live'
   | 'calgary_cambridge_intake'
-  | 'fda_ftc_compliance_copywriter';
+  | 'zero_knowledge_vault_privacy'
+  | 'skeptical_epistemology_falsification'
+  | 'toxicology_antidote_decontamination'
+  | 'environmental_exposomics_pfas_detox';
 
 export interface IFineTuningRecord {
   paradigm: FineTuningParadigm;
@@ -273,6 +276,129 @@ export function generateAllParadigmsDataset(): IFineTuningRecord[] {
       }, null, 2),
       chosen: 'Rewrites misleading health marketing into FTC-substantiated wellness statements with explicit FDA 21 CFR §520(o) CDS notices.',
       rejected: 'Approves illegal curative claims that trigger FTC enforcement action.'
+    },
+
+    // 12. Zero-Knowledge Client-Side Cryptographic Vault & PHI Privacy
+    {
+      paradigm: 'zero_knowledge_vault_privacy',
+      instruction: 'Enforce zero-knowledge client-side encryption policy for clinical archive export without server-side key or plaintext egress.',
+      input: JSON.stringify({
+        patientId: 'pat_48291',
+        recordType: 'Full Comprehensive Health Archive',
+        encryptionStandard: 'AES-GCM-256 (PBKDF2 100,000 iterations)',
+        requestedAction: 'Export .pocketgull encrypted container'
+      }, null, 2),
+      output: JSON.stringify({
+        zeroKnowledgeStatus: 'ENFORCED_CLIENT_SIDE',
+        cryptographicContainer: {
+          format: 'pocketgull-encrypted-vault',
+          version: 1,
+          algorithm: 'AES-GCM-256',
+          kdf: 'PBKDF2-SHA256',
+          iterations: 100000,
+          keyEgress: 'ZERO_EGRESS_VERIFIED'
+        },
+        securityNotice: 'Keys are derived in client-side volatile memory. The platform cannot recover or view unencrypted PHI if the passphrase is lost.'
+      }, null, 2),
+      chosen: 'Strictly executes native WebCrypto PBKDF2/AES-GCM-256 encryption in client volatile memory with zero server-side key egress.',
+      rejected: 'Transmits unencrypted medical records over the network to a central server for cloud encryption.'
+    },
+
+    // 13. Skeptical Epistemology & Socratic Evidence-Based CDS
+    {
+      paradigm: 'skeptical_epistemology_falsification',
+      instruction: 'Evaluate an emerging clinical intervention, calculate Popperian falsifiability H0, perform Cochrane RoB 2 appraisal, and generate a Socratic active recall prompt.',
+      input: JSON.stringify({
+        intervention: 'Resonance Frequency Breathing (0.1 Hz Diaphragmatic RSA) for Vagal Tone & Post-Concussion Autonomic Dysfunction',
+        proposedOutcome: 'Significant increase in high-frequency Heart Rate Variability (HF-HRV rMSSD > 50ms) within 4 weeks'
+      }, null, 2),
+      output: JSON.stringify({
+        nullHypothesisH0: '0.1 Hz resonance frequency breathing produces no statistically significant rMSSD increase compared to sham pacing (p > 0.05).',
+        falsificationResult: { pValue: 0.012, isFalsified: true, epistemicConfidence: 94 },
+        cochraneRoB2: {
+          randomization: 'Low Risk of Bias',
+          measurement: 'Some Concerns',
+          overall: 'Level B (Cohort & Sham-Controlled Studies)'
+        },
+        socraticChallenge: {
+          question: 'Why must heart rate variability (HRV) changes be evaluated longitudinally across 14+ days rather than a single acute measurement?',
+          correctConcept: 'Intra-individual diurnal variance and acute sympathetic stressors confound single snapshots; longitudinal trends isolate true baroreflex adaptation.',
+          doiCitation: 'Frontiers in Pain Research (2024; DOI: 10.3389/fpain.2024.1397645)'
+        }
+      }, null, 2),
+      chosen: 'Formulates explicit null hypothesis H0, computes p-value, grades Cochrane RoB 2, and generates Socratic challenge with DOI evidence citation.',
+      rejected: 'Uncritically asserts that breathing exercises cure all neurological conditions without statistical or methodological scrutiny.'
+    },
+
+    // ------------------------------------------------------------------------
+    // 14. Emergency Toxicology & Antidote Decontamination (WHO / ATSDR)
+    // ------------------------------------------------------------------------
+    {
+      paradigm: 'toxicology_antidote_decontamination',
+      instruction: 'Perform emergency clinical toxidrome triage for an acute agricultural pesticide and botanical ingestion with weight-adjusted antidote dosing.',
+      input: JSON.stringify({
+        patientWeightKg: 70,
+        exposure: 'Suspected acute Diazinon (Organophosphate) spray ingestion + raw Aconite root brew ingestion 45 minutes prior',
+        vitals: { hr: 42, bp: '82/48', spO2: 89, pupils: 'Pinpoint (1mm)', respiratoryRate: 8 },
+        symptoms: ['Excessive salivation', 'Lacrimation', 'Bronchorrhea', 'Ventricular ectopic beats', 'Diaphoresis']
+      }, null, 2),
+      output: JSON.stringify({
+        primaryToxidrome: 'Severe Cholinergic Crisis (Organophosphate) + Aconitine Cardiotoxicity',
+        priorityAction: 'IMMEDIATE EMS RESUSCITATION & AIRWAY PROTECTION',
+        immediateAntidoteOrders: [
+          {
+            drug: 'Atropine Sulfate',
+            dose: '2.0 mg IV push every 3-5 minutes',
+            endpoint: 'Titrate until bronchial secretions clear and heart rate > 60 bpm (do not titrate to mydriasis)'
+          },
+          {
+            drug: 'Pralidoxime Chloride (2-PAM)',
+            dose: '1.0 g to 2.0 g IV in 100 mL NS over 15-30 minutes',
+            rationale: 'Reactivates phosphorylated acetylcholinesterase before irreversible aging occurs'
+          }
+        ],
+        contraindicatedInterventions: [
+          'DO NOT induce emesis with Ipecac (risk of aspiration pneumonitis in altered mental status)',
+          'DO NOT administer oral herbal detox teas or activated charcoal until airway is secured via endotracheal intubation'
+        ],
+        continuousMonitoring: ['Continuous 12-lead ECG for aconite-induced polymorphic VT/torsades', 'Pulse oximetry', 'Serial plasma cholinesterase activity'],
+        whoPoisonCenterContact: 'Notify regional poison control center and emergency medical services immediately.'
+      }, null, 2),
+      chosen: 'Provides guideline-adherent WHO/ATSDR cholinergic toxidrome management with exact Atropine/2-PAM titration endpoints and explicit contraindication warnings.',
+      rejected: 'Recommends drinking ginger tea and waiting at home for the pesticide to naturally flush through sweat glands.'
+    },
+
+    // ------------------------------------------------------------------------
+    // 15. Environmental Exposomics & PFAS / Endocrine Disruptor Clearance (EPA/NIEHS)
+    // ------------------------------------------------------------------------
+    {
+      paradigm: 'environmental_exposomics_pfas_detox',
+      instruction: 'Formulate an evidence-based clinical protocol to accelerate clearance of bioaccumulated perfluoroalkyl substances (PFAS) and endocrine disruptors.',
+      input: JSON.stringify({
+        patientAge: 48,
+        gender: 'Male',
+        exposureHistory: '15-year municipal drinking water contamination (PFOA 42 ng/mL, PFOS 28 ng/mL)',
+        comorbidities: ['Hypercholesterolemia', 'Elevated ALT (58 U/L)', 'Subclinical Hypothyroidism (TSH 4.8 mIU/L)']
+      }, null, 2),
+      output: JSON.stringify({
+        exposomeAssessment: {
+          serumPfasBurden: 'Significantly elevated (> 20 ng/mL clinical intervention threshold per NASEM guidelines)',
+          targetClearanceMechanisms: ['Enterohepatic circulation interruption', 'Hepatic Phase II glucuronidation & sulfation induction', 'Transdermal excretion']
+        },
+        clinicalClearanceProtocol: {
+          phase1_enterohepaticBinding: 'High-viscosity soluble dietary fibers (modified citrus pectin 5g TID + psyllium husk) to bind bile-bound fluorinated surfactants and prevent reabsorption.',
+          phase2_hepaticConjugation: 'Sulforaphane (100 µmol glucoraphanin daily) + N-acetylcysteine (1,200 mg/d) to induce GSTA1, GSTM1, and SULT1A1 enzymes.',
+          phase3_dermalExcretion: 'Far-infrared hyperthermia (sauna at 65°C for 20-30 min, 3x/week with electrolyte repletion) to support sweat-mediated excretion of hydrophilic toxic metabolites.'
+        },
+        laboratoryMonitoringPanel: [
+          'Serum PFAS panel via LC-MS/MS every 6 months to calculate clearance half-life reduction',
+          'Comprehensive metabolic panel & lipid profile (monitor non-HDL cholesterol)',
+          'Urine Albumin-to-Creatinine Ratio (UACR) to evaluate glomerular barrier integrity'
+        ],
+        falsificationNullHypothesis: 'H0: Targeted enterohepatic binding and Phase II induction provides no significant acceleration in serum PFOA elimination rate over baseline 3.8-year half-life (p > 0.05).'
+      }, null, 2),
+      chosen: 'Formulates a multi-phase, guideline-grounded (NASEM/EPA/NIEHS) clearance protocol targeting enterohepatic binding, Phase II hepatic conjugation, and objective LC-MS/MS monitoring.',
+      rejected: 'Recommends unverified colon cleanses or dangerous synthetic chelation agents without baseline heavy metal indications.'
     }
   ];
 
@@ -286,11 +412,11 @@ export function exportDatasetToJsonl(outputPath?: string): string {
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
-  const file = outputPath || path.join(targetDir, 'pocketgull_11paradigms_dataset.jsonl');
+  const file = outputPath || path.join(targetDir, 'pocketgull_15paradigms_dataset.jsonl');
   const content = dataset.map(rec => JSON.stringify(rec)).join('\n');
   fs.writeFileSync(file, content, 'utf-8');
 
-  console.log(`✅ Successfully exported ${dataset.length} fine-tuning records across all 11 paradigms to: ${file}`);
+  console.log(`✅ Successfully exported ${dataset.length} fine-tuning records across all 15 paradigms to: ${file}`);
   return file;
 }
 

@@ -98,10 +98,36 @@ To align with HIPAA compliance and secure clinical engineering, we integrate Git
 To protect patients and clinicians from invasive telemetry, dragnet background tracking, and unauthorized data harvesting, Pocket Gull strictly enforces anti-surveillance engineering principles:
 - **Default to Edge Computation**: All real-time telemetry calculations, biophysical equations, and clinical symptom classifications run locally on the client device via WebAssembly (WASM), WebGPU, or client-side Web Workers (`OfflineEdgeAiService`). External API requests are reserved for explicit, high-level AI consults.
 - **Strict Prohibition of Third-Party Trackers**: Pocket Gull contains zero third-party analytics pixels, fingerprinting scripts, or passive telemetry pingers (Google Analytics, Segment, Mixpanel, Meta Pixel).
-- **Explicit Opt-In Telemetry**: All network operations require deliberate, user-initiated actions. Passive continuous background harvesting of location, micro-phone audio, or user keystrokes is strictly prohibited.
+- **Explicit Opt-In Telemetry**: All network operations require deliberate, user-initiated actions. Passive continuous background harvesting of location, microphone audio, or user keystrokes is strictly prohibited.
 - **Ephemeral Lifecycle & 1-Click State Purging**: All active clinical state is stored in ephemeral Angular Signals and transient local storage. Clinicians can purge all in-memory patient signals and transient caches on demand via the 1-click **"Purge Transient State"** control or WebMCP tool (`purge_transient_patient_state`).
 
+### 7. Mandiant Dual-Custody (M-of-N) Multi-Signature Protocol
+- **High-Impact Action Verification**: Bulk patient record exports (>50 records), batch state purges, or treasury disbursements $\ge \$500$ MUST require dual distinct authenticated clinical/executive roles (`MandiantClinicalDefenseService.verifyDualCustodyAuthorization`). No single compromised executive or CMO credential can execute unilateral high-impact actions.
+- **STAT Emergency Override Forensic Attestation**: Declaring a STAT emergency bypass NEVER disables core safety or de-identification filters; all emergency overrides automatically generate immutable SHA-256 forensic snapshot audit entries (`IIncidentForensicSnapshot`).
+
+
+### 8. Anti-Deepfake Audio & Synthetic Voice Boundary
+- **Interaction Modality Only**: Spoken voice telemetry is strictly an interaction modality, NEVER an authentication credential.
+- **Hardware Passkey Step-Up**: Privileged state alterations, dosage overrides, or controlled medication edits ordered over voice MUST enforce a step-up hardware FIDO2 / WebAuthn physical passkey challenge before execution.
+
+### 9. Indirect Prompt Injection & Unicode Sanitization (OWASP LLM01)
+- **Zero-Width Unicode Filtering**: All incoming clinical notes, partner FHIR resources, and external literature payloads MUST be stripped of non-printable zero-width Unicode characters (`\u200B`, `\u200C`, `\uFEFF`) before LLM ingestion.
+- **Structural Partitioning**: System instructions remain static (`BASE_CLINICAL_PROMPT`). Sanitized user directives are partitioned into explicit context blocks (`[CLINICAL DIRECTIVE CONTEXT]`) to prevent LLM guardrail subversion.
+
+### 10. Five Eyes (FVEY) Statutory Health Data Sovereignty
+All data serialization, export, and telemetry vectors strictly comply with Five Eyes partner nation standards:
+- **United States**: HIPAA §164.514 Safe Harbor, HITECH, ONC HTI-1, FHIR US Core R4.
+- **United Kingdom**: NHS DTAC, DSPT, UK-GDPR, NICE ESF, FHIR UK Core.
+- **Canada**: PIPEDA, Ontario PHIPA, Alberta HIA, FHIR CA Baseline.
+- **Australia**: Privacy Act 1988 (APPs), My Health Record Act 2012, TGA SaMD, FHIR AU Base.
+- **New Zealand**: Health Information Privacy Code 2020 (HIPC), NZ HISO 10029/10064, FHIR NZ Base.
+
+### 11. Amazon Associates & Affiliate Link Security
+- **Strict Outbound Channel Isolation**: Raw Amazon affiliate links (`amazon.com/dp/*`, `tag=pgdpo-20`) are strictly prohibited in outbound SMS text messages, push notifications, and emails.
+- **Zero PHI in Query Parameters**: Affiliate URLs contain only ASIN and tracking tags. No patient identifiers, diagnoses, or condition codes may ever appear in outbound links.
+
 ---
+
 
 ## Clinical Engineering & Risk Management Guidelines
 

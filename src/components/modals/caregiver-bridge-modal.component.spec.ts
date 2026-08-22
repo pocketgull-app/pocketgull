@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { CaregiverBridgeModalComponent } from './caregiver-bridge-modal.component';
 import { PatientStateService } from '../../services/patient-state.service';

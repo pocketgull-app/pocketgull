@@ -175,6 +175,72 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             <span class="text-[10px] uppercase font-bold">Reset</span>
           </button>
         </div>
+
+        <!-- 🔪 3D Anatomical Cross-Section & Slice Plane Controls -->
+        <div class="flex items-center gap-1.5 p-1 bg-slate-200/90 dark:bg-zinc-900 rounded-lg border border-slate-300 dark:border-zinc-800 text-[10.5px]">
+          <span class="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[9.5px]">🔪 Slice Plane:</span>
+          
+          <button type="button" (click)="setSlicePlaneMode('none')"
+                  [class.bg-zinc-800]="slicePlaneMode() === 'none'"
+                  [class.text-white]="slicePlaneMode() === 'none'"
+                  [class.text-zinc-400]="slicePlaneMode() !== 'none'"
+                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer">
+            Off
+          </button>
+          <button type="button" (click)="setSlicePlaneMode('axial')"
+                  [class.bg-sky-600]="slicePlaneMode() === 'axial'"
+                  [class.text-white]="slicePlaneMode() === 'axial'"
+                  [class.text-zinc-400]="slicePlaneMode() !== 'axial'"
+                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer"
+                  title="Axial Transverse (Horizontal) Cross-Section">
+            Axial
+          </button>
+          <button type="button" (click)="setSlicePlaneMode('coronal')"
+                  [class.bg-emerald-600]="slicePlaneMode() === 'coronal'"
+                  [class.text-white]="slicePlaneMode() === 'coronal'"
+                  [class.text-zinc-400]="slicePlaneMode() !== 'coronal'"
+                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer"
+                  title="Coronal (Frontal / Anterior-Posterior) Cross-Section">
+            Coronal
+          </button>
+          <button type="button" (click)="setSlicePlaneMode('sagittal')"
+                  [class.bg-purple-600]="slicePlaneMode() === 'sagittal'"
+                  [class.text-white]="slicePlaneMode() === 'sagittal'"
+                  [class.text-zinc-400]="slicePlaneMode() !== 'sagittal'"
+                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer"
+                  title="Sagittal (Lateral / Medial-Lateral) Cross-Section">
+            Sagittal
+          </button>
+
+          @if (slicePlaneMode() !== 'none') {
+            <div class="flex items-center gap-1.5 ml-1 pl-1 border-l border-zinc-700">
+              <input type="range" min="-100" max="100" [value]="slicePlaneDepth()"
+                     (input)="setSlicePlaneDepth(+$any($event.target).value)"
+                     aria-label="3D Anatomical Slice Depth Slider"
+                     class="w-20 sm:w-28 accent-emerald-500 h-1.5 cursor-pointer" />
+              <span class="text-[9.5px] font-mono text-emerald-400 font-bold whitespace-nowrap">{{ slicePlaneDepthLabel() }}</span>
+              <button type="button" (click)="toggleSlicePlaneInversion()"
+                      [class.bg-amber-600]="slicePlaneInverted()"
+                      [class.text-white]="slicePlaneInverted()"
+                      class="px-1.5 py-0.5 rounded text-[9px] font-bold border border-zinc-700 hover:bg-zinc-800 cursor-pointer"
+                      title="Invert Slice Normal (Flip Cut Direction)">
+                🔄 Flip
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- 🔥 3D Dynamic Organ Biomarker Risk Heatmap Button -->
+        <button type="button" (click)="toggleBiomarkerHeatmap()"
+                [class.bg-rose-600]="biomarkerHeatmapMode()"
+                [class.text-white]="biomarkerHeatmapMode()"
+                [class.text-zinc-700]="!biomarkerHeatmapMode()"
+                [class.dark:text-zinc-300]="!biomarkerHeatmapMode()"
+                class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800 text-[10px] uppercase tracking-wider font-mono shadow-2xs"
+                title="Toggle WHO / NIH Real-Time Organ Biomarker Risk Heatmap">
+          <span>🔥</span>
+          <span>{{ biomarkerHeatmapMode() ? 'Biomarkers (ON)' : 'Biomarkers' }}</span>
+        </button>
       </div>
 
       <!-- 2. Central Unobstructed 3D Viewport Canvas -->
@@ -469,6 +535,132 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     });
     readonly isAutoSpinning = signal<boolean>(false);
 
+    // 🔪 Anatomical Cross-Section & Slice Plane State
+    readonly slicePlaneMode = signal<'none' | 'axial' | 'coronal' | 'sagittal'>('none');
+    readonly slicePlaneDepth = signal<number>(0); // -100 to 100 mm displacement
+    readonly slicePlaneInverted = signal<boolean>(false);
+
+    setSlicePlaneMode(mode: 'none' | 'axial' | 'coronal' | 'sagittal'): void {
+      this.slicePlaneMode.set(mode);
+      this.updateClippingPlane();
+    }
+
+    setSlicePlaneDepth(depth: number): void {
+      this.slicePlaneDepth.set(depth);
+      this.updateClippingPlane();
+    }
+
+    toggleSlicePlaneInversion(): void {
+      this.slicePlaneInverted.update(v => !v);
+      this.updateClippingPlane();
+    }
+
+    readonly slicePlaneDepthLabel = computed(() => {
+      const mode = this.slicePlaneMode();
+      const depth = this.slicePlaneDepth();
+      if (mode === 'none') return 'Full 3D';
+      if (mode === 'axial') {
+        if (depth > 40) return `Cranial (+${depth}mm)`;
+        if (depth > 10) return `Thoracic T4-T8 (+${depth}mm)`;
+        if (depth > -20) return `Lumbar L1-L5 (${depth}mm)`;
+        return `Pelvic / Lower (${depth}mm)`;
+      }
+      if (mode === 'coronal') {
+        return depth >= 0 ? `Anterior (+${depth}mm)` : `Posterior (${depth}mm)`;
+      }
+      if (mode === 'sagittal') {
+        return depth >= 0 ? `Right (+${depth}mm)` : `Left (${depth}mm)`;
+      }
+      return `${depth}mm`;
+    });
+
+    private clippingPlane?: THREE.Plane;
+
+    private updateClippingPlane(): void {
+      const mode = this.slicePlaneMode();
+      if (!this.mannequinGroup) return;
+
+      if (mode === 'none') {
+        this.clippingPlane = undefined;
+        this.applyClippingPlaneToMeshes(null);
+        return;
+      }
+
+      const inv = this.slicePlaneInverted() ? -1 : 1;
+      const normalizedDepth = (this.slicePlaneDepth() / 100) * 1.5; // Scale to model units
+
+      let normal = new THREE.Vector3(0, inv, 0); // Axial default
+      if (mode === 'coronal') {
+        normal = new THREE.Vector3(0, 0, inv);
+      } else if (mode === 'sagittal') {
+        normal = new THREE.Vector3(inv, 0, 0);
+      }
+
+      const constant = -normalizedDepth * inv;
+      this.clippingPlane = new THREE.Plane(normal, constant);
+      this.applyClippingPlaneToMeshes(this.clippingPlane);
+    }
+
+    private applyClippingPlaneToMeshes(plane: THREE.Plane | null): void {
+      if (!this.mannequinGroup) return;
+      const planes = plane ? [plane] : [];
+      this.mannequinGroup.traverse((child: any) => {
+        if (child.isMesh && child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((mat: any) => {
+              mat.clippingPlanes = planes;
+              mat.clipShadows = true;
+              mat.needsUpdate = true;
+            });
+          } else {
+            child.material.clippingPlanes = planes;
+            child.material.clipShadows = true;
+            child.material.needsUpdate = true;
+          }
+        }
+      });
+    }
+
+    // --- 🔥 3D Dynamic Organ Biomarker Risk Heatmap ---
+    biomarkerHeatmapMode = signal<boolean>(false);
+
+    toggleBiomarkerHeatmap(): void {
+      const next = !this.biomarkerHeatmapMode();
+      this.biomarkerHeatmapMode.set(next);
+      this.applyBiomarkerHeatmapToMeshes(next);
+    }
+
+    private applyBiomarkerHeatmapToMeshes(enabled: boolean): void {
+      if (!this.mannequinGroup) return;
+      this.mannequinGroup.traverse((child: any) => {
+        if (child.isMesh && child.material) {
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          mats.forEach((mat: any) => {
+            if (enabled) {
+              const name = (child.name || '').toLowerCase();
+              if (name.includes('heart') || name.includes('cardio') || name.includes('chest')) {
+                mat.emissive = new THREE.Color(0xff2244); // Cardiometabolic Risk Ruby
+                mat.emissiveIntensity = 0.6;
+              } else if (name.includes('brain') || name.includes('head') || name.includes('cranial')) {
+                mat.emissive = new THREE.Color(0x38bdf8); // Vagal Autonomic Cyan
+                mat.emissiveIntensity = 0.5;
+              } else if (name.includes('liver') || name.includes('spleen') || name.includes('organ')) {
+                mat.emissive = new THREE.Color(0x10b981); // TCM Organ Emerald
+                mat.emissiveIntensity = 0.45;
+              } else {
+                mat.emissive = new THREE.Color(0x1e1b4b);
+                mat.emissiveIntensity = 0.15;
+              }
+            } else {
+              mat.emissive = new THREE.Color(0x000000);
+              mat.emissiveIntensity = 0;
+            }
+            mat.needsUpdate = true;
+          });
+        }
+      });
+    }
+
     readonly occupationalProfile = computed(() => this.state.occupationalProfile());
     readonly occupationalStrainInfo = computed(() => {
       const prof = this.occupationalProfile();
@@ -627,6 +819,62 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     toggleDermatomeLayer(): void {
       this.showDermatomeLayer.set(!this.showDermatomeLayer());
       this.updateTransparency(this.anatomyViewMode());
+    }
+
+    focusOnPart(partId: string | null): void {
+      if (!partId) return;
+      const id = partId.toLowerCase();
+
+      // 1. Cranial / Neuro / Head / Cervical hotzones
+      if (
+        id.includes('head') || id.includes('brain') || id.includes('cranial') ||
+        id.includes('thyroid') || id.includes('cervical') || id.includes('gv20') ||
+        id.includes('adhipati') || id.includes('sthapani') || id.includes('sahasrara') ||
+        id.includes('ajna') || id.includes('vishuddha') || id.includes('oral_fdi')
+      ) {
+        this.setCameraPreset('cranial');
+        return;
+      }
+
+      // 2. Visceral / Cardiopulmonary / Digestive / Thoracic hotzones
+      if (
+        id.includes('heart') || id.includes('lung') || id.includes('chest') ||
+        id.includes('stomach') || id.includes('liver') || id.includes('kidney') ||
+        id.includes('abdo') || id.includes('cv17') || id.includes('cv12') ||
+        id.includes('hridaya') || id.includes('nabhi') || id.includes('anahata') ||
+        id.includes('manipura') || id.includes('respiratory') || id.includes('mitochondria') ||
+        id.includes('cellular')
+      ) {
+        this.setCameraPreset('visceral');
+        return;
+      }
+
+      // 3. Spinal / Posterior / Pelvic / Sciatic hotzones
+      if (
+        id.includes('thoracic') || id.includes('lumbar') || id.includes('sacral') ||
+        id.includes('spine') || id.includes('pelvis') || id.includes('dermatome_l4') ||
+        id.includes('bl23') || id.includes('bl40') || id.includes('basti') ||
+        id.includes('svadhisthana') || id.includes('muladhara') || id.includes('diaphragm')
+      ) {
+        this.setCameraPreset('spinal');
+        return;
+      }
+
+      // 4. Peripheral / Extremities / Hands / Feet / Shoulders hotzones
+      if (
+        id.includes('shoulder') || id.includes('arm') || id.includes('hand') ||
+        id.includes('leg') || id.includes('thigh') || id.includes('shin') ||
+        id.includes('foot') || id.includes('dermatome_c6') || id.includes('st36') ||
+        id.includes('li4') || id.includes('sp6') || id.includes('pc6') ||
+        id.includes('lr3') || id.includes('ki1') || id.includes('gb20') ||
+        id.includes('kshipra') || id.includes('talahridaya')
+      ) {
+        this.setCameraPreset('peripheral');
+        return;
+      }
+
+      // Default fallback
+      this.setCameraPreset('front');
     }
 
     setCameraPreset(preset: 'front' | 'back' | 'left' | 'right' | 'cranial' | 'spinal' | 'visceral' | 'peripheral' | 'systemic'): void {
@@ -2314,20 +2562,6 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 }
             });
         });
-    }
-
-    private focusOnPart(id: string | null) {
-        if (!id || !this.controls || !this.camera) return;
-        const group = this.parts.get(id);
-        if (!group) return;
-
-        const box = new THREE.Box3().setFromObject(group);
-        const center = new THREE.Vector3();
-        box.getCenter(center);
-
-        // Smoothly adjust OrbitControls target to anatomical center
-        this.controls.target.copy(center);
-        this.controls.update();
     }
 
     private updateTransparency(mode: AnatomyViewMode) {

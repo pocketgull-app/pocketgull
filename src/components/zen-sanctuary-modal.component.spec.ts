@@ -1,6 +1,5 @@
 import '@angular/compiler';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { expect } from 'vitest';
 import { ZenSanctuaryModalComponent } from './zen-sanctuary-modal.component';
 import { ZenSanctuaryService } from '../services/zen-sanctuary.service';
 

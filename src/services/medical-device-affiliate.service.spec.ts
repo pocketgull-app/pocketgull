@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, describe, it, beforeEach } from 'vitest';
 import { MedicalDeviceAffiliateService, DIRECT_MEDICAL_DEVICE_CATALOG } from './medical-device-affiliate.service';
 
 describe('MedicalDeviceAffiliateService Unit Suite', () => {

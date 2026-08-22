@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { GoogleHealthConsentModalComponent } from './google-health-consent-modal.component';
 import { FitbitService } from '../../services/hardware/fitbit.service';

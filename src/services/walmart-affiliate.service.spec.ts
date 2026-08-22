@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, describe, it, beforeEach } from 'vitest';
 import { WalmartAffiliateService, CLINICAL_CURATED_WALMART_CATALOG } from './walmart-affiliate.service';
 
 describe('WalmartAffiliateService Unit Suite', () => {

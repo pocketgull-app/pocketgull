@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { HelpfulListsService } from './helpful-lists.service';
 
 describe('HelpfulListsService Unit Suite', () => {

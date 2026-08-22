@@ -1,6 +1,5 @@
 import '@angular/compiler';
 import { Injector, runInInjectionContext, signal, PLATFORM_ID } from '@angular/core';
-import { vi } from 'vitest';
 import { FhirR5TelemetryService } from './fhir-r5-telemetry.service';
 import { PatientStateService } from '../patient-state.service';
 

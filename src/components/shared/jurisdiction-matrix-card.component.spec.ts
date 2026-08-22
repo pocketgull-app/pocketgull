@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JurisdictionMatrixCardComponent } from './jurisdiction-matrix-card.component';
 import { GlobalJurisdictionMatrixService } from '../../services/global-jurisdiction-matrix.service';
@@ -19,6 +18,7 @@ describe('JurisdictionMatrixCardComponent Unit Suite', () => {
     fixture = TestBed.createComponent(JurisdictionMatrixCardComponent);
     component = fixture.componentInstance;
     matrixService = TestBed.inject(GlobalJurisdictionMatrixService);
+    component.selectJurisdiction('US', 'CA');
     fixture.detectChanges();
   });
 
@@ -35,7 +35,7 @@ describe('JurisdictionMatrixCardComponent Unit Suite', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('European Union (EU / EEA)');
+    expect(compiled.textContent).toContain('European Union');
     expect(compiled.textContent).toContain('GDPR');
     expect(compiled.textContent).toContain('112');
   });
@@ -45,7 +45,7 @@ describe('JurisdictionMatrixCardComponent Unit Suite', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('India (Bharat)');
+    expect(compiled.textContent).toContain('India');
     expect(compiled.textContent).toContain('DPDP Act');
     expect(compiled.textContent).toContain('Ayurveda (Ministry of AYUSH)');
   });

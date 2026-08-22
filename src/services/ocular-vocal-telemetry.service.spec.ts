@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { OcularVocalTelemetryService } from './ocular-vocal-telemetry.service';
 
 describe('OcularVocalTelemetryService', () => {

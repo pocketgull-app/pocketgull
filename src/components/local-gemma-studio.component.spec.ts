@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi, expect } from 'vitest';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { LocalGemmaStudioComponent } from './local-gemma-studio.component';
 import { WebLLMProvider, AVAILABLE_GEMMA_MODELS } from '../services/ai/webllm.provider';

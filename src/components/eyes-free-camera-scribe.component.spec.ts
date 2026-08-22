@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { EyesFreeCameraScribeComponent } from './eyes-free-camera-scribe.component';
 import { EyesFreeCameraScribeService } from '../services/eyes-free-camera-scribe.service';

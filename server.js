@@ -86,6 +86,8 @@ app.use((req, res, next) => {
 
   const isBusinessSite =
     req.path === '/business' ||
+    req.path === '/store' ||
+    req.path === '/community' ||
     req.query['preview'] === 'business' ||
     /(^|\.)pocketgull\.com$/.test(rawHost);
 

@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { WebgpuSpatialDigitalTwinService } from './webgpu-spatial-digital-twin.service';
 
 describe('WebgpuSpatialDigitalTwinService Unit Suite', () => {

@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
 
 vi.mock('@angular/forms', () => ({
   FormsModule: class {},

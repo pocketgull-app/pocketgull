@@ -65,6 +65,10 @@ import { MainHeaderNavComponent } from './components/main-header-nav.component';
 import { IntakeToolbarComponent } from './components/intake-toolbar.component';
 import { OnboardingTourOverlayComponent } from './components/onboarding-tour-overlay.component';
 import { SereneIntakeComponent } from './components/synthesis/serene-intake.component';
+import { EncryptedVaultModalComponent } from './components/shared/encrypted-vault-modal.component';
+import { SmartFhirSyncModalComponent } from './components/shared/smart-fhir-sync-modal.component';
+import { GlobalHealthInitiativesModalComponent } from './components/shared/global-health-initiatives-modal.component';
+import { ArticlesReaderComponent } from './components/articles-reader.component';
 
 @Component({
   selector: 'app-root',
@@ -105,7 +109,11 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
     OnboardingTourOverlayComponent,
     SupportTicketModalComponent,
     ApiPricingComponent,
-    SereneIntakeComponent
+    SereneIntakeComponent,
+    EncryptedVaultModalComponent,
+    SmartFhirSyncModalComponent,
+    GlobalHealthInitiativesModalComponent,
+    ArticlesReaderComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -159,6 +167,11 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
         <app-support-ticket-modal (closed)="showSupportTicketModal.set(false)"></app-support-ticket-modal>
       }
 
+      <!-- Zero-Knowledge Encrypted Vault Modal, SMART on FHIR Modal & Global Health Modal -->
+      <app-encrypted-vault-modal #vaultModal></app-encrypted-vault-modal>
+      <app-smart-fhir-sync-modal #fhirModal></app-smart-fhir-sync-modal>
+      <app-global-health-initiatives-modal #globalHealthModal></app-global-health-initiatives-modal>
+
       @defer (on idle) {
         <app-dictation-modal></app-dictation-modal>
       }
@@ -189,7 +202,7 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
                 </div>
                 <div>
                   <div class="flex items-center gap-2">
-                    <span class="font-pocketgull-chiseltip text-sm sm:text-base font-black tracking-wider text-red-100 uppercase">
+                    <span class="font-pocketgull-mono text-sm sm:text-base font-black tracking-wider text-red-100 uppercase">
                       CODE BLUE • EMERGENCY TRIAGE ACTIVE
                     </span>
                     <span class="hidden sm:inline px-2 py-0.5 rounded-md bg-red-500/20 text-red-300 text-[10px] font-bold border border-red-500/40">
@@ -374,6 +387,10 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
           (openSupportTicket)="showSupportTicketModal.set(true)"
+          (openEncryptedVault)="vaultModal.open()"
+          (openSmartFhirSync)="fhirModal.open()"
+          (openGlobalHealth)="globalHealthModal.open()"
+          (openArticles)="showArticlesModal.set(true)"
           (triggerSomaticGrounding)="triggerSomaticGrounding()">
         </app-main-header-nav>
 
@@ -383,6 +400,7 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
           (exportPdf)="exportPdf()"
           (exportJson)="exportJson()"
           (exportFhir)="exportFhir()"
+          (exportFhirR4Bundle)="exportFhirR4Bundle()"
           (exportLaafHapticFhir)="exportLaafHapticFhir()"
           (connectEpic)="connectEpic()"
           (connectAwsHealth)="connectAwsHealth()"
@@ -676,6 +694,26 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
     <!-- Native Angular Documentation Suite -->
     @if (showDocsStudy()) {
       <app-docs-study></app-docs-study>
+    }
+
+    <!-- WordPress Articles & 6th Grade / Bionic Knowledge Hub Modal -->
+    @if (showArticlesModal()) {
+      <div class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 no-print animate-in fade-in duration-200">
+        <div class="bg-zinc-950 text-zinc-100 w-full max-w-6xl max-h-[92dvh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-zinc-800 relative">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/70 font-mono">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">📰</span>
+              <h2 class="text-sm font-bold uppercase tracking-wider text-white">Pocket-Gull Articles & Everyday Knowledge Hub</h2>
+            </div>
+            <button (click)="showArticlesModal.set(false)" class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-bold transition cursor-pointer border border-zinc-700">
+              ✕ Close
+            </button>
+          </div>
+          <div class="flex-1 overflow-y-auto p-4 sm:p-6">
+            <app-articles-reader />
+          </div>
+        </div>
+      </div>
     }
 
     <!-- Preview & Print Modal (Dieter Rams Style) -->
@@ -1090,6 +1128,7 @@ export class AppComponent implements OnDestroy {
   isDemoMode = this.state.isDemoMode;
   readonly showCompanionSyncModal = signal<boolean>(false);
   readonly showSupportTicketModal = signal<boolean>(false);
+  readonly showArticlesModal = signal<boolean>(false);
   readonly showHeaderThemeMenu = signal<boolean>(false);
   apiKeyInput = signal<string>('');
   showPassword = signal<boolean>(false);
@@ -1209,6 +1248,13 @@ export class AppComponent implements OnDestroy {
         report: results,
         summary: results['Summary Overview']
       }, 'Clinical User');
+    }
+  }
+
+  exportFhirR4Bundle() {
+    const patient = this.patientMgmt.selectedPatient();
+    if (patient) {
+      this.export.downloadFhirR4Bundle(patient);
     }
   }
 

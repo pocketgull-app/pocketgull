@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { GenomicPathogenicityService, IGenomicVariant } from './genomic-pathogenicity.service';
 
 describe('GenomicPathogenicityService', () => {

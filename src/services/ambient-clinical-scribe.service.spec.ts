@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { AmbientClinicalScribeService } from './ambient-clinical-scribe.service';
 import { IPatient } from './patient.types';
 

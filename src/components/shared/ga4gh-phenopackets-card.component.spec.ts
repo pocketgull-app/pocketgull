@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { runInInjectionContext, createEnvironmentInjector, signal } from '@angular/core';
 import { Ga4ghPhenopacketsCardComponent } from './ga4gh-phenopackets-card.component';
 import { Ga4ghPhenopacketService } from '../../services/ga4gh-phenopacket.service';

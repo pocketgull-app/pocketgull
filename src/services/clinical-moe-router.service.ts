@@ -67,6 +67,8 @@ export class ClinicalMoERouterService {
       case 'Treatment Matrix':
       case 'Maternal & Postpartum':
       case 'Pre-Conception & Family Health':
+      case 'Environmental Exposomics & Toxicology':
+      case 'Skeptical Epistemology & Socratic Audit':
         return {
           thinkingBudget: 8192,
           includeThoughts: true,

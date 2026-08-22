@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import type { IPatient } from './patient.types';
 import { ExportService } from './export.service';
 
@@ -63,5 +62,13 @@ describe('ExportService FHIR R4 Tri-Paradigm Bundle Suite', () => {
     expect(fhirResources).toHaveLength(6);
     expect(fhirResources).toContain('DeviceRequest');
     expect(fhirResources).toContain('NutritionOrder');
+  });
+
+  it('generates cryptographic SHA-256 receipt for clinical document validation', async () => {
+    const receipt = await exportService.generateCryptographicReceipt(mockPatient);
+    expect(receipt.sha256Hash).toBeDefined();
+    expect(receipt.sha256Hash.length).toBe(64);
+    expect(receipt.verificationUri).toContain('urn:pocketgull:verify:sha256:');
+    expect(receipt.summary).toContain('Cryptographically sealed');
   });
 });

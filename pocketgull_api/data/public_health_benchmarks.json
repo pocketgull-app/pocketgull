@@ -1,0 +1,683 @@
+{
+  "source": "WHO GHO & openFDA FAERS Live API",
+  "generated_at": "2026-08-21T17:45:26.138433",
+  "who_hypertension_prevalence": [
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "UKR",
+      "year": 2003,
+      "prevalence_rate": 50.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "VNM",
+      "year": 2018,
+      "prevalence_rate": 29.5
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "KAZ",
+      "year": 2011,
+      "prevalence_rate": 40.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "SGP",
+      "year": 2003,
+      "prevalence_rate": 37.6
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "GNQ",
+      "year": 2003,
+      "prevalence_rate": 38.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "CYP",
+      "year": 2019,
+      "prevalence_rate": 35.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "KAZ",
+      "year": 1996,
+      "prevalence_rate": 39.4
+    },
+    {
+      "spatial_dim": "WORLDBANKINCOMEGROUP",
+      "country_code": "WB_UMI",
+      "year": 1996,
+      "prevalence_rate": 30.9
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "ROU",
+      "year": 1998,
+      "prevalence_rate": 48.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "VCT",
+      "year": 2008,
+      "prevalence_rate": 38.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "SYC",
+      "year": 2001,
+      "prevalence_rate": 47.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "SRB",
+      "year": 2006,
+      "prevalence_rate": 46.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "UZB",
+      "year": 2016,
+      "prevalence_rate": 43.3
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "LBN",
+      "year": 1990,
+      "prevalence_rate": 39.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "CHL",
+      "year": 1996,
+      "prevalence_rate": 38.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "SOM",
+      "year": 2001,
+      "prevalence_rate": 37.6
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "CZE",
+      "year": 1993,
+      "prevalence_rate": 40.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "NPL",
+      "year": 2015,
+      "prevalence_rate": 39.3
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "NIU",
+      "year": 2018,
+      "prevalence_rate": 39.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "GEO",
+      "year": 1997,
+      "prevalence_rate": 40.9
+    },
+    {
+      "spatial_dim": "UNSDGREGION",
+      "country_code": "UNSDG_CENTRALASIASOUTHERNASIA",
+      "year": 1997,
+      "prevalence_rate": 31.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "AUT",
+      "year": 2001,
+      "prevalence_rate": 44.5
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "STP",
+      "year": 2005,
+      "prevalence_rate": 46.5
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "ARE",
+      "year": 1992,
+      "prevalence_rate": 35.8
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "LBN",
+      "year": 2016,
+      "prevalence_rate": 38.6
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "SSD",
+      "year": 1999,
+      "prevalence_rate": 35.6
+    },
+    {
+      "spatial_dim": "WORLDBANKINCOMEGROUP",
+      "country_code": "WB_UMI",
+      "year": 1995,
+      "prevalence_rate": 30.3
+    },
+    {
+      "spatial_dim": "WORLDBANKINCOMEGROUP",
+      "country_code": "WB_LI",
+      "year": 2004,
+      "prevalence_rate": 34.8
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "NER",
+      "year": 2002,
+      "prevalence_rate": 43.6
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "KIR",
+      "year": 1997,
+      "prevalence_rate": 32.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "JPN",
+      "year": 1992,
+      "prevalence_rate": 33.8
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "LSO",
+      "year": 2001,
+      "prevalence_rate": 32.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "HRV",
+      "year": 1997,
+      "prevalence_rate": 44.4
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "IRL",
+      "year": 2002,
+      "prevalence_rate": 36.4
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "SYC",
+      "year": 2009,
+      "prevalence_rate": 50.9
+    },
+    {
+      "spatial_dim": "REGION",
+      "country_code": "WPR",
+      "year": 1995,
+      "prevalence_rate": 28.19589376
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "THA",
+      "year": 1991,
+      "prevalence_rate": 24.3
+    },
+    {
+      "spatial_dim": "UNSDGREGION",
+      "country_code": "UNSDG_CENTRALASIASOUTHERNASIA",
+      "year": 2015,
+      "prevalence_rate": 32.9
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "TZA",
+      "year": 2017,
+      "prevalence_rate": 36.5
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "OMN",
+      "year": 2016,
+      "prevalence_rate": 46.3
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "TGO",
+      "year": 2013,
+      "prevalence_rate": 37.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "PAK",
+      "year": 1996,
+      "prevalence_rate": 37.6
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "ISL",
+      "year": 2001,
+      "prevalence_rate": 30.3
+    },
+    {
+      "spatial_dim": "UNSDGREGION",
+      "country_code": "UNSDG_WESTERNASIANORTHERNAFR",
+      "year": 2007,
+      "prevalence_rate": 36.3
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "CRI",
+      "year": 2011,
+      "prevalence_rate": 38.9
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "PRI",
+      "year": 1997,
+      "prevalence_rate": 37.9
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "USA",
+      "year": 2010,
+      "prevalence_rate": 33.7
+    },
+    {
+      "spatial_dim": "WORLDBANKINCOMEGROUP",
+      "country_code": "WB_LI",
+      "year": 2005,
+      "prevalence_rate": 34.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "LKA",
+      "year": 2000,
+      "prevalence_rate": 31.8
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "SWE",
+      "year": 2019,
+      "prevalence_rate": 30.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "BGR",
+      "year": 2010,
+      "prevalence_rate": 49.1
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "CIV",
+      "year": 2001,
+      "prevalence_rate": 38.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "IRN",
+      "year": 1992,
+      "prevalence_rate": 30.6
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "CPV",
+      "year": 2011,
+      "prevalence_rate": 48.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "VUT",
+      "year": 1997,
+      "prevalence_rate": 35.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "JAM",
+      "year": 1999,
+      "prevalence_rate": 40.5
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "TKM",
+      "year": 1992,
+      "prevalence_rate": 34.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "BIH",
+      "year": 1992,
+      "prevalence_rate": 45.5
+    },
+    {
+      "spatial_dim": "REGION",
+      "country_code": "AFR",
+      "year": 1996,
+      "prevalence_rate": 35.5
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "PAK",
+      "year": 1990,
+      "prevalence_rate": 36.6
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "THA",
+      "year": 2006,
+      "prevalence_rate": 25.5
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "LBN",
+      "year": 2012,
+      "prevalence_rate": 39.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "CHE",
+      "year": 2007,
+      "prevalence_rate": 33.1
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "CYP",
+      "year": 2009,
+      "prevalence_rate": 34.3
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "PNG",
+      "year": 2003,
+      "prevalence_rate": 21.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "THA",
+      "year": 2007,
+      "prevalence_rate": 27.9
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "PAN",
+      "year": 2006,
+      "prevalence_rate": 35.6
+    },
+    {
+      "spatial_dim": "WORLDBANKINCOMEGROUP",
+      "country_code": "WB_HI",
+      "year": 2012,
+      "prevalence_rate": 29.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "TZA",
+      "year": 2010,
+      "prevalence_rate": 35.5
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "LTU",
+      "year": 2012,
+      "prevalence_rate": 57.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "FJI",
+      "year": 2006,
+      "prevalence_rate": 31.8
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "TUN",
+      "year": 2006,
+      "prevalence_rate": 36.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "JOR",
+      "year": 1998,
+      "prevalence_rate": 37.3
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "KEN",
+      "year": 1996,
+      "prevalence_rate": 35.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "SOM",
+      "year": 2000,
+      "prevalence_rate": 36.5
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "MWI",
+      "year": 2002,
+      "prevalence_rate": 37.2
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "TCD",
+      "year": 2008,
+      "prevalence_rate": 39.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "COG",
+      "year": 1998,
+      "prevalence_rate": 39.4
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "EGY",
+      "year": 1991,
+      "prevalence_rate": 37.9
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "ITA",
+      "year": 2018,
+      "prevalence_rate": 29.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "HTI",
+      "year": 1998,
+      "prevalence_rate": 38.1
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "SWE",
+      "year": 2012,
+      "prevalence_rate": 29.1
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "TUN",
+      "year": 2003,
+      "prevalence_rate": 32.3
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "GNB",
+      "year": 2006,
+      "prevalence_rate": 39.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "FSM",
+      "year": 2004,
+      "prevalence_rate": 27.8
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "NER",
+      "year": 2018,
+      "prevalence_rate": 42.8
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "CIV",
+      "year": 2011,
+      "prevalence_rate": 37.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "PAK",
+      "year": 2009,
+      "prevalence_rate": 42.1
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "IDN",
+      "year": 1996,
+      "prevalence_rate": 31.1
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "TUN",
+      "year": 1990,
+      "prevalence_rate": 34.9
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "ETH",
+      "year": 1993,
+      "prevalence_rate": 27.6
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "TLS",
+      "year": 2009,
+      "prevalence_rate": 33.9
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "MNE",
+      "year": 1990,
+      "prevalence_rate": 46.3
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "NZL",
+      "year": 2015,
+      "prevalence_rate": 34.8
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "CHN",
+      "year": 1991,
+      "prevalence_rate": 20.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "KAZ",
+      "year": 2016,
+      "prevalence_rate": 42.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "PRT",
+      "year": 2019,
+      "prevalence_rate": 37.0
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "TON",
+      "year": 2013,
+      "prevalence_rate": 40.5
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "BOL",
+      "year": 1991,
+      "prevalence_rate": 25.7
+    },
+    {
+      "spatial_dim": "COUNTRY",
+      "country_code": "VNM",
+      "year": 2000,
+      "prevalence_rate": 30.1
+    }
+  ],
+  "openfda_meddra_adverse_reactions": {
+    "LISINOPRIL": [
+      {
+        "term": "FATIGUE",
+        "count": 21075
+      },
+      {
+        "term": "NAUSEA",
+        "count": 19678
+      },
+      {
+        "term": "DRUG INEFFECTIVE",
+        "count": 18974
+      },
+      {
+        "term": "DIARRHOEA",
+        "count": 18369
+      },
+      {
+        "term": "DYSPNOEA",
+        "count": 14648
+      }
+    ],
+    "METOPROLOL": [
+      {
+        "term": "FATIGUE",
+        "count": 22088
+      },
+      {
+        "term": "DYSPNOEA",
+        "count": 19044
+      },
+      {
+        "term": "DIARRHOEA",
+        "count": 18815
+      },
+      {
+        "term": "NAUSEA",
+        "count": 18336
+      },
+      {
+        "term": "DRUG INEFFECTIVE",
+        "count": 16529
+      }
+    ],
+    "SIMVASTATIN": [
+      {
+        "term": "FATIGUE",
+        "count": 11988
+      },
+      {
+        "term": "NAUSEA",
+        "count": 11051
+      },
+      {
+        "term": "DYSPNOEA",
+        "count": 10795
+      },
+      {
+        "term": "DIARRHOEA",
+        "count": 10635
+      },
+      {
+        "term": "DRUG INEFFECTIVE",
+        "count": 9567
+      }
+    ]
+  },
+  "cdc_nhanes_summary": {
+    "mean_age": 48.55406000000001,
+    "mean_sbp": 117.76003999999999,
+    "mean_dbp": 74.66896000000001,
+    "mean_glucose": 104.4914,
+    "mean_hr": 72.1192,
+    "mean_rmssd": 25.63074,
+    "high_risk_prevalence_pct": 29.160000000000004
+  }
+}

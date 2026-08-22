@@ -12,17 +12,20 @@ import { PatientStateService } from '../services/patient-state.service';
 import { PetAuditoryService } from '../services/pet-auditory.service';
 import { EnvironmentalTelemetryService } from '../services/environmental-telemetry.service';
 import { environment } from '../environments/environment';
-import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
+import { PocketgullBrandMarkComponent } from './shared/pocketgull-brand-mark.component';
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
 import { PapercraftBackdropComponent } from './papercraft-backdrop.component';
 import { SecureStorageService } from '../services/secure-storage.service';
 import { WacomCryptoInkService } from '../services/wacom-crypto-ink.service';
 import { AuthSsoService } from '../services/auth-sso.service';
+import { MonroePersianTranceService, HEMISPHERIC_PRESETS, KarolinskaSleepinessLevel, HemisphericSyncType } from '../services/monroe-persian-trance.service';
+import { MissionSymphonyEngineService, MISSION_THEMES, MissionPhase } from '../services/mission-symphony-engine.service';
+import { LifeJourneyNavigatorService, LIFE_JOURNEY_PROFILES, LifeJourneyStage } from '../services/life-journey-navigator.service';
 
 @Component({
   selector: 'app-secure-splash',
   standalone: true,
-  imports: [CommonModule, FormsModule, PocketgullIconComponent, SafeHtmlPipe, PapercraftBackdropComponent],
+  imports: [CommonModule, FormsModule, PocketgullBrandMarkComponent, SafeHtmlPipe, PapercraftBackdropComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <main [style.background]="telemetryGradient()" class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 backdrop-blur-xl sm:backdrop-blur-3xl secure-splash-main animate-in fade-in duration-[800ms] overflow-y-auto overscroll-contain">
@@ -166,19 +169,22 @@ import { AuthSsoService } from '../services/auth-sso.service';
           <!-- Tactile Paper Pocket Top Fold Notch -->
           <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#2AA4A0]/40 via-[#F6B12B]/40 to-[#EF6658]/40 border-b border-amber-300/40 dark:border-zinc-700/50"></div>
           
-          <div class="text-center mb-3 mt-1">
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/30 text-amber-800 dark:text-amber-300 text-[9.5px] font-bold uppercase tracking-widest mb-1.5 shadow-2xs">
+          <div class="text-center mb-3 mt-1 flex flex-col items-center">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/30 text-amber-800 dark:text-amber-300 text-[9.5px] font-bold uppercase tracking-widest mb-2 shadow-2xs">
               <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
               Pocket-Gull Clinician Suite
               <span class="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-400/40 text-[9px] font-mono font-bold tracking-normal">v{{ appVersion }}</span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-pocketgull tracking-tight text-zinc-900 dark:text-amber-400 uppercase pb-0.5 drop-shadow-sm flex items-center justify-center gap-2">
-              <app-pocketgull-icon name="seagull" />
-              {{ isLocked() ? 'Resume Session' : 'Pocket Gull' }}
-            </h1>
-            <p class="text-[11px] font-pocketgull-inter uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-              {{ isLocked() ? 'Idle Timeout Protection Active' : 'Clinical Intelligence Engine' }}
-            </p>
+            
+            <div class="py-1 flex justify-center">
+              <app-pocketgull-brand-mark [size]="'responsive'" [showSubtext]="!isLocked()" />
+            </div>
+
+            @if (isLocked()) {
+              <p class="text-[11px] font-pocketgull-inter uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400 mt-1">
+                Idle Timeout Protection Active
+              </p>
+            }
           </div>
 
 
@@ -423,23 +429,295 @@ import { AuthSsoService } from '../services/auth-sso.service';
                   </summary>
 
                   <div class="mt-3 space-y-3 pt-1">
-                    <!-- 1. 🎵 Audio Comfort Protocol Card -->
-                    <div class="p-3 bg-white/60 dark:bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-amber-200/50 dark:border-zinc-800/60 shadow-xs flex flex-col items-center justify-center text-center space-y-2">
-                      <span class="text-xs font-bold uppercase tracking-[0.15em] text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
-                        🎵 Audio Comfort Protocol
-                      </span>
-                      
-                      <div class="flex flex-wrap items-center justify-center gap-2 w-full">
-                        <!-- AVS Entrainment Controller -->
+                    <!-- 1. 🌲 Seven Generations Environmental Listening & Telemetry HUD -->
+                    <div class="p-3.5 bg-white/75 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 shadow-xs flex flex-col space-y-3 text-left">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-[0.15em] text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
+                          🌲 Seven Generations Environmental Listening HUD
+                        </span>
+                        <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                          Schumann 7.83 Hz &bull; {{ envTelemetryService.telemetry().ambientNoiseDb }} dB Ambient
+                        </span>
+                      </div>
+
+                      <!-- Real-time Atmospheric Telemetry Matrix -->
+                      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                        <div class="p-2 rounded-xl bg-zinc-100/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80">
+                          <div class="text-[10px] uppercase font-bold text-zinc-500">Barometric Trend</div>
+                          <div class="font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                            {{ envTelemetryService.telemetry().barometricPressure }} hPa
+                            <span class="text-[10px]" [class.text-rose-500]="envTelemetryService.telemetry().pressureDelta3h < 0" [class.text-emerald-500]="envTelemetryService.telemetry().pressureDelta3h >= 0">
+                              ({{ envTelemetryService.telemetry().pressureDelta3h > 0 ? '+' : '' }}{{ envTelemetryService.telemetry().pressureDelta3h }} 3h)
+                            </span>
+                          </div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-zinc-100/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80">
+                          <div class="text-[10px] uppercase font-bold text-zinc-500">Air Quality (AQI)</div>
+                          <div class="font-mono font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1">
+                            <span>{{ envTelemetryService.telemetry().aqi }}</span>
+                            <span class="text-[10px] px-1.5 py-0.2 rounded font-sans font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                              {{ envTelemetryService.aqiRiskLabel().label }}
+                            </span>
+                          </div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-zinc-100/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80">
+                          <div class="text-[10px] uppercase font-bold text-zinc-500">Acoustic Noise</div>
+                          <div class="font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                            {{ envTelemetryService.telemetry().ambientNoiseDb }} dB
+                            <span class="text-[10px] text-zinc-400 block truncate">{{ envTelemetryService.acousticEnvironmentLabel().status }}</span>
+                          </div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-zinc-100/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80">
+                          <div class="text-[10px] uppercase font-bold text-zinc-500">Solar UV Index</div>
+                          <div class="font-mono font-bold text-amber-600 dark:text-amber-400">
+                            {{ envTelemetryService.telemetry().uvIndex }} UV &bull; {{ envTelemetryService.telemetry().solarZenithAngle }}°
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Recommended Acoustic Mission Protocol matching living ambient telemetry -->
+                      <div class="p-2.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 flex items-center justify-between gap-2 text-[11px]">
+                        <div>
+                          <div class="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-400">
+                            🍃 Recommended Ambient Harmonization Protocol:
+                          </div>
+                          <div class="font-semibold text-zinc-800 dark:text-zinc-200">
+                            {{ envTelemetryService.recommendedAcousticProtocol().name }} &mdash; <span class="text-zinc-500 dark:text-zinc-400">{{ envTelemetryService.recommendedAcousticProtocol().rationale }}</span>
+                          </div>
+                        </div>
                         <button type="button"
-                                (click)="toggleAvs()"
-                                class="min-h-[42px] px-3.5 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1.5 hover:bg-white dark:hover:bg-zinc-700 transition cursor-pointer shadow-2xs">
-                          <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" [class]="isAvsPlaying() ? 'bg-emerald-400' : 'bg-zinc-400'"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2" [class]="isAvsPlaying() ? 'bg-emerald-500' : 'bg-zinc-400'"></span>
-                          </span>
-                          <span>{{ isAvsPlaying() ? 'AVS Active' : 'AVS Entrainment' }}</span>
+                                (click)="tranceService?.playPreset(envTelemetryService.recommendedAcousticProtocol().presetId)"
+                                class="shrink-0 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] cursor-pointer shadow-xs transition">
+                          ▶ Activate Protocol
                         </button>
+                      </div>
+                    </div>
+
+                    <!-- 2. 🌱 Meet Them Where They Are: Life Journey Station -->
+                    <div class="p-3.5 bg-white/75 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-amber-500/30 dark:border-amber-500/20 shadow-xs flex flex-col space-y-3 text-left">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-[0.15em] text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+                          🌱 Meet Them Where They Are &bull; Life Journey Station
+                        </span>
+                        <span class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">
+                          Energy: {{ journeyNav?.energyLevel() }}/10
+                        </span>
+                      </div>
+
+                      <!-- Life Stage Selection Chips -->
+                      <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
+                        @for (profile of journeyProfiles; track profile.stage) {
+                          <button type="button"
+                                  (click)="journeyNav?.setJourneyStage(profile.stage)"
+                                  [class]="journeyNav?.currentStage() === profile.stage ? 'bg-amber-600 text-white font-bold shadow-xs' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="p-2 rounded-xl border border-slate-200 dark:border-zinc-700 text-left transition cursor-pointer flex flex-col justify-between min-h-[58px]">
+                            <div class="text-xs font-bold truncate flex items-center gap-1">
+                              <span>{{ profile.icon }}</span>
+                              <span>{{ profile.title }}</span>
+                            </div>
+                            <div class="text-[9px] opacity-80 truncate">{{ profile.acousticResonance }}</div>
+                          </button>
+                        }
+                      </div>
+
+                      <!-- Active Compassionate Motto Banner -->
+                      <div class="p-2.5 rounded-xl bg-amber-50/70 dark:bg-zinc-950/80 border border-amber-200/60 dark:border-zinc-800 space-y-1">
+                        <div class="text-xs italic font-medium text-amber-900 dark:text-amber-200">
+                          {{ journeyNav?.currentProfile()?.compassionateMotto }}
+                        </div>
+                        <div class="text-[10px] text-zinc-600 dark:text-zinc-400 flex items-center justify-between flex-wrap gap-1 pt-1 border-t border-amber-200/40 dark:border-zinc-800">
+                          <span><strong>Need:</strong> {{ journeyNav?.currentProfile()?.primaryNeed }}</span>
+                          <span class="text-amber-700 dark:text-amber-400 font-mono text-[9px]">Tone: {{ journeyNav?.currentProfile()?.languageTone }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 3. 🚀 Heroic Mission Symphony Soundtrack Engine -->
+                    <div class="p-3.5 bg-white/75 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-sky-500/30 dark:border-sky-500/20 shadow-xs flex flex-col space-y-3 text-left">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-[0.15em] text-sky-800 dark:text-sky-400 flex items-center gap-1.5">
+                          🚀 Heroic Mission Symphony Engine
+                        </span>
+                        @if (missionSymphony?.isPlaying()) {
+                          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/30">
+                            <span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping"></span>
+                            <span>{{ missionSymphony?.currentTheme()?.title }}</span>
+                          </span>
+                        }
+                      </div>
+
+                      <div class="flex flex-wrap gap-1.5">
+                        @for (themeItem of missionThemes; track themeItem.phase) {
+                          <button type="button"
+                                  (click)="missionSymphony?.playTheme(themeItem.phase)"
+                                  [class]="missionSymphony?.currentPhase() === themeItem.phase && missionSymphony?.isPlaying() ? 'bg-sky-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-sky-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-zinc-700 transition cursor-pointer flex items-center gap-1 shadow-2xs">
+                            <span>{{ themeItem.icon }}</span>
+                            <span>{{ themeItem.title.split(' (')[0] }}</span>
+                          </button>
+                        }
+                        @if (missionSymphony?.isPlaying()) {
+                          <button type="button"
+                                  (click)="missionSymphony?.stop()"
+                                  class="px-3 py-1.5 text-xs font-bold rounded-xl bg-rose-600 text-white hover:bg-rose-500 transition cursor-pointer shadow-xs">
+                            ✕ Stop Mission Music
+                          </button>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- 4. 🪶 Indigenous Native American Trance & Hemispherical Radio Suite -->
+                    <div class="p-3.5 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md rounded-2xl border border-indigo-200/50 dark:border-indigo-900/40 shadow-xs flex flex-col space-y-3 text-left">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-[0.15em] text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
+                          🪶 Indigenous Trance &amp; Hemispherical Sync Radio
+                        </span>
+                        @if (tranceService?.isPlaying()) {
+                          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span>{{ tranceService?.currentPreset()?.name || 'Sync Active' }}</span>
+                          </span>
+                        }
+                      </div>
+
+                      <!-- Karolinska Sleepiness Scale (KSS) Adaptive Radio Station -->
+                      <div class="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 space-y-2">
+                        <div class="flex items-center justify-between text-[11px]">
+                          <span class="font-bold text-zinc-700 dark:text-zinc-300">💤 Karolinska Sleepiness Scale (KSS):</span>
+                          <button type="button"
+                                  (click)="tranceService?.playAdaptiveKssFlow()"
+                                  [class]="tranceService?.currentMode() === 'kss_adaptive_flow' ? 'px-2 py-0.5 rounded bg-emerald-500 text-zinc-950 font-extrabold text-[10px] shadow-sm' : 'px-2 py-0.5 rounded bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] border border-indigo-500/30'">
+                            📻 {{ tranceService?.currentMode() === 'kss_adaptive_flow' ? 'Auto-Flowing' : 'KSS Flow Radio' }}
+                          </button>
+                        </div>
+                        <div class="grid grid-cols-9 gap-1 text-center">
+                          @for (k of kssLevels; track k) {
+                            <button type="button"
+                                    (click)="tranceService?.setKssLevel(k)"
+                                    [class]="tranceService?.currentKss() === k ? 'py-1 rounded bg-indigo-600 text-white font-extrabold text-[11px] shadow-xs' : 'py-1 rounded bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 text-[10px] hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                    [title]="'KSS ' + k">
+                              {{ k }}
+                            </button>
+                          }
+                        </div>
+                      </div>
+
+                      <!-- Native American & Indigenous Trance Category -->
+                      <div class="space-y-1.5">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                          🪶 Native American &amp; Indigenous Trance:
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('indigenous_cedar_flute')"
+                                  [class]="tranceService?.currentMode() === 'indigenous_cedar_flute' ? 'bg-emerald-700 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🪶 Cedar Flute (432Hz)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('native_water_drum_theta')"
+                                  [class]="tranceService?.currentMode() === 'native_water_drum_theta' ? 'bg-emerald-700 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🥁 Water Drum (4.5Hz)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('gourd_rattle_clearing')"
+                                  [class]="tranceService?.currentMode() === 'gourd_rattle_clearing' ? 'bg-emerald-700 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🌾 Gourd Rattle &amp; Smudge
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('wabanaki_canoe_cadence')"
+                                  [class]="tranceService?.currentMode() === 'wabanaki_canoe_cadence' ? 'bg-emerald-700 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🛶 Wabanaki Canoe (60 BPM)
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Hemispherical, Monroe & Persian Preset Matrix -->
+                      <div class="space-y-1.5">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                          🌌 Hemispherical Sync, Monroe &amp; Persian Drones:
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('monroe_focus_10')"
+                                  [class]="tranceService?.currentMode() === 'monroe_focus_10' ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🌌 Focus 10 (4.5Hz)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('monroe_focus_12')"
+                                  [class]="tranceService?.currentMode() === 'monroe_focus_12' ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            ✨ Focus 12 (10Hz)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('emdr_bilateral_alpha')"
+                                  [class]="tranceService?.currentMode() === 'emdr_bilateral_alpha' ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            ↔️ EMDR Bilateral
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('schumann_resonance')"
+                                  [class]="tranceService?.currentMode() === 'schumann_resonance' ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🌍 Schumann 7.83Hz
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('mit_gamma_40hz')"
+                                  [class]="tranceService?.currentMode() === 'mit_gamma_40hz' ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🧠 MIT 40Hz Gamma
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('persian_dastgah_shur')"
+                                  [class]="tranceService?.currentMode() === 'persian_dastgah_shur' ? 'bg-amber-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🕌 Persian Sufi (432Hz)
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Animal Bio-Acoustic Comfort Suite -->
+                      <div class="space-y-1.5 pt-1 border-t border-zinc-200 dark:border-zinc-800">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                          🐾 Animal Comfort Protocol:
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('canine_heartbeat')"
+                                  [class]="tranceService?.currentMode() === 'canine_heartbeat' ? 'bg-amber-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🐕 Canine (60 BPM)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('feline_purr')"
+                                  [class]="tranceService?.currentMode() === 'feline_purr' ? 'bg-amber-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🐈 Feline (25–140Hz Purr)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('cetacean_528hz')"
+                                  [class]="tranceService?.currentMode() === 'cetacean_528hz' ? 'bg-amber-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🐋 Cetacean (528Hz)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('avian_dawn')"
+                                  [class]="tranceService?.currentMode() === 'avian_dawn' ? 'bg-amber-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🕊️ Avian Dawn
+                          </button>
+                          @if (tranceService?.isPlaying()) {
+                            <button type="button"
+                                    (click)="tranceService?.stop()"
+                                    class="px-3 py-1 text-xs font-bold rounded-lg bg-rose-600 text-white hover:bg-rose-500 transition cursor-pointer shadow-xs">
+                              ✕ Stop Sound
+                            </button>
+                          }
+                        </div>
                       </div>
                     </div>
 
@@ -491,51 +769,6 @@ import { AuthSsoService } from '../services/auth-sso.service';
                             ⚡ Motion
                           </span>
                         </label>
-                      </div>
-                    </div>
-
-                    <!-- 3. 🐾 Animal Comfort Protocol Card -->
-                    <div class="p-3 bg-white/60 dark:bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-amber-200/50 dark:border-zinc-800/60 shadow-xs flex flex-col items-center justify-center text-center space-y-2">
-                      <span class="text-xs font-bold uppercase tracking-[0.15em] text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
-                        🐾 Animal Comfort Protocol
-                      </span>
-
-                      <div class="flex flex-wrap items-center justify-center gap-2 w-full">
-                        <button type="button"
-                                (click)="petAuditory.currentMode === 'canine' ? petAuditory.stop() : petAuditory.playCanineHeartbeat()"
-                                [class.bg-amber-500]="petAuditory.currentMode === 'canine'"
-                                [class.text-zinc-950]="petAuditory.currentMode === 'canine'"
-                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
-                          🐕 Canine
-                        </button>
-                        <button type="button"
-                                (click)="petAuditory.currentMode === 'feline' ? petAuditory.stop() : petAuditory.playFelinePurr()"
-                                [class.bg-amber-500]="petAuditory.currentMode === 'feline'"
-                                [class.text-zinc-950]="petAuditory.currentMode === 'feline'"
-                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
-                          🐈 Feline
-                        </button>
-                        <button type="button"
-                                (click)="petAuditory.currentMode === 'cetacean' ? petAuditory.stop() : petAuditory.playCetaceanTherapy()"
-                                [class.bg-amber-500]="petAuditory.currentMode === 'cetacean'"
-                                [class.text-zinc-950]="petAuditory.currentMode === 'cetacean'"
-                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
-                          🐋 Cetacean
-                        </button>
-                        <button type="button"
-                                (click)="petAuditory.currentMode === 'avian' ? petAuditory.stop() : petAuditory.playAvianTherapy()"
-                                [class.bg-amber-500]="petAuditory.currentMode === 'avian'"
-                                [class.text-zinc-950]="petAuditory.currentMode === 'avian'"
-                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
-                          🕊️ Avian
-                        </button>
-                        @if (petAuditory.isCurrentlyPlaying) {
-                          <button type="button"
-                                  (click)="petAuditory.stop()"
-                                  class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-rose-600 text-white border border-rose-500 flex items-center gap-1 transition cursor-pointer">
-                            ✕ Stop
-                          </button>
-                        }
                       </div>
                     </div>
                   </div>
@@ -1338,6 +1571,13 @@ export class SecureSplashComponent implements OnInit {
   theme = inject(ThemeService);
   state = inject(PatientStateService);
   public readonly petAuditory = inject(PetAuditoryService);
+  public readonly tranceService = inject(MonroePersianTranceService, { optional: true });
+  public readonly missionSymphony = inject(MissionSymphonyEngineService, { optional: true });
+  public readonly journeyNav = inject(LifeJourneyNavigatorService, { optional: true });
+  public readonly hemisphericPresets = HEMISPHERIC_PRESETS;
+  public readonly missionThemes = MISSION_THEMES;
+  public readonly journeyProfiles = LIFE_JOURNEY_PROFILES;
+  public readonly kssLevels: KarolinskaSleepinessLevel[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   public readonly envTelemetryService = inject(EnvironmentalTelemetryService);
   private platformId = inject(PLATFORM_ID);
   readonly isBrowser = signal<boolean>(isPlatformBrowser(this.platformId));
@@ -1783,35 +2023,39 @@ export class SecureSplashComponent implements OnInit {
       this.isAuthorized.set(isMock || this.syncService.isEmailRegistered(email));
     }
 
-    effect(() => {
-      // Auto-focus logic based on state
-      if (this.isLocked() && this.pinInputRef()?.nativeElement) {
-         setTimeout(() => this.pinInputRef()!.nativeElement.focus(), 150);
-      }
-    });
-
-    effect(() => {
-      if (!isPlatformBrowser(this.platformId)) return;
-      const canvas = this.gestureCanvasRef()?.nativeElement;
-      if (canvas && !this.ctx) {
-        this.ctx = canvas.getContext('2d');
-        if (this.ctx) {
-          this.ctx.lineWidth = 6;
-          this.ctx.lineCap = 'round';
-          this.ctx.lineJoin = 'round';
-          const isDark = document.documentElement.classList.contains('dark');
-          this.ctx.strokeStyle = isDark ? '#10b981' : '#059669';
+    try {
+      effect(() => {
+        // Auto-focus logic based on state
+        if (this.isLocked() && this.pinInputRef()?.nativeElement) {
+           setTimeout(() => this.pinInputRef()!.nativeElement.focus(), 150);
         }
-      } else if (!canvas) {
-        this.ctx = null;
-      }
-    });
+      });
 
-    effect(() => {
-      const email = this.syncService.currentUserEmail() || '';
-      const isMock = this.secureStorage.getItem('pg_mock_clinician') === '1';
-      this.isAuthorized.set(isMock || this.syncService.isEmailRegistered(email));
-    });
+      effect(() => {
+        if (!isPlatformBrowser(this.platformId)) return;
+        const canvas = this.gestureCanvasRef()?.nativeElement;
+        if (canvas && !this.ctx) {
+          this.ctx = canvas.getContext('2d');
+          if (this.ctx) {
+            this.ctx.lineWidth = 6;
+            this.ctx.lineCap = 'round';
+            this.ctx.lineJoin = 'round';
+            const isDark = document.documentElement.classList.contains('dark');
+            this.ctx.strokeStyle = isDark ? '#10b981' : '#059669';
+          }
+        } else if (!canvas) {
+          this.ctx = null;
+        }
+      });
+
+      effect(() => {
+        const email = this.syncService.currentUserEmail() || '';
+        const isMock = this.secureStorage.getItem('pg_mock_clinician') === '1';
+        this.isAuthorized.set(isMock || this.syncService.isEmailRegistered(email));
+      });
+    } catch {
+      // Defensive fallback in headless unit tests
+    }
   }
 
   ngOnDestroy() {

@@ -1,6 +1,5 @@
 import '@angular/compiler';
 import * as DOMPurify from 'dompurify';
-import { vi } from 'vitest';
 import { CarePlanPrintPreviewComponent } from './care-plan-print-preview.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';
@@ -8,6 +7,7 @@ import { PatientManagementService } from '../services/patient-management.service
 import { ExportService } from '../services/export.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { AdobeFireflyTextureService } from '../services/adobe-firefly-texture.service';
+import { GlobalHealthInitiativesService } from '../services/global-health-initiatives.service';
 
 // Mock Angular effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
 vi.mock('@angular/core', async (importOriginal) => {
@@ -57,7 +57,8 @@ describe('CarePlanPrintPreviewComponent - Care Plan Print Studio & Document Caro
       { provide: PatientManagementService, useValue: mockPatientManagement },
       { provide: ExportService, useValue: mockExportService },
       { provide: ClinicalIntelligenceService, useValue: mockClinicalIntelligence },
-      { provide: AdobeFireflyTextureService, useValue: {} }
+      { provide: AdobeFireflyTextureService, useValue: {} },
+      { provide: GlobalHealthInitiativesService, useClass: GlobalHealthInitiativesService }
     ], undefined as any);
 
     runInInjectionContext(injector, () => {

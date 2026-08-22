@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { CdiscRweCardComponent } from './cdisc-rwe-card.component';
 import { CdiscRweDossierService } from '../../services/cdisc-rwe-dossier.service';
 import { signal } from '@angular/core';

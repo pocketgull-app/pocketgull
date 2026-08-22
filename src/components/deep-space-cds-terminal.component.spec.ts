@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, describe, it, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { DeepSpaceCdsTerminalComponent } from './deep-space-cds-terminal.component';
 import { DeepSpaceCdsService } from '../services/deep-space-cds.service';

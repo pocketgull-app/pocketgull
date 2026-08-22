@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { ClinicalTrialMatcherService } from './clinical-trial-matcher.service';
 
 describe('ClinicalTrialMatcherService Unit Suite', () => {

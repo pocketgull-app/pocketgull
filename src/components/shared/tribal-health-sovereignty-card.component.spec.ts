@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { TribalHealthSovereigntyCardComponent } from './tribal-health-sovereignty-card.component';
 import { TribalHealthSovereigntyService } from '../../services/tribal-health-sovereignty.service';
 import { signal } from '@angular/core';

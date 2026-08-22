@@ -71,11 +71,11 @@ const CLINICAL_ADAPTERS = [
     description: 'Screens 5 SDoH domains and maps community-grounded resources at an 8th-grade reading level.'
   },
   {
-    id: 'gemma-3-mandiant-defense-auditor',
-    name: 'PocketGull Gemma 3 Mandiant Clinical Cyber Defense Guard',
+    id: 'gemma-3-hipaa-tamper-sentinel',
+    name: 'PocketGull Gemma 3 HIPAA Safe Harbor & Clinical Integrity Sentinel',
     base_model: 'google/gemma-3-4b-it',
-    discipline: 'Healthcare Cybersecurity & Anti-Whaling',
-    description: 'Audits dual-custody authorization and sanitizes prompt injection vectors in external medical records.'
+    discipline: 'Clinical Data Integrity & HIPAA De-Identification',
+    description: 'Audits HIPAA §164.514 Safe Harbor de-identification, dual-custody verification, and prompt injection defense.'
   },
   {
     id: 'gemma-3-ophthalmology-retina-cds',
@@ -90,6 +90,13 @@ const CLINICAL_ADAPTERS = [
     base_model: 'google/gemma-3-12b-it',
     discipline: 'Academic Medical Case Publication',
     description: 'Compiles 7-slide academic Grand Rounds decks and CARE Guidelines-compliant medical case reports.'
+  },
+  {
+    id: 'gemma-3-osteopathic-rounds-director',
+    name: 'PocketGull Gemma 3 Dr. Elena Gullwing, DO Osteopathic Rounds Director',
+    base_model: 'google/gemma-3-12b-it',
+    discipline: 'Osteopathic Medicine, Somatic Dysfunction & Steering Committee Consensus',
+    description: 'Synthesizes multi-paradigm clinical rounds, somatic biomechanics, and holistic interdisciplinary steering committee consensus.'
   }
 ];
 

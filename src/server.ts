@@ -43,6 +43,7 @@ import { renderBusinessSiteHtml } from './server/business-site';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
+import { rsnaKneeRouter } from './server/routes/rsna-knee.routes';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -244,6 +245,8 @@ app.use((req, res, next) => {
 
   const isBusinessSite =
     req.path === '/business' ||
+    req.path === '/store' ||
+    req.path === '/community' ||
     req.query['preview'] === 'business' ||
     /(^|\.)pocketgull\.com$/.test(rawHost);
 
@@ -444,6 +447,7 @@ app.post('/api/audit', manifestRateLimiter, (req, res) => {
 app.use('/api/support', supportRouter);
 app.use('/api/v1/agent-builder', manifestRateLimiter, vertexAgentRouter);
 app.use('/api/agent-builder', manifestRateLimiter, vertexAgentRouter);
+app.use('/api/ml/rsna-knee', manifestRateLimiter, rsnaKneeRouter);
 
 app.all('/api/python/*splat', manifestRateLimiter, (req, res) => {
   res.status(200).json({

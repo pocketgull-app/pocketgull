@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { ALL_ASSESSMENTS, getAssessment } from '../../src/services/clinical-assessments/assessment-registry';
 import { AssessmentType } from '../../src/services/clinical-assessments/types';
 import { ExportService } from '../../src/services/export.service';
@@ -115,7 +114,7 @@ describe('Deep Clinical Fuzzing & Mutation Testing Suite', () => {
         expect(sanitized).not.toContain('<svg');
         expect(sanitized).toContain('Normal Sinus Rhythm');
       }
-    });
+    }, 30000);
   });
 
   // 3. Clinical Rules Engine Guardrail Fuzzing

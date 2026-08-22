@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { GreenComputingSustainabilityService } from './green-computing-sustainability.service';
 
 describe('GreenComputingSustainabilityService Unit Suite', () => {

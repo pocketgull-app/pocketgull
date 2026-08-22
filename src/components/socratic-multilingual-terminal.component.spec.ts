@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { SocraticMultilingualTerminalComponent } from './socratic-multilingual-terminal.component';
 import { SocraticMultilingualTranslatorService } from '../services/socratic-multilingual-translator.service';

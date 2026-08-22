@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { BodyExplorerGameComponent, ALL_AGES_ORGAN_CARDS } from './body-explorer-game.component';
 
 describe('BodyExplorerGameComponent Unit Suite', () => {

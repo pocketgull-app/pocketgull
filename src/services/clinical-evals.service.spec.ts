@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { ClinicalEvalsService, CLINICAL_GOLDEN_SCENARIOS } from './clinical-evals.service';
 
 describe('ClinicalEvalsService', () => {

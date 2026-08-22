@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { PlanetaryHealthHudComponent } from './planetary-health-hud.component';
 import { GreenComputingSustainabilityService } from '../services/green-computing-sustainability.service';

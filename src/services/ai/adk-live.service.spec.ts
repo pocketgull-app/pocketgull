@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { AdkLiveService, uint8ArrayToBase64, base64ToUint8Array } from './adk-live.service';
 import type { IOccupationalHazardProfile } from '../actuarial-longevity.service';
 

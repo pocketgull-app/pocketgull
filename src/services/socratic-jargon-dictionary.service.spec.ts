@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { SocraticJargonDictionaryService } from './socratic-jargon-dictionary.service';
 
 describe('SocraticJargonDictionaryService Unit Suite', () => {

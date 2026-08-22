@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { BiomarkerVelocityService } from './biomarker-velocity.service';
 import { IPatient } from './patient.types';
 

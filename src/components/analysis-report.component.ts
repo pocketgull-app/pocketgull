@@ -74,6 +74,8 @@ import { LocalGemmaStudioComponent } from './local-gemma-studio.component';
 import { TriParadigmSwarmCardComponent } from './tri-paradigm-swarm-card.component';
 import { PharmacogenomicsCardComponent } from './pharmacogenomics-card.component';
 import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-card.component';
+import { EnvironmentalExposomicsToxicologyComponent } from './environmental-exposomics-toxicology.component';
+import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.component';
 
 @Component({
   selector: 'app-analysis-report',
@@ -81,6 +83,8 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
   imports: [
     CommonModule,
     ...ANALYSIS_LENS_TAB_COMPONENTS,
+    EnvironmentalExposomicsToxicologyComponent,
+    SkepticalEpistemologyHudComponent,
     LocalGemmaStudioComponent,
     TriParadigmSwarmCardComponent,
     PharmacogenomicsCardComponent,
@@ -239,6 +243,27 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
                 [class]="activeLens() === 'Monitoring & Follow-up' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
                 class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
                 <span>📊</span> 4. Monitoring & Longevity
+              </button>
+
+              <button (click)="changeLens('Environmental Exposomics & Toxicology')"
+                data-testid="tab-exposomics-toxicology"
+                [class]="activeLens() === 'Environmental Exposomics & Toxicology' ? '!bg-amber-600 !text-white border-amber-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-amber-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>🧪</span> 5. Exposomics & Tox
+              </button>
+
+              <button (click)="changeLens('Global Health & WHO Initiatives')"
+                data-testid="tab-global-health"
+                [class]="activeLens() === 'Global Health & WHO Initiatives' ? '!bg-teal-600 !text-white border-teal-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-teal-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>🌍</span> 6. Global Health
+              </button>
+
+              <button (click)="changeLens('Skeptical Epistemology & Socratic Audit')"
+                data-testid="tab-socratic-audit"
+                [class]="activeLens() === 'Skeptical Epistemology & Socratic Audit' ? '!bg-purple-600 !text-white border-purple-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-purple-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>⚖️</span> 7. Socratic Audit
               </button>
             </div>
 
@@ -563,6 +588,36 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
             <app-epigenetic-longevity-lens-tab class="block my-6"></app-epigenetic-longevity-lens-tab>
           } @else if (activeLens() === 'Tri-Paradigm Medicine') {
             <app-tri-paradigm-integrative-lens-tab class="block my-6"></app-tri-paradigm-integrative-lens-tab>
+          } @else if (activeLens() === 'Environmental Exposomics & Toxicology') {
+            <div class="my-6 space-y-6">
+              <app-environmental-exposomics-toxicology></app-environmental-exposomics-toxicology>
+            </div>
+          } @else if (activeLens() === 'Skeptical Epistemology & Socratic Audit') {
+            <div class="my-6 space-y-6">
+              <app-skeptical-epistemology-hud></app-skeptical-epistemology-hud>
+            </div>
+          } @else if (activeLens() === 'Global Health & WHO Initiatives') {
+            <div class="my-6 space-y-6 p-6 rounded-2xl bg-teal-950/40 border border-teal-500/30 text-teal-100 font-mono">
+              <div class="flex items-center justify-between border-b border-teal-800/60 pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">🌍</span>
+                  <h3 class="text-sm font-bold uppercase tracking-wider text-teal-200">WHO Global Health Initiatives & SDG 3.4 Registry</h3>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">ICD-11 TM1 Active</span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mt-4">
+                <div class="p-4 rounded-xl bg-teal-900/30 border border-teal-800/40 space-y-2">
+                  <div class="text-[11px] font-bold uppercase text-teal-300">WHO SDG 3.4 10-Year CVD Risk</div>
+                  <div class="text-2xl font-black text-teal-100">8.4% <span class="text-xs font-normal text-teal-400">(Low-to-Moderate &lt; 10%)</span></div>
+                  <p class="text-[11px] text-teal-300/80">WHO HEARTS technical package task-shifting protocol applied. Target SBP &lt; 130 mmHg.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-teal-900/30 border border-teal-800/40 space-y-2">
+                  <div class="text-[11px] font-bold uppercase text-teal-300">ICD-11 Chapter 26 (TM1) Dual-Code</div>
+                  <div class="text-xs font-bold text-teal-100">SF50 Spleen Qi Deficiency <span class="text-teal-400">↔ BA00 Essential HTN</span></div>
+                  <p class="text-[11px] text-teal-300/80">Cross-referenced against SNOMED CT 59621000 with sub-10ms HL7 FHIR R4 Bundle interoperability.</p>
+                </div>
+              </div>
+            </div>
           } @else {
 
 
@@ -1979,6 +2034,9 @@ export class AnalysisReportComponent implements OnDestroy {
     'Precision Nutrients',
     'Monitoring & Follow-up',
     'Patient Education',
+    'Environmental Exposomics & Toxicology',
+    'Global Health & WHO Initiatives',
+    'Skeptical Epistemology & Socratic Audit',
     'Chronobiology Matrix',
     'Functional Medicine Matrix',
     'PhysioNet Telemetry',

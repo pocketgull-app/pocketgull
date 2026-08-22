@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { ActiveDefenseTarpitService } from './active-defense-tarpit.service';
 
 describe('ActiveDefenseTarpitService Unit Suite', () => {

@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { GoogleSaifClinicalDefenseService } from './google-saif-clinical-defense.service';
 
 describe('GoogleSaifClinicalDefenseService', () => {

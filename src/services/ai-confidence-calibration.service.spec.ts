@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { AiConfidenceCalibrationService } from './ai-confidence-calibration.service';
 
 describe('AiConfidenceCalibrationService', () => {

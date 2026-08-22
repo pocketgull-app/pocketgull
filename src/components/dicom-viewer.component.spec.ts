@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 
 // Mock Angular effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
