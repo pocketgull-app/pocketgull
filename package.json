@@ -82,6 +82,7 @@
     "models:retrain": "node scripts/retrain-models.mjs",
     "dataset:export": "node scripts/export_fine_tuning_dataset.mjs",
     "sentinel:audit": "node scripts/sentinel_security_guard.mjs",
+    "taint:scan": "node scripts/taint-analysis-guard.mjs",
     "evals:clinical": "node scripts/run-clinical-evals.mjs",
     "doctor:wsl": "node scripts/wsl_ai_doctor.mjs",
     "clamav:scan": "node scripts/daily-clamav-scan.mjs",

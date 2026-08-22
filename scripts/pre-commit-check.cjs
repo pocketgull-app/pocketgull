@@ -389,6 +389,13 @@ for (const file of codeFiles) {
 }
 console.log('✅ Static ReDoS & Regex Security Audit completed.\n');
 
+// Check 9: Global Taint-Tracking Data Flow Analysis
+const taintScript = path.resolve(workspaceRoot, 'scripts/taint-analysis-guard.mjs');
+const taintPassed = runNodeScript(taintScript, [], 'Global Taint-Tracking Data Flow Security Guard');
+if (!taintPassed) {
+  process.exit(1);
+}
+
 console.log('🎉 All pre-commit validation checks passed successfully. Safe to commit!\n');
 process.exit(0);
 
