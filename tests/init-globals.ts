@@ -94,4 +94,3 @@ if (typeof window !== 'undefined') {
 if (typeof global !== 'undefined') {
   ensureGlobals(global);
 }
-

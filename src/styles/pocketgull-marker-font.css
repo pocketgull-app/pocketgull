@@ -83,6 +83,7 @@
        url('/assets/fonts/PocketGullMono-Regular.ttf') format('truetype');
 }
 
+<<<<<<< HEAD
 /* PocketGull Variable Font (VF) */
 @font-face {
   font-family: 'PocketGull VF';
@@ -116,6 +117,13 @@
   font-family: 'PocketGull', 'Outfit', 'Plus Jakarta Sans', 'Atkinson Hyperlegible Next', sans-serif !important;
   font-weight: 800;
   letter-spacing: -0.015em;
+=======
+/* 🖋️ Single Unified PocketGull Geometric Rounded & Display Typeface Stack */
+.font-pocketgull {
+  font-family: 'Outfit', 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+>>>>>>> origin/main
   text-transform: none;
   color: inherit;
   -webkit-font-smoothing: antialiased;
@@ -123,6 +131,7 @@
   text-rendering: optimizeLegibility;
 }
 
+<<<<<<< HEAD
 /* 📊 PocketGull Monospace & Tabular Clinical Telemetry Stack */
 .font-pocketgull-mono {
   font-family: 'PocketGull Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
@@ -136,6 +145,11 @@
 .font-pocketgull-chiseltip,
 .font-pocketgull-chisel {
   font-family: 'PocketGull Chiseltip', 'PocketGull', 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+=======
+/* 🖋️ PocketGull Chiseltip / Black Display Variant (900 Weight) */
+.font-pocketgull-chiseltip {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+>>>>>>> origin/main
   font-weight: 900;
   letter-spacing: -0.025em;
   text-transform: uppercase;
@@ -144,6 +158,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 /* ✍️ PocketGull Fineliner / Regular Variant (400 Weight) */
 .font-pocketgull-fineliner {
   font-family: 'PocketGull Fineliner', 'PocketGull', 'Plus Jakarta Sans', sans-serif !important;
@@ -151,16 +166,30 @@
   letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+=======
+/* ✍️ PocketGull Organic Rounded Accent */
+.font-pocketgull-handwritten {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+>>>>>>> origin/main
 }
 
 /* 🏥 PocketGull Clinical High-Legibility Typeface */
 .font-pocketgull-inter {
+<<<<<<< HEAD
   font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   font-weight: 500;
   letter-spacing: -0.005em;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+=======
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 500;
+  letter-spacing: -0.011em;
+  line-height: 1.55;
+>>>>>>> origin/main
 }
 
 /* ==========================================================================
@@ -194,6 +223,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 .font-pocketgull-tabular {
   font-family: 'PocketGull Mono', 'JetBrains Mono', var(--font-pocketgull-sans) !important;
   font-feature-settings: "tnum" 1, "zero" 1;
@@ -201,6 +231,53 @@
 }
 
 /* Variable Font Helper Classes */
+=======
+/* 🖋️ Marker Heavy Bold Emphasis */
+.marker-bold-emphasis {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-weight: 900;
+  background: linear-gradient(120deg, rgba(251, 146, 60, 0.25) 0%, rgba(249, 115, 22, 0.35) 100%);
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+/* 🎨 Hand-Drawn Felt Highlighter Underline Effect */
+.marker-underline-highlight {
+  position: relative;
+  display: inline-block;
+}
+.marker-underline-highlight::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 1px;
+  width: 100%;
+  height: 6px;
+  background-color: rgba(250, 166, 59, 0.4);
+  border-radius: 3px;
+  z-index: -1;
+  transform: rotate(-0.5deg);
+}
+
+/* ==========================================================================
+   🌐 PocketGull VF — No-Tofu Multilingual Master Font Cascade
+   Ensures zero tofu (□) missing glyphs across Latin, CJK, Thai, Devanagari,
+   Greek, Arabic, Hebrew, and Universal Unicode BMP medical symbols.
+   ========================================================================== */
+
+:root {
+  --font-pocketgull-notofu: 'PocketGull VF', 'PocketGull', 'Inter', 'Noto Sans', 'WenQuanYi Zen Hei', 'IPA Gothic', 'Noto Sans CJK KR', 'Malgun Gothic', 'Noto Sans Thai', 'Loma', 'Noto Sans Devanagari', 'Noto Sans Bengali', 'Noto Sans Tamil', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans Ethiopic', 'FreeSans', 'Unifont', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-pocketgull-notofu {
+  font-family: var(--font-pocketgull-notofu) !important;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Variable Font Axis Helper Classes */
+>>>>>>> origin/main
 .font-vf-thin { font-variation-settings: 'wght' 100; font-weight: 100; }
 .font-vf-light { font-variation-settings: 'wght' 300; font-weight: 300; }
 .font-vf-normal { font-variation-settings: 'wght' 400; font-weight: 400; }
@@ -209,3 +286,123 @@
 .font-vf-bold { font-variation-settings: 'wght' 700; font-weight: 700; }
 .font-vf-extrabold { font-variation-settings: 'wght' 800; font-weight: 800; }
 .font-vf-black { font-variation-settings: 'wght' 900; font-weight: 900; }
+<<<<<<< HEAD
+=======
+
+/* ==========================================================================
+   🏛️ PocketGull Sans (Clinical Neo-Grotesque / Inter-Inspired Variable Typeface)
+   Engineered for clinical safety, zero dosage misreading, and jitter-free ICU charts.
+   ========================================================================== */
+
+:root {
+  --font-pocketgull-sans: 'PocketGull Sans', 'Inter', 'WenQuanYi Zen Hei', 'IPA Gothic', 'Loma', 'FreeSans', 'Unifont', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.font-pocketgull-sans {
+  font-family: var(--font-pocketgull-sans) !important;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Full Clinical Disambiguation Suite (cv05, cv08, ss01, ss02, tnum, zero) */
+.font-pocketgull-sans-clinical {
+  font-family: var(--font-pocketgull-sans) !important;
+  font-feature-settings: "cv05" 1, "cv08" 1, "ss01" 1, "ss02" 1, "tnum" 1, "zero" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Jitter-Free Tabular Figures for Real-Time ICU Telemetry */
+.font-pocketgull-tabular {
+  font-family: var(--font-pocketgull-sans) !important;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Specific OpenType Feature Granular Classes */
+.ot-slashed-zero { font-feature-settings: "cv08" 1, "zero" 1; }
+.ot-curved-l { font-feature-settings: "cv05" 1; }
+.ot-serifed-i { font-feature-settings: "ss02" 1; }
+.ot-open-four { font-feature-settings: "ss01" 1; }
+
+/* ==========================================================================
+   ⚡ Kinetic Typography & Biophysical Variable Font Motion Animations
+   ========================================================================== */
+
+/* 1. Systolic Pulse Variable Weight & Scale Interpolation */
+@keyframes systolicPulseAnimation {
+  0% {
+    font-variation-settings: 'wght' 200, 'opsz' 12;
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+  18% {
+    font-variation-settings: 'wght' 850, 'opsz' 48;
+    transform: scale(1.04);
+    opacity: 1;
+    text-shadow: 0 0 16px rgba(239, 68, 68, 0.6);
+  }
+  45% {
+    font-variation-settings: 'wght' 500, 'opsz' 24;
+    transform: scale(1.01);
+  }
+  100% {
+    font-variation-settings: 'wght' 200, 'opsz' 12;
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.kinetic-systolic-pulse {
+  display: inline-block;
+  font-family: var(--font-pocketgull-sans);
+  animation: systolicPulseAnimation 0.833s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* 2. Respiratory Sinus Tracking Wave Expansion */
+@keyframes respiratorySinusWave {
+  0%, 100% {
+    letter-spacing: -0.02em;
+    font-variation-settings: 'wght' 300, 'opsz' 14;
+    opacity: 0.85;
+  }
+  50% {
+    letter-spacing: 0.12em;
+    font-variation-settings: 'wght' 700, 'opsz' 32;
+    opacity: 1;
+    text-shadow: 0 0 18px rgba(56, 189, 248, 0.7);
+  }
+}
+
+.kinetic-respiratory-wave {
+  display: inline-block;
+  font-family: var(--font-pocketgull-sans);
+  animation: respiratorySinusWave 4.28s ease-in-out infinite;
+}
+
+/* 3. Ben-Day Halftone Dot Screen Raster Resonance */
+@keyframes halftoneResonance {
+  0%, 100% {
+    background-size: 6px 6px;
+    filter: contrast(130%) brightness(1);
+  }
+  50% {
+    background-size: 14px 14px;
+    filter: contrast(190%) brightness(1.2);
+  }
+}
+
+.kinetic-halftone-typography {
+  background-image: radial-gradient(#ffffff 22%, transparent 26%), radial-gradient(#06b6d4 18%, transparent 22%);
+  background-color: #09090b;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: halftoneResonance 3s ease-in-out infinite;
+}
+
+
+
+>>>>>>> origin/main

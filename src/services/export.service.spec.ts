@@ -63,7 +63,6 @@ describe('ExportService FHIR R4 Tri-Paradigm Bundle Suite', () => {
     expect(fhirResources).toContain('DeviceRequest');
     expect(fhirResources).toContain('NutritionOrder');
   });
-
   it('generates cryptographic SHA-256 receipt for clinical document validation', async () => {
     const receipt = await exportService.generateCryptographicReceipt(mockPatient);
     expect(receipt.sha256Hash).toBeDefined();
