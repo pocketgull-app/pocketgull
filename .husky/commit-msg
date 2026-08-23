@@ -1,0 +1,10 @@
+#!/bin/sh
+cd "$(dirname "$0")/.."
+NODE_BIN="node"
+if command -v node.exe >/dev/null 2>&1 && ! command -v node >/dev/null 2>&1; then
+  NODE_BIN="node.exe"
+fi
+
+if [ -f "scripts/commit-msg-lint.cjs" ]; then
+  $NODE_BIN scripts/commit-msg-lint.cjs "$1" || exit 0
+fi

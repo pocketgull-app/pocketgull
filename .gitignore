@@ -1,222 +1,123 @@
-# Logs
-logs
-*.log
+# ==============================================================================
+# PocketGull Master .gitignore
+# Real-Time Clinical AI & FHIR Care Plan Strategy Engine
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Operating Systems & Shells
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+ehthumbs_vista.db
+Thumbs.db
+Thumbs.db:encryptable
+desktop.ini
+$RECYCLE.BIN/
+*~
+*.swp
+*.swo
+*.lock
+
+# ------------------------------------------------------------------------------
+# 2. Editors & IDE Configurations
+# ------------------------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.json.example
+.vscode/chrome-debug-profile/
+chrome-debug-profile/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ------------------------------------------------------------------------------
+# 3. Secrets, Private Keys & Cloud Credentials (ZERO-TOLERANCE)
+# ------------------------------------------------------------------------------
+.env*
+!.env.example
+!.env.test.example
+!.env.template
+**/.env*
+!**/.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+*service-account*.json
+*service_account*.json
+*credentials*.json
+*client_secret*.json
+gcp-*.json
+google-services.json
+GoogleService-Info.plist
+**/android/local.properties
+**/android/key.properties
+**/android/app/google-services.json
+**/ios/Runner/GoogleService-Info.plist
+docs/legal/
+*billing-secret*
+*stripe-secret*
+
+# ------------------------------------------------------------------------------
+# 4. Node.js, Angular, SSR & Package Managers
+# ------------------------------------------------------------------------------
+node_modules/
+dist/
+dist-ssr/
+out-tsc/
+.angular/
+.angular/cache/
+.npm/
+.eslintcache
+.turbo/
+.parcel-cache/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+package-lock.json.bak
 
-# Submodules & Local Challenge Repos
-python_example_2026
-python_example_2026/
-
-node_modules
-dist
-dist-ssr
-# Local temporary test results & deployment tarball
-tmp/
-.temp/
-scratch/
-.playwright_temp/
-test-results/
-playwright-report/
-source.tgz
-deploy.tgz
-deploy_source.tar.gz
-live_pocketgull_app.png
-report.html
-report.json
-*.local
-*.local.*
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-!.vscode/launch.json
-.vscode/chrome-debug-profile/
-chrome-debug-profile/
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Local environment secrets & legal formation documents
-.env*
-**/.env*
-docs/legal/
-!src/partners/
-
-# Generated Release Packages
-packages/*
-!packages/clinical-evidence-grade/
-!packages/pocketgull-github-app/
-!packages/pocketgull-go/
-!packages/core-sdk/
-packages/pocketgull-go/bin/
-pocketgull-release.tar.gz
-
-# Angular & Mobile frameworks
-.angular
-.gradle/
-
-# Generated Reports & Snapshots
-dom-*.html
-lh-*.json
-lighthouse-*.json
-lighthouse-*.html
-bundle-*.json
-dist_*.json
-.lighthouseci/
-security-report.md
-
-# Sandbox & Challenge workspace environments
-sandbox/
-python_example_2026/
-contests/
-kernel-metadata.json
-*.ipynb
-pocketgull_physionet_*.zip
-
-# Agent Rules
-rules.yaml
-
-# Legacy API artifact - no active source project
-pocketgull_api/package-lock.json
-pocketgull_api/node_modules/
-pocketgull_api/dist/
-
-# Temporary developer listings & tool logs
-all_ts_files.txt
-
-# Playwright Test Reports & Artifacts
-playwright-report/
-test-results/
-
-# Gemini Workspace Cache
-.gemini/
-
-# Python Virtual Environments
+# ------------------------------------------------------------------------------
+# 5. Python, ML Sidecar & Virtual Environments
+# ------------------------------------------------------------------------------
 .venv/
 venv/
 env/
 ENV/
-venv/lib/
-.venv/lib/
+.venv*/
+venv*/
 pip-selfcheck.json
-
-# Python Bytecode & Cache
 __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.black/
+*.egg-info/
+.eggs/
 .ipynb_checkpoints/
+*.ipynb
 
-# Git Hooks / Husky
-.husky/
-
-# --- Apigee & GCP Security ---
-# Apigee proxy deployment bundles
-*.zip
-# Local Service Accounts, Credentials, and Keys (Prevent accidental leaks)
-*service-account*.json
-*credentials*.json
-gcp-*.json
-*.pem
-*.key
-*.jks
-*.keystore
-
-# --- Mobile Platform Overrides & Signing Secrets ---
-**/android/local.properties
-**/android/key.properties
-**/android/app/google-services.json
-**/ios/Runner/GoogleService-Info.plist
-
-# --- Local Databases & Cache ---
-*.sqlite
-*.db
-
-# --- Mobile/Native Build Overrides (Safety Net) ---
-**/build/
-**/.dart_tool/
-**/.fvm/
-**/.pub-cache/
-**/.flutter-plugins
-**/.flutter-plugins-dependencies
-**/ephemeral/
-**/gradle/wrapper/gradle-wrapper.jar
-
-# --- Local PHI & Hive Database Security ---
-*.hive
-*.hivec
-*.lock
-*patient*.json
-*session*.json
-*.pdf
-*.csv
-*.xlsx
-
-# --- Agent & Build Logs ---
-*_log*.txt
-deploy_log.txt
-firebase-debug.log
-firebase-debug.*.log
-
-# --- Billing & Stripe Configs & Secrets ---
-*billing-secret*
-*stripe-secret*
-!src/**/billing*
-!src/**/stripe*
-
-# --- Pocket Gull Custom Ignores ---
-
-# Runtime & Process IDs
-server.pid
-*.log
-*log.txt
-
-# Bundle & Build Analysis
-dist_stats.json
-sizes.json
-sizes.txt
-bundle-analysis.json
-bundle-stats*.json
-
-# Lighthouse Audits & Benchmarks
-lh-*.json
-lighthouse-*.json
-lighthouse-report*.json
-lighthouse-report*.html
-
-# Scratch Test Rigs & Automation Scripts
-adk-test*.ts
-puppeteer-*.js
-test-browser.js
-test-page.js
-test-watch*.mjs
-test-watch*.js
-test-*.js
-test-*.mjs
-test-*.cjs
-read_lh*.cjs
-
-# Local HTML DOM Snapshots & Screenshots
-dom-*.html
-test-*.png
-
-# Redteaming & Chaos Engineering Tests
-e2e/chaos-engineering.spec.ts
-
-# Contests & Hackathon Artifacts
-contests/
-*contest*
-!pocketgull_api/*contest*
-
-# Trained Models, Machine Learning Weights & Checkpoints
+# ------------------------------------------------------------------------------
+# 6. Large Machine Learning Weights & Models (>50MB)
+# ------------------------------------------------------------------------------
 *.onnx
 *.safetensors
 *.pt
@@ -240,61 +141,117 @@ pocketgull_api/*.pt
 !**/core/models/**
 !**/src/models/**
 
+# ------------------------------------------------------------------------------
+# 7. Mobile Suite (Flutter / Dart / Android / iOS)
+# ------------------------------------------------------------------------------
+**/.dart_tool/
+**/.pub-cache/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.fvm/
+**/build/
+**/ephemeral/
+.gradle/
+**/gradle/wrapper/gradle-wrapper.jar
 
-# Physio / PhysioNet Signal Telemetry & Trained Models
-physio*/
-physionet*/
-*physio*model*
-*physionet*model*
-physio_models/
-physionet_models/
-trained_physio_models/
+# ------------------------------------------------------------------------------
+# 8. Testing, Coverage, Benchmarks & Lighthouse Reports
+# ------------------------------------------------------------------------------
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+.playwright_temp/
+blob-report/
+lh-*.json
+lighthouse-*.json
+lighthouse-report*.json
+lighthouse-report*.html
+.lighthouseci/
+report.html
+report.json
+security-report.md
+dom-*.html
+test-*.png
+bundle-*.json
+dist_*.json
+dist_stats.json
+sizes.json
+sizes.txt
+bundle-analysis.json
+bundle-stats*.json
+cocomo2_report.*
+pocketgull_benchmark_plots.png
+
+# ------------------------------------------------------------------------------
+# 9. Logs, PID Files & Ephemeral Runtime Cache
+# ------------------------------------------------------------------------------
+logs/
+*.log
+*log.txt
+deploy_log.txt
+firebase-debug.log
+firebase-debug.*.log
+server.pid
+tmp/
+.temp/
+scratch/
+
+# ------------------------------------------------------------------------------
+# 10. Local Data Dumps, PHI & Health Vault Files
+# ------------------------------------------------------------------------------
+*.sqlite
+*.sqlite3
+*.db
+*.hive
+*.hivec
+*patient*.json
+*session*.json
 *.edf
 *.mat
 *.dat
 *.hea
 *.atr
 *.rec
+*.csv
+!src/**/fixtures/*.csv
+!tests/fixtures/*.csv
 
-# PhysioNet Competition Submission Code & Posters
-!contests/
-!contests/physionet/
-!contests/physionet/2026/
-!contests/physionet/2026/*
-!python_example_2026/
-!python_example_2026/**
-python_example_2026/synthetic_dataset/
-python_example_2026/real_physionet_dataset/
-python_example_2026/synthetic_model/
-python_example_2026/real_model_output/
-python_example_2026/synthetic_predictions/
-python_example_2026/*.sav
-
-# Temporary Agent & Playwright Script Artifacts
+# ------------------------------------------------------------------------------
+# 11. Contests, Kaggle & Competition Workspaces
+# ------------------------------------------------------------------------------
+contests/
+docs/contest/
+kernel-metadata.json
+live_pocketgull_app.png
 scripts/capture-*.cjs
-scripts/resize-icon.cjs
 scripts/cleanup-screenshots.cjs
+scripts/resize-icon.cjs
 
-# Local AI Build & Benchmark Logs
-build_error*.txt
-cocomo2_report.*
-pocketgull_benchmark_plots.png
+# ------------------------------------------------------------------------------
+# 12. Deployment Bundles & Release Archives
+# ------------------------------------------------------------------------------
+source.tgz
+deploy.tgz
+deploy_bundle.tar.gz
+deploy_source.tar.gz
+pocketgull-release.tar.gz
+pocketgull-v*.tar.gz
+*.zip
 
-# Antigravity IDE & Local Agent Workspace Caches
+# ------------------------------------------------------------------------------
+# 13. Workspace Caches & Agent Artifacts
+# ------------------------------------------------------------------------------
+.gemini/
 .antigravity-ide/
 .antigravity/
 .cagent/
 .sandboxd/
+.husky/_
 
-# Cloud Run & Local Deployment Tarballs
-deploy_bundle.tar.gz
-deploy_source.tar.gz
-pocketgull-v*.tar.gz
-
-# Temporary scratch files
-scratch/
-
-# DBT Artifacts
+# ------------------------------------------------------------------------------
+# 14. DBT & Data Pipelines
+# ------------------------------------------------------------------------------
 dbt/target/
 dbt/logs/
 dbt/.user.yml

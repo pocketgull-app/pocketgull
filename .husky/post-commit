@@ -1,0 +1,4 @@
+#!/bin/sh
+cd "$(dirname "$0")/.."
+NODE_BIN=$(which node 2>/dev/null || echo "/mnt/c/Program Files/nodejs/node.exe")
+"$NODE_BIN" scripts/auto-tag.cjs 2>/dev/null || node scripts/auto-tag.cjs 2>/dev/null || true
