@@ -59,7 +59,7 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
           @let isEastern = state.activePhilosophy() === 'eastern';
           @let isAyurvedic = state.activePhilosophy() === 'ayurvedic';
 
-          <div class="min-h-[56px] py-2.5 bg-zinc-950 border-b border-zinc-800 flex flex-wrap items-center justify-between px-3 sm:px-6 shrink-0 relative z-10 font-mono gap-2 text-zinc-100">
+          <div class="min-h-[52px] py-2 bg-zinc-950 border-b border-zinc-800 flex flex-wrap items-center justify-between px-3 sm:px-6 shrink-0 relative z-10 font-mono gap-2 text-zinc-100">
               
             <!-- Geographical Clinical Paradigm Selector -->
             <div class="flex items-center gap-1.5 bg-zinc-900 p-1 rounded-xl border border-zinc-800 overflow-x-auto max-w-full font-mono">
@@ -93,86 +93,77 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
                   : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer border rounded-lg bg-zinc-900 text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-zinc-850'">
                 <span>🪷 Ayurvedic</span>
               </button>
+
+              <!-- View Mode Switcher: Classic Lenses vs Functional Domain Suites -->
+              <div class="h-4 w-px bg-zinc-700 hidden sm:block mx-0.5"></div>
+              <button type="button" (click)="viewMode.set(viewMode() === 'lenses' ? 'suites' : 'lenses')"
+                title="Toggle between Classic Multi-Lens Report and Functional Domain Suites (Paradigm Diff Engine)"
+                [class]="viewMode() === 'suites'
+                  ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase rounded-lg border border-amber-400 bg-amber-500 text-zinc-950 transition cursor-pointer shadow-xs'
+                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase rounded-lg border border-zinc-700 bg-zinc-850 text-zinc-400 hover:text-zinc-200 transition cursor-pointer'">
+                <span>{{ viewMode() === 'lenses' ? '🧬 Domain Suites' : '📄 Lenses' }}</span>
+              </button>
             </div>
 
-            <!-- Export Actions & Streamlined Interactive Suite Drawer Button -->
-            <div class="flex items-center gap-2 sm:gap-2.5 ml-auto font-mono">
+            <!-- Clinical Workflows & Studio Dropdown -->
+            <div class="flex items-center gap-2 font-mono ml-auto">
               @if (justGenerated() && hasReport() && !intelligence.isLoading()) {
                 <div class="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">
                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
-                   <span>Analysis Synced</span>
+                   <span>Synced</span>
                 </div>
               }
 
-              <!-- System Status & Offline Simulation Toggle -->
-              <button type="button" (click)="network.toggleForceOffline()"
-                title="Toggle forced offline simulation mode"
-                [class]="network.forceOffline()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-red-500 bg-red-500/20 text-red-400 hover:bg-red-500/30 transition cursor-pointer shadow-sm'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-600 hover:text-white transition cursor-pointer shadow-sm'">
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" [class]="network.isOnline() ? 'bg-emerald-400' : 'bg-red-400'"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2" [class]="network.isOnline() ? 'bg-emerald-500' : 'bg-red-500'"></span>
-                </span>
-                <span>{{ network.forceOffline() ? 'App Forced Offline' : 'System Ready' }}</span>
+              <!-- Ambient SOAP Note Generator Button -->
+              <button type="button" (click)="showSoapModal.set(!showSoapModal())"
+                title="Open Ambient Real-Time FHIR R4 SOAP Note Generator"
+                [class]="showSoapModal()
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-purple-400 bg-purple-500 text-zinc-950 transition cursor-pointer shadow-md'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-purple-500/40 bg-purple-500/10 text-purple-300 hover:bg-purple-600 hover:text-white transition cursor-pointer shadow-xs'">
+                <span>📝 SOAP Note</span>
               </button>
-                      <!-- B2B Executive Sales Pitch Demo Button -->
-                <button type="button" (click)="showSalesDemoModal.set(true)" title="Launch B2B Health System Executive Demo & ROI Calculator"
-                  class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-600 hover:text-white transition cursor-pointer shadow-sm">
-                  <span>💼</span> B2B Executive Demo
+
+              <!-- What-If Sandbox Simulator Toggle Button -->
+              <button type="button" (click)="showSimulatorModal.set(!showSimulatorModal())"
+                title="Open Interactive What-If Counterfactual Health Simulator"
+                [class]="showSimulatorModal()
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-emerald-400 bg-emerald-500 text-zinc-950 transition cursor-pointer shadow-md'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-600 hover:text-white transition cursor-pointer shadow-xs'">
+                <span>🔮 What-If</span>
+              </button>
+
+              <!-- Clinical Studio Overflow Dropdown -->
+              <div class="relative">
+                <button type="button" (click)="showToolsMenu.set(!showToolsMenu())"
+                  title="Clinical Studio & Advanced Analysis Tools"
+                  [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showToolsMenu())
+                    ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-zinc-600 bg-zinc-800 text-zinc-100 transition cursor-pointer shadow-sm'
+                    : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
+                  <span>⚡ Studio ▾</span>
                 </button>
 
-                <!-- Cohort Triage Matrix Button -->
-                <button type="button" (click)="showCohortMatrixModal.set(!showCohortMatrixModal())"
-                  title="Open Multi-Patient Cohort Triage Matrix"
-                  [class]="showCohortMatrixModal()
-                    ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-blue-400 bg-blue-500 text-zinc-950 transition cursor-pointer shadow-md'
-                    : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-blue-500/40 bg-blue-500/10 text-blue-300 hover:bg-blue-600 hover:text-white transition cursor-pointer shadow-sm'">
-                  <span>📊 Cohort Matrix</span>
-                </button>
-
-                <!-- HIPAA PDF Export Button -->
-                <button type="button" (click)="showHipaaPdfModal.set(!showHipaaPdfModal())"
-                  title="Open 1-Click HIPAA Audit & FHIR R4 Bundle PDF Export"
-                  [class]="showHipaaPdfModal()
-                    ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-amber-400 bg-amber-500 text-zinc-950 transition cursor-pointer shadow-md'
-                    : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-600 hover:text-white transition cursor-pointer shadow-sm'">
-                  <span>📄 HIPAA PDF</span>
-                </button>
-
-                <!-- Ambient SOAP Note Generator Button -->
-                <button type="button" (click)="showSoapModal.set(!showSoapModal())"
-                  title="Open Ambient Real-Time FHIR R4 SOAP Note Generator"
-                  [class]="showSoapModal()
-                    ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-purple-400 bg-purple-500 text-zinc-950 transition cursor-pointer shadow-md'
-                    : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-purple-500/40 bg-purple-500/10 text-purple-300 hover:bg-purple-600 hover:text-white transition cursor-pointer shadow-sm'">
-                  <span>📝 SOAP Note</span>
-                </button>
-
-                <!-- What-If Sandbox Simulator Toggle Button -->
-                <button type="button" (click)="showSimulatorModal.set(!showSimulatorModal())"
-                  title="Open Interactive What-If Counterfactual Health Simulator"
-                  [class]="showSimulatorModal()
-                    ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-emerald-400 bg-emerald-500 text-zinc-950 transition cursor-pointer shadow-md'
-                    : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-600 hover:text-white transition cursor-pointer shadow-sm'">
-                  <span>🔮 What-If Simulator</span>
-                </button>
-
-                <!-- View Mode Switcher: Classic Lenses vs Functional Domain Suites -->
-                <button type="button" (click)="viewMode.set(viewMode() === 'lenses' ? 'suites' : 'lenses')"
-                  title="Toggle between Classic Multi-Lens Report and Functional Domain Suites (Paradigm Diff Engine)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-orange-500/40 bg-orange-500/10 text-orange-300 hover:bg-orange-600 hover:text-white transition cursor-pointer shadow-sm">
-                  <span>{{ viewMode() === 'lenses' ? '🧬 Domain Suites' : '📄 Classic Lenses' }}</span>
-                </button>
-
-                <!-- Clinical Tools & Engagement Suites Drawer Toggle Button -->
-                <button type="button" (click)="showToolsMenu.set(!showToolsMenu())" title="Open Clinical Tools & Engagement Suites Drawer"
-                  class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-extrabold uppercase rounded-xl border border-purple-500/40 bg-purple-500/10 text-purple-300 hover:bg-purple-600 hover:text-white transition cursor-pointer shadow-sm">
-                  <span>🎛️</span> Clinical Tools ▾
-                </button>
+                @if (showToolsMenu()) {
+                  <div class="absolute right-0 top-full mt-2 w-56 p-2 rounded-2xl bg-zinc-950 border border-zinc-800 shadow-2xl z-50 flex flex-col gap-1 text-xs">
+                    <button (click)="showCohortMatrixModal.set(!showCohortMatrixModal()); showToolsMenu.set(false)"
+                      class="w-full text-left px-3 py-2 rounded-xl text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      <span>📊 Cohort Matrix</span>
+                      @if (showCohortMatrixModal()) { <span class="text-blue-400">✓</span> }
+                    </button>
+                    <button (click)="showHipaaPdfModal.set(!showHipaaPdfModal()); showToolsMenu.set(false)"
+                      class="w-full text-left px-3 py-2 rounded-xl text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      <span>📄 HIPAA PDF Audit</span>
+                      @if (showHipaaPdfModal()) { <span class="text-amber-400">✓</span> }
+                    </button>
+                    <button (click)="showSalesDemoModal.set(true); showToolsMenu.set(false)"
+                      class="w-full text-left px-3 py-2 rounded-xl text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      <span>💼 B2B Executive Demo</span>
+                    </button>
+                  </div>
+                }
               </div>
             </div>
-          }
+          </div>
+        }
 
         <div class="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden relative">
           <div class="flex-1 min-h-0 min-w-0 h-full flex flex-col overflow-y-auto transition-all duration-300 p-4 sm:p-6">

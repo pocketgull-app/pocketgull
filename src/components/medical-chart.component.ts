@@ -197,21 +197,21 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
               
               <!-- WHO 10-Year CVD Risk & ICD-11 Dual-Codes Ribbon -->
               @if(whoRisk(); as risk) {
-                <div class="p-3.5 rounded-xl bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-900/50 flex flex-wrap items-center justify-between gap-3 text-xs">
-                  <div class="flex items-center gap-2.5">
-                    <span class="text-base">🌍</span>
-                    <div>
-                      <span class="font-bold text-zinc-900 dark:text-zinc-100 font-mono text-[11px] uppercase tracking-wider">
-                        WHO SDG 3.4 10-Year CVD Risk Profile:
-                      </span>
-                      <span class="ml-1.5 font-black font-mono" [ngClass]="risk.color">{{ risk.riskScorePercent }}% ({{ risk.riskTier }})</span>
-                    </div>
+                <div class="p-3 rounded-xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200/80 dark:border-sky-900/50 flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm">🌍</span>
+                    <span class="font-bold text-zinc-900 dark:text-zinc-100 text-[11px] uppercase tracking-wider">
+                      WHO SDG 3.4 CVD Risk:
+                    </span>
+                    <span class="font-black px-2 py-0.5 rounded-md bg-white dark:bg-zinc-900 border border-sky-300 dark:border-sky-800" [ngClass]="risk.color">
+                      {{ risk.riskScorePercent }}% ({{ risk.riskTier }})
+                    </span>
                   </div>
 
                   <!-- ICD-11 Dual-Codes Chips -->
-                  <div class="flex items-center gap-1.5 flex-wrap">
+                  <div class="flex items-center gap-1 flex-wrap">
                     @for (code of whoIcd11Codes(); track $index) {
-                      <span class="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-white dark:bg-zinc-900 border border-sky-300 dark:border-sky-800 text-sky-800 dark:text-sky-300 shadow-2xs">
+                      <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white dark:bg-zinc-900 border border-sky-300 dark:border-sky-800 text-sky-800 dark:text-sky-300 shadow-2xs">
                         {{ code.icd11Tm1Code }}
                       </span>
                     }
@@ -353,26 +353,36 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
           [icon]="historyIcon"
           [noPadding]="true">
           
-          <div right-action class="flex items-center gap-4">
+          <div right-action class="flex items-center gap-2">
                 @if(historyBodyParts().length > 0) {
-                    <div class="flex items-center gap-2">
-                        <pocket-gull-button 
+                    <div class="flex items-center gap-1 overflow-x-auto max-w-[280px] sm:max-w-none hide-scrollbar">
+                        <button type="button" 
                           (click)="$event.stopPropagation(); historyFilter.set(null)"
-                          [variant]="!historyFilter() ? 'primary' : 'secondary'"
-                          size="xs">
+                          [class.bg-emerald-600]="!historyFilter()"
+                          [class.text-white]="!historyFilter()"
+                          [class.bg-zinc-100]="historyFilter()"
+                          [class.dark:bg-zinc-800]="historyFilter()"
+                          [class.text-zinc-700]="historyFilter()"
+                          [class.dark:text-zinc-300]="historyFilter()"
+                          class="px-2 py-1 rounded-md text-[10px] font-mono font-bold uppercase transition cursor-pointer">
                           ALL
-                        </pocket-gull-button>
+                        </button>
                         @for(part of historyBodyParts(); track part.id) {
-                            <pocket-gull-button 
+                            <button type="button" 
                               (click)="$event.stopPropagation(); historyFilter.set(part.id)"
-                              [variant]="historyFilter() === part.id ? 'primary' : 'secondary'"
-                              size="xs">
+                              [class.bg-emerald-600]="historyFilter() === part.id"
+                              [class.text-white]="historyFilter() === part.id"
+                              [class.bg-zinc-100]="historyFilter() !== part.id"
+                              [class.dark:bg-zinc-800]="historyFilter() !== part.id"
+                              [class.text-zinc-700]="historyFilter() !== part.id"
+                              [class.dark:text-zinc-300]="historyFilter() !== part.id"
+                              class="px-2 py-1 rounded-md text-[10px] font-mono font-bold uppercase transition cursor-pointer whitespace-nowrap">
                               {{ part.name }}
-                            </pocket-gull-button>
+                            </button>
                         }
                     </div>
                 }
-                <div (click)="isHistoryExpanded.set(!isHistoryExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+                <div (click)="isHistoryExpanded.set(!isHistoryExpanded())" class="cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 p-1 rounded-md transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isHistoryExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
                 </div>
           </div>
