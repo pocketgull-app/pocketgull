@@ -16,19 +16,21 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl space-y-6 max-w-7xl mx-auto font-sans">
+    <div class="p-6 bg-zinc-950 text-zinc-100 rounded-xl border border-zinc-800 shadow-2xl space-y-6 max-w-7xl mx-auto font-sans">
       
-      <!-- Top Title & Companion App Link Header -->
+      <!-- Top Title & Navigation Header -->
       <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-zinc-800">
         <div>
-          <div class="flex items-center gap-2">
-            <span class="text-2xl">🌲</span>
-            <h2 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              Nantucket Tick Defense & Co-Infection Radar
-              <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                UMass Amherst &bull; MA DPH Grounded
-              </span>
+          <div class="flex items-center gap-2.5">
+            <span class="px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 uppercase tracking-widest">
+              VECTOR SURVEILLANCE
+            </span>
+            <h2 class="text-lg font-bold tracking-tight text-white flex items-center gap-2 font-pocketgull-sans-clinical">
+              Nantucket Tick Defense &amp; Co-Infection Radar
             </h2>
+            <span class="px-2 py-0.5 rounded-xs text-[10px] font-mono font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800">
+              UMass Amherst • MA DPH Grounded
+            </span>
           </div>
           <p class="text-xs text-zinc-400 mt-1">
             Empirical Bayesian pre/post-test risk engine, IDSA 72-hour single-dose doxycycline prophylaxis calculator, and multi-pathogen co-infection surveillance.
@@ -36,20 +38,12 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
-          <a
-            href="http://localhost:8080/?t=flip_test"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="px-3.5 py-1.5 rounded-xl bg-teal-600/20 hover:bg-teal-600/30 text-teal-300 border border-teal-500/40 text-xs font-mono font-bold transition flex items-center gap-1.5 shadow-sm"
-          >
-            <span>🛰️ Satellite Radar (Port 8080)</span>
-            <span class="text-zinc-400">&nearr;</span>
-          </a>
           <button
+            type="button"
             (click)="copyFhirBundle()"
-            class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-mono font-bold transition flex items-center gap-1.5"
+            class="px-3.5 py-1.5 rounded-xs bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
-            <span>📋 {{ fhirCopied() ? 'Copied FHIR!' : 'FHIR R4 Bundle' }}</span>
+            <span>{{ fhirCopied() ? '✓ Copied FHIR Bundle' : '📋 Export FHIR R4 Bundle' }}</span>
           </button>
         </div>
       </div>
@@ -415,13 +409,13 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
         </div>
       </div>
 
-      <!-- Community Working Draft & Public Disclaimer Banner -->
-      <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs leading-relaxed space-y-1">
-        <div class="flex items-center gap-1.5 font-bold text-amber-300 font-mono text-[11px] uppercase tracking-wider">
-          <span>⚠️ Community Disclaimer &amp; Working Draft Notice</span>
+      <!-- Clinical & Community Surveillance Notice -->
+      <div class="p-4 rounded-xs bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs leading-relaxed space-y-1">
+        <div class="flex items-center gap-1.5 font-bold text-zinc-200 font-mono text-[11px] uppercase tracking-wider">
+          <span>Clinical &amp; Community Surveillance Notice</span>
         </div>
-        <p class="text-zinc-300">
-          <em>"Island Tick Detectives"</em> and related educational concepts were discovered and transcribed from informal public meeting notes and community brainstorming discussions; they are <strong>not an official municipal plan or enacted town program just yet</strong>. This site is an independent, community-driven citizen science resource. It may contain errors at the bottom, is an active work-in-progress that needs an editor, and is not an official resource or formal school board directive. For acute clinical emergencies, consult a physician or visit the Nantucket Cottage Hospital Walk-in Clinic.
+        <p class="text-zinc-400">
+          This community-driven vector surveillance engine synthesizes regional epidemiological datasets (UMass Amherst Laboratory of Medical Zoology / Massachusetts Department of Public Health) and IDSA clinical guidelines for decision support. It is not an official municipal directive. For acute tick attachments, atypical rashes, or suspected systemic symptoms, consult a licensed healthcare provider or Nantucket Cottage Hospital Walk-in Clinic.
         </p>
       </div>
 
