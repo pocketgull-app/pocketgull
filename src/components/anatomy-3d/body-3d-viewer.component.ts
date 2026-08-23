@@ -91,16 +91,16 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
         <!-- Camera Angle Presets -->
         <div class="flex items-center gap-1">
           <span class="text-[10px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider mr-1 hidden sm:inline">Camera:</span>
-          <button (click)="setCameraPreset('cranial')" class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-sky-100 dark:bg-zinc-900 dark:hover:bg-cyan-950 text-sky-900 dark:text-cyan-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Head & Brain">
+          <button (click)="setCameraPreset('cranial')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-sky-100 dark:bg-zinc-900 dark:hover:bg-cyan-950 text-sky-900 dark:text-cyan-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Head & Brain">
             <span>🧠</span><span class="text-[10px] uppercase font-bold">Cranial</span>
           </button>
-          <button (click)="setCameraPreset('visceral')" class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-teal-100 dark:bg-zinc-900 dark:hover:bg-teal-950 text-teal-900 dark:text-teal-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Thorax & Organs">
+          <button (click)="setCameraPreset('visceral')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-teal-100 dark:bg-zinc-900 dark:hover:bg-teal-950 text-teal-900 dark:text-teal-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Thorax & Organs">
             <span>🫀</span><span class="text-[10px] uppercase font-bold">Visceral</span>
           </button>
-          <button (click)="setCameraPreset('spinal')" class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-indigo-100 dark:bg-zinc-900 dark:hover:bg-indigo-950 text-indigo-900 dark:text-indigo-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Spine & Posterior">
+          <button (click)="setCameraPreset('spinal')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-indigo-100 dark:bg-zinc-900 dark:hover:bg-indigo-950 text-indigo-900 dark:text-indigo-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Spine & Posterior">
             <span>🦴</span><span class="text-[10px] uppercase font-bold">Spine</span>
           </button>
-          <button (click)="setCameraPreset('peripheral')" class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-amber-100 dark:bg-zinc-900 dark:hover:bg-amber-950 text-amber-900 dark:text-amber-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Legs & Feet">
+          <button (click)="setCameraPreset('peripheral')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-amber-100 dark:bg-zinc-900 dark:hover:bg-amber-950 text-amber-900 dark:text-amber-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Legs & Feet">
             <span>🦵</span><span class="text-[10px] uppercase font-bold">Extremities</span>
           </button>
         </div>
@@ -111,7 +111,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
           <select [value]="activeArchetype()" 
                   (change)="onArchetypeChange($event)"
                   aria-label="3D Species and Demographic Archetype Selector"
-                  class="min-h-[36px] px-2 py-1 rounded-md bg-white dark:bg-zinc-900 text-teal-800 dark:text-cyan-300 font-bold border border-slate-300 dark:border-zinc-800 text-[10.5px] cursor-pointer outline-none">
+                  class="min-h-[34px] px-2 py-1 rounded-xs bg-white dark:bg-zinc-900 text-teal-800 dark:text-cyan-300 font-bold border border-slate-300 dark:border-zinc-800 text-[10.5px] cursor-pointer outline-none">
             <option value="homo_sapiens_female">👩 Homo Sapiens (Female)</option>
             <option value="homo_sapiens_male">👨 Homo Sapiens (Male)</option>
             <option value="homo_sapiens_senior">👵 Homo Sapiens (Senior)</option>
@@ -121,23 +121,23 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
         </div>
 
         <!-- Occupational Hazard & Strain Telemetry Badge -->
-        <div *ngIf="occupationalStrainInfo() as info" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/10 dark:bg-cyan-950/50 border border-amber-500/30 dark:border-cyan-700/40 text-amber-900 dark:text-cyan-200">
+        <div *ngIf="occupationalStrainInfo() as info" class="flex items-center gap-1.5 px-2.5 py-1 rounded-xs bg-amber-500/10 dark:bg-cyan-950/50 border border-amber-500/30 dark:border-cyan-700/40 text-amber-900 dark:text-cyan-200">
           <span>{{ info.icon }}</span>
           <span class="text-[10.5px] font-bold tracking-wide hidden md:inline">{{ info.focusLabel }}</span>
-          <button (click)="setCameraPreset(info.cameraPreset)" class="px-1.5 py-0.5 rounded bg-amber-500/20 dark:bg-cyan-800/40 hover:bg-amber-500/30 text-[9.5px] uppercase font-extrabold cursor-pointer border border-amber-500/40 dark:border-cyan-600/50 transition" title="Focus Ergonomic Strain Region">
+          <button (click)="setCameraPreset(info.cameraPreset)" class="px-1.5 py-0.5 rounded-2xs bg-amber-500/20 dark:bg-cyan-800/40 hover:bg-amber-500/30 text-[9.5px] uppercase font-extrabold cursor-pointer border border-amber-500/40 dark:border-cyan-600/50 transition" title="Focus Ergonomic Strain Region">
             Focus Strain 🎯
           </button>
         </div>
 
         <!-- Viewport Spin, Reset & Vision Accessibility Controls -->
-        <div class="flex flex-wrap items-center gap-1.5">
+        <div class="flex flex-wrap items-center gap-1">
           <button (click)="isHighContrastVision.set(!isHighContrastVision())" 
             [class.bg-amber-400]="isHighContrastVision()"
             [class.text-black]="isHighContrastVision()"
             [class.bg-white]="!isHighContrastVision()"
             [class.dark:bg-zinc-900]="!isHighContrastVision()"
             [class.dark:text-amber-300]="!isHighContrastVision()"
-            class="min-h-[36px] px-2.5 py-1 rounded-md font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
+            class="min-h-[34px] px-2 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Toggle Non-Glare High-Contrast Vision Mode for Low Vision">
             <span>👁️</span>
             <span class="text-[10px] uppercase font-bold">{{ isHighContrastVision() ? 'High Contrast ON' : 'High Contrast' }}</span>
@@ -149,7 +149,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             [class.bg-white]="!isReducedMotion()"
             [class.dark:bg-zinc-900]="!isReducedMotion()"
             [class.dark:text-emerald-400]="!isReducedMotion()"
-            class="min-h-[36px] px-2.5 py-1 rounded-md font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
+            class="min-h-[34px] px-2 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Freeze Animations for Photosensitive Safety & Motion Sensitivity">
             <span>⚡</span>
             <span class="text-[10px] uppercase font-bold">{{ isReducedMotion() ? 'Motion FREEZE' : 'Motion' }}</span>
@@ -162,14 +162,14 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             [class.dark:bg-zinc-900]="!isAutoSpinning()"
             [class.text-gray-800]="!isAutoSpinning()"
             [class.dark:text-cyan-300]="!isAutoSpinning()"
-            class="min-h-[36px] px-2.5 py-1 rounded-md font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
+            class="min-h-[34px] px-2 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Toggle 360° Auto-Spin">
             <span [class.animate-spin]="isAutoSpinning()">🔄</span>
             <span class="text-[10px] uppercase font-bold">{{ isAutoSpinning() ? 'Spin ON' : '360°' }}</span>
           </button>
 
           <button (click)="resetCameraView()" 
-            class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-gray-800 dark:text-zinc-300 font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
+            class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-gray-800 dark:text-zinc-300 font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Reset Camera View">
             <span>🎯</span>
             <span class="text-[10px] uppercase font-bold">Reset</span>
@@ -177,21 +177,21 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
         </div>
 
         <!-- 🔪 3D Anatomical Cross-Section & Slice Plane Controls -->
-        <div class="flex items-center gap-1.5 p-1 bg-slate-200/90 dark:bg-zinc-900 rounded-lg border border-slate-300 dark:border-zinc-800 text-[10.5px]">
-          <span class="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[9.5px]">🔪 Slice Plane:</span>
+        <div class="flex items-center gap-1 p-0.5 bg-slate-200/90 dark:bg-zinc-900 rounded-xs border border-slate-300 dark:border-zinc-800 text-[10.5px]">
+          <span class="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[9.5px] px-1">🔪 Slice:</span>
           
           <button type="button" (click)="setSlicePlaneMode('none')"
                   [class.bg-zinc-800]="slicePlaneMode() === 'none'"
                   [class.text-white]="slicePlaneMode() === 'none'"
                   [class.text-zinc-400]="slicePlaneMode() !== 'none'"
-                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer">
+                  class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer">
             Off
           </button>
           <button type="button" (click)="setSlicePlaneMode('axial')"
                   [class.bg-sky-600]="slicePlaneMode() === 'axial'"
                   [class.text-white]="slicePlaneMode() === 'axial'"
                   [class.text-zinc-400]="slicePlaneMode() !== 'axial'"
-                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer"
+                  class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer"
                   title="Axial Transverse (Horizontal) Cross-Section">
             Axial
           </button>
@@ -199,7 +199,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                   [class.bg-emerald-600]="slicePlaneMode() === 'coronal'"
                   [class.text-white]="slicePlaneMode() === 'coronal'"
                   [class.text-zinc-400]="slicePlaneMode() !== 'coronal'"
-                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer"
+                  class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer"
                   title="Coronal (Frontal / Anterior-Posterior) Cross-Section">
             Coronal
           </button>
@@ -207,7 +207,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                   [class.bg-purple-600]="slicePlaneMode() === 'sagittal'"
                   [class.text-white]="slicePlaneMode() === 'sagittal'"
                   [class.text-zinc-400]="slicePlaneMode() !== 'sagittal'"
-                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer"
+                  class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer"
                   title="Sagittal (Lateral / Medial-Lateral) Cross-Section">
             Sagittal
           </button>

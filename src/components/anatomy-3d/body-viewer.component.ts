@@ -51,15 +51,15 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
           </div>
         </div>
 
-        <div class="flex items-center gap-2 flex-wrap">
-          <!-- Multi-Scale Viewport Mode Switcher (Tap-Target Friendly min 44px) -->
-          <div class="flex items-center gap-1 bg-gray-200/80 dark:bg-zinc-950 p-1.5 rounded-xl border border-gray-300/80 dark:border-zinc-800 text-xs font-mono flex-wrap">
+        <div class="flex items-center gap-2 flex-wrap font-mono">
+          <!-- Multi-Scale Viewport Mode Switcher (Precision Instrument Rail) -->
+          <div class="flex items-center gap-1 bg-gray-200/80 dark:bg-zinc-950 p-1 rounded-xs border border-gray-300/80 dark:border-zinc-800 text-xs flex-wrap">
             <button (click)="state.bodyViewerMode.set('3d')" 
                     [class.bg-teal-600]="state.bodyViewerMode() === '3d'" 
                     [class.text-white]="state.bodyViewerMode() === '3d'" 
                     [class.text-gray-700]="state.bodyViewerMode() !== '3d'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== '3d'" 
-                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+                    class="min-h-[36px] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🧊</span> 3D Whole-Body
             </button>
             <button (click)="state.bodyViewerMode.set('2d')" 
@@ -67,7 +67,7 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
                     [class.text-white]="state.bodyViewerMode() === '2d'" 
                     [class.text-gray-700]="state.bodyViewerMode() !== '2d'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== '2d'" 
-                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+                    class="min-h-[36px] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🗺️</span> 2D Atlas
             </button>
             <button (click)="state.bodyViewerMode.set('cellular')" 
@@ -75,7 +75,7 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
                     [class.text-white]="state.bodyViewerMode() === 'cellular'" 
                     [class.text-gray-700]="state.bodyViewerMode() !== 'cellular'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'cellular'" 
-                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+                    class="min-h-[36px] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🔬</span> Cellular 3D
             </button>
             <button (click)="state.bodyViewerMode.set('quad')" 
@@ -83,7 +83,7 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
                     [class.text-white]="state.bodyViewerMode() === 'quad'" 
                     [class.text-gray-700]="state.bodyViewerMode() !== 'quad'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'quad'" 
-                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+                    class="min-h-[36px] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🏛️</span> 4-Way Matrix
             </button>
             <button (click)="state.bodyViewerMode.set('tme')" 
@@ -91,7 +91,7 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
                     [class.text-white]="state.bodyViewerMode() === 'tme'" 
                     [class.text-gray-700]="state.bodyViewerMode() !== 'tme'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'tme'" 
-                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+                    class="min-h-[36px] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🎯</span> Immuno-Oncology
             </button>
             <button (click)="state.bodyViewerMode.set('awcim')" 
@@ -99,7 +99,7 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
                     [class.text-white]="state.bodyViewerMode() === 'awcim'" 
                     [class.text-gray-700]="state.bodyViewerMode() !== 'awcim'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'awcim'" 
-                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+                    class="min-h-[36px] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🌿</span> AWCIM Lab
             </button>
             <button (click)="state.bodyViewerMode.set('genesis')" 
@@ -107,7 +107,7 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
                     [class.text-white]="state.bodyViewerMode() === 'genesis'" 
                     [class.text-gray-700]="state.bodyViewerMode() !== 'genesis'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'genesis'" 
-                    class="min-h-[40px] px-3 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+                    class="min-h-[36px] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🧬</span> Genesis Substrate
             </button>
           </div>
@@ -115,13 +115,13 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
           <!-- ⚡ 1-Tap Instant 4-Lens Care Plan Launch Button -->
           <button (click)="openInstantCarePlan()" 
                   title="Tap or speak to generate instant Quad-Philosophy care plan"
-                  class="min-h-[40px] px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer bg-gradient-to-r from-teal-600 via-indigo-600 to-purple-600 hover:from-teal-500 hover:to-purple-500 text-white shadow-md flex items-center justify-center gap-1.5 shrink-0">
+                  class="min-h-[36px] px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer bg-teal-700 hover:bg-teal-600 text-white border border-teal-500/50 shadow-xs flex items-center justify-center gap-1.5 shrink-0">
             <span>⚡</span> Instant 4-Lens Plan
           </button>
 
           <!-- Search Bar with Keyboard & Autocomplete -->
-          <div class="relative flex items-center bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded-xl px-3 py-1.5 w-full sm:w-72 shadow-xs focus-within:border-emerald-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 dark:text-zinc-500 mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <div class="relative flex items-center bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded-xs px-2.5 py-1 w-full sm:w-64 shadow-xs focus-within:border-emerald-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-400 dark:text-zinc-500 mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input 
               type="text" 
               [value]="searchQuery()" 
@@ -131,14 +131,14 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
               placeholder="Search organ, acupoint, symptom..." 
               class="w-full bg-transparent text-xs text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 outline-none font-medium" />
             @if (searchQuery()) {
-              <button (click)="clearSearch()" class="p-1 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-400 hover:text-gray-600 dark:text-zinc-400 dark:hover:text-zinc-200 cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <button (click)="clearSearch()" class="p-0.5 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xs text-gray-400 hover:text-gray-600 dark:text-zinc-400 dark:hover:text-zinc-200 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             }
           </div>
 
           @if (focusedHotzoneFeedback()) {
-            <div class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-mono font-bold animate-pulse flex items-center gap-1.5 shrink-0">
+            <div class="px-2.5 py-1 rounded-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-mono font-bold animate-pulse flex items-center gap-1.5 shrink-0">
               <span>{{ focusedHotzoneFeedback() }}</span>
             </div>
           }
@@ -148,23 +148,23 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
                   [class.bg-purple-600]="handednessMode() === 'left'"
                   [class.text-white]="handednessMode() === 'left'"
                   [class.border-purple-400]="handednessMode() === 'left'"
-                  class="min-h-[40px] px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 shadow-xs flex items-center gap-1.5 shrink-0"
+                  class="min-h-[36px] px-2.5 py-1 text-xs font-bold rounded-xs transition-all cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 shadow-xs flex items-center gap-1.5 shrink-0"
                   title="Toggle Left-Handed / Right-Handed Ergonomic Layout (Mirror Floating Controls & Stylus Palette)">
             <span>{{ handednessMode() === 'left' ? '🫲 Left-Handed' : '🫱 Right-Handed' }}</span>
           </button>
 
-          <!-- Paradigm Lens Selector Bar (Tap-Target Friendly & Dual Light/Dark Theme) -->
-          <div class="flex items-center gap-1.5 bg-gray-200/80 dark:bg-zinc-950 p-1.5 rounded-lg border border-gray-300/80 dark:border-zinc-800 text-xs font-mono">
-            <button (click)="state.selectPhilosophy('western')" [class.bg-sky-600]="state.activePhilosophy() === 'western'" [class.text-white]="state.activePhilosophy() === 'western'" [class.text-gray-700]="state.activePhilosophy() !== 'western'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'western'" class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
+          <!-- Paradigm Lens Selector Bar (Precision Segmented Rail) -->
+          <div class="flex items-center gap-1 bg-gray-200/80 dark:bg-zinc-950 p-1 rounded-xs border border-gray-300/80 dark:border-zinc-800 text-xs">
+            <button (click)="state.selectPhilosophy('western')" [class.bg-sky-600]="state.activePhilosophy() === 'western'" [class.text-white]="state.activePhilosophy() === 'western'" [class.text-gray-700]="state.activePhilosophy() !== 'western'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'western'" class="min-h-[36px] px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
               🩺 Western
             </button>
-            <button (click)="state.selectPhilosophy('eastern')" [class.bg-emerald-700]="state.activePhilosophy() === 'eastern'" [class.text-white]="state.activePhilosophy() === 'eastern'" [class.text-gray-700]="state.activePhilosophy() !== 'eastern'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'eastern'" class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
+            <button (click)="state.selectPhilosophy('eastern')" [class.bg-emerald-700]="state.activePhilosophy() === 'eastern'" [class.text-white]="state.activePhilosophy() === 'eastern'" [class.text-gray-700]="state.activePhilosophy() !== 'eastern'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'eastern'" class="min-h-[36px] px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
               🌿 TCM
             </button>
-            <button (click)="state.selectPhilosophy('ayurvedic')" [class.bg-amber-600]="state.activePhilosophy() === 'ayurvedic'" [class.text-white]="state.activePhilosophy() === 'ayurvedic'" [class.text-gray-700]="state.activePhilosophy() !== 'ayurvedic'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'ayurvedic'" class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
+            <button (click)="state.selectPhilosophy('ayurvedic')" [class.bg-amber-600]="state.activePhilosophy() === 'ayurvedic'" [class.text-white]="state.activePhilosophy() === 'ayurvedic'" [class.text-gray-700]="state.activePhilosophy() !== 'ayurvedic'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'ayurvedic'" class="min-h-[36px] px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
               🪷 Ayurvedic
             </button>
-            <button (click)="state.selectPhilosophy('osteopathic')" [class.bg-purple-600]="state.activePhilosophy() === 'osteopathic'" [class.text-white]="state.activePhilosophy() === 'osteopathic'" [class.text-gray-700]="state.activePhilosophy() !== 'osteopathic'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'osteopathic'" class="min-h-[44px] px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-md transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
+            <button (click)="state.selectPhilosophy('osteopathic')" [class.bg-purple-600]="state.activePhilosophy() === 'osteopathic'" [class.text-white]="state.activePhilosophy() === 'osteopathic'" [class.text-gray-700]="state.activePhilosophy() !== 'osteopathic'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'osteopathic'" class="min-h-[36px] px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
               🦴 Osteopathic
             </button>
           </div>
