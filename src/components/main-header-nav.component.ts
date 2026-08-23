@@ -225,7 +225,7 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
         <!-- Live AI Agent Consult Trigger (Always visible on mobile & desktop) -->
         <button (click)="state.toggleLiveAgent(!state.isLiveAgentActive())"
                 id="tour-voice-agent-trigger"
-                aria-label="Toggle Live Agent"
+                aria-label="AI Agent"
                 class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xs border transition-colors text-xs font-mono font-bold uppercase tracking-widest cursor-pointer shadow-xs"
                 [class.bg-gray-800]="state.isLiveAgentActive()"
                 [class.dark:bg-white]="state.isLiveAgentActive()"

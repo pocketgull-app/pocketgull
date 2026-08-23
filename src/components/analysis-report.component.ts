@@ -1138,8 +1138,8 @@ import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.
 
                     <!-- AVS Session Duration & Countdown Selector -->
                     <div class="flex items-center gap-1.5 bg-zinc-950 p-1.5 rounded-md border border-zinc-800 text-xs text-zinc-300">
-                      <span class="text-zinc-400 font-bold uppercase tracking-wider pl-1">⏱️ Limit:</span>
-                      <select [value]="avsSessionDuration()" (change)="setAvsDuration(+$any($event.target).value)" class="bg-zinc-900 border border-zinc-800 text-zinc-100 rounded px-2 py-1 outline-none cursor-pointer text-xs font-bold font-mono">
+                      <label for="avs-duration-select" class="text-zinc-400 font-bold uppercase tracking-wider pl-1">⏱️ Limit:</label>
+                      <select id="avs-duration-select" [value]="avsSessionDuration()" (change)="setAvsDuration(+$any($event.target).value)" aria-label="AVS Session Duration Limit" class="bg-zinc-900 border border-zinc-800 text-zinc-100 rounded px-2 py-1 outline-none cursor-pointer text-xs font-bold font-mono">
                         <option [value]="5">5 Min</option>
                         <option [value]="10">10 Min</option>
                         <option [value]="15">15 Min</option>
@@ -1154,8 +1154,8 @@ import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.
                     <!-- Seagullian Persona Influence Selector (Visible in Spark & Dark Modes) -->
                     @if (themeService.currentTheme() === 'spark' || themeService.currentTheme() === 'dark') {
                       <div class="flex items-center gap-1.5 bg-zinc-950 p-1.5 rounded-md border border-zinc-800 text-xs text-zinc-300">
-                        <span class="text-zinc-400 font-bold uppercase tracking-wider pl-1">🕊️ Persona:</span>
-                        <select [value]="themeService.activeSeagullPersona()" (change)="themeService.activeSeagullPersona.set($any($event.target).value)" class="bg-zinc-900 border border-zinc-800 text-zinc-100 rounded px-2 py-1 outline-none cursor-pointer text-xs font-bold">
+                        <label for="seagull-persona-select" class="text-zinc-400 font-bold uppercase tracking-wider pl-1">🕊️ Persona:</label>
+                        <select id="seagull-persona-select" [value]="themeService.activeSeagullPersona()" (change)="themeService.activeSeagullPersona.set($any($event.target).value)" aria-label="Seagullian Persona Influence" class="bg-zinc-900 border border-zinc-800 text-zinc-100 rounded px-2 py-1 outline-none cursor-pointer text-xs font-bold">
                           <option value="calm-gull">🕊️ Calm Gull (Zen Shore)</option>
                           <option value="active-skimmer">🪶 Active Skimmer (High Winds)</option>
                           <option value="deep-navigator">🦅 Deep Navigator (Thermal Lift)</option>
