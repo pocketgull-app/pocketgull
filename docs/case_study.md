@@ -90,12 +90,12 @@ The latency reduction aligns with the performance expectations set out in the RE
 1. **Adopt Pocket Gull** for all new intake workflows; reference the **[Deployment Proof](../README.md#google-cloud-deployment-proof)** for production rollout.
 2. **Integrate automated benchmarking** into CI (see the README’s **[Kaizen Philosophy](../README.md#kaizen-philosophy)**) to catch regressions early.
 3. **Contribute enhancements** (e.g., additional specialty agents) following the **[License](../README.md#license)** and open‑source contribution guidelines.
-## References
-
+## References & Published Articles Hub
 
 - Project repository: <https://github.com/philgear/pocketgull>
 - Detailed documentation: **[README.md](../README.md)**
-- Benchmark scripts: `benchmarks/benchmark.py`  
+- Benchmark scripts: `benchmarks/benchmark.py`
+- **Published Case Study on PocketGull Articles**: [pocketgull.com/articles/clinical-intake-case-study-pocketgull](https://pocketgull.com/articles/clinical-intake-case-study-pocketgull)
+- **Health Literacy & Case Study Series**: [pocketgull.com/articles](https://pocketgull.com/articles)
 
-
-*Prepared by the Clinical Innovation Team – March 2026*
+*Prepared by Phil Gear — PocketGull Clinical Architecture & Systems Engineering*

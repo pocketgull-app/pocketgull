@@ -10,11 +10,12 @@ import {
 } from '../services/nantucket-tick-radar.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedback.service';
+import { NantucketPassportStorybookComponent } from './nantucket-passport-storybook.component';
 
 @Component({
   selector: 'app-nantucket-tick-radar',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NantucketPassportStorybookComponent],
   template: `
     <div class="p-6 bg-zinc-950 text-zinc-100 rounded-xl border border-zinc-800 shadow-2xl space-y-6 max-w-7xl mx-auto font-sans">
       
@@ -38,6 +39,33 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
+          <!-- View Mode Toggle -->
+          <div class="inline-flex rounded-xs bg-zinc-900 p-0.5 border border-zinc-800 font-mono text-xs">
+            <button
+              type="button"
+              (click)="viewMode.set('clinical')"
+              [class.bg-teal-500\/20]="viewMode() === 'clinical'"
+              [class.text-teal-300]="viewMode() === 'clinical'"
+              [class.border-teal-500\/40]="viewMode() === 'clinical'"
+              [class.text-zinc-400]="viewMode() !== 'clinical'"
+              class="px-3 py-1 rounded-xs border border-transparent transition cursor-pointer font-bold"
+            >
+              🔬 Clinical Radar
+            </button>
+            <button
+              type="button"
+              (click)="viewMode.set('passport')"
+              [class.bg-rose-500\/20]="viewMode() === 'passport'"
+              [class.text-rose-300]="viewMode() === 'passport'"
+              [class.border-rose-500\/40]="viewMode() === 'passport'"
+              [class.text-zinc-400]="viewMode() !== 'passport'"
+              class="px-3 py-1 rounded-xs border border-transparent transition cursor-pointer font-bold flex items-center gap-1"
+            >
+              <span>🌊 Junior Passport</span>
+              <span class="text-[9px] px-1 py-0.2 rounded-xs bg-rose-900/40 text-rose-300">Beatrix Potter</span>
+            </button>
+          </div>
+
           <button
             type="button"
             (click)="copyFhirBundle()"
@@ -47,6 +75,11 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
           </button>
         </div>
       </div>
+
+      <!-- Passport View Conditional Render -->
+      @if (viewMode() === 'passport') {
+        <app-nantucket-passport-storybook />
+      } @else {
 
       <!-- Island Micro-Hotspots Selector Strip -->
       <div class="space-y-2">
@@ -418,6 +451,7 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
           This community-driven vector surveillance engine synthesizes regional epidemiological datasets (UMass Amherst Laboratory of Medical Zoology / Massachusetts Department of Public Health) and IDSA clinical guidelines for decision support. It is not an official municipal directive. For acute tick attachments, atypical rashes, or suspected systemic symptoms, consult a licensed healthcare provider or Nantucket Cottage Hospital Walk-in Clinic.
         </p>
       </div>
+      }
 
     </div>
   `
@@ -427,6 +461,7 @@ export class NantucketTickRadarComponent {
   patientState = inject(PatientStateService);
   haptic = inject(BioHapticFeedbackService, { optional: true });
 
+  viewMode = signal<'clinical' | 'passport'>('clinical');
   fhirCopied = signal<boolean>(false);
   chartSaved = signal<boolean>(false);
 
