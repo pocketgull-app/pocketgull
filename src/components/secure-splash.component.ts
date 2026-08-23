@@ -28,46 +28,11 @@ import { LifeJourneyNavigatorService, LIFE_JOURNEY_PROFILES, LifeJourneyStage } 
   imports: [CommonModule, FormsModule, PocketgullBrandMarkComponent, SafeHtmlPipe, PapercraftBackdropComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <main [style.background]="telemetryGradient()" class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 backdrop-blur-xl sm:backdrop-blur-3xl secure-splash-main animate-in fade-in duration-[800ms] overflow-y-auto overscroll-contain">
+    <main [style.background]="telemetryGradient()" class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 backdrop-blur-md sm:backdrop-blur-xl secure-splash-main animate-in fade-in duration-[400ms] overflow-y-auto overscroll-contain">
       <app-papercraft-backdrop [wavePeriod]="wavePeriod()"></app-papercraft-backdrop>
       
-      <!-- Papercraft Layered Living Breathing Landscape Backdrop -->
+      <!-- Random Dynamic Beach Elements -->
       <div class="absolute inset-0 w-full h-full min-h-full overflow-hidden pointer-events-none z-0">
-        <!-- Sun/Circadian Glow (Teal to Coral/Amber) Living Breathing Pulse -->
-        <div class="absolute top-[25%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] sm:w-[900px] sm:h-[900px] rounded-full bg-gradient-to-r from-[#3ebc9e]/30 via-[#faa63b]/25 to-[#ef6658]/30 blur-[100px] avs-breathing-glow animate-pulse"></div>
-
-        <!-- Paper Waves (Layered vector curves representing paper hills - Full Height Anchored, Zero Whitespace) -->
-        <!-- Layer 1: Back Ocean Waves (60% height) -->
-        <svg class="absolute -bottom-4 -left-[20%] w-[240%] h-[75%] paper-hill-back opacity-90 wave-layer min-w-[200vw]"
-             [style.animation-duration.s]="wavePeriod() * 1.5"
-             viewBox="0 0 2880 200" preserveAspectRatio="none">
-          <path fill="currentColor" [attr.d]="getWavePath(1)"></path>
-        </svg>
-        
-        <!-- Layer 2: Mid Ocean Waves (50% height) -->
-        <svg class="absolute -bottom-4 -left-[10%] w-[220%] h-[65%] paper-hill-mid wave-layer min-w-[200vw]"
-             [style.animation-duration.s]="wavePeriod() * 1.2"
-             viewBox="0 0 2880 200" preserveAspectRatio="none">
-          <path fill="currentColor" [attr.d]="getWavePath(2)"></path>
-        </svg>
-
-        <!-- Layer 3: Sandy Beach Front Dune (75% height) -->
-        <svg class="absolute -bottom-4 left-0 w-[200%] h-[80%] paper-hill-front wave-layer min-w-[200vw]"
-             [style.animation-duration.s]="wavePeriod() * 0.9"
-             viewBox="0 0 2880 200" preserveAspectRatio="none">
-          <path fill="currentColor" [attr.d]="getWavePath(3)"></path>
-        </svg>
-
-        <!-- Breezy Sandy Animation Layer (Wind gusts & sand particles across the beach) -->
-        <div class="absolute bottom-0 left-0 w-full h-[56%] pointer-events-none overflow-hidden z-10">
-          <div class="sand-breeze-particle p1"></div>
-          <div class="sand-breeze-particle p2"></div>
-          <div class="sand-breeze-particle p3"></div>
-          <div class="sand-breeze-particle p4"></div>
-          <div class="sand-breeze-particle p5"></div>
-        </div>
-
-        <!-- Random Dynamic Beach Elements -->
         @for (item of decorations(); track $index) {
           <div class="absolute cursor-pointer transition-all duration-300 hover:scale-110 active:scale-95 pointer-events-auto"
                (click)="onDecorationClick(item, $event)"
