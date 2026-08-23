@@ -442,6 +442,35 @@ import { NantucketPassportStorybookComponent } from './nantucket-passport-storyb
         </div>
       </div>
 
+      <!-- Positive Biophilic Stewardship & Savoring Reframe -->
+      <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-teal-950/30 to-zinc-900 border border-teal-500/30 space-y-2 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🌊</span>
+            <h4 class="text-xs font-mono uppercase font-bold text-teal-300">
+              Positive Biophilia & Savoring the Island Coastal Moors
+            </h4>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-200 text-[10px] font-mono font-bold border border-teal-500/40">
+            Seligman PERMA-V Savoring
+          </span>
+        </div>
+        <p class="text-xs text-zinc-300 leading-relaxed">
+          Nantucket’s rolling coastal moors, cranberry bogs, and maritime heaths are extraordinary sources of biophilic restoration and mental vitality ($V$). With simple routine habits—permethrin-treated socks, an evening full-body tick scan, and immediate single-dose Doxycycline within 72 hours—you can explore the island's conservation trails with complete confidence and peace of mind.
+        </p>
+        <div class="flex flex-wrap gap-2 pt-1">
+          <span class="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-teal-500/20 text-[10px] font-mono text-teal-300">
+            ✓ 72-Hour Window: >87% Transmission Risk Reduction
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-teal-500/20 text-[10px] font-mono text-teal-300">
+            🏥 Nantucket Cottage Hospital Walk-in: (508) 825-1000
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-teal-500/20 text-[10px] font-mono text-teal-300">
+            🌾 Conservation Foundation Trails: 100% Savoring Protected
+          </span>
+        </div>
+      </div>
+
       <!-- Clinical & Community Surveillance Notice -->
       <div class="p-4 rounded-xs bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs leading-relaxed space-y-1">
         <div class="flex items-center gap-1.5 font-bold text-zinc-200 font-mono text-[11px] uppercase tracking-wider">

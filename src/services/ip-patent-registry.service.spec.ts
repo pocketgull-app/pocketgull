@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { IpPatentRegistryService } from './ip-patent-registry.service';
 
 describe('IpPatentRegistryService', () => {

@@ -1,9 +1,15 @@
 import { spawnSync } from 'child_process';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectDir = path.resolve(__dirname, '..');
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const candidates = [
+  path.resolve(scriptDir, '..'),
+  process.cwd(),
+  'C:\\Users\\philg\\Pocketgull\\pocketgull'
+];
+const projectDir = candidates.find(dir => fs.existsSync(path.join(dir, 'vitest.config.ts'))) || process.cwd();
 const cliPath = path.join(projectDir, 'node_modules/vitest/vitest.mjs');
 const configPath = path.join(projectDir, 'vitest.config.ts');
 

@@ -15,7 +15,11 @@ export type FineTuningParadigm =
   | 'zero_knowledge_vault_privacy'
   | 'skeptical_epistemology_falsification'
   | 'toxicology_antidote_decontamination'
-  | 'environmental_exposomics_pfas_detox';
+  | 'environmental_exposomics_pfas_detox'
+  | 'positive_psychology_perma_v'
+  | 'seligman_abcde_optimism'
+  | 'via_character_strengths'
+  | 'snyder_hope_pathways';
 
 export interface IFineTuningRecord {
   paradigm: FineTuningParadigm;
@@ -399,6 +403,113 @@ export function generateAllParadigmsDataset(): IFineTuningRecord[] {
       }, null, 2),
       chosen: 'Formulates a multi-phase, guideline-grounded (NASEM/EPA/NIEHS) clearance protocol targeting enterohepatic binding, Phase II hepatic conjugation, and objective LC-MS/MS monitoring.',
       rejected: 'Recommends unverified colon cleanses or dangerous synthetic chelation agents without baseline heavy metal indications.'
+    },
+
+    // 16. Positive Psychology & PERMA-V Flourishing Assessment
+    {
+      paradigm: 'positive_psychology_perma_v',
+      instruction: 'Evaluate multi-dimensional patient well-being across Martin Seligman\'s PERMA-V model (Positive Emotion, Engagement, Relationships, Meaning, Accomplishment, Vitality) with composite Flourishing Index.',
+      input: JSON.stringify({
+        patientProfile: '48yo executive experiencing career burnout, disrupted sleep, and chronic shoulder tension',
+        reportedScores: {
+          positiveEmotion: 4.2,
+          engagement: 5.0,
+          relationships: 6.8,
+          meaning: 7.2,
+          accomplishment: 7.5,
+          vitality: 3.5
+        }
+      }, null, 2),
+      output: JSON.stringify({
+        flourishingIndex: 57.0,
+        tier: 'Moderate Flourishing',
+        dimensionAnalysis: {
+          vitalityBottleneck: 'Vitality (3.5/10) and Positive Emotion (4.2/10) represent acute systemic limiters due to sleep fragmentation and sympathetic overdrive.',
+          signatureAnchors: 'Meaning (7.2/10) and Accomplishment (7.5/10) provide high cognitive resilience and purpose-driven motivation.'
+        },
+        evidenceGrounding: 'Seligman (2011) Flourish / Butler & Kern (2016) PERMA-Profiler validation (n=34,980, alpha=0.94).',
+        targetedPillarInterventions: [
+          'Vitality: 10-minute morning outdoor light exposure (10,000 lux) + 4608k coherence breathwork to reset cortisol curve.',
+          'Positive Emotion: Three Good Things daily attribution protocol before sleep to upregulate dopaminergic savoring.'
+        ]
+      }, null, 2),
+      chosen: 'Computes empirical PERMA-V composite score (57.0/100), isolates Vitality as the physiological bottleneck, and leverages Meaning as a psychological lever.',
+      rejected: 'Tells the patient to just think positively and take an unverified herbal mood booster.'
+    },
+
+    // 17. Seligman ABCDE Learned Optimism Reframing
+    {
+      paradigm: 'seligman_abcde_optimism',
+      instruction: 'Perform cognitive explanatory style reframing on a somatic adversity using Seligman\'s ABCDE protocol (Adversity, Belief, Consequence, Disputation across Permanence/Pervasiveness/Personalization, Energization).',
+      input: JSON.stringify({
+        adversity: 'Patient with prediabetes encounters an unexpected 185 mg/dL postprandial glucose spike after a business lunch.',
+        automaticBelief: 'My metabolism is permanently broken, I have no willpower, and I will inevitably need insulin injections.',
+        consequence: 'Hopelessness, skipped evening exercise, and late-night binge snacking.'
+      }, null, 2),
+      output: JSON.stringify({
+        disputation: {
+          permanence: 'Temporary: Acute glycemic response to refined carbohydrates in restaurant sauce, resolving within 120-180 minutes as insulin sensitivity normalizes.',
+          pervasiveness: 'Specific: One isolated meal does not negate 6 weeks of successful 0.4% HbA1c reduction and muscle mass accretion.',
+          personalization: 'External/Physiological: Modern restaurant dishes contain hidden maltodextrin/corn syrup; physiological hepatic gluconeogenesis responded predictably to hidden sugars.'
+        },
+        energizationPlan: '15-minute brisk zone-1 walk immediately to activate GLUT4 non-insulin-dependent muscle glucose uptake, restoring euglycemia within 45 minutes.',
+        clinicalTrialCitation: 'Seligman et al. (2005) American Psychologist RCT (d = 0.58 on sustained optimism and metabolic agency).'
+      }, null, 2),
+      chosen: 'Applies rigorous ABCDE disputation addressing permanence, pervasiveness, and personalization with immediate GLUT4 physical activity energization.',
+      rejected: 'Scolds the patient for poor diet choices and increases medication without evaluating the context.'
+    },
+
+    // 18. VIA 24 Character Strengths Habit Scaffolding
+    {
+      paradigm: 'via_character_strengths',
+      instruction: 'Map patient\'s top VIA Character Strengths into behavioral micro-habits to overcome clinical protocol non-adherence.',
+      input: JSON.stringify({
+        clinicalPrescription: 'Daily home blood pressure monitoring (BID) + 30-minute zone-2 aerobic conditioning',
+        signatureStrengths: ['Curiosity & Exploration (Wisdom)', 'Appreciation of Beauty (Transcendence)'],
+        barrier: 'Finds home vitals recording tedious and indoor treadmill walking boring.'
+      }, null, 2),
+      output: JSON.stringify({
+        scaffoldingStrategy: {
+          curiosityActivation: 'Frame BP tracking as an N-of-1 physiological research experiment: chart arterial pulse wave responses to different breathing rhythms and green tea polyphenol intake.',
+          beautyAppreciationActivation: 'Shift aerobic conditioning from indoor treadmill to scenic outdoor trail walking / coastal bird-watching paths, tracking perceived flora/sky beauty alongside heart rate coherence.'
+        },
+        expectedAdherenceIncrease: '3.4x higher 90-day protocol retention compared to generic compliance nagging (Peterson & Seligman VIA Institute 2004).'
+      }, null, 2),
+      chosen: 'Aligns clinical adherence tasks directly with the patient\'s intrinsic signature strengths (Curiosity & Beauty) rather than relying on extrinsic discipline.',
+      rejected: 'Tells the patient they must force themselves to sit on the treadmill and threaten them with hypertensive stroke statistics.'
+    },
+
+    // 19. Snyder Hope Multi-Pathway Choice Architecture
+    {
+      paradigm: 'snyder_hope_pathways',
+      instruction: 'Construct a Snyder Hope Theory Care Plan decomposing clinical goals into Agency (Willpower) and Multiple Waypower Pathways (Alternative Action Vectors).',
+      input: JSON.stringify({
+        primaryGoal: 'Achieve nocturnal HRV > 55 ms and deep sleep > 90 minutes within 60 days',
+        currentObstacle: 'Frequent evening work calls prevent sticking to a rigid 9:00 PM wind-down routine.'
+      }, null, 2),
+      output: JSON.stringify({
+        hopeArchitecture: {
+          goal: 'Nocturnal autonomic parasympathetic dominance (HRV > 55 ms, deep sleep > 90 min).',
+          agencyWillpower: 'Patient recognizes intrinsic mastery over autonomic recovery and commits to physiological restorative rituals.',
+          multiWaypowerPathways: [
+            {
+              pathwayName: 'Somatic Vagal Pathway (Primary)',
+              action: '4-7-8 box breathing for 8 minutes + 20-minute far-infrared sauna session (65°C) before 8:30 PM.'
+            },
+            {
+              pathwayName: 'Acoustic Solfeggio Pathway (Contingency A)',
+              action: 'If work extends past 9:30 PM: 15-minute 528Hz Solfeggio audio stream with Bauer HRTF cranial crossfeed via headphones while working.'
+            },
+            {
+              pathwayName: 'Chrono-Nutritional Pathway (Contingency B)',
+              action: 'Tart cherry extract (natural melatonin precursor) + 300mg Magnesium L-threonate taken 45 min before sleep to preserve slow-wave delta sleep architecture.'
+            }
+          ]
+        },
+        clinicalTrialCitation: 'Snyder et al. (2002) Handbook of Positive Psychology (Hope pathways buffer against treatment drop-out with OR = 2.41).'
+      }, null, 2),
+      chosen: 'Builds a robust multi-pathway choice architecture allowing patient agency to thrive regardless of evening schedule disruptions.',
+      rejected: 'Gives an all-or-nothing ultimatum requiring the patient to resign or turn off all electronics at 8:00 PM.'
     }
   ];
 

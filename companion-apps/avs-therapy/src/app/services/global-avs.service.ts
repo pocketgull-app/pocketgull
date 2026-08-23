@@ -215,19 +215,34 @@ export class GlobalAvsService {
     this.stopAudioGraph();
 
     try {
-      this.ctx = new AudioContext();
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      try {
+        this.ctx = new AudioContextClass({ sampleRate: 48000, latencyHint: 'playback' });
+      } catch {
+        this.ctx = new AudioContextClass();
+      }
       const cfg = this.WAVE_CONFIG[wave] ?? this.WAVE_CONFIG['theta'];
 
       // Master gain (soft start)
       this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
-      this.masterGain.gain.linearRampToValueAtTime(0.15, this.ctx.currentTime + 3.0);
-      this.masterGain.connect(this.ctx.destination);
+      this.masterGain.gain.setValueAtTime(0.0001, this.ctx.currentTime);
+      this.masterGain.gain.linearRampToValueAtTime(0.20, this.ctx.currentTime + 2.5);
 
-      // Channel Merger
+      // Studio Dynamics Compressor (Prevents digital clipping & warms overtones)
+      const compressor = this.ctx.createDynamicsCompressor();
+      compressor.threshold.setValueAtTime(-16.0, this.ctx.currentTime);
+      compressor.knee.setValueAtTime(24.0, this.ctx.currentTime);
+      compressor.ratio.setValueAtTime(3.2, this.ctx.currentTime);
+      compressor.attack.setValueAtTime(0.005, this.ctx.currentTime);
+      compressor.release.setValueAtTime(0.22, this.ctx.currentTime);
+
+      this.masterGain.connect(compressor);
+      compressor.connect(this.ctx.destination);
+
+      // Channel Merger (Stereo Ear Separation)
       this.merger = this.ctx.createChannelMerger(2);
 
-      // Hemi-Sync Layer 1 (Primary)
+      // Hemi-Sync Layer 1 (Primary Carrier & Delta)
       this.leftOsc1  = this.ctx.createOscillator();
       this.rightOsc1 = this.ctx.createOscillator();
       this.leftOsc1.type  = 'sine';
@@ -235,7 +250,7 @@ export class GlobalAvsService {
       this.leftOsc1.frequency.value  = cfg.carrier1;
       this.rightOsc1.frequency.value = cfg.carrier1 + freqHz;
 
-      // Hemi-Sync Layer 2 (Sub-harmonic)
+      // Hemi-Sync Layer 2 (Warm Harmonic Octave & Sub-Bass)
       this.leftOsc2  = this.ctx.createOscillator();
       this.rightOsc2 = this.ctx.createOscillator();
       this.leftOsc2.type  = 'sine';
@@ -245,9 +260,8 @@ export class GlobalAvsService {
 
       const leftGain  = this.ctx.createGain();
       const rightGain = this.ctx.createGain();
-      // Lower volume overall since we have 4 oscillators
-      leftGain.gain.value  = 0.35;
-      rightGain.gain.value = 0.35;
+      leftGain.gain.value  = 0.32;
+      rightGain.gain.value = 0.32;
 
       this.leftOsc1.connect(leftGain).connect(this.merger, 0, 0);
       this.rightOsc1.connect(rightGain).connect(this.merger, 0, 1);
@@ -262,7 +276,7 @@ export class GlobalAvsService {
       this.leftOsc2.start();
       this.rightOsc2.start();
 
-      // Pink noise floor (Hemi-Sync standard)
+      // Audiophile Pink noise floor (Hemi-Sync standard)
       this.noiseGain = this.ctx.createGain();
       this.noiseGain.gain.value = cfg.noiseGain;
       this.noiseSource = this.createPinkNoise(this.ctx);
@@ -277,7 +291,7 @@ export class GlobalAvsService {
   private stopAudioGraph(): void {
     try {
       if (this.masterGain) {
-        this.masterGain.gain.linearRampToValueAtTime(0, (this.ctx?.currentTime ?? 0) + 1.5);
+        this.masterGain.gain.linearRampToValueAtTime(0, (this.ctx?.currentTime ?? 0) + 1.2);
       }
       setTimeout(() => {
         [this.leftOsc1, this.rightOsc1, this.leftOsc2, this.rightOsc2, this.noiseSource].forEach(node => {
@@ -288,30 +302,36 @@ export class GlobalAvsService {
         this.leftOsc1 = this.rightOsc1 = this.leftOsc2 = this.rightOsc2 = this.noiseSource = null;
         this.masterGain = this.noiseGain = null;
         this.splitter = this.merger = null;
-      }, 1600);
+      }, 1300);
     } catch { /* ignore */ }
   }
 
   /**
-   * Synthesizes a pink noise buffer (Hemi-Sync standard carrier).
-   * 1/f spectral density sounds more balanced to human ears.
+   * Synthesizes a 16-second seamless high-resolution pink noise buffer.
+   * 1/f spectral density sounds warm, balanced, and analog-mastered.
    */
   private createPinkNoise(ctx: AudioContext): AudioBufferSourceNode {
-    const bufferSize = ctx.sampleRate * 4; // 4s loop
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const sampleRate = ctx.sampleRate || 48000;
+    const bufferSize = sampleRate * 16; // 16s non-repetitive loop
+    const buffer = ctx.createBuffer(1, bufferSize, sampleRate);
     const data = buffer.getChannelData(0);
     let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
     
     for (let i = 0; i < bufferSize; i++) {
-      const white = Math.random() * 2 - 1;
+      let white = Math.random() * 2 - 1;
+      if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+        const buf = new Uint32Array(2);
+        window.crypto.getRandomValues(buf);
+        white = ((buf[0] * 4294967296.0 + buf[1]) / 9007199254740992.0) * 2.0 - 1.0;
+      }
+
       b0 = 0.99886 * b0 + white * 0.0555179;
       b1 = 0.99332 * b1 + white * 0.0750759;
       b2 = 0.96900 * b2 + white * 0.1538520;
       b3 = 0.86650 * b3 + white * 0.3104856;
       b4 = 0.55000 * b4 + white * 0.5329522;
       b5 = -0.7616 * b5 - white * 0.0168980;
-      data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-      data[i] *= 0.11; // normalize
+      data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.08;
       b6 = white * 0.115926;
     }
     const node = ctx.createBufferSource();

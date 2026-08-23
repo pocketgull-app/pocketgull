@@ -130,6 +130,37 @@ import { RolePathwayDocsService, ClinicalRolePathway, IPathwayDocumentation } fr
 
       </div>
 
+      <!-- Positive Psychology & Snyder Hope Pathway Framework -->
+      @if (currentPathwayDoc().flourishingAndHopeFramework; as fw) {
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-teal-950/40 via-emerald-950/30 to-indigo-950/40 border border-teal-500/30 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-mono uppercase font-bold text-teal-300 flex items-center gap-2">
+              <span>🌸 Positive Psychology & Hope Framework</span>
+              <span class="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-200 text-[10px] border border-teal-500/40 font-bold">
+                {{ fw.permaDimension }}
+              </span>
+            </h4>
+            <span class="text-[10px] font-mono text-zinc-400">Dr. Martin E. P. Seligman / Snyder Hope Protocol</span>
+          </div>
+
+          <!-- Multi-Pathway Choice Options -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+            @for (path of fw.hopePathways; track path) {
+              <div class="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-[11px] text-zinc-300 leading-relaxed flex items-start gap-2">
+                <span class="text-teal-400 font-bold mt-0.5">✦</span>
+                <span>{{ path }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Learned Optimism Reframe Banner -->
+          <div class="p-2.5 rounded-xl bg-teal-950/30 border border-teal-500/20 flex items-center gap-2.5 text-[11px] text-teal-200">
+            <span class="text-base shrink-0">💡</span>
+            <span><strong>Learned Optimism Reframe:</strong> {{ fw.learnedOptimismReframe }}</span>
+          </div>
+        </div>
+      }
+
       <!-- Regulatory Standards & Compliance Footer -->
       <div class="p-4 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 space-y-2 text-xs">
         <div class="flex flex-wrap items-center justify-between gap-2">

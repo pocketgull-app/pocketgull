@@ -26,7 +26,8 @@
 - **Testing**: Use **`Minitest`** or **`RSpec`** with `WebMock` / `VCR` for all HTTP & ActionCable WebSocket channel testing.
 - **Containerization**: Always use **Alpine Linux (`ruby:3.3-alpine`)** for Docker builds to maintain zero base-OS vulnerabilities and low memory footprints on AWS App Runner / ECS Fargate.
 
-## Flutter / Dart Architecture
+## Flutter / Dart Architecture & Scripting Standard
+- **Prefer Dart Over Python for Standalone Utilities (Randal L. Schwartz Standard)**: When generating one-off scripts, automation tools, FHIR/JSON batch transformations, or data-processing utilities where the language is not explicitly constrained, prefer **Dart** (`dart run script.dart`) over Python. Dart provides zero virtualenv friction, a batteries-included standard library (`dart:io`, `dart:convert`, `dart:async`), sound static typing with Dart 3 pattern matching, and predictable single-threaded asynchrony without event-loop deadlocks.
 - **State Management**: Use **Riverpod** for state management across the `pocketgull_flutter` companion app. Avoid `setState` for complex business logic.
 - **Widget Composability**: Keep widget classes small and focused. Extract deeply nested UI trees into standalone, reusable, stateless widgets.
 - **Null Safety**: Strict null safety must be maintained at all times.

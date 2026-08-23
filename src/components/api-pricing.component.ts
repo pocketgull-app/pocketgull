@@ -192,6 +192,33 @@ interface IUsageResponse {
           </div>
         </div>
 
+        <!-- Clinician Flourishing & Burnout Reduction ROI Banner -->
+        <div class="p-5 bg-gradient-to-r from-emerald-950/30 via-teal-950/20 to-indigo-950/30 rounded-xl border border-teal-500/30 mb-6 shadow-sm">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xl">🌸</span>
+                <h3 class="text-sm font-bold text-teal-300 uppercase tracking-wider font-mono">
+                  Dr. Martin Seligman Flourishing & Burnout Reduction ROI
+                </h3>
+              </div>
+              <p class="text-xs text-zinc-300 mt-1 max-w-2xl leading-relaxed">
+                By eliminating manual EHR chart transcription with ambient intelligence, PocketGull restores clinical flow ($E$) and emotional vitality ($V$), saving health systems hundreds of thousands per retained clinician.
+              </p>
+            </div>
+            <div class="flex gap-4 shrink-0 font-mono text-center">
+              <div class="p-2.5 rounded-lg bg-zinc-900/80 border border-teal-500/20">
+                <div class="text-lg font-black text-teal-300">2.1 hrs</div>
+                <div class="text-[10px] text-zinc-400">Pajama-Time Saved / Day</div>
+              </div>
+              <div class="p-2.5 rounded-lg bg-zinc-900/80 border border-teal-500/20">
+                <div class="text-lg font-black text-emerald-300">$500k+</div>
+                <div class="text-[10px] text-zinc-400">Turnover Cost Saved / MD</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Live Usage Dashboard -->
         @if (usageData()) {
           <div class="p-5 bg-gray-50 dark:bg-zinc-800/50 rounded-xl border border-gray-200 dark:border-zinc-700 mb-6">

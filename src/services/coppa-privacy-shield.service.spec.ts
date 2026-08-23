@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { createEnvironmentInjector, EnvironmentInjector, runInInjectionContext } from '@angular/core';
 import { CoppaPrivacyShieldService, COPPA_COMPLIANCE_RULES } from './coppa-privacy-shield.service';
 

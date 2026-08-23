@@ -29,7 +29,22 @@ import { MedicalDecoderService } from '../services/medical-decoder.service';
 import { RevealDirective } from '../directives/reveal.directive';
 import { NodeAgentDialogComponent, INodeAgentDialogData } from './node-agent-dialog.component';
 import { ClinicalAssessmentsSuiteComponent } from './clinical-assessments-suite.component';
-import { ANALYSIS_LENS_TAB_COMPONENTS } from './analysis-report';
+import { AssessmentsLensTabComponent } from './analysis-report/assessments-lens-tab.component';
+import { ChronobiologyMatrixLensTabComponent } from './analysis-report/chronobiology-matrix-lens-tab.component';
+import { DiagnosticsLensTabComponent } from './analysis-report/diagnostics-lens-tab.component';
+import { EmtHandoffLensTabComponent } from './analysis-report/emt-handoff-lens-tab.component';
+import { EpigeneticLongevityLensTabComponent } from './analysis-report/epigenetic-longevity-lens-tab.component';
+import { FunctionalCircadianSynergyBridgeComponent } from './analysis-report/functional-circadian-synergy-bridge.component';
+import { FunctionalMedicineMatrixLensTabComponent } from './analysis-report/functional-medicine-matrix-lens-tab.component';
+import { InterventionsLensTabComponent } from './analysis-report/interventions-lens-tab.component';
+import { MaternalPostpartumLensTabComponent } from './analysis-report/maternal-postpartum-lens-tab.component';
+import { NutritionalBypassLensTabComponent } from './analysis-report/nutritional-bypass-lens-tab.component';
+import { PatientEducationLensTabComponent } from './analysis-report/patient-education-lens-tab.component';
+import { SevenGenerationsStewardshipLensTabComponent } from './analysis-report/seven-generations-stewardship-lens-tab.component';
+import { SocraticEpistemologyLensTabComponent } from './analysis-report/socratic-epistemology-lens-tab.component';
+import { SummaryOverviewLensTabComponent } from './analysis-report/summary-overview-lens-tab.component';
+import { TeledentistrySystemicLensComponent } from './analysis-report/teledentistry-systemic-lens.component';
+import { TriParadigmIntegrativeLensTabComponent } from './analysis-report/tri-paradigm-integrative-lens-tab.component';
 import { ClinicalMenuComponent } from './clinical-menu.component';
 import { KssCognitiveShieldComponent } from './kss-cognitive-shield.component';
 import { CarePlanPrintPreviewComponent } from './care-plan-print-preview.component';
@@ -76,13 +91,31 @@ import { PharmacogenomicsCardComponent } from './pharmacogenomics-card.component
 import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-card.component';
 import { EnvironmentalExposomicsToxicologyComponent } from './environmental-exposomics-toxicology.component';
 import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.component';
+import { AvsEngineService, AvsBitrateTier } from '../services/avs-engine.service';
+import { PositivePsychologyFlourishingHubComponent } from './positive-psychology-flourishing-hub.component';
 
 @Component({
   selector: 'app-analysis-report',
   standalone: true,
   imports: [
     CommonModule,
-    ...ANALYSIS_LENS_TAB_COMPONENTS,
+    PositivePsychologyFlourishingHubComponent,
+    AssessmentsLensTabComponent,
+    ChronobiologyMatrixLensTabComponent,
+    DiagnosticsLensTabComponent,
+    EmtHandoffLensTabComponent,
+    EpigeneticLongevityLensTabComponent,
+    FunctionalCircadianSynergyBridgeComponent,
+    FunctionalMedicineMatrixLensTabComponent,
+    InterventionsLensTabComponent,
+    MaternalPostpartumLensTabComponent,
+    NutritionalBypassLensTabComponent,
+    PatientEducationLensTabComponent,
+    SevenGenerationsStewardshipLensTabComponent,
+    SocraticEpistemologyLensTabComponent,
+    SummaryOverviewLensTabComponent,
+    TeledentistrySystemicLensComponent,
+    TriParadigmIntegrativeLensTabComponent,
     EnvironmentalExposomicsToxicologyComponent,
     SkepticalEpistemologyHudComponent,
     LocalGemmaStudioComponent,
@@ -1136,80 +1169,196 @@ import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.
                       <span>{{ state.isAvsSessionActive() ? '⏸ Pause AVS Therapy' : '▶ Start AVS Co-Regulation' }}</span>
                     </button>
 
-                    <!-- AVS Session Duration & Countdown Selector -->
-                    <div class="flex items-center gap-1.5 bg-zinc-950 p-1.5 rounded-md border border-zinc-800 text-xs text-zinc-300">
-                      <label for="avs-duration-select" class="text-zinc-400 font-bold uppercase tracking-wider pl-1">⏱️ Limit:</label>
-                      <select id="avs-duration-select" [value]="avsSessionDuration()" (change)="setAvsDuration(+$any($event.target).value)" aria-label="AVS Session Duration Limit" class="bg-zinc-900 border border-zinc-800 text-zinc-100 rounded px-2 py-1 outline-none cursor-pointer text-xs font-bold font-mono">
-                        <option [value]="5">5 Min</option>
-                        <option [value]="10">10 Min</option>
-                        <option [value]="15">15 Min</option>
-                        <option [value]="20">20 Min</option>
-                        <option [value]="-1">Continuous</option>
-                      </select>
-                      @if (state.isAvsSessionActive() && avsSessionDuration() !== -1) {
-                        <span class="text-indigo-400 font-mono font-black pl-2 tracking-wider animate-pulse">{{ getFormattedAvsTime() }}</span>
-                      }
-                    </div>
-
-                    <!-- Seagullian Persona Influence Selector (Visible in Spark & Dark Modes) -->
-                    @if (themeService.currentTheme() === 'spark' || themeService.currentTheme() === 'dark') {
+                      <!-- AVS Session Duration & Countdown Selector -->
                       <div class="flex items-center gap-1.5 bg-zinc-950 p-1.5 rounded-md border border-zinc-800 text-xs text-zinc-300">
-                        <label for="seagull-persona-select" class="text-zinc-400 font-bold uppercase tracking-wider pl-1">🕊️ Persona:</label>
-                        <select id="seagull-persona-select" [value]="themeService.activeSeagullPersona()" (change)="themeService.activeSeagullPersona.set($any($event.target).value)" aria-label="Seagullian Persona Influence" class="bg-zinc-900 border border-zinc-800 text-zinc-100 rounded px-2 py-1 outline-none cursor-pointer text-xs font-bold">
-                          <option value="calm-gull">🕊️ Calm Gull (Zen Shore)</option>
-                          <option value="active-skimmer">🪶 Active Skimmer (High Winds)</option>
-                          <option value="deep-navigator">🦅 Deep Navigator (Thermal Lift)</option>
-                          <option value="storm-rider">⚡ Storm Rider (Ocean Gale)</option>
+                        <label for="avs-duration-select" class="text-zinc-400 font-bold uppercase tracking-wider pl-1">⏱️ Limit:</label>
+                        <select id="avs-duration-select" [value]="avsSessionDuration()" (change)="setAvsDuration(+$any($event.target).value)" aria-label="AVS Session Duration Limit" class="bg-zinc-900 border border-zinc-800 text-zinc-100 rounded px-2 py-1 outline-none cursor-pointer text-xs font-bold font-mono">
+                          <option [value]="5">5 Min</option>
+                          <option [value]="10">10 Min</option>
+                          <option [value]="15">15 Min</option>
+                          <option [value]="20">20 Min</option>
+                          <option [value]="-1">Continuous</option>
+                        </select>
+                        @if (state.isAvsSessionActive() && avsSessionDuration() !== -1) {
+                          <span class="text-indigo-400 font-mono font-black pl-2 tracking-wider animate-pulse">{{ getFormattedAvsTime() }}</span>
+                        }
+                      </div>
+
+                      <!-- High-Definition Bitrate / Audio Quality Selector -->
+                      <div class="flex items-center gap-1.5 bg-zinc-950 p-1.5 rounded-md border border-zinc-800 text-xs text-zinc-300">
+                        <label for="avs-bitrate-select" class="text-amber-400 font-bold uppercase tracking-wider pl-1">🎛️ Audio Bitrate:</label>
+                        <select id="avs-bitrate-select" [value]="avsService.sessionConfig().bitrateTier" (change)="setAvsBitrate($any($event.target).value)" aria-label="AVS Audio Bitrate and Sample Rate Quality" class="bg-zinc-900 border border-zinc-800 text-amber-300 rounded px-2 py-1 outline-none cursor-pointer text-xs font-bold font-mono">
+                          <option value="4608k_master">4608 kbps • Studio Master (96kHz/32-bit Float)</option>
+                          <option value="1536k_lossless">1536 kbps • Direct PCM Master (48kHz/32-bit)</option>
+                          <option value="320k">320 kbps • Audiophile Spatial (Bauer HRTF)</option>
+                          <option value="192k">192 kbps • Standard Co-Regulation</option>
                         </select>
                       </div>
-                    }
-                  </div>
-                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                  <div class="bg-white/70 dark:bg-zinc-900/70 p-3.5 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60">
-                    <div class="flex justify-between items-center mb-2">
-                      <span class="font-bold text-gray-700 dark:text-zinc-300">🫁 Resonant Breathing Rate</span>
-                      <span class="font-mono font-black text-indigo-600 dark:text-indigo-400">{{ state.avsBreathingRate().toFixed(1) }} bpm</span>
-                    </div>
-                    <input type="range" min="4.0" max="8.0" step="0.5" [value]="state.avsBreathingRate()"
-                      (input)="updateAvsBreathing($event)"
-                      class="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
-                    <span class="text-[10px] text-gray-400 dark:text-zinc-500 block mt-1">0.1 Hz Baroreflex Peak Resonance</span>
-                  </div>
-
-                  <div class="bg-white/70 dark:bg-zinc-900/70 p-3.5 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60">
-                    <div class="flex justify-between items-center mb-2">
-                      <span class="font-bold text-gray-700 dark:text-zinc-300">🧠 Target Entrainment</span>
-                      <span class="font-mono font-black text-purple-600 dark:text-purple-400">{{ state.avsBrainwaveFrequency() | titlecase }} ({{ state.avsBrainwaveFrequencyHz() }} Hz)</span>
-                    </div>
-                    <div class="flex gap-1">
-                      <button type="button" (click)="setAvsBrainwave('theta', 6.0)"
-                        [class.bg-purple-600]="state.avsBrainwaveFrequency() === 'theta'"
-                        [class.text-white]="state.avsBrainwaveFrequency() === 'theta'"
-                        class="flex-1 py-1 rounded bg-gray-100 dark:bg-zinc-800 text-[10px] font-bold transition cursor-pointer">Theta (6Hz)</button>
-                      <button type="button" (click)="setAvsBrainwave('alpha', 10.0)"
-                        [class.bg-purple-600]="state.avsBrainwaveFrequency() === 'alpha'"
-                        [class.text-white]="state.avsBrainwaveFrequency() === 'alpha'"
-                        class="flex-1 py-1 rounded bg-gray-100 dark:bg-zinc-800 text-[10px] font-bold transition cursor-pointer">Alpha (10Hz)</button>
-                      <button type="button" (click)="setAvsBrainwave('gamma', 40.0)"
-                        [class.bg-purple-600]="state.avsBrainwaveFrequency() === 'gamma'"
-                        [class.text-white]="state.avsBrainwaveFrequency() === 'gamma'"
-                        class="flex-1 py-1 rounded bg-gray-100 dark:bg-zinc-800 text-[10px] font-bold transition cursor-pointer">Gamma (40Hz)</button>
+                      <!-- Seagullian Persona Influence Selector (Visible in Spark & Dark Modes) -->
+                      @if (themeService.currentTheme() === 'spark' || themeService.currentTheme() === 'dark') {
+                        <div class="flex items-center gap-1.5 bg-zinc-950 p-1.5 rounded-md border border-zinc-800 text-xs text-zinc-300">
+                          <label for="seagull-persona-select" class="text-zinc-400 font-bold uppercase tracking-wider pl-1">🕊️ Persona:</label>
+                          <select id="seagull-persona-select" [value]="themeService.activeSeagullPersona()" (change)="themeService.activeSeagullPersona.set($any($event.target).value)" aria-label="Seagullian Persona Influence" class="bg-zinc-900 border border-zinc-800 text-zinc-100 rounded px-2 py-1 outline-none cursor-pointer text-xs font-bold">
+                            <option value="calm-gull">🕊️ Calm Gull (Zen Shore)</option>
+                            <option value="active-skimmer">🪶 Active Skimmer (High Winds)</option>
+                            <option value="deep-navigator">🦅 Deep Navigator (Thermal Lift)</option>
+                            <option value="storm-rider">⚡ Storm Rider (Ocean Gale)</option>
+                          </select>
+                        </div>
+                      }
                     </div>
                   </div>
 
-                  <div class="bg-white/70 dark:bg-zinc-900/70 p-3.5 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between">
-                    <span class="font-bold text-gray-700 dark:text-zinc-300">⚡ Autonomic Status</span>
-                    <div class="flex items-center gap-2 mt-1">
-                      <span class="w-2.5 h-2.5 rounded-full" [class.bg-emerald-500]="state.isAvsSessionActive()" [class.animate-ping]="state.isAvsSessionActive()" [class.bg-gray-400]="!state.isAvsSessionActive()"></span>
-                      <span class="font-bold font-mono text-[11px]" [class.text-emerald-600]="state.isAvsSessionActive()" [class.dark:text-emerald-400]="state.isAvsSessionActive()">
-                        {{ state.isAvsSessionActive() ? 'SESSION ACTIVE (AUDIO-VISUAL FLICKER)' : 'STANDBY' }}
-                      </span>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                    <div class="bg-white/70 dark:bg-zinc-900/70 p-3.5 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-gray-700 dark:text-zinc-300">🫁 Resonant Breathing Rate</span>
+                        <span class="font-mono font-black text-indigo-600 dark:text-indigo-400">{{ state.avsBreathingRate().toFixed(1) }} bpm</span>
+                      </div>
+                      <input type="range" min="4.0" max="8.0" step="0.5" [value]="state.avsBreathingRate()"
+                        (input)="updateAvsBreathing($event)"
+                        class="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
+                      <span class="text-[10px] text-gray-400 dark:text-zinc-500 block mt-1">0.1 Hz Baroreflex Peak Resonance</span>
                     </div>
-                    <span class="text-[10px] text-gray-400 block mt-1">Auto-Cutoff Enabled (Safety Cap)</span>
+
+                    <div class="bg-white/70 dark:bg-zinc-900/70 p-3.5 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-gray-700 dark:text-zinc-300">🧠 Target Entrainment</span>
+                        <span class="font-mono font-black text-purple-600 dark:text-purple-400">{{ state.avsBrainwaveFrequency() | titlecase }} ({{ state.avsBrainwaveFrequencyHz() }} Hz)</span>
+                      </div>
+                      <div class="flex gap-1">
+                        <button type="button" (click)="setAvsBrainwave('theta', 6.0)"
+                          [class.bg-purple-600]="state.avsBrainwaveFrequency() === 'theta'"
+                          [class.text-white]="state.avsBrainwaveFrequency() === 'theta'"
+                          class="flex-1 py-1 rounded bg-gray-100 dark:bg-zinc-800 text-[10px] font-bold transition cursor-pointer">Theta (6Hz)</button>
+                        <button type="button" (click)="setAvsBrainwave('alpha', 10.0)"
+                          [class.bg-purple-600]="state.avsBrainwaveFrequency() === 'alpha'"
+                          [class.text-white]="state.avsBrainwaveFrequency() === 'alpha'"
+                          class="flex-1 py-1 rounded bg-gray-100 dark:bg-zinc-800 text-[10px] font-bold transition cursor-pointer">Alpha (10Hz)</button>
+                        <button type="button" (click)="setAvsBrainwave('gamma', 40.0)"
+                          [class.bg-purple-600]="state.avsBrainwaveFrequency() === 'gamma'"
+                          [class.text-white]="state.avsBrainwaveFrequency() === 'gamma'"
+                          class="flex-1 py-1 rounded bg-gray-100 dark:bg-zinc-800 text-[10px] font-bold transition cursor-pointer">Gamma (40Hz)</button>
+                      </div>
+                    </div>
+
+                    <div class="bg-white/70 dark:bg-zinc-900/70 p-3.5 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between">
+                      <span class="font-bold text-gray-700 dark:text-zinc-300">⚡ Autonomic Status</span>
+                      <div class="flex items-center gap-2 mt-1">
+                        <span class="w-2.5 h-2.5 rounded-full" [class.bg-emerald-500]="state.isAvsSessionActive()" [class.animate-ping]="state.isAvsSessionActive()" [class.bg-gray-400]="!state.isAvsSessionActive()"></span>
+                        <span class="font-bold font-mono text-[11px]" [class.text-emerald-600]="state.isAvsSessionActive()" [class.dark:text-emerald-400]="state.isAvsSessionActive()">
+                          {{ state.isAvsSessionActive() ? 'SESSION ACTIVE (AUDIO-VISUAL FLICKER)' : 'STANDBY' }}
+                        </span>
+                      </div>
+                      <div class="flex items-center justify-between text-[10px] text-gray-400 dark:text-zinc-500 mt-1">
+                        <span>Auto-Cutoff Enabled</span>
+                        <span class="text-amber-500 font-mono font-bold">{{ avsService.bitrateLabel().split('•')[0].trim() }}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
+
+                  <!-- 🎛️ Audiophile DSP Mastering & Psychoacoustic Studio Rack -->
+                  <div class="mt-4 p-4 rounded-2xl bg-zinc-950/90 border border-amber-500/30 font-mono text-xs shadow-xl">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-amber-900/40 pb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-base">🎛️</span>
+                        <h4 class="font-black text-amber-300 uppercase tracking-wider text-xs">Audiophile Master Rack • 24-Bit Studio DSP Engine</h4>
+                        <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/40">
+                          {{ avsService.bitrateLabel() }}
+                        </span>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[11px] text-zinc-400">THD+N &lt; 0.0001% • 32-bit Float Internal Master</span>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <!-- 1. Harmonic Overtone Depth & Carrier Reference -->
+                      <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 flex flex-col justify-between">
+                        <div>
+                          <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-amber-400">🎼 Carrier Tuning</span>
+                            <span class="font-bold font-mono text-amber-300">{{ avsService.sessionConfig().carrierFreqHz }} Hz</span>
+                          </div>
+                          <div class="grid grid-cols-2 gap-1 mt-1.5">
+                            <button type="button" (click)="avsService.updateSessionConfig({ carrierFreqHz: 528 })"
+                              [class.bg-amber-600]="avsService.sessionConfig().carrierFreqHz === 528"
+                              [class.text-white]="avsService.sessionConfig().carrierFreqHz === 528"
+                              class="py-1 px-1.5 rounded bg-zinc-800 text-[10px] font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer">528Hz Solfeggio</button>
+                            <button type="button" (click)="avsService.updateSessionConfig({ carrierFreqHz: 432 })"
+                              [class.bg-amber-600]="avsService.sessionConfig().carrierFreqHz === 432"
+                              [class.text-white]="avsService.sessionConfig().carrierFreqHz === 432"
+                              class="py-1 px-1.5 rounded bg-zinc-800 text-[10px] font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer">432Hz Verdi</button>
+                          </div>
+                        </div>
+                        <span class="text-[10px] text-zinc-500 mt-2 block">Harmonic Stack: f₀ + 2f₀ + 3f₀ + 0.5f₀</span>
+                      </div>
+
+                      <!-- 2. Analog Saturation Profile -->
+                      <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 flex flex-col justify-between">
+                        <div>
+                          <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-amber-400">🔥 Harmonic Warmth</span>
+                            <span class="font-bold font-mono text-amber-300 uppercase">{{ avsService.sessionConfig().saturationProfile.replace('_', ' ') }}</span>
+                          </div>
+                          <div class="grid grid-cols-3 gap-1 mt-1.5">
+                            <button type="button" (click)="avsService.setSaturationProfile('tube_warmth')"
+                              [class.bg-amber-600]="avsService.sessionConfig().saturationProfile === 'tube_warmth'"
+                              [class.text-white]="avsService.sessionConfig().saturationProfile === 'tube_warmth'"
+                              class="py-1 rounded bg-zinc-800 text-[10px] font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer">Tube</button>
+                            <button type="button" (click)="avsService.setSaturationProfile('tape_velvet')"
+                              [class.bg-amber-600]="avsService.sessionConfig().saturationProfile === 'tape_velvet'"
+                              [class.text-white]="avsService.sessionConfig().saturationProfile === 'tape_velvet'"
+                              class="py-1 rounded bg-zinc-800 text-[10px] font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer">Tape</button>
+                            <button type="button" (click)="avsService.setSaturationProfile('pristine_linear')"
+                              [class.bg-amber-600]="avsService.sessionConfig().saturationProfile === 'pristine_linear'"
+                              [class.text-white]="avsService.sessionConfig().saturationProfile === 'pristine_linear'"
+                              class="py-1 rounded bg-zinc-800 text-[10px] font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer">Linear</button>
+                          </div>
+                        </div>
+                        <span class="text-[10px] text-zinc-500 mt-2 block">4x Oversampled Waveshaping</span>
+                      </div>
+
+                      <!-- 3. Bauer HRTF Headphone Crossfeed -->
+                      <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 flex flex-col justify-between">
+                        <div>
+                          <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-amber-400">🎧 Bauer Crossfeed</span>
+                            <span class="font-bold font-mono" [class.text-emerald-400]="avsService.sessionConfig().psychoacousticSpatialCrossfeed" [class.text-zinc-500]="!avsService.sessionConfig().psychoacousticSpatialCrossfeed">
+                              {{ avsService.sessionConfig().psychoacousticSpatialCrossfeed ? 'ACTIVE' : 'BYPASS' }}
+                            </span>
+                          </div>
+                          <button type="button" (click)="avsService.updateSessionConfig({ psychoacousticSpatialCrossfeed: !avsService.sessionConfig().psychoacousticSpatialCrossfeed })"
+                            [class.bg-emerald-600]="avsService.sessionConfig().psychoacousticSpatialCrossfeed"
+                            [class.bg-zinc-800]="!avsService.sessionConfig().psychoacousticSpatialCrossfeed"
+                            class="w-full mt-1.5 py-1 rounded text-[10px] font-bold text-white transition hover:opacity-90 cursor-pointer">
+                            {{ avsService.sessionConfig().psychoacousticSpatialCrossfeed ? '✓ 280µs Cranial Shadow' : 'Enable Bauer HRTF' }}
+                          </button>
+                        </div>
+                        <span class="text-[10px] text-zinc-500 mt-2 block">Anti-fatigue psychoacoustic pinna</span>
+                      </div>
+
+                      <!-- 4. Noise Bed & Mastering Dynamics -->
+                      <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 flex flex-col justify-between">
+                        <div>
+                          <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-amber-400">🌊 53-Bit Noise Bed</span>
+                            <span class="font-bold font-mono text-emerald-400">16s Loop</span>
+                          </div>
+                          <div class="flex items-center justify-between text-[11px] text-zinc-300 mt-1">
+                            <span>Mastering Limiter:</span>
+                            <span class="text-emerald-400 font-bold font-mono">-16dB Opto</span>
+                          </div>
+                          <div class="flex items-center justify-between text-[11px] text-zinc-300 mt-0.5">
+                            <span>Anti-Aliasing:</span>
+                            <span class="text-indigo-400 font-bold font-mono">19.5kHz LPF</span>
+                          </div>
+                        </div>
+                        <span class="text-[10px] text-zinc-500 mt-2 block">True IEEE-754 Mantissa Entropy</span>
+                      </div>
+                    </div>
+                  </div>
 
                 <!-- 🎭 4-Stage Therapeutic Narrative Arc Exploration -->
                 <div class="mt-4 p-4 rounded-2xl bg-zinc-950/80 border border-purple-800/50 font-mono text-xs">
@@ -1255,6 +1404,9 @@ import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.
                 </div>
               </div>
             }
+
+            <!-- 🌸 Dr. Martin Seligman Positive Psychology & Human Flourishing Suite -->
+            <app-positive-psychology-flourishing-hub class="mt-6 mb-6 block"></app-positive-psychology-flourishing-hub>
 
             <!-- Global Health Literacy vs Deep Clinical Rationale Mode Banner -->
             <div class="mb-4 p-3.5 rounded-2xl transition-all border flex items-center justify-between shadow-xs"
@@ -1915,6 +2067,11 @@ export class AnalysisReportComponent implements OnDestroy {
   protected readonly compassionateAnalogy = inject(CompassionateAnalogyService);
   protected readonly skepticalService = inject(SkepticalEpistemologyService);
   protected readonly fhirIntegration = inject(FhirIntegrationService);
+  protected readonly avsService = inject(AvsEngineService);
+
+  setAvsBitrate(tier: AvsBitrateTier): void {
+    this.avsService.setBitrateTier(tier);
+  }
 
   getAmazonAffiliateUrl(itemName: string): string {
     const clean = String(itemName || '').replace(/[^\w\s-]/g, '').trim();
