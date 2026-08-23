@@ -22,6 +22,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
 import { OcularVocalTelemetryService } from '../services/ocular-vocal-telemetry.service';
 import { OpticalCameraVisionService } from '../services/optical-camera-vision.service';
 import { AmbientSoapParserService, IStructuredSoapNote } from '../services/ambient-soap-parser.service';
+import { CoppaPrivacyShieldService } from '../services/coppa-privacy-shield.service';
 
 export interface IChatEntry {
     role: 'user' | 'model';
@@ -296,7 +297,26 @@ export interface IChatEntry {
 
                     <!-- Transcript Scroll Area -->
                     <div #transcriptContainer class="relative z-10 flex-1 overflow-y-auto w-full scroll-smooth pt-8 pb-48 px-4 lg:px-8">
-                        <div class="max-w-3xl mx-auto space-y-12">
+                        <div class="max-w-3xl mx-auto space-y-6">
+                            @if (isPediatricMinor()) {
+                                <div class="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-between gap-3 text-xs font-mono animate-in fade-in duration-200">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="text-xl">🧸</span>
+                                        <div>
+                                            <span class="font-bold text-emerald-600 dark:text-emerald-400 block text-xs">
+                                                Child Life Voice Mode Active
+                                            </span>
+                                            <span class="text-[11px] text-gray-600 dark:text-zinc-400 font-sans">
+                                                Gentle pediatric analogies &bull; 100% Edge-only voice processing &bull; Zero remote voiceprints
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold border border-emerald-500/30 shrink-0">
+                                        🔒 COPPA Safe Harbor
+                                    </span>
+                                </div>
+                            }
+
                             <!-- Telemetry Transcript -->
                             <div class="font-mono text-base space-y-6 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md p-6 rounded-2xl border border-white/20 dark:border-zinc-800/30 shadow-lg">
                                 @for (entry of chatHistory(); track $index; let idx = $index) {
@@ -734,6 +754,12 @@ export class VoiceAssistantComponent implements OnDestroy {
       this.dictation.speakAvianPersonaText(text, persona);
     }
     public live = inject(AdkLiveService);
+    public coppaShield = inject(CoppaPrivacyShieldService, { optional: true });
+
+    readonly isPediatricMinor = computed(() => {
+      const p = this.patientMgmt.selectedPatient();
+      return (this.coppaShield ? this.coppaShield.isUnderAgeThreshold(p?.age) : false) || this.state.isPlainLanguageMode() || (this.coppaShield ? this.coppaShield.isPediatricContext() : false);
+    });
 
     // Derived signal for UI rendering
     parsedTranscript = computed(() => {
@@ -1012,7 +1038,21 @@ Only include a rich-media block when the user explicitly requests visual or rese
             };
 
             console.log("Connecting to Live API WebSocket...");
-            await this.live.connect(apiKey, `${context}\n\nPatient Data:\n${rawPatientData}`);
+            const isPediatric = this.isPediatricMinor();
+            const activePatient = this.patientMgmt.selectedPatient();
+            const childName = activePatient?.name || this.state.patientName() || '';
+            const childAge = activePatient?.age || 7;
+
+            await this.live.connect(
+                apiKey,
+                `${context}\n\nPatient Data:\n${rawPatientData}`,
+                'Aoede',
+                'models/gemini-3.5-flash',
+                null,
+                isPediatric,
+                childName,
+                childAge
+            );
             // Barge-in enabled natively by SDK setup!
         } catch (e: any) {
             console.error("Voice Assistant Activation Error:", e);

@@ -5,7 +5,13 @@ import { Firestore } from '@google-cloud/firestore';
 import { resolveTierFromPriceId } from '../services/tier-config';
 import { gaapAccountingService } from '../services/gaap-accounting.service';
 
-const db = new Firestore();
+let _db: Firestore | null = null;
+function getDb(): Firestore {
+  if (!_db) {
+    _db = new Firestore();
+  }
+  return _db;
+}
 
 function getStripe(): Stripe {
   return new Stripe(process.env['STRIPE_SECRET_KEY'] || 'sk_test_placeholder', {
@@ -193,7 +199,7 @@ export function createBillingRouter() {
       }
 
       // Fetch the stripeCustomerId from Firestore
-      const tenantDoc = await db.collection('tenants').doc(customerEmail).get();
+      const tenantDoc = await getDb().collection('tenants').doc(customerEmail).get();
       if (!tenantDoc.exists) {
         return res.status(404).json({ error: 'Tenant not found.' });
       }
@@ -256,7 +262,7 @@ export function createBillingRouter() {
 
         // Update user/tenant document in Firestore to unlock quota/seats
         if (checkoutSession.customer_email) {
-          await db.collection('tenants').doc(checkoutSession.customer_email).set({
+          await getDb().collection('tenants').doc(checkoutSession.customer_email).set({
             subscriptionStatus: 'active',
             subscriptionTier: resolvedTier,
             stripeCustomerId: checkoutSession.customer,
@@ -308,7 +314,7 @@ export function createBillingRouter() {
         
         // Update user/tenant document to pause quota/seats
         if (failedInvoice.customer_email) {
-          await db.collection('tenants').doc(failedInvoice.customer_email).set({
+          await getDb().collection('tenants').doc(failedInvoice.customer_email).set({
             subscriptionStatus: 'past_due',
             updatedAt: new Date()
           }, { merge: true });
@@ -321,7 +327,7 @@ export function createBillingRouter() {
         console.log(`[Billing] Subscription canceled for customer ${deletedSub.customer}`);
         
         // Find tenant by stripeCustomerId
-        const snapshot = await db.collection('tenants').where('stripeCustomerId', '==', deletedSub.customer).get();
+        const snapshot = await getDb().collection('tenants').where('stripeCustomerId', '==', deletedSub.customer).get();
         if (!snapshot.empty) {
           const docRef = snapshot.docs[0].ref;
           await docRef.set({
@@ -338,7 +344,7 @@ export function createBillingRouter() {
         const newTier = resolveTierFromPriceId(updatedPriceId);
         console.log(`[Billing] Subscription updated for customer ${updatedSub.customer} → tier: ${newTier}`);
 
-        const updateSnapshot = await db.collection('tenants').where('stripeCustomerId', '==', updatedSub.customer).get();
+        const updateSnapshot = await getDb().collection('tenants').where('stripeCustomerId', '==', updatedSub.customer).get();
         if (!updateSnapshot.empty) {
           const updateDocRef = updateSnapshot.docs[0].ref;
           await updateDocRef.set({

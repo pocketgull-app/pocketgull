@@ -9,6 +9,8 @@ import { TeledentistryService } from './teledentistry.service';
 import { GcpHealthcareApiService } from './fhir/gcp-healthcare-api.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
+import { FederatedLearningService } from './federated-learning.service';
+import { OpenEvidenceCommonsService } from './open-evidence-commons.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -117,6 +119,8 @@ describe('WebMcpRegistrationService', () => {
         { provide: GcpHealthcareApiService, useValue: mockGcpHealthcareService },
         { provide: SkepticalEpistemologyService, useValue: mockSkepticalService },
         { provide: ClinicalMoERouterService, useValue: mockMoeRouter },
+        { provide: FederatedLearningService, useValue: new FederatedLearningService() },
+        { provide: OpenEvidenceCommonsService, useValue: new OpenEvidenceCommonsService() },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -124,16 +128,21 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 46 WebMCP agentic tools on modelContext', () => {
+  it('should register all 52 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(47);
+    expect(registeredTools.size).toBe(52);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
     expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
     expect(registeredTools.has('query_mandiant_threat_intelligence_and_defense')).toBe(true);
     expect(registeredTools.has('administer_clinical_mandarinate_exam')).toBe(true);
+    expect(registeredTools.has('pocketgull_trigger_federated_round')).toBe(true);
+    expect(registeredTools.has('pocketgull_verify_evidence_attestation')).toBe(true);
+    expect(registeredTools.has('pocketgull_query_evidence_commons')).toBe(true);
+    expect(registeredTools.has('pocketgull_assess_nantucket_tick_risk')).toBe(true);
+    expect(registeredTools.has('pocketgull_evaluate_novel_tick_solution')).toBe(true);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -536,16 +545,51 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 46 WebMCP agentic tools on modelContext', () => {
+  it('should register all 52 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(47);
+    expect(registeredTools.size).toBe(52);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
     expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
     expect(registeredTools.has('query_mandiant_threat_intelligence_and_defense')).toBe(true);
     expect(registeredTools.has('administer_clinical_mandarinate_exam')).toBe(true);
+    expect(registeredTools.has('pocketgull_trigger_federated_round')).toBe(true);
+    expect(registeredTools.has('pocketgull_verify_evidence_attestation')).toBe(true);
+    expect(registeredTools.has('pocketgull_query_evidence_commons')).toBe(true);
+    expect(registeredTools.has('pocketgull_assess_nantucket_tick_risk')).toBe(true);
+    expect(registeredTools.has('pocketgull_evaluate_novel_tick_solution')).toBe(true);
+  });
+
+  it('should execute pocketgull_trigger_federated_round tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('pocketgull_trigger_federated_round');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ roundReason: 'Routine swarm sync' });
+    expect(result.content[0].text).toContain('SUCCESS');
+    expect(result.content[0].text).toContain('Executed Federated Learning Round');
+  });
+
+  it('should execute pocketgull_verify_evidence_attestation tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('pocketgull_verify_evidence_attestation');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ nodeId: 'ev-sprint-2015' });
+    expect(result.content[0].text).toContain('isCryptographicallyVerified');
+    expect(result.content[0].text).toContain('ev-sprint-2015');
+  });
+
+  it('should execute pocketgull_query_evidence_commons tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('pocketgull_query_evidence_commons');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ conditionOrQuery: 'Hypertension' });
+    expect(result.content[0].text).toContain('totalMatches');
+    expect(result.content[0].text).toContain('ev-sprint-2015');
   });
 
   it('should execute administer_clinical_mandarinate_exam tool', async () => {
@@ -563,7 +607,7 @@ describe('WebMcpRegistrationService', () => {
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(47);
+    expect((service as any).mcpControllers.length).toBe(52);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

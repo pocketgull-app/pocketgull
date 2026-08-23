@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090d09" />
+      <stop offset="100%" stop-color="#111812" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="450" fill="url(#bgGradient)" rx="16" stroke="rgba(16, 185, 129, 0.3)" stroke-width="2"/>
+
+  <!-- Grid Header & Badges -->
+  <g transform="translate(40, 45)">
+    <rect x="0" y="0" width="220" height="26" rx="6" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" stroke-width="1"/>
+    <text x="110" y="17" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">SYNTHETIC PYRETHROID</text>
+
+    <text x="0" y="52" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="800">Permethrin (C₂₁H₂₀Cl₂O₃)</text>
+    <text x="0" y="74" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="13">MW: 391.29 g/mol &bull; CAS: 52645-53-1 &bull; Voltage-Gated Na+ Channel Agonist</text>
+  </g>
+
+  <!-- Chemical Structure Diagram (Bonds and Atoms) -->
+  <g transform="translate(100, 150)" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    
+    <!-- Dichlorovinyl Group -->
+    <!-- Cl 1 -->
+    <line x1="40" y1="90" x2="80" y2="120" stroke="#f87171" stroke-width="4" />
+    <!-- Cl 2 -->
+    <line x1="40" y1="170" x2="80" y2="140" stroke="#f87171" stroke-width="4" />
+    <!-- Double Bond C=C -->
+    <line x1="80" y1="130" x2="150" y2="130" stroke="#38bdf8" stroke-width="5" />
+    <line x1="85" y1="120" x2="145" y2="120" stroke="#38bdf8" stroke-width="2.5" />
+
+    <!-- Bond to Cyclopropane -->
+    <line x1="150" y1="130" x2="210" y2="90" />
+
+    <!-- Cyclopropane Ring (Triangle) -->
+    <polygon points="210,90 270,90 240,40" stroke="#34d399" stroke-width="4" fill="rgba(16, 185, 129, 0.1)" />
+    
+    <!-- Gem-Dimethyl on Cyclopropane top vertex -->
+    <line x1="240" y1="40" x2="215" y2="0" stroke="#a3e635" stroke-width="3" />
+    <line x1="240" y1="40" x2="265" y2="0" stroke="#a3e635" stroke-width="3" />
+
+    <!-- Carboxylate Ester Group -->
+    <line x1="270" y1="90" x2="330" y2="90" stroke="#38bdf8" stroke-width="3.5" />
+    <!-- Carbonyl Double Bond C=O -->
+    <line x1="326" y1="90" x2="326" y2="35" stroke="#f43f5e" stroke-width="3.5" />
+    <line x1="334" y1="90" x2="334" y2="35" stroke="#f43f5e" stroke-width="3.5" />
+
+    <!-- Ester Oxygen Single Bond C-O -->
+    <line x1="330" y1="90" x2="380" y2="125" stroke="#fb923c" stroke-width="3.5" />
+    <!-- O-CH2 Methylene Bridge -->
+    <line x1="405" y1="125" x2="450" y2="90" stroke="#38bdf8" stroke-width="3.5" />
+
+    <!-- Benzene Ring 1 (Phenoxy Core) -->
+    <polygon points="490,90 530,65 570,90 570,135 530,160 490,135" stroke="#38bdf8" stroke-width="3.5" fill="rgba(56, 189, 248, 0.08)" />
+    <circle cx="530" cy="112.5" r="22" stroke="rgba(56, 189, 248, 0.6)" stroke-dasharray="6,4" stroke-width="2" />
+    <line x1="450" y1="90" x2="490" y2="90" stroke="#38bdf8" stroke-width="3.5" />
+
+    <!-- Diphenyl Ether Oxygen Bridge -->
+    <line x1="570" y1="112.5" x2="615" y2="112.5" stroke="#fb923c" stroke-width="3.5" />
+
+    <!-- Benzene Ring 2 (Terminal Phenyl Ring) -->
+    <polygon points="655,112.5 695,87.5 735,112.5 735,157.5 695,182.5 655,157.5" stroke="#38bdf8" stroke-width="3.5" fill="rgba(56, 189, 248, 0.08)" />
+    <circle cx="695" cy="135" r="22" stroke="rgba(56, 189, 248, 0.6)" stroke-dasharray="6,4" stroke-width="2" />
+    <line x1="635" y1="112.5" x2="655" y2="112.5" stroke="#38bdf8" stroke-width="3.5" />
+  </g>
+
+  <!-- Atom Text Labels -->
+  <!-- Cl 1 -->
+  <text x="125" y="240" fill="#f87171" font-family="'JetBrains Mono', monospace" font-size="20" font-weight="800" text-anchor="middle">Cl</text>
+  <!-- Cl 2 -->
+  <text x="125" y="325" fill="#f87171" font-family="'JetBrains Mono', monospace" font-size="20" font-weight="800" text-anchor="middle">Cl</text>
+  <!-- CH3 methyl labels -->
+  <text x="310" y="145" fill="#a3e635" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="700">H₃C</text>
+  <text x="365" y="145" fill="#a3e635" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="700">CH₃</text>
+  <!-- Carbonyl O -->
+  <text x="430" y="175" fill="#f43f5e" font-family="'JetBrains Mono', monospace" font-size="20" font-weight="800">O</text>
+  <!-- Ester O -->
+  <text x="490" y="280" fill="#fb923c" font-family="'JetBrains Mono', monospace" font-size="20" font-weight="800">O</text>
+  <!-- Ether O -->
+  <text x="725" y="270" fill="#fb923c" font-family="'JetBrains Mono', monospace" font-size="20" font-weight="800">O</text>
+
+  <!-- Legend / Mechanism of Action Footer -->
+  <g transform="translate(40, 395)">
+    <rect x="0" y="0" width="820" height="35" rx="8" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(255, 255, 255, 0.1)" />
+    <text x="15" y="22" fill="#e2e8f0" font-family="system-ui, -apple-system, sans-serif" font-size="12">
+      <tspan fill="#f87171" font-weight="700">🔴 Dichlorovinyl Core</tspan> &bull; 
+      <tspan fill="#34d399" font-weight="700">🟢 Cyclopropane Ring</tspan> &bull; 
+      <tspan fill="#fb923c" font-weight="700">🟠 Phenoxy Ester</tspan> &bull; 
+      <tspan fill="#38bdf8">Lipophilic textile fiber binding &bull; Irreversible voltage-gated Na⁺ channel opening</tspan>
+    </text>
+  </g>
+</svg>

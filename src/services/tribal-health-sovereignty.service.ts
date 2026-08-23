@@ -22,6 +22,15 @@ export interface ICarePrincipleItem {
   auditMetric: string;
 }
 
+export interface IPostCustodialMetadataStandard {
+  frameworkName: string;
+  focusArea: 'POST_CUSTODIALISM' | 'INDIGENOUS_DATA_SOVEREIGNTY' | 'ETHICAL_LINKED_DATA' | 'COMMUNITY_COLLABORATION';
+  governingPrinciple: string;
+  citation: string;
+  doiOrUrl: string;
+  clinicalImplementationInPocketGull: string;
+}
+
 export interface IFirst1000DaysGuideline {
   phase: 'PRECONCEPTION' | 'FIRST_TRIMESTER' | 'SECOND_TRIMESTER' | 'THIRD_TRIMESTER' | 'POSTPARTUM_0_6M' | 'INFANT_6_24M';
   title: string;
@@ -36,6 +45,7 @@ export interface ITribalSovereigntyReport {
   tribalIrbSeal: string;
   generationDate: string;
   carePrinciples: ICarePrincipleItem[];
+  metadataEthicsStandards: IPostCustodialMetadataStandard[];
   botanicalCodexMatches: IIndigenousBotanicalRemedy[];
   first1000DaysProtocol: IFirst1000DaysGuideline[];
   zeroCloudEgressVerified: boolean;
@@ -225,6 +235,45 @@ export class TribalHealthSovereigntyService {
   ]);
 
   /**
+   * Post-Custodial Collaborative Metadata & Ethical Linked Data Standards
+   * Grounded in Carroll et al. 2020, Ham 1981, LADI (UT Austin), PANA, and Watson et al. 2023.
+   */
+  readonly postCustodialStandards = signal<IPostCustodialMetadataStandard[]>([
+    {
+      frameworkName: 'CARE Principles for Indigenous Data Governance',
+      focusArea: 'INDIGENOUS_DATA_SOVEREIGNTY',
+      governingPrinciple: 'Collective Benefit, Authority to Control, Responsibility, and Ethics (CARE) supersedes unconditional open access for Indigenous genomic and health datasets.',
+      citation: 'Carroll, Stephanie Russo, Ibrahim Garba, et al. (2020). "The CARE Principles for Indigenous Data Governance." Data Science Journal 19(1): 43.',
+      doiOrUrl: 'https://doi.org/10.5334/dsj-2020-043',
+      clinicalImplementationInPocketGull: 'Enforces client-side edge computation, sovereign FHIR R4 Bundle boundaries, and Tribal IRB consent gates before any research egress.'
+    },
+    {
+      frameworkName: 'Post-Custodial Archival Management Model',
+      focusArea: 'POST_CUSTODIALISM',
+      governingPrinciple: 'Institutions support and empower record owners without physically extracting or alienating records from their originating communities.',
+      citation: 'Ham, F. Gerald (1981). "Archival Strategies for the Post-Custodial Era." The American Archivist 44(3): 207-216; LLILAS Benson LADI Project (2016).',
+      doiOrUrl: 'https://doi.org/10.17723/aarc.44.3.6228121p01m8k376',
+      clinicalImplementationInPocketGull: 'Zero-custody patient records: Patient clinical state resides entirely in ephemeral browser memory and user-owned cryptographic FHIR bundles.'
+    },
+    {
+      frameworkName: 'Ethics in Linked Data & Cataloging Code of Ethics',
+      focusArea: 'ETHICAL_LINKED_DATA',
+      governingPrinciple: 'Metadata creation is a non-neutral sociopolitical practice requiring non-extractive vocabularies, descriptive transparency, and participatory taxonomies.',
+      citation: 'Watson, B.M., Alexandra Provo, and Kathleen Burlingame, eds. (2023). Ethics in Linked Data; Cataloging Ethics Steering Committee (2021).',
+      doiOrUrl: 'http://hdl.handle.net/11213/16716',
+      clinicalImplementationInPocketGull: 'Tri-paradigm ICD-11 TM1 / SNOMED CT ontological parity without epistemological subordination of traditional medicine frameworks.'
+    },
+    {
+      frameworkName: 'Pan-American Authorities & Community Collaboration (PANA / SAR)',
+      focusArea: 'COMMUNITY_COLLABORATION',
+      governingPrinciple: 'Equitable authority control and co-curation across transnational communities to repair historical extraction of BIPOC cultural heritage.',
+      citation: 'School of Advanced Research Guidelines for Collaboration (2019); PANA Project (UF, UT Austin, UCSD).',
+      doiOrUrl: 'https://guidelinesforcollaboration.info/',
+      clinicalImplementationInPocketGull: 'Community-governed Open Evidence Commons with quadratic voting consensus and decentralized Merkle attestation receipts.'
+    }
+  ]);
+
+  /**
    * Generates a complete Tribal Health Sovereignty & CARE Report
    */
   generateSovereigntyReport(): ITribalSovereigntyReport {
@@ -245,6 +294,7 @@ export class TribalHealthSovereigntyService {
       tribalIrbSeal: tirbSeal,
       generationDate: nowIso,
       carePrinciples: this.carePrinciples(),
+      metadataEthicsStandards: this.postCustodialStandards(),
       botanicalCodexMatches: this.tribalCodex(),
       first1000DaysProtocol: this.first1000DaysProtocol(),
       zeroCloudEgressVerified: true

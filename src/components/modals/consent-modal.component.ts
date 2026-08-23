@@ -84,16 +84,19 @@ import { ConsentService } from '../../services/consent.service';
               </svg>
             </div>
             <div>
-              <h3 class="font-bold text-gray-900 dark:text-zinc-100 mb-0.5">Our Commitments</h3>
+              <h3 class="font-bold text-gray-900 dark:text-zinc-100 mb-0.5">Our Commitments &amp; COPPA Safe Harbor</h3>
               <ul class="space-y-1 text-xs text-gray-600 dark:text-zinc-400">
                 <li class="flex items-center gap-1.5">
-                  <span class="text-emerald-500 font-bold">✓</span> No patient data is sold or shared
+                  <span class="text-emerald-500 font-bold">✓</span> No patient or child data is sold or shared
                 </li>
                 <li class="flex items-center gap-1.5">
-                  <span class="text-emerald-500 font-bold">✓</span> No behavioral tracking or advertising profiles
+                  <span class="text-emerald-500 font-bold">✓</span> Zero third-party behavioral trackers or advertising pixels (16 C.F.R. § 312.5)
                 </li>
                 <li class="flex items-center gap-1.5">
-                  <span class="text-emerald-500 font-bold">✓</span> 1-Click transient patient state purge
+                  <span class="text-emerald-500 font-bold">✓</span> Pediatric Care Plans require Guardian Proxy Attestation
+                </li>
+                <li class="flex items-center gap-1.5">
+                  <span class="text-emerald-500 font-bold">✓</span> 1-Click ephemeral patient state purge
                 </li>
               </ul>
             </div>

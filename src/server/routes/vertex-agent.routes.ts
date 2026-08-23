@@ -34,9 +34,15 @@ export interface IVertexSearchResponse {
   isSimulated?: boolean;
 }
 
-const auth = new GoogleAuth({
-  scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-});
+let _auth: GoogleAuth | null = null;
+function getAuth(): GoogleAuth {
+  if (!_auth) {
+    _auth = new GoogleAuth({
+      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+    });
+  }
+  return _auth;
+}
 
 const DEFAULT_PROJECT = process.env['GCP_PROJECT_ID'] || process.env['GOOGLE_CLOUD_PROJECT'] || 'gen-lang-client-0540208645';
 const DEFAULT_ENGINE = process.env['VERTEX_AGENT_ENGINE_ID'] || 'pocketgull-clinical-docs';
@@ -160,7 +166,7 @@ vertexAgentRouter.post('/search', async (req: Request, res: Response) => {
     }
 
     try {
-      const client = await auth.getClient();
+      const client = await getAuth().getClient();
       const accessToken = await client.getAccessToken();
 
       const response = await fetch(targetEndpoint, {

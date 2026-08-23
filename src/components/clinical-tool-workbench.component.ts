@@ -31,6 +31,8 @@ import { SaifSecurityPostureCardComponent } from './shared/saif-security-posture
 import { ClinicalModelStudioCardComponent } from './shared/clinical-model-studio-card.component';
 import { Ga4ghPhenopacketsCardComponent } from './shared/ga4gh-phenopackets-card.component';
 import { ClinicalCommercialHubComponent } from './shared/clinical-commercial-hub.component';
+import { NantucketTickRadarComponent } from './nantucket-tick-radar.component';
+import { NantucketSolutionDiscoveryComponent } from './nantucket-solution-discovery.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -89,7 +91,9 @@ export interface IWorkbenchToolStatus {
     SaifSecurityPostureCardComponent,
     ClinicalModelStudioCardComponent,
     Ga4ghPhenopacketsCardComponent,
-    ClinicalCommercialHubComponent
+    ClinicalCommercialHubComponent,
+    NantucketTickRadarComponent,
+    NantucketSolutionDiscoveryComponent
   ],
 
   template: `
@@ -377,6 +381,10 @@ export interface IWorkbenchToolStatus {
         <app-ga4gh-phenopackets-card />
       } @else if (activeWorkbenchTab() === 'commercial') {
         <app-clinical-commercial-hub />
+      } @else if (activeWorkbenchTab() === 'tickradar') {
+        <app-nantucket-tick-radar />
+      } @else if (activeWorkbenchTab() === 'tickdiscovery') {
+        <app-nantucket-solution-discovery />
       }
 
       @if (showRoleDemoModal()) {
@@ -391,11 +399,13 @@ export class ClinicalToolWorkbenchComponent {
   private readonly haptics = inject(BioHapticFeedbackService);
 
   readonly showRoleDemoModal = signal(false);
-  readonly activeWorkbenchTab = signal<'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('commercial');
+  readonly activeWorkbenchTab = signal<'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tickradar' | 'tickdiscovery' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('commercial');
   readonly intakeDirectiveQuery = signal<string>('');
 
-  readonly workbenchTabs: { id: 'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
+  readonly workbenchTabs: { id: 'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tickradar' | 'tickdiscovery' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
     { id: 'commercial', label: 'Commercial & Revenue Hub ($299/mo - $3,500)', icon: '💼', activeClass: 'bg-emerald-600 text-white shadow-xs' },
+    { id: 'tickradar', label: 'Nantucket Tick Defense & Bayesian Co-Infection Radar', icon: '🌲', activeClass: 'bg-teal-600 text-white shadow-xs' },
+    { id: 'tickdiscovery', label: 'Nantucket Novel Solution Discovery Lab (Popperian H₀)', icon: '🔬', activeClass: 'bg-purple-600 text-white shadow-xs' },
     { id: 'jurisdiction', label: 'Jurisdictional Governance Matrix (US / EU / UK Compliance)', icon: '🌐', activeClass: 'bg-indigo-600 text-white shadow-xs' },
     { id: 'saif', label: 'Google SAIF (Secure AI Framework)', icon: '🛡️', activeClass: 'bg-emerald-600 text-white shadow-xs' },
     { id: 'modelStudio', label: 'Clinical Model Studio & LoRA/DPO', icon: '🤖', activeClass: 'bg-purple-600 text-white shadow-xs' },
@@ -518,6 +528,25 @@ export class ClinicalToolWorkbenchComponent {
         socraticInquiry: 'Would you like to try a short guided breathing exercise to help relax your airway muscles?',
         spanishTranslation: 'Análisis de ritmo respiratorio y flujo de aire.',
         homeCareSteps: ['Practice 4-7-8 breathing twice daily', 'Use prescribed inhaler as directed']
+      }
+    },
+    {
+      id: 'tool_tick_radar',
+      name: 'Nantucket Tick Defense & Co-Infection Radar',
+      category: 'Clinical AI',
+      description: 'Empirical Bayesian multi-pathogen triage (Lyme, Babesia, Anaplasma) with IDSA 72-hour single-dose doxycycline prophylaxis engine.',
+      status: 'PASS',
+      latencyMs: 14,
+      isFlipped: false,
+      cognitiveInsight: '52% Borrelia & 18% Babesia nymph prevalence priors calibrated against UMass Amherst passive surveillance data.',
+      patientEducation: {
+        plainLanguageTitle: 'Island Tick Bite Check & Safety Calculator',
+        gradeLevel: 'Grade 5.8',
+        plainLanguageDiagnosis: 'Checks how long a tick was attached to tell if you need a single prevention medicine before a rash appears.',
+        biophysicalAnalogy: 'Think of a tick like a tiny key turning in a lock: it takes 36 hours for Lyme bacteria to wake up and move, so finding them early protects you completely.',
+        socraticInquiry: 'Would you like help setting a 30-day reminder to check for a ring-shaped spot or tiredness?',
+        spanishTranslation: 'Calculadora de riesgo de picadura de garrapata y prevención.',
+        homeCareSteps: ['Remove tick using fine-tipped tweezers pulling straight up', 'Clean bite area with soap and alcohol', 'Watch for fever or rash']
       }
     },
     {

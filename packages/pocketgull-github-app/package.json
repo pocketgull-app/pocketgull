@@ -1,5 +1,6 @@
 {
   "name": "@pocketgull/github-app",
+  "private": true,
   "version": "1.0.0",
   "description": "Automated Clinical Evidence, Oxford CEBM Leveling & ONC HTI-2 Compliance Reviewer for GitHub Pull Requests",
   "main": "dist/index.js",

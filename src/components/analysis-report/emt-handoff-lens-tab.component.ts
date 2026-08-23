@@ -2,7 +2,6 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, ChangeDet
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { generate } from 'lean-qr';
 import { BystanderActionSuiteComponent } from '../bystander-action-suite.component';
-import { EmergencyNutritionalBypassComponent } from '../emergency-nutritional-bypass.component';
 import { PocketGullButtonComponent } from '../shared/pocket-gull-button.component';
 import { PocketGullCardComponent } from '../shared/pocket-gull-card.component';
 import { ClinicalIcons } from '../../assets/clinical-icons';
@@ -16,7 +15,6 @@ import { PatientManagementService } from '../../services/patient-management.serv
     CommonModule,
     DecimalPipe,
     BystanderActionSuiteComponent,
-    EmergencyNutritionalBypassComponent,
     PocketGullButtonComponent,
     PocketGullCardComponent
   ],
@@ -247,9 +245,6 @@ import { PatientManagementService } from '../../services/patient-management.serv
           </button>
         }
       </div>
-
-      <!-- Emergency Bypass Rapid Nutritional Triage Telemetry -->
-      <app-emergency-nutritional-bypass></app-emergency-nutritional-bypass>
 
       <!-- First Aid Quick Guides -->
       <pocket-gull-card title="Emergency Offline Treatment Guides" [icon]="ClinicalIcons.Medication">

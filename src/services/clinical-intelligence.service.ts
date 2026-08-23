@@ -21,6 +21,7 @@ import {
 } from '../demo-data';
 import { FORMATTING_RULES, PHILOSOPHY_INSTRUCTIONS, SYSTEM_INSTRUCTIONS } from './clinical-prompts';
 import { ClinicalAssessmentsService } from './clinical-assessments/clinical-assessments.service';
+import { CoppaPrivacyShieldService } from './coppa-privacy-shield.service';
 import { ISirOdeResult, IGcnInteractionResult } from './patient.types';
 
 
@@ -67,6 +68,11 @@ export class ClinicalIntelligenceService {
     private petAuditory = inject(PetAuditoryService, { optional: true });
     private themeService = inject(ThemeService, { optional: true });
     private assessments = inject(ClinicalAssessmentsService, { optional: true });
+    readonly coppaShield = inject(CoppaPrivacyShieldService, { optional: true });
+
+    public isPediatricMinorActive(): boolean {
+        return !!this.coppaShield?.isPediatricContext() || this.rules.hasContext('pediatric_mode');
+    }
 
     readonly isLoading = signal<boolean>(false);
 

@@ -18,16 +18,22 @@ healthcareRouter.use(rateLimit({
 }));
 
 // Initialize Google Auth with the Healthcare API scope
-const auth = new GoogleAuth({
-  scopes: ['https://www.googleapis.com/auth/cloud-healthcare']
-});
+let _auth: GoogleAuth | null = null;
+function getAuth(): GoogleAuth {
+  if (!_auth) {
+    _auth = new GoogleAuth({
+      scopes: ['https://www.googleapis.com/auth/cloud-healthcare']
+    });
+  }
+  return _auth;
+}
 
 let cachedProjectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'];
 
 export async function getProjectId(): Promise<string> {
   if (cachedProjectId) return cachedProjectId;
   try {
-    const pId = await auth.getProjectId();
+    const pId = await getAuth().getProjectId();
     if (pId) {
       cachedProjectId = pId;
       return pId;
@@ -73,7 +79,7 @@ export async function ensureHealthcareStoresExist() {
     }
 
     console.log('[Healthcare Auto-Provision] Checking Cloud Healthcare API datasets & stores...');
-    const client = await auth.getClient();
+    const client = await getAuth().getClient();
     const token = await client.getAccessToken();
     const headers = { 'Authorization': `Bearer ${token.token}`, 'Content-Type': 'application/json' };
 
@@ -131,7 +137,7 @@ healthcareRouter.post('/fhir/export', express.json({ limit: '50mb' }), async (re
      const projectId = await getProjectId();
      if (!projectId) return res.status(400).json({ error: 'GCP Project ID not configured.' });
 
-     const client = await auth.getClient();
+     const client = await getAuth().getClient();
      const token = await client.getAccessToken();
      
      const patientId = payload.id || 'unknown';
@@ -424,7 +430,7 @@ healthcareRouter.get('/fhir/import/:id', async (req, res) => {
      if (!projectId) return res.status(400).json({ error: 'GCP Project ID not configured.' });
 
      console.log(`[Healthcare FHIR] Attempting to import patient pocket-gull-${patientId} from FHIR Store...`);
-     const client = await auth.getClient();
+     const client = await getAuth().getClient();
      const token = await client.getAccessToken();
      const headers = { 'Authorization': `Bearer ${token.token}` };
 
@@ -612,7 +618,7 @@ healthcareRouter.post('/nlp/analyze', express.json({ limit: '10mb' }), async (re
     }
 
     const projectId = await getProjectId();
-    const client = await auth.getClient();
+    const client = await getAuth().getClient();
     const token = await client.getAccessToken();
 
     const nlpUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/services/nlp:analyzeEntities`;
@@ -663,7 +669,7 @@ healthcareRouter.post('/deidentify', express.json({ limit: '10mb' }), async (req
     }
 
     const projectId = await getProjectId();
-    const client = await auth.getClient();
+    const client = await getAuth().getClient();
     const token = await client.getAccessToken();
 
     const deidUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets/${defaultDatasetId}:deidentify`;
@@ -718,7 +724,7 @@ healthcareRouter.post('/fhir/export-to-bigquery', express.json(), async (req, re
   try {
     const projectId = await getProjectId();
     const bqDatasetId = req.body.datasetId || 'pocketgull_fhir_analytics';
-    const client = await auth.getClient();
+    const client = await getAuth().getClient();
     const token = await client.getAccessToken();
 
     const exportUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets/${defaultDatasetId}/fhirStores/${fhirStoreId}:export`;
@@ -819,7 +825,7 @@ healthcareRouter.post('/search', express.json(), async (req, res) => {
     }
 
     const projectId = await getProjectId();
-    const client = await auth.getClient();
+    const client = await getAuth().getClient();
     const token = await client.getAccessToken();
 
     const targetType = resourceType || 'Observation';

@@ -1,5 +1,6 @@
 {
   "name": "docs-study",
+  "private": true,
   "type": "module",
   "version": "1.0.0-rc10",
   "engines": {

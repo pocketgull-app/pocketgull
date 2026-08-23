@@ -505,6 +505,15 @@ If you reference Pocket Gull in research, please cite:
 
 ---
 
+## ⚠️ Community Working Draft & Public Notice
+
+> **Important Notice:**
+> The *"Island Tick Detectives"* citizen science framework and educational concepts were discovered and transcribed from informal public meeting notes and community brainstorming discussions; **they are not an official town plan, municipal resource, or enacted school curriculum just yet**.
+> 
+> This repository and companion tools represent an independent, community-driven citizen science initiative. Content is a working draft, may contain errors at the bottom, is actively evolving and needs an editor, and is not an official resource or formal school board directive. For acute clinical emergencies, consult a licensed medical professional or visit the [Nantucket Cottage Hospital Walk-in Clinic](https://nantuckethospital.org/).
+
+---
+
 <p align="center">
   <sub>© 2026 Pocket Gull · <a href="LICENSE">MIT License</a></sub>
 </p>

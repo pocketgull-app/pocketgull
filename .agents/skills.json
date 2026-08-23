@@ -1,0 +1,28 @@
+{
+  "entries": [
+    {
+      "path": ".agents/skills",
+      "include_only": [
+        "antigravity_swe_google",
+        "audit_and_optimize",
+        "caslon_type_design",
+        "five_eyes_thin_clients",
+        "local-edge-trainer",
+        "simulate_voice",
+        "teledentistry_systemic",
+        "threejs_anatomy",
+        "codebase-mapper",
+        "context-compressor",
+        "context-fetch",
+        "context-health-monitor",
+        "debugger",
+        "empirical-validation",
+        "executor",
+        "plan-checker",
+        "planner",
+        "token-budget",
+        "verifier"
+      ]
+    }
+  ]
+}

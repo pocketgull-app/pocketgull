@@ -27,7 +27,11 @@ def package_v9_submissions():
         'contests/rsna_knee_2026/cooccurrence_calibrator.py',
         'contests/rsna_knee_2026/meta_ensemble_stacker.py',
         'contests/rsna_knee_2026/threshold_optimizer.py',
-        'contests/rsna_knee_2026/rsna_knee_submission.ipynb'
+        'contests/rsna_knee_2026/efficiency_engine.py',
+        'contests/rsna_knee_2026/high_res_preprocessor.py',
+        'contests/rsna_knee_2026/rsna_knee_submission.ipynb',
+        'contests/rsna_knee_2026/rsna_knee_submission_v6.ipynb',
+        'contests/rsna_knee_2026/rsna_knee_train_v6.ipynb'
     ]
 
     with zipfile.ZipFile(rsna_zip, 'w', zipfile.ZIP_DEFLATED) as z:

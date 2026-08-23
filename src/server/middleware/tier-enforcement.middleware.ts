@@ -21,7 +21,13 @@ import { usageMeterService } from '../services/usage-meter.service';
 import type { SubscriptionTier, UsageCategory } from '../services/tier-config';
 import { meetsMinimumTier } from '../services/tier-config';
 
-const db = new Firestore();
+let _db: Firestore | null = null;
+function getDb(): Firestore {
+  if (!_db) {
+    _db = new Firestore();
+  }
+  return _db;
+}
 
 /**
  * Resolves tenant ID and subscription tier from the incoming request.
@@ -44,10 +50,15 @@ async function resolveTenantContext(req: Request): Promise<{
   }
 
   // Fetch subscription tier from Firestore tenants collection
-  const tenantDoc = await db.collection('tenants').doc(tenantId).get();
-  const tier: SubscriptionTier = (tenantDoc.exists && tenantDoc.data()?.['subscriptionTier'])
-    ? tenantDoc.data()!['subscriptionTier'] as SubscriptionTier
-    : 'explorer';
+  let tier: SubscriptionTier = 'explorer';
+  try {
+    const tenantDoc = await getDb().collection('tenants').doc(tenantId).get();
+    if (tenantDoc.exists && tenantDoc.data()?.['subscriptionTier']) {
+      tier = tenantDoc.data()!['subscriptionTier'] as SubscriptionTier;
+    }
+  } catch (err: unknown) {
+    console.warn('[TierEnforcement] Failed to fetch tenant from Firestore (continuing with default tier):', (err as Error)?.message);
+  }
 
   // Inject tenant context into request headers for downstream use
   req.headers['x-tenant-id'] = tenantId;

@@ -68,6 +68,13 @@ export class GlobalJurisdictionMatrixService {
           isMandatory: true,
           description: 'Patients have the right to restrict health and precise biometric processing to essential diagnostic delivery.',
           optInRequired: false
+        },
+        {
+          statute: 'FTC 16 C.F.R. § 312 / CA AB 2273',
+          requirementName: 'Pediatric COPPA Safe Harbor & Guardian Proxy Verification',
+          isMandatory: true,
+          description: 'Zero third-party trackers, zero voiceprint retention, and verified parental/guardian attestation for minor patients under 13.',
+          optInRequired: true
         }
       ],
       emergencyDispatch: [
@@ -260,6 +267,13 @@ export class GlobalJurisdictionMatrixService {
           isMandatory: true,
           description: 'Clinical safety officer risk assessment and clinical risk management file compliance.',
           optInRequired: false
+        },
+        {
+          statute: 'UK Data Protection Act 2018 (Section 123)',
+          requirementName: 'Age Appropriate Design Code (Children\'s Code)',
+          isMandatory: true,
+          description: 'Default high-privacy settings, zero profiling by default, and child-safe clinical explanations for minor users.',
+          optInRequired: true
         }
       ],
       emergencyDispatch: [

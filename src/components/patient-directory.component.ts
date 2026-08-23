@@ -2,6 +2,8 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@a
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientManagementService } from '../services/patient-management.service';
+import { PatientStateService } from '../services/patient-state.service';
+import { CoppaPrivacyShieldService } from '../services/coppa-privacy-shield.service';
 import { IPatient } from '../services/patient.types';
 
 @Component({
@@ -42,6 +44,43 @@ import { IPatient } from '../services/patient.types';
                 </div>
               </div>
 
+              <!-- Pediatric COPPA & Guardian Proxy Attestation Gate (< 13 years) -->
+              @if (isPediatricMinor()) {
+                <div class="p-3.5 bg-emerald-500/10 border border-emerald-500/40 rounded-xl space-y-3 animate-in fade-in duration-200">
+                  <div class="flex items-center gap-2">
+                    <span class="text-base">🔒</span>
+                    <div>
+                      <h3 class="text-xs font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
+                        FTC COPPA & Guardian Proxy Shield
+                      </h3>
+                      <p class="text-[11px] text-emerald-600 dark:text-emerald-400 leading-tight">
+                        Patient is a minor (&lt; 13y). Guardian authorization is required.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider mb-1">
+                      Authorizing Relationship
+                    </label>
+                    <select [(ngModel)]="guardianRelationship" name="guardianRelationship"
+                            class="w-full px-2.5 py-1.5 bg-white dark:bg-zinc-950 border border-emerald-500/30 rounded-lg text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none">
+                      <option value="Parent">Parent</option>
+                      <option value="Legal Guardian">Legal Guardian</option>
+                      <option value="Authorized Clinician">Authorized Clinician</option>
+                    </select>
+                  </div>
+
+                  <label class="flex items-start gap-2 cursor-pointer pt-1">
+                    <input type="checkbox" [(ngModel)]="hasGuardianAttested" name="hasGuardianAttested"
+                           class="mt-0.5 w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500">
+                    <span class="text-[11px] text-gray-700 dark:text-zinc-300 leading-tight">
+                      I confirm I am the parent, legal guardian, or treating clinician authorized to manage this minor's care plan under FTC 16 C.F.R. § 312.
+                    </span>
+                  </label>
+                </div>
+              }
+
               <div>
                 <label class="block text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider mb-1">Primary Complaint / Goals</label>
                 <textarea [(ngModel)]="newPatientForm.goals" name="goals" rows="3"
@@ -54,7 +93,7 @@ import { IPatient } from '../services/patient.types';
                         class="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                   Cancel
                 </button>
-                <button type="submit" [disabled]="!newPatientForm.name || !newPatientForm.age"
+                <button type="submit" [disabled]="!isFormValid()"
                         class="px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-sm font-bold shadow-sm hover:shadow hover:bg-black dark:hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95">
                   Create Chart
                 </button>
@@ -160,6 +199,8 @@ import { IPatient } from '../services/patient.types';
 })
 export class PatientDirectoryComponent {
   private patientService = inject(PatientManagementService);
+  private patientState = inject(PatientStateService);
+  readonly coppaShield = inject(CoppaPrivacyShieldService);
 
   isSentinelCase(patient: any): boolean {
     return !!patient && (patient.name.toLowerCase().includes('sentinel') || ['p004', 'p005', 'p006', 'p007'].includes(patient.id));
@@ -175,6 +216,19 @@ export class PatientDirectoryComponent {
     gender: 'Other' as IPatient['gender'],
     goals: ''
   };
+
+  guardianRelationship: 'Parent' | 'Legal Guardian' | 'Authorized Clinician' = 'Parent';
+  hasGuardianAttested = false;
+
+  isPediatricMinor(): boolean {
+    return this.coppaShield.isUnderAgeThreshold(this.newPatientForm.age);
+  }
+
+  isFormValid(): boolean {
+    if (!this.newPatientForm.name || !this.newPatientForm.age) return false;
+    if (this.isPediatricMinor() && !this.hasGuardianAttested) return false;
+    return true;
+  }
   
   // Computed projection of the roster
   filteredPatients = computed(() => {
@@ -195,12 +249,22 @@ export class PatientDirectoryComponent {
 
   openNewPatientModal() {
     this.newPatientForm = { name: '', age: 35, gender: 'Other', goals: '' };
+    this.guardianRelationship = 'Parent';
+    this.hasGuardianAttested = false;
     this.showNewPatientModal.set(true);
   }
 
   async saveNewPatient() {
-    if (!this.newPatientForm.name || !this.newPatientForm.age) return;
+    if (!this.isFormValid()) return;
     
+    // If minor, record guardian attestation in compliance audit trail
+    if (this.isPediatricMinor()) {
+      this.patientState.recordGuardianProxyAttestation(
+        this.guardianRelationship,
+        `Authorized intake for minor patient ${this.newPatientForm.name} (${this.newPatientForm.age}y)`
+      );
+    }
+
     // Create via service and capture the auto-generated ID
     const newId = await this.patientService.createNewPatient();
     

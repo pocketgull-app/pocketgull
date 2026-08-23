@@ -3,72 +3,72 @@
     "id": "gemma-3-clinical-rxguard",
     "name": "PocketGull Gemma 3 RxGuard & PGx Interaction Screener",
     "hub_repo": "pocketgull-llc/gemma-3-clinical-rxguard",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-clinical-rxguard"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-clinical-rxguard"
   },
   {
     "id": "gemma-3-phenopackets-genomics",
     "name": "PocketGull Gemma 3 GA4GH Phenopackets v2 Translator",
     "hub_repo": "pocketgull-llc/gemma-3-phenopackets-genomics",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-phenopackets-genomics"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-phenopackets-genomics"
   },
   {
     "id": "gemma-3-ambient-soap-scribe",
     "name": "PocketGull Gemma 3 Ambient Clinical SOAP & SBAR Scribe",
     "hub_repo": "pocketgull-llc/gemma-3-ambient-soap-scribe",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-ambient-soap-scribe"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-ambient-soap-scribe"
   },
   {
     "id": "gemma-3-biomarker-velocity",
     "name": "PocketGull Gemma 3 Biomarker Velocity & Resilience Forecaster",
     "hub_repo": "pocketgull-llc/gemma-3-biomarker-velocity",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-biomarker-velocity"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-biomarker-velocity"
   },
   {
     "id": "gemma-3-tri-paradigm-radar",
     "name": "PocketGull Gemma 3 Tri-Paradigm Diagnostic Integrator",
     "hub_repo": "pocketgull-llc/gemma-3-tri-paradigm-radar",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-tri-paradigm-radar"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-tri-paradigm-radar"
   },
   {
     "id": "gemma-3-nof1-trial-designer",
     "name": "PocketGull Gemma 3 N-of-1 Single-Case Trial Protocol Designer",
     "hub_repo": "pocketgull-llc/gemma-3-nof1-trial-designer",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-nof1-trial-designer"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-nof1-trial-designer"
   },
   {
     "id": "gemma-3-prior-auth-cms0057",
     "name": "PocketGull Gemma 3 CMS-0057-F Fast-Track Prior Auth Assistant",
     "hub_repo": "pocketgull-llc/gemma-3-prior-auth-cms0057",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-prior-auth-cms0057"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-prior-auth-cms0057"
   },
   {
     "id": "gemma-3-sdoh-equity-compass",
     "name": "PocketGull Gemma 3 WHO/CDC SDoH Health Equity Classifier",
     "hub_repo": "pocketgull-llc/gemma-3-sdoh-equity-compass",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-sdoh-equity-compass"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-sdoh-equity-compass"
   },
   {
     "id": "gemma-3-hipaa-tamper-sentinel",
     "name": "PocketGull Gemma 3 HIPAA Safe Harbor & Clinical Integrity Sentinel",
     "hub_repo": "pocketgull-llc/gemma-3-hipaa-tamper-sentinel",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-hipaa-tamper-sentinel"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-hipaa-tamper-sentinel"
   },
   {
     "id": "gemma-3-ophthalmology-retina-cds",
     "name": "PocketGull Gemma 3 Ophthalmology & LogMAR Visual Acuity CDS",
     "hub_repo": "pocketgull-llc/gemma-3-ophthalmology-retina-cds",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-ophthalmology-retina-cds"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-ophthalmology-retina-cds"
   },
   {
     "id": "gemma-3-grand-rounds-care-presenter",
     "name": "PocketGull Gemma 3 Grand Rounds 7-Slide & CARE Case Publisher",
     "hub_repo": "pocketgull-llc/gemma-3-grand-rounds-care-presenter",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-grand-rounds-care-presenter"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-grand-rounds-care-presenter"
   },
   {
     "id": "gemma-3-osteopathic-rounds-director",
     "name": "PocketGull Gemma 3 Dr. Elena Gullwing, DO Osteopathic Rounds Director",
     "hub_repo": "pocketgull-llc/gemma-3-osteopathic-rounds-director",
-    "directory": "c:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-osteopathic-rounds-director"
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-osteopathic-rounds-director"
   }
 ]

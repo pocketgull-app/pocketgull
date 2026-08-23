@@ -548,13 +548,20 @@ export async function initializeRuntimeSecrets(): Promise<void> {
   await Promise.allSettled(essentialSecrets.map(s => fetchSecretFromSecretManager(s)));
 }
 
-const googleAuth = new GoogleAuth({
-  scopes: 'https://www.googleapis.com/auth/cloud-platform'
-});
+let _googleAuth: GoogleAuth | null = null;
+function getGoogleAuth(): GoogleAuth {
+  if (!_googleAuth) {
+    _googleAuth = new GoogleAuth({
+      scopes: 'https://www.googleapis.com/auth/cloud-platform'
+    });
+  }
+  return _googleAuth;
+}
 
 async function getGcpAccessToken(): Promise<string | null> {
   try {
-    const client = await googleAuth.getClient();
+    const auth = getGoogleAuth();
+    const client = await auth.getClient();
     const tokenResponse = await client.getAccessToken();
     return tokenResponse.token || null;
   } catch (err: unknown) {
@@ -637,9 +644,6 @@ async function getApiKey(req?: express.Request): Promise<string> {
   }
   return fetchPromise;
 }
-
-// Prefetch the API key at boot to ensure all lazy loaded APIs have process.env populated
-await getApiKey().catch(console.error);
 
 // Security headers
 app.use((req, res, next) => {
@@ -1008,7 +1012,7 @@ async function initializeAgones() {
 
 let _serverInstance: HttpServer | null = null;
 
-if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERVICE'] || process.env['PORT'] || process.env['CI'] || !process.env['NODE_ENV'] || process.env['NODE_ENV'] === 'development') {
+if (isMainModule(import.meta.url)) {
   const port = process.env['PORT'] ? parseInt(process.env['PORT'], 10) : 4000;
   if (!_serverInstance) {
     _serverInstance = app.listen(port, '0.0.0.0', () => {

@@ -94,8 +94,22 @@ export interface IBystanderTask {
         </div>
       </div>
 
-      <!-- Emergency Medical Supply & Geolocation Telemetry Radar -->
-      <app-emergency-supply-finder />
+      <!-- Emergency Medical Supply & Geolocation Telemetry Radar Toggle -->
+      <div class="mb-4">
+        <button type="button" (click)="showSupplyRadar.set(!showSupplyRadar())"
+          class="w-full py-3 px-4 rounded-2xl bg-zinc-900 hover:bg-zinc-850 text-amber-300 border border-amber-500/40 text-xs font-pocketgull font-bold uppercase tracking-wider transition flex items-center justify-between shadow-md cursor-pointer min-h-[44px]">
+          <span class="flex items-center gap-2">
+            <span>⚡</span>
+            <span>{{ showSupplyRadar() ? 'Hide Nearest AED & Emergency Supply Radar' : 'Locate Nearest AED & Critical Medical Supplies (GPS Radar)' }}</span>
+          </span>
+          <span class="text-amber-400 font-mono">{{ showSupplyRadar() ? '▲' : '▼' }}</span>
+        </button>
+        @if (showSupplyRadar()) {
+          <div class="mt-3 animate-in fade-in slide-in-from-top-2 duration-200">
+            <app-emergency-supply-finder />
+          </div>
+        }
+      </div>
 
       <!-- Quick 1-Tap Bystander Event Logger -->
       <div class="font-pocketgull-mono pt-2">
@@ -148,6 +162,7 @@ export interface IBystanderTask {
 })
 export class BystanderActionSuiteComponent {
   state = inject(PatientStateService);
+  showSupplyRadar = signal<boolean>(false);
 
   tasks = signal<IBystanderTask[]>([
     {

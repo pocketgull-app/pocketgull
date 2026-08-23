@@ -20,10 +20,10 @@ describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite',
     component = runInInjectionContext(injector, () => new ClinicalToolWorkbenchComponent());
   });
 
-  it('should initialize all 8 workbench tools as operational', () => {
+  it('should initialize all workbench tools as operational', () => {
     expect(component).toBeTruthy();
-    expect(component.tools().length).toBe(8);
-    expect(component.operationalCount()).toBe(8);
+    expect(component.tools().length).toBe(9);
+    expect(component.operationalCount()).toBe(9);
   });
 
   it('should flip card on double-click safety interlock confirmation', () => {

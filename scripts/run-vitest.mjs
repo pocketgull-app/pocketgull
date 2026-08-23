@@ -1,7 +1,9 @@
 import { spawnSync } from 'child_process';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const projectDir = process.cwd();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectDir = path.resolve(__dirname, '..');
 const cliPath = path.join(projectDir, 'node_modules/vitest/vitest.mjs');
 const configPath = path.join(projectDir, 'vitest.config.ts');
 

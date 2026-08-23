@@ -64,5 +64,24 @@ describe('TribalHealthSovereigntyService Suite', () => {
     expect(report.tribalNationJurisdiction).toContain('Sovereign Health Authority');
     expect(report.tribalIrbSeal).toMatch(/^TRIBAL-SOVEREIGN-SEAL-[0-9A-F]{8}$/);
     expect(report.zeroCloudEgressVerified).toBe(true);
+    expect(report.metadataEthicsStandards.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('5. Enforces Post-Custodial Collaborative Metadata & Ethical Linked Data Standards', () => {
+    const standards = service.postCustodialStandards();
+    expect(standards.length).toBe(4);
+
+    const care = standards.find(s => s.frameworkName.includes('CARE Principles'));
+    expect(care).toBeDefined();
+    expect(care?.citation).toContain('Carroll');
+    expect(care?.doiOrUrl).toContain('doi.org/10.5334/dsj-2020-043');
+
+    const postCustodial = standards.find(s => s.frameworkName.includes('Post-Custodial'));
+    expect(postCustodial).toBeDefined();
+    expect(postCustodial?.citation).toContain('Ham');
+
+    const linkedData = standards.find(s => s.frameworkName.includes('Ethics in Linked Data'));
+    expect(linkedData).toBeDefined();
+    expect(linkedData?.citation).toContain('Watson');
   });
 });

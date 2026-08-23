@@ -206,7 +206,9 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
             }
 
             <div class="flex-1 flex flex-col min-h-0 min-w-0 h-full overflow-y-auto relative" [class.slide-in-panel]="isSlidingIn()">
-                @if (viewMode() === 'suites') {
+                @if (state.isEmergencyMode()) {
+                  <app-analysis-report class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" #reportRef (openGleeModal)="showGleeModal.set(true)"></app-analysis-report>
+                } @else if (viewMode() === 'suites') {
                   <app-domain-suites-navigator class="w-full h-auto block overflow-visible" />
                 } @else {
                   @defer (on viewport; prefetch on idle) {

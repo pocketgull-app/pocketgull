@@ -69,8 +69,53 @@ TASK: Evaluate oral-metabolic inflammatory cross-talk under Popperian H0 hypothe
   }
 }
 
+async function testMskKneeExtraction() {
+  console.log('\n[3/4] Testing RSNA Knee 2026 MSK Radiology Report Label Extraction...');
+  const sampleReport = `EXAM: MRI RIGHT KNEE
+FINDINGS:
+High-grade full-thickness tear of the anterior cruciate ligament with anterior translation of the tibia. Bone contusion pattern in the posterior lateral tibial plateau and lateral femoral condyle consistent with pivot-shift injury mechanism. Complex tear of the posterior horn of the medial meniscus with articular surface extension on 3 consecutive sagittal slices. Moderate joint effusion with thickening of the synovium. The MCL, LCL, PCL, and extensor mechanism are intact. No discrete fracture line.`;
+
+  const mskPrompt = `You are an expert MSK radiologist reviewing knee MRI radiology reports.
+For the report below, extract binary labels (0 or 1) and confidence (0.0-1.0) for EXACTLY 12 knee abnormalities conforming strictly to the RSNA 2026 high-specificity rules:
+- ACL, MCL, Medial_Meniscus, Lateral_Meniscus, Medial_OA, Lateral_OA, PF_OA, Effusion, Synovitis, Bakers, Contusion, Fracture.
+
+Report:
+${sampleReport}
+
+OUTPUT ONLY VALID JSON:
+{"labels": {"ACL": 1, ...}, "confidence": {"ACL": 0.95, ...}}`;
+
+  try {
+    const startTime = Date.now();
+    const res = await fetch(`${LEMONADE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'Llama-3.2-3B-Instruct-GGUF',
+        messages: [{ role: 'user', content: mskPrompt }],
+        max_tokens: 384,
+        temperature: 0.1
+      })
+    });
+
+    if (res.ok) {
+      const result = await res.json();
+      const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+      const text = result.choices?.[0]?.message?.content || JSON.stringify(result);
+      console.log(`  ✅ MSK Extraction Complete in ${duration}s:`);
+      console.log('----------------------------------------------------------------');
+      console.log(text.trim());
+      console.log('----------------------------------------------------------------');
+    } else {
+      console.log(`  ℹ️ Chat completions endpoint status: HTTP ${res.status}`);
+    }
+  } catch (err) {
+    console.log(`  ℹ️ Note: Server will execute extraction when daemon is running.`);
+  }
+}
+
 async function checkMemoryHeadroom() {
-  console.log('\n[3/3] Calculating VRAM Safety Bounds for AMD Radeon RX 6650 XT:');
+  console.log('\n[4/4] Calculating VRAM Safety Bounds for AMD Radeon RX 6650 XT:');
   const totalVramMb = 8192;
   const modelVramMb = 2100;
   const osDisplayMb = 1200;
@@ -88,7 +133,9 @@ async function checkMemoryHeadroom() {
 async function main() {
   await testConnection();
   await testClinicalInference();
+  await testMskKneeExtraction();
   await checkMemoryHeadroom();
 }
 
 main();
+

@@ -55,10 +55,13 @@ VERTEX_URL = (
     f'/locations/{GCP_REGION}/publishers/google/models/{GEMINI_MODEL}:generateContent'
 )
 
-# Rate limiting
-REQUESTS_PER_MINUTE = 60  # Vertex AI paid tier
-BATCH_SIZE = 1            # 1 report per call for reliable JSON output
-SLEEP_BETWEEN_CALLS = 60.0 / REQUESTS_PER_MINUTE
+# Lemonade Server Local Edge configuration (AMD Radeon RX 6650 XT)
+LEMONADE_URL = os.getenv('LEMONADE_URL', 'http://127.0.0.1:13305/api/v1')
+LEMONADE_MODEL = os.getenv('LEMONADE_MODEL', 'Llama-3.2-3B-Instruct-GGUF')
+
+# Rate limiting & throughput
+REQUESTS_PER_MINUTE_VERTEX = 60
+BATCH_SIZE = 1
 
 # ─── Structured Extraction Prompt ──────────────────────────────────────────────
 
@@ -103,7 +106,73 @@ JSON_KEY_TO_TARGET = {
 TARGET_TO_JSON_KEY = {v: k for k, v in JSON_KEY_TO_TARGET.items()}
 
 
-# ─── Auth & API ────────────────────────────────────────────────────────────────
+# ─── Backend Providers & API ───────────────────────────────────────────────────
+
+def is_lemonade_available(base_url: str = LEMONADE_URL) -> bool:
+    """Checks whether the local Lemonade Server is online and responsive."""
+    import urllib.request
+    try:
+        req = urllib.request.Request(f"{base_url}/models", headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=2.0) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
+
+def call_lemonade_local(reports_batch: List[Tuple[str, str]], base_url: str = LEMONADE_URL, model: str = LEMONADE_MODEL) -> Optional[List[Dict]]:
+    """Send a batch of reports to the local Lemonade OpenAI-compatible endpoint."""
+    import urllib.request
+    import urllib.error
+
+    user_parts = []
+    for study_uid, report in reports_batch:
+        truncated = report[:3000] if len(report) > 3000 else report
+        user_parts.append(f"Radiology Report:\n{truncated}")
+
+    user_prompt = (
+        "Extract knee MRI labels from this radiology report. "
+        "Return a single JSON object with 'labels' and 'confidence' keys strictly adhering to MSK radiologist adjudication rules.\n\n"
+        + "\n\n".join(user_parts)
+    )
+
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt}
+        ],
+        "temperature": 0.1,
+        "max_tokens": 512
+    }
+
+    data = json.dumps(payload).encode('utf-8')
+    req = urllib.request.Request(
+        f"{base_url}/chat/completions",
+        data=data,
+        headers={'Content-Type': 'application/json'}
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=45) as resp:
+            raw_bytes = resp.read()
+            result = json.loads(raw_bytes.decode('utf-8'))
+
+        choice = result.get('choices', [{}])[0]
+        text = choice.get('message', {}).get('content', '')
+        if not text:
+            print(f'  [WARN] Lemonade returned empty response: {str(result)[:200]}', flush=True)
+            return None
+
+        parsed = repair_and_parse_json(text)
+        if isinstance(parsed, dict):
+            return [parsed]
+        elif isinstance(parsed, list):
+            return parsed
+        return None
+    except Exception as e:
+        print(f'  [WARN] Lemonade local API error: {type(e).__name__}: {e}', flush=True)
+        return None
+
 
 def get_access_token() -> str:
     """Get a fresh access token via gcloud ADC."""
@@ -117,13 +186,13 @@ def get_access_token() -> str:
     return result.stdout.strip()
 
 
-def call_gemini_vertex(reports_batch: List[Tuple[int, str]], access_token: str) -> Optional[List[Dict]]:
+def call_gemini_vertex(reports_batch: List[Tuple[str, str]], access_token: str) -> Optional[List[Dict]]:
     """Send a batch of reports to Vertex AI Gemini."""
     import urllib.request
     import urllib.error
 
     user_parts = []
-    for idx, (study_uid, report) in enumerate(reports_batch):
+    for study_uid, report in reports_batch:
         truncated = report[:3000] if len(report) > 3000 else report
         user_parts.append(f"Report:\n{truncated}")
 
@@ -267,12 +336,37 @@ def save_cache(study_uid: str, labels: Dict, confidence: Dict, language: str):
 # ─── Main Pipeline ─────────────────────────────────────────────────────────────
 
 def run_extraction():
-    print('[OK] RSNA Knee 2026 - Phase 2: Gemini Weak Label Extraction (Vertex AI)', flush=True)
-    print(f'[OK] Project: {GCP_PROJECT}', flush=True)
-    print(f'[OK] Model: {GEMINI_MODEL}', flush=True)
-    print(f'[OK] Batch size: {BATCH_SIZE} reports/call', flush=True)
-    print(f'[OK] Rate limit: {REQUESTS_PER_MINUTE} RPM', flush=True)
-    print(flush=True)
+    import argparse
+    parser = argparse.ArgumentParser(description="RSNA Knee 2026 Weak Label Extraction Engine (Lemonade Edge & Vertex AI)")
+    parser.add_argument('--backend', choices=['auto', 'lemonade', 'vertex'], default='auto',
+                        help="Backend provider: 'auto' (Lemonade with Vertex fallback), 'lemonade' (AMD local GPU), 'vertex' (GCP Cloud)")
+    parser.add_argument('--lemonade-url', default=LEMONADE_URL, help="Lemonade API base URL")
+    parser.add_argument('--lemonade-model', default=LEMONADE_MODEL, help="Lemonade model ID in local catalog")
+    parser.add_argument('--limit', type=int, default=None, help="Limit number of reports to process in this run")
+    parser.add_argument('--probe', action='store_true', help="Probe and report backend connectivity without processing entire dataset")
+    args = parser.parse_args()
+
+    print('=========================================================================', flush=True)
+    print('  🩺 RSNA Knee 2026 — Multimodal Weak Label Extraction Pipeline', flush=True)
+    print(f'  Mode: Backend Selection = {args.backend}', flush=True)
+    print('=========================================================================\n', flush=True)
+
+    lemonade_online = is_lemonade_available(args.lemonade_url)
+    print(f"[OK] Probing Lemonade Server ({args.lemonade_url}): {'ONLINE ✅' if lemonade_online else 'OFFLINE ⚠️'}", flush=True)
+
+    if args.backend == 'lemonade' and not lemonade_online:
+        print(f"[ERR] Explicit backend 'lemonade' requested, but server at {args.lemonade_url} is unreachable.", flush=True)
+        print("      Ensure lemonade daemon is running (lemond on AMD Radeon RX 6650 XT).", flush=True)
+        if not args.probe:
+            sys.exit(1)
+
+    # Resolve active backend
+    active_backend = 'lemonade' if (args.backend == 'lemonade' or (args.backend == 'auto' and lemonade_online)) else 'vertex'
+    print(f"[OK] Selected Active Engine: {active_backend.upper()}", flush=True)
+
+    if args.probe:
+        print("\n[OK] Probe mode complete. Backend readiness verified.")
+        return
 
     # Load data
     df = pd.read_csv(TRAIN_CSV)
@@ -292,29 +386,30 @@ def run_extraction():
     print(f'[OK] Already cached: {already_cached} / {len(unlabeled_df)}', flush=True)
     print(f'[OK] Remaining to extract: {remaining}', flush=True)
 
-    if remaining > 0:
-        est_calls = remaining // BATCH_SIZE + 1
-        est_minutes = est_calls * SLEEP_BETWEEN_CALLS / 60.0
-        print(f'[OK] Estimated API calls: {est_calls}', flush=True)
-        print(f'[OK] Estimated time: {est_minutes:.1f} minutes', flush=True)
+    if args.limit:
+        print(f'[OK] Limiting extraction to next {args.limit} reports', flush=True)
 
-    # Get access token
-    print(flush=True)
-    print('[OK] Authenticating via gcloud ADC...', flush=True)
-    access_token = get_access_token()
+    access_token = None
     token_refresh_time = time.time()
-    print(f'[OK] Token acquired!', flush=True)
-    print(flush=True)
+    sleep_delay = 0.05 if active_backend == 'lemonade' else (60.0 / REQUESTS_PER_MINUTE_VERTEX)
 
-    # Process batches — store (study_uid, report) tuples
-    batch = []  # List of (study_uid, report_text)
+    if active_backend == 'vertex':
+        print('[OK] Authenticating via gcloud ADC for Vertex AI...', flush=True)
+        access_token = get_access_token()
+        print('[OK] Google Cloud Token acquired!', flush=True)
+
+    # Process batches
+    batch = []
     processed = 0
     successes = 0
     errors = 0
+    count_limit = args.limit if args.limit is not None else len(unlabeled_df)
 
     for idx, row in unlabeled_df.iterrows():
-        study_uid = row['StudyInstanceUID']
+        if processed >= count_limit:
+            break
 
+        study_uid = row['StudyInstanceUID']
         if load_cached(study_uid) is not None:
             continue
 
@@ -327,33 +422,37 @@ def run_extraction():
         batch.append((study_uid, report))
 
         if len(batch) >= BATCH_SIZE:
-            # Refresh token every 45 minutes
-            if time.time() - token_refresh_time > 2700:
+            # Handle token refresh for Vertex
+            if active_backend == 'vertex' and (time.time() - token_refresh_time > 2700):
                 access_token = get_access_token()
                 token_refresh_time = time.time()
-                print('  [OK] Token refreshed', flush=True)
+                print('  [OK] Vertex Token refreshed', flush=True)
 
-            print(f'  Batch {processed+1}-{processed+len(batch)} / {remaining} '
-                  f'({100*(processed+len(batch))/max(remaining,1):.1f}%) '
+            print(f'  [{active_backend.upper()}] Batch {processed+1}-{processed+len(batch)} / {min(remaining, count_limit)} '
                   f'[{successes} OK, {errors} err]', flush=True)
 
-            result = call_gemini_vertex(batch, access_token)
-
-            # Handle token refresh
-            if result == 'REFRESH_TOKEN':
-                access_token = get_access_token()
-                token_refresh_time = time.time()
+            if active_backend == 'lemonade':
+                result = call_lemonade_local(batch, base_url=args.lemonade_url, model=args.lemonade_model)
+                # Auto-fallback to Vertex if Lemonade unexpectedly fails
+                if not result and args.backend == 'auto':
+                    print('  [WARN] Lemonade failed; attempting Vertex fallback...', flush=True)
+                    if access_token is None:
+                        access_token = get_access_token()
+                    result = call_gemini_vertex(batch, access_token)
+            else:
                 result = call_gemini_vertex(batch, access_token)
+                if result == 'REFRESH_TOKEN':
+                    access_token = get_access_token()
+                    token_refresh_time = time.time()
+                    result = call_gemini_vertex(batch, access_token)
 
             if result and isinstance(result, list):
-                # Use positional mapping: result[i] corresponds to batch[i]
                 for i, item in enumerate(result):
                     try:
                         labels = item.get('labels', {})
                         confidence = item.get('confidence', {})
                         language = item.get('language', item.get('detected_language', 'unknown'))
 
-                        # Map by position in batch
                         if i < len(batch):
                             uid = batch[i][0]
                         else:
@@ -364,17 +463,22 @@ def run_extraction():
                         print(f'    [ERR] Item {i}: {type(e).__name__}: {e}', flush=True)
                         errors += 1
             else:
-                print(f'    [ERR] call_gemini_vertex returned: {type(result).__name__} = {repr(result)[:200]}', flush=True)
+                print(f'    [ERR] Provider returned invalid response: {repr(result)[:200]}', flush=True)
                 errors += len(batch)
 
             processed += len(batch)
             batch = []
-            time.sleep(SLEEP_BETWEEN_CALLS)
+            if sleep_delay > 0:
+                time.sleep(sleep_delay)
 
-    # Final batch
-    if batch:
-        print(f'  Final batch ({len(batch)} reports)', flush=True)
-        result = call_gemini_vertex(batch, access_token)
+    # Flush remaining batch
+    if batch and processed < count_limit:
+        print(f'  [{active_backend.upper()}] Final batch ({len(batch)} reports)', flush=True)
+        if active_backend == 'lemonade':
+            result = call_lemonade_local(batch, base_url=args.lemonade_url, model=args.lemonade_model)
+        else:
+            result = call_gemini_vertex(batch, access_token)
+
         if result and isinstance(result, list):
             for i, item in enumerate(result):
                 try:
@@ -389,7 +493,7 @@ def run_extraction():
                     errors += 1
 
     print(flush=True)
-    print(f'[OK] Extraction complete! Success: {successes}, Errors: {errors}', flush=True)
+    print(f'[OK] Extraction complete! Engine: {active_backend.upper()} | Success: {successes}, Errors: {errors}', flush=True)
 
     # ─── Assemble Final CSV ────────────────────────────────────────────────────
 
@@ -409,13 +513,12 @@ def run_extraction():
         else:
             cached = load_cached(uid)
             if cached:
-                entry['label_source'] = 'gemini'
+                entry['label_source'] = 'distilled'
                 entry['detected_language'] = cached.get('language', 'unknown')
                 for t in targets:
-                    # Try underscore key (from Gemini), then exact match
                     json_key = TARGET_TO_JSON_KEY.get(t, t)
-                    val = cached['labels'].get(json_key, cached['labels'].get(t, 0))
-                    conf = cached['confidence'].get(json_key, cached['confidence'].get(t, 0.5))
+                    val = cached.get('labels', {}).get(json_key, cached.get('labels', {}).get(t, 0))
+                    conf = cached.get('confidence', {}).get(json_key, cached.get('confidence', {}).get(t, 0.5))
                     entry[t] = float(val)
                     entry[f'{t}_confidence'] = float(conf)
             else:
@@ -445,3 +548,4 @@ def run_extraction():
 
 if __name__ == '__main__':
     run_extraction()
+

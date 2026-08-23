@@ -31,6 +31,10 @@ import { GlobalJurisdictionMatrixService } from './global-jurisdiction-matrix.se
 import { MandiantClinicalDefenseService } from './mandiant-clinical-defense.service';
 import { ClinicalMandarinateExamService } from './clinical-mandarinate-exam.service';
 import { BrandPackageGeneratorService } from './brand-package-generator.service';
+import { FederatedLearningService } from './federated-learning.service';
+import { OpenEvidenceCommonsService } from './open-evidence-commons.service';
+import { NantucketTickRadarService } from './nantucket-tick-radar.service';
+import { NantucketSolutionDiscoveryService } from './nantucket-solution-discovery.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -68,6 +72,10 @@ export class WebMcpRegistrationService {
   private mandiantDefenseService = inject(MandiantClinicalDefenseService, { optional: true });
   private mandarinateExamService = inject(ClinicalMandarinateExamService, { optional: true });
   private brandPackageGeneratorService = inject(BrandPackageGeneratorService, { optional: true });
+  private federatedLearningService = inject(FederatedLearningService, { optional: true });
+  private evidenceCommonsService = inject(OpenEvidenceCommonsService, { optional: true });
+  private tickRadarService = inject(NantucketTickRadarService, { optional: true });
+  private solutionDiscoveryService = inject(NantucketSolutionDiscoveryService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1558,6 +1566,215 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(brandPackageTool, { signal: brandPackageCtrl.signal });
     this.mcpControllers.push({ name: brandPackageTool.name, controller: brandPackageCtrl });
+
+    // 33. Trigger Federated Learning Round (DP + SecAgg)
+    const fedRoundCtrl = new AbortController();
+    const fedRoundTool = {
+      name: 'pocketgull_trigger_federated_round',
+      description: 'Executes a client-side Privacy-Preserving Federated Learning round with Gaussian Differential Privacy (ε=2.0, δ=1e-5) and zero-sum Secure Aggregation (SecAgg) across clinical swarm nodes.',
+      parameters: {
+        type: 'object',
+        properties: {
+          roundReason: {
+            type: 'string',
+            description: 'Optional clinical rationale or trigger motive for the federated gradient update round.'
+          }
+        }
+      },
+      execute: async (args: { roundReason?: string }) => {
+        const svc = this.federatedLearningService || new FederatedLearningService();
+        const result = await svc.executeSecAggRound();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                status: 'SUCCESS',
+                message: `Executed Federated Learning Round #${result.roundNumber}`,
+                roundTelemetry: result,
+                privacyBudgetRemaining: svc.privacyBudgetRemaining(),
+                totalEpsilonSpent: svc.totalEpsilonSpent()
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(fedRoundTool, { signal: fedRoundCtrl.signal });
+    this.mcpControllers.push({ name: fedRoundTool.name, controller: fedRoundCtrl });
+
+    // 34. Verify Evidence Attestation (SHA-256 Merkle Inclusion Proof)
+    const evidenceVerifyCtrl = new AbortController();
+    const evidenceVerifyTool = {
+      name: 'pocketgull_verify_evidence_attestation',
+      description: 'Generates and cryptographically verifies a SHA-256 Merkle inclusion proof for a clinical evidence trial node in the Open Evidence Commons.',
+      parameters: {
+        type: 'object',
+        properties: {
+          nodeId: {
+            type: 'string',
+            description: 'Unique identifier of the clinical evidence node (e.g. ev-sprint-2015, ev-predimed-2018, ev-empa-reg-2015).'
+          }
+        },
+        required: ['nodeId']
+      },
+      execute: async (args: { nodeId: string }) => {
+        const svc = this.evidenceCommonsService || new OpenEvidenceCommonsService();
+        const proof = await svc.generateMerkleProof(args.nodeId);
+        if (!proof) {
+          return {
+            content: [{ type: 'text', text: `Evidence node "${args.nodeId}" not found in Open Evidence Commons.` }]
+          };
+        }
+        const isVerified = await svc.verifyMerkleProof(proof);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                nodeId: args.nodeId,
+                isCryptographicallyVerified: isVerified,
+                merkleProof: proof,
+                rootHash: proof.rootHash
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(evidenceVerifyTool, { signal: evidenceVerifyCtrl.signal });
+    this.mcpControllers.push({ name: evidenceVerifyTool.name, controller: evidenceVerifyCtrl });
+
+    // 35. Query Evidence Commons
+    const evidenceQueryCtrl = new AbortController();
+    const evidenceQueryTool = {
+      name: 'pocketgull_query_evidence_commons',
+      description: 'Queries community-attested clinical evidence trials and consensus scores in the Open Evidence Commons by ICD-10/SNOMED condition code or keyword.',
+      parameters: {
+        type: 'object',
+        properties: {
+          conditionOrQuery: {
+            type: 'string',
+            description: 'Condition name, ICD-10 code (e.g. I10, E11.9), or search keyword.'
+          }
+        }
+      },
+      execute: async (args: { conditionOrQuery?: string }) => {
+        const svc = this.evidenceCommonsService || new OpenEvidenceCommonsService();
+        const results = svc.queryEvidenceByCondition(args?.conditionOrQuery || '');
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                query: args?.conditionOrQuery || 'ALL',
+                totalMatches: results.length,
+                evidenceNodes: results
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(evidenceQueryTool, { signal: evidenceQueryCtrl.signal });
+    this.mcpControllers.push({ name: evidenceQueryTool.name, controller: evidenceQueryCtrl });
+
+    // 36. Assess Nantucket Tick Bite Risk & Doxycycline Prophylaxis
+    const tickCtrl = new AbortController();
+    const tickTool = {
+      name: 'pocketgull_assess_nantucket_tick_risk',
+      description: 'Evaluates empirical Bayesian transmission probability for tick-borne co-infections (Lyme Borrelia, Babesiosis, Anaplasmosis, Alpha-Gal) on Nantucket Island and calculates 72-hour single-dose doxycycline prophylaxis eligibility per IDSA/AAP guidelines.',
+      parameters: {
+        type: 'object',
+        properties: {
+          hoursAttached: { type: 'number', description: 'Estimated hours the tick was attached (e.g. 36).' },
+          hoursSinceRemoval: { type: 'number', description: 'Hours elapsed since tick was removed (e.g. 12).' },
+          species: { type: 'string', enum: ['ixodes_nymph', 'ixodes_adult', 'lone_star', 'dog_tick'], description: 'Identified tick species.' },
+          symptoms: { type: 'array', items: { type: 'string' }, description: 'Observed clinical signs or symptoms.' },
+          hotspotId: { type: 'string', description: 'Nantucket exposure locus (e.g. "squam_farm", "middle_moors").' }
+        },
+        required: ['hoursAttached', 'hoursSinceRemoval', 'species']
+      },
+      execute: async (args: { hoursAttached: number; hoursSinceRemoval: number; species: any; symptoms?: string[]; hotspotId?: string }) => {
+        const svc = this.tickRadarService || new NantucketTickRadarService();
+        const dwell = svc.assessDwellTime(
+          args.hoursAttached,
+          args.hoursSinceRemoval,
+          args.species || 'ixodes_nymph'
+        );
+        const triage = svc.calculateBayesianTriage(
+          args.symptoms || [],
+          args.species || 'ixodes_nymph',
+          args.hoursAttached,
+          args.hotspotId || 'squam_farm'
+        );
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                dwellAssessment: dwell,
+                bayesianCoInfectionTriage: triage
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(tickTool, { signal: tickCtrl.signal });
+    this.mcpControllers.push({ name: tickTool.name, controller: tickCtrl });
+
+    // 37. Evaluate Novel Tick Solution Candidate (Popperian H0 & E-Value)
+    const discoveryCtrl = new AbortController();
+    const discoveryTool = {
+      name: 'pocketgull_evaluate_novel_tick_solution',
+      description: 'Mathematically evaluates a novel ecological, biophysical, or immunological solution for the Nantucket tick crisis using Monte Carlo power simulation, Popperian null-hypothesis testing, and causal E-value sensitivity.',
+      parameters: {
+        type: 'object',
+        properties: {
+          solutionId: {
+            type: 'string',
+            enum: ['metarhizium_bio_barrier', 'reservoir_oral_bait_vax', 'semiochemical_pheromone_trap', 'multispectral_lidar_radar', 'botanical_cedrene_synergy'],
+            description: 'Novel intervention candidate ID.'
+          },
+          sampleSizeN: { type: 'number', description: 'Planned trial sample size (plots / transects N, default: 64).' },
+          environmentalNoise: { type: 'number', description: 'Stochastic ecological noise standard deviation (0.05 to 0.60, default: 0.25).' }
+        },
+        required: ['solutionId']
+      },
+      execute: async (args: { solutionId: string; sampleSizeN?: number; environmentalNoise?: number }) => {
+        const svc = this.solutionDiscoveryService || new NantucketSolutionDiscoveryService();
+        const candidate = svc.solutions().find(s => s.id === args.solutionId) || svc.solutions()[0];
+        const sim = svc.simulateFalsification(
+          candidate,
+          args.sampleSizeN || 64,
+          1.0,
+          args.environmentalNoise || 0.25
+        );
+        const protocol = svc.generateStudyProtocolMarkdown(candidate);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                candidate: {
+                  id: candidate.id,
+                  name: candidate.name,
+                  paradigm: candidate.paradigm,
+                  tagline: candidate.tagline,
+                  regulatoryTier: candidate.regulatoryFeasibilityTier,
+                  ecologicalSafety: candidate.ecologicalSafetyIndex
+                },
+                falsificationSimulation: sim,
+                fieldTrialProtocol: protocol
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    };
+    modelContext.registerTool(discoveryTool, { signal: discoveryCtrl.signal });
+    this.mcpControllers.push({ name: discoveryTool.name, controller: discoveryCtrl });
 
   }
 

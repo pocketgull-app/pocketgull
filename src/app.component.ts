@@ -191,6 +191,7 @@ import { OsceCaseSimulatorComponent } from './components/osce-case-simulator.com
           [hasApiKey]="hasApiKey()"
           (submitKey)="apiKeyInput.set($event); submitApiKey()"
           (loadDemo)="loadDemoMode()"
+          (unlockSession)="handleUnlockSession()"
           (selectAiStudio)="selectKey()"
           (emergencyBypass)="handleEmergencyBypass()">
         </app-secure-splash>
@@ -2091,6 +2092,13 @@ export class AppComponent implements OnDestroy {
     this.state.isDemoMode.set(false);
     // Force GeminiProvider to reinitialise with the new key on next call
     this.hasApiKey.set(true);
+  }
+
+  handleUnlockSession() {
+    this.isDemoMode.set(false);
+    this.state.isDemoMode.set(false);
+    this.hasApiKey.set(true);
+    this.session.isLocked.set(false);
   }
 
   loadDemoMode() {

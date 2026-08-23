@@ -22,6 +22,7 @@ import { StorageService } from './storage.service';
 import { GamificationService } from './gamification.service';
 import { ThemeService } from './theme.service';
 import { ActuarialLongevityService, IOccupationalHazardProfile } from './actuarial-longevity.service';
+import { CoppaPrivacyShieldService, IGuardianAttestation } from './coppa-privacy-shield.service';
 import { dataConnect } from '../lib/firebase';
 import { createCarePlan, createConsultationSession } from '../lib/dataconnect/esm/index.esm.js';
 
@@ -32,11 +33,13 @@ import { createCarePlan, createConsultationSession } from '../lib/dataconnect/es
 export class PatientStateService {
   private themeService = inject(ThemeService);
   private actuarialLongevityService = inject(ActuarialLongevityService, { optional: true });
+  readonly coppaShield = inject(CoppaPrivacyShieldService, { optional: true });
 
   // --- UI State & Clinical Tool Prescription State Machine ---
   readonly isPlainLanguageMode = computed(() => this.themeService.isPlainLanguageMode());
   readonly toolStates = signal<Record<string, 'unassigned' | 'prescribed' | 'hidden'>>({});
   readonly showContactlessScanner = signal<boolean>(false);
+  readonly guardianAttestation = computed<IGuardianAttestation>(() => this.coppaShield?.guardianAttestation() || { isAttested: false, relationship: null, timestamp: null });
 
   toggleContactlessScanner(open?: boolean): void {
     this.showContactlessScanner.update(current => open !== undefined ? open : !current);
@@ -158,10 +161,10 @@ export class PatientStateService {
   // --- Anti-Surveillance & Ephemeral Data Sovereignty Controls ---
   readonly ephemeralPrivacyMode = signal<boolean>(true);
 
-  // --- Enterprise Agent HIPAA Audit Telemetry ---
+  // --- Enterprise Agent HIPAA & COPPA Audit Telemetry ---
   readonly enterpriseAuditLog = signal<Array<{
     timestamp: string;
-    action: 'AI_SYNTHESIS' | 'FHIR_EXPORT' | 'PRESCRIBE_TOOL' | 'WAKE_WORD' | 'SBAR_HANDOFF' | 'STATE_PURGE' | 'PRIVACY_MODE_TOGGLE';
+    action: 'AI_SYNTHESIS' | 'FHIR_EXPORT' | 'PRESCRIBE_TOOL' | 'WAKE_WORD' | 'SBAR_HANDOFF' | 'STATE_PURGE' | 'PRIVACY_MODE_TOGGLE' | 'GUARDIAN_PROXY_ATTESTED' | 'COPPA_LOCKDOWN';
     actor: string;
     hash: string;
     details: string;
@@ -175,7 +178,10 @@ export class PatientStateService {
     }
   ]);
 
-  logEnterpriseAudit(action: 'AI_SYNTHESIS' | 'FHIR_EXPORT' | 'PRESCRIBE_TOOL' | 'WAKE_WORD' | 'SBAR_HANDOFF' | 'STATE_PURGE' | 'PRIVACY_MODE_TOGGLE', details: string) {
+  logEnterpriseAudit(
+    action: 'AI_SYNTHESIS' | 'FHIR_EXPORT' | 'PRESCRIBE_TOOL' | 'WAKE_WORD' | 'SBAR_HANDOFF' | 'STATE_PURGE' | 'PRIVACY_MODE_TOGGLE' | 'GUARDIAN_PROXY_ATTESTED' | 'COPPA_LOCKDOWN',
+    details: string
+  ) {
     const entry = {
       timestamp: new Date().toISOString(),
       action,
@@ -184,6 +190,17 @@ export class PatientStateService {
       details
     };
     this.enterpriseAuditLog.update(logs => [entry, ...logs.slice(0, 49)]);
+  }
+
+  recordGuardianProxyAttestation(
+    relationship: 'Parent' | 'Legal Guardian' | 'Authorized Clinician',
+    notes?: string
+  ): void {
+    const attestation = this.coppaShield.recordGuardianAttestation(relationship, notes);
+    this.logEnterpriseAudit(
+      'GUARDIAN_PROXY_ATTESTED',
+      `Guardian Proxy Attestation confirmed by ${relationship} (${attestation.timestamp})`
+    );
   }
 
   toggleEphemeralPrivacyMode(enabled?: boolean): boolean {
@@ -207,6 +224,7 @@ export class PatientStateService {
     this.reasonForVisit.set('');
     this.dietaryProtocol.set('');
     this.patientHistory.set([]);
+    this.coppaShield.revokeGuardianAttestation();
     this.vitals.set({
       bp: '',
       hr: '',
@@ -232,7 +250,7 @@ export class PatientStateService {
     }
 
     const timestamp = new Date().toISOString();
-    this.logEnterpriseAudit('STATE_PURGE', `Purged ${totalPurged} transient patient items & local storage caches`);
+    this.logEnterpriseAudit('STATE_PURGE', `Purged ${totalPurged} transient patient items & revoked guardian proxy tokens`);
 
     return { timestamp, purgedItemsCount: totalPurged };
   }

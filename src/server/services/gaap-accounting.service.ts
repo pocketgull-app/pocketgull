@@ -8,7 +8,13 @@
 
 import { Firestore, Timestamp } from '@google-cloud/firestore';
 
-const db = new Firestore();
+let _db: Firestore | null = null;
+function getDb(): Firestore {
+  if (!_db) {
+    _db = new Firestore();
+  }
+  return _db;
+}
 
 export interface IJournalEntryLine {
   accountCode: string;   // e.g. '1010-CASH', '2100-DEFERRED-REV', '4010-SUBSCRIPTION-REV'
@@ -44,8 +50,12 @@ export interface IRevenueSchedule {
 }
 
 export class GAAPAccountingService {
-  private ledgerCollection = db.collection('general_ledger');
-  private schedulesCollection = db.collection('revenue_schedules');
+  private get ledgerCollection() {
+    return getDb().collection('general_ledger');
+  }
+  private get schedulesCollection() {
+    return getDb().collection('revenue_schedules');
+  }
 
   /**
    * Records initial cash receipt and deferred revenue liability under ASC 606

@@ -16,8 +16,8 @@ export default defineConfig({
             path.resolve(__dirname, 'tests/setup.ts')
         ],
         include: [
-            'src/**/*.spec.ts',
-            'tests/**/*.spec.ts'
+            './src/**/*.spec.ts',
+            './tests/**/*.spec.ts'
         ],
         exclude: [
             '**/node_modules/**',
@@ -27,6 +27,8 @@ export default defineConfig({
             '**/AppData/**',
             '**/Local Settings/**',
             '**/Application Data/**',
+            '**/.gemini/**',
+            '**/.git/**',
             'e2e/**',
             'pocketgull_flutter/**',
             'companion-apps/**'

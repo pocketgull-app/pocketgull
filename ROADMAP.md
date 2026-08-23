@@ -58,5 +58,5 @@ Pocket Gull is committed to continuous refinement (**Kaizen**) in integrative cl
 
 ## 🌍 2028 - 2030: Global Health Equity & Federated ML Protocol
 - [x] **Universal 50-Language Socratic Translation**: Real-time multi-lingual Socratic tooltips and voice translation across 50+ global languages and indigenous medical dialects.
-- [ ] **Privacy-Preserving Federated ML Protocol**: Population health model training across participating clinics without transmitting raw PHI.
-- [ ] **Open Evidence Commons**: Community-governed, peer-reviewed clinical knowledge graph with decentralized cryptographic evidence attestation.
+- [x] **Privacy-Preserving Federated ML Protocol**: Population health model training across participating clinics with client-side differential privacy ($\epsilon=2.0, \delta=10^{-5}$ Gaussian mechanism), $L_2$ gradient clipping, and pairwise zero-sum Secure Aggregation (SecAgg) without transmitting raw PHI.
+- [x] **Open Evidence Commons & Cryptographic Attestation**: Community-governed, peer-reviewed clinical knowledge graph with decentralized SHA-256 Merkle inclusion proofs, quadratic voting consensus ($>66.7\%$ supermajority threshold), and verifiable block attestation receipts.

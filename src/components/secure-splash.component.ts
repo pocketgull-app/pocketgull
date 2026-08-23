@@ -1636,6 +1636,7 @@ export class SecureSplashComponent implements OnInit {
   // Outputs
   submitKey = output<string>();
   loadDemo = output<void>();
+  unlockSession = output<void>();
   selectAiStudio = output<void>();
   emergencyBypass = output<void>();
 
@@ -1649,9 +1650,8 @@ export class SecureSplashComponent implements OnInit {
         sessionStorage.setItem('pg_session_onboarded', '1');
       } catch (e) { /* ignore */ }
     }
-    // Signal the parent to re-enter the application.
-    // Emit loadDemo so the parent sets hasApiKey(true) and dismisses the splash.
-    this.loadDemo.emit();
+    // Signal the parent to enter the application in live clinical mode.
+    this.unlockSession.emit();
   }
 
   // State
