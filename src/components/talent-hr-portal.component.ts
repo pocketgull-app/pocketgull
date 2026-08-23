@@ -538,18 +538,18 @@ export class TalentHrPortalComponent {
     },
     {
       id: 'health-equity-regulatory',
-      title: 'Health Equity & Five Eyes Sovereignty',
+      title: 'Health Equity & Sovereign Regulatory Standards',
       badge: 'JD / Compliance / Patient Advocate',
       icon: '🌐',
       targetProfessionals: 'Healthcare Attorneys, Privacy Officers, Multilingual Patient Advocates',
-      domainMission: 'Ensure strict statutory compliance across Five Eyes partner nations (HIPAA, NHS DTAC, PIPEDA, TGA) and expand 6th-grade cognitive health literacy.',
+      domainMission: 'Ensure strict statutory compliance across international partner jurisdictions (HIPAA, NHS DTAC, PIPEDA, TGA) and expand 6th-grade cognitive health literacy.',
       howYouWrangleAgents: [
         'Audit prompt injection and data egress pipelines for HIPAA Safe Harbor de-identification',
         'Calibrate multi-jurisdictional emergency vectors (988 US, 111 UK, 988 CA, 13 11 14 AU)',
         'Test Bionic Reading and cognitive translation for low-health-literacy populations'
       ],
       deliverables: [
-        'Five Eyes statutory regulatory mapping matrix',
+        'Multi-jurisdiction statutory regulatory mapping matrix',
         'HIPAA §164.514 18-identifier de-identification evaluation suite',
         'Multilingual health equity & optotypic legibility audits'
       ],

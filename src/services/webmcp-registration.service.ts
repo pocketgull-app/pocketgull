@@ -35,6 +35,7 @@ import { FederatedLearningService } from './federated-learning.service';
 import { OpenEvidenceCommonsService } from './open-evidence-commons.service';
 import { NantucketTickRadarService } from './nantucket-tick-radar.service';
 import { NantucketSolutionDiscoveryService } from './nantucket-solution-discovery.service';
+import { IpPatentRegistryService } from './ip-patent-registry.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -76,6 +77,7 @@ export class WebMcpRegistrationService {
   private evidenceCommonsService = inject(OpenEvidenceCommonsService, { optional: true });
   private tickRadarService = inject(NantucketTickRadarService, { optional: true });
   private solutionDiscoveryService = inject(NantucketSolutionDiscoveryService, { optional: true });
+  private ipPatentRegistry = inject(IpPatentRegistryService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1775,6 +1777,52 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(discoveryTool, { signal: discoveryCtrl.signal });
     this.mcpControllers.push({ name: discoveryTool.name, controller: discoveryCtrl });
+
+    // get_staked_patent_claims_summary
+    const ipCtrl = new AbortController();
+    const ipTool = {
+      name: 'get_staked_patent_claims_summary',
+      description: 'Returns a summary of PocketGull 200 formal staked patent claims across 10 core invention clusters and 7 statutory copyright & invention clauses.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          clusterId: { type: 'string', description: 'Optional specific cluster ID (e.g., cluster-1-popperian-epistemology, cluster-2-webgpu-bio-signals).' }
+        }
+      },
+      execute: async (params?: any) => {
+        try {
+          if (!this.ipPatentRegistry) {
+            return { content: [{ type: 'text', text: 'IP Patent Registry Service unavailable.' }], isError: true };
+          }
+          if (params?.clusterId) {
+            const cluster = this.ipPatentRegistry.getClusterById(params.clusterId);
+            if (!cluster) {
+              return { content: [{ type: 'text', text: `Cluster '${params.clusterId}' not found.` }], isError: true };
+            }
+            return { content: [{ type: 'text', text: JSON.stringify(cluster, null, 2) }] };
+          }
+          const summary = this.ipPatentRegistry.getSummary();
+          const clusters = this.ipPatentRegistry.getClusters().map(c => ({
+            id: c.id,
+            clusterNumber: c.clusterNumber,
+            title: c.title,
+            claimRange: c.claimRange,
+            totalClaims: c.totalClaims,
+            abstract: c.abstract
+          }));
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({ summary, totalClusters: clusters.length, clusters }, null, 2)
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to retrieve IP patent summary: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(ipTool, { signal: ipCtrl.signal });
+    this.mcpControllers.push({ name: ipTool.name, controller: ipCtrl });
 
   }
 

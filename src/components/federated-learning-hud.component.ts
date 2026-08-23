@@ -104,7 +104,7 @@ import { FederatedLearningService, IFederatedRoundResult } from '../services/fed
       <div class="mt-5">
         <div class="flex items-center justify-between pb-2">
           <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 font-pocketgull-sans-clinical">
-            Participating Clinical Swarm Nodes (Five Eyes & Global)
+            Participating Clinical Swarm Nodes (Sovereign Multi-Region &amp; Global)
           </h3>
           <span class="text-xs text-zinc-500 font-mono">{{ flService.activeNodesCount() }} Active Nodes</span>
         </div>
