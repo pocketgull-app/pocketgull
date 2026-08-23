@@ -208,109 +208,124 @@ import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.
       <div class="px-3 sm:px-8 py-2.5 no-print w-full bg-slate-100/95 dark:bg-zinc-950/95 border-b border-slate-200 dark:border-zinc-800">
         <div class="max-w-4xl mx-auto flex flex-col gap-2 font-mono">
           
-          <!-- Primary Lens Navigation Tabs -->
-          <div class="flex items-center justify-between gap-1.5 w-full relative z-10 pt-1 border-t border-slate-200/60 dark:border-zinc-800/80">
+          <!-- Primary Lens Navigation Tabs (Precision Underline Strip) -->
+          <div class="flex items-center justify-between gap-1.5 w-full relative z-10 border-b border-slate-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 font-mono text-xs">
             <!-- Scroll Left Arrow -->
             <button type="button" (click)="scrollLensBar('left')" 
-              class="px-1.5 py-1 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-white/80 dark:bg-zinc-900/80 rounded border border-zinc-200 dark:border-zinc-800 shrink-0 cursor-pointer shadow-xs transition" title="Scroll Lenses Left">
+              class="px-2 py-2 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-transparent border-r border-zinc-200 dark:border-zinc-800 shrink-0 cursor-pointer transition" title="Scroll Lenses Left">
               ◀
             </button>
 
-            <div #lensBarContainer class="flex items-center gap-2 overflow-x-auto scroll-smooth hide-scrollbar flex-1">
+            <div #lensBarContainer class="flex items-center gap-1 overflow-x-auto scroll-smooth hide-scrollbar flex-1">
               <button (click)="changeLens('Summary Overview')"
                 data-testid="tab-overview"
-                [class]="activeLens() === 'Summary Overview' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
-                <span>📋</span> 1. Summary Overview
+                [class]="activeLens() === 'Summary Overview' 
+                  ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
+                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                class="py-2.5 px-3 uppercase tracking-wider text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                <span class="text-teal-600 dark:text-teal-400 font-bold">01</span>
+                <span>Summary Overview</span>
               </button>
 
               <button (click)="changeLens('Treatment Matrix')"
                 data-testid="tab-treatment-matrix"
-                [class]="activeLens() === 'Treatment Matrix' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
-                <span>💊</span> 2. Treatment & Tri-Paradigm
+                [class]="activeLens() === 'Treatment Matrix' 
+                  ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
+                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                class="py-2.5 px-3 uppercase tracking-wider text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                <span class="text-teal-600 dark:text-teal-400 font-bold">02</span>
+                <span>Treatment &amp; Tri-Paradigm</span>
               </button>
 
               <button (click)="changeLens('Functional Protocols')"
                 data-testid="tab-functional-protocols"
-                [class]="(activeLens() === 'Functional Protocols' || activeLens() === 'Nutrition' || activeLens() === 'Precision Nutrients') ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
-                <span>🧠</span> 3. Functional & Nutrition
+                [class]="(activeLens() === 'Functional Protocols' || activeLens() === 'Nutrition' || activeLens() === 'Precision Nutrients') 
+                  ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
+                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                class="py-2.5 px-3 uppercase tracking-wider text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                <span class="text-teal-600 dark:text-teal-400 font-bold">03</span>
+                <span>Functional &amp; Nutrition</span>
               </button>
 
               <button (click)="changeLens('Monitoring & Follow-up')"
                 data-testid="tab-monitoring-follow-up"
-                [class]="activeLens() === 'Monitoring & Follow-up' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
-                <span>📊</span> 4. Monitoring & Longevity
+                [class]="activeLens() === 'Monitoring & Follow-up' 
+                  ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
+                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                class="py-2.5 px-3 uppercase tracking-wider text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                <span class="text-teal-600 dark:text-teal-400 font-bold">04</span>
+                <span>Monitoring &amp; Longevity</span>
               </button>
 
               <button (click)="changeLens('Environmental Exposomics & Toxicology')"
                 data-testid="tab-exposomics-toxicology"
-                [class]="activeLens() === 'Environmental Exposomics & Toxicology' ? '!bg-amber-600 !text-white border-amber-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-amber-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
-                <span>🧪</span> 5. Exposomics & Tox
+                [class]="activeLens() === 'Environmental Exposomics & Toxicology' 
+                  ? 'border-b-2 border-amber-500 text-zinc-950 dark:text-white font-bold bg-amber-500/5 -mb-px' 
+                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                class="py-2.5 px-3 uppercase tracking-wider text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                <span class="text-amber-500 font-bold">05</span>
+                <span>Exposomics &amp; Tox</span>
               </button>
 
               <button (click)="changeLens('Global Health & WHO Initiatives')"
                 data-testid="tab-global-health"
-                [class]="activeLens() === 'Global Health & WHO Initiatives' ? '!bg-teal-600 !text-white border-teal-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-teal-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
-                <span>🌍</span> 6. Global Health
+                [class]="activeLens() === 'Global Health & WHO Initiatives' 
+                  ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
+                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                class="py-2.5 px-3 uppercase tracking-wider text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                <span class="text-teal-500 font-bold">06</span>
+                <span>Global Health</span>
               </button>
 
               <button (click)="changeLens('Skeptical Epistemology & Socratic Audit')"
                 data-testid="tab-socratic-audit"
-                [class]="activeLens() === 'Skeptical Epistemology & Socratic Audit' ? '!bg-purple-600 !text-white border-purple-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-purple-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
-                <span>⚖️</span> 7. Socratic Audit
+                [class]="activeLens() === 'Skeptical Epistemology & Socratic Audit' 
+                  ? 'border-b-2 border-purple-500 text-zinc-950 dark:text-white font-bold bg-purple-500/5 -mb-px' 
+                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                class="py-2.5 px-3 uppercase tracking-wider text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                <span class="text-purple-400 font-bold">07</span>
+                <span>Socratic Audit</span>
               </button>
             </div>
 
             <!-- Compact Dropdown for All Specialized Deep Dives -->
-            <div class="relative shrink-0">
+            <div class="relative shrink-0 flex items-center gap-1 pr-1">
               <button (click)="showAllLensesMenu.set(!showAllLensesMenu())"
-                class="py-2 px-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-purple-300 border border-purple-500/40 text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5">
-                <span class="text-purple-300">🔬 Subsystem Vault</span>
-                <span class="text-purple-300 text-[10px]">▾</span>
+                class="py-1.5 px-2.5 bg-zinc-900 hover:bg-zinc-800 text-purple-300 border border-purple-500/40 text-[11px] font-mono font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5">
+                <span>[VAULT ▾]</span>
               </button>
 
-
               @if (showAllLensesMenu()) {
-                <div class="absolute right-0 top-full mt-1.5 w-64 p-2 rounded-2xl bg-zinc-950 border border-purple-500/40 shadow-2xl z-50 flex flex-col gap-1 max-h-80 overflow-y-auto">
+                <div class="absolute right-0 top-full mt-1 w-64 p-1.5 bg-zinc-950 border border-purple-500/40 shadow-2xl z-50 flex flex-col gap-1 max-h-80 overflow-y-auto font-mono text-xs">
                   @for (lens of availableLenses; track lens) {
                     <button (click)="changeLens(lens); showAllLensesMenu.set(false)"
                       [class]="activeLens() === lens ? 'bg-purple-600 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-900'"
-                      class="px-3 py-2 rounded-xl text-left text-xs font-mono transition flex items-center justify-between cursor-pointer">
+                      class="px-2.5 py-1.5 text-left text-xs font-mono transition flex items-center justify-between cursor-pointer">
                       <span [class.text-white]="activeLens() === lens" [class.text-zinc-300]="activeLens() !== lens">{{ lens }}</span>
                       @if (activeLens() === lens) { <span class="text-white">✓</span> }
                     </button>
                   }
                 </div>
               }
+
+              <!-- Bionic Reading Mode Lens Accent Toggle -->
+              <button (click)="bionicReading.toggleBionicReading()"
+                      [class.bg-amber-600]="bionicReading.isBionicReadingEnabled()"
+                      [class.text-white]="bionicReading.isBionicReadingEnabled()"
+                      [class.bg-zinc-900]="!bionicReading.isBionicReadingEnabled()"
+                      [class.text-amber-400]="!bionicReading.isBionicReadingEnabled()"
+                      class="py-1.5 px-2 border border-amber-500/40 text-[11px] font-mono font-bold uppercase tracking-wider transition cursor-pointer shrink-0"
+                      title="Toggle Bionic Reading Mode">
+                <span>{{ bionicReading.isBionicReadingEnabled() ? '[BIONIC: ON]' : '[BIONIC]' }}</span>
+              </button>
+
+              <!-- Unified Clinical Export & Portability Hub Quick Trigger -->
+              <button (click)="showClinicalToolsModal.set(true)"
+                      class="py-1.5 px-2.5 bg-zinc-900 hover:bg-zinc-800 text-indigo-300 border border-indigo-500/40 text-[11px] font-mono font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 shrink-0"
+                      title="Open Clinical Tools & Export Hub">
+                <span>[EXPORT]</span>
+              </button>
             </div>
-
-            <!-- Bionic Reading Mode Lens Accent Toggle -->
-            <button (click)="bionicReading.toggleBionicReading()"
-                    [class.bg-amber-600]="bionicReading.isBionicReadingEnabled()"
-                    [class.text-white]="bionicReading.isBionicReadingEnabled()"
-                    [class.bg-white]="!bionicReading.isBionicReadingEnabled()"
-                    [class.dark:bg-zinc-900]="!bionicReading.isBionicReadingEnabled()"
-                    [class.text-amber-800]="!bionicReading.isBionicReadingEnabled()"
-                    [class.dark:text-amber-300]="!bionicReading.isBionicReadingEnabled()"
-                    class="py-1.5 px-3 rounded-lg border border-amber-500/40 text-[11px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0"
-                    title="Toggle Bionic Reading Focus across all 13 Clinical Lenses">
-              <span>📖 Bionic Focus</span>
-              <span>{{ bionicReading.isBionicReadingEnabled() ? 'ON' : 'OFF' }}</span>
-            </button>
-
-            <!-- Unified Clinical Export & Portability Hub Quick Trigger -->
-            <button (click)="showClinicalToolsModal.set(true)"
-                    class="py-1.5 px-3 rounded-lg bg-indigo-950 hover:bg-indigo-900 text-indigo-200 border border-indigo-500/40 text-[11px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 shrink-0"
-                    title="Open Clinical Tools & Export Hub">
-              <span>📥 Export Hub</span>
-            </button>
-
           </div>
 
         </div>
@@ -2949,20 +2964,22 @@ export class AnalysisReportComponent implements OnDestroy {
             return { suggestions, proposedText, cleanedText };
           };
 
-          const applyHighlights = (html: string, issues: IVerificationIssue[]) => {
+          const applyHighlights = (html: string, issues?: IVerificationIssue[]) => {
             let highlightedHtml = html;
-            for (const issue of issues) {
-              if (issue.claim && highlightedHtml.includes(issue.claim)) {
-                const colorClass = issue.severity === 'high' ? 'bg-red-100 border-red-200 dark:bg-red-900/30 dark:border-red-800' : 'bg-amber-100 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800';
-                // Encode the message to ensure it doesn't break data attributes
-                const highlightSpan = '<span class="verification-claim px-0.5 border-b-2 border-dotted cursor-help transition-colors ' +
-                  colorClass +
-                  '" data-message="' +
-                  encodeHtml(issue.message) +
-                  '">' +
-                  encodeHtml(issue.claim) +
-                  '</span>';
-                highlightedHtml = highlightedHtml.replace(issue.claim, highlightSpan);
+            if (Array.isArray(issues)) {
+              for (const issue of issues) {
+                if (issue && issue.claim && highlightedHtml.includes(issue.claim)) {
+                  const colorClass = issue.severity === 'high' ? 'bg-red-100 border-red-200 dark:bg-red-900/30 dark:border-red-800' : 'bg-amber-100 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800';
+                  // Encode the message to ensure it doesn't break data attributes
+                  const highlightSpan = '<span class="verification-claim px-0.5 border-b-2 border-dotted cursor-help transition-colors ' +
+                    colorClass +
+                    '" data-message="' +
+                    encodeHtml(issue.message) +
+                    '">' +
+                    encodeHtml(issue.claim) +
+                    '</span>';
+                  highlightedHtml = highlightedHtml.replace(issue.claim, highlightSpan);
+                }
               }
             }
 
@@ -2972,7 +2989,7 @@ export class AnalysisReportComponent implements OnDestroy {
               highlightedHtml = `<div class="apa-citation-block flex flex-col gap-1 my-3 font-sans">
                 <div class="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-indigo-600 dark:text-indigo-400 font-extrabold">
                   <span>📖 APA 7th Edition & UK RIO Verified Citation</span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span class="w-1.5 h-1.5 rounded-2xs bg-emerald-500"></span>
                   <span class="text-emerald-600 dark:text-emerald-400">Peer-Reviewed Evidence</span>
                 </div>
                 <div class="text-xs leading-relaxed text-slate-800 dark:text-slate-200 font-medium">

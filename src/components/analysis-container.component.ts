@@ -59,58 +59,57 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
           @let isEastern = state.activePhilosophy() === 'eastern';
           @let isAyurvedic = state.activePhilosophy() === 'ayurvedic';
 
-          <div class="min-h-[52px] py-2 bg-zinc-950 border-b border-zinc-800 flex flex-wrap items-center justify-between px-3 sm:px-6 shrink-0 relative z-10 font-mono gap-2 text-zinc-100">
+          <div class="min-h-[48px] py-1.5 bg-zinc-950 border-b border-zinc-800 flex flex-wrap items-center justify-between px-3 sm:px-6 shrink-0 relative z-10 font-mono gap-2 text-zinc-100">
               
-            <!-- Geographical Clinical Paradigm Selector -->
-            <div class="flex items-center gap-1.5 bg-zinc-900 p-1 rounded-xl border border-zinc-800 overflow-x-auto max-w-full font-mono">
-              <span class="hidden md:inline text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 px-1">
-                Paradigm:
+            <!-- Geographical Clinical Paradigm Selector (Precision Segmented Rail) -->
+            <div class="flex items-center border border-zinc-800 bg-zinc-900 overflow-x-auto max-w-full font-mono divide-x divide-zinc-800">
+              <span class="hidden md:inline text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-500 px-2.5 py-1.5 select-none">
+                PARADIGM:
               </span>
 
               <!-- Western Clinical (North America & Europe) -->
               <button (click)="selectPhilosophy('western')"
                 title="Western Clinical Medicine (North America & Europe)"
                 [class]="isWestern
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer border rounded-lg bg-orange-500 text-zinc-950 border-orange-400/50 shadow-sm'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer border rounded-lg bg-zinc-900 text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-zinc-850'">
-                <span>🏥 Western</span>
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-amber-500 text-zinc-950'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'">
+                <span>WESTERN</span>
               </button>
 
               <!-- Eastern TCM (East Asia Zang-Fu) -->
               <button (click)="selectPhilosophy('eastern')"
                 title="Eastern TCM Medicine (East Asian Zang-Fu)"
                 [class]="isEastern
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer border rounded-lg bg-orange-500 text-zinc-950 border-orange-400/50 shadow-sm'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer border rounded-lg bg-zinc-900 text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-zinc-850'">
-                <span>☯️ Eastern</span>
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-amber-500 text-zinc-950'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'">
+                <span>EASTERN</span>
               </button>
 
               <!-- Ayurvedic (South Asia Vedic) -->
               <button (click)="selectPhilosophy('ayurvedic')"
                 title="Ayurvedic Medicine (South Asian Vedic Dosha)"
                 [class]="isAyurvedic
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer border rounded-lg bg-orange-500 text-zinc-950 border-orange-400/50 shadow-sm'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer border rounded-lg bg-zinc-900 text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-zinc-850'">
-                <span>🪷 Ayurvedic</span>
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-amber-500 text-zinc-950'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'">
+                <span>AYURVEDIC</span>
               </button>
 
               <!-- View Mode Switcher: Classic Lenses vs Functional Domain Suites -->
-              <div class="h-4 w-px bg-zinc-700 hidden sm:block mx-0.5"></div>
               <button type="button" (click)="viewMode.set(viewMode() === 'lenses' ? 'suites' : 'lenses')"
                 title="Toggle between Classic Multi-Lens Report and Functional Domain Suites (Paradigm Diff Engine)"
                 [class]="viewMode() === 'suites'
-                  ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase rounded-lg border border-amber-400 bg-amber-500 text-zinc-950 transition cursor-pointer shadow-xs'
-                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase rounded-lg border border-zinc-700 bg-zinc-850 text-zinc-400 hover:text-zinc-200 transition cursor-pointer'">
-                <span>{{ viewMode() === 'lenses' ? '🧬 Domain Suites' : '📄 Lenses' }}</span>
+                  ? 'flex items-center gap-1 px-3 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1 px-3 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
+                <span>{{ viewMode() === 'lenses' ? '🧬 DOMAIN SUITES' : '📄 LENSES' }}</span>
               </button>
             </div>
 
             <!-- Clinical Workflows & Studio Dropdown -->
             <div class="flex items-center gap-2 font-mono ml-auto">
               @if (justGenerated() && hasReport() && !intelligence.isLoading()) {
-                <div class="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">
-                   <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
-                   <span>Synced</span>
+                <div class="hidden lg:flex items-center gap-1.5 px-2 py-1 bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">
+                   <span class="w-1.5 h-1.5 bg-orange-500 rounded-2xs"></span>
+                   <span>[SYNCED]</span>
                 </div>
               }
 
@@ -118,18 +117,18 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
               <button type="button" (click)="showSoapModal.set(!showSoapModal())"
                 title="Open Ambient Real-Time FHIR R4 SOAP Note Generator"
                 [class]="showSoapModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-purple-400 bg-purple-500 text-zinc-950 transition cursor-pointer shadow-md'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-purple-500/40 bg-purple-500/10 text-purple-300 hover:bg-purple-600 hover:text-white transition cursor-pointer shadow-xs'">
-                <span>📝 SOAP Note</span>
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-purple-400 bg-purple-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-purple-500/40 bg-purple-500/10 text-purple-300 hover:bg-purple-600 hover:text-white transition cursor-pointer'">
+                <span>[SOAP NOTE]</span>
               </button>
 
               <!-- What-If Sandbox Simulator Toggle Button -->
               <button type="button" (click)="showSimulatorModal.set(!showSimulatorModal())"
                 title="Open Interactive What-If Counterfactual Health Simulator"
                 [class]="showSimulatorModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-emerald-400 bg-emerald-500 text-zinc-950 transition cursor-pointer shadow-md'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-600 hover:text-white transition cursor-pointer shadow-xs'">
-                <span>🔮 What-If</span>
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-emerald-400 bg-emerald-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-600 hover:text-white transition cursor-pointer'">
+                <span>[WHAT-IF]</span>
               </button>
 
               <!-- Clinical Studio Overflow Dropdown -->
@@ -137,25 +136,25 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
                 <button type="button" (click)="showToolsMenu.set(!showToolsMenu())"
                   title="Clinical Studio & Advanced Analysis Tools"
                   [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showToolsMenu())
-                    ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-zinc-600 bg-zinc-800 text-zinc-100 transition cursor-pointer shadow-sm'
-                    : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
-                  <span>⚡ Studio ▾</span>
+                    ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-600 bg-zinc-800 text-zinc-100 transition cursor-pointer'
+                    : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
+                  <span>STUDIO ▾</span>
                 </button>
 
                 @if (showToolsMenu()) {
-                  <div class="absolute right-0 top-full mt-2 w-56 p-2 rounded-2xl bg-zinc-950 border border-zinc-800 shadow-2xl z-50 flex flex-col gap-1 text-xs">
+                  <div class="absolute right-0 top-full mt-1 w-56 p-1.5 bg-zinc-950 border border-zinc-800 shadow-2xl z-50 flex flex-col gap-1 text-xs font-mono">
                     <button (click)="showCohortMatrixModal.set(!showCohortMatrixModal()); showToolsMenu.set(false)"
-                      class="w-full text-left px-3 py-2 rounded-xl text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      class="w-full text-left px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
                       <span>📊 Cohort Matrix</span>
                       @if (showCohortMatrixModal()) { <span class="text-blue-400">✓</span> }
                     </button>
                     <button (click)="showHipaaPdfModal.set(!showHipaaPdfModal()); showToolsMenu.set(false)"
-                      class="w-full text-left px-3 py-2 rounded-xl text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      class="w-full text-left px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
                       <span>📄 HIPAA PDF Audit</span>
                       @if (showHipaaPdfModal()) { <span class="text-amber-400">✓</span> }
                     </button>
                     <button (click)="showSalesDemoModal.set(true); showToolsMenu.set(false)"
-                      class="w-full text-left px-3 py-2 rounded-xl text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      class="w-full text-left px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
                       <span>💼 B2B Executive Demo</span>
                     </button>
                   </div>

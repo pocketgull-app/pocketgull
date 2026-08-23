@@ -16,6 +16,7 @@ import { SentinelTelemetryPlotterComponent } from './sentinel-telemetry-plotter.
 import { LongitudinalTrendSparklineComponent } from './shared/longitudinal-trend-sparkline.component';
 import { GlobalHealthInitiativesService } from '../services/global-health-initiatives.service';
 import { EnvironmentalExposomicsToxicologyComponent } from './environmental-exposomics-toxicology.component';
+import { InstantBodyCarePlanSheetComponent } from './anatomy-3d/instant-body-care-plan-sheet.component';
 
 @Component({
   selector: 'app-medical-chart',
@@ -32,7 +33,8 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
     SentinelTriageComponent,
     SentinelTelemetryPlotterComponent,
     LongitudinalTrendSparklineComponent,
-    EnvironmentalExposomicsToxicologyComponent
+    EnvironmentalExposomicsToxicologyComponent,
+    InstantBodyCarePlanSheetComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -60,58 +62,58 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
           </div>
       }
 
-      <!-- 🧭 Segmented Workspace Navigator (Zero-Scroll Mode) -->
-      <div class="flex items-center justify-between gap-2 p-1.5 bg-zinc-200/80 dark:bg-zinc-900/90 rounded-2xl border border-zinc-300 dark:border-zinc-800 shadow-xs mb-1 font-sans text-xs shrink-0">
-        <div class="flex items-center gap-1 overflow-x-auto">
+      <!-- 🧭 Precision Workspace Navigator (Zero-Scroll Mode) -->
+      <div class="flex items-center justify-between gap-1 border-b border-zinc-200 dark:border-zinc-800 bg-white/40 dark:bg-zinc-950/40 px-1 mb-2 font-mono text-xs shrink-0 overflow-x-auto">
+        <div class="flex items-center gap-4">
           <button type="button" (click)="activeWorkspaceTab.set('anatomy')"
-            [class.bg-white]="activeWorkspaceTab() === 'anatomy'"
-            [class.dark:bg-zinc-800]="activeWorkspaceTab() === 'anatomy'"
-            [class.text-zinc-900]="activeWorkspaceTab() === 'anatomy'"
-            [class.dark:text-zinc-100]="activeWorkspaceTab() === 'anatomy'"
-            [class.shadow-xs]="activeWorkspaceTab() === 'anatomy'"
-            [class.text-zinc-600]="activeWorkspaceTab() !== 'anatomy'"
+            [class.border-teal-500]="activeWorkspaceTab() === 'anatomy'"
+            [class.text-zinc-950]="activeWorkspaceTab() === 'anatomy'"
+            [class.dark:text-white]="activeWorkspaceTab() === 'anatomy'"
+            [class.font-bold]="activeWorkspaceTab() === 'anatomy'"
+            [class.border-transparent]="activeWorkspaceTab() !== 'anatomy'"
+            [class.text-zinc-500]="activeWorkspaceTab() !== 'anatomy'"
             [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'anatomy'"
-            class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap">
-            <span>🧬</span>
+            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            <span class="text-teal-600 dark:text-teal-400 font-bold">01</span>
             <span>3D Anatomy</span>
           </button>
 
           <button type="button" (click)="activeWorkspaceTab.set('vitals')"
-            [class.bg-white]="activeWorkspaceTab() === 'vitals'"
-            [class.dark:bg-zinc-800]="activeWorkspaceTab() === 'vitals'"
-            [class.text-zinc-900]="activeWorkspaceTab() === 'vitals'"
-            [class.dark:text-zinc-100]="activeWorkspaceTab() === 'vitals'"
-            [class.shadow-xs]="activeWorkspaceTab() === 'vitals'"
-            [class.text-zinc-600]="activeWorkspaceTab() !== 'vitals'"
+            [class.border-teal-500]="activeWorkspaceTab() === 'vitals'"
+            [class.text-zinc-950]="activeWorkspaceTab() === 'vitals'"
+            [class.dark:text-white]="activeWorkspaceTab() === 'vitals'"
+            [class.font-bold]="activeWorkspaceTab() === 'vitals'"
+            [class.border-transparent]="activeWorkspaceTab() !== 'vitals'"
+            [class.text-zinc-500]="activeWorkspaceTab() !== 'vitals'"
             [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'vitals'"
-            class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap">
-            <span>📈</span>
+            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            <span class="text-teal-600 dark:text-teal-400 font-bold">02</span>
             <span>Vitals &amp; Bio</span>
           </button>
 
           <button type="button" (click)="activeWorkspaceTab.set('imaging')"
-            [class.bg-white]="activeWorkspaceTab() === 'imaging'"
-            [class.dark:bg-zinc-800]="activeWorkspaceTab() === 'imaging'"
-            [class.text-zinc-900]="activeWorkspaceTab() === 'imaging'"
-            [class.dark:text-zinc-100]="activeWorkspaceTab() === 'imaging'"
-            [class.shadow-xs]="activeWorkspaceTab() === 'imaging'"
-            [class.text-zinc-600]="activeWorkspaceTab() !== 'imaging'"
+            [class.border-teal-500]="activeWorkspaceTab() === 'imaging'"
+            [class.text-zinc-950]="activeWorkspaceTab() === 'imaging'"
+            [class.dark:text-white]="activeWorkspaceTab() === 'imaging'"
+            [class.font-bold]="activeWorkspaceTab() === 'imaging'"
+            [class.border-transparent]="activeWorkspaceTab() !== 'imaging'"
+            [class.text-zinc-500]="activeWorkspaceTab() !== 'imaging'"
             [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'imaging'"
-            class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap">
-            <span>🩻</span>
+            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            <span class="text-teal-600 dark:text-teal-400 font-bold">03</span>
             <span>Imaging &amp; Tox</span>
           </button>
 
           <button type="button" (click)="activeWorkspaceTab.set('timeline')"
-            [class.bg-white]="activeWorkspaceTab() === 'timeline'"
-            [class.dark:bg-zinc-800]="activeWorkspaceTab() === 'timeline'"
-            [class.text-zinc-900]="activeWorkspaceTab() === 'timeline'"
-            [class.dark:text-zinc-100]="activeWorkspaceTab() === 'timeline'"
-            [class.shadow-xs]="activeWorkspaceTab() === 'timeline'"
-            [class.text-zinc-600]="activeWorkspaceTab() !== 'timeline'"
+            [class.border-teal-500]="activeWorkspaceTab() === 'timeline'"
+            [class.text-zinc-950]="activeWorkspaceTab() === 'timeline'"
+            [class.dark:text-white]="activeWorkspaceTab() === 'timeline'"
+            [class.font-bold]="activeWorkspaceTab() === 'timeline'"
+            [class.border-transparent]="activeWorkspaceTab() !== 'timeline'"
+            [class.text-zinc-500]="activeWorkspaceTab() !== 'timeline'"
             [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'timeline'"
-            class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap">
-            <span>⏳</span>
+            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            <span class="text-teal-600 dark:text-teal-400 font-bold">04</span>
             <span>History</span>
           </button>
         </div>
@@ -120,10 +122,10 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
         <button type="button" (click)="activeWorkspaceTab.set(activeWorkspaceTab() === 'all' ? 'anatomy' : 'all')"
           [class.text-emerald-600]="activeWorkspaceTab() === 'all'"
           [class.dark:text-emerald-400]="activeWorkspaceTab() === 'all'"
-          [class.bg-emerald-50]="activeWorkspaceTab() === 'all'"
-          [class.dark:bg-emerald-950/40]="activeWorkspaceTab() === 'all'"
-          class="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-mono font-bold uppercase tracking-wider border border-zinc-300 dark:border-zinc-700 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer shrink-0">
-          <span>{{ activeWorkspaceTab() === 'all' ? '📑 Multi-Panel' : '📑 View All' }}</span>
+          [class.border-emerald-500]="activeWorkspaceTab() === 'all'"
+          [class.bg-emerald-500/10]="activeWorkspaceTab() === 'all'"
+          class="hidden sm:flex items-center gap-1 px-2 py-1 text-[10px] font-mono font-bold uppercase tracking-wider border border-zinc-300 dark:border-zinc-700 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer shrink-0">
+          <span>{{ activeWorkspaceTab() === 'all' ? '[ MULTI-PANEL ]' : '[ ALL PANELS ]' }}</span>
         </button>
       </div>
 
@@ -143,18 +145,14 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
           @if(isViewerExpanded()) {
             <div class="body-viewer-container min-h-[500px] sm:min-h-[540px] xl:min-h-[580px] overflow-hidden bg-white dark:bg-black/20 shrink-0 flex flex-col">
               @defer (on immediate) {
-                <app-body-viewer class="h-full w-full flex-1 flex flex-col"></app-body-viewer>
-              } @placeholder {
-                <div class="h-full w-full flex items-center justify-center text-gray-500 dark:text-zinc-400 bg-gray-50/50 dark:bg-zinc-800/50">
-                  <div class="flex flex-col items-center gap-3">
-                    <div class="w-6 h-6 border-2 border-gray-200 border-t-[#689F38] rounded-sm animate-spin"></div>
-                    <span class="text-xs uppercase tracking-widest font-bold">Loading 3D Viewer...</span>
-                  </div>
-                </div>
+                <app-body-viewer class="shrink-0 flex-1 flex flex-col"></app-body-viewer>
               }
             </div>
           }
         </pocket-gull-card>
+
+        <!-- Instant Body Care Plan Sheet (Bottom-sheet drawer overlay) -->
+        <app-instant-body-care-plan-sheet />
 
         <!-- Medical Summary Card -->
         <pocket-gull-card 
@@ -195,23 +193,23 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
           @if(isSparklinesExpanded()) {
             <div class="space-y-4 pt-1">
               
-              <!-- WHO 10-Year CVD Risk & ICD-11 Dual-Codes Ribbon -->
+              <!-- WHO 10-Year CVD Risk & ICD-11 Dual-Codes Bar -->
               @if(whoRisk(); as risk) {
-                <div class="p-3 rounded-xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200/80 dark:border-sky-900/50 flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
+                <div class="px-3 py-2 bg-zinc-50 dark:bg-zinc-900/60 border-l-2 border-sky-500 border-y border-r border-zinc-200 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
                   <div class="flex items-center gap-2">
-                    <span class="text-sm">🌍</span>
-                    <span class="font-bold text-zinc-900 dark:text-zinc-100 text-[11px] uppercase tracking-wider">
-                      WHO SDG 3.4 CVD Risk:
+                    <span class="inline-block w-1.5 h-1.5 bg-sky-500 rounded-2xs"></span>
+                    <span class="font-bold text-zinc-800 dark:text-zinc-200 text-[11px] uppercase tracking-wider">
+                      WHO SDG 3.4 CVD TELEMETRY:
                     </span>
-                    <span class="font-black px-2 py-0.5 rounded-md bg-white dark:bg-zinc-900 border border-sky-300 dark:border-sky-800" [ngClass]="risk.color">
-                      {{ risk.riskScorePercent }}% ({{ risk.riskTier }})
+                    <span class="font-black tracking-tight" [ngClass]="risk.color">
+                      [{{ risk.riskScorePercent }}% ▪ {{ risk.riskTier }}]
                     </span>
                   </div>
 
-                  <!-- ICD-11 Dual-Codes Chips -->
-                  <div class="flex items-center gap-1 flex-wrap">
+                  <!-- ICD-11 Dual-Codes Tags -->
+                  <div class="flex items-center gap-1.5 flex-wrap">
                     @for (code of whoIcd11Codes(); track $index) {
-                      <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white dark:bg-zinc-900 border border-sky-300 dark:border-sky-800 text-sky-800 dark:text-sky-300 shadow-2xs">
+                      <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-sky-700 dark:text-sky-300">
                         {{ code.icd11Tm1Code }}
                       </span>
                     }
