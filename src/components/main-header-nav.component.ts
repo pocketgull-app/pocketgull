@@ -44,9 +44,8 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
           <span class="text-xs font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">{{ network.isOnline() ? 'System Ready' : 'System Offline' }}</span>
         </div>
 
-        <!-- Desktop Quick Utility Bar (Hidden on mobile / tablet) -->
-        <div class="hidden xl:flex items-center gap-2 overflow-hidden">
-          <!-- Ambient Flow Background Music Toggle Button -->
+        <!-- Ambient Flow Background Music Quick Indicator (Desktop) -->
+        <div class="hidden xl:flex items-center gap-2">
           <button 
             type="button" 
             (click)="showAmbientPlayer.set(!showAmbientPlayer())"
@@ -56,106 +55,166 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
             [class.border-teal-500/50]="soundscapeService.isPlaying()"
             class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer shrink-0"
             title="Toggle Ambient Flow Soundscape & Offline Binaural Focus Music">
-            <span>{{ soundscapeService.isPlaying() ? '🎶 Flow Active' : '🎵 Ambient Flow' }}</span>
-          </button>
-
-          <!-- Socratic Intake Studio Button -->
-          <button 
-            type="button" 
-            id="btn-socratic-intake-nav"
-            (click)="openSocraticIntake.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer shrink-0"
-            title="Open Socratic Patient Intake Studio & FIFE Question Generator">
-            <span>✨ Socratic Intake</span>
-          </button>
-
-          <!-- Vertex AI Model Garden Button -->
-          <button 
-            type="button" 
-            id="btn-model-garden-nav"
-            (click)="openModelGarden.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer shrink-0"
-            title="Open Vertex AI Model Garden & Clinical Model Registry">
-            <span>🌿 Model Garden</span>
-          </button>
-
-          <!-- Companion App Sync Button -->
-          <button 
-            type="button" 
-            (click)="openCompanionSync.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-indigo-500/50 outline-none cursor-pointer shrink-0"
-            title="Generate FHIR R4 Smart Launch QR for Patient/Doctor Mobile Companion">
-            <span>📱 Sync Companion</span>
-          </button>
-
-          <!-- Support AI Agent Portal Button -->
-          <button 
-            type="button" 
-            (click)="openSupportTicket.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer shrink-0"
-            title="Open Autonomous Support AI Portal (support@pocketgull.app)">
-            <span>📬 AI Support</span>
-          </button>
-
-          <!-- Bio-Network QR & Theme Song Studio Button -->
-          <button 
-            type="button" 
-            (click)="openBioNetworkQr.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-purple-500/50 outline-none cursor-pointer shrink-0"
-            title="Sharable Peer Network QR Code, Personal Bio-Theme Song & Haptic Entrainment">
-            <span>🎵 Bio-Network</span>
-          </button>
-
-
-          <!-- Zero-Knowledge Encrypted Vault Button -->
-          <button 
-            type="button" 
-            (click)="openEncryptedVault.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-emerald-500/50 outline-none cursor-pointer shrink-0"
-            title="Zero-Knowledge AES-GCM-256 Client-Side Encrypted Patient Vault">
-            <span>🔐 Vault</span>
-          </button>
-
-          <!-- SMART on FHIR EHR Bridge Button -->
-          <button 
-            type="button" 
-            (click)="openSmartFhirSync.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60 hover:bg-sky-100 dark:hover:bg-sky-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-sky-500/50 outline-none cursor-pointer shrink-0"
-            title="SMART on FHIR R4 EHR Synchronizer (Epic, Cerner, HAPI)">
-            <span>🏥 FHIR Sync</span>
-          </button>
-
-          <!-- WHO / NIH / NSF Global Health Strategic Suite Button -->
-          <button 
-            type="button" 
-            (click)="openGlobalHealth.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-purple-500/50 outline-none cursor-pointer shrink-0"
-            title="WHO SDG 3.4, ICD-11 Chapter 26 TCIM Dual-Coding & NIH Geroscience Suite">
-            <span>🌐 Global Health</span>
-          </button>
-
-          <!-- Patient Telehealth Portal Button -->
-          <button 
-            type="button" 
-            (click)="openPatientPortal.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-blue-500/50 outline-none cursor-pointer shrink-0"
-            title="Open Patient Self-Service Portal">
-            <span>🩺 Patient Portal</span>
-          </button>
-
-          <!-- Articles & Knowledge Hub Button -->
-          <button 
-            type="button" 
-            (click)="openArticles.emit()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-amber-500/50 outline-none cursor-pointer shrink-0"
-            title="Open Articles, SNO-10 Craft Analogies & 6th Grade Knowledge Hub">
-            <span>📰 Articles</span>
+            <span [class.animate-pulse]="soundscapeService.isPlaying()">{{ soundscapeService.isPlaying() ? '🎶' : '🎵' }}</span>
+            <span>{{ soundscapeService.isPlaying() ? 'Flow: ' + soundscapeService.activePreset().carrierFreqHz + 'Hz' : 'Ambient Flow' }}</span>
           </button>
         </div>
       </div>
 
       <!-- Right Nav Action Suite -->
       <div class="flex items-center gap-2 shrink-0">
+        <!-- 🌟 Master Apps & Portals Hub Dropdown Button (Desktop) -->
+        <div class="relative hidden md:block">
+          <button 
+            type="button" 
+            id="btn-apps-hub-trigger"
+            (click)="isAppsHubOpen.set(!isAppsHubOpen())"
+            aria-label="Open Apps and Clinical Portals Hub"
+            [class.bg-emerald-500/20]="isAppsHubOpen()"
+            [class.border-emerald-500/60]="isAppsHubOpen()"
+            class="flex items-center gap-2 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 hover:border-emerald-500/50 dark:hover:border-emerald-500/50 hover:bg-emerald-50 dark:hover:bg-zinc-800/80 rounded-lg text-xs font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+            <span class="text-xs">✨</span>
+            <span>Apps &amp; Portals</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-500 transition-transform duration-200" [class.rotate-180]="isAppsHubOpen()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+
+          <!-- Apps Hub Popover Grid -->
+          @if (isAppsHubOpen()) {
+            <!-- Backdrop click-away -->
+            <div class="fixed inset-0 z-40 bg-black/20" (click)="isAppsHubOpen.set(false)"></div>
+
+            <div class="absolute right-0 top-full mt-2 w-[440px] z-50 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-4 animate-in fade-in slide-in-from-top-2 duration-200 font-sans">
+              <div class="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-black tracking-widest uppercase text-zinc-500 font-mono">PocketGull Workstation Hub</span>
+                </div>
+                <span class="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-300 dark:border-emerald-800">14 Active Modules</span>
+              </div>
+
+              <!-- Categorized Grid -->
+              <div class="grid grid-cols-2 gap-3 pt-3">
+                <!-- Section: Clinical Intelligence & AI -->
+                <div class="space-y-1.5">
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🧠 Clinical AI</span>
+                  <button type="button" (click)="openSocraticIntake.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">✨</span>
+                    <div>
+                      <div>Socratic Intake</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">FIFE Question Engine</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openModelGarden.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-teal-50 dark:hover:bg-teal-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">🌿</span>
+                    <div>
+                      <div>Model Garden</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Vertex AI Registries</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openEncryptedVault.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">🔐</span>
+                    <div>
+                      <div>Encrypted Vault</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">AES-GCM-256 Vault</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openSmartFhirSync.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-sky-50 dark:hover:bg-sky-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">🏥</span>
+                    <div>
+                      <div>SMART on FHIR</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">EHR Sync Bridge</div>
+                    </div>
+                  </button>
+                </div>
+
+                <!-- Section: Global & Community Health -->
+                <div class="space-y-1.5">
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🌍 Global Health</span>
+                  <button type="button" (click)="openGlobalHealth.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">🌐</span>
+                    <div>
+                      <div>Global Health</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">WHO SDG 3.4 &amp; ICD-11</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openCompanionSync.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">📱</span>
+                    <div>
+                      <div>Sync Companion</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Mobile QR Launch</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openPatientPortal.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">🩺</span>
+                    <div>
+                      <div>Patient Portal</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Self-Service Access</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openArticles.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">📰</span>
+                    <div>
+                      <div>Knowledge Hub</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">SNO-10 &amp; Articles</div>
+                    </div>
+                  </button>
+                </div>
+
+                <!-- Section: Focus, Telemetry & Wellness -->
+                <div class="space-y-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🎵 Wellness</span>
+                  <button type="button" (click)="openBioNetworkQr.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">🎵</span>
+                    <div>
+                      <div>Bio-Network HUD</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Haptic Sound Engine</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="triggerSomaticGrounding.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">🧘</span>
+                    <div>
+                      <div>Somatic Grounding</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Box Breathing Pacer</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openTypefaceSite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">🔤</span>
+                    <div>
+                      <div>Typeface Suite</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">William Caslon Fonts</div>
+                    </div>
+                  </button>
+                </div>
+
+                <!-- Section: Enterprise & Operations -->
+                <div class="space-y-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🏢 Enterprise</span>
+                  <button type="button" (click)="openSupportTicket.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-teal-50 dark:hover:bg-teal-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">📬</span>
+                    <div>
+                      <div>AI Support Portal</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Autonomous Ticketing</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openTalentHrPortal.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-teal-50 dark:hover:bg-teal-950/30 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">💼</span>
+                    <div>
+                      <div>Executive Demo</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Health System ROI</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openBillingDashboard.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer">
+                    <span class="text-sm">💳</span>
+                    <div>
+                      <div>Billing &amp; Pricing</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Usage &amp; Plans</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
         <!-- Live AI Agent Consult Trigger (Always visible on mobile & desktop) -->
         <button (click)="state.toggleLiveAgent(!state.isLiveAgentActive())"
                 id="tour-voice-agent-trigger"
@@ -189,44 +248,6 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                   class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 text-xs font-bold uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer bg-white/80 dark:bg-zinc-900">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18c-2.29 0-4.43-.78-6.14-2.1C4.6 16.5 4 14.83 4 12c0-1.5.3-2.91.86-4.22L16.22 19.14A7.92 7.92 0 0 1 12 20m7.14-2.1C20.4 16.5 21 14.83 21 12c0-1.5-.3-2.91-.86-4.22L8.78 19.14C10.09 20.7 11.97 21.5 14 21.5c1.47 0 2.87-.42 4.14-1.14Z"/></svg>
             <span>Research</span>
-          </button>
-
-          <button (click)="openTypefaceSite.emit()"
-                  id="tour-typeface-trigger"
-                  aria-label="PocketGull Typeface Specimen Suite"
-                  title="Open PocketGull Typeface Specimen Suite"
-                  class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 border border-amber-500/40 text-amber-700 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-lg">
-            <app-pocketgull-icon name="seagull" />
-            <span class="font-pocketgull">Typeface</span>
-          </button>
-
-          <!-- Somatic Box-Breathing Grounding -->
-          <button (click)="triggerSomaticGrounding.emit()" 
-                  aria-label="Somatic Grounding & Box Breathing"
-                  title="Open Somatic Grounding & Box Breathing Canvas"
-                  class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 border border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-extrabold uppercase tracking-wider transition-colors rounded-lg cursor-pointer">
-            <span>🧘</span>
-            <span>Grounding</span>
-          </button>
-
-          <!-- Ambient Flow State Soundscape Trigger -->
-          <button (click)="showAmbientPlayer.set(!showAmbientPlayer())"
-                  id="tour-ambient-flow-trigger"
-                  aria-label="Toggle Ambient Flow State Soundscape"
-                  title="Toggle Ambient Flow State Soundscape (432 Hz, Pacific Surf, 528 Hz, 40 Hz Gamma)"
-                  class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 border transition-all rounded-lg cursor-pointer text-xs font-black uppercase tracking-wider"
-                  [class.bg-teal-500/20]="soundscapeService.isPlaying()"
-                  [class.border-teal-400]="soundscapeService.isPlaying()"
-                  [class.text-teal-300]="soundscapeService.isPlaying()"
-                  [class.border-teal-500/30]="!soundscapeService.isPlaying()"
-                  [class.bg-teal-500/10]="!soundscapeService.isPlaying()"
-                  [class.text-teal-700]="!soundscapeService.isPlaying()"
-                  [class.dark:text-teal-400]="!soundscapeService.isPlaying()"
-                  [class.hover:bg-teal-500/20]="!soundscapeService.isPlaying()">
-            <span [class.animate-pulse]="soundscapeService.isPlaying()">
-              {{ soundscapeService.isPlaying() ? '🎵' : '🌊' }}
-            </span>
-            <span>{{ soundscapeService.isPlaying() ? 'Flow: ' + soundscapeService.activePreset().carrierFreqHz + 'Hz' : 'Flow State' }}</span>
           </button>
 
           <!-- Theme Toggle -->
@@ -399,6 +420,7 @@ export class MainHeaderNavComponent {
 
   today = new Date();
   isMobileMenuOpen = signal<boolean>(false);
+  isAppsHubOpen = signal<boolean>(false);
   showAmbientPlayer = signal<boolean>(false);
 
   openSocraticIntake = output<void>();
