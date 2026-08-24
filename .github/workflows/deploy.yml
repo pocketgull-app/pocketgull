@@ -134,19 +134,17 @@ jobs:
           GEMINI_API_KEY: 'placeholder-key-for-build'
           SKIP_HEALTHCARE_PROVISION: 'true'
 
-      - name: Wait for Server
+      - name: Wait for Preview Server
         run: |
-          npx wait-on http-get://127.0.0.1:4000 --timeout 60000 || (echo "=== /tmp/server.log ===" && cat /tmp/server.log && exit 1)
-
-      - name: Verify Preview Server Started
-        run: |
-          for i in 1 2 3 4 5; do
-            status=$(curl -s -o /tmp/preview.txt -w "%{http_code}" http://127.0.0.1:4000 || echo "000")
-            echo "attempt $i -> $status"
-            if [ "$status" = "200" ]; then exit 0; fi
+          for i in $(seq 1 30); do
+            if curl -fs http://127.0.0.1:4000/health > /dev/null 2>&1; then
+              echo "Preview server is ready on http://127.0.0.1:4000 (attempt $i)"
+              exit 0
+            fi
+            echo "Waiting for preview server (attempt $i/30)..."
             sleep 2
           done
-          echo "Server did not return 200; last server logs:"
+          echo "Preview server failed to start within 60s. Server logs:"
           cat /tmp/server.log || true
           exit 1
 
