@@ -329,7 +329,7 @@ export class PositivePsychologyService {
         id: 'path_acoustic',
         routeType: 'ACOUSTIC_COGNITIVE',
         title: 'Route C • 4608kbps 528Hz Solfeggio Co-Regulation',
-        actionPlan: 'Listen to 15 minutes of Studio Master Solfeggio harmonics with Bauer HRTF pinna crossfeed.',
+        actionPlan: 'Listen to 15 minutes of Studio Lossless Solfeggio harmonics with Bauer HRTF pinna crossfeed.',
         frictionLevel: 'Low',
         estimatedAutonomicBenefit: 'Induces deep parasympathetic shift and alpha-theta brainwave coherence.'
       }

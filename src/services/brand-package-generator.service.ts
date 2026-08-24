@@ -331,7 +331,7 @@ export class BrandPackageGeneratorService {
     return [
       {
         type: 'wordmark',
-        title: 'Master Vector Wordmark',
+        title: 'Primary Vector Wordmark',
         svgContent: wordmarkSvg,
         viewBox: '0 0 600 120',
         description: 'Primary vector logotype with 45-degree chamfer cuts.'

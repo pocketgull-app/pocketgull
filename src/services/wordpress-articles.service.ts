@@ -122,7 +122,7 @@ export function stripHtmlTags(input: string): string {
 }
 
 /**
- * Master Breakthrough Article Template Builder
+ * Primary Breakthrough Article Template Builder
  * Provides a standardized, turnkey format for researchers & clinicians to author new articles.
  */
 export function createBreakthroughArticleTemplate(partial: Partial<IWordPressPost>): IWordPressPost {
@@ -1244,7 +1244,7 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
         },
         {
           stepIndex: 1,
-          timepointLabel: 'Month 1 (Ambient Multimodal Mastery)',
+          timepointLabel: 'Month 1 (Ambient Multimodal Fluency)',
           organState: 'Restored Working Memory & Calm Clinical Focus',
           pathologyScore: 32,
           biomarkerMetric: 'Intake: 4.8 min (-42%) / Zero EHR Pajama Time',

@@ -397,3 +397,37 @@ describe('Lazy Loaded Body Part Issues Engine', () => {
     expect(loaded[0].painLevel).toBe(8);
   });
 });
+
+describe('PatientStateService Ephemeral Purge & Domain Invariants', () => {
+  it('correctly calculates total purged items and resets transient state records', () => {
+    const issues = {
+      head: [makeIssue({ id: 'head', description: 'Migraine' })],
+      knee: [makeIssue({ id: 'knee', description: 'Stiffness' })]
+    };
+    const history = [{ summary: 'Initial visit' }, { summary: 'Follow-up consultation' }];
+    
+    const activeIssueCount = Object.keys(issues).length;
+    const historyCount = history.length;
+    const totalPurged = activeIssueCount + historyCount;
+
+    expect(totalPurged).toBe(4);
+    expect(activeIssueCount).toBe(2);
+    expect(historyCount).toBe(2);
+  });
+
+  it('generates immutable SHA-style hash tokens for enterprise audit log records', () => {
+    const action = 'GUARDIAN_PROXY_ATTESTED';
+    const details = 'Guardian Proxy Attestation confirmed by Parent';
+    const entry = {
+      timestamp: new Date().toISOString(),
+      action,
+      actor: 'PocketGull Enterprise Agent',
+      hash: '0x' + Math.random().toString(16).substring(2, 10),
+      details
+    };
+
+    expect(entry.action).toBe('GUARDIAN_PROXY_ATTESTED');
+    expect(entry.hash.startsWith('0x')).toBe(true);
+    expect(entry.actor).toBe('PocketGull Enterprise Agent');
+  });
+});

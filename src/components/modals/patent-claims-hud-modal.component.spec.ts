@@ -1,21 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import '@angular/compiler';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { PatentClaimsHudModalComponent } from './patent-claims-hud-modal.component';
 import { IpPatentRegistryService } from '../../services/ip-patent-registry.service';
 
 describe('PatentClaimsHudModalComponent', () => {
   let component: PatentClaimsHudModalComponent;
-  let fixture: ComponentFixture<PatentClaimsHudModalComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [PatentClaimsHudModalComponent],
-      providers: [IpPatentRegistryService]
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(PatentClaimsHudModalComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(() => {
+    const injector = Injector.create({
+      providers: [
+        IpPatentRegistryService,
+        PatentClaimsHudModalComponent
+      ]
+    });
+    component = runInInjectionContext(injector, () => injector.get(PatentClaimsHudModalComponent));
   });
 
   it('should create the modal component', () => {
@@ -53,3 +51,4 @@ describe('PatentClaimsHudModalComponent', () => {
     expect(component.copiedText()).toBe(true);
   });
 });
+

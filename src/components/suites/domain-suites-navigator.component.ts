@@ -10,7 +10,7 @@ import { AaasBreakthroughsSuiteComponent } from '../aaas/aaas-breakthroughs-suit
 import { LaskerBreakthroughSuiteComponent } from '../lasker/lasker-breakthrough-suite.component';
 import { EasternTcmSuiteComponent } from '../eastern/eastern-tcm-suite.component';
 import { AyurvedicSystemsSuiteComponent } from '../ayurvedic/ayurvedic-systems-suite.component';
-import { UnifiedParadigmSynthesizerComponent } from './master-paradigm-synthesizer.component';
+import { UnifiedParadigmSynthesizerComponent } from './unified-paradigm-synthesizer.component';
 import { BiochemicalSuiteComponent } from '../biochemical-suite.component';
 import { PublicHealthSentinelSuiteComponent } from '../public-health-sentinel-suite.component';
 import { OccupationalHazardCardComponent } from '../occupational-hazard-card.component';

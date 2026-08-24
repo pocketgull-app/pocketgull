@@ -24,6 +24,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
 
 import { OcularVocalTelemetryService } from '../services/ocular-vocal-telemetry.service';
 import { OpticalCameraVisionService } from '../services/optical-camera-vision.service';
+import { SpatialLesionMarkupService } from '../services/spatial-lesion-markup.service';
 
 describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Controls', () => {
   let component: VoiceAssistantComponent;
@@ -153,6 +154,7 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
         { provide: YbocsService, useValue: mockYbocs },
         { provide: OcularVocalTelemetryService, useValue: mockTelemetry },
         { provide: OpticalCameraVisionService, useValue: mockOpticalVision },
+        SpatialLesionMarkupService,
         BionicReadingService
       ]
     });

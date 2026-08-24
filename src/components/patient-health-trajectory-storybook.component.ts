@@ -332,8 +332,8 @@ export class PatientHealthTrajectoryStorybookComponent implements OnDestroy {
       if (!inTag) sanitized += text[i];
     }
 
-    if (this.readingStyle() === 'bionic') {
-      return this.bionicReadingService.formatToBionicHtml(sanitized, 'font-extrabold text-indigo-600 dark:text-indigo-400');
+    if (this.readingStyle() === 'bionic' || this.bionicReadingService.isBionicReadingEnabled()) {
+      return this.bionicReadingService.formatToBionicHtml(sanitized, 'bionic-fixation font-extrabold text-indigo-600 dark:text-indigo-400');
     }
     return sanitized;
   }

@@ -4,7 +4,9 @@ import {
   SkepticalEpistemologyService,
   ICdsComplianceReport,
   ISocraticChallenge,
-  CochraneRiskOfBiasLevel
+  CochraneRiskOfBiasLevel,
+  IBiohackEpistemicAssessment,
+  BiohackCategory
 } from '../services/skeptical-epistemology.service';
 
 @Component({
@@ -73,7 +75,7 @@ import {
           } @else {
             <div class="mt-3 flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
               <span>✓</span>
-              <span>Statistically significant (p < 0.05). Null hypothesis H₀ rejected with {{ fals.epistemicConfidencePercent }}% confidence.</span>
+              <span>Statistically significant (p &lt; 0.05). Null hypothesis H₀ rejected with {{ fals.epistemicConfidencePercent }}% confidence.</span>
             </div>
           }
         </div>
@@ -119,6 +121,116 @@ import {
           </p>
         </div>
       }
+
+      <!-- Interactive Biohack & Functional Medicine Epistemology Auditor -->
+      <div class="mt-6 border-t border-zinc-100 dark:border-zinc-800/80 pt-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400 flex items-center gap-2">
+            <span>🌿</span> Biohack &amp; Functional Epistemology Evaluator
+          </h4>
+          <span class="text-[11px] font-mono text-zinc-500">
+            Cochrane RoB 2 Meta-Analysis Graded
+          </span>
+        </div>
+
+        <!-- Category Selector Chips -->
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          @for (cat of categories; track cat) {
+            <button
+              type="button"
+              (click)="selectedCategory.set(cat)"
+              class="px-2.5 py-1 rounded-lg text-xs font-medium transition-all min-h-[32px] border"
+              [ngClass]="{
+                'bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/40': selectedCategory() === cat,
+                'bg-zinc-100/80 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 border-transparent hover:border-zinc-300 dark:hover:border-zinc-700': selectedCategory() !== cat
+              }"
+            >
+              {{ cat }}
+            </button>
+          }
+        </div>
+
+        <!-- Quick Biohack Selection Chips -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          @for (bio of filteredBiohacks(); track bio.id) {
+            <button
+              type="button"
+              (click)="selectBiohack(bio.id)"
+              class="px-3 py-1.5 rounded-xl text-xs font-medium transition-all min-h-[40px] flex items-center gap-2 border"
+              [ngClass]="{
+                'border-teal-500 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 shadow-sm': activeBiohackId() === bio.id,
+                'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-teal-300': activeBiohackId() !== bio.id
+              }"
+            >
+              <span class="w-2 h-2 rounded-full" [ngClass]="bio.falsifiability.isFalsified ? 'bg-emerald-500' : 'bg-amber-500'"></span>
+              <span>{{ bio.name }}</span>
+            </button>
+          }
+        </div>
+
+        <!-- Active Biohack Assessment Card -->
+        @if (activeBiohack(); as b) {
+          <div class="rounded-xl bg-zinc-50 dark:bg-zinc-950/60 p-4 border border-zinc-200 dark:border-zinc-800 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-md bg-teal-500/10 text-teal-700 dark:text-teal-300 font-mono font-bold text-[10px] border border-teal-500/30">
+                  {{ b.category }}
+                </span>
+                <h5 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  {{ b.name }}
+                </h5>
+              </div>
+              <span
+                class="px-2.5 py-0.5 rounded-full text-xs font-semibold border"
+                [ngClass]="{
+                  'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30': b.evidenceTier.startsWith('Level A'),
+                  'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30': b.evidenceTier.startsWith('Level B'),
+                  'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/30': b.evidenceTier.startsWith('Level C')
+                }"
+              >
+                {{ b.evidenceTier }}
+              </span>
+            </div>
+
+            <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+              <strong class="text-zinc-800 dark:text-zinc-200">Mechanism:</strong> {{ b.biologicalMechanism }}
+            </p>
+
+            <!-- Biohack Falsifiability Check -->
+            <div class="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80">
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="font-semibold text-zinc-700 dark:text-zinc-300">
+                  H₀ Test: {{ b.falsifiability.metricName }}
+                </span>
+                <span class="font-mono font-bold" [ngClass]="b.falsifiability.isFalsified ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'">
+                  p = {{ b.falsifiability.pValue }}
+                </span>
+              </div>
+              @if (b.falsifiability.skepticalWarningNotice) {
+                <p class="text-xs text-amber-700 dark:text-amber-300 font-medium">
+                  ⚠️ {{ b.falsifiability.skepticalWarningNotice }}
+                </p>
+              } @else {
+                <p class="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                  ✓ Statistically significant (p &lt; 0.05). Null hypothesis H₀ rejected.
+                </p>
+              }
+            </div>
+
+            <!-- Protocol & Verdict -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div class="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80">
+                <span class="font-semibold text-zinc-800 dark:text-zinc-200 block mb-1">Clinical Protocol:</span>
+                <p class="text-zinc-600 dark:text-zinc-400">{{ b.recommendedProtocol }}</p>
+              </div>
+              <div class="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80">
+                <span class="font-semibold text-zinc-800 dark:text-zinc-200 block mb-1">Skeptical Verdict:</span>
+                <p class="text-zinc-600 dark:text-zinc-400">{{ b.skepticalVerdict }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
 
       <!-- Socratic Evidence Literacy Challenge -->
       @if (challenges().length > 0) {
@@ -206,6 +318,26 @@ export class SkepticalEpistemologyHudComponent {
 
   private skepticalService = inject(SkepticalEpistemologyService);
 
+  readonly categories: Array<'All' | BiohackCategory> = ['All', 'Thermal', 'Photonic', 'Metabolic', 'Nutraceutical'];
+  readonly selectedCategory = signal<'All' | BiohackCategory>('All');
+  readonly activeBiohackId = signal<string>('cold-immersion');
+
+  readonly allBiohacks = computed<IBiohackEpistemicAssessment[]>(() => {
+    return this.skepticalService.getAllBiohacks();
+  });
+
+  readonly filteredBiohacks = computed<IBiohackEpistemicAssessment[]>(() => {
+    const cat = this.selectedCategory();
+    const list = this.allBiohacks();
+    if (cat === 'All') return list;
+    return list.filter(b => b.category === cat);
+  });
+
+  readonly activeBiohack = computed<IBiohackEpistemicAssessment | null>(() => {
+    const id = this.activeBiohackId();
+    return this.skepticalService.evaluateBiohack(id);
+  });
+
   readonly report = computed<ICdsComplianceReport>(() => {
     return this.skepticalService.evaluateCdsCompliance(this.lensName());
   });
@@ -222,6 +354,10 @@ export class SkepticalEpistemologyHudComponent {
     const idx = this.activeChallengeIndex();
     return list[idx] || null;
   });
+
+  selectBiohack(id: string): void {
+    this.activeBiohackId.set(id);
+  }
 
   selectOption(index: number): void {
     this.selectedOptionIndex.set(index);

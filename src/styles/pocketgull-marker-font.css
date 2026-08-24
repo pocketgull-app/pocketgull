@@ -1,6 +1,6 @@
 /* ==========================================================================
    PocketGull Superfamily Typography Architecture (v2.000)
-   Compiled from the Master Vector Glyph Paths with Quaker Typographic Craftsmanship:
+   Compiled from the Primary Vector Glyph Paths with Quaker Typographic Craftsmanship:
    - PocketGull Bold (700): Handcrafted Felt-Marker Display & Wordmark
    - PocketGull Chiseltip (900): High-Impact 45° Calligraphic Display Black
    - PocketGull Fineliner (400): Technical Fine-Line Handcrafted Grotesque
@@ -9,7 +9,7 @@
    - PocketGull VF: 100-900 Continuous Variable Font Axis
    ========================================================================== */
 
-/* 🖋️ 1. Master TrueType & WOFF2 Font Face Declarations */
+/* 🖋️ 1. Core TrueType & WOFF2 Font Face Declarations */
 
 /* PocketGull Bold (700 Display & Wordmark) */
 @font-face {
@@ -164,7 +164,7 @@
 }
 
 /* ==========================================================================
-   🌐 3. PocketGull VF — No-Tofu Master Font Cascade
+   🌐 3. PocketGull VF — No-Tofu Primary Font Cascade
    ========================================================================== */
 
 :root {

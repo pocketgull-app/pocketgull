@@ -163,23 +163,23 @@ export class PetAuditoryService {
     filter.type = 'lowpass';
     filter.frequency.value = 150;
 
-    const masterGain = this.audioCtx.createGain();
-    masterGain.gain.value = 0; // fade in
+    const mainGain = this.audioCtx.createGain();
+    mainGain.gain.value = 0; // fade in
 
     // Routing
     modulator.connect(modulatorGain);
-    modulatorGain.connect(masterGain.gain);
+    modulatorGain.connect(mainGain.gain);
     carrier.connect(filter);
-    filter.connect(masterGain);
-    masterGain.connect(this.audioCtx.destination);
+    filter.connect(mainGain);
+    mainGain.connect(this.audioCtx.destination);
 
     // Fade in
-    masterGain.gain.setTargetAtTime(0.4, this.audioCtx.currentTime, 1.0);
+    mainGain.gain.setTargetAtTime(0.4, this.audioCtx.currentTime, 1.0);
 
     carrier.start();
     modulator.start();
 
-    this.nodes.push(carrier, modulator, modulatorGain, filter, masterGain);
+    this.nodes.push(carrier, modulator, modulatorGain, filter, mainGain);
     this.isPlaying = true;
     this.activeMode = 'feline';
     this.scheduleSpeciesAutoCutoff(2.0); // 2-minute feline attention span micro-dose
@@ -238,7 +238,7 @@ export class PetAuditoryService {
     osc.start(time);
     osc.stop(time + 0.2);
 
-    // Keep track of master nodes if we need to completely halt, but short nodes garbage collect.
+    // Keep track of active audio nodes if we need to completely halt, but short nodes garbage collect.
   }
 
   /**

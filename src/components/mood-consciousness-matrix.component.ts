@@ -393,7 +393,7 @@ export interface IConsciousnessState {
 
           <!-- Jukebox Controls -->
           <div class="flex items-center gap-2.5 shrink-0">
-            <!-- Master Audio Mute Toggle Button -->
+            <!-- Global Audio Mute Toggle Button -->
             <button (click)="audioService.toggleMute()"
               [class]="audioService.isMuted()
                 ? 'px-3.5 py-2.5 rounded-2xl bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/40 text-xs font-bold font-mono transition cursor-pointer hover:bg-amber-500/30'

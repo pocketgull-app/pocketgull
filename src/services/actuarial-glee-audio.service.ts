@@ -70,7 +70,7 @@ export class ActuarialGleeAudioService {
   visualizerBars = signal<number[]>([35, 60, 85, 45, 90, 75, 50, 95, 65, 80, 40, 70]);
 
   private audioCtx: AudioContext | null = null;
-  private masterGain: GainNode | null = null;
+  private mainGain: GainNode | null = null;
   private chordInterval: any = null;
   private noteInterval: any = null;
 
@@ -687,11 +687,11 @@ export class ActuarialGleeAudioService {
 
   toggleMute() {
     this.isMuted.update(m => !m);
-    if (this.masterGain && this.audioCtx) {
+    if (this.mainGain && this.audioCtx) {
       if (this.isMuted()) {
-        this.masterGain.gain.setValueAtTime(0, this.audioCtx.currentTime);
+        this.mainGain.gain.setValueAtTime(0, this.audioCtx.currentTime);
       } else {
-        this.masterGain.gain.setValueAtTime(this.volume() * 0.25, this.audioCtx.currentTime);
+        this.mainGain.gain.setValueAtTime(this.volume() * 0.25, this.audioCtx.currentTime);
       }
     }
   }
@@ -706,10 +706,10 @@ export class ActuarialGleeAudioService {
       if (!AudioCtx) return;
       this.audioCtx = new AudioCtx();
 
-      this.masterGain = this.audioCtx.createGain();
+      this.mainGain = this.audioCtx.createGain();
       const initialGain = this.isMuted() ? 0 : this.volume() * 0.25;
-      this.masterGain.gain.setValueAtTime(initialGain, this.audioCtx.currentTime);
-      this.masterGain.connect(this.audioCtx.destination);
+      this.mainGain.gain.setValueAtTime(initialGain, this.audioCtx.currentTime);
+      this.mainGain.connect(this.audioCtx.destination);
 
       this.isPlaying.set(true);
       this.currentNoteIndex.set(0);
@@ -751,7 +751,7 @@ export class ActuarialGleeAudioService {
             osc.connect(gain);
           }
 
-          gain.connect(this.masterGain!);
+          gain.connect(this.mainGain!);
 
           osc.start();
           osc.stop(this.audioCtx!.currentTime + 2.0);
@@ -780,8 +780,8 @@ export class ActuarialGleeAudioService {
 
   setVolume(vol: number) {
     this.volume.set(vol);
-    if (this.masterGain && this.audioCtx && !this.isMuted()) {
-      this.masterGain.gain.setValueAtTime(vol * 0.25, this.audioCtx.currentTime);
+    if (this.mainGain && this.audioCtx && !this.isMuted()) {
+      this.mainGain.gain.setValueAtTime(vol * 0.25, this.audioCtx.currentTime);
     }
   }
 
@@ -795,11 +795,11 @@ export class ActuarialGleeAudioService {
       } catch (e) { /* Context may already be closed */ }
       this.audioCtx = null;
     }
-    this.masterGain = null;
+    this.mainGain = null;
   }
 
   playCrabCanonPolyphony() {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
 
     const telem = this.fhirAudioTelemetry();
 
@@ -830,8 +830,8 @@ export class ActuarialGleeAudioService {
     osc1.connect(gain1);
     osc2.connect(gain2);
 
-    gain1.connect(this.masterGain);
-    gain2.connect(this.masterGain);
+    gain1.connect(this.mainGain);
+    gain2.connect(this.mainGain);
 
     osc1.start();
     osc2.start();
@@ -839,7 +839,7 @@ export class ActuarialGleeAudioService {
   }
 
   playOrchOrMicrotubuleCoherence() {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
 
     const telem = this.fhirAudioTelemetry();
 
@@ -869,8 +869,8 @@ export class ActuarialGleeAudioService {
     osc1.connect(gain1);
     osc2.connect(gain2);
 
-    gain1.connect(this.masterGain);
-    gain2.connect(this.masterGain);
+    gain1.connect(this.mainGain);
+    gain2.connect(this.mainGain);
 
     osc1.start();
     osc2.start();

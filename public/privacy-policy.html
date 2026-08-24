@@ -508,15 +508,18 @@
       <li><a href="#overview">1. Overview</a></li>
       <li><a href="#data-collected">2. Data We Collect</a></li>
       <li><a href="#health-data">3. Health Biometrics</a></li>
-      <li><a href="#how-we-use">4. How We Use Data</a></li>
-      <li><a href="#ai-processing">5. AI Processing</a></li>
-      <li><a href="#how-we-share">6. Data Sharing</a></li>
-      <li><a href="#retention">7. Data Retention</a></li>
-      <li><a href="#security">8. Security Safeguards</a></li>
-      <li><a href="#rights">9. Your Rights</a></li>
-      <li><a href="#children">10. Children's Privacy</a></li>
-      <li><a href="#changes">11. Policy Changes</a></li>
-      <li><a href="#contact">12. Contact DPO</a></li>
+      <li><a href="#consent-lineage">4. Consent-as-Code &amp; Granular Scopes</a></li>
+      <li><a href="#how-we-use">5. How We Use Data</a></li>
+      <li><a href="#ai-processing">6. AI Processing &amp; Zero-Data Retention</a></li>
+      <li><a href="#how-we-share">7. Data Sharing &amp; Third Parties</a></li>
+      <li><a href="#retention">8. Cryptographic Wiping &amp; Retention</a></li>
+      <li><a href="#security">9. Security Safeguards</a></li>
+      <li><a href="#rights">10. Your Rights &amp; Data Control</a></li>
+      <li><a href="#children">11. Pediatric Mode &amp; COPPA Safeguards</a></li>
+      <li><a href="#fvey-sovereignty">12. Five Eyes (FVEY) Regulatory Compliance</a></li>
+      <li><a href="#ftc-affiliate">13. FTC Affiliate &amp; Egress Boundary</a></li>
+      <li><a href="#changes">14. Policy Changes</a></li>
+      <li><a href="#contact">15. Contact DPO</a></li>
     </ol>
   </aside>
 
@@ -592,79 +595,158 @@
         <p>This integration strictly complies with the <a href="https://developers.google.com/health/policies/health-api-user-data-and-research-policy" target="_blank" rel="noopener">Google Health API Developer and User Data Policy</a>.</p>
       </section>
 
-      <section id="how-we-use">
-        <h2>4. How We Use Your Data</h2>
-        <p>We use processed data exclusively for the following functional purposes:</p>
+      <section id="consent-lineage">
+        <h2>4. Consent-as-Code &amp; Granular Scopes</h2>
+        <p>Pocket Gull implements <strong>Consent-as-Code</strong> inspired by Nishant Bhajaria's Privacy Engineering standard. Rather than treating consent as an all-or-nothing binary toggle, patients and clinicians maintain granular, independent control across distinct clinical data scopes:</p>
         <ul>
-          <li>Rendering real-time biometric trend graphs and multi-lens radar summaries</li>
-          <li>Synthesizing integrative care plan recommendations via Google Gemini models</li>
-          <li>Authenticating user sessions and safeguarding API client connections</li>
-          <li>Sanitizing outgoing clinical prompts using DOMPurify for HIPAA Safe Harbor compliance</li>
+          <li><strong>Symptoms &amp; Conditions (<code>symptoms</code>):</strong> Longitudinal symptom tracking, anatomical site tags, and severity logs.</li>
+          <li><strong>3D Spatial Lesion Markup (<code>spatialLesions</code>):</strong> Procedural 3D anatomical surface coordinates, morphology, and SNOMED CT identifiers.</li>
+          <li><strong>Vitals &amp; Telemetry (<code>vitalsTelemetry</code>):</strong> Heart rate, blood pressure, SpO₂, glucose, and continuous biomarker streams.</li>
+          <li><strong>Live Audio Streaming (<code>audioStreaming</code>):</strong> Bidirectional multimodal speech streaming with Dr. Gulliver.</li>
+          <li><strong>Optical Camera &amp; Vision (<code>cameraVision</code>):</strong> Edge-based optical scanning of documents and physical exam points.</li>
+          <li><strong>FHIR R4 Interoperability (<code>fhirExport</code>):</strong> Export of standardized HL7 FHIR US Core / UK Core / CA Baseline bundles.</li>
+          <li><strong>Actuarial Longevity Scoring (<code>actuarialScoring</code>):</strong> Occupational hazard assessment and healthspan calculations.</li>
         </ul>
-        <p><strong>We NEVER:</strong> sell user data, monetize health metrics, build advertising profiles, or share personal information with data brokers.</p>
+        <div class="highlight">
+          <strong>⚡ Instant Real-Time Redaction:</strong>
+          Revoking any specific scope takes effect instantly. Outbound AI consult payloads, chart displays, and FHIR export builders immediately redact the revoked data vector to <code>null</code> with zero caching delay.
+        </div>
+      </section>
+
+      <section id="how-we-use">
+        <h2>5. How We Use Your Data</h2>
+        <p>We use processed data exclusively for authorized functional clinical purposes:</p>
+        <ul>
+          <li>Rendering real-time biometric trend graphs and multi-lens radar summaries.</li>
+          <li>Synthesizing integrative care plan recommendations via Google Gemini models under explicit user initiation.</li>
+          <li>Authenticating user sessions and safeguarding API client connections.</li>
+          <li>Sanitizing outgoing clinical prompts using DOMPurify for HIPAA Safe Harbor §164.514 compliance.</li>
+        </ul>
+        <p><strong>We NEVER:</strong> sell user data, monetize health metrics, build advertising profiles, or share personal information with data brokers or insurance underwriters.</p>
       </section>
 
       <section id="ai-processing">
-        <h2>5. AI Processing &amp; Model Disclosures</h2>
+        <h2>6. AI Processing &amp; Zero-Data Retention (ZDR)</h2>
         <p>Clinical intelligence in Pocket Gull is powered by Google Gemini foundation models. When you trigger an AI consultation or care strategy synthesis:</p>
         <ul>
-          <li>De-identified patient vitals, symptoms, and selected analysis lenses are transmitted via TLS 1.3 to Google Gemini API endpoints.</li>
-          <li>Transmitted data is processed ephemerally under <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener">Google's Gemini API Enterprise Terms</a>. API data is not retained by Google to train baseline models.</li>
-          <li>AI responses cached locally on your device are protected using Web Crypto AES-GCM encryption.</li>
+          <li><strong>18-Identifier Safe Harbor Scrubbing:</strong> Outgoing payloads are stripped of all 18 direct and indirect HIPAA identifiers before transmission.</li>
+          <li><strong>Zero-Data-Retention (ZDR) Attestation:</strong> Outgoing requests transmit <code>X-ZDR-Attestation: enabled</code> headers. Transmitted data is processed ephemerally under <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener">Google's Gemini API Enterprise Terms</a>. User data is <strong>never retained by Google to train foundational base model weights</strong>.</li>
+          <li><strong>Encrypted Client Caching:</strong> AI responses cached locally on your device are protected using Web Crypto AES-GCM encryption.</li>
         </ul>
       </section>
 
       <section id="how-we-share">
-        <h2>6. Data Sharing &amp; Third-Party Services</h2>
-        <p>Pocket Gull does not sell or trade user data. Ephemeral data transit occurs only with essential cloud infrastructure providers:</p>
+        <h2>7. Data Sharing &amp; Third-Party Services</h2>
+        <p>Pocket Gull does not sell or trade user data. Ephemeral data transit occurs only with essential, cryptographically audited infrastructure providers:</p>
         <ul>
-          <li><strong>Google Cloud Platform (Cloud Run):</strong> Secure container hosting and serverless execution under enterprise SOC2 / HIPAA agreements.</li>
-          <li><strong>Google Gemini API:</strong> Large language model inference for clinical co-pilot insights.</li>
+          <li><strong>Google Cloud Platform (Cloud Run):</strong> Secure container hosting and serverless execution under enterprise SOC2 / FedRAMP / HIPAA Business Associate Agreements (BAA).</li>
+          <li><strong>Google Gemini API:</strong> Large language model inference for real-time clinical co-pilot insights.</li>
         </ul>
       </section>
 
       <section id="retention">
-        <h2>7. Data Retention</h2>
+        <h2>8. Cryptographic Storage Wiping &amp; Retention</h2>
+        <p>To prevent cold-memory forensic data extraction, Pocket Gull implements active cryptographic overwriting:</p>
         <ul>
-          <li><strong>Patient State &amp; Notes:</strong> Retained locally on your physical device until manually purged or cleared via browser storage settings.</li>
-          <li><strong>Google Health OAuth Tokens:</strong> Ephemeral in RAM — destroyed immediately upon session closure.</li>
-          <li><strong>Security Logs:</strong> Hashed audit logs retained for 90 days for breach detection and security compliance.</li>
+          <li><strong>CSPRNG Memory Overwrite:</strong> When you click "1-Click State Purge" or "Disconnect &amp; Erase Data", all client-side storage keys are overwritten with cryptographically secure pseudorandom noise (<code>crypto.getRandomValues</code>) before unlinking and deleting.</li>
+          <li><strong>OAuth Tokens:</strong> Held strictly in volatile RAM and destroyed immediately upon session disconnect.</li>
+          <li><strong>Hashed Audit Logs:</strong> Cryptographic SHA-256 event digests retained for 90 days for statutory breach detection.</li>
         </ul>
       </section>
 
       <section id="security">
-        <h2>8. Security Safeguards</h2>
+        <h2>9. Security Safeguards</h2>
         <p>Pocket Gull implements enterprise-grade technical and organizational safeguards:</p>
         <ul>
-          <li><strong>End-to-End TLS 1.3 Encryption:</strong> All transit is strictly encrypted over HTTPS.</li>
-          <li><strong>AES-256 Browser Storage Encryption:</strong> Local patient records are encrypted at rest.</li>
-          <li><strong>DOMPurify XSS Shield:</strong> All rendered inputs and markdown outputs undergo DOMPurify sanitization.</li>
-          <li><strong>OAuth 2.0 with PKCE:</strong> Prevents authorization code interception and token leakage.</li>
+          <li><strong>End-to-End TLS 1.3 Encryption:</strong> All network transit is strictly encrypted with forward secrecy.</li>
+          <li><strong>CycloneDX 1.6 SBOM Verification:</strong> 1,500+ software dependencies are cryptographically audited on every build.</li>
+          <li><strong>Sentinel Security &amp; Egress Guard:</strong> Pre-flight continuous analysis scans all source files for unauthorized network egress domains and secret leaks.</li>
+          <li><strong>DOMPurify XSS Shield:</strong> All rendered markdown and clinical summaries undergo strict DOMPurify HTML sanitization.</li>
+          <li><strong>OAuth 2.0 with PKCE:</strong> Mitigates authorization code interception and token leakage.</li>
         </ul>
       </section>
 
       <section id="rights">
-        <h2>9. Your Rights &amp; Data Control</h2>
-        <p>You maintain complete control over your health data:</p>
+        <h2>10. Your Rights &amp; Data Control</h2>
+        <p>You maintain complete sovereignty over your health records:</p>
         <ul>
-          <li><strong>Instant Data Erasure:</strong> Click "Disconnect &amp; Erase Data" in the app header to instantly wipe all cached biometric tokens and local patient state.</li>
-          <li><strong>FHIR R4 Bundle Export:</strong> Export your complete clinical data record at any time in standardized FHIR R4 JSON or PDF formats.</li>
-          <li><strong>Access &amp; Inquiries:</strong> Contact our Data Protection Officer at <a href="mailto:dpo@pocketgull.app">dpo@pocketgull.app</a> for data inquiries.</li>
+          <li><strong>1-Click Ephemeral State Purge:</strong> Instantly wipe all cached biometric tokens, 3D lesion markups, and local patient records with CSPRNG memory overwriting.</li>
+          <li><strong>FHIR R4 Bundle Export:</strong> Export your complete clinical data record at any time in standardized FHIR R4 JSON or Bionic Reading PDF format.</li>
+          <li><strong>Consent Scope Revocation:</strong> Dynamically grant or revoke individual data processing permissions at any time.</li>
+          <li><strong>Access &amp; Inquiries:</strong> Contact our Data Protection Officer at <a href="mailto:dpo@pocketgull.app">dpo@pocketgull.app</a>.</li>
         </ul>
       </section>
 
       <section id="children">
-        <h2>10. Children's Privacy</h2>
-        <p>Pocket Gull is intended for licensed clinicians, healthcare providers, and adults aged 18 and older. We do not knowingly collect information from children under 18.</p>
+        <h2>11. Pediatric Mode &amp; COPPA Safeguards</h2>
+        <p>For pediatric minor patients, Pocket Gull provides a specialized <strong>Child Life Specialist &amp; Pediatric Companion Mode</strong> governed by strict Children's Online Privacy Protection Act (COPPA) Safe Harbor protocols:</p>
+        <ul>
+          <li><strong>Verifiable Guardian Attestation:</strong> Pediatric consultations require explicit guardian attestation and proxy authorization before activation.</li>
+          <li><strong>Edge-Only Speech Processing:</strong> Spoken audio is analyzed locally on device with immediate volatile memory release. Voice telemetry is never used as an authentication credential.</li>
+          <li><strong>Child-Friendly Clinical Analogies:</strong> AI guidance uses supportive, non-pathologizing analogies (e.g., "friendly defender helpers" for white blood cells) to reduce pediatric clinical anxiety.</li>
+        </ul>
+      </section>
+
+      <section id="fvey-sovereignty">
+        <h2>12. Five Eyes (FVEY) Regulatory Compliance</h2>
+        <p>Pocket Gull's clinical state exports, consent flows, and emergency vectors are mapped directly to Five Eyes partner nation statutory standards:</p>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Jurisdiction</th>
+                <th>Statutory Mapping</th>
+                <th>Standard Profile</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>United States</strong></td>
+                <td>HIPAA §164.514 Safe Harbor, HITECH, ONC HTI-1</td>
+                <td>FHIR US Core R4, 988 Crisis Lifeline</td>
+              </tr>
+              <tr>
+                <td><strong>United Kingdom</strong></td>
+                <td>NHS DTAC, DSPT, UK-GDPR, NICE ESF</td>
+                <td>FHIR UK Core, NHS 111 Dispatch</td>
+              </tr>
+              <tr>
+                <td><strong>Canada</strong></td>
+                <td>PIPEDA, Ontario PHIPA, Alberta HIA</td>
+                <td>FHIR CA Baseline, 988 Suicide Crisis</td>
+              </tr>
+              <tr>
+                <td><strong>Australia</strong></td>
+                <td>Privacy Act 1988 (APPs), My Health Record Act 2012, TGA SaMD</td>
+                <td>FHIR AU Base, Lifeline 13 11 14</td>
+              </tr>
+              <tr>
+                <td><strong>New Zealand</strong></td>
+                <td>Health Information Privacy Code 2020 (HIPC), NZ HISO 10029/10064</td>
+                <td>FHIR NZ Base, 1737 Need to Talk</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="ftc-affiliate">
+        <h2>13. FTC Affiliate &amp; Egress Boundary</h2>
+        <p>In compliance with Federal Trade Commission (FTC) guidelines and Amazon Associates Operating Policies:</p>
+        <ul>
+          <li><strong>Affiliate Disclosure:</strong> <em>As an Amazon Associate, PocketGull earns from qualifying purchases.</em> Supportive products recommended in care plans are evidence-grounded non-prescription tools.</li>
+          <li><strong>Zero PHI in Outbound Links:</strong> Affiliate links contain only standard ASIN identifiers (<code>tag=pgdpo-20</code>). Patient names, diagnoses, or condition codes are strictly prohibited from external URLs.</li>
+          <li><strong>No Outbound Push/SMS Links:</strong> Raw affiliate links are never transmitted via SMS or push notifications; patients access recommendations exclusively within their authenticated portal.</li>
+        </ul>
       </section>
 
       <section id="changes">
-        <h2>11. Policy Changes</h2>
-        <p>We may update this Privacy Policy to reflect evolving regulatory frameworks or platform features. Revisions will be posted here with an updated effective date.</p>
+        <h2>14. Policy Changes</h2>
+        <p>We may update this Privacy Policy to reflect evolving clinical guidelines, privacy standards, or platform enhancements. Revisions will be posted here with an updated effective date.</p>
       </section>
 
       <section id="contact">
-        <h2>12. Contact Data Protection Officer</h2>
+        <h2>15. Contact Data Protection Officer</h2>
         <p>For privacy inquiries, audit requests, or security disclosures:</p>
         <ul>
           <li><strong>Data Protection Officer:</strong> <a href="mailto:dpo@pocketgull.app">dpo@pocketgull.app</a></li>

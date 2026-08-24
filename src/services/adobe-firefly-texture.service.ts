@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import * as THREE from 'three';
 
-export type FireflyTextureType = 'skin' | 'muscle' | 'skeleton' | 'organs';
+export type FireflyTextureType = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'cellular' | 'typographic';
 
 export interface IFireflyTextureMetadata {
   type: FireflyTextureType;
@@ -63,6 +63,26 @@ export class AdobeFireflyTextureService {
       bumpScale: 0.06,
       emissiveHex: 0xf43f5e,
       emissiveIntensity: 0.25
+    },
+    cellular: {
+      type: 'cellular',
+      prompt: 'Edwin Smith Surgical Codex Case V: Mitochondrial cristae inner matrix, ATP synthase rotor kinetics, phospholipid double-membrane bilayer, biophotonic cyan-amber emission',
+      resolution: 512,
+      roughness: 0.20,
+      metalness: 0.35,
+      bumpScale: 0.09,
+      emissiveHex: 0x06b6d4,
+      emissiveIntensity: 0.30
+    },
+    typographic: {
+      type: 'typographic',
+      prompt: 'William Caslon Optotypic Codex: High-precision Snellen 20/20 & LogMAR 0.0 typography matrix, micro-glyph collagen striations, slashed zero (cv08) and curved lowercase l (cv05) glyph grid',
+      resolution: 512,
+      roughness: 0.15,
+      metalness: 0.40,
+      bumpScale: 0.05,
+      emissiveHex: 0xf59e0b,
+      emissiveIntensity: 0.22
     }
   };
 
@@ -72,6 +92,8 @@ export class AdobeFireflyTextureService {
     this.imageCache.set('muscle', 'assets/textures/firefly_muscle.png');
     this.imageCache.set('skeleton', 'assets/textures/firefly_skeleton.png');
     this.imageCache.set('organs', 'assets/textures/firefly_organs.png');
+    this.imageCache.set('cellular', 'assets/textures/firefly_cellular.png');
+    this.imageCache.set('typographic', 'assets/textures/firefly_typographic.png');
   }
 
   /**
@@ -158,6 +180,19 @@ export class AdobeFireflyTextureService {
             data[idx] = Math.min(255, Math.max(0, 220 + vascular));
             data[idx + 1] = Math.min(255, Math.max(0, 40 + vascular * 0.3));
             data[idx + 2] = Math.min(255, Math.max(0, 80 + vascular * 0.4));
+          } else if (type === 'cellular') {
+            const cristae = Math.sin(x * 0.12) * Math.sin(y * 0.12) * 50;
+            const atpPores = (x % 32 < 4 && y % 32 < 4) ? 80 : 0;
+            data[idx] = Math.min(255, Math.max(0, 6 + cristae + atpPores));
+            data[idx + 1] = Math.min(255, Math.max(0, 182 + cristae * 0.5));
+            data[idx + 2] = Math.min(255, Math.max(0, 212 + cristae + atpPores));
+          } else if (type === 'typographic') {
+            const gridX = (x % 16 === 0 || (x + 1) % 16 === 0) ? 120 : 0;
+            const gridY = (y % 16 === 0 || (y + 1) % 16 === 0) ? 120 : 0;
+            const glyphs = Math.sin(x * 0.25) * Math.cos(y * 0.25) > 0.4 ? 100 : 0;
+            data[idx] = Math.min(255, Math.max(0, 245 + noise * 0.2));
+            data[idx + 1] = Math.min(255, Math.max(0, 158 + gridX + glyphs));
+            data[idx + 2] = Math.min(255, Math.max(0, 11 + gridY));
           } else {
             data[idx] = Math.min(255, Math.max(0, 56 + noise));
             data[idx + 1] = Math.min(255, Math.max(0, 189 + noise));

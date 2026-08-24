@@ -40,4 +40,31 @@ describe('SkepticalEpistemologyHudComponent', () => {
     component.selectOption(1);
     expect(component.selectedOptionIndex()).toBe(1);
   });
+
+  it('5. Computes filtered biohacks by selected category', () => {
+    expect(component.filteredBiohacks().length).toBeGreaterThanOrEqual(8);
+
+    component.selectedCategory.set('Thermal');
+    expect(component.filteredBiohacks().length).toBe(2);
+    expect(component.filteredBiohacks().every(b => b.category === 'Thermal')).toBe(true);
+
+    component.selectedCategory.set('Nutraceutical');
+    expect(component.filteredBiohacks().every(b => b.category === 'Nutraceutical')).toBe(true);
+  });
+
+  it('6. Selects and evaluates active biohack in HUD', () => {
+    component.selectBiohack('photobiomodulation');
+    expect(component.activeBiohackId()).toBe('photobiomodulation');
+
+    const active = component.activeBiohack();
+    expect(active?.id).toBe('photobiomodulation');
+    expect(active?.evidenceTier).toBe('Level A (Replicated RCTs)');
+    expect(active?.falsifiability.pValue).toBeLessThan(0.05);
+  });
+
+  it('7. Returns correct Tailwind color classes for Cochrane risk levels', () => {
+    expect(component.getBiasColorClass('Low Risk of Bias')).toContain('text-emerald');
+    expect(component.getBiasColorClass('Some Concerns')).toContain('text-amber');
+    expect(component.getBiasColorClass('High Risk of Bias')).toContain('text-rose');
+  });
 });

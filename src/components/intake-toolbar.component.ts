@@ -13,8 +13,6 @@ import { FitbitService } from '../services/hardware/fitbit.service';
   template: `
     <!-- Patient Intake Navigation Bar -->
     <nav class="h-12 border-b border-[#EEEEEE] dark:border-zinc-800 flex items-center px-3 sm:px-6 shrink-0 bg-gray-50 dark:bg-[#09090b] z-40 no-print gap-2 sm:gap-4">
-      <div class="text-xs text-gray-500 dark:text-zinc-400 font-medium hidden sm:block">INTAKE MODULE 01</div>
-      <div class="h-4 w-px bg-gray-300 dark:bg-zinc-700 hidden sm:block"></div>
       <div id="tour-patient-dropdown"><app-patient-dropdown></app-patient-dropdown></div>
 
       <!-- Socratic Intake Studio Launcher -->

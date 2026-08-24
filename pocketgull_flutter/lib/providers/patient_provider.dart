@@ -229,6 +229,46 @@ class PatientNotifier extends Notifier<PatientState> {
     _saveToPrefs(state);
   }
 
+  void addSpatialLesion(SpatialLesionModel lesion) {
+    final updated = List<SpatialLesionModel>.from(state.spatialLesions)..add(lesion);
+    state = state.copyWith(spatialLesions: updated);
+    _saveToPrefs(state);
+  }
+
+  void removeSpatialLesion(String id) {
+    final updated = List<SpatialLesionModel>.from(state.spatialLesions)
+      ..removeWhere((l) => l.id == id);
+    state = state.copyWith(spatialLesions: updated);
+    _saveToPrefs(state);
+  }
+
+  void clearSpatialLesions() {
+    state = state.copyWith(spatialLesions: const []);
+    _saveToPrefs(state);
+  }
+
+  void hydrateFromFhirR4(Map<String, dynamic> fhirBundleJson, dynamic fhirService) {
+    final parsed = fhirService.parseFhirR4Bundle(fhirBundleJson);
+    final vitalsMap = (parsed['vitals'] as Map<String, dynamic>?) ?? {};
+    
+    final updatedVitals = PatientVitals(
+      bp: vitalsMap['bp'] as String? ?? state.vitals.bp,
+      hr: vitalsMap['hr'] as String? ?? state.vitals.hr,
+      temp: vitalsMap['temp'] as String? ?? state.vitals.temp,
+      spO2: vitalsMap['spO2'] as String? ?? state.vitals.spO2,
+      weight: state.vitals.weight,
+      height: state.vitals.height,
+    );
+
+    state = state.copyWith(
+      name: parsed['name'] as String? ?? state.name,
+      vitals: updatedVitals,
+      spatialLesions: parsed['lesions'] as List<SpatialLesionModel>? ?? state.spatialLesions,
+      issues: parsed['issues'] as Map<String, List<BodyPartIssue>>? ?? state.issues,
+    );
+    _saveToPrefs(state);
+  }
+
   Future<void> _saveToPrefs(PatientState currentState) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -260,6 +300,7 @@ class PatientNotifier extends Notifier<PatientState> {
           'text': i.text,
           'status': i.status.index,
         }).toList(),
+        'spatialLesions': currentState.spatialLesions.map((l) => l.toJson()).toList(),
         'viewMode': currentState.viewMode.index,
       };
       
@@ -306,6 +347,7 @@ class PatientNotifier extends Notifier<PatientState> {
             text: i['text'],
             status: BracketingState.values[i['status'] ?? 0],
           )).toList() ?? [],
+          spatialLesions: (data['spatialLesions'] as List?)?.map((l) => SpatialLesionModel.fromJson(l as Map<String, dynamic>)).toList() ?? const [],
           viewMode: AnatomicalViewMode.values[data['viewMode'] ?? 0],
         );
         state = loadedState;

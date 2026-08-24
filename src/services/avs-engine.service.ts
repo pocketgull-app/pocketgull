@@ -1,9 +1,171 @@
 import { Injectable, signal, computed, inject, effect, untracked, PLATFORM_ID, NgZone } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { PatientStateService } from './patient-state.service';
+import { DictationService } from './dictation.service';
+import { BleWearablesService } from './hardware/ble-wearables.service';
+import { VibroacousticHapticService } from './hardware/vibroacoustic-haptic.service';
 
-export type AvsBitrateTier = '192k' | '320k' | '1536k_lossless' | '4608k_master';
+export type AvsBitrateTier = '192k' | '320k' | '1536k_lossless' | '4608k_studio';
 export type AvsSaturationProfile = 'tube_warmth' | 'tape_velvet' | 'pristine_linear';
+
+export interface ISolfeggioTone {
+  id: string;
+  name: string;
+  carrierFreqHz: number;
+  clinicalContext: string;
+  chakraAffinity: string;
+  harmonicDescription: string;
+}
+
+export interface IBrainwavePreset {
+  id: string;
+  name: string;
+  waveType: 'delta' | 'theta' | 'alpha' | 'beta' | 'gamma' | 'schumann';
+  beatFreqHz: number;
+  recommendedCarrierHz: number;
+  targetState: string;
+  clinicalRationale: string;
+}
+
+export const SOLFEGGIO_CATALOG: ISolfeggioTone[] = [
+  {
+    id: 'solf-174',
+    name: '174 Hz — Foundation & Somatosensory Relief',
+    carrierFreqHz: 174,
+    clinicalContext: 'Natural anesthetic grounding; reduces peripheral musculoskeletal tension and downregulates nociceptive signaling.',
+    chakraAffinity: 'Sub-Root / Grounding',
+    harmonicDescription: 'Deep, resonant acoustic bedrock encouraging physical cellular relaxation.'
+  },
+  {
+    id: 'solf-285',
+    name: '285 Hz — Cellular Matrix Restoration',
+    carrierFreqHz: 285,
+    clinicalContext: 'Cellular quantum morphogenesis; promotes restorative biological tissue recovery.',
+    chakraAffinity: 'Root / Etheric Field',
+    harmonicDescription: 'Warm harmonic foundation aiding cellular homeostasis.'
+  },
+  {
+    id: 'solf-396',
+    name: '396 Hz — Liberation from Fear & Allostatic Burden',
+    carrierFreqHz: 396,
+    clinicalContext: 'Sympathetic downregulation; cleanses allostatic stress loops and autonomic fight-or-flight tension.',
+    chakraAffinity: 'Muladhara (Root Chakra)',
+    harmonicDescription: 'Low-frequency visceral anchor for stabilizing emotional security.'
+  },
+  {
+    id: 'solf-417',
+    name: '417 Hz — Facilitating Neuroplastic Change',
+    carrierFreqHz: 417,
+    clinicalContext: 'Dislodging stagnant behavioral conditioning and neuroplastic habituation.',
+    chakraAffinity: 'Svadhisthana (Sacral Chakra)',
+    harmonicDescription: 'Fluid, warm middle register encouraging adaptive cognitive shifts.'
+  },
+  {
+    id: 'pyth-432',
+    name: '432 Hz — Pythagorean Natural Harmonic Reference',
+    carrierFreqHz: 432,
+    clinicalContext: 'Verdi scientific tuning; synchronizes with natural planetary acoustics and heart rate variability (HRV) coherence.',
+    chakraAffinity: 'Biofield Coherence',
+    harmonicDescription: 'Mathematically harmonious acoustic proportion eliminating auditory fatigue.'
+  },
+  {
+    id: 'solf-528',
+    name: '528 Hz — Transformation & Mitochondrial Cellular Miracles',
+    carrierFreqHz: 528,
+    clinicalContext: 'Mitochondrial biophotonic resonance; stimulates cytochrome c oxidase efficiency and DNA repair signaling.',
+    chakraAffinity: 'Manipura (Solar Plexus) & Bio-Resonance',
+    harmonicDescription: 'The Golden Frequency of organic nature and cellular vitality.'
+  },
+  {
+    id: 'solf-639',
+    name: '639 Hz — Interpersonal & Heart Center Coherence',
+    carrierFreqHz: 639,
+    clinicalContext: 'Enhances social engagement system via myelinated vagus nerve, supporting empathy and emotional calm.',
+    chakraAffinity: 'Anahata (Heart Chakra)',
+    harmonicDescription: 'Enfolding melodic frequency supporting relational harmony.'
+  },
+  {
+    id: 'solf-741',
+    name: '741 Hz — Cellular Detoxification & Intuitive Clarity',
+    carrierFreqHz: 741,
+    clinicalContext: 'Stimulates intuitive problem-solving and cellular autophagic clearance of metabolic residue.',
+    chakraAffinity: 'Vishuddha (Throat Chakra)',
+    harmonicDescription: 'Piercing, crystalline timbre promoting cognitive clarity.'
+  },
+  {
+    id: 'solf-852',
+    name: '852 Hz — Awakening Intuition & Neural Order',
+    carrierFreqHz: 852,
+    clinicalContext: 'Returns neural firing patterns to pristine baseline; aids meditative focus and visual spatial awareness.',
+    chakraAffinity: 'Ajna (Third Eye Chakra)',
+    harmonicDescription: 'High-register luminous tone stimulating cortical synchrony.'
+  },
+  {
+    id: 'solf-963',
+    name: '963 Hz — Crown Pineal Pure Consciousness',
+    carrierFreqHz: 963,
+    clinicalContext: 'Pineal gland activation, circadian melatonin regulation, and transcendent cognitive unity.',
+    chakraAffinity: 'Sahasrara (Crown Chakra)',
+    harmonicDescription: 'Translucent high-frequency harmonic envelope.'
+  }
+];
+
+export const BRAINWAVE_PRESETS: IBrainwavePreset[] = [
+  {
+    id: 'deep-delta-sleep',
+    name: 'Deep Delta Rest & Somatotropic Recovery',
+    waveType: 'delta',
+    beatFreqHz: 1.5,
+    recommendedCarrierHz: 174,
+    targetState: 'Stage 3/4 Slow-Wave Deep Sleep',
+    clinicalRationale: 'Triggers somatotropin (human growth hormone) secretion and glymphatic brain metabolic clearance.'
+  },
+  {
+    id: 'theta-meditation',
+    name: 'Theta Hypnagogic & Subconscious Flow',
+    waveType: 'theta',
+    beatFreqHz: 5.5,
+    recommendedCarrierHz: 528,
+    targetState: 'Deep Meditative Absorption & Neuroplastic Visualization',
+    clinicalRationale: 'Downregulates default mode network (DMN) hyperactivity to relieve anxiety and rumination.'
+  },
+  {
+    id: 'schumann-resonance',
+    name: 'Schumann Planetary Biospheric Resonance',
+    waveType: 'schumann',
+    beatFreqHz: 7.83,
+    recommendedCarrierHz: 432,
+    targetState: 'Bio-Electromagnetic Coherence',
+    clinicalRationale: 'Fundamental electromagnetic resonance of the Earth ionospheric cavity (7.83 Hz) restoring circadian grounding.'
+  },
+  {
+    id: 'alpha-relaxed-focus',
+    name: 'Alpha Calm Focus & Attentive Clarity',
+    waveType: 'alpha',
+    beatFreqHz: 10.0,
+    recommendedCarrierHz: 432,
+    targetState: 'Relaxed Alertness & Reduced Cortisol',
+    clinicalRationale: 'Promotes thalamocortical alpha synchrony, reducing situational performance stress while maintaining vigilance.'
+  },
+  {
+    id: 'beta-cognition',
+    name: 'Beta Problem-Solving & Analytical Drive',
+    waveType: 'beta',
+    beatFreqHz: 18.0,
+    recommendedCarrierHz: 639,
+    targetState: 'Active Cognitive Processing',
+    clinicalRationale: 'Upregulates left-hemispheric prefrontal alertness and executive task engagement.'
+  },
+  {
+    id: 'gamma-synchrony',
+    name: 'Gamma Peak Processing & Hyper-Integration',
+    waveType: 'gamma',
+    beatFreqHz: 40.0,
+    recommendedCarrierHz: 963,
+    targetState: 'Cortical Micro-Binding & High Insight',
+    clinicalRationale: '40 Hz gamma oscillations coordinate distant brain regions for peak working memory retrieval and sensory binding.'
+  }
+];
 
 export interface IAvsSessionConfig {
   carrierFreqHz: number; // e.g. 528Hz (Solfeggio Transformation) or 432Hz (Pythagorean)
@@ -19,14 +181,18 @@ export interface IAvsSessionConfig {
   psychoacousticSpatialCrossfeed: boolean;
   crossfeedDelayMs: number; // 0.25 - 0.35ms (Bauer ITD Craniometric Model)
   crossfeedGainDb: number; // -18dB to -9dB
+  isIsochronicPulseEnabled: boolean;
+  isochronicDepth: number; // 0.0 - 1.0 (Isochronic pulse amplitude depth)
 }
 
 /**
  * AvsEngineService — Audiophile Studio Audio-Visual Entrainment & Co-Regulation Engine
  * 
- * Engineered from high-end psychoacoustic & audio mastering principles:
- * - 4608 kbps 24-bit / 96kHz Lossless Studio Master
- * - 1536 kbps 24-bit / 48kHz Direct PCM Master (32-bit float internal DSP)
+ * Engineered from high-end psychoacoustic & audiophile studio engineering principles:
+ * - 4608 kbps 24-bit / 96kHz Lossless Studio Reference
+ * - 1536 kbps 24-bit / 48kHz Direct PCM Reference (32-bit float internal DSP)
+ * - 9-Tone Solfeggio Scale & 7.83Hz Schumann Planetary Cavity Resonance
+ * - Dual-Modality: Stereo Headphone Binaural + Open-Air Isochronic Pulse LFO
  * - Multi-Harmonic Overtone Synthesis (Fundamental + 2x Octave + 3x Fifth + 0.5x Sub-Bass)
  * - Bauer HRTF Psychoacoustic Pinna Crossfeed (Eliminates headphone isolation fatigue)
  * - 53-Bit Cryptographic Mantissa Analog Tape Pink Noise Floor
@@ -37,10 +203,36 @@ export interface IAvsSessionConfig {
   providedIn: 'root'
 })
 export class AvsEngineService {
-  private readonly platformId = inject(PLATFORM_ID, { optional: true }) ?? 'browser';
-  private readonly zone = inject(NgZone, { optional: true });
-  private readonly state = inject(PatientStateService, { optional: true });
+  private readonly platformId = (() => {
+    try { return inject(PLATFORM_ID, { optional: true }) ?? 'browser'; } catch { return 'browser'; }
+  })();
+  private readonly zone = (() => {
+    try { return inject(NgZone, { optional: true }); } catch { return null; }
+  })();
+  private readonly state = (() => {
+    try { return inject(PatientStateService, { optional: true }); } catch { return null; }
+  })();
+  private readonly dictation = (() => {
+    try { return inject(DictationService, { optional: true }); } catch { return null; }
+  })();
+  private readonly bleWearables = (() => {
+    try { return inject(BleWearablesService, { optional: true }); } catch { return null; }
+  })();
+  private readonly haptics = (() => {
+    try { return inject(VibroacousticHapticService, { optional: true }); } catch { return null; }
+  })();
   private readonly isBrowser = typeof window !== 'undefined' && isPlatformBrowser(this.platformId as Object);
+
+  readonly isDucked = signal<boolean>(false);
+  readonly isBiofeedbackLocked = signal<boolean>(false);
+  readonly biofeedbackHeartRate = computed<number | null>(() => this.bleWearables?.heartRate() ?? null);
+  readonly biofeedbackCoherenceScore = computed<number>(() => this.bleWearables?.autonomicCoherenceScore() ?? 0);
+  readonly biofeedbackResonanceHz = computed<number>(() => this.bleWearables?.cardiacResonanceHz() ?? 0.10);
+  readonly biofeedbackStateLabel = computed<string>(() => this.bleWearables?.recommendedEntrainmentHz().stateLabel ?? 'Nominal');
+
+  readonly isHapticsActive = computed<boolean>(() => this.haptics?.isHapticsActive() ?? false);
+  readonly isGamepadConnected = computed<boolean>(() => this.haptics?.isGamepadConnected() ?? false);
+  readonly isMobileVibrationSupported = computed<boolean>(() => this.haptics?.isMobileVibrationSupported() ?? false);
 
   private config = signal<IAvsSessionConfig>({
     carrierFreqHz: 528,
@@ -48,25 +240,31 @@ export class AvsEngineService {
     volume: 0.55,
     isStrobeEnabled: false,
     strobeColorHex: '#38bdf8',
-    bitrateTier: '4608k_master',
+    bitrateTier: '4608k_studio',
     sampleRate: 96000,
     harmonicOvertoneDepth: 0.85,
     saturationProfile: 'tube_warmth',
     analogTapeNoiseFloor: true,
     psychoacousticSpatialCrossfeed: true,
     crossfeedDelayMs: 0.28,
-    crossfeedGainDb: -12
+    crossfeedGainDb: -12,
+    isIsochronicPulseEnabled: false,
+    isochronicDepth: 0.75
   });
 
   private isPlayingSignal = signal<boolean>(false);
 
   // --- Audio Graph Web Audio API Nodes ---
   private audioCtx: AudioContext | null = null;
-  private masterGain: GainNode | null = null;
+  private mainGain: GainNode | null = null;
+  private isochronicGainNode: GainNode | null = null;
+  private isochronicLfoNode: OscillatorNode | null = null;
+  private isochronicDepthGain: GainNode | null = null;
   private compressorNode: DynamicsCompressorNode | null = null;
   private antiAliasFilter: BiquadFilterNode | null = null;
   private waveshaperNode: WaveShaperNode | null = null;
   private analyserNode: AnalyserNode | null = null;
+  private pannerNode: PannerNode | null = null;
   private mergerNode: ChannelMergerNode | null = null;
   private splitterNode: ChannelSplitterNode | null = null;
 
@@ -83,6 +281,14 @@ export class AvsEngineService {
   private noiseSourceNode: AudioBufferSourceNode | null = null;
   private noiseGainNode: GainNode | null = null;
 
+  readonly isSpatialPanningEnabled = signal<boolean>(false);
+  readonly spatialSourcePosition = signal<{ x: number; y: number; z: number }>({ x: 0, y: 0, z: 0 });
+  readonly spatialAzimuthDeg = computed<number>(() => {
+    const pos = this.spatialSourcePosition();
+    const rad = Math.atan2(pos.x, pos.z || 1.0);
+    return Math.round(rad * (180 / Math.PI));
+  });
+
   readonly sessionConfig = this.config.asReadonly();
   readonly isPlaying = this.isPlayingSignal.asReadonly();
 
@@ -92,10 +298,10 @@ export class AvsEngineService {
   readonly bitrateLabel = computed<string>(() => {
     const tier = this.config().bitrateTier;
     switch (tier) {
-      case '4608k_master':
-        return '4608 kbps • 24-bit/96kHz Studio Master (32-bit Float DSP)';
+      case '4608k_studio':
+        return '4608 kbps • 24-bit/96kHz Studio Lossless (32-bit Float DSP)';
       case '1536k_lossless':
-        return '1536 kbps • 24-bit/48kHz Direct PCM (Lossless Master)';
+        return '1536 kbps • 24-bit/48kHz Direct PCM (Lossless Reference)';
       case '320k':
         return '320 kbps • Audiophile Spatial (Bauer HRTF Binaural)';
       case '192k':
@@ -115,15 +321,20 @@ export class AvsEngineService {
     };
   });
 
+  readonly activeSolfeggioTone = computed<ISolfeggioTone | null>(() => {
+    const carrier = this.config().carrierFreqHz;
+    return SOLFEGGIO_CATALOG.find(s => s.carrierFreqHz === carrier) || null;
+  });
+
   constructor() {
     if (!this.isBrowser) return;
 
     // Reactively synchronize with PatientStateService if available
-    if (this.state) {
+    if (this.state && typeof this.state.isAvsSessionActive === 'function') {
       effect(() => {
         const active = this.state!.isAvsSessionActive();
-        const freqHz = this.state!.avsBrainwaveFrequencyHz();
-        const wave = this.state!.avsBrainwaveFrequency();
+        const freqHz = typeof this.state!.avsBrainwaveFrequencyHz === 'function' ? this.state!.avsBrainwaveFrequencyHz() : 6;
+        const wave = typeof this.state!.avsBrainwaveFrequency === 'function' ? this.state!.avsBrainwaveFrequency() : 'theta';
 
         untracked(() => {
           let carrier = 528;
@@ -147,6 +358,118 @@ export class AvsEngineService {
         });
       });
     }
+
+    // Reactively sidechain-duck AVS volume when clinical dictation is active
+    if (this.dictation && typeof this.dictation.isListening === 'function') {
+      effect(() => {
+        const isListening = this.dictation!.isListening();
+        const depth = typeof this.dictation!.sidechainDuckingDepth === 'function' 
+          ? this.dictation!.sidechainDuckingDepth() 
+          : 0.85;
+
+        untracked(() => {
+          this.isDucked.set(isListening);
+          if (this.mainGain && this.audioCtx) {
+            const nominalGain = 0.18;
+            const targetGain = isListening ? nominalGain * (1.0 - depth) : nominalGain;
+            const timeConstant = isListening ? 0.04 : 0.60;
+            this.mainGain.gain.setTargetAtTime(targetGain, this.audioCtx.currentTime, timeConstant);
+          }
+        });
+      });
+    }
+
+    // Reactively lock AVS binaural beat and carrier to real-time wearable HRV/RSA telemetry
+    if (this.bleWearables && typeof this.bleWearables.heartRate === 'function') {
+      effect(() => {
+        const locked = this.isBiofeedbackLocked();
+        const recommendation = typeof this.bleWearables!.recommendedEntrainmentHz === 'function' 
+          ? this.bleWearables!.recommendedEntrainmentHz() 
+          : { beatFreqHz: 7.83, carrierFreqHz: 432, stateLabel: 'Coherence' };
+
+        if (locked) {
+          untracked(() => {
+            this.updateSessionConfig({
+              carrierFreqHz: recommendation.carrierFreqHz,
+              binauralBeatHz: recommendation.beatFreqHz
+            });
+            if (this.isPlayingSignal()) {
+              this.updateLiveFrequencies();
+            }
+          });
+        }
+      });
+    }
+  }
+
+  /**
+   * Toggles closed-loop wearable biofeedback synchronization
+   */
+  toggleBiofeedbackLock(forceState?: boolean): boolean {
+    const nextState = forceState !== undefined ? forceState : !this.isBiofeedbackLocked();
+    this.isBiofeedbackLocked.set(nextState);
+    if (nextState && this.bleWearables && typeof this.bleWearables.recommendedEntrainmentHz === 'function') {
+      const rec = this.bleWearables.recommendedEntrainmentHz();
+      this.updateSessionConfig({
+        carrierFreqHz: rec.carrierFreqHz,
+        binauralBeatHz: rec.beatFreqHz
+      });
+      if (this.isPlayingSignal()) {
+        this.updateLiveFrequencies();
+      }
+    }
+    return nextState;
+  }
+
+  /**
+   * Retrieves the full catalog of Solfeggio & Harmonic Sacred Frequencies
+   */
+  getSolfeggioCatalog(): ISolfeggioTone[] {
+    return [...SOLFEGGIO_CATALOG];
+  }
+
+  /**
+   * Retrieves the full catalog of Brainwave Co-Regulation Presets
+   */
+  getBrainwavePresets(): IBrainwavePreset[] {
+    return [...BRAINWAVE_PRESETS];
+  }
+
+  /**
+   * Applies a specific Solfeggio carrier frequency
+   */
+  applySolfeggioTone(toneIdOrHz: string | number): void {
+    let targetHz = typeof toneIdOrHz === 'number' ? toneIdOrHz : 528;
+    if (typeof toneIdOrHz === 'string') {
+      const match = SOLFEGGIO_CATALOG.find(s => s.id === toneIdOrHz || String(s.carrierFreqHz) === toneIdOrHz);
+      if (match) targetHz = match.carrierFreqHz;
+    }
+    this.updateSessionConfig({ carrierFreqHz: targetHz });
+  }
+
+  /**
+   * Applies a complete Brainwave Entrainment Preset
+   */
+  applyBrainwavePreset(presetId: string): void {
+    const preset = BRAINWAVE_PRESETS.find(p => p.id === presetId);
+    if (!preset) return;
+
+    this.updateSessionConfig({
+      binauralBeatHz: preset.beatFreqHz,
+      carrierFreqHz: preset.recommendedCarrierHz
+    });
+  }
+
+  /**
+   * Toggles Isochronic Pulse LFO modulation (for open-air speaker listening)
+   */
+  toggleIsochronicPulse(enabled?: boolean): boolean {
+    const nextState = enabled !== undefined ? enabled : !this.config().isIsochronicPulseEnabled;
+    this.updateSessionConfig({ isIsochronicPulseEnabled: nextState });
+    if (this.isPlayingSignal()) {
+      this.rebuildAudioGraph();
+    }
+    return nextState;
   }
 
   /**
@@ -165,8 +488,8 @@ export class AvsEngineService {
   setBitrateTier(tier: AvsBitrateTier): void {
     const patch: Partial<IAvsSessionConfig> = {
       bitrateTier: tier,
-      sampleRate: tier === '4608k_master' ? 96000 : (tier === '1536k_lossless' ? 48000 : 44100),
-      harmonicOvertoneDepth: tier === '4608k_master' ? 1.0 : (tier === '1536k_lossless' ? 0.85 : (tier === '320k' ? 0.50 : 0.0)),
+      sampleRate: tier === '4608k_studio' ? 96000 : (tier === '1536k_lossless' ? 48000 : 44100),
+      harmonicOvertoneDepth: tier === '4608k_studio' ? 1.0 : (tier === '1536k_lossless' ? 0.85 : (tier === '320k' ? 0.50 : 0.0)),
       analogTapeNoiseFloor: tier !== '192k',
       psychoacousticSpatialCrossfeed: tier !== '192k'
     };
@@ -189,8 +512,8 @@ export class AvsEngineService {
   /**
    * Toggle AVS session state
    */
-  toggleSession(): boolean {
-    const nextState = !this.isPlayingSignal();
+  toggleSession(forceState?: boolean): boolean {
+    const nextState = forceState !== undefined ? forceState : !this.isPlayingSignal();
     this.isPlayingSignal.set(nextState);
     if (this.state) {
       this.state.isAvsSessionActive.set(nextState);
@@ -201,6 +524,69 @@ export class AvsEngineService {
       this.stopAudio();
     }
     return nextState;
+  }
+
+  /**
+   * Toggle 3D Binaural HRTF Spatial Acoustic Panning mode
+   */
+  toggleSpatialPanning(forceState?: boolean): boolean {
+    const nextState = forceState !== undefined ? forceState : !this.isSpatialPanningEnabled();
+    this.isSpatialPanningEnabled.set(nextState);
+    if (this.isPlayingSignal()) {
+      this.rebuildAudioGraph();
+    }
+    return nextState;
+  }
+
+  /**
+   * Update real-time 3D spatial coordinate position of target somatic lesion and camera listener
+   */
+  updateSpatialAudioPosition(
+    sourcePos: { x: number; y: number; z: number },
+    listenerPos?: { x: number; y: number; z: number },
+    forwardVec?: { x: number; y: number; z: number }
+  ): void {
+    this.spatialSourcePosition.set(sourcePos);
+    if (!this.audioCtx || !this.pannerNode) return;
+
+    const now = this.audioCtx.currentTime;
+    if (this.pannerNode.positionX) {
+      this.pannerNode.positionX.setTargetAtTime(sourcePos.x, now, 0.05);
+      this.pannerNode.positionY.setTargetAtTime(sourcePos.y, now, 0.05);
+      this.pannerNode.positionZ.setTargetAtTime(sourcePos.z, now, 0.05);
+    } else {
+      (this.pannerNode as any).setPosition?.(sourcePos.x, sourcePos.y, sourcePos.z);
+    }
+
+    if (listenerPos && this.audioCtx.listener) {
+      const listener = this.audioCtx.listener;
+      if (listener.positionX) {
+        listener.positionX.setTargetAtTime(listenerPos.x, now, 0.05);
+        listener.positionY.setTargetAtTime(listenerPos.y, now, 0.05);
+        listener.positionZ.setTargetAtTime(listenerPos.z, now, 0.05);
+      } else {
+        (listener as any).setPosition?.(listenerPos.x, listenerPos.y, listenerPos.z);
+      }
+    }
+
+    if (forwardVec && this.audioCtx.listener) {
+      const listener = this.audioCtx.listener;
+      if (listener.forwardX) {
+        listener.forwardX.setTargetAtTime(forwardVec.x, now, 0.05);
+        listener.forwardY.setTargetAtTime(forwardVec.y, now, 0.05);
+        listener.forwardZ.setTargetAtTime(forwardVec.z, now, 0.05);
+      } else {
+        (listener as any).setOrientation?.(forwardVec.x, forwardVec.y, forwardVec.z, 0, 1, 0);
+      }
+    }
+  }
+
+  /**
+   * Toggle physical vibroacoustic somatosensory haptics
+   */
+  toggleVibroacousticHaptics(forceState?: boolean): boolean {
+    if (!this.haptics) return false;
+    return this.haptics.toggleHaptics(forceState);
   }
 
   /**
@@ -256,9 +642,9 @@ export class AvsEngineService {
     const run = () => {
       try {
         const now = this.audioCtx!.currentTime;
-        if (this.masterGain) {
-          this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-          this.masterGain.gain.linearRampToValueAtTime(0.0001, now + 0.65);
+        if (this.mainGain) {
+          this.mainGain.gain.setValueAtTime(this.mainGain.gain.value, now);
+          this.mainGain.gain.linearRampToValueAtTime(0.0001, now + 0.65);
         }
 
         setTimeout(() => {
@@ -288,6 +674,17 @@ export class AvsEngineService {
     }
   }
 
+  /**
+   * Retrieves real-time time-domain oscilloscope telemetry for Lissajous and Cymatic visualizers
+   */
+  getRealtimeTimeDomainData(timeDomainArray: Uint8Array): void {
+    if (this.analyserNode && this.isPlayingSignal()) {
+      this.analyserNode.getByteTimeDomainData(timeDomainArray);
+    } else {
+      timeDomainArray.fill(128); // 128 is center DC zero in Uint8 format
+    }
+  }
+
   private rebuildAudioGraph(): void {
     if (!this.audioCtx || this.audioCtx.state === 'closed') return;
     this.tearDownNodes();
@@ -299,10 +696,10 @@ export class AvsEngineService {
     const now = this.audioCtx.currentTime;
     const cfg = this.config();
 
-    // 1. Studio Master Gain with Soft Analog Ramp
-    this.masterGain = this.audioCtx.createGain();
-    this.masterGain.gain.setValueAtTime(0.0001, now);
-    this.masterGain.gain.linearRampToValueAtTime(cfg.volume, now + 1.2);
+    // 1. Studio Main Gain with Soft Analog Ramp
+    this.mainGain = this.audioCtx.createGain();
+    this.mainGain.gain.setValueAtTime(0.0001, now);
+    this.mainGain.gain.linearRampToValueAtTime(cfg.volume, now + 1.2);
 
     // 2. Real-Time 64-Band Audiophile FFT Spectrum Analyser
     this.analyserNode = this.audioCtx.createAnalyser();
@@ -323,116 +720,166 @@ export class AvsEngineService {
     this.antiAliasFilter.frequency.setValueAtTime(19500, now);
     this.antiAliasFilter.Q.setValueAtTime(0.707, now);
 
-    // 5. Analog Tube/Tape Waveshaper Saturation
+    // 5. 3D Binaural HRTF Spatial Panner Node
+    this.pannerNode = this.audioCtx.createPanner();
+    this.pannerNode.panningModel = 'HRTF';
+    this.pannerNode.distanceModel = 'inverse';
+    this.pannerNode.refDistance = 1.0;
+    this.pannerNode.maxDistance = 10.0;
+    this.pannerNode.rolloffFactor = 1.0;
+    this.pannerNode.coneInnerAngle = 360;
+
+    const sourcePos = this.spatialSourcePosition();
+    if (this.pannerNode.positionX) {
+      this.pannerNode.positionX.setValueAtTime(sourcePos.x, now);
+      this.pannerNode.positionY.setValueAtTime(sourcePos.y, now);
+      this.pannerNode.positionZ.setValueAtTime(sourcePos.z, now);
+    } else {
+      (this.pannerNode as any).setPosition?.(sourcePos.x, sourcePos.y, sourcePos.z);
+    }
+
+    // 6. Analog Tube/Tape Waveshaper Saturation
     this.waveshaperNode = this.audioCtx.createWaveShaper();
     this.applySaturationCurve();
 
-    // 6. Stereo Channel Merger & Splitter for Bauer HRTF Crossfeed
+    // 7. Stereo Channel Merger & Splitter for Bauer HRTF Crossfeed
     this.mergerNode = this.audioCtx.createChannelMerger(2);
 
+    // 7. Optional Isochronic Pulse LFO Node
+    let preCompressorDestination: AudioNode = this.compressorNode;
+    if (cfg.isIsochronicPulseEnabled) {
+      this.isochronicGainNode = this.audioCtx.createGain();
+      this.isochronicGainNode.gain.setValueAtTime(1.0 - cfg.isochronicDepth * 0.5, now);
+
+      this.isochronicDepthGain = this.audioCtx.createGain();
+      this.isochronicDepthGain.gain.setValueAtTime(cfg.isochronicDepth * 0.5, now);
+
+      this.isochronicLfoNode = this.audioCtx.createOscillator();
+      this.isochronicLfoNode.type = 'sine';
+      this.isochronicLfoNode.frequency.setValueAtTime(cfg.binauralBeatHz, now);
+
+      this.isochronicLfoNode.connect(this.isochronicDepthGain);
+      this.isochronicDepthGain.connect(this.isochronicGainNode.gain);
+      this.isochronicLfoNode.start(now);
+
+      this.isochronicGainNode.connect(this.compressorNode);
+      preCompressorDestination = this.isochronicGainNode;
+    }
+
     if (cfg.psychoacousticSpatialCrossfeed) {
-      this.setupBauerCrossfeed(now);
+      this.setupBauerCrossfeed(now, preCompressorDestination);
     } else {
       // Direct stereo bus routing
       this.mergerNode.connect(this.waveshaperNode);
       this.waveshaperNode.connect(this.antiAliasFilter);
-      this.antiAliasFilter.connect(this.compressorNode);
-      this.compressorNode.connect(this.masterGain);
-      this.masterGain.connect(this.analyserNode);
+      this.antiAliasFilter.connect(preCompressorDestination);
+      this.compressorNode.connect(this.mainGain);
+      if (this.isSpatialPanningEnabled() && this.pannerNode) {
+        this.mainGain.connect(this.pannerNode);
+        this.pannerNode.connect(this.analyserNode);
+      } else {
+        this.mainGain.connect(this.analyserNode);
+      }
       this.analyserNode.connect(this.audioCtx.destination);
     }
 
-    // 7. Multi-Harmonic Binaural Oscillator Bank
+    // 8. Multi-Harmonic Binaural Oscillator Bank
     this.createMultiHarmonicBank(now);
 
-    // 8. 53-Bit Cryptographic Pink Noise Analog Tape Floor
+    // 9. 53-Bit Cryptographic Pink Noise Analog Tape Floor
     if (cfg.analogTapeNoiseFloor) {
       this.createAudiophileNoiseFloor(now);
     }
   }
 
-  /**
-   * Sets up Bauer HRTF Crossfeed network to eliminate headphone listening fatigue.
-   * Simulates head acoustic diameter (~17.5cm) with 280µs micro-delay and 700Hz low-pass shadowing.
-   */
-  private setupBauerCrossfeed(now: number): void {
-    if (!this.audioCtx || !this.mergerNode || !this.waveshaperNode || !this.antiAliasFilter || !this.compressorNode || !this.masterGain || !this.analyserNode) return;
+  private setupBauerCrossfeed(now: number, targetDestination?: AudioNode): void {
+    if (!this.audioCtx || !this.mergerNode || !this.waveshaperNode || !this.antiAliasFilter || !this.compressorNode || !this.mainGain || !this.analyserNode) return;
+
+    const cfg = this.config();
+    const dest = targetDestination || this.compressorNode;
 
     this.splitterNode = this.audioCtx.createChannelSplitter(2);
 
-    // Direct and cross paths merger
-    const crossfeedMerger = this.audioCtx.createChannelMerger(2);
+    const delaySec = cfg.crossfeedDelayMs / 1000.0;
+    const gainLinear = Math.pow(10, cfg.crossfeedGainDb / 20.0);
 
-    // Left -> Right Crossfeed Path
+    // Left-to-Right HRTF Crossfeed Path
     this.leftToRightDelay = this.audioCtx.createDelay(0.01);
-    this.leftToRightDelay.delayTime.setValueAtTime(0.00028, now); // 280µs
+    this.leftToRightDelay.delayTime.setValueAtTime(delaySec, now);
     this.leftToRightFilter = this.audioCtx.createBiquadFilter();
     this.leftToRightFilter.type = 'lowpass';
-    this.leftToRightFilter.frequency.setValueAtTime(700, now); // Head shadow cutoff
+    this.leftToRightFilter.frequency.setValueAtTime(700, now);
     this.leftToRightGain = this.audioCtx.createGain();
-    this.leftToRightGain.gain.setValueAtTime(0.25, now); // -12dB attenuation
+    this.leftToRightGain.gain.setValueAtTime(gainLinear, now);
 
-    // Right -> Left Crossfeed Path
+    // Right-to-Left HRTF Crossfeed Path
     this.rightToLeftDelay = this.audioCtx.createDelay(0.01);
-    this.rightToLeftDelay.delayTime.setValueAtTime(0.00028, now); // 280µs
+    this.rightToLeftDelay.delayTime.setValueAtTime(delaySec, now);
     this.rightToLeftFilter = this.audioCtx.createBiquadFilter();
     this.rightToLeftFilter.type = 'lowpass';
     this.rightToLeftFilter.frequency.setValueAtTime(700, now);
     this.rightToLeftGain = this.audioCtx.createGain();
-    this.rightToLeftGain.gain.setValueAtTime(0.25, now);
+    this.rightToLeftGain.gain.setValueAtTime(gainLinear, now);
 
-    // Connect Splitter from initial binaural merger
+    const finalMerger = this.audioCtx.createChannelMerger(2);
+
     this.mergerNode.connect(this.splitterNode);
 
-    // Direct Left -> CrossfeedMerger(0)
-    this.splitterNode.connect(crossfeedMerger, 0, 0);
-    // Direct Right -> CrossfeedMerger(1)
-    this.splitterNode.connect(crossfeedMerger, 1, 1);
+    // Direct Left Channel -> Final Left (0)
+    this.splitterNode.connect(finalMerger, 0, 0);
+    // Direct Right Channel -> Final Right (1)
+    this.splitterNode.connect(finalMerger, 1, 1);
 
-    // Cross Left -> Delay -> Filter -> Gain -> CrossfeedMerger(1) [Right Ear]
+    // Crossfeed Left -> Delay/Filter -> Final Right (1)
     this.splitterNode.connect(this.leftToRightDelay, 0);
     this.leftToRightDelay.connect(this.leftToRightFilter);
     this.leftToRightFilter.connect(this.leftToRightGain);
-    this.leftToRightGain.connect(crossfeedMerger, 0, 1);
+    this.leftToRightGain.connect(finalMerger, 0, 1);
 
-    // Cross Right -> Delay -> Filter -> Gain -> CrossfeedMerger(0) [Left Ear]
+    // Crossfeed Right -> Delay/Filter -> Final Left (0)
     this.splitterNode.connect(this.rightToLeftDelay, 1);
     this.rightToLeftDelay.connect(this.rightToLeftFilter);
     this.rightToLeftFilter.connect(this.rightToLeftGain);
-    this.rightToLeftGain.connect(crossfeedMerger, 0, 0);
+    this.rightToLeftGain.connect(finalMerger, 0, 0);
 
-    // Route through Mastering Bus
-    crossfeedMerger.connect(this.waveshaperNode);
+    finalMerger.connect(this.waveshaperNode);
     this.waveshaperNode.connect(this.antiAliasFilter);
-    this.antiAliasFilter.connect(this.compressorNode);
-    this.compressorNode.connect(this.masterGain);
-    this.masterGain.connect(this.analyserNode);
+    this.antiAliasFilter.connect(dest);
+    this.compressorNode.connect(this.mainGain);
+    if (this.isSpatialPanningEnabled() && this.pannerNode) {
+      this.mainGain.connect(this.pannerNode);
+      this.pannerNode.connect(this.analyserNode);
+    } else {
+      this.mainGain.connect(this.analyserNode);
+    }
     this.analyserNode.connect(this.audioCtx.destination);
   }
 
   private applySaturationCurve(): void {
-    if (!this.waveshaperNode || !this.audioCtx) return;
+    if (!this.waveshaperNode) return;
     const profile = this.config().saturationProfile;
-    const samples = 1024;
-    const curve = new Float32Array(samples);
 
-    if (profile === 'tube_warmth') {
-      // 2nd/3rd Order Soft-Knee Vacuum Tube Saturation Curve
-      for (let i = 0; i < samples; i++) {
-        const x = (i * 2) / samples - 1;
-        // Hyperbolic tangent soft saturation + subtle 2nd harmonic warmth
-        curve[i] = Math.tanh(1.15 * x) + 0.03 * (x * x * (x > 0 ? 1 : -1));
-      }
-    } else if (profile === 'tape_velvet') {
-      // 3rd Order Analog Magnetic Tape Saturation Curve
-      for (let i = 0; i < samples; i++) {
-        const x = (i * 2) / samples - 1;
-        curve[i] = (3 * x - Math.pow(x, 3)) / 2;
-      }
-    } else {
-      // Pristine Linear (Zero coloration)
-      for (let i = 0; i < samples; i++) {
-        curve[i] = (i * 2) / samples - 1;
+    const n_samples = 4096;
+    const curve = new Float32Array(n_samples);
+    const deg = Math.PI / 180;
+
+    for (let i = 0; i < n_samples; ++i) {
+      const x = (i * 2) / n_samples - 1;
+
+      if (profile === 'tube_warmth') {
+        // Soft asymmetric even-harmonic vacuum tube curve
+        if (x < -1) curve[i] = -1;
+        else if (x > 1) curve[i] = 1;
+        else {
+          const k = 2;
+          curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x * 20 * deg));
+        }
+      } else if (profile === 'tape_velvet') {
+        // Hyperbolic tangent magnetic tape velvet compression
+        curve[i] = Math.tanh(x * 1.35) * 0.85;
+      } else {
+        // Pristine linear reference
+        curve[i] = x;
       }
     }
 
@@ -444,34 +891,16 @@ export class AvsEngineService {
     if (!this.audioCtx || !this.mergerNode) return;
 
     const harmonics = this.harmonicOvertoneFreqs();
-    const tier = this.config().bitrateTier;
-    const isMaster = tier === '4608k_master';
-    const isLossless = tier === '1536k_lossless';
-    const isSpatial = tier === '320k';
+    const depth = this.config().harmonicOvertoneDepth;
 
-    const layers: Array<{ left: number; right: number; gain: number }> = [
-      { left: harmonics.fundamental.left, right: harmonics.fundamental.right, gain: 0.30 }
+    const tiers = [
+      { pair: harmonics.fundamental, gainLeft: 0.35, gainRight: 0.35 },
+      { pair: harmonics.octave2x, gainLeft: 0.18 * depth, gainRight: 0.18 * depth },
+      { pair: harmonics.fifth3x, gainLeft: 0.08 * depth, gainRight: 0.08 * depth },
+      { pair: harmonics.subBass, gainLeft: 0.22 * depth, gainRight: 0.22 * depth }
     ];
 
-    if (isMaster) {
-      // Ultimate 4-tier audiophile harmonic depth
-      layers.push(
-        { left: harmonics.octave2x.left, right: harmonics.octave2x.right, gain: 0.090 },
-        { left: harmonics.fifth3x.left, right: harmonics.fifth3x.right, gain: 0.038 },
-        { left: harmonics.subBass.left, right: harmonics.subBass.right, gain: 0.075 }
-      );
-    } else if (isLossless) {
-      layers.push(
-        { left: harmonics.octave2x.left, right: harmonics.octave2x.right, gain: 0.075 },
-        { left: harmonics.subBass.left, right: harmonics.subBass.right, gain: 0.055 }
-      );
-    } else if (isSpatial) {
-      layers.push(
-        { left: harmonics.octave2x.left, right: harmonics.octave2x.right, gain: 0.050 }
-      );
-    }
-
-    layers.forEach(layer => {
+    tiers.forEach(t => {
       const leftOsc = this.audioCtx!.createOscillator();
       const rightOsc = this.audioCtx!.createOscillator();
       const leftGain = this.audioCtx!.createGain();
@@ -480,17 +909,17 @@ export class AvsEngineService {
       leftOsc.type = 'sine';
       rightOsc.type = 'sine';
 
-      leftOsc.frequency.setValueAtTime(layer.left, now);
-      rightOsc.frequency.setValueAtTime(layer.right, now);
+      leftOsc.frequency.setValueAtTime(t.pair.left, now);
+      rightOsc.frequency.setValueAtTime(t.pair.right, now);
 
-      leftGain.gain.setValueAtTime(layer.gain, now);
-      rightGain.gain.setValueAtTime(layer.gain, now);
+      leftGain.gain.setValueAtTime(t.gainLeft, now);
+      rightGain.gain.setValueAtTime(t.gainRight, now);
 
       leftOsc.connect(leftGain);
-      leftGain.connect(this.mergerNode!, 0, 0);
-
       rightOsc.connect(rightGain);
-      rightGain.connect(this.mergerNode!, 0, 1);
+
+      leftGain.connect(this.mergerNode!, 0, 0); // Left channel
+      rightGain.connect(this.mergerNode!, 0, 1); // Right channel
 
       leftOsc.start(now);
       rightOsc.start(now);
@@ -501,7 +930,7 @@ export class AvsEngineService {
   }
 
   private createAudiophileNoiseFloor(now: number): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
 
     try {
       const sampleRate = this.audioCtx.sampleRate || 96000;
@@ -552,7 +981,7 @@ export class AvsEngineService {
 
       this.noiseSourceNode.connect(noiseFilter);
       noiseFilter.connect(this.noiseGainNode);
-      this.noiseGainNode.connect(this.masterGain);
+      this.noiseGainNode.connect(this.mainGain);
 
       this.noiseSourceNode.start(now);
     } catch (e) {
@@ -564,6 +993,7 @@ export class AvsEngineService {
     if (!this.audioCtx || this.activeOscillators.length === 0) return;
     const now = this.audioCtx.currentTime;
     const harmonics = this.harmonicOvertoneFreqs();
+    const cfg = this.config();
 
     const pairs = [
       harmonics.fundamental,
@@ -583,6 +1013,10 @@ export class AvsEngineService {
         oscIdx += 2;
       }
     }
+
+    if (this.isochronicLfoNode) {
+      this.isochronicLfoNode.frequency.setTargetAtTime(cfg.binauralBeatHz, now, 0.25);
+    }
   }
 
   private tearDownNodes(): void {
@@ -598,6 +1032,24 @@ export class AvsEngineService {
       try { g.disconnect(); } catch {}
     });
     this.activeGains = [];
+
+    if (this.isochronicLfoNode) {
+      try {
+        this.isochronicLfoNode.stop();
+        this.isochronicLfoNode.disconnect();
+      } catch {}
+      this.isochronicLfoNode = null;
+    }
+
+    if (this.isochronicDepthGain) {
+      try { this.isochronicDepthGain.disconnect(); } catch {}
+      this.isochronicDepthGain = null;
+    }
+
+    if (this.isochronicGainNode) {
+      try { this.isochronicGainNode.disconnect(); } catch {}
+      this.isochronicGainNode = null;
+    }
 
     if (this.noiseSourceNode) {
       try {
@@ -668,9 +1120,14 @@ export class AvsEngineService {
       this.analyserNode = null;
     }
 
-    if (this.masterGain) {
-      try { this.masterGain.disconnect(); } catch {}
-      this.masterGain = null;
+    if (this.pannerNode) {
+      try { this.pannerNode.disconnect(); } catch {}
+      this.pannerNode = null;
+    }
+
+    if (this.mainGain) {
+      try { this.mainGain.disconnect(); } catch {}
+      this.mainGain = null;
     }
   }
 

@@ -253,7 +253,7 @@ export class IpPatentRegistryService {
     return {
       totalClaimClusters: this.totalClusters(),
       totalClaimsCount: this.totalClaims(),
-      charterDocumentPath: 'docs/research/POCKETGULL_MASTER_PATENT_CLAIMS_CHARTER.md',
+      charterDocumentPath: 'docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md',
       clausesDocumentPath: 'docs/legal/INVENTION_ASSIGNMENT_AND_COPYRIGHT_CLAUSES.md',
       lastUpdated: '2026-08-23',
       clusters: this.claimClusters(),

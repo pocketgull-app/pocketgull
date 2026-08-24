@@ -75,7 +75,7 @@ export class BioHapticFeedbackService {
       const carrierOsc = this.audioCtx.createOscillator();
       const lfoOsc = this.audioCtx.createOscillator();
       const lfoGain = this.audioCtx.createGain();
-      const masterGain = this.audioCtx.createGain();
+      const mainGain = this.audioCtx.createGain();
 
       // Saturn SKR plasma frequency settings (FM modulation)
       carrierOsc.type = 'sawtooth';
@@ -88,12 +88,12 @@ export class BioHapticFeedbackService {
       lfoOsc.connect(lfoGain);
       lfoGain.connect(carrierOsc.frequency);
 
-      masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
-      masterGain.gain.exponentialRampToValueAtTime(0.12, this.audioCtx.currentTime + 0.2);
-      masterGain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + (durationMs / 1000));
+      mainGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+      mainGain.gain.exponentialRampToValueAtTime(0.12, this.audioCtx.currentTime + 0.2);
+      mainGain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + (durationMs / 1000));
 
-      carrierOsc.connect(masterGain);
-      masterGain.connect(this.audioCtx.destination);
+      carrierOsc.connect(mainGain);
+      mainGain.connect(this.audioCtx.destination);
 
       lfoOsc.start();
       carrierOsc.start();

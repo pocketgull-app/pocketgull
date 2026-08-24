@@ -50,12 +50,12 @@ describe('MissionSymphonyEngineService Suite', () => {
 
   it('4. Handles volume adjustments within valid 0.0 to 1.0 boundary', () => {
     service.setVolume(0.8);
-    expect(service.masterVolume()).toBe(0.8);
+    expect(service.mainVolume()).toBe(0.8);
 
     service.setVolume(2.5);
-    expect(service.masterVolume()).toBe(1.0);
+    expect(service.mainVolume()).toBe(1.0);
 
     service.setVolume(-0.5);
-    expect(service.masterVolume()).toBe(0.0);
+    expect(service.mainVolume()).toBe(0.0);
   });
 });

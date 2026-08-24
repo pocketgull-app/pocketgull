@@ -73,7 +73,7 @@ import { GenomicPathogenicityService, IGenomicVariant } from '../services/genomi
         </div>
       </div>
 
-      <!-- Main Layout: Variant Master-Detail List & Active Card -->
+      <!-- Main Layout: Variant Split-View List & Active Card -->
       <div class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Variant Selection List (5 cols) -->
         <div class="lg:col-span-5 space-y-2.5 max-h-[560px] overflow-y-auto pr-1">

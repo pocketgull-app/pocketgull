@@ -62,10 +62,10 @@ export class BionicReadingService {
   formatToBionicHtml(text: string, highlightClass?: string): string {
     if (!text) return '';
 
-    // Match HTML tags (to preserve markup) or whitespace-delimited tokens
-    return text.replace(/<[^>]+>|([^\s<>]+)/g, (match) => {
-      // Preserve HTML tags untouched
-      if (match.startsWith('<') && match.endsWith('>')) {
+    // Match HTML tags (to preserve markup), HTML entities, or whitespace-delimited tokens
+    return text.replace(/<[^>]+>|&[a-zA-Z0-9#]+;|([^\s<>]+)/g, (match) => {
+      // Preserve HTML tags and HTML entities untouched
+      if ((match.startsWith('<') && match.endsWith('>')) || (match.startsWith('&') && match.endsWith(';'))) {
         return match;
       }
 

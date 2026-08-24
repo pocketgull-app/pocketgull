@@ -11,7 +11,7 @@ export interface IImpactMpaComplianceRule {
 @Injectable({
   providedIn: 'root'
 })
-export class ImpactMasterProgramAgreementService {
+export class ImpactProgramAgreementService {
   readonly mpaEffectiveDate = signal<string>('2025-04-01');
 
   readonly mpaComplianceRules = signal<IImpactMpaComplianceRule[]>([

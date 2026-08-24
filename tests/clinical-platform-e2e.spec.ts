@@ -11,6 +11,7 @@ import { ThemeStudioDrawerComponent } from '../src/components/shared/theme-studi
 import { CircadianSleepinessService } from '../src/services/circadian-sleepiness.service';
 import { ResearchLecturesService } from '../src/services/research-lectures.service';
 import { ActuarialLongevityService } from '../src/services/actuarial-longevity.service';
+import { BionicReadingService } from '../src/services/bionic-reading.service';
 // Mock Angular constructor effects for headless Vitest environment
 vi.mock('@angular/core', async (importOriginal) => {
   const original = await importOriginal<any>();
@@ -132,7 +133,8 @@ describe('Clinical Platform & Progressive Disclosure E2E Suite', () => {
     const injector = Injector.create({
       providers: [
         { provide: PLATFORM_ID, useValue: 'server' },
-        { provide: ThemeService, useFactory: () => new ThemeService() }
+        { provide: ThemeService, useFactory: () => new ThemeService() },
+        { provide: BionicReadingService, useFactory: () => new BionicReadingService() }
       ]
     });
     const studio = runInInjectionContext(injector, () => new ThemeStudioDrawerComponent());

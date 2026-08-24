@@ -63,7 +63,7 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
 
       <!-- Right Nav Action Suite -->
       <div class="flex items-center gap-2 shrink-0">
-        <!-- 🌟 Master Apps & Portals Hub Dropdown Button (Desktop) -->
+        <!-- 🌟 Clinical Apps & Portals Hub Dropdown Button (Desktop) -->
         <div class="relative hidden md:block">
           <button 
             type="button" 

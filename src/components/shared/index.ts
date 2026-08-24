@@ -29,6 +29,8 @@ export * from './immuno-oncology-tme-viewer.component';
 export * from './alpha-stem-viewer.component';
 export * from './electroacupuncture-viewer.component';
 export * from './practice-roi-calculator.component';
+export * from './nih-who-goal-tracker.component';
+export * from './global-health-initiatives-modal.component';
 
 /**
  * Shared Pocketgull UI components array.

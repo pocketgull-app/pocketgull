@@ -342,7 +342,7 @@ export type T3dAnatomyLens = 'skeleton' | 'vascular' | 'neural' | 'ascii';
               </div>
 
               @if (isDrawing()) {
-                <!-- Master Vector Calligramme Drawing -->
+                <!-- Primary Vector Calligramme Drawing -->
                 <svg
                   [attr.data-draw-key]="drawKey()"
                   viewBox="0 0 900 240"
@@ -392,7 +392,7 @@ export type T3dAnatomyLens = 'skeleton' | 'vascular' | 'neural' | 'ascii';
                     class="vector-anim-ekg"
                   />
 
-                  <!-- 2. Master "POCKETGULL VF" Stylized Vector Path -->
+                  <!-- 2. Primary "POCKETGULL VF" Stylized Vector Path -->
                   <!-- P -->
                   <path d="M 80 50 L 80 140 M 80 50 C 130 50, 140 80, 140 95 C 140 115, 125 125, 80 125" fill="none" [attr.stroke]="getStrokeGradient()" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" class="vector-anim-p1" />
                   <!-- O -->

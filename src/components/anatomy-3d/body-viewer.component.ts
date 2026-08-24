@@ -4,13 +4,9 @@ import { PatientStateService } from '../../services/patient-state.service';
 import { IBodyPartIssue } from '../../services/patient.types';
 import { PatientManagementService } from '../../services/patient-management.service';
 import { Body3DViewerComponent } from './body-3d-viewer.component';
-import { GenesisBiophysicalSubstrateComponent } from './genesis-biophysical-substrate.component';
 import { ThemeService } from '../../services/theme.service';
 import { TypographicAnatomyService } from '../../services/typographic-anatomy.service';
-import { CellularBiophysicsViewerComponent } from '../shared/cellular-biophysics-viewer.component';
 import { QuadPhilosophyMatrixComponent } from '../shared/quad-philosophy-matrix.component';
-import { ImmunoOncologyTmeViewerComponent } from '../shared/immuno-oncology-tme-viewer.component';
-import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative-prescriber.component';
 import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-sheet.component';
 
 @Component({
@@ -19,11 +15,7 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
   imports: [
     CommonModule, 
     Body3DViewerComponent, 
-    GenesisBiophysicalSubstrateComponent,
-    CellularBiophysicsViewerComponent,
     QuadPhilosophyMatrixComponent,
-    ImmunoOncologyTmeViewerComponent,
-    AwcimIntegrativePrescriberComponent,
     InstantBodyCarePlanSheetComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -70,14 +62,6 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
                     class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🗺️</span> 2D Atlas
             </button>
-            <button (click)="state.bodyViewerMode.set('cellular')" 
-                    [class.bg-cyan-800]="state.bodyViewerMode() === 'cellular'" 
-                    [class.text-white]="state.bodyViewerMode() === 'cellular'" 
-                    [class.text-gray-700]="state.bodyViewerMode() !== 'cellular'" 
-                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'cellular'" 
-                    class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
-              <span>🔬</span> Cellular 3D
-            </button>
             <button (click)="state.bodyViewerMode.set('quad')" 
                     [class.bg-purple-800]="state.bodyViewerMode() === 'quad'" 
                     [class.text-white]="state.bodyViewerMode() === 'quad'" 
@@ -85,30 +69,6 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'quad'" 
                     class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🏛️</span> 4-Way Matrix
-            </button>
-            <button (click)="state.bodyViewerMode.set('tme')" 
-                    [class.bg-rose-800]="state.bodyViewerMode() === 'tme'" 
-                    [class.text-white]="state.bodyViewerMode() === 'tme'" 
-                    [class.text-gray-700]="state.bodyViewerMode() !== 'tme'" 
-                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'tme'" 
-                    class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
-              <span>🎯</span> Immuno-Oncology
-            </button>
-            <button (click)="state.bodyViewerMode.set('awcim')" 
-                    [class.bg-emerald-800]="state.bodyViewerMode() === 'awcim'" 
-                    [class.text-white]="state.bodyViewerMode() === 'awcim'" 
-                    [class.text-gray-700]="state.bodyViewerMode() !== 'awcim'" 
-                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'awcim'" 
-                    class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
-              <span>🌿</span> AWCIM Lab
-            </button>
-            <button (click)="state.bodyViewerMode.set('genesis')" 
-                    [class.bg-amber-800]="state.bodyViewerMode() === 'genesis'" 
-                    [class.text-white]="state.bodyViewerMode() === 'genesis'" 
-                    [class.text-gray-700]="state.bodyViewerMode() !== 'genesis'" 
-                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'genesis'" 
-                    class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
-              <span>🧬</span> Genesis Substrate
             </button>
           </div>
 
@@ -313,32 +273,9 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
               <p class="text-sm font-medium uppercase tracking-widest text-zinc-400">Loading 3D Engine...</p>
             </div>
           }
-        } @else if (state.bodyViewerMode() === 'cellular') {
-          <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
-            <app-cellular-biophysics-viewer class="w-full block"></app-cellular-biophysics-viewer>
-          </div>
         } @else if (state.bodyViewerMode() === 'quad') {
           <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
             <app-quad-philosophy-matrix class="w-full block"></app-quad-philosophy-matrix>
-          </div>
-        } @else if (state.bodyViewerMode() === 'tme') {
-          <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
-            <app-immuno-oncology-tme-viewer class="w-full block"></app-immuno-oncology-tme-viewer>
-          </div>
-        } @else if (state.bodyViewerMode() === 'awcim') {
-          <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
-            <app-awcim-integrative-prescriber class="w-full block"></app-awcim-integrative-prescriber>
-          </div>
-        } @else if (state.bodyViewerMode() === 'genesis') {
-          <div class="w-full h-full flex-1 flex flex-col min-h-[540px]">
-            <div class="p-3 bg-amber-950/40 border-b border-amber-500/30 text-amber-200 text-xs font-mono flex items-center justify-between gap-2 shrink-0">
-              <div class="flex items-center gap-2">
-                <span>🧬</span>
-                <span><strong>Genesis Biophysical Substrate Lens:</strong> PBR Optical Physics &amp; Microscopic Tissue Simulation (Bone Trabeculae $\\Delta$BMD, Endothelial Shear Stress, Dental SIBI).</span>
-              </div>
-              <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 uppercase">Edwin Smith Codex</span>
-            </div>
-            <app-genesis-biophysical-substrate class="w-full h-full flex-1 flex flex-col"></app-genesis-biophysical-substrate>
           </div>
         } @else {
           <!-- 2D SVG Schematic (Redrawn Holographic Medical Vector Twin) -->
@@ -619,7 +556,6 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
           <div class="flex items-center bg-zinc-950 p-1 rounded-xl border border-zinc-800">
             <button (click)="state.bodyViewerMode.set('3d')" [class.bg-indigo-800]="state.bodyViewerMode() === '3d'" [class.text-white]="state.bodyViewerMode() === '3d'" [class.text-zinc-400]="state.bodyViewerMode() !== '3d'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🧊 3D</button>
             <button (click)="state.bodyViewerMode.set('2d')" [class.bg-indigo-800]="state.bodyViewerMode() === '2d'" [class.text-white]="state.bodyViewerMode() === '2d'" [class.text-zinc-400]="state.bodyViewerMode() !== '2d'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🗺️ 2D</button>
-            <button (click)="state.bodyViewerMode.set('genesis')" [class.bg-amber-800]="state.bodyViewerMode() === 'genesis'" [class.text-white]="state.bodyViewerMode() === 'genesis'" [class.text-zinc-400]="state.bodyViewerMode() !== 'genesis'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🧬 Genesis</button>
           </div>
 
           <!-- Layers Strip -->

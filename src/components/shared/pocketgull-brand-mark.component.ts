@@ -7,9 +7,9 @@ export type BrandMascotType = 'origami-gull' | 'geometric-prism';
 export type BrandThemeMode = 'auto' | 'light' | 'dark' | 'on-dark' | 'on-light' | 'cardstock';
 
 /**
- * PocketGull Master Brand Mark & Superfamily Display Suite
+ * PocketGull Primary Brand Mark & Superfamily Display Suite
  * 
- * Sourced directly from the official hand-drawn master vector paths:
+ * Sourced directly from the official hand-drawn primary vector paths:
  * - ZERO letter collisions: Exact organic kerning curves preserved with 100% mathematical fidelity.
  * - WCAG AAA 7:1+ contrast: Crisp solid deep obsidian on light backdrops, luminous pure white on dark.
  * - Dual Certified Mascots: Origami Seagull & Diamond Compass Prism.
@@ -164,7 +164,7 @@ export type BrandThemeMode = 'auto' | 'light' | 'dark' | 'on-dark' | 'on-light' 
         }
 
         <!-- ============================================================
-             2. AUTHENTIC MASTER POCKETGULL VECTOR WORDMARK (10 Master Paths)
+             2. AUTHENTIC PRIMARY POCKETGULL VECTOR WORDMARK (10 Primary Paths)
              ============================================================ -->
         @if (mode() !== 'icon-only') {
           <g [attr.transform]="wordmarkTransform()" [attr.fill]="wordmarkFillColor()">

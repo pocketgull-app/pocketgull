@@ -150,6 +150,57 @@ export class SecureStorageService implements OnDestroy {
   }
 
   /**
+   * Cryptographically overwrites a stored value with CSPRNG pseudorandom noise
+   * before calling removeItem(). Mitigates cold-memory forensic extraction.
+   * Inspired by Nishant Bhajaria's Privacy Engineering Data Minimization Standard.
+   */
+  cryptographicWipe(key: string): void {
+    this.cache.delete(key);
+    if (!this.isBrowser || typeof localStorage === 'undefined') return;
+
+    try {
+      const existing = localStorage.getItem(key);
+      if (existing !== null && existing.length > 0) {
+        const wipeLen = Math.min(existing.length, 4096);
+        const noise = new Uint8Array(wipeLen);
+        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+          crypto.getRandomValues(noise);
+          const noiseHex = Array.from(noise).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, wipeLen);
+          localStorage.setItem(key, noiseHex);
+        }
+      }
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.warn(`[SecureStorageService] Cryptographic wipe failed for key '${key}':`, e);
+      try { localStorage.removeItem(key); } catch {}
+    }
+  }
+
+  /**
+   * Cryptographically wipes all matching keys (or all keys if no prefix) across localStorage.
+   */
+  cryptographicWipeAll(prefix: string = 'pocketgull_'): void {
+    this.cache.clear();
+    if (!this.isBrowser || typeof localStorage === 'undefined') return;
+
+    try {
+      const keysToWipe: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (prefix === '' || k.startsWith(prefix))) {
+          keysToWipe.push(k);
+        }
+      }
+      for (const k of keysToWipe) {
+        this.cryptographicWipe(k);
+      }
+    } catch (e) {
+      console.warn('[SecureStorageService] Cryptographic wipe all failed:', e);
+      try { localStorage.clear(); } catch {}
+    }
+  }
+
+  /**
    * Returns true if localStorage is available (browser context).
    * Useful for guards that need to short-circuit early.
    */

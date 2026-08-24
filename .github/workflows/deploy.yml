@@ -135,7 +135,8 @@ jobs:
           SKIP_HEALTHCARE_PROVISION: 'true'
 
       - name: Wait for Server
-        run: npx wait-on http://127.0.0.1:4000 --timeout 60000
+        run: |
+          npx wait-on http-get://127.0.0.1:4000 --timeout 60000 || (echo "=== /tmp/server.log ===" && cat /tmp/server.log && exit 1)
 
       - name: Verify Preview Server Started
         run: |

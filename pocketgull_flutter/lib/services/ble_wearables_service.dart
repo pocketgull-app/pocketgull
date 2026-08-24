@@ -88,6 +88,47 @@ class BleWearablesService {
   bool get isSimulationActive => _isSimulationActive;
   double get hrvRmssd => _hrvRmssd;
 
+  /// Respiratory Sinus Arrhythmia (RSA) 0.10 Hz Resonance (6 breaths/min)
+  double get cardiacResonanceHz => 0.10;
+
+  /// Real-time Autonomic Vagal Coherence Score (0–100%)
+  int get autonomicCoherenceScore {
+    final hr = _currentVitals.heartRateBpm ?? 72;
+    final rmssd = _hrvRmssd;
+    final score = ((rmssd / 60.0) * 50.0 + (1.0 - (math.max(0, hr - 60) / 60.0)) * 50.0).clamp(0.0, 100.0);
+    return score.round();
+  }
+
+  /// Recommended AVS Brainwave & Solfeggio Entrainment based on real-time HRV
+  Map<String, dynamic> get recommendedEntrainment {
+    final hr = _currentVitals.heartRateBpm ?? 72;
+    final score = autonomicCoherenceScore;
+    if (hr > 90 || score < 50) {
+      return {
+        'beatFreqHz': 5.5, // Theta
+        'carrierFreqHz': 528, // Transformation
+        'stateLabel': 'Autonomic De-stress & Vagal Activation'
+      };
+    } else if (score >= 80) {
+      return {
+        'beatFreqHz': 7.83, // Schumann
+        'carrierFreqHz': 432, // Natural Pythagorean
+        'stateLabel': 'Peak Autonomic Coherence'
+      };
+    } else if (hr < 60) {
+      return {
+        'beatFreqHz': 10.0, // Alpha
+        'carrierFreqHz': 432,
+        'stateLabel': 'Calm Restorative Integration'
+      };
+    }
+    return {
+      'beatFreqHz': 8.5, // Low Alpha
+      'carrierFreqHz': 528,
+      'stateLabel': 'Autonomic Balance'
+    };
+  }
+
   Stream<BleVitalsData> get vitalsStream => _vitalsController.stream;
   Stream<BleConnectionState> get stateStream => _stateController.stream;
   Stream<List<double>> get ppgStream => _ppgController.stream;

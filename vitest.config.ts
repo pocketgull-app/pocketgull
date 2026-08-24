@@ -10,7 +10,7 @@ export default defineConfig({
     root: __dirname,
     test: {
         globals: true,
-        environment: 'jsdom',
+        environment: 'node',
         setupFiles: [
             path.resolve(__dirname, 'tests/init-globals.ts'),
             path.resolve(__dirname, 'tests/setup.ts')
@@ -29,6 +29,9 @@ export default defineConfig({
             '**/Application Data/**',
             '**/.gemini/**',
             '**/.git/**',
+            '**/.antigravity-ide/**',
+            '**/.vscode/**',
+            '**/InsightSpark/**',
             'e2e/**',
             'pocketgull_flutter/**',
             'companion-apps/**'

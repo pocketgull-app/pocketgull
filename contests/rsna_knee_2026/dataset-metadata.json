@@ -10,14 +10,16 @@
   "sources": [
     {
       "name": "Pocketgull Clinical Intelligence Engine & Biophysical Archive",
-      "url": "https://github.com/philgear/pocketgull"
+      "url": "https://github.com/pocketgull-app/pocketgull"
     }
   ],
   "updateFrequency": "monthly",
   "isPrivate": true,
   "keywords": [
     "healthcare",
-    "python"
+    "dart",
+    "clinical-cds",
+    "biophysics"
   ],
   "resources": [
     {
@@ -100,5 +102,5 @@
       }
     }
   ],
-  "description": "# Pocketgull Clinical Decision & Biophysical Benchmark\n\n## Overview & Purpose\nThis dataset provides de-identified 3D volumetric metadata, multi-label diagnostic annotations, and synthetic clinical consult vectors engineered for Pocketgull's clinical decision support engine, evaluating diagnostic accuracy, Popperian falsifiability ($p < 0.05$), and Socratic evidence literacy.\n\n## Data Provenance & Sources\n- Source: Pocketgull Clinical Decision Intelligence Engine & Biophysical Archive\n- Pipeline: De-identified via HIPAA \u00a7164.514(b)(2) Safe Harbor standards\n\n## Files & Schema\n- `train.csv`: 4,400+ study-level multi-label pathology annotations.\n- `train_series.csv`: DICOM MRI volumetric acquisition parameters and plane orientations.\n- `train_labels_gemini.csv`: Gemini distilled weak labels with clinical rationale confidence scores.\n\n## HIPAA Safe Harbor Compliance\nStrictly compliant with HIPAA 45 CFR \u00a7164.514(b)(2) Safe Harbor anonymization. All 18 direct personal identifiers (names, dates, MRNs, institutional headers) have been permanently removed.\n\n## Licensing\nLicensed under Creative Commons Attribution 4.0 International (CC-BY 4.0).\n"
+  "description": "# Pocketgull Clinical Decision & Biophysical Benchmark\n\n## Overview & Purpose\nThis dataset provides de-identified 3D volumetric metadata, multi-label diagnostic annotations, and synthetic clinical consult vectors engineered for Pocketgull's clinical decision support engine, evaluating diagnostic accuracy, Popperian falsifiability ($p < 0.05$), and Socratic evidence literacy.\n\n## Data Provenance & Sources\n- Source: Pocketgull Clinical Decision Intelligence Engine & Biophysical Archive\n- Pipeline: De-identified via HIPAA §164.514(b)(2) Safe Harbor standards\n\n## Files & Schema\n- `train.csv`: 4,400+ study-level multi-label pathology annotations.\n- `train_series.csv`: DICOM MRI volumetric acquisition parameters and plane orientations.\n- `train_labels_gemini.csv`: Gemini distilled weak labels with clinical rationale confidence scores.\n\n## HIPAA Safe Harbor Compliance\nStrictly compliant with HIPAA 45 CFR §164.514(b)(2) Safe Harbor anonymization. All 18 direct personal identifiers (names, dates, MRNs, institutional headers) have been permanently removed.\n\n## Licensing\nLicensed under Creative Commons Attribution 4.0 International (CC-BY 4.0).\n"
 }

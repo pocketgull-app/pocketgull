@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.0] - 2026-08-24
+
+**Sacred Solfeggio Scale & Audiovisual Entrainment Studio, Automated Reactive Sidechain Ducking, Closed-Loop Wearable HRV/RSA Biofeedback Lock, Real-Time Cymatics & Chladni Visualizer, 3D Spatial Lesion HRTF Binaural Panning, Vibroacoustic Somatosensory Haptics, FHIR R4 Somatic Lesion & AVS Bundle Export Generator, and Flutter Companion Synchronization**
+
+### Added
+- **[Sacred Solfeggio Scale & AVS Studio Entrainment Matrix] (`AvsEngineService`, `SecureSplashComponent`)**:
+  - Full 10-tone Sacred Solfeggio catalog (174 Hz Foundation, 285 Hz Morphogenic Blueprint, 396 Hz Root Liberation, 417 Hz Sacral Transmutation, 432 Hz Pythagorean Natural Harmonic, 528 Hz Cellular Repair & DNA Integrity, 639 Hz Interpersonal Heart Resonance, 741 Hz Intuitive Expression, 852 Hz Neural Awakening, 963 Hz Crown Consciousness).
+  - Isochronic Pulse LFO modulation with adjustable depth (0–100%) and square/sine wave shapes.
+  - Bauer HRTF psychoacoustic spatial crossfeed with 24-bit/96kHz lossless 32-bit floating-point DSP synthesis.
+- **[Automated Reactive Sidechain Ducking] (`DictationService`, `AvsEngineService`, `AmbientFlowSoundscapeService`, `MonroePersianTranceService`)**:
+  - Real-time sidechain gain compression (-16.5 dB attenuation) with clinical-grade 40ms attack and 600ms release curves triggered whenever clinical dictation voice recording is active.
+- **[Closed-Loop Wearable HRV & RSA-Locked Entrainment] (`BleWearablesService`, `AvsEngineService`)**:
+  - Real-time $0.10\text{ Hz}$ Respiratory Sinus Arrhythmia (RSA) cardiac resonance calculation ($6\text{ breaths/min}$).
+  - Autonomic Vagal Coherence scoring (0–100%) dynamically adjusting carrier and brainwave entrainment frequencies to match physiological state.
+- **[Real-Time Cymatics & Chladni Sacred Geometry Visualizer] (`AvsCymaticsVisualizerComponent`, `AvsEngineService`)**:
+  - 4 high-DPI Canvas render modes: 2D Chladni plate nodal sand particle simulation ($w(x, y) = a \sin(n \pi x) \sin(m \pi y) - b \sin(m \pi x) \sin(n \pi y)$), Lissajous phase orbits rotating at the brainwave beat rate, Golden Ratio ($\Phi \approx 1.618$) mandalas breathing at $0.10\text{ Hz}$, and 64-band FFT waterfall spectrograms.
+- **[3D Spatial Lesion Binaural Acoustic Panning (HRTF)] (`SpatialLesionMarkupService`, `Body3dViewerComponent`, `AvsEngineService`)**:
+  - Web Audio `PannerNode` with `panningModel: 'HRTF'` dynamically tracking Three.js camera orbit controls around somatic lesion markers.
+  - Morphology-to-Solfeggio therapeutic mapping (528 Hz for inflammation/erythema/edema, 174 Hz for calcification/fibrosis, 285 Hz for lacerations/nodules, 432 Hz for rash).
+- **[Vibroacoustic Somatosensory Haptic Feedback] (`VibroacousticHapticService`, `AvsEngineService`, `SecureSplashComponent`)**:
+  - Gamepad Haptic Actuator API (`dual-rumble` weak/strong magnitude actuators for Xbox, PS DualSense, Switch Pro) delivering physical carrier flutter to Pacinian corpuscles and sub-bass isochronic rumble to Meissner corpuscles.
+  - Web Vibration API (`navigator.vibrate`) microsecond pulse trains across mobile devices.
+  - 3 adaptive modes: `isochronic_pulse`, `rsa_breathing`, and `carrier_drone`.
+- **[FHIR R4 Somatic Lesion & AVS Session Export Generator] (`FhirR4BundleExportService`, `SpatialLesionMarkupService`, `Body3dViewerComponent`)**:
+  - Serializes 3D spatial lesion pins into standard FHIR R4 `Observation` entries with `spatial-coordinates-3d` extensions ($(x, y, z)$ and surface normals), SNOMED CT morphological codes, anatomical body sites, and critical severity interpretations.
+  - Serializes active/completed AVS sessions into FHIR R4 `Procedure` entries with acoustic dosimetry (SNOMED `866167008` acoustic stimulation therapy), Solfeggio carrier Hz, isochronic pulse rates, 3D HRTF panning parameters, haptics, and live cardiac resonance ($0.10\text{ Hz}$ RSA / Autonomic Coherence %).
+  - Packages entries into official `DiagnosticReport` and `Composition` document bundles with 1-click JSON browser download.
+- **[Flutter & Companion App Ecosystem Synchronization] (`companion-apps/avs-therapy`, `pocketgull_flutter`)**:
+  - Full cross-platform synchronization of the 10-tone Solfeggio scale, Isochronic pulse modulation, Vibroacoustic Haptics, and Wearable HRV resonance across Angular and Flutter companion suites.
+- **[Hermetic Proof Chain & 100% Test Pass Rate]**:
+  - Monorepo test suite expanded to **364 test files (1,434 / 1,434 tests passed, 100%)** with zero TypeScript errors and zero security egress leaks.
+
 ## [1.26.0] - 2026-08-22
 
 **Breakthrough Article Framework & Knowledge Hub, 3D Anatomical Organ & Longitudinal Consequence Viewer, Medical Inventions & Luminary Spotlight, Chronological Action Matrix (Present / Short-Term / Long-Term), Verified Empirical Citations (DOIs/PMIDs), and Historical Prevention Pathways**

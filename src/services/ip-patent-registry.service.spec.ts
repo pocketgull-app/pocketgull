@@ -27,7 +27,7 @@ describe('IpPatentRegistryService', () => {
     const summary = service.getPatentSummary();
     expect(summary.totalClaimClusters).toBe(10);
     expect(summary.totalClaimsCount).toBe(200);
-    expect(summary.charterDocumentPath).toBe('docs/research/POCKETGULL_MASTER_PATENT_CLAIMS_CHARTER.md');
+    expect(summary.charterDocumentPath).toBe('docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md');
     expect(summary.clausesDocumentPath).toBe('docs/legal/INVENTION_ASSIGNMENT_AND_COPYRIGHT_CLAUSES.md');
     expect(summary.clusters.length).toBe(10);
     expect(summary.statutoryClauses.length).toBe(7);

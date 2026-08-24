@@ -75,4 +75,33 @@ describe('SkepticalEpistemologyService', () => {
     );
     expect(kneeChallenges.some(c => c.epistemicTag === 'Joint-Prior Bayesian Calibration')).toBe(true);
   });
+
+  it('8. Retrieves the complete biohack epistemic catalog', () => {
+    const biohacks = service.getAllBiohacks();
+    expect(biohacks.length).toBeGreaterThanOrEqual(8);
+    expect(biohacks.some(b => b.id === 'cold-immersion')).toBe(true);
+    expect(biohacks.some(b => b.id === 'photobiomodulation')).toBe(true);
+    expect(biohacks.some(b => b.id === 'nad-precursors')).toBe(true);
+  });
+
+  it('9. Correctly flags unrejected H0 biohacks with skeptical warnings (NAD+ and Vitamin C)', () => {
+    const nad = service.evaluateBiohack('nad-precursors');
+    expect(nad.falsifiability.isFalsified).toBe(false);
+    expect(nad.falsifiability.pValue).toBeGreaterThanOrEqual(0.05);
+    expect(nad.falsifiability.skepticalWarningNotice).toContain('Null hypothesis H0 cannot be rejected');
+    expect(nad.cochraneBias.overallRiskOfBias).toBe('High Risk of Bias');
+
+    const cold = service.evaluateBiohack('cold-immersion');
+    expect(cold.falsifiability.isFalsified).toBe(true);
+    expect(cold.falsifiability.pValue).toBeLessThan(0.05);
+    expect(cold.falsifiability.skepticalWarningNotice).toBeNull();
+  });
+
+  it('10. Dynamically generates epistemic assessments for novel biohack queries', () => {
+    const custom = service.evaluateBiohack('Hyperbaric Ozone Therapy');
+    expect(custom.name).toBe('Hyperbaric Ozone Therapy');
+    expect(custom.falsifiability).toBeDefined();
+    expect(custom.cochraneBias).toBeDefined();
+    expect(custom.contraindications.length).toBeGreaterThan(0);
+  });
 });

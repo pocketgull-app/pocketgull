@@ -1250,10 +1250,8 @@ export class AppComponent implements OnDestroy {
   hasApiKey = signal<boolean>(!!this.aiConfig?.apiKey);
   showSplash = computed(() => {
     const locked = this.session.isLocked();
-    const hasKey = this.hasApiKey();
-    const onboard = this.session.isOnboardingComplete();
     const emergency = this.state.isEmergencyMode();
-    return (locked || !hasKey || !onboard) && !emergency;
+    return locked && !emergency;
   });
   isDemoMode = this.state.isDemoMode;
   readonly showCompanionSyncModal = signal<boolean>(false);
@@ -2126,8 +2124,6 @@ export class AppComponent implements OnDestroy {
     this.clinicalIntelligence.loadArchivedAnalysis(darwinReport as Partial<Record<AnalysisLens, string>>);
     this.clinicalIntelligence.lastActivePhilosophy.set('western');
     this.clinicalIntelligence.lastPatientData.set(this.state.getAllDataForPrompt());
-    // Start tour after data is loaded so targets exist in DOM
-    setTimeout(() => this.tour.start(), 400);
   }
 
   handleEmergencyBypass() {

@@ -1,22 +1,22 @@
 import '@angular/compiler';
 import { Injector, runInInjectionContext, PLATFORM_ID, ɵChangeDetectionScheduler as ChangeDetectionScheduler } from '@angular/core';
-import { ImpactMasterProgramAgreementService } from './impact-master-program-agreement.service';
+import { ImpactProgramAgreementService } from './impact-program-agreement.service';
 
-describe('ImpactMasterProgramAgreementService (Impact.com MPA Legal Compliance)', () => {
-  let service: ImpactMasterProgramAgreementService;
+describe('ImpactProgramAgreementService (Impact.com MPA Legal Compliance)', () => {
+  let service: ImpactProgramAgreementService;
 
   beforeEach(() => {
     const injector = Injector.create({
       providers: [
         { provide: ChangeDetectionScheduler, useValue: { schedule: () => {}, notify: () => {} } },
         { provide: PLATFORM_ID, useValue: 'server' },
-        ImpactMasterProgramAgreementService
+        ImpactProgramAgreementService
       ]
     });
-    service = runInInjectionContext(injector, () => injector.get(ImpactMasterProgramAgreementService));
+    service = runInInjectionContext(injector, () => injector.get(ImpactProgramAgreementService));
   });
 
-  it('1. Verifies full compliance with Impact.com Master Program Agreement (MPA)', () => {
+  it('1. Verifies full compliance with Impact.com MPA', () => {
     expect(service.mpaEffectiveDate()).toBe('2025-04-01');
     expect(service.mpaComplianceRules().length).toBe(4);
     expect(service.isFullMpaCompliant()).toBe(true);

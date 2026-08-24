@@ -126,7 +126,7 @@ import { AmbientFlowSoundscapeService, SOUNDSCAPE_PRESETS, SoundscapeType } from
             <!-- Volume Slider -->
             <div class="space-y-1">
               <div class="flex items-center justify-between text-[11px] font-mono">
-                <span class="text-zinc-400">Master Volume:</span>
+                <span class="text-zinc-400">Main Volume:</span>
                 <span class="text-teal-300 font-bold">{{ Math.round(soundscapeService.volume() * 100) }}%</span>
               </div>
               <input 

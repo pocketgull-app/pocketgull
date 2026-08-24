@@ -50,7 +50,7 @@ export interface IPolygenicTraitProfile {
   providedIn: 'root'
 })
 export class AlphaGenomeRegulatoryService {
-  // Master Non-Coding Regulatory Benchmark Variants
+  // Primary Non-Coding Regulatory Benchmark Variants
   private readonly regulatoryVariantsCatalog: IRegulatoryVariant[] = [
     {
       id: 'reg-9p21-cad',

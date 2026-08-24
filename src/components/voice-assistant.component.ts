@@ -23,6 +23,8 @@ import { OcularVocalTelemetryService } from '../services/ocular-vocal-telemetry.
 import { OpticalCameraVisionService } from '../services/optical-camera-vision.service';
 import { AmbientSoapParserService, IStructuredSoapNote } from '../services/ambient-soap-parser.service';
 import { CoppaPrivacyShieldService } from '../services/coppa-privacy-shield.service';
+import { ActuarialLongevityService } from '../services/actuarial-longevity.service';
+import { SpatialLesionMarkupService } from '../services/spatial-lesion-markup.service';
 
 export interface IChatEntry {
     role: 'user' | 'model';
@@ -755,6 +757,8 @@ export class VoiceAssistantComponent implements OnDestroy {
     }
     public live = inject(AdkLiveService);
     public coppaShield = inject(CoppaPrivacyShieldService, { optional: true });
+    public actuarialService = inject(ActuarialLongevityService, { optional: true });
+    public lesionMarkup = inject(SpatialLesionMarkupService, { optional: true });
 
     readonly isPediatricMinor = computed(() => {
       const p = this.patientMgmt.selectedPatient();
@@ -871,6 +875,21 @@ export class VoiceAssistantComponent implements OnDestroy {
                 });
             }
         });
+
+        // Stream real-time 3D spatial lesion placement events to live Gemini audio WebSocket session
+        if (this.lesionMarkup) {
+            let prevLesionCount = this.lesionMarkup.activeLesions().length;
+            effect(() => {
+                const lesions = this.lesionMarkup?.activeLesions() || [];
+                if (lesions.length > prevLesionCount && this.live.isConnected()) {
+                    const latestLesion = lesions[lesions.length - 1];
+                    untracked(() => {
+                        this.live.sendRealtimeLesionUpdate(latestLesion);
+                    });
+                }
+                prevLesionCount = lesions.length;
+            });
+        }
 
         // Only init if in browser
         if (typeof window !== 'undefined') {
@@ -1042,16 +1061,26 @@ Only include a rich-media block when the user explicitly requests visual or rese
             const activePatient = this.patientMgmt.selectedPatient();
             const childName = activePatient?.name || this.state.patientName() || '';
             const childAge = activePatient?.age || 7;
+            const occString = activePatient?.preexistingConditions?.find(c => c.toLowerCase().includes('engineer') || c.toLowerCase().includes('nurse') || c.toLowerCase().includes('construction') || c.toLowerCase().includes('teacher') || c.toLowerCase().includes('pilot') || c.toLowerCase().includes('physician') || c.toLowerCase().includes('driver') || c.toLowerCase().includes('software')) || undefined;
+            const occupationalProfile = this.actuarialService ? this.actuarialService.getPersonalizedOccupationalProfile(
+                occString,
+                activePatient?.vitals,
+                [],
+                75
+            ) : null;
+
+            const activeLesions = this.lesionMarkup ? this.lesionMarkup.activeLesions() : [];
 
             await this.live.connect(
                 apiKey,
                 `${context}\n\nPatient Data:\n${rawPatientData}`,
                 'Aoede',
                 'models/gemini-3.5-flash',
-                null,
+                occupationalProfile,
                 isPediatric,
                 childName,
-                childAge
+                childAge,
+                activeLesions
             );
             // Barge-in enabled natively by SDK setup!
         } catch (e: any) {

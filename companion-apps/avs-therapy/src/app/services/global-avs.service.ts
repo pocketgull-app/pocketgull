@@ -58,12 +58,16 @@ export class GlobalAvsService {
 
   // ── Carrier / beat frequencies per brainwave ──────────────────
   private readonly WAVE_CONFIG: Record<string, { carrier1: number; beat1: number; carrier2: number; beat2: number; noiseGain: number }> = {
-    delta: { carrier1: 432, beat1: 2.0,  carrier2: 216, beat2: 1.5,  noiseGain: 0.04 },
-    theta: { carrier1: 432, beat1: 6.0,  carrier2: 216, beat2: 4.0,  noiseGain: 0.03 },
-    alpha: { carrier1: 432, beat1: 10.0, carrier2: 216, beat2: 7.5,  noiseGain: 0.02 },
-    beta:  { carrier1: 432, beat1: 20.0, carrier2: 216, beat2: 14.0, noiseGain: 0.015 },
-    gamma: { carrier1: 432, beat1: 40.0, carrier2: 216, beat2: 30.0, noiseGain: 0.01 },
+    delta:    { carrier1: 432, beat1: 2.5,  carrier2: 216, beat2: 1.5,  noiseGain: 0.04 },
+    theta:    { carrier1: 528, beat1: 6.0,  carrier2: 264, beat2: 4.0,  noiseGain: 0.03 },
+    schumann: { carrier1: 432, beat1: 7.83, carrier2: 216, beat2: 7.83, noiseGain: 0.025 },
+    alpha:    { carrier1: 432, beat1: 10.0, carrier2: 216, beat2: 7.5,  noiseGain: 0.02 },
+    beta:     { carrier1: 432, beat1: 18.0, carrier2: 216, beat2: 14.0, noiseGain: 0.015 },
+    gamma:    { carrier1: 432, beat1: 40.0, carrier2: 216, beat2: 30.0, noiseGain: 0.01 },
   };
+
+  readonly activeSolfeggioHz = signal<number>(528);
+  readonly isHapticsActive = signal<boolean>(false);
 
   constructor() {
     if (!this.isBrowser) return;
@@ -123,12 +127,65 @@ export class GlobalAvsService {
   /** Dynamically update frequency during an active session. */
   updateFrequencyHz(freqHz: number): void {
     if (!this.isBrowser) return;
-    const wave = this.state.avsBrainwaveFrequency();
-    const cfg = this.WAVE_CONFIG[wave] ?? this.WAVE_CONFIG['theta'];
+    const carrier = this.activeSolfeggioHz();
     if (this.leftOsc1 && this.rightOsc1 && this.leftOsc2 && this.rightOsc2) {
       const now = this.audioTime();
-      this.rightOsc1.frequency.setTargetAtTime(cfg.carrier1 + freqHz, now, 0.2);
-      this.rightOsc2.frequency.setTargetAtTime(cfg.carrier2 + (freqHz * 0.66), now, 0.2);
+      this.leftOsc1.frequency.setTargetAtTime(carrier, now, 0.2);
+      this.rightOsc1.frequency.setTargetAtTime(carrier + freqHz, now, 0.2);
+      this.leftOsc2.frequency.setTargetAtTime(carrier * 0.5, now, 0.2);
+      this.rightOsc2.frequency.setTargetAtTime(carrier * 0.5 + (freqHz * 0.66), now, 0.2);
+    }
+  }
+
+  /** Set active Sacred Solfeggio carrier tone */
+  setSolfeggioTone(hz: number): void {
+    this.activeSolfeggioHz.set(hz);
+    if (this.isBrowser && this.leftOsc1 && this.rightOsc1) {
+      const now = this.audioTime();
+      const freqHz = this.state.avsBrainwaveFrequencyHz();
+      this.leftOsc1.frequency.setTargetAtTime(hz, now, 0.3);
+      this.rightOsc1.frequency.setTargetAtTime(hz + freqHz, now, 0.3);
+      if (this.leftOsc2 && this.rightOsc2) {
+        this.leftOsc2.frequency.setTargetAtTime(hz * 0.5, now, 0.3);
+        this.rightOsc2.frequency.setTargetAtTime(hz * 0.5 + (freqHz * 0.66), now, 0.3);
+      }
+    }
+  }
+
+  /** Toggle physical somatosensory haptics */
+  toggleHaptics(forceState?: boolean): boolean {
+    const next = forceState !== undefined ? forceState : !this.isHapticsActive();
+    this.isHapticsActive.set(next);
+    if (next) {
+      this.triggerHapticPulse(45);
+    }
+    return next;
+  }
+
+  /** Trigger vibrotactile haptic pulse via Web Vibration or Gamepad API */
+  triggerHapticPulse(durationMs: number = 40): void {
+    if (!this.isBrowser || !this.isHapticsActive()) return;
+
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        navigator.vibrate(durationMs);
+      } catch {}
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.getGamepads) {
+      try {
+        const gamepads = navigator.getGamepads();
+        for (const gp of gamepads) {
+          if (gp && gp.vibrationActuator && typeof gp.vibrationActuator.playEffect === 'function') {
+            gp.vibrationActuator.playEffect('dual-rumble', {
+              startDelay: 0,
+              duration: durationMs,
+              weakMagnitude: 0.5,
+              strongMagnitude: 0.7
+            }).catch(() => {});
+          }
+        }
+      } catch {}
     }
   }
 

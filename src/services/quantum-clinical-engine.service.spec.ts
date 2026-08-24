@@ -5,8 +5,7 @@ describe('QuantumClinicalEngineService', () => {
   let service: QuantumClinicalEngineService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(QuantumClinicalEngineService);
+    service = new QuantumClinicalEngineService();
   });
 
   it('1. Initializes 64-qubit Google Quantum AI circuit state', () => {

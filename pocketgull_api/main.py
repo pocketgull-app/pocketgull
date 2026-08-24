@@ -40,6 +40,11 @@ from services.holistic_risk_service import MultiModalPatientStateInput, compute_
 from services.readmission_sepsis_model import ReadmissionSepsisInput, predict_readmission_and_sepsis
 from services.sibi_cross_talk_model import SibiCrossTalkInput, SibiCrossTalkOutput, compute_sibi_cross_talk_risk
 from services.onnx_engine import onnx_engine
+from services.asymmetric_loss_engine import (
+    ClinicalBiomarkerFeatures,
+    MultiLabelClinicalRiskOutput,
+    predict_asymmetric_multilabel_risk,
+)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ML: CLINICAL RISK SCORING (joblib / scikit-learn) STATE & LOADING
@@ -271,6 +276,13 @@ class SomaticCoherenceResponse(BaseModel):
 async def predict_readmission_sepsis_route(payload: ReadmissionSepsisInput):
     """XGBoost 30-Day Hospital Readmission & qSOFA ICU Sepsis Escalation ML Scoring."""
     return predict_readmission_and_sepsis(payload)
+
+
+@app.post("/api/ml/asymmetric-risk-score", response_model=MultiLabelClinicalRiskOutput, tags=["ML"])
+@app.post("/ml/asymmetric-risk-score", response_model=MultiLabelClinicalRiskOutput, tags=["ML"])
+async def calculate_asymmetric_multilabel_risk(payload: ClinicalBiomarkerFeatures) -> MultiLabelClinicalRiskOutput:
+    """Calibrated 12-target Multi-Label Clinical Risk Scoring grounded by Asymmetric Loss Optimization."""
+    return predict_asymmetric_multilabel_risk(payload)
 
 
 @app.post("/api/ml/somatic-coherence-score", response_model=SomaticCoherenceResponse, tags=["ML"])

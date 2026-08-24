@@ -13,12 +13,18 @@ class StressInterventionState {
   final bool isAvsSessionActive;
   final String? brainwaveFrequency;
   final double? breathingRate;
+  final int carrierFreqHz;
+  final bool isIsochronicPulseEnabled;
+  final bool isHapticsEnabled;
 
   const StressInterventionState({
     this.isTriggered = false,
     this.isAvsSessionActive = false,
     this.brainwaveFrequency,
     this.breathingRate,
+    this.carrierFreqHz = 528,
+    this.isIsochronicPulseEnabled = true,
+    this.isHapticsEnabled = true,
   });
 
   StressInterventionState copyWith({
@@ -26,12 +32,18 @@ class StressInterventionState {
     bool? isAvsSessionActive,
     String? brainwaveFrequency,
     double? breathingRate,
+    int? carrierFreqHz,
+    bool? isIsochronicPulseEnabled,
+    bool? isHapticsEnabled,
   }) =>
       StressInterventionState(
         isTriggered: isTriggered ?? this.isTriggered,
         isAvsSessionActive: isAvsSessionActive ?? this.isAvsSessionActive,
         brainwaveFrequency: brainwaveFrequency ?? this.brainwaveFrequency,
         breathingRate: breathingRate ?? this.breathingRate,
+        carrierFreqHz: carrierFreqHz ?? this.carrierFreqHz,
+        isIsochronicPulseEnabled: isIsochronicPulseEnabled ?? this.isIsochronicPulseEnabled,
+        isHapticsEnabled: isHapticsEnabled ?? this.isHapticsEnabled,
       );
 }
 

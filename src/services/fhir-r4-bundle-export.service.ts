@@ -260,4 +260,261 @@ export class FhirR4BundleExportService {
   exportBundleAsJson(patient: IPatient): string {
     return JSON.stringify(this.generateFhirR4Bundle(patient), null, 2);
   }
+
+  /**
+   * Serializes 3D Spatial Somatic Lesions and AVS Neuro-Acoustic Sessions into a standardized FHIR R4 Document Bundle
+   */
+  generateSpatialLesionAndAvsBundle(params: {
+    patientId: string;
+    patientName: string;
+    lesions: Array<{
+      id: string;
+      label: string;
+      partId: string;
+      position: { x: number; y: number; z: number };
+      normal?: { x: number; y: number; z: number };
+      severity: 'mild' | 'moderate' | 'critical';
+      morphology: string;
+      clinicalNotes: string;
+      snomedCode?: string;
+    }>;
+    avsSession?: {
+      carrierFreqHz: number;
+      binauralBeatHz: number;
+      isIsochronicPulseEnabled?: boolean;
+      isSpatialPanningEnabled?: boolean;
+      hapticMode?: string;
+      durationMinutes?: number;
+    };
+    vitals?: {
+      heartRate?: number;
+      autonomicCoherenceScore?: number;
+      cardiacResonanceHz?: number;
+    };
+  }): IFhirBundle {
+    const timestamp = new Date().toISOString();
+    const bundleId = `urn:uuid:bundle-spatial-avs-${params.patientId}-${Date.now()}`;
+    const patientUrn = `urn:uuid:patient-${params.patientId}`;
+
+    // 1. Patient Resource
+    const patientResource = {
+      resourceType: 'Patient',
+      id: params.patientId,
+      identifier: [{ system: 'https://pocketgull.app/fhir/patient-id', value: params.patientId }],
+      active: true,
+      name: [{ use: 'official', text: params.patientName }]
+    };
+
+    // 2. 3D Spatial Lesion Observations
+    const observationResources = params.lesions.map((lesion) => {
+      const obsId = `obs-spatial-${lesion.id}`;
+      return {
+        resourceType: 'Observation',
+        id: obsId,
+        status: 'final',
+        category: [
+          {
+            coding: [
+              {
+                system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+                code: 'exam',
+                display: 'Exam'
+              }
+            ]
+          }
+        ],
+        code: {
+          coding: [
+            {
+              system: 'http://snomed.info/sct',
+              code: lesion.snomedCode || '404684003',
+              display: `${lesion.morphology} - ${lesion.label}`
+            }
+          ],
+          text: lesion.label
+        },
+        subject: { reference: patientUrn, display: params.patientName },
+        effectiveDateTime: timestamp,
+        interpretation: [
+          {
+            coding: [
+              {
+                system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
+                code: lesion.severity === 'critical' ? 'AA' : lesion.severity === 'moderate' ? 'A' : 'N',
+                display: lesion.severity
+              }
+            ]
+          }
+        ],
+        bodySite: {
+          coding: [
+            {
+              system: 'https://pocketgull.app/fhir/anatomy-part-id',
+              code: lesion.partId,
+              display: lesion.partId.replace(/_/g, ' ')
+            }
+          ]
+        },
+        note: [{ text: lesion.clinicalNotes }],
+        extension: [
+          {
+            url: 'https://pocketgull.app/fhir/StructureDefinition/spatial-coordinates-3d',
+            extension: [
+              { url: 'x', valueDecimal: lesion.position.x },
+              { url: 'y', valueDecimal: lesion.position.y },
+              { url: 'z', valueDecimal: lesion.position.z },
+              ...(lesion.normal ? [
+                { url: 'normalX', valueDecimal: lesion.normal.x },
+                { url: 'normalY', valueDecimal: lesion.normal.y },
+                { url: 'normalZ', valueDecimal: lesion.normal.z }
+              ] : [])
+            ]
+          }
+        ]
+      };
+    });
+
+    // 3. AVS Neuro-Acoustic & Vibroacoustic Procedure Resource
+    const procedureResources: any[] = [];
+    if (params.avsSession) {
+      const procId = `proc-avs-${Date.now()}`;
+      procedureResources.push({
+        resourceType: 'Procedure',
+        id: procId,
+        status: 'completed',
+        category: {
+          coding: [
+            {
+              system: 'http://snomed.info/sct',
+              code: '866167008',
+              display: 'Acoustic stimulation therapy (procedure)'
+            }
+          ]
+        },
+        code: {
+          coding: [
+            {
+              system: 'https://pocketgull.app/fhir/avs-protocol',
+              code: `solfeggio-${params.avsSession.carrierFreqHz}hz`,
+              display: `Sacred Solfeggio ${params.avsSession.carrierFreqHz}Hz Entrainment`
+            }
+          ],
+          text: `AVS Entrainment: Carrier ${params.avsSession.carrierFreqHz}Hz, Beat ${params.avsSession.binauralBeatHz}Hz`
+        },
+        subject: { reference: patientUrn, display: params.patientName },
+        performedDateTime: timestamp,
+        note: [
+          {
+            text: `Acoustic Dosimetry: Isochronic Pulse = ${params.avsSession.isIsochronicPulseEnabled ? 'Active' : 'Binaural Continuous'}; 3D HRTF Spatial Panning = ${params.avsSession.isSpatialPanningEnabled ? 'Active' : 'Stereo Center'}; Haptics = ${params.avsSession.hapticMode || 'Disabled'}; Cardiac Resonance = ${params.vitals?.cardiacResonanceHz || 0.10}Hz (${params.vitals?.autonomicCoherenceScore || 85}% Coherence)`
+          }
+        ]
+      });
+    }
+
+    // 4. DiagnosticReport Resource
+    const diagnosticReportResource = {
+      resourceType: 'DiagnosticReport',
+      id: `diag-spatial-avs-${params.patientId}`,
+      status: 'final',
+      category: [
+        {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/v2-0074',
+              code: 'RAD',
+              display: 'Radiology / 3D Anatomical Spatial Observation'
+            }
+          ]
+        }
+      ],
+      code: {
+        coding: [
+          {
+            system: 'http://loinc.org',
+            code: '72170-4',
+            display: 'Photographic and 3D surface observation report'
+          }
+        ],
+        text: 'PocketGull 3D Somatic Lesion & Vibroacoustic Entrainment Assessment'
+      },
+      subject: { reference: patientUrn, display: params.patientName },
+      effectiveDateTime: timestamp,
+      issued: timestamp,
+      result: observationResources.map(o => ({ reference: `urn:uuid:${o.id}`, display: o.code.text })),
+      conclusion: `Identified ${observationResources.length} 3D surface lesion loci. Target Solfeggio acoustic dosimetry applied.`
+    };
+
+    // 5. Composition Resource (Document Header)
+    const compositionResource = {
+      resourceType: 'Composition',
+      id: `comp-spatial-avs-${params.patientId}`,
+      status: 'final',
+      type: {
+        coding: [{ system: 'http://loinc.org', code: '11503-0', display: 'Medical records' }],
+        text: 'PocketGull 3D Spatial Lesion & Vibroacoustic Entrainment Dossier'
+      },
+      subject: { reference: patientUrn, display: params.patientName },
+      date: timestamp,
+      title: '3D Somatic Lesion Markup & Neuro-Acoustic Procedure Report (FHIR R4)',
+      section: [
+        {
+          title: '3D Spatial Surface Lesion Observations',
+          entry: observationResources.map(o => ({ reference: `urn:uuid:${o.id}` }))
+        },
+        ...(procedureResources.length > 0 ? [{
+          title: 'Vibroacoustic & AVS Clinical Procedures',
+          entry: procedureResources.map(p => ({ reference: `urn:uuid:${p.id}` }))
+        }] : []),
+        {
+          title: 'Clinical Diagnostic Synthesis',
+          entry: [{ reference: `urn:uuid:${diagnosticReportResource.id}` }]
+        }
+      ]
+    };
+
+    return {
+      resourceType: 'Bundle',
+      id: bundleId,
+      type: 'document',
+      timestamp,
+      entry: [
+        { fullUrl: `urn:uuid:${compositionResource.id}`, resource: compositionResource },
+        { fullUrl: patientUrn, resource: patientResource },
+        { fullUrl: `urn:uuid:${diagnosticReportResource.id}`, resource: diagnosticReportResource },
+        ...observationResources.map(o => ({ fullUrl: `urn:uuid:${o.id}`, resource: o })),
+        ...procedureResources.map(p => ({ fullUrl: `urn:uuid:${p.id}`, resource: p }))
+      ]
+    };
+  }
+
+  /**
+   * Exports 3D spatial lesion & AVS bundle as JSON string
+   */
+  exportSpatialLesionBundleAsJson(params: Parameters<FhirR4BundleExportService['generateSpatialLesionAndAvsBundle']>[0]): string {
+    return JSON.stringify(this.generateSpatialLesionAndAvsBundle(params), null, 2);
+  }
+
+  /**
+   * Triggers client-side browser download of the generated FHIR R4 Bundle JSON file
+   */
+  downloadSpatialLesionBundleJson(params: Parameters<FhirR4BundleExportService['generateSpatialLesionAndAvsBundle']>[0]): boolean {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return false;
+
+    try {
+      const jsonStr = this.exportSpatialLesionBundleAsJson(params);
+      const blob = new Blob([jsonStr], { type: 'application/fhir+json;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fhir_r4_spatial_avs_${params.patientId}_${Date.now()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      return true;
+    } catch (e) {
+      console.warn('[FhirR4BundleExport] Bundle download failed:', e);
+      return false;
+    }
+  }
 }

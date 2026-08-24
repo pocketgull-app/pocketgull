@@ -267,7 +267,7 @@ export type PatentHudTab = 'inventions' | 'clauses' | 'math' | 'charter';
               </div>
 
               <div class="space-y-2 text-zinc-700 dark:text-zinc-300 text-[11px] leading-relaxed">
-                <p>• <strong>USPTO Specification Document</strong>: <code class="text-teal-600 dark:text-teal-400">docs/research/POCKETGULL_MASTER_PATENT_CLAIMS_CHARTER.md</code></p>
+                <p>• <strong>USPTO Specification Document</strong>: <code class="text-teal-600 dark:text-teal-400">docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md</code></p>
                 <p>• <strong>Statutory Clauses &amp; IP Governance</strong>: <code class="text-teal-600 dark:text-teal-400">docs/legal/INVENTION_ASSIGNMENT_AND_COPYRIGHT_CLAUSES.md</code></p>
                 <p>• <strong>Cryptographic Anchor</strong>: Git Repository SHA-256 Commit Chain (Automated Pre-Commit Sentinel Guard)</p>
                 <p>• <strong>Prior Art Differentiation</strong>: Zero video cloud streaming, Popperian $H_0$ statistical falsification ($p < 0.05$), and Stackelberg adherence rebate optimization ($r^*$).</p>
@@ -276,7 +276,7 @@ export type PatentHudTab = 'inventions' | 'clauses' | 'math' | 'charter';
               <div class="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
                 <span class="text-[11px] text-zinc-500">Jurisdictions: USPTO (US), EPO (EU), WIPO (PCT)</span>
                 <button type="button"
-                        (click)="copyText('docs/research/POCKETGULL_MASTER_PATENT_CLAIMS_CHARTER.md')"
+                        (click)="copyText('docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md')"
                         class="px-3 py-1.5 bg-teal-500 text-white font-bold text-xs uppercase cursor-pointer hover:bg-teal-600 transition">
                   Copy Charter File Reference
                 </button>

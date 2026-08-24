@@ -8,6 +8,11 @@ import os
 import asyncio
 import importlib.util
 import inspect
+import warnings
+
+# Filter harmless third-party deprecation & core-count warnings in test runner
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=UserWarning, module="joblib")
 
 def run_all_tests():
     api_dir = os.path.dirname(os.path.abspath(__file__))

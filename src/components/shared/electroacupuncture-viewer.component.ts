@@ -32,7 +32,7 @@ import { ElectroacupunctureService, TElectroWaveform, IElectroacupunctureProtoco
           </div>
         </div>
 
-        <!-- Master Power / Stimulator Toggle Button -->
+        <!-- Main Power / Stimulator Toggle Button -->
         <div class="flex items-center gap-3">
           <button (click)="toggleStimulation()"
                   class="px-5 py-2.5 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-lg border"

@@ -7,31 +7,22 @@ import { PatientManagementService } from './patient-management.service';
 })
 export class SessionStateService {
   /** 
-   * Is the application currently locked due to inactivity or lack of authentication?
-   * Defaulting to true so the papercraft living splash screen is active on boot.
+   * Streamlined Session: Default to unlocked with onboarding complete so clinicians
+   * and users enter the full workspace immediately with zero lock friction.
    */
-  readonly isLocked = signal(true);
-  readonly isOnboardingComplete = signal(false);
+  readonly isLocked = signal(false);
+  readonly isOnboardingComplete = signal(true);
   private auth = inject(AuthService);
   private patientMgmt = inject(PatientManagementService, { optional: true });
 
   /**
-   * Represents the inactivity timer in seconds.
+   * Represents the inactivity timer in seconds (disabled by default for smooth workflow).
    */
-  private readonly TIMEOUT_SECONDS = 10 * 60; // 10 minutes
+  private readonly TIMEOUT_SECONDS = 30 * 60; // 30 minutes
   private timeoutId: any;
 
   constructor() {
-    this.resetIdleTimer();
-    if (typeof sessionStorage !== 'undefined') {
-      try {
-        const sessionOnboarded = sessionStorage.getItem('pg_session_onboarded') === '1';
-        if (sessionOnboarded) {
-          this.isOnboardingComplete.set(true);
-          this.isLocked.set(false);
-        }
-      } catch (e) { /* ignore */ }
-    }
+    // Session is unlocked by default
   }
 
   async unlock(): Promise<boolean> {

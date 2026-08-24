@@ -1,4 +1,4 @@
-# ⚖️ POCKET GULL MASTER PATENT CLAIMS CHARTER (USPTO / PCT PROVISIONAL APPLICATION SPECIFICATION)
+# ⚖️ POCKET GULL PRIMARY PATENT CLAIMS CHARTER (USPTO / PCT PROVISIONAL APPLICATION SPECIFICATION)
 **Title of Invention**: *Autonomous Multi-Paradigm Clinical Decision Support, Client-Side Zero-Egress Bio-Signal Extraction, Popperian Epistemological Verification, and Game-Theoretic Adherence Engines*
 **Inventors**: *PocketGull Applied Clinical AI & Biophysics Research Consortium*
 **Jurisdictions Targeted**: *United States Patent and Trademark Office (USPTO), European Patent Office (EPO), WIPO PCT*

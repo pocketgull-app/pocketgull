@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject, effect, untracked } from '@angular/core';
+import { DictationService } from './dictation.service';
 
 export type SoundscapeType = 
   | 'golden_flow'          // 432 Hz Golden Ambient Pad + 10 Hz Alpha Focus
@@ -82,6 +83,11 @@ export const SOUNDSCAPE_PRESETS: ISoundscapePreset[] = [
 })
 export class AmbientFlowSoundscapeService {
   // Reactive State Signals
+  private readonly dictation = (() => {
+    try { return inject(DictationService, { optional: true }); } catch { return null; }
+  })();
+  readonly isDucked = signal<boolean>(false);
+
   isPlaying = signal<boolean>(false);
   activeSoundscape = signal<SoundscapeType>('golden_flow');
   volume = signal<number>(0.65); // 0.0 to 1.0
@@ -94,7 +100,7 @@ export class AmbientFlowSoundscapeService {
 
   // Web Audio Context & Synthesizer Graph
   private audioCtx: AudioContext | null = null;
-  private masterGain: GainNode | null = null;
+  private mainGain: GainNode | null = null;
   private analyserNode: AnalyserNode | null = null;
   private activeOscillators: OscillatorNode[] = [];
   private activeGains: GainNode[] = [];
@@ -103,7 +109,24 @@ export class AmbientFlowSoundscapeService {
   private timerInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
-    // Lazy AudioContext on user interaction
+    if (this.dictation && typeof this.dictation.isListening === 'function') {
+      effect(() => {
+        const isListening = this.dictation!.isListening();
+        const depth = typeof this.dictation!.sidechainDuckingDepth === 'function'
+          ? this.dictation!.sidechainDuckingDepth()
+          : 0.85;
+
+        untracked(() => {
+          this.isDucked.set(isListening);
+          if (this.mainGain && this.audioCtx) {
+            const baseVol = this.isMuted() ? 0 : this.volume();
+            const targetGain = isListening ? baseVol * (1.0 - depth) : baseVol;
+            const timeConstant = isListening ? 0.04 : 0.60;
+            this.mainGain.gain.setTargetAtTime(targetGain, this.audioCtx.currentTime, timeConstant);
+          }
+        });
+      });
+    }
   }
 
   getAnalyser(): AnalyserNode | null {
@@ -129,18 +152,20 @@ export class AmbientFlowSoundscapeService {
   setVolume(vol: number): void {
     const clamped = Math.max(0, Math.min(1, vol));
     this.volume.set(clamped);
-    if (this.masterGain && this.audioCtx) {
-      const targetGain = this.isMuted() ? 0 : clamped;
-      this.masterGain.gain.setTargetAtTime(targetGain, this.audioCtx.currentTime, 0.05);
+    if (this.mainGain && this.audioCtx) {
+      const isListening = this.dictation && typeof this.dictation.isListening === 'function' && this.dictation.isListening();
+      const depth = this.dictation && typeof this.dictation.sidechainDuckingDepth === 'function' ? this.dictation.sidechainDuckingDepth() : 0.85;
+      const targetGain = this.isMuted() ? 0 : (isListening ? clamped * (1.0 - depth) : clamped);
+      this.mainGain.gain.setTargetAtTime(targetGain, this.audioCtx.currentTime, 0.05);
     }
   }
 
   toggleMute(): void {
     const nextMute = !this.isMuted();
     this.isMuted.set(nextMute);
-    if (this.masterGain && this.audioCtx) {
+    if (this.mainGain && this.audioCtx) {
       const targetGain = nextMute ? 0 : this.volume();
-      this.masterGain.gain.setTargetAtTime(targetGain, this.audioCtx.currentTime, 0.05);
+      this.mainGain.gain.setTargetAtTime(targetGain, this.audioCtx.currentTime, 0.05);
     }
   }
 
@@ -181,7 +206,7 @@ export class AmbientFlowSoundscapeService {
         await this.audioCtx.resume();
       }
 
-      this.setupMasterBus();
+      this.setupMainBus();
       this.synthesizeSoundscape(this.activeSoundscape());
       this.isPlaying.set(true);
     } catch (err) {
@@ -190,9 +215,9 @@ export class AmbientFlowSoundscapeService {
   }
 
   stop(): void {
-    if (this.audioCtx && this.masterGain) {
+    if (this.audioCtx && this.mainGain) {
       // Fade out over 0.6 seconds to avoid clicks
-      this.masterGain.gain.setTargetAtTime(0, this.audioCtx.currentTime, 0.2);
+      this.mainGain.gain.setTargetAtTime(0, this.audioCtx.currentTime, 0.2);
     }
 
     setTimeout(() => {
@@ -207,41 +232,41 @@ export class AmbientFlowSoundscapeService {
     }
   }
 
-  private setupMasterBus(): void {
+  private setupMainBus(): void {
     if (!this.audioCtx) return;
 
     this.tearDownAudioNodes();
 
-    this.masterGain = this.audioCtx.createGain();
+    this.mainGain = this.audioCtx.createGain();
     const initVol = this.isMuted() ? 0 : this.volume();
-    this.masterGain.gain.setValueAtTime(0, this.audioCtx.currentTime);
-    this.masterGain.gain.setTargetAtTime(initVol, this.audioCtx.currentTime, 0.4);
+    this.mainGain.gain.setValueAtTime(0, this.audioCtx.currentTime);
+    this.mainGain.gain.setTargetAtTime(initVol, this.audioCtx.currentTime, 0.4);
 
     this.analyserNode = this.audioCtx.createAnalyser();
     this.analyserNode.fftSize = 64;
     this.analyserNode.smoothingTimeConstant = 0.85;
 
-    this.masterGain.connect(this.analyserNode);
+    this.mainGain.connect(this.analyserNode);
     this.analyserNode.connect(this.audioCtx.destination);
   }
 
   private async crossfadeToNewSoundscape(): Promise<void> {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
 
     // Fade down
-    this.masterGain.gain.setTargetAtTime(0.05, this.audioCtx.currentTime, 0.3);
+    this.mainGain.gain.setTargetAtTime(0.05, this.audioCtx.currentTime, 0.3);
 
     setTimeout(() => {
       this.tearDownSoundscapeNodes();
       this.synthesizeSoundscape(this.activeSoundscape());
       // Fade back up
       const targetVol = this.isMuted() ? 0 : this.volume();
-      this.masterGain?.gain.setTargetAtTime(targetVol, this.audioCtx?.currentTime || 0, 0.4);
+      this.mainGain?.gain.setTargetAtTime(targetVol, this.audioCtx?.currentTime || 0, 0.4);
     }, 350);
   }
 
   private synthesizeSoundscape(type: SoundscapeType): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
 
     const ctx = this.audioCtx;
     const now = ctx.currentTime;
@@ -300,7 +325,7 @@ export class AmbientFlowSoundscapeService {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.masterGain!);
+      gain.connect(this.mainGain!);
 
       osc.start(now);
       this.activeOscillators.push(osc);
@@ -349,7 +374,7 @@ export class AmbientFlowSoundscapeService {
 
     whiteNoise.connect(surfFilter);
     surfFilter.connect(surfGain);
-    surfGain.connect(this.masterGain!);
+    surfGain.connect(this.mainGain!);
     whiteNoise.start(now);
 
     // 7.83 Hz Schumann Resonance Sub-Pulse
@@ -358,7 +383,7 @@ export class AmbientFlowSoundscapeService {
     // Generative Pentatonic Wind Chimes (Random bell tones)
     const chimePitches = [523.25, 587.33, 659.25, 783.99, 880.0]; // C5, D5, E5, G5, A5
     const chimeTimer = setInterval(() => {
-      if (!this.isPlaying() || !this.audioCtx || !this.masterGain) return;
+      if (!this.isPlaying() || !this.audioCtx || !this.mainGain) return;
       if (Math.random() > 0.4) {
         const pitch = chimePitches[Math.floor(Math.random() * chimePitches.length)];
         const bellOsc = ctx.createOscillator();
@@ -369,7 +394,7 @@ export class AmbientFlowSoundscapeService {
         bellGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3.2);
 
         bellOsc.connect(bellGain);
-        bellGain.connect(this.masterGain!);
+        bellGain.connect(this.mainGain!);
         bellOsc.start(ctx.currentTime);
         bellOsc.stop(ctx.currentTime + 3.3);
       }
@@ -397,7 +422,7 @@ export class AmbientFlowSoundscapeService {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.masterGain!);
+      gain.connect(this.mainGain!);
 
       osc.start(now);
       this.activeOscillators.push(osc);
@@ -431,7 +456,7 @@ export class AmbientFlowSoundscapeService {
       gain.gain.setValueAtTime(0.04 / (i + 1), now);
 
       osc.connect(gain);
-      gain.connect(this.masterGain!);
+      gain.connect(this.mainGain!);
       osc.start(now);
 
       this.activeOscillators.push(osc);
@@ -451,7 +476,7 @@ export class AmbientFlowSoundscapeService {
     subOsc.frequency.setValueAtTime(55.0, now);
     subGain.gain.setValueAtTime(0.08, now);
     subOsc.connect(subGain);
-    subGain.connect(this.masterGain!);
+    subGain.connect(this.mainGain!);
     subOsc.start(now);
     this.activeOscillators.push(subOsc);
     this.activeGains.push(subGain);
@@ -476,7 +501,7 @@ export class AmbientFlowSoundscapeService {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.masterGain!);
+      gain.connect(this.mainGain!);
 
       osc.start(now);
       this.activeOscillators.push(osc);
@@ -511,16 +536,16 @@ export class AmbientFlowSoundscapeService {
 
       leftOsc.connect(leftGain);
       leftGain.connect(leftPanner);
-      leftPanner.connect(this.masterGain!);
+      leftPanner.connect(this.mainGain!);
 
       rightOsc.connect(rightGain);
       rightGain.connect(rightPanner);
-      rightPanner.connect(this.masterGain!);
+      rightPanner.connect(this.mainGain!);
     } else {
       leftOsc.connect(leftGain);
-      leftGain.connect(this.masterGain!);
+      leftGain.connect(this.mainGain!);
       rightOsc.connect(rightGain);
-      rightGain.connect(this.masterGain!);
+      rightGain.connect(this.mainGain!);
     }
 
     leftOsc.start(now);
@@ -558,9 +583,9 @@ export class AmbientFlowSoundscapeService {
       this.analyserNode = null;
     }
 
-    if (this.masterGain) {
-      try { this.masterGain.disconnect(); } catch { /* ignore */ }
-      this.masterGain = null;
+    if (this.mainGain) {
+      try { this.mainGain.disconnect(); } catch { /* ignore */ }
+      this.mainGain = null;
     }
   }
 }

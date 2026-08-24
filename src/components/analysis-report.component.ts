@@ -34,7 +34,6 @@ import { ChronobiologyMatrixLensTabComponent } from './analysis-report/chronobio
 import { DiagnosticsLensTabComponent } from './analysis-report/diagnostics-lens-tab.component';
 import { EmtHandoffLensTabComponent } from './analysis-report/emt-handoff-lens-tab.component';
 import { EpigeneticLongevityLensTabComponent } from './analysis-report/epigenetic-longevity-lens-tab.component';
-import { FunctionalCircadianSynergyBridgeComponent } from './analysis-report/functional-circadian-synergy-bridge.component';
 import { FunctionalMedicineMatrixLensTabComponent } from './analysis-report/functional-medicine-matrix-lens-tab.component';
 import { InterventionsLensTabComponent } from './analysis-report/interventions-lens-tab.component';
 import { MaternalPostpartumLensTabComponent } from './analysis-report/maternal-postpartum-lens-tab.component';
@@ -60,11 +59,6 @@ import { TypologyBadgeComponent } from './shared/typology-badge.component';
 import { PatientHealthTrajectoryStorybookComponent } from './patient-health-trajectory-storybook.component';
 import { HandoffModalComponent } from './modals/handoff-modal.component';
 import { SdohNavigatorComponent } from './sdoh-navigator.component';
-import { LifePerilsParadigmMatrixComponent } from './life-perils-paradigm-matrix.component';
-import { HealthyHobbiesLifestyleComponent } from './healthy-hobbies-lifestyle.component';
-import { StormAnalysisComponent } from './storm-analysis.component';
-import { AndroscogginForagingPhytoncideComponent } from './androscoggin-foraging-phytoncide.component';
-import { ProceduralInvestmentMatrixComponent } from './procedural-investment-matrix.component';
 import { ActuarialQalyCalculatorComponent } from './actuarial-qaly-calculator.component';
 import { OccupationalHazardCardComponent } from './occupational-hazard-card.component';
 import { VagalBiofeedbackDockComponent } from './vagal-biofeedback-dock.component';
@@ -105,7 +99,6 @@ import { PositivePsychologyFlourishingHubComponent } from './positive-psychology
     DiagnosticsLensTabComponent,
     EmtHandoffLensTabComponent,
     EpigeneticLongevityLensTabComponent,
-    FunctionalCircadianSynergyBridgeComponent,
     FunctionalMedicineMatrixLensTabComponent,
     InterventionsLensTabComponent,
     MaternalPostpartumLensTabComponent,
@@ -152,11 +145,6 @@ import { PositivePsychologyFlourishingHubComponent } from './positive-psychology
     TypologyBadgeComponent,
     HandoffModalComponent,
     SdohNavigatorComponent,
-    LifePerilsParadigmMatrixComponent,
-    HealthyHobbiesLifestyleComponent,
-    StormAnalysisComponent,
-    AndroscogginForagingPhytoncideComponent,
-    ProceduralInvestmentMatrixComponent,
     ActuarialQalyCalculatorComponent,
     VagalBiofeedbackDockComponent,
     Sec1557AuditModalComponent,
@@ -780,80 +768,6 @@ import { PositivePsychologyFlourishingHubComponent } from './positive-psychology
                     </button>
                   }
 
-                  <!-- Storm Tool -->
-                  @if (state.getToolState('storm') !== 'hidden') {
-                    <button (click)="handleAuxToolClick('storm')" (dblclick)="handleAuxToolDblClick('storm')"
-                            [class.bg-[#10B981]]="state.getToolState('storm') === 'prescribed'"
-                            [class.text-white]="state.getToolState('storm') === 'prescribed'"
-                            [class.bg-orange-500]="activeAuxTool() === 'storm' && state.getToolState('storm') !== 'prescribed'"
-                            [class.text-zinc-950]="activeAuxTool() === 'storm' && state.getToolState('storm') !== 'prescribed'"
-                            [class.bg-zinc-100]="activeAuxTool() !== 'storm' && state.getToolState('storm') === 'unassigned'"
-                            [class.dark:bg-zinc-900]="activeAuxTool() !== 'storm' && state.getToolState('storm') === 'unassigned'"
-                            [class.text-zinc-800]="activeAuxTool() !== 'storm' && state.getToolState('storm') === 'unassigned'"
-                            [class.dark:text-zinc-300]="activeAuxTool() !== 'storm' && state.getToolState('storm') === 'unassigned'"
-                            class="px-3 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-800 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5"
-                            title="Single-click to view. Double-click to prescribe to care plan.">
-                      <span>⛈️ Storm Shield</span>
-                      @if (state.getToolState('storm') === 'prescribed') { <span class="text-[10px] font-black px-1.5 py-0.5 rounded bg-white text-emerald-950">💊 Prescribed</span> }
-                    </button>
-                  }
-
-                  <!-- Foraging Tool -->
-                  @if (state.getToolState('foraging') !== 'hidden') {
-                    <button (click)="handleAuxToolClick('foraging')" (dblclick)="handleAuxToolDblClick('foraging')"
-                            [class.bg-[#10B981]]="state.getToolState('foraging') === 'prescribed'"
-                            [class.text-white]="state.getToolState('foraging') === 'prescribed'"
-                            [class.bg-orange-500]="activeAuxTool() === 'foraging' && state.getToolState('foraging') !== 'prescribed'"
-                            [class.text-zinc-950]="activeAuxTool() === 'foraging' && state.getToolState('foraging') !== 'prescribed'"
-                            [class.bg-zinc-100]="activeAuxTool() !== 'foraging' && state.getToolState('foraging') === 'unassigned'"
-                            [class.dark:bg-zinc-900]="activeAuxTool() !== 'foraging' && state.getToolState('foraging') === 'unassigned'"
-                            [class.text-zinc-800]="activeAuxTool() !== 'foraging' && state.getToolState('foraging') === 'unassigned'"
-                            [class.dark:text-zinc-300]="activeAuxTool() !== 'foraging' && state.getToolState('foraging') === 'unassigned'"
-                            class="px-3 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-800 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5"
-                            title="Single-click to view. Double-click to prescribe to care plan.">
-                      <span>🫐 Foraging</span>
-                      @if (state.getToolState('foraging') === 'prescribed') { <span class="text-[10px] font-black px-1.5 py-0.5 rounded bg-white text-emerald-950">💊 Prescribed</span> }
-                    </button>
-                  }
-
-                  <!-- Investment Tool -->
-                  @if (state.getToolState('investment') !== 'hidden') {
-                    <button (click)="handleAuxToolClick('investment')" (dblclick)="handleAuxToolDblClick('investment')"
-                            [class.bg-[#10B981]]="state.getToolState('investment') === 'prescribed'"
-                            [class.text-white]="state.getToolState('investment') === 'prescribed'"
-                            [class.bg-orange-500]="activeAuxTool() === 'investment' && state.getToolState('investment') !== 'prescribed'"
-                            [class.text-zinc-950]="activeAuxTool() === 'investment' && state.getToolState('investment') !== 'prescribed'"
-                            [class.bg-zinc-100]="activeAuxTool() !== 'investment' && state.getToolState('investment') === 'unassigned'"
-                            [class.dark:bg-zinc-900]="activeAuxTool() !== 'investment' && state.getToolState('investment') === 'unassigned'"
-                            [class.text-zinc-800]="activeAuxTool() !== 'investment' && state.getToolState('investment') === 'unassigned'"
-                            [class.dark:text-zinc-300]="activeAuxTool() !== 'investment' && state.getToolState('investment') === 'unassigned'"
-                            class="px-3 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-800 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5"
-                            title="Single-click to view. Double-click to prescribe to care plan.">
-                      <span>📈 Investments</span>
-                      @if (state.getToolState('investment') === 'prescribed') { <span class="text-[10px] font-black px-1.5 py-0.5 rounded bg-white text-emerald-950">💊 Prescribed</span> }
-                    </button>
-                  }
-
-                  <!-- Perils Tool -->
-                  @if (state.getToolState('perils') !== 'hidden') {
-                    <button (click)="handleAuxToolClick('perils')" (dblclick)="handleAuxToolDblClick('perils')"
-                            [class.bg-[#10B981]]="state.getToolState('perils') === 'prescribed'"
-                            [class.text-white]="state.getToolState('perils') === 'prescribed'"
-                            [class.bg-orange-500]="activeAuxTool() === 'perils' && state.getToolState('perils') !== 'prescribed'"
-                            [class.text-zinc-950]="activeAuxTool() === 'perils' && state.getToolState('perils') !== 'prescribed'"
-                            [class.bg-zinc-100]="activeAuxTool() !== 'perils' && state.getToolState('perils') === 'unassigned'"
-                            [class.dark:bg-zinc-900]="activeAuxTool() !== 'perils' && state.getToolState('perils') === 'unassigned'"
-                            [class.text-zinc-800]="activeAuxTool() !== 'perils' && state.getToolState('perils') === 'unassigned'"
-                            [class.dark:text-zinc-300]="activeAuxTool() !== 'perils' && state.getToolState('perils') === 'unassigned'"
-                            class="px-3 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-800 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5"
-                            title="Single-click to view. Double-click to prescribe to care plan.">
-                      <span>⏳ Perils Matrix</span>
-                      @if (state.getToolState('perils') === 'prescribed') { <span class="text-[10px] font-black px-1.5 py-0.5 rounded bg-white text-emerald-950">💊 Prescribed</span> }
-                    </button>
-                  }
-
-
-
                   <!-- Clinical Assessments Suite Button -->
                   <button (click)="toggleAuxTool('assessments')"
                           [class.bg-sky-500]="activeAuxTool() === 'assessments'"
@@ -883,23 +797,6 @@ import { PositivePsychologyFlourishingHubComponent } from './positive-psychology
                   <div class="animate-in fade-in duration-200">
                     <app-vagal-biofeedback-dock></app-vagal-biofeedback-dock>
                   </div>
-                } @else if (activeAuxTool() === 'storm') {
-                  <div class="animate-in fade-in duration-200">
-                    <app-storm-analysis></app-storm-analysis>
-                  </div>
-                } @else if (activeAuxTool() === 'foraging') {
-                  <div class="animate-in fade-in duration-200">
-                    <app-androscoggin-foraging-phytoncide></app-androscoggin-foraging-phytoncide>
-                  </div>
-                } @else if (activeAuxTool() === 'investment') {
-                  <div class="animate-in fade-in duration-200">
-                    <app-procedural-investment-matrix></app-procedural-investment-matrix>
-                  </div>
-                } @else if (activeAuxTool() === 'perils') {
-                  <div class="animate-in fade-in duration-200">
-                    <app-life-perils-paradigm-matrix></app-life-perils-paradigm-matrix>
-                  </div>
-
                 } @else if (activeAuxTool() === 'assessments') {
                   <div class="animate-in fade-in duration-200">
                     @defer (on idle) {
@@ -972,10 +869,7 @@ import { PositivePsychologyFlourishingHubComponent } from './positive-psychology
           </div>
         }
 
-        <!-- Active Hobbies & Healthy Lifestyle Suggestions (Functional Protocols Lens Only) -->
-        @if (activeLens() === 'Functional Protocols' && hasAnyReport()) {
-          <app-healthy-hobbies-lifestyle></app-healthy-hobbies-lifestyle>
-        }
+
 
         <!-- Theatrical Clinical Proposal Act Banner -->
         @if (!state.isEmergencyMode()) {
@@ -1188,8 +1082,8 @@ import { PositivePsychologyFlourishingHubComponent } from './positive-psychology
                       <div class="flex items-center gap-1.5 bg-zinc-950 p-1.5 rounded-md border border-zinc-800 text-xs text-zinc-300">
                         <label for="avs-bitrate-select" class="text-amber-400 font-bold uppercase tracking-wider pl-1">🎛️ Audio Bitrate:</label>
                         <select id="avs-bitrate-select" [value]="avsService.sessionConfig().bitrateTier" (change)="setAvsBitrate($any($event.target).value)" aria-label="AVS Audio Bitrate and Sample Rate Quality" class="bg-zinc-900 border border-zinc-800 text-amber-300 rounded px-2 py-1 outline-none cursor-pointer text-xs font-bold font-mono">
-                          <option value="4608k_master">4608 kbps • Studio Master (96kHz/32-bit Float)</option>
-                          <option value="1536k_lossless">1536 kbps • Direct PCM Master (48kHz/32-bit)</option>
+                          <option value="4608k_studio">4608 kbps • Studio Lossless (96kHz/32-bit Float)</option>
+                          <option value="1536k_lossless">1536 kbps • Direct PCM Lossless (48kHz/32-bit)</option>
                           <option value="320k">320 kbps • Audiophile Spatial (Bauer HRTF)</option>
                           <option value="192k">192 kbps • Standard Co-Regulation</option>
                         </select>
@@ -1616,7 +1510,7 @@ import { PositivePsychologyFlourishingHubComponent } from './positive-psychology
                       <div class="rams-typography" (mouseover)="onTooltipOver($event)" (mouseout)="onTooltipOut($event)">
                         @for (node of section.nodes; track node.id) {
                           @if (node.type === 'raw') {
-                            <div [innerHTML]="(node.rawHtml || '') | safeHtml" class="mb-4"></div>
+                            <div [innerHTML]="renderNodeHtml(node.rawHtml || '') | safeHtml" class="mb-4"></div>
                           } @else if (node.type === 'paragraph') {
                             <app-summary-node
                               [node]="node"
@@ -3320,6 +3214,14 @@ export class AnalysisReportComponent implements OnDestroy {
 
   protected readonly bionicReading = inject(BionicReadingService);
   private readonly skepticalEpistemology = inject(SkepticalEpistemologyService);
+
+  renderNodeHtml(rawHtml: string): string {
+    if (!rawHtml) return '';
+    if (this.bionicReading.isBionicReadingEnabled()) {
+      return this.bionicReading.formatToBionicHtml(rawHtml, 'bionic-fixation font-bold text-amber-600 dark:text-amber-400');
+    }
+    return rawHtml;
+  }
 
   /**
    * Socratic challenge questions for the active lens, generated from content keywords.

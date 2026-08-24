@@ -3,7 +3,7 @@ import { Injectable, signal, computed } from '@angular/core';
 export interface IFhirClinicalGoal {
   id: string;
   title: string;
-  category: 'AUTONOMIC_RECOVERY' | 'GLYCEMIC_MASTERY' | 'EPIGENETIC_LONGEVITY' | 'STRESS_RESILIENCE';
+  category: 'AUTONOMIC_RECOVERY' | 'GLYCEMIC_STABILITY' | 'EPIGENETIC_LONGEVITY' | 'STRESS_RESILIENCE';
   lifecycleStatus: 'proposed' | 'active' | 'completed' | 'on-hold';
   achievementStatus: 'in-progress' | 'achieved' | 'sustaining';
   targetMetricName: string;
@@ -39,7 +39,7 @@ export class GoalPlanningEngineService {
     {
       id: 'goal-002',
       title: 'Continuous Glucose Time-in-Range',
-      category: 'GLYCEMIC_MASTERY',
+      category: 'GLYCEMIC_STABILITY',
       lifecycleStatus: 'active',
       achievementStatus: 'in-progress',
       targetMetricName: 'CGM Time-in-Range',

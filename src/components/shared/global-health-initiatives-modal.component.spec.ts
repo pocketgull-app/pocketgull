@@ -1,3 +1,4 @@
+import '@angular/compiler';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { GlobalHealthInitiativesModalComponent } from './global-health-initiatives-modal.component';
 import { GlobalHealthInitiativesService } from '../../services/global-health-initiatives.service';
@@ -63,5 +64,23 @@ describe('GlobalHealthInitiativesModalComponent', () => {
     expect(modal.activeAgencyTab()).toBe('nih');
     modal.activeAgencyTab.set('arpah');
     expect(modal.activeAgencyTab()).toBe('arpah');
+  });
+
+  it('5. Computes reactive WHO ICOPE intrinsic capacity score and domains', () => {
+    const modal = createComponent();
+    const icope = modal.whoIcope();
+    expect(icope.domains.length).toBe(6);
+    expect(icope.intrinsicCapacityScore).toBeGreaterThan(0);
+    expect(icope.statusTier).toBeDefined();
+    expect(icope.clinicalDirectives.length).toBeGreaterThan(0);
+  });
+
+  it('6. Computes reactive NIH RECOVER Long-COVID 12-symptom assessment', () => {
+    const modal = createComponent();
+    const pasc = modal.nihRecover();
+    expect(pasc.symptoms.length).toBe(12);
+    expect(pasc.pascScore).toBeGreaterThanOrEqual(0);
+    expect(pasc.pascProbabilityTier).toBeDefined();
+    expect(pasc.pacingAndRecoveryDirectives.length).toBeGreaterThan(0);
   });
 });

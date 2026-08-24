@@ -23,7 +23,7 @@ import { EyesFreeAccessibilityService, ITactileMedicationGuide } from '../servic
         {{ service.lastScreenReaderAnnouncement() }}
       </div>
 
-      <!-- Header & Master Eyes-Free Toggle -->
+      <!-- Header & Global Eyes-Free Toggle -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
         <div class="space-y-1">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-mono font-bold">
