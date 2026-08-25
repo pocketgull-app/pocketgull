@@ -1,0 +1,888 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Pocket Gull Node.js Express Gateway",
+    "version": "1.0.0",
+    "description": "API Gateway for Pocket Gull - handles secrets, patient state sync, and PubMed proxy services."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Local Development Server"
+    },
+    {
+      "url": "/api",
+      "description": "Relative URL (Proxied via Frontend)"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health Check Endpoint",
+        "description": "Determines if the Express gateway is online and functional.",
+        "responses": {
+          "200": {
+            "description": "Server is healthy",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pubmed/search": {
+      "get": {
+        "summary": "PubMed Search Proxy",
+        "description": "Queries the NCBI Entrez PubMed database for articles using a search term.",
+        "parameters": [
+          {
+            "name": "term",
+            "in": "query",
+            "required": true,
+            "description": "The search query (e.g., 'hypothyroidism symptoms')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of PubMed search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "esearchresult": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "type": "string"
+                        },
+                        "retmax": {
+                          "type": "string"
+                        },
+                        "retstart": {
+                          "type": "string"
+                        },
+                        "idlist": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing search term",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Term is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/pubmed/summary": {
+      "get": {
+        "summary": "PubMed Summary Proxy",
+        "description": "Retrieves the detail summaries for a list of PubMed article IDs.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Comma-separated PubMed IDs (e.g., '32912445,31023902')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of PubMed article summaries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "uid": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "pubdate": {
+                            "type": "string"
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "authors": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "authtype": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "ID is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/orcid/{id}": {
+      "get": {
+        "summary": "ORCID Profile Proxy",
+        "description": "Fetches a public ORCID researcher profile by their ORCID ID (e.g. 0000-0002-1825-0097).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The 16-character ORCID ID",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{4}-\\d{4}-\\d{3}[0-9X]$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of ORCID profile record"
+          },
+          "400": {
+            "description": "Invalid format or missing ID"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/patients": {
+      "get": {
+        "summary": "Get All Patients",
+        "description": "Retrieves all synced patient structures currently stored in the JSON database file.",
+        "responses": {
+          "200": {
+            "description": "A JSON array of patients",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Patient"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error reading database"
+          }
+        }
+      },
+      "post": {
+        "summary": "Overwrite/Sync All Patients",
+        "description": "Completely overwrites the existing patients database with an updated array from the client.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Patient"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully saved database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 12
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request body"
+          },
+          "500": {
+            "description": "Error saving database"
+          }
+        }
+      }
+    },
+    "/api/patients/{id}": {
+      "put": {
+        "summary": "Sync or Create Patient by ID",
+        "description": "Upserts a specific patient object by its unique ID. Ensures changes match the local state in the mobile/web app.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The unique ID of the patient to upsert",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Patient"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully upserted patient",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "patient": {
+                      "$ref": "#/components/schemas/Patient"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid patient object"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/healthcare/fhir/export": {
+      "post": {
+        "summary": "Synchronize Patient to Google Cloud Healthcare FHIR Store",
+        "description": "Transforms demographic details, conditions, and vitals from the local patient record into standard FHIR R4 Patient, Condition, and Observation resources, then synchronizes them to the GCP Healthcare FHIR Store via high-performance upsert PUT requests.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Patient"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Synchronization successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Patient record successfully synchronized to Google Cloud Healthcare FHIR Store."
+                    },
+                    "conditionsSynced": {
+                      "type": "integer",
+                      "example": 3
+                    },
+                    "observationsSynced": {
+                      "type": "integer",
+                      "example": 6
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing Project ID or malformed request"
+          },
+          "500": {
+            "description": "Internal or Google Cloud Healthcare API Error"
+          }
+        }
+      }
+    },
+    "/api/healthcare/nlp/analyze": {
+      "post": {
+        "summary": "Analyze Clinical Text using Healthcare NLP API",
+        "description": "Extracts medical entity mentions (SNOMED CT, ICD-10, LOINC, RxNorm) and clinical relationships from unstructured clinical text notes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": { "type": "string", "example": "Patient has acute hypertension and dyspnea, taking Lisinopril 10mg." }
+                },
+                "required": ["text"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Healthcare NLP extraction result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "source": { "type": "string", "example": "gcp_healthcare_nlp" },
+                    "entities": { "type": "array" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/healthcare/deidentify": {
+      "post": {
+        "summary": "De-identify PII/PHI using GCP Healthcare De-id Engine",
+        "description": "Sanitizes clinical narratives and JSON patient payloads under HIPAA Safe Harbor rules.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": { "type": "string" },
+                  "payload": { "type": "object" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "De-identification result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "source": { "type": "string" },
+                    "deidentifiedText": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/healthcare/fhir/export-to-bigquery": {
+      "post": {
+        "summary": "Export FHIR Store to BigQuery Analytics",
+        "description": "Triggers automated export of FHIR R4 store datasets to BigQuery analytics tables for population health modeling.",
+        "responses": {
+          "200": {
+            "description": "Export job initiated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "targetUri": { "type": "string", "example": "bq://gen-lang-client-0540208645.pocketgull_fhir_analytics" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/healthcare/pubsub/webhook": {
+      "post": {
+        "summary": "Cloud Healthcare Pub/Sub Webhook Listener",
+        "description": "Receives real-time FHIR mutation events pushed by Cloud Pub/Sub and triggers Python FastAPI sidecar ML scoring re-evaluations.",
+        "responses": {
+          "200": {
+            "description": "Webhook notification processed successfully"
+          }
+        }
+      }
+    },
+    "/api/healthcare/search": {
+      "post": {
+        "summary": "Grounded Clinical Search",
+        "description": "Executes grounded search queries across Cloud Healthcare API FHIR resources.",
+        "responses": {
+          "200": {
+            "description": "Search results returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "count": { "type": "integer" },
+                    "results": { "type": "array" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hardware/telemetry": {
+      "get": {
+        "summary": "Retrieve Node Hardware Telemetry",
+        "description": "Gathers live CPU and GPU accelerator telemetry (NVIDIA-SMI, AMD ROCm, Intel XPU, Apple Silicon, and system RAM/load metrics) for dynamic local model routing decisions.",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of hardware metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cpuName": { "type": "string", "example": "Intel Core i7-9750H" },
+                    "cpuLoadPercent": { "type": "integer", "example": 15 },
+                    "systemMemoryTotalGb": { "type": "number", "example": 16 },
+                    "systemMemoryUsedGb": { "type": "number", "example": 8.5 },
+                    "gpus": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "vendor": { "type": "string", "example": "nvidia" },
+                          "name": { "type": "string", "example": "NVIDIA GeForce RTX 2060" },
+                          "temperatureC": { "type": "integer", "example": 62 },
+                          "utilizationPercent": { "type": "integer", "example": 40 },
+                          "memoryTotalMiB": { "type": "integer", "example": 6144 },
+                          "memoryUsedMiB": { "type": "integer", "example": 2048 },
+                          "memoryFreeMiB": { "type": "integer", "example": 4096 }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error gathering metrics"
+          }
+        }
+      }
+    },
+    "/api/health/baselines": {
+      "get": {
+        "summary": "Fetch Global Health Baselines",
+        "description": "Loads comparative baseline statistics from CDC and WHO for overlaid clinical charts.",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of global health baselines"
+          }
+        }
+      }
+    },
+    "/api/ai/metrics": {
+      "post": {
+        "summary": "Generate Biomarker Metrics Flow",
+        "description": "Synthesizes orthomolecular biomarker metrics from clinical input text.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully parsed metrics object"
+          }
+        }
+      }
+    },
+    "/api/ai/changes": {
+      "post": {
+        "summary": "Detect Clinical State Changes",
+        "description": "Compares historical patient state with current state to evaluate clinical significance.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldData": { "type": "object" },
+                  "newData": { "type": "object" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Significance evaluation completed"
+          }
+        }
+      }
+    },
+    "/api/ai/translate": {
+      "post": {
+        "summary": "Translate Reading Level Flow",
+        "description": "Translates care plan summaries into pediatric, dyslexia-friendly, or multi-lingual cognitive formats.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": { "type": "string" },
+                  "level": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Translation completed"
+          }
+        }
+      }
+    },
+    "/api/ai/analyze-translation": {
+      "post": {
+        "summary": "Analyze Care Plan Translation",
+        "description": "Audits a care plan translation against the original plan for clinical integrity and quality assurance.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "original": { "type": "string" },
+                  "translated": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Audit and translation analysis outputted successfully"
+          }
+        }
+      }
+    },
+    "/api/ai/analyze-image": {
+      "post": {
+        "summary": "Analyze Clinical Image Flow",
+        "description": "Analyzes medical scans and diagnostic imagery files uploaded in Base64 format.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "base64Image": { "type": "string" },
+                  "context": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vision model image analysis completed"
+          }
+        }
+      }
+    },
+    "/api/ai/stream": {
+      "post": {
+        "summary": "Server-Sent Events AI Content Stream",
+        "description": "Streams live care plan generations from Google Gemini models using server-sent events (SSE).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patientData": { "type": "string" },
+                  "systemInstruction": { "type": "string" },
+                  "model": { "type": "string" },
+                  "temperature": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Streaming connection established"
+          }
+        }
+      }
+    },
+    "/api/ai/chat/start": {
+      "post": {
+        "summary": "Initialize Multi-Turn AI Chat Session",
+        "description": "Allocates conversational history storage on the server for a specific session ID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sessionId": { "type": "string" },
+                  "systemInstruction": { "type": "string" },
+                  "model": { "type": "string" },
+                  "temperature": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Session initialized"
+          }
+        }
+      }
+    },
+    "/api/ai/chat/message": {
+      "post": {
+        "summary": "Send Message to Chat Session",
+        "description": "Appends user message, queries Gemini model, updates context history, and returns the response.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sessionId": { "type": "string" },
+                  "message": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Content successfully generated"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Patient": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the patient",
+            "example": "pat_88f99e3a"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name of the patient",
+            "example": "Jane Doe"
+          },
+          "age": {
+            "type": "integer",
+            "example": 42
+          },
+          "vitals": {
+            "type": "object",
+            "properties": {
+              "bp": {
+                "type": "string",
+                "example": "120/80"
+              },
+              "hr": {
+                "type": "string",
+                "example": "72"
+              },
+              "temp": {
+                "type": "string",
+                "example": "98.6"
+              },
+              "spO2": {
+                "type": "string",
+                "example": "98"
+              },
+              "weight": {
+                "type": "string",
+                "example": "68kg"
+              },
+              "height": {
+                "type": "string",
+                "example": "165cm"
+              }
+            }
+          },
+          "symptoms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "fatigue",
+              "brain fog",
+              "joint stiffness"
+            ]
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Hypothyroidism",
+              "Vitamin D deficiency"
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-05-18T05:00:00Z"
+          }
+        },
+        "example": {
+          "id": "p002",
+          "name": "Sarah Jenkins",
+          "age": 42,
+          "vitals": {
+            "bp": "120/80",
+            "hr": "72",
+            "temp": "98.6",
+            "spO2": "98",
+            "weight": "145 lbs",
+            "height": "5'5\""
+          },
+          "symptoms": [
+            "Lower Back"
+          ],
+          "conditions": [
+            "Asthma",
+            "Anxiety Disorder",
+            "Chronic Lower Back Pain",
+            "Opioid Use Disorder (in remission)",
+            "Depression"
+          ],
+          "updatedAt": "2026-05-20T05:25:20.377Z"
+        }
+      }
+    }
+  }
+}

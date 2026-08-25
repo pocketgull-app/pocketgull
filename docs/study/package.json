@@ -1,0 +1,28 @@
+{
+  "name": "docs-study",
+  "type": "module",
+  "version": "1.0.0-rc10",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^7.0.3",
+    "astro": "^7.1.3",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "defu": "^6.1.7",
+    "devalue": "^5.8.1"
+  },
+  "overrides": {
+    "launch-editor": ">=2.14.1",
+    "js-yaml": ">=4.3.1",
+    "nanoid": ">=3.3.19"
+  }
+}

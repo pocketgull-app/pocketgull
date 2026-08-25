@@ -1,0 +1,33 @@
+---
+interface Props {
+  term: string;
+  category?: string;
+  hint: string;
+  link?: string;
+  linkLabel?: string;
+  icon?: string;
+}
+
+const { term, category = 'Technology', hint, link, linkLabel = 'Official Docs →', icon } = Astro.props;
+---
+
+<span class="doc-node" data-term={term} data-category={category} data-hint={hint} data-link={link || ''}>
+  <slot>{term}</slot>
+  <span class="doc-popover">
+    <span class="doc-popover-header">
+      {icon && <img src={icon} alt="" class="doc-popover-icon" width="14" height="14" />}
+      <span class="doc-popover-label">{category}</span>
+    </span>
+    <span class="doc-popover-hint">{hint}</span>
+    {link && (
+      <a href={link} target="_blank" rel="noopener" class="doc-popover-link">
+        {icon && <img src={icon} alt="" class="doc-popover-link-icon" width="10" height="10" />}
+        {linkLabel}
+      </a>
+    )}
+    <span class="doc-popover-status">
+      <span class="doc-popover-dot"></span>
+      <span class="doc-popover-status-text">Click to explore with AI</span>
+    </span>
+  </span>
+</span>

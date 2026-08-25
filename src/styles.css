@@ -1,0 +1,3820 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=JetBrains+Mono:wght@400;600;700&display=swap');
+@import './styles/pocketgull-marker-font.css';
+@import './styles/pocketgull-icon-font.css';
+
+:root {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Nunito', sans-serif;
+  --font-heading: 'Nunito', sans-serif;
+  --font-serif: 'Nunito', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-rounded: 'Nunito', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body, html {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading, .font-pocketgull, .font-pocketgull-chiseltip {
+  font-family: 'Nunito', sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.font-sans, .ui-sans-serif, .font-serif, .ui-serif, .font-caslon, .font-pocketgull-inter {
+  font-family: 'Nunito', sans-serif !important;
+}
+
+.font-mono, .ui-monospace, code, kbd, samp, pre {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-feature-settings: "zero", "ss01", "ss02";
+}
+
+.font-rounded, .ui-rounded {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   PAPERCRAFT THEME SYSTEM (Rice Paper, Hemp, Construction, Cardstock)
+   ========================================================================== */
+
+html.papercraft-mode {
+  background-color: #FAF8F5;
+  background-image: url('/images/rice_paper_texture.png');
+  background-repeat: repeat;
+  background-attachment: fixed;
+  color: #1c1917;
+}
+
+html.papercraft-rice body,
+html.papercraft-rice app-root {
+  background-color: transparent;
+  background-image: url('/images/rice_paper_texture.png');
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+html.papercraft-hemp body,
+html.papercraft-hemp app-root {
+  background-color: #f4eee0;
+  background-image: url('/images/hemp_paper_texture.png');
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+html.papercraft-construction body,
+html.papercraft-construction app-root {
+  background-color: #0f172a;
+  background-image: url('/images/construction_paper_texture.png');
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+/* 🎨 PocketGull GearArts Warm Sunlight Theme */
+html.papercraft-pocketgull-geararts body,
+html.papercraft-pocketgull-geararts app-root {
+  background-color: #f7a268;
+  background-image: radial-gradient(circle at 50% 30%, #fba668 0%, #f48242 100%);
+  background-attachment: fixed;
+  color: #1c1917;
+  font-family: 'Inter', 'Outfit', sans-serif;
+}
+
+html.papercraft-pocketgull-geararts .paper-card {
+  background-color: rgba(255, 248, 240, 0.92);
+  border: 2px solid #e07a3c;
+  box-shadow: 0 10px 25px -4px rgba(180, 80, 20, 0.25);
+}
+
+/* Zero Cumulative Layout Shift (CLS) Stability Rules */
+app-root {
+  display: block;
+  min-height: 100vh;
+}
+
+app-body-3d-viewer,
+.body-viewer-container {
+  min-height: 480px;
+  contain: layout;
+}
+
+@keyframes wobble {
+
+    0%,
+    100% {
+        transform: scaleX(1) rotate(0deg);
+    }
+
+    25% {
+        transform: scaleX(1.1) rotate(5deg);
+    }
+
+    50% {
+        transform: scaleX(0.95) rotate(-5deg);
+    }
+
+    75% {
+        transform: scaleX(1.05) rotate(2deg);
+    }
+}
+
+.water-handle {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.water-handle:hover {
+    animation: wobble 2s infinite ease-in-out !important;
+    background-color: #1C1C1C !important;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Printing Systems */
+@media print {
+
+    /* Critical reset to allow document flow for multi-page printing */
+    body,
+    html,
+    app-root,
+    * {
+        height: auto !important;
+        max-height: none !important;
+        min-height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Professional Margin for Medical Stationary */
+    @page {
+        margin: 15mm;
+        size: letter portrait;
+    }
+
+    /* Hide everything marked as no-print */
+    .no-print,
+    .no-print * {
+        display: none !important;
+    }
+
+    /* Print-only area base styling */
+    .print-only {
+        display: block !important;
+        visibility: visible !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        position: static !important;
+        background: white !important;
+    }
+
+    /* Page breaking controls for structured layout */
+    .print-markdown-content h1,
+    .print-markdown-content h2,
+    .print-markdown-content h3,
+    .print-markdown-content h4 {
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    .print-markdown-content table,
+    .print-markdown-content blockquote,
+    .print-markdown-content img,
+    ul,
+    ol,
+    .avoid-break {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .page-break-before {
+        page-break-before: always;
+        break-before: always;
+    }
+
+    /* typography adjustments for ink/paper */
+    .rams-typography {
+        color: black !important;
+    }
+
+    /* ─── Evidence Trail — Dieter Rams Print Design ─── */
+    /* Hairline divider, monochrome, numbered reference list */
+    .evidence-trail-print {
+        margin-top: 10pt;
+        padding-top: 8pt;
+        border-top: 0.5pt solid #1C1C1C;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .et-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6pt;
+    }
+
+    .et-label {
+        font-family: 'Inter', system-ui, sans-serif;
+        font-size: 6pt;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: #1C1C1C;
+        border: 0.5pt solid #1C1C1C;
+        padding: 1pt 4pt;
+        border-radius: 2pt;
+    }
+
+    .et-count {
+        font-family: 'Inter', system-ui, sans-serif;
+        font-size: 6pt;
+        font-weight: 400;
+        color: #6B7280;
+        letter-spacing: 0.06em;
+    }
+
+    .et-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .et-item {
+        display: flex;
+        gap: 8pt;
+        align-items: flex-start;
+        padding: 4pt 0;
+        border-bottom: 0.25pt solid #E5E7EB;
+    }
+
+    .et-item:last-child {
+        border-bottom: none;
+    }
+
+    .et-num {
+        font-family: 'Inter', system-ui, sans-serif;
+        font-size: 6.5pt;
+        font-weight: 700;
+        color: #9CA3AF;
+        min-width: 10pt;
+        text-align: right;
+        flex-shrink: 0;
+        padding-top: 0.5pt;
+        letter-spacing: 0.05em;
+    }
+
+    .et-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1pt;
+    }
+
+    .et-text {
+        font-family: 'Inter', system-ui, sans-serif;
+        font-size: 7.5pt;
+        font-weight: 400;
+        color: #1C1C1C;
+        line-height: 1.45;
+    }
+
+    .et-drill {
+        font-family: 'Inter', system-ui, sans-serif;
+        font-size: 6pt;
+        font-style: italic;
+        color: #6B7280;
+        letter-spacing: 0.03em;
+    }
+}
+
+@media screen {
+    .print-only {
+        display: none !important;
+    }
+}
+
+/* Premium Inter Typography Styles (Dieter Rams inspired) */
+.rams-typography {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Dieter Rams Precision Grid Spacing & Accessible Action Filters */
+.dieter-rams-grid-spacing {
+    gap: 8px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+}
+
+.action-mesh-filter {
+    background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 75%);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.rams-typography h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.85rem;
+    letter-spacing: -0.025em;
+}
+.dark .rams-typography h1 { 
+    color: #f8fafc; 
+    border-bottom-color: #334155; 
+}
+
+.rams-typography h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.65rem;
+    letter-spacing: -0.02em;
+}
+.dark .rams-typography h2 { 
+    color: #f1f5f9; 
+    border-bottom-color: #1e293b; 
+}
+
+.rams-typography h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 800;
+    color: #10b981;
+    margin-top: 1.75rem;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px dashed rgba(16, 185, 129, 0.25);
+}
+.dark .rams-typography h3 { 
+    color: #34d399; 
+    border-bottom-color: rgba(52, 211, 153, 0.25); 
+}
+
+.rams-typography h4,
+.rams-typography h5,
+.rams-typography h6 {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+.dark .rams-typography h4, .dark .rams-typography h5, .dark .rams-typography h6 { 
+    color: #f8fafc; 
+}
+
+.rams-typography p,
+.rams-typography li,
+.rams-typography td,
+.rams-typography th {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.7;
+    color: #334155;
+}
+.dark .rams-typography p, .dark .rams-typography li, .dark .rams-typography td, .dark .rams-typography th { 
+    color: #cbd5e1; 
+}
+
+.rams-typography strong {
+    font-weight: 800;
+    color: #0f172a;
+}
+.dark .rams-typography strong { 
+    color: #f8fafc; 
+}
+
+.rams-typography ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 2rem;
+}
+
+.rams-typography li {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.75rem 0.5rem 2rem;
+    position: relative;
+    background: rgba(248, 250, 252, 0.6);
+    border-radius: 8px;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    transition: all 0.15s ease-in-out;
+}
+.dark .rams-typography li {
+    background: rgba(15, 23, 42, 0.4);
+    border-color: rgba(30, 41, 59, 0.6);
+}
+.rams-typography li:hover {
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.rams-typography li::before {
+    content: '•';
+    color: #10b981;
+    font-size: 1.25rem;
+    font-weight: 900;
+    position: absolute;
+    left: 0.85rem;
+    top: 0.45rem;
+}
+.dark .rams-typography li::before { 
+    color: #34d399; 
+}
+
+.rams-typography blockquote {
+    border-left: 4px solid #10b981;
+    padding: 1.15rem 1.5rem;
+    background: linear-gradient(135deg, rgba(240, 253, 244, 0.8) 0%, rgba(248, 250, 252, 0.6) 100%);
+    font-style: italic;
+    font-weight: 500;
+    color: #1e293b;
+    margin: 2rem 0;
+    border-radius: 0 12px 12px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.dark .rams-typography blockquote { 
+    background: linear-gradient(135deg, rgba(6, 78, 59, 0.25) 0%, rgba(15, 23, 42, 0.6) 100%); 
+    color: #e2e8f0; 
+    border-left-color: #34d399; 
+}
+
+/* Tables — AI-generated tables for labs, medication, and monitoring */
+.rams-typography table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1.75rem 0;
+    font-size: 0.875rem;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+.dark .rams-typography table { 
+    border-color: #1e293b; 
+}
+
+.rams-typography thead {
+    background: #f8fafc;
+}
+.dark .rams-typography thead { 
+    background: #0f172a; 
+}
+
+.rams-typography th {
+    text-align: left;
+    padding: 0.85rem 1.15rem;
+    font-weight: 800;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #64748b;
+    border-bottom: 2px solid #e2e8f0;
+}
+.dark .rams-typography th { 
+    color: #94a3b8; 
+    border-bottom-color: #1e293b; 
+}
+
+.rams-typography td {
+    padding: 0.85rem 1.15rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+}
+.dark .rams-typography td { 
+    border-bottom-color: #1e293b; 
+}
+
+.rams-typography tbody tr:nth-child(even) {
+    background: rgba(248, 250, 252, 0.5);
+}
+.dark .rams-typography tbody tr:nth-child(even) { 
+    background: rgba(15, 23, 42, 0.3); 
+}
+
+.rams-typography tbody tr:hover {
+    background: rgba(236, 253, 245, 0.7);
+}
+.dark .rams-typography tbody tr:hover { 
+    background: rgba(6, 78, 59, 0.2); 
+}
+
+/* APA 7th Edition & UK RIO Academic Citation Styling */
+.rams-typography .apa-citation-block,
+.apa-citation-block {
+    border-left: 4px solid #6366f1;
+    padding: 1rem 1.25rem;
+    background: rgba(248, 250, 252, 0.85);
+    border-radius: 4px;
+    margin: 1.5rem 0;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: #1e293b;
+    border-top: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+.dark .rams-typography .apa-citation-block,
+.dark .apa-citation-block {
+    background: rgba(15, 23, 42, 0.7);
+    border-color: #1e293b;
+    border-left-color: #818cf8;
+    color: #e2e8f0;
+}
+
+/* Dieter Rams Rectilinear Task Brackets (Replacing Rounded Pills) */
+.rams-task-bracket {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 2px;
+    border: 1.5px solid currentColor;
+    background: transparent;
+}
+.rams-task-bracket.approved {
+    color: #059669;
+    border-color: #059669;
+    background: rgba(16, 185, 129, 0.08);
+}
+.dark .rams-task-bracket.approved {
+    color: #34d399;
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.12);
+}
+.rams-task-bracket.in-progress {
+    color: #d97706;
+    border-color: #d97706;
+    background: rgba(245, 158, 11, 0.08);
+}
+.dark .rams-task-bracket.in-progress {
+    color: #fbbf24;
+    border-color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+}
+
+/* Barbara Oakley Deep Learning Cognitive Chunking Cards */
+.oakley-cognitive-chunk {
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    background: #ffffff;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+.dark .oakley-cognitive-chunk {
+    border-color: #1e293b;
+    background: #09090b;
+}
+.oakley-chunk-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.dark .oakley-chunk-header {
+    background: #0f172a;
+    border-bottom-color: #1e293b;
+}
+
+/* Expanded 48px Rams Drill-Down Action Buttons */
+.btn-rams-drilldown {
+    min-height: 48px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    transition: all 0.15s ease-in-out;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+}
+.btn-rams-drilldown-primary {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+}
+.dark .btn-rams-drilldown-primary {
+    background: #f8fafc;
+    color: #0f172a;
+    border-color: #f8fafc;
+}
+.btn-rams-drilldown-primary:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+}
+.dark .btn-rams-drilldown-primary:hover {
+    background: #e2e8f0;
+}
+
+/* Imagineering Scroll & Reveal Animations */
+.reveal-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Tab Fade Transition for mobile */
+.tab-fade-enter {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── Rich Media Cards ──────────────────────────────────────────────────────── */
+
+.spark-theme .rm-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.spark-theme .rm-card {
+    background: #0f0f10;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.72);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.spark-theme .rm-card-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.spark-theme .rm-card-header svg {
+    flex-shrink: 0;
+    opacity: 0.6;
+}
+
+.spark-theme .rm-card-title {
+    flex: 1;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.spark-theme .rm-card-badge {
+    font-size: 7.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 5px;
+    background: rgba(104, 159, 56, 0.18);
+    color: #8bc34a;
+    border-radius: 3px;
+    border: 1px solid rgba(104, 159, 56, 0.25);
+    flex-shrink: 0;
+}
+
+.spark-theme .rm-card--model .rm-card-badge {
+    background: rgba(66, 133, 244, 0.15);
+    color: #7ab4f8;
+    border-color: rgba(66, 133, 244, 0.25);
+}
+
+.spark-theme .rm-card--gallery .rm-card-badge {
+    background: rgba(251, 188, 4, 0.12);
+    color: #f9c232;
+    border-color: rgba(251, 188, 4, 0.2);
+}
+
+.spark-theme .rm-card--pubmed .rm-card-badge {
+    background: rgba(234, 67, 53, 0.12);
+    color: #f28b82;
+    border-color: rgba(234, 67, 53, 0.2);
+}
+
+.spark-theme .rm-card--phil .rm-card-badge {
+    background: rgba(104, 159, 56, 0.18);
+    color: #8bc34a;
+    border-color: rgba(104, 159, 56, 0.25);
+}
+
+.spark-theme .rm-card-footer {
+    padding: 5px 10px;
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.2);
+    letter-spacing: 0.04em;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.spark-theme .rm-loading,
+.spark-theme .rm-empty {
+    padding: 14px 10px;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+    font-style: italic;
+}
+
+/* 3D Model */
+.spark-theme .rm-model-frame-wrap {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    background: #050507;
+}
+
+.spark-theme .rm-model-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Image gallery */
+.spark-theme .rm-gallery-strip {
+    display: flex;
+    gap: 6px;
+    padding: 8px 10px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.spark-theme .rm-gallery-strip::-webkit-scrollbar {
+    height: 3px;
+}
+
+.spark-theme .rm-gallery-strip::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+}
+
+.spark-theme .rm-gallery-item {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.spark-theme .rm-gallery-img {
+    width: 89px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #1a1a1c;
+    transition: border-color 0.15s;
+}
+
+.spark-theme .rm-gallery-item:hover .rm-gallery-img {
+    border-color: rgba(104, 159, 56, 0.5);
+}
+
+.spark-theme .rm-gallery-caption {
+    font-size: 7.5px;
+    color: rgba(255, 255, 255, 0.35);
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* PubMed citations */
+.spark-theme .rm-citations {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0;
+}
+
+.spark-theme .rm-citation {
+    display: block;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.12s;
+}
+
+.spark-theme .rm-citation:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.spark-theme .rm-citation:last-child {
+    border-bottom: none;
+}
+
+.spark-theme .rm-citation-title {
+    font-size: 9.5px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.4;
+    margin-bottom: 2px;
+}
+
+.spark-theme .rm-citation-meta {
+    font-size: 8.5px;
+    color: rgba(255, 255, 255, 0.38);
+    margin-bottom: 2px;
+}
+
+.spark-theme .rm-citation-pmid {
+    font-size: 8px;
+    color: #7ab4f8;
+    letter-spacing: 0.03em;
+}
+
+/* Media pills */
+.spark-theme .inline-pill--media {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(104, 159, 56, 0.3) !important;
+    color: #8bc34a !important;
+}
+
+.spark-theme .inline-pill--media:hover {
+    background: rgba(104, 159, 56, 0.12) !important;
+    border-color: rgba(104, 159, 56, 0.5) !important;
+}
+
+/* Print: hide all rich media */
+@media print {
+
+    .spark-theme .rm-panel,
+    .spark-theme .rm-card,
+    .spark-theme .inline-pill--media {
+        display: none !important;
+    }
+}
+
+/* ─── Origami Pocket Brand Theme ────────────────────────────────────────── */
+
+/* The Pocket */
+.origami-pocket {
+    position: absolute;
+    bottom: 0;
+    width: 200px;
+    height: 75px;
+    background: rgba(24, 24, 27, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(63, 63, 70, 0.4);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    z-index: 20;
+    /* Dieter Rams touch: slight shadow, very subtle */
+    box-shadow: 0 -6px 15px rgba(0, 0, 0, 0.03);
+}
+
+.origami-pocket::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 5px;
+    background: #6366f1;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
+    border-radius: 3px;
+}
+
+/* The Flying Container */
+.origami-seagull-container {
+    position: absolute;
+    bottom: 30px;
+    z-index: 10;
+    animation: flightHover 4s ease-in-out infinite alternate;
+}
+
+/* Frightened state interrupts animation and uses dynamic variables */
+.origami-seagull-container.frightened {
+    animation: none !important;
+    transform: translate(var(--fly-x, 0), var(--fly-y, -200px)) scale(0.4) rotate(45deg) !important;
+    opacity: 0 !important;
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease-out;
+}
+
+/* Initial enter animation for the container */
+.origami-seagull-enter {
+    animation: flightEnter 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* The 3D Folding Paper Container */
+.origami-paper-3d {
+    position: absolute;
+    left: -50px;
+    bottom: 0;
+    width: 100px;
+    height: 100px;
+    perspective: 800px;
+    transform-style: preserve-3d;
+    z-index: 5;
+    animation: fadeOutPaper 2.8s ease-in forwards;
+}
+
+/* Base Panel Styles */
+.paper-panel {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+/* The Fixed Center/Bottom-Right Panel */
+.panel-base {
+    bottom: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+}
+
+/* Left Panel folds over Base */
+.panel-left {
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    transform-origin: right center;
+    animation: foldLeft 2.4s ease-in-out forwards;
+}
+
+/* Right Panel (Top Right) folds down */
+.panel-right {
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    transform-origin: bottom center;
+    animation: foldDown 2.4s ease-in-out forwards;
+    animation-delay: 0.2s; /* Staggered fold */
+}
+
+/* Top Left Panel folds diagonally */
+.panel-top {
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    transform-origin: bottom right;
+    animation: foldDiagonal 2.4s ease-in-out forwards;
+    animation-delay: 0.4s;
+}
+
+/* The Final Package rotates */
+.origami-paper-3d::after {
+   content: '';
+   position: absolute;
+   inset: 0;
+   transform-style: preserve-3d;
+   animation: spinPackage 2.8s ease-in forwards;
+}
+
+.origami-seagull {
+    position: absolute;
+    left: -120px;
+    bottom: -65px;
+    width: 240px;
+    height: 240px;
+    opacity: 0;
+    transform: scale(0.1);
+    z-index: 10;
+    animation: unfoldBird 2.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation-delay: 0.8s; /* Wait for folds */
+}
+
+.origami-seagull svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0px 12px 16px rgba(0, 0, 0, 0.1));
+    animation: flapBird 1.2s infinite alternate ease-in-out;
+    transform-origin: center;
+}
+
+/* Animations */
+@keyframes flightEnter {
+    0% {
+        transform: translateY(60px) scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(-80px) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes flightHover {
+    0% {
+        transform: translateY(-80px) scale(1);
+    }
+
+    100% {
+        transform: translateY(-60px) scale(1.02);
+    }
+}
+
+/* 3D Folding Keyframes */
+@keyframes foldLeft {
+    0%, 10% { transform: rotateY(0deg); }
+    40%, 100% { transform: rotateY(178deg); background: #f9fafb; }
+}
+
+@keyframes foldDown {
+    0%, 20% { transform: rotateX(0deg); }
+    50%, 100% { transform: rotateX(-178deg); background: #f3f4f6; }
+}
+
+@keyframes foldDiagonal {
+    0%, 30% { transform: rotate3d(1, -1, 0, 0deg); }
+    60%, 100% { transform: rotate3d(1, -1, 0, 178deg); background: #e5e7eb; }
+}
+
+@keyframes fadeOutPaper {
+    0%, 60% { opacity: 1; transform: scale(1) rotate(0deg); }
+    80% { opacity: 0.5; transform: scale(0.5) rotate(45deg); }
+    100% { opacity: 0; transform: scale(0) rotate(90deg); }
+}
+
+@keyframes unfoldBird {
+
+    0%,
+    60% {
+        opacity: 0;
+        transform: scale(0.1) rotate(-180deg);
+    }
+
+    80% {
+        opacity: 1;
+        transform: scale(1.1) rotate(10deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes flapBird {
+    0% {
+        transform: rotate(-2deg) scaleY(1);
+    }
+
+    100% {
+        transform: rotate(2deg) scaleY(0.9);
+    }
+}
+
+/* ─── Insight Spark Brand Theme Custom Styling ─── */
+.theme-spark {
+    --spark-orange: #f97316;
+    --spark-amber: #d97706;
+}
+
+.theme-spark body {
+    background-color: #050201 !important;
+}
+
+.theme-spark .bg-white {
+    background-color: #0c0604 !important;
+}
+
+.theme-spark .dark\:bg-zinc-900 {
+    background-color: #0f0704 !important;
+}
+
+.theme-spark .border-gray-100,
+.theme-spark .dark\:border-zinc-800 {
+    border-color: rgba(249, 115, 22, 0.12) !important;
+}
+
+.theme-spark .text-gray-900,
+.theme-spark .dark\:text-gray-100,
+.theme-spark .text-zinc-100,
+.theme-spark .dark\:text-zinc-100,
+.theme-spark .text-zinc-200,
+.theme-spark .dark\:text-zinc-200,
+.theme-spark .text-white {
+    color: #fffaf7 !important;
+}
+
+.theme-spark .text-gray-800,
+.theme-spark .dark\:text-gray-200,
+.theme-spark .text-zinc-300,
+.theme-spark .dark\:text-zinc-300 {
+    color: #f6e3dc !important;
+}
+
+.theme-spark .text-gray-700,
+.theme-spark .dark\:text-gray-300,
+.theme-spark .text-zinc-400,
+.theme-spark .dark\:text-zinc-400 {
+    color: #dfc8bf !important;
+}
+
+.theme-spark .text-gray-600,
+.theme-spark .dark\:text-zinc-400,
+.theme-spark .text-zinc-500,
+.theme-spark .dark\:text-zinc-500 {
+    color: #c1a69b !important;
+}
+
+.theme-spark .text-gray-500,
+.theme-spark .dark\:text-zinc-500,
+.theme-spark .text-zinc-600,
+.theme-spark .dark\:text-zinc-600 {
+    color: #a3877b !important;
+}
+
+.theme-spark ::-webkit-scrollbar-thumb {
+    background: rgba(249, 115, 22, 0.3) !important;
+    border-radius: 4px;
+}
+
+.theme-spark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(249, 115, 22, 0.5) !important;
+}
+
+/* Custom premium hover cards with orange embers */
+.theme-spark .transition-all:hover {
+    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.08) !important;
+    border-color: rgba(249, 115, 22, 0.25) !important;
+}
+
+/* ─── Y-BOCs Calm Mode Sensory-Safe Styling ─── */
+.theme-calm body {
+    background-color: #F5F5F4 !important; /* Soft warm stone-100 */
+    color: #44403C !important; /* Stone-700 dark text */
+}
+
+.theme-calm .bg-white,
+.theme-calm .dark\:bg-zinc-950,
+.theme-calm .dark\:bg-\[\#09090b\],
+.theme-calm .dark\:bg-zinc-900 {
+    background-color: #FAF9F6 !important; /* Soft paper white */
+}
+
+.theme-calm .border-gray-200,
+.theme-calm .dark\:border-zinc-800,
+.theme-calm .border-zinc-200,
+.theme-calm .dark\:border-zinc-850 {
+    border-color: #E7E5E4 !important; /* Stone-200 */
+}
+
+.theme-calm .text-zinc-900,
+.theme-calm .dark\:text-zinc-50,
+.theme-calm .dark\:text-zinc-100,
+.theme-calm .text-zinc-800,
+.theme-calm .dark\:text-zinc-200 {
+    color: #292524 !important; /* Stone-800 */
+}
+
+.theme-calm .text-zinc-500,
+.theme-calm .dark\:text-zinc-400,
+.theme-calm .text-zinc-400,
+.theme-calm .dark\:text-zinc-550 {
+    color: #78716C !important; /* Stone-500 */
+}
+
+.theme-calm * {
+    transition-duration: 100ms !important;
+}
+
+/* GLOBAL AVS CSS CONTRACT v1.1
+   Single source of truth for all AVS visual states.
+   Written by GlobalAvsService via rAF loop to :root.
+   All downstream components inherit automatically. */
+
+/* ── @property: circadian hue — enables CSS-native animation of the hue
+      value when JS updates it. Supported in Chrome 85+, Edge 85+, Safari 16.4+.
+      Falls back gracefully (instant switch) in unsupported browsers.       ── */
+@property --circadian-h {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 152;          /* Emerald — default morning-peak hue */
+}
+@property --circadian-s {
+    syntax: '<percentage>';
+    inherits: true;
+    initial-value: 65%;
+}
+@property --circadian-l {
+    syntax: '<percentage>';
+    inherits: true;
+    initial-value: 52%;
+}
+@property --circadian-a {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0.04;
+}
+
+/* --- Default (idle) AVS tokens --- */
+:root {
+    --avs-breath-duration: 10.9s;       /* 5.5 BPM resonance default */
+    --avs-breath-phase: 0;              /* 0→1 written each rAF frame  */
+    --avs-color-primary: 16, 185, 129;  /* Emerald 500 (rgb triplet)   */
+    --avs-color-glow: 16, 185, 129;
+    --avs-color-text: #10b981;
+    --avs-wave-label: 'AMBIENT';
+    --avs-glow-intensity: 0;            /* 0 = off, 1 = full glow      */
+    --avs-border-opacity: 0;
+}
+
+/* --- Brainwave color palettes (set by GlobalAvsService) --- */
+body.avs-active[data-avs-wave="theta"] {
+    --avs-color-primary: 99, 102, 241;  /* Indigo 500  */
+    --avs-color-glow:    99, 102, 241;
+    --avs-color-text:    #6366f1;
+    --avs-wave-label:    'THETA';
+}
+body.avs-active[data-avs-wave="alpha"] {
+    --avs-color-primary: 59, 130, 246;  /* Blue 500    */
+    --avs-color-glow:    59, 130, 246;
+    --avs-color-text:    #3b82f6;
+    --avs-wave-label:    'ALPHA';
+}
+body.avs-active[data-avs-wave="delta"] {
+    --avs-color-primary: 139, 92, 246;  /* Violet 500  */
+    --avs-color-glow:    139, 92, 246;
+    --avs-color-text:    #8b5cf6;
+    --avs-wave-label:    'DELTA';
+}
+body.avs-active[data-avs-wave="beta"] {
+    --avs-color-primary: 245, 158, 11;  /* Amber 500   */
+    --avs-color-glow:    245, 158, 11;
+    --avs-color-text:    #f59e0b;
+    --avs-wave-label:    'BETA';
+}
+body.avs-active[data-avs-wave="gamma"] {
+    --avs-color-primary: 239, 68, 68;   /* Red 500     */
+    --avs-color-glow:    239, 68, 68;
+    --avs-color-text:    #ef4444;
+    --avs-wave-label:    'GAMMA';
+}
+
+/* ── AVS Active glow intensity token (driven by rAF) ─────────── */
+body.avs-active {
+    --avs-glow-intensity: 1;
+    --avs-border-opacity: 0.35;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL AVS AMBIENT HALO
+   Full-screen breathing aura behind all content.
+   ═══════════════════════════════════════════════════════════════ */
+
+#avs-ambient-halo {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    background: radial-gradient(
+        ellipse 70% 60% at 50% 50%,
+        rgba(var(--avs-color-glow), 0.06) 0%,
+        rgba(var(--avs-color-glow), 0.02) 50%,
+        transparent 100%
+    );
+}
+
+body.avs-active #avs-ambient-halo {
+    opacity: 1;
+    animation: avs-halo-breathe var(--avs-breath-duration) ease-in-out infinite;
+}
+
+@keyframes avs-halo-breathe {
+    0%, 100% {
+        opacity: 0.6;
+        background: radial-gradient(
+            ellipse 60% 50% at 50% 50%,
+            rgba(var(--avs-color-glow), 0.04) 0%,
+            transparent 70%
+        );
+    }
+    50% {
+        opacity: 1;
+        background: radial-gradient(
+            ellipse 80% 70% at 50% 50%,
+            rgba(var(--avs-color-glow), 0.10) 0%,
+            rgba(var(--avs-color-glow), 0.03) 50%,
+            transparent 100%
+        );
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT AVS TREATMENTS
+   Every frame, panel, and lens reacts to body.avs-active.
+   No per-component changes needed.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Panel & card borders ─────────────────────────────────────── */
+body.avs-active .border-gray-200,
+body.avs-active .dark\:border-zinc-800,
+body.avs-active .border-gray-100,
+body.avs-active .dark\:border-zinc-900 {
+    border-color: rgba(var(--avs-color-primary), var(--avs-border-opacity)) !important;
+    transition: border-color 1.5s ease;
+}
+
+/* ── Card panel breath-glow ───────────────────────────────────── */
+body.avs-active .rounded-xl.shadow-sm,
+body.avs-active .rounded-xl.shadow-md {
+    box-shadow:
+        0 0 0 1px rgba(var(--avs-color-primary), 0.08),
+        0 4px 24px rgba(var(--avs-color-primary), 0.06),
+        0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    animation: avs-panel-breathe var(--avs-breath-duration) ease-in-out infinite;
+}
+
+@keyframes avs-panel-breathe {
+    0%, 100% {
+        box-shadow:
+            0 0 0 1px rgba(var(--avs-color-primary), 0.05),
+            0 4px 16px rgba(var(--avs-color-primary), 0.04),
+            0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    50% {
+        box-shadow:
+            0 0 0 1px rgba(var(--avs-color-primary), 0.18),
+            0 8px 32px rgba(var(--avs-color-primary), 0.12),
+            0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+}
+
+/* ── Navbar border breath ─────────────────────────────────────── */
+body.avs-active nav {
+    border-bottom-color: rgba(var(--avs-color-primary), 0.2) !important;
+    box-shadow: 0 1px 0 rgba(var(--avs-color-primary), 0.1) !important;
+    animation: avs-nav-breathe var(--avs-breath-duration) ease-in-out infinite;
+    transition: border-color 1.5s ease, box-shadow 1.5s ease;
+}
+
+@keyframes avs-nav-breathe {
+    0%, 100% { box-shadow: 0 1px 0 rgba(var(--avs-color-primary), 0.06); }
+    50%       { box-shadow: 0 1px 0 rgba(var(--avs-color-primary), 0.20); }
+}
+
+/* ── Background tint on main content area ────────────────────── */
+body.avs-active .bg-\[\#F9FAFB\],
+body.avs-active .dark\:bg-\[\#09090b\] {
+    background-image: radial-gradient(
+        ellipse 100% 80% at 50% 0%,
+        rgba(var(--avs-color-primary), 0.025) 0%,
+        transparent 60%
+    ) !important;
+}
+
+/* ── Text Contrast and Readability Enhancements ──────────────── */
+body.avs-active {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Ensure all titles, subtitles, and labels pop with maximum contrast */
+body.avs-active .text-gray-900,
+body.avs-active .dark\:text-gray-100,
+body.avs-active .text-zinc-100,
+body.avs-active .dark\:text-zinc-100,
+body.avs-active .text-zinc-200,
+body.avs-active .dark\:text-zinc-200,
+body.avs-active .text-white {
+    color: #ffffff !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* Muted or secondary clinician details */
+body.avs-active .text-gray-800,
+body.avs-active .dark\:text-gray-200,
+body.avs-active .text-zinc-300,
+body.avs-active .dark\:text-zinc-300 {
+    color: #f4f4f5 !important; /* Zinc 100 */
+}
+
+body.avs-active .text-gray-700,
+body.avs-active .dark\:text-gray-300,
+body.avs-active .text-zinc-400,
+body.avs-active .dark\:text-zinc-400 {
+    color: #e4e4e7 !important; /* Zinc 200 */
+}
+
+/* Secondary labels & secondary info */
+body.avs-active .text-gray-600,
+body.avs-active .dark\:text-zinc-400,
+body.avs-active .text-zinc-500,
+body.avs-active .dark\:text-zinc-500 {
+    color: #d4d4d8 !important; /* Zinc 300 */
+    font-weight: 500;
+}
+
+/* Small status text and helper/baseline legends */
+body.avs-active .text-gray-500,
+body.avs-active .dark\:text-zinc-500,
+body.avs-active .text-zinc-600,
+body.avs-active .dark\:text-zinc-600 {
+    color: #a1a1aa !important; /* Zinc 400 */
+    font-weight: 600;
+}
+
+/* Wave-specific primary accent text (dynamic colors) */
+body.avs-active .text-orange-500,
+body.avs-active .dark\:text-orange-400,
+body.avs-active .text-sky-500,
+body.avs-active .dark\:text-sky-400,
+body.avs-active .text-indigo-500,
+body.avs-active .dark\:text-indigo-400,
+body.avs-active .text-violet-500,
+body.avs-active .dark\:text-violet-400,
+body.avs-active .text-emerald-500,
+body.avs-active .dark\:text-emerald-400 {
+    color: var(--avs-color-text) !important;
+    transition: color 1.2s ease;
+}
+
+/* Background panel highlights & badges for the active wave */
+body.avs-active .bg-orange-500\/10,
+body.avs-active .bg-sky-500\/10,
+body.avs-active .bg-indigo-500\/10,
+body.avs-active .bg-violet-500\/10,
+body.avs-active .bg-emerald-500\/10 {
+    background-color: rgba(var(--avs-color-primary), 0.12) !important;
+    border-color: rgba(var(--avs-color-primary), 0.3) !important;
+    transition: background-color 1.2s ease, border-color 1.2s ease;
+}
+
+body.avs-active .bg-orange-500,
+body.avs-active .bg-sky-500,
+body.avs-active .bg-indigo-500,
+body.avs-active .bg-violet-500,
+body.avs-active .bg-emerald-500 {
+    background: linear-gradient(135deg, rgb(var(--avs-color-primary)) 0%, rgba(var(--avs-color-primary), 0.85) 100%) !important;
+    transition: background 1.2s ease;
+}
+
+/* Improve contrast of input controls when AVS is active */
+body.avs-active select,
+body.avs-active input:not([type="checkbox"]):not([type="radio"]),
+body.avs-active textarea {
+    background-color: rgba(15, 23, 42, 0.75) !important; /* dark slate bg */
+    color: #ffffff !important;
+    border-color: rgba(var(--avs-color-primary), 0.45) !important;
+}
+
+body.avs-active option {
+    background-color: #0f172a !important; /* solid slate bg for dropdown choices */
+    color: #ffffff !important;
+}
+
+
+/* ── AVS Status badge in navbar ──────────────────────────────── */
+#avs-status-badge {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    border: 1px solid rgba(var(--avs-color-primary), 0.3);
+    background: rgba(var(--avs-color-primary), 0.08);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--avs-color-text);
+    animation: avs-badge-breathe var(--avs-breath-duration) ease-in-out infinite;
+}
+
+body.avs-active #avs-status-badge {
+    display: flex;
+}
+
+.avs-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--avs-color-text);
+    animation: avs-badge-breathe var(--avs-breath-duration) ease-in-out infinite;
+}
+
+@keyframes avs-badge-breathe {
+    0%, 100% { opacity: 0.5; transform: scale(0.85); }
+    50%       { opacity: 1.0; transform: scale(1.0);  }
+}
+
+/* ── Scrollbar tint ───────────────────────────────────────────── */
+body.avs-active ::-webkit-scrollbar-thumb {
+    background: rgba(var(--avs-color-primary), 0.25) !important;
+    border-radius: 4px;
+}
+body.avs-active ::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--avs-color-primary), 0.45) !important;
+}
+
+/* ── Resizer handle glow ─────────────────────────────────────── */
+body.avs-active .cursor-col-resize .rounded-full {
+    background-color: rgba(var(--avs-color-primary), 0.35) !important;
+}
+
+/* ── Research frame border pulse ─────────────────────────────── */
+body.avs-active app-research-frame {
+    animation: avs-frame-pulse var(--avs-breath-duration) ease-in-out infinite;
+}
+
+@keyframes avs-frame-pulse {
+    0%, 100% { filter: drop-shadow(0 0 4px  rgba(var(--avs-color-primary), 0.0)); }
+    50%       { filter: drop-shadow(0 0 12px rgba(var(--avs-color-primary), 0.15)); }
+}
+
+/* ── Body 3D viewer lens glow ────────────────────────────────── */
+body.avs-active app-body-3d-viewer,
+body.avs-active canvas {
+    animation: avs-lens-breathe var(--avs-breath-duration) ease-in-out infinite;
+}
+
+@keyframes avs-lens-breathe {
+    0%, 100% { filter: drop-shadow(0 0  6px rgba(var(--avs-color-primary), 0.0)); }
+    50%       { filter: drop-shadow(0 0 18px rgba(var(--avs-color-primary), 0.20)); }
+}
+
+/* ── Input & textarea focus rings ────────────────────────────── */
+body.avs-active input:focus,
+body.avs-active textarea:focus,
+body.avs-active select:focus {
+    outline-color: rgba(var(--avs-color-primary), 0.6) !important;
+    box-shadow: 0 0 0 3px rgba(var(--avs-color-primary), 0.15) !important;
+}
+
+/* ── Button active states ────────────────────────────────────── */
+body.avs-active button:focus-visible {
+    outline: 2px solid rgba(var(--avs-color-primary), 0.7);
+    outline-offset: 2px;
+}
+
+/* ── Selection highlight ─────────────────────────────────────── */
+body.avs-active ::selection {
+    background-color: rgba(var(--avs-color-primary), 0.25);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SAFETY: Respect prefers-reduced-motion
+   Disable all AVS animations for users with motion sensitivity.
+   CSS vars (color changes) are preserved as they are non-motion.
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+    body.avs-active #avs-ambient-halo,
+    body.avs-active .rounded-xl.shadow-sm,
+    body.avs-active .rounded-xl.shadow-md,
+    body.avs-active nav,
+    body.avs-active app-research-frame,
+    body.avs-active app-body-3d-viewer,
+    body.avs-active canvas,
+    .avs-badge-dot {
+        animation: none !important;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   KSS TIER COLOR SYSTEM
+   Applied via data-kss-tier attribute on <body> by CircadianSleepinessService.
+   Provides a persistent ambient palette that layers beneath AVS wave colors.
+
+   Clinical rationale:
+     optimal (1–3) → Emerald  — peak surgical calm, standard clinical green
+     neutral (4–5) → Sky Blue — cool alerting, melatonin suppression
+     caution (6–7) → Amber    — warm warning, increases vigilance
+     alert   (8–9) → Rose/Red — high contrast alarm, impossible to miss
+
+   Tokens drive: ambient halo, focus rings, selection, scrollbars, border
+   accents, and background micro-tint. AVS wave colors take precedence when
+   avs-active is set (specificity intentional).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tier 1: Optimal (KSS 1–3) ── */
+body[data-kss-tier="optimal"] {
+    --circadian-h: 152;
+    --circadian-s: 85%;
+    --circadian-l: 40%;
+    --circadian-a: 0.012;
+}
+
+/* ── Tier 2: Neutral (KSS 4–5) ── */
+body[data-kss-tier="neutral"] {
+    --circadian-h: 199;
+    --circadian-s: 90%;
+    --circadian-l: 48%;
+    --circadian-a: 0.018;
+}
+
+/* ── Tier 3: Caution (KSS 6–7) ── */
+body[data-kss-tier="caution"] {
+    --circadian-h: 38;
+    --circadian-s: 95%;
+    --circadian-l: 50%;
+    --circadian-a: 0.025;
+}
+
+/* ── Tier 4: Alert (KSS 8–9) ── */
+body[data-kss-tier="alert"] {
+    --circadian-h: 349;
+    --circadian-s: 90%;
+    --circadian-l: 60%;
+    --circadian-a: 0.03;
+}
+
+
+/* Body micro-tint gradient from top */
+body {
+    background-image: radial-gradient(
+        ellipse 80vw 60vh at 50% 0%,
+        hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / var(--circadian-a)) 0%,
+        transparent 100%
+    );
+    transition: background-image 1.5s ease;
+}
+
+/* Focus rings (inactive AVS) */
+body:not(.avs-active) *:focus-visible {
+    outline-color: hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / 0.7) !important;
+    box-shadow: 0 0 0 3px hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / 0.18) !important;
+}
+
+/* Text selection */
+body:not(.avs-active) ::selection {
+    background-color: hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / 0.28);
+    color: inherit;
+}
+
+/* Scrollbar accents */
+body:not(.avs-active) ::-webkit-scrollbar-thumb {
+    background: hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / 0.22);
+}
+body:not(.avs-active) ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / 0.40);
+}
+
+/* Circadian ambient halo — sits behind all content at z-index 0 */
+#kss-ambient-halo {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 1;
+    transition: background 2s ease;
+    background: radial-gradient(
+        ellipse 900px 500px at 50% -80px,
+        hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / calc(var(--circadian-a) * 2)) 0%,
+        transparent 70%
+    );
+}
+
+body[data-kss-tier="alert"] #kss-ambient-halo {
+    animation: kss-alert-pulse 3s ease-in-out infinite;
+}
+body[data-kss-tier="caution"] #kss-ambient-halo {
+    animation: kss-caution-breathe 6s ease-in-out infinite;
+}
+
+@keyframes kss-alert-pulse {
+    0%, 100% { opacity: 0.8; }
+    50%       { opacity: 1.4; }
+}
+@keyframes kss-caution-breathe {
+    0%, 100% { opacity: 0.9; }
+    50%       { opacity: 1.2; }
+}
+
+/* Nav border tint */
+body:not(.avs-active) nav,
+body:not(.avs-active) [role="navigation"] {
+    border-color: hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / 0.1) !important;
+    transition: border-color 1.5s ease;
+}
+
+/* Alert tier: subtle ring on all cards */
+body[data-kss-tier="alert"]:not(.avs-active) .rounded-xl,
+body[data-kss-tier="alert"]:not(.avs-active) .rounded-2xl {
+    box-shadow: inset 0 0 0 1px hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / 0.1);
+}
+
+/* Badge utility used by KSS status indicators */
+.kss-tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / 0.3);
+    color: hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l));
+    background: hsl(var(--circadian-h) var(--circadian-s) var(--circadian-l) / 0.08);
+    transition: all 1.5s ease;
+}
+
+/* Custom entrance animations to ensure text stays solid and stable after completion */
+.animate-in {
+    animation-fill-mode: both !important;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.animate-in.fade-in {
+    animation-name: fadeInOnly;
+}
+
+.animate-in.slide-in-from-top-4 {
+    animation-name: slideInFromTop4;
+}
+
+.animate-in.slide-in-from-top-4-centered {
+    animation-name: slideInFromTop4Centered;
+}
+
+.animate-in.slide-in-from-bottom-2 {
+    animation-name: slideInFromBottom2;
+}
+
+.animate-in.slide-in-from-bottom-4 {
+    animation-name: slideInFromBottom4;
+}
+
+.animate-in.slide-in-from-bottom-8 {
+    animation-name: slideInFromBottom8;
+}
+
+.animate-in.duration-300 {
+    animation-duration: 300ms !important;
+}
+
+.animate-in.duration-500 {
+    animation-duration: 500ms !important;
+}
+
+.animate-in.duration-700 {
+    animation-duration: 700ms !important;
+}
+
+.animate-in.duration-1000 {
+    animation-duration: 1000ms !important;
+}
+
+@keyframes fadeInOnly {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInFromTop4 {
+    from { transform: translateY(-16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInFromTop4Centered {
+    from { transform: translate(-50%, -16px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes slideInFromBottom2 {
+    from { transform: translateY(8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInFromBottom4 {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInFromBottom8 {
+    from { transform: translateY(32px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+/* ─── Accessibility: Reduced Motion (Rachel Nabors Guidelines) ─── */
+/* We enforce near-zero duration instead of "none" so that framework JS events (transitionend/animationend) still fire. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Good Samaritan CPR Visual Metronome Flash */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border: 5px solid rgba(239, 68, 68, 0.8);
+  box-shadow: inset 0 0 40px rgba(239, 68, 68, 0.5);
+  opacity: 0;
+  transition: opacity 100ms ease-out;
+}
+body.cpr-flash::after {
+  opacity: 1;
+  transition: none; /* Instant on, fade out */
+}
+
+/* ─── Dyslexia-Friendly Reading Styles (Cognitive Accessibility) ─── */
+.dyslexia-textarea textarea,
+textarea.dyslexia-textarea {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    font-size: 15px !important;
+    line-height: 1.85 !important;
+    letter-spacing: 0.12em !important;
+    word-spacing: 0.18em !important;
+    background-color: #fcf8f2 !important; /* Soft warm cream to minimize glare */
+    color: #242424 !important; /* Soft dark gray for low contrast strain reduction */
+    padding: 1.25rem !important;
+    border-color: #e5bfa0 !important;
+}
+
+html.dark .dyslexia-textarea textarea,
+html.dark textarea.dyslexia-textarea {
+    background-color: #17151a !important; /* Warm dark theme */
+    color: #e3ded6 !important; /* Soft sand-colored text */
+    border-color: #3f3747 !important;
+}
+
+/* ─── High-Performance Hardware Composition & Layout Containment ─── */
+.hardware-accelerated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.content-contain {
+  contain: content;
+}
+
+.layout-contain {
+  contain: layout style;
+}
+
+/* ─── Papercraft Design System & 3D Origami Animations ─── */
+:root {
+  --paper-cream: #F9F3D9;
+  --paper-peach: #F5B98E;
+  --paper-mustard: #F6B12B;
+  --paper-teal: #2AA4A0;
+  --paper-coral: #EF6658;
+  --paper-white: #FFFFFF;
+  --paper-ink: #1C1C1C;
+  --paper-shadow: 6px 12px 24px -4px rgba(80, 50, 20, 0.18), 0 2px 4px rgba(0, 0, 0, 0.08);
+  --paper-shadow-lifted: 12px 24px 36px -6px rgba(80, 50, 20, 0.25), 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.paper-card {
+  position: relative;
+  background-color: #FFFFFF;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(220, 200, 170, 0.4);
+  box-shadow: var(--paper-shadow);
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 300ms ease;
+}
+
+.paper-card:hover {
+  transform: translateY(-3px) rotate(-0.3deg);
+  box-shadow: var(--paper-shadow-lifted);
+}
+
+/* ─── Comprehensive Papercraft Theme Mode Overrides ─── */
+/* ─── Comprehensive Subtle Papercraft & Paper Textures Suite ─── */
+html.papercraft-mode {
+  --paper-cream: #FAF7EE;
+  --paper-peach: #F6E2CF;
+  --paper-mustard: #F6B12B;
+  --paper-teal: #2AA4A0;
+  --paper-coral: #EF6658;
+  --paper-white: #FFFDF8;
+  --paper-ink: #1F1B16;
+  --paper-shadow: 6px 14px 28px -4px rgba(70, 45, 18, 0.16), 0 2px 4px rgba(0, 0, 0, 0.08);
+  --paper-shadow-lifted: 12px 24px 38px -6px rgba(70, 45, 18, 0.22), 0 4px 8px rgba(0, 0, 0, 0.12);
+
+  background-color: #FAF7EE !important;
+  color: #1F1B16 !important;
+}
+
+/* Base Canvas (Body, Main, Containers, Splash) - Light & Transparent Papercraft (10% Opacity Overlay) */
+html.papercraft-mode body,
+html.papercraft-mode main,
+html.papercraft-mode .secure-splash-main,
+html.papercraft-mode .bg-zinc-950,
+html.papercraft-mode .bg-gray-50,
+html.papercraft-mode .bg-zinc-900,
+html.papercraft-mode .bg-zinc-800 {
+  background: linear-gradient(135deg, #FFFEFA 0%, #FAF6EB 60%, #F5EEDD 100%) !important;
+  color: #1F1B16 !important;
+  position: relative;
+}
+
+/* 🌿 Hemp Paper Variant */
+html.papercraft-hemp body,
+html.papercraft-hemp main,
+html.papercraft-hemp .secure-splash-main,
+html.papercraft-hemp .bg-zinc-950,
+html.papercraft-hemp .bg-gray-50 {
+  background: linear-gradient(135deg, #FCF8F3 0%, #F7EFE6 60%, #EFE3D5 100%) !important;
+}
+
+/* 📜 Rice Paper / Washi Variant */
+html.papercraft-rice body,
+html.papercraft-rice main,
+html.papercraft-rice .secure-splash-main,
+html.papercraft-rice .bg-zinc-950,
+html.papercraft-rice .bg-gray-50 {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF8F5 60%, #F3EFE7 100%) !important;
+}
+
+/* 🎨 Construction Paper Variant */
+html.papercraft-construction body,
+html.papercraft-construction main,
+html.papercraft-construction .secure-splash-main,
+html.papercraft-construction .bg-zinc-950,
+html.papercraft-construction .bg-gray-50 {
+  background: linear-gradient(135deg, #FDFBF5 0%, #F8F3E6 60%, #EFE7D5 100%) !important;
+}
+
+/* Global 10% Opacity Texture Overlay */
+html.papercraft-mode body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.10 !important; /* Strictly 10% texture opacity */
+  background-repeat: repeat;
+  background-image: url('/images/paper_cardstock_texture.png');
+}
+
+html.papercraft-hemp body::before {
+  background-image: url('/images/hemp_paper_texture.png');
+}
+
+html.papercraft-rice body::before {
+  background-image: url('/images/rice_paper_texture.png');
+}
+
+html.papercraft-construction body::before {
+  background-image: url('/images/construction_paper_texture.png');
+}
+
+/* Tactile Translucent Light Paper Cards & Containers (10% Texture Opacity) */
+html.papercraft-mode .bg-white:not(.overflow-y-auto):not(.overflow-auto),
+html.papercraft-mode .pocket-gull-card,
+html.papercraft-mode .paper-card,
+html.papercraft-mode .sub-panel,
+html.papercraft-mode .card,
+html.papercraft-mode [class*="bg-zinc-900"]:not(.overflow-y-auto):not(.overflow-auto),
+html.papercraft-mode [class*="bg-zinc-950"]:not(.overflow-y-auto):not(.overflow-auto),
+html.papercraft-mode [class*="bg-slate-900"]:not(.overflow-y-auto):not(.overflow-auto),
+html.papercraft-mode .bg-gray-50:not(.overflow-y-auto):not(.overflow-auto),
+html.papercraft-mode .bg-gray-100:not(.overflow-y-auto):not(.overflow-auto) {
+  position: relative;
+  background-color: rgba(255, 254, 250, 0.96) !important;
+  color: #1F1B16 !important;
+  border: 1px solid rgba(220, 205, 180, 0.4) !important;
+  box-shadow: 0 4px 16px -2px rgba(70, 45, 18, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+  border-radius: 1.25rem !important;
+}
+
+/* Explicitly preserve scroll container behavior across all papercraft themes */
+html.papercraft-mode .overflow-y-auto,
+html.papercraft-mode .overflow-auto,
+html.papercraft-mode [class*="overflow-y-auto"],
+html.papercraft-mode [class*="overflow-auto"] {
+  overflow-y: auto !important;
+}
+
+html.papercraft-mode .pocket-gull-card::before,
+html.papercraft-mode .paper-card::before,
+html.papercraft-mode .sub-panel::before,
+html.papercraft-mode .card::before,
+html.papercraft-mode .bg-white::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.10 !important; /* Strictly 10% texture opacity */
+  mix-blend-mode: soft-light !important;
+  background-repeat: repeat;
+  background-image: url('/images/paper_cardstock_texture.png');
+}
+
+html.papercraft-hemp .pocket-gull-card::before,
+html.papercraft-hemp .paper-card::before,
+html.papercraft-hemp .sub-panel::before,
+html.papercraft-hemp .card::before,
+html.papercraft-hemp .bg-white::before {
+  background-image: url('/images/hemp_paper_texture.png');
+  border-color: rgba(214, 194, 172, 0.4) !important;
+}
+
+html.papercraft-rice .pocket-gull-card::before,
+html.papercraft-rice .paper-card::before,
+html.papercraft-rice .sub-panel::before,
+html.papercraft-rice .card::before,
+html.papercraft-rice .bg-white::before {
+  background-image: url('/images/rice_paper_texture.png');
+  border-color: rgba(226, 215, 197, 0.4) !important;
+}
+
+html.papercraft-construction .pocket-gull-card::before,
+html.papercraft-construction .paper-card::before,
+html.papercraft-construction .sub-panel::before,
+html.papercraft-construction .card::before,
+html.papercraft-construction .bg-white::before {
+  background-image: url('/images/construction_paper_texture.png');
+  border-color: rgba(218, 205, 182, 0.4) !important;
+}
+
+/* Crisp Paper Cut-out Sub-Panels & White Cards */
+html.papercraft-mode .paper-cutout,
+html.papercraft-mode .sub-panel {
+  background-color: #FFFFFF !important;
+  border: 1px solid rgba(220, 190, 150, 0.6) !important;
+  color: #1F1B16 !important;
+  box-shadow: 0 4px 12px rgba(70, 45, 18, 0.1) !important;
+  border-radius: 1rem !important;
+}
+
+/* Translucent Paper & Pocket-Like UI Utilities */
+.paper-pocket-container {
+  background-image: linear-gradient(135deg, rgba(255, 253, 248, 0.78) 0%, rgba(249, 243, 230, 0.65) 100%);
+  border: 1.5px solid rgba(230, 215, 190, 0.6);
+  box-shadow: 0 20px 50px -10px rgba(60, 40, 15, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+html.dark .paper-pocket-container {
+  background-image: linear-gradient(135deg, rgba(24, 24, 27, 0.75) 0%, rgba(9, 9, 11, 0.85) 100%);
+  border: 1.5px solid rgba(63, 63, 70, 0.6);
+  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.paper-hemp-panel {
+  position: relative;
+  background: rgba(245, 238, 224, 0.72);
+  border: 1px solid rgba(214, 194, 172, 0.5);
+  box-shadow: inset 0 2px 6px rgba(70, 45, 18, 0.06);
+}
+
+html.dark .paper-hemp-panel {
+  background: rgba(24, 24, 27, 0.65);
+  border: 1px solid rgba(63, 63, 70, 0.5);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.paper-hemp-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+  background-image: url('/images/hemp_paper_texture.png');
+}
+
+.paper-rice-panel {
+  position: relative;
+  background: rgba(253, 251, 247, 0.82);
+  border: 1px solid rgba(226, 215, 197, 0.6);
+  box-shadow: 0 4px 14px rgba(70, 45, 18, 0.05);
+}
+
+html.dark .paper-rice-panel {
+  background: rgba(24, 24, 27, 0.75);
+  border: 1px solid rgba(63, 63, 70, 0.6);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.paper-rice-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+  background-image: url('/images/rice_paper_texture.png');
+}
+
+.pocket-stitched-border {
+  border-style: dashed !important;
+}
+
+/* Origami Teal & Coral Action Buttons */
+html.papercraft-mode .btn-primary {
+  background-color: #167874 !important;
+  color: #FFFFFF !important;
+  border: 1.5px solid #0f5855 !important;
+  box-shadow: 0 4px 10px rgba(22, 120, 116, 0.25) !important;
+  border-radius: 0.85rem !important;
+  font-weight: 700 !important;
+}
+
+html.papercraft-mode .btn-accent {
+  background-color: #C8392B !important;
+  color: #FFFFFF !important;
+  border: 1.5px solid #a32c21 !important;
+  box-shadow: 0 4px 10px rgba(200, 57, 43, 0.25) !important;
+  border-radius: 0.5rem !important;
+  font-weight: 700 !important;
+}
+
+/* 📐 Global Dieter Rams Zero-Pill Standard (No oval pills in any components, suites, or tools) */
+.rounded-full:not(.status-dot),
+[class*="rounded-full"]:not(.status-dot),
+button.rounded-full,
+span.rounded-full,
+div.rounded-full {
+  border-radius: 0.375rem !important; /* Crisp 6px rectangular chamfer */
+}
+
+/* Headings & Text Color Overrides for Papercraft Mode */
+html.papercraft-mode h1:not([class*="text-"]),
+html.papercraft-mode h2:not([class*="text-"]),
+html.papercraft-mode h3:not([class*="text-"]),
+html.papercraft-mode h4:not([class*="text-"]),
+html.papercraft-mode h5:not([class*="text-"]) {
+  color: #1F1B16 !important;
+  font-weight: 700;
+}
+
+html.papercraft-mode p:not([class*="text-white"]):not([class*="text-zinc-950"]):not([class*="text-[#"]),
+html.papercraft-mode span:not([class*="text-white"]):not([class*="text-[#"]):not([class*="text-sky"]):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-purple"]):not([class*="text-indigo"]):not([class*="text-[#1C1C1C]"]):not(button *):not(.badge *) {
+  color: #332C25;
+}
+
+/* Explicit preservation of button and badge text colors in papercraft mode */
+html.papercraft-mode button [class*="text-white"],
+html.papercraft-mode button.text-white,
+html.papercraft-mode .text-white,
+html.papercraft-mode [class*="!text-white"],
+html.papercraft-mode [class*="bg-indigo-600"],
+html.papercraft-mode [class*="bg-indigo-600"] *,
+html.papercraft-mode [class*="bg-purple-600"],
+html.papercraft-mode [class*="bg-purple-600"] *,
+html.papercraft-mode [class*="bg-red-600"],
+html.papercraft-mode [class*="bg-sky-600"],
+html.papercraft-mode [class*="bg-emerald-600"] {
+  color: #FFFFFF !important;
+}
+
+/* Papercraft Wave & Hill Colors */
+html.papercraft-mode .paper-hill-back { color: #F6B12B !important; }
+html.papercraft-mode .paper-hill-mid { color: #2AA4A0 !important; }
+html.papercraft-mode .paper-hill-front { color: #EF6658 !important; }
+
+/* Navbar & Header Overrides (10% Soft-Light Paper Texture) */
+html.papercraft-mode header,
+html.papercraft-mode nav {
+  position: relative;
+  background-color: rgba(250, 247, 238, 0.96) !important;
+  border-bottom: 1.5px solid rgba(229, 213, 181, 0.5) !important;
+}
+
+html.papercraft-mode header::before,
+html.papercraft-mode nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.10 !important; /* Strictly 10% texture opacity */
+  mix-blend-mode: soft-light !important;
+  background-repeat: repeat;
+  background-image: url('/images/paper_cardstock_texture.png');
+}
+
+html.papercraft-hemp header::before,
+html.papercraft-hemp nav::before {
+  background-image: url('/images/hemp_paper_texture.png');
+}
+
+html.papercraft-rice header::before,
+html.papercraft-rice nav::before {
+  background-image: url('/images/rice_paper_texture.png');
+}
+
+html.papercraft-construction header::before,
+html.papercraft-construction nav::before {
+  background-image: url('/images/construction_paper_texture.png');
+}
+
+.paper-cutout {
+  border-radius: 9999px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  filter: drop-shadow(2px 4px 6px rgba(60, 40, 20, 0.15));
+}
+
+/* 3D Origami Fold & Unfold Animations */
+.origami-perspective {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.origami-unfold {
+  transform-origin: top center;
+  animation: origamiUnfold 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  backface-visibility: hidden;
+}
+
+@keyframes origamiUnfold {
+  0% {
+    opacity: 0.2;
+    transform: rotateX(-75deg) scaleY(0.4);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+  }
+  60% {
+    transform: rotateX(8deg) scaleY(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(0deg) scaleY(1);
+    box-shadow: var(--paper-shadow);
+  }
+}
+
+/* ─── Avian Persona SVG Keyframe Animations ─── */
+.anim-telescope-scan {
+  animation: telescopeScan 3s ease-in-out infinite alternate;
+}
+@keyframes telescopeScan {
+  0% { transform: rotate(-8deg) scale(0.95); opacity: 0.8; }
+  50% { transform: rotate(8deg) scale(1.05); opacity: 1; }
+  100% { transform: rotate(-8deg) scale(0.95); opacity: 0.8; }
+}
+
+.anim-satchel-bounce {
+  animation: satchelBounce 2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+@keyframes satchelBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px) scale(1.05); }
+}
+
+.anim-lantern-sweep {
+  animation: lanternSweep 4s ease-in-out infinite;
+  transform-origin: center center;
+}
+@keyframes lanternSweep {
+  0% { transform: rotate(0deg); opacity: 0.7; }
+  50% { transform: rotate(180deg); opacity: 1; filter: drop-shadow(0 0 10px #F59E0B); }
+  100% { transform: rotate(360deg); opacity: 0.7; }
+}
+
+.anim-quill-write {
+  animation: quillWrite 2.5s ease-in-out infinite;
+}
+@keyframes quillWrite {
+  0% { transform: rotate(0deg) translate(0, 0); }
+  25% { transform: rotate(-10deg) translate(-2px, -3px); }
+  75% { transform: rotate(10deg) translate(2px, 3px); }
+  100% { transform: rotate(0deg) translate(0, 0); }
+}
+
+.anim-speed-dash {
+  animation: speedDash 1.2s linear infinite;
+}
+@keyframes speedDash {
+  0% { transform: translateX(-4px) skewX(-10deg); opacity: 0.6; }
+  50% { transform: translateX(4px) skewX(10deg); opacity: 1; }
+  100% { transform: translateX(-4px) skewX(-10deg); opacity: 0.6; }
+}
+
+.anim-cpr-pulse {
+  animation: cprPulse 545ms ease-in-out infinite alternate; /* 110 BPM */
+}
+@keyframes cprPulse {
+  0% { transform: scale(0.96); filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.4)); }
+  100% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.9)); }
+}
+
+/* ─── Neo-Brutalist Tactile Papercraft Utilities ─── */
+.neo-tactile-card {
+  border: 2px solid #1C1C1C !important;
+  box-shadow: 4px 6px 0px 0px rgba(28, 28, 28, 0.85) !important;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease !important;
+}
+
+.dark .neo-tactile-card {
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 4px 6px 0px 0px rgba(0, 0, 0, 0.9) !important;
+}
+
+.neo-tactile-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 6px 10px 0px 0px rgba(28, 28, 28, 0.9) !important;
+}
+
+.neo-tactile-btn {
+  border: 2px solid #1C1C1C !important;
+  box-shadow: 2px 3px 0px 0px rgba(28, 28, 28, 0.85) !important;
+  font-weight: 800 !important;
+  transition: all 0.15s ease !important;
+}
+
+.dark .neo-tactile-btn {
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 2px 3px 0px 0px rgba(0, 0, 0, 0.9) !important;
+}
+
+.neo-tactile-btn:hover {
+  transform: translateY(-1px) scale(1.02) !important;
+  box-shadow: 4px 5px 0px 0px rgba(28, 28, 28, 0.9) !important;
+}
+
+.neo-tactile-btn:active {
+  transform: translateY(1px) scale(0.98) !important;
+  box-shadow: 1px 1px 0px 0px rgba(28, 28, 28, 0.9) !important;
+}
+
+.neo-persona-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  border: 1.5px solid #1C1C1C;
+  font-family: monospace;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 2px 2px 0px 0px rgba(28, 28, 28, 0.85);
+}
+
+.dark .neo-persona-badge {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.8);
+}
+
+
+/* ==========================================================================
+   WHITE MARBLE THEME (Light Theme with Gold & Grey Veins)
+   ========================================================================== */
+html.theme-white-marble {
+  --marble-gold: #d4af37;
+  --marble-gold-dark: #aa771c;
+  --marble-gold-light: #f6e4a6;
+  --marble-bg: #f9f9fb;
+  --marble-slab: rgba(255, 255, 255, 0.88);
+}
+
+html.theme-white-marble body,
+html.theme-white-marble main,
+html.theme-white-marble .secure-splash-main,
+html.theme-white-marble .bg-zinc-950,
+html.theme-white-marble .bg-gray-50,
+html.theme-white-marble app-root {
+  background: linear-gradient(135deg, #FAFBFD 0%, #F4F5F8 60%, #EBECEF 100%) !important;
+  color: #1f2937 !important;
+  position: relative;
+}
+
+/* Fixed Global White Marble Texture Overlay (Modeled on Papercraft) */
+html.theme-white-marble body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.35 !important;
+  background-repeat: repeat;
+  background-image: url('/images/white_marble_texture.png');
+}
+
+html.theme-white-marble .bg-white:not(.overflow-y-auto):not(.overflow-auto),
+html.theme-white-marble .bg-zinc-900:not(.overflow-y-auto):not(.overflow-auto),
+html.theme-white-marble .bg-zinc-950:not(.overflow-y-auto):not(.overflow-auto),
+html.theme-white-marble .pocket-gull-card,
+html.theme-white-marble .paper-card,
+html.theme-white-marble .sub-panel,
+html.theme-white-marble .card {
+  position: relative;
+  background-color: var(--marble-slab) !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
+  box-shadow: 0 4px 20px -2px rgba(28, 25, 23, 0.08), 0 0 10px rgba(212, 175, 55, 0.02) !important;
+  color: #1f2937 !important;
+  border-radius: 1.25rem !important;
+}
+
+/* Card Texture Blend Overlay for White Marble */
+html.theme-white-marble .pocket-gull-card::before,
+html.theme-white-marble .paper-card::before,
+html.theme-white-marble .sub-panel::before,
+html.theme-white-marble .card::before,
+html.theme-white-marble .bg-white::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.25 !important;
+  mix-blend-mode: multiply !important;
+  background-repeat: repeat;
+  background-image: url('/images/white_marble_texture.png');
+}
+
+html.theme-white-marble .border,
+html.theme-white-marble .border-gray-100,
+html.theme-white-marble .border-gray-200,
+html.theme-white-marble .border-gray-300,
+html.theme-white-marble .border-zinc-700,
+html.theme-white-marble .border-zinc-800,
+html.theme-white-marble .border-zinc-850 {
+  border-color: rgba(212, 175, 55, 0.22) !important;
+}
+
+html.theme-white-marble h1,
+html.theme-white-marble h2,
+html.theme-white-marble h3,
+html.theme-white-marble h4,
+html.theme-white-marble h5 {
+  color: #aa771c !important;
+}
+
+html.theme-white-marble .text-gray-550,
+html.theme-white-marble .text-gray-500,
+html.theme-white-marble .text-zinc-400,
+html.theme-white-marble .text-zinc-500 {
+  color: #4b5563 !important;
+}
+
+html.theme-white-marble .text-gray-900,
+html.theme-white-marble .text-gray-800,
+html.theme-white-marble .text-zinc-100,
+html.theme-white-marble .text-zinc-200 {
+  color: #111827 !important;
+}
+
+/* Primary/Accent buttons get gold gradient */
+html.theme-white-marble .bg-teal-600,
+html.theme-white-marble .bg-teal-500,
+html.theme-white-marble .bg-indigo-600,
+html.theme-white-marble .bg-\[\#1C1C1C\],
+html.theme-white-marble .bg-slate-900 {
+  background: linear-gradient(135deg, #aa771c 0%, #d4af37 50%, #f6e4a6 100%) !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  border: 1px solid #f6e4a6 !important;
+}
+
+html.theme-white-marble .bg-teal-600:hover,
+html.theme-white-marble .bg-teal-500:hover,
+html.theme-white-marble .bg-indigo-600:hover,
+html.theme-white-marble .bg-\[\#1C1C1C\]:hover,
+html.theme-white-marble .bg-slate-900:hover {
+  background: linear-gradient(135deg, #b8860b 0%, #ffd700 50%, #fff8dc 100%) !important;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.4) !important;
+  color: #000000 !important;
+}
+
+
+/* ==========================================================================
+   BLACK MARBLE THEME (Dark Theme with Gold Veins)
+   ========================================================================== */
+html.theme-black-marble {
+  --marble-gold: #d4af37;
+  --marble-gold-light: #f6e4a6;
+  --marble-black: #0d0d11;
+  --marble-slab: rgba(20, 20, 26, 0.86);
+}
+
+html.theme-black-marble body,
+html.theme-black-marble main,
+html.theme-black-marble .secure-splash-main,
+html.theme-black-marble .bg-zinc-950,
+html.theme-black-marble .bg-gray-50,
+html.theme-black-marble app-root {
+  background: linear-gradient(135deg, #0F0F14 0%, #0A0A0E 60%, #050508 100%) !important;
+  color: #f3f4f6 !important;
+  position: relative;
+}
+
+/* Fixed Global Black Marble Texture Overlay (Modeled on Papercraft) */
+html.theme-black-marble body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.45 !important;
+  background-repeat: repeat;
+  background-image: url('/images/black_marble_texture.png');
+}
+
+html.theme-black-marble .bg-white:not(.overflow-y-auto):not(.overflow-auto),
+html.theme-black-marble .bg-zinc-900:not(.overflow-y-auto):not(.overflow-auto),
+html.theme-black-marble .bg-zinc-950:not(.overflow-y-auto):not(.overflow-auto),
+html.theme-black-marble .pocket-gull-card,
+html.theme-black-marble .paper-card,
+html.theme-black-marble .sub-panel,
+html.theme-black-marble .card {
+  position: relative;
+  background-color: var(--marble-slab) !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.03) !important;
+  color: #f3f4f6 !important;
+  border-radius: 1.25rem !important;
+}
+
+/* Card Texture Blend Overlay for Black Marble */
+html.theme-black-marble .pocket-gull-card::before,
+html.theme-black-marble .paper-card::before,
+html.theme-black-marble .sub-panel::before,
+html.theme-black-marble .card::before,
+html.theme-black-marble .bg-zinc-900::before,
+html.theme-black-marble .bg-zinc-950::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.35 !important;
+  mix-blend-mode: screen !important;
+  background-repeat: repeat;
+  background-image: url('/images/black_marble_texture.png');
+}
+
+html.theme-black-marble .border,
+html.theme-black-marble .border-gray-100,
+html.theme-black-marble .border-gray-200,
+html.theme-black-marble .border-gray-300,
+html.theme-black-marble .border-zinc-700,
+html.theme-black-marble .border-zinc-800,
+html.theme-black-marble .border-zinc-850 {
+  border-color: rgba(212, 175, 55, 0.22) !important;
+}
+
+html.theme-black-marble h1,
+html.theme-black-marble h2,
+html.theme-black-marble h3,
+html.theme-black-marble h4,
+html.theme-black-marble h5,
+html.theme-black-marble .text-teal-400,
+html.theme-black-marble .text-teal-300,
+html.theme-black-marble .text-\[\#00B0B9\] {
+  color: var(--marble-gold-light) !important;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.1);
+}
+
+html.theme-black-marble .text-gray-500,
+html.theme-black-marble .text-zinc-400,
+html.theme-black-marble .text-zinc-500 {
+  color: #9ca3af !important;
+}
+
+html.theme-black-marble .text-gray-900,
+html.theme-black-marble .text-gray-800,
+html.theme-black-marble .text-zinc-100,
+html.theme-black-marble .text-zinc-200 {
+  color: #f3f4f6 !important;
+}
+
+/* Primary/Accent buttons in Marble Theme get a beautiful gold gradient */
+html.theme-black-marble .bg-teal-600,
+html.theme-black-marble .bg-teal-500,
+html.theme-black-marble .bg-indigo-600,
+html.theme-black-marble .bg-\[\#1C1C1C\],
+html.theme-black-marble .bg-slate-900 {
+  background: linear-gradient(135deg, #aa771c 0%, #d4af37 50%, #f6e4a6 100%) !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  border: 1px solid #f6e4a6 !important;
+}
+
+html.theme-black-marble .bg-teal-600:hover,
+html.theme-black-marble .bg-teal-500:hover,
+html.theme-black-marble .bg-indigo-600:hover,
+html.theme-black-marble .bg-\[\#1C1C1C\]:hover,
+html.theme-black-marble .bg-slate-900:hover {
+  background: linear-gradient(135deg, #b8860b 0%, #ffd700 50%, #fff8dc 100%) !important;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.4) !important;
+  color: #000000 !important;
+}
+
+
+/* ==========================================================================
+   PAPYRUS CAVE THEME (Ancient Egyptian Aesthetic with Torchlight Flicker)
+   ========================================================================== */
+html.theme-papyrus {
+  --egyptian-gold: #d4af37;
+  --egyptian-blue: #1e3a8a; /* Royal Lapis Lazuli */
+  --egyptian-turquoise: #06b6d4; /* Turquoise */
+  --egyptian-terracotta: #b91c1c; /* Ochre/Red clay */
+  --papyrus-dark: #171410;
+  --papyrus-slab: rgba(30, 25, 20, 0.85);
+  --papyrus-text: #e2d1b0;
+}
+
+html.theme-papyrus body,
+html.theme-papyrus app-root {
+  background-color: var(--papyrus-dark);
+  background-image: 
+    url('/images/papyrus_texture.png'),
+    radial-gradient(circle at 30% 20%, rgba(217, 119, 6, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(185, 28, 28, 0.08) 0%, transparent 45%);
+  background-repeat: repeat;
+  background-blend-mode: color-burn;
+  background-attachment: fixed;
+  color: var(--papyrus-text);
+}
+
+/* Torchlight Cave Flicker Overlay */
+html.theme-papyrus body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  mix-blend-mode: color-dodge;
+  background-image: 
+    radial-gradient(circle at 25% 35%, rgba(251, 146, 60, 0.16) 0%, rgba(217, 119, 6, 0.08) 35%, transparent 70%),
+    radial-gradient(circle at 75% 65%, rgba(251, 113, 133, 0.12) 0%, rgba(185, 28, 28, 0.06) 40%, transparent 75%);
+  animation: torch-flicker 4.5s infinite ease-in-out alternate;
+}
+
+@keyframes torch-flicker {
+  0% {
+    opacity: 0.8;
+    transform: scale(1.0) translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    opacity: 0.95;
+    transform: scale(1.04) translate(-12px, 8px) rotate(0.5deg);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.97) translate(10px, -15px) rotate(-0.5deg);
+  }
+  75% {
+    opacity: 0.88;
+    transform: scale(1.02) translate(-5px, -5px) rotate(0.2deg);
+  }
+  100% {
+    opacity: 0.82;
+    transform: scale(0.99) translate(8px, 12px) rotate(-0.2deg);
+  }
+}
+
+/* Component slabs styled as clay/dark papyrus tablets */
+html.theme-papyrus .bg-white,
+html.theme-papyrus .bg-zinc-900,
+html.theme-papyrus .bg-zinc-950,
+html.theme-papyrus .pocket-gull-card,
+html.theme-papyrus .paper-card,
+html.theme-papyrus .sub-panel,
+html.theme-papyrus .card {
+  background-color: rgba(23, 20, 16, 0.75) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(212, 175, 55, 0.25) !important;
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(217, 119, 6, 0.04) !important;
+  color: var(--papyrus-text) !important;
+  border-radius: 4px !important; /* ancient tablet corners */
+}
+
+/* Egyptian Borders */
+html.theme-papyrus .border,
+html.theme-papyrus .border-gray-100,
+html.theme-papyrus .border-gray-200,
+html.theme-papyrus .border-gray-300,
+html.theme-papyrus .border-zinc-700,
+html.theme-papyrus .border-zinc-800,
+html.theme-papyrus .border-zinc-850 {
+  border-color: rgba(212, 175, 55, 0.18) !important;
+}
+
+/* Egyptian colors for headings: Terracotta Ochre & Gold */
+html.theme-papyrus h1,
+html.theme-papyrus h2,
+html.theme-papyrus h3,
+html.theme-papyrus h4,
+html.theme-papyrus h5 {
+  color: var(--egyptian-gold) !important;
+  font-family: serif, 'Times New Roman', Georgia;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 10px rgba(217, 119, 6, 0.12);
+}
+
+/* Turquoise and Lapis for secondary highlighted alerts & icons */
+html.theme-papyrus .text-teal-400,
+html.theme-papyrus .text-teal-300,
+html.theme-papyrus .text-\[\#00B0B9\] {
+  color: var(--egyptian-turquoise) !important;
+}
+
+html.theme-papyrus .text-gray-500,
+html.theme-papyrus .text-zinc-400,
+html.theme-papyrus .text-zinc-500 {
+  color: #a78bfa !important; /* Soft violet/amethyst details */
+  color: rgba(226, 209, 176, 0.85) !important;
+}
+
+html.theme-papyrus .text-gray-900,
+html.theme-papyrus .text-gray-800,
+html.theme-papyrus .text-zinc-100,
+html.theme-papyrus .text-zinc-200 {
+  color: var(--papyrus-text) !important;
+}
+
+/* Interactive primary buttons styled in Lapis Lazuli & Gold */
+html.theme-papyrus .bg-teal-600,
+html.theme-papyrus .bg-teal-500,
+html.theme-papyrus .bg-indigo-600,
+html.theme-papyrus .bg-\[\#1C1C1C\],
+html.theme-papyrus .bg-slate-900 {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(212, 175, 55, 0.5) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.theme-papyrus .bg-teal-600:hover,
+html.theme-papyrus .bg-teal-500:hover,
+html.theme-papyrus .bg-indigo-600:hover,
+html.theme-papyrus .bg-\[\#1C1C1C\]:hover,
+html.theme-papyrus .bg-slate-900:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.4) !important;
+  color: #ffffff !important;
+}
+
+
+/* ==========================================================================
+   POOL RIPPLES THEME (Light/Dark Dynamic Day & Night, Inflatable Vinyl UI)
+   ========================================================================== */
+html.theme-pool {
+  --pool-noodle-pink: #fb7185;
+  --pool-noodle-cyan: #22d3ee;
+  --pool-noodle-yellow: #facc15;
+  --pool-noodle-green: #4ade80;
+}
+
+/* Day Pool Water Background */
+html.theme-pool-light body,
+html.theme-pool-light main,
+html.theme-pool-light .secure-splash-main,
+html.theme-pool-light .bg-zinc-950,
+html.theme-pool-light .bg-gray-50,
+html.theme-pool-light app-root {
+  background: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 50%, #bae6fd 100%) !important;
+  color: #0369a1 !important;
+  position: relative;
+}
+
+/* Fixed Global Pool Light Texture Overlay (Modeled on Papercraft) */
+html.theme-pool-light body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.35 !important;
+  background-repeat: repeat;
+  background-image: url('/images/pool_water_light.png');
+  animation: pool-water-flow 12s infinite linear alternate;
+}
+
+/* Night Pool Water Background */
+html.theme-pool-dark body,
+html.theme-pool-dark main,
+html.theme-pool-dark .secure-splash-main,
+html.theme-pool-dark .bg-zinc-950,
+html.theme-pool-dark .bg-gray-50,
+html.theme-pool-dark app-root {
+  background: linear-gradient(180deg, #020617 0%, #0f172a 60%, #1e1b4b 100%) !important;
+  color: #bae6fd !important;
+  position: relative;
+}
+
+/* Fixed Global Pool Dark Texture Overlay (Modeled on Papercraft) */
+html.theme-pool-dark body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.40 !important;
+  background-repeat: repeat;
+  background-image: url('/images/pool_water_dark.png');
+  animation: pool-water-flow 16s infinite linear alternate;
+}
+
+@keyframes pool-water-flow {
+  0% { background-position: 0px 0px; }
+  100% { background-position: 60px 40px; }
+}
+
+/* Gentle floating animation for Blow-up UI Panels */
+html.theme-pool .bg-white,
+html.theme-pool .bg-zinc-900,
+html.theme-pool .bg-zinc-950,
+html.theme-pool .pocket-gull-card,
+html.theme-pool .paper-card,
+html.theme-pool .sub-panel,
+html.theme-pool .card {
+  animation: floating-lounger 6s ease-in-out infinite alternate;
+}
+
+@keyframes floating-lounger {
+  0% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-5px) rotate(0.4deg); }
+}
+
+/* Glossy Solid Floating Vinyl Lounger & Pool Furniture Panels */
+html.theme-pool .bg-white,
+html.theme-pool .bg-zinc-900,
+html.theme-pool .bg-zinc-950,
+html.theme-pool .pocket-gull-card,
+html.theme-pool .paper-card,
+html.theme-pool .sub-panel,
+html.theme-pool .card {
+  border-radius: 20px !important;
+  backdrop-filter: blur(12px) !important;
+  contain: paint;
+  box-shadow: 
+    0 22px 45px -12px rgba(2, 132, 199, 0.45),
+    0 10px 20px -5px rgba(0, 0, 0, 0.25),
+    inset 0 3px 6px rgba(255, 255, 255, 0.9),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light Mode Solid Floating Pool Furniture */
+html.theme-pool-light .bg-white,
+html.theme-pool-light .bg-zinc-900,
+html.theme-pool-light .bg-zinc-950,
+html.theme-pool-light .pocket-gull-card,
+html.theme-pool-light .paper-card,
+html.theme-pool-light .sub-panel,
+html.theme-pool-light .card {
+  position: relative;
+  background-color: #FFFFFF !important; /* 100% Solid White Porcelain Floating Lounger */
+  color: #0F172A !important; /* Deep Navy High Contrast Text */
+  border: 3px solid #0284C7 !important; /* Crisp Aqua Vinyl Seam */
+}
+
+html.theme-pool-light .pocket-gull-card::before,
+html.theme-pool-light .paper-card::before,
+html.theme-pool-light .sub-panel::before,
+html.theme-pool-light .card::before,
+html.theme-pool-light .bg-white::before {
+  display: none !important; /* Remove background texture bleed inside card for crystal clarity */
+}
+
+/* Dark Mode Solid Floating Pool Furniture */
+html.theme-pool-dark .bg-white,
+html.theme-pool-dark .bg-zinc-900,
+html.theme-pool-dark .bg-zinc-950,
+html.theme-pool-dark .pocket-gull-card,
+html.theme-pool-dark .paper-card,
+html.theme-pool-dark .sub-panel,
+html.theme-pool-dark .card {
+  position: relative;
+  background-color: #0F172A !important; /* 100% Solid Midnight Slate Floating Raft */
+  color: #F0F9FF !important; /* Ice White High Contrast Text */
+  border: 3px solid #38BDF8 !important; /* Glowing Turquoise Vinyl Seam */
+  box-shadow: 
+    0 22px 50px -10px rgba(0, 0, 0, 0.75),
+    0 10px 20px -5px rgba(14, 165, 233, 0.3),
+    inset 0 3px 6px rgba(255, 255, 255, 0.2),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.theme-pool-dark .pocket-gull-card::before,
+html.theme-pool-dark .paper-card::before,
+html.theme-pool-dark .sub-panel::before,
+html.theme-pool-dark .card::before,
+html.theme-pool-dark .bg-zinc-900::before,
+html.theme-pool-dark .bg-zinc-950::before {
+  display: none !important; /* Remove background texture bleed inside card for crystal clarity */
+}
+
+/* Inflatable Vinyl Seam Accents for Cards */
+html.theme-pool .pocket-gull-card,
+html.theme-pool .card {
+  border-color: #0284C7 !important;
+}
+html.theme-pool .bg-white,
+html.theme-pool .paper-card {
+  border-color: #0284C7 !important;
+}
+html.theme-pool .sub-panel {
+  border-color: #EAB308 !important; /* Yellow poolside accent seam */
+}
+
+/* Specific elements nested get noodle-style accents */
+html.theme-pool .border,
+html.theme-pool .border-gray-100,
+html.theme-pool .border-gray-200,
+html.theme-pool .border-gray-300,
+html.theme-pool .border-zinc-700,
+html.theme-pool .border-zinc-800,
+html.theme-pool .border-zinc-850 {
+  border-color: rgba(14, 165, 233, 0.25) !important;
+}
+
+/* Glossy, Rounded, Inflated Pool Toy Button Style */
+html.theme-pool .bg-teal-600,
+html.theme-pool .bg-teal-500,
+html.theme-pool .bg-indigo-600,
+html.theme-pool .bg-\[\#1C1C1C\],
+html.theme-pool .bg-slate-900 {
+  background: linear-gradient(180deg, #f87171 0%, #ef4444 100%) !important; /* Inflatable red ring */
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border-radius: 9999px !important;
+  border: 3px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 
+    0 6px 12px -2px rgba(239, 68, 68, 0.3),
+    inset 0 4px 6px rgba(255, 255, 255, 0.5) !important;
+}
+
+html.theme-pool .bg-teal-600:hover,
+html.theme-pool .bg-teal-500:hover,
+html.theme-pool .bg-indigo-600:hover,
+html.theme-pool .bg-\[\#1C1C1C\]:hover,
+html.theme-pool .bg-slate-900:hover {
+  background: linear-gradient(180deg, #fca5a5 0%, #f87171 100%) !important;
+  box-shadow: 
+    0 10px 18px -2px rgba(239, 68, 68, 0.5),
+    inset 0 6px 10px rgba(255, 255, 255, 0.6) !important;
+  color: #ffffff !important;
+}
+
+/* Texts coordination for Floating Pool Loungers & Furniture */
+html.theme-pool-light h1,
+html.theme-pool-light h2,
+html.theme-pool-light h3,
+html.theme-pool-light h4,
+html.theme-pool-light h5 {
+  color: #0369A1 !important; /* Deep Cyan Heading (WCAG AAA Compliant 5.7:1) */
+  font-weight: 800 !important;
+}
+
+html.theme-pool-dark h1,
+html.theme-pool-dark h2,
+html.theme-pool-dark h3,
+html.theme-pool-dark h4,
+html.theme-pool-dark h5 {
+  color: #38BDF8 !important; /* Glowing Turquoise Heading */
+  font-weight: 800 !important;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+html.theme-pool-light p,
+html.theme-pool-light span,
+html.theme-pool-light div,
+html.theme-pool-light .text-gray-900,
+html.theme-pool-light .text-gray-800,
+html.theme-pool-light .text-gray-700,
+html.theme-pool-light .text-zinc-100,
+html.theme-pool-light .text-zinc-200,
+html.theme-pool-light .text-zinc-300 {
+  color: #0F172A !important; /* Solid High Contrast Deep Slate Body Text */
+}
+
+html.theme-pool-dark p,
+html.theme-pool-dark span,
+html.theme-pool-dark div,
+html.theme-pool-dark .text-gray-900,
+html.theme-pool-dark .text-gray-800,
+html.theme-pool-dark .text-zinc-100,
+html.theme-pool-dark .text-zinc-200,
+html.theme-pool-dark .text-zinc-300 {
+  color: #F8FAFC !important; /* Solid High Contrast Ice White Body Text */
+}
+
+html.theme-pool-light .text-gray-500,
+html.theme-pool-light .text-zinc-400,
+html.theme-pool-light .text-zinc-500 {
+  color: #334155 !important; /* High Contrast Slate Secondary Text */
+}
+
+html.theme-pool-dark .text-gray-500,
+html.theme-pool-dark .text-zinc-400,
+html.theme-pool-dark .text-zinc-500 {
+  color: #94A3B8 !important; /* High Contrast Slate Muted Text */
+}
+html.theme-pool-dark .text-zinc-100,
+html.theme-pool-dark .text-zinc-200 {
+  color: #bae6fd !important;
+}
+
+
+/* ==========================================================================
+   MANDALA THEME (Cosmic Indigo & Violet Meditative Visualizer Theme)
+   ========================================================================== */
+html.theme-mandala {
+  --mandala-indigo: #0b071e;
+  --mandala-purple: #4c1d95;
+  --mandala-gold: #f59e0b;
+  --mandala-cyan: #06b6d4;
+  --mandala-text: #e9e3ff;
+  --mandala-rotation-duration: 140s;
+  --mandala-opacity: 0.15;
+}
+
+/* Seagullian Persona Influences */
+html.theme-mandala[data-seagull-persona="calm-gull"] {
+  --mandala-rotation-duration: 180s;
+  --mandala-opacity: 0.08;
+  --mandala-indigo: #08111e;
+  --mandala-purple: #134e4a;
+  --mandala-gold: #34d399; /* Seafoam emerald */
+  --mandala-cyan: #2dd4bf;
+}
+html.theme-mandala[data-seagull-persona="active-skimmer"] {
+  --mandala-rotation-duration: 60s;
+  --mandala-opacity: 0.26;
+  --mandala-indigo: #0c1b2b;
+  --mandala-purple: #0369a1;
+  --mandala-gold: #f59e0b;
+  --mandala-cyan: #38bdf8;
+}
+html.theme-mandala[data-seagull-persona="deep-navigator"] {
+  --mandala-rotation-duration: 95s;
+  --mandala-opacity: 0.18;
+  --mandala-indigo: #0b071e;
+  --mandala-purple: #4c1d95;
+  --mandala-gold: #f59e0b;
+  --mandala-cyan: #06b6d4;
+}
+html.theme-mandala[data-seagull-persona="storm-rider"] {
+  --mandala-rotation-duration: 32s;
+  --mandala-opacity: 0.42;
+  --mandala-indigo: #1e1111;
+  --mandala-purple: #991b1b;
+  --mandala-gold: #f97316; /* Fire orange */
+  --mandala-cyan: #ef4444;
+}
+
+html.theme-mandala body,
+html.theme-mandala app-root {
+  background-color: var(--mandala-indigo) !important;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.18) 0%, transparent 60%),
+    radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.12) 0%, transparent 45%) !important;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--mandala-text);
+  overflow-x: hidden;
+  transition: background-color 0.8s ease;
+}
+
+/* Slow-Rotating Floating Mandala Backdrop */
+html.theme-mandala body::before {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70vw;
+  height: 70vw;
+  min-width: 600px;
+  min-height: 600px;
+  background-image: url('/images/mandala_bg.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: var(--mandala-opacity);
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+  animation: mandala-backdrop-rotate var(--mandala-rotation-duration) linear infinite;
+  transition: opacity 0.5s ease;
+}
+
+@keyframes mandala-backdrop-rotate {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Translucent Glowing Cosmic Panels */
+html.theme-mandala .bg-white,
+html.theme-mandala .bg-zinc-900,
+html.theme-mandala .bg-zinc-950,
+html.theme-mandala .pocket-gull-card,
+html.theme-mandala .paper-card,
+html.theme-mandala .sub-panel,
+html.theme-mandala .card {
+  background-color: rgba(18, 12, 45, 0.72) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
+  box-shadow: 
+    0 15px 35px -10px rgba(0, 0, 0, 0.6),
+    0 0 25px rgba(139, 92, 246, 0.08) !important;
+  color: var(--mandala-text) !important;
+  border-radius: 20px !important; /* Smooth circular energy corners */
+}
+
+/* Glowing Mandala Borders */
+html.theme-mandala .border,
+html.theme-mandala .border-gray-100,
+html.theme-mandala .border-gray-200,
+html.theme-mandala .border-gray-300,
+html.theme-mandala .border-zinc-700,
+html.theme-mandala .border-zinc-800,
+html.theme-mandala .border-zinc-850 {
+  border-color: rgba(139, 92, 246, 0.2) !important;
+}
+
+/* Headers: Shimmering Gold */
+html.theme-mandala h1,
+html.theme-mandala h2,
+html.theme-mandala h3,
+html.theme-mandala h4,
+html.theme-mandala h5 {
+  color: var(--mandala-gold) !important;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+  font-family: serif, 'Times New Roman', Georgia;
+  letter-spacing: 0.08em;
+}
+
+/* Glowing Neon Details */
+html.theme-mandala .text-teal-400,
+html.theme-mandala .text-teal-300,
+html.theme-mandala .text-\[\#00B0B9\] {
+  color: var(--mandala-cyan) !important;
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+}
+
+html.theme-mandala .text-gray-500,
+html.theme-mandala .text-zinc-400,
+html.theme-mandala .text-zinc-500 {
+  color: #a78bfa !important; /* Soft Amethyst Violet details */
+  opacity: 0.85;
+}
+
+html.theme-mandala .text-gray-900,
+html.theme-mandala .text-gray-800,
+html.theme-mandala .text-zinc-100,
+html.theme-mandala .text-zinc-200 {
+  color: var(--mandala-text) !important;
+}
+
+/* Gold Glowing Action Buttons */
+html.theme-mandala .bg-teal-600,
+html.theme-mandala .bg-teal-500,
+html.theme-mandala .bg-indigo-600,
+html.theme-mandala .bg-\[\#1C1C1C\],
+html.theme-mandala .bg-slate-900 {
+  background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 50%, #8b5cf6 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid var(--mandala-gold) !important;
+  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.4) !important;
+}
+
+html.theme-mandala .bg-teal-600:hover,
+html.theme-mandala .bg-teal-500:hover,
+html.theme-mandala .bg-indigo-600:hover,
+html.theme-mandala .bg-\[\#1C1C1C\]:hover,
+html.theme-mandala .bg-slate-900:hover {
+  background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 50%, #a78bfa 100%) !important;
+  box-shadow: 
+    0 0 15px rgba(245, 158, 11, 0.5),
+    0 4px 20px rgba(139, 92, 246, 0.6) !important;
+  color: #ffffff !important;
+}
+
+/* ─── Accessibility & Readability Text Scaling ─── */
+html.text-scale-large {
+  font-size: 112% !important;
+}
+html.text-scale-extra-large {
+  font-size: 125% !important;
+}
+
+/* ==========================================================================
+   DIETER RAMS "LESS, BUT BETTER" DESIGN SYSTEM & THEME NAVBAR BRIDGE
+   ========================================================================== */
+
+/* 1. Theme Navigation Bar Bridge */
+.theme-nav-bar {
+  background-color: var(--bg-card, #FFFFFF);
+  color: var(--text-primary, #0F172A);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+html.dark .theme-nav-bar {
+  background-color: #111111 !important;
+  border-bottom-color: #27272a !important;
+  color: #f4f4f5 !important;
+}
+
+html.papercraft-mode .theme-nav-bar,
+html.papercraft-rice .theme-nav-bar {
+  background-color: #FAF8F0 !important;
+  border-bottom-color: #E5DFC8 !important;
+  color: #18181B !important;
+}
+
+html.papercraft-hemp .theme-nav-bar {
+  background-color: #F5EFE0 !important;
+  border-bottom-color: #DCCFA8 !important;
+  color: #1F1912 !important;
+}
+
+html.papercraft-construction .theme-nav-bar {
+  background-color: #ECEAE2 !important;
+  border-bottom-color: #C8C4B4 !important;
+  color: #0F172A !important;
+}
+
+html.theme-papyrus .theme-nav-bar {
+  background-color: #1C1813 !important;
+  border-bottom-color: #382C1E !important;
+  color: #F3EAD6 !important;
+}
+
+html.theme-pool-light .theme-nav-bar {
+  background-color: #FFFFFF !important;
+  border-bottom-color: #0284C7 !important;
+  color: #0F172A !important;
+}
+
+html.theme-pool-dark .theme-nav-bar {
+  background-color: #0F172A !important;
+  border-bottom-color: #38BDF8 !important;
+  color: #F8FAFC !important;
+}
+
+html.theme-white-marble .theme-nav-bar {
+  background-color: #FFFFFF !important;
+  border-bottom-color: #E2E8F0 !important;
+  color: #0F172A !important;
+}
+
+html.theme-black-marble .theme-nav-bar {
+  background-color: #13151D !important;
+  border-bottom-color: #2D3748 !important;
+  color: #F8FAFC !important;
+}
+
+html.theme-spark .theme-nav-bar {
+  background-color: #170B07 !important;
+  border-bottom-color: #441A0E !important;
+  color: #FFF7ED !important;
+}
+
+html.theme-mandala .theme-nav-bar {
+  background-color: #211A42 !important;
+  border-bottom-color: #3B2E70 !important;
+  color: #F5F3FF !important;
+}
+
+/* ✝️ Lent / Ascetic Metabolic Reset Theme (Lenten Violet #3B1F52 & Warm Linen #F7F5F0) */
+html.theme-lent {
+  --bg-primary: #1F112B;
+  --bg-card: #2B183B;
+  --text-primary: #F7F5F0;
+  --text-secondary: #E6B800;
+  --border-color: #5D377A;
+  --brand-accent: #8A4DAF;
+
+  background-color: #1F112B !important;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(138, 77, 175, 0.12) 0%, transparent 85%),
+    radial-gradient(rgba(230, 184, 0, 0.08) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 14px 14px !important;
+}
+
+html.theme-lent body {
+  background-color: transparent !important;
+}
+
+html.theme-lent .bg-white,
+html.theme-lent .dark\:bg-zinc-900,
+html.theme-lent .bg-gray-50,
+html.theme-lent .pocket-gull-card {
+  background-color: #2B183B !important;
+  border-color: rgba(138, 77, 175, 0.4) !important;
+  color: #F7F5F0 !important;
+}
+
+html.theme-lent .theme-nav-bar {
+  background-color: #180D22 !important;
+  border-bottom: 2px solid #8A4DAF !important;
+  color: #F7F5F0 !important;
+}
+
+/* ☢️ Madame Curie Radium Lab & 1950s Gilbert U-238 Atomic Energy Lab Theme */
+html.theme-curie {
+  --bg-primary: #0f1416;
+  --bg-card: #162025;
+  --text-primary: #e2f8ee;
+  --text-secondary: #00ff66;
+  --border-color: #00cc66;
+  --brand-accent: #00ff66;
+
+  /* ⚛️ Brushed Lead/Steel Plate Metallic Grid & Radioactive Radium Particle Cloud */
+  background-color: #0f1416 !important;
+  background-image: 
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 24px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 24px),
+    radial-gradient(circle at 50% 30%, rgba(0, 255, 102, 0.20) 0%, transparent 75%),
+    linear-gradient(135deg, #0e1315 0%, #1a252b 50%, #0c1012 100%) !important;
+  background-size: 24px 24px, 24px 24px, 100% 100%, 100% 100% !important;
+}
+
+html.theme-curie body {
+  background-color: transparent !important;
+}
+
+/* ☢️ Gilbert U-238 Metallic Lead-Shielded Cards & Geiger Pulse Borders */
+html.theme-curie .bg-white,
+html.theme-curie .dark\:bg-zinc-900,
+html.theme-curie .bg-gray-50,
+html.theme-curie .pocket-gull-card {
+  background-color: #162025 !important;
+  background-image: 
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(0, 0, 0, 0.2) 100%),
+    radial-gradient(circle at 10% 10%, rgba(0, 255, 102, 0.08) 0%, transparent 60%) !important;
+  border-color: rgba(0, 255, 102, 0.4) !important;
+  border-width: 1.5px !important;
+  color: #e2f8ee !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 15px rgba(0, 255, 102, 0.15) !important;
+}
+
+html.theme-curie .theme-nav-bar {
+  background-color: #0b0f11 !important;
+  border-bottom: 2.5px solid #00ff66 !important;
+  box-shadow: 0 4px 15px rgba(0, 255, 102, 0.2) !important;
+  color: #e2f8ee !important;
+}
+
+/* ⚛️ Gilbert U-238 Radium Accent Headings & Isotope Badges */
+html.theme-curie h1,
+html.theme-curie h2,
+html.theme-curie h3,
+html.theme-curie h4 {
+  color: #00ff66 !important;
+  text-shadow: 0 0 8px rgba(0, 255, 102, 0.4) !important;
+}
+
+html.theme-curie .text-zinc-400,
+html.theme-curie .text-zinc-500,
+html.theme-curie .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+/* 2. Dieter Rams Tactile Controls & Typography Tokens */
+.btn-rams {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 0.375rem; /* 6px Dieter Rams precise radius */
+  border: 1px solid currentColor;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-rams:active {
+  transform: scale(0.98);
+}
+
+/* Rams Header & Panel Typography */
+.rams-header-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-family: var(--font-mono, monospace);
+}
+
+.rams-badge {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: var(--font-mono, monospace);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+/* ==========================================================================
+   TRANSLUCENT THEMATIC GLASSMORPHISM FOR 3D VIEWERS & SPATIAL SCANNERS
+   Ensures background textures/images are clearly visible underneath 3D UI containers.
+   ========================================================================== */
+app-body-viewer,
+app-body-3d-viewer,
+app-spatial-scanner,
+app-rosetta-stone-anatomy,
+app-arborist-3d-viewer,
+app-mechanical-3d-viewer {
+  display: block;
+  backdrop-filter: blur(12px);
+}
+
+.thematic-3d-container {
+  backdrop-filter: blur(12px) !important;
+  background-color: rgba(255, 255, 255, 0.45) !important;
+  transition: all 0.3s ease !important;
+}
+
+html.dark .thematic-3d-container {
+  background-color: rgba(9, 9, 11, 0.65) !important;
+}
+
+html.papercraft-mode .thematic-3d-container {
+  background-color: rgba(250, 247, 238, 0.75) !important;
+  border-color: rgba(220, 205, 180, 0.5) !important;
+}
+
+html.theme-white-marble .thematic-3d-container {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  border-color: rgba(212, 175, 55, 0.4) !important;
+}
+
+html.theme-black-marble .thematic-3d-container {
+  background-color: rgba(13, 13, 17, 0.7) !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
+}
+
+html.theme-papyrus .thematic-3d-container {
+  background-color: rgba(23, 20, 16, 0.7) !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+}
+
+html.theme-pool-light .thematic-3d-container {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+  border-color: #0284C7 !important;
+}
+
+html.theme-pool-dark .thematic-3d-container {
+  background-color: rgba(15, 23, 42, 0.75) !important;
+  border-color: #38BDF8 !important;
+}
+
+html.theme-mandala .thematic-3d-container {
+  background-color: rgba(18, 12, 45, 0.65) !important;
+  border-color: rgba(139, 92, 246, 0.4) !important;
+}
+
+html.theme-curie .thematic-3d-container {
+  background-color: rgba(22, 32, 37, 0.75) !important;
+  border-color: rgba(0, 255, 102, 0.5) !important;
+}
+
+/* ==========================================================================
+   3D CARD FLIP & COGNITIVE LOAD SHIELDING UTILITIES
+   ========================================================================== */
+.perspective-1000 {
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg) !important;
+  -webkit-transform: rotateY(180deg) !important;
+}
+
+.rotate-y-0 {
+  transform: rotateY(0deg) !important;
+  -webkit-transform: rotateY(0deg) !important;
+}
+
+/* ==========================================================================
+   ACCESSIBILITY: PREFERS-REDUCED-MOTION (WCAG 2.1 Success Criterion 2.3.3)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .transform-style-3d,
+  .perspective-1000,
+  .rotate-y-180,
+  .backface-hidden {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* Instant zero-motion face swap for vestibular sensitivity */
+  .rotate-y-180 {
+    transform: none !important;
+    -webkit-transform: none !important;
+  }
+
+  /* Hide front face instantly when container has .rotate-y-180 class under reduced motion */
+  .transform-style-3d.rotate-y-180 > .backface-hidden:not(.rotate-y-180) {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  /* Hide back face instantly when container has .rotate-y-180 class under reduced motion */
+  .transform-style-3d.rotate-y-180 > .rotate-y-180 {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   UI CONGRUENCY & MICRO-ANIMATION DESIGN SYSTEM
+   ========================================================================== */
+
+@keyframes pgFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pgSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pgPulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 12px 2px rgba(16, 185, 129, 0.4);
+  }
+}
+
+@keyframes pgSkeletonShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-pg-fade-in {
+  animation: pgFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pg-slide-up {
+  animation: pgSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pg-pulse-glow {
+  animation: pgPulseGlow 2.5s infinite ease-in-out;
+}
+
+.pg-skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+  animation: pgSkeletonShimmer 1.8s infinite ease-in-out;
+}
+
+/* Glassmorphic & Papercraft Unified Card System */
+.pg-card {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.dark .pg-card {
+  background-color: rgba(24, 24, 27, 0.9);
+  border-color: #27272a;
+}
+
+.pg-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: scale(1.008);
+}
+
+.pg-card-interactive {
+  cursor: pointer;
+}
+.pg-card-interactive:active {
+  transform: scale(0.99);
+}
+
+.pg-button-primary {
+  background-color: #059669;
+  color: #ffffff;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  transition: all 200ms ease;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+.pg-button-primary:hover:not(:disabled) {
+  background-color: #10b981;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.pg-button-primary:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.pg-button-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pg-button-secondary {
+  background-color: #f4f4f5;
+  color: #27272a;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  transition: all 200ms ease;
+}
+.dark .pg-button-secondary {
+  background-color: #27272a;
+  color: #e4e4e7;
+}
+.pg-button-secondary:hover {
+  background-color: #e4e4e7;
+}
+.dark .pg-button-secondary:hover {
+  background-color: #3f3f46;
+}
+.pg-button-secondary:active {
+  transform: scale(0.97);
+}
+
+.pg-button-ghost {
+  color: #52525b;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 200ms ease;
+}
+.dark .pg-button-ghost {
+  color: #a1a1aa;
+}
+.pg-button-ghost:hover {
+  background-color: #f4f4f5;
+}
+.dark .pg-button-ghost:hover {
+  background-color: rgba(39, 39, 42, 0.6);
+}
+.pg-button-ghost:active {
+  transform: scale(0.97);
+}
+
+/* ───────────────────────────────────────────────────────────── */
+/* ♿ CLINICAL INCLUSIVENESS & ACCESSIBILITY (a11y / DEI) SUITE */
+/* ───────────────────────────────────────────────────────────── */
+
+/* 1. Dyslexia-Friendly High-Legibility Font Stack */
+.dyslexia-font-active,
+.dyslexia-font-active * {
+  font-family: 'OpenDyslexic', 'Caslon Pro', 'Comic Sans MS', sans-serif !important;
+  letter-spacing: 0.05em !important;
+  word-spacing: 0.1em !important;
+  line-height: 1.6 !important;
+}
+
+/* 2. WCAG AAA High-Contrast Mode (7:1 Contrast Compliance) */
+.high-contrast-active {
+  --tw-bg-opacity: 1 !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+.high-contrast-active button,
+.high-contrast-active a,
+.high-contrast-active input,
+.high-contrast-active select {
+  border: 2px solid #ffffff !important;
+  color: #ffffff !important;
+}
+.high-contrast-active .text-gray-400,
+.high-contrast-active .text-zinc-400,
+.high-contrast-active .text-zinc-500,
+.high-contrast-active .text-zinc-600 {
+  color: #f3f4f6 !important;
+}
+
+/* 3. Neurodivergent Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html.reduce-motion *,
+html.reduce-motion ::before,
+html.reduce-motion ::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* 4. Keyboard Traversal Focus Visible Rings (Fitts's Law) */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #10b981 !important;
+  outline-offset: 2px !important;
+}
+
+
+
+
+
+

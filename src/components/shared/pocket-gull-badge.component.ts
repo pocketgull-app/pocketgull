@@ -1,0 +1,89 @@
+import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+export type BadgeSeverity = 'info' | 'success' | 'warning' | 'error' | 'neutral';
+
+@Component({
+  selector: 'pocket-gull-badge',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <span [class]="badgeClasses()" class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-bold uppercase tracking-wider border transition-all duration-200">
+      <ng-content select="[badge-icon]"></ng-content>
+      <span [class.ml-1]="hasIcon()">{{ label() }}</span>
+    </span>
+  `,
+  styles: [`
+    :host { display: inline-block; }
+    
+    .severity-info {
+      background: rgba(30, 136, 229, 0.08);
+      color: #1E88E5;
+      border-color: rgba(30, 136, 229, 0.15);
+    }
+    
+    .severity-success {
+      background: rgba(104, 159, 56, 0.08); /* Brand Green */
+      color: #558B2F;
+      border-color: rgba(104, 159, 56, 0.15);
+    }
+    
+    .severity-warning {
+      background: rgba(255, 179, 0, 0.08);
+      color: #FFB300;
+      border-color: rgba(255, 179, 0, 0.15);
+    }
+    
+    .severity-error {
+      background: rgba(229, 57, 53, 0.08);
+      color: #E53935;
+      border-color: rgba(229, 57, 53, 0.15);
+    }
+    
+    .severity-neutral {
+      background: rgba(107, 114, 128, 0.08);
+      color: #4B5563;
+      border-color: rgba(107, 114, 128, 0.15);
+    }
+    
+    /* Dark Mode Defaults */
+    :host-context(.dark) .severity-info,
+    :host-context(html.dark) .severity-info {
+      background: rgba(30, 136, 229, 0.15);
+      color: #64b5f6;
+      border-color: rgba(30, 136, 229, 0.3);
+    }
+    :host-context(.dark) .severity-success,
+    :host-context(html.dark) .severity-success {
+      background: rgba(104, 159, 56, 0.15);
+      color: #aed581;
+      border-color: rgba(104, 159, 56, 0.3);
+    }
+    :host-context(.dark) .severity-warning,
+    :host-context(html.dark) .severity-warning {
+      background: rgba(255, 179, 0, 0.15);
+      color: #ffd54f;
+      border-color: rgba(255, 179, 0, 0.3);
+    }
+    :host-context(.dark) .severity-error,
+    :host-context(html.dark) .severity-error {
+      background: rgba(229, 57, 53, 0.15);
+      color: #e57373;
+      border-color: rgba(229, 57, 53, 0.3);
+    }
+    :host-context(.dark) .severity-neutral,
+    :host-context(html.dark) .severity-neutral {
+      background: rgba(161, 161, 170, 0.15);
+      color: #a1a1aa;
+      border-color: rgba(161, 161, 170, 0.3);
+    }
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class PocketGullBadgeComponent {
+  label = input.required<string>();
+  severity = input<BadgeSeverity>('neutral');
+  hasIcon = input<boolean>(false);
+
+  badgeClasses = computed(() => `severity-${this.severity()}`);
+}

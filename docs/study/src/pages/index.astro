@@ -1,0 +1,210 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="Overview">
+  <div class="overview-header">
+    <div class="badge">GEMINI LIVE AGENT CHALLENGE</div>
+    <h1>Pocket Gull</h1>
+    <p class="tagline">Insight beneath the surface.</p>
+    <p class="intro">Pocket Gull streamlines patient intake with an interactive 3D body map and AI-powered clinical intelligence. It empowers practitioners with rapid data visualization and strategy synthesis for proactive care decisions, acting as an interruptible voice-first clinical co-pilot.</p>
+  </div>
+
+  <hr />
+
+  <h2>Product Highlights</h2>
+  <p>A highly interactive, aesthetically minimal user interface — <strong>Industrial Grace</strong> — designed for immediate clinical insight.</p>
+
+  <div class="screenshots">
+    <figure>
+      <img src={import.meta.env.BASE_URL + "images/dashboard.png"} alt="Pocket Gull Dashboard" loading="lazy" />
+      <figcaption>Dashboard — Patient intake overview with real-time AI status</figcaption>
+    </figure>
+    <figure>
+      <img src={import.meta.env.BASE_URL + "images/body_viewer.png"} alt="3D Body Viewer" loading="lazy" />
+      <figcaption>Body Viewer — Three.js anatomical selection with severity particles</figcaption>
+    </figure>
+    <figure>
+      <img src={import.meta.env.BASE_URL + "images/inline_chat.webp"} alt="Inline Agent Chat" loading="lazy" />
+      <figcaption>Live Agent — Voice-first AI consult with context-aware memory</figcaption>
+    </figure>
+  </div>
+
+  <hr />
+
+  <h2>At a Glance</h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-number">100</div>
+      <div class="stat-label">Lighthouse Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">42%</div>
+      <div class="stat-label">Intake Time Reduction</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">286px</div>
+      <div class="stat-label">Min. Viewport Width</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">FHIR R4</div>
+      <div class="stat-label">Data Export Standard</div>
+    </div>
+  </div>
+
+  <hr />
+
+  <h2>Philosophy</h2>
+  <blockquote>
+    Pocket Gull is built on the <strong>Kaizen</strong> principle of continuous, incremental improvement. Clinical tools should never be "finished" — they evolve alongside the practitioners who use them.
+  </blockquote>
+  <ul>
+    <li><strong>Incremental Intelligence</strong> — Every analysis is a baseline for refinement.</li>
+    <li><strong>Iterative Design</strong> — UI is constantly polished to reduce cognitive load.</li>
+    <li><strong>Evolving Integration</strong> — Manual data handling today, automated biometric telemetry tomorrow.</li>
+  </ul>
+
+  <hr />
+
+  <div class="nav-cards">
+    <a href={`${import.meta.env.BASE_URL}architecture`} class="nav-card">
+      <span class="nav-card-label">Architecture</span>
+      <span class="nav-card-desc">System diagram & tech stack</span>
+    </a>
+    <a href={`${import.meta.env.BASE_URL}features`} class="nav-card">
+      <span class="nav-card-label">Features</span>
+      <span class="nav-card-desc">All capabilities in detail</span>
+    </a>
+    <a href={`${import.meta.env.BASE_URL}dependencies`} class="nav-card">
+      <span class="nav-card-label">Dependencies</span>
+      <span class="nav-card-desc">Third-party compliance & licenses</span>
+    </a>
+    <a href={`${import.meta.env.BASE_URL}case-study`} class="nav-card">
+      <span class="nav-card-label">Case Study</span>
+      <span class="nav-card-desc">Engineering deep dive & results</span>
+    </a>
+    <a href={`${import.meta.env.BASE_URL}getting-started`} class="nav-card">
+      <span class="nav-card-label">Getting Started</span>
+      <span class="nav-card-desc">Setup & deployment</span>
+    </a>
+  </div>
+</DocsLayout>
+
+<style>
+  .overview-header {
+    padding: 2rem 0 1rem;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pg-accent);
+    border: 1px solid var(--pg-accent);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+  .overview-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.25rem;
+    border-bottom: none;
+  }
+  .tagline {
+    font-style: italic;
+    color: var(--pg-text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  .intro {
+    font-size: 1rem;
+    line-height: 1.8;
+    max-width: 640px;
+  }
+
+  .screenshots {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 1.5rem 0;
+  }
+  .screenshots figure {
+    margin: 0;
+  }
+  .screenshots img {
+    width: 100%;
+    border-radius: var(--pg-radius);
+    border: 1px solid var(--pg-border);
+  }
+  .screenshots figcaption {
+    font-size: 0.75rem;
+    color: var(--pg-text-muted);
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .stat-card {
+    background: var(--pg-surface);
+    border: 1px solid var(--pg-border);
+    border-radius: var(--pg-radius);
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--pg-accent-dark);
+    margin-bottom: 0.25rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    .stat-number { color: var(--pg-accent-light); }
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--pg-text-muted);
+  }
+
+  .nav-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .nav-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    border: 1px solid var(--pg-border);
+    border-radius: var(--pg-radius);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .nav-card:hover {
+    border-color: var(--pg-accent);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+  .nav-card-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--pg-text);
+    margin-bottom: 0.25rem;
+  }
+  .nav-card-desc {
+    font-size: 0.78rem;
+    color: var(--pg-text-muted);
+  }
+</style>

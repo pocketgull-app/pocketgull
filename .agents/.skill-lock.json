@@ -1,0 +1,42 @@
+{
+  "version": 3,
+  "skills": {
+    "local-ai-use": {
+      "source": "amd/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/amd/skills.git",
+      "skillPath": "skills/local-ai-use/SKILL.md",
+      "skillFolderHash": "b99f6d2fa17583e68db0868c59b07e34bd2be456",
+      "pluginName": "amd-skills",
+      "installedAt": "2026-08-07T06:30:12.565Z",
+      "updatedAt": "2026-08-07T06:30:12.565Z"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "skillFolderHash": "76a98a285cb0434f3d39e1a873823556330e398b",
+      "installedAt": "2026-08-07T06:30:15.879Z",
+      "updatedAt": "2026-08-07T06:30:15.879Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  },
+  "lastSelectedAgents": [
+    "amp",
+    "antigravity",
+    "antigravity-cli",
+    "cline",
+    "codex",
+    "cursor",
+    "deepagents",
+    "gemini-cli",
+    "github-copilot",
+    "kimi-code-cli",
+    "opencode",
+    "warp",
+    "zed"
+  ]
+}

@@ -1,0 +1,705 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Real-time medical care plan strategy and streaming AI consult engine powered by Google Gemini. Features 10D multi-paradigm strategy, FHIR R4 export & 3D spatial anatomy.' } = Astro.props;
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const base = import.meta.env.BASE_URL.replace(/\/$/, ''); // base without trailing slash, e.g. "/docs/study"
+const canonicalUrl = new URL(Astro.url.pathname, 'https://pocketgull.app').href;
+
+const navItems = [
+  { href: `${base}/`, label: 'Overview' },
+  { href: `${base}/architecture/`, label: 'Architecture' },
+  { href: `${base}/features/`, label: 'Features' },
+  { href: `${base}/data/`, label: 'Data & Privacy' },
+  { href: `${base}/responsible-ai/`, label: 'Responsible AI' },
+  { href: `${base}/clinical-paradigms/`, label: 'Clinical Paradigms & FHIR' },
+  { href: `${base}/dependencies/`, label: 'Dependencies & Licenses' },
+  { href: `${base}/getting-started/`, label: 'Getting Started' },
+  { href: `${base}/api/`, label: 'API Reference' },
+  { href: `${base}/edge-mobile-integration/`, label: 'Mobile & Edge Guide' },
+  { href: `${base}/case-study/`, label: 'Case Study' },
+  { href: `${base}/positioning/`, label: 'Valuation & Positioning' },
+  { href: `${base}/git-roadmap/`, label: 'Git Roadmap & Telemetry' },
+  { href: `${base}/changelog/`, label: 'Changelog' },
+];
+
+function isActive(href: string): boolean {
+  const clean = currentPath.replace(/\/$/, '') || '/';
+  const cleanHref = href.replace(/\/$/, '') || '/';
+  return clean === cleanHref;
+}
+
+// Prev/next page
+const currentIndex = navItems.findIndex(item => isActive(item.href));
+const prevPage = currentIndex > 0 ? navItems[currentIndex - 1] : null;
+const nextPage = currentIndex < navItems.length - 1 ? navItems[currentIndex + 1] : null;
+
+// Version info & Git Release Candidates History
+const currentVersion = 'v1.0.0-rc10';
+const versions = [
+  { label: 'v1.0.0-rc10', tag: 'latest', summary: 'PhysioNet Telemetry & 7s Origami Unfolding', current: true },
+  { label: 'v1.0.0-rc9', tag: 'release', summary: '3D Search & Global Languages', current: false },
+  { label: 'v1.0.0-rc8', tag: 'release', summary: 'Dynamic Mocks & Task Bracketing', current: false },
+  { label: 'v1.0.0-rc7', tag: 'release', summary: 'Companion Apps & Widget Tests', current: false },
+  { label: 'v1.0.0-rc6', tag: 'release', summary: 'CodeQL Security Hardening', current: false },
+  { label: 'v1.0.0-rc5', tag: 'release', summary: 'Good Samaritan CPR Mode & QR', current: false },
+  { label: 'v1.0.0-rc4', tag: 'release', summary: 'FHIR R4 Bundle Serialization', current: false },
+  { label: 'v1.0.0-rc3', tag: 'release', summary: 'Multi-Agent ADK & Lenses', current: false },
+  { label: 'v1.0.0-rc2', tag: 'release', summary: '3D Skeletal Anatomy & Spine', current: false },
+  { label: 'v1.0.0-rc1', tag: 'initial', summary: 'Angular Signals Core Architecture', current: false },
+];
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <title>{title} — Pocket Gull Docs</title>
+  <link rel="canonical" href={canonicalUrl} />
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,40 65,15 58,45' fill='%233ebc9e' stroke='%232fa085' stroke-width='0.5'/><polygon points='20,50 50,40 10,35' fill='%23e5e5e5' stroke='%23d5d5d5' stroke-width='0.5'/><polygon points='20,50 50,40 58,45 75,55 50,65' fill='%23f4f4f4' stroke='%23e0e0e0' stroke-width='0.5'/><polygon points='50,40 58,45 35,85' fill='%23ef6658' stroke='%23df5648' stroke-width='0.5'/><polygon points='50,40 35,85 20,50' fill='%23d85547' stroke='%23c84537' stroke-width='0.5'/><polygon points='75,55 58,45 85,38' fill='%23ffffff' stroke='%23f0f0f0' stroke-width='0.5'/><polygon points='85,38 82,45 95,34' fill='%23faa63b' stroke='%23e0902c' stroke-width='0.5'/></svg>" />
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <script is:inline>
+    const savedTheme = localStorage.getItem('pg-docs-theme') || 'western';
+    document.documentElement.className = `theme-${savedTheme}`;
+  </script>
+</head>
+<body>
+  <!-- Top Navbar -->
+  <nav class="docs-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href={import.meta.env.BASE_URL} class="nav-brand" aria-label="Pocket Gull Documentation">
+          <svg width="28" height="28" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(0, -20)">
+              <rect x="166" y="275" width="180" height="10" rx="2" fill="#76B362" />
+              <g>
+                <path d="M251 270 C200 250 155 200 155 145 C155 180 185 240 251 270Z" fill="#76B362" />
+                <path d="M251 270 C240 210 215 155 185 145 C185 145 230 200 251 270Z" fill="#244626" />
+              </g>
+              <g transform="translate(512, 0) scale(-1, 1)">
+                <path d="M251 270 C200 250 155 200 155 145 C155 180 185 240 251 270Z" fill="#76B362" />
+                <path d="M251 270 C240 210 215 155 185 145 C185 145 230 200 251 270Z" fill="#76B362" />
+              </g>
+            </g>
+          </svg>
+          <span class="brand-text">POCKET GULL</span>
+          <span class="brand-divider"></span>
+          <span class="brand-label">DOCS</span>
+        </a>
+        <!-- Version Dropdown -->
+        <div class="version-dropdown" id="versionDropdown">
+          <button class="version-trigger" id="versionTrigger">
+            <span>{currentVersion}</span>
+            <svg viewBox="0 -960 960 960" fill="currentColor" width="10" height="10"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg>
+          </button>
+          <div class="version-menu" id="versionMenu">
+            {versions.map(v => (
+              <div class:list={['version-item', { active: v.current }]}>
+                <div class="version-info flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="version-label font-mono font-bold text-xs">{v.label}</span>
+                    {v.current && <span class="version-tag">current</span>}
+                    {!v.current && <span class="version-tag muted">{v.tag}</span>}
+                  </div>
+                  <div class="version-summary text-[10px] text-zinc-400 dark:text-zinc-500 truncate">{v.summary}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <div class="theme-selector-container">
+          <span class="theme-selector-label">Theme:</span>
+          <div class="theme-selector" id="themeSelector">
+            <button class="theme-dot western" data-theme="western" title="Western (Sky)" aria-label="Switch to Western theme"></button>
+            <button class="theme-dot eastern" data-theme="eastern" title="Eastern (Emerald)" aria-label="Switch to Eastern theme"></button>
+            <button class="theme-dot ayurvedic" data-theme="ayurvedic" title="Ayurvedic (Amber)" aria-label="Switch to Ayurvedic theme"></button>
+            <button class="theme-dot longevity" data-theme="longevity" title="Secular Longevity (Zinc)" aria-label="Switch to Secular Longevity theme"></button>
+          </div>
+        </div>
+        <a href="https://pocketgull.app" target="_blank" rel="noopener">Live App ↗</a>
+        <a href="https://github.com/philgear/pocketgull" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="docs-container">
+    <!-- Sidebar -->
+    <aside class="docs-sidebar" id="sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Documentation</div>
+        {navItems.map((item) => (
+          <a href={item.href} class:list={['sidebar-link', { active: isActive(item.href) }]}>
+            {item.label}
+          </a>
+        ))}
+      </nav>
+      <div class="sidebar-footer">
+        <span>{currentVersion}</span>
+        <span>·</span>
+        <span>MIT</span>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="docs-main">
+      <article class="docs-article">
+        <slot />
+      </article>
+
+      <!-- Prev / Next Navigation -->
+      <nav class="page-nav">
+        {prevPage ? (
+          <a href={prevPage.href} class="page-nav-card page-nav-prev">
+            <span class="page-nav-direction">← Previous</span>
+            <span class="page-nav-label">{prevPage.label}</span>
+          </a>
+        ) : <div></div>}
+        {nextPage ? (
+          <a href={nextPage.href} class="page-nav-card page-nav-next">
+            <span class="page-nav-direction">Next →</span>
+            <span class="page-nav-label">{nextPage.label}</span>
+          </a>
+        ) : <div></div>}
+      </nav>
+
+      <footer class="docs-footer">
+        <p>© 2026 Phil Gear · <a href="https://developers.google.com/profile/philgear">developers.google.com/profile/philgear</a> · MIT License</p>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // Mobile menu toggle
+    const toggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    toggle?.addEventListener('click', () => {
+      sidebar?.classList.toggle('open');
+    });
+    sidebar?.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => sidebar?.classList.remove('open'));
+    });
+
+    // Version dropdown
+    const versionTrigger = document.getElementById('versionTrigger');
+    const versionMenu = document.getElementById('versionMenu');
+    versionTrigger?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      versionMenu?.classList.toggle('open');
+    });
+    document.addEventListener('click', () => {
+      versionMenu?.classList.remove('open');
+    });
+
+    // Theme selector
+    const themeSelector = document.getElementById('themeSelector');
+    const dots = themeSelector?.querySelectorAll('.theme-dot');
+    
+    const updateActiveDot = () => {
+      const currentTheme = localStorage.getItem('pg-docs-theme') || 'western';
+      dots?.forEach(dot => {
+        if (dot.getAttribute('data-theme') === currentTheme) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    };
+    
+    updateActiveDot();
+    
+    dots?.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const theme = dot.getAttribute('data-theme');
+        if (theme) {
+          localStorage.setItem('pg-docs-theme', theme);
+          document.documentElement.className = `theme-${theme}`;
+          updateActiveDot();
+        }
+      });
+    });
+  </script>
+
+  <!-- DocNode drill-down engine -->
+  <script is:inline defer src={`${import.meta.env.BASE_URL}scripts/doc-drill.js`}></script>
+
+  <!-- Client-side Mermaid rendering -->
+  <script is:inline type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+
+    async function renderMermaidDiagrams() {
+      const blocks = document.querySelectorAll('pre[data-language="mermaid"], pre.mermaid, code.language-mermaid, pre:has(code.language-mermaid)');
+      for (let i = 0; i < blocks.length; i++) {
+        const block = blocks[i];
+        if (block.classList.contains('mermaid-processed')) continue;
+        
+        let code = block.textContent.trim();
+        // Standardize literal escapes for Mermaid parser
+        code = code.replace(/\\n/g, '<br/>');
+
+        const container = document.createElement('div');
+        container.className = 'mermaid mermaid-processed flex justify-center my-6 overflow-x-auto p-4 bg-zinc-900/60 rounded-xl border border-zinc-800';
+        container.id = `mermaid-diagram-${i}-${Date.now()}`;
+        container.textContent = code;
+
+        const target = block.tagName === 'CODE' ? block.parentNode : block;
+        target.parentNode?.replaceChild(container, target);
+      }
+      
+      const unrendered = document.querySelectorAll('.mermaid-processed:not([data-processed="true"])');
+      if (unrendered.length > 0) {
+        try {
+          await mermaid.run({
+            nodes: unrendered,
+          });
+        } catch (e) {
+          console.warn('[DocsLayout] Mermaid rendering warning:', e);
+        }
+      }
+    }
+
+    renderMermaidDiagrams();
+    document.addEventListener('astro:page-load', renderMermaidDiagrams);
+  </script>
+</body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+  @import '../styles/doc-nodes.css';
+</style>
+
+<style>
+  .docs-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: 56px;
+    border-bottom: 1px solid var(--pg-border);
+    background: var(--pg-surface);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--pg-text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--pg-text);
+  }
+
+  .nav-brand:hover { text-decoration: none; }
+
+  .brand-text {
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    color: var(--pg-text);
+  }
+
+  .brand-divider {
+    width: 1px;
+    height: 16px;
+    background: var(--pg-border);
+  }
+
+  .brand-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--pg-text-muted);
+    text-transform: uppercase;
+  }
+
+  /* Version Dropdown */
+  .version-dropdown {
+    position: relative;
+    margin-left: 0.25rem;
+  }
+
+  .version-trigger {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--pg-text-muted);
+    background: var(--pg-bg);
+    border: 1px solid var(--pg-border);
+    border-radius: 4px;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .version-trigger:hover {
+    border-color: var(--pg-accent);
+    color: var(--pg-text);
+  }
+
+  .version-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 140px;
+    background: var(--pg-surface);
+    border: 1px solid var(--pg-border);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    z-index: 60;
+    display: none;
+    padding: 4px;
+  }
+
+  .version-menu.open { display: block; }
+
+  .version-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+
+  .version-item:hover { background: var(--pg-border); }
+  .version-item.active { font-weight: 600; }
+
+  .version-label { color: var(--pg-text); }
+
+  .version-tag {
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #689F38;
+    background: #F0F7E8;
+    border: 1px solid #C8E6C9;
+    border-radius: 8px;
+    padding: 1px 5px;
+  }
+
+  .version-tag.muted {
+    color: #9CA3AF;
+    background: #F3F4F6;
+    border-color: #E5E7EB;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .nav-links a {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pg-text-muted);
+    transition: color 0.2s ease;
+  }
+
+  .nav-links a:hover {
+    color: var(--pg-accent);
+    text-decoration: none;
+  }
+
+  /* Theme selector styles */
+  .theme-selector-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .theme-selector-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--pg-text-muted);
+  }
+
+  .theme-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--pg-bg);
+    border: 1px solid var(--pg-border);
+    padding: 3px 6px;
+    border-radius: 20px;
+  }
+
+  .theme-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+  }
+
+  .theme-dot::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .theme-dot.western::before { background-color: #38bdf8; }
+  .theme-dot.eastern::before { background-color: #10b981; }
+  .theme-dot.ayurvedic::before { background-color: #f59e0b; }
+  .theme-dot.longevity::before { background-color: #71717a; }
+
+  .theme-dot:hover::before {
+    transform: scale(1.25);
+  }
+
+  .theme-dot.active::before {
+    border: 2px solid var(--pg-text);
+    box-shadow: 0 0 8px currentColor;
+    transform: scale(1.1);
+  }
+
+  .theme-dot.active.western::before { color: #38bdf8; }
+  .theme-dot.active.eastern::before { color: #10b981; }
+  .theme-dot.active.ayurvedic::before { color: #f59e0b; }
+  .theme-dot.active.longevity::before { color: #fafafa; }
+
+  /* Container: sidebar + main */
+  .docs-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* Sidebar */
+  .docs-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--pg-border);
+    padding: 2rem 1.25rem;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .sidebar-section-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--pg-text-muted);
+    margin-bottom: 1rem;
+    padding-left: 0.75rem;
+  }
+
+  .sidebar-link {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--pg-text-muted);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    margin-bottom: 2px;
+  }
+
+  .sidebar-link:hover {
+    color: var(--pg-text);
+    background: var(--pg-border);
+    text-decoration: none;
+  }
+
+  .sidebar-link.active {
+    color: var(--pg-accent-dark);
+    background: rgba(65, 107, 31, 0.08);
+    font-weight: 600;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .sidebar-link.active {
+      color: var(--pg-accent-light);
+      background: rgba(118, 179, 98, 0.1);
+    }
+  }
+
+  .sidebar-footer {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--pg-text-muted);
+    padding-left: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--pg-border);
+  }
+
+  /* Main content */
+  .docs-main {
+    flex: 1;
+    min-width: 0;
+    padding: 2.5rem 3rem 4rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .docs-article {
+    max-width: 780px;
+    flex: 1;
+    animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Prev / Next Navigation */
+  .page-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 3rem;
+    max-width: 780px;
+  }
+
+  .page-nav-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--pg-border);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    min-width: 140px;
+  }
+
+  .page-nav-card:hover {
+    border-color: var(--pg-accent);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .page-nav-next { align-items: flex-end; margin-left: auto; }
+
+  .page-nav-direction {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--pg-text-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .page-nav-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--pg-accent-dark);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .page-nav-label { color: var(--pg-accent-light); }
+  }
+
+  .docs-footer {
+    border-top: 1px solid var(--pg-border);
+    padding: 1.5rem 0;
+    margin-top: 2rem;
+  }
+
+  .docs-footer p {
+    font-size: 0.75rem;
+    color: var(--pg-text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .menu-toggle { display: block; }
+    .brand-text, .brand-divider, .brand-label, .version-dropdown { display: none; }
+
+    .docs-sidebar {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      bottom: 0;
+      width: 260px;
+      background: var(--pg-surface);
+      z-index: 40;
+      transform: translateX(-100%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border-right: 1px solid var(--pg-border);
+      box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+    }
+
+    .docs-sidebar.open {
+      transform: translateX(0);
+    }
+
+    .docs-main {
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    .page-nav {
+      flex-direction: column;
+    }
+
+    .page-nav-next { align-items: flex-start; margin-left: 0; }
+  }
+</style>

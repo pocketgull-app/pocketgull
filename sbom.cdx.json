@@ -1,0 +1,1102 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:0c9a1588-8aea-4bca-a726-b80a17197851",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-08-05T13:33:31.273Z",
+    "tools": [
+      {
+        "vendor": "Pocket-Gull Engineering",
+        "name": "Automated Sentinel Guard",
+        "version": "1.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "pocket-gull",
+      "version": "1.3.0",
+      "description": "Real-time medical Care Plan Strategy and Live AI Consult engine",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/pocket-gull@1.9.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "@angular/build",
+      "version": "22.0.8",
+      "purl": "pkg:npm/%40angular/build@22.0.8",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular-cli"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/cli",
+      "version": "22.0.7",
+      "purl": "pkg:npm/%40angular/cli@22.0.7",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular-cli"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/common",
+      "version": "22.0.5",
+      "purl": "pkg:npm/%40angular/common@22.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/compiler",
+      "version": "22.0.5",
+      "purl": "pkg:npm/%40angular/compiler@22.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/compiler-cli",
+      "version": "22.0.5",
+      "purl": "pkg:npm/%40angular/compiler-cli@22.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/core",
+      "version": "22.0.5",
+      "purl": "pkg:npm/%40angular/core@22.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/fire",
+      "version": "20.0.1",
+      "purl": "pkg:npm/%40angular/fire@20.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angularfire"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/forms",
+      "version": "22.0.5",
+      "purl": "pkg:npm/%40angular/forms@22.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/platform-browser",
+      "version": "22.0.5",
+      "purl": "pkg:npm/%40angular/platform-browser@22.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/platform-server",
+      "version": "22.1.0",
+      "purl": "pkg:npm/%40angular/platform-server@22.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/router",
+      "version": "22.0.5",
+      "purl": "pkg:npm/%40angular/router@22.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/service-worker",
+      "version": "22.0.5",
+      "purl": "pkg:npm/%40angular/service-worker@22.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@angular/ssr",
+      "version": "22.0.5",
+      "purl": "pkg:npm/%40angular/ssr@22.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/angular/angular-cli"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@aws-crypto/sha256-js",
+      "version": "5.2.0",
+      "purl": "pkg:npm/%40aws-crypto/sha256-js@5.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "git@github.com:aws/aws-sdk-js-crypto-helpers"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@google-cloud/agones-sdk",
+      "version": "1.59.0",
+      "purl": "pkg:npm/%40google-cloud/agones-sdk@1.59.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "googleforgames/agones"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@google-cloud/secret-manager",
+      "version": "6.3.0",
+      "purl": "pkg:npm/%40google-cloud/secret-manager@6.3.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/googleapis/google-cloud-node"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@mcp-b/webmcp-polyfill",
+      "version": "2.3.2",
+      "purl": "pkg:npm/%40mcp-b/webmcp-polyfill@2.3.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/WebMCP-org/npm-packages"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@mlc-ai/web-llm",
+      "version": "0.2.84",
+      "purl": "pkg:npm/%40mlc-ai/web-llm@0.2.84",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/mlc-ai/web-llm"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@opentelemetry/api",
+      "version": "1.9.1",
+      "purl": "pkg:npm/%40opentelemetry/api@1.9.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "open-telemetry/opentelemetry-js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@opentelemetry/exporter-logs-otlp-http",
+      "version": "0.221.0",
+      "purl": "pkg:npm/%40opentelemetry/exporter-logs-otlp-http@0.221.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/open-telemetry/opentelemetry-js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@opentelemetry/exporter-metrics-otlp-http",
+      "version": "0.221.0",
+      "purl": "pkg:npm/%40opentelemetry/exporter-metrics-otlp-http@0.221.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "open-telemetry/opentelemetry-js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@opentelemetry/exporter-trace-otlp-http",
+      "version": "0.221.0",
+      "purl": "pkg:npm/%40opentelemetry/exporter-trace-otlp-http@0.221.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "open-telemetry/opentelemetry-js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@opentelemetry/sdk-logs",
+      "version": "0.221.0",
+      "purl": "pkg:npm/%40opentelemetry/sdk-logs@0.221.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/open-telemetry/opentelemetry-js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@opentelemetry/sdk-metrics",
+      "version": "2.9.0",
+      "purl": "pkg:npm/%40opentelemetry/sdk-metrics@2.9.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "open-telemetry/opentelemetry-js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@opentelemetry/sdk-trace-base",
+      "version": "2.9.0",
+      "purl": "pkg:npm/%40opentelemetry/sdk-trace-base@2.9.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "open-telemetry/opentelemetry-js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@opentelemetry/sdk-trace-node",
+      "version": "2.10.0",
+      "purl": "pkg:npm/%40opentelemetry/sdk-trace-node@2.10.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "open-telemetry/opentelemetry-js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@tailwindcss/typography",
+      "version": "0.5.20",
+      "purl": "pkg:npm/%40tailwindcss/typography@0.5.20",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/tailwindlabs/tailwindcss-typography"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@types/crypto-js",
+      "version": "4.2.2",
+      "purl": "pkg:npm/%40types/crypto-js@4.2.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@types/express",
+      "version": "5.0.6",
+      "purl": "pkg:npm/%40types/express@5.0.6",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@types/three",
+      "version": "0.185.0",
+      "purl": "pkg:npm/%40types/three@0.185.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "autoprefixer",
+      "version": "10.5.2",
+      "purl": "pkg:npm/autoprefixer@10.5.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "postcss/autoprefixer"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "avs-therapy",
+      "version": "0.0.0",
+      "purl": "pkg:npm/avs-therapy@0.0.0",
+      "licenses": [],
+      "externalReferences": []
+    },
+    {
+      "type": "library",
+      "name": "chart.js",
+      "version": "4.5.1",
+      "purl": "pkg:npm/chart.js@4.5.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/chartjs/Chart.js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "compression",
+      "version": "1.8.1",
+      "purl": "pkg:npm/compression@1.8.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "expressjs/compression"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "cors",
+      "version": "2.8.6",
+      "purl": "pkg:npm/cors@2.8.6",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "expressjs/cors"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "crypto-js",
+      "version": "4.2.0",
+      "purl": "pkg:npm/crypto-js@4.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/brix/crypto-js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "docs-study",
+      "version": "1.0.0-rc10",
+      "purl": "pkg:npm/docs-study@1.0.0-rc10",
+      "licenses": [],
+      "externalReferences": []
+    },
+    {
+      "type": "library",
+      "name": "dompurify",
+      "version": "3.4.12",
+      "purl": "pkg:npm/dompurify@3.4.12",
+      "licenses": [
+        {
+          "license": {
+            "id": "(MPL-2.0 OR Apache-2.0)"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "git://github.com/cure53/DOMPurify"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "express",
+      "version": "5.2.1",
+      "purl": "pkg:npm/express@5.2.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "expressjs/express"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "firebase",
+      "version": "12.16.0",
+      "purl": "pkg:npm/firebase@12.16.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/firebase/firebase-js-sdk"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "google-auth-library",
+      "version": "10.9.0",
+      "purl": "pkg:npm/google-auth-library@10.9.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/googleapis/google-cloud-node"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "helmet",
+      "version": "8.2.0",
+      "purl": "pkg:npm/helmet@8.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "git://github.com/helmetjs/helmet"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "http-proxy-middleware",
+      "version": "4.2.0",
+      "purl": "pkg:npm/http-proxy-middleware@4.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/chimurai/http-proxy-middleware"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "jspdf",
+      "version": "4.2.1",
+      "purl": "pkg:npm/jspdf@4.2.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/parallax/jsPDF"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "lean-qr",
+      "version": "2.7.2",
+      "purl": "pkg:npm/lean-qr@2.7.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/davidje13/lean-qr"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "marked",
+      "version": "18.0.5",
+      "purl": "pkg:npm/marked@18.0.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "git://github.com/markedjs/marked"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "patch-package",
+      "version": "8.0.1",
+      "purl": "pkg:npm/patch-package@8.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "github:ds300/patch-package"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "pocketgull-api",
+      "version": "0.9.0",
+      "purl": "pkg:npm/pocketgull-api@0.9.0",
+      "licenses": [],
+      "externalReferences": []
+    },
+    {
+      "type": "library",
+      "name": "postcss",
+      "version": "8.5.23",
+      "purl": "pkg:npm/postcss@8.5.23",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "postcss/postcss"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "rxjs",
+      "version": "7.8.2",
+      "purl": "pkg:npm/rxjs@7.8.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/reactivex/rxjs"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "sloc",
+      "version": "0.3.2",
+      "purl": "pkg:npm/sloc@0.3.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "git://github.com/flosse/sloc"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "socket.io",
+      "version": "4.8.3",
+      "purl": "pkg:npm/socket.io@4.8.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/socketio/socket.io"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "socket.io-client",
+      "version": "4.8.3",
+      "purl": "pkg:npm/socket.io-client@4.8.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/socketio/socket.io"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "swagger-ui-express",
+      "version": "5.0.1",
+      "purl": "pkg:npm/swagger-ui-express@5.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "git@github.com:scottie1984/swagger-ui-express"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "tailwindcss",
+      "version": "3.4.19",
+      "purl": "pkg:npm/tailwindcss@3.4.19",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/tailwindlabs/tailwindcss#v3"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "three",
+      "version": "0.185.0",
+      "purl": "pkg:npm/three@0.185.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/mrdoob/three.js"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "ws",
+      "version": "8.21.0",
+      "purl": "pkg:npm/ws@8.21.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/websockets/ws"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "zod",
+      "version": "4.4.3",
+      "purl": "pkg:npm/zod@4.4.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/colinhacks/zod"
+        }
+      ]
+    }
+  ],
+  "vulnerabilities": []
+}

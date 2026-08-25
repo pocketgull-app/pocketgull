@@ -1,0 +1,21 @@
+[
+  {
+    "name": "delete-old-images",
+    "action": {
+      "type": "Delete"
+    },
+    "condition": {
+      "olderThan": "604800s",
+      "tagState": "ANY"
+    }
+  },
+  {
+    "name": "keep-recent-builds",
+    "action": {
+      "type": "Keep"
+    },
+    "mostRecentVersions": {
+      "keepCount": 3
+    }
+  }
+]

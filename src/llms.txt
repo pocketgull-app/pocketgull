@@ -1,0 +1,33 @@
+# Pocket Gull - Real-Time AI Clinical Copilot & Care Plan Engine
+
+> Pocket Gull is a high-performance, real-time medical Care Plan Strategy and Live AI Consult engine powered by Google Gemini 2.5. It provides actionable clinical intelligence, manages patient states via FHIR R4/R5 standards, and offers real-time streaming bi-directional voice consultations.
+
+## Core System Architecture
+- **Frontend**: Angular 22 Standalone Components with Signals (`signal`, `computed`, `effect`).
+- **Backend / SSR**: Node.js, Express, and integrated Angular Server-Side Rendering.
+- **Interactive 3D Anatomy**: Three.js WebGL procedural skeletal, organ, and dermatome mapping.
+- **Python ML Sidecar**: FastAPI sidecar (`pocketgull_api`) providing XGBoost risk scoring and digital signal processing (EDF / PhysioNet 2026).
+- **Mobile Companion**: Flutter / Dart cross-platform mobile suite (`pocketgull_flutter`) supporting Doctor Mode & Patient Mode.
+- **Interoperability**: Strict FHIR R4 Bundle export & FHIR R5 `SubscriptionTopic` real-time biometric telemetry streaming (`http://hl7.org/fhir/SubscriptionTopic/biometric-telemetry-stream`).
+
+## WebMCP Model Context Protocol (MCP) Tools
+Pocket Gull exposes native WebMCP tools for autonomous AI browser agents:
+- `get_patient_state`: Retrieves current patient demographics, vitals, CMP lab panel, and active symptoms.
+- `update_patient_vitals`: Pushes updated vital signs (HR, BP, SpO2, Temp) or CMP laboratory values.
+- `trigger_fhir_r5_stream`: Toggles live FHIR R5 biometric telemetry streaming.
+- `connect_ble_wearable`: Connects to Apple Watch / Garmin Web Bluetooth GATT Heart Rate Service (`0x180D`).
+- `toggle_dermatome_layer`: Activates interactive WebGL 3D spine & dermatome nerve root mapping (C1-C8, T1-T12, L1-L5, S1-S5).
+- `generate_companion_sync_link`: Produces dynamic FHIR R4 Smart Launch QR code and deep links (`pocketgull://sync?...`).
+- `generate_care_plan`: Triggers multi-paradigm clinical strategy generation across 6 specialized lenses (Western, TCM, Ayurvedic, Longevity).
+
+## Key Documentation & References
+- [Architecture & Medical Paradigms](/docs/study/architecture/)
+- [Clinical Features & FHIR Specifications](/docs/study/features/)
+- [Positioning & Open-Source Strategy](/docs/study/positioning/)
+- [Changelog](/docs/study/changelog/)
+
+## AI Agent Guidance
+When navigating or controlling Pocket Gull:
+1. Always verify patient consent and ethics pledge before accessing clinical metrics.
+2. Utilize standalone Angular signals for state inspection.
+3. Ensure all clinical data payloads adhere strictly to FHIR R4 bundle specifications.

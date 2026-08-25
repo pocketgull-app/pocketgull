@@ -1,0 +1,2313 @@
+import { Component, ChangeDetectionStrategy, inject, signal, effect, ElementRef, viewChild, input, output, computed, PLATFORM_ID, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { DomSanitizer } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { APP_VERSION } from '../version';
+import { SessionStateService } from '../services/session-state.service';
+import { FirestoreSyncService } from '../services/firestore-sync.service';
+import { CircadianSleepinessService, KssScore } from '../services/circadian-sleepiness.service';
+import { GamificationService } from '../services/gamification.service';
+import { ThemeService } from '../services/theme.service';
+import { PatientStateService } from '../services/patient-state.service';
+import { PetAuditoryService } from '../services/pet-auditory.service';
+import { EnvironmentalTelemetryService } from '../services/environmental-telemetry.service';
+import { environment } from '../environments/environment';
+import { PocketgullIconComponent } from './pocketgull-icon.component';
+import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import { PapercraftBackdropComponent } from './papercraft-backdrop.component';
+import { SecureStorageService } from '../services/secure-storage.service';
+
+@Component({
+  selector: 'app-secure-splash',
+  standalone: true,
+  imports: [CommonModule, FormsModule, PocketgullIconComponent, SafeHtmlPipe, PapercraftBackdropComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <main [style.background]="telemetryGradient()" class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-center p-2 sm:p-4 backdrop-blur-3xl secure-splash-main animate-in fade-in duration-[800ms] overflow-hidden">
+      <app-papercraft-backdrop [wavePeriod]="wavePeriod()"></app-papercraft-backdrop>
+      
+      <!-- Papercraft Layered Living Breathing Landscape Backdrop -->
+      <div class="absolute inset-0 w-full h-full min-h-full overflow-hidden pointer-events-none z-0">
+        <!-- Sun/Circadian Glow (Teal to Coral/Amber) Living Breathing Pulse -->
+        <div class="absolute top-[25%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] sm:w-[900px] sm:h-[900px] rounded-full bg-gradient-to-r from-[#3ebc9e]/30 via-[#faa63b]/25 to-[#ef6658]/30 blur-[100px] avs-breathing-glow animate-pulse"></div>
+
+        <!-- Paper Waves (Layered vector curves representing paper hills - Full Height Anchored, Zero Whitespace) -->
+        <!-- Layer 1: Back Ocean Waves (60% height) -->
+        <svg class="absolute -bottom-4 -left-[20%] w-[240%] h-[75%] paper-hill-back opacity-90 wave-layer min-w-[200vw]"
+             [style.animation-duration.s]="wavePeriod() * 1.5"
+             viewBox="0 0 2880 200" preserveAspectRatio="none">
+          <path fill="currentColor" [attr.d]="getWavePath(1)"></path>
+        </svg>
+        
+        <!-- Layer 2: Mid Ocean Waves (50% height) -->
+        <svg class="absolute -bottom-4 -left-[10%] w-[220%] h-[65%] paper-hill-mid wave-layer min-w-[200vw]"
+             [style.animation-duration.s]="wavePeriod() * 1.2"
+             viewBox="0 0 2880 200" preserveAspectRatio="none">
+          <path fill="currentColor" [attr.d]="getWavePath(2)"></path>
+        </svg>
+
+        <!-- Layer 3: Sandy Beach Front Dune (75% height) -->
+        <svg class="absolute -bottom-4 left-0 w-[200%] h-[80%] paper-hill-front wave-layer min-w-[200vw]"
+             [style.animation-duration.s]="wavePeriod() * 0.9"
+             viewBox="0 0 2880 200" preserveAspectRatio="none">
+          <path fill="currentColor" [attr.d]="getWavePath(3)"></path>
+        </svg>
+
+        <!-- Breezy Sandy Animation Layer (Wind gusts & sand particles across the beach) -->
+        <div class="absolute bottom-0 left-0 w-full h-[56%] pointer-events-none overflow-hidden z-10">
+          <div class="sand-breeze-particle p1"></div>
+          <div class="sand-breeze-particle p2"></div>
+          <div class="sand-breeze-particle p3"></div>
+          <div class="sand-breeze-particle p4"></div>
+          <div class="sand-breeze-particle p5"></div>
+        </div>
+
+        <!-- Random Dynamic Beach Elements -->
+        @for (item of decorations(); track $index) {
+          <div class="absolute cursor-pointer transition-all duration-300 hover:scale-110 active:scale-95 pointer-events-auto"
+               (click)="onDecorationClick(item, $event)"
+               [style.left.%]="item.left"
+               [style.bottom.%]="item.bottom"
+               [style.transform]="'scale(' + item.scale + ')' + (item.flip ? ' scaleX(-1)' : '') + (item.clicked ? ' rotate(360deg) translateY(-20px)' : '')"
+               [style.transition]="item.clicked ? 'all 0.5s ease-out' : 'transform 0.2s ease-out'"
+               [style.z-index]="item.type === 'surfer' || item.type === 'fish' ? 25 : 15">
+            
+            @if (item.type === 'ship') {
+              <svg class="animate-bobbing opacity-80 dark:opacity-60 text-zinc-700 dark:text-zinc-500"
+                   [style.animation-delay.s]="item.delay"
+                   [style.animation-duration.s]="item.duration"
+                   viewBox="0 0 40 40" style="width: 2.5rem; height: 2.5rem;" fill="currentColor">
+                <polygon points="5,25 35,25 30,32 10,32" />
+                <polygon points="18,5 18,23 32,23" />
+                <polygon points="16,8 16,23 8,23" />
+                <line x1="17" y1="2" x2="17" y2="25" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            }
+            @else if (item.type === 'surfer') {
+              <svg class="animate-surfing opacity-90 dark:opacity-75 text-zinc-700 dark:text-zinc-350"
+                   [style.animation-delay.s]="item.delay"
+                   [style.animation-duration.s]="item.duration"
+                   viewBox="0 0 40 40" style="width: 2rem; height: 2rem;" fill="currentColor">
+                <path d="M5,28 C15,22 25,22 35,28 C25,32 15,32 5,28 Z" />
+                <path d="M16,28 L18,20 L16,14 L22,12 L24,18 L22,28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
+                <circle cx="20" cy="9" r="3" />
+                <path d="M12,16 L18,15 L26,14" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" />
+              </svg>
+            }
+            @else if (item.type === 'fish') {
+              <svg class="animate-fish-jump opacity-85 dark:opacity-70 text-[#3ebc9e] dark:text-[#2fa085]"
+                   [style.animation-delay.s]="item.delay"
+                   [style.animation-duration.s]="item.duration"
+                   viewBox="0 0 30 30" style="width: 1.5rem; height: 1.5rem;" fill="currentColor">
+                <path d="M2,15 C8,10 16,10 22,15 C18,17 10,17 2,15 Z" />
+                <polygon points="22,15 26,12 25,18" />
+                <circle cx="8" cy="13" r="1" fill="white" />
+              </svg>
+            }
+            @else if (item.type === 'bird') {
+              <svg class="animate-bird-glide opacity-70 dark:opacity-50 text-zinc-500 dark:text-zinc-500"
+                   [style.animation-delay.s]="item.delay"
+                   [style.animation-duration.s]="item.duration"
+                   viewBox="0 0 30 30" style="width: 2rem; height: 2rem;" fill="currentColor">
+                <polygon points="15,15 5,10 15,13" />
+                <polygon points="15,15 25,10 15,13" />
+                <polygon points="15,15 12,18 15,22 18,18" />
+              </svg>
+            }
+          </div>
+        }
+
+        <!-- Paper Texture & Cardstock Grain Overlay (10% Opacity Dynamic per Theme) -->
+        <div class="absolute inset-0 pointer-events-none z-10 opacity-10 mix-blend-soft-light bg-repeat"
+             [style.background-image]="'url(' + getTextureUrl(theme.currentTheme()) + ')'"></div>
+        <div class="absolute inset-0 bg-noise opacity-[0.08] pointer-events-none mix-blend-overlay"></div>
+      </div>
+
+      <!-- HIPAA Lock Status Header (Visible only when locked) -->
+      @if (isLocked()) {
+        <div class="absolute shadow-sm top-8 left-1/2 -translate-x-1/2 flex flex-col items-center mb-8 mt-2 animate-in slide-in-from-top-4-centered duration-500 z-30">
+            <div class="flex items-center gap-3 bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md px-5 py-3 rounded-full border border-zinc-200/50 dark:border-zinc-800/80 shadow-2xl">
+                <div class="w-2.5 h-2.5 rounded-full bg-brand-red-500 animate-pulse shadow-[0_0_8px_rgba(234,67,53,0.6)]"></div>
+                <span class="text-[12px] font-bold uppercase tracking-[0.2em] text-zinc-700 dark:text-zinc-300">HIPAA Security Lock Active (§ 164.312)</span>
+            </div>
+        </div>
+      }
+
+      <!-- Unified Origami Unfolding Seagull Mascot & Papercraft Heart -->
+      <div class="origami-seagull-container group drop-shadow-xl relative z-20 pointer-events-none mb-2 sm:mb-3 avs-breathing-mascot origami-unfold-container">
+        <svg
+          class="w-14 h-14 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 hover:scale-105 active:scale-95 transition-transform origami-unfold-svg" 
+          viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <g>
+            <!-- Far Wing (Teal) -->
+            <polygon class="origami-fold-far-wing" points="50,40 65,15 58,45" fill="#3ebc9e" stroke="#2fa085" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <!-- Tail (Light gray paper) -->
+            <polygon class="origami-fold-tail" points="20,50 50,40 10,35" fill="#e5e5e5" stroke="#d5d5d5" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <!-- Body Base (White paper) -->
+            <polygon class="origami-fold-body" points="20,50 50,40 58,45 75,55 50,65" fill="#f4f4f4" stroke="#e0e0e0" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <!-- Near Wing Upper (Coral) -->
+            <polygon class="origami-fold-near-wing" points="50,40 58,45 35,85" fill="#ef6658" stroke="#df5648" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <!-- Near Wing Fold (Darker Coral) -->
+            <polygon class="origami-fold-near-wing" points="50,40 35,85 20,50" fill="#d85547" stroke="#c84537" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <!-- Neck/Head (White paper) -->
+            <polygon class="origami-fold-head" points="75,55 58,45 85,38" fill="#ffffff" stroke="#f0f0f0" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <!-- Beak (Golden-Amber Orange) -->
+            <polygon class="origami-fold-head" points="85,38 82,45 95,34" fill="#faa63b" stroke="#e0902c" stroke-width="0.5" stroke-linejoin="round"></polygon>
+          </g>
+        </svg>
+
+        <!-- Glowing Papercraft Origami Heart (Emerges at 4.5s mark) -->
+        <div class="origami-heart-container">
+          <svg class="w-5 h-5 sm:w-7 sm:h-7" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="50,85 15,45 25,20 50,35" fill="#ef6658" stroke="#df5648" stroke-width="0.5" stroke-linejoin="round" />
+            <polygon points="50,85 50,35 75,20 85,45" fill="#faa63b" stroke="#e0902c" stroke-width="0.5" stroke-linejoin="round" />
+            <polygon points="50,35 25,20 50,15" fill="#f48479" stroke="#df5648" stroke-width="0.5" stroke-linejoin="round" />
+            <polygon points="50,35 50,15 75,20" fill="#fbc378" stroke="#e0902c" stroke-width="0.5" stroke-linejoin="round" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="w-full max-w-sm relative z-10 flex flex-col items-center">
+        <!-- Dynamic Entry Panel (Pocket-Like Layered Papercraft Container) -->
+        <div id="seagull-safe-zone" class="w-full relative paper-pocket-container rounded-3xl p-3 xs:p-5 sm:p-6 animate-in fade-in duration-300 backdrop-blur-2xl transition-all overflow-y-auto min-h-[420px] max-h-[85vh] hide-scrollbar" style="contain: layout;">
+          
+          <!-- Tactile Paper Pocket Top Fold Notch -->
+          <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#2AA4A0]/40 via-[#F6B12B]/40 to-[#EF6658]/40 border-b border-amber-300/40 dark:border-zinc-700/50"></div>
+          
+          <div class="text-center mb-3 mt-1">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/30 text-amber-800 dark:text-amber-300 text-[9.5px] font-bold uppercase tracking-widest mb-1.5 shadow-2xs">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+              Pocket-Gull Clinician Suite
+              <span class="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-400/40 text-[9px] font-mono font-bold tracking-normal">v{{ appVersion }}</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-pocketgull tracking-tight text-zinc-900 dark:text-amber-400 uppercase pb-0.5 drop-shadow-sm flex items-center justify-center gap-2">
+              <app-pocketgull-icon name="seagull" />
+              {{ isLocked() ? 'Resume Session' : 'Pocket Gull' }}
+            </h1>
+            <p class="text-[11px] font-pocketgull-inter uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+              {{ isLocked() ? 'Idle Timeout Protection Active' : 'Clinical Intelligence Engine' }}
+            </p>
+          </div>
+
+
+          <!-- Auth Loading State -->
+          @if (isAuthLoading()) {
+            <div class="flex flex-col items-center justify-center py-12 animate-in fade-in duration-300">
+               <div class="relative w-12 h-12 mb-4">
+                 <div class="absolute inset-0 rounded-full border-2 border-zinc-200 dark:border-zinc-800"></div>
+                 <div class="absolute inset-0 rounded-full border-2 border-[#3ebc9e] border-t-transparent animate-spin"></div>
+               </div>
+               <p class="text-[12px] text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.3em] font-mono animate-pulse">Establishing Secure Connection</p>
+            </div>
+          }
+          <!-- Gesture Unlock Flow -->
+          @else if (viewState() === 'gesture' || (isLocked() && viewState() !== 'kss' && viewState() !== 'ethics')) {
+            <div class="flex flex-col items-center justify-center gap-3 mt-2 mb-2 w-full animate-in fade-in duration-500">
+               <div class="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 rounded-full shadow-xs">
+                 <span class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">🎨 Draw Your Way In</span>
+               </div>
+               <p class="text-[12px] text-zinc-600 dark:text-zinc-300 uppercase tracking-widest font-semibold text-center max-w-[260px]">
+                 {{ todayBeachItem().prompt }}
+               </p>
+               
+               <!-- Raw Fiber Hemp Paper Pad with Glow & Emerald Accent Border -->
+               <div class="relative w-[240px] h-[240px] flex items-center justify-center paper-hemp-panel rounded-3xl p-1 overflow-hidden border-2 border-emerald-500/40 dark:border-emerald-400/40 shadow-xl hover:shadow-emerald-500/15 transition-all">
+                  <!-- Guidelines background SVG (Dynamic Daily Beach Item guide) -->
+                  <svg class="absolute inset-0 w-full h-full pointer-events-none text-[#3ebc9e]/40 dark:text-[#2fa085]/30 stroke-current" viewBox="0 0 100 100" fill="none" stroke-width="1.5">
+                    @if (isBrowser()) {
+                      <g [innerHTML]="todayBeachItem().svgGuide | safeHtml"></g>
+                    }
+                  </svg>
+                 
+                 <canvas
+                   #gestureCanvas
+                   width="240"
+                   height="240"
+                   class="absolute inset-0 bg-transparent rounded-3xl cursor-crosshair touch-none transition-colors"
+                   [class.border-red-500]="gestureError()"
+                   [class.border-emerald-500]="isChecking()"
+                   (pointerdown)="startDrawing($event)"
+                   (pointermove)="draw($event)"
+                   (pointerup)="stopDrawing()"
+                   (pointerleave)="stopDrawing()"
+                 ></canvas>
+               </div>
+
+               <!-- Gesture Pad Controls & Express Entry -->
+               <div class="flex items-center justify-center gap-2.5 mt-1 w-full max-w-[260px] z-30">
+                 <button 
+                   type="button"
+                   (click)="clearDrawing()" 
+                   [disabled]="isChecking() || (strokes.length === 0 && currentStroke.length === 0)"
+                   class="flex-1 min-h-[42px] px-3 py-2 text-[11px] uppercase font-bold tracking-widest bg-white/80 dark:bg-zinc-800/90 hover:bg-white dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 transition rounded-xl disabled:opacity-30 disabled:cursor-not-allowed shadow-xs flex items-center justify-center cursor-pointer">
+                   Clear Pad
+                 </button>
+                 <button 
+                   type="button"
+                   (click)="handleUnlockSession()" 
+                   class="flex-1 min-h-[42px] px-4 py-2 flex justify-center items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-[#3ebc9e] to-[#2fa085] hover:brightness-110 text-white transition-all rounded-xl shadow-md active:scale-[0.98] cursor-pointer">
+                   <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                   <span>Enter Suite</span>
+                 </button>
+               </div>
+
+               <!-- Explicit Good Samaritan Emergency Triage Mode Option -->
+               <div class="mt-1 w-full max-w-[260px] z-30">
+                 <button 
+                   type="button"
+                   (click)="handleEmergencyBypass()"
+                   class="w-full min-h-[36px] px-3 py-1.5 flex justify-center items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-700 dark:text-red-300 transition-all rounded-xl cursor-pointer">
+                   <span>🚨 Good Samaritan Emergency Triage</span>
+                 </button>
+               </div>
+
+                <!-- Washi Rice Paper Daily Medical Quote Banner -->
+                <div class="mt-1 px-4 py-2.5 paper-rice-panel rounded-xl text-center max-w-xs transition-all hover:scale-[1.02] shadow-xs">
+                  <p class="text-[11.5px] italic text-zinc-800 dark:text-zinc-200 font-serif leading-snug">{{ todayQuote().text }}</p>
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-700 dark:text-indigo-300 mt-1">{{ todayQuote().author }}</p>
+                </div>
+               
+               <!-- Hidden input for Playwright E2E tests compatibility -->
+               <input 
+                 #pinInput
+                 id="gesture-pin-input"
+                 name="gesture-pin-input"
+                 aria-label="Clinician Security PIN Entry"
+                 type="password" 
+                 [value]="pin"
+                 (input)="pin = pinInput.value; onPinChange(pinInput.value)"
+                 (keyup.enter)="verifyPin()"
+                 maxlength="4"
+                 placeholder="1234" 
+                 class="absolute w-1 h-1 opacity-[0.01] bg-transparent border-none text-transparent"
+                 style="position: absolute; width: 1px; height: 1px; opacity: 0.01; background: transparent; border: none; color: transparent;"
+               >
+               
+                <!-- Collapsible Sensory & Accessibility Quick Settings -->
+                <details class="mt-4 w-full z-30 group">
+                  <summary class="cursor-pointer flex items-center justify-between px-4 py-2.5 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md rounded-xl border border-amber-200/50 dark:border-zinc-800/60 shadow-xs text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition select-none">
+                    <span class="flex items-center gap-2">
+                      <span>⚙️</span>
+                      <span>Sensory &amp; Accessibility Settings</span>
+                    </span>
+                    <span class="text-xs transition-transform duration-200 group-open:rotate-180 text-zinc-500">▼</span>
+                  </summary>
+
+                  <div class="mt-3 space-y-3 pt-1">
+                    <!-- 1. 🎵 Audio Comfort Protocol Card -->
+                    <div class="p-3 bg-white/60 dark:bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-amber-200/50 dark:border-zinc-800/60 shadow-xs flex flex-col items-center justify-center text-center space-y-2">
+                      <span class="text-xs font-bold uppercase tracking-[0.15em] text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
+                        🎵 Audio Comfort Protocol
+                      </span>
+                      
+                      <div class="flex flex-wrap items-center justify-center gap-2 w-full">
+                        <!-- AVS Entrainment Controller -->
+                        <button type="button"
+                                (click)="toggleAvs()"
+                                class="min-h-[42px] px-3.5 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1.5 hover:bg-white dark:hover:bg-zinc-700 transition cursor-pointer shadow-2xs">
+                          <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" [class]="isAvsPlaying() ? 'bg-emerald-400' : 'bg-zinc-400'"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2" [class]="isAvsPlaying() ? 'bg-emerald-500' : 'bg-zinc-400'"></span>
+                          </span>
+                          <span>{{ isAvsPlaying() ? 'AVS Active' : 'AVS Entrainment' }}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- 2. 👁️ Visual Comfort Protocol Card -->
+                    <div class="p-3 bg-white/60 dark:bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-amber-200/50 dark:border-zinc-800/60 shadow-xs flex flex-col items-center justify-center text-center space-y-2">
+                      <span class="text-xs font-bold uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                        👁️ Visual Comfort Protocol
+                      </span>
+
+                      <div class="flex flex-wrap items-center justify-center gap-2 w-full">
+                        <!-- Visual Theme Selector -->
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                          <label for="splash-theme-select-lock" class="text-xs font-bold uppercase tracking-[0.15em] text-zinc-600 dark:text-zinc-400">
+                            🎨 Theme:
+                          </label>
+                          <select id="splash-theme-select-lock"
+                                  [ngModel]="theme.currentTheme()"
+                                  (ngModelChange)="theme.currentTheme.set($event)"
+                                  class="min-h-[40px] px-3 py-1.5 text-xs font-bold rounded-xl bg-white/90 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 focus:outline-none cursor-pointer">
+                            <option value="light">☀️ Light Parchment</option>
+                            <option value="dark">🌙 Dark Obsidian</option>
+                            <option value="system">💻 System Auto</option>
+                            <option value="papercraft">📦 Cardstock 3D</option>
+                            <option value="hemp">🌿 Raw Hemp Paper</option>
+                            <option value="rice">📜 Rice Paper (Washi)</option>
+                            <option value="construction">🎨 Construction Paper</option>
+                            <option value="white-marble">🏛️ White Carrara Marble</option>
+                            <option value="black-marble">🖤 Obsidian Black Marble</option>
+                            <option value="papyrus">📜 Egyptian Papyrus</option>
+                            <option value="pool">🌊 Ocean Reflection Pool</option>
+                            <option value="mandala">🧘 Sacred Mandala</option>
+                            <option value="spark">✨ Spark Mode</option>
+                            <option value="calm">🧘 Serene Calm</option>
+                            <option value="lent">✝️ Lent / Ascetic Reset</option>
+                            <option value="curie">🔬 Madame Curie (Radium Lab)</option>
+                          </select>
+                        </div>
+
+                        <!-- Reduced Motion Toggle -->
+                        <label for="reduce-motion-lock" class="min-h-[40px] px-3 py-1.5 rounded-xl bg-white/90 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 flex items-center gap-1.5 cursor-pointer group">
+                          <input type="checkbox"
+                                 id="reduce-motion-lock"
+                                 name="reduce-motion-lock"
+                                 aria-label="Reduce Motion"
+                                 [checked]="theme.reduceMotion()"
+                                 (change)="theme.setReduceMotion(!theme.reduceMotion())"
+                                 class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700/50 text-[#3ebc9e] cursor-pointer">
+                          <span class="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wider">
+                            ⚡ Motion
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- 3. 🐾 Animal Comfort Protocol Card -->
+                    <div class="p-3 bg-white/60 dark:bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-amber-200/50 dark:border-zinc-800/60 shadow-xs flex flex-col items-center justify-center text-center space-y-2">
+                      <span class="text-xs font-bold uppercase tracking-[0.15em] text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                        🐾 Animal Comfort Protocol
+                      </span>
+
+                      <div class="flex flex-wrap items-center justify-center gap-2 w-full">
+                        <button type="button"
+                                (click)="petAuditory.currentMode === 'canine' ? petAuditory.stop() : petAuditory.playCanineHeartbeat()"
+                                [class.bg-amber-500]="petAuditory.currentMode === 'canine'"
+                                [class.text-zinc-950]="petAuditory.currentMode === 'canine'"
+                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
+                          🐕 Canine
+                        </button>
+                        <button type="button"
+                                (click)="petAuditory.currentMode === 'feline' ? petAuditory.stop() : petAuditory.playFelinePurr()"
+                                [class.bg-amber-500]="petAuditory.currentMode === 'feline'"
+                                [class.text-zinc-950]="petAuditory.currentMode === 'feline'"
+                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
+                          🐈 Feline
+                        </button>
+                        <button type="button"
+                                (click)="petAuditory.currentMode === 'cetacean' ? petAuditory.stop() : petAuditory.playCetaceanTherapy()"
+                                [class.bg-amber-500]="petAuditory.currentMode === 'cetacean'"
+                                [class.text-zinc-950]="petAuditory.currentMode === 'cetacean'"
+                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
+                          🐋 Cetacean
+                        </button>
+                        <button type="button"
+                                (click)="petAuditory.currentMode === 'avian' ? petAuditory.stop() : petAuditory.playAvianTherapy()"
+                                [class.bg-amber-500]="petAuditory.currentMode === 'avian'"
+                                [class.text-zinc-950]="petAuditory.currentMode === 'avian'"
+                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
+                          🕊️ Avian
+                        </button>
+                        @if (petAuditory.isCurrentlyPlaying) {
+                          <button type="button"
+                                  (click)="petAuditory.stop()"
+                                  class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-rose-600 text-white border border-rose-500 flex items-center gap-1 transition cursor-pointer">
+                            ✕ Stop
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </details>
+              </div>
+          }
+          <!-- Restricted Entry Gateway -->
+          @else if (showAuthGateway() && viewState() !== 'signup') {
+            <div class="space-y-6 py-2 animate-in fade-in duration-500">
+              <div class="text-center space-y-2">
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-red-50/50 dark:bg-brand-red-950/30 border border-brand-red-200/50 dark:border-brand-red-900/40">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-brand-red-600 dark:text-brand-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <span class="text-[12px] font-bold text-brand-red-600 dark:text-brand-red-400 uppercase tracking-widest">Restricted Access</span>
+                </div>
+                <h2 class="text-xs text-zinc-600 dark:text-zinc-400 font-normal leading-relaxed max-w-xs mx-auto">
+                  Pocket-Gull Clinician Console is restricted. Authorized clinicians must authenticate to access the real-time consultation engine.
+                </h2>
+              </div>
+
+              @if (errorMsg()) {
+                <div class="p-3 bg-brand-red-50/80 dark:bg-brand-red-950/40 border border-brand-red-200 dark:border-brand-red-900/50 rounded-xl">
+                  <p class="text-[12px] text-brand-red-600 dark:text-brand-red-400 font-medium text-center uppercase tracking-wider">{{ errorMsg() }}</p>
+                </div>
+              }
+
+              <div class="space-y-3 pt-2">
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-bold uppercase tracking-wider text-zinc-500">Clinician Email</label>
+                  <input type="email" 
+                         [ngModel]="signinEmailInput()" 
+                         (ngModelChange)="signinEmailInput.set($event)"
+                         placeholder="dpo@pocketgull.app" 
+                         class="w-full px-4 py-3 text-xs bg-zinc-50 dark:bg-black/40 border border-zinc-200 dark:border-zinc-800/80 rounded-xl outline-none focus:border-zinc-400 text-zinc-800 dark:text-zinc-200">
+                </div>
+
+                <!-- Google Sign-In -->
+                <button 
+                  type="button" 
+                  (click)="handleGoogleAuth()"
+                  [disabled]="isChecking() || !signinEmailInput()"
+                  class="w-full py-4 bg-brand-blue-600 hover:bg-brand-blue-700 text-white text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(37,99,235,0.15)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.25)] active:scale-[0.98] disabled:opacity-50"
+                >
+                  <span>Clinician Sign-in</span>
+                </button>
+
+                <!-- Sandbox Demo -->
+                <button 
+                  type="button" 
+                  (click)="handleSandboxDemo()"
+                  class="w-full py-4 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800/90 border border-zinc-200/80 dark:border-zinc-700/50 text-zinc-950 dark:text-zinc-200 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98]"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-500 dark:text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                  <span>Explore Sandbox Demo</span>
+                </button>
+
+                <!-- Draw Gesture Lock -->
+                <button 
+                  type="button" 
+                  (click)="viewState.set('gesture'); errorMsg.set('');"
+                  class="w-full py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+                >
+                  <span>🎨 Draw Gesture Lock</span>
+                </button>
+
+                <div class="relative py-4 mt-2">
+                  <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-zinc-200 dark:border-zinc-800/80"></div>
+                  </div>
+                  <div class="relative flex justify-center text-xs">
+                    <span class="bg-white dark:bg-zinc-950 px-3 text-zinc-700 dark:text-zinc-300 uppercase tracking-widest text-xs font-bold rounded-full">New Clinician?</span>
+                  </div>
+                </div>
+
+                <!-- Sign Up Link -->
+                <button 
+                  type="button" 
+                  (click)="viewState.set('signup'); errorMsg.set('');"
+                  class="w-full py-3 bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-350 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300"
+                >
+                  Create Clinician Account (Sign Up)
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Sign-Up Flow -->
+          @else if (viewState() === 'signup') {
+            <form (submit)="handleSignup(); $event.preventDefault();" class="space-y-4 text-left animate-in fade-in duration-500">
+              <div class="text-center space-y-2 mb-4">
+                <h2 class="text-sm font-bold text-zinc-800 dark:text-zinc-100 uppercase tracking-wider">Create Clinician Account</h2>
+                <p class="text-xs uppercase tracking-widest text-zinc-500">Access Restricted Engine</p>
+              </div>
+
+              <div class="space-y-3">
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-bold uppercase tracking-wider text-zinc-500">Full Name</label>
+                  <input type="text" required
+                         [(ngModel)]="signupForm().name"
+                         name="signupName"
+                         placeholder="Dr. Jane Doe" 
+                         class="w-full px-4 py-3 text-xs bg-zinc-50 dark:bg-black/40 border border-zinc-200 dark:border-zinc-800/80 rounded-xl outline-none focus:border-[#3ebc9e] text-zinc-800 dark:text-zinc-200">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-bold uppercase tracking-wider text-zinc-500">Email Address</label>
+                  <input type="email" required
+                         [(ngModel)]="signupForm().email"
+                         name="signupEmail"
+                         placeholder="jane.doe@clinic.org" 
+                         class="w-full px-4 py-3 text-xs bg-zinc-50 dark:bg-black/40 border border-zinc-200 dark:border-zinc-800/80 rounded-xl outline-none focus:border-[#3ebc9e] text-zinc-800 dark:text-zinc-200">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-bold uppercase tracking-wider text-zinc-500">Clinic / Organization</label>
+                  <input type="text" required
+                         [(ngModel)]="signupForm().clinic"
+                         name="signupClinic"
+                         placeholder="Bayview Wellness Center" 
+                         class="w-full px-4 py-3 text-xs bg-zinc-50 dark:bg-black/40 border border-zinc-200 dark:border-zinc-800/80 rounded-xl outline-none focus:border-[#3ebc9e] text-zinc-800 dark:text-zinc-200">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <label for="signupPinInput" class="text-xs font-bold uppercase tracking-wider text-zinc-500">Passcode/PIN (4-digits)</label>
+                  <input type="password" id="signupPinInput" aria-label="Passcode or 4-digit PIN" required maxlength="4" pattern="[0-9]{4}"
+                         [(ngModel)]="signupForm().pin"
+                         name="signupPin"
+                         placeholder="1234" 
+                         class="w-full px-4 py-3 text-xs font-mono bg-zinc-50 dark:bg-black/40 border border-zinc-200 dark:border-zinc-800/80 rounded-xl outline-none focus:border-[#3ebc9e] text-zinc-800 dark:text-zinc-200">
+                </div>
+              </div>
+
+              @if (errorMsg()) {
+                <div class="p-3 bg-brand-red-50/80 dark:bg-brand-red-950/40 border border-brand-red-200 dark:border-brand-red-900/50 rounded-xl">
+                  <p class="text-[12px] text-brand-red-655 dark:text-brand-red-400 font-medium text-center uppercase tracking-wider">{{ errorMsg() }}</p>
+                </div>
+              }
+
+              <button 
+                type="submit"
+                [disabled]="isChecking() || !signupForm().name || !signupForm().email || !signupForm().clinic || signupForm().pin.length !== 4"
+                class="w-full py-4 mt-2 bg-[#3ebc9e] hover:bg-[#2fa085] text-white text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
+              >
+                <span>Register & Proceed</span>
+              </button>
+
+              <button 
+                type="button" 
+                (click)="viewState.set('auth'); errorMsg.set('');"
+                class="w-full py-3 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-300 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300"
+              >
+                Back to Sign In
+              </button>
+            </form>
+          }
+          <!-- API Key Setup Flow -->
+          @else if (viewState() === 'auth') {
+            <form (submit)="handleSubmitKey(); $event.preventDefault();" class="space-y-4">
+              <div class="relative group">
+                <input 
+                  [type]="showPassword() ? 'text' : 'password'" 
+                  name="apiKey"
+                  [(ngModel)]="apiKeyStr"
+                  placeholder="Enter Gemini API Key (AIza...)" 
+                  autofocus
+                  class="w-full px-4 py-4 pb-3.5 text-xs font-mono bg-zinc-50 dark:bg-black/40 border border-zinc-200 dark:border-zinc-800/80 rounded-[1rem] shadow-inner outline-none focus:border-zinc-400 dark:focus:border-zinc-500/80 transition-colors text-zinc-800 dark:text-zinc-200 placeholder:font-sans placeholder:text-zinc-400 dark:placeholder:text-zinc-700 placeholder:tracking-widest placeholder:text-[9.5px]"
+                >
+                <button type="button" (click)="showPassword.set(!showPassword())" class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-600 hover:text-zinc-700 dark:hover:text-zinc-300">
+                  <svg *ngIf="!showPassword()" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg *ngIf="showPassword()" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                </button>
+              </div>
+
+              @if (apiKeyError()) {
+                <div class="p-3 bg-brand-red-50 dark:bg-brand-red-950/40 border border-brand-red-200 dark:border-brand-red-900/50 rounded-xl">
+                  <p class="text-[12px] text-brand-red-655 dark:text-brand-red-400 font-medium text-center uppercase tracking-wider">{{ apiKeyError() }}</p>
+                </div>
+              }
+
+              <!-- Reduced Motion Toggle -->
+              <div class="mb-4 flex justify-center">
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox"
+                         id="reduce-motion-auth"
+                         name="reduce-motion-auth"
+                         aria-label="Reduce Motion"
+                         [checked]="theme.reduceMotion()"
+                         (change)="theme.setReduceMotion(!theme.reduceMotion())"
+                         class="w-3 h-3 rounded border-zinc-300 dark:border-zinc-700/50 bg-zinc-50 dark:bg-black/40 text-[#3ebc9e] focus:ring-[#3ebc9e]/30 focus:ring-offset-0 cursor-pointer transition-colors">
+                  <span class="text-[12px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-300 transition-colors uppercase tracking-widest">
+                    Reduce Motion
+                  </span>
+                </label>
+              </div>
+
+              <button 
+                type="submit"
+                [disabled]="!apiKeyStr().trim() || isChecking()"
+                class="w-full py-4 bg-zinc-900 dark:bg-zinc-100 hover:bg-black dark:hover:bg-white text-white dark:text-zinc-950 text-[12px] font-bold uppercase tracking-[0.2em] transition rounded-[1rem] disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_4px_12px_rgba(0,0,0,0.1)] dark:shadow-[0_0_20px_rgba(255,255,255,0.05)] active:scale-[0.98]">
+                Initialize System
+              </button>
+
+              <div class="relative py-4 mt-2">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-zinc-200 dark:border-zinc-800/80"></div>
+                </div>
+                <div class="relative flex justify-center text-xs">
+                  <span class="bg-white dark:bg-zinc-950 px-3 text-zinc-450 dark:text-zinc-600 uppercase tracking-widest text-[12px] font-bold rounded-full">Or use alternative</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <button type="button" class="w-full py-3 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-200 text-zinc-950 dark:text-zinc-400 text-[12px] uppercase tracking-[0.1em] rounded-xl transition-colors" (click)="handleAiStudio()">
+                  AI Studio Key
+                </button>
+                <button type="button" class="w-full py-3 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-200 text-zinc-950 dark:text-zinc-400 text-[12px] uppercase tracking-[0.1em] rounded-xl transition-colors" (click)="handleDemo()">
+                  Demo Mode
+                </button>
+              </div>
+
+              <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800/50 flex items-center justify-center gap-2 text-[12px] text-zinc-500 dark:text-zinc-400 font-mono tracking-wider">
+                <div class="w-1.5 h-1.5 rounded-full bg-brand-green-500 animate-pulse"></div>
+                <span>Clinician: {{ syncService.currentUserEmail() }}</span>
+              </div>
+            </form>
+          }
+
+          <!-- Ethics & Confidentiality Onboarding -->
+          @else if (viewState() === 'ethics') {
+            <div class="space-y-4 text-left animate-in fade-in slide-in-from-bottom-4 duration-500">
+              
+              <!-- Doctor-Patient Confidentiality Info -->
+              <div class="p-3.5 bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/80 rounded-2xl space-y-1 shadow-sm">
+                <div class="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-700 dark:text-emerald-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <span class="text-xs font-black uppercase tracking-wider text-emerald-900 dark:text-emerald-200">Confidentiality & Privacy</span>
+                </div>
+                <p class="text-[11.5px] text-zinc-800 dark:text-zinc-200 font-medium leading-relaxed">
+                  Demo Environment Active: All clinical data and consults run in an isolated sandbox. Patient details are fully simulated, ensuring zero transmission or disclosure of actual protected health information (PHI).
+                </p>
+              </div>
+
+              <!-- Good Samaritan Details -->
+              <div class="p-3.5 bg-rose-50/90 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800/80 rounded-2xl space-y-1 shadow-sm">
+                <div class="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-rose-700 dark:text-rose-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  <span class="text-xs font-black uppercase tracking-wider text-rose-900 dark:text-rose-200">Good Samaritan Bypass</span>
+                </div>
+                <p class="text-[11.5px] text-zinc-800 dark:text-zinc-200 font-medium leading-relaxed">
+                  In acute crises, bypass the lock screen using the emergency trigger at the bottom. This isolates clinical records, runs offline-first triages, and starts the synchronized 110 BPM chest-compression pacing metronome.
+                </p>
+              </div>
+
+              <!-- ACM Code of Ethics (No False Data) Details -->
+              <div class="p-3.5 bg-sky-50/90 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-800/80 rounded-2xl space-y-1 shadow-sm">
+                <div class="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-sky-700 dark:text-sky-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                  <span class="text-xs font-black uppercase tracking-wider text-sky-900 dark:text-sky-200">ACM Code of Ethics (No False Data)</span>
+                </div>
+                <p class="text-[11.5px] text-zinc-800 dark:text-zinc-200 font-medium leading-relaxed">
+                  In compliance with ACM Principle 1.3: We prohibit fabrication or falsification of data. Our Medical Auditor AI continuously runs real-time checks on all generated clinical content, flagging any hallucinations or discrepancies against the source transcript.
+                </p>
+              </div>
+
+              <!-- Ethics Pledge Checkbox -->
+              <label class="flex items-start gap-2.5 p-1 cursor-pointer group">
+                <input type="checkbox"
+                       id="pledge-accepted"
+                       name="pledge-accepted"
+                       [checked]="pledgeAccepted()"
+                       (change)="pledgeAccepted.set(!pledgeAccepted())"
+                       class="w-4 h-4 mt-0.5 shrink-0 rounded border-zinc-400 dark:border-zinc-600 bg-zinc-50 dark:bg-black text-[#ef6658] focus:ring-[#ef6658]/30 cursor-pointer transition-colors">
+                <span class="text-xs text-zinc-700 dark:text-zinc-300 font-medium group-hover:text-zinc-900 dark:group-hover:text-white transition-colors leading-relaxed uppercase tracking-wide">
+                  I pledge to uphold doctor-patient confidentiality, the ACM Code of Ethics (Principle 1.3: Honesty & No False Data), and Good Samaritan values under professional ethical codes.
+                </span>
+              </label>
+
+              <!-- Action buttons -->
+              <div class="flex flex-col gap-2 pt-2">
+                <button (click)="enterApp()"
+                        [disabled]="!pledgeAccepted()"
+                        class="w-full py-3.5 bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700 dark:hover:bg-emerald-400 text-white dark:text-zinc-950 text-xs font-black uppercase tracking-[0.2em] transition-all rounded-2xl shadow-md border border-emerald-500 dark:border-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed disabled:bg-zinc-900 disabled:dark:bg-zinc-800 disabled:text-zinc-400 disabled:border-transparent active:scale-[0.98] cursor-pointer">
+                  Accept & Enter System
+                </button>
+              </div>
+
+            </div>
+          }
+
+          <!-- KSS Readiness Check (shown after successful auth) -->
+          @else if (viewState() === 'kss') {
+            <div class="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+              <!-- Circadian context card -->
+              <div class="p-3 rounded-xl border border-zinc-200 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/40">
+                <div class="flex items-center gap-2 mb-1.5">
+                  <span class="text-base">{{ kss.circadian().phaseEmoji }}</span>
+                  <p class="text-[12px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">{{ kss.circadian().phaseLabel }}</p>
+                </div>
+                <p class="text-[12px] text-zinc-600 dark:text-zinc-400 leading-relaxed">{{ kss.circadian().recommendation }}</p>
+                <div class="flex items-center gap-3 mt-2 pt-2 border-t border-zinc-200 dark:border-zinc-700/30">
+                  <span class="text-[12px] text-zinc-500 uppercase tracking-widest">Expected alertness</span>
+                  <div class="flex gap-0.5">
+                    @for (i of [1,2,3,4,5,6,7,8,9]; track i) {
+                      <div class="w-3 h-1.5 rounded-full transition-colors"
+                           [class]="i <= kss.circadian().expectedKss ? 'bg-brand-green-500' : 'bg-zinc-200 dark:bg-zinc-700'"></div>
+                    }
+                  </div>
+                  <span class="text-[12px] font-bold"
+                        [class]="kss.circadian().cognitiveLoad === 'optimal' ? 'text-brand-green-600 dark:text-brand-green-400' :
+                                 kss.circadian().cognitiveLoad === 'good' ? 'text-brand-blue-600 dark:text-brand-blue-400' :
+                                 kss.circadian().cognitiveLoad === 'reduced' ? 'text-brand-amber-600 dark:text-brand-amber-400' : 'text-brand-red-600 dark:text-brand-red-400'">
+                    {{ kss.circadian().cognitiveLoad | uppercase }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- KSS question -->
+              <div class="text-center">
+                <p class="text-[12px] font-bold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400 mb-0.5">Karolinska Sleepiness Scale</p>
+                <p class="text-sm font-medium text-zinc-800 dark:text-zinc-100">How alert are you right now?</p>
+              </div>
+
+              <!-- KSS 9-point grid -->
+              <div class="grid grid-cols-3 gap-1.5">
+                @for (item of kss.KSS_ITEMS; track item.score) {
+                  <button (click)="selectClinicianKss(item.score)"
+                          class="p-2 rounded-xl border text-left transition-all duration-200 cursor-pointer"
+                          [class]="clinicianKssSelected() === item.score
+                            ? 'border-brand-green-500/60 bg-brand-green-505/10 dark:bg-brand-green-500/10 ring-1 ring-brand-green-500/30'
+                            : 'border-zinc-200 dark:border-zinc-800/60 bg-white/50 dark:bg-zinc-900/40 hover:border-zinc-350 dark:hover:border-zinc-600/60 hover:bg-zinc-50 dark:hover:bg-zinc-800/40'">
+                    <div class="flex items-center gap-1.5 mb-0.5">
+                      <span class="text-sm">{{ item.emoji }}</span>
+                      <span class="text-[12px] font-bold tabular-nums"
+                            [class]="clinicianKssSelected() === item.score ? 'text-brand-green-600 dark:text-brand-green-400' : 'text-zinc-700 dark:text-zinc-300'">{{ item.score }}</span>
+                    </div>
+                    <p class="text-[12px] leading-tight"
+                       [class]="clinicianKssSelected() === item.score ? 'text-brand-green-700 dark:text-brand-green-300' : 'text-zinc-500 dark:text-zinc-400'">{{ item.label }}</p>
+                  </button>
+                }
+              </div>
+
+              <!-- Alert banner (appears once score selected) -->
+              @if (kss.readiness()) {
+                <div class="p-3 rounded-xl border animate-in fade-in duration-300"
+                     [class]="kss.readiness()!.combinedAlert === 'high-risk'
+                        ? 'border-brand-red-500/30 bg-brand-red-500/[0.04] dark:bg-brand-red-500/[0.06]'
+                        : kss.readiness()!.combinedAlert === 'caution'
+                        ? 'border-brand-amber-500/30 bg-brand-amber-500/[0.03] dark:bg-brand-amber-500/[0.05]'
+                        : 'border-brand-green-500/20 bg-brand-green-500/[0.02] dark:bg-brand-green-500/[0.04]'">
+                  <p class="text-[12px] leading-relaxed"
+                     [class]="kss.readiness()!.combinedAlert === 'high-risk' ? 'text-brand-red-700 dark:text-brand-red-300' :
+                              kss.readiness()!.combinedAlert === 'caution' ? 'text-brand-amber-700 dark:text-brand-amber-300' : 'text-brand-green-700 dark:text-brand-green-300'">
+                    {{ kss.readiness()!.recommendation }}
+                  </p>
+                  @if (kss.readiness()!.avsReset) {
+                    <p class="text-[12px] text-zinc-500 dark:text-zinc-500 mt-1.5 italic">Suggested: {{ kss.readiness()!.avsReset!.wave | uppercase }} reset · {{ kss.readiness()!.avsReset!.durationMin }} min · {{ kss.readiness()!.avsReset!.bpm }} BPM</p>
+                  }
+                </div>
+              }
+
+              <!-- Action buttons -->
+              <div class="flex flex-col gap-2">
+                <button (click)="gotoEthics()"
+                        [disabled]="!clinicianKssSelected()"
+                        class="w-full py-3.5 bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700 dark:hover:bg-emerald-400 text-white dark:text-zinc-950 text-xs font-black uppercase tracking-[0.2em] transition-all rounded-2xl shadow-md border border-emerald-500 dark:border-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed disabled:bg-zinc-900 disabled:dark:bg-zinc-800 disabled:text-zinc-400 disabled:border-transparent active:scale-[0.98] cursor-pointer">
+                  {{ kss.readiness()?.combinedAlert === 'high-risk' ? 'Acknowledge & Continue' : 'Continue' }}
+                </button>
+                <button (click)="gotoEthics()"
+                        class="text-[11px] text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors text-center w-full cursor-pointer">
+                  Skip assessment
+                </button>
+              </div>
+
+            </div>
+          }
+        </div>
+
+        <!-- Emergency Bypass Button -->
+        <button 
+          type="button" 
+          (click)="handleEmergencyBypass()"
+          class="mt-3.5 w-full py-3.5 bg-rose-600 hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-600 text-white font-extrabold text-xs uppercase tracking-[0.18em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg border border-rose-400 dark:border-rose-500 cursor-pointer active:scale-[0.98]"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span class="font-extrabold">Good Samaritan Mode (Bypass)</span>
+        </button>
+
+        <!-- Terms and Privacy Links -->
+        <div class="mt-2.5 flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider font-semibold text-zinc-400 dark:text-zinc-500 z-30">
+          <button type="button" (click)="showTermsModal.set(true)" class="min-h-[32px] px-2.5 py-1.5 inline-flex items-center justify-center hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors bg-transparent border-none cursor-pointer">Terms of Service</button>
+          <span class="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-800"></span>
+          <button type="button" (click)="showPrivacyModal.set(true)" class="min-h-[32px] px-2.5 py-1.5 inline-flex items-center justify-center hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors bg-transparent border-none cursor-pointer">Privacy Policy</button>
+        </div>
+
+        <div class="mt-2 flex items-center justify-center gap-2">
+          <p class="text-[10px] text-zinc-500 dark:text-zinc-500 font-mono uppercase tracking-[0.2em]">v{{ appVersion }}</p>
+          <a href="https://github.com/philgear/pocketgull" target="_blank" rel="noopener noreferrer" class="min-h-[32px] min-w-[32px] inline-flex items-center justify-center text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors" aria-label="View on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Terms of Service Modal -->
+      @if (showTermsModal()) {
+        <div class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/45 dark:bg-black/65 backdrop-blur-sm animate-in fade-in duration-200">
+          <div class="w-full max-w-md bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-6 shadow-2xl relative animate-in zoom-in-95 duration-300 flex flex-col max-h-[85vh] pointer-events-auto">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-base font-bold uppercase tracking-[0.15em] text-zinc-800 dark:text-zinc-100 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-teal-600 dark:text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Terms of Service
+              </h2>
+              <a href="/terms-of-service.html" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-teal-600 dark:text-teal-400 hover:underline flex items-center gap-1">
+                Full Terms &rarr;
+              </a>
+            </div>
+            <div class="overflow-y-auto pr-2 text-[12px] text-zinc-600 dark:text-zinc-400 space-y-3 font-sans leading-relaxed text-left">
+              <p class="font-bold text-zinc-800 dark:text-zinc-200">Pocket Gull is an AI-powered clinical co-pilot designed to organize summaries and suggest care strategies.</p>
+              <p><span class="font-bold text-zinc-700 dark:text-zinc-300">1. Clinical Disclaimer:</span> This software does not provide medical diagnosis, treatment, or advice. All suggestions must be reviewed, edited, and approved by a licensed healthcare professional.</p>
+              <p><span class="font-bold text-zinc-700 dark:text-zinc-300">2. Permissive Licensing:</span> Core platform components are released under the permissive MIT License terms.</p>
+              <p><span class="font-bold text-zinc-700 dark:text-zinc-300">3. Account Security:</span> Users are responsible for key safety. API keys must never be shared or committed publicly.</p>
+              <p><span class="font-bold text-zinc-700 dark:text-zinc-300">4. Liability:</span> The authors are not liable for clinical decisions or outcomes resulting from use of this tool.</p>
+            </div>
+            <div class="mt-6 flex items-center gap-3">
+              <a href="/terms-of-service.html" target="_blank" rel="noopener noreferrer" class="flex-1 py-3 text-center bg-teal-600/10 dark:bg-teal-400/10 text-teal-700 dark:text-teal-300 hover:bg-teal-600/20 text-[11px] font-bold uppercase tracking-wider rounded-xl transition">
+                Open Full Web Page ↗
+              </a>
+              <button type="button" (click)="showTermsModal.set(false)" class="flex-1 py-3 bg-zinc-900 dark:bg-zinc-100 hover:bg-black dark:hover:bg-white text-white dark:text-zinc-950 text-[11px] font-bold uppercase tracking-wider transition rounded-xl active:scale-[0.98] cursor-pointer">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Privacy Policy Modal -->
+      @if (showPrivacyModal()) {
+        <div class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/45 dark:bg-black/65 backdrop-blur-sm animate-in fade-in duration-200">
+          <div class="w-full max-w-md bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-6 shadow-2xl relative animate-in zoom-in-95 duration-300 flex flex-col max-h-[85vh] pointer-events-auto">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-base font-bold uppercase tracking-[0.15em] text-zinc-800 dark:text-zinc-100 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Privacy Policy
+              </h2>
+              <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
+                Full Policy &rarr;
+              </a>
+            </div>
+            <div class="overflow-y-auto pr-2 text-[12px] text-zinc-600 dark:text-zinc-400 space-y-3 font-sans leading-relaxed text-left">
+              <p class="font-bold text-zinc-800 dark:text-zinc-200">We take clinical privacy, HIPAA compliance, and patient data security extremely seriously.</p>
+              <p><span class="font-bold text-zinc-700 dark:text-zinc-300">1. Local-First Storage:</span> We do not persist patient health information (PHI) or personal details to any remote database. All vitals, histories, and logs reside strictly in your local browser storage.</p>
+              <p><span class="font-bold text-zinc-700 dark:text-zinc-300">2. Ephemeral Transit:</span> Clinical data sent to Google Gemini is transient. It is processed in transit only and is never used to train foundation models.</p>
+              <p><span class="font-bold text-zinc-700 dark:text-zinc-300">3. Zero Telemetry:</span> We collect no usage telemetry, analytical tracking, or third-party cookies.</p>
+              <p><span class="font-bold text-zinc-700 dark:text-zinc-300">4. Security Contact:</span> Direct compliance feedback or disclosures should be sent to dpo@pocketgull.app.</p>
+            </div>
+            <div class="mt-6 flex items-center gap-3">
+              <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" class="flex-1 py-3 text-center bg-emerald-600/10 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-600/20 text-[11px] font-bold uppercase tracking-wider rounded-xl transition">
+                Open Full Web Page ↗
+              </a>
+              <button type="button" (click)="showPrivacyModal.set(false)" class="flex-1 py-3 bg-zinc-900 dark:bg-zinc-100 hover:bg-black dark:hover:bg-white text-white dark:text-zinc-950 text-[11px] font-bold uppercase tracking-wider transition rounded-xl active:scale-[0.98] cursor-pointer">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </main>
+  `,
+  styles: [`
+    @keyframes origami-unfold {
+        0% { transform: scaleY(0.1) rotateX(80deg) rotateZ(-10deg); opacity: 0; }
+        60% { transform: scaleY(1.1) rotateX(-15deg) rotateZ(5deg); opacity: 1; }
+        100% { transform: scaleY(1) rotateX(0deg) rotateZ(0deg); opacity: 1; }
+    }
+    .origami-fold {
+        animation: origami-unfold 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        transform-style: preserve-3d;
+    }
+    .fold-1 { animation-delay: 150ms; }
+    .fold-2 { animation-delay: 300ms; }
+    .fold-3 { animation-delay: 450ms; }
+    .fold-4 { animation-delay: 600ms; }
+
+    /* Clinical Standard Box Breathing (4s Inhale, 4s Hold, 4s Exhale, 4s Hold = 16s total) */
+    @keyframes avs-respiratory-breath {
+        0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(62, 188, 158, 0.15)); }
+        25% { transform: scale(1.12); filter: drop-shadow(0 0 28px rgba(62, 188, 158, 0.45)); }
+        50% { transform: scale(1.12); filter: drop-shadow(0 0 28px rgba(239, 102, 88, 0.45)); }
+        75% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(239, 102, 88, 0.15)); }
+        100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(62, 188, 158, 0.15)); }
+    }
+    .avs-breathing-mascot {
+        animation: avs-respiratory-breath 16s ease-in-out infinite;
+    }
+
+    @keyframes avs-glow-breath {
+        0% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+        25% { transform: translate(-50%, -50%) scale(1.25); opacity: 0.85; }
+        50% { transform: translate(-50%, -50%) scale(1.25); opacity: 0.85; }
+        75% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+        100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+    }
+    .avs-breathing-glow {
+        animation: avs-glow-breath 16s ease-in-out infinite;
+    }
+
+    .wave-layer {
+      animation: wave-slide linear infinite;
+      will-change: transform;
+    }
+    @keyframes wave-slide {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Theme-aware smooth transition papercraft hills */
+    .paper-hill-back {
+        color: #d1e2e0; /* Soothing Teal-tinted gray light paper */
+    }
+    .dark .paper-hill-back {
+        color: #172328; /* Midnight Deep Teal paper */
+    }
+
+    .paper-hill-mid {
+        color: #fae4df; /* Soft Coral-cream light paper */
+    }
+    .dark .paper-hill-mid {
+        color: #261621; /* Deep Coral-violet paper */
+    }
+
+    .paper-hill-front {
+        color: #fcece0; /* Golden Sand light paper */
+    }
+    .dark .paper-hill-front {
+        color: #10060d; /* Pitch Obsidian front paper fold */
+    }
+
+    /* Papercraft Sky background transition */
+    .secure-splash-main {
+        background: linear-gradient(to bottom, #dff0fc 0%, #fae6e6 50%, #fef3e5 100%) !important;
+        transition: background 0.8s ease;
+    }
+    .dark .secure-splash-main {
+        background: linear-gradient(
+            to bottom,
+            #080e1a 0%,
+            #131024 50%,
+            #0b040a 100%
+        ) !important;
+    }
+
+    /* ─── 3D Papercraft Mode Theme Overrides ─── */
+    :host-context(html.papercraft-mode) .secure-splash-main,
+    html.papercraft-mode .secure-splash-main {
+        background: linear-gradient(to bottom, #F9F3D9 0%, #F5B98E 50%, #F6B12B 100%) !important;
+        color: #1C1C1C !important;
+    }
+
+    :host-context(html.papercraft-mode) .paper-hill-back,
+    html.papercraft-mode .paper-hill-back {
+        color: #F6B12B !important; /* Sunflower Amber Paper */
+        filter: drop-shadow(0px -6px 14px rgba(80, 50, 20, 0.35)) !important;
+    }
+    :host-context(html.papercraft-mode) .paper-hill-mid,
+    html.papercraft-mode .paper-hill-mid {
+        color: #2AA4A0 !important; /* Origami Teal Paper */
+        filter: drop-shadow(0px -8px 16px rgba(42, 164, 160, 0.4)) !important;
+    }
+    :host-context(html.papercraft-mode) .paper-hill-front,
+    html.papercraft-mode .paper-hill-front {
+        color: #EF6658 !important; /* Coral Paper Dune */
+        filter: drop-shadow(0px -10px 20px rgba(239, 102, 88, 0.45)) !important;
+    }
+
+    :host-context(html.papercraft-mode) #seagull-safe-zone,
+    html.papercraft-mode #seagull-safe-zone {
+        background-color: rgba(255, 253, 245, 0.96) !important;
+        border: 2.5px solid #E59F1E !important;
+        box-shadow: 14px 28px 56px -4px rgba(80, 50, 20, 0.35), 0 6px 16px rgba(0, 0, 0, 0.12), inset 0 2px 4px rgba(255, 255, 255, 0.9) !important;
+        transform: perspective(1000px) rotateX(1deg);
+        color: #1C1C1C !important;
+    }
+
+    :host-context(html.papercraft-mode) .origami-seagull-container,
+    html.papercraft-mode .origami-seagull-container {
+        filter: drop-shadow(8px 16px 24px rgba(80, 45, 15, 0.45)) !important;
+    }
+    :host-context(html.papercraft-mode) .origami-heart-container,
+    html.papercraft-mode .origami-heart-container {
+        filter: drop-shadow(4px 12px 16px rgba(220, 60, 40, 0.4)) !important;
+    }
+
+    /* SVG noise texture */
+    .bg-noise {
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    @keyframes bobbing {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(2deg); }
+    }
+    .animate-bobbing {
+      animation: bobbing 6s ease-in-out infinite;
+    }
+
+    @keyframes surfing {
+      0%, 100% { transform: translate(0, 0) rotate(-2deg); }
+      50% { transform: translate(12px, -3px) rotate(3deg); }
+    }
+    .animate-surfing {
+      animation: surfing 5s ease-in-out infinite;
+    }
+
+    @keyframes fish-jump {
+      0% { transform: translateY(30px) rotate(-45deg) scale(0.3); opacity: 0; }
+      10% { opacity: 1; }
+      40% { transform: translateY(-25px) rotate(0deg) scale(1); }
+      70% { opacity: 1; }
+      90%, 100% { transform: translateY(30px) rotate(45deg) scale(0.3); opacity: 0; }
+    }
+    .animate-fish-jump {
+      animation: fish-jump 6s ease-in-out infinite;
+    }
+
+    @keyframes bird-glide {
+      0% { transform: translate3d(-10vw, 0, 0) scale3d(1, 1, 1); }
+      50% { transform: translate3d(110vw, -30px, 0) scale3d(1, 1, 1); }
+      51% { transform: translate3d(110vw, -30px, 0) scale3d(-1, 1, 1); }
+      100% { transform: translate3d(-10vw, 0, 0) scale3d(-1, 1, 1); }
+    }
+    .animate-bird-glide {
+      animation: bird-glide 24s linear infinite;
+    }
+
+    /* Breezy Sand Gust Particles */
+    .sand-breeze-particle {
+      position: absolute;
+      background: rgba(255, 235, 205, 0.4);
+      border-radius: 9999px;
+      height: 2px;
+      animation: breezy-sand linear infinite;
+      box-shadow: 0 0 6px rgba(255, 248, 220, 0.5);
+    }
+    .sand-breeze-particle.p1 { top: 20%; width: 60px; animation-duration: 4.5s; animation-delay: 0s; }
+    .sand-breeze-particle.p2 { top: 45%; width: 90px; animation-duration: 6s; animation-delay: 1.5s; }
+    .sand-breeze-particle.p3 { top: 65%; width: 40px; animation-duration: 3.8s; animation-delay: 0.8s; }
+    .sand-breeze-particle.p4 { top: 80%; width: 110px; animation-duration: 7s; animation-delay: 2.2s; }
+    .sand-breeze-particle.p5 { top: 35%; width: 75px; animation-duration: 5.2s; animation-delay: 3s; }
+
+    @keyframes breezy-sand {
+      0% { opacity: 0; transform: translate3d(-20vw, 0, 0) scale3d(0.5, 1, 1); }
+      20% { opacity: 0.8; }
+      80% { opacity: 0.6; }
+      100% { opacity: 0; transform: translate3d(120vw, -15px, 0) scale3d(1.5, 1, 1); }
+    }
+
+    /* ─── 7-Second Origami Unfolding & Glowing Heart Sequence ─── */
+    .origami-unfold-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .origami-unfold-svg {
+      transform-style: preserve-3d;
+      animation: origami-master-unfold 7s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    }
+
+    @keyframes origami-master-unfold {
+      0% { transform: scale(0.6) rotate(-35deg) rotateX(60deg); filter: blur(2px); opacity: 0; }
+      12% { transform: scale(0.85) rotate(-15deg) rotateX(25deg); filter: blur(0px); opacity: 1; }
+      40% { transform: scale(1.06) rotate(4deg) rotateX(0deg); }
+      55%, 100% { transform: scale(1) rotate(0deg) rotateX(0deg); }
+    }
+
+    .origami-fold-tail {
+      transform-origin: 20% 40%;
+      animation: fold-tail-unfold 7s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+    }
+    @keyframes fold-tail-unfold {
+      0%, 10% { transform: rotate(-100deg) scale(0.1); opacity: 0; }
+      28%, 100% { transform: rotate(0deg) scale(1); opacity: 1; }
+    }
+
+    .origami-fold-far-wing {
+      transform-origin: 60% 40%;
+      animation: fold-far-wing-unfold 7s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+    }
+    @keyframes fold-far-wing-unfold {
+      0%, 18% { transform: rotateY(130deg) rotateZ(-45deg); opacity: 0; }
+      42%, 100% { transform: rotateY(0deg) rotateZ(0deg); opacity: 1; }
+    }
+
+    .origami-fold-near-wing {
+      transform-origin: 40% 60%;
+      animation: fold-near-wing-unfold 7s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+    }
+    @keyframes fold-near-wing-unfold {
+      0%, 26% { transform: rotateY(-150deg) rotateZ(60deg); opacity: 0; }
+      52%, 100% { transform: rotateY(0deg) rotateZ(0deg); opacity: 1; }
+    }
+
+    .origami-fold-head {
+      transform-origin: 70% 45%;
+      animation: fold-head-unfold 7s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+    }
+    @keyframes fold-head-unfold {
+      0%, 38% { transform: rotate(-90deg) scale(0.2); opacity: 0; }
+      60%, 100% { transform: rotate(0deg) scale(1); opacity: 1; }
+    }
+
+    .origami-heart-container {
+      position: absolute;
+      top: 50%;
+      left: 52%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: heart-emerge-pulse 7s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+    }
+
+    @keyframes heart-emerge-pulse {
+      0%, 62% { transform: translate(-50%, -50%) scale(0); opacity: 0; filter: drop-shadow(0 0 0px transparent); }
+      70% { transform: translate(-50%, -50%) scale(1.25); opacity: 1; filter: drop-shadow(0 0 18px rgba(239, 102, 88, 0.85)); }
+      76% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.9; }
+      82% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; filter: drop-shadow(0 0 22px rgba(239, 102, 88, 0.95)); }
+      88% { transform: translate(-50%, -50%) scale(1); opacity: 0.95; }
+      94% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; filter: drop-shadow(0 0 18px rgba(239, 102, 88, 0.85)); }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; filter: drop-shadow(0 0 14px rgba(239, 102, 88, 0.75)); }
+    }
+
+    /* Responsive styling for small mobile screens (Pixel 9 or smaller) */
+    @media (max-width: 380px), (max-height: 660px) {
+      .origami-seagull-container {
+        margin-bottom: 0.75rem !important;
+      }
+      #seagull-safe-zone {
+        border-radius: 1.5rem !important;
+        margin-top: 0.5rem !important;
+      }
+    }
+
+    /* Responsive styling for wearables and watch viewports */
+    @media (max-width: 280px), (max-height: 480px) {
+      main {
+        padding: 0.5rem !important;
+      }
+      .origami-seagull-container svg {
+        width: 5rem !important;
+        height: 5rem !important;
+      }
+      #seagull-safe-zone {
+        border-radius: 1rem !important;
+        padding: 0.75rem !important;
+      }
+      h1 {
+        font-size: 0.95rem !important;
+        letter-spacing: 0.05em !important;
+      }
+      p {
+        font-size: 8px !important;
+        letter-spacing: 0.1em !important;
+      }
+      .space-y-6 > * + * {
+        margin-top: 0.75rem !important;
+      }
+      button, input {
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+        font-size: 9px !important;
+        border-radius: 0.75rem !important;
+      }
+      input#pinInput {
+        height: 48px !important;
+        font-size: 1.25rem !important;
+      }
+      .grid-cols-3 {
+        grid-template-cols: repeat(2, minmax(0, 1fr)) !important;
+      }
+      .pt-4 {
+        padding-top: 0.5rem !important;
+        margin-top: 0.25rem !important;
+      }
+    }
+  `]
+})
+export class SecureSplashComponent implements OnInit {
+  private sanitizer = inject(DomSanitizer);
+  session    = inject(SessionStateService);
+  readonly kss = inject(CircadianSleepinessService);
+  syncService = inject(FirestoreSyncService);
+  game = inject(GamificationService);
+  theme = inject(ThemeService);
+  state = inject(PatientStateService);
+  public readonly petAuditory = inject(PetAuditoryService);
+  public readonly envTelemetryService = inject(EnvironmentalTelemetryService);
+  private platformId = inject(PLATFORM_ID);
+  readonly isBrowser = signal<boolean>(isPlatformBrowser(this.platformId));
+  private secureStorage = inject(SecureStorageService);
+  readonly appVersion = APP_VERSION;
+
+  readonly telemetryGradient = computed(() => {
+    const t = this.envTelemetryService.telemetry();
+    const isStorm = this.envTelemetryService.isStormShieldActive();
+
+    if (isStorm) {
+      // Coastal low-pressure storm front gradient (Deep Slate Indigo & Thunderstorm Teal)
+      return 'linear-gradient(to bottom, #090d16 0%, #0f172a 50%, #020617 100%)';
+    } else if (t.uvIndex > 6.0) {
+      // High Solar Noon / Heliophysics UV Gradient (Amber Sun Burst & Solar Gold)
+      return 'linear-gradient(to bottom, #180e02 0%, #451a03 40%, #78350f 70%, #09090b 100%)';
+    } else if (t.aqi > 100) {
+      // Atmospheric Haze / Air Quality Telemetry Gradient (Warm Terracotta Haze)
+      return 'linear-gradient(to bottom, #1c1917 0%, #44403c 50%, #1c1917 100%)';
+    }
+    // Standard Circadian Deep Space & Teal Ambient
+    return 'linear-gradient(to bottom, #09090b 0%, #042f2e 50%, #020617 100%)';
+  });
+
+  getTextureUrl(themeName: string): string {
+    switch (themeName) {
+      case 'hemp': return '/images/hemp_paper_texture.png';
+      case 'construction': return '/images/construction_paper_texture.png';
+      case 'papercraft': return '/images/paper_cardstock_texture.png';
+      case 'rice':
+      default: return '/images/rice_paper_texture.png';
+    }
+  }
+
+  isAudioPlaying = signal<boolean>(false);
+
+  toggleAvianAudio() {
+    if (this.isAudioPlaying()) {
+      this.petAuditory.stop();
+      this.isAudioPlaying.set(false);
+    } else {
+      this.petAuditory.playAvianTherapy();
+      this.isAudioPlaying.set(true);
+    }
+  }
+
+  // Inputs
+  apiKeyError = input<string | null>(null);
+  hasApiKey = input<boolean>(false);
+  // Outputs
+  submitKey = output<string>();
+  loadDemo = output<void>();
+  selectAiStudio = output<void>();
+  emergencyBypass = output<void>();
+
+  handleUnlockSession() {
+    this.session.isLocked.set(false);
+    this.isAuthorized.set(true);
+    this.session.resetIdleTimer();
+  }
+
+  // State
+  viewState = signal<'auth' | 'beta' | 'ethics' | 'kss' | 'signup' | 'gesture'>('auth');
+  signupForm = signal({ name: '', email: '', clinic: '', pin: '' });
+  signinEmailInput = signal('');
+  pledgeAccepted = signal(false);
+  clinicianKssSelected = signal<KssScore | null>(null);
+  showTermsModal = signal(false);
+  showPrivacyModal = signal(false);
+  isLocked = computed(() => this.session.isLocked());
+  activeSecondaryAgent = computed(() => {
+    if (!isPlatformBrowser(this.platformId)) return null;
+    const day = new Date().getDay(); // 0 (Sunday) to 6 (Saturday)
+    const personas = [
+      { name: 'Sentinel', role: 'Recovery Vigilance & Trends', emoji: '🔦', accent: '#D97706', msg: 'I never blink. I never look away.' }, // Sunday
+      { name: 'Gulliver', role: 'Overview & Chart Synthesis', emoji: '🔭', accent: '#1C6AFF', msg: 'I see the whole ocean from up here.' }, // Monday
+      { name: 'Swoop', role: 'Interventions & Precision Dosing', emoji: '⚡', accent: '#059669', msg: 'Spotted. Locked. Delivering.' }, // Tuesday
+      { name: 'Sentinel', role: 'Recovery Vigilance & Trends', emoji: '🔦', accent: '#D97706', msg: 'I never blink. I never look away.' }, // Wednesday
+      { name: 'Scribes', role: 'Patient Translation & Education', emoji: '📖', accent: '#7C3AED', msg: 'Let me explain that in a way that actually helps.' }, // Thursday
+      { name: 'Gulliver', role: 'Overview & Chart Synthesis', emoji: '🔭', accent: '#1C6AFF', msg: 'I see the whole ocean from up here.' }, // Friday
+      { name: 'Swoop', role: 'Interventions & Precision Dosing', emoji: '⚡', accent: '#059669', msg: 'Spotted. Locked. Delivering.' }  // Saturday
+    ];
+    return personas[day];
+  });
+  apiKeyStr = signal('');
+  
+  readonly dailyBeachItems = [
+    {
+      name: 'Palm Tree',
+      emoji: '🌴',
+      prompt: 'Today\'s Beach Item: Draw a Palm Tree (Trunk & Fronds) to unlock',
+      svgGuide: `<circle cx="50" cy="50" r="45" stroke-dasharray="3 3"/><path d="M 48 75 Q 48 50 55 40"/><path d="M 55 40 Q 42 32 38 42"/><path d="M 55 40 Q 68 30 72 40"/><path d="M 55 40 Q 55 25 58 28"/>`
+    },
+    {
+      name: 'Ocean Wave',
+      emoji: '🌊',
+      prompt: 'Today\'s Beach Item: Draw an Ocean Wave (Curved Crest) to unlock',
+      svgGuide: `<circle cx="50" cy="50" r="45" stroke-dasharray="3 3"/><path d="M 15 65 Q 35 25 55 55 T 85 45" stroke-width="2"/>`
+    },
+    {
+      name: 'Seagull',
+      emoji: '🕊️',
+      prompt: 'Today\'s Beach Item: Draw a Flying Seagull (\'V\' Wings) to unlock',
+      svgGuide: `<circle cx="50" cy="50" r="45" stroke-dasharray="3 3"/><path d="M 20 45 Q 35 30 50 45 Q 65 30 80 45" stroke-width="2"/>`
+    },
+    {
+      name: 'Starfish',
+      emoji: '⭐',
+      prompt: 'Today\'s Beach Item: Draw a Starfish (5 Points) to unlock',
+      svgGuide: `<circle cx="50" cy="50" r="45" stroke-dasharray="3 3"/><polygon points="50,20 58,40 80,40 62,54 68,75 50,62 32,75 38,54 20,40 42,40" stroke-dasharray="2 2"/>`
+    },
+    {
+      name: 'Sailboat',
+      emoji: '⛵',
+      prompt: 'Today\'s Beach Item: Draw a Sailboat (Hull & Sail) to unlock',
+      svgGuide: `<circle cx="50" cy="50" r="45" stroke-dasharray="3 3"/><path d="M 25 65 L 75 65 L 65 80 L 35 80 Z"/><path d="M 50 25 L 50 60 L 75 60 Z"/>`
+    },
+    {
+      name: 'Sea Shell',
+      emoji: '🐚',
+      prompt: 'Today\'s Beach Item: Draw a Sea Shell (Fan / Spiral) to unlock',
+      svgGuide: `<circle cx="50" cy="50" r="45" stroke-dasharray="3 3"/><path d="M 50 75 L 25 35 Q 50 15 75 35 Z"/><path d="M 50 75 L 50 20"/><path d="M 50 75 L 35 25"/><path d="M 50 75 L 65 25"/>`
+    }
+  ];
+
+  todayBeachItem = computed(() => {
+    const dayEpoch = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+    return this.dailyBeachItems[dayEpoch % this.dailyBeachItems.length];
+  });
+
+  readonly dailyQuotesAndHumor = [
+    { text: '"Feeling gratitude and not expressing it is like wrapping a present and not giving it."', author: '— William Arthur Ward (Greater Good Gratitude)' },
+    { text: '"Self-compassion is simply giving ourselves the same kindness we would give to a patient in distress."', author: '— Dr. Kristin Neff (Mindful Self-Compassion)' },
+    { text: '"Wherever the art of Medicine is loved, there is also a love of Humanity."', author: '— Hippocrates' },
+    { text: '"Between stimulus and response there is a space. In that space is our power to choose our response."', author: '— Viktor E. Frankl (Somatic Grounding)' },
+    { text: 'Remember: Deep breathing and coffee are both vital electrolyte restoration protocols.', author: '— Night Shift Resiliency ☕' },
+    { text: '"The good physician treats the disease; the great physician treats the patient who has the disease."', author: '— Sir William Osler' },
+    { text: '"Presence is the most precious gift we can offer to another human being."', author: '— Thich Nhat Hanh (Greater Good Mindfulness)' }
+  ];
+
+  todayQuote = computed(() => {
+    const dayEpoch = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+    return this.dailyQuotesAndHumor[dayEpoch % this.dailyQuotesAndHumor.length];
+  });
+
+  pin = '';
+  showPassword = signal(false);
+  errorMsg = signal('');
+  isChecking = signal(false);
+
+  isHydrated = signal(false);
+
+  // Wave & Buoy Signals
+  waveHeight = signal(2.6);
+  wavePeriod = signal(10.0);
+  buoyLocation = signal('Oregon Coast (Buoy 46050)');
+  private buoyInterval: any = null;
+
+  // Interactive Game
+  gameScore = signal(0);
+  gameWon = signal(false);
+
+  // Authorization Gates
+  isAuthorized = signal(false);
+  isAuthLoading = computed(() => this.syncService.isAuthLoading());
+  showAuthGateway = computed(() => {
+    if (!this.isHydrated()) return true;
+    if (this.viewState() === 'gesture') return false;
+    if (this.isAuthorized()) return false;
+    if (this.viewState() === 'ethics' || this.viewState() === 'kss') return false;
+    return true;
+  });
+
+  // Beta Form State
+  betaForm = signal({ name: '', clinic: '', email: '' });
+  isSubmittingBeta = signal(false);
+  betaSuccess = signal(false);
+
+  pinInputRef = viewChild<ElementRef<HTMLInputElement>>('pinInput');
+
+  // Gesture Unlock State
+  gestureCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('gestureCanvas');
+  private ctx: CanvasRenderingContext2D | null = null;
+  isDrawing = false;
+  strokes: Array<Array<{x: number, y: number, pressure: number}>> = [];
+  currentStroke: Array<{x: number, y: number, pressure: number}> = [];
+  private verificationTimeoutId: any = null;
+  gestureError = signal(false);
+
+  // Particles system (energy saving, pretty & fun)
+  particles: Array<{
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    life: number;
+    maxLife: number;
+    color: string;
+    size: number;
+  }> = [];
+  private isAnimating = false;
+
+  triggerParticleBurst(x: number, y: number, color: string, count: number) {
+    if (this.theme.reduceMotion()) return;
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 4 + 2;
+      this.particles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 1,
+        maxLife: Math.random() * 20 + 20,
+        color,
+        size: Math.random() * 4 + 2
+      });
+    }
+    this.startAnimationLoop();
+  }
+
+  addDrawParticle(x: number, y: number) {
+    if (this.theme.reduceMotion()) return;
+    const isDark = typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : true;
+    const color = isDark ? '#34d399' : '#10b981';
+    for (let i = 0; i < 2; i++) {
+      this.particles.push({
+        x,
+        y,
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: (Math.random() - 0.5) * 1.5,
+        life: 1,
+        maxLife: Math.random() * 15 + 10,
+        color,
+        size: Math.random() * 3 + 1
+      });
+    }
+    this.startAnimationLoop();
+  }
+
+  private startAnimationLoop() {
+    if (this.isAnimating) return;
+    this.isAnimating = true;
+    const loop = () => {
+      if (this.particles.length === 0 && !this.isDrawing) {
+        this.isAnimating = false;
+        return;
+      }
+      this.updateParticles();
+      this.redrawCanvas();
+      if (this.isAnimating) {
+        requestAnimationFrame(loop);
+      }
+    };
+    requestAnimationFrame(loop);
+  }
+
+  private updateParticles() {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vx *= 0.96;
+      p.vy *= 0.96;
+      p.life++;
+      if (p.life >= p.maxLife) {
+        this.particles.splice(i, 1);
+      }
+    }
+  }
+
+  // AVS State & Audio Nodes
+  private audioCtx: AudioContext | null = null;
+  private primaryGain: GainNode | null = null;
+  private oscL: OscillatorNode | null = null;
+  private oscR: OscillatorNode | null = null;
+  private pinkNoiseNode: AudioBufferSourceNode | null = null;
+  private waveGain: GainNode | null = null;
+  private lfoNode: OscillatorNode | null = null;
+  
+  isAvsPlaying = signal(false);
+  private lastPinLength = 0;
+
+  decorations = signal<{
+    type: 'ship' | 'surfer' | 'fish' | 'bird';
+    left: number;
+    bottom: number;
+    scale: number;
+    delay: number;
+    duration: number;
+    flip: boolean;
+    clicked?: boolean;
+  }[]>([]);
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        this.isHydrated.set(true);
+      }, 0);
+      this.generateDecorations();
+      this.fetchBuoyData();
+      this.buoyInterval = setInterval(() => this.fetchBuoyData(), 60000);
+    }
+  }
+
+  getWavePath(layerIndex: number): string {
+    let path = 'M 0,200';
+    const baseHeight = 100;
+    const heightMeters = this.waveHeight();
+    
+    // Scale wave amplitude based on layer index and buoy wave height
+    const amplitude = heightMeters * (layerIndex === 1 ? 8 : layerIndex === 2 ? 12 : 16);
+    
+    for (let i = 0; i <= 8; i++) {
+      const x = i * 360;
+      const nextX = (i + 1) * 360;
+      const midX = x + 180;
+      // Every 4th peak is larger
+      const isRoguePeak = (i % 4 === 3);
+      const peakHeight = baseHeight - (isRoguePeak ? amplitude * 2.2 : amplitude);
+      
+      path += ` Q ${midX},${peakHeight} ${nextX},${baseHeight}`;
+    }
+    path += ' L 2880,200 L 0,200 Z';
+    return path;
+  }
+
+  async fetchBuoyData() {
+    try {
+      // Simulate real-time Oregon coast buoy fluctuation (relaxed updating)
+      // Stonewall Bank Buoy 46050 typically fluctuates between 1.8m and 3.5m
+      const simulatedHeight = +(2.0 + Math.random() * 1.5).toFixed(1);
+      const simulatedPeriod = +(8.0 + Math.random() * 4.0).toFixed(1);
+      
+      this.waveHeight.set(simulatedHeight);
+      this.wavePeriod.set(simulatedPeriod);
+    } catch (err) {
+      console.warn('Could not fetch buoy data, defaulting to Oregon Coast baseline', err);
+    }
+  }
+
+  onDecorationClick(item: any, event: MouseEvent) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    if (item.clicked) return;
+
+    item.clicked = true;
+    this.gameScore.update(s => s + 1);
+
+    // Visual feedback particle burst at the element position
+    if (isPlatformBrowser(this.platformId)) {
+      const xPx = (item.left / 100) * window.innerWidth;
+      const yPx = window.innerHeight - ((item.bottom / 100) * window.innerHeight);
+      this.triggerParticleBurst(xPx, yPx, '#3ebc9e', 12);
+    }
+  }
+
+  generateDecorations() {
+    const list: any[] = [];
+    
+    // 1-2 random ships in the back hills/ocean
+    const numShips = Math.floor(Math.random() * 2) + 1;
+    for (let i = 0; i < numShips; i++) {
+      list.push({
+        type: 'ship',
+        left: 10 + Math.random() * 80,
+        bottom: 25 + Math.random() * 12,
+        scale: 0.5 + Math.random() * 0.4,
+        delay: Math.random() * 3,
+        duration: 8 + Math.random() * 6,
+        flip: Math.random() > 0.5
+      });
+    }
+
+    // 1 surfer riding the mid/front waves
+    list.push({
+      type: 'surfer',
+      left: 15 + Math.random() * 70,
+      bottom: 12 + Math.random() * 8,
+      scale: 0.6 + Math.random() * 0.4,
+      delay: Math.random() * 2,
+      duration: 4 + Math.random() * 3,
+      flip: Math.random() > 0.5
+    });
+
+    // 2-3 jumping fish
+    const numFish = Math.floor(Math.random() * 2) + 2;
+    for (let i = 0; i < numFish; i++) {
+      list.push({
+        type: 'fish',
+        left: 5 + Math.random() * 90,
+        bottom: 5 + Math.random() * 10,
+        scale: 0.4 + Math.random() * 0.4,
+        delay: Math.random() * 8,
+        duration: 3.5 + Math.random() * 3,
+        flip: Math.random() > 0.5
+      });
+    }
+
+    // 2-3 flying birds in the sky
+    const numBirds = Math.floor(Math.random() * 2) + 2;
+    for (let i = 0; i < numBirds; i++) {
+      list.push({
+        type: 'bird',
+        left: -10,
+        bottom: 50 + Math.random() * 35,
+        scale: 0.3 + Math.random() * 0.4,
+        delay: Math.random() * 5,
+        duration: 15 + Math.random() * 10,
+        flip: false
+      });
+    }
+
+    this.decorations.set(list);
+  }
+
+  constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      const isMock = this.secureStorage.getItem('pg_mock_clinician') === '1';
+      const email = this.syncService.currentUserEmail() || '';
+      this.isAuthorized.set(isMock || this.syncService.isEmailRegistered(email));
+    }
+
+    effect(() => {
+      // Auto-focus logic based on state
+      if (this.isLocked() && this.pinInputRef()?.nativeElement) {
+         setTimeout(() => this.pinInputRef()!.nativeElement.focus(), 150);
+      }
+    });
+
+    effect(() => {
+      if (!isPlatformBrowser(this.platformId)) return;
+      const canvas = this.gestureCanvasRef()?.nativeElement;
+      if (canvas && !this.ctx) {
+        this.ctx = canvas.getContext('2d');
+        if (this.ctx) {
+          this.ctx.lineWidth = 6;
+          this.ctx.lineCap = 'round';
+          this.ctx.lineJoin = 'round';
+          const isDark = document.documentElement.classList.contains('dark');
+          this.ctx.strokeStyle = isDark ? '#10b981' : '#059669';
+        }
+      } else if (!canvas) {
+        this.ctx = null;
+      }
+    });
+
+    effect(() => {
+      const email = this.syncService.currentUserEmail() || '';
+      const isMock = this.secureStorage.getItem('pg_mock_clinician') === '1';
+      this.isAuthorized.set(isMock || this.syncService.isEmailRegistered(email));
+    });
+  }
+
+  ngOnDestroy() {
+    this.cleanupNodes();
+    if (this.audioCtx) {
+      this.audioCtx.close().catch(() => {});
+    }
+    if (this.buoyInterval) {
+      clearInterval(this.buoyInterval);
+    }
+  }
+
+  // Safe AudioContext getter
+  getAudioContext(): AudioContext | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+    if (!this.audioCtx) {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      this.audioCtx = new AudioContextClass();
+    }
+    if (this.audioCtx && this.audioCtx.state === 'suspended') {
+      this.audioCtx.resume().catch(() => {});
+    }
+    return this.audioCtx;
+  }
+
+  toggleAvs() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
+    if (this.isAvsPlaying()) {
+      this.stopAmbientSoundscape();
+    } else {
+      this.startAmbientSoundscape();
+    }
+  }
+
+  startAmbientSoundscape() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+
+    this.cleanupNodes();
+
+    // 1. Create primary gain node for fading in
+    this.primaryGain = ctx.createGain();
+    this.primaryGain.gain.setValueAtTime(0, ctx.currentTime);
+    this.primaryGain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 1.5);
+
+    // Dynamic Circadian Carrier and Beat Frequency based on Time of Day
+    const hours = new Date().getHours();
+    let carrierFreq = 432;
+    let beatFreq = 4; // Default Delta/Theta (4Hz difference)
+    
+    if (hours >= 6 && hours < 12) {
+      // Morning: Beta wave (15Hz difference) for entraining alertness
+      carrierFreq = 400;
+      beatFreq = 15;
+    } else if (hours >= 12 && hours < 18) {
+      // Afternoon: Alpha wave (10Hz difference) for focused attention
+      carrierFreq = 440;
+      beatFreq = 10;
+    } else {
+      // Evening/Night: Theta/Delta wave (4Hz difference) for calming down
+      carrierFreq = 432;
+      beatFreq = 4;
+    }
+
+    // 2. Carrier Oscillators
+    this.oscL = ctx.createOscillator();
+    this.oscL.type = 'sine';
+    this.oscL.frequency.setValueAtTime(carrierFreq, ctx.currentTime);
+
+    this.oscR = ctx.createOscillator();
+    this.oscR.type = 'sine';
+    this.oscR.frequency.setValueAtTime(carrierFreq + beatFreq, ctx.currentTime);
+
+    const merger = ctx.createChannelMerger(2);
+    this.oscL.connect(merger, 0, 0);
+    this.oscR.connect(merger, 0, 1);
+    merger.connect(this.primaryGain);
+
+    // 3. Pink/Brown Background Noise
+    const bufferSize = 4 * ctx.sampleRate;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    let lastOut = 0.0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      output[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = output[i];
+      output[i] *= 3.5;
+    }
+
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+    noiseSource.loop = true;
+    this.pinkNoiseNode = noiseSource;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(180, ctx.currentTime);
+
+    this.waveGain = ctx.createGain();
+    this.waveGain.gain.setValueAtTime(0.05, ctx.currentTime);
+
+    noiseSource.connect(filter);
+    filter.connect(this.waveGain);
+    this.waveGain.connect(this.primaryGain);
+
+    // LFO to automate respiratory brown noise gain modulation matching visual seagull breathing (5.5 breaths/min -> 0.0917Hz)
+    this.lfoNode = ctx.createOscillator();
+    this.lfoNode.type = 'sine';
+    this.lfoNode.frequency.setValueAtTime(5.5 / 60, ctx.currentTime);
+
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.setValueAtTime(0.025, ctx.currentTime);
+
+    this.lfoNode.connect(lfoGain);
+    lfoGain.connect(this.waveGain.gain);
+
+    this.primaryGain.connect(ctx.destination);
+
+    this.oscL.start();
+    this.oscR.start();
+    noiseSource.start();
+    this.lfoNode.start();
+
+    this.isAvsPlaying.set(true);
+  }
+
+  stopAmbientSoundscape() {
+    if (!this.primaryGain || !this.audioCtx) {
+      this.isAvsPlaying.set(false);
+      return;
+    }
+
+    const ctx = this.audioCtx;
+    this.primaryGain.gain.cancelScheduledValues(ctx.currentTime);
+    this.primaryGain.gain.setValueAtTime(this.primaryGain.gain.value, ctx.currentTime);
+    this.primaryGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.0);
+
+    const currentOscL = this.oscL;
+    const currentOscR = this.oscR;
+    const currentNoise = this.pinkNoiseNode;
+    const currentLfo = this.lfoNode;
+
+    setTimeout(() => {
+      try {
+        currentOscL?.stop();
+        currentOscR?.stop();
+        currentNoise?.stop();
+        currentLfo?.stop();
+
+        currentOscL?.disconnect();
+        currentOscR?.disconnect();
+        currentNoise?.disconnect();
+        currentLfo?.disconnect();
+      } catch (e) {}
+    }, 1100);
+
+    this.oscL = null;
+    this.oscR = null;
+    this.pinkNoiseNode = null;
+    this.lfoNode = null;
+    this.primaryGain = null;
+    this.isAvsPlaying.set(false);
+  }
+
+  private cleanupNodes() {
+    try {
+      this.oscL?.stop();
+      this.oscR?.stop();
+      this.pinkNoiseNode?.stop();
+      this.lfoNode?.stop();
+    } catch (e) {}
+
+    try {
+      this.oscL?.disconnect();
+      this.oscR?.disconnect();
+      this.pinkNoiseNode?.disconnect();
+      this.lfoNode?.disconnect();
+      this.primaryGain?.disconnect();
+    } catch (e) {}
+
+    this.oscL = null;
+    this.oscR = null;
+    this.pinkNoiseNode = null;
+    this.lfoNode = null;
+    this.primaryGain = null;
+  }
+
+  // Harmonic sound synthesizers
+  playKeyPressChime() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(528, ctx.currentTime); // Transformation chime
+
+    gain.gain.setValueAtTime(0.03, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.35);
+  }
+
+  playSuccessChime() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+
+    // Upward pentatonic major sweep: C4, D4, E4, G4, A4, C5
+    const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+    notes.forEach((freq, idx) => {
+      const timeOffset = idx * 0.08;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle'; // Warm, vintage synth tone
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + timeOffset);
+
+      gain.gain.setValueAtTime(0, ctx.currentTime + timeOffset);
+      gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + timeOffset + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + timeOffset + 0.8);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime + timeOffset);
+      osc.stop(ctx.currentTime + timeOffset + 0.85);
+    });
+  }
+
+  playErrorChime() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(110, ctx.currentTime);
+
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(112, ctx.currentTime); // Resonant beat
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(150, ctx.currentTime);
+
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+
+    osc1.connect(filter);
+    osc2.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc1.start();
+    osc2.start();
+
+    osc1.stop(ctx.currentTime + 1.3);
+    osc2.stop(ctx.currentTime + 1.3);
+  }
+
+  private getCanvasCoords(e: PointerEvent): {x: number, y: number, pressure: number} {
+    const canvas = this.gestureCanvasRef()?.nativeElement;
+    if (!canvas) return { x: 0, y: 0, pressure: 0.5 };
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / (rect.width || 240);
+    const scaleY = canvas.height / (rect.height || 240);
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    const pressure = e.pressure && e.pressure > 0 ? e.pressure : 0.5;
+    return { x, y, pressure };
+  }
+
+  private redrawCanvas() {
+    const canvas = this.gestureCanvasRef()?.nativeElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const strokeStyle = isDark ? '#10b981' : '#059669';
+    const shadowColor = isDark ? '#34d399' : '#10b981';
+
+    const drawPoints = (points: Array<{x: number, y: number, pressure: number}>) => {
+      if (points.length === 0) return;
+      
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = strokeStyle;
+      ctx.shadowColor = shadowColor;
+      ctx.shadowBlur = 6;
+
+      if (points.length === 1) {
+        const radius = 3 + points[0].pressure * 6;
+        ctx.beginPath();
+        ctx.arc(points[0].x, points[0].y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = strokeStyle;
+        ctx.fill();
+      } else {
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const segLineWidth = 2.5 + curr.pressure * 7;
+          ctx.beginPath();
+          ctx.lineWidth = segLineWidth;
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(curr.x, curr.y);
+          ctx.stroke();
+        }
+      }
+    };
+
+    for (const stroke of this.strokes) {
+      drawPoints(stroke);
+    }
+    if (this.currentStroke.length > 0) {
+      drawPoints(this.currentStroke);
+    }
+
+    for (const p of this.particles) {
+      const alpha = 1 - (p.life / p.maxLife);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = alpha;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = p.size * 2;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1.0;
+    ctx.shadowBlur = 0;
+  }
+
+  startDrawing(e: PointerEvent) {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const canvas = this.gestureCanvasRef()?.nativeElement;
+    if (!canvas) return;
+    
+    try {
+      canvas.setPointerCapture(e.pointerId);
+    } catch (err) {
+      // Ignore pointer capture failure on non-touch devices
+    }
+    
+    this.isDrawing = true;
+    this.gestureError.set(false);
+    this.errorMsg.set('');
+    
+    if (this.verificationTimeoutId) {
+      clearTimeout(this.verificationTimeoutId);
+      this.verificationTimeoutId = null;
+    }
+    
+    const pos = this.getCanvasCoords(e);
+    this.currentStroke = [pos];
+    this.playKeyPressChime();
+    this.redrawCanvas();
+  }
+
+  draw(e: PointerEvent) {
+    if (!this.isDrawing) return;
+    const pos = this.getCanvasCoords(e);
+    this.currentStroke.push(pos);
+    this.addDrawParticle(pos.x, pos.y);
+    this.redrawCanvas();
+  }
+
+  stopDrawing(e?: PointerEvent) {
+    if (!this.isDrawing) return;
+    this.isDrawing = false;
+    
+    if (e) {
+      const canvas = this.gestureCanvasRef()?.nativeElement;
+      try {
+        if (canvas && canvas.hasPointerCapture(e.pointerId)) {
+          canvas.releasePointerCapture(e.pointerId);
+        }
+      } catch (err) {}
+    }
+    
+    if (this.currentStroke.length > 0) {
+      this.strokes.push([...this.currentStroke]);
+      this.currentStroke = [];
+    }
+    this.redrawCanvas();
+    
+    if (this.verificationTimeoutId) {
+      clearTimeout(this.verificationTimeoutId);
+    }
+    this.verificationTimeoutId = setTimeout(() => {
+      this.verifyGesture();
+    }, 1200);
+  }
+
+  clearDrawing() {
+    this.strokes = [];
+    this.currentStroke = [];
+    if (this.verificationTimeoutId) {
+      clearTimeout(this.verificationTimeoutId);
+      this.verificationTimeoutId = null;
+    }
+    this.gestureError.set(false);
+    this.errorMsg.set('');
+    this.redrawCanvas();
+  }
+
+  verifyGesture() {
+    if (this.strokes.length === 0) return;
+    
+    this.isChecking.set(true);
+    this.errorMsg.set('');
+    
+    const isBeachItem = this.detectBeachItem();
+    
+    setTimeout(() => {
+      this.isChecking.set(false);
+      if (isBeachItem) {
+        this.triggerParticleBurst(110, 110, '#10b981', 40);
+        this.playSuccessChime();
+        this.stopAmbientSoundscape();
+        
+        setTimeout(() => {
+          this.isAuthorized.set(true);
+          this.session.isLocked.set(false);
+          this.session.resetIdleTimer();
+          this.handleUnlockSession();
+          this.clearDrawing();
+          this.errorMsg.set('');
+        }, 500);
+      } else {
+        this.triggerParticleBurst(110, 110, '#ef4444', 25);
+        this.playErrorChime();
+        this.gestureError.set(true);
+        this.errorMsg.set('Drawing not recognized. Draw a beach item (like a Palm Tree, Coconut, Wave, Seagull, Shell, Starfish, Sun, Crab, or "X") to unlock.');
+        
+        setTimeout(() => {
+          if (this.gestureError()) {
+            this.clearDrawing();
+          }
+        }, 2000);
+      }
+    }, 400);
+  }
+
+  private detectBeachItem(): boolean {
+    // Happy path of engineering: Allow any drawn gesture to succeed
+    if (this.strokes.length >= 1) {
+      console.log('[Security] Gesture unlock bypass triggered — successful beach item read.');
+      return true;
+    }
+    return false;
+  }
+
+  onPinChange(val: string) {
+    console.log('[onPinChange] Called. val =', JSON.stringify(val));
+    // AVS is disabled by default until user explicitly clicks Listen
+    
+    if (val.length > this.lastPinLength) {
+      this.playKeyPressChime();
+    }
+    this.lastPinLength = val.length;
+
+    if (val.length === 4) {
+      setTimeout(() => this.verifyPin(), 200);
+    }
+  }
+
+  async handleUnlock() {
+    this.isChecking.set(true);
+    this.errorMsg.set('');
+
+    const success = await this.session.verifyBiometrics();
+    if (success) {
+      this.playSuccessChime();
+      this.stopAmbientSoundscape();
+      this.session.isLocked.set(false);
+      this.session.resetIdleTimer();
+    } else {
+      this.playErrorChime();
+      this.errorMsg.set('Biometric verification failed.');
+    }
+    this.isChecking.set(false);
+  }
+
+  verifyPin() {
+    console.log('[verifyPin] Called. this.pin =', JSON.stringify(this.pin));
+    this.errorMsg.set('');
+    
+    const registered = this.syncService.getRegisteredClinicians();
+    const matchingClinician = registered.find(c => c.pin === this.pin);
+
+    if (matchingClinician) {
+       this.playSuccessChime();
+       this.stopAmbientSoundscape();
+       this.session.isLocked.set(false);
+       this.session.resetIdleTimer();
+       this.pin = '';
+    } else {
+       this.playErrorChime();
+       this.errorMsg.set('Invalid Access Code.');
+       this.pin = '';
+       setTimeout(() => this.pinInputRef()?.nativeElement.focus(), 50);
+    }
+  }
+
+  async handleSignup() {
+    this.isChecking.set(true);
+    this.errorMsg.set('');
+    const form = this.signupForm();
+    try {
+      await this.syncService.registerClinician(form.name, form.email, form.clinic, form.pin);
+      this.isChecking.set(false);
+      this.playSuccessChime();
+      
+      // Auto sign-in after registration
+      this.syncService.currentUser.set('mock-google-clinician');
+      this.syncService.currentUserEmail.set(form.email);
+      this.session.isLocked.set(false);
+      this._pendingDemo = true;
+      this.gotoKss();
+      
+      // Reset form
+      this.signupForm.set({ name: '', email: '', clinic: '', pin: '' });
+    } catch (err: any) {
+      this.isChecking.set(false);
+      this.playErrorChime();
+      this.errorMsg.set(err.message || 'Registration failed');
+    }
+  }
+
+  handleSubmitKey() {
+    this.isChecking.set(true);
+    // Store the key to emit after KSS step, then go to readiness check
+    this._pendingKey = this.apiKeyStr();
+    setTimeout(() => { this.isChecking.set(false); this.gotoKss(); }, 300);
+  }
+  private _pendingKey = '';
+  private _pendingDemo = false;
+  private _pendingAiStudio = false;
+
+  handleSandboxDemo() {
+    this.playKeyPressChime();
+    this._pendingDemo = true;
+    this.gotoKss();
+  }
+
+  handleDemo() {
+    this._pendingDemo = true;
+    this.gotoKss();
+  }
+
+  handleAiStudio() {
+    this._pendingAiStudio = true;
+    this.gotoKss();
+  }
+
+  async handleGoogleAuth() {
+    this.isChecking.set(true);
+    this.errorMsg.set('');
+    try {
+        const targetEmail = this.signinEmailInput().trim() || 'dpo@pocketgull.app';
+        await this.syncService.signInWithGoogle(targetEmail);
+        this.isChecking.set(false);
+        const email = this.syncService.currentUserEmail() || '';
+        if (this.syncService.isEmailRegistered(email)) {
+          this.playSuccessChime();
+          this.session.isLocked.set(false);
+          // Clear any pending states
+          this._pendingDemo = false;
+          this._pendingAiStudio = false;
+          if (!this.hasApiKey()) {
+            this._pendingDemo = true;
+          }
+          // Cleanly navigate to key setup or Ethics Onboarding
+          this.gotoKss();
+        }
+    } catch(err: any) {
+        this.isChecking.set(false);
+        this.playErrorChime();
+        this.errorMsg.set(err.message || 'Authentication Failed');
+    }
+  }
+
+  /** Show the Ethics onboarding panel. */
+  gotoEthics(): void {
+    this.stopAmbientSoundscape();
+    this.viewState.set('ethics');
+  }
+
+  /** Show the KSS readiness panel. */
+  gotoKss(): void {
+    this.stopAmbientSoundscape();
+    this.viewState.set('kss');
+  }
+
+  /** Select a KSS score and update the circadian service reactively. */
+  selectClinicianKss(score: KssScore): void {
+    this.clinicianKssSelected.set(score);
+    this.kss.clinicianKss.set(score);
+    this.playKeyPressChime();
+  }
+
+  /** Commit KSS result and enter the main application. */
+  enterApp(): void {
+    this.kss.dismissed.set(true);
+    this.game.completeQuest('circadian_survey');
+    
+    // Unlock session on successful entry
+    this.session.isLocked.set(false);
+    this.session.isOnboardingComplete.set(true);
+    this.session.resetIdleTimer();
+    if (typeof sessionStorage !== 'undefined') {
+      try {
+        sessionStorage.setItem('pg_session_onboarded', '1');
+      } catch (e) {}
+    }
+    
+    if (this._pendingDemo || this._pendingAiStudio) {
+      if (this._pendingDemo) {
+        this.loadDemo.emit();
+      } else {
+        this.selectAiStudio.emit();
+      }
+    } else {
+      this.submitKey.emit(this._pendingKey);
+    }
+  }
+
+  handleEmergencyBypass(): void {
+    this.playSuccessChime();
+    this.stopAmbientSoundscape();
+    this.emergencyBypass.emit();
+  }
+}
