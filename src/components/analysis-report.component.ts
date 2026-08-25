@@ -316,6 +316,7 @@ import { PositivePsychologyFlourishingHubComponent } from './positive-psychology
                 <span>[VAULT ▾]</span>
               </button>
 
+
               @if (showAllLensesMenu()) {
                 <div class="absolute right-0 top-full mt-1 w-64 p-1.5 bg-zinc-950 border border-purple-500/40 shadow-2xl z-50 flex flex-col gap-1 max-h-80 overflow-y-auto font-mono text-xs">
                   @for (lens of availableLenses; track lens) {

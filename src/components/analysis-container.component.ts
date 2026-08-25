@@ -318,6 +318,11 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
     @if (showEvaluationHubModal()) {
       <app-clinical-ux-evaluation-hub (closed)="showEvaluationHubModal.set(false)"></app-clinical-ux-evaluation-hub>
     }
+
+    <!-- NN/g Usability & Clinical Evaluation Hub Modal -->
+    @if (showEvaluationHubModal()) {
+      <app-clinical-ux-evaluation-hub (closed)="showEvaluationHubModal.set(false)"></app-clinical-ux-evaluation-hub>
+    }
   `,
   styles: [`
     :host { display: block; height: 100%; width: 100%; }

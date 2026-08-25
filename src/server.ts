@@ -514,6 +514,7 @@ export async function fetchSecretFromSecretManager(secretName: string): Promise<
     return '';
   }
 
+  // Dynamic GCP Secret Manager Runtime Fetch (Keyless IAM Workload Identity)
   try {
     if (!secretClient) {
       secretClient = new SecretManagerServiceClient();

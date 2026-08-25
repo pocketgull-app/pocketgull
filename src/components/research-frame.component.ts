@@ -9,6 +9,8 @@ import { IBookmark } from '../services/patient.types';
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { PatientEducationFlipDirective, IPatientEducationFlipData } from '../directives/patient-education-flip.directive';
+import { NcaaSportsScienceHubComponent } from './research-frame/ncaa-sports-science-hub.component';
+import { InternationalUniversityHubComponent } from './research-frame/international-university-hub.component';
 import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
@@ -371,6 +373,14 @@ export interface IPubMedSearchResult {
               }
             }
           </div>
+        } @else if (searchEngine() === 'ncaa') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-ncaa-sports-science-hub></app-ncaa-sports-science-hub>
+          </div>
+        } @else if (searchEngine() === 'international') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-international-university-hub></app-international-university-hub>
+          </div>
         } @else if (!sanitizedUrl()) {
           <div class="w-full h-full flex items-center justify-center text-center text-gray-500 dark:text-zinc-400 p-4 relative z-20">
              <p class="text-xs">Search results and bookmarked pages will appear here.</p>
@@ -423,7 +433,7 @@ export class ResearchFrameComponent implements OnDestroy {
   patientState = inject(PatientStateService);
 
   isMobile = signal(false);
-  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard'>('google');
+  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international'>('google');
   searchText = signal<string>('');
 
   // --- Cognitive Load & Evidence Tier Signals ---
@@ -707,9 +717,9 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   // --- Browser Actions ---
-  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard') {
+  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international') {
     this.searchEngine.set(engine);
-    if (engine !== 'datacard' && this.searchText().trim()) {
+    if (engine !== 'datacard' && engine !== 'ncaa' && engine !== 'international' && this.searchText().trim()) {
       this.search();
     }
   }
