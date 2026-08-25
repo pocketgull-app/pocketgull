@@ -57,7 +57,8 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
     try {
       const term = req.query['term'] as string;
       if (!term) return res.status(400).json({ error: 'Term is required' });
-      const eSearchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(term)}&retmode=json&retmax=15`;
+      const apiKeyParam = process.env['NCBI_API_KEY'] ? `&api_key=${encodeURIComponent(process.env['NCBI_API_KEY'])}` : '';
+      const eSearchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(term)}&retmode=json&retmax=15&tool=PocketGull&email=dpo@pocketgull.app${apiKeyParam}`;
       const response = await fetch(eSearchUrl);
       const data = await response.json();
       res.json(data);
@@ -73,7 +74,8 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
     try {
       const id = req.query['id'] as string;
       if (!id) return res.status(400).json({ error: 'ID is required' });
-      const eSummaryUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${id}&retmode=json`;
+      const apiKeyParam = process.env['NCBI_API_KEY'] ? `&api_key=${encodeURIComponent(process.env['NCBI_API_KEY'])}` : '';
+      const eSummaryUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${encodeURIComponent(id)}&retmode=json&tool=PocketGull&email=dpo@pocketgull.app${apiKeyParam}`;
       const response = await fetch(eSummaryUrl);
       const data = await response.json();
       res.json(data);
