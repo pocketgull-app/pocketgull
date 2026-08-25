@@ -2,11 +2,17 @@ import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/c
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { IGeneticVariant, IBiochemicalPathway, IPharmacokineticInteraction } from '../services/patient.types';
+import { AlphaGenomeRegulatoryCardComponent } from './alphagenome-regulatory-card.component';
+import { GenomicVariantScreenerComponent } from './genomic-variant-screener.component';
 
 @Component({
   selector: 'app-biochemical-suite',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule, 
+    AlphaGenomeRegulatoryCardComponent, 
+    GenomicVariantScreenerComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-6 bg-zinc-950/60 backdrop-blur-md rounded-2xl border border-zinc-800/80 shadow-2xl space-y-6">
@@ -187,6 +193,16 @@ import { IGeneticVariant, IBiochemicalPathway, IPharmacokineticInteraction } fro
 
         </div>
 
+      </div>
+
+      <!-- AlphaGenome Deep Learning Regulatory Variant & PRS Engine -->
+      <div class="pt-4 border-t border-zinc-800 space-y-3">
+        <app-alphagenome-regulatory-card />
+      </div>
+
+      <!-- Precision Genomic Variant Screener -->
+      <div class="pt-4 border-t border-zinc-800 space-y-3">
+        <app-genomic-variant-screener />
       </div>
 
     </div>

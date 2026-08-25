@@ -5,7 +5,7 @@ import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { HistoryEntry, IPatient, IPatientVitals } from '../services/patient.types';
 import { MarkdownService } from '../services/markdown.service';
-import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { ParadigmLyricsService } from '../services/paradigm-lyrics.service';
 import { DictationService } from '../services/dictation.service';
 import { CompassionateAnalogyService } from '../services/compassionate-analogy.service';
@@ -87,12 +87,16 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
 import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.component';
 import { AvsEngineService, AvsBitrateTier } from '../services/avs-engine.service';
 import { PositivePsychologyFlourishingHubComponent } from './positive-psychology-flourishing-hub.component';
+import { SystemsEquilibriumHudComponent, SystemsNavMode } from './analysis-report/systems-equilibrium-hud.component';
+import { InterSystemCrosstalkCardComponent } from './analysis-report/inter-system-crosstalk-card.component';
 
 @Component({
   selector: 'app-analysis-report',
   standalone: true,
   imports: [
     CommonModule,
+    SystemsEquilibriumHudComponent,
+    InterSystemCrosstalkCardComponent,
     PositivePsychologyFlourishingHubComponent,
     AssessmentsLensTabComponent,
     ChronobiologyMatrixLensTabComponent,
@@ -683,21 +687,39 @@ import { PositivePsychologyFlourishingHubComponent } from './positive-psychology
 
 
 
-        <!--Clinical Overview Dashboard & Telemetry Gauges-->
+        <!-- Clinical Overview Dashboard & Telemetry Gauges -->
         @if (activeLens() !== 'EMT Handoff' && !state.isEmergencyMode() && intel.analysisMetrics(); as metrics) {
-          <div class="mb-10 grid grid-cols-1 md:grid-cols-3 gap-6 no-print">
+          <div class="mb-8 space-y-4 no-print font-mono">
             
-            <!-- Tri-Paradigm Swarm, Pharmacogenomics, Biometric Fusion & Local Gemma Studio -->
-            <div class="col-span-full mb-4 space-y-4 font-mono">
-              <app-tri-paradigm-swarm-card></app-tri-paradigm-swarm-card>
-              <app-pharmacogenomics-card></app-pharmacogenomics-card>
-              <app-biometric-sensor-fusion-card></app-biometric-sensor-fusion-card>
-              <app-local-gemma-studio></app-local-gemma-studio>
-            </div>
+            <!-- Tier 1: Systems Equilibrium HUD -->
+            <app-systems-equilibrium-hud (modeChange)="onSystemsModeChange($event)"></app-systems-equilibrium-hud>
+
+            <!-- Mode-Driven Systems Content -->
+            @if (systemsNavMode() === 'overview') {
+              <div class="space-y-4 animate-in fade-in duration-200">
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                  <app-tri-paradigm-swarm-card></app-tri-paradigm-swarm-card>
+                  <div class="space-y-4">
+                    <app-pharmacogenomics-card></app-pharmacogenomics-card>
+                    <app-biometric-sensor-fusion-card></app-biometric-sensor-fusion-card>
+                  </div>
+                </div>
+                <app-local-gemma-studio></app-local-gemma-studio>
+              </div>
+            } @else if (systemsNavMode() === 'crosstalk') {
+              <div class="space-y-4 animate-in fade-in duration-200">
+                <app-inter-system-crosstalk-card></app-inter-system-crosstalk-card>
+                <app-local-gemma-studio></app-local-gemma-studio>
+              </div>
+            } @else if (systemsNavMode() === 'gemma') {
+              <div class="animate-in fade-in duration-200">
+                <app-local-gemma-studio></app-local-gemma-studio>
+              </div>
+            }
 
             <!-- Multi-Paradigm Switchable Clinical Dashboard (Shown for Functional Protocols or Non-Western Paradigms) -->
             @if (activeLens() === 'Functional Protocols' || state.activePhilosophy() !== 'western') {
-              <div class="col-span-full mb-4 space-y-4 font-mono">
+              <div class="space-y-4">
                 <app-occupational-hazard-card></app-occupational-hazard-card>
                 <app-paradigm-clinical-dashboard></app-paradigm-clinical-dashboard>
               </div>
@@ -2345,6 +2367,14 @@ export class AnalysisReportComponent implements OnDestroy {
   showClinicalToolsModal = signal<boolean>(false);
   showAllLensesMenu = signal<boolean>(false);
   showFhirPassportModal = signal<boolean>(false);
+  readonly systemsNavMode = signal<SystemsNavMode>('overview');
+
+  onSystemsModeChange(mode: SystemsNavMode): void {
+    this.systemsNavMode.set(mode);
+    if (mode === 'auxiliary') {
+      this.isAuxToolsExpanded.set(true);
+    }
+  }
 
   exportFhirPassport() {
     this.showFhirPassportModal.set(true);

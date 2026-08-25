@@ -18,8 +18,11 @@ import { SeverityParticleService } from '../../services/severity-particle.servic
 import { SocraticComorbidityRadarService } from '../../services/socratic-comorbidity-radar.service';
 import { RadialPieMenuComponent, RadialPieAction } from './radial-pie-menu.component';
 import { BiophysicalTwinTimelineComponent } from './biophysical-twin-timeline.component';
+import { ClinicalHolodeckViewerComponent } from '../clinical-holodeck-viewer.component';
+import { LidarScanUploadModalComponent } from '../modals/lidar-scan-upload-modal.component';
 import { SpatialLesionMarkupService } from '../../services/spatial-lesion-markup.service';
 import { AvsEngineService } from '../../services/avs-engine.service';
+import { VeoService } from '../../services/veo.service';
 import { IBodyPartIssue } from '../../services/patient.types';
 
 const PART_NAMES: Record<string, string> = {
@@ -82,7 +85,13 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
     host: {
         'ngSkipHydration': 'true'
     },
-    imports: [CommonModule, RadialPieMenuComponent, BiophysicalTwinTimelineComponent],
+    imports: [
+        CommonModule, 
+        RadialPieMenuComponent, 
+        BiophysicalTwinTimelineComponent,
+        ClinicalHolodeckViewerComponent,
+        LidarScanUploadModalComponent
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 
     template: `
@@ -222,6 +231,22 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
               <span>Export FHIR R4</span>
             </button>
           }
+
+          <!-- 🥽 3D Holodeck WebXR Dissection Viewer Button -->
+          <button (click)="showHolodeckModal.set(true)"
+            class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-teal-700 hover:bg-teal-800 text-white border border-teal-600 shadow-xs text-[10px] uppercase"
+            title="Launch 3D WebXR Joint Dissection Holodeck">
+            <span>🥽</span>
+            <span>Holodeck</span>
+          </button>
+
+          <!-- 📸 LiDAR / 3D Mesh Upload Button -->
+          <button (click)="showLidarModal.set(true)"
+            class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-cyan-700 hover:bg-cyan-800 text-white border border-cyan-600 shadow-xs text-[10px] uppercase"
+            title="Import custom 3D LiDAR scan or photogrammetry model">
+            <span>📸</span>
+            <span>LiDAR Scan</span>
+          </button>
         </div>
 
         <!-- 🔪 3D Anatomical Cross-Section & Slice Plane Controls -->
@@ -496,6 +521,26 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
       <!-- 🧬 24-Hour Predictive Biophysical Twin Timeline Scrubber Ribbon -->
       <app-biophysical-twin-timeline />
 
+      <!-- 🥽 3D WebXR Clinical Holodeck Viewer Modal Overlay -->
+      @if (showHolodeckModal()) {
+        <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200">
+          <div class="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto bg-zinc-950 rounded-2xl border border-zinc-800 shadow-2xl p-2">
+            <button (click)="showHolodeckModal.set(false)"
+                    class="absolute top-4 right-4 z-50 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-300 hover:text-white font-mono text-xs font-bold transition cursor-pointer">
+              ✕ Close Holodeck
+            </button>
+            <app-clinical-holodeck-viewer />
+          </div>
+        </div>
+      }
+
+      <!-- 📸 LiDAR & Photogrammetry Mesh Upload Modal -->
+      @if (showLidarModal()) {
+        <app-lidar-scan-upload-modal
+          (closeModal)="showLidarModal.set(false)"
+          (modelLoaded)="showLidarModal.set(false)" />
+      }
+
     </div>
   `,
 
@@ -511,8 +556,13 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     protected readonly envTelemetry = inject(EnvironmentalTelemetryService);
     protected readonly fireflyTexture = inject(AdobeFireflyTextureService);
     protected readonly radarService = inject(SocraticComorbidityRadarService, { optional: true });
+    protected readonly veoService = inject(VeoService, { optional: true });
     private readonly platformId = inject(PLATFORM_ID);
     private readonly canvasContainer = viewChild<ElementRef<HTMLDivElement>>('canvasContainer');
+
+    // 🥽 WebXR Holodeck & 📸 LiDAR Scan Modal Signals
+    readonly showHolodeckModal = signal<boolean>(false);
+    readonly showLidarModal = signal<boolean>(false);
 
     // 🪢 Socratic Referral Radar Computed List
     readonly activeReferrals = computed(() => this.radarService?.activeReferrals() ?? []);

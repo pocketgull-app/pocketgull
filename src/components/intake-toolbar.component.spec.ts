@@ -2,6 +2,7 @@ import '@angular/compiler';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { IntakeToolbarComponent } from './intake-toolbar.component';
 import { FitbitService } from '../services/hardware/fitbit.service';
+import { AppLicensingGuardService } from '../services/app-licensing-guard.service';
 
 describe('IntakeToolbarComponent', () => {
   let component: IntakeToolbarComponent;
@@ -17,7 +18,8 @@ describe('IntakeToolbarComponent', () => {
 
     const injector = Injector.create({
       providers: [
-        { provide: FitbitService, useValue: mockFitbit }
+        { provide: FitbitService, useValue: mockFitbit },
+        AppLicensingGuardService
       ]
     });
 

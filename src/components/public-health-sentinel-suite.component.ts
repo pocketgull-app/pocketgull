@@ -2,11 +2,18 @@ import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SentinelSurveillanceService } from '../services/sentinel-surveillance.service';
 import { EnvironmentalExposomicsToxicologyComponent } from './environmental-exposomics-toxicology.component';
+import { PrivacySovereigntyDashboardComponent } from './privacy-sovereignty-dashboard.component';
+import { OfflineEdgeControlsComponent } from './offline-edge-controls.component';
 
 @Component({
   selector: 'app-public-health-sentinel-suite',
   standalone: true,
-  imports: [CommonModule, EnvironmentalExposomicsToxicologyComponent],
+  imports: [
+    CommonModule, 
+    EnvironmentalExposomicsToxicologyComponent,
+    PrivacySovereigntyDashboardComponent,
+    OfflineEdgeControlsComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-6 bg-zinc-950/60 backdrop-blur-md rounded-2xl border border-zinc-800/80 shadow-2xl space-y-6">
@@ -242,6 +249,12 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
 
       <!-- Acute Toxidrome Triage & PFAS Environmental Exposomics Module -->
       <app-environmental-exposomics-toxicology class="block mt-6" />
+
+      <!-- Privacy Sovereignty & Zero-Egress HIPAA Shield -->
+      <app-privacy-sovereignty-dashboard />
+
+      <!-- Offline PWA & WebAssembly Edge AI Controls -->
+      <app-offline-edge-controls />
 
     </div>
   `,

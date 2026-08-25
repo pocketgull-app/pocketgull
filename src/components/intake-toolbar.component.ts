@@ -2,6 +2,7 @@ import { Component, inject, output, signal, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientDropdownComponent } from './patient-dropdown.component';
 import { FitbitService } from '../services/hardware/fitbit.service';
+import { AppLicensingGuardService } from '../services/app-licensing-guard.service';
 
 @Component({
   selector: 'app-intake-toolbar',
@@ -14,6 +15,34 @@ import { FitbitService } from '../services/hardware/fitbit.service';
     <!-- Patient Intake Navigation Bar -->
     <nav class="h-12 border-b border-[#EEEEEE] dark:border-zinc-800 flex items-center px-3 sm:px-6 shrink-0 bg-gray-50 dark:bg-[#09090b] z-40 no-print gap-2 sm:gap-4">
       <div id="tour-patient-dropdown"><app-patient-dropdown></app-patient-dropdown></div>
+
+      <!-- Usage & License Meter Badge -->
+      <button 
+        type="button"
+        id="btn-licensing-toolbar"
+        (click)="openLicensingModal.emit()"
+        aria-label="View Usage and License Status"
+        class="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer border"
+        [class.bg-emerald-500/10]="licensing.isLicenseActive()"
+        [class.border-emerald-500/30]="licensing.isLicenseActive()"
+        [class.text-emerald-700]="licensing.isLicenseActive()"
+        [class.dark:text-emerald-400]="licensing.isLicenseActive()"
+        [class.bg-amber-500/10]="!licensing.isLicenseActive() && !licensing.isTrialExhausted()"
+        [class.border-amber-500/30]="!licensing.isLicenseActive() && !licensing.isTrialExhausted()"
+        [class.text-amber-700]="!licensing.isLicenseActive() && !licensing.isTrialExhausted()"
+        [class.dark:text-amber-400]="!licensing.isLicenseActive() && !licensing.isTrialExhausted()"
+        [class.bg-rose-500/10]="licensing.isTrialExhausted()"
+        [class.border-rose-500/40]="licensing.isTrialExhausted()"
+        [class.text-rose-700]="licensing.isTrialExhausted()"
+        [class.dark:text-rose-400]="licensing.isTrialExhausted()">
+        @if (licensing.isLicenseActive()) {
+          <span>👑</span>
+          <span class="hidden sm:inline">Active ({{ licensing.activeTier().replace('_', ' ') }})</span>
+        } @else {
+          <span>🎯</span>
+          <span>Trial: {{ licensing.remainingConsults() }}/{{ licensing.MAX_FREE_TRIAL_CONSULTS }} Left</span>
+        }
+      </button>
 
       <!-- Socratic Intake Studio Launcher -->
       <button 
@@ -130,12 +159,14 @@ import { FitbitService } from '../services/hardware/fitbit.service';
 })
 export class IntakeToolbarComponent {
   fitbit = inject(FitbitService);
+  licensing = inject(AppLicensingGuardService);
 
   hasReport = input<boolean>(false);
 
   exportMenuOpen = signal<boolean>(false);
   connectMenuOpen = signal<boolean>(false);
 
+  openLicensingModal = output<void>();
   exportPdf = output<void>();
   exportJson = output<void>();
   exportFhir = output<void>();

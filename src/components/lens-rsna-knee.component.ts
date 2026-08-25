@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientStateService } from '../services/patient-state.service';
+import { KneeHologramHudComponent } from './knee-hologram-hud.component';
 
 export interface IKneeAbnormalityTarget {
   key: string;
@@ -41,10 +42,14 @@ export interface IFhirR4DiagnosticReport {
 @Component({
   selector: 'app-lens-rsna-knee',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, KneeHologramHudComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mb-8 p-6 sm:p-8 bg-zinc-950 text-zinc-100 rounded-3xl border border-zinc-800 shadow-2xl font-sans relative overflow-hidden">
+      <!-- 3D Joint Hologram Tri-Plane Slicer HUD -->
+      <div class="mb-6">
+        <app-knee-hologram-hud />
+      </div>
       <!-- Header Banner -->
       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800 pb-6 mb-6">
         <div>

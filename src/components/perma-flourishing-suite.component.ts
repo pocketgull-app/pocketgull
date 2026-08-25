@@ -1,6 +1,7 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { PostItNotesComponent } from './shared/post-it-notes.component';
 
 export interface IGratitudeLog {
   id: string;
@@ -13,7 +14,7 @@ export interface IGratitudeLog {
 @Component({
   selector: 'app-perma-flourishing-suite',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PostItNotesComponent],
   template: `
     <div class="p-6 bg-gradient-to-br from-amber-50/60 via-emerald-50/50 to-teal-50/60 dark:from-zinc-900 dark:via-emerald-950/20 dark:to-zinc-900 rounded-2xl border border-amber-200/60 dark:border-emerald-800/40 shadow-xl transition-all">
       
@@ -123,6 +124,11 @@ export interface IGratitudeLog {
           </div>
         </div>
 
+      </div>
+
+      <!-- Positive Psychology & Clinical Care Post-It Sticky Notes -->
+      <div class="mt-6 pt-6 border-t border-amber-200/50 dark:border-zinc-800">
+        <app-post-it-notes />
       </div>
     </div>
   `

@@ -97,6 +97,19 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
     });
   });
 
+  // Intercept POST /api/patients bulk sync to ensure fast, deterministic E2E test execution across all browser engines
+  await page.route('**/api/patients', async route => {
+    if (route.request().method() === 'POST') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true })
+      });
+    } else {
+      await route.continue();
+    }
+  });
+
   // Intercept AI Metrics endpoint
   await page.route('**/api/ai/metrics', async route => {
     console.log('E2E MOCK: Intercepted POST /api/ai/metrics');

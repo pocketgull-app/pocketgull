@@ -33,7 +33,7 @@ export class ImpactPartnerChannelsService {
       followerOrVisitorCount: 0, // Authentic launch state
       isVerified: true,
       status: 'CONNECTED_PRIMARY',
-      impactChecklistId: '___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL'
+      impactChecklistId: 'impact-chk-default-partner'
     },
     {
       id: 'chan_youtube_02',
@@ -43,7 +43,7 @@ export class ImpactPartnerChannelsService {
       followerOrVisitorCount: 0, // Authentic launch state
       isVerified: true,
       status: 'CONNECTED',
-      impactChecklistId: '___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL'
+      impactChecklistId: 'impact-chk-default-partner'
     },
     {
       id: 'chan_x_03',
@@ -53,7 +53,7 @@ export class ImpactPartnerChannelsService {
       followerOrVisitorCount: 0, // Authentic launch state
       isVerified: true,
       status: 'CONNECTED',
-      impactChecklistId: '___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL'
+      impactChecklistId: 'impact-chk-default-partner'
     }
   ]);
 
@@ -70,7 +70,7 @@ export class ImpactPartnerChannelsService {
       followerOrVisitorCount: count,
       isVerified: true,
       status: 'CONNECTED',
-      impactChecklistId: '___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL'
+      impactChecklistId: 'impact-chk-default-partner'
     };
     this.connectedChannels.update(list => [...list, newChan]);
   }

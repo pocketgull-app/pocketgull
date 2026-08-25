@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@a
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component';
+import { LifePerilsParadigmMatrixComponent } from '../life-perils-paradigm-matrix.component';
 
 export interface IChronoDoseStep {
   time: string;
@@ -17,7 +18,7 @@ export interface IChronoDoseStep {
 @Component({
   selector: 'app-tri-paradigm-integrative-lens-tab',
   standalone: true,
-  imports: [CommonModule, PocketGullBadgeComponent],
+  imports: [CommonModule, PocketGullBadgeComponent, LifePerilsParadigmMatrixComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-6 animate-in fade-in duration-300">
@@ -337,6 +338,9 @@ export interface IChronoDoseStep {
         </div>
 
       </div>
+
+      <!-- Cross-Paradigm Life-Stage Perils Matrix -->
+      <app-life-perils-paradigm-matrix />
 
     </div>
   `

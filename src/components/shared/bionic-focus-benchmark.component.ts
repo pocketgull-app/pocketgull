@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BionicReadingService } from '../../services/bionic-reading.service';
-import { SafeHtmlPipe } from '../../pipes/safe-html-new.pipe';
+import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 
 export type LearnerNeurotype = 'all' | 'adhd' | 'dyslexia' | 'icu-triage';
 export type GameLevel = 1 | 2 | 3 | 4;

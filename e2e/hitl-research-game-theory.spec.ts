@@ -5,7 +5,9 @@ test.describe('HITL Research Queue, Tri-Gesture & Game Theory Engine Suite', () 
   test.beforeEach(async ({ page }) => {
     test.setTimeout(120000);
     await setupE2ePage(page);
-    await page.setViewportSize({ width: 1440, height: 900 });
+    try {
+      await page.setViewportSize({ width: 1440, height: 900 });
+    } catch {}
     await enterDemoMode(page);
   });
 

@@ -312,7 +312,7 @@ export class PatientStateService {
   readonly analysisUpdateRequest = signal(0);
   readonly requestedResearchUrl = signal<string | null>(null);
   readonly requestedResearchQuery = signal<string | null>(null);
-  readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | null>(null);
+  readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
   readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular'>('3d');
   readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic'>('skin');

@@ -218,6 +218,40 @@ PARADIGM_DIRECTIVES = {
         "spatial panning mode, and generate an empathetic micro-grounding affirmation under 20 words. "
         "Output strict JSON with keys: 'audio_engine', 'panning_mode', 'grounding_phrase'."
     ),
+    "on_device_ismp_guard": (
+        "[PARADIGM: ON-DEVICE ISMP HIGH-RISK MEDICATION SAFETY PROOFREADER]\n"
+        "You are an on-device clinical proofreader and ISMP medication safety guard. Inspect draft clinical notes "
+        "and prescription orders. Strictly detect and flag trailing zeroes (e.g. 5.0 mg -> 5 mg), naked decimals "
+        "(e.g. .5 mg -> 0.5 mg), error-prone abbreviations (U, QD, MS), and sound-alike look-alike (SALAD) drug confusion. "
+        "Output strict JSON with keys: 'auditResult', 'violations', 'correctedOrder', 'citation'."
+    ),
+    "triage_acuity_routing": (
+        "[PARADIGM: TRIAGE ACUITY CLASSIFICATION & FIVE EYES DISPATCH]\n"
+        "You are an emergency triage acuity classifier. Classify patient symptom and vital telemetry into "
+        "categorical acuity tiers ('STAT_EMERGENCY', 'URGENT', 'ROUTINE'). Formulate immediate clinical stabilization "
+        "directives and map statutory Five Eyes crisis lifelines (988 US/CA, 111 UK, 13 11 14 AU, 1737 NZ). "
+        "Output strict JSON with keys: 'acuityLevel', 'clinicalDirectives', 'statutoryHotlines', 'fhirTriageCode'."
+    ),
+    "multimodal_wound_derm_vision": (
+        "[PARADIGM: MULTIMODAL WOUND & DERMATOLOGY TISSUE VISION]\n"
+        "You are a multimodal clinical wound assessment engine. Analyze visual wound artifacts, quantify surface tissue "
+        "composition (granulation, slough, eschar percentages), and recommend evidence-grounded non-cytotoxic cleansing and "
+        "hydrocellular dressing protocols citing Cochrane Level A systematic reviews. "
+        "Output strict JSON with keys: 'stage', 'tissueComposition', 'exudateLevel', 'evidenceGroundedProtocol', 'cochraneRoB2Citation'."
+    ),
+    "amazon_affiliate_egress_guard": (
+        "[PARADIGM: AMAZON AFFILIATE & FTC COMPLIANCE EGRESS GUARD]\n"
+        "You are a clinical affiliate egress governance controller. Validate supportive equipment recommendations. "
+        "Ensure mandatory FTC disclosure ('As an Amazon Associate, PocketGull earns from qualifying purchases'), "
+        "strictly prohibit raw affiliate links inside SMS or outbound push communications, and eliminate all patient PHI from URL tracking parameters. "
+        "Output strict JSON with keys: 'isApprovedChannel', 'sanitizedUrl', 'ftcMandatoryDisclosure', 'clinicalDisclaimer', 'egressAudit'."
+    ),
+    "post_quantum_fhir_seal": (
+        "[PARADIGM: POST-QUANTUM FHIR R4 PROVENANCE SEALING]\n"
+        "You are a post-quantum clinical cryptographic sealing engine. Encapsulate exported FHIR R4 Patient Care Plan "
+        "bundles with ML-KEM-768 / Dilithium3 digital signatures and SHA-256 state provenance digests. Ensure strict HIPAA Safe Harbor §164.514 de-identification. "
+        "Output strict JSON with keys: 'sealedBundleEnvelope'."
+    ),
 }
 
 SAMPLE_DATASETS = {
@@ -1016,6 +1050,11 @@ def main() -> None:
             "ambient_environmental_telemetry",
             "clinician_fatigue_adaptive_ui",
             "life_journey_sensory_path",
+            "on_device_ismp_guard",
+            "triage_acuity_routing",
+            "multimodal_wound_derm_vision",
+            "amazon_affiliate_egress_guard",
+            "post_quantum_fhir_seal",
         ],
         help="Target clinical paradigm instruction format",
     )

@@ -17,7 +17,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
 import { MarkdownService } from '../services/markdown.service';
 import { RichMediaService, IRichMediaCard } from '../services/rich-media.service';
 import { Medical3DViewerComponent } from './anatomy-3d/medical-3d-viewer.component';
-import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { ClinicalIconComponent } from './shared/clinical-icon.component';

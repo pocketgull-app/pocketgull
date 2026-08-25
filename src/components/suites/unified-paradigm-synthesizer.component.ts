@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
+import { PARADIGM_DEFINITIONS } from '../../constants/paradigm-definitions';
 
 export interface IParadigmVector {
   id: string;
@@ -58,6 +59,23 @@ export interface IParadigmVector {
           </div>
         }
       </div>
+
+      <!-- Core 4 Multimodal Medical Paradigms Metadata Strip -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-3 border-t border-zinc-850 text-xs font-mono">
+        @for (item of paradigmList; track item.id) {
+          <div [class]="'p-2 rounded-xl bg-zinc-900/60 border ' + item.borderColor + ' flex flex-col justify-between'">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-[11px] text-zinc-200">{{ item.title }}</span>
+              <span [class]="'px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase ' + item.badgeBg + ' ' + item.badgeText">
+                {{ item.id }}
+              </span>
+            </div>
+            <p class="text-[10px] text-zinc-400 font-sans mt-1 leading-tight line-clamp-2">
+              {{ item.subtitle }}
+            </p>
+          </div>
+        }
+      </div>
     </div>
   `,
   styles: [`
@@ -67,6 +85,7 @@ export interface IParadigmVector {
 export class UnifiedParadigmSynthesizerComponent {
   private patientState = inject(PatientStateService);
 
+  readonly paradigmList = Object.values(PARADIGM_DEFINITIONS);
   readonly alignmentScore = signal<number>(94);
 
   readonly vectors = signal<IParadigmVector[]>([

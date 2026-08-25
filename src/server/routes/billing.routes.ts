@@ -163,17 +163,36 @@ export function createBillingRouter() {
         return res.json({ url: fallbackUrl, sessionId: 'cs_simulated_' + Date.now() });
       }
 
-      // Create a live Stripe Checkout Session
+      // Create a live Stripe Checkout Session with best enterprise and GAAP provisions
       const session = await getStripe().checkout.sessions.create({
         line_items: lineItems,
         mode: mode,
         success_url: String(successUrl || `${origin}/?billing=success&session_id={CHECKOUT_SESSION_ID}`),
         cancel_url: String(cancelUrl || `${origin}/?billing=canceled`),
         customer_email: customerEmail ? String(customerEmail) : undefined,
+        billing_address_collection: 'auto',
+        allow_promotion_codes: true,
+        automatic_tax: { enabled: true },
+        phone_number_collection: { enabled: true },
+        invoice_creation: mode === 'payment' ? { enabled: true } : undefined,
+        payment_method_types: ['card', 'link'],
+        customer_update: mode === 'subscription' ? { address: 'auto', name: 'auto' } : undefined,
+        subscription_data: mode === 'subscription' ? {
+          metadata: {
+            tier: String(tier || 'clinic_pro'),
+            gaap_covenant: 'ASC_958_85PCT_PROGRAMMATIC',
+            entity: 'PocketGull LLC (Registry: 258869891)'
+          }
+        } : undefined,
         metadata: {
           tier: String(tier || 'custom'),
-          endowment_fund: String(endowmentFund || 'Alumni Health & Research Endowment'),
-          revenue_split: String(revenueSplit || '50-30-20'),
+          endowment_fund: String(endowmentFund || 'PocketGull Seven Generations Tribal & Public Health Fund'),
+          revenue_split: String(revenueSplit || '85-10-5'),
+          gaap_covenant: 'ASC_958_85PCT_PROGRAMMATIC',
+          tribal_sovereignty_fund: 'Wampanoag_and_Indigenous_Health_Alliance',
+          entity: 'PocketGull LLC',
+          registry: '258869891',
+          fhir_r4_compliance: 'true',
           founder_dispensation: 'true'
         }
       });

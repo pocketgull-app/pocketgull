@@ -17,7 +17,6 @@ class _SplashLoginScreenState extends State<SplashLoginScreen> {
   final TextEditingController _delegationCodeController = TextEditingController();
   bool _obscureText = true;
   List<Patient> _patients = [];
-  bool _loadingPatients = true;
 
   @override
   void initState() {
@@ -26,7 +25,6 @@ class _SplashLoginScreenState extends State<SplashLoginScreen> {
   }
 
   Future<void> _loadPatients() async {
-    setState(() => _loadingPatients = true);
     final data = await _apiClient.fetchPatients();
     if (mounted) {
       setState(() {
@@ -62,7 +60,6 @@ class _SplashLoginScreenState extends State<SplashLoginScreen> {
             ),
           ];
         }
-        _loadingPatients = false;
       });
     }
   }

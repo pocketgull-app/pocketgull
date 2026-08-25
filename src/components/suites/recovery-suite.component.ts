@@ -4,11 +4,24 @@ import { PatientStateService } from '../../services/patient-state.service';
 import { VagalBiofeedbackDockComponent } from '../vagal-biofeedback-dock.component';
 import { ChronoClockDecisionRailComponent } from '../chrono-clock-decision-rail.component';
 import { HolisticSleepToolkitComponent } from '../holistic-sleep-toolkit.component';
+import { PhantomLimbMirrorTherapyComponent } from '../phantom-limb-mirror-therapy.component';
+import { BioSymphonyVisualizerComponent } from '../bio-symphony-visualizer.component';
+import { AvianSeaShantyDeckComponent } from '../avian-sea-shanty-deck.component';
+import { DocConsciousnessComponent } from '../doc-consciousness.component';
 
 @Component({
   selector: 'app-recovery-suite',
   standalone: true,
-  imports: [CommonModule, VagalBiofeedbackDockComponent, ChronoClockDecisionRailComponent, HolisticSleepToolkitComponent],
+  imports: [
+    CommonModule, 
+    VagalBiofeedbackDockComponent, 
+    ChronoClockDecisionRailComponent, 
+    HolisticSleepToolkitComponent,
+    PhantomLimbMirrorTherapyComponent,
+    BioSymphonyVisualizerComponent,
+    AvianSeaShantyDeckComponent,
+    DocConsciousnessComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl space-y-6">
@@ -44,6 +57,26 @@ import { HolisticSleepToolkitComponent } from '../holistic-sleep-toolkit.compone
             <span>🌙</span> Sleep Twin, Conformal Uncertainty (95% Coverage) & Ambient Sanctuary
           </h4>
           <app-holistic-sleep-toolkit />
+        </div>
+
+        <!-- Phantom Limb Mirror Therapy & Somatosensory Rehabilitation -->
+        <div class="space-y-4 col-span-1 lg:col-span-2">
+          <app-phantom-limb-mirror-therapy />
+        </div>
+
+        <!-- Bio-Symphony Generative Vital Signs & Binaural Entrainment Suite -->
+        <div class="space-y-4 col-span-1 lg:col-span-2">
+          <app-bio-symphony-visualizer />
+        </div>
+
+        <!-- Avian Sea Shanty Vagal Co-Singing Deck -->
+        <div class="space-y-4 col-span-1 lg:col-span-2">
+          <app-avian-sea-shanty-deck />
+        </div>
+
+        <!-- Disorders of Consciousness (DOC) Sensory Stimulation Protocol -->
+        <div class="space-y-4 col-span-1 lg:col-span-2">
+          <app-doc-consciousness />
         </div>
       </div>
     </div>

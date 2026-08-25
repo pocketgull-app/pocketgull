@@ -130,7 +130,6 @@ Uint8List generateProviderIconPng(int size) {
       final idx = (y * size + x) * 4;
       final dx = x - center;
       final dy = y - center;
-      final dist = math.sqrt(dx * dx + dy * dy);
 
       final cornerRadius = size * 0.22;
       final isInsideSquircle = isPointInsideSquircle(x.toDouble(), y.toDouble(), size.toDouble(), cornerRadius);
@@ -197,7 +196,6 @@ Uint8List generateCoreIconPng(int size) {
       }
 
       final dx = x - center;
-      final dy = y - center;
 
       int r = 10;
       int g = 10;

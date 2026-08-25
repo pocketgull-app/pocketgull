@@ -2,6 +2,7 @@ import '@angular/compiler';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { NcaaSportsScienceHubComponent } from './ncaa-sports-science-hub.component';
 import { NcaaSportsScienceService } from '../../services/ncaa-sports-science.service';
+import { AthleticProtocolService } from '../../services/athletic-protocol.service';
 
 describe('NcaaSportsScienceHubComponent Suite', () => {
   let component: NcaaSportsScienceHubComponent;
@@ -10,7 +11,8 @@ describe('NcaaSportsScienceHubComponent Suite', () => {
   beforeEach(() => {
     const injector = Injector.create({
       providers: [
-        NcaaSportsScienceService
+        NcaaSportsScienceService,
+        AthleticProtocolService
       ]
     });
     sportsScienceService = injector.get(NcaaSportsScienceService);

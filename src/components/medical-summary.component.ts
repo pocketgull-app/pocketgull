@@ -21,12 +21,20 @@ import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { PocketGullBadgeComponent } from './shared/pocket-gull-badge.component';
 import { MetricCardComponent } from './shared/metric-card.component';
 import { ClinicalDataCardComponent } from './clinical-data-card.component';
-import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-medical-summary',
   standalone: true,
-  imports: [CommonModule, PocketGullButtonComponent, PocketGullInputComponent, PocketGullBadgeComponent, MetricCardComponent, ClinicalDataCardComponent, SafeHtmlPipe],
+  imports: [
+    CommonModule, 
+    PocketGullButtonComponent, 
+    PocketGullInputComponent, 
+    PocketGullBadgeComponent, 
+    MetricCardComponent, 
+    ClinicalDataCardComponent, 
+    SafeHtmlPipe
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
     /* Tighter margin collapsing inside strategy prose to prevent padding blowouts */

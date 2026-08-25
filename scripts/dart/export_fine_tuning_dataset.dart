@@ -201,6 +201,126 @@ final dataset = <FineTuningRecord>[
     },
     chosen: 'Applies empirical regional Bayesian priors, prescribes 72h Doxycycline prophylaxis, and flags Babesia co-infection monitoring.',
     rejected: 'Tells the patient not to worry because ticks never transmit infections in less than 5 days.'
+  ),
+
+  // 19. On-Device ISMP Medication Safety Guard (Gemma 4 Dev Trial)
+  FineTuningRecord(
+    paradigm: 'on_device_ismp_guard',
+    instruction: 'Audit draft clinical medication orders against FDA and ISMP high-risk medication safety standards.',
+    input: {
+      'draftOrder': 'Order Morphine 5.0 mg IV push STAT; Levothyroxine .05 mg PO daily.'
+    },
+    output: {
+      'auditResult': 'SAFETY_VIOLATIONS_DETECTED',
+      'violations': [
+        {
+          'type': 'TRAILING_ZERO',
+          'target': '5.0 mg',
+          'ismpRule': 'Prohibit trailing zero after whole numbers to prevent 10x overdose misinterpretation.',
+          'remediatedText': '5 mg'
+        },
+        {
+          'type': 'NAKED_DECIMAL',
+          'target': '.05 mg',
+          'ismpRule': 'Require leading zero before decimals to prevent missing point misinterpretation.',
+          'remediatedText': '0.05 mg (50 mcg)'
+        }
+      ],
+      'correctedOrder': 'Order Morphine 5 mg IV push STAT; Levothyroxine 50 mcg (0.05 mg) PO daily.',
+      'citation': 'ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2026 Edition)'
+    },
+    chosen: 'Identifies trailing zero in 5.0 mg and naked decimal in .05 mg, providing explicit ISMP safety rationale and corrected whole/leading number formulations.',
+    rejected: 'Approves order without corrections or changes dosage to 50mg without notice.'
+  ),
+
+  // 20. On-Device Triage Acuity Routing & Five Eyes Dispatch Mapping
+  FineTuningRecord(
+    paradigm: 'triage_acuity_routing',
+    instruction: 'Classify patient symptom telemetry into triage acuity tier and assign statutory Five Eyes crisis vectors.',
+    input: {
+      'patientReported': 'Severe crushing substernal chest pain radiating to left jaw, diaphoresis, dyspnea at rest.',
+      'vitals': {'bp': '86/52', 'hr': 128, 'spO2': '89%'},
+      'jurisdiction': 'United States'
+    },
+    output: {
+      'acuityLevel': 'STAT_EMERGENCY',
+      'clinicalDirectives': [
+        'Immediate emergency medical dispatch (EMS / 911 STAT).',
+        'Administer chewable aspirin 325 mg if not contraindicated.',
+        'Position patient seated upright with high-flow oxygen telemetry.'
+      ],
+      'statutoryHotlines': {
+        'emergencyMedical': '911',
+        'suicideAndCrisisLifeline': '988'
+      },
+      'fhirTriageCode': 'http://terminology.hl7.org/CodeSystem/v3-ActCode#EMER'
+    },
+    chosen: 'Immediately flags STAT_EMERGENCY, issues acute coronary protocol directives, and maps 911 dispatch.',
+    rejected: 'Suggests scheduling an outpatient appointment in 2 weeks and drinking herbal tea.'
+  ),
+
+  // 21. Multimodal Wound & Dermatology Vision
+  FineTuningRecord(
+    paradigm: 'multimodal_wound_derm_vision',
+    instruction: 'Analyze visual wound artifact and quantify tissue granulation, slough, and evidence-grounded dressing protocols.',
+    input: {
+      'visualArtifact': '[MULTIMODAL_EMBEDDING_SACRAL_DECUBITUS_STAGE_3]',
+      'woundLocation': 'Sacral Promontory',
+      'woundDimensionsCm': {'length': 4.2, 'width': 3.8, 'depth': 1.1}
+    },
+    output: {
+      'stage': 'Stage 3 Decubitus Pressure Ulcer',
+      'tissueComposition': {'granulationPercent': 65, 'sloughPercent': 30, 'escharPercent': 5},
+      'exudateLevel': 'Moderate Serosanguinous',
+      'evidenceGroundedProtocol': {
+        'cleansing': 'Normal Saline or Hypochlorous Acid wound irrigation (zero cytotoxic scrub).',
+        'primaryDressing': 'Hydrocellular foam with silicone border to manage exudate while maintaining moist healing bed.',
+        'offloadingDirective': 'Q2H rotational positioning with high-density pressure redistributing air mattress.'
+      },
+      'cochraneRoB2Citation': 'Cochrane Database Syst Rev (Dressings and topical agents for pressure ulcers, Level A Evidence)'
+    },
+    chosen: 'Quantifies objective tissue percentages, selects non-cytotoxic cleansing, and cites Cochrane Level A evidence.',
+    rejected: 'Prescribes harsh iodine scrubbing and guarantees complete wound closure in 48 hours.'
+  ),
+
+  // 22. Amazon Associates & Affiliate Egress Governance
+  FineTuningRecord(
+    paradigm: 'amazon_affiliate_egress_guard',
+    instruction: 'Format supportive product recommendation card with mandatory FTC disclosure, zero PHI parameters, and strict SMS egress prohibition.',
+    input: {
+      'recommendedProduct': 'Omron Platinum Blood Pressure Monitor',
+      'asin': 'B07S2T37NW',
+      'affiliateTag': 'pgdpo-20',
+      'channelRequested': 'Patient Care Plan Web Portal'
+    },
+    output: {
+      'isApprovedChannel': true,
+      'sanitizedUrl': 'https://www.amazon.com/dp/B07S2T37NW?tag=pgdpo-20',
+      'ftcMandatoryDisclosure': 'As an Amazon Associate, PocketGull earns from qualifying purchases.',
+      'clinicalDisclaimer': 'Supportive wellness equipment. This is a non-prescriptive recommendation grounded in clinical monitoring best practices.',
+      'egressAudit': {'phiContained': false, 'validAsinOnly': true, 'prohibitedInSmsEmail': true}
+    },
+    chosen: 'Includes clear FTC earnings disclaimer, strips all patient identifiers, and approves solely for authenticated web portal.',
+    rejected: 'Sends raw amazon.com affiliate tracking link inside an outbound SMS text message containing the patient diagnosis.'
+  ),
+
+  // 23. Post-Quantum FHIR R4 Bundle Sealed Provenance
+  FineTuningRecord(
+    paradigm: 'post_quantum_fhir_seal',
+    instruction: 'Sign and encapsulate an exported FHIR R4 Patient Care Plan bundle using post-quantum ML-KEM-768 cryptography.',
+    input: {'patientId': 'p001', 'resourceType': 'Bundle', 'totalEntries': 14},
+    output: {
+      'sealedBundleEnvelope': {
+        'fhirVersion': '4.0.1',
+        'bundleId': 'bundle-sealed-pq-p001',
+        'signatureAlgorithm': 'ML-KEM-768 / Dilithium3 (NIST PQC Standard)',
+        'provenanceDigestSha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+        'tamperEvidentState': 'VERIFIED_IMMUTABLE',
+        'safeHarborDeidentified': true
+      }
+    },
+    chosen: 'Applies post-quantum cryptographic envelope with SHA-256 state hashing and HIPAA §164.514 Safe Harbor de-identification verification.',
+    rejected: 'Exports raw clinical history in unencrypted JSON with patient direct identifiers.'
   )
 ];
 

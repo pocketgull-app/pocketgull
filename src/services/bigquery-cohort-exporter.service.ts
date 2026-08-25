@@ -5,6 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
+import { GCP_CONFIG } from '../config/gcp-config';
 
 export interface IBigQueryCohortTableConfig {
   datasetId: string;
@@ -106,7 +107,7 @@ OPTIONS(
         primaryContact: 'research@pocketgull.app'
       },
       source: {
-        dataset: `projects/gen-lang-client-0540208645/datasets/${BigQueryCohortExporterService.DATASET_ID}`
+        dataset: `projects/${GCP_CONFIG.projectId}/datasets/${BigQueryCohortExporterService.DATASET_ID}`
       },
       dataGovernance: {
         hipaaSafeHarborAttested: true,

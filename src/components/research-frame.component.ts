@@ -1,7 +1,9 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, effect, viewChild, ElementRef, OnDestroy, untracked, HostListener, ViewChild, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
+import { AcronymExpanderPipe } from '../pipes/acronym-expander.pipe';
+import { MedicalDecoderPipe } from '../pipes/medical-decoder.pipe';
 import { fromEvent, Subscription } from 'rxjs';
 import { PatientManagementService } from '../services/patient-management.service';
 import { PatientStateService } from '../services/patient-state.service';
@@ -12,6 +14,9 @@ import { PatientEducationFlipDirective, IPatientEducationFlipData } from '../dir
 import { NcaaSportsScienceHubComponent } from './research-frame/ncaa-sports-science-hub.component';
 import { InternationalUniversityHubComponent } from './research-frame/international-university-hub.component';
 import { ResearchDataDividendComponent } from './research-data-dividend.component';
+import { GullSquadronShowcaseComponent } from './gull-squadron-showcase.component';
+import { GullNarrativeDispatchComponent } from './gull-narrative-dispatch.component';
+import { OnDeviceEmbedderService } from '../services/ai/on-device-embedder.service';
 import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
@@ -25,6 +30,7 @@ export interface IPubMedSearchResult {
   rob2Risk?: 'Low Risk' | 'Some Concerns' | 'High Risk';
   bottomLineTakeaway?: string;
   patientContextMatch?: string;
+  semanticMatchScore?: number;
 }
 
 @Component({
@@ -35,10 +41,14 @@ export interface IPubMedSearchResult {
     PocketGullButtonComponent, 
     PocketGullInputComponent, 
     SafeHtmlPipe, 
+    AcronymExpanderPipe,
+    MedicalDecoderPipe,
     PatientEducationFlipDirective,
     NcaaSportsScienceHubComponent,
     InternationalUniversityHubComponent,
-    ResearchDataDividendComponent
+    ResearchDataDividendComponent,
+    GullSquadronShowcaseComponent,
+    GullNarrativeDispatchComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -158,6 +168,16 @@ export interface IPubMedSearchResult {
                     [class.text-gray-500]="searchEngine() !== 'dividend'"
                     [class.dark:text-zinc-400]="searchEngine() !== 'dividend'">
               🧬 Data Dividend
+            </button>
+            <button (click)="setSearchEngine('squadron')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    [class.bg-white]="searchEngine() === 'squadron'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'squadron'"
+                    [class.text-amber-700]="searchEngine() === 'squadron'"
+                    [class.dark:text-amber-400]="searchEngine() === 'squadron'"
+                    [class.text-gray-500]="searchEngine() !== 'squadron'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'squadron'">
+              🪺 Squadron
             </button>
 
           </div>
@@ -321,6 +341,11 @@ export interface IPubMedSearchResult {
                       <span class="px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
                         RoB 2: {{ res.rob2Risk || 'Low Risk' }}
                       </span>
+                      @if (res.semanticMatchScore !== undefined) {
+                        <span class="px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider rounded bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 font-mono">
+                          🧬 {{ res.semanticMatchScore }}% Semantic Fit
+                        </span>
+                      }
                     </div>
                     <span class="text-[10px] font-bold text-teal-600 dark:text-teal-400 opacity-80 group-hover:opacity-100 transition-opacity">
                       dblclick 🔄 Patient Lens
@@ -332,7 +357,7 @@ export interface IPubMedSearchResult {
 
                   <!-- 1-Sentence Point-of-Care Takeaway -->
                   <div class="my-2.5 p-2 bg-teal-50/60 dark:bg-teal-950/20 border-l-2 border-teal-500 rounded-r text-[11.5px] text-teal-900 dark:text-teal-200 font-sans leading-relaxed">
-                    <span class="font-bold">💡 Point-of-Care Takeaway:</span> {{ res.bottomLineTakeaway || 'Demonstrates significant therapeutic benefit with low risk of adverse cross-reactivity.' }}
+                    <span class="font-bold">💡 Point-of-Care Takeaway:</span> <span [innerHTML]="((res.bottomLineTakeaway || 'Demonstrates significant therapeutic benefit with low risk of adverse cross-reactivity.') | acronymExpander | medicalDecoder) | safeHtml"></span>
                   </div>
 
                   <div class="text-[12px] text-gray-500 dark:text-zinc-400 flex items-center gap-2 mb-3">
@@ -399,6 +424,11 @@ export interface IPubMedSearchResult {
           <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
             <app-research-data-dividend></app-research-data-dividend>
           </div>
+        } @else if (searchEngine() === 'squadron') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto space-y-6">
+            <app-gull-squadron-showcase></app-gull-squadron-showcase>
+            <app-gull-narrative-dispatch></app-gull-narrative-dispatch>
+          </div>
         } @else if (!sanitizedUrl()) {
           <div class="w-full h-full flex items-center justify-center text-center text-gray-500 dark:text-zinc-400 p-4 relative z-20">
              <p class="text-xs">Search results and bookmarked pages will appear here.</p>
@@ -449,9 +479,10 @@ export class ResearchFrameComponent implements OnDestroy {
   private platformId = inject(PLATFORM_ID);
   patientManager = inject(PatientManagementService);
   patientState = inject(PatientStateService);
+  embedder = inject(OnDeviceEmbedderService);
 
   isMobile = signal(false);
-  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend'>('google');
+  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron'>('google');
   searchText = signal<string>('');
 
   // --- Cognitive Load & Evidence Tier Signals ---
@@ -735,9 +766,9 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   // --- Browser Actions ---
-  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend') {
+  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron') {
     this.searchEngine.set(engine);
-    if (engine !== 'datacard' && engine !== 'ncaa' && engine !== 'international' && engine !== 'dividend' && this.searchText().trim()) {
+    if (engine !== 'datacard' && engine !== 'ncaa' && engine !== 'international' && engine !== 'dividend' && engine !== 'squadron' && this.searchText().trim()) {
       this.search();
     }
   }
@@ -869,6 +900,19 @@ export class ResearchFrameComponent implements OnDestroy {
           doi: doiStr
         };
       }).filter((res: any): res is IPubMedSearchResult => res !== null);
+
+      // On-Device Semantic Vector Similarity Scoring
+      try {
+        const queryVec = await this.embedder.computeEmbedding(query);
+        for (const res of results) {
+          const titleVec = await this.embedder.computeEmbedding(res.title);
+          const sim = this.embedder.cosineSimilarity(queryVec, titleVec);
+          res.semanticMatchScore = Math.max(10, Math.min(99, Math.round(sim * 100)));
+        }
+        results.sort((a, b) => (b.semanticMatchScore || 0) - (a.semanticMatchScore || 0));
+      } catch (embErr) {
+        console.warn('[ResearchFrame] On-device embedding ranking skipped:', embErr);
+      }
 
       this.pubmedResults.set(results);
 

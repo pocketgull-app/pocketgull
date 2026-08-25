@@ -1,14 +1,28 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
+import { AigaModelAugmentationService } from '../../services/aiga-model-augmentation.service';
 import { BiomarkerMatrixComponent } from '../biomarker-matrix.component';
 import { PatientVitalsChartComponent } from '../patient-vitals-chart.component';
 import { TeledentistryOdontogramComponent } from '../teledentistry-odontogram.component';
+import { BleWearablesHudComponent } from '../ble-wearables-hud.component';
+import { PhysioNetAcousticHudComponent } from '../physionet-acoustic-hud.component';
+import { VisualAcuityExamComponent } from '../shared/visual-acuity-exam.component';
+import { StormAnalysisComponent } from '../storm-analysis.component';
 
 @Component({
   selector: 'app-biomedical-suite',
   standalone: true,
-  imports: [CommonModule, BiomarkerMatrixComponent, PatientVitalsChartComponent, TeledentistryOdontogramComponent],
+  imports: [
+    CommonModule, 
+    BiomarkerMatrixComponent, 
+    PatientVitalsChartComponent, 
+    TeledentistryOdontogramComponent,
+    BleWearablesHudComponent,
+    PhysioNetAcousticHudComponent,
+    VisualAcuityExamComponent,
+    StormAnalysisComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl space-y-6">
@@ -21,7 +35,7 @@ import { TeledentistryOdontogramComponent } from '../teledentistry-odontogram.co
               <span>Biomedical & Diagnostic Suite</span>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-600 dark:text-sky-400 font-mono font-bold uppercase">Ground Truth</span>
             </h3>
-            <p class="text-xs text-zinc-500 dark:text-zinc-400">High-resolution lab biomarkers, vitals telemetry, and FHIR R4 observations.</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">High-resolution lab biomarkers, vitals telemetry, wearable sensors, and FHIR R4 observations.</p>
           </div>
         </div>
 
@@ -48,16 +62,38 @@ import { TeledentistryOdontogramComponent } from '../teledentistry-odontogram.co
         </div>
       </div>
 
+      <!-- Live BLE Wearable Sensor Fusion HUD -->
+      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+        <app-ble-wearables-hud />
+      </div>
+
+      <!-- PhysioNet MedGemma Acoustic PCG Stethoscope AI HUD -->
+      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+        <app-physionet-acoustic-hud />
+      </div>
+
+      <!-- Clinical Visual Acuity & Eye Exam Module -->
+      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+        <app-visual-acuity-exam />
+      </div>
+
       <!-- Teledentistry FDI Odontogram & SIBI Systemic Cross-Talk Section -->
       <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
         <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 font-mono">FDI Odontogram & Systemic Inflammatory Burden (SIBI)</h4>
         <app-teledentistry-odontogram />
+      </div>
+
+      <!-- Physiological & Environmental Storm Shield -->
+      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
+        <app-storm-analysis />
       </div>
     </div>
   `
 })
 export class BiomedicalSuiteComponent {
   private patientState = inject(PatientStateService);
+  readonly aigaAugmentation = inject(AigaModelAugmentationService);
+  
   vitals = this.patientState.vitals;
   history = this.patientState.patientHistory;
 }

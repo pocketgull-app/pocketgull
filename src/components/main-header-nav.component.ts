@@ -10,6 +10,7 @@ import { SessionStateService } from '../services/session-state.service';
 import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
 import { PocketgullBrandMarkComponent } from './shared/pocketgull-brand-mark.component';
 import { AmbientFlowPlayerComponent } from './shared/ambient-flow-player.component';
+import { ConsoleIntegrityBadgeComponent } from './console-integrity-badge.component';
 import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscape.service';
 
 @Component({
@@ -19,7 +20,8 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
     CommonModule,
     PocketgullIconComponent,
     PocketgullBrandMarkComponent,
-    AmbientFlowPlayerComponent
+    AmbientFlowPlayerComponent,
+    ConsoleIntegrityBadgeComponent
   ],
   template: `
     <!-- Navbar: Pure utility & theme harmony -->
@@ -63,6 +65,8 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
 
       <!-- Right Nav Action Suite -->
       <div class="flex items-center gap-2 shrink-0">
+        <app-console-integrity-badge class="hidden lg:inline-flex" />
+
         <!-- 🌟 Clinical Apps & Portals Hub Dropdown Button (Desktop) -->
         <div class="relative hidden md:block">
           <button 
@@ -204,6 +208,20 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                       <div class="text-[10px] text-zinc-400 font-normal">Box Breathing Pacer</div>
                     </div>
                   </button>
+                  <button type="button" (click)="openAmbientLivingSpace.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🏡</span>
+                    <div>
+                      <div>Living Room Ambient</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Dieter Rams Display Mode</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openHumanDignityPact.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🕊️</span>
+                    <div>
+                      <div>Dignity Charter</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Human Rights & Autonomy</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openTypefaceSite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🔤</span>
                     <div>
@@ -235,6 +253,20 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                     <div>
                       <div>Billing &amp; Pricing</div>
                       <div class="text-[10px] text-zinc-400 font-normal">Usage &amp; Plans</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openDoctorShiftDemo.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🏥</span>
+                    <div>
+                      <div>Hospital Shift Demo</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Physician Pilot & HHS § 1557</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openGreenRoom.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🌿</span>
+                    <div>
+                      <div>Green Room Lounge</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Clinician Debrief & Reflection</div>
                     </div>
                   </button>
                   <button type="button" (click)="openPatentClaims.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
@@ -479,6 +511,10 @@ export class MainHeaderNavComponent {
   openArticles = output<void>();
   openResearchDividend = output<void>();
   openPatentClaims = output<void>();
+  openAmbientLivingSpace = output<void>();
+  openHumanDignityPact = output<void>();
+  openDoctorShiftDemo = output<void>();
+  openGreenRoom = output<void>();
   triggerSomaticGrounding = output<void>();
 }
 

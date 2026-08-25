@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import '@angular/compiler';
 import { Injector, runInInjectionContext, NgZone } from '@angular/core';
 import { WebMcpRegistrationService, normalizeToolInputSchema } from './webmcp-registration.service';

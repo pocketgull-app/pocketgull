@@ -13,7 +13,7 @@ import { PetAuditoryService } from '../services/pet-auditory.service';
 import { EnvironmentalTelemetryService } from '../services/environmental-telemetry.service';
 import { environment } from '../environments/environment';
 import { PocketgullBrandMarkComponent } from './shared/pocketgull-brand-mark.component';
-import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { PapercraftBackdropComponent } from './papercraft-backdrop.component';
 import { SecureStorageService } from '../services/secure-storage.service';
 import { WacomCryptoInkService } from '../services/wacom-crypto-ink.service';
