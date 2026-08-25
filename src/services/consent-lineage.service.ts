@@ -175,18 +175,14 @@ export class ConsentLineageService {
   }
 
   /**
-   * Generates Zero-Data-Retention (ZDR) and HIPAA compliance attestation headers
-   * for outbound Gemini AI consult and FHIR synchronization HTTP requests.
+   * Generates Zero-Data-Retention (ZDR) attestation headers for HIPAA-safe egress.
    */
   public getZdrAttestationHeader(): Record<string, string> {
     const scope = this._consentScope();
     return {
       'X-ZDR-Attestation': 'enabled',
-      'X-HIPAA-Safe-Harbor-DeID': 'verified-18-identifiers-scrubbed',
+      'X-HIPAA-Safe-Harbor-DeID': 'verified-§164.514',
       'X-Consent-Scope-Symptoms': String(scope.symptoms),
-      'X-Consent-Scope-Lesions': String(scope.spatialLesions),
-      'X-Consent-Scope-Vitals': String(scope.vitalsTelemetry),
-      'X-Consent-Scope-Audio': String(scope.audioStreaming),
       'X-Consent-Timestamp': scope.updatedAt
     };
   }

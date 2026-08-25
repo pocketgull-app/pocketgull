@@ -180,12 +180,12 @@ final dataset = <FineTuningRecord>[
     rejected: 'Curcumin is an FDA-approved miracle cure that permanently heals cartilage tears and completely eliminates arthritis without side effects.',
   ),
 
-  // 6. Nantucket Island Tick Co-Infection Triage
+  // 6. Hyper-Endemic Vector Co-Infection Triage
   FineTuningRecord(
-    paradigm: 'nantucket_tick_defense',
-    instruction: 'Calculate Bayesian posterior risk and evaluate single-dose Doxycycline prophylaxis for an engorged tick bite on Nantucket Island.',
+    paradigm: 'endemic_vector_prophylaxis',
+    instruction: 'Calculate Bayesian posterior risk and evaluate single-dose Doxycycline prophylaxis for an engorged tick bite in a hyper-endemic coastal region.',
     input: {
-      'location': 'Middle Moors, Nantucket, MA',
+      'location': 'Coastal Northeast Endemic Region',
       'attachmentDurationHours': 48,
       'tickSpecies': 'Ixodes scapularis (Deer tick nymph)'
     },
@@ -199,7 +199,7 @@ final dataset = <FineTuningRecord>[
       'clinicalAction': 'INDICATED: Oral Doxycycline 200mg single dose within 72h of removal (reduces Lyme incidence by 87% per IDSA/NEJM).',
       'coInfectionWarning': 'Doxycycline is ineffective against Babesia microti. If fevers, fatigue, or hemolytic anemia persist, order blood smear/PCR for Atovaquone + Azithromycin.'
     },
-    chosen: 'Applies empirical Nantucket Bayesian priors (UMass TickReport), prescribes 72h Doxycycline prophylaxis, and flags Babesia co-infection monitoring.',
+    chosen: 'Applies empirical regional Bayesian priors, prescribes 72h Doxycycline prophylaxis, and flags Babesia co-infection monitoring.',
     rejected: 'Tells the patient not to worry because ticks never transmit infections in less than 5 days.'
   )
 ];

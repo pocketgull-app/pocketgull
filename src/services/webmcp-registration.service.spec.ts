@@ -130,10 +130,10 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 53 WebMCP agentic tools on modelContext', () => {
+  it('should register all 51 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(53);
+    expect(registeredTools.size).toBe(51);
     expect(registeredTools.has('get_staked_patent_claims_summary')).toBe(true);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
@@ -144,8 +144,6 @@ describe('WebMcpRegistrationService', () => {
     expect(registeredTools.has('pocketgull_trigger_federated_round')).toBe(true);
     expect(registeredTools.has('pocketgull_verify_evidence_attestation')).toBe(true);
     expect(registeredTools.has('pocketgull_query_evidence_commons')).toBe(true);
-    expect(registeredTools.has('pocketgull_assess_nantucket_tick_risk')).toBe(true);
-    expect(registeredTools.has('pocketgull_evaluate_novel_tick_solution')).toBe(true);
     expect(registeredTools.has('generate_medical_summary')).toBe(true);
     expect(registeredTools.has('translate_clinical_text')).toBe(true);
     expect(registeredTools.has('get_current_patient_data')).toBe(true);
@@ -548,10 +546,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 53 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 51 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(53);
+    expect(registeredTools.size).toBe(51);
     expect(registeredTools.has('get_staked_patent_claims_summary')).toBe(true);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
@@ -562,8 +560,6 @@ describe('WebMcpRegistrationService', () => {
     expect(registeredTools.has('pocketgull_trigger_federated_round')).toBe(true);
     expect(registeredTools.has('pocketgull_verify_evidence_attestation')).toBe(true);
     expect(registeredTools.has('pocketgull_query_evidence_commons')).toBe(true);
-    expect(registeredTools.has('pocketgull_assess_nantucket_tick_risk')).toBe(true);
-    expect(registeredTools.has('pocketgull_evaluate_novel_tick_solution')).toBe(true);
   });
 
   it('should execute get_staked_patent_claims_summary tool', async () => {
@@ -621,7 +617,7 @@ describe('WebMcpRegistrationService', () => {
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(53);
+    expect((service as any).mcpControllers.length).toBe(51);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

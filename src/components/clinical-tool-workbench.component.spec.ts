@@ -22,8 +22,8 @@ describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite',
 
   it('should initialize all workbench tools as operational', () => {
     expect(component).toBeTruthy();
-    expect(component.tools().length).toBe(9);
-    expect(component.operationalCount()).toBe(9);
+    expect(component.tools().length).toBe(8);
+    expect(component.operationalCount()).toBe(8);
   });
 
   it('should flip card on double-click safety interlock confirmation', () => {

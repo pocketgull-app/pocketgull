@@ -33,8 +33,6 @@ import { ClinicalMandarinateExamService } from './clinical-mandarinate-exam.serv
 import { BrandPackageGeneratorService } from './brand-package-generator.service';
 import { FederatedLearningService } from './federated-learning.service';
 import { OpenEvidenceCommonsService } from './open-evidence-commons.service';
-import { NantucketTickRadarService } from './nantucket-tick-radar.service';
-import { NantucketSolutionDiscoveryService } from './nantucket-solution-discovery.service';
 import { IpPatentRegistryService } from './ip-patent-registry.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
@@ -75,8 +73,6 @@ export class WebMcpRegistrationService {
   private brandPackageGeneratorService = inject(BrandPackageGeneratorService, { optional: true });
   private federatedLearningService = inject(FederatedLearningService, { optional: true });
   private evidenceCommonsService = inject(OpenEvidenceCommonsService, { optional: true });
-  private tickRadarService = inject(NantucketTickRadarService, { optional: true });
-  private solutionDiscoveryService = inject(NantucketSolutionDiscoveryService, { optional: true });
   private ipPatentRegistry = inject(IpPatentRegistryService, { optional: true });
   private ngZone = inject(NgZone);
 
@@ -1680,103 +1676,6 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(evidenceQueryTool, { signal: evidenceQueryCtrl.signal });
     this.mcpControllers.push({ name: evidenceQueryTool.name, controller: evidenceQueryCtrl });
-
-    // 36. Assess Nantucket Tick Bite Risk & Doxycycline Prophylaxis
-    const tickCtrl = new AbortController();
-    const tickTool = {
-      name: 'pocketgull_assess_nantucket_tick_risk',
-      description: 'Evaluates empirical Bayesian transmission probability for tick-borne co-infections (Lyme Borrelia, Babesiosis, Anaplasmosis, Alpha-Gal) on Nantucket Island and calculates 72-hour single-dose doxycycline prophylaxis eligibility per IDSA/AAP guidelines.',
-      parameters: {
-        type: 'object',
-        properties: {
-          hoursAttached: { type: 'number', description: 'Estimated hours the tick was attached (e.g. 36).' },
-          hoursSinceRemoval: { type: 'number', description: 'Hours elapsed since tick was removed (e.g. 12).' },
-          species: { type: 'string', enum: ['ixodes_nymph', 'ixodes_adult', 'lone_star', 'dog_tick'], description: 'Identified tick species.' },
-          symptoms: { type: 'array', items: { type: 'string' }, description: 'Observed clinical signs or symptoms.' },
-          hotspotId: { type: 'string', description: 'Nantucket exposure locus (e.g. "squam_farm", "middle_moors").' }
-        },
-        required: ['hoursAttached', 'hoursSinceRemoval', 'species']
-      },
-      execute: async (args: { hoursAttached: number; hoursSinceRemoval: number; species: any; symptoms?: string[]; hotspotId?: string }) => {
-        const svc = this.tickRadarService || new NantucketTickRadarService();
-        const dwell = svc.assessDwellTime(
-          args.hoursAttached,
-          args.hoursSinceRemoval,
-          args.species || 'ixodes_nymph'
-        );
-        const triage = svc.calculateBayesianTriage(
-          args.symptoms || [],
-          args.species || 'ixodes_nymph',
-          args.hoursAttached,
-          args.hotspotId || 'squam_farm'
-        );
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify({
-                dwellAssessment: dwell,
-                bayesianCoInfectionTriage: triage
-              }, null, 2)
-            }
-          ]
-        };
-      }
-    };
-    modelContext.registerTool(tickTool, { signal: tickCtrl.signal });
-    this.mcpControllers.push({ name: tickTool.name, controller: tickCtrl });
-
-    // 37. Evaluate Novel Tick Solution Candidate (Popperian H0 & E-Value)
-    const discoveryCtrl = new AbortController();
-    const discoveryTool = {
-      name: 'pocketgull_evaluate_novel_tick_solution',
-      description: 'Mathematically evaluates a novel ecological, biophysical, or immunological solution for the Nantucket tick crisis using Monte Carlo power simulation, Popperian null-hypothesis testing, and causal E-value sensitivity.',
-      parameters: {
-        type: 'object',
-        properties: {
-          solutionId: {
-            type: 'string',
-            enum: ['metarhizium_bio_barrier', 'reservoir_oral_bait_vax', 'semiochemical_pheromone_trap', 'multispectral_lidar_radar', 'botanical_cedrene_synergy'],
-            description: 'Novel intervention candidate ID.'
-          },
-          sampleSizeN: { type: 'number', description: 'Planned trial sample size (plots / transects N, default: 64).' },
-          environmentalNoise: { type: 'number', description: 'Stochastic ecological noise standard deviation (0.05 to 0.60, default: 0.25).' }
-        },
-        required: ['solutionId']
-      },
-      execute: async (args: { solutionId: string; sampleSizeN?: number; environmentalNoise?: number }) => {
-        const svc = this.solutionDiscoveryService || new NantucketSolutionDiscoveryService();
-        const candidate = svc.solutions().find(s => s.id === args.solutionId) || svc.solutions()[0];
-        const sim = svc.simulateFalsification(
-          candidate,
-          args.sampleSizeN || 64,
-          1.0,
-          args.environmentalNoise || 0.25
-        );
-        const protocol = svc.generateStudyProtocolMarkdown(candidate);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify({
-                candidate: {
-                  id: candidate.id,
-                  name: candidate.name,
-                  paradigm: candidate.paradigm,
-                  tagline: candidate.tagline,
-                  regulatoryTier: candidate.regulatoryFeasibilityTier,
-                  ecologicalSafety: candidate.ecologicalSafetyIndex
-                },
-                falsificationSimulation: sim,
-                fieldTrialProtocol: protocol
-              }, null, 2)
-            }
-          ]
-        };
-      }
-    };
-    modelContext.registerTool(discoveryTool, { signal: discoveryCtrl.signal });
-    this.mcpControllers.push({ name: discoveryTool.name, controller: discoveryCtrl });
 
     // get_staked_patent_claims_summary
     const ipCtrl = new AbortController();
