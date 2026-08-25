@@ -13,6 +13,14 @@ import {
   IClinicalConsultResponse
 } from './types.js';
 
+function trimTrailingSlashes(url: string): string {
+  let end = url.length;
+  while (end > 0 && url.charCodeAt(end - 1) === 47 /* '/' */) {
+    end--;
+  }
+  return url.slice(0, end);
+}
+
 export class PocketGullClient {
   private readonly baseUrl: string;
   private readonly wsUrl: string;
@@ -20,8 +28,8 @@ export class PocketGullClient {
   private readonly timeoutMs: number;
 
   constructor(config: IPocketGullClientConfig = {}) {
-    this.baseUrl = (config.baseUrl || 'https://pocketgull.app').replace(/\/+$/, '');
-    this.wsUrl = (config.wsUrl || 'wss://pocketgull.app').replace(/\/+$/, '');
+    this.baseUrl = trimTrailingSlashes(config.baseUrl || 'https://pocketgull.app');
+    this.wsUrl = trimTrailingSlashes(config.wsUrl || 'wss://pocketgull.app');
     this.apiKey = config.apiKey;
     this.timeoutMs = config.timeoutMs || 10000;
   }

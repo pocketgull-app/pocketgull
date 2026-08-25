@@ -8,6 +8,7 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
+import { randomBytes } from 'node:crypto';
 import { sanitizeLogInput } from '../../utils/security-helper';
 
 export function createResearchRouter(): Router {
@@ -96,7 +97,7 @@ export function createResearchRouter(): Router {
         return res.status(400).json({ error: 'Invalid enrollment payload. Missing signatureName or cohortIds.' });
       }
 
-      const signatureHash = `sha256_${Math.random().toString(36).substring(2, 15)}_${Date.now()}`;
+      const signatureHash = `sha256_${randomBytes(8).toString('hex')}_${Date.now()}`;
       const safePatient = sanitizeLogInput(String(patientId || 'anonymous_patient'));
       console.log('[ResearchRoutes] Enrolled patient %s in %d cohorts. Signature Hash: %s', safePatient, cohortIds.length, signatureHash);
 
@@ -118,7 +119,7 @@ export function createResearchRouter(): Router {
     try {
       const { patientId } = req.body || {};
       const safePatient = sanitizeLogInput(String(patientId || 'patient_anon'));
-      const accountId = `acct_${Math.random().toString(36).substring(2, 12)}`;
+      const accountId = `acct_${randomBytes(6).toString('hex')}`;
       const onboardingUrl = `https://connect.stripe.com/express/oauth/authorize?client_id=ca_pocketgull_live&state=${safePatient}&suggested_capabilities[]=transfers`;
 
       res.status(200).json({
@@ -149,7 +150,7 @@ export function createResearchRouter(): Router {
         console.log('[ResearchRoutes] High-value payout of $%d flagged for Dual-Custody Authorization', amount);
       }
 
-      const payoutTxId = `tr_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+      const payoutTxId = `tr_${Date.now()}_${randomBytes(4).toString('hex')}`;
       res.status(200).json({
         success: true,
         amountPaid: amount,
