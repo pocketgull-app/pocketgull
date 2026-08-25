@@ -56,12 +56,13 @@ describe('ConsentLineageService - Consent-as-Code & Privacy Engineering', () => 
     const tagged = service.attachConsentProvenance(mockObservation, 'spatialLesions');
 
     expect(tagged.meta.security).toBeTruthy();
-    expect(tagged.meta.security[0].code).toBe('CONSENT-SCOPE');
-    expect(tagged.meta.security[0].display).toContain('GRANTED');
+    expect(tagged.meta.security[0]['code']).toBe('CONSENT-SCOPE');
+    expect(tagged.meta.security[0]['display']).toContain('GRANTED');
     expect(tagged.extension).toBeTruthy();
-    expect(tagged.extension[0].url).toContain('consent-lineage');
-    expect(tagged.extension[0].extension.find((e: any) => e.url === 'scope').valueString).toBe('spatialLesions');
-    expect(tagged.extension[0].extension.find((e: any) => e.url === 'status').valueCode).toBe('active');
+    expect(tagged.extension[0]['url']).toContain('consent-lineage');
+    const innerExts = tagged.extension[0]['extension'] as Array<{ url: string; valueString?: string; valueCode?: string }>;
+    expect(innerExts.find((e) => e.url === 'scope')?.valueString).toBe('spatialLesions');
+    expect(innerExts.find((e) => e.url === 'status')?.valueCode).toBe('active');
   });
 
   it('5. Generates Zero-Data-Retention (ZDR) attestation headers', () => {

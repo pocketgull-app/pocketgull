@@ -5,11 +5,20 @@ import { ClinicalIntelligenceService } from '../../services/clinical-intelligenc
 import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component';
 import { AiConfidenceHudComponent } from '../ai-confidence-hud.component';
 import { PlanDifferentialInspectorComponent } from '../plan-differential-inspector.component';
+import { GoalPlanningCardComponent } from '../goal-planning-card.component';
+import { ResearchDataDividendComponent } from '../research-data-dividend.component';
 
 @Component({
   selector: 'app-summary-overview-lens-tab',
   standalone: true,
-  imports: [CommonModule, PocketGullBadgeComponent, AiConfidenceHudComponent, PlanDifferentialInspectorComponent],
+  imports: [
+    CommonModule, 
+    PocketGullBadgeComponent, 
+    AiConfidenceHudComponent, 
+    PlanDifferentialInspectorComponent,
+    GoalPlanningCardComponent,
+    ResearchDataDividendComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-6 font-sans">
@@ -68,6 +77,12 @@ import { PlanDifferentialInspectorComponent } from '../plan-differential-inspect
         }
 
       </div>
+
+      <!-- Clinical SMART Goals & Quests Card -->
+      <app-goal-planning-card class="block"></app-goal-planning-card>
+
+      <!-- Research Data Dividend & Cohort Exchange Card -->
+      <app-research-data-dividend class="block"></app-research-data-dividend>
 
     </div>
   `

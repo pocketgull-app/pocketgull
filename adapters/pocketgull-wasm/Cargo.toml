@@ -2,7 +2,7 @@
 name = "pocketgull-wasm"
 version = "0.1.0"
 edition = "2021"
-authors = ["Phil Gear <phil@pocketgull.io>"]
+authors = ["Phil Gear <dpo@pocketgull.app>"]
 description = "WebAssembly Edge Module for client-side browser & edge-worker HIPAA confidential computing."
 license = "MIT"
 

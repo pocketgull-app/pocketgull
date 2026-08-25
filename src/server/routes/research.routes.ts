@@ -113,6 +113,27 @@ export function createResearchRouter(): Router {
     }
   });
 
+  // POST /api/research/payout/stripe-connect-link (Stripe Connect Express Onboarding)
+  router.post('/payout/stripe-connect-link', limiter, (req: Request, res: Response) => {
+    try {
+      const { patientId } = req.body || {};
+      const safePatient = sanitizeLogInput(String(patientId || 'patient_anon'));
+      const accountId = `acct_${Math.random().toString(36).substring(2, 12)}`;
+      const onboardingUrl = `https://connect.stripe.com/express/oauth/authorize?client_id=ca_pocketgull_live&state=${safePatient}&suggested_capabilities[]=transfers`;
+
+      res.status(200).json({
+        success: true,
+        accountId,
+        onboardingUrl,
+        expiresAt: new Date(Date.now() + 3600000).toISOString()
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[ResearchRoutes] Error generating Stripe Connect link:', sanitizeLogInput(msg));
+      res.status(500).json({ error: 'Internal error generating Stripe Connect link' });
+    }
+  });
+
   // POST /api/research/payout/request
   router.post('/payout/request', limiter, (req: Request, res: Response) => {
     try {
@@ -123,16 +144,19 @@ export function createResearchRouter(): Router {
       }
 
       // Mandiant Dual-Custody Check for high-value payouts (>= $500)
-      if (amount >= 500) {
+      const requiresDualCustody = amount >= 500;
+      if (requiresDualCustody) {
         console.log('[ResearchRoutes] High-value payout of $%d flagged for Dual-Custody Authorization', amount);
       }
 
-      const payoutTxId = `strp_po_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+      const payoutTxId = `tr_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
       res.status(200).json({
         success: true,
         amountPaid: amount,
         transactionId: payoutTxId,
-        status: 'disbursed',
+        transferId: payoutTxId,
+        status: requiresDualCustody ? 'pending_dual_custody' : 'disbursed',
+        requiresDualCustody,
         timestamp: new Date().toISOString()
       });
     } catch (err: unknown) {

@@ -413,6 +413,26 @@ function auditFile(filePath) {
     }
   }
 
+  // 6. Kaizen Poka-Yoke: Prohibit untyped 'as any' in Clinical Dosage & Biochemistry Services
+  if (
+    (relativePath.includes('clinical-biochemistry') ||
+      relativePath.includes('rx-guard') ||
+      relativePath.includes('pharmacogenomics') ||
+      relativePath.includes('precision-nutrition')) &&
+    !relativePath.includes('spec.ts')
+  ) {
+    const looseAnyRegex = /:\s*any\b|\bas\s+any\b/g;
+    let anyMatch;
+    while ((anyMatch = looseAnyRegex.exec(content)) !== null) {
+      issues.push({
+        type: 'POKA_YOKE_LOOSE_ANY_TYPE',
+        severity: 'HIGH',
+        message: `Kaizen Poka-Yoke violation: Untyped 'any' cast detected in clinical dosage service. Use strict domain types.`,
+        line: content.substring(0, anyMatch.index).split('\n').length,
+      });
+    }
+  }
+
   return issues;
 }
 

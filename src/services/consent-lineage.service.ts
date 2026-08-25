@@ -83,14 +83,14 @@ export class ConsentLineageService {
    * Grants permission for a specific data vector.
    */
   public grantScope(scopeKey: keyof Omit<IPatientConsentScope, 'updatedAt'>): void {
-    this.setConsentScope({ [scopeKey]: true } as any);
+    this.setConsentScope({ [scopeKey]: true } as Partial<Omit<IPatientConsentScope, 'updatedAt'>>);
   }
 
   /**
    * Revokes permission for a specific data vector with instantaneous redaction effect.
    */
   public revokeScope(scopeKey: keyof Omit<IPatientConsentScope, 'updatedAt'>): void {
-    this.setConsentScope({ [scopeKey]: false } as any);
+    this.setConsentScope({ [scopeKey]: false } as Partial<Omit<IPatientConsentScope, 'updatedAt'>>);
   }
 
   /**
@@ -129,10 +129,10 @@ export class ConsentLineageService {
    * Injects standardized FHIR R4 security tags and consent provenance extensions.
    * Conforms to HL7 FHIR US Core Consent and HIPAA §164.514 Safe Harbor.
    */
-  public attachConsentProvenance<T extends Record<string, any>>(
+  public attachConsentProvenance<T extends Record<string, unknown>>(
     fhirResource: T,
     scopeKey: keyof Omit<IPatientConsentScope, 'updatedAt'>
-  ): T & { meta: any; extension: any[] } {
+  ): T & { meta: Record<string, unknown>; extension: Array<Record<string, unknown>> } {
     if (!fhirResource || typeof fhirResource !== 'object') {
       return { ...fhirResource, meta: {}, extension: [] };
     }
@@ -150,16 +150,16 @@ export class ConsentLineageService {
       ]
     };
 
-    const existingExtensions = Array.isArray(fhirResource['extension']) ? fhirResource['extension'] : [];
-    const meta = fhirResource['meta'] || {};
-    const existingSecurity = Array.isArray(meta['security']) ? meta['security'] : [];
+    const existingExtensions = Array.isArray(fhirResource['extension']) ? (fhirResource['extension'] as Array<Record<string, unknown>>) : [];
+    const meta = (fhirResource['meta'] as Record<string, unknown>) || {};
+    const existingSecurity = Array.isArray(meta['security']) ? (meta['security'] as Array<Record<string, unknown>>) : [];
 
     return {
       ...fhirResource,
       meta: {
         ...meta,
         security: [
-          ...existingSecurity.filter((s: any) => s.code !== 'CONSENT-SCOPE'),
+          ...existingSecurity.filter((s) => s['code'] !== 'CONSENT-SCOPE'),
           {
             system: 'https://pocketgull.app/fhir/security-labels',
             code: 'CONSENT-SCOPE',
@@ -168,7 +168,7 @@ export class ConsentLineageService {
         ]
       },
       extension: [
-        ...existingExtensions.filter((e: any) => e.url !== consentExtension.url),
+        ...existingExtensions.filter((e) => e['url'] !== consentExtension.url),
         consentExtension
       ]
     };

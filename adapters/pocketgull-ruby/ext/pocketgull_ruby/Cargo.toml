@@ -2,7 +2,7 @@
 name = "pocketgull_ruby"
 version = "0.1.0"
 edition = "2021"
-authors = ["Phil Gear <phil@pocketgull.io>"]
+authors = ["Phil Gear <dpo@pocketgull.app>"]
 
 [lib]
 crate-type = ["cdylib"]

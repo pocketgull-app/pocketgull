@@ -2,7 +2,7 @@
 name = "pocketgull-core"
 version = "0.1.0"
 edition = "2021"
-authors = ["Phil Gear <phil@pocketgull.io>"]
+authors = ["Phil Gear <dpo@pocketgull.app>"]
 description = "Zero-allocation clinical DSP engine, SIBI calculation, FHIR R4 serialization, and QR matrix generator."
 license = "MIT"
 

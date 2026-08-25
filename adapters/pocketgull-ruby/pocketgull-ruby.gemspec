@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.name          = "pocketgull-ruby"
   spec.version       = "0.1.0"
   spec.authors       = ["Phil Gear"]
-  spec.email         = ["phil@pocketgull.io"]
+  spec.email         = ["dpo@pocketgull.app"]
   spec.summary       = "Blazing fast Ruby bindings for Pocketgull clinical DSP, SIBI calculation, and FHIR R4."
   spec.description   = "Ruby C-Extension gem wrapping pocketgull-core Rust engine using magnus and rb-sys."
   spec.license       = "MIT"
