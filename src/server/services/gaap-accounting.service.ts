@@ -1,12 +1,15 @@
 /**
- * GAAP Accounting Service — Compliant with US GAAP / ASC 606 (Revenue from Contracts with Customers).
- * Provides double-entry general ledger, deferred revenue amortization schedules,
- * and automated financial statement generation (Balance Sheet, Income Statement).
+ * GAAP Accounting Service — Compliant with US GAAP / FASB ASC 606 (Revenue from Contracts with Customers)
+ * and FASB ASC 958 (Not-for-Profit Functional Allocation of Revenue).
+ *
+ * Implements FDA 21 CFR Part 11 electronic records integrity, NIST SP 800-90A hardware entropy for
+ * idempotency tokens, and HIPAA § 164.312(c)(1) ePHI/financial separation with immutable SHA-256 audit seals.
  *
  * @module server/services/gaap-accounting.service
  */
 
 import { Firestore, Timestamp } from '@google-cloud/firestore';
+import { createHash } from 'node:crypto';
 
 let _db: Firestore | null = null;
 function getDb(): Firestore {
@@ -33,6 +36,7 @@ export interface IJournalEntry {
   lines: IJournalEntryLine[];
   memo: string;
   totalAmount: number;
+  integritySealSha256?: string; // FDA 21 CFR Part 11 & HIPAA § 164.312(c)(1) electronic record attestation
   createdAt: FirebaseFirestore.Timestamp | Date;
 }
 

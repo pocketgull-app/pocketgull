@@ -350,10 +350,10 @@ def check_vpc_sc_perimeter_enabled(
       if project_number_path not in resources:
         continue
 
-      restricted_services = status.get("restrictedServices") or []
-      if (
-          "storage.googleapis.com" in restricted_services
-          or _VPC_SC_WILDCARD in restricted_services
+      restricted_services = set(status.get("restrictedServices") or [])
+      if any(
+          svc in {"storage.googleapis.com", _VPC_SC_WILDCARD}
+          for svc in restricted_services
       ):
         return True
 
