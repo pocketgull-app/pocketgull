@@ -3,7 +3,84 @@
 All notable changes to Pocket Gull are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## v1.7.0 — 2026-07-27
+## v1.28.0 — 2026-08-25
+
+**Ethical Patient Research Data Dividend & Disease Cohort Marketplace, Express 100MB Body Parser Scaling, Flutter Sentinel Models & CI Parallelization**
+
+### Added
+- **[Clinical Research / Data Dividend] Ethical Patient Research Data Dividend Engine (`research-consent.service.ts` & `research-data-dividend.component.ts`)**:
+  - Implemented the **NIH "All of Us"**, **LunaDNA Public Benefit**, and **Ciitizen/Invitae** ethical research precedents.
+  - Automated 85% revenue-share data dividend accrual and real-time ledger tracking with cryptographic transaction hashes.
+  - 1-Click Stripe Connect Express automated cash out and instant HIPAA § 164.508 digital consent revocation.
+  - Pre-populated 5 certified disease research cohorts (Type 2 Diabetes CGM, Oncology Epigenetic Biomarkers, Long-COVID Autonomic HRV, Cardiopulmonary Acoustics, Neurodiversity).
+- **[API / Research Routes] Research Cohort Catalog & Enrollment API (`research.routes.ts`)**:
+  - `GET /api/research/cohorts` (public catalog with $k$-anonymity metrics).
+  - `POST /api/research/enroll` (digital HIPAA § 164.508 signature verification).
+  - `POST /api/research/payout/request` (Stripe Connect / PayPal disbursement with Mandiant Dual-Custody checks for $\ge \$500$).
+- **[Flutter / Mobile Suite] Dart Sentinel & Social Gravitation Models (`pocketgull_flutter`)**:
+  - Added `SocialVector` and `HobbyVector` models with strict JSON serialization.
+  - Added `SentinelNode`, `SentinelPacket`, and default telemetric packet generators for real-time mobile triage streaming.
+
+### Fixed & Performance
+- **[Server / Body Parser] 413 Payload Too Large Resolution (`server.ts` & `patients.routes.ts`)**:
+  - Increased Express JSON and URL-encoded body limits from 50MB to 100MB.
+  - Increased `MAX_DB_BYTES` from 10MB to 50MB.
+  - Added single-patient fallback synchronization in `PatientManagementService` upon bulk payload constraint.
+- **[CI/CD / Skunk Works Velocity] Parallelized GitHub Actions Workflows (`ci.yml` & `deploy.yml`)**:
+  - Parallelized `security-and-lint` (4m), `python-ml-test` (3m), and `test-e2e` (Playwright) jobs.
+  - Restricted deployment workflows to `push: branches: [main]`, eliminating redundant 7-minute PR test cycles.
+
+---
+
+## v1.27.0 — 2026-08-24
+
+**Solfeggio Cymatics Sensory Suite, Somatosensory Haptics, Spatial Lesion Markup & Cleaned Test Architecture**
+
+### Added
+- **[Sensory / Audio] Sacred Solfeggio Cymatics Visualizer & Sensory Presets (`avs-cymatics-visualizer.component.ts` & `secure-splash.component.ts`)**:
+  - Monroe, Indigenous, Persian, and Animal entrainment audio presets.
+  - Vibroacoustic somatosensory haptic feedback locking.
+- **[Clinical / 3D Viewer] Spatial Lesion 3D Markup & Annotations (`spatial-lesion-markup.service.ts`)**:
+  - 3D coordinate point projection for clinical lesion tracking across procedural skeletal and surface meshes.
+
+---
+
+## v1.26.0 — 2026-08-20
+
+**Enterprise Multi-Provider SSO, William Caslon Typography Engine & Marker Font Governance Standard**
+
+### Added
+- **[Authentication / SSO] Enterprise Multi-Provider SSO Hub (`auth.routes.ts` & `sso.service.ts`)**:
+  - Epic FHIR, Cerner SMART on FHIR, NHS Digital, Okta, and Google Workspace OAuth2/OIDC integration.
+- **[Typography / Brand Governance] William Caslon Typography Standard (`caslon_type_design`)**:
+  - Bounded marker handwriting font strictly to official Brand Lettering ("PocketGull") and Copyright / Legal footer imprints.
+  - Universal optical legibility font stacks (`font-pocketgull-sans-clinical`, `font-pocketgull-inter`, `font-pocketgull-mono`) across all clinical tables and HUDs.
+
+---
+
+## v1.25.0 — 2026-08-19
+
+**Safe Data Superfamily, Active Defense Tarpit & HIPAA Safe Harbor De-Identification Protocol**
+
+### Security & Hardening
+- **[Security / Defense] Active Defense Tarpit (`active-defense-tarpit.service.ts`)**:
+  - Exponential backoff delay tarpit and honeypot traps for credential stuffing and unauthorized API crawlers.
+- **[HIPAA / Privacy] Safe Data Superfamily Audit (`sentinel_security_guard.mjs`)**:
+  - Automated CI validation enforcing zero PHI leakage and 18-attribute HIPAA Safe Harbor de-identification.
+
+---
+
+## v1.24.0 — 2026-08-15
+
+**Enterprise Clinical Architecture, Cochrane RoB 2 Evidence Radar & ONC HTI-2 Compliance**
+
+### Added
+- **[Evidence / Clinical CDS] Cochrane RoB 2 Evidence Radar (`clinical-intelligence.service.ts`)**:
+  - Real-time Risk of Bias 2 evaluation across PubMed clinical studies and clinical guidelines.
+- **[Regulatory / Compliance] ONC HTI-2 & USCDI v4 Compliance Engine**:
+  - Standardized FHIR US Core R4 data exchange and provenance tracking.
+
+---
 
 **Container Security Hardening (5 CVE Fixes), Google Cloud Data Agent Proxy Integration, Multiplatform Flutter Web Download Architecture, and Java 21 Toolchain Alignment**
 
