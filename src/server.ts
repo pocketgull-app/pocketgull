@@ -697,7 +697,8 @@ const apiLimiter = rateLimit({
   message: { error: 'Too many requests. Please try again later.' }
 });
 app.use('/api', apiLimiter);
-app.use('/api', express.json({ limit: '50mb' }));
+app.use('/api', express.json({ limit: '100mb' }));
+app.use('/api', express.urlencoded({ limit: '100mb', extended: true }));
 app.use('/docs', apiLimiter);
 app.use('/api-docs', apiLimiter);
 app.use('/health', apiLimiter);

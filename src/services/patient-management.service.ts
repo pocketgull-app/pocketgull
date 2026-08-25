@@ -855,6 +855,21 @@ export class PatientManagementService implements OnDestroy {
       console.log('[PatientManagementService] Successfully synced to cloud');
       return true;
     } catch (error: any) {
+      if (error?.status === 413 || error?.statusCode === 413) {
+        const selectedId = this.selectedPatientId();
+        const activePatient = this.patients().find(p => p.id === selectedId);
+        if (activePatient) {
+          try {
+            const secret = (window as any).__PATIENTS_SECRET__ || '';
+            const headers: Record<string, string> = secret ? { Authorization: `Bearer ${secret}` } : {};
+            await firstValueFrom(this.http.put(`/api/patients/${encodeURIComponent(activePatient.id)}`, activePatient, { headers }));
+            console.log('[PatientManagementService] Successfully synced active patient fallback to cloud');
+            return true;
+          } catch (individualErr: any) {
+            console.warn('[PatientManagementService] Individual patient sync fallback failed:', individualErr?.message || individualErr);
+          }
+        }
+      }
       console.warn('[PatientManagementService] Cloud sync unavailable (HTTP/Cloud):', error?.message || error);
       return false;
     }
