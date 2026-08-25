@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { IrmaaDecisionService } from './irmaa-decision.service';
 
 describe('IrmaaDecisionService Unit Suite', () => {

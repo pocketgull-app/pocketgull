@@ -74,6 +74,8 @@ import { LocalGemmaStudioComponent } from './local-gemma-studio.component';
 import { TriParadigmSwarmCardComponent } from './tri-paradigm-swarm-card.component';
 import { PharmacogenomicsCardComponent } from './pharmacogenomics-card.component';
 import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-card.component';
+import { EnvironmentalExposomicsToxicologyComponent } from './environmental-exposomics-toxicology.component';
+import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.component';
 
 @Component({
   selector: 'app-analysis-report',
@@ -81,6 +83,8 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
   imports: [
     CommonModule,
     ...ANALYSIS_LENS_TAB_COMPONENTS,
+    EnvironmentalExposomicsToxicologyComponent,
+    SkepticalEpistemologyHudComponent,
     LocalGemmaStudioComponent,
     TriParadigmSwarmCardComponent,
     PharmacogenomicsCardComponent,
@@ -148,33 +152,51 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
 
     <!-- Emergency Mode Dedicated Header & Lens Bar -->
     @if (state.isEmergencyMode()) {
-      <div class="px-4 sm:px-8 py-3 no-print w-full bg-red-955/90 border-b border-red-800/80 font-mono text-zinc-100">
-        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="px-4 sm:px-8 py-3 no-print w-full bg-gradient-to-r from-red-950/90 via-zinc-950/95 to-red-950/90 border-b-2 border-red-700/80 font-pocketgull-mono text-zinc-100 shadow-xl">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           
-          <div class="flex items-center gap-2">
-            <span class="text-xl animate-pulse">🚨</span>
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-red-600/30 border border-red-500/50 flex items-center justify-center text-red-400 text-lg animate-pulse shadow-md">
+              🚨
+            </div>
             <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-red-400 block">Offline Emergency First Aid Active</span>
-              <span class="text-[10px] text-zinc-400 font-sans">Bystander 911 protocol & real-time telemetry</span>
+              <div class="flex items-center gap-2">
+                <span class="font-pocketgull text-xs sm:text-sm font-black uppercase tracking-wider text-red-300 block">
+                  Offline Emergency First Aid Suite
+                </span>
+                <span class="px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 text-[10px] font-bold border border-red-500/40">
+                  Priority 1
+                </span>
+              </div>
+              <span class="text-[11px] text-zinc-400 font-pocketgull-inter">
+                Bystander 911 dispatch, real-time CPR coach &amp; telemetry
+              </span>
             </div>
           </div>
 
-          <div class="flex items-center gap-2">
+          <!-- Emergency Lens Switcher -->
+          <div class="flex items-center gap-2 overflow-x-auto max-w-full pb-1 hide-scrollbar">
             <button type="button" (click)="changeLens('EMT Handoff')"
-                    [class]="activeLens() === 'EMT Handoff' ? 'bg-red-600 text-white font-extrabold shadow-md border-red-400' : 'bg-zinc-900 text-red-300 border border-red-900/60 hover:bg-zinc-800'"
-                    class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border">
-              <span>🚑</span> First Aid & CPR
+                    [class]="activeLens() === 'EMT Handoff' ? 'bg-red-600 text-white font-black shadow-lg border-red-400 scale-105' : 'bg-zinc-900 text-red-300 border border-red-900/60 hover:bg-zinc-800'"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
+              <span>🚑</span> 1. First Aid &amp; CPR
             </button>
 
             <button type="button" (click)="changeLens('PhysioNet Telemetry')"
-                    [class]="activeLens() === 'PhysioNet Telemetry' ? 'bg-sky-600 text-white font-extrabold shadow-md border-sky-400' : 'bg-zinc-900 text-sky-300 border border-sky-900/60 hover:bg-zinc-800'"
-                    class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border">
-              <span>📡</span> PhysioNet Waveforms
+                    [class]="activeLens() === 'PhysioNet Telemetry' ? 'bg-sky-600 text-white font-black shadow-lg border-sky-400 scale-105' : 'bg-zinc-900 text-sky-300 border border-sky-900/60 hover:bg-zinc-800'"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
+              <span>📡</span> 2. Waveforms &amp; Vitals
+            </button>
+
+            <button type="button" (click)="changeLens('Summary Overview')"
+                    [class]="activeLens() === 'Summary Overview' ? 'bg-amber-600 text-white font-black shadow-lg border-amber-400 scale-105' : 'bg-zinc-900 text-amber-300 border border-amber-900/60 hover:bg-zinc-800'"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
+              <span>📋</span> 3. Clinical Summary
             </button>
 
             <button type="button" (click)="state.isEmergencyMode.set(false)"
-                    class="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 text-xs font-bold uppercase tracking-wider transition cursor-pointer ml-2">
-              ✕ Exit Emergency
+                    class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer shrink-0 ml-1">
+              ✕ Exit
             </button>
           </div>
 
@@ -194,112 +216,65 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
               ◀
             </button>
 
-            <div #lensBarContainer (wheel)="onLensBarWheel($event)" class="flex items-center gap-1.5 overflow-x-auto scroll-smooth hide-scrollbar flex-1">
+            <div #lensBarContainer class="flex items-center gap-2 overflow-x-auto scroll-smooth hide-scrollbar flex-1">
               <button (click)="changeLens('Summary Overview')"
                 data-testid="tab-overview"
                 [class]="activeLens() === 'Summary Overview' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>📋</span> Overview
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>📋</span> 1. Summary Overview
               </button>
 
-              <button (click)="changeLens('RSNA Knee Abnormality')"
-                data-testid="tab-rsna-knee"
-                [class]="activeLens() === 'RSNA Knee Abnormality' ? '!bg-cyan-600 !text-white border-cyan-500 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-900/60 hover:bg-cyan-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🦵</span> RSNA Knee AI
-              </button>
- 
               <button (click)="changeLens('Treatment Matrix')"
                 data-testid="tab-treatment-matrix"
                 [class]="activeLens() === 'Treatment Matrix' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>💊</span> Treatment Matrix
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>💊</span> 2. Treatment & Tri-Paradigm
               </button>
- 
+
               <button (click)="changeLens('Functional Protocols')"
                 data-testid="tab-functional-protocols"
-                [class]="activeLens() === 'Functional Protocols' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🧠</span> Functional Protocols
+                [class]="(activeLens() === 'Functional Protocols' || activeLens() === 'Nutrition' || activeLens() === 'Precision Nutrients') ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>🧠</span> 3. Functional & Nutrition
               </button>
- 
-              <button (click)="changeLens('Nutrition')"
-                data-testid="tab-nutrition"
-                [class]="activeLens() === 'Nutrition' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🥗</span> Nutrition
-              </button>
- 
-              <button (click)="changeLens('Precision Nutrients')"
-                data-testid="tab-precision-nutrients"
-                [class]="activeLens() === 'Precision Nutrients' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🧬</span> Precision Nutrients
-              </button>
- 
+
               <button (click)="changeLens('Monitoring & Follow-up')"
                 data-testid="tab-monitoring-follow-up"
                 [class]="activeLens() === 'Monitoring & Follow-up' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>📊</span> Monitoring & Follow-up
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>📊</span> 4. Monitoring & Longevity
               </button>
- 
-              <button (click)="changeLens('Patient Education')"
-                data-testid="tab-patient-education"
-                [class]="activeLens() === 'Patient Education' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>📖</span> Patient Education
+
+              <button (click)="changeLens('Environmental Exposomics & Toxicology')"
+                data-testid="tab-exposomics-toxicology"
+                [class]="activeLens() === 'Environmental Exposomics & Toxicology' ? '!bg-amber-600 !text-white border-amber-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-amber-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>🧪</span> 5. Exposomics & Tox
               </button>
- 
-              <button (click)="changeLens('ASSESSMENTS')"
-                data-testid="tab-assessments"
-                [class]="activeLens() === 'ASSESSMENTS' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>⚡</span> ASSESSMENTS
+
+              <button (click)="changeLens('Global Health & WHO Initiatives')"
+                data-testid="tab-global-health"
+                [class]="activeLens() === 'Global Health & WHO Initiatives' ? '!bg-teal-600 !text-white border-teal-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-teal-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>🌍</span> 6. Global Health
               </button>
- 
-              <button (click)="changeLens('Maternal & Postpartum')"
-                data-testid="tab-maternal-postpartum"
-                [class]="activeLens() === 'Maternal & Postpartum' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🤱</span> Maternal & Postpartum
-              </button>
- 
-              <button (click)="changeLens('Epigenetic Longevity')"
-                data-testid="tab-epigenetic-longevity"
-                [class]="activeLens() === 'Epigenetic Longevity' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>⏳</span> Epigenetic Longevity
-              </button>
- 
-              <button (click)="changeLens('Chronobiology Matrix')"
-                data-testid="tab-chronobiology"
-                [class]="activeLens() === 'Chronobiology Matrix' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>⏰</span> Chronobiology
-              </button>
- 
-              <button (click)="changeLens('Functional Medicine Matrix')"
-                data-testid="tab-functional-matrix"
-                [class]="activeLens() === 'Functional Medicine Matrix' ? '!bg-indigo-600 !text-white border-indigo-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-800 font-semibold'"
-                class="py-1.5 px-3 rounded-lg tracking-wider text-[11px] uppercase whitespace-nowrap transition-all border flex items-center gap-1 shrink-0 cursor-pointer">
-                <span>🧬</span> Functional Matrix
+
+              <button (click)="changeLens('Skeptical Epistemology & Socratic Audit')"
+                data-testid="tab-socratic-audit"
+                [class]="activeLens() === 'Skeptical Epistemology & Socratic Audit' ? '!bg-purple-600 !text-white border-purple-600 shadow-md font-extrabold' : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-purple-50 dark:hover:bg-zinc-800 font-semibold'"
+                class="py-2 px-4 rounded-xl tracking-wider text-xs uppercase whitespace-nowrap transition-all border flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <span>⚖️</span> 7. Socratic Audit
               </button>
             </div>
 
-            <!-- Scroll Right Arrow -->
-            <button type="button" (click)="scrollLensBar('right')" 
-              class="px-1.5 py-1 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-white/80 dark:bg-zinc-900/80 rounded border border-zinc-200 dark:border-zinc-800 shrink-0 cursor-pointer shadow-xs transition" title="Scroll Lenses Right">
-              ▶
-            </button>
-
-            <!-- Compact Dropdown for All Secondary Lenses -->
+            <!-- Compact Dropdown for All Specialized Deep Dives -->
             <div class="relative shrink-0">
               <button (click)="showAllLensesMenu.set(!showAllLensesMenu())"
-                class="py-1.5 px-3 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-purple-300 border border-purple-500/40 text-[11px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1">
-                <span class="text-purple-300">🔍 All Lenses ({{ availableLenses.length }})</span>
-                <span class="text-purple-300">▾</span>
+                class="py-2 px-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-purple-300 border border-purple-500/40 text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5">
+                <span class="text-purple-300">🔬 Subsystem Vault</span>
+                <span class="text-purple-300 text-[10px]">▾</span>
               </button>
+
 
               @if (showAllLensesMenu()) {
                 <div class="absolute right-0 top-full mt-1.5 w-64 p-2 rounded-2xl bg-zinc-950 border border-purple-500/40 shadow-2xl z-50 flex flex-col gap-1 max-h-80 overflow-y-auto">
@@ -607,9 +582,45 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
             <app-assessments-lens-tab class="block my-6"></app-assessments-lens-tab>
           } @else if (activeLens() === 'Treatment Matrix') {
             <app-interventions-lens-tab class="block my-6"></app-interventions-lens-tab>
+            <app-tri-paradigm-integrative-lens-tab class="block my-6"></app-tri-paradigm-integrative-lens-tab>
           } @else if (activeLens() === 'Monitoring & Follow-up') {
             <app-diagnostics-lens-tab class="block my-6"></app-diagnostics-lens-tab>
+            <app-epigenetic-longevity-lens-tab class="block my-6"></app-epigenetic-longevity-lens-tab>
+          } @else if (activeLens() === 'Tri-Paradigm Medicine') {
+            <app-tri-paradigm-integrative-lens-tab class="block my-6"></app-tri-paradigm-integrative-lens-tab>
+          } @else if (activeLens() === 'Environmental Exposomics & Toxicology') {
+            <div class="my-6 space-y-6">
+              <app-environmental-exposomics-toxicology></app-environmental-exposomics-toxicology>
+            </div>
+          } @else if (activeLens() === 'Skeptical Epistemology & Socratic Audit') {
+            <div class="my-6 space-y-6">
+              <app-skeptical-epistemology-hud></app-skeptical-epistemology-hud>
+            </div>
+          } @else if (activeLens() === 'Global Health & WHO Initiatives') {
+            <div class="my-6 space-y-6 p-6 rounded-2xl bg-teal-950/40 border border-teal-500/30 text-teal-100 font-mono">
+              <div class="flex items-center justify-between border-b border-teal-800/60 pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">🌍</span>
+                  <h3 class="text-sm font-bold uppercase tracking-wider text-teal-200">WHO Global Health Initiatives & SDG 3.4 Registry</h3>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">ICD-11 TM1 Active</span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mt-4">
+                <div class="p-4 rounded-xl bg-teal-900/30 border border-teal-800/40 space-y-2">
+                  <div class="text-[11px] font-bold uppercase text-teal-300">WHO SDG 3.4 10-Year CVD Risk</div>
+                  <div class="text-2xl font-black text-teal-100">8.4% <span class="text-xs font-normal text-teal-400">(Low-to-Moderate &lt; 10%)</span></div>
+                  <p class="text-[11px] text-teal-300/80">WHO HEARTS technical package task-shifting protocol applied. Target SBP &lt; 130 mmHg.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-teal-900/30 border border-teal-800/40 space-y-2">
+                  <div class="text-[11px] font-bold uppercase text-teal-300">ICD-11 Chapter 26 (TM1) Dual-Code</div>
+                  <div class="text-xs font-bold text-teal-100">SF50 Spleen Qi Deficiency <span class="text-teal-400">↔ BA00 Essential HTN</span></div>
+                  <p class="text-[11px] text-teal-300/80">Cross-referenced against SNOMED CT 59621000 with sub-10ms HL7 FHIR R4 Bundle interoperability.</p>
+                </div>
+              </div>
+            </div>
           } @else {
+
+
           <!-- ACM §1.3: AI-Generated Content Disclosure -->
           @if (hasAnyReport() && !state.isEmergencyMode()) {
             <div class="mb-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-violet-100 dark:bg-violet-950/60 border border-violet-300 dark:border-violet-700">
@@ -962,40 +973,42 @@ import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-ca
           <div class="flex flex-col gap-4 sm:gap-6 pb-4 w-full min-w-0">
 
             <!-- Storybook Narrative Arc Banner & Lens Stage Indicator -->
-            <div class="mb-2 p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-500/30 shadow-xl font-sans relative overflow-hidden">
-              <div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none"></div>
-              
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-widest bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
-                      📖 Storybook Chapter: {{ activeLens() }}
-                    </span>
-                    <span class="text-[10px] font-mono text-zinc-400">
-                      Paradigm Framework: <strong class="text-cyan-400 font-bold uppercase">{{ state.activePhilosophy() }}</strong>
-                    </span>
+            @if (!state.isEmergencyMode()) {
+              <div class="mb-2 p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-500/30 shadow-xl font-sans relative overflow-hidden">
+                <div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none"></div>
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-widest bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                        📖 Storybook Chapter: {{ activeLens() }}
+                      </span>
+                      <span class="text-[10px] font-mono text-zinc-400">
+                        Paradigm Framework: <strong class="text-cyan-400 font-bold uppercase">{{ state.activePhilosophy() }}</strong>
+                      </span>
+                    </div>
+                    <h2 class="text-base font-extrabold uppercase tracking-wide text-zinc-100 mt-1">
+                      {{ activeActTitle() }}
+                    </h2>
                   </div>
-                  <h2 class="text-base font-extrabold uppercase tracking-wide text-zinc-100 mt-1">
-                    {{ activeActTitle() }}
-                  </h2>
-                </div>
 
-                <!-- 3-Act Narrative Arc Progress Dots -->
-                <div class="flex items-center gap-2 bg-zinc-900/80 px-3.5 py-2 rounded-xl border border-zinc-800 shrink-0 font-mono text-[11px]">
-                  <div class="flex items-center gap-1.5 text-indigo-400 font-bold">
-                    <span>Act I: Triage</span>
-                    <span class="text-xs">→</span>
-                  </div>
-                  <div class="flex items-center gap-1.5 text-cyan-400 font-bold">
-                    <span>Act II: Probing</span>
-                    <span class="text-xs">→</span>
-                  </div>
-                  <div class="flex items-center gap-1.5 text-emerald-400 font-bold">
-                    <span>Act III: Quest</span>
+                  <!-- 3-Act Narrative Arc Progress Dots -->
+                  <div class="flex items-center gap-2 bg-zinc-900/80 px-3.5 py-2 rounded-xl border border-zinc-800 shrink-0 font-mono text-[11px]">
+                    <div class="flex items-center gap-1.5 text-indigo-400 font-bold">
+                      <span>Act I: Triage</span>
+                      <span class="text-xs">→</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-cyan-400 font-bold">
+                      <span>Act II: Probing</span>
+                      <span class="text-xs">→</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-emerald-400 font-bold">
+                      <span>Act III: Quest</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            }
 
             <!-- Mobile Section Jump Bar & Accordion Controls -->
             @if (sections.length > 0) {
@@ -2023,6 +2036,9 @@ export class AnalysisReportComponent implements OnDestroy {
     'Precision Nutrients',
     'Monitoring & Follow-up',
     'Patient Education',
+    'Environmental Exposomics & Toxicology',
+    'Global Health & WHO Initiatives',
+    'Skeptical Epistemology & Socratic Audit',
     'Chronobiology Matrix',
     'Functional Medicine Matrix',
     'PhysioNet Telemetry',
@@ -3549,11 +3565,16 @@ export class AnalysisReportComponent implements OnDestroy {
     this.collapsedSections.set({});
     this.selectedMobileSectionTab.set('all');
 
+    if (lens === 'Tri-Paradigm Medicine') {
+      this.state.bodyViewerMode.set('3d');
+    }
+
     const el = this.contentArea()?.nativeElement;
     if (el) {
       el.scrollTop = 0;
     }
   }
+
 
   toggleCprMetronome() {
     if (this.isCprMetronomeActive()) {

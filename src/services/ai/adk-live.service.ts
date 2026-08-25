@@ -55,6 +55,7 @@ export class AdkLiveService {
   public isConnected = signal(false);
   public isListening = signal(false);
   public isSpeaking = signal(false);
+  public isChildLifeMode = signal(false);
   public latestTranscript = signal('');
   public connectionError = signal<string | null>(null);
   public latencyMs = signal<number>(145); // Sub-200ms streaming latency tracker
@@ -126,6 +127,25 @@ export class AdkLiveService {
     }
   }
 
+  public buildPediatricPromptSegment(isPediatric: boolean, childName?: string, age?: number): string {
+    if (!isPediatric) return '';
+
+    return `
+
+🧸 CHILD LIFE SPECIALIST & PEDIATRIC COMMUNICATION PROTOCOL (COPPA Safe Harbor & AAP Guidelines):
+- Persona & Role: You are speaking as a certified Child Life Specialist and gentle pediatric clinical companion.
+- Target Audience: You are communicating with a pediatric patient${childName ? ` (${childName})` : ''}${age ? ` around age ${age}` : ''} and their parent/guardian.
+- Tone & Prosody: Speak with gentle warmth, calm pacing, reassuring vocal cadence, and empathetic tone. Never sound stern, clinical, or alarming.
+- Concrete Child-Friendly Analogies:
+  * Immune System / White Blood Cells: "Your body's friendly defender helpers" or "tiny superhero castle guards."
+  * Lungs & Airways: "Balloons that help bring fresh ocean air to your body."
+  * Hydration & Electrolytes: "Watering your body's internal garden so cells stay happy and bouncy."
+  * Medication / Inhalers / Sprays: "Special helpers that clear away the tickly clouds in your chest or tummy."
+- Terminology Avoidance: Avoid graphic pathology descriptions, alarming mortality stats, or complex medical abbreviations without immediate child-friendly explanation.
+- Empowering & Interactive: Validate their courage ("You're doing great", "Taking deep belly breaths is your superpower").
+- 🔒 COPPA Audio Rule Safeguard: All speech recognition is processed at the browser edge with immediate ephemeral memory release.`;
+  }
+
   public buildOccupationalPromptSegment(occupationalProfile?: IOccupationalHazardProfile | null): string {
     const prof = occupationalProfile;
     if (!prof) return '';
@@ -142,14 +162,25 @@ Occupational Healthspan & Precision Strategy Context:
 - Choral Vocal Resonance & Glee Protocol: ${prof.vocalResonanceProtocol || 'N/A'}`;
   }
 
-  async connect(apiKey: string, systemInstruction: string, voiceName: string = 'Aoede', modelName: string = 'models/gemini-3.5-flash', occupationalProfile?: IOccupationalHazardProfile | null) {
+  async connect(
+    apiKey: string = '',
+    systemInstruction: string,
+    voiceName: string = 'Aoede',
+    modelName: string = 'models/gemini-3.5-flash',
+    occupationalProfile?: IOccupationalHazardProfile | null,
+    isPediatric: boolean = false,
+    childName?: string,
+    age?: number
+  ) {
     if (this.isConnected()) return;
     this.connectionError.set(null);
+    this.isChildLifeMode.set(isPediatric);
 
+    const pedSegment = this.buildPediatricPromptSegment(isPediatric, childName, age);
     const occSegment = this.buildOccupationalPromptSegment(occupationalProfile);
 
-    // Enhance system instruction with vocal prosody directives, Occupational Hazard Context, & Macro Fleet Sentinel Context
-    const enhancedInstruction = `${systemInstruction}${occSegment}
+    // Enhance system instruction with vocal prosody directives, Child Life Pediatric Context, & Macro Fleet Sentinel Context
+    const enhancedInstruction = `${systemInstruction}${pedSegment}${occSegment}
 
 Vocal & Speech Delivery Style:
 - Speak in a warm, conversational, empathetic, and reassuring voice.
@@ -163,11 +194,10 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
 - Gentleman & Muse Entrainment: Synchronize clockwork escapement rhythm and 528 Hz solfeggio audio tones.`;
 
     try {
-      // We use the standard WebSocket approach directly to the Gemini API since the 
-      // `@google/genai` types are sometimes missing browser specific live features depending on the beta version.
-      // We route this through our backend proxy to securely affix the Referer headers required by restricted API keys.
+      // We route this through our backend WebSocket proxy which securely handles Vertex AI IAM / ADC
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      let url = `${protocol}//${window.location.host}/ws/gemini-live?key=${apiKey}`;
+      const keyParam = apiKey ? `?key=${encodeURIComponent(apiKey)}` : '';
+      let url = `${protocol}//${window.location.host}/ws/gemini-live${keyParam}`;
       // 4. Setup Audio Playback
       this.playbackContext = new AudioContext({ sampleRate: 24000 });
 

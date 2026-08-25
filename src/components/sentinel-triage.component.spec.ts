@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
 import { SentinelTriageComponent } from './sentinel-triage.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector, PLATFORM_ID } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';

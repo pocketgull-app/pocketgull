@@ -230,6 +230,8 @@ contests/
 *.joblib
 /models/
 trained_models/
+lora_*/
+checkpoint-*/
 pocketgull_api/models/
 pocketgull_api/*.joblib
 pocketgull_api/*.pkl
@@ -237,6 +239,7 @@ pocketgull_api/*.pt
 !**/lib/models/**
 !**/core/models/**
 !**/src/models/**
+
 
 # Physio / PhysioNet Signal Telemetry & Trained Models
 physio*/

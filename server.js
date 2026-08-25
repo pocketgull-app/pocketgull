@@ -74,7 +74,8 @@ function sanitizeLogInput(val) {
   return str.replace(/[\r\n\u2028\u2029]+/g, ' _ ').replace(/[\x00-\x1F\x7F]+/g, ' ').slice(0, 2000);
 }
 
-app.set('trust proxy', true);
+// Trust single reverse proxy hop on Google Cloud Run
+app.set('trust proxy', 1);
 
 // Primary Business Site Handler for pocketgull.com & www.pocketgull.com
 app.use((req, res, next) => {
@@ -85,6 +86,8 @@ app.use((req, res, next) => {
 
   const isBusinessSite =
     req.path === '/business' ||
+    req.path === '/store' ||
+    req.path === '/community' ||
     req.query['preview'] === 'business' ||
     /(^|\.)pocketgull\.com$/.test(rawHost);
 
@@ -794,12 +797,6 @@ app.get(/(.*)/, (req, res) => {
   if (fs.existsSync(indexPath)) {
     try {
       let html = fs.readFileSync(indexPath, 'utf8');
-      if (geminiApiKeyCached) {
-        // Inject script immediately before closing </head>
-        const nonce = res.locals.nonce || '';
-        const scriptTag = `<script nonce="${nonce}" px-api-key="true">window.GEMINI_API_KEY = "${geminiApiKeyCached}";</script>\n</head>`;
-        html = html.replace('</head>', scriptTag);
-      }
       // Strip print media + onload from stylesheet link tags so browser doesn't wait on CSP-blocked inline handlers
       html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)media=["']print["']\s+onload=["'][^"']*["']/gi, '<link$1media="all"');
       html = html.replace(/<link([^>]*rel=["']stylesheet["'][^>]*)\s+media=["']print["'](?![^>]*class=["']print-only["'])/gi, '<link$1media="all"');

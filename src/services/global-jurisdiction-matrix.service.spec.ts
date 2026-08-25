@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { GlobalJurisdictionMatrixService } from './global-jurisdiction-matrix.service';
 
 describe('GlobalJurisdictionMatrixService Unit Suite', () => {

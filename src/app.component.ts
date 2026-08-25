@@ -65,6 +65,13 @@ import { MainHeaderNavComponent } from './components/main-header-nav.component';
 import { IntakeToolbarComponent } from './components/intake-toolbar.component';
 import { OnboardingTourOverlayComponent } from './components/onboarding-tour-overlay.component';
 import { SereneIntakeComponent } from './components/synthesis/serene-intake.component';
+import { EncryptedVaultModalComponent } from './components/shared/encrypted-vault-modal.component';
+import { SmartFhirSyncModalComponent } from './components/shared/smart-fhir-sync-modal.component';
+import { GlobalHealthInitiativesModalComponent } from './components/shared/global-health-initiatives-modal.component';
+import { ArticlesReaderComponent } from './components/articles-reader.component';
+import { VertexModelGardenPortalComponent } from './components/vertex-model-garden-portal.component';
+import { TalentHrPortalComponent } from './components/talent-hr-portal.component';
+import { OsceCaseSimulatorComponent } from './components/osce-case-simulator.component';
 
 @Component({
   selector: 'app-root',
@@ -105,7 +112,14 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
     OnboardingTourOverlayComponent,
     SupportTicketModalComponent,
     ApiPricingComponent,
-    SereneIntakeComponent
+    SereneIntakeComponent,
+    EncryptedVaultModalComponent,
+    SmartFhirSyncModalComponent,
+    GlobalHealthInitiativesModalComponent,
+    ArticlesReaderComponent,
+    VertexModelGardenPortalComponent,
+    TalentHrPortalComponent,
+    OsceCaseSimulatorComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -159,6 +173,11 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
         <app-support-ticket-modal (closed)="showSupportTicketModal.set(false)"></app-support-ticket-modal>
       }
 
+      <!-- Zero-Knowledge Encrypted Vault Modal, SMART on FHIR Modal & Global Health Modal -->
+      <app-encrypted-vault-modal #vaultModal></app-encrypted-vault-modal>
+      <app-smart-fhir-sync-modal #fhirModal></app-smart-fhir-sync-modal>
+      <app-global-health-initiatives-modal #globalHealthModal></app-global-health-initiatives-modal>
+
       @defer (on idle) {
         <app-dictation-modal></app-dictation-modal>
       }
@@ -172,25 +191,51 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
           [hasApiKey]="hasApiKey()"
           (submitKey)="apiKeyInput.set($event); submitApiKey()"
           (loadDemo)="loadDemoMode()"
+          (unlockSession)="handleUnlockSession()"
           (selectAiStudio)="selectKey()"
           (emergencyBypass)="handleEmergencyBypass()">
         </app-secure-splash>
       } @else {
         @if (state.isEmergencyMode()) {
-          <main class="flex-1 flex flex-col min-w-0 min-h-0 relative bg-[#F9FAFB] dark:bg-[#09090b] p-4 sm:p-6 overflow-y-auto">
-            <div class="mb-4 flex items-center justify-between no-print">
-              <button (click)="state.isEmergencyMode.set(false); session.isLocked.set(true)" class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-900 dark:hover:text-zinc-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-                Exit Emergency Mode
-              </button>
-              <div class="flex items-center gap-2 px-3 py-1 bg-red-500/10 dark:bg-red-500/20 border border-red-500/30 rounded-full">
-                <div class="relative flex h-2 w-2">
+          <main class="flex-1 flex flex-col min-w-0 min-h-0 relative bg-zinc-950 text-zinc-100 overflow-hidden font-pocketgull-inter">
+            <!-- 🚨 Emergency Mode Top Critical Command Bar -->
+            <div class="px-4 py-2.5 bg-gradient-to-r from-red-950 via-zinc-950 to-red-950 border-b-2 border-red-600/80 shadow-2xl flex flex-wrap items-center justify-between gap-3 shrink-0 no-print z-30 font-pocketgull-mono">
+              
+              <!-- Left: Pulsing Beacon & Mode Title -->
+              <div class="flex items-center gap-3">
+                <div class="relative flex h-3.5 w-3.5 shrink-0">
                   <span class="absolute inline-flex h-full w-full rounded-full opacity-75 bg-red-500 animate-ping"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                  <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-600 shadow-[0_0_12px_rgba(239,68,68,0.9)]"></span>
                 </div>
-                <span class="text-[12px] font-bold text-red-655 dark:text-red-400 uppercase tracking-widest">First Aid Mode</span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-pocketgull-mono text-sm sm:text-base font-black tracking-wider text-red-100 uppercase">
+                      CODE BLUE • EMERGENCY TRIAGE ACTIVE
+                    </span>
+                    <span class="hidden sm:inline px-2 py-0.5 rounded-md bg-red-500/20 text-red-300 text-[10px] font-bold border border-red-500/40">
+                      OFFLINE FIRST AID
+                    </span>
+                  </div>
+                  <span class="text-[11px] text-zinc-400 font-sans block">
+                    Zero-latency bystander CPR, EMT handoff telemetry &amp; rapid emergency guides
+                  </span>
+                </div>
               </div>
+
+              <!-- Right: Direct 911 Dialer & Exit Control -->
+              <div class="flex items-center gap-2.5 ml-auto">
+                <a href="tel:911" class="px-4 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-pocketgull font-bold text-xs uppercase tracking-wider transition shadow-lg flex items-center gap-1.5 active:scale-95 border border-red-400 no-underline cursor-pointer">
+                  <span class="animate-bounce">📞</span> CALL 911
+                </a>
+                <button type="button" (click)="state.isEmergencyMode.set(false); session.isLocked.set(true)" 
+                        class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 font-pocketgull font-bold text-xs uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer">
+                  <span>✕</span> Exit Emergency Mode
+                </button>
+              </div>
+
             </div>
+
+            <!-- Main Analysis Container in Emergency Mode -->
             <app-analysis-container class="flex flex-col flex-1 min-h-0 h-full w-full overflow-hidden"></app-analysis-container>
           </main>
         } @else {
@@ -340,6 +385,8 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
 
         <app-main-header-nav
           (openSocraticIntake)="state.toggleSocraticIntake(true)"
+          (openModelGarden)="showModelGardenModal.set(true)"
+          (openTalentHrPortal)="showTalentHrPortalModal.set(true)"
           (openCompanionSync)="showCompanionSyncModal.set(true)"
           (openBioNetworkQr)="showCompanionSyncModal.set(true)"
           (openBillingDashboard)="showBillingDashboard.set(true)"
@@ -349,6 +396,10 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
           (openSupportTicket)="showSupportTicketModal.set(true)"
+          (openEncryptedVault)="vaultModal.open()"
+          (openSmartFhirSync)="fhirModal.open()"
+          (openGlobalHealth)="globalHealthModal.open()"
+          (openArticles)="showArticlesModal.set(true)"
           (triggerSomaticGrounding)="triggerSomaticGrounding()">
         </app-main-header-nav>
 
@@ -358,6 +409,7 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
           (exportPdf)="exportPdf()"
           (exportJson)="exportJson()"
           (exportFhir)="exportFhir()"
+          (exportFhirR4Bundle)="exportFhirR4Bundle()"
           (exportLaafHapticFhir)="exportLaafHapticFhir()"
           (connectEpic)="connectEpic()"
           (connectAwsHealth)="connectAwsHealth()"
@@ -382,20 +434,20 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
                   <button (click)="mobileActiveTab.set('chart')" 
                           class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
                           [class.bg-white]="mobileActiveTab() === 'chart'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'chart'" [class.text-black]="mobileActiveTab() === 'chart'" [class.dark:text-white]="mobileActiveTab() === 'chart'"
-                          [class.text-gray-500]="mobileActiveTab() !== 'chart'" [class.dark:text-zinc-400]="mobileActiveTab() !== 'chart'">
+                          [class.text-gray-700]="mobileActiveTab() !== 'chart'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'chart'">
                     🩺 Chart
                   </button>
                   <button (click)="mobileActiveTab.set('analysis')"
                           class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
                           [class.bg-white]="mobileActiveTab() === 'analysis'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'analysis'" [class.text-black]="mobileActiveTab() === 'analysis'" [class.dark:text-white]="mobileActiveTab() === 'analysis'"
-                          [class.text-gray-500]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-400]="mobileActiveTab() !== 'analysis'">
+                          [class.text-gray-700]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'analysis'">
                     📊 Analysis
                   </button>
                   @if (state.selectedPartId()) {
                     <button (click)="mobileActiveTab.set('tasks')"
                             class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
                             [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
-                            [class.text-gray-500]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-400]="mobileActiveTab() !== 'tasks'">
+                            [class.text-gray-700]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'tasks'">
                       📋 Tasks
                     </button>
                   }
@@ -602,6 +654,38 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
              }
           }
         </div>
+
+        <!-- Institutional, Careers & Clinical Transparency Footer -->
+        <footer class="border-t border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md px-4 sm:px-8 py-3.5 no-print text-xs text-zinc-500 dark:text-zinc-400 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 z-10 shadow-xs">
+          <div class="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs">
+            <span class="font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">PocketGull Clinical Intelligence</span>
+            <span class="text-zinc-400 dark:text-zinc-600 hidden sm:inline">•</span>
+            <span class="text-zinc-500 dark:text-zinc-400 hidden sm:inline">Five Eyes Sovereignty &amp; HIPAA Safe Harbor</span>
+          </div>
+          <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-5 font-semibold text-[11px] sm:text-xs">
+            <button type="button" (click)="showOsceSimulatorModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>🎓 Case Simulator</span>
+            </button>
+            <button type="button" (click)="showTalentHrPortalModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>🤝 Join Team &amp; Fellowships</span>
+            </button>
+            <button type="button" (click)="showModelGardenModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>🌿 Vertex Model Garden</span>
+            </button>
+            <button type="button" (click)="showBillingDashboard.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>💳 Subscriptions</span>
+            </button>
+            <button type="button" (click)="showApiPricing.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>⚡ API Pricing</span>
+            </button>
+            <button type="button" (click)="showArticlesModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>📰 Articles</span>
+            </button>
+            <button type="button" (click)="showDocsStudy.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>📚 Docs</span>
+            </button>
+          </div>
+        </footer>
       }
         
         @if(state.isResearchFrameVisible()) {
@@ -651,6 +735,101 @@ import { SereneIntakeComponent } from './components/synthesis/serene-intake.comp
     <!-- Native Angular Documentation Suite -->
     @if (showDocsStudy()) {
       <app-docs-study></app-docs-study>
+    }
+
+    <!-- Vertex AI Model Garden & Developer API Portal Modal Site -->
+    @if (showModelGardenModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-300 no-print" role="dialog" aria-modal="true" aria-labelledby="model-garden-title">
+        <div class="relative w-full max-w-7xl max-h-[92vh] bg-zinc-950 rounded-3xl shadow-2xl border border-teal-900/50 overflow-y-auto flex flex-col">
+          <div class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800">
+            <div class="flex items-center gap-3">
+              <span class="p-2 rounded-xl bg-teal-950/60 text-teal-400 text-lg border border-teal-500/30">🌿</span>
+              <div>
+                <h2 id="model-garden-title" class="text-sm font-bold uppercase tracking-widest text-zinc-100">PocketGull Vertex AI Model Garden & Developer Hub</h2>
+                <p class="text-xs text-zinc-400">Enterprise Specialty Model Registry • Calibrated Probabilities • 1-Click Cloud Deployment</p>
+              </div>
+            </div>
+            <button (click)="showModelGardenModal.set(false)" 
+                    aria-label="Close Model Garden"
+                    class="px-3.5 py-1.5 bg-zinc-800 hover:bg-rose-600 text-zinc-200 hover:text-white rounded-full transition-colors font-bold text-xs cursor-pointer border border-zinc-700">
+              ✕ Close Garden
+            </button>
+          </div>
+          <div class="p-4 sm:p-6">
+            <app-vertex-model-garden-portal />
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Human Resources & Domain Specialist Agent-Wrangling Portal Modal Site -->
+    @if (showTalentHrPortalModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-300 no-print" role="dialog" aria-modal="true" aria-labelledby="talent-portal-title">
+        <div class="relative w-full max-w-7xl max-h-[92vh] bg-zinc-950 rounded-3xl shadow-2xl border border-teal-900/50 overflow-y-auto flex flex-col">
+          <div class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800">
+            <div class="flex items-center gap-3">
+              <span class="p-2 rounded-xl bg-teal-950/60 text-teal-400 text-lg border border-teal-500/30">🤝</span>
+              <div>
+                <h2 id="talent-portal-title" class="text-sm font-bold uppercase tracking-widest text-zinc-100">PocketGull Human Resources &amp; Domain Specialist Network</h2>
+                <p class="text-xs text-zinc-400">Join the Team • Steer &amp; Wrangle Autonomous Clinical Agents • Regenerative Fellowships</p>
+              </div>
+            </div>
+            <button (click)="showTalentHrPortalModal.set(false)" 
+                    aria-label="Close Talent Portal"
+                    class="px-3.5 py-1.5 bg-zinc-800 hover:bg-rose-600 text-zinc-200 hover:text-white rounded-full transition-colors font-bold text-xs cursor-pointer border border-zinc-700">
+              ✕ Close Portal
+            </button>
+          </div>
+          <div class="p-4 sm:p-6">
+            <app-talent-hr-portal />
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Socratic Clinical Case Simulator & OSCE Flight Arena Modal -->
+    @if (showOsceSimulatorModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-300 no-print" role="dialog" aria-modal="true" aria-labelledby="osce-modal-title">
+        <div class="relative w-full max-w-7xl max-h-[92vh] bg-zinc-950 rounded-3xl shadow-2xl border border-teal-900/50 overflow-y-auto flex flex-col">
+          <div class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800">
+            <div class="flex items-center gap-3">
+              <span class="p-2 rounded-xl bg-teal-950/60 text-teal-400 text-lg border border-teal-500/30">🎓</span>
+              <div>
+                <h2 id="osce-modal-title" class="text-sm font-bold uppercase tracking-widest text-zinc-100">PocketGull Socratic Clinical Case Simulator</h2>
+                <p class="text-xs text-zinc-400">Diagnostic Flight Simulator • Socratic Preceptor Guidance • Board Exam Evaluator</p>
+              </div>
+            </div>
+            <button (click)="showOsceSimulatorModal.set(false)" 
+                    aria-label="Close Case Simulator"
+                    class="px-3.5 py-1.5 bg-zinc-800 hover:bg-rose-600 text-zinc-200 hover:text-white rounded-full transition-colors font-bold text-xs cursor-pointer border border-zinc-700">
+              ✕ Close Simulator
+            </button>
+          </div>
+          <div class="p-4 sm:p-6">
+            <app-osce-case-simulator />
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- WordPress Articles & 6th Grade / Bionic Knowledge Hub Modal -->
+    @if (showArticlesModal()) {
+      <div class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 no-print animate-in fade-in duration-200">
+        <div class="bg-zinc-950 text-zinc-100 w-full max-w-6xl max-h-[92dvh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-zinc-800 relative">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/70 font-mono">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">📰</span>
+              <h2 class="text-sm font-bold uppercase tracking-wider text-white">Pocket-Gull Articles & Everyday Knowledge Hub</h2>
+            </div>
+            <button (click)="showArticlesModal.set(false)" class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-bold transition cursor-pointer border border-zinc-700">
+              ✕ Close
+            </button>
+          </div>
+          <div class="flex-1 overflow-y-auto p-4 sm:p-6">
+            <app-articles-reader />
+          </div>
+        </div>
+      </div>
     }
 
     <!-- Preview & Print Modal (Dieter Rams Style) -->
@@ -997,6 +1176,9 @@ export class AppComponent implements OnDestroy {
   showApiPricing = signal(false);
   showPatientPortal = signal(false);
   showClinicianOnboarding = signal(false);
+  showModelGardenModal = signal(false);
+  showTalentHrPortalModal = signal(false);
+  showOsceSimulatorModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
   readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);
@@ -1065,6 +1247,7 @@ export class AppComponent implements OnDestroy {
   isDemoMode = this.state.isDemoMode;
   readonly showCompanionSyncModal = signal<boolean>(false);
   readonly showSupportTicketModal = signal<boolean>(false);
+  readonly showArticlesModal = signal<boolean>(false);
   readonly showHeaderThemeMenu = signal<boolean>(false);
   apiKeyInput = signal<string>('');
   showPassword = signal<boolean>(false);
@@ -1184,6 +1367,13 @@ export class AppComponent implements OnDestroy {
         report: results,
         summary: results['Summary Overview']
       }, 'Clinical User');
+    }
+  }
+
+  exportFhirR4Bundle() {
+    const patient = this.patientMgmt.selectedPatient();
+    if (patient) {
+      this.export.downloadFhirR4Bundle(patient);
     }
   }
 
@@ -1902,6 +2092,13 @@ export class AppComponent implements OnDestroy {
     this.state.isDemoMode.set(false);
     // Force GeminiProvider to reinitialise with the new key on next call
     this.hasApiKey.set(true);
+  }
+
+  handleUnlockSession() {
+    this.isDemoMode.set(false);
+    this.state.isDemoMode.set(false);
+    this.hasApiKey.set(true);
+    this.session.isLocked.set(false);
   }
 
   loadDemoMode() {

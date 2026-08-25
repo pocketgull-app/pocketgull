@@ -13,6 +13,7 @@ import { SevenGenerationsStewardshipLensTabComponent } from './seven-generations
 import { SocraticEpistemologyLensTabComponent } from './socratic-epistemology-lens-tab.component';
 import { SummaryOverviewLensTabComponent } from './summary-overview-lens-tab.component';
 import { TeledentistrySystemicLensComponent } from './teledentistry-systemic-lens.component';
+import { TriParadigmIntegrativeLensTabComponent } from './tri-paradigm-integrative-lens-tab.component';
 
 export * from './assessments-lens-tab.component';
 export * from './chronobiology-matrix-lens-tab.component';
@@ -29,6 +30,7 @@ export * from './seven-generations-stewardship-lens-tab.component';
 export * from './socratic-epistemology-lens-tab.component';
 export * from './summary-overview-lens-tab.component';
 export * from './teledentistry-systemic-lens.component';
+export * from './tri-paradigm-integrative-lens-tab.component';
 
 /**
  * Composite array of all analysis report lens tab components.
@@ -50,4 +52,6 @@ export const ANALYSIS_LENS_TAB_COMPONENTS = [
   SocraticEpistemologyLensTabComponent,
   SummaryOverviewLensTabComponent,
   TeledentistrySystemicLensComponent,
+  TriParadigmIntegrativeLensTabComponent,
 ] as const;
+

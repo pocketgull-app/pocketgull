@@ -11,7 +11,12 @@ import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const scriptDir = dirname(__filename);
-const rootDir = resolve(scriptDir, '..');
+let rawRootDir = resolve(scriptDir, '..');
+if (rawRootDir.match(/^[a-z]:/)) {
+  rawRootDir = rawRootDir[0].toUpperCase() + rawRootDir.slice(1);
+}
+const rootDir = rawRootDir;
+process.chdir(rootDir);
 
 const TARGET_PROJECT = process.env.GCP_PROJECT || 'gen-lang-client-0540208645';
 const SERVICE_NAME = 'pocket-gull';
@@ -35,23 +40,32 @@ function run(cmd, options = {}) {
   }
 }
 
+// 0. Mandatory Pre-Flight Verification Chain (Unit Tests, Lint, Security, SBOM)
+console.log('\n🧪 Step 0/5: Running mandatory pre-flight test & security verification chain...');
+run(`node "${join(rootDir, 'scripts/pre-commit-check.cjs')}"`);
+
+console.log('• CycloneDX 1.6 SBOM Verification...');
+run(`node "${join(rootDir, 'scripts/generate_cyclonedx_sbom.mjs')}"`);
+
+console.log('✅ All pre-flight tests passed successfully. Proceeding with deployment.');
+
 // 1. Verify Project Config
-console.log('\n🔍 Step 1/4: Verifying gcloud project configuration...');
+console.log('\n🔍 Step 1/5: Verifying gcloud project configuration...');
 run(`gcloud config set project ${TARGET_PROJECT}`);
 
 // 2. Package Clean Deployment Source Archive
-console.log('\n📦 Step 2/4: Packaging clean source archive for Cloud Build...');
+console.log('\n📦 Step 2/5: Packaging clean source archive for Cloud Build...');
 const tmpDir = join(rootDir, 'tmp');
 const archivePath = join(tmpDir, 'deploy_source.tar.gz');
 
 try {
-  run(`node scripts/package-deploy-source.mjs`);
+  run(`node "${join(rootDir, 'scripts/package-deploy-source.mjs')}"`);
 } catch (e) {
   console.warn('⚠️ Fallback to direct directory upload...');
 }
 
 // 3. Submit Cloud Build
-console.log('\n🏗️ Step 3/4: Building container image via Google Cloud Build...');
+console.log('\n🏗️ Step 3/5: Building container image via Google Cloud Build...');
 const sourceTar = join(rootDir, 'deploy_source.tar.gz');
 if (existsSync(sourceTar)) {
   console.log(`Found clean source archive (${(statSync(sourceTar).size / 1024 / 1024).toFixed(2)} MB). Submitting to Cloud Build...`);
@@ -61,7 +75,7 @@ if (existsSync(sourceTar)) {
 }
 
 // 4. Deploy to Google Cloud Run
-console.log('\n🚀 Step 4/4: Deploying image to Google Cloud Run (Scale-to-Zero)...');
+console.log('\n🚀 Step 4/5: Deploying image to Google Cloud Run (Scale-to-Zero & Zero Secret Injections)...');
 run(
   `gcloud run deploy ${SERVICE_NAME} ` +
   `--image ${IMAGE_TAG} ` +
@@ -73,15 +87,15 @@ run(
   `--cpu 2 ` +
   `--min-instances 0 ` +
   `--max-instances 2 ` +
-  `--set-secrets="GEMINI_API_KEY=GEMINI_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest,AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID:latest,AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY:latest,AWS_HEALTHLAKE_ENDPOINT=AWS_HEALTHLAKE_ENDPOINT:latest" ` +
-  `--update-env-vars=OTEL_SDK_DISABLED=true ` +
+  `--clear-secrets ` +
+  `--update-env-vars=OTEL_SDK_DISABLED=true,GOOGLE_CLOUD_PROJECT=${TARGET_PROJECT} ` +
   `--quiet`
 );
 
 // 5. Apply Lifecycle & Cost Controls
-console.log('\n🧹 Applying storage lifecycle and cost control policies...');
+console.log('\n🧹 Step 5/5: Applying storage lifecycle and cost control policies...');
 try {
-  run(`node scripts/apply-gcp-lifecycle-policies.mjs`);
+  run(`node "${join(rootDir, 'scripts/apply-gcp-lifecycle-policies.mjs')}"`);
 } catch (e) {
   console.warn('⚠️ Lifecycle policy application notice:', e.message);
 }

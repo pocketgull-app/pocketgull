@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { ClinicalMandarinateExamService } from './clinical-mandarinate-exam.service';
 
 describe('ClinicalMandarinateExamService Unit Suite', () => {

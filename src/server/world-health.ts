@@ -1,6 +1,13 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-const bigquery = new BigQuery();
+let _bigquery: BigQuery | null = null;
+function getBigQuery(): BigQuery {
+  if (!_bigquery) {
+    _bigquery = new BigQuery();
+  }
+  return _bigquery;
+}
+
 let cachedBaselines: any = null;
 
 export async function fetchWorldHealthBaselines() {
@@ -20,7 +27,7 @@ export async function fetchWorldHealthBaselines() {
               SELECT 999999999 as person_id, 1984 as year_of_birth
             )
         `;
-        const [rows] = await bigquery.query({ query });
+        const [rows] = await getBigQuery().query({ query });
         if (rows && rows.length > 0) {
             bqStats = rows[0];
             isRealBigQuery = true;

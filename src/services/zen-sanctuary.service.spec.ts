@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { ZenSanctuaryService } from './zen-sanctuary.service';
 
 describe('ZenSanctuaryService Unit Suite', () => {

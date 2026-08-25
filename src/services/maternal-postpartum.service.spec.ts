@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { MaternalPostpartumService } from './maternal-postpartum.service';
 
 describe('MaternalPostpartumService', () => {

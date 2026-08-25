@@ -1,7 +1,7 @@
 # ==========================================
 # Stage 1: Build
 # ==========================================
-FROM node:24-alpine@sha256:d32cdf619f63fe0471182d08996dd516c6275bb5fd31ae06e55a570bd9e1ad43 AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -16,6 +16,8 @@ ENV NODE_ENV=development
 
 # Install ALL dependencies (including root & workspace devDependencies needed for tsc & ng build)
 COPY package*.json ./
+COPY packages/core-sdk/package*.json ./packages/core-sdk/
+COPY packages/pocketgull-github-app/package*.json ./packages/pocketgull-github-app/
 COPY docs/study/package*.json ./docs/study/
 COPY companion-apps/avs-therapy/package*.json ./companion-apps/avs-therapy/
 COPY pocketgull_api/package*.json ./pocketgull_api/
@@ -32,7 +34,7 @@ RUN npm prune --omit=dev --legacy-peer-deps
 # ==========================================
 # Stage 2: Production
 # ==========================================
-FROM node:24-alpine@sha256:d32cdf619f63fe0471182d08996dd516c6275bb5fd31ae06e55a570bd9e1ad43
+FROM node:24-alpine
 
 WORKDIR /app
 

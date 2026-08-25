@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { AdkLiveService, uint8ArrayToBase64, base64ToUint8Array } from './adk-live.service';
 import type { IOccupationalHazardProfile } from '../actuarial-longevity.service';
 
@@ -85,6 +85,23 @@ describe('AdkLiveService', () => {
 
   it('should define a 10-minute MAX_SESSION_DURATION_MS safety ceiling (600,000 ms)', () => {
     expect(AdkLiveService.MAX_SESSION_DURATION_MS).toBe(600000);
+  });
+
+  it('should generate rich Child Life Specialist prompt segment when isPediatric is true', () => {
+    const service = new AdkLiveService();
+    const segment = service.buildPediatricPromptSegment(true, 'Leo', 7);
+
+    expect(segment).toContain('CHILD LIFE SPECIALIST & PEDIATRIC COMMUNICATION PROTOCOL');
+    expect(segment).toContain('Leo');
+    expect(segment).toContain('around age 7');
+    expect(segment).toContain('tiny superhero castle guards');
+    expect(segment).toContain('COPPA Audio Rule Safeguard');
+  });
+
+  it('should return empty string when isPediatric is false', () => {
+    const service = new AdkLiveService();
+    const segment = service.buildPediatricPromptSegment(false);
+    expect(segment).toBe('');
   });
 });
 

@@ -1,5 +1,6 @@
 {
   "name": "@pocketgull/core-sdk",
+  "private": true,
   "version": "1.0.0",
   "description": "Zero-dependency TypeScript core clinical intelligence, scoring engines, FHIR R4 serialization, and Popperian statistical hypothesis evaluation for health systems.",
   "main": "./dist/index.js",

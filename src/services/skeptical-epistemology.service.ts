@@ -367,6 +367,66 @@ const SOCRATIC_QUESTION_BANK: ISocraticTemplate[] = [
     explanation: 'Confounding occurs when a third variable (smoking) is associated with both the exposure (coffee) and the outcome (lung cancer). Without adjusting for confounders, observed associations can be entirely spurious.',
     difficulty: 'analytical',
     epistemicTag: 'Confounding Variables'
+  },
+  {
+    keywords: ['ambient', 'scribe', 'dictation', 'transcript', 'voice', 'SOAP'],
+    lenses: ['Ambient Scribe', 'Voice Intake', 'Treatment Matrix'],
+    question: 'When using an ambient AI scribe to generate clinical SOAP notes from encounter audio, what is the most common form of epistemic error?',
+    options: [
+      'Fabrication of entire organ systems',
+      'Extrapolative hallucination (inferring negative Review of Systems findings that were never actually discussed in the encounter)',
+      'Misspelling anatomical terms',
+      'Failing to format markdown'
+    ],
+    correctIndex: 1,
+    explanation: 'Recent Nature npj Digital Medicine (2025; DOI: 10.1038/s41746-025-01670-7) benchmarks reveal that LLM scribes most frequently produce extrapolative hallucinations—falsely asserting unmentioned symptoms were negative rather than unasked.',
+    difficulty: 'critical',
+    epistemicTag: 'Ambient Scribe Hallucination'
+  },
+  {
+    keywords: ['knee', 'meniscus', 'ACL', 'osteoarthritis', 'cartilage', 'joint', 'MRI'],
+    lenses: ['Physical Medicine', 'Musculoskeletal', 'Lens RSNA Knee'],
+    question: 'Why does an isolated deep learning classifier for medial meniscus tears require Bayesian joint-prior calibration?',
+    options: [
+      'To make the neural network run faster on mobile devices',
+      'Because meniscus pathology strongly co-occurs with ACL tears and medial compartment osteoarthritis; uncalibrated models produce kinematically implausible false positives',
+      'Because MRI slice thickness is always 10mm',
+      'To bypass FDA software regulation'
+    ],
+    correctIndex: 1,
+    explanation: 'Knee joint biomechanics link ACL integrity to medial meniscus stability and joint space narrowing (MedComm 2025; DOI: 10.1002/mco2.70260). Co-occurrence Bayesian priors prevent decoupled false positives.',
+    difficulty: 'analytical',
+    epistemicTag: 'Joint-Prior Bayesian Calibration'
+  },
+  {
+    keywords: ['vault', 'encrypted', 'security', 'crypto', 'FHIR', 'privacy', 'PHI'],
+    lenses: ['Zero-Knowledge Vault', 'Smart FHIR Sync', 'EHR Bridge'],
+    question: 'In zero-knowledge client-side encryption (AES-GCM-256 with PBKDF2), where do cryptographic keys reside?',
+    options: [
+      'Stored on the central cloud database server for indexing',
+      'Exclusively in client-side volatile memory derived from the user passphrase, with zero key egress to the server',
+      'Shared with third-party EHR vendors via plain HTTP',
+      'Embedded in public DNS records'
+    ],
+    correctIndex: 1,
+    explanation: 'Zero-knowledge guarantees (JPM 2024; DOI: 10.3390/jpm14030282) dictate that cryptographic keys and unencrypted PHI never leave the client device, preventing upstream sub-processor breaches.',
+    difficulty: 'foundational',
+    epistemicTag: 'Zero-Knowledge PHI Privacy'
+  },
+  {
+    keywords: ['CDS', 'decision support', 'automation', 'vigilance', 'alert', 'complacency'],
+    lenses: ['Skeptical Epistemology', 'Executive Summary', 'Clinical Summary'],
+    question: 'What human-factors mechanism best mitigates clinician automation bias when using AI decision support systems?',
+    options: [
+      'Displaying AI recommendations in flashing red text',
+      'Interactive Socratic counter-challenges, transparency confidence bounds, and explicit falsification triggers',
+      'Automatically accepting AI recommendations after 10 seconds',
+      'Hiding all evidence citations'
+    ],
+    correctIndex: 1,
+    explanation: 'Human factors clinical research (ACM CHI 2026; DOI: 10.1145/3772318.3791575) demonstrates that active epistemic friction (Socratic challenge questions and confidence bounds) prevents dangerous automation complacency.',
+    difficulty: 'critical',
+    epistemicTag: 'Automation Bias Mitigation'
   }
 ];
 

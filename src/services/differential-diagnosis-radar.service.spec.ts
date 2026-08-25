@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { DifferentialDiagnosisRadarService } from './differential-diagnosis-radar.service';
 import { IPatient } from './patient.types';
 

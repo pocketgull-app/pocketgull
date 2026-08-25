@@ -21,15 +21,33 @@ android {
 
     defaultConfig {
         applicationId = "app.pocketgull.companion"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
-        versionCode = 15
-        versionName = "1.15.0"
+        versionCode = 16
+        versionName = "1.16.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    flavorDimensions += listOf("store")
+    productFlavors {
+        create("play") {
+            dimension = "store"
+            applicationIdSuffix = ""
+            manifestPlaceholders["storeName"] = "Google Play"
+        }
+        create("amazon") {
+            dimension = "store"
+            applicationIdSuffix = ".amazon"
+            manifestPlaceholders["storeName"] = "Amazon Appstore"
+        }
     }
 
     buildTypes {
         release {
+            isMinifyEnabled = false
+            isShrinkResources = false
             signingConfig = signingConfigs.getByName("debug")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 }

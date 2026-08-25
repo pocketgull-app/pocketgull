@@ -131,6 +131,69 @@ PARADIGM_DIRECTIVES = {
         "and State B (Back: Double-Flip Cognitive Rationale, Trigger Evidence, Cochrane RoB 2 Tier, and Socratic Explanation). "
         "Output ONLY raw valid JSON containing 'stateA' and 'stateB' objects conforming to DoubleFlipStateMachine schema."
     ),
+    "dpo_epistemic_grounding": (
+        "[PARADIGM: DPO EPISTEMIC GROUNDING & HALLUCINATION SUPPRESSION]\n"
+        "You are Pocketgull Epistemic Calibration Engine. Evaluate clinical therapies and dietary supplements. "
+        "Explicitly compute Popperian null-hypothesis testability (H0), report precise Cochrane Risk of Bias (RoB 2) ratings, "
+        "and distinguish Level A RCT evidence from preliminary Level C hypotheses without overconfident curative claims."
+    ),
+    "ambient_scribe_soap": (
+        "[PARADIGM: AMBIENT CLINICAL SCRIBE & SOAP GENERATOR]\n"
+        "You are an on-device ambient medical scribe. Convert multi-turn doctor-patient audio transcripts into "
+        "structured clinical SOAP notes (Subjective, Objective, Assessment, Plan) and SBAR specialist handoffs. "
+        "Extract exact symptom chronologies, vital signs, physical exam findings, and medication changes in valid JSON."
+    ),
+    "pharmacogenomics_pgx": (
+        "[PARADIGM: PHARMACOGENOMICS & DRUG-HERB INTERACTION CLASSIFIER]\n"
+        "You are a clinical pharmacogenomics and polypharmacy intercept engine. Cross-reference patient Cytochrome P450 "
+        "genotypes (CYP2D6, CYP2C19, CYP3A4, SLCO1B1) with active prescription drugs, botanical herbs, and OTC supplements. "
+        "Detect hepatic enzyme induction/inhibition, myopathy risks, and provide actionable dosage adjustments."
+    ),
+    "circadian_chronodosing": (
+        "[PARADIGM: CIRCADIAN CHRONODOSING & TELEMETRY FORECASTING]\n"
+        "You are a chronobiology decision engine. Translate continuous wearable PPG/HRV sensor telemetry and salivary cortisol "
+        "slopes into optimal chronotherapy medication timing windows (e.g. bedtime antihypertensive dosing for non-dipping phenotypes)."
+    ),
+    "prior_auth_cms0057f": (
+        "[PARADIGM: CMS-0057-F PRIOR AUTHORIZATION FHIR BUNDLER]\n"
+        "You are a CMS-0057-F Interoperability & Prior Authorization automation engine. Transform clinical visit summaries "
+        "into fully compliant FHIR R4 Claim and CoverageEligibilityRequest resource bundles with ICD-10-CM and CPT crosswalk rationale."
+    ),
+    "tri_paradigm_synthesis": (
+        "[PARADIGM: TRI-PARADIGM INTEGRATIVE CLINICAL HARMONIZATION]\n"
+        "You are Pocketgull Tri-Paradigm Medical Arbiter. Harmonize Western allopathic pathophysiology with Eastern TCM "
+        "Zang-Fu organ patterns and Ayurvedic Dosha/Agni dynamics while enforcing strict clinical safety boundaries."
+    ),
+    "rsna_imaging_vlm": (
+        "[PARADIGM: MULTIMODAL RSNA KNEE & RADIOLOGICAL REASONING]\n"
+        "You are a specialized musculoskeletal radiology intelligence model. Analyze multi-slice DICOM knee radiographs "
+        "and sagittal MRI findings to generate standardized Kellgren-Lawrence osteoarthritis grades, meniscus tear classifications, "
+        "and structured radiological impressions with conservative clinical management plans."
+    ),
+    "seo_medical_journalism": (
+        "[PARADIGM: MEDICAL JOURNALISM & HEALTH LITERACY SEO ENGINE]\n"
+        "You are a clinical science journalist and health literacy educator for pocketgull.com. "
+        "Transform complex Cochrane and PubMed clinical trials into engaging Grade 6-8 plain-language articles. "
+        "Generate valid JSON-LD MedicalWebPage schema markup and compliant FTC affiliate disclaimers."
+    ),
+    "voice_multimodal_live": (
+        "[PARADIGM: REAL-TIME MULTIMODAL VOICE & AUDIO STREAM CONSULT TUNER]\n"
+        "You are Pocketgull Real-Time Multimodal Voice Consult Intelligence for pocketgull.app. "
+        "Parse spontaneous patient speech, strip disfluencies and mid-sentence self-corrections, "
+        "extract clinical timelines, and produce empathetic spoken audio responses formatted with Speech Synthesis Markup Language (SSML)."
+    ),
+    "calgary_cambridge_intake": (
+        "[PARADIGM: SOCRATIC CALGARY-CAMBRIDGE PATIENT INTAKE & TRIAGE]\n"
+        "You are an empathetic clinical triage interviewer for pocketgull.app adhering to the Calgary-Cambridge guide. "
+        "Conduct dynamic 1-question-at-a-time diagnostic inquiries, characterize OPQRST symptom vectors, screen for red flags, "
+        "and guide patients smoothly into the 3D anatomy and care plan experience."
+    ),
+    "fda_ftc_compliance_copywriter": (
+        "[PARADIGM: FTC & FDA 520(O) CLINICAL COPYWRITING & COMPLIANCE GUARD]\n"
+        "You are a healthcare regulatory and legal compliance editor for pocketgull.com and pocketgull.app. "
+        "Audit marketing copy and user interfaces, eliminate unsubstantiated medical cure claims, ensure FTC health claim substantiation, "
+        "and inject mandatory FDA 21 CFR §520(o) non-device Clinical Decision Support statutory notices."
+    ),
 }
 
 SAMPLE_DATASETS = {
@@ -368,6 +431,179 @@ SAMPLE_DATASETS = {
             ),
         }
     ],
+    "dpo_epistemic_grounding": [
+        {
+            "input": json.dumps({"supplement": "Curcumin (Bio-enhanced)", "indication": "Knee Osteoarthritis", "dosageMg": 1000}, indent=2),
+            "output": json.dumps({
+                "evidenceTier": "Level B (Cohort / Small RCTs)",
+                "nullHypothesisH0": "Curcumin 1000mg produces no statistically significant WOMAC score reduction compared to placebo at 12 weeks.",
+                "pValue": 0.038,
+                "isFalsified": True,
+                "cochraneRiskOfBias": {"overall": "Some Concerns", "commercialFundingBias": "Moderate"},
+                "recommendation": "Adjunctive supportive therapy. Does not replace physical therapy or weight management.",
+                "primaryCitation": "Cochrane Database Syst Rev (PMID: 33150652)"
+            }, indent=2),
+            "chosen": "Curcumin demonstrates modest adjunctive pain reduction (p = 0.038 against H0), supported by Cochrane review (PMID: 33150652, Level B). Recommend as supportive therapy.",
+            "rejected": "Curcumin is an FDA-approved miracle cure that permanently heals cartilage tears and completely eliminates arthritis."
+        }
+    ],
+    "ambient_scribe_soap": [
+        {
+            "input": "Doctor: 'Good morning Mr. Davis.' Patient: 'I have had a dry cough for 3 weeks since starting my blood pressure pill.' Doctor: 'BP is 138/84, lungs clear. Switching from Lisinopril 20mg to Losartan 50mg.'",
+            "output": json.dumps({
+                "soapNote": {
+                    "subjective": "64yo male with 3-week dry cough following Lisinopril initiation.",
+                    "objective": "BP 138/84 mmHg, lungs clear bilaterally.",
+                    "assessment": "ACEi-induced bradykinin cough.",
+                    "plan": "1. Discontinue Lisinopril 20mg.\n2. Start Losartan 50mg.\n3. Recheck BMP in 3 weeks."
+                }
+            }, indent=2),
+            "chosen": "Structured SOAP note detailing ACE-inhibitor cough mechanism, switch to Losartan, and 3-week follow-up.",
+            "rejected": "Prescribe cough syrup and continue Lisinopril."
+        }
+    ],
+    "pharmacogenomics_pgx": [
+        {
+            "input": json.dumps({
+                "genotype": {"cyp2d6": "*4/*4 (Poor Metabolizer)", "slco1b1": "521T>C"},
+                "medications": ["Simvastatin 40mg", "Metoprolol 50mg"],
+                "botanicals": ["St. John's Wort 300mg"]
+            }, indent=2),
+            "output": json.dumps({
+                "criticalAlerts": [
+                    {
+                        "type": "CONTRAINDICATION_INTERCEPT",
+                        "agents": ["St. John's Wort", "Simvastatin"],
+                        "mechanism": "Potent CYP3A4 induction reduces statin efficacy.",
+                        "action": "Discontinue St. John's Wort."
+                    },
+                    {
+                        "type": "PGX_DOSE_ADJUSTMENT",
+                        "gene": "CYP2D6 *4/*4",
+                        "drug": "Metoprolol",
+                        "action": "Reduce dose 50% or switch to Atenolol."
+                    }
+                ],
+                "riskScore": "CRITICAL"
+            }, indent=2),
+            "chosen": "Detects St. John's Wort CYP3A4 induction and CYP2D6 poor-metabolizer Metoprolol accumulation with dosage adjustments.",
+            "rejected": "No interactions found."
+        }
+    ],
+    "circadian_chronodosing": [
+        {
+            "input": json.dumps({
+                "hrvRmssdMs": 24,
+                "nocturnalBpDippingPct": 4.2,
+                "currentMeds": [{"name": "Amlodipine 5mg", "currentTiming": "08:00 AM"}]
+            }, indent=2),
+            "output": json.dumps({
+                "circadianPhenotype": "Non-Dipper Hypertensive",
+                "chronotherapyOptimization": {
+                    "recommendation": "Shift Amlodipine administration from 08:00 AM to 09:30 PM (Bedtime Dosing).",
+                    "rationale": "Hygia Chronotherapy Trial demonstrates bedtime dosing converts non-dippers to dippers [PMID: 31640833]."
+                }
+            }, indent=2),
+            "chosen": "Recommends bedtime administration shift for non-dipping hypertensive phenotype based on Hygia trial.",
+            "rejected": "Keep morning administration."
+        }
+    ],
+    "prior_auth_cms0057f": [
+        {
+            "input": json.dumps({
+                "patientId": "pat_98231",
+                "diagnosis": "Severe Eczema refractory to topical steroids",
+                "requestedMedication": "Dupilumab 300mg SQ q2w"
+            }, indent=2),
+            "output": json.dumps({
+                "resourceType": "Bundle",
+                "type": "collection",
+                "entry": [{"resource": {"resourceType": "Claim", "use": "preauthorization", "diagnosis": [{"sequence": 1, "diagnosisCodeableConcept": {"coding": [{"code": "L20.84"}]}}]}}]
+            }, indent=2),
+            "chosen": "Generates valid CMS-0057-F FHIR R4 Claim preauthorization bundle with ICD-10 L20.84.",
+            "rejected": "Outputs non-standard text letter without FHIR schema."
+        }
+    ],
+    "tri_paradigm_synthesis": [
+        {
+            "input": json.dumps({
+                "westernDiagnosis": "Metabolic Syndrome (Fasting Glucose 118 mg/dL)",
+                "tongueObservation": "Pale swollen tongue with greasy white coating",
+                "doshaAssessment": "Kapha-Pitta aggravation with impaired Agni"
+            }, indent=2),
+            "output": json.dumps({
+                "westernPathophysiology": "Hepatic de novo lipogenesis and insulin resistance.",
+                "easternTcmPattern": "Spleen Qi Deficiency with Phlegm-Damp Accumulation (Tan Shi).",
+                "ayurvedicEnergetics": "Mandagni generating Ama obstructing Meda Dhatu.",
+                "integratedProtocol": {"pharmacotherapy": "Metformin 500mg ER", "herbalFormulation": "Er Chen Tang + Triphala"}
+            }, indent=2),
+            "chosen": "Cross-paradigm integration mapping insulin resistance to Spleen Dampness and Kapha-Ama.",
+            "rejected": "Unsubstantiated claims without clinical safety bounds."
+        }
+    ],
+    "rsna_imaging_vlm": [
+        {
+            "input": json.dumps({
+                "modality": "DICOM Knee Radiograph + Sagittal PD MRI",
+                "findings": "Medial joint space narrowing, subchondral sclerosis, 3mm osteophyte, medial meniscus grade 2 cleavage tear."
+            }, indent=2),
+            "output": json.dumps({
+                "kellgrenLawrenceGrade": "Grade 3 (Moderate Osteoarthritis)",
+                "radiologicalImpression": "1. Moderate medial compartment knee osteoarthritis (KL Grade 3).\n2. Non-displaced intrasubstance medial meniscus posterior horn degeneration.",
+                "clinicalRecommendation": "Conservative physical therapy and unloader bracing."
+            }, indent=2),
+            "chosen": "Kellgren-Lawrence Grade 3 impression with conservative physical therapy recommendation.",
+            "rejected": "Recommends emergency total knee replacement."
+        }
+    ],
+    "seo_medical_journalism": [
+        {
+            "input": json.dumps({"studyTopic": "Zone 2 Cardio and Mitochondrial Biogenesis", "sourceCitations": ["San-Millán I. Cell Metab 2018 (PMID: 29909271)"]}, indent=2),
+            "output": json.dumps({
+                "articleTitle": "The Power of Zone 2 Cardio: How Easy Exercise Turbocharges Your Cellular Energy",
+                "slug": "zone-2-cardio-mitochondrial-health",
+                "fleschKincaidGradeLevel": 7.2,
+                "metaDescription": "Discover how 45 minutes of easy Zone 2 cardio trains your mitochondria to burn fat efficiently.",
+                "ftcDisclaimer": "As an Amazon Associate, PocketGull earns from qualifying purchases."
+            }, indent=2),
+            "chosen": "Grade 7.2 plain-language article with structured JSON-LD MedicalWebPage metadata and compliant FTC disclaimers for pocketgull.com.",
+            "rejected": "Dense academic jargon or unverified miracle fitness claims."
+        }
+    ],
+    "voice_multimodal_live": [
+        {
+            "input": "Patient audio transcript: 'Um, hi doctor... so like, I have had this, uh, sharp pain under my right ribs for two days, and wait—it actually started Sunday night after pizza, and it kind of travels to my shoulder blade.'",
+            "output": json.dumps({
+                "extractedClinicalFacts": {"chiefComplaint": "RUQ pain", "duration": "2 days post-fatty meal", "radiation": "Right scapula"},
+                "spokenResponseSsml": "<speak>I hear you clearly. <break time='300ms'/> Because this pattern can point to your gallbladder, <emphasis level='moderate'>have you noticed any nausea or fever?</emphasis></speak>"
+            }, indent=2),
+            "chosen": "Strips speech disfluencies, extracts biliary colic chronology, and responds with natural SSML audio tags for streaming live consult in pocketgull.app.",
+            "rejected": "Robotic wall of text without acoustic pacing or empathy."
+        }
+    ],
+    "calgary_cambridge_intake": [
+        {
+            "input": json.dumps({"currentDialogTurn": 2, "patientLastMessage": "I have had a dull headache in the back of my head for 4 days."}, indent=2),
+            "output": json.dumps({
+                "opqrstState": {"onset": "4 days ago", "quality": "Dull ache", "radiation": "Occipital"},
+                "nextSocraticQuestion": "On a scale from 1 to 10, how intense is this dull ache, and does it feel tighter when looking down at screens?"
+            }, indent=2),
+            "chosen": "Progressive 1-question Socratic inquiry characterizing tension headache vs cervical strain while screening red flags.",
+            "rejected": "Asks 15 overwhelming questions at once."
+        }
+    ],
+    "fda_ftc_compliance_copywriter": [
+        {
+            "input": "Draft Marketing Copy: 'PocketGull is an AI doctor app that instantly cures chronic fatigue and permanently stops joint degeneration.'",
+            "output": json.dumps({
+                "complianceStatus": "VIOLATIONS_NEUTRALIZED",
+                "remediatedCompliantCopy": "PocketGull provides evidence-grounded Clinical Decision Support and care plan strategies alongside your physician.",
+                "statutoryDisclaimer": "PocketGull is an epistemological clinical intelligence platform conforming to FDA 21 CFR §520(o) non-device CDS standards."
+            }, indent=2),
+            "chosen": "Rewrites misleading health marketing into FTC-substantiated statements with explicit FDA 21 CFR §520(o) CDS notices.",
+            "rejected": "Approves illegal curative claims."
+        }
+    ],
 }
 
 
@@ -406,24 +642,40 @@ def load_dataset_for_paradigm(paradigm: str, custom_path: Optional[str] = None) 
     directive = PARADIGM_DIRECTIVES.get(paradigm, PARADIGM_DIRECTIVES["clinical_cot"])
     raw_samples = []
 
-    if custom_path and os.path.exists(custom_path):
-        logger.info(f"Loading custom dataset from {custom_path}")
-        with open(custom_path, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.strip():
-                    raw_samples.append(json.loads(line))
+    if custom_path:
+        path_to_try = os.path.expanduser(custom_path.strip().strip('"').strip("'"))
+        if not os.path.exists(path_to_try) and len(path_to_try) > 2 and path_to_try[1] == ':':
+            drive = path_to_try[0].lower()
+            rest = path_to_try[2:].replace('\\', '/')
+            path_to_try = f"/mnt/{drive}{rest}"
+
+        if os.path.exists(path_to_try):
+            logger.info(f"Loading custom dataset from {path_to_try}")
+            with open(path_to_try, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        raw_samples.append(json.loads(line))
+        else:
+            logger.warning(f"Custom path '{custom_path}' not found. Falling back to synthetic samples.")
+            raw_samples = SAMPLE_DATASETS.get(paradigm, SAMPLE_DATASETS["clinical_cot"])
     else:
         logger.info(f"Using pre-packaged synthetic dataset samples for paradigm '{paradigm}'")
         raw_samples = SAMPLE_DATASETS.get(paradigm, SAMPLE_DATASETS["clinical_cot"])
 
     formatted_samples = []
     for sample in raw_samples:
-        text = format_gemma_prompt(
-            system_directive=directive,
-            user_input=sample["input"],
-            model_response=sample.get("output", ""),
-        )
-        formatted_samples.append({"text": text})
+        if "text" in sample:
+            formatted_samples.append({"text": sample["text"]})
+        elif "input" in sample:
+            instr = sample.get("instruction", "").strip()
+            inp = sample.get("input", "").strip()
+            combined_input = f"{instr}\n\n{inp}".strip() if instr else inp
+            text = format_gemma_prompt(
+                system_directive=directive,
+                user_input=combined_input,
+                model_response=sample.get("output", ""),
+            )
+            formatted_samples.append({"text": text})
 
     return formatted_samples
 
@@ -505,26 +757,44 @@ def train_with_huggingface(args: argparse.Namespace, dataset_samples: List[Dict[
         import torch
         from datasets import Dataset
         from peft import LoraConfig, get_peft_model
-        from transformers import AutoModelForCausalVLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments
-        from trl import SFTTrainer
+        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+        from trl import SFTConfig, SFTTrainer
     except ImportError as e:
         logger.error(f"Missing required Hugging Face dependency: {e}")
         logger.error("Install dependencies via: pip install torch transformers peft trl datasets bitsandbytes")
         sys.exit(1)
 
-    logger.info(f"Initializing Hugging Face model with BitsAndBytes 4-bit: {args.model_name}")
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.float16,
-    )
+    logger.info(f"Initializing model for fine-tuning: {args.model_name}")
+    import os
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+    
+    use_cuda = torch.cuda.is_available()
+    logger.info(f"Compute Backend Detected: {'CUDA/ROCm GPU' if use_cuda else 'Multi-Core CPU (Intel i7)'}")
+
+    if use_cuda:
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.float16,
+        )
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model_name,
+            quantization_config=bnb_config,
+            device_map="auto",
+            low_cpu_mem_usage=True,
+        )
+    else:
+        # Load in bfloat16 on CPU to cut memory from 11GB down to 3GB
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model_name,
+            torch_dtype=torch.bfloat16,
+            low_cpu_mem_usage=True,
+        )
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
-    model = AutoModelForCausalVLM.from_pretrained(
-        args.model_name,
-        quantization_config=bnb_config,
-        device_map="auto",
-    )
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
 
     peft_config = LoraConfig(
         r=args.r,
@@ -536,32 +806,78 @@ def train_with_huggingface(args: argparse.Namespace, dataset_samples: List[Dict[
     )
 
     model = get_peft_model(model, peft_config)
+    if use_cuda and hasattr(model, "gradient_checkpointing_enable"):
+        model.gradient_checkpointing_enable()
+
     dataset = Dataset.from_list(dataset_samples)
+    effective_grad_accum = min(args.grad_accum, max(1, len(dataset_samples)))
+
+    training_args = SFTConfig(
+        dataset_text_field="text",
+        max_length=args.max_seq_length,
+        per_device_train_batch_size=args.batch_size,
+        gradient_accumulation_steps=effective_grad_accum,
+        warmup_steps=1,
+        max_steps=args.max_steps if args.max_steps > 0 else len(dataset_samples) * args.epochs,
+        learning_rate=args.lr,
+        fp16=use_cuda,
+        bf16=not use_cuda,
+        use_cpu=not use_cuda,
+        logging_steps=1,
+        output_dir=args.output_dir,
+        gradient_checkpointing=use_cuda,
+        optim="paged_adamw_8bit" if use_cuda else "adamw_torch",
+        dataloader_pin_memory=False,
+        max_grad_norm=0.3,
+    )
+
+    from transformers import TrainerCallback
+    import time
+    import gc
+
+    class ThermalCooldownCallback(TrainerCallback):
+        """Inserts intermittent cooling breaks during long-running training runs."""
+        def __init__(self, cooldown_seconds: int = 45, step_frequency: int = 15):
+            self.cooldown_seconds = cooldown_seconds
+            self.step_frequency = step_frequency
+
+        def on_step_end(self, args, state, control, **kwargs):
+            if state.global_step > 0 and state.global_step % self.step_frequency == 0:
+                logger.info(f"🌬️ [Thermal Cooldown] Step {state.global_step}: Pausing for {self.cooldown_seconds}s to cool CPU/GPU cores & flush cache...")
+                gc.collect()
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                time.sleep(self.cooldown_seconds)
+                logger.info("⚡ [Thermal Cooldown] Cooldown complete. Resuming training with fresh thermal headroom.")
+
+        def on_epoch_end(self, args, state, control, **kwargs):
+            logger.info(f"🌬️ [Thermal Cooldown] Epoch complete: Pausing for {self.cooldown_seconds * 2}s inter-epoch thermal rest...")
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            time.sleep(self.cooldown_seconds * 2)
+            logger.info("⚡ [Thermal Cooldown] Inter-epoch cooling complete. Resuming next epoch.")
+
+    cooldown_cb = ThermalCooldownCallback(
+        cooldown_seconds=args.cooldown_seconds,
+        step_frequency=args.cooldown_steps
+    )
 
     trainer = SFTTrainer(
         model=model,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         train_dataset=dataset,
-        dataset_text_field="text",
-        max_seq_length=args.max_seq_length,
-        args=TrainingArguments(
-            per_device_train_batch_size=args.batch_size,
-            gradient_accumulation_steps=args.grad_accum,
-            warmup_steps=5,
-            max_steps=args.max_steps if args.max_steps > 0 else len(dataset_samples) * args.epochs,
-            learning_rate=args.lr,
-            fp16=True,
-            logging_steps=1,
-            output_dir=args.output_dir,
-        ),
+        args=training_args,
+        callbacks=[cooldown_cb] if args.cooldown_seconds > 0 else None,
     )
 
-    logger.info("Starting LoRA fine-tuning with Hugging Face PEFT...")
+    logger.info(f"Starting LoRA fine-tuning (Accumulation: {effective_grad_accum}, Device: {'GPU' if use_cuda else 'CPU'}, Thermal Breaks: {args.cooldown_seconds}s every {args.cooldown_steps} steps)...")
     trainer.train()
 
     logger.info(f"Saving fine-tuned LoRA adapter to {args.output_dir}")
     model.save_pretrained(args.output_dir)
     tokenizer.save_pretrained(args.output_dir)
+    logger.info("✅ Fine-tuning completed successfully and adapter weights saved.")
 
 
 # -----------------------------------------------------------------------------
@@ -575,8 +891,8 @@ def main() -> None:
     parser.add_argument(
         "--model_name",
         type=str,
-        default="unsloth/gemma-2-9b-it",
-        help="Base Gemma model repository ID on Hugging Face",
+        default="unsloth/gemma-2-2b-it",
+        help="Base Gemma model repository ID on Hugging Face (default: 2B parameter low-memory)",
     )
     parser.add_argument(
         "--paradigm",
@@ -595,19 +911,61 @@ def main() -> None:
             "clinical_safety_guard",
             "generative_ui_dispatch",
             "double_flip_ui_interlock",
+            "dpo_epistemic_grounding",
+            "ambient_scribe_soap",
+            "pharmacogenomics_pgx",
+            "circadian_chronodosing",
+            "prior_auth_cms0057f",
+            "tri_paradigm_synthesis",
+            "rsna_imaging_vlm",
+            "seo_medical_journalism",
+            "voice_multimodal_live",
+            "calgary_cambridge_intake",
+            "fda_ftc_compliance_copywriter",
         ],
         help="Target clinical paradigm instruction format",
+    )
+    parser.add_argument(
+        "--trainer_type",
+        type=str,
+        default="sft",
+        choices=["sft", "dpo", "orpo"],
+        help="Training mode: Supervised Fine-Tuning (sft), Direct Preference Optimization (dpo), or Odds Ratio Preference Optimization (orpo)",
     )
     parser.add_argument("--dataset_path", type=str, default=None, help="Path to custom JSONL training dataset")
     parser.add_argument("--output_dir", type=str, default="./lora_gemma_adapter", help="Directory to save output weights")
     parser.add_argument("--r", type=int, default=16, help="LoRA rank parameter")
     parser.add_argument("--alpha", type=int, default=32, help="LoRA alpha scaling parameter")
     parser.add_argument("--lr", type=float, default=2e-4, help="Learning rate")
-    parser.add_argument("--batch_size", type=int, default=2, help="Per-device train batch size")
-    parser.add_argument("--grad_accum", type=int, default=4, help="Gradient accumulation steps")
+    parser.add_argument("--batch_size", type=int, default=1, help="Per-device train batch size (default: 1 for 8GB VRAM safety)")
+    parser.add_argument("--grad_accum", type=int, default=8, help="Gradient accumulation steps")
     parser.add_argument("--epochs", type=int, default=3, help="Training epoch count")
     parser.add_argument("--max_steps", type=int, default=-1, help="Max training steps (-1 uses epochs)")
-    parser.add_argument("--max_seq_length", type=int, default=2048, help="Maximum sequence token length")
+    parser.add_argument("--max_seq_length", type=int, default=1024, help="Maximum sequence token length (default: 1024 for low-VRAM)")
+    parser.add_argument(
+        "--cooldown_seconds",
+        type=int,
+        default=45,
+        help="Seconds to pause for thermal cooling and memory garbage collection between steps/epochs",
+    )
+    parser.add_argument(
+        "--cooldown_steps",
+        type=int,
+        default=15,
+        help="Step frequency to trigger thermal cooling pauses",
+    )
+    parser.add_argument(
+        "--low_mem",
+        action="store_true",
+        default=True,
+        help="Enforce ultra low-VRAM guardrails (batch_size=1, grad_accum=8, paged_adamw_8bit, max_seq=1024)",
+    )
+    parser.add_argument(
+        "--lemonade_url",
+        type=str,
+        default="http://localhost:13305/api/v1",
+        help="Local Lemonade Server OpenAI API endpoint for evaluation and dataset distillation",
+    )
     parser.add_argument(
         "--export_gguf",
         type=str,

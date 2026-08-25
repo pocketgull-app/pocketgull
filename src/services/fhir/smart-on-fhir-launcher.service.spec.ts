@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { SmartOnFhirLauncherService } from './smart-on-fhir-launcher.service';
 
 import { Injector, runInInjectionContext } from '@angular/core';

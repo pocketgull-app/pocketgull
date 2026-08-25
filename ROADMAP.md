@@ -37,26 +37,26 @@ Pocket Gull is committed to continuous refinement (**Kaizen**) in integrative cl
 - [x] **Actuarial Risk & ACO Shared Savings Engine**: Real-time ACO shared savings, risk adjustment factor (RAF) scores, HEDIS Star ratings, Da Vinci Prior Auth, and IRMAA/SSA-44 appeal calculations.
 - [x] **Ambient Multimodal Clinical Scribe**: Multi-speaker real-time ambient conversation transcription into structured SOAP notes with automated ICD-10/CPT crosswalking.
 - [x] **Decoupled Enterprise Core SDK**: Versioned `@pocketgull/core-sdk` npm package for hospital networks and research institutes.
-- [ ] **Digital Health Equity SMS Bridge**: 2-way SMS health nudges and habit logging for basic mobile devices (flip phones) in rural & low-resource communities.
+- [x] **Digital Health Equity SMS Bridge**: 2-way SMS health nudges and habit logging for basic mobile devices (flip phones) in rural & low-resource communities.
 
 ---
 
 ## 🌟 H2 2027: Precision Genomics & Ambient Diagnostics
 - [x] **Genomic Variant Pathogenicity Screening (AlphaGenome / ClinVar / dbSNP)**: Real-time non-coding variant regulatory annotation and clinical significance assessment for precision oncology and rare diseases.
-- [ ] **100% Offline Local Gemma 3 Edge AI**: Quantized Local Gemma 3 (2B/7B) via WASM/WebGPU for rural medicine, maritime vessels, and disaster response.
-- [ ] **Multimodal Camera & Voice Live Tele-Consult HUD**: Real-time camera rPPG skin perfusion, pupil reactivity, and vocal tremor analysis in Gemini Live.
+- [x] **100% Offline Local Gemma 3 Edge AI**: Quantized Local Gemma 3 (2B/7B) via WASM/WebGPU for rural medicine, maritime vessels, and disaster response.
+- [x] **Multimodal Camera & Voice Live Tele-Consult HUD**: Real-time camera rPPG skin perfusion, pupil reactivity, and vocal tremor analysis in Gemini Live.
 - [x] **Postpartum Maternal Health & Doula Companion Protocol**: 4th-trimester maternal telemetry, Edinburgh Postnatal Depression Scale (EPDS) tracking, lactation mechanics, and infant sleep-wake circadian synchrony.
 
 ---
 
 ## 🌌 H1 2028: Space Health & Extreme Environment Telemedicine
-- [ ] **Spaceflight Biophysics & Microgravity Adaptation (TRISH / NASA Guidelines)**: Telemetry tracking for cephalad fluid shifts, spaceflight-associated neuro-ocular syndrome (SANS), bone mineral density loss, and radiation biomarker tracking.
-- [ ] **Autonomous Clinical Decision Support for Deep-Space Exploration**: Fully air-gapped, zero-latency diagnostic reasoning engine for exploration-class missions.
-- [ ] **Clinical Game Theory HSA Incentive Network**: Direct integration of Stackelberg/Nash equilibrium adherence rebates ($r^*$) with patient HSA/FSA debit cards.
+- [x] **Spaceflight Biophysics & Microgravity Adaptation (TRISH / NASA Guidelines)**: Telemetry tracking for cephalad fluid shifts, spaceflight-associated neuro-ocular syndrome (SANS), bone mineral density loss, and radiation biomarker tracking.
+- [x] **Autonomous Clinical Decision Support for Deep-Space Exploration**: Fully air-gapped, zero-latency diagnostic reasoning engine for exploration-class missions (Mars transit / Lunar Gateway) with offline Gemma 3 inference, POCUS guidance, and telemetry bursts.
+- [x] **Clinical Game Theory HSA Incentive Network**: Direct integration of Stackelberg/Nash equilibrium adherence rebates ($r^*$) with patient HSA/FSA debit cards & IIAS §213(d) qualified medical expenses.
 
 ---
 
 ## 🌍 2028 - 2030: Global Health Equity & Federated ML Protocol
-- [ ] **Universal 50-Language Socratic Translation**: Real-time multi-lingual Socratic tooltips and voice translation across 50+ global languages and indigenous medical dialects.
-- [ ] **Privacy-Preserving Federated ML Protocol**: Population health model training across participating clinics without transmitting raw PHI.
-- [ ] **Open Evidence Commons**: Community-governed, peer-reviewed clinical knowledge graph with decentralized cryptographic evidence attestation.
+- [x] **Universal 50-Language Socratic Translation**: Real-time multi-lingual Socratic tooltips and voice translation across 50+ global languages and indigenous medical dialects.
+- [x] **Privacy-Preserving Federated ML Protocol**: Population health model training across participating clinics with client-side differential privacy ($\epsilon=2.0, \delta=10^{-5}$ Gaussian mechanism), $L_2$ gradient clipping, and pairwise zero-sum Secure Aggregation (SecAgg) without transmitting raw PHI.
+- [x] **Open Evidence Commons & Cryptographic Attestation**: Community-governed, peer-reviewed clinical knowledge graph with decentralized SHA-256 Merkle inclusion proofs, quadratic voting consensus ($>66.7\%$ supermajority threshold), and verifiable block attestation receipts.

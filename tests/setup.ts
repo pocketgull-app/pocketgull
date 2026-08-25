@@ -3,28 +3,44 @@ import 'zone.js';
 import 'zone.js/testing';
 
 const g: any = typeof window !== 'undefined' ? window : globalThis;
-Object.defineProperty(g, 'config', {
-  value: { production: false },
-  writable: true,
-  configurable: true
-});
+try {
+  Object.defineProperty(g, 'config', {
+    value: { production: false },
+    writable: true,
+    configurable: true
+  });
+} catch {}
+
 g.ng = g.ng || {};
-Object.defineProperty(g.ng, 'config', {
-  value: { production: false },
-  writable: true,
-  configurable: true
-});
+try {
+  Object.defineProperty(g.ng, 'config', {
+    value: { production: false },
+    writable: true,
+    configurable: true
+  });
+} catch {}
+
 g.ngDevMode = true;
 
 import { getTestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 
 try {
-  getTestBed().initTestEnvironment(
-    BrowserDynamicTestingModule,
-    platformBrowserDynamicTesting(),
-    { teardown: { destroyAfterEach: true } }
-  );
+  const testBed = getTestBed();
+  if (!testBed.platform) {
+    testBed.initTestEnvironment(
+      BrowserDynamicTestingModule,
+      platformBrowserDynamicTesting(),
+      { teardown: { destroyAfterEach: true } }
+    );
+  }
 } catch {
-  // Environment already initialized
+  try {
+    getTestBed().resetTestEnvironment();
+    getTestBed().initTestEnvironment(
+      BrowserDynamicTestingModule,
+      platformBrowserDynamicTesting(),
+      { teardown: { destroyAfterEach: true } }
+    );
+  } catch {}
 }

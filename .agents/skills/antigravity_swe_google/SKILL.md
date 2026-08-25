@@ -32,3 +32,8 @@ This skill codifies Google Software Engineering principles (Titus Winters et al.
 ### 5. WebMCP & AI Safety Policies
 - All WebMCP tools registered via `WebMcpRegistrationService` must declare an `AbortController` signal and explicit JSON Schemas.
 - Gemini Clinical Safety Filter policy: `DANGEROUS_CONTENT = OFF` in `src/server/genkit.ts` per `SECURITY.md §2` to prevent false-positive blocking of medical decision support content.
+
+### 6. Domain Encapsulation & "Tell, Don't Ask" Principle
+- Never reuse or query an existing getter to extract raw internal state and bolt new business logic, mutations, or domain calculations externally on the caller side.
+- Keep domain behavior, state transitions, and validation invariants encapsulated within the class, entity, or service that owns the underlying data.
+- Introduce explicit, purpose-built domain methods directly on the owning model/service instead of leaking raw state and chaining logic around generic property accessors.

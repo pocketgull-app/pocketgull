@@ -16,13 +16,26 @@ const workspaceRoot = getWorkspaceRoot();
 // Programmatically switch process working directory to workspace root
 process.chdir(workspaceRoot);
 
+const cleanEnv = { ...process.env };
+for (const key of Object.keys(cleanEnv)) {
+  if (key.startsWith('npm_') || key.startsWith('NPM_')) {
+    delete cleanEnv[key];
+  }
+}
+cleanEnv.INIT_CWD = workspaceRoot;
+cleanEnv.PWD = workspaceRoot;
+
 console.log('🚀 Running Shift-Left Pre-Commit Validation...\n');
 
-// Helper to run node scripts directly using process.execPath
+// Helper to run node scripts directly using process.execPath in workspaceRoot
 function runNodeScript(scriptPath, args, description) {
   console.log(`🔹 Running: ${description}...`);
   try {
-    execFileSync(process.execPath, [scriptPath, ...args], { stdio: 'inherit', cwd: workspaceRoot });
+    execFileSync(process.execPath, [scriptPath, ...args], { 
+      stdio: 'inherit', 
+      cwd: workspaceRoot,
+      env: cleanEnv
+    });
     console.log(`✅ ${description} passed.\n`);
     return true;
   } catch (error) {
@@ -35,7 +48,7 @@ function runNodeScript(scriptPath, args, description) {
 function runCommand(command, description) {
   console.log(`🔹 Running: ${description}...`);
   try {
-    execSync(command, { stdio: 'inherit', cwd: workspaceRoot });
+    execSync(command, { stdio: 'inherit', cwd: workspaceRoot, env: cleanEnv });
     console.log(`✅ ${description} passed.\n`);
     return true;
   } catch (error) {
@@ -309,7 +322,8 @@ if (process.platform === 'win32') {
   }
 }
 // Check 6: Sentinel Network Egress & High-Entropy Security Guard
-const sentinelPassed = runCommand('node scripts/sentinel_security_guard.mjs', 'Sentinel Network & Egress Security Guard');
+const sentinelScript = path.resolve(workspaceRoot, 'scripts/sentinel_security_guard.mjs');
+const sentinelPassed = runNodeScript(sentinelScript, [], 'Sentinel Network & Egress Security Guard');
 if (!sentinelPassed) {
   process.exit(1);
 }
@@ -345,6 +359,41 @@ if (boundaryViolations > 0) {
   process.exit(1);
 } else {
   console.log('✅ Monorepo Package Boundary validation passed.\n');
+}
+
+// Check 8: Static ReDoS & Catastrophic Backtracking Prevention Audit
+console.log('🔹 Running: Static ReDoS & Regular Expression Security Audit...');
+let redosViolations = 0;
+const srcDir = path.join(workspaceRoot, 'src');
+const codeFiles = [];
+walkDir(srcDir, '.ts', codeFiles);
+
+const dangerousRegexPatterns = [
+  { name: 'Nested Quantifier (a+)+', regex: /\/[^\/\n]*\([^)\n]*(\+|\*)[^)\n]*\)(\+|\*)[^\/\n]*\//g },
+  { name: 'Unbounded Wildcard Alternation', regex: /\/[^\/\n]*\.\*[^\/\n]*\([^\/\n]*\|[^\/\n]*\)[^\/\n]*\.\*[^\/\n]*\//g }
+];
+
+for (const file of codeFiles) {
+  if (file.includes('.spec.') || file.includes('test')) continue;
+  try {
+    const content = fs.readFileSync(file, 'utf8');
+    for (const pat of dangerousRegexPatterns) {
+      pat.regex.lastIndex = 0;
+      let match;
+      while ((match = pat.regex.exec(content)) !== null) {
+        console.warn(`⚠️  [${path.relative(workspaceRoot, file)}]: Potential ReDoS pattern (${pat.name}): "${match[0]}"`);
+        // We warn rather than abort to allow verified safe fixtures while flagging dangerous code
+      }
+    }
+  } catch (e) {}
+}
+console.log('✅ Static ReDoS & Regex Security Audit completed.\n');
+
+// Check 9: Global Taint-Tracking Data Flow Analysis
+const taintScript = path.resolve(workspaceRoot, 'scripts/taint-analysis-guard.mjs');
+const taintPassed = runNodeScript(taintScript, [], 'Global Taint-Tracking Data Flow Security Guard');
+if (!taintPassed) {
+  process.exit(1);
 }
 
 console.log('🎉 All pre-commit validation checks passed successfully. Safe to commit!\n');

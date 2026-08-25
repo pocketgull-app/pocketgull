@@ -1,0 +1,20 @@
+# Dockerfile.wordpress
+# Optimized Serverless WordPress Container for Google Cloud Run
+# Target Project: gen-lang-client-0540208645
+
+FROM wordpress:6.5-php8.2-apache
+
+# Configure Apache port for Google Cloud Run (default port 8080)
+RUN sed -i 's/80/8080/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
+
+# Copy Pocket-Gull Theme into the standard WordPress themes directory
+COPY wordpress-theme/pocketgull-articles /var/www/html/wp-content/themes/pocketgull-articles
+
+# Enable Apache rewrite module for permalinks
+RUN a2enmod rewrite
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8080/wp-admin/install.php || exit 1
+
+EXPOSE 8080

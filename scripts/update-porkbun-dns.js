@@ -49,8 +49,18 @@ async function updateDomain(domain) {
       targets.push({ name: '', type: 'AAAA', content: ip });
     }
 
-    // Subdomains CNAME records to Google Cloud Run endpoint
-    for (const sub of ['www', 'api', 'lean']) {
+    // Core Platform Subdomains (Google Cloud Run CNAME & A/AAAA mapping)
+    const cloudRunSubdomains = [
+      'www', 'api', 'lean',
+      // Clinical & Commercial Services
+      'clinic', 'research', 'models', 'grants', 'status',
+      // NCAA Conference & Academic University Portals
+      'uw', 'purdue', 'oregon', 'bigten', 'pac12',
+      // Multi-Industry Vertical Hubs
+      'aero', 'legal', 'plant', 'agri'
+    ];
+
+    for (const sub of cloudRunSubdomains) {
       targets.push({ name: sub, type: 'CNAME', content: 'ghs.googlehosted.com' });
       for (const ip of cloudRunAIPs) {
         targets.push({ name: sub, type: 'A', content: ip });
@@ -60,7 +70,7 @@ async function updateDomain(domain) {
       }
     }
 
-    // GitHub Pages custom domain for organization docs & design system
+    // GitHub Pages custom domains for documentation & design system
     targets.push({ name: 'typeface', type: 'CNAME', content: 'pocketgull-app.github.io' });
     targets.push({ name: 'docs', type: 'CNAME', content: 'pocketgull-app.github.io' });
 

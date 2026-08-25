@@ -34,10 +34,14 @@ add_action( 'after_setup_theme', 'pocketgull_theme_setup' );
  * Enqueue scripts and styles.
  */
 function pocketgull_enqueue_scripts() {
-    // Tailwind CDN / CSS & Caslon Typography
-    wp_enqueue_style( 'google-fonts-caslon', 'https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap', array(), null );
-    wp_enqueue_style( 'tailwind-cdn', 'https://cdn.tailwindcss.com', array(), null );
-    wp_enqueue_style( 'pocketgull-style', get_stylesheet_uri(), array(), '1.0.0' );
+    // Official PocketGull Clinical Typeface Stack (Inter, Outfit, Plus Jakarta Sans, Cinzel, JetBrains Mono)
+    wp_enqueue_style( 'pocketgull-fonts', 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&family=Cinzel:wght@400;700&display=swap', array(), null );
+    
+    // Tailwind CDN JS Engine (properly enqueued as script)
+    wp_enqueue_script( 'tailwind-cdn', 'https://cdn.tailwindcss.com', array(), null, false );
+    
+    // Main Theme CSS
+    wp_enqueue_style( 'pocketgull-style', get_stylesheet_uri(), array(), '1.0.1' );
 }
 add_action( 'wp_enqueue_scripts', 'pocketgull_enqueue_scripts' );
 

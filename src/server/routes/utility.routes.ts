@@ -1,14 +1,13 @@
 /**
  * Utility Routes — PubMed proxy, ORCID lookup, WebMCP catalog,
- * health endpoints, hardware telemetry, and Swagger docs.
+ * health endpoints, and hardware telemetry.
  *
  * Extracted from server.ts to reduce monolith size.
  *
  * @module server/routes/utility.routes
  */
 import { Router, json as expressJson } from 'express';
-import type { Request, Response, NextFunction } from 'express';
-import swaggerUi from 'swagger-ui-express';
+import type { Request, Response } from 'express';
 import fs from 'node:fs';
 import { join, normalize } from 'node:path';
 import { APP_VERSION } from '../../version';
@@ -49,71 +48,7 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
   const router = Router();
   const { getApiKey, rootDir } = deps;
 
-  // ── OpenAPI Spec Loading ──────────────────────────────────────────────
-  let openApiSpec: Record<string, unknown> = {};
-  try {
-    const possiblePaths = [
-      join(rootDir, 'docs', 'openapi.json'),
-      join(process.cwd(), 'docs', 'openapi.json')
-    ];
 
-    let specPath = '';
-    for (const p of possiblePaths) {
-      if (fs.existsSync(p)) {
-        specPath = normalize(p);
-        break;
-      }
-    }
-
-    if (specPath) {
-      openApiSpec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
-    } else {
-      throw new Error('docs/openapi.json not found in expected locations');
-    }
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    console.warn('[Swagger] Failed to load docs/openapi.json:', message);
-  }
-
-  // ── Swagger Auth Middleware ───────────────────────────────────────────
-  // Ensure credentials come strictly from environment variables without hardcoded defaults
-  const swaggerAuth = (req: Request, res: Response, next: NextFunction) => {
-    const username = process.env['SWAGGER_USERNAME'];
-    const password = process.env['SWAGGER_PASSWORD'];
-
-    // In non-production environments without explicit Swagger credentials, permit access or require auth
-    if (!username || !password) {
-      if (process.env['NODE_ENV'] !== 'production' || process.env['POCKETGULL_LIVE_DEMO'] === 'true') {
-        return next();
-      }
-    }
-
-    const authHeader = req.headers['authorization'];
-    if (!authHeader) {
-      res.setHeader('WWW-Authenticate', 'Basic realm="Pocket Gull Secure Docs"');
-      return res.status(401).send('Authentication required.');
-    }
-
-    const [type, credentials] = authHeader.split(' ');
-    if (type === 'Basic' && credentials && username && password) {
-      const decoded = Buffer.from(credentials, 'base64').toString('utf8');
-      const [u, p] = decoded.split(':');
-      if (u === username && p === password) {
-        return next();
-      }
-    }
-
-    res.setHeader('WWW-Authenticate', 'Basic realm="Pocket Gull Secure Docs"');
-    return res.status(401).send('Invalid credentials.');
-  };
-
-  // GET /docs → redirect to /api-docs
-  router.get('/docs', swaggerAuth, (_req: Request, res: Response) => {
-    res.redirect('/api-docs');
-  });
-
-  // Swagger UI at /api-docs
-  router.use('/api-docs', swaggerAuth, swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
   // ── PubMed Proxy ──────────────────────────────────────────────────────
 

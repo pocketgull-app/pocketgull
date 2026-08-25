@@ -7,7 +7,14 @@
 
 // ── Subscription Tiers ──────────────────────────────────────────────────
 
-export type SubscriptionTier = 'explorer' | 'academic' | 'practitioner' | 'institution';
+export type SubscriptionTier =
+  | 'explorer'
+  | 'academic'
+  | 'practitioner'
+  | 'institution'
+  | 'founder_lifetime'
+  | 'clinic_annual'
+  | 'clinic_onboarding';
 
 /** Usage category identifiers for metering. */
 export type UsageCategory =
@@ -58,6 +65,73 @@ export const TIER_DEFINITIONS: Record<SubscriptionTier, ITierDefinition> = {
       'Community support'
     ]
   },
+  founder_lifetime: {
+    name: 'founder_lifetime',
+    label: 'Founder Lifetime Solo License ($299 one-time)',
+    priceMonthlyUsd: 0,
+    quotas: {
+      discovery_read: -1,
+      discovery_resolve: 5000,
+      discovery_probe: 2500,
+      tool_execution: 25000,
+      pipeline_graph: 1000
+    },
+    stripePriceIds: [
+      process.env['STRIPE_PRICE_FOUNDER_LIFETIME_LIVE'] || '',
+      process.env['STRIPE_PRICE_FOUNDER_LIFETIME'] || ''
+    ].filter(Boolean),
+    features: [
+      '100% on-device offline AI scribing forever',
+      'Zero recurring monthly fees',
+      'Standard SOAP templates & 1-click EHR export',
+      'Lifetime software updates & community access'
+    ]
+  },
+  clinic_annual: {
+    name: 'clinic_annual',
+    label: 'Annual Clinic Pro Pass ($490/yr)',
+    priceMonthlyUsd: 40.83,
+    quotas: {
+      discovery_read: -1,
+      discovery_resolve: 5000,
+      discovery_probe: 2500,
+      tool_execution: 25000,
+      pipeline_graph: 1000
+    },
+    stripePriceIds: [
+      process.env['STRIPE_PRICE_CLINIC_ANNUAL_LIVE'] || '',
+      process.env['STRIPE_PRICE_CLINIC_ANNUAL'] || ''
+    ].filter(Boolean),
+    features: [
+      'Ambient AI voice scribing',
+      'Custom specialty note templates',
+      'Medication & Herb-Drug safety checker',
+      'Priority clinician support & onboarding',
+      'Save $98/year (2 months free discount)'
+    ]
+  },
+  clinic_onboarding: {
+    name: 'clinic_onboarding',
+    label: 'Clinic White-Glove Onboarding Bundle ($1,250)',
+    priceMonthlyUsd: 0,
+    quotas: {
+      discovery_read: -1,
+      discovery_resolve: 25000,
+      discovery_probe: 10000,
+      tool_execution: 100000,
+      pipeline_graph: 2000
+    },
+    stripePriceIds: [
+      process.env['STRIPE_PRICE_CLINIC_ONBOARDING_LIVE'] || '',
+      process.env['STRIPE_PRICE_CLINIC_ONBOARDING'] || ''
+    ].filter(Boolean),
+    features: [
+      'Up to 5 clinician licenses included',
+      'White-glove EHR template customization',
+      '1-on-1 staff workflow integration',
+      'Dedicated HIPAA Business Associate Agreement (BAA)'
+    ]
+  },
   academic: {
     name: 'academic',
     label: 'Resident & Academic ($19/mo or $149/yr)',
@@ -85,7 +159,7 @@ export const TIER_DEFINITIONS: Record<SubscriptionTier, ITierDefinition> = {
   },
   practitioner: {
     name: 'practitioner',
-    label: 'Practitioner',
+    label: 'Practitioner ($49/mo)',
     priceMonthlyUsd: 49,
     quotas: {
       discovery_read: -1,

@@ -1,15 +1,15 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+message: "If you use this software or datasets in your clinical research, please cite it as below."
 authors:
   - family-names: "Gear"
     given-names: "Phil"
     orcid: "https://orcid.org/0009-0008-1372-5381"
     email: "leads@pocketgull.app"
     website: "https://github.com/philgear"
-title: "Pocket-Gull: Living Medical Intelligence Engine"
-version: "1.15.0"
+title: "Pocket-Gull: Living Medical Intelligence Engine & Open Clinical Science Suite"
+version: "1.25.0"
 doi: "10.5281/zenodo.20647514"
-date-released: "2026-07-24"
+date-released: "2026-08-21"
 license: "MIT"
 url: "https://pocketgull.app"
 repository-code: "https://github.com/pocketgull-app/pocketgull"
@@ -20,4 +20,9 @@ identifiers:
   - type: doi
     value: "10.5281/zenodo.20647513"
     description: "Zenodo Concept DOI (All Versions)"
-
+  - type: other
+    value: "1487569752"
+    description: "CMS National Provider Identifier (NPI)"
+  - type: other
+    value: "0009-0008-1372-5381"
+    description: "ORCID Researcher Identifier"

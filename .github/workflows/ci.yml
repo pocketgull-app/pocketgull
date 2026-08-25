@@ -43,6 +43,9 @@ jobs:
       - name: Sentinel Security & Log Injection Audit
         run: npm run sentinel:audit
 
+      - name: Generate CycloneDX SBOM (EU CRA Compliance)
+        run: npm run sbom
+
       - name: Run Tests (Vitest)
         run: npx vitest run
 
@@ -59,5 +62,7 @@ jobs:
 
       - name: Run Python Tests
         env:
-          PYTHONPATH: .
-        run: python3 pocketgull_api/run_tests.py
+          PYTHONPATH: pocketgull_api:.
+        run: |
+          python3 pocketgull_api/train_clinical_risk_models.py || true
+          python3 pocketgull_api/run_tests.py

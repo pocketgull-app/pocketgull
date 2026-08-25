@@ -1,0 +1,22 @@
+{
+  "entries": [
+    {
+      "path": "~/.gemini/config/plugins",
+      "include_only": [
+        "gemini-api",
+        "chrome-devtools-plugin",
+        "flutter",
+        "firebase",
+        "modern-web-guidance-plugin",
+        "google_maps_platform",
+        "google-antigravity-sdk"
+      ],
+      "exclude": [
+        "science",
+        "data-agent-kit-plugin",
+        "android-cli-plugin",
+        "googlecloudtools.datacloud_telemetry"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, vi } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { IrmaaDecisionCalculatorComponent } from './irmaa-decision-calculator.component';
 import { IrmaaDecisionService } from '../../services/irmaa-decision.service';

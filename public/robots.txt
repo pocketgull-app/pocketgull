@@ -1,22 +1,58 @@
 User-agent: *
 Allow: /
+Allow: /business
 Allow: /llms.txt
-Allow: /api/webmcp/tools
-Allow: /contracts/clinical-ml-openapi.yaml
+Allow: /.well-known/agent.json
 Allow: /search.html
 Allow: /privacy-policy.html
 Allow: /terms-of-service.html
+Disallow: /api/
+Allow: /api/webmcp/tools
+Disallow: /contracts/
+Disallow: /contracts/clinical-vault-canary.json
+Disallow: /api/v1/internal-research-telemetry
+Disallow: /api/internal/patient-cohort-backup.json
+
+# Verified Search Engine & AI Assistant Bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
 
 User-agent: GPTBot
 Allow: /
+Disallow: /api/
+Disallow: /contracts/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /api/
+Disallow: /contracts/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /api/
+Disallow: /contracts/
 
-User-agent: Google-Extended
-Allow: /
+# Aggressive Bulk Scrapers, Social Crawlers & Model Harvesters
+User-agent: CCBot
+Disallow: /
 
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: RedditBot
+Disallow: /
+
+User-agent: redditbot
+Disallow: /
+
+Sitemap: https://pocketgull.com/sitemap.xml
 Sitemap: https://pocketgull.app/sitemap.xml

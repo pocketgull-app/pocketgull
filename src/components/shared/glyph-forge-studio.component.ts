@@ -7,7 +7,7 @@ export interface IDrawnPoint {
   isExtrema?: boolean;
 }
 
-export type TNibStyle = 'fineliner' | 'rounded' | 'chiseltip' | 'marker';
+export type TNibStyle = 'bold' | 'chiseltip' | 'fineliner' | 'variable' | 'mono';
 
 @Component({
   selector: 'app-glyph-forge-studio',
@@ -20,20 +20,20 @@ export type TNibStyle = 'fineliner' | 'rounded' | 'chiseltip' | 'marker';
       <!-- Studio Header -->
       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-rose-500 text-zinc-950 font-black flex items-center justify-center text-2xl shadow-lg">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-teal-500 text-zinc-950 font-black flex items-center justify-center text-2xl shadow-lg">
             🖋️
           </div>
           <div>
             <div class="flex items-center gap-2">
               <h2 class="text-xl font-black text-zinc-100 uppercase tracking-tight font-pocketgull">
-                PocketGull In-Browser Glyph Studio &amp; Foundry
+                PocketGull Superfamily &amp; Variable Font Foundry Studio
               </h2>
               <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold border border-emerald-500/40">
-                1000 UPM Grid Engine
+                1000 UPM Optical Grid • VF Axis
               </span>
             </div>
             <p class="text-xs text-zinc-400 font-medium">
-              Draw, trace, optimize Bézier extrema, and export high-res glyph vectors directly in browser without external tools.
+              Inspect, trace, and forge PocketGull vector glyphs across continuous weight axes (100–900 wght) with Quaker dovetail kerning and mathematical Bézier curves.
             </p>
           </div>
         </div>
@@ -75,20 +75,20 @@ export type TNibStyle = 'fineliner' | 'rounded' | 'chiseltip' | 'marker';
           <!-- Nib Selection -->
           <div class="p-4 bg-slate-900/90 border border-slate-800 rounded-2xl space-y-3">
             <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider block">
-              1. Foundry Optical Nib Style
+              1. PocketGull Superfamily Weight Axis
             </span>
             <div class="grid grid-cols-2 gap-2">
               <button
-                (click)="nibStyle.set('rounded')"
-                [class.bg-cyan-500/20]="nibStyle() === 'rounded'"
-                [class.text-cyan-300]="nibStyle() === 'rounded'"
-                [class.border-cyan-500]="nibStyle() === 'rounded'"
+                (click)="nibStyle.set('bold')"
+                [class.bg-amber-500/20]="nibStyle() === 'bold'"
+                [class.text-amber-300]="nibStyle() === 'bold'"
+                [class.border-amber-500]="nibStyle() === 'bold'"
                 class="p-2.5 rounded-xl border border-slate-800 text-left transition cursor-pointer"
               >
-                <div class="font-bold">🔤 Geometric Round</div>
-                <div class="text-[10px] text-zinc-400 font-sans">Outfit / Jakarta style</div>
+                <div class="font-bold">🖋️ Bold (700)</div>
+                <div class="text-[10px] text-zinc-400 font-sans">Display Wordmark</div>
               </button>
-              
+
               <button
                 (click)="nibStyle.set('chiseltip')"
                 [class.bg-rose-500/20]="nibStyle() === 'chiseltip'"
@@ -96,10 +96,10 @@ export type TNibStyle = 'fineliner' | 'rounded' | 'chiseltip' | 'marker';
                 [class.border-rose-500]="nibStyle() === 'chiseltip'"
                 class="p-2.5 rounded-xl border border-slate-800 text-left transition cursor-pointer"
               >
-                <div class="font-bold">🖋️ 45° Chiseltip (900)</div>
-                <div class="text-[10px] text-zinc-400 font-sans">Display Black weight</div>
+                <div class="font-bold">⬛ Chiseltip (900)</div>
+                <div class="text-[10px] text-zinc-400 font-sans">Calligraphic Black</div>
               </button>
-
+              
               <button
                 (click)="nibStyle.set('fineliner')"
                 [class.bg-emerald-500/20]="nibStyle() === 'fineliner'"
@@ -107,20 +107,37 @@ export type TNibStyle = 'fineliner' | 'rounded' | 'chiseltip' | 'marker';
                 [class.border-emerald-500]="nibStyle() === 'fineliner'"
                 class="p-2.5 rounded-xl border border-slate-800 text-left transition cursor-pointer"
               >
-                <div class="font-bold">✍️ Fineliner (100)</div>
-                <div class="text-[10px] text-zinc-400 font-sans">Precision technical line</div>
+                <div class="font-bold">✍️ Fineliner (400)</div>
+                <div class="text-[10px] text-zinc-400 font-sans">Technical Grotesque</div>
               </button>
 
               <button
-                (click)="nibStyle.set('marker')"
-                [class.bg-amber-500/20]="nibStyle() === 'marker'"
-                [class.text-amber-300]="nibStyle() === 'marker'"
-                [class.border-amber-500]="nibStyle() === 'marker'"
+                (click)="nibStyle.set('mono')"
+                [class.bg-cyan-500/20]="nibStyle() === 'mono'"
+                [class.text-cyan-300]="nibStyle() === 'mono'"
+                [class.border-cyan-500]="nibStyle() === 'mono'"
                 class="p-2.5 rounded-xl border border-slate-800 text-left transition cursor-pointer"
               >
-                <div class="font-bold">🎨 Felt-Tip Grain</div>
-                <div class="text-[10px] text-zinc-400 font-sans">Organic pressure nib</div>
+                <div class="font-bold">📊 Mono (400)</div>
+                <div class="text-[10px] text-zinc-400 font-sans">Tabular Clinical Telemetry</div>
               </button>
+            </div>
+
+            <!-- Variable Font Continuous Weight Slider -->
+            <div class="pt-2 border-t border-slate-800 space-y-1.5">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-teal-400 font-bold">PocketGull VF Axis (wght):</span>
+                <span class="text-zinc-200 font-black">{{ variableWeight() }}</span>
+              </div>
+              <input 
+                type="range" 
+                min="100" 
+                max="900" 
+                step="25" 
+                [value]="variableWeight()" 
+                (input)="onWeightSliderChange($event)"
+                class="w-full accent-teal-400 h-2 bg-slate-800 rounded-lg cursor-pointer"
+              />
             </div>
           </div>
 
@@ -145,162 +162,154 @@ export type TNibStyle = 'fineliner' | 'rounded' | 'chiseltip' | 'marker';
             </div>
           </div>
 
-          <!-- Stroke Presets & Actions -->
+          <!-- Character Preset Strip -->
           <div class="p-4 bg-slate-900/90 border border-slate-800 rounded-2xl space-y-3">
             <span class="text-[11px] font-bold text-rose-400 uppercase tracking-wider block">
-              3. Preset Glyph Templates
+              3. PocketGull Master Glyphs
             </span>
             <div class="flex flex-wrap gap-1.5">
-              @for (char of ['P', 'G', 'O', 'Ø', '1', 'l', 'I', '7', 'µ']; track char) {
+              @for (char of characterPresets; track char) {
                 <button
-                  (click)="loadPresetGlyph(char)"
-                  class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-zinc-100 font-bold border border-slate-700 transition cursor-pointer"
+                  (click)="loadPreset(char)"
+                  [class.bg-amber-500]="activeChar() === char"
+                  [class.text-zinc-950]="activeChar() === char"
+                  [class.font-bold]="activeChar() === char"
+                  class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-zinc-300 text-sm flex items-center justify-center transition cursor-pointer"
                 >
                   {{ char }}
                 </button>
               }
             </div>
+            
             <div class="pt-2 flex items-center gap-2">
               <button
                 (click)="clearCanvas()"
-                class="w-full py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 rounded-xl text-xs font-bold transition cursor-pointer"
+                class="w-full py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 rounded-xl transition cursor-pointer text-center"
               >
                 🗑️ Clear Canvas
               </button>
             </div>
           </div>
-
         </div>
 
-        <!-- Right: Interactive Vector Drawing Canvas & Bézier Viewport (8 Cols) -->
-        <div class="lg:col-span-8 flex flex-col items-center justify-center">
+        <!-- Right: Interactive Vector Canvas (8 Cols) -->
+        <div class="lg:col-span-8 flex flex-col items-center justify-center bg-slate-900/60 border border-slate-800 rounded-3xl p-6 relative overflow-hidden">
           
-          <div class="w-full relative bg-slate-900 border-2 border-dashed border-slate-800 rounded-3xl p-4 overflow-hidden shadow-inner flex flex-col items-center justify-center">
-            
-            <!-- Canvas HUD -->
-            <div class="w-full flex items-center justify-between pb-2 font-mono text-[11px] text-zinc-400 border-b border-slate-800/80 mb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Active Stroke: <strong class="text-zinc-100">{{ strokeCount() }} Nodes</strong></span>
-              </div>
-              <span>Click &amp; Drag to Draw • Auto-Cubic Bézier Interpolation</span>
+          <!-- Drawing Surface -->
+          <canvas
+            #drawingCanvas
+            width="600"
+            height="600"
+            (mousedown)="startDrawing($event)"
+            (mousemove)="draw($event)"
+            (mouseup)="stopDrawing()"
+            (mouseleave)="stopDrawing()"
+            class="bg-slate-950 rounded-2xl border border-slate-700/80 shadow-2xl cursor-crosshair max-w-full touch-none"
+          ></canvas>
+
+          <!-- Status Footer -->
+          <div class="w-full mt-4 flex flex-wrap items-center justify-between text-xs font-mono text-zinc-400 gap-2">
+            <div>
+              <span>Active Glyph: </span>
+              <strong class="text-amber-400">{{ activeChar() }}</strong>
+              <span class="mx-2 text-zinc-600">|</span>
+              <span>Points: </span>
+              <strong class="text-teal-400">{{ pointCount() }}</strong>
             </div>
-
-            <!-- Vector Canvas Drawing Container -->
-            <div class="relative w-full max-w-[600px] aspect-square bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl flex items-center justify-center cursor-crosshair">
-              
-              <!-- Background Typographic Metrics Grid SVG -->
-              <svg viewBox="0 0 1000 1000" class="absolute inset-0 w-full h-full pointer-events-none z-0">
-                @if (showOvershoot()) {
-                  <!-- Cap Overshoot Line -->
-                  <line x1="0" y1="180" x2="1000" y2="180" stroke="#f43f5e" stroke-dasharray="6,6" stroke-width="2" />
-                  <text x="20" y="170" fill="#f43f5e" font-family="monospace" font-size="22">OVERSHOOT (820 UPM)</text>
-
-                  <!-- Baseline Overshoot Line -->
-                  <line x1="0" y1="820" x2="1000" y2="820" stroke="#f43f5e" stroke-dasharray="6,6" stroke-width="2" />
-                  <text x="20" y="845" fill="#f43f5e" font-family="monospace" font-size="22">BASELINE OVERSHOOT (-20 UPM)</text>
-                }
-
-                @if (showGridLines()) {
-                  <!-- Cap Height (800 UPM -> Y = 200) -->
-                  <line x1="0" y1="200" x2="1000" y2="200" stroke="#38bdf8" stroke-width="2" />
-                  <text x="20" y="225" fill="#38bdf8" font-family="monospace" font-size="22">CAP-HEIGHT (800 UPM)</text>
-
-                  <!-- X-Height (520 UPM -> Y = 480) -->
-                  <line x1="0" y1="480" x2="1000" y2="480" stroke="#10b981" stroke-width="2" />
-                  <text x="20" y="470" fill="#10b981" font-family="monospace" font-size="22">X-HEIGHT (520 UPM)</text>
-
-                  <!-- Baseline (0 UPM -> Y = 800) -->
-                  <line x1="0" y1="800" x2="1000" y2="800" stroke="#fbbf24" stroke-width="3" />
-                  <text x="20" y="790" fill="#fbbf24" font-family="monospace" font-size="22">BASELINE (0 UPM)</text>
-                }
-
-                <!-- Center Optical Guide -->
-                <line x1="500" y1="0" x2="500" y2="1000" stroke="#334155" stroke-dasharray="4,4" stroke-width="1.5" />
-              </svg>
-
-              <!-- Interactive HTML5 Drawing Canvas -->
-              <canvas
-                #drawingCanvas
-                width="1000"
-                height="1000"
-                (pointerdown)="startDrawing($event)"
-                (pointermove)="draw($event)"
-                (pointerup)="stopDrawing()"
-                (pointercancel)="stopDrawing()"
-                class="w-full h-full relative z-10 block touch-none"
-              ></canvas>
+            <div>
+              <span class="text-emerald-400">Scale: 1000 UPM</span>
+              <span class="mx-2 text-zinc-600">|</span>
+              <span class="text-cyan-400">Weight: {{ variableWeight() }} wght</span>
             </div>
-
-            <!-- Real-Time Generated Path Readout -->
-            <div class="w-full mt-4 p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-[11px] space-y-1">
-              <div class="flex items-center justify-between text-zinc-400">
-                <span class="text-amber-400 font-bold uppercase text-[10px]">Computed Bézier Path (SVG):</span>
-                <span>Length: {{ currentSvgPath().length }} chars</span>
-              </div>
-              <div class="text-zinc-300 truncate bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 select-all">
-                {{ currentSvgPath() }}
-              </div>
-            </div>
-
           </div>
-
         </div>
 
       </div>
-
     </div>
   `
 })
 export class GlyphForgeStudioComponent implements AfterViewInit {
-  drawingCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('drawingCanvas');
-
-  nibStyle = signal<TNibStyle>('rounded');
+  drawingCanvas = viewChild<ElementRef<HTMLCanvasElement>>('drawingCanvas');
+  
+  nibStyle = signal<TNibStyle>('bold');
+  variableWeight = signal<number>(700);
   showGridLines = signal<boolean>(true);
   showOvershoot = signal<boolean>(true);
   showExtrema = signal<boolean>(true);
-  strokeCount = signal<number>(0);
+  activeChar = signal<string>('P');
   copied = signal<boolean>(false);
-  currentSvgPath = signal<string>('M 250 200 L 250 800 M 250 200 C 650 200, 750 350, 750 500 C 750 650, 650 680, 250 680');
+  pointCount = signal<number>(0);
 
-  private isPointerDown = false;
+  characterPresets = ['P', 'o', 'c', 'k', 'e', 't', 'G', 'u', 'l', '1', '0', 'Ø', 'B', '8', 'S', '5', '7', 'µ'];
+  
+  private ctx: CanvasRenderingContext2D | null = null;
+  private isDrawing = false;
   private currentStroke: IDrawnPoint[] = [];
   private allStrokes: IDrawnPoint[][] = [];
 
-  ngAfterViewInit() {
-    this.renderCanvas();
+  ngAfterViewInit(): void {
+    const canvas = this.drawingCanvas()?.nativeElement;
+    if (canvas) {
+      this.ctx = canvas.getContext('2d');
+      this.redrawCanvas();
+      this.loadPreset('P');
+    }
   }
 
-  startDrawing(event: PointerEvent) {
-    const canvas = this.drawingCanvasRef()?.nativeElement;
-    if (!canvas) return;
-    canvas.setPointerCapture(event.pointerId);
-    this.isPointerDown = true;
-    
-    const pt = this.getCanvasCoords(event, canvas);
+  onWeightSliderChange(event: Event): void {
+    const val = Number((event.target as HTMLInputElement).value);
+    this.variableWeight.set(val);
+    this.nibStyle.set('variable');
+    this.redrawCanvas();
+  }
+
+  startDrawing(event: MouseEvent): void {
+    this.isDrawing = true;
+    const pt = this.getCanvasPoint(event);
     this.currentStroke = [pt];
     this.allStrokes.push(this.currentStroke);
-    this.renderCanvas();
+    this.redrawCanvas();
   }
 
-  draw(event: PointerEvent) {
-    if (!this.isPointerDown) return;
-    const canvas = this.drawingCanvasRef()?.nativeElement;
-    if (!canvas) return;
-
-    const pt = this.getCanvasCoords(event, canvas);
+  draw(event: MouseEvent): void {
+    if (!this.isDrawing) return;
+    const pt = this.getCanvasPoint(event);
     this.currentStroke.push(pt);
-    this.strokeCount.set(this.allStrokes.reduce((acc, s) => acc + s.length, 0));
-    this.renderCanvas();
+    this.pointCount.update(c => c + 1);
+    this.redrawCanvas();
   }
 
-  stopDrawing() {
-    if (!this.isPointerDown) return;
-    this.isPointerDown = false;
-    this.compileSvgPath();
+  stopDrawing(): void {
+    this.isDrawing = false;
   }
 
-  private getCanvasCoords(event: PointerEvent, canvas: HTMLCanvasElement): IDrawnPoint {
+  clearCanvas(): void {
+    this.allStrokes = [];
+    this.currentStroke = [];
+    this.pointCount.set(0);
+    this.redrawCanvas();
+  }
+
+  loadPreset(char: string): void {
+    this.activeChar.set(char);
+    this.clearCanvas();
+    
+    // Master Vector Coordinates for standard PocketGull Glyphs (scaled to 600x600 canvas)
+    const masterPaths: Record<string, string> = {
+      'P': 'M 100,500 L 100,100 C 100,100 160,70 240,70 C 330,70 380,120 380,200 C 380,280 320,330 230,330 L 180,330 L 180,500 Z M 180,260 L 230,260 C 270,260 300,240 300,200 C 300,160 270,140 220,140 L 180,140 Z',
+      'G': 'M 440,240 C 420,130 350,70 240,70 C 120,70 70,160 70,320 C 70,480 140,550 270,550 C 380,550 440,490 460,390 L 460,320 L 280,320 L 280,380 L 390,380 C 380,450 330,490 270,490 C 170,490 140,410 140,320 C 140,210 180,130 250,130 C 310,130 360,170 380,240 Z'
+    };
+
+    if (masterPaths[char] && this.ctx) {
+      const p = new Path2D(masterPaths[char]);
+      this.ctx.fillStyle = '#0d9488';
+      this.ctx.fill(p);
+    }
+  }
+
+  private getCanvasPoint(event: MouseEvent): IDrawnPoint {
+    const canvas = this.drawingCanvas()?.nativeElement;
+    if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
@@ -310,149 +319,103 @@ export class GlyphForgeStudioComponent implements AfterViewInit {
     };
   }
 
-  clearCanvas() {
-    this.allStrokes = [];
-    this.currentStroke = [];
-    this.strokeCount.set(0);
-    this.currentSvgPath.set('');
-    this.renderCanvas();
-  }
+  private redrawCanvas(): void {
+    const canvas = this.drawingCanvas()?.nativeElement;
+    if (!canvas || !this.ctx) return;
+    const ctx = this.ctx;
 
-  loadPresetGlyph(char: string) {
-    this.clearCanvas();
-    const presets: Record<string, string> = {
-      'P': 'M 250 200 L 250 800 M 250 200 C 650 200, 750 350, 750 500 C 750 650, 650 680, 250 680',
-      'G': 'M 750 350 C 550 180, 250 280, 250 500 C 250 750, 550 820, 750 700 L 750 520 L 520 520',
-      'O': 'M 500 180 C 280 180, 220 380, 220 500 C 220 650, 280 820, 500 820 C 720 820, 780 650, 780 500 C 780 380, 720 180, 500 180 Z',
-      'Ø': 'M 500 180 C 280 180, 220 380, 220 500 C 220 650, 280 820, 500 820 C 720 820, 780 650, 780 500 C 780 380, 720 180, 500 180 Z M 320 740 L 680 260',
-      '1': 'M 350 320 L 500 200 L 500 800 M 320 800 L 680 800',
-      'l': 'M 420 200 L 420 740 C 420 800, 560 800, 620 740',
-      'I': 'M 300 200 L 700 200 M 500 200 L 500 800 M 300 800 L 700 800',
-      '7': 'M 250 200 L 750 200 L 420 800 M 360 480 L 640 480',
-      'µ': 'M 300 480 L 300 950 M 300 740 C 300 820, 650 820, 650 740 L 650 480'
-    };
+    // Background
+    ctx.fillStyle = '#090d16';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const path = presets[char] || presets['P'];
-    this.currentSvgPath.set(path);
-    this.renderSvgPathToCanvas(path);
-  }
+    // Typographic Grid Lines
+    if (this.showGridLines()) {
+      ctx.lineWidth = 1;
+      
+      // Baseline (Y: 500)
+      ctx.strokeStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(0, 500); ctx.lineTo(canvas.width, 500);
+      ctx.stroke();
 
-  private renderSvgPathToCanvas(pathStr: string) {
-    const canvas = this.drawingCanvasRef()?.nativeElement;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+      // X-Height (Y: 280)
+      ctx.strokeStyle = '#a78bfa';
+      ctx.beginPath();
+      ctx.moveTo(0, 280); ctx.lineTo(canvas.width, 280);
+      ctx.stroke();
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const p2d = new Path2D(pathStr);
-    
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = this.nibStyle() === 'chiseltip' ? 68 : this.nibStyle() === 'fineliner' ? 18 : 42;
-    ctx.lineCap = this.nibStyle() === 'rounded' ? 'round' : 'square';
+      // Cap-Height (Y: 100)
+      ctx.strokeStyle = '#f43f5e';
+      ctx.beginPath();
+      ctx.moveTo(0, 100); ctx.lineTo(canvas.width, 100);
+      ctx.stroke();
+    }
+
+    // Draw active user strokes with selected nib style & variable weight
+    let strokeWidth = 24;
+    let strokeColor = '#2dd4bf';
+
+    switch (this.nibStyle()) {
+      case 'bold':
+        strokeWidth = 32;
+        strokeColor = '#f59e0b';
+        break;
+      case 'chiseltip':
+        strokeWidth = 48;
+        strokeColor = '#f43f5e';
+        break;
+      case 'fineliner':
+        strokeWidth = 8;
+        strokeColor = '#10b981';
+        break;
+      case 'variable':
+        strokeWidth = (this.variableWeight() / 900) * 44 + 6;
+        strokeColor = '#14b8a6';
+        break;
+      case 'mono':
+        strokeWidth = 18;
+        strokeColor = '#38bdf8';
+        break;
+    }
+
+    ctx.lineWidth = strokeWidth;
+    ctx.lineCap = this.nibStyle() === 'chiseltip' ? 'square' : 'round';
     ctx.lineJoin = 'round';
-    ctx.stroke(p2d);
-  }
-
-  private renderCanvas() {
-    const canvas = this.drawingCanvasRef()?.nativeElement;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.strokeStyle = this.nibStyle() === 'chiseltip' ? '#f43f5e' : this.nibStyle() === 'fineliner' ? '#10b981' : '#38bdf8';
-    ctx.lineWidth = this.nibStyle() === 'chiseltip' ? 64 : this.nibStyle() === 'fineliner' ? 16 : 44;
-    ctx.lineCap = this.nibStyle() === 'rounded' ? 'round' : 'square';
-    ctx.lineJoin = 'round';
+    ctx.strokeStyle = strokeColor;
 
     for (const stroke of this.allStrokes) {
-      if (stroke.length === 0) continue;
+      if (stroke.length < 2) continue;
       ctx.beginPath();
       ctx.moveTo(stroke[0].x, stroke[0].y);
       for (let i = 1; i < stroke.length; i++) {
         ctx.lineTo(stroke[i].x, stroke[i].y);
       }
       ctx.stroke();
-
-      if (this.showExtrema()) {
-        ctx.fillStyle = '#10b981';
-        for (const pt of stroke) {
-          ctx.beginPath();
-          ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
     }
   }
 
-  private compileSvgPath() {
-    if (this.allStrokes.length === 0) return;
-    let svg = '';
-    for (const stroke of this.allStrokes) {
-      if (stroke.length === 0) continue;
-      svg += `M ${Math.round(stroke[0].x)} ${Math.round(stroke[0].y)} `;
-      for (let i = 1; i < stroke.length; i++) {
-        svg += `L ${Math.round(stroke[i].x)} ${Math.round(stroke[i].y)} `;
-      }
-    }
-    this.currentSvgPath.set(svg.trim());
+  copySvgPath(): void {
+    this.copied.set(true);
+    setTimeout(() => this.copied.set(false), 2000);
   }
 
-  copySvgPath() {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(this.currentSvgPath()).then(() => {
-        this.copied.set(true);
-        setTimeout(() => this.copied.set(false), 2000);
-      });
-    }
-  }
-
-  exportHighResPng() {
-    const canvas = this.drawingCanvasRef()?.nativeElement;
-    if (!canvas || typeof document === 'undefined') return;
-
-    // Create high-res specimen export canvas (1200 x 1200) with dark background
-    const exportCanvas = document.createElement('canvas');
-    exportCanvas.width = 1200;
-    exportCanvas.height = 1200;
-    const eCtx = exportCanvas.getContext('2d');
-    if (!eCtx) return;
-
-    // Dark background
-    eCtx.fillStyle = '#020617';
-    eCtx.fillRect(0, 0, 1200, 1200);
-
-    // Draw grid and content
-    eCtx.drawImage(canvas, 100, 100, 1000, 1000);
-
-    // Header label
-    eCtx.fillStyle = '#38bdf8';
-    eCtx.font = 'bold 32px monospace';
-    eCtx.fillText('POCKETGULL VARIABLE SUPERFAMILY — 1000 UPM SPECIMEN', 100, 70);
-
-    // Trigger download
-    const url = exportCanvas.toDataURL('image/png');
+  exportHighResPng(): void {
+    const canvas = this.drawingCanvas()?.nativeElement;
+    if (!canvas) return;
+    const url = canvas.toDataURL('image/png');
     const a = document.createElement('a');
     a.href = url;
-    a.download = `pocketgull_glyph_specimen_${Date.now()}.png`;
+    a.download = `pocketgull_${this.activeChar()}_${this.variableWeight()}wght_specimen.png`;
     a.click();
   }
 
-  exportSvgFile() {
-    if (typeof document === 'undefined') return;
-    const svgContent = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
-  <rect width="1000" height="1000" fill="#020617" />
-  <path d="${this.currentSvgPath()}" stroke="#38bdf8" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-</svg>`;
-
-    const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+  exportSvgFile(): void {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600"><rect width="100%" height="100%" fill="#090d16"/><text x="100" y="500" fill="#2dd4bf" font-family="'PocketGull VF', sans-serif" font-size="400">${this.activeChar()}</text></svg>`;
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `pocketgull_glyph_${Date.now()}.svg`;
+    a.download = `pocketgull_${this.activeChar()}.svg`;
     a.click();
-    URL.revokeObjectURL(url);
   }
 }

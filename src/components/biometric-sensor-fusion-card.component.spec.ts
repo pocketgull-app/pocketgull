@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { BiometricSensorFusionCardComponent } from './biometric-sensor-fusion-card.component';
 import { BiometricSensorFusionService } from '../services/hardware/biometric-sensor-fusion.service';

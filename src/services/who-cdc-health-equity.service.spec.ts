@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { WhoCdcHealthEquityService } from './who-cdc-health-equity.service';
 
 describe('WhoCdcHealthEquityService Unit Suite', () => {

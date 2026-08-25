@@ -1,4 +1,5 @@
 import '@angular/compiler';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { PopulationHealthEquityService } from './population-health-equity.service';
 import { createEnvironmentInjector, EnvironmentInjector, runInInjectionContext } from '@angular/core';
 

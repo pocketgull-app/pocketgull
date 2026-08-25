@@ -16,6 +16,113 @@
     }
   ],
   "paths": {
+    "/api/auth/sso/config": {
+      "get": {
+        "summary": "SSO Discovery Configuration",
+        "description": "Returns public OAuth2 client IDs, SMART-on-FHIR issuers, and WebAuthn relying party metadata.",
+        "responses": {
+          "200": {
+            "description": "SSO Configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "active" },
+                    "projectId": { "type": "string", "example": "gen-lang-client-0540208645" },
+                    "google": { "type": "object" },
+                    "smartOnFhir": { "type": "object" },
+                    "webauthn": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/sso/google": {
+      "post": {
+        "summary": "Google Cloud IAM & Workspace Single Sign-On",
+        "description": "Authenticates a clinician or patient via Google Workspace or Google Cloud IAM Workload Identity with optional Wacom WILL 3.0 kinetic proof.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "clinician@pocketgull.app" },
+                  "name": { "type": "string", "example": "Dr. Gulliver" },
+                  "role": { "type": "string", "enum": ["roles/aiplatform.user", "roles/healthcare.datasetAdmin", "roles/bigquery.jobUser", "roles/viewer"], "example": "roles/aiplatform.user" },
+                  "zkpKineticHash": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "session": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/sso/smart-fhir": {
+      "post": {
+        "summary": "SMART-on-FHIR Hospital EHR Launch SSO",
+        "description": "Authenticates EHR sessions from Epic Systems, Oracle Cerner, and AthenaHealth with clinical role assignment.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "issuer": { "type": "string", "example": "Epic Systems EHR" },
+                  "fhirPatientId": { "type": "string", "example": "patient-curie-2026" },
+                  "role": { "type": "string", "example": "roles/aiplatform.user" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated SMART-on-FHIR session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/sso/webauthn": {
+      "post": {
+        "summary": "FIDO2 / WebAuthn Biometric Passkey SSO",
+        "description": "Authenticates using client hardware authenticators (Face ID, Touch ID, YubiKey).",
+        "responses": {
+          "200": {
+            "description": "Authenticated WebAuthn session"
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health Check Endpoint",

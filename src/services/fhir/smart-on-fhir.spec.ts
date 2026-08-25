@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { FhirIntegrationService } from './fhir-integration.service';
 import { FhirBundleFactoryService } from './fhir-bundle-factory.service';

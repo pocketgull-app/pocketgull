@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ClinicalMandarinateExamCardComponent } from './clinical-mandarinate-exam-card.component';
 import { ClinicalMandarinateExamService } from '../../services/clinical-mandarinate-exam.service';

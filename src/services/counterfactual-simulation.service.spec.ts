@@ -42,4 +42,54 @@ describe('CounterfactualSimulationService', () => {
     expect(service.deltaSteps()).toBe(0);
     expect(service.hasActiveSimulation()).toBe(false);
   });
+
+  it('should provide Socratic What-If scenarios and apply them cleanly', () => {
+    expect(service.socraticScenarios.length).toBeGreaterThanOrEqual(4);
+    const vagalScenario = service.socraticScenarios.find(s => s.id === 'scenario_vagal_breath');
+    expect(vagalScenario).toBeDefined();
+
+    service.applyScenario(vagalScenario!);
+    expect(service.deltaHrv()).toBe(18);
+    expect(service.deltaSystolic()).toBe(-8);
+    expect(service.hasActiveSimulation()).toBe(true);
+  });
+
+  it('should provide Goal Inversion pathways and apply them', () => {
+    expect(service.goalInversionPathways.length).toBe(3);
+    const metabolicPathway = service.goalInversionPathways.find(p => p.id === 'pathway_metabolic');
+    expect(metabolicPathway).toBeDefined();
+
+    service.applyPathway(metabolicPathway!);
+    expect(service.deltaHbA1c()).toBe(-1.2);
+    expect(service.deltaSteps()).toBe(2000);
+  });
+
+  it('should compute multi-paradigm checks across Western, Eastern TCM, and Ayurvedic frameworks', () => {
+    const checks = service.multiParadigmChecks();
+    expect(checks.length).toBe(3);
+    const paradigms = checks.map(c => c.paradigm);
+    expect(paradigms).toContain('Western Clinical');
+    expect(paradigms).toContain('Eastern TCM');
+    expect(paradigms).toContain('Ayurvedic Vedic');
+
+    // Trigger warning on intensive SBP lowering
+    service.deltaSystolic.set(-25);
+    const updatedChecks = service.multiParadigmChecks();
+    const westernCheck = updatedChecks.find(c => c.paradigm === 'Western Clinical');
+    expect(westernCheck?.status).toBe('WARNING');
+  });
+
+  it('should contain OARS Motivational Interviewing readiness prompts for all 4 biomarkers', () => {
+    const oars = service.oarsPrompts;
+    expect(oars['hba1c']).toBeDefined();
+    expect(oars['steps']).toBeDefined();
+    expect(oars['hrv']).toBeDefined();
+    expect(oars['systolic']).toBeDefined();
+    expect(oars['hba1c'].readinessRulerQuestion).toContain('scale of 1 to 10');
+  });
+
+  it('should compute dynamic sensitivity insights based on simulated perturbations', () => {
+    service.deltaHrv.set(16);
+    expect(service.sensitivityInsight()).toContain('Physiological Equivalence Insight');
+  });
 });

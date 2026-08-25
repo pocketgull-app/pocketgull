@@ -2,6 +2,8 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@a
 import { CommonModule } from '@angular/common';
 import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedback.service';
 import { ClinicalIconComponent } from './shared/clinical-icon.component';
+import { AmazonProductCardComponent } from './shared/amazon-product-card.component';
+import { AmazonCreatorsApiService, IAmazonProductItem, CLINICAL_CURATED_AMAZON_CATALOG } from '../services/amazon-creators-api.service';
 
 export interface ITherapeuticHobby {
   snomedCode: string;
@@ -20,7 +22,7 @@ export interface ITherapeuticHobby {
 @Component({
   selector: 'app-bibliotherapy-hobby-prescriber',
   standalone: true,
-  imports: [CommonModule, ClinicalIconComponent],
+  imports: [CommonModule, ClinicalIconComponent, AmazonProductCardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-5 bg-white dark:bg-zinc-900 border border-teal-500/40 rounded-2xl shadow-xl space-y-6 font-sans">
@@ -83,7 +85,7 @@ export interface ITherapeuticHobby {
             </p>
           </div>
 
-          <a [href]="amazonStoreUrl()" target="_blank" rel="noopener"
+          <a [href]="amazonStoreUrl()" target="_blank" rel="noopener noreferrer"
              class="min-h-[44px] min-w-[44px] px-4 py-2 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-2 shadow-md">
             <span>🛒 Recommended Supplies</span>
             <span class="text-[10px] font-mono opacity-80">(tag=pgdpo-20)</span>
@@ -112,13 +114,34 @@ export interface ITherapeuticHobby {
             }
           </div>
         </div>
+
+        <!-- Amazon Creators API Product Recommendations Grid -->
+        @if (recommendedProducts().length > 0) {
+          <div class="space-y-2.5 pt-3 border-t border-slate-200 dark:border-zinc-800">
+            <div class="flex items-center justify-between">
+              <h5 class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                <span>📦 Amazon Associates Practice Equipment</span>
+              </h5>
+              <span class="text-[10px] font-mono text-slate-400 dark:text-zinc-500">
+                Creators API (tag: pgdpo-20)
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              @for (prod of recommendedProducts(); track prod.asin) {
+                <app-amazon-product-card [product]="prod"></app-amazon-product-card>
+              }
+            </div>
+          </div>
+        }
       </div>
     </div>
   `,
   styles: []
 })
 export class BibliotherapyHobbyPrescriberComponent {
-  private bioHaptic = inject(BioHapticFeedbackService);
+  private bioHaptic = inject(BioHapticFeedbackService, { optional: true });
+  private amazonApi = inject(AmazonCreatorsApiService, { optional: true });
 
   readonly hobbies: ITherapeuticHobby[] = [
     {
@@ -190,8 +213,23 @@ export class BibliotherapyHobbyPrescriberComponent {
     return `https://www.amazon.com/s?k=${encodeURIComponent(q)}&tag=pgdpo-20`;
   });
 
+  readonly recommendedProducts = computed<IAmazonProductItem[]>(() => {
+    const hobby = this.selectedHobby();
+    const snomed = hobby.snomedCode;
+    const query = hobby.amazonQuery.toLowerCase();
+
+    const matched = CLINICAL_CURATED_AMAZON_CATALOG.filter(
+      item => item.snomedCode === snomed || item.title.toLowerCase().includes(query) || (item.clinicalContext && item.clinicalContext.toLowerCase().includes(query))
+    );
+
+    if (matched.length > 0) return matched;
+    return CLINICAL_CURATED_AMAZON_CATALOG.slice(0, 2);
+  });
+
   selectHobby(hobby: ITherapeuticHobby): void {
     this.selectedHobby.set(hobby);
-    this.bioHaptic.triggerHapticPulse('inhale');
+    if (this.bioHaptic) {
+      this.bioHaptic.triggerHapticPulse('inhale');
+    }
   }
 }

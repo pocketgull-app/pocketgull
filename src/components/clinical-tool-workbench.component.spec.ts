@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi, expect } from 'vitest';
 import { runInInjectionContext, createEnvironmentInjector } from '@angular/core';
 import { ClinicalToolWorkbenchComponent } from './clinical-tool-workbench.component';
 import { DoubleFlipStateMachineService } from '../services/double-flip-state-machine.service';
@@ -21,10 +20,10 @@ describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite',
     component = runInInjectionContext(injector, () => new ClinicalToolWorkbenchComponent());
   });
 
-  it('should initialize all 8 workbench tools as operational', () => {
+  it('should initialize all workbench tools as operational', () => {
     expect(component).toBeTruthy();
-    expect(component.tools().length).toBe(8);
-    expect(component.operationalCount()).toBe(8);
+    expect(component.tools().length).toBe(9);
+    expect(component.operationalCount()).toBe(9);
   });
 
   it('should flip card on double-click safety interlock confirmation', () => {
@@ -41,14 +40,17 @@ describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite',
     expect(component.tools().find(t => t.id === toolId)?.isFlipped).toBe(true);
   });
 
-  it('should switch between new enterprise studio tabs (ssa, jurisdiction, mandiant, mandarinate)', () => {
-    expect(component.activeWorkbenchTab()).toBe('tools');
+  it('should switch between new enterprise studio tabs (commercial, ssa, jurisdiction, mandiant, mandarinate)', () => {
+    expect(component.activeWorkbenchTab()).toBe('commercial');
 
     component.activeWorkbenchTab.set('ssa');
     expect(component.activeWorkbenchTab()).toBe('ssa');
 
     component.activeWorkbenchTab.set('jurisdiction');
     expect(component.activeWorkbenchTab()).toBe('jurisdiction');
+
+    component.activeWorkbenchTab.set('commercial');
+    expect(component.activeWorkbenchTab()).toBe('commercial');
 
     component.activeWorkbenchTab.set('mandiant');
     expect(component.activeWorkbenchTab()).toBe('mandiant');

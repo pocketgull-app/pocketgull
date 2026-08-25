@@ -6,6 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const srcDir = path.resolve(__dirname, '../src');
 const testsDir = path.resolve(__dirname, '../tests');
+const packagesDir = path.resolve(__dirname, '../packages');
 
 function getAllSpecFiles(dir) {
   let results = [];
@@ -23,7 +24,7 @@ function getAllSpecFiles(dir) {
   return results;
 }
 
-const specFiles = [...getAllSpecFiles(srcDir), ...getAllSpecFiles(testsDir)];
+const specFiles = [...getAllSpecFiles(srcDir), ...getAllSpecFiles(testsDir), ...getAllSpecFiles(packagesDir)];
 let modifiedCount = 0;
 
 for (const file of specFiles) {

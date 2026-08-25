@@ -59,4 +59,20 @@ describe('SkepticalEpistemologyService', () => {
     expect(questions.length).toBe(2);
     expect(questions[0].id).toContain('socratic-unusual-lens-target');
   });
+
+  it('7. Matches DOI-backed Socratic questions for ambient scribe and knee MRI kinematics', () => {
+    const ambientChallenges = service.generateSocraticChallenges(
+      'Ambient Scribe',
+      'Ambient audio dictation transcript producing SOAP notes and review of systems.',
+      2
+    );
+    expect(ambientChallenges.some(c => c.epistemicTag === 'Ambient Scribe Hallucination')).toBe(true);
+
+    const kneeChallenges = service.generateSocraticChallenges(
+      'Physical Medicine',
+      'Patient with knee joint meniscus tear and ACL laxity evaluated on MRI.',
+      2
+    );
+    expect(kneeChallenges.some(c => c.epistemicTag === 'Joint-Prior Bayesian Calibration')).toBe(true);
+  });
 });

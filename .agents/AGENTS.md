@@ -55,13 +55,6 @@
   - No period at the end
 - **Body** (optional): If the diff is non-trivial, add a blank line after the subject, then a concise body explaining *why* the change was made, not *what* (the diff shows what). Wrap at 80 characters. Move extra details here if the subject would exceed 72 characters.
 - **Breaking changes**: Prefix the body with `BREAKING CHANGE:` if the commit introduces breaking changes.
-- **Examples of good commit messages**:
-  - `feat(ai): add Gemini 2.5 Flash streaming to voice assistant`
-  - `fix(clinical): sync intake form keys with care plan report structure`
-  - `security(server): sanitize Vertex AI URL params against SSRF`
-  - `chore(deps): bump Angular to v22.1 and resolve esbuild overrides`
-  - `feat(demo): add dynamic mock clinical assessments per patient demographics`
-  - `fix(types): add explicit token loop types in analysis-report parser`
 
 ## FHIR R4 Compliance
 - **Data Serialization**: Anytime patient data (symptoms, history, conditions) is serialized, exported, or passed across API boundaries, the payload MUST strictly conform to the **FHIR R4 Bundle** standard.
@@ -164,7 +157,6 @@ To prevent context window degradation, attention drift, and token exhaustion:
    - Keep conversational commentary concise, high-signal, and linked to concrete workspace symbols.
    - Provide clickable file links using GitHub-style markdown: `[file.ts](file:///absolute/path/file.ts)`.
 
-
 ## Data Science & ML Competition Engineering Standards
 1. **Leak-Free Cross-Validation Anchoring (`GroupKFold`)**: In medical imaging datasets where patients have multiple series/scans, group splits strictly by `patient_id` using `GroupKFold(n_splits=5)` to prevent patient-feature leakage between train and validation splits.
 2. **Empirical Pipeline Verification (Numerical Proof First)**: Never claim an architecture edit or post-processing pipeline works based on intuition alone. Record Out-of-Fold (OOF) metric progression at every stage.
@@ -188,6 +180,7 @@ To prevent context window degradation, attention drift, and token exhaustion:
     - **Standardized Tag Taxonomy**: All published Kaggle models, datasets, utility scripts, and notebooks MUST import and utilize `get_standard_tags()` from `scripts/kaggle_tags.py` to enforce unified metadata tags (`CLINICAL_TAGS`, `AI_ML_TAGS`, `PROJECT_TAGS`).
     - **Usability 10 Checklist**: Every published Model Hub entry or Dataset MUST generate complete `model-metadata.json` / `dataset-metadata.json` containing explicit data dictionaries, open source licenses (`Apache 2.0` / `CC-BY-4.0`), and HIPAA §164.514(b)(2) Safe Harbor verification to maintain a perfect 10/10 usability rating.
     - **Zero Spam & Self-Promotion**: Strictly prohibit upvote begging, off-topic self-promotion, plagiarism, or attaching unrelated datasets/models to notebooks. All shared work must provide genuine educational, research, or competition modeling value.
+
 ## Anti-Surveillance & Ephemeral Data Sovereignty Standards
 - **Default to Edge Computation**: All real-time telemetry calculations, biophysical equations, and clinical symptom classifications MUST run locally on the client device via WebAssembly (WASM), WebGPU, or client-side Web Workers (`OfflineEdgeAiService`). External API calls are reserved for explicit, user-initiated AI consults.
 - **Prohibition of Third-Party Trackers**: Zero third-party analytics pixels, fingerprinting scripts, or passive telemetry pingers (Google Analytics, Segment, Mixpanel, Meta Pixel) are permitted.
@@ -204,33 +197,5 @@ To prevent context window degradation, attention drift, and token exhaustion:
 - **Explicit Tool Contracts**: Every browser tool exposed to AI model contexts MUST be registered via `WebMcpRegistrationService`, declare strict JSON Schema inputs, and provide an explicit `AbortController` cancellation signal.
 - **Mandatory Spec Coverage**: Any addition or modification to registered WebMCP tools MUST include corresponding unit tests in `webmcp-registration.service.spec.ts` verifying registration, execution, and error handling.
 
-## Clinical, Ophthalmological & Optotypic Quality Standards (WCAG AAA & HIPAA Safe Harbor)
-1. **Zero Orthographic & Typographic Spelling Errors (100% Lexical Precision)**:
-   - All text, graphics, labels, image generation prompts, code comments, and UI strings MUST adhere to strictly verified medical, pharmacological, and anatomical spellings.
-   - Canonical spellings mandatory:
-     * `HIPAA` (Health Insurance Portability and Accountability Act) — NEVER `HIPPA`.
-     * `Ophthalmology` / `Ophthalmic` / `Optotypic` — NEVER `Optimological` or `Opthamology`.
-     * `Ayurvedic` (`आयुर्वेद`) / `Tridosha` (`त्रिदोष`) — NEVER `Avyerdic`.
-     * `Variable Font` / `Visualization` — NEVER `Vadiabe` or `Islsualization`.
-     * `Nomina Anatomica` Latin: `Cerebrum`, `Myocardium`, `Hepar`, `Oculus`, `Ren`, `Pulmo`.
-2. **Ophthalmological / Optotypic Visual Acuity (LogMAR 0.0 & Snellen 20/20)**:
-   - Design text hierarchies to resolve clearly at a 5-arcminute total visual angle with 1-arcminute stroke details at $50\text{--}70\text{ cm}$ surgical/ICU monitor viewing distance.
-   - Maintain an elevated x-height to cap-height ratio ($0.70\text{--}0.74$) with wide, un-constricted counterforms (`c`, `e`, `a`, `o`, `s`, `6`, `8`, `9`) to prevent astigmatic letter collision.
-   - Maintain strict WCAG AAA contrast ratio ($\ge 7:1$) against `#020617` / `#09090b` obsidian backgrounds.
-3. **ISMP & FDA Clinical Drug Dosage Disambiguation**:
-   - Enforce slashed zero (`cv08` / `zero`) to distinguish `0` from capital `O`.
-   - Enforce curved lowercase `l` with exit spur (`cv05`) vs. capital `I` with bilateral serifs (`ss02`) vs. numeral `1` with sharp top flag.
-   - Enforce tabular figures (`tnum`) for jitter-free real-time ICU telemetry metrics.
-   - Enforce mandatory leading zeros (`0.5 mg`, NEVER `.5 mg`) and strictly prohibit trailing zeros (`1 mg`, NEVER `1.0 mg`).
-4. **HIPAA §164.514 Safe Harbor & FHIR R4 Research Conformance**:
-   - All research datasets, mock profiles, and case studies MUST strip all 18 direct/indirect HIPAA identifiers.
-   - Sanitize all I/O via DOMPurify and ensure strict FHIR R4 Bundle schema conformance for patient observations and clinical crosswalks.
-5. **Quad-Philosophy Diagnostic Integrity (Ayurvedic, TCM, Allopathic, Osteopathic)**:
-   - When modeling human biology across paradigms, preserve authentic nomenclature:
-     * **Ayurvedic**: Sanskrit Devanagari ligatures (`हृदयम्`, `शिरस्`, `आलोचक पित्त`).
-     * **TCM**: Traditional/Simplified Hanzi & Kampo Kanji (`心`, `肝开窍于目`, `任脉`, `足三里`).
-     * **Allopathic**: Latin *Nomina Anatomica* with ICD-10/SNOMED-CT codes and hemodynamic formulas ($CO = HR \times SV$, $MAP$).
-     * **Osteopathic**: Somatic dysfunction T.A.R.T. criteria (Tissue, Asymmetry, Restriction, Tenderness) and Craniosacral PRM ($8\text{--}12\text{ cpm}$).
-
-
-
+## Clinical, Typographic & Security Canonical Reference
+- For core clinical & ophthalmological standards (LogMAR 0.0, ISMP/FDA dosage disambiguation, WCAG AAA 7:1), Marker font brand boundary, Amazon affiliate egress limits, anti-whaling dual-custody protocols, Tailwind CSS tokens, Five Eyes regulatory mapping, institutional thin-client resilience, and "Tell, Don't Ask" domain encapsulation, refer to the canonical root [GEMINI.md](file:///c:/Users/philg/Pocketgull/pocketgull/GEMINI.md).

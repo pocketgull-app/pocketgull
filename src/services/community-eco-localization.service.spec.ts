@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { CommunityEcoLocalizationService } from './community-eco-localization.service';
 
 describe('CommunityEcoLocalizationService Unit Suite', () => {

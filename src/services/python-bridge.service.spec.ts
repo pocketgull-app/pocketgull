@@ -2,7 +2,6 @@ import '@angular/compiler';
 import { Injector, runInInjectionContext, signal, PLATFORM_ID } from '@angular/core';
 import { PythonBridgeService } from './python-bridge.service';
 import { PatientStateService } from './patient-state.service';
-import { expect, vi } from 'vitest';
 
 // Mock Angular's effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
 vi.mock('@angular/core', async (importOriginal) => {

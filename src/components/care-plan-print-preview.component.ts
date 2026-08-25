@@ -4,6 +4,7 @@ import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { ExportService } from '../services/export.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
+import { GlobalHealthInitiativesService } from '../services/global-health-initiatives.service';
 import { ClinicalDataCardComponent } from './clinical-data-card.component';
 import { generate } from 'lean-qr';
 
@@ -41,8 +42,21 @@ export interface IPrintPageThumbnail {
           </p>
         </div>
 
-        <!-- Action Buttons: Print PDF & Edit Mode Toggle -->
-        <div class="flex items-center gap-2 font-mono">
+        <!-- Action Buttons: Audio Readback, Print PDF & Edit Mode Toggle -->
+        <div class="flex flex-wrap items-center gap-2 font-mono">
+          <button (click)="isSpeaking() ? stopSpeaking() : speakCarePlan()"
+            [class.bg-teal-600]="isSpeaking()"
+            [class.hover:bg-teal-700]="isSpeaking()"
+            [class.bg-zinc-100]="!isSpeaking()"
+            [class.dark:bg-zinc-800]="!isSpeaking()"
+            [class.text-white]="isSpeaking()"
+            [class.text-zinc-700]="!isSpeaking()"
+            [class.dark:text-zinc-300]="!isSpeaking()"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold uppercase transition active:scale-95 cursor-pointer border border-zinc-200/80 dark:border-zinc-700 flex items-center gap-1.5 shadow-2xs">
+            <span>{{ isSpeaking() ? '🛑' : '🔊' }}</span>
+            <span>{{ isSpeaking() ? 'Stop Audio' : 'Listen to Care Plan' }}</span>
+          </button>
+
           <button (click)="toggleEditBox()"
             class="px-3.5 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-bold uppercase transition active:scale-95 cursor-pointer border border-zinc-200/80 dark:border-zinc-700 flex items-center gap-1.5">
             <span>✏️</span>
@@ -371,11 +385,32 @@ export interface IPrintPageThumbnail {
         <!-- Rendered Page Mockup -->
         <div class="p-6 bg-white text-zinc-900 rounded-2xl shadow-inner font-sans text-xs space-y-4 max-h-96 overflow-y-auto">
           @if (currentPage.pageNumber === 1) {
-            <div>
-              <h1 class="text-lg font-bold border-b pb-2 mb-2">POCKET GULL CLINICAL CARE PLAN — {{ activePatientName() }}</h1>
-              <p class="mb-2"><strong>Patient Vitals:</strong> {{ patientState.vitals().bp ? 'BP ' + patientState.vitals().bp + ' | ' : '' }} {{ patientState.vitals().hr ? 'HR ' + patientState.vitals().hr + ' bpm | ' : '' }} SpO2 98%</p>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between border-b pb-2">
+                <h1 class="text-base font-bold text-zinc-900">POCKET GULL CLINICAL CARE PLAN — {{ activePatientName() }}</h1>
+                <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">CERTIFIED CDS</span>
+              </div>
+              <p><strong>Patient Vitals:</strong> {{ patientState.vitals().bp ? 'BP ' + patientState.vitals().bp + ' | ' : '' }} {{ patientState.vitals().hr ? 'HR ' + patientState.vitals().hr + ' bpm | ' : '' }} SpO2 98%</p>
               <p><strong>Primary Philosophy:</strong> {{ activePhilosophy() | titlecase }} Clinical Intelligence</p>
-              <div class="p-3 bg-zinc-100 rounded border mt-3">
+              
+              <!-- WHO SDG 3.4 & ICD-11 TM1 Certified Stamp -->
+              @if (whoRisk(); as risk) {
+                <div class="p-2.5 rounded-xl bg-sky-50 border border-sky-200 text-[11px] font-mono flex items-center justify-between">
+                  <div>
+                    <strong class="text-sky-900">🌍 WHO SDG 3.4 10-Yr CVD Risk:</strong>
+                    <span class="ml-1 font-bold" [ngClass]="risk.color">{{ risk.riskScorePercent }}% ({{ risk.riskTier }})</span>
+                  </div>
+                  <div class="flex gap-1">
+                    @for (code of whoIcd11Codes(); track $index) {
+                      <span class="px-1.5 py-0.5 rounded bg-white border border-sky-300 text-sky-800 text-[9.5px] font-bold">
+                        {{ code.icd11Tm1Code }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              }
+
+              <div class="p-3 bg-zinc-100 rounded-xl border mt-2">
                 <strong>Clinician Care Notes:</strong> {{ editableNotes() || 'No additional notes provided.' }}
               </div>
             </div>
@@ -426,6 +461,7 @@ export class CarePlanPrintPreviewComponent {
   patientManagement = inject(PatientManagementService);
   exportService = inject(ExportService);
   intelligence = inject(ClinicalIntelligenceService);
+  globalHealth = inject(GlobalHealthInitiativesService);
 
   isEditBoxOpen = signal<boolean>(false);
   activePageIndex = signal<number>(0);
@@ -441,11 +477,27 @@ export class CarePlanPrintPreviewComponent {
   activePhilosophy = computed(() => this.patientState.activePhilosophy());
   activeCognitiveLevel = computed(() => this.patientState.selectedCognitiveLevel());
 
-  activePatientName = computed(() => {
+  activePatient = computed(() => {
     const pId = this.patientManagement.selectedPatientId();
-    if (!pId) return 'Charles Darwin';
-    const patient = this.patientManagement.patients().find(p => p.id === pId);
-    return patient ? patient.name : 'Charles Darwin';
+    if (!pId) return null;
+    return this.patientManagement.patients().find(p => p.id === pId) || null;
+  });
+
+  activePatientName = computed(() => {
+    return this.activePatient()?.name || 'Charles Darwin';
+  });
+
+  whoRisk = computed(() => {
+    const patient = this.activePatient();
+    return patient ? this.globalHealth.calculateWhoCvdRisk(patient) : null;
+  });
+
+  whoIcd11Codes = computed(() => {
+    const patient = this.activePatient();
+    if (!patient) return [];
+    const conditions = patient.preexistingConditions || [];
+    const issueDescriptions = Object.values(patient.issues || {}).flat().map(i => i.description || '');
+    return this.globalHealth.mapToWhoIcd11Chapter26([...conditions, ...issueDescriptions]);
   });
 
   qrContainer = viewChild<ElementRef<HTMLDivElement>>('qrContainer');
@@ -578,6 +630,37 @@ export class CarePlanPrintPreviewComponent {
     if (this.activePageIndex() < this.printPages.length - 1) {
       this.activePageIndex.update(i => i + 1);
     }
+  }
+
+  isSpeaking = signal<boolean>(false);
+
+  speakCarePlan() {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      alert('Speech Synthesis is not supported in this browser environment.');
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const patientName = this.activePatientName();
+    const notes = this.editableNotes() || 'No active notes.';
+    const textToSpeak = `Personalized Care Plan for ${patientName}. Diagnostic Philosophy: ${this.activePhilosophy()}. Reading Mode: ${this.activeCognitiveLevel()}. Summary: ${notes}`;
+
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+
+    utterance.onstart = () => this.isSpeaking.set(true);
+    utterance.onend = () => this.isSpeaking.set(false);
+    utterance.onerror = () => this.isSpeaking.set(false);
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  stopSpeaking() {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    this.isSpeaking.set(false);
   }
 
   triggerPrintPdf() {

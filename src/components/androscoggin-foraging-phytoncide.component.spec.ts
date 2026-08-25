@@ -1,6 +1,5 @@
 import '@angular/compiler';
 import * as DOMPurify from 'dompurify';
-import { expect, vi } from 'vitest';
 import { AndroscogginForagingPhytoncideComponent } from './androscoggin-foraging-phytoncide.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';

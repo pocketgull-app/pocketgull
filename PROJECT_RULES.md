@@ -243,6 +243,15 @@ After understanding a file:
 
 ---
 
+## Domain Encapsulation & "Tell, Don't Ask" Standard
+
+- **No Bolting Logic on Getters**: Never reuse or call an existing getter to extract raw internal state and bolt new business logic, domain calculations, or state mutations externally on the caller side.
+- **Tell, Don't Ask**: Encapsulate operations, state transitions, and validation invariants within the class, entity, or domain service owning the data.
+- **Intent-Revealing Methods**: Add explicit, purpose-built domain methods directly on the owning object rather than leaking raw state and performing external ad-hoc computations.
+- **Prevent Feature Envy**: Keep business calculations cohesive within their domain boundaries to prevent anemic models and scattered business logic.
+
+---
+
 ## Quick Reference
 
 ```

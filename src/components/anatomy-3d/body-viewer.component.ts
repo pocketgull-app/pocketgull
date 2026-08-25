@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, OnDestroy, effect, viewChild, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnDestroy, effect, viewChild, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { IBodyPartIssue } from '../../services/patient.types';
@@ -11,6 +11,7 @@ import { CellularBiophysicsViewerComponent } from '../shared/cellular-biophysics
 import { QuadPhilosophyMatrixComponent } from '../shared/quad-philosophy-matrix.component';
 import { ImmunoOncologyTmeViewerComponent } from '../shared/immuno-oncology-tme-viewer.component';
 import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative-prescriber.component';
+import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-sheet.component';
 
 @Component({
   selector: 'app-body-viewer',
@@ -22,7 +23,8 @@ import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative
     CellularBiophysicsViewerComponent,
     QuadPhilosophyMatrixComponent,
     ImmunoOncologyTmeViewerComponent,
-    AwcimIntegrativePrescriberComponent
+    AwcimIntegrativePrescriberComponent,
+    InstantBodyCarePlanSheetComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `    
@@ -110,21 +112,46 @@ import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative
             </button>
           </div>
 
-          <!-- Search Bar -->
-          <div class="relative flex items-center bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded-xl px-3 py-1.5 w-full sm:w-56 shadow-xs">
+          <!-- ⚡ 1-Tap Instant 4-Lens Care Plan Launch Button -->
+          <button (click)="openInstantCarePlan()" 
+                  title="Tap or speak to generate instant Quad-Philosophy care plan"
+                  class="min-h-[40px] px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer bg-gradient-to-r from-teal-600 via-indigo-600 to-purple-600 hover:from-teal-500 hover:to-purple-500 text-white shadow-md flex items-center justify-center gap-1.5 shrink-0">
+            <span>⚡</span> Instant 4-Lens Plan
+          </button>
+
+          <!-- Search Bar with Keyboard & Autocomplete -->
+          <div class="relative flex items-center bg-white dark:bg-zinc-950 border border-gray-300 dark:border-zinc-800 rounded-xl px-3 py-1.5 w-full sm:w-72 shadow-xs focus-within:border-emerald-500 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 dark:text-zinc-500 mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input 
               type="text" 
               [value]="searchQuery()" 
               (input)="onSearchInput($event)" 
-              placeholder="Search organ, acupoint..." 
+              (keydown)="onSearchKeyDown($event)"
+              (focus)="isSearchOpen.set(true)"
+              placeholder="Search organ, acupoint, symptom..." 
               class="w-full bg-transparent text-xs text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 outline-none font-medium" />
             @if (searchQuery()) {
-              <button (click)="clearSearch()" class="p-1 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-400 hover:text-gray-600 dark:text-zinc-400 dark:hover:text-zinc-200">
+              <button (click)="clearSearch()" class="p-1 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-400 hover:text-gray-600 dark:text-zinc-400 dark:hover:text-zinc-200 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             }
           </div>
+
+          @if (focusedHotzoneFeedback()) {
+            <div class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-mono font-bold animate-pulse flex items-center gap-1.5 shrink-0">
+              <span>{{ focusedHotzoneFeedback() }}</span>
+            </div>
+          }
+
+          <!-- 🫲 Dual-Handed / Left-Handed Clinical Ergonomics Button -->
+          <button (click)="toggleHandedness()" 
+                  [class.bg-purple-600]="handednessMode() === 'left'"
+                  [class.text-white]="handednessMode() === 'left'"
+                  [class.border-purple-400]="handednessMode() === 'left'"
+                  class="min-h-[40px] px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 shadow-xs flex items-center gap-1.5 shrink-0"
+                  title="Toggle Left-Handed / Right-Handed Ergonomic Layout (Mirror Floating Controls & Stylus Palette)">
+            <span>{{ handednessMode() === 'left' ? '🫲 Left-Handed' : '🫱 Right-Handed' }}</span>
+          </button>
 
           <!-- Paradigm Lens Selector Bar (Tap-Target Friendly & Dual Light/Dark Theme) -->
           <div class="flex items-center gap-1.5 bg-gray-200/80 dark:bg-zinc-950 p-1.5 rounded-lg border border-gray-300/80 dark:border-zinc-800 text-xs font-mono">
@@ -146,21 +173,126 @@ import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative
 
       <!-- 2. Center 3D Viewport Window -->
 
-      <!-- Live Search Dropdown (Dual Light/Dark Theme) -->
-      @if (isSearchOpen() || filteredParts().length > 0 && searchQuery().trim()) {
-        <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 p-2 max-h-[220px] overflow-y-auto divide-y divide-gray-100 dark:divide-zinc-800 z-30 shadow-lg">
-          @for (part of filteredParts(); track part.id) {
-            <button (click)="onPartSearchResultClick(part)" 
-                    class="w-full text-left px-4 py-3 min-h-[44px] text-xs flex items-center justify-between hover:bg-emerald-500/10 transition-colors group rounded-lg">
-              <div class="flex items-center gap-3">
-                <span class="text-lg">{{ part.icon }}</span>
-                <div>
-                  <div class="font-bold text-gray-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">{{ part.name }}</div>
-                  <div class="text-[10px] text-gray-500 dark:text-zinc-400 font-mono uppercase tracking-wider">{{ part.system }}</div>
+      <!-- Rich Multi-Paradigm Live Autocomplete Dropdown -->
+      @if (isSearchOpen()) {
+        <div class="bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 p-3 max-h-[340px] overflow-y-auto divide-y divide-gray-100 dark:divide-zinc-900 z-30 shadow-2xl space-y-2">
+          
+          <!-- Paradigm Sub-Filter Pills -->
+          <div class="flex items-center justify-between gap-2 pb-2 text-[10px] font-mono overflow-x-auto">
+            <div class="flex items-center gap-1">
+              <button 
+                type="button"
+                (click)="activeSystemFilter.set('all')"
+                [class.bg-emerald-500]="activeSystemFilter() === 'all'"
+                [class.text-zinc-950]="activeSystemFilter() === 'all'"
+                [class.bg-zinc-800]="activeSystemFilter() !== 'all'"
+                [class.text-zinc-300]="activeSystemFilter() !== 'all'"
+                class="px-2 py-0.5 rounded-md font-bold transition">
+                All ({{ allParts.length }})
+              </button>
+              <button 
+                type="button"
+                (click)="activeSystemFilter.set('western')"
+                [class.bg-sky-500]="activeSystemFilter() === 'western'"
+                [class.text-white]="activeSystemFilter() === 'western'"
+                [class.bg-zinc-800]="activeSystemFilter() !== 'western'"
+                [class.text-zinc-300]="activeSystemFilter() !== 'western'"
+                class="px-2 py-0.5 rounded-md font-bold transition">
+                🩺 Western
+              </button>
+              <button 
+                type="button"
+                (click)="activeSystemFilter.set('eastern')"
+                [class.bg-emerald-600]="activeSystemFilter() === 'eastern'"
+                [class.text-white]="activeSystemFilter() === 'eastern'"
+                [class.bg-zinc-800]="activeSystemFilter() !== 'eastern'"
+                [class.text-zinc-300]="activeSystemFilter() !== 'eastern'"
+                class="px-2 py-0.5 rounded-md font-bold transition">
+                🌿 TCM Acupoints
+              </button>
+              <button 
+                type="button"
+                (click)="activeSystemFilter.set('ayurvedic')"
+                [class.bg-amber-600]="activeSystemFilter() === 'ayurvedic'"
+                [class.text-white]="activeSystemFilter() === 'ayurvedic'"
+                [class.bg-zinc-800]="activeSystemFilter() !== 'ayurvedic'"
+                [class.text-zinc-300]="activeSystemFilter() !== 'ayurvedic'"
+                class="px-2 py-0.5 rounded-md font-bold transition">
+                🪷 Marmas
+              </button>
+              <button 
+                type="button"
+                (click)="activeSystemFilter.set('cellular')"
+                [class.bg-cyan-600]="activeSystemFilter() === 'cellular'"
+                [class.text-white]="activeSystemFilter() === 'cellular'"
+                [class.bg-zinc-800]="activeSystemFilter() !== 'cellular'"
+                [class.text-zinc-300]="activeSystemFilter() !== 'cellular'"
+                class="px-2 py-0.5 rounded-md font-bold transition">
+                🔬 Cellular
+              </button>
+              <button 
+                type="button"
+                (click)="activeSystemFilter.set('osteopathic')"
+                [class.bg-purple-600]="activeSystemFilter() === 'osteopathic'"
+                [class.text-white]="activeSystemFilter() === 'osteopathic'"
+                [class.bg-zinc-800]="activeSystemFilter() !== 'osteopathic'"
+                [class.text-zinc-300]="activeSystemFilter() !== 'osteopathic'"
+                class="px-2 py-0.5 rounded-md font-bold transition">
+                🦴 Osteopathic
+              </button>
+            </div>
+            <button (click)="clearSearch()" class="text-zinc-400 hover:text-zinc-200 text-[10px]">Close ✕</button>
+          </div>
+
+          <!-- Autocomplete Results List -->
+          <div class="divide-y divide-gray-100 dark:divide-zinc-800/60 pt-1">
+            @for (part of filteredParts(); track part.id; let idx = $index) {
+              <button (click)="onPartSearchResultClick(part)" 
+                      [class.bg-emerald-500/15]="selectedAutocompleteIndex() === idx"
+                      class="w-full text-left px-3 py-2.5 min-h-[44px] text-xs flex items-center justify-between hover:bg-emerald-500/10 transition-colors group rounded-xl cursor-pointer">
+                <div class="flex items-center gap-3">
+                  <span class="text-lg shrink-0">{{ part.icon }}</span>
+                  <div>
+                    <div class="font-bold text-gray-900 dark:text-zinc-100 group-hover:text-emerald-500 flex items-center gap-2">
+                      <span>{{ part.name }}</span>
+                      @if (part.secondaryName) {
+                        <span class="text-[10px] font-normal text-zinc-400 font-sans">({{ part.secondaryName }})</span>
+                      }
+                    </div>
+                    <div class="text-[10px] text-zinc-500 font-sans line-clamp-1">
+                      {{ part.clinicalFocus }}
+                    </div>
+                  </div>
                 </div>
+
+                <div class="text-right shrink-0 flex flex-col items-end gap-1">
+                  <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase"
+                        [class.bg-sky-500/20]="part.paradigm === 'western'"
+                        [class.text-sky-400]="part.paradigm === 'western'"
+                        [class.bg-emerald-500/20]="part.paradigm === 'eastern'"
+                        [class.text-emerald-400]="part.paradigm === 'eastern'"
+                        [class.bg-amber-500/20]="part.paradigm === 'ayurvedic'"
+                        [class.text-amber-400]="part.paradigm === 'ayurvedic'"
+                        [class.bg-cyan-500/20]="part.paradigm === 'cellular'"
+                        [class.text-cyan-400]="part.paradigm === 'cellular'"
+                        [class.bg-purple-500/20]="part.paradigm === 'osteopathic'"
+                        [class.text-purple-400]="part.paradigm === 'osteopathic'">
+                    {{ part.paradigm }}
+                  </span>
+                  @if (part.symptoms.length > 0) {
+                    <span class="text-[8px] text-zinc-500 font-mono">
+                      {{ part.symptoms.slice(0, 2).join(', ') }}
+                    </span>
+                  }
+                </div>
+              </button>
+            } @empty {
+              <div class="p-4 text-center text-xs text-zinc-400 font-mono">
+                No matching anatomical structure or symptom found for "{{ searchQuery() }}".
               </div>
-            </button>
-          }
+            }
+          </div>
+
         </div>
       }
 
@@ -499,6 +631,9 @@ import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative
           </div>
         </div>
       </div>
+
+      <!-- ⚡ Instant 4-Lens Care Plan Bottom Sheet -->
+      <app-instant-body-care-plan-sheet #instantSheet />
     </div>
   `,
   styles: [`
@@ -516,6 +651,8 @@ import { AwcimIntegrativePrescriberComponent } from '../shared/awcim-integrative
   `]
 })
 export class BodyViewerComponent implements OnDestroy {
+  @ViewChild('instantSheet') instantSheet?: InstantBodyCarePlanSheetComponent;
+
   state = inject(PatientStateService);
   patientManagement = inject(PatientManagementService);
   themeService = inject(ThemeService);
@@ -533,6 +670,18 @@ export class BodyViewerComponent implements OnDestroy {
   searchQuery = signal<string>('');
   isSearchOpen = signal<boolean>(false);
   activeSystemFilter = signal<string>('all');
+  selectedAutocompleteIndex = signal<number>(-1);
+  handednessMode = signal<'right' | 'left'>('right');
+
+  toggleHandedness(): void {
+    this.handednessMode.update(h => h === 'right' ? 'left' : 'right');
+  }
+
+  openInstantCarePlan(bodyPartName?: string) {
+    const selectedId = this.state.selectedPartId();
+    const part = bodyPartName || (selectedId ? this.allParts.find(p => p.id === selectedId)?.name : null) || 'Full Body';
+    this.instantSheet?.openForBodyPart(part);
+  }
 
   constructor() {
     effect(() => {
@@ -547,55 +696,337 @@ export class BodyViewerComponent implements OnDestroy {
     });
   }
 
-  readonly allParts = [
-    { id: 'head', name: 'Head & Brain (Cranial)', system: 'neuro', icon: '🧠' },
-    { id: 'neck', name: 'Neck & Cervical Spine', system: 'skeletal', icon: '🦴' },
-    { id: 'chest', name: 'Chest & Thorax', system: 'organ', icon: '🫁' },
-    { id: 'heart', name: 'Cardiac / Heart', system: 'organ', icon: '🫀' },
-    { id: 'lungs', name: 'Pulmonary / Lungs', system: 'organ', icon: '🫁' },
-    { id: 'abdomen', name: 'Abdomen & Digestive', system: 'organ', icon: '🟡' },
-    { id: 'stomach', name: 'Gastric / Stomach', system: 'organ', icon: '🟡' },
-    { id: 'liver', name: 'Hepatic / Liver', system: 'organ', icon: '🟤' },
-    { id: 'kidneys', name: 'Renal / Kidneys', system: 'organ', icon: '🔴' },
-    { id: 'pelvis', name: 'Pelvis & Hip Girdle', system: 'skeletal', icon: '🦴' },
-    { id: 'spine', name: 'Spine & Lumbar Column', system: 'skeletal', icon: '🦴' },
-    { id: 'shoulder_left', name: 'Left Shoulder', system: 'skeletal', icon: '💪' },
-    { id: 'shoulder_right', name: 'Right Shoulder', system: 'skeletal', icon: '💪' },
-    { id: 'arm_left', name: 'Left Arm & Biceps', system: 'skeletal', icon: '💪' },
-    { id: 'arm_right', name: 'Right Arm & Biceps', system: 'skeletal', icon: '💪' },
-    { id: 'hand_left', name: 'Left Hand & Wrist', system: 'skeletal', icon: '✋' },
-    { id: 'hand_right', name: 'Right Hand & Wrist', system: 'skeletal', icon: '✋' },
-    { id: 'leg_left', name: 'Left Leg & Knee', system: 'skeletal', icon: '🦵' },
-    { id: 'leg_right', name: 'Right Leg & Knee', system: 'skeletal', icon: '🦵' },
-    { id: 'foot_left', name: 'Left Foot & Ankle', system: 'skeletal', icon: '🦶' },
-    { id: 'foot_right', name: 'Right Foot & Ankle', system: 'skeletal', icon: '🦶' }
+  readonly allParts: Array<{
+    id: string;
+    name: string;
+    secondaryName?: string;
+    paradigm: 'western' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'cellular';
+    system: 'neuro' | 'cardio' | 'pulmo' | 'visceral' | 'skeletal' | 'tcm' | 'ayurveda' | 'cellular' | 'osteopathic';
+    icon: string;
+    symptoms: string[];
+    clinicalFocus: string;
+  }> = [
+    // 🩺 1. Western Organs, Neuro & Skeletal Systems
+    { id: 'head', name: 'Head & Cranial Vault', secondaryName: 'Neuro-Cortex & Cranial Nerves', paradigm: 'western', system: 'neuro', icon: '🧠', symptoms: ['headache', 'migraine', 'concussion', 'dizziness', 'vertigo', 'tinnitus', 'mental fog'], clinicalFocus: 'Cranial nerve distribution, meningeal tension & cerebral perfusion' },
+    { id: 'brain', name: 'Brain & Nervous System', secondaryName: 'Cerebrum, Cerebellum & Limbic System', paradigm: 'western', system: 'neuro', icon: '🧠', symptoms: ['insomnia', 'anxiety', 'depression', 'memory loss', 'neuropathy', 'tremor', 'cognitive fatigue'], clinicalFocus: 'Neuroplasticity, autonomic regulation & neurotransmitter balance' },
+    { id: 'thyroid', name: 'Thyroid & Endocrine Gland', secondaryName: 'Follicular Cells (T3/T4 Regulation)', paradigm: 'western', system: 'visceral', icon: '🦋', symptoms: ['hypothyroid', 'hashimotos', 'fatigue', 'cold intolerance', 'weight gain', 'tsh imbalance'], clinicalFocus: 'Basal metabolic rate, HPA axis balance & iodine metabolism' },
+    { id: 'chest', name: 'Chest & Thoracic Cavity', secondaryName: 'Thorax, Mediastinum & Ribcage', paradigm: 'western', system: 'pulmo', icon: '🫁', symptoms: ['chest tightness', 'pleuritic pain', 'intercostal neuralgia', 'costochondritis'], clinicalFocus: 'Rib mobility, thoracic compliance & respiratory dynamics' },
+    { id: 'heart', name: 'Heart & Cardiovascular System', secondaryName: 'Myocardium & Coronary Arteries', paradigm: 'western', system: 'cardio', icon: '🫀', symptoms: ['chest pain', 'palpitations', 'hypertension', 'angina', 'shortness of breath', 'arrhythmia'], clinicalFocus: 'Cardiac output, ejection fraction & vascular endothelial tone' },
+    { id: 'lungs', name: 'Lungs & Respiratory System', secondaryName: 'Pulmonary Bronchi & Alveoli', paradigm: 'western', system: 'pulmo', icon: '🫁', symptoms: ['cough', 'dyspnea', 'asthma', 'wheezing', 'pneumonia', 'sob', 'shallow breathing'], clinicalFocus: 'Gas exchange, vital capacity & bronchial airway reactivity' },
+    { id: 'abdomen', name: 'Abdomen & Digestive Tract', secondaryName: 'Enteric Nervous System & Peritoneum', paradigm: 'western', system: 'visceral', icon: '🟡', symptoms: ['abdominal pain', 'cramping', 'sibo', 'ibs', 'constipation', 'diarrhea', 'gut inflammation'], clinicalFocus: 'Microbiome diversity, gut barrier permeability & enteric motility' },
+    { id: 'stomach', name: 'Stomach & Gastric Pouch', secondaryName: 'Gastric Fundus & Parietal Cells', paradigm: 'western', system: 'visceral', icon: '🟡', symptoms: ['gerd', 'acid reflux', 'heartburn', 'nausea', 'gastritis', 'indigestion', 'bloating'], clinicalFocus: 'Hydrochloric acid secretion, pepsinogen activation & mucosal barrier' },
+    { id: 'liver', name: 'Liver & Hepatic System', secondaryName: 'Hepatic Lobules & Cytochrome P450', paradigm: 'western', system: 'visceral', icon: '🟤', symptoms: ['elevated alt', 'fatty liver', 'detoxification', 'jaundice', 'cirrhosis', 'metabolic sluggishness'], clinicalFocus: 'Phase I/II hepatic biotransformation & bile acid synthesis' },
+    { id: 'kidneys', name: 'Kidneys & Renal System', secondaryName: 'Renal Cortex, Nephrons & Glomeruli', paradigm: 'western', system: 'visceral', icon: '🔴', symptoms: ['flank pain', 'kidney stones', 'hypertension', 'edema', 'gout', 'elevated creatinine'], clinicalFocus: 'Glomerular filtration rate (eGFR), electrolyte homeostasis & renin cascade' },
+    { id: 'pelvis', name: 'Pelvis & Hip Girdle', secondaryName: 'Acetabulum, SI Joint & Pelvic Floor', paradigm: 'western', system: 'skeletal', icon: '🦴', symptoms: ['hip pain', 'sacroiliitis', 'pelvic floor tension', 'sciatica', 'groin strain'], clinicalFocus: 'Pelvic ring stability, levator ani tone & load transfer' },
+    { id: 'spine_cervical', name: 'Cervical Spine (C1-C7)', secondaryName: 'Neck & Cervical Vertebrae', paradigm: 'western', system: 'skeletal', icon: '🦴', symptoms: ['neck pain', 'cervical radiculopathy', 'whiplash', 'stiff neck', 'occipital neuralgia'], clinicalFocus: 'Lordotic curvature, facet joint arthropathy & nerve root exit' },
+    { id: 'spine_thoracic', name: 'Thoracic Spine (T1-T12)', secondaryName: 'Mid-Back & Costovertebral Joints', paradigm: 'western', system: 'skeletal', icon: '🦴', symptoms: ['mid back pain', 'rib subluxation', 'kyphosis', 'thoracic stiffness'], clinicalFocus: 'Viscerosomatic sympathetic chain ganglion reflexes & ribcage rotation' },
+    { id: 'spine_lumbar', name: 'Lumbar Spine (L1-L5)', secondaryName: 'Low Back & Intervertebral Discs', paradigm: 'western', system: 'skeletal', icon: '🦴', symptoms: ['low back pain', 'lumbago', 'disc herniation', 'sciatica', 'lumbar stenosis'], clinicalFocus: 'L4/L5 & L5/S1 disc decompression, multifidus recruitment & core stability' },
+    { id: 'dermatome_l4_l5', name: 'L4-L5 Sciatic Nerve Dermatome', secondaryName: 'Sciatic Pathway & Lateral Sural Path', paradigm: 'western', system: 'neuro', icon: '⚡', symptoms: ['sciatica', 'shooting leg pain', 'foot numbness', 'tingling in toes', 'piriformis syndrome'], clinicalFocus: 'Neurodynamic sciatic flossing & dermatomal sensory distribution' },
+    { id: 'shoulder_left', name: 'Left Shoulder & Rotator Cuff', secondaryName: 'Glenohumeral & Subacromial Space', paradigm: 'western', system: 'skeletal', icon: '💪', symptoms: ['shoulder impingement', 'rotator cuff tear', 'frozen shoulder', 'bursitis'], clinicalFocus: 'Scapulohumeral rhythm & supraspinatus tendon glide' },
+    { id: 'shoulder_right', name: 'Right Shoulder & Rotator Cuff', secondaryName: 'Glenohumeral & Subacromial Space', paradigm: 'western', system: 'skeletal', icon: '💪', symptoms: ['shoulder impingement', 'rotator cuff pain', 'calcific tendonitis', 'arm weakness'], clinicalFocus: 'Subacromial space clearance & rotator cuff balance' },
+    { id: 'hand_left', name: 'Left Hand & Wrist', secondaryName: 'Carpal Tunnel & Median Nerve', paradigm: 'western', system: 'skeletal', icon: '✋', symptoms: ['carpal tunnel', 'wrist pain', 'finger numbness', 'arthritis', 'tendonitis'], clinicalFocus: 'Median/ulnar nerve mobility & flexor retinaculum tension' },
+    { id: 'hand_right', name: 'Right Hand & Wrist', secondaryName: 'Carpal Tunnel & Median Nerve', paradigm: 'western', system: 'skeletal', icon: '✋', symptoms: ['carpal tunnel syndrome', 'wrist strain', 'trigger finger', 'repetitive strain'], clinicalFocus: 'Grip strength ergonomics & carpal alignment' },
+    { id: 'leg_left', name: 'Left Knee & Leg', secondaryName: 'Patellofemoral Joint & Meniscus', paradigm: 'western', system: 'skeletal', icon: '🦵', symptoms: ['knee pain', 'meniscus tear', 'runner knee', 'patellar tendonitis', 'swelling'], clinicalFocus: 'Q-angle biomechanics, VMO activation & joint space preservation' },
+    { id: 'leg_right', name: 'Right Knee & Leg', secondaryName: 'Patellofemoral Joint & Meniscus', paradigm: 'western', system: 'skeletal', icon: '🦵', symptoms: ['knee pain', 'acl strain', 'osteoarthritis', 'patellar tracking', 'calf tightness'], clinicalFocus: 'Tibiofemoral articulation & kinetic chain alignment' },
+    { id: 'foot_left', name: 'Left Foot & Ankle', secondaryName: 'Plantar Fascia & Talocrural Joint', paradigm: 'western', system: 'skeletal', icon: '🦶', symptoms: ['plantar fasciitis', 'ankle sprain', 'achilles tendonitis', 'heel spur'], clinicalFocus: 'Medial longitudinal arch resilience & subtalar joint mobility' },
+    { id: 'foot_right', name: 'Right Foot & Ankle', secondaryName: 'Plantar Fascia & Talocrural Joint', paradigm: 'western', system: 'skeletal', icon: '🦶', symptoms: ['plantar fasciitis', 'heel pain', 'ankle instability', 'pronation'], clinicalFocus: 'Proprioceptive ground reaction force attenuation' },
+
+    // 🌿 2. Traditional Chinese Medicine (TCM) Jing-Luo Acupoint Touch Targets
+    { id: 'acupoint_gv20', name: 'GV-20 Baihui (Hundred Convergences)', secondaryName: '百会 (Crown Master Yang Meeting Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['migraine', 'headache', 'dizziness', 'hypertension', 'insomnia', 'depression', 'brain fog', 'prolapse'], clinicalFocus: 'Clears sensory orifices, lifts sunken Yang Qi & pacifies internal wind' },
+    { id: 'acupoint_cv17', name: 'CV-17 Danzhong (Sea of Qi)', secondaryName: '膻中 (Chest Center / Pericardium Mu Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['chest tightness', 'anxiety', 'panic attacks', 'palpitations', 'cough', 'grief', 'intercostal tension'], clinicalFocus: 'Regulates thoracic Qi circulation, unbinds the chest & calms Shen' },
+    { id: 'acupoint_cv12', name: 'CV-12 Zhongwan (Middle Cavity)', secondaryName: '中脘 (Stomach Front-Mu & Middle Jiao Center)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['stomach ache', 'acid reflux', 'gerd', 'nausea', 'vomiting', 'poor digestion', 'abdominal bloating'], clinicalFocus: 'Harmonizes Stomach Qi, fortifies Spleen transformation & dispels dampness' },
+    { id: 'acupoint_st36_r', name: 'ST-36 Zusanli (Right Leg Three Miles)', secondaryName: '足三里 (He-Sea Earth Master Energy Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['fatigue', 'chronic exhaustion', 'weak immunity', 'gastritis', 'poor appetite', 'longevity tonic'], clinicalFocus: 'Major systemic tonification point for Post-Natal Qi, blood generation & vitality' },
+    { id: 'acupoint_st36_l', name: 'ST-36 Zusanli (Left Leg Three Miles)', secondaryName: '足三里 (He-Sea Earth Master Energy Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['fatigue', 'low vitality', 'indigestion', 'immune deficiency', 'leg weakness'], clinicalFocus: 'Replenishes vital Qi, balances digestive motility & supports recovery' },
+    { id: 'acupoint_li4_r', name: 'LI-4 Hegu (Right Joining Valley)', secondaryName: '合谷 (Yuan-Source Master Head/Face Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['headache', 'toothache', 'sinus congestion', 'facial pain', 'constipation', 'stress tension'], clinicalFocus: 'Master point for sensory organs of head & face; releases exterior wind' },
+    { id: 'acupoint_li4_l', name: 'LI-4 Hegu (Left Joining Valley)', secondaryName: '合谷 (Yuan-Source Master Head/Face Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['headache', 'migraine', 'jaw tension', 'tmj', 'nasal allergy', 'constipation'], clinicalFocus: 'Potent analgesic and Qi regulator; pairs with LR-3 (Four Gates)' },
+    { id: 'acupoint_sp6_r', name: 'SP-6 Sanyinjiao (Right Three Yin Crossing)', secondaryName: '三阴交 (Spleen, Liver & Kidney Intersection)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['pms', 'menstrual cramps', 'insomnia', 'water retention', 'pelvic congestion', 'digestive weakness'], clinicalFocus: 'Nourishes Yin & blood, resolves pelvic blood stasis & calms the mind' },
+    { id: 'acupoint_sp6_l', name: 'SP-6 Sanyinjiao (Left Three Yin Crossing)', secondaryName: '三阴交 (Spleen, Liver & Kidney Intersection)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['cramps', 'hormonal imbalance', 'sleep disturbance', 'edema', 'heavy legs'], clinicalFocus: 'Regulates lower Jiao urogenital functions & harmonizes three Yin channels' },
+    { id: 'acupoint_pc6_r', name: 'PC-6 Neiguan (Right Inner Pass)', secondaryName: '内关 (Luo-Connecting Master Cardiac Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['nausea', 'motion sickness', 'morning sickness', 'palpitations', 'anxiety', 'chest oppression', 'insomnia'], clinicalFocus: 'Opens the chest, regulates Heart rate variability & subdues rebellious Stomach Qi' },
+    { id: 'acupoint_pc6_l', name: 'PC-6 Neiguan (Left Inner Pass)', secondaryName: '内关 (Luo-Connecting Master Cardiac Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['nausea', 'vomiting', 'cardiac arrhythmia', 'panic', 'emotional stress'], clinicalFocus: 'Vagal neuromodulation corridor & Shen stabilizer' },
+    { id: 'acupoint_lr3_r', name: 'LR-3 Taichong (Right Great Surge)', secondaryName: '太冲 (Liver Shu-Stream & Yuan-Source Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['irritability', 'stress', 'high blood pressure', 'eye strain', 'headache', 'anger', 'menstrual pain'], clinicalFocus: 'Smooths Liver Qi stagnation, clears liver fire & alleviates somatic spasms' },
+    { id: 'acupoint_lr3_l', name: 'LR-3 Taichong (Left Great Surge)', secondaryName: '太冲 (Liver Shu-Stream & Yuan-Source Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['hypertension', 'frustration', 'muscle cramps', 'migraine aura', 'liver stagnation'], clinicalFocus: 'Subdues rising Liver Yang and regulates systemic circulation' },
+    { id: 'acupoint_ki1_r', name: 'KI-1 Yongquan (Right Gushing Spring)', secondaryName: '涌泉 (Jing-Well Wood / Root Grounding Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['insomnia', 'night sweats', 'grounding deficit', 'hot flashes', 'hypertension', 'foot heat', 'panic'], clinicalFocus: 'Draws excess fire downward, anchors Kidney Yin & stabilizes floating Yang' },
+    { id: 'acupoint_gb20_r', name: 'GB-20 Fengchi (Right Wind Pool)', secondaryName: '风池 (Suboccipital Wind Gate & Cranial Bridge)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['stiff neck', 'occipital headache', 'cold/flu onset', 'tinnitus', 'vertigo', 'eye pain'], clinicalFocus: 'Eliminates internal/external wind, relieves suboccipital spasms & benefits eyes' },
+    { id: 'acupoint_bl23_r', name: 'BL-23 Shenshu (Right Kidney Back-Shu)', secondaryName: '肾俞 (Vital Kidney Essence Back-Shu Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['chronic low back pain', 'tinnitus', 'adrenal exhaustion', 'frequent urination', 'cold lumbar'], clinicalFocus: 'Directly tonifies Kidney Yin/Yang, strengthens bone marrow & nourishes lower back' },
+    { id: 'acupoint_bl40_r', name: 'BL-40 Weizhong (Right Bend Middle)', secondaryName: '委中 (Popliteal Fossa Lumbar Command Point)', paradigm: 'eastern', system: 'tcm', icon: '🌿', symptoms: ['acute back spasm', 'sciatica', 'knee pain', 'hamstring strain', 'lumbar stiffness'], clinicalFocus: 'Master command point for the back; clears heat from blood & releases lumbar tension' },
+
+    // 🪷 3. Ayurvedic Marmas & Chakras
+    { id: 'marma_adhipati', name: 'Adhipati Marma (Crown Supreme)', secondaryName: 'अधिपति (Sahasrara Crown Chakra Center)', paradigm: 'ayurvedic', system: 'ayurveda', icon: '🪷', symptoms: ['headache', 'mental stress', 'spiritual disconnect', 'insomnia', 'ojas depletion', 'neurological strain'], clinicalFocus: 'Master junction point controlling Prana Vayu, consciousness & higher cognitive ojas' },
+    { id: 'marma_sthapani', name: 'Sthapani Marma (Third Eye Point)', secondaryName: 'स्थापनी (Ajna Chakra / Glabella Center)', paradigm: 'ayurvedic', system: 'ayurveda', icon: '🪷', symptoms: ['sinusitis', 'lack of focus', 'tension headache', 'eye fatigue', 'mental agitation'], clinicalFocus: 'Regulates Sadhaka Pitta, pituitary-hypothalamic synchrony & deep mental serenity' },
+    { id: 'marma_hridaya', name: 'Hridaya Marma (Sacred Heart Seat)', secondaryName: 'हृदय (Anahata Chakra / Center of Prana)', paradigm: 'ayurvedic', system: 'ayurveda', icon: '🪷', symptoms: ['emotional grief', 'cardiac palpitation', 'chest constriction', 'loneliness', 'vyana vayu imbalance'], clinicalFocus: 'Core seat of Ojas, Avalambaka Kapha and unconditional compassion' },
+    { id: 'marma_nabhi', name: 'Nabhi Marma (Solar Navel Center)', secondaryName: 'नाभि (Manipura Chakra / Seat of Agni)', paradigm: 'ayurvedic', system: 'ayurveda', icon: '🪷', symptoms: ['weak digestion', 'ama toxicity', 'metabolic slowdown', 'gut distension', 'samana vayu stagnation'], clinicalFocus: 'Governs Pachaka Pitta, metabolic digestion (Agni) and root digestive fire' },
+    { id: 'marma_basti', name: 'Basti Marma (Bladder & Pelvic Reservoir)', secondaryName: 'बस्ति (Svadhisthana Chakra / Water Center)', paradigm: 'ayurvedic', system: 'ayurveda', icon: '🪷', symptoms: ['urinary hesitation', 'apana vayu vitiation', 'pelvic tension', 'lower back ache'], clinicalFocus: 'Regulates Apana Vayu elimination, fluid balance and reproductive longevity' },
+    { id: 'marma_kshipra', name: 'Kshipra Marma (Quick Action Point)', secondaryName: 'क्षिप्र (Web Space of Hand & Foot)', paradigm: 'ayurvedic', system: 'ayurveda', icon: '🪷', symptoms: ['acute spasm', 'lymphatic sluggishness', 'bronchial constriction', 'prana blockage'], clinicalFocus: 'Rapid pranic accelerator balancing respiratory and cardiac vitality' },
+    { id: 'marma_talahridaya', name: 'Talahridaya Marma (Center of Palm/Sole)', secondaryName: 'तलहृदय (Heart of the Hand & Foot)', paradigm: 'ayurvedic', system: 'ayurveda', icon: '🪷', symptoms: ['cold extremities', 'poor peripheral circulation', 'anxiety', 'grounding deficit'], clinicalFocus: 'Balances somatic thermoregulation and circulating Vyana Vayu' },
+
+    // 🔬 4. Cellular Organelles & Molecular Targets
+    { id: 'cellular_mitochondria', name: 'Mitochondrial Matrix & ATP Synthase', secondaryName: 'OXPHOS & Reactive Oxygen Species (ROS)', paradigm: 'cellular', system: 'cellular', icon: '🔬', symptoms: ['chronic fatigue', 'mitochondrial dysfunction', 'low atp', 'brain fog', 'exercise intolerance', 'long covid'], clinicalFocus: 'Electron transport chain efficiency, coq10 phosphorylation & NAD+/NADH redox ratio' },
+    { id: 'cellular_nucleolus', name: 'Nucleus & Epigenetic Chromatin', secondaryName: 'DNA Repair & Telomere Biology', paradigm: 'cellular', system: 'cellular', icon: '🔬', symptoms: ['cellular aging', 'accelerated senescence', 'dna methylation changes', 'oncology risk'], clinicalFocus: 'Sirtuin histone deacetylation, telomerase preservation & DNA integrity' },
+    { id: 'cellular_endoplasmic_reticulum', name: 'Endoplasmic Reticulum & UPR', secondaryName: 'Protein Folding & Calcium Homeostasis', paradigm: 'cellular', system: 'cellular', icon: '🔬', symptoms: ['er stress', 'misfolded protein buildup', 'neurodegeneration', 'metabolic overload'], clinicalFocus: 'Unfolded protein response (UPR), chaperone protein dynamics & proteostasis' },
+
+    // 🦴 5. Osteopathic Somatic Points & Junctions
+    { id: 'osteopathic_cranium', name: 'Cranio-Sacral Sphenobasilar Junction', secondaryName: 'SBS Strain & Primary Respiration', paradigm: 'osteopathic', system: 'osteopathic', icon: '🦴', symptoms: ['cranial compression', 'tmj dysfunction', 'post-concussion syndrome', 'dural strain', 'migraine'], clinicalFocus: 'Sphenobasilar synchondrosis flexion/extension & cranial rhythm balancing' },
+    { id: 'osteopathic_thoracic_inlet', name: 'Thoracic Inlet & Sibson Fascia', secondaryName: 'Cervicothoracic Junction (C7-T1)', paradigm: 'osteopathic', system: 'osteopathic', icon: '🦴', symptoms: ['thoracic outlet syndrome', 'lymphatic congestion', 'arm numbness', 'clavicle restriction'], clinicalFocus: 'Decompresses neurovascular bundle and maximizes central thoracic duct drainage' },
+    { id: 'osteopathic_respiratory_diaphragm', name: 'Thoraco-Abdominal Diaphragm', secondaryName: 'Crural Attachments (L1-L3) & Vagus Nerve Hiatus', paradigm: 'osteopathic', system: 'osteopathic', icon: '🫁', symptoms: ['shallow breathing', 'hiatal hernia', 'vagus nerve compression', 'anxiety', 'diaphragm spasm'], clinicalFocus: 'Harmonizes pressure differential between thoracic and abdominal cavities' },
+    { id: 'osteopathic_pelvic_diaphragm', name: 'Pelvic Diaphragm & Levator Ani', secondaryName: 'Sacrotuberous Ligament & Pudendal Canal', paradigm: 'osteopathic', system: 'osteopathic', icon: '🦴', symptoms: ['pelvic floor dysfunction', 'sacral shear', 'pudendal nerve irritation', 'tailbone pain'], clinicalFocus: 'Restores reciprocity between thoracic and pelvic diaphragmatic pumps' }
   ];
+
+  focusedHotzoneFeedback = signal<string | null>(null);
+
+  /**
+   * Fast Levenshtein distance for medical term and symptom typo tolerance.
+   */
+  private levenshteinDistance(a: string, b: string): number {
+    if (a === b) return 0;
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+    const matrix: number[][] = [];
+    for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+    for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+    for (let i = 1; i <= b.length; i++) {
+      for (let j = 1; j <= a.length; j++) {
+        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+    return matrix[b.length][a.length];
+  }
+
+  private readonly clinicalAliases: Record<string, string[]> = {
+    'migraine': ['head', 'brain', 'acupoint_gv20', 'acupoint_li4_r', 'acupoint_li4_l', 'osteopathic_cranium'],
+    'headache': ['head', 'brain', 'acupoint_gv20', 'acupoint_li4_r', 'acupoint_li4_l', 'osteopathic_cranium'],
+    'htn': ['heart', 'kidneys', 'acupoint_lr3_r', 'acupoint_lr3_l', 'acupoint_gv20'],
+    'hypertension': ['heart', 'kidneys', 'acupoint_lr3_r', 'acupoint_lr3_l'],
+    'gerd': ['stomach', 'abdomen', 'acupoint_cv12', 'osteopathic_respiratory_diaphragm'],
+    'acid reflux': ['stomach', 'acupoint_cv12', 'abdomen'],
+    'sciatica': ['spine_lumbar', 'dermatome_l4_l5', 'acupoint_bl40_r', 'pelvis'],
+    'lumbago': ['spine_lumbar', 'acupoint_bl23_r', 'acupoint_bl40_r'],
+    'sibo': ['abdomen', 'stomach', 'marma_nabhi'],
+    'ibs': ['abdomen', 'stomach', 'marma_nabhi'],
+    'pots': ['brain', 'heart', 'cellular_mitochondria'],
+    'dysautonomia': ['brain', 'heart', 'osteopathic_respiratory_diaphragm'],
+    'tmj': ['head', 'osteopathic_cranium', 'acupoint_li4_r', 'acupoint_li4_l'],
+    'tinnitus': ['head', 'brain', 'acupoint_gb20_r', 'acupoint_bl23_r'],
+    'atp': ['cellular_mitochondria'],
+    'mitochondria': ['cellular_mitochondria'],
+    'fatigue': ['cellular_mitochondria', 'acupoint_st36_r', 'acupoint_st36_l', 'thyroid', 'brain'],
+    'omt': ['osteopathic_cranium', 'osteopathic_thoracic_inlet', 'osteopathic_respiratory_diaphragm', 'osteopathic_pelvic_diaphragm'],
+    'tcm': ['acupoint_gv20', 'acupoint_cv17', 'acupoint_cv12', 'acupoint_st36_r', 'acupoint_li4_r', 'acupoint_sp6_r', 'acupoint_pc6_r', 'acupoint_lr3_r', 'acupoint_ki1_r', 'acupoint_gb20_r', 'acupoint_bl23_r', 'acupoint_bl40_r'],
+    'marma': ['marma_adhipati', 'marma_sthapani', 'marma_hridaya', 'marma_nabhi', 'marma_basti', 'marma_kshipra', 'marma_talahridaya'],
+    'chakra': ['marma_adhipati', 'marma_sthapani', 'marma_hridaya', 'marma_nabhi', 'marma_basti', 'marma_kshipra', 'marma_talahridaya'],
+    'knee': ['leg_left', 'leg_right', 'acupoint_st36_r', 'acupoint_st36_l', 'acupoint_bl40_r'],
+    'back pain': ['spine_lumbar', 'spine_thoracic', 'spine_cervical', 'acupoint_bl23_r', 'acupoint_bl40_r'],
+    'neck': ['spine_cervical', 'osteopathic_thoracic_inlet', 'acupoint_gb20_r', 'head']
+  };
+
+  private calculateFuzzyMatchScore(query: string, part: (typeof this.allParts)[number]): number {
+    const q = query.toLowerCase().trim();
+    if (!q) return 0;
+
+    let score = 0;
+    const nameLower = part.name.toLowerCase();
+    const secNameLower = (part.secondaryName || '').toLowerCase();
+    const idLower = part.id.toLowerCase();
+    const focusLower = part.clinicalFocus.toLowerCase();
+    const symptomsLower = part.symptoms.map(s => s.toLowerCase());
+
+    // 1. Clinical acronym / alias exact match
+    if (this.clinicalAliases[q]?.includes(part.id)) {
+      score += 450;
+    }
+
+    // 2. Exact match on ID, Name, or Secondary Name
+    if (idLower === q || nameLower === q || secNameLower === q) {
+      score += 500;
+    } else if (nameLower.startsWith(q) || idLower.startsWith(q)) {
+      score += 350;
+    } else if (nameLower.includes(q)) {
+      score += 250;
+    } else if (secNameLower.includes(q)) {
+      score += 200;
+    }
+
+    // 3. Exact or substring match in symptoms
+    if (symptomsLower.includes(q)) {
+      score += 300;
+    } else if (symptomsLower.some(s => s.includes(q))) {
+      score += 180;
+    }
+
+    // 4. Clinical focus or system match
+    if (focusLower.includes(q)) {
+      score += 120;
+    }
+    if (part.system.toLowerCase().includes(q) || part.paradigm.toLowerCase().includes(q)) {
+      score += 140;
+    }
+
+    // 5. Multi-token and fuzzy typo tolerance
+    const tokens = q.split(/\s+/).filter(t => t.length > 0);
+    const searchableWords = [
+      ...nameLower.split(/[\s,()•-]+/),
+      ...secNameLower.split(/[\s,()•-]+/),
+      ...symptomsLower.flatMap(s => s.split(/[\s,()•-]+/))
+    ].filter(w => w.length > 2);
+
+    for (const token of tokens) {
+      if (searchableWords.some(w => w === token)) {
+        score += 120;
+      } else if (searchableWords.some(w => w.startsWith(token))) {
+        score += 80;
+      } else if (token.length >= 4) {
+        // Fuzzy distance comparison for typos
+        for (const word of searchableWords) {
+          const dist = this.levenshteinDistance(token, word);
+          if (dist === 1) {
+            score += 100;
+            break;
+          } else if (dist === 2 && token.length >= 6) {
+            score += 50;
+            break;
+          }
+        }
+      }
+    }
+
+    return score;
+  }
+
+  getHotzoneCameraPreset(partId: string): 'cranial' | 'visceral' | 'spinal' | 'peripheral' | 'front' {
+    const id = partId.toLowerCase();
+    if (
+      id.includes('head') || id.includes('brain') || id.includes('cranial') ||
+      id.includes('thyroid') || id.includes('cervical') || id.includes('gv20') ||
+      id.includes('adhipati') || id.includes('sthapani') || id.includes('sahasrara') ||
+      id.includes('ajna') || id.includes('vishuddha') || id.includes('oral_fdi')
+    ) {
+      return 'cranial';
+    }
+    if (
+      id.includes('heart') || id.includes('lung') || id.includes('chest') ||
+      id.includes('stomach') || id.includes('liver') || id.includes('kidney') ||
+      id.includes('abdo') || id.includes('cv17') || id.includes('cv12') ||
+      id.includes('hridaya') || id.includes('nabhi') || id.includes('anahata') ||
+      id.includes('manipura') || id.includes('respiratory') || id.includes('mitochondria') ||
+      id.includes('cellular')
+    ) {
+      return 'visceral';
+    }
+    if (
+      id.includes('thoracic') || id.includes('lumbar') || id.includes('sacral') ||
+      id.includes('spine') || id.includes('pelvis') || id.includes('dermatome_l4') ||
+      id.includes('bl23') || id.includes('bl40') || id.includes('basti') ||
+      id.includes('svadhisthana') || id.includes('muladhara') || id.includes('diaphragm')
+    ) {
+      return 'spinal';
+    }
+    if (
+      id.includes('shoulder') || id.includes('arm') || id.includes('hand') ||
+      id.includes('leg') || id.includes('thigh') || id.includes('shin') ||
+      id.includes('foot') || id.includes('dermatome_c6') || id.includes('st36') ||
+      id.includes('li4') || id.includes('sp6') || id.includes('pc6') ||
+      id.includes('lr3') || id.includes('ki1') || id.includes('gb20') ||
+      id.includes('kshipra') || id.includes('talahridaya')
+    ) {
+      return 'peripheral';
+    }
+    return 'front';
+  }
 
   filteredParts = computed(() => {
     const q = this.searchQuery().toLowerCase().trim();
     const system = this.activeSystemFilter();
-    return this.allParts.filter(p => {
-      const matchesQuery = !q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || p.system.toLowerCase().includes(q);
-      const matchesSystem = system === 'all' || p.system === system;
-      return matchesQuery && matchesSystem;
-    });
+
+    if (!q) {
+      return this.allParts.filter(p => system === 'all' || p.paradigm === system || p.system === system);
+    }
+
+    return this.allParts
+      .map(part => {
+        const matchesSystem = system === 'all' || part.paradigm === system || part.system === system;
+        if (!matchesSystem) return { part, score: 0 };
+        const score = this.calculateFuzzyMatchScore(q, part);
+        return { part, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(item => item.part);
   });
 
   onSearchInput(event: Event) {
     const target = event.target as HTMLInputElement;
     this.searchQuery.set(target.value);
     this.isSearchOpen.set(true);
+    this.selectedAutocompleteIndex.set(-1);
+  }
+
+  onSearchKeyDown(event: KeyboardEvent) {
+    const parts = this.filteredParts();
+    if (!parts.length) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      const next = (this.selectedAutocompleteIndex() + 1) % parts.length;
+      this.selectedAutocompleteIndex.set(next);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      const prev = (this.selectedAutocompleteIndex() - 1 + parts.length) % parts.length;
+      this.selectedAutocompleteIndex.set(prev);
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      const idx = this.selectedAutocompleteIndex();
+      const targetPart = idx >= 0 && idx < parts.length ? parts[idx] : parts[0];
+      if (targetPart) {
+        this.onPartSearchResultClick(targetPart);
+      }
+    } else if (event.key === 'Escape') {
+      this.clearSearch();
+    }
   }
 
   clearSearch() {
     this.searchQuery.set('');
     this.isSearchOpen.set(false);
+    this.selectedAutocompleteIndex.set(-1);
   }
 
-  onPartSearchResultClick(part: { id: string, name: string }) {
+  onPartSearchResultClick(part: { id: string, name: string, paradigm?: string }) {
+    // 1. Activate matching paradigm mode if needed
+    if (part.paradigm === 'eastern') {
+      this.state.selectPhilosophy('eastern');
+      this.state.bodyViewerMode.set('3d');
+    } else if (part.paradigm === 'ayurvedic') {
+      this.state.selectPhilosophy('ayurvedic');
+      this.state.bodyViewerMode.set('3d');
+    } else if (part.paradigm === 'osteopathic') {
+      this.state.selectPhilosophy('osteopathic');
+      this.state.bodyViewerMode.set('3d');
+    } else if (part.paradigm === 'cellular') {
+      this.state.bodyViewerMode.set('cellular');
+    } else {
+      this.state.selectPhilosophy('western');
+      this.state.bodyViewerMode.set('3d');
+    }
+
+    // 2. Select the anatomical target in the shared state & trigger hotzone auto-focus
     this.select(part.id, part.name);
+    
+    const preset = this.getHotzoneCameraPreset(part.id);
+    this.focusedHotzoneFeedback.set(`🎯 Auto-Focused ${part.name} (${preset.toUpperCase()} Sentinel View)`);
+    setTimeout(() => {
+      this.focusedHotzoneFeedback.set(null);
+    }, 4000);
+
     this.searchQuery.set('');
     this.isSearchOpen.set(false);
+    this.selectedAutocompleteIndex.set(-1);
   }
 
 

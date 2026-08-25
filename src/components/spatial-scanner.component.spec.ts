@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
 import { SpatialScannerComponent } from './spatial-scanner.component';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';

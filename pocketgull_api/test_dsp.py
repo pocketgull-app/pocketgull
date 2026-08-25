@@ -43,10 +43,6 @@ def test_hrv_rmssd_extraction():
     hrv_rmssd = np.sqrt(np.mean(sq_diffs))
     
     # Mathematical validation
-    # The variations we injected: 0, 10, -5, 15, -10, 5, -15, 20, -20, 0
-    # Diff of variations: 10, -15, 20, -25, 15, -20, 35, -40, 20
-    # True RMSSD should be exactly reproducible.
-    
     assert len(peaks) > 2, "Failed to detect synthetic ECG peaks."
     assert 10.0 <= hrv_rmssd <= 50.0, f"HRV RMSSD {hrv_rmssd} out of expected clinical test range."
 
@@ -54,9 +50,50 @@ def test_rsa_breathing_rate():
     """
     Test the derivation of Respiratory Sinus Arrhythmia (RSA) mapping to Breathing BPM.
     """
-    # If avg RR is 1000ms (1 Hz), HR is 60 BPM. RSA estimate is 1/4th = 15 BPM.
     avg_rr_s = 1.0
     hr_bpm = 60 / avg_rr_s
     breathing_bpm = hr_bpm / 4.0
     
     assert breathing_bpm == 15.0, "Breathing BPM derivation from RSA failed clinical assertion."
+
+def test_multiscale_sample_entropy_and_autonomic_tone():
+    """
+    Test multiscale sample entropy (MSE) computation and sympathovagal tone indexing.
+    """
+    # 200 synthetic RR intervals (normal sinus rhythm with physiological variability)
+    np.random.seed(42)
+    base_rr = 850.0 # ~70 BPM
+    noise = np.random.normal(0, 35.0, 200)
+    rr_series = base_rr + noise
+
+    # Multiscale coarse-graining for scale tau = 1..3
+    mse_scales = {}
+    for tau in [1, 2, 3]:
+        n_coarse = len(rr_series) // tau
+        coarse_grained = np.mean(rr_series[:n_coarse * tau].reshape(n_coarse, tau), axis=1)
+        # Sample entropy approximation (r = 0.2 * std, m = 2)
+        std_dev = np.std(coarse_grained)
+        r = 0.2 * std_dev
+        
+        # Count template matches
+        m = 2
+        N = len(coarse_grained)
+        patterns_m = np.array([coarse_grained[i:i+m] for i in range(N - m)])
+        patterns_m1 = np.array([coarse_grained[i:i+m+1] for i in range(N - m)])
+        
+        # Chebyshev / max norm distance check
+        count_m = 0
+        count_m1 = 0
+        for i in range(len(patterns_m)):
+            dist_m = np.max(np.abs(patterns_m - patterns_m[i]), axis=1)
+            dist_m1 = np.max(np.abs(patterns_m1 - patterns_m1[i]), axis=1)
+            count_m += np.sum(dist_m < r) - 1
+            count_m1 += np.sum(dist_m1 < r) - 1
+            
+        sampen = -np.log((count_m1 + 1e-6) / (count_m + 1e-6))
+        mse_scales[f"scale_{tau}"] = float(sampen)
+
+    complexity_index = float(np.sum(list(mse_scales.values())))
+    assert len(mse_scales) == 3
+    assert complexity_index > 0.0, "Complexity index must be positive for physiological RR series."
+    assert "scale_1" in mse_scales

@@ -7,6 +7,7 @@ export const SAMPLE_ARTICLES = [
   {
     title: 'Keeping Their Craft Alive: How to Honor Someone You Miss by Picking Up Their Tools',
     slug: 'keeping-their-craft-alive',
+    author: 'Phil',
     domain: 'Occupational Therapy & Bereavement',
     sno10Code: 'SNOMED 399269003 (Wellness & Craft Continuity)',
     bodyHtml: `
@@ -67,6 +68,39 @@ export const SAMPLE_ARTICLES = [
     takeaway: 'Daily blood pressure monitoring and gentle physical movement are the ultimate high-yield investments. Prevention is the greatest public service.',
     status: 'publish',
     tags: ['Prevention', 'Kidney-Health', 'Blood-Pressure', 'Health-Economics']
+  },
+  {
+    title: 'The PocketGull Typeface: Why Typography is a Safety-Critical Medical Device',
+    slug: 'pocketgull-typeface-medical-safety',
+    author: 'Phil',
+    domain: 'Optotypic Ergonomics & Typographic Engineering',
+    sno10Code: 'SNOMED 709044004 / WCAG AAA Compliance',
+    bodyHtml: `
+      <p>In high-stress clinical environments and dim exam rooms, typographic ambiguity causes real medication errors. When a lowercase 'l', an uppercase 'I', and a numeral '1' look identical, dosage mistakes happen.</p>
+      <p>The <strong>PocketGull Typeface Family</strong> (released under SIL Open Font License 1.1) was engineered from the ground up to solve this: featuring slashed zeroes (<code>cv08</code>), curved lowercase ells (<code>cv05</code>), and distinct serifs on capital 'I' (<code>ss02</code>).</p>
+      <blockquote>"Typography in healthcare isn't decorative—it is a safety-critical user interface."</blockquote>
+    `,
+    takeaway: 'Distinct optotypic legibility prevents Look-Alike Sound-Alike medication errors and ensures clarity for patients and providers alike.',
+    status: 'publish',
+    tags: ['Typography', 'Accessibility', 'WCAG-AAA', 'Patient-Safety']
+  },
+  {
+    title: 'Less, But Better: Applying Dieter Rams\' 10 Principles to Clinical AI',
+    slug: 'dieter-rams-10-principles-clinical-ai',
+    author: 'Phil',
+    domain: 'Industrial Grace & Clinical Ergonomics',
+    sno10Code: 'SNOMED 399269003 / Dieter Rams Industrial Design',
+    bodyHtml: `
+      <p>Modern electronic health records are notorious for overwhelming clinicians with alert fatigue, visual noise, and hundreds of useless clicks. Legendary industrial designer Dieter Rams advocated for <em>"Weniger, aber besser"</em> (Less, but better).</p>
+      <p>PocketGull applies this philosophy to generative clinical intelligence: surfacing only high-signal insights, respecting the clinician's cognitive focus, and preserving the human doctor-patient connection.</p>
+      <div class="sno10-analogy-box">
+        <span class="badge">📐 Design Principle</span>
+        <p>Good design is unobtrusive. Clinical AI should be an empathetic quiet co-pilot, not an intrusive popup machine.</p>
+      </div>
+    `,
+    takeaway: 'Minimalist, unobtrusive interfaces reduce burnout and let clinicians focus on listening to their patients.',
+    status: 'publish',
+    tags: ['Design', 'Dieter-Rams', 'Ergonomics', 'Clinical-AI']
   }
 ];
 

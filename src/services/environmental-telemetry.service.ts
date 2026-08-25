@@ -1,4 +1,12 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { HemisphericSyncType } from './monroe-persian-trance.service';
+
+export interface ISevenGenerationEpigeneticMetric {
+  generation: 'F1 (Immediate Children)' | 'F2 (Grandchildren)' | 'F3 (Great-Grandchildren)' | 'F4' | 'F5' | 'F6' | 'F7 (Seventh Generation)';
+  epigeneticShieldScore: number; // 0 to 100%
+  keyProtectiveFactor: string;
+  environmentalRiskMitigated: string;
+}
 
 export interface IEnvironmentalTelemetry {
   barometricPressure: number; // hPa
@@ -11,6 +19,9 @@ export interface IEnvironmentalTelemetry {
   locationName: string;
   solarZenithAngle: number;   // degrees for UV directional lighting
   jointCapsuleCompressionRisk: 'Low' | 'Moderate' | 'Elevated' | 'Severe';
+  ambientNoiseDb: number;      // Ambient acoustic noise in dB (30-90 dB)
+  geomagneticKpIndex: number;  // 0 to 9 planetary Kp index
+  schumannResonanceHz: number; // 7.83 Hz fundamental
 }
 
 @Injectable({
@@ -25,9 +36,12 @@ export class EnvironmentalTelemetryService {
     aqi: 68,
     uvIndex: 7.2,
     pollenLevel: 'High',
-    locationName: 'Portland, ME (Coastal Atlantic Biome)',
+    locationName: 'Portland, ME (Coastal Atlantic & Androscoggin Biome)',
     solarZenithAngle: 38,
-    jointCapsuleCompressionRisk: 'Elevated'
+    jointCapsuleCompressionRisk: 'Elevated',
+    ambientNoiseDb: 42,
+    geomagneticKpIndex: 2.3,
+    schumannResonanceHz: 7.83
   });
 
   // Storm Shield trigger state
@@ -45,6 +59,82 @@ export class EnvironmentalTelemetryService {
     return { label: 'Unhealthy', color: 'red' };
   });
 
+  // Acoustic noise environment assessment
+  readonly acousticEnvironmentLabel = computed(() => {
+    const db = this.telemetry().ambientNoiseDb;
+    if (db < 45) return { status: 'Serene Sanctuary', advice: 'Optimal for deep research & restorative trance' };
+    if (db < 65) return { status: 'Moderate Clinic Ambient', advice: 'Recommended: Canine 60 BPM or Cedar Flute to mask noise' };
+    return { status: 'Acoustic Overload', advice: 'Recommended: EMDR Bilateral 8Hz + Brown Noise Shield' };
+  });
+
+  // Seven Generations Epigenetic Environmental Lineage Analysis
+  readonly sevenGenLineageProtection = computed<ISevenGenerationEpigeneticMetric[]>(() => {
+    const t = this.telemetry();
+    const isCleanAir = t.aqi <= 50;
+    const isQuiet = t.ambientNoiseDb < 50;
+    const baseScore = Math.round(
+      (isCleanAir ? 40 : 20) + 
+      (isQuiet ? 30 : 15) + 
+      (this.isStormShieldActive() ? 15 : 30)
+    );
+
+    return [
+      {
+        generation: 'F1 (Immediate Children)',
+        epigeneticShieldScore: Math.min(100, baseScore + 10),
+        keyProtectiveFactor: 'Zero phthalate/VOC exposure & maternal autonomic co-regulation',
+        environmentalRiskMitigated: 'Reduced childhood asthma and neurodevelopmental inflammation'
+      },
+      {
+        generation: 'F2 (Grandchildren)',
+        epigeneticShieldScore: Math.min(100, baseScore + 5),
+        keyProtectiveFactor: 'Preserved germline DNA methylation patterns via anti-inflammatory nutrition',
+        environmentalRiskMitigated: 'Protection against intergenerational metabolic dysregulation'
+      },
+      {
+        generation: 'F3 (Great-Grandchildren)',
+        epigeneticShieldScore: Math.min(100, baseScore),
+        keyProtectiveFactor: 'Traditional botanical biodiversity & clean watershed guardianship',
+        environmentalRiskMitigated: 'Prevention of cumulative endocrine disruption'
+      },
+      {
+        generation: 'F7 (Seventh Generation)',
+        epigeneticShieldScore: Math.min(100, baseScore - 5),
+        keyProtectiveFactor: 'Haudenosaunee 100-Year Soil Biome & Seed Sovereignty Stewardship',
+        environmentalRiskMitigated: 'Long-term biospheric resilience and intergenerational health sovereignty'
+      }
+    ];
+  });
+
+  // Automatically recommend the optimal acoustic protocol based on living environmental telemetry
+  readonly recommendedAcousticProtocol = computed<{ presetId: HemisphericSyncType; name: string; rationale: string }>(() => {
+    const t = this.telemetry();
+    if (this.isStormShieldActive()) {
+      return {
+        presetId: 'indigenous_cedar_flute',
+        name: 'Sacred Cedar Flute (432 Hz)',
+        rationale: 'Barometric low pressure detected: Soothes barometric headache & joint capsule tension.'
+      };
+    } else if (t.ambientNoiseDb > 60) {
+      return {
+        presetId: 'emdr_bilateral_alpha',
+        name: 'EMDR Bilateral Panning (8 Hz)',
+        rationale: 'Elevated ambient noise: Disperses sympathetic sensory overload.'
+      };
+    } else if (t.aqi > 75) {
+      return {
+        presetId: 'wabanaki_canoe_cadence',
+        name: 'Wabanaki River & Pine Wind',
+        rationale: 'Moderate airborne particulate: Entrains deep diaphragmatic bronchial relaxation.'
+      };
+    }
+    return {
+      presetId: 'monroe_focus_12',
+      name: 'Monroe Focus 12 / Interstellar Launch',
+      rationale: 'Harmonious atmospheric conditions: Primed for deep cognitive discovery.'
+    };
+  });
+
   // Update telemetry helper (for dynamic preset or location switching)
   setPreset(preset: 'coastal_storm' | 'desert_dry' | 'high_altitude' | 'optimal') {
     switch (preset) {
@@ -59,7 +149,10 @@ export class EnvironmentalTelemetryService {
           pollenLevel: 'High',
           locationName: 'Androscoggin Estuary, ME (Low Pressure Front)',
           solarZenithAngle: 55,
-          jointCapsuleCompressionRisk: 'Severe'
+          jointCapsuleCompressionRisk: 'Severe',
+          ambientNoiseDb: 48,
+          geomagneticKpIndex: 3.2,
+          schumannResonanceHz: 7.83
         });
         break;
       case 'high_altitude':
@@ -73,7 +166,10 @@ export class EnvironmentalTelemetryService {
           pollenLevel: 'Low',
           locationName: 'Denver / Boulder, CO (High Altitude 5,280 ft)',
           solarZenithAngle: 15,
-          jointCapsuleCompressionRisk: 'Severe'
+          jointCapsuleCompressionRisk: 'Severe',
+          ambientNoiseDb: 39,
+          geomagneticKpIndex: 1.8,
+          schumannResonanceHz: 7.83
         });
         break;
       case 'desert_dry':
@@ -87,7 +183,10 @@ export class EnvironmentalTelemetryService {
           pollenLevel: 'Moderate',
           locationName: 'Sonoran Basin, AZ (Arid High Heat)',
           solarZenithAngle: 8,
-          jointCapsuleCompressionRisk: 'Low'
+          jointCapsuleCompressionRisk: 'Low',
+          ambientNoiseDb: 52,
+          geomagneticKpIndex: 4.1,
+          schumannResonanceHz: 7.83
         });
         break;
       case 'optimal':
@@ -98,11 +197,14 @@ export class EnvironmentalTelemetryService {
           humidityPercent: 50,
           temperatureF: 72,
           aqi: 25,
-          uvIndex: 5.0,
+          uvIndex: 5.5,
           pollenLevel: 'Low',
-          locationName: 'Portland, ME (Standard Baseline)',
-          solarZenithAngle: 40,
-          jointCapsuleCompressionRisk: 'Low'
+          locationName: 'Casco Bay, ME (Harmonious Maritime Equilibrium)',
+          solarZenithAngle: 42,
+          jointCapsuleCompressionRisk: 'Low',
+          ambientNoiseDb: 35,
+          geomagneticKpIndex: 1.2,
+          schumannResonanceHz: 7.83
         });
         break;
     }

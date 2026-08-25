@@ -1,13 +1,8 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClinicalAssessmentsService } from '../services/clinical-assessments/clinical-assessments.service';
-import { AssessmentType, IQuestionItem, ISeverityTier } from '../services/clinical-assessments/types';
-import { 
-  PHQ9_QUESTIONS, GAD7_QUESTIONS, ISI_QUESTIONS, CSSRS_QUESTIONS, 
-  ROS14_QUESTIONS, PHQ15_QUESTIONS, PRAPARE_QUESTIONS,
-  AYURVEDA_QUESTIONS, TCM_QUESTIONS, GROW_THYSELF_QUESTIONS,
-  MOCA_QUESTIONS, AUDITC_QUESTIONS, SARCF_QUESTIONS, DN4_QUESTIONS, SIBI_QUESTIONS
-} from '../services/clinical-assessments/data';
+import { AssessmentType, IQuestionItem, ISeverityTier, IAssessmentDefinition } from '../services/clinical-assessments/types';
+import { getAssessment } from '../services/clinical-assessments/assessment-registry';
 
 @Component({
   selector: 'app-clinical-assessments-suite',
@@ -15,7 +10,6 @@ import {
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="flex flex-col gap-6 animate-in fade-in duration-300">
     <div class="flex flex-col gap-6 animate-in fade-in duration-300">
       <!-- Header Suite Card with 3D Double-Click Flip State Machine -->
       <div class="relative perspective-1000 group cursor-pointer"
@@ -28,25 +22,30 @@ import {
           <!-- FRONT FACE: Quantitative Assessment Telemetry -->
           <div class="p-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm backface-hidden">
             <div class="flex-1">
-              <div class="flex items-center gap-2 mb-1.5">
+              <div class="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span class="text-xs uppercase font-extrabold tracking-widest text-zinc-400">Clinical & Life Sovereignty Instrumentation</span>
                 <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-850">
-                  Master Life Data Provider & Clinical Suite
+                  {{ currentAssessment().badge }}
                 </span>
                 <span (click)="toggleHeaderFlip($event)"
                       class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition cursor-pointer select-none">
                   dblclick 🔄 flip OARS
                 </span>
               </div>
-              <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-50">Multimodal Clinical & Life Assessments</h2>
+              <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-50">{{ currentAssessment().title }}</h2>
               <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-xl leading-relaxed">
-                Standardized Western, Eastern, & Grow-Thyself Life Sovereignty instruments: PHQ-9, GAD-7, ISI, C-SSRS, ROS-14, PHQ-15, PRAPARE, Ayurveda, TCM, and Grow-Thyself Epigenetic Flourishing.
+                {{ currentAssessment().patientEducation }}
               </p>
+              @if (currentAssessment().citation) {
+                <div class="mt-2 text-[10px] text-zinc-400 font-mono italic">
+                  Ref: {{ currentAssessment().citation }}
+                </div>
+              }
             </div>
 
             <div class="flex flex-col items-center shrink-0 p-4 bg-white dark:bg-zinc-950 border border-zinc-200/60 dark:border-zinc-800 rounded-2xl w-full md:w-64 text-center shadow-inner">
               <div class="text-xs uppercase font-bold text-zinc-400 mb-1 font-mono">
-                Active: {{ currentTitle() }}
+                Active: {{ currentAssessment().shortName }}
               </div>
               <span class="text-3xl font-black text-zinc-900 dark:text-zinc-100 font-mono tracking-tight">
                 {{ currentScore() }}<span class="text-sm font-normal text-zinc-400">/{{ currentMaxScore() }}</span>
@@ -74,14 +73,14 @@ import {
                 <div class="space-y-1.5">
                   <span class="font-bold text-amber-300 font-mono block uppercase">💬 Open-Ended Reflection Prompt (OARS):</span>
                   <p class="text-indigo-100 italic leading-relaxed">
-                    "I notice your {{ currentTitle() }} assessment score is {{ currentScore() }}/{{ currentMaxScore() }} ({{ currentTier().label }}). What shifts have you noticed in your daily energy or mood recently?"
+                    "{{ currentMotivationalPrompt() }}"
                   </p>
                 </div>
 
                 <div class="space-y-1.5">
                   <span class="font-bold text-emerald-300 font-mono block uppercase">🧑‍🤝‍🧑 Plain-Language Patient Literacy Tip:</span>
                   <p class="text-indigo-100 leading-relaxed">
-                    This score reflects your documented symptoms. Small daily habits—like morning light exposure, diaphragmatic breathing, or gentle movement—help support your body's natural balance.
+                    {{ currentAssessment().patientEducation }}
                   </p>
                 </div>
               </div>
@@ -132,6 +131,24 @@ import {
           [class.text-zinc-400]="svc.activeTab() !== 'isi'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
           <span>🌙 ISI (Insomnia)</span>
+        </button>
+
+        <button (click)="svc.activeTab.set('cvsq')"
+          [class.border-b-2]="svc.activeTab() === 'cvsq'"
+          [class.border-cyan-500]="svc.activeTab() === 'cvsq'"
+          [class.text-cyan-600]="svc.activeTab() === 'cvsq'"
+          [class.text-zinc-400]="svc.activeTab() !== 'cvsq'"
+          class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+          <span>👁️ CVS-Q (Vision Strain)</span>
+        </button>
+
+        <button (click)="svc.activeTab.set('mbi')"
+          [class.border-b-2]="svc.activeTab() === 'mbi'"
+          [class.border-rose-500]="svc.activeTab() === 'mbi'"
+          [class.text-rose-600]="svc.activeTab() === 'mbi'"
+          [class.text-zinc-400]="svc.activeTab() !== 'mbi'"
+          class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+          <span>🔥 MBI (Burnout)</span>
         </button>
 
         <button (click)="svc.activeTab.set('cssrs')"
@@ -248,8 +265,6 @@ import {
           </button>
         }
 
-        
-
         <button (click)="svc.resetAssessment(svc.activeTab())"
           class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-400 font-bold uppercase tracking-wider text-xs transition active:scale-95 cursor-pointer">
           <span>🗑️ Clear Tab Answers</span>
@@ -270,6 +285,16 @@ import {
             <strong class="text-xs font-extrabold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1">Clinical Protocol Recommendation:</strong>
             <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">{{ currentTier().recommendation }}</p>
           </div>
+
+          <!-- MBI Burnout Subscale Breakdown Bar -->
+          @if (svc.activeTab() === 'mbi') {
+            <div class="pt-3 border-t border-zinc-200/60 dark:border-zinc-800/60 flex items-center gap-3 text-xs font-mono flex-wrap">
+              <span class="font-bold uppercase text-zinc-400">Burnout Subscale Indices:</span>
+              <span class="px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20 font-bold">🧠 Emotional Exhaustion (EE): {{ svc.mbiBreakdown().ee }}/18</span>
+              <span class="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 font-bold">⚡ Depersonalization (DP): {{ svc.mbiBreakdown().dp }}/15</span>
+              <span class="px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20 font-bold">🛡️ Personal Accomplishment Strain: {{ svc.mbiBreakdown().pa }}/15</span>
+            </div>
+          }
 
           <!-- Grow-Thyself Life Domain Breakdown Bar -->
           @if (svc.activeTab() === 'growthyself') {
@@ -298,55 +323,41 @@ import {
             <div class="pt-3 border-t border-zinc-200/60 dark:border-zinc-800/60 flex items-center gap-3 text-xs font-mono flex-wrap">
               <span class="font-bold uppercase text-zinc-400">Ba Gang Profile:</span>
               <span class="px-2 py-0.5 rounded bg-red-500/10 text-red-700 dark:text-red-300 border border-red-500/20 font-bold">Yang: {{ svc.tcmBreakdown().yang }}</span>
-              <span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20 font-bold">Yin: {{ svc.tcmBreakdown().yin }}</span>
+              <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20 font-bold">Yin: {{ svc.tcmBreakdown().yin }}</span>
               <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 font-bold">Qi: {{ svc.tcmBreakdown().qi }}</span>
               <span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 font-bold">Blood: {{ svc.tcmBreakdown().blood }}</span>
-              <span class="px-2 py-0.5 rounded bg-orange-500/10 text-orange-700 dark:text-orange-300 border border-orange-500/20 font-bold">Heat: {{ svc.tcmBreakdown().heat }}</span>
-              <span class="px-2 py-0.5 rounded bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20 font-bold">Cold: {{ svc.tcmBreakdown().cold }}</span>
+              <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 font-bold">Heat: {{ svc.tcmBreakdown().heat }}</span>
+              <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20 font-bold">Cold: {{ svc.tcmBreakdown().cold }}</span>
             </div>
           }
         </div>
 
-        <div class="flex flex-col gap-5">
+        <!-- Dynamic Questions Stream -->
+        <div class="flex flex-col gap-4">
           @for (item of currentQuestions(); track item.id) {
-            <div class="p-4 bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 rounded-xl shadow-xs flex flex-col gap-3">
-              <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-[10px] font-mono font-bold uppercase text-zinc-400">Question {{ item.id }}</span>
-                  @if (item.growDomain) {
-                    <span class="text-[9.5px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-850">
-                      Domain: {{ item.growDomain }}
-                    </span>
-                  }
+            <div class="p-4 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/30 flex flex-col md:flex-row md:items-center justify-between gap-4 transition hover:border-zinc-300 dark:hover:border-zinc-700">
+              <div class="flex items-start gap-3 flex-1">
+                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-zinc-200/80 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-mono font-bold shrink-0">
+                  {{ item.id }}
+                </span>
+                <div>
                   @if (item.category) {
-                    <span class="text-[9.5px] font-extrabold uppercase px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-850">
-                      {{ item.category }}
-                    </span>
+                    <span class="text-[10px] font-mono uppercase font-bold text-zinc-400 block mb-0.5">{{ item.category }}</span>
                   }
                   @if (item.zCode) {
-                    <span class="text-[9.5px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-850">
-                      FHIR Z-Code: {{ item.zCode }}
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-teal-500/10 text-teal-700 dark:text-teal-300 border border-teal-500/20 inline-block mb-1">
+                      ICD-10 {{ item.zCode }}
                     </span>
                   }
-                  @if (item.doshaVector) {
-                    <span class="text-[9.5px] font-extrabold uppercase px-2 py-0.5 rounded bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-850">
-                      Dosha Vector: {{ item.doshaVector }}
-                    </span>
-                  }
-                  @if (item.tcmVector) {
-                    <span class="text-[9.5px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-850">
-                      TCM Pattern: {{ item.tcmVector }}
-                    </span>
-                  }
+                  <p class="text-sm font-medium text-zinc-800 dark:text-zinc-200 leading-snug">{{ item.question }}</p>
                 </div>
-                <p class="text-xs font-bold text-zinc-900 dark:text-zinc-150 mt-1.5">{{ item.question }}</p>
               </div>
 
-              <!-- Options Grid in Y-Bocs Radio Style -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 font-sans mt-1">
+              <!-- Option Buttons / Radio Group -->
+              <div class="flex flex-wrap sm:flex-nowrap gap-1.5 shrink-0 self-end md:self-center w-full md:w-auto">
                 @for (opt of item.options; track opt.value) {
                   <button (click)="svc.setAnswer(svc.activeTab(), item.id, opt.value)"
-                    [class.bg-indigo-50\/40]="getAnswer(item.id) === opt.value"
+                    [class.bg-indigo-50]="getAnswer(item.id) === opt.value"
                     [class.border-indigo-400]="getAnswer(item.id) === opt.value"
                     [class.dark:bg-indigo-950\/15]="getAnswer(item.id) === opt.value"
                     [class.dark:border-indigo-850]="getAnswer(item.id) === opt.value"
@@ -396,120 +407,22 @@ export class ClinicalAssessmentsSuiteComponent {
     this.lastHeaderFlipTime = now;
     this.isHeaderFlipped.update(v => !v);
   }
+
   readonly toastMessage = signal<string | null>(null);
 
-  readonly currentTitle = computed(() => {
-    const t = this.svc.activeTab();
-    if (t === 'growthyself') return 'Grow-Thyself Life Index';
-    if (t === 'phq9') return 'PHQ-9 Depression';
-    if (t === 'gad7') return 'GAD-7 Anxiety';
-    if (t === 'isi') return 'ISI Insomnia';
-    if (t === 'cssrs') return 'C-SSRS Safety Sentinel';
-    if (t === 'ros14') return 'ROS-14 Review Systems';
-    if (t === 'phq15') return 'PHQ-15 Somatic Symptoms';
-    if (t === 'prapare') return 'PRAPARE SDOH Protocol';
-    if (t === 'ayurveda') return 'Ayurveda Tridosha';
-    if (t === 'tcm') return 'TCM Shi Wen 10-Questions';
-    if (t === 'moca') return 'MoCA / Mini-Cog Cognitive';
-    if (t === 'auditc') return 'AUDIT-C Alcohol Risk';
-    if (t === 'sarcf') return 'SARC-F Sarcopenia & Frailty';
-    if (t === 'dn4') return 'DN4 Neuropathic Pain';
-    return 'SIBI Teledentistry & Cardio';
-  });
-
-  readonly currentQuestions = computed<IQuestionItem[]>(() => {
-    const t = this.svc.activeTab();
-    if (t === 'growthyself') return GROW_THYSELF_QUESTIONS;
-    if (t === 'phq9') return PHQ9_QUESTIONS;
-    if (t === 'gad7') return GAD7_QUESTIONS;
-    if (t === 'isi') return ISI_QUESTIONS;
-    if (t === 'cssrs') return CSSRS_QUESTIONS;
-    if (t === 'ros14') return ROS14_QUESTIONS;
-    if (t === 'phq15') return PHQ15_QUESTIONS;
-    if (t === 'prapare') return PRAPARE_QUESTIONS;
-    if (t === 'ayurveda') return AYURVEDA_QUESTIONS;
-    if (t === 'tcm') return TCM_QUESTIONS;
-    if (t === 'moca') return MOCA_QUESTIONS;
-    if (t === 'auditc') return AUDITC_QUESTIONS;
-    if (t === 'sarcf') return SARCF_QUESTIONS;
-    if (t === 'dn4') return DN4_QUESTIONS;
-    return SIBI_QUESTIONS;
-  });
-
-  readonly currentScore = computed(() => {
-    const t = this.svc.activeTab();
-    if (t === 'growthyself') return this.svc.growThyselfScore();
-    if (t === 'phq9') return this.svc.phq9Score();
-    if (t === 'gad7') return this.svc.gad7Score();
-    if (t === 'isi') return this.svc.isiScore();
-    if (t === 'cssrs') return this.svc.cssrsScore();
-    if (t === 'ros14') return this.svc.ros14Score();
-    if (t === 'phq15') return this.svc.phq15Score();
-    if (t === 'prapare') return this.svc.prapareScore();
-    if (t === 'ayurveda') return this.svc.ayurvedaScore();
-    if (t === 'tcm') return this.svc.tcmScore();
-    if (t === 'moca') return this.svc.mocaScore();
-    if (t === 'auditc') return this.svc.auditcScore();
-    if (t === 'sarcf') return this.svc.sarcfScore();
-    if (t === 'dn4') return this.svc.dn4Score();
-    return this.svc.sibiScore();
-  });
-
-  readonly currentMaxScore = computed(() => {
-    const t = this.svc.activeTab();
-    if (t === 'growthyself') return 15;
-    if (t === 'phq9') return 27;
-    if (t === 'gad7') return 21;
-    if (t === 'isi') return 28;
-    if (t === 'cssrs') return 16;
-    if (t === 'ros14') return 14;
-    if (t === 'phq15') return 30;
-    if (t === 'prapare') return 11;
-    if (t === 'ayurveda') return 6;
-    if (t === 'tcm') return 6;
-    if (t === 'moca') return 12;
-    if (t === 'auditc') return 12;
-    if (t === 'sarcf') return 10;
-    if (t === 'dn4') return 4;
-    return 8;
-  });
-
-  readonly currentTier = computed<ISeverityTier>(() => {
-    const t = this.svc.activeTab();
-    if (t === 'growthyself') return this.svc.growThyselfTier();
-    if (t === 'phq9') return this.svc.phq9Tier();
-    if (t === 'gad7') return this.svc.gad7Tier();
-    if (t === 'isi') return this.svc.isiTier();
-    if (t === 'cssrs') return this.svc.cssrsTier();
-    if (t === 'ros14') return this.svc.ros14Tier();
-    if (t === 'phq15') return this.svc.phq15Tier();
-    if (t === 'prapare') return this.svc.prapareTier();
-    if (t === 'ayurveda') return this.svc.ayurvedaTier();
-    if (t === 'tcm') return this.svc.tcmTier();
-    if (t === 'moca') return this.svc.mocaTier();
-    if (t === 'auditc') return this.svc.auditcTier();
-    if (t === 'sarcf') return this.svc.sarcfTier();
-    if (t === 'dn4') return this.svc.dn4Tier();
-    return this.svc.sibiTier();
+  readonly currentAssessment = computed<IAssessmentDefinition>(() => getAssessment(this.svc.activeTab()));
+  readonly currentTitle = computed(() => this.currentAssessment().title);
+  readonly currentQuestions = computed<IQuestionItem[]>(() => this.currentAssessment().questions);
+  readonly currentScore = computed(() => this.svc.currentScore());
+  readonly currentMaxScore = computed(() => this.currentAssessment().maxScore);
+  readonly currentTier = computed<ISeverityTier>(() => this.svc.currentTier());
+  readonly currentMotivationalPrompt = computed(() => {
+    const def = this.currentAssessment();
+    return def.motivationalPrompt ? def.motivationalPrompt(this.currentScore(), this.currentTier()) : `Assessment score is ${this.currentScore()}/${def.maxScore}.`;
   });
 
   getAnswer(questionId: number): number | undefined {
-    const t = this.svc.activeTab();
-    if (t === 'growthyself') return this.svc.growThyselfAnswers()[questionId];
-    if (t === 'phq9') return this.svc.phq9Answers()[questionId];
-    if (t === 'gad7') return this.svc.gad7Answers()[questionId];
-    if (t === 'isi') return this.svc.isiAnswers()[questionId];
-    if (t === 'cssrs') return this.svc.cssrsAnswers()[questionId];
-    if (t === 'ros14') return this.svc.ros14Answers()[questionId];
-    if (t === 'phq15') return this.svc.phq15Answers()[questionId];
-    if (t === 'prapare') return this.svc.prapareAnswers()[questionId];
-    if (t === 'ayurveda') return this.svc.ayurvedaAnswers()[questionId];
-    if (t === 'tcm') return this.svc.tcmAnswers()[questionId];
-    if (t === 'moca') return this.svc.mocaAnswers()[questionId];
-    if (t === 'auditc') return this.svc.auditcAnswers()[questionId];
-    if (t === 'sarcf') return this.svc.sarcfAnswers()[questionId];
-    if (t === 'dn4') return this.svc.dn4Answers()[questionId];
-    return this.svc.sibiAnswers()[questionId];
+    return this.svc.answersMap()[this.svc.activeTab()]?.[questionId];
   }
 
   commitAssessment() {
@@ -523,12 +436,6 @@ export class ClinicalAssessmentsSuiteComponent {
   triggerVagalBiofeedback() {
     window.dispatchEvent(new CustomEvent('somatic-grounding-activate'));
     this.toastMessage.set('Triggered 0.1 Hz Vagal HRV Biofeedback pacing for autonomic stabilization.');
-    setTimeout(() => this.toastMessage.set(null), 5000);
-  }
-
-  triggerSolfeggioSleepDeck() {
-    window.dispatchEvent(new CustomEvent('solfeggio-audio-activate', { detail: 432 }));
-    this.toastMessage.set('Activated Solfeggio 432 Hz sleep deck for insomnia recovery.');
     setTimeout(() => this.toastMessage.set(null), 5000);
   }
 }

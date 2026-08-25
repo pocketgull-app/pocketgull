@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { HobbyDomainCompanionService, SNO10_CONDITIONS } from './hobby-domain-companion.service';
 
 describe('HobbyDomainCompanionService - SNO-10 Passion & Lost Buddy Companion Engine', () => {

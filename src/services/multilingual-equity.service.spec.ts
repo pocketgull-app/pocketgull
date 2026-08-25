@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { MultilingualEquityService } from './multilingual-equity.service';
 
 describe('MultilingualEquityService Unit Suite', () => {

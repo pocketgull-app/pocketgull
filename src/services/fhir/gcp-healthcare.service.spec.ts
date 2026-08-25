@@ -1,4 +1,3 @@
-import { expect } from 'vitest';
 
 /**
  * Basic HL7 FHIR R4 Bundle Validation Suite

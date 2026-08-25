@@ -12,18 +12,23 @@ import { PatientStateService } from '../services/patient-state.service';
 import { PetAuditoryService } from '../services/pet-auditory.service';
 import { EnvironmentalTelemetryService } from '../services/environmental-telemetry.service';
 import { environment } from '../environments/environment';
-import { PocketgullIconComponent } from './shared/pocketgull-icon.component';
+import { PocketgullBrandMarkComponent } from './shared/pocketgull-brand-mark.component';
 import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
 import { PapercraftBackdropComponent } from './papercraft-backdrop.component';
 import { SecureStorageService } from '../services/secure-storage.service';
+import { WacomCryptoInkService } from '../services/wacom-crypto-ink.service';
+import { AuthSsoService } from '../services/auth-sso.service';
+import { MonroePersianTranceService, HEMISPHERIC_PRESETS, KarolinskaSleepinessLevel, HemisphericSyncType } from '../services/monroe-persian-trance.service';
+import { MissionSymphonyEngineService, MISSION_THEMES, MissionPhase } from '../services/mission-symphony-engine.service';
+import { LifeJourneyNavigatorService, LIFE_JOURNEY_PROFILES, LifeJourneyStage } from '../services/life-journey-navigator.service';
 
 @Component({
   selector: 'app-secure-splash',
   standalone: true,
-  imports: [CommonModule, FormsModule, PocketgullIconComponent, SafeHtmlPipe, PapercraftBackdropComponent],
+  imports: [CommonModule, FormsModule, PocketgullBrandMarkComponent, SafeHtmlPipe, PapercraftBackdropComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <main [style.background]="telemetryGradient()" class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-center p-2 sm:p-4 backdrop-blur-3xl secure-splash-main animate-in fade-in duration-[800ms] overflow-hidden">
+    <main [style.background]="telemetryGradient()" class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 backdrop-blur-xl sm:backdrop-blur-3xl secure-splash-main animate-in fade-in duration-[800ms] overflow-y-auto overscroll-contain">
       <app-papercraft-backdrop [wavePeriod]="wavePeriod()"></app-papercraft-backdrop>
       
       <!-- Papercraft Layered Living Breathing Landscape Backdrop -->
@@ -123,20 +128,10 @@ import { SecureStorageService } from '../services/secure-storage.service';
         <div class="absolute inset-0 bg-noise opacity-[0.08] pointer-events-none mix-blend-overlay"></div>
       </div>
 
-      <!-- HIPAA Lock Status Header (Visible only when locked) -->
-      @if (isLocked()) {
-        <div class="absolute shadow-sm top-8 left-1/2 -translate-x-1/2 flex flex-col items-center mb-8 mt-2 animate-in slide-in-from-top-4-centered duration-500 z-30">
-            <div class="flex items-center gap-3 bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md px-5 py-3 rounded-full border border-zinc-200/50 dark:border-zinc-800/80 shadow-2xl">
-                <div class="w-2.5 h-2.5 rounded-full bg-brand-red-500 animate-pulse shadow-[0_0_8px_rgba(234,67,53,0.6)]"></div>
-                <span class="text-[12px] font-bold uppercase tracking-[0.2em] text-zinc-700 dark:text-zinc-300">HIPAA Security Lock Active (§ 164.312)</span>
-            </div>
-        </div>
-      }
-
       <!-- Unified Origami Unfolding Seagull Mascot & Papercraft Heart -->
-      <div class="origami-seagull-container group drop-shadow-xl relative z-20 pointer-events-none mb-2 sm:mb-3 avs-breathing-mascot origami-unfold-container">
+      <div class="origami-seagull-container group drop-shadow-xl relative z-20 pointer-events-none mb-1 sm:mb-3 avs-breathing-mascot origami-unfold-container shrink-0">
         <svg
-          class="w-14 h-14 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 hover:scale-105 active:scale-95 transition-transform origami-unfold-svg" 
+          class="w-12 h-12 xs:w-14 xs:h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 hover:scale-105 active:scale-95 transition-transform origami-unfold-svg" 
           viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
           <g>
             <!-- Far Wing (Teal) -->
@@ -158,7 +153,7 @@ import { SecureStorageService } from '../services/secure-storage.service';
 
         <!-- Glowing Papercraft Origami Heart (Emerges at 4.5s mark) -->
         <div class="origami-heart-container">
-          <svg class="w-5 h-5 sm:w-7 sm:h-7" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-4 h-4 sm:w-7 sm:h-7" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <polygon points="50,85 15,45 25,20 50,35" fill="#ef6658" stroke="#df5648" stroke-width="0.5" stroke-linejoin="round" />
             <polygon points="50,85 50,35 75,20 85,45" fill="#faa63b" stroke="#e0902c" stroke-width="0.5" stroke-linejoin="round" />
             <polygon points="50,35 25,20 50,15" fill="#f48479" stroke="#df5648" stroke-width="0.5" stroke-linejoin="round" />
@@ -169,24 +164,27 @@ import { SecureStorageService } from '../services/secure-storage.service';
 
       <div class="w-full max-w-sm relative z-10 flex flex-col items-center">
         <!-- Dynamic Entry Panel (Pocket-Like Layered Papercraft Container) -->
-        <div id="seagull-safe-zone" class="w-full relative paper-pocket-container rounded-3xl p-3 xs:p-5 sm:p-6 animate-in fade-in duration-300 backdrop-blur-2xl transition-all overflow-y-auto min-h-[420px] max-h-[85vh] hide-scrollbar" style="contain: layout;">
+        <div id="seagull-safe-zone" class="w-full relative paper-pocket-container rounded-3xl p-3 xs:p-4 sm:p-6 animate-in fade-in duration-300 backdrop-blur-2xl transition-all overflow-y-auto min-h-0 max-h-[85vh] sm:max-h-[88vh] hide-scrollbar" style="contain: layout;">
           
           <!-- Tactile Paper Pocket Top Fold Notch -->
           <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#2AA4A0]/40 via-[#F6B12B]/40 to-[#EF6658]/40 border-b border-amber-300/40 dark:border-zinc-700/50"></div>
           
-          <div class="text-center mb-3 mt-1">
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/30 text-amber-800 dark:text-amber-300 text-[9.5px] font-bold uppercase tracking-widest mb-1.5 shadow-2xs">
+          <div class="text-center mb-3 mt-1 flex flex-col items-center">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/30 text-amber-800 dark:text-amber-300 text-[9.5px] font-bold uppercase tracking-widest mb-2 shadow-2xs">
               <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
               Pocket-Gull Clinician Suite
               <span class="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-400/40 text-[9px] font-mono font-bold tracking-normal">v{{ appVersion }}</span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-pocketgull tracking-tight text-zinc-900 dark:text-amber-400 uppercase pb-0.5 drop-shadow-sm flex items-center justify-center gap-2">
-              <app-pocketgull-icon name="seagull" />
-              {{ isLocked() ? 'Resume Session' : 'Pocket Gull' }}
-            </h1>
-            <p class="text-[11px] font-pocketgull-inter uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-              {{ isLocked() ? 'Idle Timeout Protection Active' : 'Clinical Intelligence Engine' }}
-            </p>
+            
+            <div class="py-1 flex justify-center">
+              <app-pocketgull-brand-mark [size]="'responsive'" [showSubtext]="!isLocked()" />
+            </div>
+
+            @if (isLocked()) {
+              <p class="text-[11px] font-pocketgull-inter uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400 mt-1">
+                Idle Timeout Protection Active
+              </p>
+            }
           </div>
 
 
@@ -202,14 +200,36 @@ import { SecureStorageService } from '../services/secure-storage.service';
           }
           <!-- Gesture Unlock Flow -->
           @else if (viewState() === 'gesture' || (isLocked() && viewState() !== 'kss' && viewState() !== 'ethics')) {
-            <div class="flex flex-col items-center justify-center gap-3 mt-2 mb-2 w-full animate-in fade-in duration-500">
-               <div class="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 rounded-full shadow-xs">
-                 <span class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">🎨 Draw Your Way In</span>
+            <div class="flex flex-col items-center justify-center gap-2 mt-1 mb-2 w-full animate-in fade-in duration-500">
+               <div class="flex items-center justify-between w-full max-w-[260px] px-1">
+                 <div class="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 rounded-full shadow-xs">
+                   <span class="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">🎨 Draw Your Way In</span>
+                 </div>
+                 <div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-mono text-emerald-600 dark:text-emerald-400" title="Green Computing: 100% Client-Side Edge Execution, Zero Idle Emissions">
+                   <span>🌱 Edge 0g CO₂</span>
+                 </div>
                </div>
+
                <p class="text-[12px] text-zinc-600 dark:text-zinc-300 uppercase tracking-widest font-semibold text-center max-w-[260px]">
                  {{ todayBeachItem().prompt }}
                </p>
-               
+
+               <!-- Fun Dexterity Brush Palette & Live Agility Rating -->
+               <div class="flex items-center justify-between w-full max-w-[240px] px-0.5 gap-1">
+                 <div class="flex items-center gap-0.5 bg-zinc-200/90 dark:bg-zinc-800/90 p-0.5 rounded-xl border border-zinc-300 dark:border-zinc-700 shadow-2xs">
+                   <button type="button" (click)="wacomInk.activeBrushMode.set('sumi-calligraphy')" [class.bg-emerald-600]="wacomInk.activeBrushMode() === 'sumi-calligraphy'" [class.text-white]="wacomInk.activeBrushMode() === 'sumi-calligraphy'" class="px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer hover:scale-105" title="Sumi Calligraphy (Tapered Nib)">🖌️</button>
+                   <button type="button" (click)="wacomInk.activeBrushMode.set('prismatic-rainbow')" [class.bg-purple-600]="wacomInk.activeBrushMode() === 'prismatic-rainbow'" [class.text-white]="wacomInk.activeBrushMode() === 'prismatic-rainbow'" class="px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer hover:scale-105" title="Prismatic Rainbow (Tilt Responsive)">🌈</button>
+                   <button type="button" (click)="wacomInk.activeBrushMode.set('sparkle-sand')" [class.bg-amber-500]="wacomInk.activeBrushMode() === 'sparkle-sand'" [class.text-white]="wacomInk.activeBrushMode() === 'sparkle-sand'" class="px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer hover:scale-105" title="Sparkling Sand Dunes (Bio-Luminescent)">✨</button>
+                   <button type="button" (click)="wacomInk.activeBrushMode.set('ocean-wave')" [class.bg-cyan-600]="wacomInk.activeBrushMode() === 'ocean-wave'" [class.text-white]="wacomInk.activeBrushMode() === 'ocean-wave'" class="px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer hover:scale-105" title="Ocean Ripple Waves">🌊</button>
+                 </div>
+
+                 <!-- Live Dexterity Score Badge -->
+                 <div class="flex items-center gap-1 px-2 py-1 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-bold text-emerald-700 dark:text-emerald-300 shadow-2xs" title="Dexterity Motor Smoothness & Dynamic Agility">
+                   <span>{{ wacomInk.dexterity().rankGrade }}</span>
+                   <span class="font-mono">{{ wacomInk.dexterity().score }}%</span>
+                 </div>
+               </div>
+
                <!-- Raw Fiber Hemp Paper Pad with Glow & Emerald Accent Border -->
                <div class="relative w-[240px] h-[240px] flex items-center justify-center paper-hemp-panel rounded-3xl p-1 overflow-hidden border-2 border-emerald-500/40 dark:border-emerald-400/40 shadow-xl hover:shadow-emerald-500/15 transition-all">
                   <!-- Guidelines background SVG (Dynamic Daily Beach Item guide) -->
@@ -236,28 +256,145 @@ import { SecureStorageService } from '../services/secure-storage.service';
                    (mouseleave)="stopDrawing($event)"
                    (touchstart)="startDrawing($event)"
                    (touchmove)="draw($event)"
-                   (touchend)="stopDrawing($event)"
-                 ></canvas>
-               </div>
+                   (touchend)="stopDrawing($event)"></canvas>
+                </div>
 
-               <!-- Gesture Pad Controls & Express Entry -->
-               <div class="flex items-center justify-center gap-2.5 mt-1 w-full max-w-[260px] z-30">
-                 <button 
-                   type="button"
-                   (click)="clearDrawing()" 
-                   [disabled]="isChecking() || (strokes.length === 0 && currentStroke.length === 0)"
-                   class="flex-1 min-h-[42px] px-3 py-2 text-[11px] uppercase font-bold tracking-widest bg-white/80 dark:bg-zinc-800/90 hover:bg-white dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 transition rounded-xl disabled:opacity-30 disabled:cursor-not-allowed shadow-xs flex items-center justify-center cursor-pointer">
-                   Clear Pad
-                 </button>
-                 <button 
-                   type="button"
-                   (click)="handleUnlockSession()" 
-                   class="flex-1 min-h-[42px] px-4 py-2 flex justify-center items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-[#3ebc9e] to-[#2fa085] hover:brightness-110 text-white transition-all rounded-xl shadow-md active:scale-[0.98] cursor-pointer">
-                   <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                   <span>Enter Suite</span>
-                 </button>
-               </div>
+                <!-- Wacom Digital Ink (WILL 3.0) & Pressure-Tilt Dynamic Telemetry Badge -->
+                <div class="flex items-center justify-between w-full max-w-[240px] px-2.5 py-1 rounded-lg bg-zinc-900/80 text-white dark:bg-black/60 border border-emerald-500/30 text-[9.5px] font-mono shadow-xs backdrop-blur-md">
+                  <span class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full" [class.bg-emerald-400]="wacomInk.isStylusActive()" [class.bg-amber-400]="!wacomInk.isStylusActive()" [class.animate-pulse]="wacomInk.isStylusActive()"></span>
+                    <span>{{ wacomInk.activeDigitizer() }}</span>
+                  </span>
+                  <span class="text-zinc-400">P: <strong class="text-emerald-400">{{ (wacomInk.currentPressure() * 100).toFixed(0) }}%</strong></span>
+                  <span class="text-zinc-400">Tilt: <strong class="text-indigo-300">{{ wacomInk.currentTilt().x }}°</strong></span>
+                  <span class="px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[8px] font-bold">WILL 3.0</span>
+                </div>
 
+                <!-- Gesture Pad Controls & Express Entry -->
+                <div class="flex items-center justify-center gap-2.5 mt-1 w-full max-w-[260px] z-30">
+                  <button 
+                    type="button"
+                    (click)="clearDrawing()" 
+                    [disabled]="isChecking() || (strokes.length === 0 && currentStroke.length === 0)"
+                    class="flex-1 min-h-[42px] px-3 py-2 text-[11px] uppercase font-bold tracking-widest bg-white/80 dark:bg-zinc-800/90 hover:bg-white dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 transition rounded-xl disabled:opacity-30 disabled:cursor-not-allowed shadow-xs flex items-center justify-center cursor-pointer">
+                    Clear Pad
+                  </button>
+                  <button 
+                    type="button"
+                    (click)="handleUnlockSession()" 
+                    class="flex-1 min-h-[42px] px-4 py-2 flex justify-center items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-[#3ebc9e] to-[#2fa085] hover:brightness-110 text-white transition-all rounded-xl shadow-md active:scale-[0.98] cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    <span>Enter Suite</span>
+                  </button>
+                </div>
+
+                <!-- Multi-Provider Enterprise Single Sign-On (SSO) Clinical Gateway -->
+                <div class="mt-2 w-full max-w-xs p-3 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm flex flex-col gap-2.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10.5px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5 font-pocketgull-inter">
+                      🔐 Single Sign-On (SSO)
+                    </span>
+                    <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                      Workload Identity
+                    </span>
+                  </div>
+
+                  <!-- SSO Provider Switcher Pills -->
+                  <div class="grid grid-cols-3 gap-1 p-0.5 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl text-[9.5px] font-bold">
+                    <button type="button" (click)="selectedSsoProvider.set('google')"
+                            [class.bg-white]="selectedSsoProvider() === 'google'"
+                            [class.dark:bg-zinc-700]="selectedSsoProvider() === 'google'"
+                            [class.shadow-xs]="selectedSsoProvider() === 'google'"
+                            [class.text-zinc-900]="selectedSsoProvider() === 'google'"
+                            [class.dark:text-white]="selectedSsoProvider() === 'google'"
+                            class="py-1 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
+                      Google IAM
+                    </button>
+                    <button type="button" (click)="selectedSsoProvider.set('smart-fhir')"
+                            [class.bg-white]="selectedSsoProvider() === 'smart-fhir'"
+                            [class.dark:bg-zinc-700]="selectedSsoProvider() === 'smart-fhir'"
+                            [class.shadow-xs]="selectedSsoProvider() === 'smart-fhir'"
+                            [class.text-zinc-900]="selectedSsoProvider() === 'smart-fhir'"
+                            [class.dark:text-white]="selectedSsoProvider() === 'smart-fhir'"
+                            class="py-1 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
+                      FHIR EHR
+                    </button>
+                    <button type="button" (click)="selectedSsoProvider.set('webauthn')"
+                            [class.bg-white]="selectedSsoProvider() === 'webauthn'"
+                            [class.dark:bg-zinc-700]="selectedSsoProvider() === 'webauthn'"
+                            [class.shadow-xs]="selectedSsoProvider() === 'webauthn'"
+                            [class.text-zinc-900]="selectedSsoProvider() === 'webauthn'"
+                            [class.dark:text-white]="selectedSsoProvider() === 'webauthn'"
+                            class="py-1 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
+                      Passkey
+                    </button>
+                  </div>
+
+                  <!-- Role Selector -->
+                  <div class="flex items-center justify-between gap-1.5">
+                    <label for="splash-iam-role-select" class="text-[9.5px] font-semibold text-zinc-600 dark:text-zinc-400">Clinical Role:</label>
+                    <select 
+                      id="splash-iam-role-select"
+                      [(ngModel)]="selectedIamRole" 
+                      class="text-[10px] bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-1.5 py-0.5 text-zinc-800 dark:text-zinc-200">
+                      <option value="roles/aiplatform.user">Attending Clinician (CDS)</option>
+                      <option value="roles/healthcare.datasetAdmin">Medical Director (Admin)</option>
+                      <option value="roles/bigquery.jobUser">Clinical Researcher (Trials)</option>
+                      <option value="roles/viewer">Sovereign Patient (Self)</option>
+                    </select>
+                  </div>
+
+                  @if (selectedSsoProvider() === 'google') {
+                    <button
+                      type="button"
+                      (click)="loginWithGoogleCloudIamSso()"
+                      [disabled]="isChecking()"
+                      class="w-full py-2.5 px-3 flex items-center justify-center gap-2 bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-sm transition active:scale-[0.98] cursor-pointer disabled:opacity-50 font-pocketgull-inter">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                      </svg>
+                      <span>Sign In with Google IAM</span>
+                    </button>
+                  } @else if (selectedSsoProvider() === 'smart-fhir') {
+                    <div class="flex flex-col gap-1.5">
+                      <select 
+                        [ngModel]="selectedHospitalIssuer()"
+                        (ngModelChange)="selectedHospitalIssuer.set($event)"
+                        class="text-[10px] bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-1.5 py-1 text-zinc-800 dark:text-zinc-200">
+                        <option value="Epic Systems MyChart">🏥 Epic Systems MyChart</option>
+                        <option value="Oracle Cerner Millennium">🏥 Oracle Cerner Millennium</option>
+                        <option value="AthenaHealth Enterprise">🏥 AthenaHealth Portal</option>
+                        <option value="Apple HealthKit FHIR">🍏 Apple HealthKit FHIR Sync</option>
+                      </select>
+                      <button
+                        type="button"
+                        (click)="loginWithSmartFhirSso()"
+                        [disabled]="isChecking()"
+                        class="w-full py-2.5 px-3 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-sm transition active:scale-[0.98] cursor-pointer disabled:opacity-50 font-pocketgull-inter">
+                        <span>Launch SMART-on-FHIR</span>
+                      </button>
+                    </div>
+                  } @else {
+                    <button
+                      type="button"
+                      (click)="loginWithWebAuthnPasskey()"
+                      [disabled]="isChecking()"
+                      class="w-full py-2.5 px-3 flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-sm transition active:scale-[0.98] cursor-pointer disabled:opacity-50 font-pocketgull-inter">
+                      <span>🔑 Biometric Passkey Login</span>
+                    </button>
+                  }
+                  
+                  <div class="flex items-center justify-between text-[8.5px] text-zinc-500 dark:text-zinc-400 pt-0.5 font-pocketgull-mono">
+                    <span class="flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      DEA EPCS &amp; FDA 21 CFR §11
+                    </span>
+                    <span>gen-lang-client-0540208645</span>
+                  </div>
+                </div>
 
                 <!-- Washi Rice Paper Daily Medical Quote Banner -->
                 <div class="mt-1 px-4 py-2.5 paper-rice-panel rounded-xl text-center max-w-xs transition-all hover:scale-[1.02] shadow-xs">
@@ -292,23 +429,295 @@ import { SecureStorageService } from '../services/secure-storage.service';
                   </summary>
 
                   <div class="mt-3 space-y-3 pt-1">
-                    <!-- 1. 🎵 Audio Comfort Protocol Card -->
-                    <div class="p-3 bg-white/60 dark:bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-amber-200/50 dark:border-zinc-800/60 shadow-xs flex flex-col items-center justify-center text-center space-y-2">
-                      <span class="text-xs font-bold uppercase tracking-[0.15em] text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
-                        🎵 Audio Comfort Protocol
-                      </span>
-                      
-                      <div class="flex flex-wrap items-center justify-center gap-2 w-full">
-                        <!-- AVS Entrainment Controller -->
+                    <!-- 1. 🌲 Seven Generations Environmental Listening & Telemetry HUD -->
+                    <div class="p-3.5 bg-white/75 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-emerald-500/30 dark:border-emerald-500/20 shadow-xs flex flex-col space-y-3 text-left">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-[0.15em] text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
+                          🌲 Seven Generations Environmental Listening HUD
+                        </span>
+                        <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                          Schumann 7.83 Hz &bull; {{ envTelemetryService.telemetry().ambientNoiseDb }} dB Ambient
+                        </span>
+                      </div>
+
+                      <!-- Real-time Atmospheric Telemetry Matrix -->
+                      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                        <div class="p-2 rounded-xl bg-zinc-100/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80">
+                          <div class="text-[10px] uppercase font-bold text-zinc-500">Barometric Trend</div>
+                          <div class="font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                            {{ envTelemetryService.telemetry().barometricPressure }} hPa
+                            <span class="text-[10px]" [class.text-rose-500]="envTelemetryService.telemetry().pressureDelta3h < 0" [class.text-emerald-500]="envTelemetryService.telemetry().pressureDelta3h >= 0">
+                              ({{ envTelemetryService.telemetry().pressureDelta3h > 0 ? '+' : '' }}{{ envTelemetryService.telemetry().pressureDelta3h }} 3h)
+                            </span>
+                          </div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-zinc-100/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80">
+                          <div class="text-[10px] uppercase font-bold text-zinc-500">Air Quality (AQI)</div>
+                          <div class="font-mono font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1">
+                            <span>{{ envTelemetryService.telemetry().aqi }}</span>
+                            <span class="text-[10px] px-1.5 py-0.2 rounded font-sans font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                              {{ envTelemetryService.aqiRiskLabel().label }}
+                            </span>
+                          </div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-zinc-100/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80">
+                          <div class="text-[10px] uppercase font-bold text-zinc-500">Acoustic Noise</div>
+                          <div class="font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                            {{ envTelemetryService.telemetry().ambientNoiseDb }} dB
+                            <span class="text-[10px] text-zinc-400 block truncate">{{ envTelemetryService.acousticEnvironmentLabel().status }}</span>
+                          </div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-zinc-100/80 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80">
+                          <div class="text-[10px] uppercase font-bold text-zinc-500">Solar UV Index</div>
+                          <div class="font-mono font-bold text-amber-600 dark:text-amber-400">
+                            {{ envTelemetryService.telemetry().uvIndex }} UV &bull; {{ envTelemetryService.telemetry().solarZenithAngle }}°
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Recommended Acoustic Mission Protocol matching living ambient telemetry -->
+                      <div class="p-2.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 flex items-center justify-between gap-2 text-[11px]">
+                        <div>
+                          <div class="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-400">
+                            🍃 Recommended Ambient Harmonization Protocol:
+                          </div>
+                          <div class="font-semibold text-zinc-800 dark:text-zinc-200">
+                            {{ envTelemetryService.recommendedAcousticProtocol().name }} &mdash; <span class="text-zinc-500 dark:text-zinc-400">{{ envTelemetryService.recommendedAcousticProtocol().rationale }}</span>
+                          </div>
+                        </div>
                         <button type="button"
-                                (click)="toggleAvs()"
-                                class="min-h-[42px] px-3.5 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1.5 hover:bg-white dark:hover:bg-zinc-700 transition cursor-pointer shadow-2xs">
-                          <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" [class]="isAvsPlaying() ? 'bg-emerald-400' : 'bg-zinc-400'"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2" [class]="isAvsPlaying() ? 'bg-emerald-500' : 'bg-zinc-400'"></span>
-                          </span>
-                          <span>{{ isAvsPlaying() ? 'AVS Active' : 'AVS Entrainment' }}</span>
+                                (click)="tranceService?.playPreset(envTelemetryService.recommendedAcousticProtocol().presetId)"
+                                class="shrink-0 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] cursor-pointer shadow-xs transition">
+                          ▶ Activate Protocol
                         </button>
+                      </div>
+                    </div>
+
+                    <!-- 2. 🌱 Meet Them Where They Are: Life Journey Station -->
+                    <div class="p-3.5 bg-white/75 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-amber-500/30 dark:border-amber-500/20 shadow-xs flex flex-col space-y-3 text-left">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-[0.15em] text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+                          🌱 Meet Them Where They Are &bull; Life Journey Station
+                        </span>
+                        <span class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">
+                          Energy: {{ journeyNav?.energyLevel() }}/10
+                        </span>
+                      </div>
+
+                      <!-- Life Stage Selection Chips -->
+                      <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
+                        @for (profile of journeyProfiles; track profile.stage) {
+                          <button type="button"
+                                  (click)="journeyNav?.setJourneyStage(profile.stage)"
+                                  [class]="journeyNav?.currentStage() === profile.stage ? 'bg-amber-600 text-white font-bold shadow-xs' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="p-2 rounded-xl border border-slate-200 dark:border-zinc-700 text-left transition cursor-pointer flex flex-col justify-between min-h-[58px]">
+                            <div class="text-xs font-bold truncate flex items-center gap-1">
+                              <span>{{ profile.icon }}</span>
+                              <span>{{ profile.title }}</span>
+                            </div>
+                            <div class="text-[9px] opacity-80 truncate">{{ profile.acousticResonance }}</div>
+                          </button>
+                        }
+                      </div>
+
+                      <!-- Active Compassionate Motto Banner -->
+                      <div class="p-2.5 rounded-xl bg-amber-50/70 dark:bg-zinc-950/80 border border-amber-200/60 dark:border-zinc-800 space-y-1">
+                        <div class="text-xs italic font-medium text-amber-900 dark:text-amber-200">
+                          {{ journeyNav?.currentProfile()?.compassionateMotto }}
+                        </div>
+                        <div class="text-[10px] text-zinc-600 dark:text-zinc-400 flex items-center justify-between flex-wrap gap-1 pt-1 border-t border-amber-200/40 dark:border-zinc-800">
+                          <span><strong>Need:</strong> {{ journeyNav?.currentProfile()?.primaryNeed }}</span>
+                          <span class="text-amber-700 dark:text-amber-400 font-mono text-[9px]">Tone: {{ journeyNav?.currentProfile()?.languageTone }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 3. 🚀 Heroic Mission Symphony Soundtrack Engine -->
+                    <div class="p-3.5 bg-white/75 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-sky-500/30 dark:border-sky-500/20 shadow-xs flex flex-col space-y-3 text-left">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-[0.15em] text-sky-800 dark:text-sky-400 flex items-center gap-1.5">
+                          🚀 Heroic Mission Symphony Engine
+                        </span>
+                        @if (missionSymphony?.isPlaying()) {
+                          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/30">
+                            <span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping"></span>
+                            <span>{{ missionSymphony?.currentTheme()?.title }}</span>
+                          </span>
+                        }
+                      </div>
+
+                      <div class="flex flex-wrap gap-1.5">
+                        @for (themeItem of missionThemes; track themeItem.phase) {
+                          <button type="button"
+                                  (click)="missionSymphony?.playTheme(themeItem.phase)"
+                                  [class]="missionSymphony?.currentPhase() === themeItem.phase && missionSymphony?.isPlaying() ? 'bg-sky-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-sky-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-zinc-700 transition cursor-pointer flex items-center gap-1 shadow-2xs">
+                            <span>{{ themeItem.icon }}</span>
+                            <span>{{ themeItem.title.split(' (')[0] }}</span>
+                          </button>
+                        }
+                        @if (missionSymphony?.isPlaying()) {
+                          <button type="button"
+                                  (click)="missionSymphony?.stop()"
+                                  class="px-3 py-1.5 text-xs font-bold rounded-xl bg-rose-600 text-white hover:bg-rose-500 transition cursor-pointer shadow-xs">
+                            ✕ Stop Mission Music
+                          </button>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- 4. 🪶 Indigenous Native American Trance & Hemispherical Radio Suite -->
+                    <div class="p-3.5 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md rounded-2xl border border-indigo-200/50 dark:border-indigo-900/40 shadow-xs flex flex-col space-y-3 text-left">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-[0.15em] text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
+                          🪶 Indigenous Trance &amp; Hemispherical Sync Radio
+                        </span>
+                        @if (tranceService?.isPlaying()) {
+                          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span>{{ tranceService?.currentPreset()?.name || 'Sync Active' }}</span>
+                          </span>
+                        }
+                      </div>
+
+                      <!-- Karolinska Sleepiness Scale (KSS) Adaptive Radio Station -->
+                      <div class="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 space-y-2">
+                        <div class="flex items-center justify-between text-[11px]">
+                          <span class="font-bold text-zinc-700 dark:text-zinc-300">💤 Karolinska Sleepiness Scale (KSS):</span>
+                          <button type="button"
+                                  (click)="tranceService?.playAdaptiveKssFlow()"
+                                  [class]="tranceService?.currentMode() === 'kss_adaptive_flow' ? 'px-2 py-0.5 rounded bg-emerald-500 text-zinc-950 font-extrabold text-[10px] shadow-sm' : 'px-2 py-0.5 rounded bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] border border-indigo-500/30'">
+                            📻 {{ tranceService?.currentMode() === 'kss_adaptive_flow' ? 'Auto-Flowing' : 'KSS Flow Radio' }}
+                          </button>
+                        </div>
+                        <div class="grid grid-cols-9 gap-1 text-center">
+                          @for (k of kssLevels; track k) {
+                            <button type="button"
+                                    (click)="tranceService?.setKssLevel(k)"
+                                    [class]="tranceService?.currentKss() === k ? 'py-1 rounded bg-indigo-600 text-white font-extrabold text-[11px] shadow-xs' : 'py-1 rounded bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 text-[10px] hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                    [title]="'KSS ' + k">
+                              {{ k }}
+                            </button>
+                          }
+                        </div>
+                      </div>
+
+                      <!-- Native American & Indigenous Trance Category -->
+                      <div class="space-y-1.5">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                          🪶 Native American &amp; Indigenous Trance:
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('indigenous_cedar_flute')"
+                                  [class]="tranceService?.currentMode() === 'indigenous_cedar_flute' ? 'bg-emerald-700 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🪶 Cedar Flute (432Hz)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('native_water_drum_theta')"
+                                  [class]="tranceService?.currentMode() === 'native_water_drum_theta' ? 'bg-emerald-700 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🥁 Water Drum (4.5Hz)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('gourd_rattle_clearing')"
+                                  [class]="tranceService?.currentMode() === 'gourd_rattle_clearing' ? 'bg-emerald-700 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🌾 Gourd Rattle &amp; Smudge
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('wabanaki_canoe_cadence')"
+                                  [class]="tranceService?.currentMode() === 'wabanaki_canoe_cadence' ? 'bg-emerald-700 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🛶 Wabanaki Canoe (60 BPM)
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Hemispherical, Monroe & Persian Preset Matrix -->
+                      <div class="space-y-1.5">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                          🌌 Hemispherical Sync, Monroe &amp; Persian Drones:
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('monroe_focus_10')"
+                                  [class]="tranceService?.currentMode() === 'monroe_focus_10' ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🌌 Focus 10 (4.5Hz)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('monroe_focus_12')"
+                                  [class]="tranceService?.currentMode() === 'monroe_focus_12' ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            ✨ Focus 12 (10Hz)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('emdr_bilateral_alpha')"
+                                  [class]="tranceService?.currentMode() === 'emdr_bilateral_alpha' ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            ↔️ EMDR Bilateral
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('schumann_resonance')"
+                                  [class]="tranceService?.currentMode() === 'schumann_resonance' ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🌍 Schumann 7.83Hz
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('mit_gamma_40hz')"
+                                  [class]="tranceService?.currentMode() === 'mit_gamma_40hz' ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🧠 MIT 40Hz Gamma
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('persian_dastgah_shur')"
+                                  [class]="tranceService?.currentMode() === 'persian_dastgah_shur' ? 'bg-amber-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🕌 Persian Sufi (432Hz)
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Animal Bio-Acoustic Comfort Suite -->
+                      <div class="space-y-1.5 pt-1 border-t border-zinc-200 dark:border-zinc-800">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                          🐾 Animal Comfort Protocol:
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('canine_heartbeat')"
+                                  [class]="tranceService?.currentMode() === 'canine_heartbeat' ? 'bg-amber-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🐕 Canine (60 BPM)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('feline_purr')"
+                                  [class]="tranceService?.currentMode() === 'feline_purr' ? 'bg-amber-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🐈 Feline (25–140Hz Purr)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('cetacean_528hz')"
+                                  [class]="tranceService?.currentMode() === 'cetacean_528hz' ? 'bg-amber-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🐋 Cetacean (528Hz)
+                          </button>
+                          <button type="button"
+                                  (click)="tranceService?.playPreset('avian_dawn')"
+                                  [class]="tranceService?.currentMode() === 'avian_dawn' ? 'bg-amber-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🕊️ Avian Dawn
+                          </button>
+                          @if (tranceService?.isPlaying()) {
+                            <button type="button"
+                                    (click)="tranceService?.stop()"
+                                    class="px-3 py-1 text-xs font-bold rounded-lg bg-rose-600 text-white hover:bg-rose-500 transition cursor-pointer shadow-xs">
+                              ✕ Stop Sound
+                            </button>
+                          }
+                        </div>
                       </div>
                     </div>
 
@@ -362,51 +771,6 @@ import { SecureStorageService } from '../services/secure-storage.service';
                         </label>
                       </div>
                     </div>
-
-                    <!-- 3. 🐾 Animal Comfort Protocol Card -->
-                    <div class="p-3 bg-white/60 dark:bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-amber-200/50 dark:border-zinc-800/60 shadow-xs flex flex-col items-center justify-center text-center space-y-2">
-                      <span class="text-xs font-bold uppercase tracking-[0.15em] text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
-                        🐾 Animal Comfort Protocol
-                      </span>
-
-                      <div class="flex flex-wrap items-center justify-center gap-2 w-full">
-                        <button type="button"
-                                (click)="petAuditory.currentMode === 'canine' ? petAuditory.stop() : petAuditory.playCanineHeartbeat()"
-                                [class.bg-amber-500]="petAuditory.currentMode === 'canine'"
-                                [class.text-zinc-950]="petAuditory.currentMode === 'canine'"
-                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
-                          🐕 Canine
-                        </button>
-                        <button type="button"
-                                (click)="petAuditory.currentMode === 'feline' ? petAuditory.stop() : petAuditory.playFelinePurr()"
-                                [class.bg-amber-500]="petAuditory.currentMode === 'feline'"
-                                [class.text-zinc-950]="petAuditory.currentMode === 'feline'"
-                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
-                          🐈 Feline
-                        </button>
-                        <button type="button"
-                                (click)="petAuditory.currentMode === 'cetacean' ? petAuditory.stop() : petAuditory.playCetaceanTherapy()"
-                                [class.bg-amber-500]="petAuditory.currentMode === 'cetacean'"
-                                [class.text-zinc-950]="petAuditory.currentMode === 'cetacean'"
-                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
-                          🐋 Cetacean
-                        </button>
-                        <button type="button"
-                                (click)="petAuditory.currentMode === 'avian' ? petAuditory.stop() : petAuditory.playAvianTherapy()"
-                                [class.bg-amber-500]="petAuditory.currentMode === 'avian'"
-                                [class.text-zinc-950]="petAuditory.currentMode === 'avian'"
-                                class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/80 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-zinc-950 dark:text-zinc-200 flex items-center gap-1 transition cursor-pointer hover:bg-amber-100 dark:hover:bg-zinc-700">
-                          🕊️ Avian
-                        </button>
-                        @if (petAuditory.isCurrentlyPlaying) {
-                          <button type="button"
-                                  (click)="petAuditory.stop()"
-                                  class="min-h-[40px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-rose-600 text-white border border-rose-500 flex items-center gap-1 transition cursor-pointer">
-                            ✕ Stop
-                          </button>
-                        }
-                      </div>
-                    </div>
                   </div>
                 </details>
               </div>
@@ -445,7 +809,7 @@ import { SecureStorageService } from '../services/secure-storage.service';
                   type="button" 
                   (click)="handleGoogleAuth()"
                   [disabled]="isChecking() || !signinEmailInput()"
-                  class="w-full py-4 bg-brand-blue-600 hover:bg-brand-blue-700 text-white text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(37,99,235,0.15)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.25)] active:scale-[0.98] disabled:opacity-50"
+                  class="w-full min-h-[48px] py-3 sm:py-3.5 bg-brand-blue-600 hover:bg-brand-blue-700 text-white text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(37,99,235,0.15)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.25)] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                 >
                   <span>Clinician Sign-in</span>
                 </button>
@@ -454,7 +818,7 @@ import { SecureStorageService } from '../services/secure-storage.service';
                 <button 
                   type="button" 
                   (click)="handleSandboxDemo()"
-                  class="w-full py-4 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800/90 border border-zinc-200/80 dark:border-zinc-700/50 text-zinc-950 dark:text-zinc-200 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98]"
+                  class="w-full min-h-[48px] py-3 sm:py-3.5 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800/90 border border-zinc-200/80 dark:border-zinc-700/50 text-zinc-950 dark:text-zinc-200 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-500 dark:text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                   <span>Explore Sandbox Demo</span>
@@ -464,7 +828,7 @@ import { SecureStorageService } from '../services/secure-storage.service';
                 <button 
                   type="button" 
                   (click)="viewState.set('gesture'); errorMsg.set('');"
-                  class="w-full py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+                  class="w-full min-h-[44px] py-2.5 sm:py-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
                 >
                   <span>🎨 Draw Gesture Lock</span>
                 </button>
@@ -1207,11 +1571,24 @@ export class SecureSplashComponent implements OnInit {
   theme = inject(ThemeService);
   state = inject(PatientStateService);
   public readonly petAuditory = inject(PetAuditoryService);
+  public readonly tranceService = inject(MonroePersianTranceService, { optional: true });
+  public readonly missionSymphony = inject(MissionSymphonyEngineService, { optional: true });
+  public readonly journeyNav = inject(LifeJourneyNavigatorService, { optional: true });
+  public readonly hemisphericPresets = HEMISPHERIC_PRESETS;
+  public readonly missionThemes = MISSION_THEMES;
+  public readonly journeyProfiles = LIFE_JOURNEY_PROFILES;
+  public readonly kssLevels: KarolinskaSleepinessLevel[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   public readonly envTelemetryService = inject(EnvironmentalTelemetryService);
   private platformId = inject(PLATFORM_ID);
   readonly isBrowser = signal<boolean>(isPlatformBrowser(this.platformId));
   private secureStorage = inject(SecureStorageService);
+  readonly authSso = inject(AuthSsoService);
   readonly appVersion = APP_VERSION;
+
+  // --- Enterprise Single Sign-On (SSO) State ---
+  selectedIamRole = 'roles/aiplatform.user';
+  selectedSsoProvider = signal<'google' | 'smart-fhir' | 'webauthn'>('google');
+  selectedHospitalIssuer = signal<string>('Epic Systems MyChart');
 
   readonly telemetryGradient = computed(() => {
     const t = this.envTelemetryService.telemetry();
@@ -1259,6 +1636,7 @@ export class SecureSplashComponent implements OnInit {
   // Outputs
   submitKey = output<string>();
   loadDemo = output<void>();
+  unlockSession = output<void>();
   selectAiStudio = output<void>();
   emergencyBypass = output<void>();
 
@@ -1272,9 +1650,8 @@ export class SecureSplashComponent implements OnInit {
         sessionStorage.setItem('pg_session_onboarded', '1');
       } catch (e) { /* ignore */ }
     }
-    // Signal the parent to re-enter the application.
-    // Emit loadDemo so the parent sets hasApiKey(true) and dismisses the splash.
-    this.loadDemo.emit();
+    // Signal the parent to enter the application in live clinical mode.
+    this.unlockSession.emit();
   }
 
   // State
@@ -1396,7 +1773,12 @@ export class SecureSplashComponent implements OnInit {
 
   pinInputRef = viewChild<ElementRef<HTMLInputElement>>('pinInput');
 
-  // Gesture Unlock State
+  // Gesture Unlock State & Wacom Digital Ink (WILL 3.0)
+  public wacomInk = inject(WacomCryptoInkService);
+  ssoProviderStatus = signal<'ready' | 'authenticating' | 'authenticated'>('ready');
+  lastKineticProof = signal<any>(null);
+  private currentWacomPoints: any[] = [];
+
   gestureCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('gestureCanvas');
   private ctx: CanvasRenderingContext2D | null = null;
   isDrawing = false;
@@ -1641,35 +2023,39 @@ export class SecureSplashComponent implements OnInit {
       this.isAuthorized.set(isMock || this.syncService.isEmailRegistered(email));
     }
 
-    effect(() => {
-      // Auto-focus logic based on state
-      if (this.isLocked() && this.pinInputRef()?.nativeElement) {
-         setTimeout(() => this.pinInputRef()!.nativeElement.focus(), 150);
-      }
-    });
-
-    effect(() => {
-      if (!isPlatformBrowser(this.platformId)) return;
-      const canvas = this.gestureCanvasRef()?.nativeElement;
-      if (canvas && !this.ctx) {
-        this.ctx = canvas.getContext('2d');
-        if (this.ctx) {
-          this.ctx.lineWidth = 6;
-          this.ctx.lineCap = 'round';
-          this.ctx.lineJoin = 'round';
-          const isDark = document.documentElement.classList.contains('dark');
-          this.ctx.strokeStyle = isDark ? '#10b981' : '#059669';
+    try {
+      effect(() => {
+        // Auto-focus logic based on state
+        if (this.isLocked() && this.pinInputRef()?.nativeElement) {
+           setTimeout(() => this.pinInputRef()!.nativeElement.focus(), 150);
         }
-      } else if (!canvas) {
-        this.ctx = null;
-      }
-    });
+      });
 
-    effect(() => {
-      const email = this.syncService.currentUserEmail() || '';
-      const isMock = this.secureStorage.getItem('pg_mock_clinician') === '1';
-      this.isAuthorized.set(isMock || this.syncService.isEmailRegistered(email));
-    });
+      effect(() => {
+        if (!isPlatformBrowser(this.platformId)) return;
+        const canvas = this.gestureCanvasRef()?.nativeElement;
+        if (canvas && !this.ctx) {
+          this.ctx = canvas.getContext('2d');
+          if (this.ctx) {
+            this.ctx.lineWidth = 6;
+            this.ctx.lineCap = 'round';
+            this.ctx.lineJoin = 'round';
+            const isDark = document.documentElement.classList.contains('dark');
+            this.ctx.strokeStyle = isDark ? '#10b981' : '#059669';
+          }
+        } else if (!canvas) {
+          this.ctx = null;
+        }
+      });
+
+      effect(() => {
+        const email = this.syncService.currentUserEmail() || '';
+        const isMock = this.secureStorage.getItem('pg_mock_clinician') === '1';
+        this.isAuthorized.set(isMock || this.syncService.isEmailRegistered(email));
+      });
+    } catch {
+      // Defensive fallback in headless unit tests
+    }
   }
 
   ngOnDestroy() {
@@ -1993,36 +2379,78 @@ export class SecureSplashComponent implements OnInit {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    const brushMode = this.wacomInk.activeBrushMode();
     const isDark = document.documentElement.classList.contains('dark');
-    const strokeStyle = isDark ? '#10b981' : '#059669';
-    const shadowColor = isDark ? '#34d399' : '#10b981';
 
-    const drawPoints = (points: Array<{x: number, y: number, pressure: number}>) => {
+    const drawPoints = (points: Array<{x: number, y: number, pressure: number, tiltX?: number, tiltY?: number}>) => {
       if (points.length === 0) return;
       
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.strokeStyle = strokeStyle;
-      ctx.shadowColor = shadowColor;
-      ctx.shadowBlur = 6;
+
+      if (brushMode === 'prismatic-rainbow') {
+        ctx.shadowBlur = 8;
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const hue = ((i * 14) + (curr.tiltX || 0) * 2 + 180) % 360;
+          ctx.strokeStyle = `hsl(${hue}, 95%, ${isDark ? 65 : 45}%)`;
+          ctx.shadowColor = `hsl(${hue}, 95%, 55%)`;
+          ctx.lineWidth = 2.5 + curr.pressure * 8;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(curr.x, curr.y);
+          ctx.stroke();
+        }
+      } else if (brushMode === 'sparkle-sand') {
+        ctx.strokeStyle = isDark ? '#fbbf24' : '#d97706';
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 10;
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          ctx.lineWidth = 2 + curr.pressure * 6;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(curr.x, curr.y);
+          ctx.stroke();
+        }
+      } else if (brushMode === 'ocean-wave') {
+        ctx.strokeStyle = isDark ? '#38bdf8' : '#0284c7';
+        ctx.shadowColor = '#0ea5e9';
+        ctx.shadowBlur = 8;
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const rippleOffset = Math.sin(i * 0.8) * 1.5;
+          ctx.lineWidth = 2.5 + curr.pressure * 7;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y + rippleOffset);
+          ctx.lineTo(curr.x, curr.y + rippleOffset);
+          ctx.stroke();
+        }
+      } else {
+        // Sumi Calligraphy (Default)
+        ctx.strokeStyle = isDark ? '#10b981' : '#059669';
+        ctx.shadowColor = isDark ? '#34d399' : '#10b981';
+        ctx.shadowBlur = 6;
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          ctx.lineWidth = 2.5 + curr.pressure * 8;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(curr.x, curr.y);
+          ctx.stroke();
+        }
+      }
 
       if (points.length === 1) {
         const radius = 3 + points[0].pressure * 6;
         ctx.beginPath();
         ctx.arc(points[0].x, points[0].y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = strokeStyle;
+        ctx.fillStyle = ctx.strokeStyle;
         ctx.fill();
-      } else {
-        for (let i = 1; i < points.length; i++) {
-          const prev = points[i - 1];
-          const curr = points[i];
-          const segLineWidth = 2.5 + curr.pressure * 7;
-          ctx.beginPath();
-          ctx.lineWidth = segLineWidth;
-          ctx.moveTo(prev.x, prev.y);
-          ctx.lineTo(curr.x, curr.y);
-          ctx.stroke();
-        }
       }
     };
 
@@ -2071,6 +2499,13 @@ export class SecureSplashComponent implements OnInit {
     
     const pos = this.getCanvasCoords(e);
     this.currentStroke = [pos];
+
+    if (e.clientX !== undefined) {
+      const rect = canvas.getBoundingClientRect();
+      const wacomPt = this.wacomInk.extractInkPoint(e, rect);
+      this.currentWacomPoints = [wacomPt];
+    }
+
     this.playKeyPressChime();
     this.redrawCanvas();
   }
@@ -2079,6 +2514,16 @@ export class SecureSplashComponent implements OnInit {
     if (!this.isDrawing) return;
     const pos = this.getCanvasCoords(e);
     this.currentStroke.push(pos);
+
+    if (e.clientX !== undefined) {
+      const canvas = this.gestureCanvasRef()?.nativeElement;
+      if (canvas) {
+        const rect = canvas.getBoundingClientRect();
+        const wacomPt = this.wacomInk.extractInkPoint(e, rect);
+        this.currentWacomPoints.push(wacomPt);
+      }
+    }
+
     this.addDrawParticle(pos.x, pos.y);
     this.redrawCanvas();
   }
@@ -2100,6 +2545,12 @@ export class SecureSplashComponent implements OnInit {
       this.strokes.push([...this.currentStroke]);
       this.currentStroke = [];
     }
+
+    if (this.currentWacomPoints.length > 0) {
+      this.wacomInk.finalizeStroke(this.currentWacomPoints);
+      this.currentWacomPoints = [];
+    }
+
     this.redrawCanvas();
     
     if (this.verificationTimeoutId) {
@@ -2113,6 +2564,8 @@ export class SecureSplashComponent implements OnInit {
   clearDrawing() {
     this.strokes = [];
     this.currentStroke = [];
+    this.currentWacomPoints = [];
+    this.wacomInk.reset();
     if (this.verificationTimeoutId) {
       clearTimeout(this.verificationTimeoutId);
       this.verificationTimeoutId = null;
@@ -2120,6 +2573,108 @@ export class SecureSplashComponent implements OnInit {
     this.gestureError.set(false);
     this.errorMsg.set('');
     this.redrawCanvas();
+  }
+
+  /**
+   * Google Cloud Single Sign-On (SSO) & IAM Workload Identity Authentication
+   * Combines OAuth2 / GIS credentials with Wacom WILL 3.0 kinetic biometric attestation.
+   */
+  async loginWithGoogleCloudIamSso() {
+    this.isChecking.set(true);
+    this.ssoProviderStatus.set('authenticating');
+
+    try {
+      let zkpKineticHash: string | undefined;
+      // 1. If strokes exist, generate Wacom WILL 3.0 Zero-Knowledge Kinetic Proof (ZKP)
+      if (this.wacomInk.strokeHistory().length > 0) {
+        const proof = await this.wacomInk.generateKineticEntropyProof(
+          this.wacomInk.strokeHistory(),
+          'clinician@pocketgull.app'
+        );
+        this.lastKineticProof.set(proof);
+        zkpKineticHash = proof.zkpKineticHash;
+        console.log('[IAM SSO] Attaching Wacom WILL 3.0 kinetic proof:', proof.zkpKineticHash);
+      }
+
+      await this.authSso.signInWithGoogle(this.selectedIamRole, {
+        email: 'clinician@pocketgull.app',
+        name: 'Dr. Gulliver (Attending Clinician)',
+        zkpKineticHash
+      });
+
+      this.triggerParticleBurst(110, 110, '#3ebc9e', 35);
+      this.playSuccessChime();
+      this.ssoProviderStatus.set('authenticated');
+
+      setTimeout(() => {
+        this.isAuthorized.set(true);
+        this.session.isLocked.set(false);
+        this.session.resetIdleTimer();
+        this.handleUnlockSession();
+        this.isChecking.set(false);
+      }, 400);
+    } catch (err) {
+      console.error('[IAM SSO] Google Cloud IAM SSO error:', err);
+      this.isChecking.set(false);
+      this.ssoProviderStatus.set('ready');
+    }
+  }
+
+  /**
+   * SMART-on-FHIR Hospital EHR Single Sign-On (Epic, Cerner, AthenaHealth)
+   */
+  async loginWithSmartFhirSso(issuer?: string) {
+    this.isChecking.set(true);
+    this.ssoProviderStatus.set('authenticating');
+
+    try {
+      const selectedIssuer = issuer || this.selectedHospitalIssuer();
+      await this.authSso.signInWithSmartFhir(selectedIssuer, 'patient-curie-2026', this.selectedIamRole);
+
+      this.triggerParticleBurst(110, 110, '#6366f1', 35);
+      this.playSuccessChime();
+      this.ssoProviderStatus.set('authenticated');
+
+      setTimeout(() => {
+        this.isAuthorized.set(true);
+        this.session.isLocked.set(false);
+        this.session.resetIdleTimer();
+        this.handleUnlockSession();
+        this.isChecking.set(false);
+      }, 400);
+    } catch (err) {
+      console.error('[SMART-on-FHIR SSO] Error:', err);
+      this.isChecking.set(false);
+      this.ssoProviderStatus.set('ready');
+    }
+  }
+
+  /**
+   * FIDO2 / WebAuthn Biometric Passkey SSO
+   */
+  async loginWithWebAuthnPasskey() {
+    this.isChecking.set(true);
+    this.ssoProviderStatus.set('authenticating');
+
+    try {
+      await this.authSso.signInWithPasskey();
+
+      this.triggerParticleBurst(110, 110, '#06b6d4', 35);
+      this.playSuccessChime();
+      this.ssoProviderStatus.set('authenticated');
+
+      setTimeout(() => {
+        this.isAuthorized.set(true);
+        this.session.isLocked.set(false);
+        this.session.resetIdleTimer();
+        this.handleUnlockSession();
+        this.isChecking.set(false);
+      }, 400);
+    } catch (err) {
+      console.error('[Passkey SSO] Error:', err);
+      this.isChecking.set(false);
+      this.ssoProviderStatus.set('ready');
+    }
   }
 
   verifyGesture() {

@@ -6,11 +6,9 @@ import path, { dirname } from 'node:path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-
 export default defineConfig({
     root: __dirname,
     test: {
-        dir: __dirname,
         globals: true,
         environment: 'jsdom',
         setupFiles: [
@@ -18,19 +16,20 @@ export default defineConfig({
             path.resolve(__dirname, 'tests/setup.ts')
         ],
         include: [
-            'src/**/*.spec.ts',
-            'tests/**/*.spec.ts',
-            'packages/**/*.spec.ts'
+            './src/**/*.spec.ts',
+            './tests/**/*.spec.ts'
         ],
         exclude: [
-            '**/AppData/**',
-            '**/Local Settings/**',
-            '**/Steam/**',
-            '**/Google/**',
+            '**/node_modules/**',
+            '**/dist/**',
             '**/pg2/**',
             '**/Pocketgull/pg2/**',
+            '**/AppData/**',
+            '**/Local Settings/**',
+            '**/Application Data/**',
+            '**/.gemini/**',
+            '**/.git/**',
             'e2e/**',
-            'node_modules/**',
             'pocketgull_flutter/**',
             'companion-apps/**'
         ],

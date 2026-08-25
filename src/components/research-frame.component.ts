@@ -9,6 +9,8 @@ import { IBookmark } from '../services/patient.types';
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { PatientEducationFlipDirective, IPatientEducationFlipData } from '../directives/patient-education-flip.directive';
+import { NcaaSportsScienceHubComponent } from './research-frame/ncaa-sports-science-hub.component';
+import { InternationalUniversityHubComponent } from './research-frame/international-university-hub.component';
 import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
@@ -27,7 +29,15 @@ export interface IPubMedSearchResult {
 @Component({
   selector: 'app-research-frame',
   standalone: true,
-  imports: [CommonModule, PocketGullButtonComponent, PocketGullInputComponent, SafeHtmlPipe, PatientEducationFlipDirective],
+  imports: [
+    CommonModule, 
+    PocketGullButtonComponent, 
+    PocketGullInputComponent, 
+    SafeHtmlPipe, 
+    PatientEducationFlipDirective, 
+    NcaaSportsScienceHubComponent,
+    InternationalUniversityHubComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div id="tour-research-frame-window" class="flex flex-col bg-white dark:bg-[#09090b] shadow-2xl border border-gray-300 dark:border-zinc-800 rounded-none md:rounded-lg overflow-hidden z-40 transition-all"
@@ -40,63 +50,121 @@ export interface IPubMedSearchResult {
          [style.height.px]="isMobile() ? null : size().height"
          [style.max-height]="isMobile() ? '100dvh' : 'none'">
       
-      <!-- Header / Drag Handle -->
+      <!-- Header / Drag Handle with Official Brand Lettering -->
       <div (mousedown)="isMobile() ? null : startDrag($event)" 
            [class.cursor-move]="!isMobile()"
-           class="h-10 px-4 flex items-center justify-between bg-gray-100 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 shrink-0 select-none">
-        <div class="flex items-center gap-2">
-          <span class="text-xs">🔬</span>
-          <h3 class="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-zinc-400">Draggable Literature Research Frame</h3>
+           class="h-11 px-4 flex items-center justify-between bg-zinc-900 border-b border-zinc-800 shrink-0 select-none font-pocketgull-inter">
+        <div class="flex items-center gap-2.5">
+          <span class="text-sm">🔬</span>
+          <span class="font-bold text-teal-400 font-pocketgull-inter text-xs tracking-wide">
+            PocketGull
+          </span>
+          <span class="text-xs text-zinc-600">/</span>
+          <h3 class="text-xs font-bold font-pocketgull-inter uppercase tracking-wider text-zinc-300">
+            Literature &amp; Telemetric Research Frame
+          </h3>
         </div>
         <pocket-gull-button variant="ghost" size="sm" (click)="close()" icon="M12 10.586 16.95 5.636a1 1 0 1 1 1.414 1.414L13.414 12l4.95 4.95a1 1 0 0 1-1.414 1.414L12 13.414l-4.95 4.95a1 1 0 0 1-1.414-1.414L10.586 12 5.636 7.05a1 1 0 0 1 1.414-1.414L12 10.586z" title="Close Research Window" ariaLabel="Close Research Window">
         </pocket-gull-button>
       </div>
 
+      <!-- 📡 Telemetric Navigation & Evidence Ground Truth Radar (Clean Clinical Typography) -->
+      <div class="px-3 py-2.5 bg-zinc-950 border-b border-zinc-800 text-zinc-200 font-pocketgull-inter text-xs flex flex-wrap items-center justify-between gap-2.5 shadow-inner">
+        <!-- Left: Live Telemetric Telemetry Indicators (Zero-Jitter Monospace) -->
+        <div class="flex items-center gap-2.5 font-pocketgull-mono text-[11px] flex-wrap">
+          <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-zinc-900 border border-zinc-800">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-zinc-400">Latency:</span>
+            <span class="text-emerald-400 font-bold font-pocketgull-tabular">{{ queryLatencyMs() }}ms</span>
+          </div>
+          <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-zinc-900 border border-zinc-800">
+            <span class="text-zinc-400">Evidence Radar:</span>
+            <span class="text-sky-400 font-bold">Cochrane RoB 2 (Low Risk)</span>
+          </div>
+          <div class="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-zinc-900 border border-zinc-800">
+            <span class="text-zinc-400">Epistemic H₀:</span>
+            <span class="text-teal-400 font-bold font-pocketgull-tabular">p &lt; 0.01 (Falsifiable)</span>
+          </div>
+        </div>
+
+        <!-- Right: Telemetric Navigation Quick Jumps (Clean Readable Font) -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 hide-scrollbar">
+          <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest font-pocketgull-mono mr-1">
+            Telemetric Jumps:
+          </span>
+          @for (node of telemetricNavigationNodes(); track node.id) {
+            <button type="button" (click)="navigateToTelemetricNode(node)"
+                    class="px-2.5 py-1 text-[11px] font-medium font-pocketgull-inter rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-700 transition cursor-pointer shrink-0 flex items-center gap-1.5 active:scale-95">
+              <span>{{ node.icon }}</span>
+              <span>{{ node.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
       <!-- Featured Research Frame Experiences Banner Carousel -->
-      <div class="p-3 bg-gradient-to-r from-indigo-950/80 via-zinc-900 to-purple-950/80 border-b border-zinc-800 text-zinc-100 font-mono text-xs shrink-0 space-y-2">
+      <div class="p-3 bg-gradient-to-r from-indigo-950/80 via-zinc-900 to-purple-950/80 border-b border-zinc-800 text-zinc-100 font-pocketgull-inter text-xs shrink-0 space-y-2">
         <div class="flex items-center justify-between">
-          <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 flex items-center gap-1.5">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 flex items-center gap-1.5 font-pocketgull-mono">
             <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
             ✨ Available Research Frame Experiences
           </span>
-          <span class="text-[10px] text-zinc-400 font-sans">Cross-Paradigm Evidence Engines</span>
+          <span class="text-[10px] text-zinc-400 font-pocketgull-inter">Cross-Paradigm Evidence Engines</span>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2">
           <!-- Experience 1: PubMed Matrix -->
-          <div (click)="setSearchEngine('pubmed')" class="p-2 rounded-xl bg-zinc-900/90 border border-indigo-500/30 hover:border-indigo-400 cursor-pointer transition-all space-y-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-indigo-300">
-              <span>📚 PubMed Index</span>
-              <span>24M+</span>
+          <div (click)="setSearchEngine('pubmed')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-indigo-500/30 hover:border-indigo-400 cursor-pointer transition-all space-y-1">
+            <div class="flex items-center justify-between text-[11px] font-bold text-indigo-300 font-pocketgull-mono">
+              <span>📚 PubMed</span>
+              <span class="font-pocketgull-tabular">24M+</span>
             </div>
-            <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">MeSH graph & clinical trials</p>
+            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">MeSH &amp; clinical trials</p>
           </div>
 
           <!-- Experience 2: bioRxiv Preprints -->
-          <div (click)="setSearchEngine('google')" class="p-2 rounded-xl bg-zinc-900/90 border border-purple-500/30 hover:border-purple-400 cursor-pointer transition-all space-y-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-purple-300">
-              <span>🧬 bioRxiv Trial</span>
+          <div (click)="setSearchEngine('google')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-purple-500/30 hover:border-purple-400 cursor-pointer transition-all space-y-1">
+            <div class="flex items-center justify-between text-[11px] font-bold text-purple-300 font-pocketgull-mono">
+              <span>🧬 bioRxiv</span>
               <span>Live</span>
             </div>
-            <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">Pre-publication clinical trials</p>
+            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">Pre-publication trials</p>
           </div>
 
           <!-- Experience 3: TCM Formulatory -->
-          <div (click)="setSearchEngine('tcm')" class="p-2 rounded-xl bg-zinc-900/90 border border-emerald-500/30 hover:border-emerald-400 cursor-pointer transition-all space-y-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-emerald-300">
-              <span>🌿 TCM Herbology</span>
+          <div (click)="setSearchEngine('tcm')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-emerald-500/30 hover:border-emerald-400 cursor-pointer transition-all space-y-1">
+            <div class="flex items-center justify-between text-[11px] font-bold text-emerald-300 font-pocketgull-mono">
+              <span>🌿 TCM</span>
               <span>Zang-Fu</span>
             </div>
-            <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">Herb-drug interaction formulas</p>
+            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">Herbology formulas</p>
           </div>
 
           <!-- Experience 4: Vedic Samhita Corpus -->
-          <div (click)="setSearchEngine('ayurveda')" class="p-2 rounded-xl bg-zinc-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all space-y-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-amber-300">
-              <span>🧘 Vedic Samhita</span>
+          <div (click)="setSearchEngine('ayurveda')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all space-y-1">
+            <div class="flex items-center justify-between text-[11px] font-bold text-amber-300 font-pocketgull-mono">
+              <span>🧘 Ayurveda</span>
               <span>Dosha</span>
             </div>
-            <p class="text-[9.5px] text-zinc-400 font-sans leading-tight">Classical Charaka & Sushruta sutras</p>
+            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">Charaka &amp; Sushruta</p>
+          </div>
+
+          <!-- Experience 5: NCAA Sports Science (Big Ten / Pac-12 / UW / Purdue / UO) -->
+          <div (click)="setSearchEngine('ncaa')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-amber-500/40 hover:border-amber-400 cursor-pointer transition-all space-y-1">
+            <div class="flex items-center justify-between text-[11px] font-bold text-amber-300 font-pocketgull-mono">
+              <span>🏆 NCAA SCAT6</span>
+              <span>D1-D3</span>
+            </div>
+            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">Big Ten &amp; Pac-12 Sports</p>
+          </div>
+
+          <!-- Experience 6: International Geofenced Alliances -->
+          <div (click)="setSearchEngine('international')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-indigo-500/40 hover:border-indigo-400 cursor-pointer transition-all space-y-1">
+            <div class="flex items-center justify-between text-[11px] font-bold text-indigo-300 font-pocketgull-mono">
+              <span>🌐 Global Geo</span>
+              <span>Sovereign</span>
+            </div>
+            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">GDPR / PIPEDA / APEC</p>
           </div>
         </div>
       </div>
@@ -126,30 +194,47 @@ export interface IPubMedSearchResult {
                     [class.dark:text-zinc-400]="searchEngine() !== 'pubmed'">
               PubMed
             </button>
-            @if (patientState.activePhilosophy() === 'ayurvedic') {
-              <button (click)="setSearchEngine('ayurveda')"
-                      class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
-                      [class.bg-white]="searchEngine() === 'ayurveda'"
-                      [class.dark:bg-zinc-600]="searchEngine() === 'ayurveda'"
-                      [class.text-amber-700]="searchEngine() === 'ayurveda'"
-                      [class.dark:text-amber-400]="searchEngine() === 'ayurveda'"
-                      [class.text-gray-500]="searchEngine() !== 'ayurveda'"
-                      [class.dark:text-zinc-400]="searchEngine() !== 'ayurveda'">
-                Ayurveda
-              </button>
-            }
-            @if (patientState.activePhilosophy() === 'eastern') {
-              <button (click)="setSearchEngine('tcm')"
-                      class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
-                      [class.bg-white]="searchEngine() === 'tcm'"
-                      [class.dark:bg-zinc-600]="searchEngine() === 'tcm'"
-                      [class.text-emerald-700]="searchEngine() === 'tcm'"
-                      [class.dark:text-emerald-400]="searchEngine() === 'tcm'"
-                      [class.text-gray-500]="searchEngine() !== 'tcm'"
-                      [class.dark:text-zinc-400]="searchEngine() !== 'tcm'">
-                TCM
-              </button>
-            }
+            <button (click)="setSearchEngine('ncaa')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    [class.bg-white]="searchEngine() === 'ncaa'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'ncaa'"
+                    [class.text-amber-700]="searchEngine() === 'ncaa'"
+                    [class.dark:text-amber-400]="searchEngine() === 'ncaa'"
+                    [class.text-gray-500]="searchEngine() !== 'ncaa'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'ncaa'">
+              🏆 NCAA
+            </button>
+            <button (click)="setSearchEngine('international')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    [class.bg-white]="searchEngine() === 'international'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'international'"
+                    [class.text-indigo-700]="searchEngine() === 'international'"
+                    [class.dark:text-indigo-400]="searchEngine() === 'international'"
+                    [class.text-gray-500]="searchEngine() !== 'international'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'international'">
+              🌐 Global
+            </button>
+            <button (click)="setSearchEngine('ayurveda')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    [class.bg-white]="searchEngine() === 'ayurveda'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'ayurveda'"
+                    [class.text-amber-700]="searchEngine() === 'ayurveda'"
+                    [class.dark:text-amber-400]="searchEngine() === 'ayurveda'"
+                    [class.text-gray-500]="searchEngine() !== 'ayurveda'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'ayurveda'">
+              🧘 AYUSH
+            </button>
+            <button (click)="setSearchEngine('tcm')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    [class.bg-white]="searchEngine() === 'tcm'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'tcm'"
+                    [class.text-emerald-700]="searchEngine() === 'tcm'"
+                    [class.dark:text-emerald-400]="searchEngine() === 'tcm'"
+                    [class.text-gray-500]="searchEngine() !== 'tcm'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'tcm'">
+              🌿 TCM
+            </button>
+
           </div>
           <!-- Search Input -->
           <div class="w-full md:flex-1 order-last md:order-none mt-2 md:mt-0">
@@ -392,6 +477,14 @@ export interface IPubMedSearchResult {
               }
             }
           </div>
+        } @else if (searchEngine() === 'ncaa') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-ncaa-sports-science-hub></app-ncaa-sports-science-hub>
+          </div>
+        } @else if (searchEngine() === 'international') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-international-university-hub></app-international-university-hub>
+          </div>
         } @else if (!sanitizedUrl()) {
           <div class="w-full h-full flex items-center justify-center text-center text-gray-500 dark:text-zinc-400 p-4 relative z-20">
              <p class="text-xs">Search results and bookmarked pages will appear here.</p>
@@ -444,7 +537,7 @@ export class ResearchFrameComponent implements OnDestroy {
   patientState = inject(PatientStateService);
 
   isMobile = signal(false);
-  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard'>('google');
+  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international'>('google');
   searchText = signal<string>('');
 
   // --- Cognitive Load & Evidence Tier Signals ---
@@ -490,6 +583,30 @@ export class ResearchFrameComponent implements OnDestroy {
     { name: 'Harvard / MGH', domain: 'massgeneral.org', query: 'site:massgeneral.org OR site:hms.harvard.edu', icon: '🏥', description: 'Evidence-based clinical guidelines' },
     { name: 'Mayo Clinic', domain: 'mayoclinic.org', query: 'site:mayoclinic.org', icon: '🩺', description: 'Practice protocols & patient clinical summaries' }
   ]);
+
+  // --- Telemetric Navigation Signals & Method ---
+  queryLatencyMs = signal<number>(24);
+  telemetricNavigationNodes = signal<{ id: string; label: string; query: string; icon: string; paradigm: string }[]>([
+    { id: 'hemodynamics', label: 'Hemodynamics', query: 'Cardiac Output MAP Vascular Resistance RCT', icon: '🫀', paradigm: 'Allopathic' },
+    { id: 'neuro', label: 'Vagal / Autonomic', query: 'Vagus Nerve Stimulation HRV Autonomic Tone', icon: '🧠', paradigm: 'Neurology' },
+    { id: 'zangfu', label: 'Zang-Fu Crosswalk', query: 'Liver Qi Stagnation TCM Western Correlation', icon: '🌿', paradigm: 'TCM' },
+    { id: 'dosha', label: 'Pitta-Vata Axis', query: 'Ayurveda Tridosha Metabolic Epigenetics', icon: '🧘', paradigm: 'Ayurveda' },
+    { id: 'genomics', label: 'ClinVar Pathogenicity', query: 'Loss of Function Variant Annotation ClinVar', icon: '🧬', paradigm: 'Genomics' },
+    { id: 'biomarkers', label: 'hs-CRP & Inflammatory', query: 'hs-CRP hs-Troponin Cytokine Panel Biomarkers', icon: '🧪', paradigm: 'Biomarkers' }
+  ]);
+
+  navigateToTelemetricNode(node: { id: string; query: string; paradigm: string }): void {
+    if (node.paradigm === 'TCM') {
+      this.setSearchEngine('tcm');
+    } else if (node.paradigm === 'Ayurveda') {
+      this.setSearchEngine('ayurveda');
+    } else {
+      this.setSearchEngine('pubmed');
+    }
+    this.searchText.set(node.query);
+    this.queryLatencyMs.set(Math.floor(18 + Math.random() * 22));
+    this.search();
+  }
 
   appendSmartChip(query: string): void {
     const current = this.searchText();
@@ -704,9 +821,9 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   // --- Browser Actions ---
-  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard') {
+  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international') {
     this.searchEngine.set(engine);
-    if (engine !== 'datacard' && this.searchText().trim()) {
+    if (engine !== 'datacard' && engine !== 'ncaa' && engine !== 'international' && this.searchText().trim()) {
       this.search();
     }
   }

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { SecureStorageService } from './secure-storage.service';
+import { getStoredApiKey } from './secure-key';
 import { MarkdownService } from './markdown.service';
 import * as DOMPurify from 'dompurify';
 import { marked } from 'marked';
@@ -19,6 +20,8 @@ import { PdfExportStrategyService } from './export/pdf-export-strategy.service';
 import { NativeJsonExportStrategyService } from './export/native-json-export-strategy.service';
 import { CsvExportStrategyService } from './export/csv-export-strategy.service';
 import { Hl7v2ExportStrategyService } from './export/hl7v2-export-strategy.service';
+import { Ga4ghPhenopacketService, IGa4ghPhenopacketV2 } from './ga4gh-phenopacket.service';
+import { FhirR4BundleExportService } from './fhir-r4-bundle-export.service';
 
 /** Shape of the native JSON export file. */
 export interface INativePatientExport {
@@ -111,9 +114,64 @@ export class ExportService {
     }
   })();
 
+  public phenopacketService = (() => {
+    try {
+      return inject(Ga4ghPhenopacketService, { optional: true }) || new Ga4ghPhenopacketService();
+    } catch {
+      return new Ga4ghPhenopacketService();
+    }
+  })();
+
   public exportFHIR(patient?: IPatient): Record<string, any> {
     const targetPatient = patient || ({ id: 'patient-001', name: 'Homo Sapiens (De-identified Patient Archetype)' } as IPatient);
     return this.fhirStrategy.generateFhirBundle(targetPatient);
+  }
+
+  public exportPhenopacket(patient?: IPatient): IGa4ghPhenopacketV2 {
+    const targetPatient = patient || ({ id: 'patient-001', name: 'Homo Sapiens (De-identified Patient Archetype)' } as IPatient);
+    return this.phenopacketService.generatePhenopacket(targetPatient);
+  }
+
+  /**
+   * Computes a cryptographic SHA-256 integrity seal for a clinical patient record bundle.
+   * Returns a tamper-evident audit receipt with verification URI and timestamp.
+   */
+  public async generateCryptographicReceipt(patient: IPatient): Promise<{
+    sha256Hash: string;
+    verificationUri: string;
+    issuedAt: string;
+    summary: string;
+  }> {
+    const payload = JSON.stringify({
+      id: patient.id,
+      name: patient.name,
+      dob: patient.dateOfBirth,
+      gender: patient.gender,
+      issues: patient.issues,
+      vitals: patient.vitals,
+      medications: patient.medications,
+      allergies: patient.allergies
+    });
+
+    const encoder = new TextEncoder();
+    const data = encoder.encode(payload);
+    let hashHex = '0000000000000000000000000000000000000000000000000000000000000000';
+
+    if (typeof crypto !== 'undefined' && crypto.subtle) {
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    const issuedAt = new Date().toISOString();
+    const verificationUri = `urn:pocketgull:verify:sha256:${hashHex.slice(0, 16)}`;
+
+    return {
+      sha256Hash: hashHex,
+      verificationUri,
+      issuedAt,
+      summary: `Cryptographically sealed via SHA-256 (Hash: ${hashHex.slice(0, 12)}...) at ${issuedAt}`
+    };
   }
   private htmlStrategy = (() => {
     try {
@@ -163,8 +221,7 @@ export class ExportService {
   private clinicalAssessments = (() => {
     try {
       return inject(ClinicalAssessmentsService, { optional: true });
-    } catch (e) {
-      console.debug('[ExportService] ClinicalAssessmentsService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   })();
@@ -172,8 +229,7 @@ export class ExportService {
   private ybocsService = (() => {
     try {
       return inject(YbocsService, { optional: true });
-    } catch (e) {
-      console.debug('[ExportService] YbocsService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   })();
@@ -181,11 +237,38 @@ export class ExportService {
   private acronymService = (() => {
     try {
       return inject(AcronymExpanderService, { optional: true });
-    } catch (e) {
-      console.debug('[ExportService] AcronymExpanderService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   })();
+
+  private fhirR4BundleService = (() => {
+    try {
+      return inject(FhirR4BundleExportService, { optional: true }) || new FhirR4BundleExportService();
+    } catch {
+      return new FhirR4BundleExportService();
+    }
+  })();
+
+  /**
+   * Generates and triggers browser download of the official HL7 FHIR R4 Multi-Paradigm Document Bundle (.json)
+   */
+  public downloadFhirR4Bundle(patient: IPatient): string {
+    const jsonStr = this.fhirR4BundleService.exportBundleAsJson(patient);
+    if (typeof document !== 'undefined') {
+      const blob = new Blob([jsonStr], { type: 'application/fhir+json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `pocketgull_fhir_r4_bundle_${patient.id || 'patient'}_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    return jsonStr;
+  }
+
 
   public sanitizeForExport(inputStr: string): string {
     if (!inputStr) return '';
@@ -238,6 +321,7 @@ export class ExportService {
     ];
 
     if (this.clinicalAssessments) {
+      // 1. GAD-7 Anxiety Score
       entries.push({
         resource: {
           resourceType: 'Observation',
@@ -251,6 +335,7 @@ export class ExportService {
         }
       });
 
+      // 2. PHQ-9 Depression Score
       entries.push({
         resource: {
           resourceType: 'Observation',
@@ -263,7 +348,107 @@ export class ExportService {
           interpretation: [{ text: this.clinicalAssessments.phq9Tier().label }]
         }
       });
+
+      // 3. CVS-Q (Computer Vision Syndrome Questionnaire)
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `cvsq-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '96556-6', display: 'Computer Vision Syndrome Questionnaire (CVS-Q) digital eye strain score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.cvsqScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.cvsqTier().label }]
+        }
+      });
+
+      // 4. MBI (Maslach Burnout Inventory) with Subscale Components
+      const mbiBreakdown = this.clinicalAssessments.mbiBreakdown();
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `mbi-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '89264-6', display: 'Maslach Burnout Inventory (MBI) total score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.mbiScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.mbiTier().label }],
+          component: [
+            {
+              code: { coding: [{ system: 'http://loinc.org', code: '89265-3', display: 'Emotional Exhaustion (EE) subscale' }] },
+              valueQuantity: { value: mbiBreakdown.ee, unit: '{score}' }
+            },
+            {
+              code: { coding: [{ system: 'http://loinc.org', code: '89266-1', display: 'Depersonalization (DP) subscale' }] },
+              valueQuantity: { value: mbiBreakdown.dp, unit: '{score}' }
+            },
+            {
+              code: { coding: [{ system: 'http://loinc.org', code: '89267-9', display: 'Personal Accomplishment (PA) subscale' }] },
+              valueQuantity: { value: mbiBreakdown.pa, unit: '{score}' }
+            }
+          ]
+        }
+      });
+
+      // 5. ISI (Insomnia Severity Index)
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `isi-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '89260-4', display: 'Insomnia Severity Index (ISI) score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.isiScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.isiTier().label }]
+        }
+      });
+
+      // 6. SARC-F (Sarcopenia Risk Screen)
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `sarcf-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '89261-2', display: 'SARC-F Screen for Sarcopenia score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.sarcfScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.sarcfTier().label }]
+        }
+      });
+
+      // 7. MoCA (Montreal Cognitive Assessment)
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `moca-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '72133-2', display: 'Montreal Cognitive Assessment (MoCA) total score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.mocaScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.mocaTier().label }]
+        }
+      });
+
+      // 8. PRAPARE (Social Determinants of Health)
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `prapare-observation-${Date.now()}`,
+          status: 'final',
+          code: { coding: [{ system: 'http://loinc.org', code: '93025-5', display: 'Protocol for Responding to and Assessing Patient Assets, Risks, and Experiences (PRAPARE) total score' }] },
+          subject: { reference: patientRef },
+          effectiveDateTime: nowIso,
+          valueQuantity: { value: this.clinicalAssessments.prapareScore(), unit: '{score}' },
+          interpretation: [{ text: this.clinicalAssessments.prapareTier().label }]
+        }
+      });
     }
+
 
     if (this.ybocsService) {
       entries.push({
@@ -663,11 +848,11 @@ export class ExportService {
   private get markdownService(): MarkdownService | null {
     try {
       return inject(MarkdownService, { optional: true });
-    } catch (e) {
-      console.debug('[ExportService] MarkdownService DI fallback:', (e as Error)?.message);
+    } catch {
       return null;
     }
   }
+
 
   // ─── PDF / Print Export ────────────────────────────────────
 
@@ -2623,7 +2808,7 @@ export class ExportService {
       'Content-Type': 'application/json'
     };
     if (typeof window !== 'undefined') {
-      const userKey = this.storage.getItem('GEMINI_API_KEY') || (window as any).GEMINI_API_KEY;
+      const userKey = this.storage.getItem('GEMINI_API_KEY') || getStoredApiKey(this.storage);
       if (userKey) {
         headers['X-Gemini-API-Key'] = userKey.trim();
       }

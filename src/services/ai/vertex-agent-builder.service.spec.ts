@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { expect } from 'vitest';
 import { VertexAgentBuilderService, IVertexSearchResponse } from './vertex-agent-builder.service';
 
 describe('VertexAgentBuilderService', () => {

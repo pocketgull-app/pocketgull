@@ -17,7 +17,13 @@ import { Firestore, FieldValue, Timestamp } from '@google-cloud/firestore';
 import type { SubscriptionTier, UsageCategory } from './tier-config';
 import { getQuotaLimit } from './tier-config';
 
-const db = new Firestore();
+let _db: Firestore | null = null;
+function getDb(): Firestore {
+  if (!_db) {
+    _db = new Firestore();
+  }
+  return _db;
+}
 
 export interface IUsageSnapshot {
   discovery_read: number;
@@ -69,7 +75,7 @@ export class UsageMeterService {
    */
   async recordUsage(tenantId: string, category: UsageCategory): Promise<void> {
     const monthKey = currentMonthKey();
-    const docRef = db
+    const docRef = getDb()
       .collection(this.collectionName)
       .doc(tenantId)
       .collection('months')
@@ -89,7 +95,7 @@ export class UsageMeterService {
    */
   async getUsage(tenantId: string, month?: string): Promise<IUsageSnapshot> {
     const monthKey = month || currentMonthKey();
-    const docRef = db
+    const docRef = getDb()
       .collection(this.collectionName)
       .doc(tenantId)
       .collection('months')

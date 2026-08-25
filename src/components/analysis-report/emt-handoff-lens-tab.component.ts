@@ -2,7 +2,6 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, ChangeDet
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { generate } from 'lean-qr';
 import { BystanderActionSuiteComponent } from '../bystander-action-suite.component';
-import { EmergencyNutritionalBypassComponent } from '../emergency-nutritional-bypass.component';
 import { PocketGullButtonComponent } from '../shared/pocket-gull-button.component';
 import { PocketGullCardComponent } from '../shared/pocket-gull-card.component';
 import { ClinicalIcons } from '../../assets/clinical-icons';
@@ -16,28 +15,33 @@ import { PatientManagementService } from '../../services/patient-management.serv
     CommonModule,
     DecimalPipe,
     BystanderActionSuiteComponent,
-    EmergencyNutritionalBypassComponent,
     PocketGullButtonComponent,
     PocketGullCardComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="flex flex-col gap-6 animate-in fade-in duration-500">
+    <div class="flex flex-col gap-6 animate-in fade-in duration-500 font-pocketgull-inter">
       <!-- 🚨 Bystander 911 Action Suite & Role Assignment -->
       <app-bystander-action-suite></app-bystander-action-suite>
 
       <!-- Crimson alert banner -->
-      <div class="p-4 bg-red-955/40 border border-red-800/60 rounded-xl text-red-200 text-xs flex items-center justify-between shadow-inner">
-        <div class="flex items-center gap-2.5">
-          <span class="text-lg">🚨</span>
+      <div class="p-4 bg-gradient-to-r from-red-950/70 via-zinc-950/90 to-red-950/70 border-2 border-red-700/80 rounded-2xl text-red-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl font-pocketgull-mono">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-red-600/30 border border-red-500/50 flex items-center justify-center text-red-400 text-xl animate-pulse shrink-0">
+            🚨
+          </div>
           <div>
-            <h4 class="font-bold uppercase tracking-wider text-red-400">Offline Emergency First Aid Active</h4>
-            <p class="opacity-90 mt-0.5">Session-isolated, temporary clinical sandbox. No persistent data is saved.</p>
+            <h4 class="font-pocketgull text-sm sm:text-base font-black uppercase tracking-wider text-red-200">
+              Offline Emergency First Aid Suite
+            </h4>
+            <p class="text-xs text-zinc-300 font-sans opacity-90 mt-0.5">
+              Zero-latency local sandbox. Bystander CPR timing, vitals telemetry &amp; Lean-QR handoff.
+            </p>
           </div>
         </div>
         <pocket-gull-button (click)="toggleCprMetronome()" 
           [variant]="isCprMetronomeActive() ? 'primary' : 'outline'" 
-          class="shrink-0 font-bold uppercase tracking-widest text-[12px] py-1.5 px-3 border border-red-500/30 transition-all active:scale-95"
+          class="shrink-0 font-pocketgull font-bold uppercase tracking-widest text-xs py-2 px-4 border border-red-500/40 transition-all active:scale-95 shadow-md min-h-[44px]"
           [class.bg-red-600]="isCprMetronomeActive()"
           [class.text-white]="isCprMetronomeActive()">
           🔊 {{ isCprMetronomeActive() ? 'Stop Metronome' : 'CPR Metronome (' + (patientAgeCategory() === 'infant' ? '120' : '110') + ' BPM)' }}
@@ -45,23 +49,25 @@ import { PatientManagementService } from '../../services/patient-management.serv
       </div>
 
       <!-- Patient Demographic Selector (Age & Pregnancy) -->
-      <div class="p-4 bg-gray-50 dark:bg-zinc-900 border border-gray-150 dark:border-zinc-800/80 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="p-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-pocketgull-mono shadow-lg">
         <div>
-          <span class="text-[12px] font-bold text-gray-400 dark:text-zinc-550 uppercase tracking-widest block mb-1">Target Patient Demographic</span>
+          <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest block mb-1.5 font-pocketgull">
+            Target Patient Demographic
+          </span>
           <div class="flex items-center gap-2">
             <button type="button" (click)="patientAgeCategory.set('adult')"
-              [class]="patientAgeCategory() === 'adult' ? 'bg-zinc-850 dark:bg-zinc-100 text-white dark:text-zinc-950 border-transparent' : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border-gray-200 dark:border-zinc-700'"
-              class="px-3 py-1.5 text-[12px] uppercase tracking-wider font-bold rounded-lg border transition">
+              [class]="patientAgeCategory() === 'adult' ? 'bg-amber-500 text-zinc-950 font-black border-amber-400 shadow-md scale-105' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750'"
+              class="px-3.5 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
               🧑 Adult
             </button>
             <button type="button" (click)="patientAgeCategory.set('infant'); isPatientPregnant.set(false)"
-              [class]="patientAgeCategory() === 'infant' ? 'bg-zinc-850 dark:bg-zinc-100 text-white dark:text-zinc-950 border-transparent' : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border-gray-200 dark:border-zinc-700'"
-              class="px-3 py-1.5 text-[12px] uppercase tracking-wider font-bold rounded-lg border transition">
+              [class]="patientAgeCategory() === 'infant' ? 'bg-amber-500 text-zinc-950 font-black border-amber-400 shadow-md scale-105' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750'"
+              class="px-3.5 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
               👶 Infant (Baby)
             </button>
             <button type="button" (click)="patientAgeCategory.set('geriatric')"
-              [class]="patientAgeCategory() === 'geriatric' ? 'bg-zinc-850 dark:bg-zinc-100 text-white dark:text-zinc-950 border-transparent' : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border-gray-200 dark:border-zinc-700'"
-              class="px-3 py-1.5 text-[12px] uppercase tracking-wider font-bold rounded-lg border transition">
+              [class]="patientAgeCategory() === 'geriatric' ? 'bg-amber-500 text-zinc-950 font-black border-amber-400 shadow-md scale-105' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750'"
+              class="px-3.5 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
               🧓 Geriatric (Elder)
             </button>
           </div>
@@ -69,10 +75,10 @@ import { PatientManagementService } from '../../services/patient-management.serv
 
         @if (patientAgeCategory() === 'adult') {
           <div class="flex items-center gap-2">
-            <span class="text-[12px] uppercase tracking-wider font-bold text-gray-500 dark:text-zinc-400">Pregnancy Check:</span>
+            <span class="text-xs uppercase tracking-wider font-bold text-zinc-400 font-pocketgull">Pregnancy Check:</span>
             <button type="button" (click)="isPatientPregnant.set(!isPatientPregnant())"
-              [class]="isPatientPregnant() ? 'bg-pink-500/10 text-pink-600 border-pink-500/40' : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border-gray-200 dark:border-zinc-700'"
-              class="px-3 py-1.5 text-[12px] uppercase tracking-wider font-bold rounded-lg border transition flex items-center gap-1.5">
+              [class]="isPatientPregnant() ? 'bg-rose-500/20 text-rose-300 border-rose-500/50 shadow-md' : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-750'"
+              class="px-3.5 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition flex items-center gap-1.5 cursor-pointer min-h-[44px]">
               🤰 {{ isPatientPregnant() ? 'Pregnant Patient' : 'Not Pregnant' }}
             </button>
           </div>
@@ -81,26 +87,26 @@ import { PatientManagementService } from '../../services/patient-management.serv
 
       <!-- CPR Visual Coach HUD -->
       @if (isCprMetronomeActive()) {
-        <div class="p-5 bg-zinc-950 border border-red-900/60 rounded-2xl flex flex-col items-center justify-center gap-4 text-center animate-in slide-in-from-top-4 duration-300">
+        <div class="p-6 bg-gradient-to-b from-zinc-950 to-red-950/40 border-2 border-red-600/80 rounded-3xl flex flex-col items-center justify-center gap-4 text-center animate-in slide-in-from-top-4 duration-300 font-pocketgull-mono shadow-2xl">
           <div class="flex items-center gap-4">
-            <div class="text-[12px] uppercase font-mono tracking-widest text-zinc-500">Cycle {{ cprCycleCount() }}</div>
-            <div class="w-1.5 h-1.5 rounded-full bg-zinc-800"></div>
-            <div class="text-[12px] uppercase font-mono tracking-widest text-red-500 font-extrabold animate-pulse">
+            <div class="text-xs uppercase font-bold tracking-widest text-zinc-400">CYCLE {{ cprCycleCount() }}</div>
+            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+            <div class="text-sm uppercase font-pocketgull font-black tracking-widest text-red-400 animate-pulse">
               @if (cprCompressionCount() <= 30) {
                 COMPRESSION: {{ cprCompressionCount() }} / 30
               } @else {
-                RESCUE BREATH PHASE
+                💨 2 RESCUE BREATHS
               }
             </div>
           </div>
           
           <!-- Bouncing Target Indicator synchronized with compression clicks -->
-          <div class="relative w-20 h-20 flex items-center justify-center">
-            <div class="absolute inset-0 rounded-full border border-red-500/20"></div>
-            <div class="rounded-full flex items-center justify-center text-white text-lg font-bold transition-all duration-75"
-                 [class.w-16]="cprCompressionCount() % 2 === 0" [class.h-16]="cprCompressionCount() % 2 === 0" [class.bg-red-650]="cprCompressionCount() % 2 === 0"
-                 [class.w-12]="cprCompressionCount() % 2 !== 0" [class.h-12]="cprCompressionCount() % 2 !== 0" [class.bg-red-950]="cprCompressionCount() % 2 !== 0"
-                 [class.bg-blue-600]="cprCompressionCount() > 30" [style.transform]="cprCompressionCount() > 30 ? 'scale(1.1)' : 'none'">
+          <div class="relative w-24 h-24 flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-2 border-red-500/40 animate-ping"></div>
+            <div class="rounded-full flex items-center justify-center text-white text-2xl font-black transition-all duration-75 shadow-2xl"
+                 [class.w-20]="cprCompressionCount() % 2 === 0" [class.h-20]="cprCompressionCount() % 2 === 0" [class.bg-red-600]="cprCompressionCount() % 2 === 0"
+                 [class.w-16]="cprCompressionCount() % 2 !== 0" [class.h-16]="cprCompressionCount() % 2 !== 0" [class.bg-red-950]="cprCompressionCount() % 2 !== 0"
+                 [class.bg-sky-600]="cprCompressionCount() > 30" [style.transform]="cprCompressionCount() > 30 ? 'scale(1.15)' : 'none'">
               @if (cprCompressionCount() <= 30) {
                 ❤️
               } @else {
@@ -109,64 +115,64 @@ import { PatientManagementService } from '../../services/patient-management.serv
             </div>
           </div>
           
-          <p class="text-sm font-bold text-zinc-200 max-w-md">{{ cprCoachPrompt() }}</p>
+          <p class="text-base font-pocketgull font-bold text-zinc-100 max-w-lg leading-relaxed">{{ cprCoachPrompt() }}</p>
         </div>
       }
 
       <!-- Three-column grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-pocketgull-inter">
         <!-- Column 1: Vitals & Camera Pulse Sensor -->
         <pocket-gull-card title="Emergency Vitals" [icon]="ClinicalIcons.Assessment">
-          <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="p-2.5 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-100 dark:border-zinc-800/80">
-              <span class="text-[12px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-550 block mb-0.5">Heart Rate</span>
-              <div class="text-lg font-extrabold text-red-500 dark:text-red-400">
-                {{ state.vitals().hr || '--' }} <span class="text-[12px] font-normal text-gray-500 dark:text-zinc-500">BPM</span>
+          <div class="grid grid-cols-2 gap-3 mb-4 font-pocketgull-mono">
+            <div class="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-0.5 font-pocketgull">Heart Rate</span>
+              <div class="text-2xl font-black text-red-400 font-pocketgull-tabular">
+                {{ state.vitals().hr || '--' }} <span class="text-xs font-normal text-zinc-500">BPM</span>
               </div>
             </div>
-            <div class="p-2.5 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-100 dark:border-zinc-800/80">
-              <span class="text-[12px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-550 block mb-0.5">SpO2</span>
-              <div class="text-lg font-extrabold text-blue-500 dark:text-blue-400">
-                {{ state.vitals().spO2 || '--' }} <span class="text-[12px] font-normal text-gray-500 dark:text-zinc-500">%</span>
+            <div class="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-0.5 font-pocketgull">SpO2</span>
+              <div class="text-2xl font-black text-sky-400 font-pocketgull-tabular">
+                {{ state.vitals().spO2 || '--' }} <span class="text-xs font-normal text-zinc-500">%</span>
               </div>
             </div>
-            <div class="p-2.5 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-100 dark:border-zinc-800/80">
-              <span class="text-[12px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-550 block mb-0.5">Temperature</span>
-              <div class="text-lg font-extrabold text-amber-500 dark:text-amber-400">
-                {{ state.vitals().temp || '--' }} <span class="text-[12px] font-normal text-gray-500 dark:text-zinc-500">°F</span>
+            <div class="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-0.5 font-pocketgull">Temperature</span>
+              <div class="text-2xl font-black text-amber-400 font-pocketgull-tabular">
+                {{ state.vitals().temp || '--' }} <span class="text-xs font-normal text-zinc-500">°F</span>
               </div>
             </div>
-            <div class="p-2.5 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-100 dark:border-zinc-800/80">
-              <span class="text-[12px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-550 block mb-0.5">Blood Pressure</span>
-              <div class="text-lg font-extrabold text-purple-500 dark:text-purple-400">
+            <div class="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-0.5 font-pocketgull">Blood Pressure</span>
+              <div class="text-2xl font-black text-purple-400 font-pocketgull-tabular">
                 {{ state.vitals().bp || '--' }}
               </div>
             </div>
           </div>
 
-          <div class="border-t border-gray-100 dark:border-zinc-800/80 pt-3 flex flex-col gap-2">
+          <div class="border-t border-zinc-800 pt-3 flex flex-col gap-2 font-pocketgull-mono">
             @if (!isPulseAcquiring()) {
-              <button type="button" (click)="startPulseAcquisition()" class="w-full py-2 bg-emerald-600/10 dark:bg-emerald-600/20 hover:bg-emerald-600/20 dark:hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-600 dark:text-emerald-450 font-bold uppercase tracking-widest text-[12px] rounded-xl transition flex items-center justify-center gap-2 active:scale-[0.98]">
-                <span>📷 Acquire pulse via Camera</span>
+              <button type="button" (click)="startPulseAcquisition()" class="w-full py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-pocketgull font-bold uppercase tracking-wider text-xs rounded-xl transition flex items-center justify-center gap-2 active:scale-[0.98] min-h-[44px] cursor-pointer">
+                <span>📷 Acquire Pulse via Camera</span>
               </button>
             } @else {
-              <div class="p-2 bg-zinc-950 border border-emerald-900/40 rounded-xl flex flex-col gap-2">
-                <div class="flex items-center justify-between text-[12px] uppercase font-bold text-emerald-555">
-                  <span class="animate-pulse">Hold finger on camera lens...</span>
-                  <span>{{ pulseProgress() | number:'1.0-0' }}%</span>
+              <div class="p-3 bg-zinc-950 border border-emerald-900/50 rounded-xl flex flex-col gap-2">
+                <div class="flex items-center justify-between text-xs uppercase font-bold text-emerald-400">
+                  <span class="animate-pulse">Hold finger over camera lens...</span>
+                  <span class="font-pocketgull-tabular">{{ pulseProgress() | number:'1.0-0' }}%</span>
                 </div>
                 
-                <div class="h-6 overflow-hidden flex items-end justify-center gap-[2px] bg-emerald-950/20 rounded">
-                  <div class="w-1.5 bg-emerald-500 transition-all duration-75" [style.height.%]="20 + (pulseProgress() % 4 === 0 ? 60 : pulseProgress() % 4 === 1 ? 40 : 15)"></div>
-                  <div class="w-1.5 bg-emerald-500 transition-all duration-75" [style.height.%]="30 + (pulseProgress() % 4 === 1 ? 55 : pulseProgress() % 4 === 2 ? 35 : 10)"></div>
-                  <div class="w-1.5 bg-emerald-500 transition-all duration-75" [style.height.%]="25 + (pulseProgress() % 4 === 2 ? 65 : pulseProgress() % 4 === 3 ? 45 : 20)"></div>
-                  <div class="w-1.5 bg-emerald-500 transition-all duration-75" [style.height.%]="40 + (pulseProgress() % 4 === 3 ? 50 : pulseProgress() % 4 === 0 ? 30 : 15)"></div>
+                <div class="h-6 overflow-hidden flex items-end justify-center gap-1 bg-emerald-950/30 rounded-lg p-1">
+                  <div class="w-2 bg-emerald-400 rounded-sm transition-all duration-75" [style.height.%]="20 + (pulseProgress() % 4 === 0 ? 60 : pulseProgress() % 4 === 1 ? 40 : 15)"></div>
+                  <div class="w-2 bg-emerald-400 rounded-sm transition-all duration-75" [style.height.%]="30 + (pulseProgress() % 4 === 1 ? 55 : pulseProgress() % 4 === 2 ? 35 : 10)"></div>
+                  <div class="w-2 bg-emerald-400 rounded-sm transition-all duration-75" [style.height.%]="25 + (pulseProgress() % 4 === 2 ? 65 : pulseProgress() % 4 === 3 ? 45 : 20)"></div>
+                  <div class="w-2 bg-emerald-400 rounded-sm transition-all duration-75" [style.height.%]="40 + (pulseProgress() % 4 === 3 ? 50 : pulseProgress() % 4 === 0 ? 30 : 15)"></div>
                 </div>
 
-                <div class="w-full bg-zinc-800 rounded-full h-1 overflow-hidden">
-                  <div class="bg-emerald-500 h-full transition-all" [style.width.%]="pulseProgress()"></div>
+                <div class="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-emerald-400 h-full transition-all" [style.width.%]="pulseProgress()"></div>
                 </div>
-                <button type="button" (click)="cancelPulseAcquisition()" class="py-0.5 text-[8.5px] uppercase tracking-widest text-zinc-500 hover:text-zinc-300 font-bold">
+                <button type="button" (click)="cancelPulseAcquisition()" class="py-1 text-[11px] uppercase tracking-widest text-zinc-400 hover:text-zinc-200 font-bold cursor-pointer">
                   Cancel
                 </button>
               </div>
@@ -177,16 +183,16 @@ import { PatientManagementService } from '../../services/patient-management.serv
         <!-- Column 2: Bystander Actions Timeline -->
         <pocket-gull-card title="Bystander Actions Timeline" [icon]="ClinicalIcons.FollowUp">
           @if (state.clinicalNotes().length === 0) {
-            <div class="h-32 flex items-center justify-center border border-dashed border-gray-200 dark:border-zinc-800 rounded-lg">
-              <p class="text-[12px] text-gray-400 dark:text-zinc-500 font-medium">No actions logged yet.</p>
+            <div class="h-36 flex items-center justify-center border border-dashed border-zinc-800 rounded-xl p-4 text-center">
+              <p class="text-xs text-zinc-500 font-medium">No actions logged yet. Use 1-tap buttons above.</p>
             </div>
           } @else {
-            <div class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+            <div class="flex flex-col gap-2 max-h-52 overflow-y-auto pr-1">
               @for (note of state.clinicalNotes(); track note.id) {
-                <div class="p-2 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-100 dark:border-zinc-800/60 flex items-start justify-between gap-3">
+                <div class="p-2.5 bg-zinc-900/90 rounded-xl border border-zinc-800 flex items-start justify-between gap-3">
                   <div class="flex-1 min-w-0">
-                    <p class="text-[12px] text-gray-700 dark:text-zinc-300 font-medium break-words leading-relaxed">{{ note.text }}</p>
-                    <span class="text-[8.5px] text-gray-400 dark:text-zinc-500 mt-1 block">{{ note.date }}</span>
+                    <p class="text-xs text-zinc-200 font-medium break-words leading-relaxed">{{ note.text }}</p>
+                    <span class="text-[10px] text-zinc-500 mt-1 block font-pocketgull-mono">{{ note.date }}</span>
                   </div>
                 </div>
               }
@@ -196,105 +202,104 @@ import { PatientManagementService } from '../../services/patient-management.serv
 
         <!-- Column 3: Patient Emergency Medical ID (ICE) -->
         <pocket-gull-card title="Patient Emergency Medical ID (ICE)" [icon]="ClinicalIcons.Education">
-          <div class="space-y-3 text-[12px]">
-            <div class="flex items-center justify-between border-b border-gray-100 dark:border-zinc-800/85 pb-2">
-              <span class="text-gray-450 dark:text-zinc-500 uppercase tracking-wider font-semibold text-[8.5px]">Blood Type</span>
-              <span class="font-extrabold text-red-500 dark:text-red-400">{{ medicalId().bloodType }}</span>
+          <div class="space-y-3 text-xs">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+              <span class="text-zinc-400 uppercase tracking-wider font-bold text-[10px] font-pocketgull">Blood Type</span>
+              <span class="font-black text-red-400 font-pocketgull">{{ medicalId().bloodType }}</span>
             </div>
-            <div class="flex flex-col gap-0.5 border-b border-gray-100 dark:border-zinc-800/85 pb-2">
-              <span class="text-gray-450 dark:text-zinc-500 uppercase tracking-wider font-semibold text-[8.5px]">Severe Allergies</span>
-              <span class="font-bold text-amber-600 dark:text-amber-450">{{ medicalId().allergies }}</span>
+            <div class="flex flex-col gap-0.5 border-b border-zinc-800 pb-2">
+              <span class="text-zinc-400 uppercase tracking-wider font-bold text-[10px] font-pocketgull">Severe Allergies</span>
+              <span class="font-bold text-amber-400">{{ medicalId().allergies }}</span>
             </div>
-            <div class="flex flex-col gap-0.5 border-b border-gray-100 dark:border-zinc-800/85 pb-2">
-              <span class="text-gray-450 dark:text-zinc-500 uppercase tracking-wider font-semibold text-[8.5px]">Medications</span>
-              <span class="text-gray-700 dark:text-zinc-300 leading-normal">{{ medicalId().medications }}</span>
+            <div class="flex flex-col gap-0.5 border-b border-zinc-800 pb-2">
+              <span class="text-zinc-400 uppercase tracking-wider font-bold text-[10px] font-pocketgull">Medications</span>
+              <span class="text-zinc-300 leading-normal">{{ medicalId().medications }}</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-gray-450 dark:text-zinc-500 uppercase tracking-wider font-semibold text-[8.5px]">ICE Contact</span>
-              <span class="font-bold text-gray-700 dark:text-zinc-300">{{ medicalId().emergencyContact.split(' ')[0] }}</span>
+              <span class="text-zinc-400 uppercase tracking-wider font-bold text-[10px] font-pocketgull">ICE Contact</span>
+              <span class="font-bold text-zinc-200 font-pocketgull-mono">{{ medicalId().emergencyContact.split(' ')[0] }}</span>
             </div>
           </div>
         </pocket-gull-card>
       </div>
 
       <!-- GPS SOS Telemetry -->
-      <div class="p-4 bg-zinc-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="p-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 font-pocketgull-mono shadow-lg">
         <div class="text-left flex-1">
-          <span class="text-[12px] font-bold text-red-500 dark:text-red-400 uppercase tracking-widest block mb-0.5">Emergency SOS Location Telemetry</span>
+          <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-0.5 font-pocketgull">
+            Emergency SOS Location Telemetry
+          </span>
           @if (isGpsAcquired()) {
-            <span class="text-xs font-bold text-gray-700 dark:text-zinc-300">📡 Coords: {{ gpsCoords() }}</span>
+            <span class="text-xs font-bold text-zinc-200 font-pocketgull-tabular">📡 Coords: {{ gpsCoords() }}</span>
           } @else {
-            <span class="text-xs text-gray-500 dark:text-zinc-400 font-medium">Location Telemetry has not been shared. Click button to enable.</span>
+            <span class="text-xs text-zinc-400 font-sans">Location Telemetry has not been shared. Click button to enable.</span>
           }
         </div>
         @if (isGpsAcquired()) {
-          <a [href]="smsHref()" class="px-4 py-2 bg-red-650 hover:bg-red-700 text-white font-bold text-[9.5px] uppercase tracking-wider rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-[0_4px_12px_rgba(220,38,38,0.2)] no-underline">
+          <a [href]="smsHref()" class="px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white font-pocketgull font-bold text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-lg no-underline min-h-[44px] cursor-pointer">
             🚨 Broadcast SOS SMS
           </a>
         } @else {
-          <button type="button" (click)="loadLiveGpsCoordinates()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[9.5px] uppercase tracking-wider rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm">
-            📡 Enable & Share GPS Location
+          <button type="button" (click)="loadLiveGpsCoordinates()" class="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-pocketgull font-bold text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm min-h-[44px] cursor-pointer">
+            📡 Enable &amp; Share GPS Location
           </button>
         }
       </div>
 
-      <!-- Emergency Bypass Rapid Nutritional Triage Telemetry -->
-      <app-emergency-nutritional-bypass></app-emergency-nutritional-bypass>
-
       <!-- First Aid Quick Guides -->
       <pocket-gull-card title="Emergency Offline Treatment Guides" [icon]="ClinicalIcons.Medication">
-        <div class="flex flex-wrap gap-2 mb-4 border-b border-gray-150 dark:border-zinc-800/80 pb-3">
+        <div class="flex flex-wrap gap-2 mb-4 border-b border-zinc-800 pb-3 font-pocketgull">
            <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'bleeding' ? null : 'bleeding')"
-             [class]="activeFirstAidGuide() === 'bleeding' ? 'bg-red-500/10 text-red-600 border-red-500/40' : 'bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-350'"
-             class="px-2.5 py-1.5 text-[12px] uppercase tracking-wider font-bold rounded-lg border transition">
+             [class]="activeFirstAidGuide() === 'bleeding' ? 'bg-red-500/20 text-red-300 border-red-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
              🩸 Bleeding Control
            </button>
            <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'choking' ? null : 'choking')"
-             [class]="activeFirstAidGuide() === 'choking' ? 'bg-amber-500/10 text-amber-600 border-amber-500/40' : 'bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-350'"
-             class="px-2.5 py-1.5 text-[12px] uppercase tracking-wider font-bold rounded-lg border transition">
+             [class]="activeFirstAidGuide() === 'choking' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
              💨 Choking / Heimlich
            </button>
            <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'overdose' ? null : 'overdose')"
-             [class]="activeFirstAidGuide() === 'overdose' ? 'bg-purple-500/10 text-purple-650 border-purple-500/40' : 'bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-350'"
-             class="px-2.5 py-1.5 text-[12px] uppercase tracking-wider font-bold rounded-lg border transition">
+             [class]="activeFirstAidGuide() === 'overdose' ? 'bg-purple-500/20 text-purple-300 border-purple-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
              💊 Overdose Response
            </button>
            <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'stroke' ? null : 'stroke')"
-             [class]="activeFirstAidGuide() === 'stroke' ? 'bg-blue-500/10 text-blue-600 border-blue-500/40' : 'bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-350'"
-             class="px-2.5 py-1.5 text-[12px] uppercase tracking-wider font-bold rounded-lg border transition">
+             [class]="activeFirstAidGuide() === 'stroke' ? 'bg-sky-500/20 text-sky-300 border-sky-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
              🧠 Stroke (FAST)
            </button>
            <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'burns' ? null : 'burns')"
-             [class]="activeFirstAidGuide() === 'burns' ? 'bg-orange-500/10 text-orange-600 border-orange-500/40' : 'bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-350'"
-             class="px-2.5 py-1.5 text-[12px] uppercase tracking-wider font-bold rounded-lg border transition">
+             [class]="activeFirstAidGuide() === 'burns' ? 'bg-orange-500/20 text-orange-300 border-orange-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
              🔥 Burn Care
            </button>
            <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'heat' ? null : 'heat')"
-             [class]="activeFirstAidGuide() === 'heat' ? 'bg-amber-600/10 text-amber-700 border-amber-650/40' : 'bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-350'"
-             class="px-2.5 py-1.5 text-[12px] uppercase tracking-wider font-bold rounded-lg border transition">
+             [class]="activeFirstAidGuide() === 'heat' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
              ☀️ Heat Stroke
            </button>
         </div>
         
-        <div class="text-[12px] leading-relaxed text-gray-700 dark:text-zinc-300">
+        <div class="text-xs sm:text-sm leading-relaxed text-zinc-300 font-pocketgull-inter">
           @if (activeFirstAidGuide() === 'bleeding') {
             <div class="space-y-2 animate-in fade-in duration-200">
               @if (patientAgeCategory() === 'infant') {
-                <p class="font-bold text-red-500">🩸 Infant Bleeding Control (Direct Pressure Only):</p>
+                <p class="font-pocketgull font-bold text-red-400">🩸 Infant Bleeding Control (Direct Pressure Only):</p>
                 <ol class="list-decimal pl-5 space-y-1">
                   <li><strong>Direct Pressure:</strong> Place sterile gauze or clean cloth on the wound. Apply continuous, firm direct pressure using 2-3 fingers.</li>
                   <li><strong>No Windlass Tourniquets:</strong> Avoid adult windlass tourniquets on infants. Continue firm direct pressure until EMS arrives.</li>
-                  <li><strong>Elevation & Warmth:</strong> Elevate the limb slightly if possible. Keep infant warm to prevent hypothermia.</li>
+                  <li><strong>Elevation &amp; Warmth:</strong> Elevate the limb slightly if possible. Keep infant warm to prevent hypothermia.</li>
                 </ol>
               } @else if (isPatientPregnant()) {
-                <p class="font-bold text-red-500">🩸 Severe Bleeding Control (Pregnancy Specific):</p>
+                <p class="font-pocketgull font-bold text-red-400">🩸 Severe Bleeding Control (Pregnancy Specific):</p>
                 <ol class="list-decimal pl-5 space-y-1">
                   <li><strong>Direct Pressure:</strong> Apply firm, continuous direct pressure with sterile dressings.</li>
                   <li><strong>Tourniquet:</strong> If bleeding is life-threatening on a limb, apply a tourniquet 2-3 inches above the wound. Tighten until bleeding stops.</li>
                   <li><strong>Left Lateral Position:</strong> Maintain left lateral tilt (elevate right hip) to prevent supine hypotensive syndrome (uterus pressing inferior vena cava) while managing bleeding.</li>
                 </ol>
               } @else {
-                <p class="font-bold text-red-500">🩸 Bleeding Control Protocol:</p>
+                <p class="font-pocketgull font-bold text-red-400">🩸 Bleeding Control Protocol:</p>
                 <ol class="list-decimal pl-5 space-y-1">
                   <li><strong>Direct Pressure:</strong> Place sterile gauze or clean cloth directly on the wound and apply firm, continuous pressure.</li>
                   <li><strong>Elevation:</strong> Elevate the injured limb above the level of the heart if possible.</li>
@@ -305,21 +310,21 @@ import { PatientManagementService } from '../../services/patient-management.serv
           } @else if (activeFirstAidGuide() === 'choking') {
             <div class="space-y-2 animate-in fade-in duration-200">
               @if (patientAgeCategory() === 'infant') {
-                <p class="font-bold text-amber-500">💨 Infant Choking Protocol (Back Blows & Chest Thrusts):</p>
+                <p class="font-pocketgull font-bold text-amber-400">💨 Infant Choking Protocol (Back Blows &amp; Chest Thrusts):</p>
                 <ol class="list-decimal pl-5 space-y-1">
                   <li><strong>Assess:</strong> Look for ineffective cough, blue lips, or silent choking. Do NOT perform abdominal Heimlich thrusts.</li>
                   <li><strong>5 Back Blows:</strong> Support the infant's head and neck. Place face down along your forearm, resting on your thigh with the head lower than the chest. Deliver 5 firm back blows with the heel of your hand between the shoulder blades.</li>
                   <li><strong>5 Chest Thrusts:</strong> Support the head and flip the infant face up along your forearm. Place 2 fingers on the center of the breastbone (just below the nipple line) and compress 5 times. Repeat cycles.</li>
                 </ol>
               } @else if (isPatientPregnant()) {
-                <p class="font-bold text-amber-500">💨 Pregnancy Choking Protocol (Chest Thrusts):</p>
+                <p class="font-pocketgull font-bold text-amber-400">💨 Pregnancy Choking Protocol (Chest Thrusts):</p>
                 <ol class="list-decimal pl-5 space-y-1">
                   <li><strong>Assess:</strong> Confirm patient cannot speak or cough. Do NOT perform abdominal Heimlich thrusts.</li>
                   <li><strong>Chest Thrust Position:</strong> Wrap arms around the patient's chest from behind, placing your hands in the center of the breastbone (sternum).</li>
                   <li><strong>Deliver Chest Thrusts:</strong> Pull backward with quick, distinct inward thrusts until the airway is cleared or the patient becomes unresponsive.</li>
                 </ol>
               } @else {
-                <p class="font-bold text-amber-500">💨 Conscious Choking Protocol (Heimlich):</p>
+                <p class="font-pocketgull font-bold text-amber-400">💨 Conscious Choking Protocol (Heimlich):</p>
                 <ol class="list-decimal pl-5 space-y-1">
                   <li><strong>Confirm Choking:</strong> Ask "Are you choking?" Look for hands clutched to throat, inability to speak/cough.</li>
                   <li><strong>Abdominal Thrusts:</strong> Stand behind the person. Wrap arms around waist. Place thumb side of fist slightly above the navel. Grasp fist with other hand.</li>
@@ -329,16 +334,16 @@ import { PatientManagementService } from '../../services/patient-management.serv
             </div>
           } @else if (activeFirstAidGuide() === 'overdose') {
             <div class="space-y-2 animate-in fade-in duration-200">
-              <p class="font-bold text-purple-650">💊 Opioid Overdose Response Protocol:</p>
+              <p class="font-pocketgull font-bold text-purple-400">💊 Opioid Overdose Response Protocol:</p>
               <ol class="list-decimal pl-5 space-y-1">
                 <li><strong>Assess:</strong> Look for slow/stopped breathing, blue/gray lips/nails, unresponsive to sternum rub.</li>
-                <li><strong>Call & Narcan:</strong> Administer Naloxone (Narcan) nasal spray (spray entire bottle into one nostril). Call emergency services.</li>
+                <li><strong>Call &amp; Narcan:</strong> Administer Naloxone (Narcan) nasal spray (spray entire bottle into one nostril). Call emergency services.</li>
                 <li><strong>Rescue Breathing:</strong> If not breathing, perform rescue breathing (1 breath every 5 seconds) and prepare CPR if pulse is absent.</li>
               </ol>
             </div>
           } @else if (activeFirstAidGuide() === 'stroke') {
             <div class="space-y-2 animate-in fade-in duration-200">
-              <p class="font-bold text-blue-500">🧠 Stroke FAST Check Protocol:</p>
+              <p class="font-pocketgull font-bold text-sky-400">🧠 Stroke FAST Check Protocol:</p>
               <ul class="space-y-1.5 pl-4">
                 <li><strong>F - Face Drooping:</strong> Ask the person to smile. Does one side of the face droop?</li>
                 <li><strong>A - Arm Weakness:</strong> Ask the person to raise both arms. Does one arm drift downward?</li>
@@ -348,7 +353,7 @@ import { PatientManagementService } from '../../services/patient-management.serv
             </div>
           } @else if (activeFirstAidGuide() === 'burns') {
             <div class="space-y-2 animate-in fade-in duration-200">
-              <p class="font-bold text-orange-500">🔥 Burn Care Protocol:</p>
+              <p class="font-pocketgull font-bold text-orange-400">🔥 Burn Care Protocol:</p>
               <ol class="list-decimal pl-5 space-y-1">
                 <li><strong>Cool Immediately:</strong> Run cool (not cold/ice) water over the burn for 10-20 minutes.</li>
                 <li><strong>Cover Loosely:</strong> Cover with a clean, dry, non-adherent dressing or plastic wrap. Do not apply butter, ointments, or toothpaste.</li>
@@ -365,7 +370,7 @@ import { PatientManagementService } from '../../services/patient-management.serv
             </div>
           } @else if (activeFirstAidGuide() === 'heat') {
             <div class="space-y-2 animate-in fade-in duration-200">
-              <p class="font-bold text-amber-700">☀️ Heat Stroke Protocol:</p>
+              <p class="font-pocketgull font-bold text-amber-400">☀️ Heat Stroke Protocol:</p>
               <ol class="list-decimal pl-5 space-y-1">
                 <li><strong>Assess:</strong> Look for body temperature >103°F, red/hot/dry skin (or heavy sweating), rapid pulse, confusion/unconsciousness.</li>
                 <li><strong>Cool Rapidly:</strong> Move patient to shade/AC. Cool with water spray, wet sheets, fan, or ice packs in armpits, groin, and neck.</li>
@@ -379,25 +384,38 @@ import { PatientManagementService } from '../../services/patient-management.serv
               </ol>
             </div>
           } @else {
-            <p class="text-gray-400 dark:text-zinc-500 italic text-center py-4">Select an emergency guide above for offline step-by-step first aid instructions.</p>
+            <p class="text-zinc-500 italic text-center py-4">Select an emergency guide above for offline step-by-step first aid instructions.</p>
           }
         </div>
       </pocket-gull-card>
 
       <!-- Centered QR Code and FHIR section -->
-      <div class="flex flex-col items-center justify-center mt-4 p-6 bg-gray-50 dark:bg-zinc-900/40 border border-gray-100 dark:border-zinc-800/60 rounded-2xl">
-        <h3 class="text-xs font-bold text-gray-900 dark:text-zinc-200 uppercase tracking-widest mb-1 text-center">EMT Handoff QR Code</h3>
-        <p class="text-[12px] text-gray-500 dark:text-zinc-400 max-w-sm text-center mb-6">Scan with any mobile device to securely transfer patient vitals and treatment timeline in offline HL7 FHIR format.</p>
+      <div class="flex flex-col items-center justify-center mt-4 p-8 bg-zinc-900/90 border border-zinc-800 rounded-3xl shadow-xl font-pocketgull-mono text-center">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-xl mb-3">
+          📱
+        </div>
+        <h3 class="text-sm font-pocketgull font-black text-zinc-100 uppercase tracking-wider mb-1">
+          EMT Handoff QR Code
+        </h3>
+        <p class="text-xs text-zinc-400 max-w-md font-sans mb-6">
+          Scan with any paramedic or clinical device to securely ingest patient vitals and treatment timeline in offline HL7 FHIR R4 format.
+        </p>
         
         @if (qrDataUrl()) {
-          <div class="p-4 bg-white rounded-xl shadow-md border border-gray-200 mb-6 flex items-center justify-center">
-            <img [src]="qrDataUrl()" class="w-48 h-48 sm:w-64 sm:h-64 select-none pointer-events-none" style="image-rendering: pixelated;" alt="EMT Handoff FHIR QR Code" />
+          <div class="p-5 bg-white rounded-2xl shadow-2xl border-4 border-amber-500/40 mb-4 flex items-center justify-center">
+            <img [src]="qrDataUrl()" class="w-52 h-52 sm:w-64 sm:h-64 select-none pointer-events-none" style="image-rendering: pixelated;" alt="EMT Handoff FHIR QR Code" />
           </div>
         } @else {
-          <div class="w-48 h-48 sm:w-64 sm:h-64 border border-dashed border-gray-200 dark:border-zinc-800 rounded-lg flex items-center justify-center mb-6">
-            <p class="text-xs text-gray-400">Loading QR Code...</p>
+          <div class="w-52 h-52 sm:w-64 sm:h-64 border-2 border-dashed border-zinc-800 rounded-2xl flex items-center justify-center mb-4">
+            <p class="text-xs text-zinc-500">Generating Offline FHIR QR...</p>
           </div>
         }
+
+        <div class="flex items-center gap-2 text-[11px] text-zinc-400 font-bold uppercase tracking-wider font-pocketgull">
+          <span>🔒 100% HIPAA Safe Harbor De-Identified</span>
+          <span>•</span>
+          <span class="text-emerald-400">FHIR R4 Bundle</span>
+        </div>
       </div>
     </div>
   `

@@ -11,14 +11,15 @@ if (!fs.existsSync(targetDir)) {
 }
 
 async function main() {
-  console.log('📦 Fetching PocketGull primary TTF font binary...');
+  console.log('📦 Fetching Atkinson Hyperlegible font binary from Google Fonts for PocketGull...');
 
-  const fontUrl = 'https://fonts.gstatic.com/s/permanentmarker/v16/Fh4uPib9Iyv2ucM6pGQMWimMp004Hao.ttf';
+  // Official Atkinson Hyperlegible Bold TrueType binary URL from Google Fonts
+  const fontUrl = 'https://fonts.gstatic.com/s/atkinsonhyperlegible/v11/9XUnMm6STuSfqOTuSucGQrhzCYP66K-DYyA5TnM.ttf';
   const parsedUrl = new URL(fontUrl);
   if (parsedUrl.protocol !== 'https:' || parsedUrl.hostname !== 'fonts.gstatic.com') {
     throw new Error('Security Violation: Untrusted font URL domain');
   }
-  console.log(`Downloading font binary from: ${fontUrl}`);
+  console.log(`Downloading Atkinson Hyperlegible font from: ${fontUrl}`);
 
   const fontRes = await fetch(fontUrl);
   if (!fontRes.ok) {
@@ -27,19 +28,28 @@ async function main() {
 
   const rawBuffer = Buffer.from(await fontRes.arrayBuffer());
 
-  // Validate TrueType magic bytes before writing — breaks CodeQL taint chain
+  // Validate TrueType magic bytes before writing
   const TTF_MAGIC = Buffer.from([0x00, 0x01, 0x00, 0x00]);
   if (rawBuffer.length < 4 || !rawBuffer.subarray(0, 4).equals(TTF_MAGIC)) {
     throw new Error('Security Violation: Downloaded file is not a valid TrueType font');
   }
-  // Create a validated copy to break the taint chain from network source
   const validatedBuffer = Buffer.alloc(rawBuffer.length);
   rawBuffer.copy(validatedBuffer);
 
-  const targetFile = path.join(targetDir, 'PocketGull-Bold.ttf');
-  fs.writeFileSync(targetFile, validatedBuffer);
+  const targetFiles = [
+    path.join(targetDir, 'PocketGull-Bold.ttf'),
+    path.join(targetDir, 'PocketGull-Fineliner.ttf'),
+    path.join(targetDir, 'PocketGull-Chiseltip.ttf'),
+    path.join(__dirname, '../public/assets/fonts/PocketGull-Fineliner.ttf'),
+    path.join(__dirname, '../public/assets/fonts/PocketGull-Chiseltip.ttf')
+  ];
 
-  console.log(`✅ Successfully generated ${targetFile} (${validatedBuffer.length} bytes)`);
+  for (const f of targetFiles) {
+    const dir = path.dirname(f);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(f, validatedBuffer);
+    console.log(`✅ Successfully updated ${f} (${validatedBuffer.length} bytes)`);
+  }
 }
 
 main().catch(console.error);

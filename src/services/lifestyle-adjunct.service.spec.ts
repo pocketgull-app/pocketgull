@@ -1,6 +1,5 @@
 import '@angular/compiler';
 import * as DOMPurify from 'dompurify';
-import { vi } from 'vitest';
 import { LifestyleAdjunctService } from './lifestyle-adjunct.service';
 import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from './patient-state.service';

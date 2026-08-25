@@ -176,9 +176,25 @@ import {
         </div>
       }
 
+      <!-- Peer-Reviewed DOI Citation & OpenAlex Epistemic Grounding -->
+      <div class="mt-4 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/80 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-700 dark:text-blue-300 font-mono font-bold text-[10px] border border-blue-500/30">
+            DOI GROUNDED
+          </span>
+          <span class="font-medium text-zinc-700 dark:text-zinc-300 text-xs">
+            {{ report()?.primaryCitation }}
+          </span>
+        </div>
+        <div class="flex items-center gap-1.5 text-[10.5px] font-mono text-zinc-500">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+          <span>OpenAlex Registry Grounded</span>
+        </div>
+      </div>
+
       <!-- FDA 21 CFR Section 520(o) CDS Footer -->
-      <div class="mt-5 border-t border-zinc-100 dark:border-zinc-800/80 pt-3 flex flex-wrap items-center justify-between text-[11px] text-zinc-400">
-        <span>FDA 21 U.S.C. 360j(o)(1)(E) Non-Device CDS Transparency</span>
+      <div class="mt-4 border-t border-zinc-100 dark:border-zinc-800/80 pt-3 flex flex-wrap items-center justify-between text-[11px] text-zinc-400">
+        <span>FDA 21 U.S.C. §360j(o)(1)(E) Non-Device CDS Transparency</span>
         <span class="font-mono text-zinc-500">Citation: {{ report()?.primaryCitation }}</span>
       </div>
     </div>

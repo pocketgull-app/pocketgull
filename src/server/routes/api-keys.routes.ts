@@ -69,7 +69,13 @@ export function createApiKeysRouter() {
   });
 
   // ── Usage Dashboard ──────────────────────────────────────────────────
-  const usageDb = new Firestore();
+  let _usageDb: Firestore | null = null;
+  function getUsageDb(): Firestore {
+    if (!_usageDb) {
+      _usageDb = new Firestore();
+    }
+    return _usageDb;
+  }
 
   /** GET /api/keys/usage — Current month usage + quota for authenticated tenant */
   router.get('/usage', async (req, res) => {
@@ -78,10 +84,15 @@ export function createApiKeysRouter() {
       const usage = await usageMeterService.getUsage(tenantId);
 
       // Fetch tenant tier from Firestore
-      const tenantDoc = await usageDb.collection('tenants').doc(tenantId).get();
-      const tier: SubscriptionTier = (tenantDoc.exists && tenantDoc.data()?.['subscriptionTier'])
-        ? tenantDoc.data()!['subscriptionTier'] as SubscriptionTier
-        : 'explorer';
+      let tier: SubscriptionTier = 'explorer';
+      try {
+        const tenantDoc = await getUsageDb().collection('tenants').doc(tenantId).get();
+        if (tenantDoc.exists && tenantDoc.data()?.['subscriptionTier']) {
+          tier = tenantDoc.data()!['subscriptionTier'] as SubscriptionTier;
+        }
+      } catch (err: unknown) {
+        console.warn('[API Keys] Failed to fetch tenant from Firestore:', (err as Error)?.message);
+      }
 
       const tierDef = TIER_DEFINITIONS[tier];
 

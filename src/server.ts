@@ -43,6 +43,7 @@ import { renderBusinessSiteHtml } from './server/business-site';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
+import { rsnaKneeRouter } from './server/routes/rsna-knee.routes';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -216,7 +217,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.set('trust proxy', true);
+// Trust single reverse proxy hop on Google Cloud Run to prevent IP spoofing while enabling secure rate-limiting
+app.set('trust proxy', 1);
 
 // Explicit preview endpoints for business site
 app.get(['/business', '/preview'], (_req, res) => {
@@ -243,11 +245,13 @@ app.use((req, res, next) => {
 
   const isBusinessSite =
     req.path === '/business' ||
+    req.path === '/store' ||
+    req.path === '/community' ||
     req.query['preview'] === 'business' ||
     /(^|\.)pocketgull\.com$/.test(rawHost);
 
   if (isBusinessSite) {
-    if (req.path === '/health' || req.path.startsWith('/api/')) {
+    if (req.path === '/health' || req.path.startsWith('/api/') || req.path === '/articles' || req.path.startsWith('/articles/')) {
       return next();
     }
     const cleanPath = req.path.split('?')[0];
@@ -427,7 +431,13 @@ const discoveryRouter = createDiscoveryRouter();
 app.use(manifestRateLimiter, discoveryRouter);
 
 app.get('/api/config', manifestRateLimiter, (req, res) => {
-  res.json({ apiKey: process.env['GEMINI_API_KEY'] || '' });
+  const isConfigured = !!(geminiApiKeyCached || process.env['GEMINI_API_KEY'] || process.env['GOOGLE_APPLICATION_CREDENTIALS'] || process.env['K_SERVICE']);
+  res.json({
+    hasKey: isConfigured,
+    authMode: 'server-proxy',
+    status: 'ok',
+    apiKey: '' // Sanitized: Never expose plaintext API keys to the browser
+  });
 });
 
 app.post('/api/audit', manifestRateLimiter, (req, res) => {
@@ -437,6 +447,7 @@ app.post('/api/audit', manifestRateLimiter, (req, res) => {
 app.use('/api/support', supportRouter);
 app.use('/api/v1/agent-builder', manifestRateLimiter, vertexAgentRouter);
 app.use('/api/agent-builder', manifestRateLimiter, vertexAgentRouter);
+app.use('/api/ml/rsna-knee', manifestRateLimiter, rsnaKneeRouter);
 
 app.all('/api/python/*splat', manifestRateLimiter, (req, res) => {
   res.status(200).json({
@@ -456,68 +467,101 @@ app.use(express.static(publicFolder, { maxAge: '1d', index: false }));
 
 
 
-async function fetchGeminiApiKey() {
-  if (process.env['GEMINI_API_KEY']) {
-    console.log('[Secrets] Using GEMINI_API_KEY from environment.');
-    return process.env['GEMINI_API_KEY'];
+const secretCache = new Map<string, string>();
+let secretClient: SecretManagerServiceClient | null = null;
+
+export async function fetchSecretFromSecretManager(secretName: string): Promise<string> {
+  if (secretCache.has(secretName)) {
+    return secretCache.get(secretName)!;
   }
 
-  // Search the Angular project root first, then fall back to sibling pocketgull_api dir
-  // so a single .env in either location satisfies all services in the monorepo.
-  const envFiles = ['.env.local', '.env', 'pocketgull_api/.env.local', 'pocketgull_api/.env'];
+  if (process.env[secretName]) {
+    secretCache.set(secretName, process.env[secretName]!);
+    return process.env[secretName]!;
+  }
 
+  // Local development file fallback (.env / .env.local)
+  const envFiles = ['.env.local', '.env', 'pocketgull_api/.env.local', 'pocketgull_api/.env'];
   for (const file of envFiles) {
     const joinedPath = join(rootDir, file);
     const envPath = normalize(joinedPath);
     if (!envPath.startsWith(rootDir)) continue;
     try {
       const localEnv = fs.readFileSync(envPath, 'utf8');
-      const match = localEnv.match(/GEMINI_API_KEY=["']?([^"'\n]+)["']?/);
+      const regex = new RegExp(`${secretName}=["']?([^"'\r\n]+)["']?`);
+      const match = localEnv.match(regex);
       if (match) {
-        console.log(`[Secrets] Manual load success: ${envPath}`);
-        return match[1].trim();
+        const val = match[1].trim();
+        secretCache.set(secretName, val);
+        process.env[secretName] = val;
+        return val;
       }
-    } catch (e) { /* file not found, try next */ }
+    } catch { /* try next */ }
   }
 
+  // Dynamic GCP Secret Manager Runtime Fetch (Keyless IAM Workload Identity)
   try {
-    const client = new SecretManagerServiceClient();
-    let projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'];
-
-    if (!projectId) {
-      if (process.env['NODE_ENV'] !== 'production' && !process.env['K_SERVICE']) {
-          console.warn('[WARN] Not running in GCP (no K_SERVICE). Skipping Secret Manager to prevent auth crash.');
-          return '';
-      }
-      console.log('[Secrets] GOOGLE_CLOUD_PROJECT not set, attempting to resolve automatically...');
-      projectId = await client.getProjectId();
+    if (!secretClient) {
+      secretClient = new SecretManagerServiceClient();
     }
+    const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
 
-    if (!projectId) {
-      console.warn('[WARN] Could not determine project ID. Returning empty string.');
-      return '';
-    }
-
-    console.log(`[Secrets] Fetching GEMINI_API_KEY from GCP Secret Manager for project ${projectId}...`);
-    const [version] = await client.accessSecretVersion({
-      name: `projects/${projectId}/secrets/GEMINI_API_KEY/versions/latest`,
+    console.log(`[Secrets] Dynamically pulling ${secretName} from GCP Secret Manager (projects/${projectId})...`);
+    const [version] = await secretClient.accessSecretVersion({
+      name: `projects/${projectId}/secrets/${secretName}/versions/latest`,
     });
-    const payload = version.payload?.data ? Buffer.from(version.payload.data).toString('utf8') : '';
-    console.log('[Secrets] Successfully fetched GEMINI_API_KEY from GCP.');
-    return payload;
+    const payload = version.payload?.data ? Buffer.from(version.payload.data).toString('utf8').trim() : '';
+    if (payload) {
+      console.log(`[Secrets] Successfully fetched ${secretName} from GCP Secret Manager.`);
+      secretCache.set(secretName, payload);
+      process.env[secretName] = payload;
+      return payload;
+    }
   } catch (err: unknown) {
-    console.warn(`[WARN] Failed to fetch secret GEMINI_API_KEY from GCP. Returning empty string. Error: ${(err as Error)?.message}`);
-    return '';
+    console.warn(`[WARN] Failed to fetch secret ${secretName} from GCP Secret Manager: ${(err as Error)?.message}`);
   }
+
+  return '';
 }
 
-const googleAuth = new GoogleAuth({
-  scopes: 'https://www.googleapis.com/auth/cloud-platform'
-});
+export async function fetchGeminiApiKey(): Promise<string> {
+  return fetchSecretFromSecretManager('GEMINI_API_KEY');
+}
+
+/**
+ * Pre-warms runtime secrets from Google Cloud Secret Manager on server initialization.
+ */
+export async function initializeRuntimeSecrets(): Promise<void> {
+  const essentialSecrets = [
+    'GEMINI_API_KEY',
+    'STRIPE_SECRET_KEY',
+    'STRIPE_WEBHOOK_SECRET',
+    'AWS_ACCESS_KEY_ID',
+    'AWS_SECRET_ACCESS_KEY',
+    'AWS_HEALTHLAKE_ENDPOINT',
+    'ATHENAHEALTH_CLIENT_ID',
+    'ORACLE_CERNER_CLIENT_ID',
+    'GOOGLE_HEALTH_CLIENT_SECRET'
+  ];
+
+  console.log('[Secrets] Initializing runtime Secret Manager client (Zero container secret injections)...');
+  await Promise.allSettled(essentialSecrets.map(s => fetchSecretFromSecretManager(s)));
+}
+
+let _googleAuth: GoogleAuth | null = null;
+function getGoogleAuth(): GoogleAuth {
+  if (!_googleAuth) {
+    _googleAuth = new GoogleAuth({
+      scopes: 'https://www.googleapis.com/auth/cloud-platform'
+    });
+  }
+  return _googleAuth;
+}
 
 async function getGcpAccessToken(): Promise<string | null> {
   try {
-    const client = await googleAuth.getClient();
+    const auth = getGoogleAuth();
+    const client = await auth.getClient();
     const tokenResponse = await client.getAccessToken();
     return tokenResponse.token || null;
   } catch (err: unknown) {
@@ -601,9 +645,6 @@ async function getApiKey(req?: express.Request): Promise<string> {
   return fetchPromise;
 }
 
-// Prefetch the API key at boot to ensure all lazy loaded APIs have process.env populated
-await getApiKey().catch(console.error);
-
 // Security headers
 app.use((req, res, next) => {
   const nonce = crypto.randomBytes(16).toString('base64');
@@ -641,6 +682,7 @@ const apiLimiter = rateLimit({
   message: { error: 'Too many requests. Please try again later.' }
 });
 app.use('/api', apiLimiter);
+app.use('/api', express.json({ limit: '50mb' }));
 app.use('/docs', apiLimiter);
 app.use('/api-docs', apiLimiter);
 app.use('/health', apiLimiter);
@@ -671,11 +713,19 @@ import { createUtilityRouter } from './server/routes/utility.routes';
 import { slackRouter } from './server/routes/slack.routes';
 import { createApiKeysRouter } from './server/routes/api-keys.routes';
 import { createBillingRouter } from './server/routes/billing.routes';
+import { createAuthRouter } from './server/routes/auth.routes';
+import { smsRouter } from './server/routes/sms.routes';
+import { hsaRouter } from './server/routes/hsa.routes';
+import { amazonRouter } from './server/routes/amazon.routes';
+import { createCanaryRouter } from './server/routes/canary.routes';
 import { apiKeyService } from './server/services/api-key.service';
 
 app.use('/api/slack', slackRouter);
-
-// Load OpenAPI specification dynamically for Swagger UI
+app.use('/api/sms', smsRouter);
+app.use('/api/hsa', hsaRouter);
+app.use('/api/amazon', amazonRouter);
+app.use(createCanaryRouter());
+ 
 // ── Python Biosignal & Data Bridge Proxy ───────────────────────────────────
 // Routes /api/python/* → FastAPI sidecar on :8001 (dev) or PYTHON_API_URL (prod).
 const pythonApiTarget = process.env['PYTHON_API_URL'] ?? 'http://localhost:8001';
@@ -694,6 +744,7 @@ app.use('/api/python', createProxyMiddleware({
 // ── Mount Extracted Routers ────────────────────────────────────────────────
 const routeDeps = { getApiKey, getGcpAccessToken, normalizeAndValidateModel };
 
+app.use('/api/auth', createAuthRouter());
 app.use('/api/ai', createAiRouter(routeDeps));
 app.use('/api/patients', createPatientsRouter());
 app.use('/api/keys', createApiKeysRouter());
@@ -860,8 +911,14 @@ app.use((req, res, next) => {
   engine
     .handle(req)
     .then(async (response: Response | null) => {
-      if (!response) {
-        return next();
+      if (!response || response.status === 404) {
+        const indexPath = join(browserDistFolder, 'index.html');
+        if (fs.existsSync(indexPath) && ((req.headers.accept || '').includes('text/html') || !extname(req.path))) {
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+          return res.status(200).sendFile(indexPath);
+        }
+        if (!response) return next();
       }
 
       const contentType = response.headers.get('content-type') || '';
@@ -900,7 +957,16 @@ app.use((req, res, next) => {
         writeResponseToNodeResponse(response, res);
       }
     })
-    .catch(next);
+    .catch((err) => {
+      console.warn('[Server] SSR render fallback to client index.html:', (err as Error)?.message);
+      const indexPath = join(browserDistFolder, 'index.html');
+      if (fs.existsSync(indexPath) && ((req.headers.accept || '').includes('text/html') || !extname(req.path))) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        return res.status(200).sendFile(indexPath);
+      }
+      next(err);
+    });
 });
 
 /**
@@ -946,13 +1012,16 @@ async function initializeAgones() {
 
 let _serverInstance: HttpServer | null = null;
 
-if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERVICE'] || process.env['PORT'] || process.env['CI'] || !process.env['NODE_ENV'] || process.env['NODE_ENV'] === 'development') {
+if (isMainModule(import.meta.url)) {
   const port = process.env['PORT'] ? parseInt(process.env['PORT'], 10) : 4000;
   if (!_serverInstance) {
     _serverInstance = app.listen(port, '0.0.0.0', () => {
       console.log(`Node Express server listening on http://0.0.0.0:${port}`);
     });
     
+    // Pre-warm secrets dynamically from GCP Secret Manager (Zero static injections)
+    initializeRuntimeSecrets().catch(console.error);
+
     // Auto-provision Cloud Healthcare API datasets and stores
     ensureHealthcareStoresExist().catch(console.error);
 
@@ -1125,7 +1194,7 @@ if (isMainModule(import.meta.url) || process.env['pm_id'] || process.env['K_SERV
           } catch (e) {}
           
           setupPromise = Promise.resolve();
-          connectToVertex(new URL(request.url || '', 'http://localhost').searchParams.get('key') || '');
+          connectToVertex(new URL(request.url || '', 'http://localhost').searchParams.get('key') || process.env['GEMINI_API_KEY'] || '');
         }
 
         // Handle all non-setup messages sequentially after setup completes

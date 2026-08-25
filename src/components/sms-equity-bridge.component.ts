@@ -27,14 +27,32 @@ import { IPatient } from '../services/patient.types';
               </span>
             </h3>
             <p class="text-xs text-zinc-500 dark:text-zinc-400">
-              Bridges digital care plans to elderly, rural, and underserved populations via 160-char SMS & natural language parsing.
+              Bridges digital care plans to basic mobile devices (flip phones) in rural & underserved regions via 160-char SMS.
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2 text-xs font-mono">
-          <span class="text-zinc-400">Target Line:</span>
-          <span class="font-bold text-teal-600 dark:text-teal-400">{{ plan().phoneNumber }}</span>
+        <div class="flex items-center gap-3 text-xs font-mono">
+          <!-- Language Selector -->
+          <div class="flex items-center gap-1">
+            <span class="text-zinc-400 text-[10px]">Lang:</span>
+            <select [ngModel]="selectedLanguage()" (ngModelChange)="selectedLanguage.set($event)" class="px-2 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs focus:outline-none">
+              <option value="en">English (EN)</option>
+              <option value="es">Español (ES)</option>
+              <option value="fr">Français (FR)</option>
+              <option value="de">Deutsch (DE)</option>
+              <option value="zh">中文 (ZH)</option>
+              <option value="ja">日本語 (JA)</option>
+              <option value="hi">हिन्दी (HI)</option>
+              <option value="ar">العربية (AR)</option>
+              <option value="pt">Português (PT)</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <span class="text-zinc-400">Target Line:</span>
+            <span class="font-bold text-teal-600 dark:text-teal-400">{{ plan().phoneNumber }}</span>
+          </div>
         </div>
       </div>
 
@@ -43,10 +61,14 @@ import { IPatient } from '../services/patient.types';
         
         <!-- Left: Outbound Daily Schedule (7 cols) -->
         <div class="lg:col-span-7 space-y-4">
-          <h4 class="text-xs font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-mono flex items-center justify-between">
-            <span>📅 Outbound Micro-Interventions (<= 160 Chars)</span>
-            <span class="text-[10px] text-teal-600 dark:text-teal-400">Plain English Health Literacy</span>
-          </h4>
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-mono flex items-center gap-2">
+              <span>📅 Outbound Micro-Interventions (<= 160 Chars)</span>
+            </h4>
+            <span class="text-[10px] font-mono font-bold text-teal-600 dark:text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded-md border border-teal-500/30">
+              9 Languages Active
+            </span>
+          </div>
 
           <div class="space-y-3">
             @for (prompt of plan().dailyPrompts; track prompt.id) {
@@ -79,9 +101,14 @@ import { IPatient } from '../services/patient.types';
 
         <!-- Right: Inbound SMS Simulator & Live Parsed Telemetry (5 cols) -->
         <div class="lg:col-span-5 space-y-4">
-          <h4 class="text-xs font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-mono">
-            📱 Inbound SMS Telemetry Parser
-          </h4>
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-mono">
+              📱 Inbound SMS Telemetry Parser
+            </h4>
+            <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30">
+              FHIR R4 Compliant
+            </span>
+          </div>
 
           <!-- Live Input Mock Box -->
           <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 space-y-3">
@@ -104,19 +131,34 @@ import { IPatient } from '../services/patient.types';
               </button>
             </div>
 
+            <!-- Quick Action Chips -->
+            <div class="flex flex-wrap gap-1.5 pt-1 text-[10px] font-mono">
+              <button type="button" (click)="testInput.set('LOG BP 120/80 HR 72'); simulateSend()" class="px-2 py-1 rounded bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 text-zinc-700 dark:text-zinc-200">BP 120/80</button>
+              <button type="button" (click)="testInput.set('MED YES took morning Lisinopril'); simulateSend()" class="px-2 py-1 rounded bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 text-zinc-700 dark:text-zinc-200">MED YES</button>
+              <button type="button" (click)="testInput.set('PAIN 4 lower back after walking'); simulateSend()" class="px-2 py-1 rounded bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 text-zinc-700 dark:text-zinc-200">PAIN 4</button>
+              <button type="button" (click)="testInput.set('STATUS'); simulateSend()" class="px-2 py-1 rounded bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 text-zinc-700 dark:text-zinc-200">STATUS</button>
+            </div>
+
             <!-- Auto-Parsed Result Card -->
             @if (latestParsed(); as parsed) {
               <div class="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-700/60 space-y-2 text-xs">
                 <div class="flex items-center justify-between">
                   <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">⚡ Parsed Output</span>
-                  <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider border"
-                        [ngClass]="{
-                          'bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-300': parsed.urgencyLevel === 'ROUTINE',
-                          'bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-300': parsed.urgencyLevel === 'ELEVATED',
-                          'bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-300': parsed.urgencyLevel === 'CRITICAL_CALL_911'
-                        }">
-                    {{ parsed.urgencyLevel }}
-                  </span>
+                  <div class="flex items-center gap-1.5">
+                    @if (parsed.adherencePointsEarned) {
+                      <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/30">
+                        +{{ parsed.adherencePointsEarned }} Pts
+                      </span>
+                    }
+                    <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider border"
+                          [ngClass]="{
+                            'bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-300': parsed.urgencyLevel === 'ROUTINE',
+                            'bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-300': parsed.urgencyLevel === 'ELEVATED',
+                            'bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-300': parsed.urgencyLevel === 'CRITICAL_CALL_911'
+                          }">
+                      {{ parsed.urgencyLevel }}
+                    </span>
+                  </div>
                 </div>
 
                 <div class="space-y-1 font-mono text-[11px]">
@@ -164,6 +206,7 @@ export class SmsEquityBridgeComponent {
   private smsService = inject(SmsEquityBridgeService);
   private patientState = inject(PatientStateService, { optional: true });
 
+  selectedLanguage = signal<string>('en');
   testInput = signal<string>('Morning BP 136/88 pulse 74 feeling a little dizzy');
   latestParsed = signal<IParsedSmsResponse | null>(null);
 
@@ -186,7 +229,7 @@ export class SmsEquityBridgeComponent {
   });
 
   plan = computed<ISmsBridgePlan>(() => {
-    return this.smsService.getBridgePlan(this.currentPatient());
+    return this.smsService.getBridgePlan(this.currentPatient(), this.selectedLanguage());
   });
 
   constructor() {

@@ -20,9 +20,15 @@ dicomRouter.use(rateLimit({
 }));
 
 // Initialize Google Auth with the Healthcare API scope
-const auth = new GoogleAuth({
-  scopes: ['https://www.googleapis.com/auth/cloud-healthcare']
-});
+let _auth: GoogleAuth | null = null;
+function getAuth(): GoogleAuth {
+  if (!_auth) {
+    _auth = new GoogleAuth({
+      scopes: ['https://www.googleapis.com/auth/cloud-healthcare']
+    });
+  }
+  return _auth;
+}
 
 function sanitizeUrl(urlStr: string): URL {
   const parsed = new URL(urlStr);
@@ -88,7 +94,7 @@ dicomRouter.get('/studies', async (req, res) => {
 
     const dicomWebUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${location}/datasets/${datasetId}/dicomStores/${dicomStoreId}/dicomWeb/studies?${searchParams.toString()}`;
 
-    const client = await auth.getClient();
+    const client = await getAuth().getClient();
     const token = await client.getAccessToken();
 
     const response = await fetch(sanitizeUrl(dicomWebUrl).href, {
@@ -130,7 +136,7 @@ dicomRouter.get('/rendered', async (req, res) => {
 
     const dicomWebUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${location}/datasets/${datasetId}/dicomStores/${dicomStoreId}/dicomWeb/studies/${studyUid}/series/${seriesUid}/instances/${instanceUid}/rendered`;
 
-    const client = await auth.getClient();
+    const client = await getAuth().getClient();
     const token = await client.getAccessToken();
 
     const response = await fetch(sanitizeUrl(dicomWebUrl).href, {
@@ -175,7 +181,7 @@ dicomRouter.post('/store', express.raw({ type: 'application/dicom', limit: '100m
 
     const dicomWebUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${location}/datasets/${datasetId}/dicomStores/${dicomStoreId}/dicomWeb/studies`;
 
-    const client = await auth.getClient();
+    const client = await getAuth().getClient();
     const token = await client.getAccessToken();
 
     const response = await fetch(sanitizeUrl(dicomWebUrl).href, {
@@ -219,7 +225,7 @@ dicomRouter.get('/raw', async (req, res) => {
 
     const dicomWebUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${location}/datasets/${datasetId}/dicomStores/${dicomStoreId}/dicomWeb/studies/${studyUid}/series/${seriesUid}/instances/${instanceUid}`;
 
-    const client = await auth.getClient();
+    const client = await getAuth().getClient();
     const token = await client.getAccessToken();
 
     const response = await fetch(sanitizeUrl(dicomWebUrl).href, {
@@ -272,7 +278,7 @@ dicomRouter.delete('/delete', async (req, res) => {
       }
     }
 
-    const client = await auth.getClient();
+    const client = await getAuth().getClient();
     const token = await client.getAccessToken();
 
     const response = await fetch(sanitizeUrl(dicomWebUrl), {

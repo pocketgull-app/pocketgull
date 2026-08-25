@@ -1,9 +1,15 @@
 import { Firestore, Timestamp } from '@google-cloud/firestore';
 import * as crypto from 'node:crypto';
 
-// Use standard Firestore client for GCP backend.
-// ADC (Application Default Credentials) will be used automatically.
-const db = new Firestore();
+// Lazy Firestore client for GCP backend.
+// ADC (Application Default Credentials) will be loaded on demand.
+let _db: Firestore | null = null;
+function getDb(): Firestore {
+  if (!_db) {
+    _db = new Firestore();
+  }
+  return _db;
+}
 
 export interface ApiKeyDocument {
   tenantId: string;
@@ -23,7 +29,9 @@ function hashApiKey(rawKey: string): string {
 }
 
 export class ApiKeyService {
-  private collection = db.collection('api_keys');
+  private get collection() {
+    return getDb().collection('api_keys');
+  }
 
   /**
    * Generates a new API key for a given tenant.

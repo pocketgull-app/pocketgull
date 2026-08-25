@@ -982,12 +982,7 @@ ${patientCtx}`;
         if (!this.live.isConnected()) {
             this.isLoading.set(true);
             try {
-                const apiKey = (window as any).GEMINI_API_KEY || getStoredApiKey(this.secureStorage) || '';
-                if (!apiKey) {
-                    this.appendModelMessage('System Note: Missing API Key. Please configure it to use voice.');
-                    this.isLoading.set(false);
-                    return;
-                }
+                const apiKey = getStoredApiKey(this.secureStorage) || '';
                 const systemContext = this.buildFullSystemContext();
                 await this.live.connect(apiKey, systemContext);
             } catch (e: any) {

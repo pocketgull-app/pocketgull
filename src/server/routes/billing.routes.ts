@@ -5,12 +5,19 @@ import { Firestore } from '@google-cloud/firestore';
 import { resolveTierFromPriceId } from '../services/tier-config';
 import { gaapAccountingService } from '../services/gaap-accounting.service';
 
-const db = new Firestore();
+let _db: Firestore | null = null;
+function getDb(): Firestore {
+  if (!_db) {
+    _db = new Firestore();
+  }
+  return _db;
+}
 
-// Make sure to set STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET in your .env
-const stripe = new Stripe(process.env['STRIPE_SECRET_KEY'] || 'sk_test_placeholder', {
-  apiVersion: '2024-06-20' as any, // Use the latest stable version or match existing
-});
+function getStripe(): Stripe {
+  return new Stripe(process.env['STRIPE_SECRET_KEY'] || 'sk_test_placeholder', {
+    apiVersion: '2024-06-20' as any,
+  });
+}
 
 export function createBillingRouter() {
   const router = Router();
@@ -21,42 +28,168 @@ export function createBillingRouter() {
     message: { error: 'Too many billing requests.' }
   });
 
-  router.post('/checkout', limiter, express.json(), async (req, res) => {
+  const handleCheckoutRequest = async (req: express.Request, res: express.Response) => {
     try {
-      const { priceId, successUrl, cancelUrl, customerEmail, endowmentFund, revenueSplit } = req.body || {};
-
-      if (!priceId) {
-        return res.status(400).json({ error: 'A priceId is required.' });
-      }
-
+      const isGet = req.method === 'GET';
+      const params = isGet ? req.query : req.body;
+      const { priceId, tier, successUrl, cancelUrl, customerEmail, endowmentFund, revenueSplit } = params || {};
       const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
 
-      // Create a Stripe Checkout Session with dynamic payment methods and philanthropic revenue metadata
-      const session = await stripe.checkout.sessions.create({
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
+      let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+      let mode: Stripe.Checkout.SessionCreateParams.Mode = 'subscription';
+
+      if (priceId) {
+        lineItems = [{ price: String(priceId), quantity: 1 }];
+      } else if (tier === 'founder_lifetime' || tier === 'founder' || tier === 'lifetime') {
+        mode = 'payment';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Lifetime Solo Founder License',
+              description: '100% on-device offline AI scribing forever, standard SOAP templates, EHR export, and lifetime software updates (Zero recurring monthly fees).',
+            },
+            unit_amount: 29900, // $299.00
           },
-        ],
-        mode: 'subscription',
-        success_url: successUrl || `${origin}/?billing=success&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: cancelUrl || `${origin}/?billing=canceled`,
-        customer_email: customerEmail,
+          quantity: 1,
+        }];
+      } else if (tier === 'clinic_annual' || tier === 'annual') {
+        mode = 'subscription';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Clinic Pro (Annual Pass - 2 Months Free)',
+              description: 'Ambient AI voice scribing, custom specialty note templates, medication & herb-drug safety screening, priority clinician support & onboarding.',
+            },
+            unit_amount: 49000, // $490.00 / yr
+            recurring: { interval: 'year' },
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'clinic_onboarding' || tier === 'onboarding') {
+        mode = 'payment';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Clinic Turnkey Onboarding & Custom EHR Integration',
+              description: 'Up to 5 clinician licenses, white-glove EHR template customization, 1-on-1 workflow integration, dedicated HIPAA BAA.',
+            },
+            unit_amount: 125000, // $1,250.00
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'clinic_pro_monthly' || tier === 'practitioner' || tier === 'monthly') {
+        mode = 'subscription';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Clinic Pro (Monthly)',
+              description: 'Ambient AI voice scribing, custom specialty templates, medication & herb-drug safety checker, priority support.',
+            },
+            unit_amount: 4900, // $49.00 / mo
+            recurring: { interval: 'month' },
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'pilot') {
+        mode = 'subscription';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Independent Clinic Pilot License',
+              description: 'Ambient Clinical Scribe + SOAP notes, RxGuard PGx & herb-drug screening, Socratic patient intake triage (Up to 3 clinicians)',
+            },
+            unit_amount: 29900, // $299.00
+            recurring: { interval: 'month' },
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'sprint') {
+        mode = 'payment';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Clinical AI Implementation & FHIR Sprint',
+              description: 'Turnkey 2-week implementation: HIPAA §164.514 Safe Harbor setup, Custom LoRA model fine-tuning, FHIR R4 / GA4GH Phenopackets pipeline integration',
+            },
+            unit_amount: 350000, // $3,500.00
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'academic') {
+        mode = 'subscription';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Academic Lab & Residency Hub License',
+              description: 'GA4GH Phenopackets v2 rare disease pipelines, 11-paradigm open science datasets, unlimited OSCE simulation training seats',
+            },
+            unit_amount: 120000, // $1,200.00 / yr
+            recurring: { interval: 'year' },
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'enterprise') {
+        mode = 'subscription';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Health System Enterprise Tier',
+              description: 'Unlimited clinician seats, Google SAIF Level 3 defense, dedicated Vertex AI endpoint deployment, priority SLA',
+            },
+            unit_amount: 99900, // $999.00 / mo
+            recurring: { interval: 'month' },
+          },
+          quantity: 1,
+        }];
+      } else {
+        return res.status(400).json({ error: 'A valid priceId or tier (founder_lifetime, clinic_annual, clinic_onboarding, clinic_pro_monthly, academic, enterprise) is required.' });
+      }
+
+      // Check if Stripe key is configured or in simulated mode
+      const stripeKey = process.env['STRIPE_SECRET_KEY'];
+      if (!stripeKey || stripeKey === 'sk_test_placeholder') {
+        const fallbackUrl = `https://pocketgull.app/?checkout_tier=${encodeURIComponent(String(tier || 'pro'))}&status=simulated_checkout`;
+        if (isGet) {
+          return res.redirect(303, fallbackUrl);
+        }
+        return res.json({ url: fallbackUrl, sessionId: 'cs_simulated_' + Date.now() });
+      }
+
+      // Create a live Stripe Checkout Session
+      const session = await getStripe().checkout.sessions.create({
+        line_items: lineItems,
+        mode: mode,
+        success_url: String(successUrl || `${origin}/?billing=success&session_id={CHECKOUT_SESSION_ID}`),
+        cancel_url: String(cancelUrl || `${origin}/?billing=canceled`),
+        customer_email: customerEmail ? String(customerEmail) : undefined,
         metadata: {
-          endowment_fund: endowmentFund || 'Alumni Health & Research Endowment',
-          revenue_split: revenueSplit || '50-30-20',
-          philanthropic_pledge: 'true',
+          tier: String(tier || 'custom'),
+          endowment_fund: String(endowmentFund || 'Alumni Health & Research Endowment'),
+          revenue_split: String(revenueSplit || '50-30-20'),
           founder_dispensation: 'true'
         }
       });
 
-      res.json({ url: session.url });
+      if (isGet) {
+        return res.redirect(303, session.url!);
+      }
+      res.json({ url: session.url, sessionId: session.id });
     } catch (err: any) {
       console.error('[Billing] Error creating checkout session:', err.message);
-      res.status(500).json({ error: 'Failed to create checkout session' });
+      res.status(500).json({ error: 'Failed to create checkout session', detail: err.message });
     }
-  });
+  };
+
+  router.post('/checkout', limiter, express.json(), handleCheckoutRequest);
+  router.get('/checkout', limiter, handleCheckoutRequest);
 
   router.post('/portal', limiter, express.json(), async (req, res) => {
     try {
@@ -66,7 +199,7 @@ export function createBillingRouter() {
       }
 
       // Fetch the stripeCustomerId from Firestore
-      const tenantDoc = await db.collection('tenants').doc(customerEmail).get();
+      const tenantDoc = await getDb().collection('tenants').doc(customerEmail).get();
       if (!tenantDoc.exists) {
         return res.status(404).json({ error: 'Tenant not found.' });
       }
@@ -79,7 +212,7 @@ export function createBillingRouter() {
       const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
 
       // Create a Customer Portal Session
-      const portalSession = await stripe.billingPortal.sessions.create({
+      const portalSession = await getStripe().billingPortal.sessions.create({
         customer: stripeCustomerId,
         return_url: `${origin}/`,
       });
@@ -103,7 +236,7 @@ export function createBillingRouter() {
       if (!endpointSecret) throw new Error('No webhook secret configured.');
       if (!sig) throw new Error('No signature provided.');
       // req.body must be the raw buffer here
-      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+      event = getStripe().webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err: any) {
       console.error('[Billing] Webhook signature verification failed');
       return res.status(400).json({ error: 'Webhook Error', message: 'Webhook signature verification failed.' });
@@ -119,7 +252,7 @@ export function createBillingRouter() {
         let resolvedTier = 'explorer';
         if (checkoutSession.subscription) {
           try {
-            const subscription = await stripe.subscriptions.retrieve(checkoutSession.subscription as string);
+            const subscription = await getStripe().subscriptions.retrieve(checkoutSession.subscription as string);
             const priceId = subscription.items?.data?.[0]?.price?.id || '';
             resolvedTier = resolveTierFromPriceId(priceId);
           } catch (subErr: any) {
@@ -129,7 +262,7 @@ export function createBillingRouter() {
 
         // Update user/tenant document in Firestore to unlock quota/seats
         if (checkoutSession.customer_email) {
-          await db.collection('tenants').doc(checkoutSession.customer_email).set({
+          await getDb().collection('tenants').doc(checkoutSession.customer_email).set({
             subscriptionStatus: 'active',
             subscriptionTier: resolvedTier,
             stripeCustomerId: checkoutSession.customer,
@@ -181,7 +314,7 @@ export function createBillingRouter() {
         
         // Update user/tenant document to pause quota/seats
         if (failedInvoice.customer_email) {
-          await db.collection('tenants').doc(failedInvoice.customer_email).set({
+          await getDb().collection('tenants').doc(failedInvoice.customer_email).set({
             subscriptionStatus: 'past_due',
             updatedAt: new Date()
           }, { merge: true });
@@ -194,7 +327,7 @@ export function createBillingRouter() {
         console.log(`[Billing] Subscription canceled for customer ${deletedSub.customer}`);
         
         // Find tenant by stripeCustomerId
-        const snapshot = await db.collection('tenants').where('stripeCustomerId', '==', deletedSub.customer).get();
+        const snapshot = await getDb().collection('tenants').where('stripeCustomerId', '==', deletedSub.customer).get();
         if (!snapshot.empty) {
           const docRef = snapshot.docs[0].ref;
           await docRef.set({
@@ -211,7 +344,7 @@ export function createBillingRouter() {
         const newTier = resolveTierFromPriceId(updatedPriceId);
         console.log(`[Billing] Subscription updated for customer ${updatedSub.customer} → tier: ${newTier}`);
 
-        const updateSnapshot = await db.collection('tenants').where('stripeCustomerId', '==', updatedSub.customer).get();
+        const updateSnapshot = await getDb().collection('tenants').where('stripeCustomerId', '==', updatedSub.customer).get();
         if (!updateSnapshot.empty) {
           const updateDocRef = updateSnapshot.docs[0].ref;
           await updateDocRef.set({

@@ -39,6 +39,12 @@ Pocket-Gull is a real-time medical Care Plan Strategy and Live AI Consult engine
 - Default TypeScript Typecheck command: `node c:\Users\philg\Pocketgull\pocketgull\node_modules\typescript\lib\tsc.js -p c:\Users\philg\Pocketgull\pocketgull\tsconfig.json --noEmit`
 - Default Angular Build command: `node c:\Users\philg\Pocketgull\pocketgull\node_modules\@angular\cli\bin\ng.js build`
 - Deployment is to Google Cloud Run via `npm run deploy`.
+- **Pre-Flight Test Mandate**: Whenever deploying or when the user requests a deployment, `npm run deploy` and any agent MUST automatically run all necessary test suites before executing the deployment:
+  1. `TypeScript Typecheck` (`tsc --noEmit`)
+  2. `Vitest Unit Test Suite` (`npx vitest run`)
+  3. `Sentinel Security & Egress Audit` (`node scripts/sentinel_security_guard.mjs`)
+  4. `CycloneDX 1.6 SBOM Verification` (`npm run sbom`)
+  If any test or security check fails, the deployment must immediately abort.
 - **Deployment Strategy**: All deployments MUST target the `gen-lang-client-0540208645` Google Cloud project.
 - **Cloud Bill & Cost Strategy**: Always monitor the cloud bill and ensure services scale to zero to minimize costs.
   - **Artifact Registry Cleanup Policy**: Enforce a 7-day auto-deletion policy (`olderThan: "604800s"`) while retaining the latest 3 builds (`keepCount: 3`) across `cloud-run-source-deploy` and `gcr.io` repositories to prevent buildup of historical Docker image storage (~175+ GB).
@@ -80,3 +86,51 @@ export class MetricCardComponent {
 - **ISMP / FDA Disambiguation**: Enforce slashed zero (`cv08`), curved lowercase `l` (`cv05`), and serifed capital `I` (`ss02`).
 - **WCAG AAA Compliance**: Minimum 7:1 contrast ratio against dark obsidian backgrounds.
 - **HIPAA Safe Harbor**: All research and mock datasets must strip all 18 direct/indirect identifiers.
+
+## Marker Font & Brand Lettering Governance Standard
+- **Exclusive Brand & Copyright Boundary**: The custom handwritten/display Marker Font (`font-pocketgull-handwritten`, `.marker-bold-emphasis`, `.bionic-pocketgull-marker`, marker SVG strokes) MUST **ONLY** be utilized when displaying the official **Brand Lettering ("PocketGull")** and **Copyright / Legal Footer imprint** lines.
+- **Universal Clinical Legibility**: All clinical UI, research frame literature, telemetric navigation, data HUDs, vitals tables, and reading frames MUST strictly utilize the clean, high-legibility clinical typography stacks (`font-pocketgull-sans-clinical`, `font-pocketgull-inter`, `font-pocketgull-mono`, `font-pocketgull-notofu`) to guarantee zero dosage misinterpretation and optimal optical legibility.
+
+## Amazon Associates & Affiliate Egress Governance Standard
+- **Strict SMS & Email Affiliate Link Prohibition**: NEVER transmit raw Amazon affiliate links (`amazon.com/dp/*`, `tag=pgdpo-20`) inside outbound SMS text messages, push notifications, or emails. All communications MUST direct patients back to their secure Pocket-Gull Care Plan web portal.
+- **Mandatory FTC & Clinical Disclaimer**: Every product recommendation card MUST display the clear FTC affiliate disclosure (`As an Amazon Associate, PocketGull earns from qualifying purchases`) and state that recommendations are supportive evidence-grounded tools, not direct prescriptions.
+- **Zero PHI in Egress Links**: Affiliate links must only contain standard ASIN and affiliate tracking parameters (`tag=pgdpo-20`). NEVER pass patient identifiers, clinical diagnoses, or condition codes in external URLs.
+- **Zero Base Model Training on Catalog Data**: Amazon product listings and program content may only be used for runtime inference/classification; NEVER use Amazon catalog data to train or fine-tune foundational base LLM weights.
+
+## Anti-Whaling & Clinical Cybersecurity Governance Standard
+- **Dual-Custody (M-of-N) Multi-Signature Protocol**: Bulk patient exports (>50 records), batch state deletions, or treasury disbursements $\ge \$500$ MUST require dual distinct authenticated clinical/executive roles (`MandiantClinicalDefenseService.verifyDualCustodyAuthorization`). No single compromised executive or CMO credential can execute unilateral high-impact actions.
+- **Anti-Deepfake Audio & Synthetic Voice Boundary**: Spoken voice telemetry is strictly an interaction modality, NEVER an authentication credential. Privileged state alterations or controlled medication edits ordered over voice MUST enforce a step-up hardware FIDO2 / WebAuthn physical passkey challenge.
+- **STAT Emergency Override Forensic Attestation**: Declaring a STAT emergency bypass NEVER disables core safety or de-identification filters; all emergency overrides automatically generate immutable SHA-256 forensic snapshot audit entries (`IIncidentForensicSnapshot`).
+- **Indirect Prompt Injection & Unicode Sanitization (OWASP LLM01)**: All external clinical notes and partner payloads MUST be stripped of non-printable zero-width Unicode characters (`\u200B`, `\u200C`) and partitioned structurally (`[CLINICAL DIRECTIVE CONTEXT]`) to prevent LLM guardrail subversion.
+
+## Tailwind CSS Best Practices & Production Performance Standard
+- **Zero Runtime JIT CDN in Production**: Never use `<script src="https://cdn.tailwindcss.com"></script>` in production builds or static SSR endpoints. All Tailwind styles MUST be precompiled and tree-shaken at build time to eliminate render-blocking script execution and maintain 100/100 Lighthouse performance.
+- **Design Token Discipline**: Map all semantic colors (`obsidian`, `gearTeal`, `amberGold`, `paperCream`) directly into `tailwind.config.js` rather than using scattered arbitrary hex values (`bg-[#09090b]`).
+- **WCAG AAA Contrast & Focus Rings**: Enforce a $\ge 7:1$ contrast ratio for all readable text against dark obsidian surfaces (`text-zinc-300` / `text-zinc-200` on `#09090b`). Never remove focus outlines without an explicit `focus-visible:ring-2 focus-visible:ring-teal-400` accessible focus state.
+- **Fitts's Law Hitboxes**: All interactive elements (buttons, links, drawer toggles) MUST maintain a minimum $44 \times 44\text{ px}$ (or $48 \times 48\text{ px}$) physical touch target with `touch-manipulation` enabled.
+- **Zero Cumulative Layout Shift (CLS)**: Always provide explicit HTML `width` and `height` attributes alongside Tailwind responsive utility classes on all images, icons, and embedded canvas containers.
+- **Tabular Figures for Telemetry**: Enforce `tabular-nums` and `font-mono` on all timers, blood pressure vitals, heart rates, and financial figures to eliminate layout jitter.
+
+## Five Eyes (FVEY) Regulatory & Data Sovereignty Standard
+- **Mandatory Statutory Mapping**: All clinical state exports, consent flows, and emergency vectors MUST support explicit Five Eyes partner nation profiles:
+  - **United States**: HIPAA §164.514 Safe Harbor, HITECH, ONC HTI-1, FHIR US Core R4, 988 Suicide & Crisis Lifeline.
+  - **United Kingdom**: NHS DTAC, DSPT, UK-GDPR, NICE ESF, FHIR UK Core, NHS 111 Dispatch.
+  - **Canada**: PIPEDA, Ontario PHIPA, Alberta HIA, FHIR CA Baseline, 988 Suicide Crisis Helpline.
+  - **Australia**: Privacy Act 1988 (APPs), My Health Record Act 2012, TGA SaMD, FHIR AU Base, Lifeline 13 11 14.
+  - **New Zealand**: Health Information Privacy Code 2020 (HIPC), NZ HISO 10029/10064, FHIR NZ Base, 1737 Need to Talk.
+
+## Institutional Thin-Client & Multi-Device Resilience Standard
+- **Cross-Form Factor Parity**: Every clinical interface MUST render with zero horizontal blowout and full feature parity across:
+  - `mobile-iphone` (iOS WebKit / Safari viewport dynamics)
+  - `mobile-chrome` (Android Pixel 7)
+  - `tablet-ipad-exam-room` (810x1080 exam room swivel mounts)
+  - `chromebook-school-library` (1366x768 constrained touch kiosks)
+  - `clinical-cow-workstation` (1280x1024 5:4 ratio Citrix/COW workstations)
+- **Defensive Permission Fallback**: If microphone, camera, or Web Audio permissions are restricted by institutional group policy, the UI MUST gracefully transition to keyboard/text input and visual telemetry without throwing unhandled exceptions.
+
+## Domain Encapsulation & "Tell, Don't Ask" Standard (Anti-Getter Business Logic Bolting)
+- **Prohibition of Bolting External Logic on Getters**: NEVER reuse or call an existing getter simply to extract raw internal state and bolt new business rules, mutative calculations, or domain workflows onto the caller side outside the owning entity or service.
+- **"Tell, Don't Ask" Enforcement**: Keep domain behavior, state transitions, and validation invariants encapsulated within the class, entity, or service that owns the underlying data.
+- **Intent-Revealing Domain Methods**: When a new business capability or computational requirement is needed, introduce an explicit, purpose-built domain method on the owning model/service rather than leaking raw state and performing external ad-hoc assembly.
+- **Prevention of Feature Envy & Anemic Models**: Ensure business calculations (such as clinical score aggregations, dosage calibrations, or state transitions) remain cohesive within their domain boundaries.
+

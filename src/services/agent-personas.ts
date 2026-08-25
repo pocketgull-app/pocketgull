@@ -164,6 +164,18 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         svgAnimation: 'beam-sweep-100',
         adkMapping: 'performance_optimization_agent',
     },
+    osteopath: {
+        name: 'Dr. Elena Gullwing, DO',
+        role: 'Osteopathic Rounds Director & Steering Committee Chair',
+        emoji: '🦴',
+        tagline: 'Structure and function are interrelated — treating the whole person across all clinical paradigms.',
+        accentColor: '#D97706',
+        accentTailwind: 'amber-600',
+        avatarPath: 'assets/images/agents/osteopath.png',
+        props: ['Spine Biomechanical Model', 'Steering Committee Gavel', 'OMT Palpation Gauge'],
+        svgAnimation: 'somatic-resonance',
+        adkMapping: 'osteopathic_rounds_director',
+    },
 };
 
 /**

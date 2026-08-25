@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect, vi } from 'vitest';
 import { VisionAccessibilityAssistComponent } from './vision-accessibility-assist.component';
 import { runInInjectionContext, createEnvironmentInjector, EnvironmentInjector } from '@angular/core';
 import { PatientStateService } from '../services/patient-state.service';

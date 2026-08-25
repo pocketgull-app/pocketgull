@@ -22,24 +22,24 @@ export interface IEmergencyNutritionalSuggestion {
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="p-5 bg-gradient-to-br from-amber-950/40 via-zinc-950 to-zinc-900 border-2 border-amber-500/50 rounded-3xl text-zinc-100 shadow-2xl mb-8 font-mono">
+    <div class="p-6 bg-gradient-to-br from-amber-950/50 via-zinc-950/90 to-zinc-900 border-2 border-amber-500/50 rounded-3xl text-zinc-100 shadow-2xl mb-8 font-pocketgull-mono">
       
       <!-- Emergency Bypass Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-500/30 pb-4 mb-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-500/30 pb-4 mb-5">
         <div>
           <div class="flex items-center gap-2.5">
-            <span class="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)] animate-ping"></span>
-            <h3 class="text-sm sm:text-base font-extrabold uppercase tracking-widest text-amber-400">
+            <span class="w-3.5 h-3.5 rounded-full bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.9)] animate-ping shrink-0"></span>
+            <h3 class="text-sm sm:text-base font-pocketgull font-black uppercase tracking-wider text-amber-400">
               🚨 Emergency Bypass — Rapid Nutritional Triage Telemetry
             </h3>
           </div>
-          <p class="text-[11px] text-zinc-400 mt-1 font-sans">
-            Real-time emergency dietary & osmotic hydration recommendations calculated from patient vitals, active conditions, and GPS location telemetry.
+          <p class="text-xs text-zinc-300 mt-1 font-pocketgull-inter leading-relaxed">
+            Real-time emergency dietary &amp; osmotic hydration recommendations calculated from patient vitals, active conditions, and GPS location telemetry.
           </p>
         </div>
 
-        <div class="flex items-center gap-2 text-[10px]">
-          <span class="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold uppercase">
+        <div class="flex items-center gap-2 text-xs">
+          <span class="px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-pocketgull font-bold uppercase tracking-wider">
             Location: {{ activeLocationRegion() }}
           </span>
         </div>
@@ -48,42 +48,48 @@ export interface IEmergencyNutritionalSuggestion {
       <!-- Emergency Suggestions Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         @for (item of suggestions(); track item.id) {
-          <div class="p-4 rounded-2xl bg-zinc-900/90 border border-amber-500/30 hover:border-amber-500/60 transition shadow-md flex flex-col justify-between">
+          <div class="p-5 rounded-2xl bg-zinc-900/95 border border-amber-500/30 hover:border-amber-500/60 transition shadow-lg flex flex-col justify-between">
             <div>
               <!-- Badge Header -->
-              <div class="flex items-center justify-between mb-2 border-b border-zinc-800 pb-2">
-                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded"
+              <div class="flex items-center justify-between mb-3 border-b border-zinc-800 pb-2.5">
+                <span class="text-[11px] font-pocketgull font-bold uppercase tracking-wider px-2.5 py-1 rounded-md"
                   [class.bg-red-500/20]="item.urgencyLevel === 'CRITICAL'"
                   [class.text-red-400]="item.urgencyLevel === 'CRITICAL'"
+                  [class.border]="item.urgencyLevel === 'CRITICAL'"
+                  [class.border-red-500/40]="item.urgencyLevel === 'CRITICAL'"
                   [class.bg-amber-500/20]="item.urgencyLevel === 'HIGH'"
                   [class.text-amber-400]="item.urgencyLevel === 'HIGH'"
+                  [class.border]="item.urgencyLevel === 'HIGH'"
+                  [class.border-amber-500/40]="item.urgencyLevel === 'HIGH'"
                   [class.bg-emerald-500/20]="item.urgencyLevel === 'ADVISORY'"
-                  [class.text-emerald-400]="item.urgencyLevel === 'ADVISORY'">
+                  [class.text-emerald-400]="item.urgencyLevel === 'ADVISORY'"
+                  [class.border]="item.urgencyLevel === 'ADVISORY'"
+                  [class.border-emerald-500/40]="item.urgencyLevel === 'ADVISORY'">
                   {{ item.urgencyLevel }} • {{ item.category }}
                 </span>
-                <span class="text-xs text-zinc-400 font-sans">⏱️ {{ item.preparationTime }}</span>
+                <span class="text-xs text-zinc-400 font-pocketgull-mono">⏱️ {{ item.preparationTime }}</span>
               </div>
 
               <!-- Title & Formula -->
-              <div class="flex items-start gap-3 mb-2">
-                <span class="text-2xl shrink-0">{{ item.emoji }}</span>
+              <div class="flex items-start gap-3 mb-2.5">
+                <span class="text-3xl shrink-0">{{ item.emoji }}</span>
                 <div>
-                  <h4 class="text-xs font-bold text-zinc-100 uppercase tracking-tight">{{ item.title }}</h4>
-                  <span class="text-[10px] text-amber-300 font-bold block mt-0.5">Formula: {{ item.activeFormula }}</span>
+                  <h4 class="text-xs sm:text-sm font-pocketgull font-bold text-zinc-100 uppercase tracking-tight">{{ item.title }}</h4>
+                  <span class="text-xs text-amber-300 font-pocketgull-mono font-bold block mt-1">Formula: {{ item.activeFormula }}</span>
                 </div>
               </div>
 
               <!-- Rationale & Trigger -->
-              <p class="text-[11px] text-zinc-300 font-sans leading-relaxed mb-3">
+              <p class="text-xs text-zinc-300 font-pocketgull-inter leading-relaxed mb-4">
                 {{ item.emergencyRationale }}
               </p>
             </div>
 
             <!-- Footer Dosage & Action -->
-            <div class="pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[10px]">
-              <span class="text-zinc-400">Trigger: <strong class="text-zinc-200">{{ item.triggerSource }}</strong></span>
+            <div class="pt-3 border-t border-zinc-800/80 flex items-center justify-between text-xs">
+              <span class="text-zinc-400 font-pocketgull-mono">Trigger: <strong class="text-zinc-200 font-pocketgull">{{ item.triggerSource }}</strong></span>
               <button (click)="prescribeEmergencyItem(item)"
-                class="px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/50 font-bold uppercase tracking-wider transition cursor-pointer active:scale-95">
+                class="px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/50 font-pocketgull font-bold text-xs uppercase tracking-wider transition cursor-pointer active:scale-95 min-h-[44px]">
                 ➕ Log Triage Meal
               </button>
             </div>

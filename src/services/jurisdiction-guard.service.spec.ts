@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { expect } from 'vitest';
 import { JurisdictionGuardService } from './jurisdiction-guard.service';
 
 describe('JurisdictionGuardService Unit Suite', () => {

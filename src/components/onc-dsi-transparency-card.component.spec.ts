@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { expect } from 'vitest';
 import { OncDsiTransparencyCardComponent } from './onc-dsi-transparency-card.component';
 import { OncDsiTransparencyService } from '../services/onc-dsi-transparency.service';
 

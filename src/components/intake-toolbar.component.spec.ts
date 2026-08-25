@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { vi } from 'vitest';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { IntakeToolbarComponent } from './intake-toolbar.component';
 import { FitbitService } from '../services/hardware/fitbit.service';
