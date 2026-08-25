@@ -22,8 +22,8 @@ const ALLOWED_PATIENT_FIELDS = [
   'demographics', 'assessment'
 ] as const;
 
-/** Maximum database file size (10 MB). */
-const MAX_DB_BYTES = 10 * 1024 * 1024;
+/** Maximum database file size (50 MB). */
+const MAX_DB_BYTES = 50 * 1024 * 1024;
 
 /** Maximum patient ID length. */
 const PATIENT_ID_PATTERN = /^[a-zA-Z0-9_-]{1,64}$/;
@@ -106,7 +106,7 @@ export function createPatientsRouter(): Router {
   });
 
   // POST /api/patients (bulk write)
-  router.post('/', limiter, expressJson({ limit: '50mb' }), (req: Request, res: Response) => {
+  router.post('/', limiter, expressJson({ limit: '100mb' }), (req: Request, res: Response) => {
     try {
       const rawBody: unknown = req.body;
       if (!Array.isArray(rawBody)) {
@@ -129,7 +129,7 @@ export function createPatientsRouter(): Router {
   });
 
   // PUT /api/patients/:id (upsert)
-  router.put('/:id', limiter, expressJson({ limit: '50mb' }), (req: Request, res: Response) => {
+  router.put('/:id', limiter, expressJson({ limit: '100mb' }), (req: Request, res: Response) => {
     try {
       const rawIdStr = String(req.params['id'] || '');
       if (!PATIENT_ID_PATTERN.test(rawIdStr)) {

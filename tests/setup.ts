@@ -10,14 +10,14 @@ try {
 } catch {}
 
 import { getTestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 
 try {
   const testBed = getTestBed();
   if (!testBed.platform) {
     testBed.initTestEnvironment(
-      BrowserDynamicTestingModule,
-      platformBrowserDynamicTesting(),
+      BrowserTestingModule,
+      platformBrowserTesting(),
       { teardown: { destroyAfterEach: true } }
     );
   }
@@ -25,8 +25,8 @@ try {
   try {
     getTestBed().resetTestEnvironment();
     getTestBed().initTestEnvironment(
-      BrowserDynamicTestingModule,
-      platformBrowserDynamicTesting(),
+      BrowserTestingModule,
+      platformBrowserTesting(),
       { teardown: { destroyAfterEach: true } }
     );
   } catch {}
