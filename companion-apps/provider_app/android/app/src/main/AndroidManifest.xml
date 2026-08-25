@@ -1,8 +1,26 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
     <application
-        android:label="provider_app"
+        android:label="PocketGull Provider"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data
+            android:name="com.pocketgull.clinical.suite"
+            android:value="PROVIDER_CLINICAL_DECISION_SUPPORT" />
+        <meta-data
+            android:name="com.pocketgull.clinical.fhir_standard"
+            android:value="FHIR_R4_US_CORE" />
+        <meta-data
+            android:name="com.pocketgull.clinical.cds_hooks"
+            android:value="CDS_HOOKS_V1" />
+        <meta-data
+            android:name="com.pocketgull.security.hipaa_safe_harbor"
+            android:value="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -31,11 +49,6 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
-    <!-- Required to query activities that can process text, see:
-         https://developer.android.com/training/package-visibility and
-         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
-
-         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>

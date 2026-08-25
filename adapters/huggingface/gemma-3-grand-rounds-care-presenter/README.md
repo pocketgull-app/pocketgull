@@ -19,7 +19,7 @@ pipeline_tag: text-generation
 
 **Organization**: [PocketGull LLC](https://pocketgull.com) (Oregon Registry: 258869891)  
 **Informatics Lead**: Phillip Gear (CMS NPI: 1487569752 | ORCID: [0009-0008-1372-5381](https://orcid.org/0009-0008-1372-5381))  
-**Base Foundation Model**: `google/gemma-3-12b-it`  
+**Base Foundation Model**: \`google/gemma-3-12b-it\`  
 **Discipline**: Academic Medical Case Publication  
 **Open Science Provenance**: [Zenodo DOI 10.5281/zenodo.20647514](https://doi.org/10.5281/zenodo.20647514)  
 
@@ -29,6 +29,35 @@ pipeline_tag: text-generation
 Compiles 7-slide academic Grand Rounds decks and CARE Guidelines-compliant medical case reports.
 
 This LoRA adapter was fine-tuned using Direct Preference Optimization (DPO) on domain-specific clinical datasets conforming strictly to **HIPAA §164.514 Safe Harbor** de-identification standards.
+
+---
+
+## 🚀 Quickstart Inference (Transformers & PEFT)
+
+```python
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from peft import PeftModel
+
+base_model_id = "google/gemma-3-12b-it"
+adapter_id = "pocketgull-llc/gemma-3-grand-rounds-care-presenter"
+
+tokenizer = AutoTokenizer.from_pretrained(base_model_id)
+base_model = AutoModelForCausalLM.from_pretrained(
+    base_model_id,
+    torch_dtype=torch.bfloat16,
+    device_map="auto"
+)
+model = PeftModel.from_pretrained(base_model, adapter_id)
+
+prompt = "Patient presents with palpitations taking St. John's Wort alongside Warfarin. Evaluate CYP450 metabolism."
+inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+
+with torch.no_grad():
+    outputs = model.generate(**inputs, max_new_tokens=256, temperature=0.2)
+
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+```
 
 ---
 

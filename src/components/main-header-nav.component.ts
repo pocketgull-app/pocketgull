@@ -96,6 +96,27 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                 <!-- Section: Clinical Intelligence & AI -->
                 <div class="space-y-1">
                   <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🧠 Clinical AI</span>
+                  <button type="button" (click)="openSocraticRounds.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">👨‍⚕️</span>
+                    <div>
+                      <div>Socratic Rounds</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">House M.D. Multi-Agent CDS</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openKneeHologram.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🩻</span>
+                    <div>
+                      <div>3D Joint Hologram</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Three.js Tri-Plane Slicer</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openSmartHealthPass.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">📱</span>
+                    <div>
+                      <div>SMART Health Pass</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Cryptographic FHIR R4 QR</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openSocraticIntake.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">✨</span>
                     <div>
@@ -437,6 +458,9 @@ export class MainHeaderNavComponent {
   isAppsHubOpen = signal<boolean>(false);
   showAmbientPlayer = signal<boolean>(false);
 
+  openSocraticRounds = output<void>();
+  openKneeHologram = output<void>();
+  openSmartHealthPass = output<void>();
   openSocraticIntake = output<void>();
   openModelGarden = output<void>();
   openTalentHrPortal = output<void>();

@@ -1,36 +1,38 @@
 {
-  "title": "Pocketgull Clinical Decision & Biophysical Benchmark",
-  "subtitle": "De-identified 3D Volumetric Imaging & Clinical Consult Vectors",
+  "title": "Pocketgull Medical Skeptic DICOM Benchmark",
+  "subtitle": "De-identified 3D Medical Imaging & Synthetic Clinical Consult Vectors",
   "id": "philgear/med-skeptic-dicom-bench",
   "licenses": [
     {
       "name": "CC-BY-4.0"
     }
   ],
+  "isPrivate": false,
+  "keywords": [
+    "healthcare",
+    "medicine",
+    "python",
+    "biology",
+    "synthetic"
+  ],
   "sources": [
     {
-      "name": "Pocketgull Clinical Intelligence Engine & Biophysical Archive",
-      "url": "https://github.com/pocketgull-app/pocketgull"
+      "name": "PocketGull Clinical Intelligence & RSNA Radiology Archive",
+      "url": "https://github.com/philgear/pocketgull"
     }
   ],
   "updateFrequency": "monthly",
-  "isPrivate": true,
-  "keywords": [
-    "healthcare",
-    "dart",
-    "clinical-cds",
-    "biophysics"
-  ],
+  "description": "# Pocketgull Clinical & Benchmark Dataset (MED-SKEPTIC)\n\n## Context & Overview\nThis dataset provides de-identified 3D MRI volumetric metadata, multi-label diagnostic annotations, and synthetic clinical consult vectors engineered to evaluate foundation model diagnostic accuracy, Popperian falsifiability ($p < 0.05$), and Socratic evidence literacy.\n\n## Content & File Structure\n- `train.csv`: 4,400+ study-level multi-label pathology annotations (ACL, MCL, Meniscus tears, Osteoarthritis, Effusion).\n- `train_series.csv`: DICOM MRI volumetric acquisition parameters, series UIDs, and plane orientations (Sagittal, Coronal, Axial).\n- `train_labels_gemini.csv`: Gemini 2.5 Flash distilled weak labels with clinical rationale confidence scores.\n- `asymmetric_loss.py`: PyTorch/NumPy implementation of Asymmetric Loss (ASL: gamma_minus=4.0, gamma_plus=1.0).\n\n## Data Dictionary\n| Column Name | Data Type | Description |\n|:---|:---|:---|\n| `StudyInstanceUID` | String | Unique anonymized study subject hash |\n| `SeriesInstanceUID` | String | Unique DICOM volumetric series acquisition identifier |\n| `ACL` | Integer (0 or 1) | Binary indicator for Anterior Cruciate Ligament tear |\n| `MCL` | Integer (0 or 1) | Binary indicator for Medial Collateral Ligament tear |\n| `Medial Meniscus` | Integer (0 or 1) | Binary indicator for Medial Meniscus tear |\n| `Lateral Meniscus` | Integer (0 or 1) | Binary indicator for Lateral Meniscus tear |\n| `Medial OA` | Integer (0 or 1) | Binary indicator for Medial Compartment Osteoarthritis |\n| `Lateral OA` | Integer (0 or 1) | Binary indicator for Lateral Compartment Osteoarthritis |\n| `PF OA` | Integer (0 or 1) | Binary indicator for Patellofemoral Osteoarthritis |\n| `Effusion` | Integer (0 or 1) | Presence of joint effusion / fluid accumulation |\n| `Synovitis` | Integer (0 or 1) | Synovial membrane inflammation or thickening |\n| `Baker's` | Integer (0 or 1) | Popliteal synovial fluid distension (Baker's cyst) |\n| `Contusion` | Integer (0 or 1) | Subchondral bone marrow edema pattern |\n| `Fracture` | Integer (0 or 1) | Cortical bone discontinuity |\n\n## HIPAA \u00a7164.514 Safe Harbor Compliance\nAll data strictly conforms to HIPAA 45 CFR \u00a7164.514(b)(2) Safe Harbor anonymization. All 18 direct personal identifiers (names, dates, MRNs, institutional headers) have been permanently removed.\n\n## Provenance & Citation\nPublished by PocketGull LLC & the RSNA Radiology Archive under Creative Commons Attribution 4.0 International (CC-BY 4.0). Free for global research, academic evaluation, and model benchmarking.\n",
   "resources": [
     {
       "path": "train.csv",
-      "description": "Primary study-level multi-label pathology annotations for 4,400+ subjects.",
+      "description": "Primary study-level multi-label pathology ground truth annotations for 4,400+ patients.",
       "schema": {
         "fields": [
           {
             "name": "StudyInstanceUID",
             "type": "string",
-            "description": "Unique anonymized study subject hash"
+            "description": "Unique anonymized study subject hash identifier"
           },
           {
             "name": "ACL",
@@ -53,54 +55,108 @@
             "description": "Lateral Meniscus tear binary indicator (0 or 1)"
           },
           {
+            "name": "Medial OA",
+            "type": "integer",
+            "description": "Medial compartment osteoarthritis cartilage loss (0 or 1)"
+          },
+          {
+            "name": "Lateral OA",
+            "type": "integer",
+            "description": "Lateral compartment osteoarthritis cartilage loss (0 or 1)"
+          },
+          {
+            "name": "PF OA",
+            "type": "integer",
+            "description": "Patellofemoral osteoarthritis retropatellar wear (0 or 1)"
+          },
+          {
             "name": "Effusion",
             "type": "integer",
             "description": "Joint effusion / fluid accumulation binary indicator (0 or 1)"
+          },
+          {
+            "name": "Synovitis",
+            "type": "integer",
+            "description": "Synovial membrane inflammation or thickening (0 or 1)"
+          },
+          {
+            "name": "Baker's",
+            "type": "integer",
+            "description": "Popliteal synovial fluid distension / Baker's cyst (0 or 1)"
+          },
+          {
+            "name": "Contusion",
+            "type": "integer",
+            "description": "Subchondral bone marrow edema pattern (0 or 1)"
+          },
+          {
+            "name": "Fracture",
+            "type": "integer",
+            "description": "Cortical bone discontinuity binary indicator (0 or 1)"
           }
         ]
       }
     },
     {
       "path": "train_series.csv",
-      "description": "DICOM MRI volumetric acquisition parameters and plane orientations.",
+      "description": "DICOM MRI volumetric acquisition parameters, series UIDs, and plane orientations.",
       "schema": {
         "fields": [
           {
             "name": "StudyInstanceUID",
             "type": "string",
-            "description": "Unique anonymized study subject hash"
+            "description": "Unique anonymized study subject hash identifier"
           },
           {
             "name": "SeriesInstanceUID",
             "type": "string",
-            "description": "Unique DICOM series acquisition identifier"
+            "description": "Unique DICOM series volumetric acquisition identifier"
           },
           {
             "name": "SeriesDescription",
             "type": "string",
-            "description": "Anatomical slice plane (Sagittal, Coronal, or Axial)"
+            "description": "Anatomical slice orientation plane (Sagittal, Coronal, or Axial)"
           }
         ]
       }
     },
     {
       "path": "train_labels_gemini.csv",
-      "description": "Gemini distilled weak labels with clinical rationale confidence scores.",
+      "description": "Gemini 2.5 Flash distilled weak labels with clinical rationale confidence scores.",
       "schema": {
         "fields": [
           {
             "name": "StudyInstanceUID",
             "type": "string",
-            "description": "Unique anonymized study subject hash"
+            "description": "Unique anonymized study subject hash identifier"
           },
           {
-            "name": "gemini_confidence",
+            "name": "ACL",
             "type": "number",
-            "description": "Model confidence score for clinical recommendation (0.0 to 1.0)"
+            "description": "Weak label probability for Anterior Cruciate Ligament tear [0.0 - 1.0]"
+          },
+          {
+            "name": "MCL",
+            "type": "number",
+            "description": "Weak label probability for Medial Collateral Ligament tear [0.0 - 1.0]"
+          },
+          {
+            "name": "Medial Meniscus",
+            "type": "number",
+            "description": "Weak label probability for Medial Meniscus tear [0.0 - 1.0]"
+          },
+          {
+            "name": "Lateral Meniscus",
+            "type": "number",
+            "description": "Weak label probability for Lateral Meniscus tear [0.0 - 1.0]"
+          },
+          {
+            "name": "Effusion",
+            "type": "number",
+            "description": "Weak label probability for Joint Effusion [0.0 - 1.0]"
           }
         ]
       }
     }
-  ],
-  "description": "# Pocketgull Clinical Decision & Biophysical Benchmark\n\n## Overview & Purpose\nThis dataset provides de-identified 3D volumetric metadata, multi-label diagnostic annotations, and synthetic clinical consult vectors engineered for Pocketgull's clinical decision support engine, evaluating diagnostic accuracy, Popperian falsifiability ($p < 0.05$), and Socratic evidence literacy.\n\n## Data Provenance & Sources\n- Source: Pocketgull Clinical Decision Intelligence Engine & Biophysical Archive\n- Pipeline: De-identified via HIPAA §164.514(b)(2) Safe Harbor standards\n\n## Files & Schema\n- `train.csv`: 4,400+ study-level multi-label pathology annotations.\n- `train_series.csv`: DICOM MRI volumetric acquisition parameters and plane orientations.\n- `train_labels_gemini.csv`: Gemini distilled weak labels with clinical rationale confidence scores.\n\n## HIPAA Safe Harbor Compliance\nStrictly compliant with HIPAA 45 CFR §164.514(b)(2) Safe Harbor anonymization. All 18 direct personal identifiers (names, dates, MRNs, institutional headers) have been permanently removed.\n\n## Licensing\nLicensed under Creative Commons Attribution 4.0 International (CC-BY 4.0).\n"
+  ]
 }

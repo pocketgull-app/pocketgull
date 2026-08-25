@@ -99,6 +99,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'www.clinicaltrials.gov',
   'smarthealthit.org',
   'launch.smarthealthit.org',
+  'smarthealth.cards',
+  'pocketgull.internal',
   'caringinfo.org',
   'www.caringinfo.org',
   'foodwise.org',

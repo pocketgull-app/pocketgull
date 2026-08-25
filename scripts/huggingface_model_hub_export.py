@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 🏛️ PocketGull LLC — Hugging Face & Kaggle Model Hub Exporter
-Packages all 11 domain fine-tuned Gemma 3 LoRA adapters with standardized
+Packages all 13 domain fine-tuned Gemma 3 LoRA adapters with standardized
 Model Card metadata, Open Science citations, and HIPAA Safe Harbor compliance.
 """
 
@@ -97,6 +97,13 @@ CLINICAL_ADAPTERS = [
         "base_model": "google/gemma-3-12b-it",
         "discipline": "Osteopathic Medicine, Somatic Dysfunction & Steering Committee Consensus",
         "description": "Synthesizes multi-paradigm clinical rounds, somatic biomechanics, and holistic interdisciplinary steering committee consensus."
+    },
+    {
+        "id": "gemma-3-sensory-ambient",
+        "name": "PocketGull Gemma 3 Context-Aware Ambient Telemetry Engine",
+        "base_model": "google/gemma-3-4b-it",
+        "discipline": "Environmental Autonomics & Sensory Co-Regulation",
+        "description": "Translates living barometric, acoustic, and AQI sensor streams into exact acoustic frequency interventions (432 Hz Flute, 4.5 Hz Water Drum) with autonomic rationales."
     }
 ]
 
@@ -187,7 +194,7 @@ def export_all_models():
     manifest = []
     
     print("================================================================")
-    print("📦  POCKETGULL LLC — HUGGING FACE & KAGGLE MODEL HUB PACKAGER")
+    print(" [MODEL HUB] POCKETGULL LLC -- HUGGING FACE & KAGGLE MODEL HUB PACKAGER")
     print("================================================================\n")
     
     for adapter in CLINICAL_ADAPTERS:
@@ -220,14 +227,14 @@ def export_all_models():
             "directory": str(model_dir)
         })
         
-        print(f"✅ Packaged: {adapter['id']} -> {model_dir}")
+        print(f" [OK] Packaged: {adapter['id']} -> {model_dir}")
         
     manifest_path = ADAPTERS_DIR / "model_hub_manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     
     print("\n----------------------------------------------------------------")
-    print(f"🎉 Successfully packaged all 11 Gemma 3 Clinical LoRA Model Cards!")
-    print(f"📄 Manifest: {manifest_path}")
+    print(f" [SUCCESS] Successfully packaged all {len(CLINICAL_ADAPTERS)} Gemma 3 Clinical LoRA Model Cards!")
+    print(f" Manifest: {manifest_path}")
     print("================================================================\n")
 
 if __name__ == "__main__":

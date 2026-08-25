@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:patient_app/core/api/api_client.dart';
 import 'package:patient_app/core/models/patient.dart';
+import '../../avs_therapy/screens/avs_therapy_screen.dart';
 
 class PatientDashboard extends StatefulWidget {
   final Patient patient;
@@ -318,6 +319,69 @@ class _PatientDashboardState extends State<PatientDashboard> {
                                   content: Text('📱 Playing 528Hz Entrance Solfeggio Chime & Haptic Pulse!'),
                                   backgroundColor: Colors.purple,
                                 ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: sectionSpacing),
+
+                  // AVS Therapy & Brainwave Entrainment Card
+                  _buildSectionTitle('AVS THERAPY & BRAINWAVE ENTRAINMENT', textColor, sectionTitleFontSize),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: EdgeInsets.all(isWatch ? 12.0 : 20.0),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF27272A).withValues(alpha: 0.5) : const Color(0xFFECFDF5),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: isDark ? const Color(0xFF065F46) : const Color(0xFFA7F3D0)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.remove_red_eye_outlined, color: Colors.teal.shade400, size: isWatch ? 16 : 22),
+                            SizedBox(width: isWatch ? 8 : 12),
+                            Expanded(
+                              child: Text(
+                                'Audio-Visual Stroboscopic Therapy',
+                                style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: infoFontSize),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Stroboscopic optical pulses, 432Hz bio-symphony entrainment, and vagal tone modulation (Theta/Alpha/Gamma).',
+                          style: TextStyle(height: 1.5, color: subColor, fontSize: isWatch ? 9 : 13),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal.shade600,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(vertical: buttonVerticalPadding),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                            ),
+                            icon: const Icon(Icons.flash_on_rounded, size: 18),
+                            label: Text(
+                              'LAUNCH AVS THERAPY SESSION',
+                              style: TextStyle(
+                                fontSize: isWatch ? 10 : 12,
+                                letterSpacing: 1.5,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const AvsTherapyScreen()),
                               );
                             },
                           ),

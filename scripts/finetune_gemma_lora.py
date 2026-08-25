@@ -194,6 +194,30 @@ PARADIGM_DIRECTIVES = {
         "Audit marketing copy and user interfaces, eliminate unsubstantiated medical cure claims, ensure FTC health claim substantiation, "
         "and inject mandatory FDA 21 CFR §520(o) non-device Clinical Decision Support statutory notices."
     ),
+    "ambient_environmental_telemetry": (
+        "[PARADIGM: CONTEXT-AWARE AMBIENT PRESCRIPTION & SENSORY HARMONIZATION]\n"
+        "You are PocketGull's Environmental Autonomic Engine. Evaluate real-time environmental sensor JSON "
+        "(barometric_trend, ambient_db, aqi, uv_index, schumann_hz). Detect physiological risks, recommend the exact "
+        "ambient harmonization track (e.g. Sacred Cedar Flute 432 Hz, Persian Sufi Ney, Water Drum 4.5 Hz) and dynamic volume offset (dB), "
+        "and provide a one-sentence clinical rationale grounded in autonomic co-regulation. "
+        "Output strict JSON with keys: 'risk_detected', 'recommended_protocol', 'volume_offset_db', 'clinical_rationale'."
+    ),
+    "clinician_fatigue_adaptive_ui": (
+        "[PARADIGM: CLINICIAN COGNITIVE LOAD & SHIFT FATIGUE ADAPTATION]\n"
+        "You are PocketGull's Adaptive Interface Controller. Evaluate Karolinska Sleepiness Scale (1-9), "
+        "shift_duration_hours, and active_clinical_role. Adjust UI theme (e.g. Dark Obsidian, Raw Hemp Paper, Light Parchment), "
+        "motion sensitivity, and binaural entrainment frequency (e.g. MIT 40 Hz Gamma, 10 Hz Focus Alpha-Beta, 7.83 Hz Schumann) "
+        "to mitigate cognitive fatigue and eliminate sensory distraction. "
+        "Output strict JSON with keys: 'theme', 'motion_enabled', 'binaural_entrainment_hz', 'alertness_protocol'."
+    ),
+    "life_journey_sensory_path": (
+        "[PARADIGM: AUTONOMIC STABILIZATION & LIFE JOURNEY MATCHING]\n"
+        "You are the PocketGull 'Meet Them Where They Are' Personalization Agent. Evaluate patient archetype "
+        "('The Frontline Healer', 'The Wounded Traveler', 'The Sacred Beginning', 'The Elder & Storyteller'), "
+        "current subjective energy (1-10), and primary clinical/emotional need. Select the primary auditory engine, "
+        "spatial panning mode, and generate an empathetic micro-grounding affirmation under 20 words. "
+        "Output strict JSON with keys: 'audio_engine', 'panning_mode', 'grounding_phrase'."
+    ),
 }
 
 SAMPLE_DATASETS = {
@@ -604,6 +628,58 @@ SAMPLE_DATASETS = {
             "rejected": "Approves illegal curative claims."
         }
     ],
+    "ambient_environmental_telemetry": [
+        {
+            "input": json.dumps({
+                "barometric_trend": "rapid_drop (998.4 hPa)",
+                "ambient_db": 54.2,
+                "aqi": 42,
+                "uv_index": 3.1,
+                "schumann_hz": 7.83
+            }, indent=2),
+            "output": json.dumps({
+                "risk_detected": "Rapid barometric pressure drop triggering cranial vascular headache & parasympathetic withdrawal",
+                "recommended_protocol": "Sacred Cedar Flute 432 Hz",
+                "volume_offset_db": -2.5,
+                "clinical_rationale": "432 Hz acoustic flute harmonics lower sympathetic vascular tone and stabilize cranial blood flow during barometric depressions."
+            }, indent=2),
+            "chosen": "Detects rapid barometric drop risk, prescribes 432 Hz flute harmonics with negative dB offset, and provides autonomic rationale.",
+            "rejected": "Ignores barometric pressure and blasts loud white noise."
+        }
+    ],
+    "clinician_fatigue_adaptive_ui": [
+        {
+            "input": json.dumps({
+                "karolinska_sleepiness_scale": 8,
+                "shift_duration_hours": 12.5,
+                "active_clinical_role": "Attending Emergency Physician"
+            }, indent=2),
+            "output": json.dumps({
+                "theme": "Dark Obsidian",
+                "motion_enabled": False,
+                "binaural_entrainment_hz": 40.0,
+                "alertness_protocol": "STAT shift fatigue mitigation: high-contrast dark obsidian surface, zero UI motion jitter, and pulsed 40 Hz gamma acoustic stimulation."
+            }, indent=2),
+            "chosen": "Switches to Dark Obsidian theme, disables motion jitter, and activates 40 Hz gamma entrainment for high KSS fatigue.",
+            "rejected": "Leaves bright flashing animations on and plays sleep-inducing delta waves during emergency shift."
+        }
+    ],
+    "life_journey_sensory_path": [
+        {
+            "input": json.dumps({
+                "patient_archetype": "The Frontline Healer",
+                "current_subjective_energy": 3,
+                "primary_need": "Burnout recovery and somatic decompression"
+            }, indent=2),
+            "output": json.dumps({
+                "audio_engine": "Bilateral EMDR Panning at 8 Hz with Purr Harmonics",
+                "panning_mode": "Bilateral 8 Hz Sinusoidal",
+                "grounding_phrase": "You have held space for others; now let the stillness hold and restore you."
+            }, indent=2),
+            "chosen": "Selects Bilateral EMDR 8 Hz engine with gentle affirmation matching Frontline Healer burnout state.",
+            "rejected": "Assigns aggressive upbeat rock track to exhausted clinician."
+        }
+    ],
 }
 
 
@@ -666,6 +742,21 @@ def load_dataset_for_paradigm(paradigm: str, custom_path: Optional[str] = None) 
     for sample in raw_samples:
         if "text" in sample:
             formatted_samples.append({"text": sample["text"]})
+        elif "chosen" in sample and "rejected" in sample:
+            prompt = (sample.get("prompt") or sample.get("input") or "").strip()
+            chosen = sample.get("chosen", "").strip()
+            rejected = sample.get("rejected", "").strip()
+            formatted_prompt = format_gemma_prompt(system_directive=directive, user_input=prompt)
+            formatted_samples.append({
+                "prompt": formatted_prompt,
+                "chosen": f"{chosen}<end_of_turn>\n",
+                "rejected": f"{rejected}<end_of_turn>\n",
+                "text": format_gemma_prompt(
+                    system_directive=directive,
+                    user_input=prompt,
+                    model_response=chosen or sample.get("output", ""),
+                ),
+            })
         elif "input" in sample:
             instr = sample.get("instruction", "").strip()
             inp = sample.get("input", "").strip()
@@ -922,6 +1013,9 @@ def main() -> None:
             "voice_multimodal_live",
             "calgary_cambridge_intake",
             "fda_ftc_compliance_copywriter",
+            "ambient_environmental_telemetry",
+            "clinician_fatigue_adaptive_ui",
+            "life_journey_sensory_path",
         ],
         help="Target clinical paradigm instruction format",
     )
