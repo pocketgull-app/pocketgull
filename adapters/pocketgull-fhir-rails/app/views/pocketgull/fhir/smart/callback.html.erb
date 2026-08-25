@@ -1,0 +1,99 @@
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+  <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+    <div>
+      <h2 class="text-xl font-bold text-white">EHR Handoff & Patient Context Synchronized</h2>
+      <p class="text-sm text-slate-400 mt-1">OAuth2 authentication completed successfully.</p>
+    </div>
+    <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-semibold flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      Active WebSocket Stream
+    </span>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+      <div class="text-xs font-medium text-slate-500">Patient Identifier</div>
+      <div class="text-lg font-bold text-white mt-1"><%= @patient_id %></div>
+    </div>
+    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+      <div class="text-xs font-medium text-slate-500">Access Token Status</div>
+      <div class="text-sm font-mono text-emerald-400 mt-2 truncate">VALIDATED</div>
+    </div>
+    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+      <div class="text-xs font-medium text-slate-500">ActionCable Telemetry</div>
+      <div id="ws-status" class="text-sm font-mono text-cyan-400 mt-2">CONNECTING...</div>
+    </div>
+  </div>
+
+  <!-- Real-Time Telemetry Stream Console -->
+  <div class="bg-slate-950 rounded-xl p-4 border border-slate-800 space-y-3">
+    <div class="flex items-center justify-between text-xs font-semibold text-slate-400">
+      <span>Live Telemetry Broadcast (ActionCable)</span>
+      <span class="font-mono text-slate-500">Channel: TelemetryChannel</span>
+    </div>
+    <div id="telemetry-log" class="bg-slate-900/90 rounded-lg p-3 font-mono text-xs text-slate-300 h-32 overflow-y-auto border border-slate-800 space-y-1">
+      <div class="text-slate-500">[System] Initializing WebSocket client connection...</div>
+    </div>
+  </div>
+
+  <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+    <div>
+      <h3 class="text-sm font-semibold text-slate-200">Pocketgull Clinical Telemetry Active</h3>
+      <p class="text-xs text-slate-400">SIBI calculation & HRV RMSSD signal processing attached to patient record.</p>
+    </div>
+    <a href="/" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition-all">
+      Return to Main Application
+    </a>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const wsStatus = document.getElementById('ws-status');
+    const telemetryLog = document.getElementById('telemetry-log');
+
+    function appendLog(msg, colorClass = 'text-slate-300') {
+      const line = document.createElement('div');
+      line.className = colorClass;
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      telemetryLog.appendChild(line);
+      telemetryLog.scrollTop = telemetryLog.scrollHeight;
+    }
+
+    try {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/cable`;
+      const socket = new WebSocket(wsUrl);
+
+      socket.onopen = () => {
+        if (wsStatus) wsStatus.textContent = 'STREAM ACTIVE';
+        appendLog('WebSocket connection established.', 'text-emerald-400');
+        
+        // Subscribe to TelemetryChannel
+        const subscribeMsg = JSON.stringify({
+          command: 'subscribe',
+          identifier: JSON.stringify({
+            channel: 'Pocketgull::Fhir::TelemetryChannel',
+            patient_id: '<%= @patient_id %>'
+          })
+        });
+        socket.send(subscribeMsg);
+      };
+
+      socket.onmessage = (event) => {
+        const payload = JSON.parse(event.data);
+        if (payload.type === 'ping') return;
+        if (payload.message) {
+          appendLog(`Received: ${JSON.stringify(payload.message)}`, 'text-cyan-300');
+        }
+      };
+
+      socket.onerror = (err) => {
+        if (wsStatus) wsStatus.textContent = 'STREAM ERROR';
+        appendLog('WebSocket error encountered.', 'text-rose-400');
+      };
+    } catch (e) {
+      appendLog(`Connection failed: ${e.message}`, 'text-amber-400');
+    }
+  });
+</script>

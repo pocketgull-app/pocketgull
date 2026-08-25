@@ -1,0 +1,19 @@
+version: '1.0'
+runtime: docker
+build:
+  commands:
+    build:
+      - docker build -t pocketgull-fhir-rails .
+run:
+  runtime-version: latest
+  command: bundle exec puma -t 5:5 -p 3000
+  network:
+    port: '3000'
+  env:
+    - name: RAILS_ENV
+      value: production
+    - name: RAILS_LOG_TO_STDOUT
+      value: 'true'
+  instance-configuration:
+    cpu: '1024'
+    memory: '2048'

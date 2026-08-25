@@ -1,0 +1,12 @@
+[package]
+name = "pocketgull_ruby"
+version = "0.1.0"
+edition = "2021"
+authors = ["Phil Gear <phil@pocketgull.io>"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+magnus = "0.6"
+pocketgull-core = { path = "../../pocketgull-core" }
