@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+import logging
 import os
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
@@ -133,9 +134,12 @@ async def chat(request: ChatRequestModel):
             )
 
       yield "data: [DONE]\n\n"
-    except Exception as e:
-      error_content = f"\\n\\n**API Error**: {str(e)}"
-      error_dict = {"type": "FINAL_RESPONSE", "content": error_content}
+    except Exception:
+      logging.exception("Error occurred during chat streaming generation")
+      error_dict = {
+          "type": "FINAL_RESPONSE",
+          "content": "\n\n**API Error**: An error occurred while processing the request.",
+      }
       yield "data: " + json.dumps(error_dict) + "\n\n"
       yield "data: [DONE]\n\n"
 

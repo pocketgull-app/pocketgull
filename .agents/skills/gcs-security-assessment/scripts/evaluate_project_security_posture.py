@@ -351,9 +351,9 @@ def check_vpc_sc_perimeter_enabled(
         continue
 
       restricted_services = status.get("restrictedServices") or []
-      if (
-          "storage.googleapis.com" in restricted_services
-          or _VPC_SC_WILDCARD in restricted_services
+      if any(
+          svc == _STORAGE_API or svc == _VPC_SC_WILDCARD
+          for svc in restricted_services
       ):
         return True
 
