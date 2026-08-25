@@ -206,6 +206,12 @@ To prevent context window degradation, attention drift, and token exhaustion:
 - **Zero-Latency Vector Embeddings (`OnDeviceEmbedderService`)**: Use `window.ai.semanticEmbedder` to generate 256-dimensional embeddings with cosine similarity matching for PubMed literature ranking and clinical archetype retrieval.
 - **Enterprise Zero-Flag Invariant**: Ensure 100% functionality and zero uncaught exceptions in enterprise environments without experimental flags by providing deterministic local TypeScript fallbacks across all features.
 
+## Institutional Security Triad Governance Standard
+- **NIST SP 800-90A CSPRNG Invariant**: All session tokens, OAuth PKCE code verifiers, digital consent signatures, and entity identifiers MUST use CSPRNG OS kernel hardware entropy (`globalThis.crypto.getRandomValues()` / Node.js `node:crypto` `randomBytes`, `randomInt`). `Math.random()` is strictly prohibited in all security, authentication, and ID generation contexts.
+- **FDA 21 CFR Part 11 Electronic Records Integrity**: All state modifications, research dividend transactions, and clinical audits MUST generate immutable timestamped SHA-256 digital attestation seals to guarantee full provenance and non-repudiation.
+- **HIPAA § 164.312(c)(1) ePHI Data Integrity**: All ePHI payloads, FHIR R4 bundles, and clinical state trees MUST incorporate cryptographic integrity verification to corroborate that clinical data has not been altered or destroyed in an unauthorized manner.
+
 ## Clinical, Typographic & Security Canonical Reference
 - For core clinical & ophthalmological standards (LogMAR 0.0, ISMP/FDA dosage disambiguation, WCAG AAA 7:1), Marker font brand boundary, Amazon affiliate egress limits, anti-whaling dual-custody protocols, Tailwind CSS tokens, Five Eyes regulatory mapping, institutional thin-client resilience, and "Tell, Don't Ask" domain encapsulation, refer to the canonical root [GEMINI.md](file:///c:/Users/philg/Pocketgull/pocketgull/GEMINI.md).
 - For the cross-disciplinary Gemma 4 On-Device architecture spanning Medicine, Science, Education, and Fast/Slow-Loop agentic engineering, refer to [GEMMA4_EDGE_ARCHITECTURE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/GEMMA4_EDGE_ARCHITECTURE.md).
+

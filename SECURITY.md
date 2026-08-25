@@ -126,6 +126,11 @@ All data serialization, export, and telemetry vectors strictly comply with Five 
 - **Strict Outbound Channel Isolation**: Raw Amazon affiliate links (`amazon.com/dp/*`, `tag=pgdpo-20`) are strictly prohibited in outbound SMS text messages, push notifications, and emails.
 - **Zero PHI in Query Parameters**: Affiliate URLs contain only ASIN and tracking tags. No patient identifiers, diagnoses, or condition codes may ever appear in outbound links.
 
+### 12. Institutional Security Triad: NIST SP 800-90A, FDA 21 CFR Part 11 & HIPAA §164.312(c)(1)
+- **NIST SP 800-90A (Hardware Entropy & Deterministic Random Bit Generation)**: All session identifiers, PKCE challenge verifiers, OAuth states, digital consent tokens, and security identifiers MUST be generated using NIST SP 800-90A compliant CSPRNG OS kernel hardware entropy (`globalThis.crypto.getRandomValues()` / Node.js `node:crypto` `randomBytes`, `randomInt`). The use of `Math.random()` in any security, authentication, transaction, or identification context is strictly prohibited.
+- **FDA 21 CFR Part 11 (Electronic Records & Electronic Signatures Integrity)**: All clinical data transactions, state transformations, research dividend ledger entries, and emergency overrides generate immutable, timestamped SHA-256 digital attestation seals (`computeIntegrityDigest()`, `generateCryptographicReceipt()`) to guarantee electronic record provenance, non-repudiation, and audit traceability.
+- **HIPAA § 164.312(c)(1) (ePHI Data Integrity Verification)**: All electronic Protected Health Information (ePHI), FHIR R4 resource bundles, and patient state records incorporate data integrity verification mechanisms to corroborate that patient clinical data has not been altered, tampered with, or destroyed in an unauthorized manner during storage, transit, or client-side evaluation.
+
 ---
 
 
