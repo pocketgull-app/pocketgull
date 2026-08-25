@@ -34,7 +34,9 @@ export interface IPubMedSearchResult {
     PocketGullButtonComponent, 
     PocketGullInputComponent, 
     SafeHtmlPipe, 
-    PatientEducationFlipDirective
+    PatientEducationFlipDirective,
+    NcaaSportsScienceHubComponent,
+    InternationalUniversityHubComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
