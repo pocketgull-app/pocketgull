@@ -758,11 +758,14 @@ app.use('/api/python', createProxyMiddleware({
 }));
 
 // ── Mount Extracted Routers ────────────────────────────────────────────────
+import { createResearchRouter } from './server/routes/research.routes';
+
 const routeDeps = { getApiKey, getGcpAccessToken, normalizeAndValidateModel };
 
 app.use('/api/auth', createAuthRouter());
 app.use('/api/ai', createAiRouter(routeDeps));
 app.use('/api/patients', createPatientsRouter());
+app.use('/api/research', createResearchRouter());
 app.use('/api/keys', createApiKeysRouter());
 app.use('/api/billing', createBillingRouter());
 
