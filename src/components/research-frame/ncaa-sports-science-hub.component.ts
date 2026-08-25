@@ -49,10 +49,12 @@ import { POCKETGULL_CORPORATE_IDENTITY } from '../../services/corporate-identity
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-stone-950 rounded-2xl border border-stone-800">
         <!-- Division Silo -->
         <div class="space-y-1">
-          <label class="text-[11px] font-mono text-stone-400">NCAA Competition Tier</label>
+          <label for="ncaa-division-select" class="text-[11px] font-mono text-stone-400">NCAA Competition Tier</label>
           <select 
+            id="ncaa-division-select"
             [ngModel]="service.selectedDivision()"
             (ngModelChange)="service.setDivision($event)"
+            aria-label="NCAA Competition Tier"
             class="w-full bg-stone-900 border border-stone-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500">
             <option value="D1">Division I (D1) — Elite National Competition</option>
             <option value="D2">Division II (D2) — Regional Balanced Scholar</option>
@@ -62,10 +64,12 @@ import { POCKETGULL_CORPORATE_IDENTITY } from '../../services/corporate-identity
 
         <!-- Carnegie Research Silo -->
         <div class="space-y-1">
-          <label class="text-[11px] font-mono text-stone-400">Carnegie Research Classification</label>
+          <label for="carnegie-tier-select" class="text-[11px] font-mono text-stone-400">Carnegie Research Classification</label>
           <select 
+            id="carnegie-tier-select"
             [ngModel]="service.selectedResearchTier()"
             (ngModelChange)="service.setResearchTier($event)"
+            aria-label="Carnegie Research Classification"
             class="w-full bg-stone-900 border border-stone-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500">
             <option value="R1">R1: Very High Research Activity (UW, Purdue, UO)</option>
             <option value="R2">R2: High Research Activity (Applied Regional)</option>
@@ -75,10 +79,12 @@ import { POCKETGULL_CORPORATE_IDENTITY } from '../../services/corporate-identity
 
         <!-- Broadcast Network Silo -->
         <div class="space-y-1">
-          <label class="text-[11px] font-mono text-stone-400">Conference Broadcast Network</label>
+          <label for="broadcast-network-select" class="text-[11px] font-mono text-stone-400">Conference Broadcast Network</label>
           <select 
+            id="broadcast-network-select"
             [ngModel]="service.selectedNetwork()"
             (ngModelChange)="service.setNetwork($event)"
+            aria-label="Conference Broadcast Network"
             class="w-full bg-stone-900 border border-stone-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500">
             <option value="Big Ten Network (BTN)">Big Ten Network (BTN)</option>
             <option value="Pac-12 Network">Pac-12 Network</option>

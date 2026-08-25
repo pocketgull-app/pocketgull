@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node-dev src/index.ts"
+    "dev": "ts-node-dev src/index.ts",
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@google-cloud/secret-manager": "^6.3.0",

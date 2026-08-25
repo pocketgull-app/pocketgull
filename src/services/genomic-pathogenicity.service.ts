@@ -27,7 +27,7 @@ export interface IGenomicVariant {
   providedIn: 'root'
 })
 export class GenomicPathogenicityService {
-  // Master ClinVar & dbSNP Benchmark Variant Catalog
+  // Primary ClinVar & dbSNP Benchmark Variant Catalog
   private readonly variantDatabase: IGenomicVariant[] = [
     {
       rsId: 'rs429358',

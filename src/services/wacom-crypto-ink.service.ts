@@ -7,7 +7,7 @@ export interface IDexterityMetrics {
   smoothness: number;     // 0 - 100
   dynamicRange: number;   // 0 - 100
   agility: number;        // 0 - 100
-  rankTitle: string;      // e.g. "Master Calligrapher 🌟"
+  rankTitle: string;      // e.g. "Virtuoso Calligrapher 🌟"
   rankGrade: 'S+' | 'A' | 'B' | 'C';
 }
 
@@ -66,7 +66,7 @@ export class WacomCryptoInkService {
     smoothness: 90,
     dynamicRange: 84,
     agility: 89,
-    rankTitle: 'Master Calligrapher 🌟',
+    rankTitle: 'Virtuoso Calligrapher 🌟',
     rankGrade: 'S+'
   });
 
@@ -216,7 +216,7 @@ export class WacomCryptoInkService {
     let rankGrade: 'S+' | 'A' | 'B' | 'C' = 'C';
 
     if (overallScore >= 92) {
-      rankTitle = 'Master Calligrapher 🌟';
+      rankTitle = 'Virtuoso Calligrapher 🌟';
       rankGrade = 'S+';
     } else if (overallScore >= 82) {
       rankTitle = 'Nimble Surgeon 🎯';

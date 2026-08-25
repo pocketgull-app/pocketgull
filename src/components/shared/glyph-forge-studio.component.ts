@@ -294,14 +294,14 @@ export class GlyphForgeStudioComponent implements AfterViewInit {
     this.activeChar.set(char);
     this.clearCanvas();
     
-    // Master Vector Coordinates for standard PocketGull Glyphs (scaled to 600x600 canvas)
-    const masterPaths: Record<string, string> = {
+    // Primary Vector Coordinates for standard PocketGull Glyphs (scaled to 600x600 canvas)
+    const primaryPaths: Record<string, string> = {
       'P': 'M 100,500 L 100,100 C 100,100 160,70 240,70 C 330,70 380,120 380,200 C 380,280 320,330 230,330 L 180,330 L 180,500 Z M 180,260 L 230,260 C 270,260 300,240 300,200 C 300,160 270,140 220,140 L 180,140 Z',
       'G': 'M 440,240 C 420,130 350,70 240,70 C 120,70 70,160 70,320 C 70,480 140,550 270,550 C 380,550 440,490 460,390 L 460,320 L 280,320 L 280,380 L 390,380 C 380,450 330,490 270,490 C 170,490 140,410 140,320 C 140,210 180,130 250,130 C 310,130 360,170 380,240 Z'
     };
 
-    if (masterPaths[char] && this.ctx) {
-      const p = new Path2D(masterPaths[char]);
+    if (primaryPaths[char] && this.ctx) {
+      const p = new Path2D(primaryPaths[char]);
       this.ctx.fillStyle = '#0d9488';
       this.ctx.fill(p);
     }

@@ -1,15 +1,21 @@
-export interface IRangerMaintenanceLog {
+export interface ITrailMaintenanceLog {
   id: string;
   trailId: string;
   trailName: string;
-  stewardGroup: 'NCF (Nantucket Conservation Foundation)' | 'Nantucket Land Bank' | 'Linda Loring Nature Foundation' | 'Private Landscaper' | 'Town DPW';
+  stewardGroup: 'NCF (Nantucket Conservation Foundation)' | 'Nantucket Land Bank' | 'Linda Loring Nature Foundation' | 'Community Trail Crew' | 'Private Landscaper' | 'Town DPW';
   date: string;
   actionType: 'Mowed & Widened Trail (6ft+)' | 'Japanese Barberry Eradication' | 'Brush Clearing' | 'Trailhead Signage & QR Refresh';
   shoulderWidthFeet: number;
   barberryPatchesRemoved: number;
-  rangerNotes: string;
-  verifiedByRanger: string;
+  trailNotes: string;
+  reportedBy: string;
+  // Legacy aliases for backward compatibility
+  rangerNotes?: string;
+  verifiedByRanger?: string;
 }
+
+// Backward compatibility alias
+export type IRangerMaintenanceLog = ITrailMaintenanceLog;
 
 export interface IBarberryHotspot {
   id: string;
@@ -29,7 +35,7 @@ export interface IPharmacyTickerData {
   lastUpdatedDate: string;
 }
 
-export const INITIAL_MAINTENANCE_LOGS: IRangerMaintenanceLog[] = [
+export const INITIAL_MAINTENANCE_LOGS: ITrailMaintenanceLog[] = [
   {
     id: 'maint-001',
     trailId: 'sanford-farm',
@@ -39,8 +45,10 @@ export const INITIAL_MAINTENANCE_LOGS: IRangerMaintenanceLog[] = [
     actionType: 'Mowed & Widened Trail (6ft+)',
     shoulderWidthFeet: 8,
     barberryPatchesRemoved: 0,
+    trailNotes: 'Full Barn to Ocean loop mowed with 8ft wide center path. Minimal brush overhang.',
+    reportedBy: 'Trail Steward M. Gardner',
     rangerNotes: 'Full Barn to Ocean loop mowed with 8ft wide center path. Minimal brush overhang.',
-    verifiedByRanger: 'Ranger M. Gardner (Badge #14)'
+    verifiedByRanger: 'Trail Steward M. Gardner'
   },
   {
     id: 'maint-002',
@@ -51,8 +59,10 @@ export const INITIAL_MAINTENANCE_LOGS: IRangerMaintenanceLog[] = [
     actionType: 'Japanese Barberry Eradication',
     shoulderWidthFeet: 4,
     barberryPatchesRemoved: 14,
+    trailNotes: 'Removed 14 invasive Japanese barberry root clusters near vernal pool boardwalk.',
+    reportedBy: 'Volunteer E. Coffin',
     rangerNotes: 'Removed 14 invasive Japanese barberry root clusters near vernal pool boardwalk.',
-    verifiedByRanger: 'Ranger E. Coffin (Badge #08)'
+    verifiedByRanger: 'Volunteer E. Coffin'
   },
   {
     id: 'maint-003',
@@ -63,6 +73,8 @@ export const INITIAL_MAINTENANCE_LOGS: IRangerMaintenanceLog[] = [
     actionType: 'Mowed & Widened Trail (6ft+)',
     shoulderWidthFeet: 12,
     barberryPatchesRemoved: 2,
+    trailNotes: 'Wide grassland mowing completed. Ocean breeze providing high desiccation.',
+    reportedBy: 'Steward T. Folger',
     rangerNotes: 'Wide grassland mowing completed. Ocean breeze providing high desiccation.',
     verifiedByRanger: 'Steward T. Folger'
   }

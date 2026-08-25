@@ -12,7 +12,7 @@ describe('MonroePersianTranceService Suite with Indigenous & Native Trances', ()
     expect(service.isPlaying()).toBe(false);
     expect(service.currentMode()).toBeNull();
     expect(service.currentKss()).toBe(3);
-    expect(service.masterVolume()).toBe(0.12);
+    expect(service.mainVolume()).toBe(0.12);
   });
 
   it('2. Contains Monroe, Indigenous Native, Hemispherical, Persian, and Animal presets', () => {
@@ -62,12 +62,16 @@ describe('MonroePersianTranceService Suite with Indigenous & Native Trances', ()
 
   it('4. Updates volume within valid bounds', () => {
     service.setVolume(0.5);
-    expect(service.masterVolume()).toBe(0.5);
+    expect(service.mainVolume()).toBe(0.5);
 
     service.setVolume(2.0);
-    expect(service.masterVolume()).toBe(1.0);
+    expect(service.mainVolume()).toBe(1.0);
 
     service.setVolume(-1.0);
-    expect(service.masterVolume()).toBe(0.0);
+    expect(service.mainVolume()).toBe(0.0);
+  });
+
+  it('5. Exposes isDucked signal for reactive sidechain ducking', () => {
+    expect(service.isDucked()).toBe(false);
   });
 });

@@ -36,4 +36,4 @@ export * from './neuro-somatic';
 export * from './fhir-interop';
 export * from './integrative-paradigms';
 export * from './clinical-ai';
-
+export * from './ip-patent-registry.service';

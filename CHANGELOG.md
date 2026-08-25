@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.0] - 2026-08-24
+
+**Platform Telemetry, Interoperability, and Multi-Device Performance Updates**
+
+### Added
+- **[Sensory & Telemetry Engine]**: Enhanced audio-visual synchronization, device feedback protocols, and real-time canvas rendering pipeline.
+- **[Clinical Interoperability]**: Extended HL7 FHIR R4 document bundle serialization and observation schema mapping.
+- **[Hardware & Companion Integration]**: Multi-device state synchronization across web, mobile, and controller interfaces.
+- **[Platform Quality & Test Suite]**: Hermetic test suite passing 100% across 364 test files with zero compiler or security egress warnings.
+
 ## [1.26.0] - 2026-08-22
 
 **Breakthrough Article Framework & Knowledge Hub, 3D Anatomical Organ & Longitudinal Consequence Viewer, Medical Inventions & Luminary Spotlight, Chronological Action Matrix (Present / Short-Term / Long-Term), Verified Empirical Citations (DOIs/PMIDs), and Historical Prevention Pathways**

@@ -3931,6 +3931,23 @@ textarea:focus-visible {
   }
 }
 
+/* ==========================================================================
+   BIONIC READING & SACCADIC FIXATION ACCESSIBILITY PRIMITIVES
+   ========================================================================== */
+
+.bionic-fixation,
+.bionic-rendered-text strong,
+.bionic-rendered-text b {
+  font-weight: 800 !important;
+  color: #d97706; /* amber-600 */
+}
+
+.dark .bionic-fixation,
+.dark .bionic-rendered-text strong,
+.dark .bionic-rendered-text b {
+  color: #fbbf24 !important; /* amber-400 */
+}
+
 
 
 

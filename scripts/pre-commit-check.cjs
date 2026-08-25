@@ -69,7 +69,38 @@ if (!lintPassed) {
 }
 
 // Check 2: Unit tests check
-const testsPassed = runNodeScript(vitestPath, ['run', '--config', vitestConfigPath], 'Vitest unit tests execution');
+// Smart test runner: If staged files are present and none are global config/scripts, run vitest related for sub-second execution
+let vitestArgs = ['run', '--config', vitestConfigPath];
+
+const isFullRun = process.argv.includes('--all') || process.env.CI;
+if (!isFullRun) {
+  try {
+    const stagedFiles = execSync('git diff --cached --name-only', { encoding: 'utf8', cwd: workspaceRoot })
+      .split('\n')
+      .map(f => f.trim())
+      .filter(Boolean);
+
+    const hasGlobalConfig = stagedFiles.length === 0 || stagedFiles.some(f => 
+      f.startsWith('scripts/') || 
+      f.startsWith('.github/') ||
+      f === 'package.json' || 
+      f === 'package-lock.json' ||
+      f === 'tsconfig.json' || 
+      f === 'vitest.config.ts' ||
+      f.endsWith('.json')
+    );
+
+    const testableFiles = stagedFiles.filter(f => f.endsWith('.ts') || f.endsWith('.js') || f.endsWith('.html'));
+
+    if (!hasGlobalConfig && testableFiles.length > 0) {
+      vitestArgs = ['related', '--run', '--config', vitestConfigPath, ...testableFiles];
+    }
+  } catch (e) {
+    // Fallback to standard full suite
+  }
+}
+
+const testsPassed = runNodeScript(vitestPath, vitestArgs, 'Vitest unit tests execution');
 if (!testsPassed) {
   process.exit(1);
 }

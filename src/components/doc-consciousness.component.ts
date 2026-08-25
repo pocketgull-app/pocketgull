@@ -59,11 +59,12 @@ import { DocLevel, IDocProfile, IDocStimBlock } from '../services/patient.types'
             <!-- GCS + DOC Level -->
             <div class="grid grid-cols-2 gap-3">
               <div class="space-y-1.5">
-                <label class="text-[12px] font-bold uppercase tracking-widest text-slate-400">GCS Score</label>
+                <label for="doc-gcs-score-input" class="text-[12px] font-bold uppercase tracking-widest text-slate-400">GCS Score</label>
                 <div class="flex items-center gap-2">
-                  <input type="range" min="3" max="15" step="1"
+                  <input id="doc-gcs-score-input" type="range" min="3" max="15" step="1"
                          [value]="form().gcsScore"
                          (input)="updateGcs($any($event.target).value)"
+                         aria-label="Glasgow Coma Scale (GCS) Score"
                          class="flex-1 accent-sky-500 cursor-pointer"/>
                   <span class="text-lg font-extrabold tabular-nums"
                         [class]="gcsColor()">{{ form().gcsScore }}</span>
@@ -72,9 +73,10 @@ import { DocLevel, IDocProfile, IDocStimBlock } from '../services/patient.types'
               </div>
 
               <div class="space-y-1.5">
-                <label class="text-[12px] font-bold uppercase tracking-widest text-slate-400">DOC Level</label>
-                <select [value]="form().docLevel"
+                <label for="doc-level-select" class="text-[12px] font-bold uppercase tracking-widest text-slate-400">DOC Level</label>
+                <select id="doc-level-select" [value]="form().docLevel"
                         (change)="updateField('docLevel', $any($event.target).value)"
+                        aria-label="Disorder of Consciousness Level"
                         class="w-full px-2.5 py-2 rounded-lg border border-slate-700/50 bg-slate-900/60 text-xs text-slate-200 focus:outline-none focus:border-sky-500/60">
                   <option value="coma">Coma (no wake-sleep)</option>
                   <option value="vs-uws">Vegetative / UWS</option>

@@ -16,6 +16,7 @@ import { SecureStorageService } from '../services/secure-storage.service';
 import { RichMediaService } from '../services/rich-media.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { PatientManagementService } from '../services/patient-management.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
 
 describe('SummaryNodeComponent - Interactive Node Context & Telemetry Summary', () => {
   let component: SummaryNodeComponent;
@@ -72,7 +73,8 @@ describe('SummaryNodeComponent - Interactive Node Context & Telemetry Summary', 
       { provide: SecureStorageService, useValue: mockSecureStorage },
       { provide: RichMediaService, useValue: mockRichMedia },
       { provide: DomSanitizer, useValue: { bypassSecurityTrustHtml: (html: string) => html, sanitize: () => '' } },
-      { provide: PatientManagementService, useValue: mockPatientManagement }
+      { provide: PatientManagementService, useValue: mockPatientManagement },
+      BionicReadingService
     ], undefined as any);
 
     runInInjectionContext(injector, () => {

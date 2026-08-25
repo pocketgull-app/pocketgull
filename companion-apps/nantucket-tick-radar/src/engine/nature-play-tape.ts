@@ -1,5 +1,5 @@
 /**
- * 📼 Nantucket Junior Ranger "Nature Play Tape" (Interactive Audio Cassette Player)
+ * 📼 Nantucket Nature Detective "Nature Play Tape" (Interactive Audio Cassette Player)
  * Safe, COPPA-compliant, edge-native audio storytelling and acoustic nature tapes for children and families.
  * Zero logins, zero tracking, zero personal data collection.
  */
@@ -27,7 +27,7 @@ export const NATURE_PLAY_TAPE_TRACKS: INaturePlayTapeTrack[] = [
     title: 'The Whispering Grasses of Sanford Farm',
     durationFormatted: '1:45',
     durationSeconds: 105,
-    narrator: 'Ranger Maya & Island Songbirds',
+    narrator: 'Trail Guide Maya & Island Songbirds',
     icon: '🌾',
     tagline: 'Little Bluestem Grass & Gentle Atlantic Winds',
     synopsis: 'Listen to the rustle of golden bluestem grasses on the moors and discover why staying in the center of wide gravel paths keeps both you and fragile butterfly cocoons safe.',
@@ -55,7 +55,7 @@ export const NATURE_PLAY_TAPE_TRACKS: INaturePlayTapeTrack[] = [
     title: 'Captain Permethrin’s Hot-Foot Trail Dance',
     durationFormatted: '1:30',
     durationSeconds: 90,
-    narrator: 'Captain Gear & The Sandplain Rangers',
+    narrator: 'Captain Gear & The Island Explorers',
     icon: '🥾',
     tagline: 'The Science of Treated Socks & Bug Physics',
     synopsis: 'Learn how Permethrin-treated socks feel like a hot dance floor to tiny tick feet, making them turn around and fall right off!',

@@ -67,4 +67,95 @@ describe('FhirR4BundleExportService - HL7 FHIR R4 Multi-Paradigm Exporter', () =
     expect(parsed.entry.some((e: any) => e.resource.resourceType === 'Observation')).toBe(true);
     expect(parsed.entry.some((e: any) => e.resource.resourceType === 'CarePlan')).toBe(true);
   });
+
+  it('4. Generates 3D Spatial Somatic Lesion Observations with standard coordinate extensions', () => {
+    const service = createService();
+    const bundle = service.generateSpatialLesionAndAvsBundle({
+      patientId: 'pt-spatial-02',
+      patientName: 'Ada Lovelace',
+      lesions: [
+        {
+          id: 'lesion-01',
+          label: 'Patellar Tendonitis',
+          partId: 'r_knee',
+          position: { x: 0.25, y: 0.45, z: 0.12 },
+          normal: { x: 0.0, y: 0.1, z: 0.99 },
+          severity: 'moderate',
+          morphology: 'inflammation',
+          clinicalNotes: 'Anterior joint line tenderness upon palpation',
+          snomedCode: '23583003'
+        }
+      ],
+      avsSession: {
+        carrierFreqHz: 528,
+        binauralBeatHz: 6.0,
+        isIsochronicPulseEnabled: true,
+        isSpatialPanningEnabled: true,
+        hapticMode: 'isochronic_pulse'
+      },
+      vitals: {
+        heartRate: 68,
+        autonomicCoherenceScore: 92,
+        cardiacResonanceHz: 0.10
+      }
+    });
+
+    expect(bundle.resourceType).toBe('Bundle');
+    expect(bundle.type).toBe('document');
+
+    // Verify 3D Spatial Observation
+    const obsEntry = bundle.entry.find(e => e.resource.resourceType === 'Observation');
+    expect(obsEntry).toBeDefined();
+    const obs = obsEntry!.resource;
+    expect(obs.code.coding[0].code).toBe('23583003');
+    expect(obs.bodySite.coding[0].code).toBe('r_knee');
+    expect(obs.extension[0].url).toContain('spatial-coordinates-3d');
+    expect(obs.extension[0].extension.find((e: any) => e.url === 'x').valueDecimal).toBe(0.25);
+
+    // Verify AVS Procedure
+    const procEntry = bundle.entry.find(e => e.resource.resourceType === 'Procedure');
+    expect(procEntry).toBeDefined();
+    const proc = procEntry!.resource;
+    expect(proc.category.coding[0].code).toBe('866167008'); // Acoustic stimulation therapy
+    expect(proc.code.coding[0].code).toBe('solfeggio-528hz');
+    expect(proc.note[0].text).toContain('Cardiac Resonance = 0.1Hz (92% Coherence)');
+
+    // Verify DiagnosticReport
+    const reportEntry = bundle.entry.find(e => e.resource.resourceType === 'DiagnosticReport');
+    expect(reportEntry).toBeDefined();
+    expect(reportEntry!.resource.result.length).toBe(1);
+  });
+
+  it('5. Exports and parses 3D Spatial Lesion & AVS Bundle JSON successfully', () => {
+    const service = createService();
+    const jsonStr = service.exportSpatialLesionBundleAsJson({
+      patientId: 'pt-spatial-03',
+      patientName: 'Nikola Tesla',
+      lesions: [
+        {
+          id: 'lesion-02',
+          label: 'L4/L5 Disc Degeneration',
+          partId: 'spine_lumbar',
+          position: { x: 0.0, y: 1.1, z: -0.15 },
+          severity: 'critical',
+          morphology: 'calcification',
+          clinicalNotes: 'Severe axial loading stenosis'
+        }
+      ]
+    });
+
+    expect(typeof jsonStr).toBe('string');
+    const parsed = JSON.parse(jsonStr);
+    expect(parsed.resourceType).toBe('Bundle');
+    expect(parsed.entry.some((e: any) => e.resource.resourceType === 'DiagnosticReport')).toBe(true);
+  });
+
+  it('6. Handles client-side JSON download execution cleanly', () => {
+    const service = createService();
+    expect(() => service.downloadSpatialLesionBundleJson({
+      patientId: 'pt-spatial-04',
+      patientName: 'Marie Curie',
+      lesions: []
+    })).not.toThrow();
+  });
 });

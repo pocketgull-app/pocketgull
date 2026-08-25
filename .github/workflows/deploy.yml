@@ -35,7 +35,7 @@ jobs:
           cache: 'npm'
           
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: npm ci --legacy-peer-deps --prefer-offline
         
       - name: Security Audit
         run: npm audit --json > audit.json || true
@@ -57,10 +57,12 @@ jobs:
         uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
         with:
           python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'pocketgull_api/requirements.txt'
 
       - name: Install Python Dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y libhdf5-dev
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends libhdf5-dev
           python -m pip install --upgrade pip
           pip install -r pocketgull_api/requirements.txt
 
@@ -134,18 +136,17 @@ jobs:
           GEMINI_API_KEY: 'placeholder-key-for-build'
           SKIP_HEALTHCARE_PROVISION: 'true'
 
-      - name: Wait for Server
-        run: npx wait-on http://127.0.0.1:4000 --timeout 60000
-
-      - name: Verify Preview Server Started
+      - name: Wait for Preview Server
         run: |
-          for i in 1 2 3 4 5; do
-            status=$(curl -s -o /tmp/preview.txt -w "%{http_code}" http://127.0.0.1:4000 || echo "000")
-            echo "attempt $i -> $status"
-            if [ "$status" = "200" ]; then exit 0; fi
+          for i in $(seq 1 30); do
+            if curl -fs http://127.0.0.1:4000/health > /dev/null 2>&1; then
+              echo "Preview server is ready on http://127.0.0.1:4000 (attempt $i)"
+              exit 0
+            fi
+            echo "Waiting for preview server (attempt $i/30)..."
             sleep 2
           done
-          echo "Server did not return 200; last server logs:"
+          echo "Preview server failed to start within 60s. Server logs:"
           cat /tmp/server.log || true
           exit 1
 

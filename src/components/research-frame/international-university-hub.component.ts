@@ -20,7 +20,7 @@ import {
         <div>
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-400 font-mono text-xs font-semibold uppercase tracking-wider mb-2">
             <span>🌐</span>
-            <span>Five Eyes (FVEY) &amp; India Sovereign Research Alliances</span>
+            <span>Sovereign Multi-Jurisdiction &amp; Global Research Alliances</span>
           </div>
           <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">
             Sovereign Research Alliances &amp; Multi-Jurisdiction Hub

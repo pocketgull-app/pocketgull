@@ -709,6 +709,7 @@ class PatientState extends Equatable {
   final EnvironmentalHealthIndex? environmentalIndex;
   final GodelIncompletenessBound? godelBound;
   final BachCrabCanonTrack? crabCanonTrack;
+  final List<SpatialLesionModel> spatialLesions;
 
   const PatientState({
     this.name = 'Selected Patient',
@@ -746,6 +747,7 @@ class PatientState extends Equatable {
     this.environmentalIndex,
     this.godelBound,
     this.crabCanonTrack,
+    this.spatialLesions = const [],
   });
 
   @override
@@ -759,7 +761,7 @@ class PatientState extends Equatable {
         traumaFlags, avsProtocol, activePhilosophy,
         genomicVariants, biochemicalPathways, pkInteractions,
         ewarsAlerts, travelProfile, awareStewardship, environmentalIndex,
-        godelBound, crabCanonTrack,
+        godelBound, crabCanonTrack, spatialLesions,
       ];
 
   PatientState copyWith({
@@ -789,6 +791,7 @@ class PatientState extends Equatable {
     TraumaFlags? traumaFlags,
     AvsProtocol? avsProtocol,
     MedicalPhilosophy? activePhilosophy,
+    List<SpatialLesionModel>? spatialLesions,
   }) {
     return PatientState(
       name: name ?? this.name,
@@ -817,6 +820,7 @@ class PatientState extends Equatable {
       traumaFlags: traumaFlags ?? this.traumaFlags,
       avsProtocol: avsProtocol ?? this.avsProtocol,
       activePhilosophy: activePhilosophy ?? this.activePhilosophy,
+      spatialLesions: spatialLesions ?? this.spatialLesions,
     );
   }
 }
@@ -1674,5 +1678,79 @@ class Fhir7BundleMeta extends Equatable {
 
   @override
   List<Object?> get props => [fhirVersion, postQuantumEncryption, securityLabel];
+}
+
+class SpatialLesionModel extends Equatable {
+  final String id;
+  final String label;
+  final String partId;
+  final double x;
+  final double y;
+  final double z;
+  final String severity; // 'mild' | 'moderate' | 'critical'
+  final String morphology;
+  final String clinicalNotes;
+  final String snomedCode;
+  final DateTime createdAt;
+
+  const SpatialLesionModel({
+    required this.id,
+    required this.label,
+    required this.partId,
+    required this.x,
+    required this.y,
+    required this.z,
+    required this.severity,
+    required this.morphology,
+    required this.clinicalNotes,
+    required this.snomedCode,
+    required this.createdAt,
+  });
+
+  factory SpatialLesionModel.fromJson(Map<String, dynamic> json) {
+    final pos = json['position'] as Map<String, dynamic>?;
+    return SpatialLesionModel(
+      id: json['id'] as String? ?? '',
+      label: json['label'] as String? ?? '',
+      partId: json['partId'] as String? ?? '',
+      x: (pos?['x'] as num?)?.toDouble() ?? (json['x'] as num?)?.toDouble() ?? 0.0,
+      y: (pos?['y'] as num?)?.toDouble() ?? (json['y'] as num?)?.toDouble() ?? 0.0,
+      z: (pos?['z'] as num?)?.toDouble() ?? (json['z'] as num?)?.toDouble() ?? 0.0,
+      severity: json['severity'] as String? ?? 'moderate',
+      morphology: json['morphology'] as String? ?? 'inflammation',
+      clinicalNotes: json['clinicalNotes'] as String? ?? '',
+      snomedCode: json['snomedCode'] as String? ?? '404684003',
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
+          : DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'label': label,
+    'partId': partId,
+    'position': {'x': x, 'y': y, 'z': z},
+    'severity': severity,
+    'morphology': morphology,
+    'clinicalNotes': clinicalNotes,
+    'snomedCode': snomedCode,
+    'createdAt': createdAt.toIso8601String(),
+  };
+
+  @override
+  List<Object?> get props => [
+        id,
+        label,
+        partId,
+        x,
+        y,
+        z,
+        severity,
+        morphology,
+        clinicalNotes,
+        snomedCode,
+        createdAt,
+      ];
 }
 

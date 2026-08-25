@@ -31,6 +31,63 @@ export class BleWearablesService {
   readonly rrIntervals = signal<number[]>([820, 835, 815, 840, 825]); // ms
   readonly isSimulationActive = signal<boolean>(false);
 
+  // --- Real-time Bio-Adaptive Computations for Closed-Loop Entrainment ---
+  readonly cardiacResonanceHz = computed<number>(() => {
+    const hr = this.heartRate() || 72;
+    // Resonant RSA oscillation frequency (nominal 0.10 Hz = 6 breaths/min, slightly shifting with heart rate)
+    return Math.round((0.08 + (hr / 72.0) * 0.02) * 100) / 100;
+  });
+
+  readonly autonomicCoherenceScore = computed<number>(() => {
+    const rmssd = this.hrvRmssd();
+    const rrs = this.rrIntervals();
+    if (rrs.length < 2) return 75;
+    // Standard deviation of R-R intervals (SDNN proxy)
+    const mean = rrs.reduce((a, b) => a + b, 0) / rrs.length;
+    const variance = rrs.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / rrs.length;
+    const sdnn = Math.sqrt(variance);
+
+    // Coherence index combining RMSSD (vagal) and SDNN (baroreflex stability)
+    const baseScore = Math.min(100, Math.max(20, Math.round((rmssd * 0.8) + (sdnn * 0.6))));
+    return baseScore;
+  });
+
+  readonly recommendedEntrainmentHz = computed<{ beatFreqHz: number; carrierFreqHz: number; stateLabel: string }>(() => {
+    const hr = this.heartRate() || 72;
+    const rmssd = this.hrvRmssd();
+    const coherence = this.autonomicCoherenceScore();
+
+    if (hr > 85 || rmssd < 28) {
+      // Sympathetic hyper-arousal -> Theta 5.5 Hz on 528 Hz for vagal deceleration
+      return {
+        beatFreqHz: 5.5,
+        carrierFreqHz: 528,
+        stateLabel: 'Sympathetic Downregulation (Theta 5.5Hz)'
+      };
+    } else if ((coherence >= 60 || rmssd >= 40) && hr >= 58 && hr <= 78) {
+      // Optimal Coherence -> Schumann 7.83 Hz on 432 Hz Pythagorean
+      return {
+        beatFreqHz: 7.83,
+        carrierFreqHz: 432,
+        stateLabel: 'Vagal Planetary Coherence (Schumann 7.83Hz)'
+      };
+    } else if (hr < 55) {
+      // Low Energy / Drowsy -> Alpha 10.0 Hz on 432 Hz
+      return {
+        beatFreqHz: 10.0,
+        carrierFreqHz: 432,
+        stateLabel: 'Calm Alertness Flow (Alpha 10.0Hz)'
+      };
+    } else {
+      // Baseline balance -> Alpha 8.5 Hz on 528 Hz
+      return {
+        beatFreqHz: 8.5,
+        carrierFreqHz: 528,
+        stateLabel: 'Autonomic Balance (Alpha 8.5Hz)'
+      };
+    }
+  });
+
   private simulationTimer: any = null;
   private simStep = 0;
   private gattServer: BluetoothRemoteGATTServer | null = null;

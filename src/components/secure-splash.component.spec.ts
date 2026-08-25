@@ -18,6 +18,9 @@ import { WacomCryptoInkService } from '../services/wacom-crypto-ink.service';
 import { MonroePersianTranceService, HEMISPHERIC_PRESETS } from '../services/monroe-persian-trance.service';
 import { MissionSymphonyEngineService } from '../services/mission-symphony-engine.service';
 import { LifeJourneyNavigatorService } from '../services/life-journey-navigator.service';
+import { AvsEngineService } from '../services/avs-engine.service';
+import { BleWearablesService } from '../services/hardware/ble-wearables.service';
+import { VibroacousticHapticService } from '../services/hardware/vibroacoustic-haptic.service';
 
 describe('SecureSplashComponent Sensory Suite', () => {
   const createComponent = () => {
@@ -30,7 +33,13 @@ describe('SecureSplashComponent Sensory Suite', () => {
       isEmailRegistered: () => true
     };
     const mockKssService = { currentScore: signal(3), kssTheme: signal('kss-3'), setScore: () => {} };
-    const mockPatientState = { activeSymptoms: signal([]), vitals: signal({}) };
+    const mockPatientState = {
+      activeSymptoms: signal([]),
+      vitals: signal({}),
+      isAvsSessionActive: signal(false),
+      avsBrainwaveFrequencyHz: signal(6),
+      avsBrainwaveFrequency: signal('theta')
+    };
     const mockGame = { currentPoints: signal(100), currentStreak: signal(3) };
     const mockAuthSso = { isAuthenticating: signal(false), launchGoogleSso: () => {}, launchSmartFhirSso: () => {} };
     const mockWacomInk = { isInitialized: signal(true), resetCanvas: () => {} };
@@ -42,6 +51,16 @@ describe('SecureSplashComponent Sensory Suite', () => {
       setReduceMotion: () => {},
       isHighContrast: signal(false),
       seagullPersona: signal('classic')
+    };
+
+    const mockAvsEngine = {
+      sessionConfig: signal({ carrierFreqHz: 528, binauralBeatHz: 6, isIsochronicPulseEnabled: false }),
+      applySolfeggioTone: (hz: number | string) => {
+        mockAvsEngine.sessionConfig.update(c => ({ ...c, carrierFreqHz: typeof hz === 'number' ? hz : 528 }));
+      },
+      applyBrainwavePreset: () => {},
+      toggleSession: () => true,
+      isPlaying: signal(false)
     };
 
     const injector = Injector.create({
@@ -64,6 +83,27 @@ describe('SecureSplashComponent Sensory Suite', () => {
         { provide: MonroePersianTranceService, useClass: MonroePersianTranceService },
         { provide: MissionSymphonyEngineService, useClass: MissionSymphonyEngineService },
         { provide: LifeJourneyNavigatorService, useClass: LifeJourneyNavigatorService },
+        { provide: AvsEngineService, useValue: mockAvsEngine },
+        {
+          provide: BleWearablesService,
+          useValue: {
+            isConnected: signal(false),
+            heartRate: signal(72),
+            autonomicCoherenceScore: signal(85),
+            cardiacResonanceHz: signal(0.10),
+            recommendedEntrainmentHz: signal({ beatFreqHz: 7.83, carrierFreqHz: 432, stateLabel: 'Coherence' })
+          }
+        },
+        {
+          provide: VibroacousticHapticService,
+          useValue: {
+            isHapticsActive: signal(false),
+            isGamepadConnected: signal(false),
+            isMobileVibrationSupported: signal(true),
+            hapticIntensity: signal(0.75),
+            toggleHaptics: () => true
+          }
+        },
         { provide: PLATFORM_ID, useValue: 'browser' }
       ]
     });
@@ -80,16 +120,36 @@ describe('SecureSplashComponent Sensory Suite', () => {
 
   it('2. Exposes Monroe, Indigenous, Persian, and Animal presets across all categories', () => {
     const component = createComponent();
-    const monroePresets = component.hemisphericPresets.filter(p => p.category === 'monroe');
-    expect(monroePresets.length).toBeGreaterThanOrEqual(4);
+    const categories = new Set(component.hemisphericPresets.map(p => p.category));
+    expect(categories.has('monroe')).toBe(true);
+    expect(categories.has('indigenous')).toBe(true);
+    expect(categories.has('persian')).toBe(true);
+    expect(categories.has('animal')).toBe(true);
+  });
 
-    const indigenousPresets = component.hemisphericPresets.filter(p => p.category === 'indigenous');
-    expect(indigenousPresets.length).toBeGreaterThanOrEqual(4);
+  it('3. Exposes Sacred Solfeggio Scale & AVS Studio Entrainment controls', () => {
+    const component = createComponent();
+    expect(component.solfeggioCatalog).toBeDefined();
+    expect(component.solfeggioCatalog.length).toBe(10);
+    expect(component.brainwavePresets).toBeDefined();
+    expect(component.brainwavePresets.length).toBe(6);
 
-    const persianPresets = component.hemisphericPresets.filter(p => p.category === 'persian');
-    expect(persianPresets.length).toBeGreaterThanOrEqual(3);
+    expect(component.avsEngine).toBeDefined();
+    component.avsEngine?.applySolfeggioTone(528);
+    expect(component.avsEngine?.sessionConfig().carrierFreqHz).toBe(528);
+  });
 
-    const animalPresets = component.hemisphericPresets.filter(p => p.category === 'animal');
-    expect(animalPresets.length).toBeGreaterThanOrEqual(4);
+  it('4. Exposes Wearable BLE integration for closed-loop biofeedback locking', () => {
+    const component = createComponent();
+    expect(component.bleWearables).toBeDefined();
+    expect(component.bleWearables?.heartRate()).toBe(72);
+    expect(component.bleWearables?.autonomicCoherenceScore()).toBe(85);
+  });
+
+  it('5. Exposes Vibroacoustic Somatosensory Haptics integration', () => {
+    const component = createComponent();
+    expect(component.haptics).toBeDefined();
+    expect(component.haptics?.isHapticsActive()).toBe(false);
+    expect(component.haptics?.isMobileVibrationSupported()).toBe(true);
   });
 });

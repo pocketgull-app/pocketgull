@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, inject, computed } from '@angular/core';
 import { PatientStateService, BODY_PART_NAMES } from './patient-state.service';
 import { PatientManagementService } from './patient-management.service';
 import { PetAuditoryService } from './pet-auditory.service';
@@ -16,6 +16,8 @@ export class DictationService {
   private lighting = inject(AmbientLightingService, { optional: true });
 
   readonly isListening = signal(false);
+  readonly isSidechainDuckingActive = computed(() => this.isListening());
+  readonly sidechainDuckingDepth = signal<number>(0.85); // 85% attenuation (-16.5 dB)
   readonly isModalOpen = signal(false);
   readonly permissionError = signal<string | null>(null);
   readonly initialText = signal('');

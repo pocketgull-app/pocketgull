@@ -18,6 +18,8 @@ import { SeverityParticleService } from '../../services/severity-particle.servic
 import { SocraticComorbidityRadarService } from '../../services/socratic-comorbidity-radar.service';
 import { RadialPieMenuComponent, RadialPieAction } from './radial-pie-menu.component';
 import { BiophysicalTwinTimelineComponent } from './biophysical-twin-timeline.component';
+import { SpatialLesionMarkupService } from '../../services/spatial-lesion-markup.service';
+import { AvsEngineService } from '../../services/avs-engine.service';
 import { IBodyPartIssue } from '../../services/patient.types';
 
 const PART_NAMES: Record<string, string> = {
@@ -72,7 +74,7 @@ const PART_NAMES: Record<string, string> = {
     'chakra_muladhara': 'Muladhara (Root Earth Base Support Chakra)'
 };
 
-export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'orch_or' | 'typographic';
+export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic';
 
 @Component({
     selector: 'app-body-3d-viewer',
@@ -91,16 +93,16 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
         <!-- Camera Angle Presets -->
         <div class="flex items-center gap-1">
           <span class="text-[10px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider mr-1 hidden sm:inline">Camera:</span>
-          <button (click)="setCameraPreset('cranial')" class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-sky-100 dark:bg-zinc-900 dark:hover:bg-cyan-950 text-sky-900 dark:text-cyan-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Head & Brain">
+          <button (click)="setCameraPreset('cranial')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-sky-100 dark:bg-zinc-900 dark:hover:bg-cyan-950 text-sky-900 dark:text-cyan-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Head & Brain">
             <span>🧠</span><span class="text-[10px] uppercase font-bold">Cranial</span>
           </button>
-          <button (click)="setCameraPreset('visceral')" class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-teal-100 dark:bg-zinc-900 dark:hover:bg-teal-950 text-teal-900 dark:text-teal-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Thorax & Organs">
+          <button (click)="setCameraPreset('visceral')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-teal-100 dark:bg-zinc-900 dark:hover:bg-teal-950 text-teal-900 dark:text-teal-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Thorax & Organs">
             <span>🫀</span><span class="text-[10px] uppercase font-bold">Visceral</span>
           </button>
-          <button (click)="setCameraPreset('spinal')" class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-indigo-100 dark:bg-zinc-900 dark:hover:bg-indigo-950 text-indigo-900 dark:text-indigo-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Spine & Posterior">
+          <button (click)="setCameraPreset('spinal')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-indigo-100 dark:bg-zinc-900 dark:hover:bg-indigo-950 text-indigo-900 dark:text-indigo-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Spine & Posterior">
             <span>🦴</span><span class="text-[10px] uppercase font-bold">Spine</span>
           </button>
-          <button (click)="setCameraPreset('peripheral')" class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-amber-100 dark:bg-zinc-900 dark:hover:bg-amber-950 text-amber-900 dark:text-amber-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Legs & Feet">
+          <button (click)="setCameraPreset('peripheral')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-amber-100 dark:bg-zinc-900 dark:hover:bg-amber-950 text-amber-900 dark:text-amber-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Legs & Feet">
             <span>🦵</span><span class="text-[10px] uppercase font-bold">Extremities</span>
           </button>
         </div>
@@ -111,7 +113,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
           <select [value]="activeArchetype()" 
                   (change)="onArchetypeChange($event)"
                   aria-label="3D Species and Demographic Archetype Selector"
-                  class="min-h-[36px] px-2 py-1 rounded-md bg-white dark:bg-zinc-900 text-teal-800 dark:text-cyan-300 font-bold border border-slate-300 dark:border-zinc-800 text-[10.5px] cursor-pointer outline-none">
+                  class="min-h-[34px] px-2 py-1 rounded-xs bg-white dark:bg-zinc-900 text-teal-800 dark:text-cyan-300 font-bold border border-slate-300 dark:border-zinc-800 text-[10.5px] cursor-pointer outline-none">
             <option value="homo_sapiens_female">👩 Homo Sapiens (Female)</option>
             <option value="homo_sapiens_male">👨 Homo Sapiens (Male)</option>
             <option value="homo_sapiens_senior">👵 Homo Sapiens (Senior)</option>
@@ -121,23 +123,23 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
         </div>
 
         <!-- Occupational Hazard & Strain Telemetry Badge -->
-        <div *ngIf="occupationalStrainInfo() as info" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/10 dark:bg-cyan-950/50 border border-amber-500/30 dark:border-cyan-700/40 text-amber-900 dark:text-cyan-200">
+        <div *ngIf="occupationalStrainInfo() as info" class="flex items-center gap-1.5 px-2.5 py-1 rounded-xs bg-amber-500/10 dark:bg-cyan-950/50 border border-amber-500/30 dark:border-cyan-700/40 text-amber-900 dark:text-cyan-200">
           <span>{{ info.icon }}</span>
           <span class="text-[10.5px] font-bold tracking-wide hidden md:inline">{{ info.focusLabel }}</span>
-          <button (click)="setCameraPreset(info.cameraPreset)" class="px-1.5 py-0.5 rounded bg-amber-500/20 dark:bg-cyan-800/40 hover:bg-amber-500/30 text-[9.5px] uppercase font-extrabold cursor-pointer border border-amber-500/40 dark:border-cyan-600/50 transition" title="Focus Ergonomic Strain Region">
+          <button (click)="setCameraPreset(info.cameraPreset)" class="px-1.5 py-0.5 rounded-2xs bg-amber-500/20 dark:bg-cyan-800/40 hover:bg-amber-500/30 text-[9.5px] uppercase font-extrabold cursor-pointer border border-amber-500/40 dark:border-cyan-600/50 transition" title="Focus Ergonomic Strain Region">
             Focus Strain 🎯
           </button>
         </div>
 
         <!-- Viewport Spin, Reset & Vision Accessibility Controls -->
-        <div class="flex flex-wrap items-center gap-1.5">
+        <div class="flex flex-wrap items-center gap-1">
           <button (click)="isHighContrastVision.set(!isHighContrastVision())" 
             [class.bg-amber-400]="isHighContrastVision()"
             [class.text-black]="isHighContrastVision()"
             [class.bg-white]="!isHighContrastVision()"
             [class.dark:bg-zinc-900]="!isHighContrastVision()"
             [class.dark:text-amber-300]="!isHighContrastVision()"
-            class="min-h-[36px] px-2.5 py-1 rounded-md font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
+            class="min-h-[34px] px-2 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Toggle Non-Glare High-Contrast Vision Mode for Low Vision">
             <span>👁️</span>
             <span class="text-[10px] uppercase font-bold">{{ isHighContrastVision() ? 'High Contrast ON' : 'High Contrast' }}</span>
@@ -149,7 +151,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             [class.bg-white]="!isReducedMotion()"
             [class.dark:bg-zinc-900]="!isReducedMotion()"
             [class.dark:text-emerald-400]="!isReducedMotion()"
-            class="min-h-[36px] px-2.5 py-1 rounded-md font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
+            class="min-h-[34px] px-2 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Freeze Animations for Photosensitive Safety & Motion Sensitivity">
             <span>⚡</span>
             <span class="text-[10px] uppercase font-bold">{{ isReducedMotion() ? 'Motion FREEZE' : 'Motion' }}</span>
@@ -162,36 +164,82 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             [class.dark:bg-zinc-900]="!isAutoSpinning()"
             [class.text-gray-800]="!isAutoSpinning()"
             [class.dark:text-cyan-300]="!isAutoSpinning()"
-            class="min-h-[36px] px-2.5 py-1 rounded-md font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
+            class="min-h-[34px] px-2 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Toggle 360° Auto-Spin">
             <span [class.animate-spin]="isAutoSpinning()">🔄</span>
             <span class="text-[10px] uppercase font-bold">{{ isAutoSpinning() ? 'Spin ON' : '360°' }}</span>
           </button>
 
           <button (click)="resetCameraView()" 
-            class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-gray-800 dark:text-zinc-300 font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
+            class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-gray-800 dark:text-zinc-300 font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Reset Camera View">
             <span>🎯</span>
             <span class="text-[10px] uppercase font-bold">Reset</span>
           </button>
+
+          <!-- 📍 3D Spatial Lesion Pinning Mode Toggle -->
+          <button (click)="lesionMarkup.toggleMarkupMode()"
+            [class.bg-rose-600]="lesionMarkup.isMarkupMode()"
+            [class.text-white]="lesionMarkup.isMarkupMode()"
+            [class.bg-white]="!lesionMarkup.isMarkupMode()"
+            [class.dark:bg-zinc-900]="!lesionMarkup.isMarkupMode()"
+            [class.text-rose-700]="!lesionMarkup.isMarkupMode()"
+            [class.dark:text-rose-400]="!lesionMarkup.isMarkupMode()"
+            class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800 shadow-xs"
+            title="Click to enable 3D raycast surface lesion placement">
+            <span>📍</span>
+            <span class="text-[10px] uppercase font-bold">{{ lesionMarkup.isMarkupMode() ? 'Pinning ACTIVE' : 'Pin Lesion' }}</span>
+            <span *ngIf="lesionMarkup.activeLesions().length > 0" class="ml-1 px-1.5 py-0.2 rounded-full text-[9px] bg-rose-950 text-rose-200 font-mono">
+              {{ lesionMarkup.activeLesions().length }}
+            </span>
+          </button>
+
+          <!-- 🎧 3D HRTF Spatial Audio Pinning Toggle -->
+          <button (click)="lesionMarkup.toggleAcousticPinning()"
+            [class.bg-teal-600]="lesionMarkup.isAcousticPinningActive()"
+            [class.text-white]="lesionMarkup.isAcousticPinningActive()"
+            [class.bg-white]="!lesionMarkup.isAcousticPinningActive()"
+            [class.dark:bg-zinc-900]="!lesionMarkup.isAcousticPinningActive()"
+            [class.text-teal-700]="!lesionMarkup.isAcousticPinningActive()"
+            [class.dark:text-teal-400]="!lesionMarkup.isAcousticPinningActive()"
+            class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800 shadow-xs"
+            title="Toggle 3D Binaural HRTF Spatial Audio locked to active lesion coordinates">
+            <span>🎧</span>
+            <span class="text-[10px] uppercase font-bold">{{ lesionMarkup.isAcousticPinningActive() ? '3D HRTF ACTIVE' : '3D Spatial Audio' }}</span>
+            @if (lesionMarkup.isAcousticPinningActive() && avsEngine) {
+              <span class="ml-1 px-1.5 py-0.2 rounded-full text-[9px] bg-teal-950 text-teal-200 font-mono">
+                {{ avsEngine.spatialAzimuthDeg() }}°
+              </span>
+            }
+          </button>
+
+          <!-- 📋 3D Spatial Lesion & AVS FHIR R4 Bundle Export -->
+          @if (lesionMarkup.activeLesions().length > 0) {
+            <button (click)="lesionMarkup.downloadFhirBundleJson()"
+              class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-500 shadow-xs text-[10px] uppercase"
+              title="Export and download standardized HL7 FHIR R4 Document Bundle of 3D Lesions and AVS Procedures">
+              <span>📋</span>
+              <span>Export FHIR R4</span>
+            </button>
+          }
         </div>
 
         <!-- 🔪 3D Anatomical Cross-Section & Slice Plane Controls -->
-        <div class="flex items-center gap-1.5 p-1 bg-slate-200/90 dark:bg-zinc-900 rounded-lg border border-slate-300 dark:border-zinc-800 text-[10.5px]">
-          <span class="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[9.5px]">🔪 Slice Plane:</span>
+        <div class="flex items-center gap-1 p-0.5 bg-slate-200/90 dark:bg-zinc-900 rounded-xs border border-slate-300 dark:border-zinc-800 text-[10.5px]">
+          <span class="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[9.5px] px-1">🔪 Slice:</span>
           
           <button type="button" (click)="setSlicePlaneMode('none')"
                   [class.bg-zinc-800]="slicePlaneMode() === 'none'"
                   [class.text-white]="slicePlaneMode() === 'none'"
                   [class.text-zinc-400]="slicePlaneMode() !== 'none'"
-                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer">
+                  class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer">
             Off
           </button>
           <button type="button" (click)="setSlicePlaneMode('axial')"
                   [class.bg-sky-600]="slicePlaneMode() === 'axial'"
                   [class.text-white]="slicePlaneMode() === 'axial'"
                   [class.text-zinc-400]="slicePlaneMode() !== 'axial'"
-                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer"
+                  class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer"
                   title="Axial Transverse (Horizontal) Cross-Section">
             Axial
           </button>
@@ -199,7 +247,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                   [class.bg-emerald-600]="slicePlaneMode() === 'coronal'"
                   [class.text-white]="slicePlaneMode() === 'coronal'"
                   [class.text-zinc-400]="slicePlaneMode() !== 'coronal'"
-                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer"
+                  class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer"
                   title="Coronal (Frontal / Anterior-Posterior) Cross-Section">
             Coronal
           </button>
@@ -207,7 +255,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                   [class.bg-purple-600]="slicePlaneMode() === 'sagittal'"
                   [class.text-white]="slicePlaneMode() === 'sagittal'"
                   [class.text-zinc-400]="slicePlaneMode() !== 'sagittal'"
-                  class="px-2 py-0.5 rounded font-bold transition cursor-pointer"
+                  class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer"
                   title="Sagittal (Lateral / Medial-Lateral) Cross-Section">
             Sagittal
           </button>
@@ -575,6 +623,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     });
 
     private clippingPlane?: THREE.Plane;
+    private slicePlaneHelperGroup = new THREE.Group();
 
     private updateClippingPlane(): void {
       const mode = this.slicePlaneMode();
@@ -583,6 +632,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
       if (mode === 'none') {
         this.clippingPlane = undefined;
         this.applyClippingPlaneToMeshes(null);
+        this.updateSlicePlaneHelper(null);
         return;
       }
 
@@ -599,6 +649,49 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
       const constant = -normalizedDepth * inv;
       this.clippingPlane = new THREE.Plane(normal, constant);
       this.applyClippingPlaneToMeshes(this.clippingPlane);
+      this.updateSlicePlaneHelper(this.clippingPlane);
+    }
+
+    private updateSlicePlaneHelper(plane: THREE.Plane | null): void {
+      while (this.slicePlaneHelperGroup.children.length > 0) {
+        const child = this.slicePlaneHelperGroup.children[0] as THREE.Group;
+        this.disposeHierarchy(child);
+        this.slicePlaneHelperGroup.remove(child);
+      }
+
+      if (!plane || this.slicePlaneMode() === 'none') return;
+
+      const size = 2.4;
+      const geom = new THREE.PlaneGeometry(size, size);
+      const edges = new THREE.EdgesGeometry(geom);
+      const lineMat = new THREE.LineBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.85,
+        blending: THREE.AdditiveBlending
+      });
+      const wireframe = new THREE.LineSegments(edges, lineMat);
+
+      const surfMat = new THREE.MeshBasicMaterial({
+        color: 0x0284c7,
+        transparent: true,
+        opacity: 0.12,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
+      const surfMesh = new THREE.Mesh(geom, surfMat);
+
+      const helper = new THREE.Group();
+      helper.add(wireframe);
+      helper.add(surfMesh);
+
+      const normal = plane.normal.clone().normalize();
+      const pos = normal.clone().multiplyScalar(-plane.constant);
+      helper.position.copy(pos);
+      helper.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
+
+      this.slicePlaneHelperGroup.add(helper);
     }
 
     private applyClippingPlaneToMeshes(plane: THREE.Plane | null): void {
@@ -961,6 +1054,26 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             const rect = container.getBoundingClientRect();
             const mouse = this.raycastService.getNormalizedMouse(e.clientX, e.clientY, rect);
 
+            if (this.lesionMarkup.isMarkupMode() && this.mannequinGroup) {
+                this.raycaster.setFromCamera(mouse, this.camera);
+                const intersects = this.raycaster.intersectObjects(this.mannequinGroup.children, true);
+                if (intersects.length > 0) {
+                    const hitPoint = intersects[0].point;
+                    const hitObj = intersects[0].object;
+                    const partId = hitObj.userData['partId'] || 'torso';
+                    this.lesionMarkup.addLesion({
+                        label: `Spatial Lesion (${(PART_NAMES[partId] || partId).replace(/_/g, ' ')})`,
+                        partId: partId,
+                        position: { x: hitPoint.x, y: hitPoint.y, z: hitPoint.z },
+                        severity: this.lesionMarkup.activeSeverity(),
+                        morphology: this.lesionMarkup.activeMorphology(),
+                        clinicalNotes: `Marked at 3D coordinate (${hitPoint.x.toFixed(2)}, ${hitPoint.y.toFixed(2)}, ${hitPoint.z.toFixed(2)})`
+                    });
+                    this.updateLesionPins();
+                    return;
+                }
+            }
+
             const hit = this.raycastService.pickObject(mouse, this.camera, this.mannequinGroup);
             if (hit) {
                 const hitPartId = hit.hitPartId;
@@ -1110,6 +1223,74 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     private meshFactory = inject(BodyMeshFactoryService);
     private raycastService = inject(RaycastSelectionService);
     private particleService = inject(SeverityParticleService);
+    public lesionMarkup = inject(SpatialLesionMarkupService);
+    public avsEngine = inject(AvsEngineService, { optional: true });
+
+    private lesionPinGroup = new THREE.Group();
+
+    public updateLesionPins(): void {
+        while (this.lesionPinGroup.children.length > 0) {
+            const child = this.lesionPinGroup.children[0] as THREE.Group | THREE.Mesh;
+            this.disposeHierarchy(child);
+            this.lesionPinGroup.remove(child);
+        }
+
+        const lesions = this.lesionMarkup.activeLesions();
+        for (const l of lesions) {
+            const color = l.severity === 'critical' ? 0xef4444 : l.severity === 'moderate' ? 0xf59e0b : 0x06b6d4;
+            const beaconGroup = new THREE.Group();
+            beaconGroup.position.set(l.position.x, l.position.y, l.position.z);
+            beaconGroup.userData = {
+                lesionId: l.id,
+                isLesionBeacon: true,
+                severity: l.severity,
+                phase: Math.random() * Math.PI * 2
+            };
+
+            // 1. Inner glowing core sphere
+            const coreGeo = new THREE.SphereGeometry(0.042, 16, 16);
+            const coreMat = new THREE.MeshStandardMaterial({
+                color,
+                emissive: color,
+                emissiveIntensity: 0.9,
+                roughness: 0.15,
+                metalness: 0.85
+            });
+            const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+            coreMesh.userData = { isBeaconCore: true };
+            beaconGroup.add(coreMesh);
+
+            // 2. Pulsing billboarded beacon halo ring
+            const ringGeo = new THREE.RingGeometry(0.05, 0.085, 32);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.75,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+            ringMesh.userData = { isBeaconRing: true };
+            beaconGroup.add(ringMesh);
+
+            // 3. Vertical micro-beacon light ray pillar
+            const rayGeo = new THREE.CylinderGeometry(0.003, 0.003, 0.25, 8);
+            rayGeo.translate(0, 0.125, 0);
+            const rayMat = new THREE.MeshBasicMaterial({
+                color,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const rayMesh = new THREE.Mesh(rayGeo, rayMat);
+            rayMesh.userData = { isBeaconRay: true };
+            beaconGroup.add(rayMesh);
+
+            this.lesionPinGroup.add(beaconGroup);
+        }
+    }
 
     private renderer!: THREE.WebGLRenderer;
     private scene!: THREE.Scene;
@@ -1271,6 +1452,9 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             this.mannequinGroup = mannequinData.group;
             this.parts = mannequinData.parts;
             this.scene.add(this.mannequinGroup);
+            this.scene.add(this.lesionPinGroup);
+            this.scene.add(this.slicePlaneHelperGroup);
+            this.updateLesionPins();
 
             this.startAnimation();
             this.setupInteractions();
@@ -1519,6 +1703,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         const height = container.clientHeight;
 
         this.scene = new THREE.Scene();
+        this.scene.fog = new THREE.FogExp2(0x09090b, 0.008);
 
         this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
         this.camera.position.set(0, 1.2, 5);
@@ -2662,6 +2847,20 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 }
 
                 if (this.controls) this.controls.update();
+
+                // Real-time 3D Binaural HRTF Spatial Acoustic Panning for pinned lesion targets
+                if (this.lesionMarkup.isAcousticPinningActive() && this.lesionMarkup.selectedLesion() && this.avsEngine && this.camera) {
+                    const lesion = this.lesionMarkup.selectedLesion()!;
+                    const camPos = this.camera.position;
+                    const camDir = new THREE.Vector3();
+                    this.camera.getWorldDirection(camDir);
+
+                    this.avsEngine.updateSpatialAudioPosition(
+                        { x: lesion.position.x, y: lesion.position.y, z: lesion.position.z },
+                        { x: camPos.x, y: camPos.y, z: camPos.z },
+                        { x: camDir.x, y: camDir.y, z: camDir.z }
+                    );
+                }
             
             if (this.molecularScienceGroup && this.molecularScienceGroup.visible) {
                 this.molecularScienceGroup.rotation.y += 0.012;
@@ -2837,7 +3036,49 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                     });
                 }
 
-                // 8. Ambient Aura / Bloom entrainment
+                // 8. 3D Spatial Lesion Beacon Pulsing & Billboard Ring Animation
+                if (this.lesionPinGroup && this.lesionPinGroup.children.length > 0) {
+                    this.lesionPinGroup.children.forEach(group => {
+                        const phase = group.userData['phase'] || 0;
+                        const pulse = Math.sin(time * 3.5 + phase);
+                        const haloCycle = (time * 1.5 + phase) % 1.0;
+
+                        group.children.forEach(child => {
+                            if (child.userData['isBeaconCore'] && child instanceof THREE.Mesh) {
+                                const s = 1.0 + pulse * 0.18;
+                                child.scale.set(s, s, s);
+                                if (child.material instanceof THREE.MeshStandardMaterial) {
+                                    child.material.emissiveIntensity = 0.8 + pulse * 0.4;
+                                }
+                            } else if (child.userData['isBeaconRing'] && child instanceof THREE.Mesh) {
+                                const ringScale = 1.0 + haloCycle * 1.6;
+                                child.scale.set(ringScale, ringScale, ringScale);
+                                if (child.material instanceof THREE.MeshBasicMaterial) {
+                                    child.material.opacity = Math.max(0, 0.75 * (1.0 - haloCycle));
+                                }
+                                if (this.camera) {
+                                    child.quaternion.copy(this.camera.quaternion);
+                                }
+                            } else if (child.userData['isBeaconRay'] && child instanceof THREE.Mesh) {
+                                if (child.material instanceof THREE.MeshBasicMaterial) {
+                                    child.material.opacity = 0.4 + pulse * 0.3;
+                                }
+                            }
+                        });
+                    });
+                }
+
+                // 9. Adaptive Depth-Fog Lensing Transitions
+                if (this.scene && this.scene.fog instanceof THREE.FogExp2) {
+                    const isCellular = this.state.bodyViewerMode() === 'cellular';
+                    const targetDensity = isCellular ? 0.038 : 0.008;
+                    const targetColorHex = isCellular ? 0x04131f : 0x09090b;
+
+                    this.scene.fog.density += (targetDensity - this.scene.fog.density) * 0.05;
+                    this.scene.fog.color.lerp(new THREE.Color(targetColorHex), 0.05);
+                }
+
+                // 10. Ambient Aura / Bloom entrainment
                 if (this.bloomPass) {
                     if (avsActive) {
                         const pacingFrequency = (this.state.avsBreathingRate() / 60) * 2 * Math.PI;

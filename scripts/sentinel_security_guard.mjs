@@ -23,6 +23,11 @@ const APPROVED_EGRESS_DOMAINS = [
   'cloudrun.app',
   'google.com',
   'ai.google.dev',
+  'discuss.ai.google.dev',
+  'antigravity.google',
+  'antigravity.google.com',
+  'anthropic.com',
+  'www.anthropic.com',
   'github.com',
   'githubusercontent.com',
   'api.github.com',
@@ -368,6 +373,42 @@ function auditFile(filePath) {
         severity: 'MEDIUM',
         message: `Live telemetry stream component does not reference DOMPurify or HIPAA PII sanitization filters.`,
         line: 1,
+      });
+    }
+  }
+
+  // 4. Audit Prohibited Third-Party Agent Harnesses (Google Antigravity Terms §6: OpenClaw, unauthorized OAuth hooks)
+  if (!relativePath.includes('sentinel_security_guard')) {
+    const prohibitedHarnesses = [
+      { pattern: /\bimport\s+.*['"]openclaw['"]/i, name: 'OpenClaw SDK import' },
+      { pattern: /\brequire\(['"]openclaw['"]\)/i, name: 'OpenClaw require' },
+      { pattern: /\bopenclaw_antigravity_bridge\b/i, name: 'OpenClaw Antigravity Bridge' },
+      { pattern: /\bantigravity_oauth_interceptor\b/i, name: 'Antigravity OAuth Interceptor' },
+    ];
+    for (const check of prohibitedHarnesses) {
+      if (check.pattern.test(content)) {
+        issues.push({
+          type: 'PROHIBITED_AGENT_HARNESS',
+          severity: 'CRITICAL',
+          message: `Prohibited third-party agent harness detected (${check.name}) per Google Antigravity Terms §6.`,
+          line: 1,
+        });
+      }
+    }
+  }
+
+  // 5. Audit HIPAA §164.514 Direct Identifiers (Unmasked SSN detection)
+  if (!relativePath.includes('sentinel_security_guard') && !relativePath.includes('spec.ts')) {
+    const rawSsnRegex = /\b(?!000|666|9\d{2})\d{3}-(?!00)\d{2}-(?!0000)\d{4}\b/g;
+    let ssnMatch;
+    while ((ssnMatch = rawSsnRegex.exec(content)) !== null) {
+      // Allow synthetic zeroes or explicit Safe Harbor placeholders
+      if (ssnMatch[0].startsWith('000-00-') || ssnMatch[0] === '123-45-6789') continue;
+      issues.push({
+        type: 'LEAKED_PHI_IDENTIFIER',
+        severity: 'CRITICAL',
+        message: `Potential unmasked SSN/Direct Identifier detected: "${ssnMatch[0]}" under HIPAA §164.514 Safe Harbor.`,
+        line: content.substring(0, ssnMatch.index).split('\n').length,
       });
     }
   }

@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect } from 'vitest';
 import { AdkLiveService, uint8ArrayToBase64, base64ToUint8Array } from './adk-live.service';
 import type { IOccupationalHazardProfile } from '../actuarial-longevity.service';
 
@@ -102,6 +101,55 @@ describe('AdkLiveService', () => {
     const service = new AdkLiveService();
     const segment = service.buildPediatricPromptSegment(false);
     expect(segment).toBe('');
+  });
+
+  it('should generate structured 3D spatial lesion prompt segment when lesions are provided', () => {
+    const service = new AdkLiveService();
+    const mockLesions = [
+      {
+        id: 'lesion_1',
+        label: 'Lumbar Facet Arthropathy',
+        partId: 'torso',
+        position: { x: 0.12, y: 0.95, z: -0.15 },
+        severity: 'critical' as const,
+        morphology: 'edema' as const,
+        snomedCode: '298705009',
+        clinicalNotes: 'L4/L5 facet joint tenderness',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+
+    const segment = service.buildSpatialLesionPromptSegment(mockLesions);
+
+    expect(segment).toContain('3D SPATIAL ANATOMY TELEMETRY & ACTIVE LESION MARKUP CONTEXT');
+    expect(segment).toContain('[CRITICAL] Lumbar Facet Arthropathy at 3D coordinate (0.12, 0.95, -0.15)');
+    expect(segment).toContain('SNOMED: 298705009');
+    expect(segment).toContain('L4/L5 facet joint tenderness');
+    expect(segment).toContain('Clinical Grounding Directive for 3D Lesions');
+  });
+
+  it('should return empty string when spatialLesions is empty or undefined', () => {
+    const service = new AdkLiveService();
+    expect(service.buildSpatialLesionPromptSegment([])).toBe('');
+    expect(service.buildSpatialLesionPromptSegment(undefined)).toBe('');
+  });
+
+  it('should handle sendRealtimeLesionUpdate gracefully when disconnected', () => {
+    const service = new AdkLiveService();
+    expect(() => {
+      service.sendRealtimeLesionUpdate({
+        id: 'lesion_2',
+        label: 'Patellar Tendinopathy',
+        partId: 'leg_left',
+        position: { x: -0.2, y: 0.45, z: 0.05 },
+        severity: 'moderate' as const,
+        morphology: 'inflammation' as const,
+        clinicalNotes: 'Inferior pole patellar pain',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    }).not.toThrow();
   });
 });
 

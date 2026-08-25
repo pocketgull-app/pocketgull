@@ -62,4 +62,8 @@ describe('AmbientFlowSoundscapeService', () => {
     service.toggleMute();
     expect(service.isMuted()).toBe(false);
   });
+
+  it('should expose isDucked signal for reactive sidechain ducking', () => {
+    expect(service.isDucked()).toBe(false);
+  });
 });

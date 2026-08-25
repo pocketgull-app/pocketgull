@@ -145,7 +145,7 @@ export class GrowThyselfLegacyEngineService {
         return {
           label: '🫀 Physical Practitioner & Athlete',
           focus: 'Cardiovascular longevity, movement, strength retention, and vital energy flow.',
-          motto: 'Maintaining physical mastery and vital movement throughout all decades.'
+          motto: 'Maintaining physical vitality and vital movement throughout all decades.'
         };
       case 'CIVIC_BUILDER':
         return {

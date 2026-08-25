@@ -12,19 +12,21 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl space-y-6 max-w-7xl mx-auto font-sans">
+    <div class="p-6 bg-zinc-950 text-zinc-100 rounded-xl border border-zinc-800 shadow-2xl space-y-6 max-w-7xl mx-auto font-sans">
       
       <!-- Top Title & Navigation Header -->
       <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-zinc-800">
         <div>
-          <div class="flex items-center gap-2">
-            <span class="text-2xl">🔬</span>
-            <h2 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              Nantucket Novel Solution Discovery & Skeptical Epistemology Lab
-              <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                Popperian H₀ Tested &bull; Cochrane RoB 2 &bull; E-Value
-              </span>
+          <div class="flex items-center gap-2.5">
+            <span class="px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase tracking-widest">
+              ECOLOGICAL CDS
+            </span>
+            <h2 class="text-lg font-bold tracking-tight text-white flex items-center gap-2 font-pocketgull-sans-clinical">
+              Nantucket Novel Solution Discovery &amp; Epistemology Lab
             </h2>
+            <span class="px-2 py-0.5 rounded-xs text-[10px] font-mono font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800">
+              Popperian H₀ • Cochrane RoB 2 • E-Value
+            </span>
           </div>
           <p class="text-xs text-zinc-400 mt-1">
             Discovering, modeling, and mathematically falsifying next-generation ecological, biophysical, and immunological interventions for the Nantucket tick crisis.
@@ -33,10 +35,11 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
 
         <div class="flex items-center gap-3">
           <button
+            type="button"
             (click)="copyStudyProtocol()"
-            class="px-3.5 py-1.5 rounded-xl bg-teal-600/20 hover:bg-teal-600/30 text-teal-300 border border-teal-500/40 text-xs font-mono font-bold transition flex items-center gap-1.5 shadow-sm"
+            class="px-3.5 py-1.5 rounded-xs bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
-            <span>📜 {{ protocolCopied() ? 'Protocol Copied to Clipboard!' : 'Export Study Protocol Dossier' }}</span>
+            <span>{{ protocolCopied() ? '✓ Protocol Copied' : '📜 Export Study Protocol Dossier' }}</span>
           </button>
         </div>
       </div>
@@ -340,13 +343,13 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
         </div>
       </div>
 
-      <!-- Community Working Draft & Public Disclaimer Banner -->
-      <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs leading-relaxed space-y-1">
-        <div class="flex items-center gap-1.5 font-bold text-amber-300 font-mono text-[11px] uppercase tracking-wider">
-          <span>⚠️ Community Disclaimer &amp; Working Draft Notice</span>
+      <!-- Clinical & Ecological Research Notice -->
+      <div class="p-4 rounded-xs bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs leading-relaxed space-y-1">
+        <div class="flex items-center gap-1.5 font-bold text-zinc-200 font-mono text-[11px] uppercase tracking-wider">
+          <span>Clinical &amp; Ecological Research Notice</span>
         </div>
-        <p class="text-zinc-300">
-          <em>"Island Tick Detectives"</em> and related educational concepts were discovered and transcribed from informal public meeting notes and community brainstorming discussions; they are <strong>not an official municipal plan or enacted town program just yet</strong>. This site is an independent, community-driven citizen science resource. It may contain errors at the bottom, is an active work-in-progress that needs an editor, and is not an official resource or formal school board directive.
+        <p class="text-zinc-400">
+          This computational modeling environment provides open-access biophysical simulations, empirical power calculations, and Cochrane Risk of Bias assessments for potential ecological and immunological vector interventions. Intended for researchers, public health officials, and community scientists evaluating long-term vector eradication strategies.
         </p>
       </div>
 

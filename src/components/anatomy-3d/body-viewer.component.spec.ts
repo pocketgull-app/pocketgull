@@ -26,7 +26,7 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
 
   beforeEach(() => {
     mockPatientState = {
-      bodyViewerMode: signal<'3d' | '2d' | 'cellular' | 'quad' | 'tme' | 'awcim' | 'genesis'>('3d'),
+      bodyViewerMode: signal<'3d' | '2d' | 'quad' | 'cellular'>('3d'),
       anatomyViewMode: signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic'>('skin'),
       selectedPartId: signal<string | null>(null),
       activePhilosophy: signal<'western' | 'eastern' | 'ayurvedic' | 'osteopathic'>('western'),
@@ -73,21 +73,15 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
     expect(mockPatientState.anatomyViewMode()).toBe('skin');
   });
 
-  it('should allow switching across all 7 multi-scale modes', () => {
-    mockPatientState.bodyViewerMode.set('cellular');
-    expect(mockPatientState.bodyViewerMode()).toBe('cellular');
+  it('should allow switching across core viewport modes', () => {
+    mockPatientState.bodyViewerMode.set('2d');
+    expect(mockPatientState.bodyViewerMode()).toBe('2d');
 
     mockPatientState.bodyViewerMode.set('quad');
     expect(mockPatientState.bodyViewerMode()).toBe('quad');
 
-    mockPatientState.bodyViewerMode.set('tme');
-    expect(mockPatientState.bodyViewerMode()).toBe('tme');
-
-    mockPatientState.bodyViewerMode.set('awcim');
-    expect(mockPatientState.bodyViewerMode()).toBe('awcim');
-
-    mockPatientState.bodyViewerMode.set('genesis');
-    expect(mockPatientState.bodyViewerMode()).toBe('genesis');
+    mockPatientState.bodyViewerMode.set('3d');
+    expect(mockPatientState.bodyViewerMode()).toBe('3d');
   });
 
   it('should allow switching to 2D view and activating typographic anatomy lens', () => {

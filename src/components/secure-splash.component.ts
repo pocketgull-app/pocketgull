@@ -21,53 +21,22 @@ import { AuthSsoService } from '../services/auth-sso.service';
 import { MonroePersianTranceService, HEMISPHERIC_PRESETS, KarolinskaSleepinessLevel, HemisphericSyncType } from '../services/monroe-persian-trance.service';
 import { MissionSymphonyEngineService, MISSION_THEMES, MissionPhase } from '../services/mission-symphony-engine.service';
 import { LifeJourneyNavigatorService, LIFE_JOURNEY_PROFILES, LifeJourneyStage } from '../services/life-journey-navigator.service';
+import { AvsEngineService, SOLFEGGIO_CATALOG, BRAINWAVE_PRESETS } from '../services/avs-engine.service';
+import { BleWearablesService } from '../services/hardware/ble-wearables.service';
+import { VibroacousticHapticService } from '../services/hardware/vibroacoustic-haptic.service';
+import { AvsCymaticsVisualizerComponent } from './avs-cymatics-visualizer.component';
 
 @Component({
   selector: 'app-secure-splash',
   standalone: true,
-  imports: [CommonModule, FormsModule, PocketgullBrandMarkComponent, SafeHtmlPipe, PapercraftBackdropComponent],
+  imports: [CommonModule, FormsModule, PocketgullBrandMarkComponent, SafeHtmlPipe, PapercraftBackdropComponent, AvsCymaticsVisualizerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <main [style.background]="telemetryGradient()" class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 backdrop-blur-xl sm:backdrop-blur-3xl secure-splash-main animate-in fade-in duration-[800ms] overflow-y-auto overscroll-contain">
+    <main [style.background]="telemetryGradient()" class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 backdrop-blur-md sm:backdrop-blur-xl secure-splash-main animate-in fade-in duration-[400ms] overflow-y-auto overscroll-contain">
       <app-papercraft-backdrop [wavePeriod]="wavePeriod()"></app-papercraft-backdrop>
       
-      <!-- Papercraft Layered Living Breathing Landscape Backdrop -->
+      <!-- Random Dynamic Beach Elements -->
       <div class="absolute inset-0 w-full h-full min-h-full overflow-hidden pointer-events-none z-0">
-        <!-- Sun/Circadian Glow (Teal to Coral/Amber) Living Breathing Pulse -->
-        <div class="absolute top-[25%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] sm:w-[900px] sm:h-[900px] rounded-full bg-gradient-to-r from-[#3ebc9e]/30 via-[#faa63b]/25 to-[#ef6658]/30 blur-[100px] avs-breathing-glow animate-pulse"></div>
-
-        <!-- Paper Waves (Layered vector curves representing paper hills - Full Height Anchored, Zero Whitespace) -->
-        <!-- Layer 1: Back Ocean Waves (60% height) -->
-        <svg class="absolute -bottom-4 -left-[20%] w-[240%] h-[75%] paper-hill-back opacity-90 wave-layer min-w-[200vw]"
-             [style.animation-duration.s]="wavePeriod() * 1.5"
-             viewBox="0 0 2880 200" preserveAspectRatio="none">
-          <path fill="currentColor" [attr.d]="getWavePath(1)"></path>
-        </svg>
-        
-        <!-- Layer 2: Mid Ocean Waves (50% height) -->
-        <svg class="absolute -bottom-4 -left-[10%] w-[220%] h-[65%] paper-hill-mid wave-layer min-w-[200vw]"
-             [style.animation-duration.s]="wavePeriod() * 1.2"
-             viewBox="0 0 2880 200" preserveAspectRatio="none">
-          <path fill="currentColor" [attr.d]="getWavePath(2)"></path>
-        </svg>
-
-        <!-- Layer 3: Sandy Beach Front Dune (75% height) -->
-        <svg class="absolute -bottom-4 left-0 w-[200%] h-[80%] paper-hill-front wave-layer min-w-[200vw]"
-             [style.animation-duration.s]="wavePeriod() * 0.9"
-             viewBox="0 0 2880 200" preserveAspectRatio="none">
-          <path fill="currentColor" [attr.d]="getWavePath(3)"></path>
-        </svg>
-
-        <!-- Breezy Sandy Animation Layer (Wind gusts & sand particles across the beach) -->
-        <div class="absolute bottom-0 left-0 w-full h-[56%] pointer-events-none overflow-hidden z-10">
-          <div class="sand-breeze-particle p1"></div>
-          <div class="sand-breeze-particle p2"></div>
-          <div class="sand-breeze-particle p3"></div>
-          <div class="sand-breeze-particle p4"></div>
-          <div class="sand-breeze-particle p5"></div>
-        </div>
-
-        <!-- Random Dynamic Beach Elements -->
         @for (item of decorations(); track $index) {
           <div class="absolute cursor-pointer transition-all duration-300 hover:scale-110 active:scale-95 pointer-events-auto"
                (click)="onDecorationClick(item, $event)"
@@ -678,6 +647,98 @@ import { LifeJourneyNavigatorService, LIFE_JOURNEY_PROFILES, LifeJourneyStage } 
                             🕌 Persian Sufi (432Hz)
                           </button>
                         </div>
+                      </div>
+
+                      <!-- Sacred Solfeggio & AVS Studio Entrainment Matrix -->
+                      <div class="space-y-1.5 pt-1 border-t border-zinc-200 dark:border-zinc-800">
+                        <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+                          <span>🌿 Sacred Solfeggio &amp; AVS Studio Entrainment (4608 kbps):</span>
+                          @if (avsEngine?.isPlaying()) {
+                            <span class="inline-flex items-center gap-1 text-[9.5px] font-mono text-emerald-600 dark:text-emerald-400">
+                              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                              {{ avsEngine?.sessionConfig()?.carrierFreqHz }}Hz + {{ avsEngine?.sessionConfig()?.binauralBeatHz }}Hz
+                            </span>
+                          }
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5">
+                          <button type="button"
+                                  (click)="avsEngine?.applySolfeggioTone(528)"
+                                  [class]="avsEngine?.sessionConfig()?.carrierFreqHz === 528 ? 'bg-teal-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-teal-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🧬 528Hz Transformation
+                          </button>
+                          <button type="button"
+                                  (click)="avsEngine?.applySolfeggioTone(432)"
+                                  [class]="avsEngine?.sessionConfig()?.carrierFreqHz === 432 ? 'bg-teal-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-teal-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            📐 432Hz Pythagorean
+                          </button>
+                          <button type="button"
+                                  (click)="avsEngine?.applySolfeggioTone(963)"
+                                  [class]="avsEngine?.sessionConfig()?.carrierFreqHz === 963 ? 'bg-teal-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-teal-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            👑 963Hz Crown Pineal
+                          </button>
+                          <button type="button"
+                                  (click)="avsEngine?.applyBrainwavePreset('schumann-resonance')"
+                                  [class]="avsEngine?.sessionConfig()?.binauralBeatHz === 7.83 ? 'bg-indigo-600 text-white font-bold' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                            🌍 7.83Hz Schumann
+                          </button>
+                          <button type="button"
+                                  (click)="avsEngine?.toggleBiofeedbackLock()"
+                                  [class]="avsEngine?.isBiofeedbackLocked() ? 'bg-cyan-600 text-white font-bold ring-2 ring-cyan-400' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-cyan-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer flex items-center gap-1">
+                            <span>🔗 Wearable HRV Lock</span>
+                            @if (avsEngine?.isBiofeedbackLocked()) {
+                              <span class="text-[9px] font-mono text-cyan-200">
+                                @if (bleWearables?.heartRate()) {
+                                  ({{ bleWearables?.heartRate() }} bpm • {{ bleWearables?.autonomicCoherenceScore() }}%)
+                                } @else {
+                                  (0.10Hz RSA)
+                                }
+                              </span>
+                            }
+                          </button>
+                          <button type="button"
+                                  (click)="haptics?.toggleHaptics()"
+                                  [class]="haptics?.isHapticsActive() ? 'bg-amber-600 text-white font-bold ring-2 ring-amber-400' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-amber-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer flex items-center gap-1">
+                            <span>📳 Haptics</span>
+                            @if (haptics?.isHapticsActive()) {
+                              <span class="text-[9px] font-mono text-amber-200">
+                                @if (haptics?.isGamepadConnected()) {
+                                  (🎮 Dual-Rumble)
+                                } @else if (haptics?.isMobileVibrationSupported()) {
+                                  (📱 Vibrotactile)
+                                } @else {
+                                  (Tactile Active)
+                                }
+                              </span>
+                            }
+                          </button>
+                          <button type="button"
+                                  (click)="isCymaticsTrayOpen.set(!isCymaticsTrayOpen())"
+                                  [class]="isCymaticsTrayOpen() ? 'bg-purple-600 text-white font-bold ring-2 ring-purple-400' : 'bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 hover:bg-purple-50 dark:hover:bg-zinc-700'"
+                                  class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-zinc-700 transition cursor-pointer flex items-center gap-1">
+                            <span>🌌 Cymatics Oscilloscope</span>
+                          </button>
+                          <button type="button"
+                                  (click)="avsEngine?.toggleSession()"
+                                  [class]="avsEngine?.isPlaying() ? 'bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-md' : 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm'"
+                                  class="px-3 py-1 text-xs rounded-lg transition cursor-pointer flex items-center gap-1.5">
+                            @if (avsEngine?.isPlaying()) {
+                              <span>⏹ Stop AVS</span>
+                            } @else {
+                              <span>⚡ Launch AVS Studio</span>
+                            }
+                          </button>
+                        </div>
+                        @if (isCymaticsTrayOpen()) {
+                          <div class="pt-2 animate-in fade-in duration-200">
+                            <app-avs-cymatics-visualizer></app-avs-cymatics-visualizer>
+                          </div>
+                        }
                       </div>
 
                       <!-- Animal Bio-Acoustic Comfort Suite -->
@@ -1572,6 +1633,12 @@ export class SecureSplashComponent implements OnInit {
   state = inject(PatientStateService);
   public readonly petAuditory = inject(PetAuditoryService);
   public readonly tranceService = inject(MonroePersianTranceService, { optional: true });
+  public readonly avsEngine = inject(AvsEngineService, { optional: true });
+  public readonly bleWearables = inject(BleWearablesService, { optional: true });
+  public readonly haptics = inject(VibroacousticHapticService, { optional: true });
+  public readonly isCymaticsTrayOpen = signal<boolean>(false);
+  public readonly solfeggioCatalog = SOLFEGGIO_CATALOG;
+  public readonly brainwavePresets = BRAINWAVE_PRESETS;
   public readonly missionSymphony = inject(MissionSymphonyEngineService, { optional: true });
   public readonly journeyNav = inject(LifeJourneyNavigatorService, { optional: true });
   public readonly hemisphericPresets = HEMISPHERIC_PRESETS;
@@ -2803,9 +2870,11 @@ export class SecureSplashComponent implements OnInit {
 
   handleSubmitKey() {
     this.isChecking.set(true);
-    // Store the key to emit after KSS step, then go to readiness check
     this._pendingKey = this.apiKeyStr();
-    setTimeout(() => { this.isChecking.set(false); this.gotoKss(); }, 300);
+    setTimeout(() => {
+      this.isChecking.set(false);
+      this.enterApp();
+    }, 200);
   }
   private _pendingKey = '';
   private _pendingDemo = false;
@@ -2814,17 +2883,17 @@ export class SecureSplashComponent implements OnInit {
   handleSandboxDemo() {
     this.playKeyPressChime();
     this._pendingDemo = true;
-    this.gotoKss();
+    this.enterApp();
   }
 
   handleDemo() {
     this._pendingDemo = true;
-    this.gotoKss();
+    this.enterApp();
   }
 
   handleAiStudio() {
     this._pendingAiStudio = true;
-    this.gotoKss();
+    this.enterApp();
   }
 
   async handleGoogleAuth() {

@@ -46,8 +46,8 @@ export const SPECIALTY_PROFILES: ISpecialtyProfile[] = [
     focusTags: ['Methylation Cycle', 'Mitochondrial Respiration', 'Enzymatic Cofactors', 'Antioxidant Reserves']
   },
   {
-    id: 'tcm_master',
-    title: 'TCM Master Herbalist & Acupuncturist',
+    id: 'tcm_herbalist',
+    title: 'TCM Senior Herbalist & Acupuncturist',
     doctorType: 'Doctor of Acupuncture & Oriental Medicine (DAOM)',
     icon: '☯️',
     targetLens: 'Summary Overview',
@@ -338,7 +338,7 @@ export class HandoffModalComponent {
   selectSpecialty(spec: ISpecialtyProfile): void {
     this.selectedSpecialty.set(spec);
     // Automatically switch active paradigm if applicable
-    if (spec.id === 'tcm_master') {
+    if (spec.id === 'tcm_herbalist') {
       this.patientState.selectPhilosophy('eastern');
     } else if (spec.id === 'ayurvedic_vaidya') {
       this.patientState.selectPhilosophy('ayurvedic');

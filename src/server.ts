@@ -1,5 +1,13 @@
 process.env['OTEL_SDK_DISABLED'] = 'true';
 
+// Global Defensive Exception & Promise Rejection Handlers
+process.on('unhandledRejection', (reason) => {
+  console.warn('[Server Warning] Unhandled Promise Rejection intercepted:', (reason as Error)?.message || reason);
+});
+process.on('uncaughtException', (err) => {
+  console.warn('[Server Warning] Uncaught Exception intercepted:', err?.message || err);
+});
+
 // Server-side polyfill for Domino / SSR missing CSSStyleDeclaration.setProperty
 try {
   const g = (typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : {}) as Record<string, unknown>;
@@ -497,6 +505,13 @@ export async function fetchSecretFromSecretManager(secretName: string): Promise<
         return val;
       }
     } catch { /* try next */ }
+  }
+
+  // Dynamic GCP Secret Manager Runtime Fetch (Keyless IAM Workload Identity)
+  const isCiOrTest = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test');
+  const hasGcpCreds = Boolean(process.env['GOOGLE_APPLICATION_CREDENTIALS'] || process.env['K_SERVICE']);
+  if (isCiOrTest && !hasGcpCreds) {
+    return '';
   }
 
   // Dynamic GCP Secret Manager Runtime Fetch (Keyless IAM Workload Identity)

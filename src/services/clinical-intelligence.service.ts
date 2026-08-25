@@ -758,8 +758,8 @@ CRITICAL EMERGENCY RULES:
             await this.generateVisualMetrics(newReport as Record<string, string>);
 
             const reportText = lenses.map(lens => newReport[lens]).filter(Boolean).join('\n\n');
-            const masterKey = await this.cache.generateKey([reportText, 'MASTER_SNAPSHOT_V1']);
-            await this.cache.set(masterKey, {
+            const primarySnapshotKey = await this.cache.generateKey([reportText, 'PRIMARY_SNAPSHOT_V1']);
+            await this.cache.set(primarySnapshotKey, {
                 report: newReport,
                 _metrics: this.analysisMetrics(),
                 _timestamp: new Date().toISOString(),

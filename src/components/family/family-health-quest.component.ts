@@ -243,7 +243,7 @@ export const UNIVERSAL_TRANSLATIONS: Record<SupportedLanguage, {
             id: 'rainbow',
             emoji: '🧑‍🍳',
             title: 'Chef’s Rainbow Plate Ritual',
-            role: 'Master of Nutrition',
+            role: 'Lead Nutritionist',
             action: 'Cook a vibrant meal featuring at least 3 distinct plant colors as a deliberate act of self-respect and craft.',
             scienceRationale: 'Cooking for oneself fosters mindful eating, slows digestion, and boosts polyphenol diversity.',
             badgeName: 'Culinary Artist'

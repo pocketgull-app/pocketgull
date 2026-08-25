@@ -71,4 +71,16 @@ describe('DictationService & Voice Simulation Suite', () => {
     const result = service.speakResponse('Care plan strategy initialized');
     expect(typeof result).toBe('boolean');
   });
+
+  it('exposes isSidechainDuckingActive and sidechainDuckingDepth for audio ducking', () => {
+    const service = createService();
+    expect(service.isSidechainDuckingActive()).toBe(false);
+    expect(service.sidechainDuckingDepth()).toBe(0.85);
+
+    service.isListening.set(true);
+    expect(service.isSidechainDuckingActive()).toBe(true);
+
+    service.isListening.set(false);
+    expect(service.isSidechainDuckingActive()).toBe(false);
+  });
 });

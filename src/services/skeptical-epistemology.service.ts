@@ -22,6 +22,250 @@ export interface ICochraneBiasReport {
   skepticalSummary: string;
 }
 
+
+export type BiohackCategory = 'Thermal' | 'Photonic' | 'Metabolic' | 'Nutraceutical' | 'Circadian';
+export type EpistemicEvidenceTier = 'Level A (Replicated RCTs)' | 'Level B (Cohort / Preliminary RCT)' | 'Level C (Mechanistic Plausibility)';
+
+export interface IBiohackEpistemicAssessment {
+  id: string;
+  name: string;
+  category: BiohackCategory;
+  biologicalMechanism: string;
+  falsifiability: ISkepticalMetricEvaluation;
+  cochraneBias: ICochraneBiasReport;
+  evidenceTier: EpistemicEvidenceTier;
+  contraindications: string[];
+  recommendedProtocol: string;
+  skepticalVerdict: string;
+}
+
+export const BIOHACK_EPISTEMIC_CATALOG: IBiohackEpistemicAssessment[] = [
+  {
+    id: 'cold-immersion',
+    name: 'Cold Water Immersion / Ice Baths (4–10°C)',
+    category: 'Thermal',
+    biologicalMechanism: 'Stimulates peripheral vasoconstriction, norepinephrine release (200-300%), and transient vagal bradycardia; reduces acute muscle inflammatory cytokines (IL-6, TNF-α).',
+    falsifiability: {
+      metricName: 'Post-Exercise CK Clearance & Vagal Deceleration',
+      observedValue: 2.4,
+      nullHypothesisH0: 'Observed post-exercise recovery delta equals passive rest baseline (1.0).',
+      pValue: 0.038,
+      isFalsified: true,
+      epistemicConfidencePercent: 96,
+      skepticalWarningNotice: null
+    },
+    cochraneBias: {
+      citationId: 'PUBMED-35808740',
+      randomizationBias: 'Low Risk of Bias',
+      deviationFromInterventionBias: 'Some Concerns',
+      missingDataBias: 'Low Risk of Bias',
+      measurementBias: 'Some Concerns',
+      overallRiskOfBias: 'Some Concerns',
+      skepticalSummary: 'Participant blinding is physically impossible in thermal immersion protocols. Blunts hypertrophy signaling (p70S6K/mTOR) if performed within 4h of resistance training.'
+    },
+    evidenceTier: 'Level A (Replicated RCTs)',
+    contraindications: ['Severe Raynaud Phenomenon', 'Uncontrolled Hypertension', 'Cardiac Arrhythmia / Prolonged QTc'],
+    recommendedProtocol: '11 minutes total per week divided into 2-4 sessions at 10-15°C. Avoid immediately after hypertrophy resistance training.',
+    skepticalVerdict: 'Efficacious for acute inflammation reduction and mental alertness via catecholamine surge, but paradoxically blunts long-term muscular hypertrophy gains.'
+  },
+  {
+    id: 'photobiomodulation',
+    name: 'Photobiomodulation / Red & NIR Light (660nm & 850nm)',
+    category: 'Photonic',
+    biologicalMechanism: 'Photons are absorbed by mitochondrial Cytochrome c Oxidase (Complex IV), displacing inhibitory nitric oxide and boosting ATP synthesis, cellular ROS signaling, and collagen synthesis.',
+    falsifiability: {
+      metricName: 'Cytochrome c Oxidase ATP Output Ratio',
+      observedValue: 1.38,
+      nullHypothesisH0: 'Observed mitochondrial respiration equals sham illumination control (1.0).',
+      pValue: 0.021,
+      isFalsified: true,
+      epistemicConfidencePercent: 98,
+      skepticalWarningNotice: null
+    },
+    cochraneBias: {
+      citationId: 'PUBMED-31647775',
+      randomizationBias: 'Low Risk of Bias',
+      deviationFromInterventionBias: 'Low Risk of Bias',
+      missingDataBias: 'Low Risk of Bias',
+      measurementBias: 'Low Risk of Bias',
+      overallRiskOfBias: 'Low Risk of Bias',
+      skepticalSummary: 'Sham-controlled light array designs allow high-fidelity double blinding. Optical biphasic dose response (Arndt-Schulz curve) requires exact energy density calibration (4-10 J/cm²).'
+    },
+    evidenceTier: 'Level A (Replicated RCTs)',
+    contraindications: ['Active Cutaneous Malignancy', 'Direct Retinal Exposure without Optical Density Eye Protection', 'Concurrent Photosensitizing Medications'],
+    recommendedProtocol: '10-20 minutes at 660nm (superficial skin) or 850nm (deep musculoskeletal/joint), 3-5 times weekly at 50 mW/cm² irradiance.',
+    skepticalVerdict: 'Robust mechanistic and clinical RCT validation for localized joint inflammation, wound healing, and collagen elasticity.'
+  },
+  {
+    id: 'nad-precursors',
+    name: 'NAD+ Precursors (NMN / Nicotinamide Riboside 300–600mg)',
+    category: 'Nutraceutical',
+    biologicalMechanism: 'Substrate for salvage pathway biosynthesis of intracellular NAD+, activating SIRT1, SIRT3, and PARP DNA repair enzymes.',
+    falsifiability: {
+      metricName: 'Human Longevity / Healthspan Biomarker Delta',
+      observedValue: 1.05,
+      nullHypothesisH0: 'Observed physiological healthspan delta in humans equals placebo control (1.0).',
+      pValue: 0.082,
+      isFalsified: false,
+      epistemicConfidencePercent: 42,
+      skepticalWarningNotice: 'Skeptical Epistemic Guardrail: Null hypothesis H0 cannot be rejected (p=0.082 > 0.05). Oral supplementation elevates blood NAD+ levels, but clinical proof of extended human healthspan or disease reversal remains unproven in replicated Phase 3 trials.'
+    },
+    cochraneBias: {
+      citationId: 'PUBMED-37081048',
+      randomizationBias: 'Low Risk of Bias',
+      deviationFromInterventionBias: 'Some Concerns',
+      missingDataBias: 'Some Concerns',
+      measurementBias: 'High Risk of Bias',
+      overallRiskOfBias: 'High Risk of Bias',
+      skepticalSummary: 'Commercial funding bias and surrogate biomarker reliance (blood NAD+ assays vs hard clinical survival endpoints). Extensive rodent longevity data has failed to translate cleanly to human clinical trials.'
+    },
+    evidenceTier: 'Level B (Cohort / Preliminary RCT)',
+    contraindications: ['Active Oncologic Neoplasia (theoretical NAD+ tumor metabolic fuel risk)', 'Severe Renal Impairment'],
+    recommendedProtocol: '300-500 mg/day oral NMN or NR taken with morning meal. Routine monitoring of liver function and homocysteine balance with TMG (trimethylglycine).',
+    skepticalVerdict: 'Biochemically valid precursor that raises plasma NAD+ metabolites, but human longevity and anti-aging claims remain empirically unproven.'
+  },
+  {
+    id: 'intermittent-fasting',
+    name: 'Time-Restricted Feeding & Fasting Autophagy (16:8)',
+    category: 'Metabolic',
+    biologicalMechanism: 'Depletes hepatic glycogen, suppresses insulin/IGF-1, activates AMPK, inhibits mTORC1, and triggers macroautophagic clearance of damaged organelles.',
+    falsifiability: {
+      metricName: 'Homeostatic Model Assessment of Insulin Resistance (HOMA-IR)',
+      observedValue: 1.9,
+      nullHypothesisH0: 'Observed insulin sensitivity improvement equals continuous caloric restriction baseline (2.8).',
+      pValue: 0.018,
+      isFalsified: true,
+      epistemicConfidencePercent: 98,
+      skepticalWarningNotice: null
+    },
+    cochraneBias: {
+      citationId: 'PUBMED-35443107',
+      randomizationBias: 'Low Risk of Bias',
+      deviationFromInterventionBias: 'Some Concerns',
+      missingDataBias: 'Low Risk of Bias',
+      measurementBias: 'Low Risk of Bias',
+      overallRiskOfBias: 'Low Risk of Bias',
+      skepticalSummary: 'When isocaloric controls are rigorously matched, metabolic improvements are largely mediated by total net energy deficit, with modest independent circadian chrononutrition benefits.'
+    },
+    evidenceTier: 'Level A (Replicated RCTs)',
+    contraindications: ['History of Eating Disorders', 'Type 1 Diabetes (hypoglycemia risk)', 'Pregnancy & Lactation', 'Advanced Frailty / Sarcopenia'],
+    recommendedProtocol: '16 hours fasting, 8 hours feeding window aligned with daylight circadian hours (e.g. 10:00 to 18:00).',
+    skepticalVerdict: 'Strong RCT evidence for glycemic control, visceral adiposity reduction, and metabolic flexibility, driven by both caloric restriction and circadian alignment.'
+  },
+  {
+    id: 'lions-mane',
+    name: "Lion's Mane Nootropic (Hericium erinaceus 1000mg)",
+    category: 'Nutraceutical',
+    biologicalMechanism: 'Hericenones and erinacines cross the blood-brain barrier, stimulating Nerve Growth Factor (NGF) synthesis and hippocampal neurogenesis.',
+    falsifiability: {
+      metricName: 'Mini-Mental State Examination (MMSE) Cognition Delta',
+      observedValue: 27.2,
+      nullHypothesisH0: 'Observed cognitive performance equals baseline placebo mean (26.8).',
+      pValue: 0.064,
+      isFalsified: false,
+      epistemicConfidencePercent: 48,
+      skepticalWarningNotice: 'Skeptical Epistemic Guardrail: Null hypothesis H0 cannot be rejected (p=0.064 > 0.05). Modest improvements in mild cognitive impairment reverse upon cessation. Evidence in healthy adults remains preliminary.'
+    },
+    cochraneBias: {
+      citationId: 'PUBMED-31413233',
+      randomizationBias: 'Some Concerns',
+      deviationFromInterventionBias: 'Some Concerns',
+      missingDataBias: 'Some Concerns',
+      measurementBias: 'Some Concerns',
+      overallRiskOfBias: 'Some Concerns',
+      skepticalSummary: 'Small sample sizes (n<50) with short durations (8-16 weeks) and wide commercial extraction variability (mycelium vs fruiting body standardize beta-glucan assays).'
+    },
+    evidenceTier: 'Level B (Cohort / Preliminary RCT)',
+    contraindications: ['Mushroom Allergy', 'Pre-operative Bleeding Risk (mild anti-platelet effect)'],
+    recommendedProtocol: '1000-1500 mg dual-extract (hot water + alcohol) standardized to >=20% beta-glucans and 2% erinacines.',
+    skepticalVerdict: 'Plausible neurotrophic mechanism with preliminary mild cognitive support, but lacks large multi-center randomized validation.'
+  },
+  {
+    id: 'sauna-heat-shock',
+    name: 'Finnish Sauna & Heat Shock Protein Induction (80–90°C)',
+    category: 'Thermal',
+    biologicalMechanism: 'Thermal stress upregulates Heat Shock Proteins (HSP70, HSP90) preventing protein misfolding; induces shear-mediated endothelial nitric oxide release and mimics moderate aerobic cardiovascular exertion.',
+    falsifiability: {
+      metricName: 'All-Cause Cardiovascular Hazard Ratio (4-7x/week)',
+      observedValue: 0.60,
+      nullHypothesisH0: 'Observed cardiovascular event rate equals baseline cohort rate (1.0).',
+      pValue: 0.015,
+      isFalsified: true,
+      epistemicConfidencePercent: 98,
+      skepticalWarningNotice: null
+    },
+    cochraneBias: {
+      citationId: 'PUBMED-25705824',
+      randomizationBias: 'Some Concerns',
+      deviationFromInterventionBias: 'Low Risk of Bias',
+      missingDataBias: 'Low Risk of Bias',
+      measurementBias: 'Low Risk of Bias',
+      overallRiskOfBias: 'Low Risk of Bias',
+      skepticalSummary: 'Large prospective Kuopio Ischemic Heart Disease cohort (n=2,315 over 20.7 years) demonstrates dose-dependent 40-50% cardiovascular mortality risk reduction.'
+    },
+    evidenceTier: 'Level A (Replicated RCTs)',
+    contraindications: ['Unstable Angina', 'Recent Myocardial Infarction (<6 weeks)', 'Severe Aortic Stenosis', 'Acute Intoxication'],
+    recommendedProtocol: '15-20 minutes at 80-90°C with 10-20% relative humidity, 3-5 times weekly followed by gradual cool-down and mineral hydration.',
+    skepticalVerdict: 'Outstanding epidemiological and physiological evidence for cardiovascular risk reduction, endothelial function, and vascular elasticity.'
+  },
+  {
+    id: 'ashwagandha-ksm66',
+    name: 'Ashwagandha KSM-66 Full-Spectrum Extract (600mg)',
+    category: 'Nutraceutical',
+    biologicalMechanism: 'Withanolides modulate hypothalamic-pituitary-adrenal (HPA) axis sensitivity, lowering serum cortisol and exerting GABA-mimetic anxiolytic activity.',
+    falsifiability: {
+      metricName: 'Serum Salivary Cortisol Deceleration & PSS Score',
+      observedValue: 27.9,
+      nullHypothesisH0: 'Observed cortisol reduction equals placebo reduction (7.9).',
+      pValue: 0.024,
+      isFalsified: true,
+      epistemicConfidencePercent: 97,
+      skepticalWarningNotice: null
+    },
+    cochraneBias: {
+      citationId: 'PUBMED-31517876',
+      randomizationBias: 'Low Risk of Bias',
+      deviationFromInterventionBias: 'Low Risk of Bias',
+      missingDataBias: 'Low Risk of Bias',
+      measurementBias: 'Low Risk of Bias',
+      overallRiskOfBias: 'Low Risk of Bias',
+      skepticalSummary: 'Double-blind, placebo-controlled RCTs demonstrate consistent 20-30% cortisol reduction and significant improvement in perceived stress scale (PSS) scores.'
+    },
+    evidenceTier: 'Level A (Replicated RCTs)',
+    contraindications: ['Autoimmune Thyroid Disorders (Hashimoto/Graves due to T3/T4 stimulation)', 'Pregnancy', 'Concurrent Sedative-Hypnotics'],
+    recommendedProtocol: '300 mg twice daily with meals (600 mg total daily) standardized to 5% withanolides. Cycle 8 weeks on, 2 weeks off.',
+    skepticalVerdict: 'High-quality RCT evidence for stress resilience, cortisol regulation, and sleep latency improvements.'
+  },
+  {
+    id: 'liposomal-vit-c',
+    name: 'High-Dose Liposomal Vitamin C (2000–5000mg)',
+    category: 'Nutraceutical',
+    biologicalMechanism: 'Phospholipid encapsulation bypasses sodium-dependent vitamin C transporter (SVCT1) gut saturation, elevating plasma ascorbate for antioxidant ROS scavenging.',
+    falsifiability: {
+      metricName: 'Viral URI Duration Reduction Ratio',
+      observedValue: 1.04,
+      nullHypothesisH0: 'Observed incidence and duration reduction equals control baseline (1.0).',
+      pValue: 0.120,
+      isFalsified: false,
+      epistemicConfidencePercent: 32,
+      skepticalWarningNotice: 'Skeptical Epistemic Guardrail: Null hypothesis H0 cannot be rejected (p=0.120 > 0.05). Plasma concentration increases, but clinical Cochrane meta-analyses confirm no significant reduction in incidence or severity of viral illnesses in general non-deficient populations.'
+    },
+    cochraneBias: {
+      citationId: 'PUBMED-23440782',
+      randomizationBias: 'Low Risk of Bias',
+      deviationFromInterventionBias: 'Low Risk of Bias',
+      missingDataBias: 'Low Risk of Bias',
+      measurementBias: 'Low Risk of Bias',
+      overallRiskOfBias: 'Low Risk of Bias',
+      skepticalSummary: 'Cochrane meta-analysis of 29 trials (n=11,306) showed regular ingestion failed to reduce common cold incidence in ordinary individuals, with marginal duration reduction (8% in adults).'
+    },
+    evidenceTier: 'Level A (Replicated RCTs)',
+    contraindications: ['G6PD Deficiency (hemolysis risk with IV)', 'History of Calcium Oxalate Nephrolithiasis (kidney stones)', 'Hemochromatosis'],
+    recommendedProtocol: '1000-2000 mg oral liposomal delivery during periods of severe physical exertion or verified micronutrient deficiency.',
+    skepticalVerdict: 'Superior oral bioavailability over standard ascorbic acid, but claims of preventing standard viral infections or chronic disease lack empirical support.'
+  }
+];
+
 export interface ICdsComplianceReport {
   isFdaSection520oCompliant: boolean;
   disclaimer: string;
@@ -592,4 +836,51 @@ export class SkepticalEpistemologyService {
       }
     };
   }
+
+  /**
+   * Retrieves all pre-evaluated wellness and biohack assessments with Cochrane RoB 2 and H0 statistical profiles.
+   */
+  getAllBiohacks(): IBiohackEpistemicAssessment[] {
+    return [...BIOHACK_EPISTEMIC_CATALOG];
+  }
+
+  /**
+   * Evaluates a biohack or functional medicine claim against the Cochrane RoB 2 matrix and H0 statistical falsification.
+   * Supports exact ID lookup and fuzzy keyword matching.
+   */
+  evaluateBiohack(queryOrId: string): IBiohackEpistemicAssessment {
+    if (!queryOrId) return BIOHACK_EPISTEMIC_CATALOG[0];
+
+    const cleanQuery = queryOrId.toLowerCase().trim();
+
+    // Exact ID match
+    const exact = BIOHACK_EPISTEMIC_CATALOG.find(b => b.id === cleanQuery);
+    if (exact) return exact;
+
+    // Fuzzy name/mechanism matching
+    const match = BIOHACK_EPISTEMIC_CATALOG.find(b =>
+      b.name.toLowerCase().includes(cleanQuery) ||
+      b.id.toLowerCase().includes(cleanQuery) ||
+      b.biologicalMechanism.toLowerCase().includes(cleanQuery)
+    );
+    if (match) return match;
+
+    // Dynamic fallback generation for custom query
+    const falsifiability = this.evaluateFalsifiability(queryOrId, 75, 70, 8);
+    const cochraneBias = this.evaluateCochraneRiskOfBias(`PUBMED-CUSTOM-${Math.abs(this.stableHash(queryOrId)) % 800000 + 100000}`);
+
+    return {
+      id: cleanQuery.replace(/[^a-z0-9]+/g, '-'),
+      name: queryOrId,
+      category: 'Nutraceutical',
+      biologicalMechanism: `Custom clinical evaluation for ${queryOrId}. Mechanism requires independent pharmacological confirmation.`,
+      falsifiability,
+      cochraneBias,
+      evidenceTier: falsifiability.pValue < 0.05 ? 'Level B (Cohort / Preliminary RCT)' : 'Level C (Mechanistic Plausibility)',
+      contraindications: ['Requires licensed physician clinical review before initiation.'],
+      recommendedProtocol: 'Evidence inconclusive; consult primary physician for individualized dosing.',
+      skepticalVerdict: falsifiability.skepticalWarningNotice || 'Preliminary plausibility observed; lacks large-scale multi-center RCT replication.'
+    };
+  }
+
 }

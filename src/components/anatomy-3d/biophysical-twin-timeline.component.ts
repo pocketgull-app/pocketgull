@@ -89,38 +89,44 @@ import { PatientStateService } from '../../services/patient-state.service';
         <div class="flex flex-wrap items-center gap-4">
           <!-- Caffeine Dose Slider -->
           <div class="flex items-center gap-1.5">
-            <span class="text-amber-400 font-mono text-[11px]">☕ Caffeine:</span>
+            <label for="caffeine-dose-slider" class="text-amber-400 font-mono text-[11px]">☕ Caffeine:</label>
             <input 
+              id="caffeine-dose-slider"
               type="range" 
               min="0" 
               max="300" 
               step="25" 
               [value]="caffeineDoseMg()" 
               (input)="onCaffeineChange($event)"
+              aria-label="Caffeine dose in milligrams"
               class="w-20 h-1.5 appearance-none bg-slate-700 rounded cursor-pointer accent-amber-400" />
             <span class="font-mono text-[10px] text-amber-300 font-bold w-12">{{ caffeineDoseMg() }} mg</span>
           </div>
 
           <!-- Resonance Breathing Minutes -->
           <div class="flex items-center gap-1.5">
-            <span class="text-emerald-400 font-mono text-[11px]">🫁 0.1Hz Breathing:</span>
+            <label for="breathing-duration-slider" class="text-emerald-400 font-mono text-[11px]">🫁 0.1Hz Breathing:</label>
             <input 
+              id="breathing-duration-slider"
               type="range" 
               min="0" 
               max="30" 
               step="5" 
               [value]="breathingMinutes()" 
               (input)="onBreathingChange($event)"
+              aria-label="Resonance breathing duration in minutes"
               class="w-20 h-1.5 appearance-none bg-slate-700 rounded cursor-pointer accent-emerald-400" />
             <span class="font-mono text-[10px] text-emerald-300 font-bold w-12">{{ breathingMinutes() }} min</span>
           </div>
 
           <!-- Blue-Light Cutoff Hour -->
           <div class="flex items-center gap-1.5">
-            <span class="text-purple-400 font-mono text-[11px]">🌙 Screen Cutoff:</span>
+            <label for="screen-cutoff-select" class="text-purple-400 font-mono text-[11px]">🌙 Screen Cutoff:</label>
             <select 
+              id="screen-cutoff-select"
               [value]="screenCutoffHour()" 
               (change)="onScreenCutoffChange($event)"
+              aria-label="Blue-light screen cutoff hour"
               class="px-2 py-0.5 rounded bg-slate-800 text-purple-300 font-mono text-[10px] border border-slate-700 cursor-pointer outline-none">
               <option [value]="20">20:00 (8 PM)</option>
               <option [value]="21">21:00 (9 PM)</option>

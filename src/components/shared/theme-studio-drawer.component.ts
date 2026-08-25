@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeService, AppTheme } from '../../services/theme.service';
+import { BionicReadingService } from '../../services/bionic-reading.service';
 
 export interface IThemeOption {
   id: AppTheme;
@@ -90,29 +91,36 @@ export interface IThemeOption {
         }
       </div>
 
-      <!-- Reduced Motion & Accessibility Options Bar -->
-      <div class="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div class="flex items-center gap-2">
-          <span class="text-zinc-500 font-bold uppercase text-[10px]">ADA Comfort:</span>
-          <button 
-            (click)="themeService.setReduceMotion(!themeService.reduceMotion())"
-            [class]="themeService.reduceMotion() ? 'min-h-[44px] px-3 py-2 rounded-md bg-emerald-600 text-white font-bold border border-emerald-500' : 'min-h-[44px] px-3 py-2 rounded-md bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold border border-zinc-300 dark:border-zinc-700'">
-            ⚡ Reduced Motion: {{ themeService.reduceMotion() ? 'ON' : 'OFF' }}
-          </button>
-        </div>
+        <!-- Reduced Motion & Accessibility Options Bar -->
+        <div class="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-zinc-500 font-bold uppercase text-[10px]">ADA Comfort:</span>
+            <button 
+              (click)="themeService.setReduceMotion(!themeService.reduceMotion())"
+              [class]="themeService.reduceMotion() ? 'min-h-[44px] px-3 py-2 rounded-md bg-emerald-600 text-white font-bold border border-emerald-500' : 'min-h-[44px] px-3 py-2 rounded-md bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold border border-zinc-300 dark:border-zinc-700'">
+              ⚡ Reduced Motion: {{ themeService.reduceMotion() ? 'ON' : 'OFF' }}
+            </button>
+            <button 
+              (click)="bionicReading.toggleBionicReading()"
+              [class]="bionicReading.isBionicReadingEnabled() ? 'min-h-[44px] px-3 py-2 rounded-md bg-amber-600 text-white font-bold border border-amber-500 shadow-sm' : 'min-h-[44px] px-3 py-2 rounded-md bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold border border-zinc-300 dark:border-zinc-700'"
+              title="Toggle Bionic Reading Saccadic Fixation (Alt+B)">
+              📖 Bionic Mode: {{ bionicReading.isBionicReadingEnabled() ? 'ACTIVE (40%)' : 'OFF' }}
+            </button>
+          </div>
 
-        <div class="text-[11px] text-zinc-500 font-sans">
-          <span>Single click to select theme • Double click to fast-cycle</span>
+          <div class="text-[11px] text-zinc-500 font-sans">
+            <span>Alt+B toggles Bionic Mode • Single click to select theme</span>
+          </div>
         </div>
       </div>
-    </div>
-  `,
-  styles: [`
-    :host { display: block; }
-  `]
-})
-export class ThemeStudioDrawerComponent {
-  public themeService = inject(ThemeService);
+    `,
+    styles: [`
+      :host { display: block; }
+    `]
+  })
+  export class ThemeStudioDrawerComponent {
+    public themeService = inject(ThemeService);
+    public bionicReading = inject(BionicReadingService);
 
   categories: Array<'Clinical' | 'Tactile Paper' | 'Mineral & Organic' | 'Special Diagnostic'> = [
     'Clinical',

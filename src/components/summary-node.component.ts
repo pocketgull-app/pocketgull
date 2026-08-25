@@ -21,6 +21,7 @@ import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { ClinicalIconComponent } from './shared/clinical-icon.component';
+import { BionicReadingService } from '../services/bionic-reading.service';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -724,9 +725,7 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
                     @if (msg.claims && msg.claims.length > 0) {
                       @for (claim of msg.claims; track claim.id) {
                         <div class="claim-unit" [class.claim-unit--heading]="claim.type === 'heading'">
-                          <span class="claim-content" [innerHTML]="(claim.type === 'list-item'
-                            ? '• ' + claim.html
-                            : claim.html) | safeHtml"></span>
+                          <span class="claim-content" [innerHTML]="formatClaimHtml(claim) | safeHtml"></span>
                           @if (claim.type !== 'heading') {
                             <div class="claim-toolbar">
                               <!-- Bracket / extract button -->
@@ -1016,6 +1015,7 @@ export class SummaryNodeComponent implements AfterViewChecked {
   private richMedia = inject(RichMediaService);
   private sanitizer = inject(DomSanitizer);
   private patientState = inject(PatientStateService);
+  protected readonly bionicReading = inject(BionicReadingService);
 
   safeEmbedUrl(url: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
@@ -1023,13 +1023,35 @@ export class SummaryNodeComponent implements AfterViewChecked {
 
   proposalAccepted = signal(false);
   isRejected = signal(false);
-  rawHtml = computed(() => (this.node() as any).rawHtml || '');
-  listItemHtml = computed(() => (this.node() as any).rawHtml || (this.node() as any).html || '');
+  rawHtml = computed(() => {
+    const node = this.node() as any;
+    const raw = node?.rawHtml || node?.html || '';
+    if (this.bionicReading.isBionicReadingEnabled()) {
+      return this.bionicReading.formatToBionicHtml(raw, 'bionic-fixation font-bold text-amber-600 dark:text-amber-400');
+    }
+    return raw;
+  });
+  listItemHtml = computed(() => {
+    const node = this.node() as any;
+    const raw = node?.html || node?.rawHtml || '';
+    if (this.bionicReading.isBionicReadingEnabled()) {
+      return this.bionicReading.formatToBionicHtml(raw, 'bionic-fixation font-bold text-amber-600 dark:text-amber-400');
+    }
+    return raw;
+  });
   hasAcmViolation = computed(() => {
     const issues = this.node().verificationIssues;
     if (!issues) return false;
     return issues.some(issue => issue.message && issue.message.includes('ACM 1.3'));
   });
+
+  formatClaimHtml(claim: IClaimUnit): string {
+    const html = claim.type === 'list-item' ? '• ' + claim.html : claim.html;
+    if (this.bionicReading.isBionicReadingEnabled()) {
+      return this.bionicReading.formatToBionicHtml(html, 'bionic-fixation font-bold text-amber-600 dark:text-amber-400');
+    }
+    return html;
+  }
 
   // ─── Inline chat ─────────────────────────────
   showChat = signal(false);

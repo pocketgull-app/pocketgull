@@ -346,6 +346,8 @@ export interface ILifestyleAdjunct {
     clinician_note:  string;
 }
 
+export type IAvsAdjunct = ILifestyleAdjunct;
+
 export interface IBookmark {
 
     title: string;

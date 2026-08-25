@@ -11,6 +11,7 @@ import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import { FederatedLearningService } from './federated-learning.service';
 import { OpenEvidenceCommonsService } from './open-evidence-commons.service';
+import { IpPatentRegistryService } from './ip-patent-registry.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -121,6 +122,7 @@ describe('WebMcpRegistrationService', () => {
         { provide: ClinicalMoERouterService, useValue: mockMoeRouter },
         { provide: FederatedLearningService, useValue: new FederatedLearningService() },
         { provide: OpenEvidenceCommonsService, useValue: new OpenEvidenceCommonsService() },
+        { provide: IpPatentRegistryService, useValue: new IpPatentRegistryService() },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -128,10 +130,11 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 52 WebMCP agentic tools on modelContext', () => {
+  it('should register all 53 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(52);
+    expect(registeredTools.size).toBe(53);
+    expect(registeredTools.has('get_staked_patent_claims_summary')).toBe(true);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -545,10 +548,11 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 52 WebMCP agentic tools on modelContext', () => {
+  it('should register all 53 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(52);
+    expect(registeredTools.size).toBe(53);
+    expect(registeredTools.has('get_staked_patent_claims_summary')).toBe(true);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
@@ -560,6 +564,16 @@ describe('WebMcpRegistrationService', () => {
     expect(registeredTools.has('pocketgull_query_evidence_commons')).toBe(true);
     expect(registeredTools.has('pocketgull_assess_nantucket_tick_risk')).toBe(true);
     expect(registeredTools.has('pocketgull_evaluate_novel_tick_solution')).toBe(true);
+  });
+
+  it('should execute get_staked_patent_claims_summary tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('get_staked_patent_claims_summary');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute();
+    expect(result.content[0].text).toContain('totalClusters');
+    expect(result.content[0].text).toContain('Popperian');
   });
 
   it('should execute pocketgull_trigger_federated_round tool', async () => {
@@ -607,7 +621,7 @@ describe('WebMcpRegistrationService', () => {
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(52);
+    expect((service as any).mcpControllers.length).toBe(53);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

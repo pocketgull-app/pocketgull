@@ -72,6 +72,7 @@ import { ArticlesReaderComponent } from './components/articles-reader.component'
 import { VertexModelGardenPortalComponent } from './components/vertex-model-garden-portal.component';
 import { TalentHrPortalComponent } from './components/talent-hr-portal.component';
 import { OsceCaseSimulatorComponent } from './components/osce-case-simulator.component';
+import { PatentClaimsHudModalComponent } from './components/modals/patent-claims-hud-modal.component';
 
 @Component({
   selector: 'app-root',
@@ -119,7 +120,8 @@ import { OsceCaseSimulatorComponent } from './components/osce-case-simulator.com
     ArticlesReaderComponent,
     VertexModelGardenPortalComponent,
     TalentHrPortalComponent,
-    OsceCaseSimulatorComponent
+    OsceCaseSimulatorComponent,
+    PatentClaimsHudModalComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -400,6 +402,7 @@ import { OsceCaseSimulatorComponent } from './components/osce-case-simulator.com
           (openSmartFhirSync)="fhirModal.open()"
           (openGlobalHealth)="globalHealthModal.open()"
           (openArticles)="showArticlesModal.set(true)"
+          (openPatentClaims)="showPatentClaimsModal.set(true)"
           (triggerSomaticGrounding)="triggerSomaticGrounding()">
         </app-main-header-nav>
 
@@ -658,11 +661,14 @@ import { OsceCaseSimulatorComponent } from './components/osce-case-simulator.com
         <!-- Institutional, Careers & Clinical Transparency Footer -->
         <footer class="border-t border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md px-4 sm:px-8 py-3.5 no-print text-xs text-zinc-500 dark:text-zinc-400 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 z-10 shadow-xs">
           <div class="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs">
-            <span class="font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">PocketGull Clinical Intelligence</span>
+            <span class="font-pocketgull-brand font-bold text-xs text-zinc-900 dark:text-zinc-100">PocketGull</span>
             <span class="text-zinc-400 dark:text-zinc-600 hidden sm:inline">•</span>
-            <span class="text-zinc-500 dark:text-zinc-400 hidden sm:inline">Five Eyes Sovereignty &amp; HIPAA Safe Harbor</span>
+            <span class="text-zinc-500 dark:text-zinc-400 hidden sm:inline">Copyright © 2026 Applied Clinical AI Consortium • Global Health Equity &amp; HIPAA Safe Harbor</span>
           </div>
           <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-5 font-semibold text-[11px] sm:text-xs">
+            <button type="button" (click)="showPatentClaimsModal.set(true)" class="text-teal-600 dark:text-teal-400 hover:underline transition cursor-pointer flex items-center gap-1 font-mono text-[11px] font-bold">
+              <span>⚖️ IP &amp; 200 Claims</span>
+            </button>
             <button type="button" (click)="showOsceSimulatorModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>🎓 Case Simulator</span>
             </button>
@@ -694,6 +700,11 @@ import { OsceCaseSimulatorComponent } from './components/osce-case-simulator.com
             }
         }
 
+
+    <!-- Patent & IP Claims Registry Modal -->
+    @if (showPatentClaimsModal()) {
+      <app-patent-claims-hud-modal (close)="showPatentClaimsModal.set(false)"></app-patent-claims-hud-modal>
+    }
 
     <!-- Socratic Patient Intake Studio Modal -->
     @if (state.isSocraticIntakeVisible()) {
@@ -1239,15 +1250,14 @@ export class AppComponent implements OnDestroy {
   hasApiKey = signal<boolean>(!!this.aiConfig?.apiKey);
   showSplash = computed(() => {
     const locked = this.session.isLocked();
-    const hasKey = this.hasApiKey();
-    const onboard = this.session.isOnboardingComplete();
     const emergency = this.state.isEmergencyMode();
-    return (locked || !hasKey || !onboard) && !emergency;
+    return locked && !emergency;
   });
   isDemoMode = this.state.isDemoMode;
   readonly showCompanionSyncModal = signal<boolean>(false);
   readonly showSupportTicketModal = signal<boolean>(false);
   readonly showArticlesModal = signal<boolean>(false);
+  readonly showPatentClaimsModal = signal<boolean>(false);
   readonly showHeaderThemeMenu = signal<boolean>(false);
   apiKeyInput = signal<string>('');
   showPassword = signal<boolean>(false);
@@ -2114,8 +2124,6 @@ export class AppComponent implements OnDestroy {
     this.clinicalIntelligence.loadArchivedAnalysis(darwinReport as Partial<Record<AnalysisLens, string>>);
     this.clinicalIntelligence.lastActivePhilosophy.set('western');
     this.clinicalIntelligence.lastPatientData.set(this.state.getAllDataForPrompt());
-    // Start tour after data is loaded so targets exist in DOM
-    setTimeout(() => this.tour.start(), 400);
   }
 
   handleEmergencyBypass() {

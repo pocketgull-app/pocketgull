@@ -18,7 +18,7 @@ export const GROW_THYSELF_QUESTIONS: IQuestionItem[] = [
 export const GROW_THYSELF_TIERS: ISeverityTier[] = [
   { min: 0, max: 5, label: 'Flourishing Seed — High Potential', colorClass: 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30', recommendation: 'Activate core Grow-Thyself foundational routines (sunlight, vagal breath, purpose journal).' },
   { min: 6, max: 10, label: 'Developing Growth — Emerging Sovereignty', colorClass: 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30', recommendation: 'Optimize circadian timing, phytoncide foraging, and cognitive focus blocks.' },
-  { min: 11, max: 15, label: 'Flourishing Sovereign — High Resilience', colorClass: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30', recommendation: 'Master level alignment across purpose, somatic resilience, and epigenetic vitality.' }
+  { min: 11, max: 15, label: 'Flourishing Sovereign — High Resilience', colorClass: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30', recommendation: 'Exemplary alignment across purpose, somatic resilience, and epigenetic vitality.' }
 ];
 
 export const GrowThyselfAssessment: IAssessmentDefinition<{ purpose: number; somatic: number; nutrition: number; emotional: number; cognitive: number }> = {

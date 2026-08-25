@@ -10,25 +10,28 @@ import {
 } from '../services/nantucket-tick-radar.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedback.service';
+import { NantucketPassportStorybookComponent } from './nantucket-passport-storybook.component';
 
 @Component({
   selector: 'app-nantucket-tick-radar',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NantucketPassportStorybookComponent],
   template: `
-    <div class="p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl space-y-6 max-w-7xl mx-auto font-sans">
+    <div class="p-6 bg-zinc-950 text-zinc-100 rounded-xl border border-zinc-800 shadow-2xl space-y-6 max-w-7xl mx-auto font-sans">
       
-      <!-- Top Title & Companion App Link Header -->
+      <!-- Top Title & Navigation Header -->
       <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-zinc-800">
         <div>
-          <div class="flex items-center gap-2">
-            <span class="text-2xl">🌲</span>
-            <h2 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              Nantucket Tick Defense & Co-Infection Radar
-              <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                UMass Amherst &bull; MA DPH Grounded
-              </span>
+          <div class="flex items-center gap-2.5">
+            <span class="px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 uppercase tracking-widest">
+              VECTOR SURVEILLANCE
+            </span>
+            <h2 class="text-lg font-bold tracking-tight text-white flex items-center gap-2 font-pocketgull-sans-clinical">
+              Nantucket Tick Defense &amp; Co-Infection Radar
             </h2>
+            <span class="px-2 py-0.5 rounded-xs text-[10px] font-mono font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800">
+              UMass Amherst • MA DPH Grounded
+            </span>
           </div>
           <p class="text-xs text-zinc-400 mt-1">
             Empirical Bayesian pre/post-test risk engine, IDSA 72-hour single-dose doxycycline prophylaxis calculator, and multi-pathogen co-infection surveillance.
@@ -36,23 +39,47 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
-          <a
-            href="http://localhost:8080/?t=flip_test"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="px-3.5 py-1.5 rounded-xl bg-teal-600/20 hover:bg-teal-600/30 text-teal-300 border border-teal-500/40 text-xs font-mono font-bold transition flex items-center gap-1.5 shadow-sm"
-          >
-            <span>🛰️ Satellite Radar (Port 8080)</span>
-            <span class="text-zinc-400">&nearr;</span>
-          </a>
+          <!-- View Mode Toggle -->
+          <div class="inline-flex rounded-xs bg-zinc-900 p-0.5 border border-zinc-800 font-mono text-xs">
+            <button
+              type="button"
+              (click)="viewMode.set('clinical')"
+              [class.bg-teal-500\/20]="viewMode() === 'clinical'"
+              [class.text-teal-300]="viewMode() === 'clinical'"
+              [class.border-teal-500\/40]="viewMode() === 'clinical'"
+              [class.text-zinc-400]="viewMode() !== 'clinical'"
+              class="px-3 py-1 rounded-xs border border-transparent transition cursor-pointer font-bold"
+            >
+              🔬 Clinical Radar
+            </button>
+            <button
+              type="button"
+              (click)="viewMode.set('passport')"
+              [class.bg-rose-500\/20]="viewMode() === 'passport'"
+              [class.text-rose-300]="viewMode() === 'passport'"
+              [class.border-rose-500\/40]="viewMode() === 'passport'"
+              [class.text-zinc-400]="viewMode() !== 'passport'"
+              class="px-3 py-1 rounded-xs border border-transparent transition cursor-pointer font-bold flex items-center gap-1"
+            >
+              <span>🌊 Junior Passport</span>
+              <span class="text-[9px] px-1 py-0.2 rounded-xs bg-rose-900/40 text-rose-300">Beatrix Potter</span>
+            </button>
+          </div>
+
           <button
+            type="button"
             (click)="copyFhirBundle()"
-            class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-mono font-bold transition flex items-center gap-1.5"
+            class="px-3.5 py-1.5 rounded-xs bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
-            <span>📋 {{ fhirCopied() ? 'Copied FHIR!' : 'FHIR R4 Bundle' }}</span>
+            <span>{{ fhirCopied() ? '✓ Copied FHIR Bundle' : '📋 Export FHIR R4 Bundle' }}</span>
           </button>
         </div>
       </div>
+
+      <!-- Passport View Conditional Render -->
+      @if (viewMode() === 'passport') {
+        <app-nantucket-passport-storybook />
+      } @else {
 
       <!-- Island Micro-Hotspots Selector Strip -->
       <div class="space-y-2">
@@ -415,15 +442,45 @@ import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedba
         </div>
       </div>
 
-      <!-- Community Working Draft & Public Disclaimer Banner -->
-      <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs leading-relaxed space-y-1">
-        <div class="flex items-center gap-1.5 font-bold text-amber-300 font-mono text-[11px] uppercase tracking-wider">
-          <span>⚠️ Community Disclaimer &amp; Working Draft Notice</span>
+      <!-- Positive Biophilic Stewardship & Savoring Reframe -->
+      <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-teal-950/30 to-zinc-900 border border-teal-500/30 space-y-2 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🌊</span>
+            <h4 class="text-xs font-mono uppercase font-bold text-teal-300">
+              Positive Biophilia & Savoring the Island Coastal Moors
+            </h4>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-200 text-[10px] font-mono font-bold border border-teal-500/40">
+            Seligman PERMA-V Savoring
+          </span>
         </div>
-        <p class="text-zinc-300">
-          <em>"Island Tick Detectives"</em> and related educational concepts were discovered and transcribed from informal public meeting notes and community brainstorming discussions; they are <strong>not an official municipal plan or enacted town program just yet</strong>. This site is an independent, community-driven citizen science resource. It may contain errors at the bottom, is an active work-in-progress that needs an editor, and is not an official resource or formal school board directive. For acute clinical emergencies, consult a physician or visit the Nantucket Cottage Hospital Walk-in Clinic.
+        <p class="text-xs text-zinc-300 leading-relaxed">
+          Nantucket’s rolling coastal moors, cranberry bogs, and maritime heaths are extraordinary sources of biophilic restoration and mental vitality ($V$). With simple routine habits—permethrin-treated socks, an evening full-body tick scan, and immediate single-dose Doxycycline within 72 hours—you can explore the island's conservation trails with complete confidence and peace of mind.
+        </p>
+        <div class="flex flex-wrap gap-2 pt-1">
+          <span class="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-teal-500/20 text-[10px] font-mono text-teal-300">
+            ✓ 72-Hour Window: >87% Transmission Risk Reduction
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-teal-500/20 text-[10px] font-mono text-teal-300">
+            🏥 Nantucket Cottage Hospital Walk-in: (508) 825-1000
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-zinc-900/90 border border-teal-500/20 text-[10px] font-mono text-teal-300">
+            🌾 Conservation Foundation Trails: 100% Savoring Protected
+          </span>
+        </div>
+      </div>
+
+      <!-- Clinical & Community Surveillance Notice -->
+      <div class="p-4 rounded-xs bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs leading-relaxed space-y-1">
+        <div class="flex items-center gap-1.5 font-bold text-zinc-200 font-mono text-[11px] uppercase tracking-wider">
+          <span>Clinical &amp; Community Surveillance Notice</span>
+        </div>
+        <p class="text-zinc-400">
+          This community-driven vector surveillance engine synthesizes regional epidemiological datasets (UMass Amherst Laboratory of Medical Zoology / Massachusetts Department of Public Health) and IDSA clinical guidelines for decision support. It is not an official municipal directive. For acute tick attachments, atypical rashes, or suspected systemic symptoms, consult a licensed healthcare provider or Nantucket Cottage Hospital Walk-in Clinic.
         </p>
       </div>
+      }
 
     </div>
   `
@@ -433,6 +490,7 @@ export class NantucketTickRadarComponent {
   patientState = inject(PatientStateService);
   haptic = inject(BioHapticFeedbackService, { optional: true });
 
+  viewMode = signal<'clinical' | 'passport'>('clinical');
   fhirCopied = signal<boolean>(false);
   chartSaved = signal<boolean>(false);
 

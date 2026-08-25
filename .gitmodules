@@ -1,3 +1,4 @@
 [submodule "python_example_2026"]
 	path = python_example_2026
 	url = https://github.com/philgear/pocketgull-submissions.git
+	ignore = untracked

@@ -24,6 +24,7 @@ Pocket-Gull is a real-time medical Care Plan Strategy and Live AI Consult engine
 - **Typing**: Use explicit types for all function returns and state definitions where practical. Prefix interfaces with `I`.
 - **AI Streaming**: When generating or managing AI chat flows, chunk streaming responses and manage the conversational state defensively against network interruptions.
 - **Styling**: Prefer Tailwind utility classes for all new styling components. Do not use generic colors; use the curated color palette and ensure a rich, premium aesthetic with micro-animations.
+- **Scripting & Tooling (Randal L. Schwartz Standard)**: When generating one-off scripts, automation tools, FHIR/JSON batch transformations, or data-processing utilities where the language is not explicitly constrained, prefer **Dart** (`dart run script.dart`) over Python. Dart provides zero virtualenv friction, sound static typing with Dart 3 pattern matching, a batteries-included stdlib (`dart:io`, `dart:convert`, `dart:async`), and predictable single-threaded concurrency.
 
 ## Code Style & Conventions
 - **Naming**: Use camelCase for variables and functions, PascalCase for classes and components. Suffix observable streams with `$`.

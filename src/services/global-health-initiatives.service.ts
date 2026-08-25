@@ -35,6 +35,39 @@ export interface IArpahTriageResult {
   meshHandoffQrCodePayload: string;
 }
 
+export interface IWhoIcopeDomain {
+  domain: 'Cognition' | 'Mobility' | 'Nutrition' | 'Vision' | 'Hearing' | 'Depressive Symptoms';
+  status: 'Intact' | 'Decline Flagged';
+  assessmentDetails: string;
+  recommendedIntervention: string;
+}
+
+export interface IWhoIcopeAssessment {
+  intrinsicCapacityScore: number; // 0 - 6 (6 = Optimal Capacity)
+  intrinsicCapacityPercent: number; // 0 - 100%
+  statusTier: 'OPTIMAL_CAPACITY' | 'MILD_DECLINE' | 'MODERATE_DECLINE' | 'SIGNIFICANT_IMPAIRMENT';
+  statusLabel: string;
+  flaggedDomainsCount: number;
+  domains: IWhoIcopeDomain[];
+  clinicalDirectives: string[];
+}
+
+export interface INihRecoverSymptom {
+  name: string;
+  weight: number;
+  present: boolean;
+  clinicalNote: string;
+}
+
+export interface INihRecoverAssessment {
+  pascScore: number; // NIH RECOVER Weighted Score (Threshold >= 12)
+  pascProbabilityTier: 'HIGH_PROBABILITY_PASC' | 'BORDERLINE_POSSIBLE_PASC' | 'UNLIKELY_PASC';
+  pascClassification: string;
+  thresholdMet: boolean; // pascScore >= 12
+  symptoms: INihRecoverSymptom[];
+  pacingAndRecoveryDirectives: string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -247,6 +280,198 @@ export class GlobalHealthInitiativesService {
       triageProtocol: 'START',
       actionableDirectives: directives,
       meshHandoffQrCodePayload: qrPayload
+    };
+  }
+
+  /**
+   * 5. WHO ICOPE: Integrated Care for Older People Intrinsic Capacity Engine
+   */
+  assessWhoIcope(patient: IPatient): IWhoIcopeAssessment {
+    const textCorpus = [
+      ...(patient.preexistingConditions || []),
+      ...Object.values(patient.issues || {}).flat().map(i => i.description || ''),
+      ...(patient.history || []).map(h => h.summary || '')
+    ].join(' ').toLowerCase();
+
+    const weightKg = parseFloat(patient.vitals?.weight || '70') || 70;
+    const heightM = (parseFloat(patient.vitals?.height || '170') || 170) / 100;
+    const bmi = heightM > 0 ? parseFloat((weightKg / (heightM * heightM)).toFixed(1)) : 23.0;
+
+    const domains: IWhoIcopeDomain[] = [];
+
+    // 1. Cognition
+    const cogDecline = textCorpus.includes('memory') || textCorpus.includes('cognit') || textCorpus.includes('dementia') || textCorpus.includes('confusion') || textCorpus.includes('alzheimer');
+    domains.push({
+      domain: 'Cognition',
+      status: cogDecline ? 'Decline Flagged' : 'Intact',
+      assessmentDetails: cogDecline ? 'Cognitive decline indicators identified (recall / orientation).' : 'Memory and orientation within normal age-adjusted limits.',
+      recommendedIntervention: cogDecline
+        ? 'Administer 10-point Cognitive Screener (10-CS) / MoCA; initiate structured cognitive stimulation therapy.'
+        : 'Maintain mentally stimulating activities and social connection.'
+    });
+
+    // 2. Mobility / Locomotor
+    const mobDecline = textCorpus.includes('gait') || textCorpus.includes('mobility') || textCorpus.includes('fall') || textCorpus.includes('joint') || textCorpus.includes('arthritis') || textCorpus.includes('weakness') || textCorpus.includes('chair');
+    domains.push({
+      domain: 'Mobility',
+      status: mobDecline ? 'Decline Flagged' : 'Intact',
+      assessmentDetails: mobDecline ? 'Locomotor impairment or fall risk signals detected.' : 'Locomotor performance and chair rise capacity intact.',
+      recommendedIntervention: mobDecline
+        ? 'Perform Short Physical Performance Battery (SPPB); prescribe progressive multimodal balance and resistance training.'
+        : 'Prescribe >=150 min/week moderate aerobic and balance exercises.'
+    });
+
+    // 3. Nutrition / Vitality
+    const nutDecline = bmi < 20 || bmi > 32 || textCorpus.includes('malnutrition') || textCorpus.includes('weight loss') || textCorpus.includes('anorexia') || textCorpus.includes('appetite');
+    domains.push({
+      domain: 'Nutrition',
+      status: nutDecline ? 'Decline Flagged' : 'Intact',
+      assessmentDetails: nutDecline ? `Nutritional vulnerability (BMI ${bmi} kg/m² or appetite/weight shift).` : `Optimal body composition and vitality (BMI ${bmi} kg/m²).`,
+      recommendedIntervention: nutDecline
+        ? 'Administer Mini Nutritional Assessment (MNA); prescribe targeted protein repletion (1.2-1.5 g/kg/day) and Vitamin D3/K2.'
+        : 'Maintain balanced Mediterranean-Okinawan whole-foods pattern.'
+    });
+
+    // 4. Vision
+    const visDecline = textCorpus.includes('vision') || textCorpus.includes('cataract') || textCorpus.includes('glaucoma') || textCorpus.includes('macular') || textCorpus.includes('blur') || textCorpus.includes('retinopathy');
+    domains.push({
+      domain: 'Vision',
+      status: visDecline ? 'Decline Flagged' : 'Intact',
+      assessmentDetails: visDecline ? 'Visual acuity or ocular pathology risk flagged.' : 'Visual capacity adequate for independent daily functioning.',
+      recommendedIntervention: visDecline
+        ? 'Refer for comprehensive ophthalmological exam / refraction; optimize high-contrast home lighting.'
+        : 'Routine biennial ophthalmological screening.'
+    });
+
+    // 5. Hearing
+    const hearDecline = textCorpus.includes('hearing') || textCorpus.includes('tinnitus') || textCorpus.includes('presbycusis') || textCorpus.includes('deaf') || textCorpus.includes('ear');
+    domains.push({
+      domain: 'Hearing',
+      status: hearDecline ? 'Decline Flagged' : 'Intact',
+      assessmentDetails: hearDecline ? 'Auditory perception or conversational hearing deficit noted.' : 'Whisper/conversational speech perception intact.',
+      recommendedIntervention: hearDecline
+        ? 'Perform otoscopic ear canal examination for cerumen impaction; evaluate for hearing assistive technologies.'
+        : 'Protect auditory pathway from occupational and environmental noise.'
+    });
+
+    // 6. Depressive Symptoms / Psychological
+    const depDecline = textCorpus.includes('depress') || textCorpus.includes('anhedonia') || textCorpus.includes('hopeless') || textCorpus.includes('lonel') || textCorpus.includes('grief') || textCorpus.includes('apathy');
+    domains.push({
+      domain: 'Depressive Symptoms',
+      status: depDecline ? 'Decline Flagged' : 'Intact',
+      assessmentDetails: depDecline ? 'Affective mood disturbance or social isolation risk detected.' : 'Psychological vitality and mood equilibrium intact.',
+      recommendedIntervention: depDecline
+        ? 'Administer Geriatric Depression Scale (GDS-15) / PHQ-9; integrate behavioral activation and community peer circles.'
+        : 'Sustain social engagement networks and purposeful activities.'
+    });
+
+    const flaggedCount = domains.filter(d => d.status === 'Decline Flagged').length;
+    const capacityScore = 6 - flaggedCount;
+    const capacityPercent = Math.round((capacityScore / 6) * 100);
+
+    let statusTier: IWhoIcopeAssessment['statusTier'] = 'OPTIMAL_CAPACITY';
+    let statusLabel = 'Optimal Intrinsic Capacity (6/6 Domains Intact)';
+    if (capacityScore <= 2) {
+      statusTier = 'SIGNIFICANT_IMPAIRMENT';
+      statusLabel = 'Significant Intrinsic Capacity Loss (Priority Multi-Domain Care Plan Required)';
+    } else if (capacityScore <= 4) {
+      statusTier = 'MODERATE_DECLINE';
+      statusLabel = 'Moderate Intrinsic Capacity Loss (Targeted Clinical Interventions Advised)';
+    } else if (capacityScore === 5) {
+      statusTier = 'MILD_DECLINE';
+      statusLabel = 'Mild Intrinsic Capacity Loss (Single-Domain Prevention Focus)';
+    }
+
+    const directives: string[] = [];
+    domains.filter(d => d.status === 'Decline Flagged').forEach(d => {
+      directives.push(`[${d.domain}]: ${d.recommendedIntervention}`);
+    });
+    if (directives.length === 0) {
+      directives.push('Maintain annual WHO ICOPE step-1 intrinsic capacity surveillance and community physical wellness.');
+    }
+
+    return {
+      intrinsicCapacityScore: capacityScore,
+      intrinsicCapacityPercent: capacityPercent,
+      statusTier,
+      statusLabel,
+      flaggedDomainsCount: flaggedCount,
+      domains,
+      clinicalDirectives: directives
+    };
+  }
+
+  /**
+   * 6. NIH RECOVER: Researching COVID to Enhance Recovery (PASC / Long-COVID) 12-Symptom Engine
+   */
+  assessNihRecover(patient: IPatient): INihRecoverAssessment {
+    const textCorpus = [
+      ...(patient.preexistingConditions || []),
+      ...Object.values(patient.issues || {}).flat().map(i => i.description || ''),
+      ...(patient.history || []).map(h => h.summary || '')
+    ].join(' ').toLowerCase();
+
+    // 12 consensus symptoms with JAMA/NIH RECOVER weighted coefficients
+    const symptomDefinitions: Array<{ name: string; weight: number; keywords: string[]; note: string }> = [
+      { name: 'Post-Exertional Malaise (PEM)', weight: 7, keywords: ['pem', 'post-exertional', 'crash after', 'exhaustion after minimal', 'malaise after exercise'], note: 'Disproportionate symptom exacerbation following physical/cognitive effort.' },
+      { name: 'Chronic Fatigue', weight: 4, keywords: ['fatigue', 'exhaustion', 'tiredness', 'low energy', 'chronic fatigue', 'malaise'], note: 'Persistent unrefreshing fatigue not alleviated by sleep.' },
+      { name: 'Brain Fog / Cognitive Dysfunction', weight: 3, keywords: ['brain fog', 'foggy', 'memory lapse', 'word finding', 'confusion', 'concentration'], note: 'Impaired executive functioning, memory recall, or cognitive processing speed.' },
+      { name: 'Dizziness / Orthostatic Intolerance (POTS)', weight: 3, keywords: ['dizziness', 'orthostatic', 'pots', 'postural', 'lightheaded', 'vertigo', 'syncope'], note: 'Lightheadedness or tachycardia provoked by standing upright.' },
+      { name: 'Gastrointestinal Distress', weight: 2, keywords: ['bloating', 'digest', 'nausea', 'diarrhea', 'constipation', 'ibs', 'gut', 'abdominal pain'], note: 'Dysbiosis, motility disturbance, or altered microbiome signalling.' },
+      { name: 'Heart Palpitations / Tachycardia', weight: 2, keywords: ['palpitation', 'racing heart', 'tachycardia', 'irregular beat', 'flutter'], note: 'Resting sinus tachycardia or inappropriate cardiac response to mild stimuli.' },
+      { name: 'Chronic Cough / Shortness of Breath', weight: 1, keywords: ['cough', 'dyspnea', 'shortness of breath', 'breathless', 'wheeze'], note: 'Sub-acute respiratory limitation or airway hyper-reactivity.' },
+      { name: 'Loss of Taste or Smell (Anosmia/Ageusia)', weight: 1, keywords: ['smell', 'taste', 'anosmia', 'ageusia', 'parosmia'], note: 'Persistent post-viral olfactory neuro-epithelial signaling deficit.' },
+      { name: 'Chronic Thirst / Polydipsia', weight: 1, keywords: ['thirst', 'dry mouth', 'polydipsia', 'parched'], note: 'Neuro-endocrine or autonomic fluid balance dysregulation.' },
+      { name: 'Chest Pain / Tightness', weight: 1, keywords: ['chest pain', 'chest tight', 'substernal', 'thoracic pain'], note: 'Microvascular or costochondral inflammatory discomfort.' },
+      { name: 'Muscle / Joint Pain (Myalgia/Arthralgia)', weight: 1, keywords: ['joint pain', 'muscle pain', 'myalgia', 'arthralgia', 'body ache', 'soreness'], note: 'Systemic musculoskeletal inflammatory hyperalgesia.' },
+      { name: 'Sleep Disturbance / Insomnia', weight: 1, keywords: ['insomnia', 'sleep', 'waking', 'non-restorative', 'night sweats'], note: 'Disrupted sleep architecture and circadian misalignment.' }
+    ];
+
+    let totalScore = 0;
+    const evaluatedSymptoms: INihRecoverSymptom[] = symptomDefinitions.map(def => {
+      const isPresent = def.keywords.some(kw => textCorpus.includes(kw));
+      if (isPresent) {
+        totalScore += def.weight;
+      }
+      return {
+        name: def.name,
+        weight: def.weight,
+        present: isPresent,
+        clinicalNote: def.note
+      };
+    });
+
+    const thresholdMet = totalScore >= 12;
+    let tier: INihRecoverAssessment['pascProbabilityTier'] = 'UNLIKELY_PASC';
+    let classification = `Low Probability PASC (NIH RECOVER Score: ${totalScore}/27)`;
+
+    if (thresholdMet) {
+      tier = 'HIGH_PROBABILITY_PASC';
+      classification = `High Probability PASC / Long-COVID Phenotype (NIH RECOVER Score: ${totalScore}/27 >= 12 Threshold)`;
+    } else if (totalScore >= 6) {
+      tier = 'BORDERLINE_POSSIBLE_PASC';
+      classification = `Borderline / Sub-Threshold PASC Symptoms (NIH RECOVER Score: ${totalScore}/27)`;
+    }
+
+    const directives: string[] = [];
+    if (thresholdMet || evaluatedSymptoms.find(s => s.name.includes('Post-Exertional') && s.present)) {
+      directives.push('🛡️ Energy Envelope & HR Ceiling: Enforce strict pacing to prevent PEM. Keep HR below anaerobic threshold (approx 60% HRmax).');
+    }
+    if (evaluatedSymptoms.find(s => s.name.includes('Dizziness') && s.present) || evaluatedSymptoms.find(s => s.name.includes('Palpitations') && s.present)) {
+      directives.push('💧 Autonomic POTS Vector: Target 2.5-3.0L fluids + 3-5g dietary sodium/electrolytes daily; use waist-high compression wear.');
+    }
+    if (evaluatedSymptoms.find(s => s.name.includes('Brain Fog') && s.present) || evaluatedSymptoms.find(s => s.name.includes('Fatigue') && s.present)) {
+      directives.push('🧬 Mitochondrial Support: Prescribe CoQ10 (Ubiquinol 200mg/day), Alpha-Lipoic Acid, and PQQ for cellular ATP recovery.');
+    }
+    directives.push('🫁 0.1 Hz Vagal RSA Pacing: Practice 4.0s inhale / 6.0s exhale (6 breaths/min) twice daily for autonomic coherence.');
+
+    return {
+      pascScore: totalScore,
+      pascProbabilityTier: tier,
+      pascClassification: classification,
+      thresholdMet,
+      symptoms: evaluatedSymptoms,
+      pacingAndRecoveryDirectives: directives
     };
   }
 

@@ -4,6 +4,7 @@
  */
 import { Injectable, signal, NgZone, inject } from '@angular/core';
 import { sanitizeLogInput } from '../../utils/security-helper';
+import { ISpatialLesion } from '../spatial-lesion-markup.service';
 
 import type { IOccupationalHazardProfile } from '../actuarial-longevity.service';
 
@@ -162,6 +163,46 @@ Occupational Healthspan & Precision Strategy Context:
 - Choral Vocal Resonance & Glee Protocol: ${prof.vocalResonanceProtocol || 'N/A'}`;
   }
 
+  public buildSpatialLesionPromptSegment(spatialLesions?: ISpatialLesion[]): string {
+    if (!spatialLesions || spatialLesions.length === 0) return '';
+
+    const lines = spatialLesions.map((l, idx) => {
+      const coord = `(${l.position.x.toFixed(2)}, ${l.position.y.toFixed(2)}, ${l.position.z.toFixed(2)})`;
+      return `  ${idx + 1}. [${l.severity.toUpperCase()}] ${l.label} at 3D coordinate ${coord} (Body Site: ${l.partId}) | Morphology: ${l.morphology} (SNOMED: ${l.snomedCode || 'N/A'}) | Notes: ${l.clinicalNotes || 'None'}`;
+    });
+
+    return `
+
+📍 3D SPATIAL ANATOMY TELEMETRY & ACTIVE LESION MARKUP CONTEXT:
+The patient or clinician has marked interactive 3D spatial lesion pins directly on their anatomical model:
+${lines.join('\n')}
+
+Clinical Grounding Directive for 3D Lesions:
+- Reference these exact anatomical sites and marked coordinates when discussing physical symptoms or etiology.
+- Ground your triage and care plan guidance in the specific severity tier, morphology, and anatomical coordinates.
+- Reassure the patient with clear, empathetic guidance on diagnostic follow-up or supportive home-care protocols for each marked lesion.`;
+  }
+
+  public sendRealtimeLesionUpdate(lesion: ISpatialLesion): void {
+    if (!this.isConnected() || !this.liveClient || this.liveClient.readyState !== WebSocket.OPEN) return;
+
+    const coord = `(${lesion.position.x.toFixed(2)}, ${lesion.position.y.toFixed(2)}, ${lesion.position.z.toFixed(2)})`;
+    const updateText = `[CLINICAL TELEMETRY EVENT]: Patient placed a 3D lesion marker: ${lesion.label} (Severity: ${lesion.severity}, Morphology: ${lesion.morphology}, SNOMED: ${lesion.snomedCode}) at anatomical coordinate ${coord}. Notes: ${lesion.clinicalNotes}`;
+
+    try {
+      this.liveClient.send(JSON.stringify({
+        realtimeInput: {
+          mediaChunks: [{
+            mimeType: 'text/plain',
+            data: btoa(updateText)
+          }]
+        }
+      }));
+    } catch (e) {
+      console.debug('[AdkLiveService] Failed to send realtime lesion update frame:', (e as Error)?.message);
+    }
+  }
+
   async connect(
     apiKey: string = '',
     systemInstruction: string,
@@ -170,7 +211,8 @@ Occupational Healthspan & Precision Strategy Context:
     occupationalProfile?: IOccupationalHazardProfile | null,
     isPediatric: boolean = false,
     childName?: string,
-    age?: number
+    age?: number,
+    spatialLesions?: ISpatialLesion[]
   ) {
     if (this.isConnected()) return;
     this.connectionError.set(null);
@@ -178,9 +220,10 @@ Occupational Healthspan & Precision Strategy Context:
 
     const pedSegment = this.buildPediatricPromptSegment(isPediatric, childName, age);
     const occSegment = this.buildOccupationalPromptSegment(occupationalProfile);
+    const lesionSegment = this.buildSpatialLesionPromptSegment(spatialLesions);
 
-    // Enhance system instruction with vocal prosody directives, Child Life Pediatric Context, & Macro Fleet Sentinel Context
-    const enhancedInstruction = `${systemInstruction}${pedSegment}${occSegment}
+    // Enhance system instruction with vocal prosody directives, Child Life Pediatric Context, 3D Spatial Lesion Telemetry & Macro Fleet Sentinel Context
+    const enhancedInstruction = `${systemInstruction}${pedSegment}${occSegment}${lesionSegment}
 
 Vocal & Speech Delivery Style:
 - Speak in a warm, conversational, empathetic, and reassuring voice.

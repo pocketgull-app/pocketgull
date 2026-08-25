@@ -76,14 +76,14 @@ export const MISSION_THEMES: IMissionTheme[] = [
 })
 export class MissionSymphonyEngineService {
   private audioCtx: AudioContext | null = null;
-  private masterGain: GainNode | null = null;
+  private mainGain: GainNode | null = null;
   private activeNodes: (AudioNode | number)[] = [];
   private arpeggioTimer: any = null;
   private currentStep = 0;
 
   readonly isPlaying = signal<boolean>(false);
   readonly currentPhase = signal<MissionPhase>('celestial_launch');
-  readonly masterVolume = signal<number>(0.14);
+  readonly mainVolume = signal<number>(0.14);
 
   readonly currentTheme = computed<IMissionTheme>(() => {
     return MISSION_THEMES.find(t => t.phase === this.currentPhase()) || MISSION_THEMES[0];
@@ -96,7 +96,7 @@ export class MissionSymphonyEngineService {
     this.stop();
     this.currentPhase.set(phase);
     this.initAudioContext();
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
 
     this.isPlaying.set(true);
 
@@ -116,13 +116,13 @@ export class MissionSymphonyEngineService {
   }
 
   /**
-   * Adjust master volume (0.0 to 1.0)
+   * Adjust main output volume (0.0 to 1.0)
    */
   setVolume(vol: number): void {
     const clamped = Math.max(0, Math.min(1, vol));
-    this.masterVolume.set(clamped);
-    if (this.masterGain && this.audioCtx) {
-      this.masterGain.gain.setTargetAtTime(clamped, this.audioCtx.currentTime, 0.05);
+    this.mainVolume.set(clamped);
+    if (this.mainGain && this.audioCtx) {
+      this.mainGain.gain.setTargetAtTime(clamped, this.audioCtx.currentTime, 0.05);
     }
   }
 
@@ -165,15 +165,15 @@ export class MissionSymphonyEngineService {
     if (this.audioCtx && this.audioCtx.state === 'suspended') {
       this.audioCtx.resume();
     }
-    if (this.audioCtx && !this.masterGain) {
-      this.masterGain = this.audioCtx.createGain();
-      this.masterGain.gain.setValueAtTime(this.masterVolume(), this.audioCtx.currentTime);
-      this.masterGain.connect(this.audioCtx.destination);
+    if (this.audioCtx && !this.mainGain) {
+      this.mainGain = this.audioCtx.createGain();
+      this.mainGain.gain.setValueAtTime(this.mainVolume(), this.audioCtx.currentTime);
+      this.mainGain.connect(this.audioCtx.destination);
     }
   }
 
   private startMissionAtmosphere(theme: IMissionTheme): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
     const now = this.audioCtx.currentTime;
 
     // 1. Deep Celestial Sub-Bass Drone (The Infinite Foundation)
@@ -189,7 +189,7 @@ export class MissionSymphonyEngineService {
     droneFilter.Q.setValueAtTime(3.0, now);
 
     droneGain.gain.setValueAtTime(0.09, now);
-    droneOsc.connect(droneFilter).connect(droneGain).connect(this.masterGain);
+    droneOsc.connect(droneFilter).connect(droneGain).connect(this.mainGain);
     droneOsc.start(now);
 
     // 2. Slow Circadian Breathing Filter LFO (0.08 Hz = 4.8 Breaths/Min)
@@ -218,12 +218,12 @@ export class MissionSymphonyEngineService {
     if (pannerL && pannerR) {
       pannerL.pan.setValueAtTime(-0.85, now);
       pannerR.pan.setValueAtTime(0.85, now);
-      oscL.connect(carrierGain).connect(pannerL).connect(this.masterGain);
-      oscR.connect(carrierGain).connect(pannerR).connect(this.masterGain);
+      oscL.connect(carrierGain).connect(pannerL).connect(this.mainGain);
+      oscR.connect(carrierGain).connect(pannerR).connect(this.mainGain);
       this.activeNodes.push(pannerL, pannerR);
     } else {
-      oscL.connect(carrierGain).connect(this.masterGain);
-      oscR.connect(carrierGain).connect(this.masterGain);
+      oscL.connect(carrierGain).connect(this.mainGain);
+      oscR.connect(carrierGain).connect(this.mainGain);
     }
 
     oscL.start(now);
@@ -248,7 +248,7 @@ export class MissionSymphonyEngineService {
     const intervalMs = (60 / theme.tempoBpm / 2) * 1000; // 8th note rhythm
 
     this.arpeggioTimer = setInterval(() => {
-      if (!this.audioCtx || !this.masterGain || !this.isPlaying()) return;
+      if (!this.audioCtx || !this.mainGain || !this.isPlaying()) return;
       const noteFreq = root * intervals[this.currentStep % intervals.length];
       this.triggerCinematicNote(noteFreq);
       this.currentStep++;
@@ -256,7 +256,7 @@ export class MissionSymphonyEngineService {
   }
 
   private triggerCinematicNote(freq: number): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
     try {
       const now = this.audioCtx.currentTime;
       const osc = this.audioCtx.createOscillator();
@@ -270,7 +270,7 @@ export class MissionSymphonyEngineService {
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.85);
 
       osc.connect(gain);
-      gain.connect(this.masterGain);
+      gain.connect(this.mainGain);
 
       osc.start(now);
       osc.stop(now + 0.9);

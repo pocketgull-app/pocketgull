@@ -96,10 +96,12 @@ export interface ICollisionEvent {
             
             <!-- Event Generator Selection -->
             <div>
-              <label class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Select Physics Event</label>
+              <label for="physics-event-select" class="block text-xs font-mono uppercase text-zinc-400 mb-1.5">Select Physics Event</label>
               <select 
+                id="physics-event-select"
                 [value]="selectedEventType()" 
                 (change)="onEventTypeChange($event)"
+                aria-label="Select Physics Event"
                 class="w-full h-11 px-3 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-200 focus:outline-none focus:border-purple-500">
                 <option value="higgs">Higgs Boson (H → ZZ* → 4ℓ)</option>
                 <option value="top_quark">Top Quark Pair (t t̄ → b b̄ W+ W-)</option>
@@ -110,18 +112,19 @@ export interface ICollisionEvent {
             <!-- Beam Energy Slider -->
             <div>
               <div class="flex justify-between items-center text-xs font-mono mb-1">
-                <span class="text-zinc-400">Beam Energy (√s):</span>
+                <label for="beam-energy-slider" class="text-zinc-400">Beam Energy (√s):</label>
                 <span class="text-purple-400 font-bold">{{ sqrtS() }} TeV</span>
               </div>
               <input 
+                id="beam-energy-slider"
                 type="range" 
                 min="0.9" 
                 max="14.0" 
                 step="0.1" 
                 [value]="sqrtS()"
                 (input)="onSqrtSChange($event)"
+                aria-label="Beam Energy in TeV"
                 class="w-full accent-purple-500 bg-zinc-950 rounded-lg cursor-pointer h-2"
-                aria-label="Beam Energy Slider"
               />
             </div>
 

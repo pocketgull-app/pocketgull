@@ -14,8 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-and-test:
-    name: Lint & Test
+  node-lint-and-test:
+    name: Node Lint & Vitest
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +35,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: npm ci --legacy-peer-deps --prefer-offline
 
       - name: TypeScript Lint (tsc --noEmit)
         run: npm run lint
@@ -49,16 +49,34 @@ jobs:
       - name: Run Tests (Vitest)
         run: npx vitest run
 
+  python-ml-test:
+    name: Python ML & Sidecar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          disable-sudo: false
+          egress-policy: audit
+
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - name: Setup Python
         uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
         with:
           python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'pocketgull_api/requirements.txt'
+
+      - name: Install System Dependencies
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libhdf5-dev
 
       - name: Install Python Dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y libhdf5-dev
-          cd pocketgull_api
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install -r pocketgull_api/requirements.txt
 
       - name: Run Python Tests
         env:

@@ -251,7 +251,7 @@ function renderApp() {
               <span class="badge badge-ocean font-mono">ACK / HYPER-ENDEMIC</span>
             </div>
             <p style="font-size: 0.8rem; color: var(--text-secondary);">
-              Satellite Spatial Radar • Ranger Portal • 360° Body Inspection • Desiccation Index • Citizen Science
+              Satellite Spatial Radar • Community Trail Watch • 360° Body Inspection • Desiccation Index • Citizen Science
             </p>
           </div>
         </div>
@@ -290,7 +290,7 @@ function renderApp() {
             <span>🔬 72h Triage</span><span class="kbd-shortcut">4</span>
           </button>
           <button role="tab" aria-selected="${state.currentTab === 'community' ? 'true' : 'false'}" class="nav-tab ${state.currentTab === 'community' ? 'active' : ''}" data-tab="community" title="Press 5">
-            <span>🌲 Ranger & Community</span><span class="kbd-shortcut">5</span>
+            <span>🌲 Community Trail Watch</span><span class="kbd-shortcut">5</span>
           </button>
           <button role="tab" aria-selected="${state.currentTab === 'repellents' ? 'true' : 'false'}" class="nav-tab ${state.currentTab === 'repellents' ? 'active' : ''}" data-tab="repellents" title="Press 6">
             <span>🛡️ Repellent Lab</span><span class="kbd-shortcut">6</span>
@@ -487,7 +487,7 @@ function renderMapTab(): string {
               ${activeLoc.description}
             </p>
             <div style="background: rgba(14, 165, 233, 0.08); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 10px; font-size: 0.75rem; color: #38bdf8; margin-bottom: 12px;">
-              <strong>Ranger Safety Rule:</strong> ${activeLoc.safetyTip}
+              <strong>Trail Safety Tip:</strong> ${activeLoc.safetyTip}
             </div>
             <div>
               <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">
@@ -1259,10 +1259,10 @@ function renderCommunityPortalTab(): string {
               <span class="badge badge-ocean font-mono">ZERO-FRICTION UPDATES</span>
             </div>
             <h2 style="font-size: 1.25rem; font-weight: 800;">
-              🌲 Island Ranger, Landscaper & Local Community Hub
+              🌲 Island Community & Trail Stewardship Hub
             </h2>
             <p style="font-size: 0.85rem; color: var(--text-secondary); max-width: 820px;">
-              Empowering Nantucket rangers, landscapers, pharmacists, and residents to update mowing status, flag invasive barberry clusters, and log field sightings in seconds.
+              Empowering island residents, trail walkers, landscapers, and pharmacists to check mowing status, flag invasive barberry clusters, and log field sightings in seconds.
             </p>
           </div>
 
@@ -1413,11 +1413,11 @@ function renderCommunityPortalTab(): string {
       <!-- Grid 2: Ranger Maintenance Logger & Barberry Eradication Map -->
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
         
-        <!-- Ranger Maintenance & Mowing Logger -->
+        <!-- Community Trail Maintenance & Mowing Logger -->
         <div class="glass-card" style="padding: 20px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary);">
-              🚜 Ranger Trail Mowing & Maintenance Logs
+              🚜 Community Trail Mowing & Maintenance Logs
             </h3>
             <span class="badge badge-emerald font-mono">${logs.length} VERIFIED LOGS</span>
           </div>
@@ -1430,10 +1430,10 @@ function renderCommunityPortalTab(): string {
                   <span class="badge badge-ocean font-mono" style="font-size: 0.65rem;">${log.date}</span>
                 </div>
                 <div style="font-size: 0.75rem; color: var(--text-primary); font-weight: 600;">${log.actionType}</div>
-                <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 4px 0;">${log.rangerNotes}</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 4px 0;">${log.trailNotes || log.rangerNotes || ''}</p>
                 <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted);">
                   <span>Steward: ${log.stewardGroup.split(' (')[0]}</span>
-                  <span>${log.verifiedByRanger}</span>
+                  <span>${log.reportedBy || log.verifiedByRanger || ''}</span>
                 </div>
               </div>
             `).join('')}
@@ -2560,8 +2560,8 @@ function renderKioskTab(): string {
 
             <!-- Voice Persona Selector -->
             <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-              <button class="kiosk-persona-btn ${state.kioskEngine.getActivePersona() === 'ranger_maya' ? 'active' : ''}" data-kiosk-persona="ranger_maya" title="Island Ranger Maya: Warm, trail-wise naturalist">
-                🌲 Ranger Maya
+              <button class="kiosk-persona-btn ${state.kioskEngine.getActivePersona() === 'ranger_maya' ? 'active' : ''}" data-kiosk-persona="ranger_maya" title="Trail Guide Maya: Warm, trail-wise naturalist">
+                🌲 Trail Guide Maya
               </button>
               <button class="kiosk-persona-btn ${state.kioskEngine.getActivePersona() === 'barnaby_owl' ? 'active' : ''}" data-kiosk-persona="barnaby_owl" title="Barnaby Owl: Fun, animated 6th-grade analogies">
                 🦉 Barnaby Owl
@@ -2855,7 +2855,7 @@ function renderNaturePlayTapeDeck(): string {
           <span style="font-size: 1.6rem;">📼</span>
           <div>
             <h3 style="font-size: 1.15rem; font-weight: 800; color: #38bdf8; margin: 0;">
-              Junior Ranger Nature Play Tape
+              Island Nature Detective Play Tape
             </h3>
             <span style="font-size: 0.75rem; color: var(--text-muted);">
               Child-Friendly Audio Stories &bull; Zero Data Collection &bull; COPPA Safe Harbor

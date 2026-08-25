@@ -52,7 +52,7 @@ import { EncryptedVaultService, IVaultArchiveContainer } from '../../services/en
                 <input
                   type="password"
                   [(ngModel)]="exportPassphrase"
-                  placeholder="Enter secure master passphrase (min 6 chars)..."
+                  placeholder="Enter secure vault passphrase (min 6 chars)..."
                   class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
@@ -94,7 +94,7 @@ import { EncryptedVaultService, IVaultArchiveContainer } from '../../services/en
               </div>
 
               <div>
-                <label class="block text-xs font-medium text-zinc-300 mb-1">Enter Master Passphrase:</label>
+                <label class="block text-xs font-medium text-zinc-300 mb-1">Enter Vault Passphrase:</label>
                 <input
                   type="password"
                   [(ngModel)]="importPassphrase"
@@ -178,16 +178,18 @@ export class EncryptedVaultModalComponent {
     try {
       const container = await this.vaultService.exportEncryptedVault(this.exportPassphrase);
       const jsonStr = JSON.stringify(container, null, 2);
-      const blob = new Blob([jsonStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
+      if (typeof document !== 'undefined' && typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
 
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `patient-vault-${Date.now()}.pocketgull`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `patient-vault-${Date.now()}.pocketgull`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
 
       this.statusType.set('success');
       this.statusMessage.set('Vault encrypted and downloaded successfully with SHA-256 integrity seal.');

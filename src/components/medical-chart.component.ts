@@ -16,6 +16,7 @@ import { SentinelTelemetryPlotterComponent } from './sentinel-telemetry-plotter.
 import { LongitudinalTrendSparklineComponent } from './shared/longitudinal-trend-sparkline.component';
 import { GlobalHealthInitiativesService } from '../services/global-health-initiatives.service';
 import { EnvironmentalExposomicsToxicologyComponent } from './environmental-exposomics-toxicology.component';
+import { InstantBodyCarePlanSheetComponent } from './anatomy-3d/instant-body-care-plan-sheet.component';
 
 @Component({
   selector: 'app-medical-chart',
@@ -32,11 +33,12 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
     SentinelTriageComponent,
     SentinelTelemetryPlotterComponent,
     LongitudinalTrendSparklineComponent,
-    EnvironmentalExposomicsToxicologyComponent
+    EnvironmentalExposomicsToxicologyComponent,
+    InstantBodyCarePlanSheetComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="w-full min-h-full flex flex-col gap-4 sm:gap-6 p-4 sm:p-8 bg-[#F9FAFB] dark:bg-transparent">
+    <div class="w-full min-h-full flex flex-col gap-3 sm:gap-4 p-3 sm:p-6 bg-[#F9FAFB] dark:bg-transparent">
  
        <!-- Review Mode Banner -->
       @if(isReviewMode() && state.viewingPastVisit(); as visit) {
@@ -59,272 +61,356 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
               </pocket-gull-button>
           </div>
       }
-      
 
-      <!-- 3D Body Viewer Card -->
-      <pocket-gull-card 
-        id="tour-body-chart"
-        title="3D Body Viewer" 
-        [icon]="viewerIcon"
-        [noPadding]="true">
-        
-        <div right-action (click)="isViewerExpanded.set(!isViewerExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isViewerExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+      <!-- 🧭 Precision Workspace Navigator (Zero-Scroll Mode) -->
+      <div class="flex items-center justify-between gap-1 border-b border-zinc-200 dark:border-zinc-800 bg-white/40 dark:bg-zinc-950/40 px-1 mb-2 font-mono text-xs shrink-0 overflow-x-auto">
+        <div class="flex items-center gap-4">
+          <button type="button" (click)="activeWorkspaceTab.set('anatomy')"
+            [class.border-teal-500]="activeWorkspaceTab() === 'anatomy'"
+            [class.text-zinc-950]="activeWorkspaceTab() === 'anatomy'"
+            [class.dark:text-white]="activeWorkspaceTab() === 'anatomy'"
+            [class.font-bold]="activeWorkspaceTab() === 'anatomy'"
+            [class.border-transparent]="activeWorkspaceTab() !== 'anatomy'"
+            [class.text-zinc-500]="activeWorkspaceTab() !== 'anatomy'"
+            [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'anatomy'"
+            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            <span class="text-teal-600 dark:text-teal-400 font-bold">01</span>
+            <span>3D Anatomy</span>
+          </button>
+
+          <button type="button" (click)="activeWorkspaceTab.set('vitals')"
+            [class.border-teal-500]="activeWorkspaceTab() === 'vitals'"
+            [class.text-zinc-950]="activeWorkspaceTab() === 'vitals'"
+            [class.dark:text-white]="activeWorkspaceTab() === 'vitals'"
+            [class.font-bold]="activeWorkspaceTab() === 'vitals'"
+            [class.border-transparent]="activeWorkspaceTab() !== 'vitals'"
+            [class.text-zinc-500]="activeWorkspaceTab() !== 'vitals'"
+            [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'vitals'"
+            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            <span class="text-teal-600 dark:text-teal-400 font-bold">02</span>
+            <span>Vitals &amp; Bio</span>
+          </button>
+
+          <button type="button" (click)="activeWorkspaceTab.set('imaging')"
+            [class.border-teal-500]="activeWorkspaceTab() === 'imaging'"
+            [class.text-zinc-950]="activeWorkspaceTab() === 'imaging'"
+            [class.dark:text-white]="activeWorkspaceTab() === 'imaging'"
+            [class.font-bold]="activeWorkspaceTab() === 'imaging'"
+            [class.border-transparent]="activeWorkspaceTab() !== 'imaging'"
+            [class.text-zinc-500]="activeWorkspaceTab() !== 'imaging'"
+            [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'imaging'"
+            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            <span class="text-teal-600 dark:text-teal-400 font-bold">03</span>
+            <span>Imaging &amp; Tox</span>
+          </button>
+
+          <button type="button" (click)="activeWorkspaceTab.set('timeline')"
+            [class.border-teal-500]="activeWorkspaceTab() === 'timeline'"
+            [class.text-zinc-950]="activeWorkspaceTab() === 'timeline'"
+            [class.dark:text-white]="activeWorkspaceTab() === 'timeline'"
+            [class.font-bold]="activeWorkspaceTab() === 'timeline'"
+            [class.border-transparent]="activeWorkspaceTab() !== 'timeline'"
+            [class.text-zinc-500]="activeWorkspaceTab() !== 'timeline'"
+            [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'timeline'"
+            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            <span class="text-teal-600 dark:text-teal-400 font-bold">04</span>
+            <span>History</span>
+          </button>
         </div>
 
-        @if(isViewerExpanded()) {
-          <div class="body-viewer-container min-h-[540px] sm:min-h-[580px] xl:min-h-[640px] overflow-hidden bg-white dark:bg-black/20 shrink-0 flex flex-col">
-            @defer (on immediate) {
-              <app-body-viewer class="h-full w-full flex-1 flex flex-col"></app-body-viewer>
-            } @placeholder {
-              <div class="h-full w-full flex items-center justify-center text-gray-500 dark:text-zinc-400 bg-gray-50/50 dark:bg-zinc-800/50">
-                <div class="flex flex-col items-center gap-3">
-                  <div class="w-6 h-6 border-2 border-gray-200 border-t-[#689F38] rounded-sm animate-spin"></div>
-                  <span class="text-xs uppercase tracking-widest font-bold">Loading 3D Viewer...</span>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </pocket-gull-card>
+        <!-- Multi-Panel All Toggle -->
+        <button type="button" (click)="activeWorkspaceTab.set(activeWorkspaceTab() === 'all' ? 'anatomy' : 'all')"
+          [class.text-emerald-600]="activeWorkspaceTab() === 'all'"
+          [class.dark:text-emerald-400]="activeWorkspaceTab() === 'all'"
+          [class.border-emerald-500]="activeWorkspaceTab() === 'all'"
+          [class.bg-emerald-500/10]="activeWorkspaceTab() === 'all'"
+          class="hidden sm:flex items-center gap-1 px-2 py-1 text-[10px] font-mono font-bold uppercase tracking-wider border border-zinc-300 dark:border-zinc-700 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer shrink-0">
+          <span>{{ activeWorkspaceTab() === 'all' ? '[ MULTI-PANEL ]' : '[ ALL PANELS ]' }}</span>
+        </button>
+      </div>
 
-      <!-- Sentinel Outbreak & Telemetry Plotter Section -->
-      @if (isSentinel()) {
-        <app-sentinel-triage class="block w-full"></app-sentinel-triage>
-        <app-sentinel-telemetry-plotter class="block w-full"></app-sentinel-telemetry-plotter>
+      <!-- 🧬 SECTION 1: 3D ANATOMY & SUMMARY -->
+      @if (activeWorkspaceTab() === 'anatomy' || activeWorkspaceTab() === 'all') {
+        <!-- 3D Body Viewer Card -->
+        <pocket-gull-card 
+          id="tour-body-chart"
+          title="3D Body Viewer" 
+          [icon]="viewerIcon"
+          [noPadding]="true">
+          
+          <div right-action (click)="isViewerExpanded.set(!isViewerExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isViewerExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+          </div>
+
+          @if(isViewerExpanded()) {
+            <div class="body-viewer-container min-h-[500px] sm:min-h-[540px] xl:min-h-[580px] overflow-hidden bg-white dark:bg-black/20 shrink-0 flex flex-col">
+              @defer (on immediate) {
+                <app-body-viewer class="shrink-0 flex-1 flex flex-col"></app-body-viewer>
+              }
+            </div>
+          }
+        </pocket-gull-card>
+
+        <!-- Instant Body Care Plan Sheet (Bottom-sheet drawer overlay) -->
+        <app-instant-body-care-plan-sheet />
+
+        <!-- Medical Summary Card -->
+        <pocket-gull-card 
+          title="Medical Summary" 
+          [icon]="summaryIcon"
+          [noPadding]="true">
+          
+          <div right-action (click)="isSummaryExpanded.set(!isSummaryExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isSummaryExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+          </div>
+
+          @if(isSummaryExpanded()) {
+            <div class="bg-white dark:bg-zinc-900 shrink-0 min-h-0 min-w-0 border-b border-gray-100 dark:border-zinc-800 last:border-0 p-0">
+               <app-medical-summary class="block"></app-medical-summary>
+            </div>
+          }
+        </pocket-gull-card>
       }
 
-      <!-- Multi-Paradigm Longitudinal Vitals & WHO SDG 3.4 Card -->
-      <pocket-gull-card 
-        title="Multi-Paradigm Longitudinal Vitals &amp; WHO SDG 3.4" 
-        [icon]="sparklineIcon"
-        [noPadding]="false">
-        
-        <div right-action (click)="isSparklinesExpanded.set(!isSparklinesExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isSparklinesExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-        </div>
-
-        @if(isSparklinesExpanded()) {
-          <div class="space-y-4 pt-1">
-            
-            <!-- WHO 10-Year CVD Risk & ICD-11 Dual-Codes Ribbon -->
-            @if(whoRisk(); as risk) {
-              <div class="p-3.5 rounded-xl bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-900/50 flex flex-wrap items-center justify-between gap-3 text-xs">
-                <div class="flex items-center gap-2.5">
-                  <span class="text-base">🌍</span>
-                  <div>
-                    <span class="font-bold text-zinc-900 dark:text-zinc-100 font-mono text-[11px] uppercase tracking-wider">
-                      WHO SDG 3.4 10-Year CVD Risk Profile:
-                    </span>
-                    <span class="ml-1.5 font-black font-mono" [ngClass]="risk.color">{{ risk.riskScorePercent }}% ({{ risk.riskTier }})</span>
-                  </div>
-                </div>
-
-                <!-- ICD-11 Dual-Codes Chips -->
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  @for (code of whoIcd11Codes(); track $index) {
-                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-white dark:bg-zinc-900 border border-sky-300 dark:border-sky-800 text-sky-800 dark:text-sky-300 shadow-2xs">
-                      {{ code.icd11Tm1Code }}
-                    </span>
-                  }
-                </div>
-              </div>
-            }
-
-            <!-- 4 Multi-Paradigm Sparklines Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <app-longitudinal-trend-sparkline
-                metricTitle="HRV rMSSD"
-                unit="ms"
-                paradigm="western"
-                [dataPoints]="[
-                  { date: 'May 1', value: 38 },
-                  { date: 'Jun 1', value: 41 },
-                  { date: 'Jul 1', value: 40 },
-                  { date: 'Jul 15', value: 44 },
-                  { date: 'Aug 1', value: 48 },
-                  { date: 'Aug 15', value: 52 },
-                  { date: 'Aug 21', value: 55 }
-                ]"
-                [targetRange]="{ min: 45, max: 65 }">
-              </app-longitudinal-trend-sparkline>
-
-              <app-longitudinal-trend-sparkline
-                metricTitle="Spleen Qi Index"
-                unit="pts"
-                paradigm="tcm"
-                [dataPoints]="[
-                  { date: 'May 1', value: 60 },
-                  { date: 'Jun 1', value: 62 },
-                  { date: 'Jul 1', value: 65 },
-                  { date: 'Jul 15', value: 68 },
-                  { date: 'Aug 1', value: 72 },
-                  { date: 'Aug 15', value: 74 },
-                  { date: 'Aug 21', value: 78 }
-                ]"
-                [targetRange]="{ min: 70, max: 90 }">
-              </app-longitudinal-trend-sparkline>
-
-              <app-longitudinal-trend-sparkline
-                metricTitle="Vata Stability"
-                unit="pts"
-                paradigm="ayurveda"
-                [dataPoints]="[
-                  { date: 'May 1', value: 40 },
-                  { date: 'Jun 1', value: 45 },
-                  { date: 'Jul 1', value: 52 },
-                  { date: 'Jul 15', value: 58 },
-                  { date: 'Aug 1', value: 64 },
-                  { date: 'Aug 15', value: 70 },
-                  { date: 'Aug 21', value: 75 }
-                ]"
-                [targetRange]="{ min: 65, max: 85 }">
-              </app-longitudinal-trend-sparkline>
-
-              <app-longitudinal-trend-sparkline
-                metricTitle="Somatic Strain"
-                unit="pts"
-                paradigm="osteopathic"
-                [dataPoints]="[
-                  { date: 'May 1', value: 75 },
-                  { date: 'Jun 1', value: 70 },
-                  { date: 'Jul 1', value: 68 },
-                  { date: 'Jul 15', value: 62 },
-                  { date: 'Aug 1', value: 55 },
-                  { date: 'Aug 15', value: 48 },
-                  { date: 'Aug 21', value: 42 }
-                ]"
-                [targetRange]="{ min: 20, max: 45 }">
-              </app-longitudinal-trend-sparkline>
-            </div>
-
-          </div>
+      <!-- 📈 SECTION 2: VITALS & BIO -->
+      @if (activeWorkspaceTab() === 'vitals' || activeWorkspaceTab() === 'all') {
+        <!-- Sentinel Outbreak & Telemetry Plotter Section -->
+        @if (isSentinel()) {
+          <app-sentinel-triage class="block w-full"></app-sentinel-triage>
+          <app-sentinel-telemetry-plotter class="block w-full"></app-sentinel-telemetry-plotter>
         }
-      </pocket-gull-card>
 
-      <!-- Biometric Trends Card -->
-      <pocket-gull-card 
-        title="Biometric Trends" 
-        [icon]="biometricIcon"
-        [noPadding]="true">
-        
-        <div right-action (click)="isBiometricExpanded.set(!isBiometricExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isBiometricExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-        </div>
-
-        @if(isBiometricExpanded()) {
-          <div class="h-[250px] overflow-hidden bg-white dark:bg-black/20 shrink-0 p-4">
-             <app-biometric-history-chart></app-biometric-history-chart>
+        <!-- Multi-Paradigm Longitudinal Vitals & WHO SDG 3.4 Card -->
+        <pocket-gull-card 
+          title="Multi-Paradigm Longitudinal Vitals &amp; WHO SDG 3.4" 
+          [icon]="sparklineIcon"
+          [noPadding]="false">
+          
+          <div right-action (click)="isSparklinesExpanded.set(!isSparklinesExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isSparklinesExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
           </div>
-        }
-      </pocket-gull-card>
 
-      <!-- Environmental Exposomics & Acute Toxicology Card -->
-      <pocket-gull-card 
-        title="Environmental Exposomics &amp; Acute Toxicology" 
-        [icon]="toxicologyIcon"
-        [noPadding]="false">
-        
-        <div right-action (click)="isToxicologyExpanded.set(!isToxicologyExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isToxicologyExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-        </div>
-
-        @if(isToxicologyExpanded()) {
-          <div class="pt-2">
-            <app-environmental-exposomics-toxicology></app-environmental-exposomics-toxicology>
-          </div>
-        }
-      </pocket-gull-card>
-
-      <!-- Medical Summary Card -->
-      <pocket-gull-card 
-        title="Medical Summary" 
-        [icon]="summaryIcon"
-        [noPadding]="true">
-        
-        <div right-action (click)="isSummaryExpanded.set(!isSummaryExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isSummaryExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-        </div>
-
-        @if(isSummaryExpanded()) {
-          <div class="bg-white dark:bg-zinc-900 shrink-0 min-h-0 min-w-0 border-b border-gray-100 dark:border-zinc-800 last:border-0 p-0">
-             <app-medical-summary class="block"></app-medical-summary>
-          </div>
-        }
-      </pocket-gull-card>
-
-      <!-- Patient History Card -->
-      <pocket-gull-card 
-        title="Patient History" 
-        [icon]="historyIcon"
-        [noPadding]="true">
-        
-        <div right-action class="flex items-center gap-4">
-              @if(historyBodyParts().length > 0) {
+          @if(isSparklinesExpanded()) {
+            <div class="space-y-4 pt-1">
+              
+              <!-- WHO 10-Year CVD Risk & ICD-11 Dual-Codes Bar -->
+              @if(whoRisk(); as risk) {
+                <div class="px-3 py-2 bg-zinc-50 dark:bg-zinc-900/60 border-l-2 border-sky-500 border-y border-r border-zinc-200 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
                   <div class="flex items-center gap-2">
-                      <pocket-gull-button 
-                        (click)="$event.stopPropagation(); historyFilter.set(null)"
-                        [variant]="!historyFilter() ? 'primary' : 'secondary'"
-                        size="xs">
-                        ALL
-                      </pocket-gull-button>
-                      @for(part of historyBodyParts(); track part.id) {
-                          <pocket-gull-button 
-                            (click)="$event.stopPropagation(); historyFilter.set(part.id)"
-                            [variant]="historyFilter() === part.id ? 'primary' : 'secondary'"
-                            size="xs">
-                            {{ part.name }}
-                          </pocket-gull-button>
-                      }
+                    <span class="inline-block w-1.5 h-1.5 bg-sky-500 rounded-2xs"></span>
+                    <span class="font-bold text-zinc-800 dark:text-zinc-200 text-[11px] uppercase tracking-wider">
+                      WHO SDG 3.4 CVD TELEMETRY:
+                    </span>
+                    <span class="font-black tracking-tight" [ngClass]="risk.color">
+                      [{{ risk.riskScorePercent }}% ▪ {{ risk.riskTier }}]
+                    </span>
                   </div>
-              }
-              <div (click)="isHistoryExpanded.set(!isHistoryExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isHistoryExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-              </div>
-        </div>
-        
-        @if(isHistoryExpanded()) {
-          <div class="flex flex-col min-h-0">
-            <div #historyContainer class="p-6 scroll-smooth">
-              @if(selectedPatient()?.history; as history) {
-                <app-patient-history-timeline 
-                  [history]="filteredHistory()"
-                  [activeVisit]="state.viewingPastVisit()"
-                  (review)="reviewVisit($event)"
-                  (reviewAnalysis)="reviewAnalysis($event)"
-                  (reviewNote)="reviewNote($event)"
-                  (deleteNote)="deleteNote($event)"
-                  (openBookmark)="openBookmarkInResearchFrame($event)"
-                ></app-patient-history-timeline>
-              }
 
-              @if ((selectedPatient()?.history?.length ?? 0) === 0) {
-                <div class="h-32 flex flex-col items-center justify-center text-gray-200">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 mb-2 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-                  <p class="text-xs font-bold uppercase tracking-[0.15em]">No recorded activity</p>
+                  <!-- ICD-11 Dual-Codes Tags -->
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    @for (code of whoIcd11Codes(); track $index) {
+                      <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-sky-700 dark:text-sky-300">
+                        {{ code.icd11Tm1Code }}
+                      </span>
+                    }
+                  </div>
                 </div>
               }
+
+              <!-- 4 Multi-Paradigm Sparklines Grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <app-longitudinal-trend-sparkline
+                  metricTitle="HRV rMSSD"
+                  unit="ms"
+                  paradigm="western"
+                  [dataPoints]="[
+                    { date: 'May 1', value: 38 },
+                    { date: 'Jun 1', value: 41 },
+                    { date: 'Jul 1', value: 40 },
+                    { date: 'Jul 15', value: 44 },
+                    { date: 'Aug 1', value: 48 },
+                    { date: 'Aug 15', value: 52 },
+                    { date: 'Aug 21', value: 55 }
+                  ]"
+                  [targetRange]="{ min: 45, max: 65 }">
+                </app-longitudinal-trend-sparkline>
+
+                <app-longitudinal-trend-sparkline
+                  metricTitle="Spleen Qi Index"
+                  unit="pts"
+                  paradigm="tcm"
+                  [dataPoints]="[
+                    { date: 'May 1', value: 60 },
+                    { date: 'Jun 1', value: 62 },
+                    { date: 'Jul 1', value: 65 },
+                    { date: 'Jul 15', value: 68 },
+                    { date: 'Aug 1', value: 72 },
+                    { date: 'Aug 15', value: 74 },
+                    { date: 'Aug 21', value: 78 }
+                  ]"
+                  [targetRange]="{ min: 70, max: 90 }">
+                </app-longitudinal-trend-sparkline>
+
+                <app-longitudinal-trend-sparkline
+                  metricTitle="Vata Stability"
+                  unit="pts"
+                  paradigm="ayurveda"
+                  [dataPoints]="[
+                    { date: 'May 1', value: 40 },
+                    { date: 'Jun 1', value: 45 },
+                    { date: 'Jul 1', value: 52 },
+                    { date: 'Jul 15', value: 58 },
+                    { date: 'Aug 1', value: 64 },
+                    { date: 'Aug 15', value: 70 },
+                    { date: 'Aug 21', value: 75 }
+                  ]"
+                  [targetRange]="{ min: 65, max: 85 }">
+                </app-longitudinal-trend-sparkline>
+
+                <app-longitudinal-trend-sparkline
+                  metricTitle="Somatic Strain"
+                  unit="pts"
+                  paradigm="osteopathic"
+                  [dataPoints]="[
+                    { date: 'May 1', value: 75 },
+                    { date: 'Jun 1', value: 70 },
+                    { date: 'Jul 1', value: 68 },
+                    { date: 'Jul 15', value: 62 },
+                    { date: 'Aug 1', value: 55 },
+                    { date: 'Aug 15', value: 48 },
+                    { date: 'Aug 21', value: 42 }
+                  ]"
+                  [targetRange]="{ min: 20, max: 45 }">
+                </app-longitudinal-trend-sparkline>
+              </div>
+
             </div>
-          </div>
-        }
-      </pocket-gull-card>
+          }
+        </pocket-gull-card>
 
-      <!-- Patient Scans Card -->
-      <pocket-gull-card 
-        title="DICOM Viewer" 
-        [icon]="scansIcon"
-        [noPadding]="true">
-        
-        <div right-action (click)="isScansExpanded.set(!isScansExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isScansExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-        </div>
-
-        @if(isScansExpanded()) {
-          <div class="p-6 bg-[#F9FAFB]/50 dark:bg-zinc-900/50 min-h-0">
-            <app-dicom-viewer class="shrink-0"></app-dicom-viewer>
+        <!-- Biometric Trends Card -->
+        <pocket-gull-card 
+          title="Biometric Trends" 
+          [icon]="biometricIcon"
+          [noPadding]="true">
+          
+          <div right-action (click)="isBiometricExpanded.set(!isBiometricExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isBiometricExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
           </div>
-        }
-      </pocket-gull-card>
+
+          @if(isBiometricExpanded()) {
+            <div class="h-[250px] overflow-hidden bg-white dark:bg-black/20 shrink-0 p-4">
+               <app-biometric-history-chart></app-biometric-history-chart>
+            </div>
+          }
+        </pocket-gull-card>
+      }
+
+      <!-- 🩻 SECTION 3: IMAGING & EXPOSOMICS -->
+      @if (activeWorkspaceTab() === 'imaging' || activeWorkspaceTab() === 'all') {
+        <!-- Patient Scans Card -->
+        <pocket-gull-card 
+          title="DICOM Viewer" 
+          [icon]="scansIcon"
+          [noPadding]="true">
+          
+          <div right-action (click)="isScansExpanded.set(!isScansExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isScansExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+          </div>
+
+          @if(isScansExpanded()) {
+            <div class="p-6 bg-[#F9FAFB]/50 dark:bg-zinc-900/50 min-h-0">
+              <app-dicom-viewer class="shrink-0"></app-dicom-viewer>
+            </div>
+          }
+        </pocket-gull-card>
+
+        <!-- Environmental Exposomics & Acute Toxicology Card -->
+        <pocket-gull-card 
+          title="Environmental Exposomics &amp; Acute Toxicology" 
+          [icon]="toxicologyIcon"
+          [noPadding]="false">
+          
+          <div right-action (click)="isToxicologyExpanded.set(!isToxicologyExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isToxicologyExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+          </div>
+
+          @if(isToxicologyExpanded()) {
+            <div class="pt-2">
+              <app-environmental-exposomics-toxicology></app-environmental-exposomics-toxicology>
+            </div>
+          }
+        </pocket-gull-card>
+      }
+
+      <!-- ⏳ SECTION 4: HISTORY & TIMELINE -->
+      @if (activeWorkspaceTab() === 'timeline' || activeWorkspaceTab() === 'all') {
+        <!-- Patient History Card -->
+        <pocket-gull-card 
+          title="Patient History" 
+          [icon]="historyIcon"
+          [noPadding]="true">
+          
+          <div right-action class="flex items-center gap-2">
+                @if(historyBodyParts().length > 0) {
+                    <div class="flex items-center gap-1 overflow-x-auto max-w-[280px] sm:max-w-none hide-scrollbar">
+                        <button type="button" 
+                          (click)="$event.stopPropagation(); historyFilter.set(null)"
+                          [class.bg-emerald-600]="!historyFilter()"
+                          [class.text-white]="!historyFilter()"
+                          [class.bg-zinc-100]="historyFilter()"
+                          [class.dark:bg-zinc-800]="historyFilter()"
+                          [class.text-zinc-700]="historyFilter()"
+                          [class.dark:text-zinc-300]="historyFilter()"
+                          class="px-2 py-1 rounded-md text-[10px] font-mono font-bold uppercase transition cursor-pointer">
+                          ALL
+                        </button>
+                        @for(part of historyBodyParts(); track part.id) {
+                            <button type="button" 
+                              (click)="$event.stopPropagation(); historyFilter.set(part.id)"
+                              [class.bg-emerald-600]="historyFilter() === part.id"
+                              [class.text-white]="historyFilter() === part.id"
+                              [class.bg-zinc-100]="historyFilter() !== part.id"
+                              [class.dark:bg-zinc-800]="historyFilter() !== part.id"
+                              [class.text-zinc-700]="historyFilter() !== part.id"
+                              [class.dark:text-zinc-300]="historyFilter() !== part.id"
+                              class="px-2 py-1 rounded-md text-[10px] font-mono font-bold uppercase transition cursor-pointer whitespace-nowrap">
+                              {{ part.name }}
+                            </button>
+                        }
+                    </div>
+                }
+                <div (click)="isHistoryExpanded.set(!isHistoryExpanded())" class="cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 p-1 rounded-md transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isHistoryExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </div>
+          </div>
+          
+          @if(isHistoryExpanded()) {
+            <div class="flex flex-col min-h-0">
+              <div #historyContainer class="p-6 scroll-smooth">
+                @if(selectedPatient()?.history; as history) {
+                  <app-patient-history-timeline 
+                    [history]="filteredHistory()"
+                    [activeVisit]="state.viewingPastVisit()"
+                    (review)="reviewVisit($event)"
+                    (reviewAnalysis)="reviewAnalysis($event)"
+                    (reviewNote)="reviewNote($event)"
+                    (deleteNote)="deleteNote($event)"
+                    (openBookmark)="openBookmarkInResearchFrame($event)"
+                  ></app-patient-history-timeline>
+                }
+
+                @if ((selectedPatient()?.history?.length ?? 0) === 0) {
+                  <div class="h-32 flex flex-col items-center justify-center text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 mb-2 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+                    <p class="text-xs font-bold uppercase tracking-[0.15em]">No recorded activity</p>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </pocket-gull-card>
+      }
 
     </div>
   `
@@ -339,6 +425,9 @@ export class MedicalChartComponent {
 
   el = inject(ElementRef, { optional: true });
   platformId = inject(PLATFORM_ID, { optional: true });
+
+  // --- Active Workspace Tab for Zero-Scroll Mode ---
+  activeWorkspaceTab = signal<'anatomy' | 'vitals' | 'imaging' | 'timeline' | 'all'>('anatomy');
 
   viewerIcon = `
     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

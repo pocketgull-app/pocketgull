@@ -187,7 +187,7 @@ export class HobbyDomainCompanionService {
     {
       id: 'buddy_arborist',
       name: 'Silas "Old Oak" Thorne',
-      domainTitle: 'Old-Growth Arborist & Master Botanical Gardener',
+      domainTitle: 'Old-Growth Arborist & Lead Botanical Specialist',
       passionBadge: '🌲 Forest Ecologist',
       avatarEmoji: '🌳',
       tagline: 'Deep roots withstand the winter gale; prune the deadwood and let the canopy breathe.',
@@ -198,50 +198,42 @@ export class HobbyDomainCompanionService {
           domainId: 'buddy_arborist',
           metaphorName: 'Elevated Xylem Sap Pressure in the Cambium Layer',
           craftExplanation: 'Spring sap flow is surging too fast through narrow outer vascular rings, straining the trunk bark.',
-          systemAnalogy: 'Hypertension = Xylem over-pressurization. Deep breathwork and hydration widen the vascular rings.',
-          maintenanceStep: 'Evening foot soaks and herbal hydration to ground the ascending tree sap.',
-          adaptiveToolRecommendation: 'Telescoping carbon-fiber ratchet pruners to eliminate overhead shoulder strain.'
+          systemAnalogy: 'Hypertension = Excessive xylem pressure. Deep rhythmic breathing relieves the hydraulic tension in the vessels.',
+          maintenanceStep: 'Sip cold mountain water and take 5 slow diaphragmatic breaths before lifting garden mulch.',
+          adaptiveToolRecommendation: 'Telescopic bypass loppers with compound ratchet leverage so your shoulders never strain.'
         },
-        'E11.9': {
+        'M17.9': {
           domainId: 'buddy_arborist',
-          metaphorName: 'Clogged Phloem Sugar Transport & Starch Saturation',
-          craftExplanation: 'The leaves produced rich sugars, but the phloem transport vessels are gummed up, starving the deep mycorrhizal roots.',
-          systemAnalogy: 'Type 2 Diabetes = Sugar stagnation in circulation instead of fueling root growth. Muscle contraction acts like a root pump.',
-          maintenanceStep: 'Post-meal garden strolls to open the vascular channels and metabolize sap sugars.',
-          adaptiveToolRecommendation: 'Ergonomic soil auger drill bits for electric drills instead of heavy manual digging.'
-        },
-        'J44.9': {
-          domainId: 'buddy_arborist',
-          metaphorName: 'Restricted Stomata Gas Exchange in Old-Growth Needles',
-          craftExplanation: 'Microscopic leaf stomata pores are clogged with forest dust, cutting down oxygen-carbon exchange.',
-          systemAnalogy: 'COPD = Constricted stomatal respiration. Pursed-lip breathing clears the bronchial airways like a gentle sea breeze.',
-          maintenanceStep: 'Diaphragmatic pacing and clean air humidity around the greenhouse bench.',
-          adaptiveToolRecommendation: 'Lightweight positive-pressure PAPR respirator mask for sawdust and pollen days.'
+          metaphorName: 'Calcified Wood Grain & Weathered Heartwood Knots',
+          craftExplanation: 'Years of storms have hardened the rings; cold damp mornings make the green boughs stiff until the sun warms them.',
+          systemAnalogy: 'Knee Osteoarthritis = Weathered branch joints. Gentle morning movement lubricates the cellular cambium.',
+          maintenanceStep: 'Warm herbal compress and 10 minutes of gentle range-of-motion leg swings before weeding.',
+          adaptiveToolRecommendation: 'Ergonomic rolling garden seat and thick memory foam knee pads.'
         }
       },
       workshopErgonomics: [
         {
-          toolName: 'Elevated 36-Inch Ergonomic Cedar Raised Garden Bed',
-          clinicalPurpose: 'Zero-Bend Lumbar Protection (M54.5)',
-          howItHelps: 'Brings soil level up to waist height so you can sow seeds and trim herbs with a perfectly neutral spine.',
-          icon: '🌱'
-        },
-        {
-          toolName: 'Telescoping Compound-Action Bypass Lopper',
-          clinicalPurpose: 'Rotator Cuff & Cervical Spine Conservation',
-          howItHelps: '4:1 gear-ratio multiplier snips 2-inch tree branches with just 5 lbs of arm squeeze.',
+          toolName: 'Ergonomic Ratchet Bypass Pruners with Rotating Handle',
+          clinicalPurpose: 'Carpal Tunnel & Hand Arthritis Relief',
+          howItHelps: 'Multiplies cutting power 4x through mechanical gearing, eliminating wrist twisting when trimming thick branches.',
           icon: '✂️'
         },
         {
-          toolName: 'Gel-Infused Heavy-Duty Articulated Knee Armor',
-          clinicalPurpose: 'Knee Bursitis & Cartilage Preservation (M17.9)',
-          howItHelps: 'Distributes weight across the entire shin, eliminating direct patellar pressure when inspecting root crowns.',
-          icon: '🛡️'
+          toolName: 'Raised Bed Planting Tables with 32" Working Height',
+          clinicalPurpose: 'Lumbar Spine & Postural Ergonomics',
+          howItHelps: 'Eliminates repetitive bending and stooping, allowing comfortable standing or stool-height gardening.',
+          icon: '🪴'
+        },
+        {
+          toolName: 'Pneumatic-Tired Heavy Duty Garden Cart with Pull Handle',
+          clinicalPurpose: 'Joint Loading & Energy Conservation',
+          howItHelps: 'Transfers 100% of the weight of heavy soil and mulch to 4 air-filled tires, preventing spine compression.',
+          icon: '🛒'
         }
       ],
       sampleGreetings: [
-        'Welcome back to the grove, old friend. The redwoods are standing tall today. How are your roots feeling?',
-        'Look at those saplings we grafted last spring! Let’s check the soil moisture and make sure you’re staying well-hydrated.',
+        'Welcome back to the greenhouse, Silas! Smell that rich loam after the morning rain? Let’s check our cuttings today.',
+        'Good to see you on the path, friend. The oaks are standing tall today—let’s make sure we tend our own roots first.',
         'Take a deep breath of the pine needles. Remember: trees don’t rush, yet everything gets accomplished.'
       ]
     },
@@ -249,7 +241,7 @@ export class HobbyDomainCompanionService {
     {
       id: 'buddy_woodworker',
       name: 'Gus "Dovetail" Lindqvist',
-      domainTitle: 'Master Cabinetmaker & Hand-Tool Woodworker',
+      domainTitle: 'Artisan Cabinetmaker & Hand-Tool Woodworker',
       passionBadge: '🪚 Fine Furniture Artisan',
       avatarEmoji: '🪵',
       tagline: 'Measure twice, cut once, and let the wood grain dictate the joint.',
@@ -303,7 +295,7 @@ export class HobbyDomainCompanionService {
     {
       id: 'buddy_musician',
       name: 'Maestra Clara Schumann-Vance',
-      domainTitle: 'Symphony Concertmaster & Cellist',
+      domainTitle: 'Symphony Principal Violinist & Cellist',
       passionBadge: '🎻 Chamber Music Maestro',
       avatarEmoji: '🎼',
       tagline: 'When the rhythm is steady and the harmony is true, the soul resonates at 528 Hz.',
@@ -357,7 +349,7 @@ export class HobbyDomainCompanionService {
     {
       id: 'buddy_sailor',
       name: 'Captain Barnaby "Compass" Croft',
-      domainTitle: 'Master Mariner & Offshore Navigator',
+      domainTitle: 'Lead Navigator & Offshore Mariner',
       passionBadge: '⛵ Ocean Voyager',
       avatarEmoji: '🧭',
       tagline: 'You cannot direct the wind, but you can always adjust your sails.',
@@ -625,12 +617,12 @@ export class HobbyDomainCompanionService {
       id: 'evt_03',
       domainCategory: 'gardening',
       title: 'Heirloom Seed Swap & Raised-Bed Volunteer Morning',
-      organizer: 'Master Gardeners County Extension & Botanical Garden',
+      organizer: 'County Botanical Extension & Heritage Gardeners',
       location: 'Community Botanical Conservatory & Heritage Grove',
       scheduleDescription: '1st & 3rd Saturday of the month, 9:00 AM – 12:00 PM',
       communityType: 'Community Garden',
       accessibilityRating: 'Light Walking',
-      contactOrLink: 'https://pocketgull.app/community/master-gardeners',
+      contactOrLink: 'https://pocketgull.app/community/botanical-gardeners',
       buddyEncouragement: 'The heirloom tomatoes need trellising. Perfect chance to get some morning sunlight and talk soil ecology.',
       icon: '🌱'
     },

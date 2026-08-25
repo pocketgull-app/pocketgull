@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject, effect, untracked } from '@angular/core';
+import { DictationService } from './dictation.service';
 
 export type KarolinskaSleepinessLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
@@ -258,15 +259,41 @@ export const HEMISPHERIC_PRESETS: IHemisphericPreset[] = [
   providedIn: 'root'
 })
 export class MonroePersianTranceService {
+  private readonly dictation = (() => {
+    try { return inject(DictationService, { optional: true }); } catch { return null; }
+  })();
+  readonly isDucked = signal<boolean>(false);
+
   private audioCtx: AudioContext | null = null;
-  private masterGain: GainNode | null = null;
+  private mainGain: GainNode | null = null;
   private activeNodes: (AudioNode | number)[] = [];
   private pulseIntervalTimer: any = null;
 
   readonly isPlaying = signal<boolean>(false);
   readonly currentMode = signal<HemisphericSyncType | null>(null);
   readonly currentKss = signal<KarolinskaSleepinessLevel>(3);
-  readonly masterVolume = signal<number>(0.12);
+  readonly mainVolume = signal<number>(0.12);
+
+  constructor() {
+    if (this.dictation && typeof this.dictation.isListening === 'function') {
+      effect(() => {
+        const isListening = this.dictation!.isListening();
+        const depth = typeof this.dictation!.sidechainDuckingDepth === 'function'
+          ? this.dictation!.sidechainDuckingDepth()
+          : 0.85;
+
+        untracked(() => {
+          this.isDucked.set(isListening);
+          if (this.mainGain && this.audioCtx) {
+            const baseVol = this.mainVolume();
+            const targetGain = isListening ? baseVol * (1.0 - depth) : baseVol;
+            const timeConstant = isListening ? 0.04 : 0.60;
+            this.mainGain.gain.setTargetAtTime(targetGain, this.audioCtx.currentTime, timeConstant);
+          }
+        });
+      });
+    }
+  }
 
   readonly currentPreset = computed<IHemisphericPreset | null>(() => {
     const mode = this.currentMode();
@@ -310,7 +337,7 @@ export class MonroePersianTranceService {
     this.stop();
     this.currentMode.set(mode);
     this.initAudioContext();
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
 
     this.isPlaying.set(true);
 
@@ -357,7 +384,7 @@ export class MonroePersianTranceService {
     const adaptivePreset = this.getAdaptivePresetForKss(kss);
     this.currentMode.set('kss_adaptive_flow');
     this.initAudioContext();
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
 
     this.isPlaying.set(true);
 
@@ -400,13 +427,16 @@ export class MonroePersianTranceService {
   }
 
   /**
-   * Adjust master output volume (0.0 to 1.0)
+   * Adjust main output volume (0.0 to 1.0)
    */
   setVolume(vol: number): void {
     const clamped = Math.max(0, Math.min(1, vol));
-    this.masterVolume.set(clamped);
-    if (this.masterGain && this.audioCtx) {
-      this.masterGain.gain.setTargetAtTime(clamped, this.audioCtx.currentTime, 0.05);
+    this.mainVolume.set(clamped);
+    if (this.mainGain && this.audioCtx) {
+      const isListening = this.dictation && typeof this.dictation.isListening === 'function' && this.dictation.isListening();
+      const depth = this.dictation && typeof this.dictation.sidechainDuckingDepth === 'function' ? this.dictation.sidechainDuckingDepth() : 0.85;
+      const targetGain = isListening ? clamped * (1.0 - depth) : clamped;
+      this.mainGain.gain.setTargetAtTime(targetGain, this.audioCtx.currentTime, 0.05);
     }
   }
 
@@ -423,10 +453,13 @@ export class MonroePersianTranceService {
     if (this.audioCtx && this.audioCtx.state === 'suspended') {
       this.audioCtx.resume();
     }
-    if (this.audioCtx && !this.masterGain) {
-      this.masterGain = this.audioCtx.createGain();
-      this.masterGain.gain.setValueAtTime(this.masterVolume(), this.audioCtx.currentTime);
-      this.masterGain.connect(this.audioCtx.destination);
+    if (this.audioCtx && !this.mainGain) {
+      this.mainGain = this.audioCtx.createGain();
+      const isListening = this.dictation && typeof this.dictation.isListening === 'function' && this.dictation.isListening();
+      const depth = this.dictation && typeof this.dictation.sidechainDuckingDepth === 'function' ? this.dictation.sidechainDuckingDepth() : 0.85;
+      const initialGain = isListening ? this.mainVolume() * (1.0 - depth) : this.mainVolume();
+      this.mainGain.gain.setValueAtTime(initialGain, this.audioCtx.currentTime);
+      this.mainGain.connect(this.audioCtx.destination);
     }
   }
 
@@ -434,7 +467,7 @@ export class MonroePersianTranceService {
    * Synthesize Native American & Indigenous Trances (Cedar Flute, Water Drum, Gourd Rattle, Canoe Cadence)
    */
   private synthesizeIndigenousTrance(id: HemisphericSyncType, rootHz: number, thetaBeatHz: number): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
     const now = this.audioCtx.currentTime;
 
     if (id === 'indigenous_cedar_flute') {
@@ -460,7 +493,7 @@ export class MonroePersianTranceService {
       vibratoLfo.start(now);
 
       fluteGain.gain.setValueAtTime(0.07, now);
-      fluteOsc.connect(fluteFilter).connect(fluteGain).connect(this.masterGain);
+      fluteOsc.connect(fluteFilter).connect(fluteGain).connect(this.mainGain);
       fluteOsc.start(now);
 
       this.activeNodes.push(fluteOsc, fluteFilter, fluteGain, vibratoLfo, vibratoGain);
@@ -473,7 +506,7 @@ export class MonroePersianTranceService {
       drumOsc.frequency.setValueAtTime(rootHz, now);
 
       drumGain.gain.setValueAtTime(0.08, now);
-      drumOsc.connect(drumGain).connect(this.masterGain);
+      drumOsc.connect(drumGain).connect(this.mainGain);
       drumOsc.start(now);
 
       // Periodic 4.5 Hz pulse envelope
@@ -518,7 +551,7 @@ export class MonroePersianTranceService {
       rattleLfoGain.connect(rattleGain.gain);
       rattleLfo.start(now);
 
-      whiteNoise.connect(highpass).connect(rattleGain).connect(this.masterGain);
+      whiteNoise.connect(highpass).connect(rattleGain).connect(this.mainGain);
       whiteNoise.start(now);
 
       this.activeNodes.push(whiteNoise, highpass, rattleGain, rattleLfo, rattleLfoGain);
@@ -530,7 +563,7 @@ export class MonroePersianTranceService {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(rootHz, now);
       gain.gain.setValueAtTime(0.06, now);
-      osc.connect(gain).connect(this.masterGain);
+      osc.connect(gain).connect(this.mainGain);
       osc.start(now);
       this.activeNodes.push(osc, gain);
     }
@@ -540,7 +573,7 @@ export class MonroePersianTranceService {
    * Synthesize Monroe Institute style stereo binaural beat with subtle pink noise bed
    */
   private synthesizeMonroeHemiSync(carrierHz: number, beatHz: number): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
     const now = this.audioCtx.currentTime;
 
     // Left Channel: Carrier - (Beat / 2)
@@ -554,10 +587,10 @@ export class MonroePersianTranceService {
 
     if (panLeft) {
       panLeft.pan.setValueAtTime(-0.9, now);
-      oscLeft.connect(gainLeft).connect(panLeft).connect(this.masterGain);
+      oscLeft.connect(gainLeft).connect(panLeft).connect(this.mainGain);
       this.activeNodes.push(panLeft);
     } else {
-      oscLeft.connect(gainLeft).connect(this.masterGain);
+      oscLeft.connect(gainLeft).connect(this.mainGain);
     }
 
     // Right Channel: Carrier + (Beat / 2)
@@ -571,10 +604,10 @@ export class MonroePersianTranceService {
 
     if (panRight) {
       panRight.pan.setValueAtTime(0.9, now);
-      oscRight.connect(gainRight).connect(panRight).connect(this.masterGain);
+      oscRight.connect(gainRight).connect(panRight).connect(this.mainGain);
       this.activeNodes.push(panRight);
     } else {
-      oscRight.connect(gainRight).connect(this.masterGain);
+      oscRight.connect(gainRight).connect(this.mainGain);
     }
 
     // Isochronic Sub-Harmonic Warble
@@ -583,7 +616,7 @@ export class MonroePersianTranceService {
     subOsc.type = 'triangle';
     subOsc.frequency.setValueAtTime(carrierHz / 2, now);
     subGain.gain.setValueAtTime(0.02, now);
-    subOsc.connect(subGain).connect(this.masterGain);
+    subOsc.connect(subGain).connect(this.mainGain);
 
     oscLeft.start(now);
     oscRight.start(now);
@@ -596,7 +629,7 @@ export class MonroePersianTranceService {
    * Synthesize EMDR Bilateral Alternating Left/Right Panning at 8 Hz Alpha rate
    */
   private synthesizeEmdrBilateral(carrierHz: number, modulationRateHz: number): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
     const now = this.audioCtx.currentTime;
 
     const osc = this.audioCtx.createOscillator();
@@ -615,10 +648,10 @@ export class MonroePersianTranceService {
       lfo.connect(panner.pan);
       lfo.start(now);
 
-      osc.connect(gain).connect(panner).connect(this.masterGain);
+      osc.connect(gain).connect(panner).connect(this.mainGain);
       this.activeNodes.push(panner, lfo, lfoGain);
     } else {
-      osc.connect(gain).connect(this.masterGain);
+      osc.connect(gain).connect(this.mainGain);
     }
 
     osc.start(now);
@@ -629,7 +662,7 @@ export class MonroePersianTranceService {
    * Synthesize MIT 40 Hz Gamma synchrony isochronic burst
    */
   private synthesizeMitGamma40Hz(carrierHz: number): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
     const now = this.audioCtx.currentTime;
 
     const osc = this.audioCtx.createOscillator();
@@ -645,7 +678,7 @@ export class MonroePersianTranceService {
     pulseGain.gain.setValueAtTime(0.08, now);
     lfo.connect(pulseGain.gain);
 
-    osc.connect(pulseGain).connect(this.masterGain);
+    osc.connect(pulseGain).connect(this.mainGain);
 
     osc.start(now);
     lfo.start(now);
@@ -657,7 +690,7 @@ export class MonroePersianTranceService {
    * Synthesize Tibetan Dual Singing Bowl (432 Hz Fundamental + 528 Hz Harmonic Overtones)
    */
   private synthesizeTibetanSingingBowl(fundamentalHz: number): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
     const now = this.audioCtx.currentTime;
 
     const bowl1 = this.audioCtx.createOscillator();
@@ -679,7 +712,7 @@ export class MonroePersianTranceService {
     bowl1.connect(gain);
     bowl2.connect(gain);
     overtone.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.mainGain);
 
     bowl1.start(now);
     bowl2.start(now);
@@ -692,7 +725,7 @@ export class MonroePersianTranceService {
    * Synthesize Persian Sufi Ney & Shur modal drone (432 Hz Pythagorean + Quarter-Tone microtonal harmonics)
    */
   private synthesizePersianTrance(rootHz: number, modulationHz: number): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
     const now = this.audioCtx.currentTime;
 
     const oscRoot = this.audioCtx.createOscillator();
@@ -706,14 +739,14 @@ export class MonroePersianTranceService {
     filter.Q.setValueAtTime(4.0, now);
 
     gainRoot.gain.setValueAtTime(0.06, now);
-    oscRoot.connect(filter).connect(gainRoot).connect(this.masterGain);
+    oscRoot.connect(filter).connect(gainRoot).connect(this.mainGain);
 
     const oscKoron = this.audioCtx.createOscillator();
     const gainKoron = this.audioCtx.createGain();
     oscKoron.type = 'sine';
     oscKoron.frequency.setValueAtTime(rootHz * 1.22, now);
     gainKoron.gain.setValueAtTime(0.04, now);
-    oscKoron.connect(gainKoron).connect(this.masterGain);
+    oscKoron.connect(gainKoron).connect(this.mainGain);
 
     const lfo = this.audioCtx.createOscillator();
     const lfoGain = this.audioCtx.createGain();
@@ -733,7 +766,7 @@ export class MonroePersianTranceService {
    * Synthesize Animal Bio-Acoustic Comfort Protocols
    */
   private synthesizeAnimalBioAcoustics(mode: HemisphericSyncType): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
     const now = this.audioCtx.currentTime;
 
     if (mode === 'canine_heartbeat') {
@@ -742,7 +775,7 @@ export class MonroePersianTranceService {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(55, now);
       gain.gain.setValueAtTime(0.09, now);
-      osc.connect(gain).connect(this.masterGain);
+      osc.connect(gain).connect(this.mainGain);
       osc.start(now);
       this.activeNodes.push(osc, gain);
     } else if (mode === 'feline_purr') {
@@ -758,7 +791,7 @@ export class MonroePersianTranceService {
       gain.gain.setValueAtTime(0.07, now);
       osc1.connect(gain);
       osc2.connect(gain);
-      gain.connect(this.masterGain);
+      gain.connect(this.mainGain);
 
       osc1.start(now);
       osc2.start(now);
@@ -775,7 +808,7 @@ export class MonroePersianTranceService {
       filter.Q.setValueAtTime(3.0, now);
 
       gain.gain.setValueAtTime(0.05, now);
-      osc.connect(filter).connect(gain).connect(this.masterGain);
+      osc.connect(filter).connect(gain).connect(this.mainGain);
       osc.start(now);
       this.activeNodes.push(osc, filter, gain);
     } else if (mode === 'avian_dawn') {
@@ -791,7 +824,7 @@ export class MonroePersianTranceService {
       gain.gain.setValueAtTime(0.03, now);
       osc1.connect(gain);
       osc2.connect(gain);
-      gain.connect(this.masterGain);
+      gain.connect(this.mainGain);
 
       osc1.start(now);
       osc2.start(now);

@@ -24,7 +24,7 @@ export const LIFE_JOURNEY_PROFILES: ILifeJourneyProfile[] = [
   {
     stage: 'seeker_student',
     title: 'The Seeker & Scholar',
-    subtitle: 'Curiosity, biomedical inquiry, and academic mastery',
+    subtitle: 'Curiosity, biomedical inquiry, and academic excellence',
     compassionateMotto: '“Knowledge begins when we listen to the mystery of living biology.”',
     primaryNeed: 'Cognitive lucidity & deep scientific engagement without burnout',
     recommendedTheme: 'scientific_quest',

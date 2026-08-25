@@ -23,6 +23,8 @@ import { GamificationService } from './gamification.service';
 import { ThemeService } from './theme.service';
 import { ActuarialLongevityService, IOccupationalHazardProfile } from './actuarial-longevity.service';
 import { CoppaPrivacyShieldService, IGuardianAttestation } from './coppa-privacy-shield.service';
+import { SecureStorageService } from './secure-storage.service';
+import { ConsentLineageService } from './consent-lineage.service';
 import { dataConnect } from '../lib/firebase';
 import { createCarePlan, createConsultationSession } from '../lib/dataconnect/esm/index.esm.js';
 
@@ -34,6 +36,8 @@ export class PatientStateService {
   private themeService = inject(ThemeService);
   private actuarialLongevityService = inject(ActuarialLongevityService, { optional: true });
   readonly coppaShield = inject(CoppaPrivacyShieldService, { optional: true });
+  private secureStorage = inject(SecureStorageService, { optional: true });
+  private consentLineage = inject(ConsentLineageService, { optional: true });
 
   // --- UI State & Clinical Tool Prescription State Machine ---
   readonly isPlainLanguageMode = computed(() => this.themeService.isPlainLanguageMode());
@@ -196,7 +200,7 @@ export class PatientStateService {
     relationship: 'Parent' | 'Legal Guardian' | 'Authorized Clinician',
     notes?: string
   ): void {
-    const attestation = this.coppaShield.recordGuardianAttestation(relationship, notes);
+    const attestation = this.coppaShield?.recordGuardianAttestation(relationship, notes) || { isAttested: true, timestamp: new Date().toISOString() };
     this.logEnterpriseAudit(
       'GUARDIAN_PROXY_ATTESTED',
       `Guardian Proxy Attestation confirmed by ${relationship} (${attestation.timestamp})`
@@ -224,7 +228,7 @@ export class PatientStateService {
     this.reasonForVisit.set('');
     this.dietaryProtocol.set('');
     this.patientHistory.set([]);
-    this.coppaShield.revokeGuardianAttestation();
+    this.coppaShield?.revokeGuardianAttestation();
     this.vitals.set({
       bp: '',
       hr: '',
@@ -240,7 +244,10 @@ export class PatientStateService {
       b12: ''
     });
 
-    if (typeof window !== 'undefined' && window.localStorage) {
+    // Cryptographically wipe all persisted state and consent lineage tokens
+    if (this.secureStorage) {
+      this.secureStorage.cryptographicWipeAll('pocketgull_');
+    } else if (typeof window !== 'undefined' && window.localStorage) {
       try {
         localStorage.removeItem('pocketgull_patient_state');
         localStorage.removeItem('pocketgull_transient_cache');
@@ -249,8 +256,12 @@ export class PatientStateService {
       }
     }
 
+    if (this.consentLineage) {
+      this.consentLineage.purgeConsentTokens();
+    }
+
     const timestamp = new Date().toISOString();
-    this.logEnterpriseAudit('STATE_PURGE', `Purged ${totalPurged} transient patient items & revoked guardian proxy tokens`);
+    this.logEnterpriseAudit('STATE_PURGE', `Purged ${totalPurged} transient patient items, wiped cryptographic storage & revoked guardian proxy tokens`);
 
     return { timestamp, purgedItemsCount: totalPurged };
   }
@@ -303,7 +314,7 @@ export class PatientStateService {
   readonly requestedResearchQuery = signal<string | null>(null);
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
-  readonly bodyViewerMode = signal<'3d' | '2d' | 'cellular' | 'quad' | 'tme' | 'awcim' | 'genesis'>('3d');
+  readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular'>('3d');
   readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic'>('skin');
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);

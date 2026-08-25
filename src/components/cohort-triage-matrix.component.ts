@@ -44,10 +44,12 @@ export interface ITriageRow {
         </div>
 
         <div class="flex items-center gap-2 self-start sm:self-auto">
-          <span class="text-xs font-mono font-bold text-zinc-500">Sort by:</span>
+          <label for="cohort-sort-select" class="text-xs font-mono font-bold text-zinc-500">Sort by:</label>
           <select 
+            id="cohort-sort-select"
             [value]="sortField()"
             (change)="setSort(getEventVal($event))"
+            aria-label="Sort cohort triage by"
             class="px-3 py-1.5 text-xs font-mono font-bold bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none cursor-pointer">
             <option value="sibi">Systemic Burden (SIBI)</option>
             <option value="cvRisk">10-Yr CV Risk %</option>

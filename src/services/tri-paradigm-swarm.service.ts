@@ -74,7 +74,7 @@ export class TriParadigmSwarmService {
     // 2. Eastern TCM Zang-Fu Specialist Perspective (Swoop)
     const eastern: IParadigmPerspective = {
       paradigm: 'eastern',
-      specialistName: 'Master Swoop (Eastern TCM Zang-Fu & Meridian Harmony)',
+      specialistName: 'Elder Swoop (Eastern TCM Zang-Fu & Meridian Harmony)',
       avatarIcon: '☯️',
       primaryDiagnosis: `Spleen Qi Deficiency with Dampness accumulation and Liver Qi Stagnation disrupting Digestive Fire.`,
       keyInterventions: [

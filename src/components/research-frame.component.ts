@@ -34,9 +34,7 @@ export interface IPubMedSearchResult {
     PocketGullButtonComponent, 
     PocketGullInputComponent, 
     SafeHtmlPipe, 
-    PatientEducationFlipDirective, 
-    NcaaSportsScienceHubComponent,
-    InternationalUniversityHubComponent
+    PatientEducationFlipDirective
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -102,73 +100,6 @@ export interface IPubMedSearchResult {
         </div>
       </div>
 
-      <!-- Featured Research Frame Experiences Banner Carousel -->
-      <div class="p-3 bg-gradient-to-r from-indigo-950/80 via-zinc-900 to-purple-950/80 border-b border-zinc-800 text-zinc-100 font-pocketgull-inter text-xs shrink-0 space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 flex items-center gap-1.5 font-pocketgull-mono">
-            <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
-            ✨ Available Research Frame Experiences
-          </span>
-          <span class="text-[10px] text-zinc-400 font-pocketgull-inter">Cross-Paradigm Evidence Engines</span>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2">
-          <!-- Experience 1: PubMed Matrix -->
-          <div (click)="setSearchEngine('pubmed')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-indigo-500/30 hover:border-indigo-400 cursor-pointer transition-all space-y-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-indigo-300 font-pocketgull-mono">
-              <span>📚 PubMed</span>
-              <span class="font-pocketgull-tabular">24M+</span>
-            </div>
-            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">MeSH &amp; clinical trials</p>
-          </div>
-
-          <!-- Experience 2: bioRxiv Preprints -->
-          <div (click)="setSearchEngine('google')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-purple-500/30 hover:border-purple-400 cursor-pointer transition-all space-y-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-purple-300 font-pocketgull-mono">
-              <span>🧬 bioRxiv</span>
-              <span>Live</span>
-            </div>
-            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">Pre-publication trials</p>
-          </div>
-
-          <!-- Experience 3: TCM Formulatory -->
-          <div (click)="setSearchEngine('tcm')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-emerald-500/30 hover:border-emerald-400 cursor-pointer transition-all space-y-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-emerald-300 font-pocketgull-mono">
-              <span>🌿 TCM</span>
-              <span>Zang-Fu</span>
-            </div>
-            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">Herbology formulas</p>
-          </div>
-
-          <!-- Experience 4: Vedic Samhita Corpus -->
-          <div (click)="setSearchEngine('ayurveda')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all space-y-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-amber-300 font-pocketgull-mono">
-              <span>🧘 Ayurveda</span>
-              <span>Dosha</span>
-            </div>
-            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">Charaka &amp; Sushruta</p>
-          </div>
-
-          <!-- Experience 5: NCAA Sports Science (Big Ten / Pac-12 / UW / Purdue / UO) -->
-          <div (click)="setSearchEngine('ncaa')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-amber-500/40 hover:border-amber-400 cursor-pointer transition-all space-y-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-amber-300 font-pocketgull-mono">
-              <span>🏆 NCAA SCAT6</span>
-              <span>D1-D3</span>
-            </div>
-            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">Big Ten &amp; Pac-12 Sports</p>
-          </div>
-
-          <!-- Experience 6: International Geofenced Alliances -->
-          <div (click)="setSearchEngine('international')" class="p-2.5 rounded-xl bg-zinc-900/90 border border-indigo-500/40 hover:border-indigo-400 cursor-pointer transition-all space-y-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-indigo-300 font-pocketgull-mono">
-              <span>🌐 Global Geo</span>
-              <span>Sovereign</span>
-            </div>
-            <p class="text-[10px] text-zinc-400 font-pocketgull-inter leading-tight">GDPR / PIPEDA / APEC</p>
-          </div>
-        </div>
-      </div>
-
       <!-- Toolbar -->
       <div class="p-3 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-[#09090b]/50 shrink-0">
         <div class="flex flex-wrap items-center gap-2 md:flex-nowrap">
@@ -193,26 +124,6 @@ export interface IPubMedSearchResult {
                     [class.text-gray-500]="searchEngine() !== 'pubmed'"
                     [class.dark:text-zinc-400]="searchEngine() !== 'pubmed'">
               PubMed
-            </button>
-            <button (click)="setSearchEngine('ncaa')"
-                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
-                    [class.bg-white]="searchEngine() === 'ncaa'"
-                    [class.dark:bg-zinc-600]="searchEngine() === 'ncaa'"
-                    [class.text-amber-700]="searchEngine() === 'ncaa'"
-                    [class.dark:text-amber-400]="searchEngine() === 'ncaa'"
-                    [class.text-gray-500]="searchEngine() !== 'ncaa'"
-                    [class.dark:text-zinc-400]="searchEngine() !== 'ncaa'">
-              🏆 NCAA
-            </button>
-            <button (click)="setSearchEngine('international')"
-                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
-                    [class.bg-white]="searchEngine() === 'international'"
-                    [class.dark:bg-zinc-600]="searchEngine() === 'international'"
-                    [class.text-indigo-700]="searchEngine() === 'international'"
-                    [class.dark:text-indigo-400]="searchEngine() === 'international'"
-                    [class.text-gray-500]="searchEngine() !== 'international'"
-                    [class.dark:text-zinc-400]="searchEngine() !== 'international'">
-              🌐 Global
             </button>
             <button (click)="setSearchEngine('ayurveda')"
                     class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
@@ -263,21 +174,6 @@ export interface IPubMedSearchResult {
             <button (click)="appendSmartChip(chip.query)"
                     class="px-2 py-0.5 text-[11px] font-semibold bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 rounded-full hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-all shrink-0">
               {{ chip.label }}
-            </button>
-          }
-        </div>
-
-        <!-- Leading Biomedical & Citizen Science Research Institutions -->
-        <div class="mt-1.5 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest shrink-0 flex items-center gap-1">
-            <span>🏛️</span> Research Institutions:
-          </span>
-          @for (inst of researchInstitutions(); track inst.name) {
-            <button (click)="searchInstitution(inst)"
-                    [title]="inst.description"
-                    class="px-2 py-0.5 text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-all shrink-0 flex items-center gap-1">
-              <span>{{ inst.icon }}</span>
-              <span>{{ inst.name }}</span>
             </button>
           }
         </div>

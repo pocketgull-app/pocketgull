@@ -1,7 +1,6 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
-import { ThemeService } from '../../services/theme.service';
 
 export interface IParadigmVector {
   id: string;
@@ -75,7 +74,7 @@ export class UnifiedParadigmSynthesizerComponent {
     { id: 'therapeutics', name: 'Therapeutics', score: 88, status: 'Precision Regimen', icon: '🌿', color: 'bg-emerald-500' },
     { id: 'nutrition', name: 'Metabolic', score: 95, status: 'Circadian Fasting', icon: '🥗', color: 'bg-amber-500' },
     { id: 'recovery', name: 'Recovery', score: 90, status: 'Vagal Tone High', icon: '⚡', color: 'bg-purple-500' },
-    { id: 'turing', name: 'Turing Logic', score: '96' as any, status: '0 Deadlocks', icon: '🧮', color: 'bg-cyan-500' },
+    { id: 'turing', name: 'Turing Logic', score: 96, status: '0 Deadlocks', icon: '🧮', color: 'bg-cyan-500' },
     { id: 'nobel', name: 'Nobel Evidence', score: 94, status: 'Autophagy Peak', icon: '🏆', color: 'bg-amber-400' },
     { id: 'aaas', name: 'AAAS Science', score: 91, status: 'GLP-1 Incretin Active', icon: '🔬', color: 'bg-teal-500' },
     { id: 'lasker', name: 'Lasker Model', score: 93, status: 'Ψ-mRNA Modified', icon: '🏛️', color: 'bg-indigo-500' },

@@ -10,6 +10,7 @@ import { AdobeFireflyTextureService } from '../../services/adobe-firefly-texture
 import { BodyMeshFactoryService } from '../../services/body-mesh-factory.service';
 import { RaycastSelectionService } from '../../services/raycast-selection.service';
 import { SeverityParticleService } from '../../services/severity-particle.service';
+import { SpatialLesionMarkupService } from '../../services/spatial-lesion-markup.service';
 
 // Mock Angular effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
 vi.mock('@angular/core', async (importOriginal) => {
@@ -45,6 +46,7 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
         { provide: RaycastSelectionService, useValue: {} },
         { provide: SeverityParticleService, useValue: {} },
         { provide: AdobeFireflyTextureService, useValue: {} },
+        { provide: SpatialLesionMarkupService, useClass: SpatialLesionMarkupService },
         { provide: NgZone, useValue: { runOutsideAngular: (fn: any) => fn() } }
       ]
     });
@@ -140,5 +142,27 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     expect(viewer.biomarkerHeatmapMode()).toBe(true);
     viewer.toggleBiomarkerHeatmap();
     expect(viewer.biomarkerHeatmapMode()).toBe(false);
+  });
+
+  it('constructs compound 3D lesion beacon pins with core, halo ring, and light ray', () => {
+    const viewer = createViewer();
+    expect(viewer.lesionMarkup.isMarkupMode()).toBe(false);
+
+    viewer.lesionMarkup.toggleMarkupMode(true);
+    expect(viewer.lesionMarkup.isMarkupMode()).toBe(true);
+
+    viewer.lesionMarkup.addLesion({
+      label: 'Cervical Radiculopathy',
+      partId: 'head',
+      position: { x: 0, y: 1.6, z: 0.1 },
+      severity: 'critical',
+      morphology: 'inflammation',
+      clinicalNotes: 'C5/C6 impingement'
+    });
+
+    expect(viewer.lesionMarkup.activeLesions().length).toBe(1);
+    expect(viewer.lesionMarkup.activeSeverity()).toBe('moderate');
+
+    viewer.updateLesionPins();
   });
 });
