@@ -715,7 +715,7 @@ class _SentinelMapPainter extends CustomPainter {
 
       final color = isAlert
           ? const Color(0xFFEF4444)
-          : _parseColor(packet.color);
+          : packet.color;
 
       final paint = Paint()
         ..style = PaintingStyle.fill
@@ -793,11 +793,6 @@ class _SentinelMapPainter extends CustomPainter {
         Offset(node.x - tp.width / 2, node.y - size - 12),
       );
     }
-  }
-
-  Color _parseColor(String hex) {
-    final cleaned = hex.replaceFirst('#', '');
-    return Color(int.parse('FF$cleaned', radix: 16));
   }
 
   @override
