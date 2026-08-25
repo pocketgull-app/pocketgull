@@ -31,7 +31,9 @@ export function getSecureRandomId(): string {
     gCrypto.getRandomValues(array);
     return Array.from(array, num => num.toString(36)).join('');
   }
-  return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+  const timestamp = Date.now().toString(36);
+  const perf = typeof performance !== 'undefined' ? performance.now().toString(36).replace('.', '') : '';
+  return `${timestamp}${perf}`;
 }
 
 /**

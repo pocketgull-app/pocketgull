@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { getSecureRandomId } from '../utils/security-helper';
 
 export interface IPeerSharingConsent {
   shareAcousticThemeSong: boolean;
@@ -78,7 +79,7 @@ export class PeerNetworkService {
    */
   generateMyPeerQrPayload(userAlias: string, schoolId: string): string {
     const encodedAlias = encodeURIComponent(userAlias);
-    const peerId = `p_${Math.random().toString(36).substring(2, 9)}`;
+    const peerId = `p_${getSecureRandomId()}`;
     return `https://pocketgull.app/peer-sync?peerId=${peerId}&alias=${encodedAlias}&school=${schoolId}&v=1.16`;
   }
 

@@ -1,4 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
+import { getSecureRandomId } from '../utils/security-helper';
 import { AvsEngineService } from './avs-engine.service';
 import { FhirR4BundleExportService } from './fhir-r4-bundle-export.service';
 
@@ -136,7 +137,7 @@ export class SpatialLesionMarkupService {
   }
 
   addLesion(payload: Omit<ISpatialLesion, 'id' | 'createdAt' | 'updatedAt'>): ISpatialLesion {
-    const id = `lesion_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const id = `lesion_${Date.now()}_${getSecureRandomId()}`;
     const now = new Date().toISOString();
     const snomed = payload.snomedCode || MORPHOLOGY_SNOMED_MAP[payload.morphology]?.code || '404684003';
 

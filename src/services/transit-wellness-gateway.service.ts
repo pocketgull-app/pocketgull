@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { getSecureRandomId } from '../utils/security-helper';
 
 export type ScannerVenueType = 'AIRPORT_TSA' | 'STADIUM_ARENA';
 
@@ -63,7 +64,7 @@ export class TransitWellnessGatewayService {
   importVoluntaryScan(scanData: Partial<ITransitBodyScanResult>): ITransitBodyScanResult {
     const venueType = scanData.venueType || 'STADIUM_ARENA';
     const updated: ITransitBodyScanResult = {
-      scanId: `scan-${Math.random().toString(36).substring(2, 8)}`,
+      scanId: `scan-${getSecureRandomId()}`,
       venueType,
       venueNameOrIata: scanData.venueNameOrIata || (venueType === 'STADIUM_ARENA' ? 'MetLife Stadium 🏈' : 'SFO Airport'),
       postureSymmetryScore: scanData.postureSymmetryScore || 91,

@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { randomBytes } from 'node:crypto';
 
 export const supportRouter = Router();
 
@@ -40,7 +41,7 @@ supportRouter.post('/ticket', (req: Request, res: Response) => {
 
     const priority = isAcuteEmergency ? 'P1_CRITICAL' : (category === 'EHR_INTEGRATION' || category === 'PRIVACY_HIPAA' ? 'P2_HIGH' : 'P3_STANDARD');
 
-    const ticketId = 'tkt-' + Math.random().toString(36).substring(2, 9);
+    const ticketId = `tkt-${randomBytes(4).toString('hex')}`;
     const disclaimer = '\n\n---\n*FDA 520(o) Non-Device CDS Disclaimer: This support agent provides technical, administrative, and educational guidance only. It does not provide medical diagnosis, treatment, or replace professional clinical evaluation.*';
 
     let aiResponse = '';

@@ -5,6 +5,7 @@ import {
   IPatientResearchEnrollment,
   IResearchDividendLedgerEntry
 } from '../models/research-cohort.types';
+import { getSecureRandomId } from '../utils/security-helper';
 
 const INITIAL_COHORTS: IResearchCohortListing[] = [
   {
@@ -180,7 +181,7 @@ export class ResearchConsentService {
   /** Signs HIPAA Research Authorization (§ 164.508) & Ethical Research Charter */
   signHipaaAuthorization(signatureName: string): string {
     const timestamp = new Date().toISOString();
-    const signatureHash = `sha256_${Math.random().toString(36).substring(2, 15)}_${Date.now()}`;
+    const signatureHash = `sha256_${getSecureRandomId()}_${Date.now()}`;
     
     this.enrollment.update(current => ({
       ...current,
@@ -246,7 +247,7 @@ export class ResearchConsentService {
       amountUsd: dividendAmount,
       patientRevenueSharePercent: 85,
       status: 'accrued',
-      transactionHash: `0x${Math.random().toString(16).substring(2, 12)}`,
+      transactionHash: `0x${getSecureRandomId()}`,
       researchFindingSummary: `Accredited study query by ${institutionName} to accelerate evidence-based treatment discovery.`
     };
 
@@ -267,7 +268,7 @@ export class ResearchConsentService {
       return { success: false, amountPaid: 0, txId: '' };
     }
 
-    const txId = `strp_po_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    const txId = `strp_po_${Date.now()}_${getSecureRandomId()}`;
 
     this.enrollment.update(current => ({
       ...current,

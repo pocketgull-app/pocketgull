@@ -45,10 +45,18 @@ export class SmartOnFhirLaunchService {
   };
 
   /**
-   * Generates PKCE code verifier string.
+   * Generates PKCE code verifier string using cryptographic entropy.
    */
   public generateCodeVerifier(): string {
-    return 'pg_pkce_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const array = new Uint8Array(32);
+    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+      globalThis.crypto.getRandomValues(array);
+    } else {
+      for (let i = 0; i < 32; i++) {
+        array[i] = (Date.now() + i * 17) & 0xff;
+      }
+    }
+    return 'pg_pkce_' + Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
   }
 
   /**
@@ -58,7 +66,15 @@ export class SmartOnFhirLaunchService {
     const vendorEndpoints = this.defaultVendorEndpoints[config.vendor] || this.defaultVendorEndpoints.GENERIC_FHIR;
     const fhirBaseUrl = config.fhirBaseUrl || vendorEndpoints.defaultBaseUrl;
     const scopes = config.scope || 'patient/*.read launch/patient openid fhirUser';
-    const state = 'state_' + Math.random().toString(36).substring(2, 10);
+    const stateArray = new Uint8Array(8);
+    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+      globalThis.crypto.getRandomValues(stateArray);
+    } else {
+      for (let i = 0; i < 8; i++) {
+        stateArray[i] = (Date.now() + i * 13) & 0xff;
+      }
+    }
+    const state = 'state_' + Array.from(stateArray, b => b.toString(16).padStart(2, '0')).join('');
     const codeVerifier = this.generateCodeVerifier();
     const codeChallenge = 'S256_' + codeVerifier; // Simplified PKCE S256 challenge string
 

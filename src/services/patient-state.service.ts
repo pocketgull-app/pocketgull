@@ -15,6 +15,7 @@ import {
   IAyurvedicStatus,
   IPatientAnatomicProfile
 } from './patient.types';
+import { getSecureRandomId } from '../utils/security-helper';
 
 export type { IPatientState };
 export { BODY_PART_NAMES };
@@ -190,7 +191,7 @@ export class PatientStateService {
       timestamp: new Date().toISOString(),
       action,
       actor: 'PocketGull Enterprise Agent',
-      hash: `0x${Math.random().toString(16).substring(2, 10)}${Math.random().toString(16).substring(2, 10)}`,
+      hash: `0x${getSecureRandomId()}`,
       details
     };
     this.enterpriseAuditLog.update(logs => [entry, ...logs.slice(0, 49)]);

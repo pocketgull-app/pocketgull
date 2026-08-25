@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { getSecureRandomId } from '../utils/security-helper';
 
 export type WacomBrushMode = 'sumi-calligraphy' | 'prismatic-rainbow' | 'sparkle-sand' | 'ocean-wave';
 
@@ -157,7 +158,7 @@ export class WacomCryptoInkService {
     const endTime = points[points.length - 1].timestamp;
 
     const stroke: IWacomInkStroke = {
-      id: `stroke-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      id: `stroke-${Date.now()}-${getSecureRandomId()}`,
       points,
       startTime,
       endTime,
