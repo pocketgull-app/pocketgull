@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Comprehensive Brainwave & Clinical Entrainment Protocols
 enum AvsProtocol {
@@ -123,6 +124,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
   late AnimationController _flickerController;
   late AnimationController _breathController;
   late AnimationController _spiralController;
+  late AnimationController _mascotBobController;
 
   AvsProtocol _selectedProtocol = AvsProtocol.alphaCalm;
   VisualParadigm _visualParadigm = VisualParadigm.lissajous;
@@ -132,10 +134,34 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
   bool _isIsochronic = false;
   bool _isHapticEnabled = true;
   bool _isStrobeEnabled = true;
+  bool _showMascot = true;
   int _secondsRemaining = 300;
   Timer? _sessionTimer;
   Timer? _hapticTimer;
   double _autonomicCoherence = 88.5;
+  int _circadianKssScore = 5; // Karolinska Sleepiness Scale (1-9)
+
+  final String _origamiMascotSvg = '''
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- Far Wing -->
+    <polygon points="50,40 65,15 58,45" fill="#3ebc9e" stroke="#2fa085" stroke-width="0.5" stroke-linejoin="round" />
+    <!-- Tail -->
+    <polygon points="20,50 50,40 10,35" fill="#d4d4d8" stroke="#a1a1aa" stroke-width="0.5" stroke-linejoin="round" />
+    <!-- Body Base -->
+    <polygon points="20,50 50,40 58,45 75,55 50,65" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="0.5" stroke-linejoin="round" />
+    <!-- Near Wing (Upper) -->
+    <polygon points="50,40 58,45 35,85" fill="#ffffff" stroke="#e4e4e7" stroke-width="0.5" stroke-linejoin="round" />
+    <!-- Near Wing (Fold) -->
+    <polygon points="50,40 35,85 20,50" fill="#f9f9f9" stroke="#d4d4d8" stroke-width="0.5" stroke-linejoin="round" />
+    <!-- Neck/Head -->
+    <polygon points="75,55 58,45 85,38" fill="#ffffff" stroke="#e4e4e7" stroke-width="0.5" stroke-linejoin="round" />
+    <!-- Beak - Gold Accent -->
+    <polygon points="85,38 82,45 95,34" fill="#F59E0B" stroke="#D97706" stroke-width="0.5" stroke-linejoin="round" />
+    <!-- Cool Sunglasses -->
+    <polygon points="76,41 84,37 83,43 75,47" fill="#09090B" stroke="#06B6D4" stroke-width="0.8" />
+    <polygon points="70,44 76,41 75,47 69,50" fill="#09090B" stroke="#06B6D4" stroke-width="0.8" />
+  </svg>
+  ''';
 
   @override
   void initState() {
@@ -158,7 +184,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
         }
       });
 
-    // 5.5 BPM Resonance Breathing Cycle (10.9 seconds per breath: 4.5s in, 1s hold, 5.4s out)
+    // 5.5 BPM Resonance Breathing Cycle (10.9 seconds per breath)
     _breathController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 10900),
@@ -169,6 +195,12 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
       vsync: this,
       duration: const Duration(seconds: 18),
     )..repeat();
+
+    // Bobbing Seagull Mascot
+    _mascotBobController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2600),
+    )..repeat(reverse: true);
   }
 
   void _selectProtocol(AvsProtocol protocol) {
@@ -246,11 +278,28 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
     HapticFeedback.lightImpact();
   }
 
+  void _applyCircadianKss(int kss) {
+    setState(() {
+      _circadianKssScore = kss;
+      if (kss >= 7) {
+        _selectProtocol(AvsProtocol.deltaRest);
+      } else if (kss >= 5) {
+        _selectProtocol(AvsProtocol.thetaFlow);
+      } else if (kss >= 3) {
+        _selectProtocol(AvsProtocol.alphaCalm);
+      } else {
+        _selectProtocol(AvsProtocol.betaDrive);
+      }
+    });
+    HapticFeedback.selectionClick();
+  }
+
   @override
   void dispose() {
     _flickerController.dispose();
     _breathController.dispose();
     _spiralController.dispose();
+    _mascotBobController.dispose();
     _sessionTimer?.cancel();
     _hapticTimer?.cancel();
     super.dispose();
@@ -302,6 +351,18 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
         actions: [
           IconButton(
             icon: Icon(
+              _showMascot ? Icons.pets : Icons.pets_outlined,
+              color: _showMascot ? themeColor : Colors.white38,
+              size: 20,
+            ),
+            tooltip: 'Toggle Origami Mascot',
+            onPressed: () {
+              setState(() => _showMascot = !_showMascot);
+              HapticFeedback.lightImpact();
+            },
+          ),
+          IconButton(
+            icon: Icon(
               _isStrobeEnabled ? Icons.flash_on : Icons.flash_off,
               color: _isStrobeEnabled ? themeColor : Colors.white38,
               size: 20,
@@ -340,11 +401,108 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 1. MASTER MULTI-MODAL VISUAL CYMATICS CANVAS
+              // 0. SPLASH-INSPIRED ANIMATED ORIGAMI MASCOT & COASTAL BREEZE
+              if (_showMascot)
+                AnimatedBuilder(
+                  animation: _mascotBobController,
+                  builder: (context, child) {
+                    final bobY = math.sin(_mascotBobController.value * math.pi) * -6.0;
+                    return Transform.translate(
+                      offset: Offset(0, bobY),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF13151A),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: themeColor.withValues(alpha: 0.25)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: themeColor.withValues(alpha: 0.08),
+                              blurRadius: 16,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            // Interactive Mascot Svg
+                            InkWell(
+                              onTap: () {
+                                HapticFeedback.mediumImpact();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('PocketGull: "Breathe in harmony with the tides." 🌊'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(24),
+                              child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: SvgPicture.string(_origamiMascotSvg),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        'POCKET GULL',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 12,
+                                          letterSpacing: 2.0,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                        decoration: BoxDecoration(
+                                          color: themeColor.withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          'AVS SUNGLEAM',
+                                          style: TextStyle(
+                                            fontSize: 8.5,
+                                            fontWeight: FontWeight.bold,
+                                            color: themeColor,
+                                            letterSpacing: 0.8,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    _isPlaying
+                                        ? 'Synchronizing neural oscillations at ${_frequencyHz.toStringAsFixed(1)} Hz...'
+                                        : 'Select your state or tune circadian alertness below.',
+                                    style: const TextStyle(fontSize: 10.5, color: Colors.white60),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+              // 1. MASTER MULTI-MODAL VISUAL CYMATICS CANVAS WITH PAPERCRAFT HORIZON
               AnimatedBuilder(
                 animation: Listenable.merge([_flickerController, _breathController, _spiralController]),
                 builder: (context, child) {
@@ -353,7 +511,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                       : 0.35;
 
                   return Container(
-                    height: 270,
+                    height: 260,
                     decoration: BoxDecoration(
                       color: const Color(0xFF030507),
                       borderRadius: BorderRadius.circular(24),
@@ -371,6 +529,16 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                     ),
                     child: Stack(
                       children: [
+                        // Procedural Coastal Papercraft Dunes Backdrop
+                        Positioned.fill(
+                          child: CustomPaint(
+                            painter: _PapercraftBackdropPainter(
+                              breathProgress: _breathController.value,
+                              themeColor: themeColor,
+                            ),
+                          ),
+                        ),
+
                         // Generative Cymatics & Geometric Painter
                         Positioned.fill(
                           child: CustomPaint(
@@ -389,8 +557,8 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
 
                         // Frequency HUD Telemetry Overlay
                         Positioned(
-                          top: 14,
-                          left: 16,
+                          top: 12,
+                          left: 14,
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
@@ -403,15 +571,15 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                                 Text(
                                   '${_frequencyHz.toStringAsFixed(1)} Hz',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                     color: themeColor,
                                     fontFamily: 'monospace',
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 6),
                                 Text(
-                                  '•  ${_carrierHz.toInt()} Hz Carrier',
+                                  '• ${_carrierHz.toInt()} Hz',
                                   style: const TextStyle(
                                     fontSize: 11,
                                     color: Colors.white70,
@@ -425,8 +593,8 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
 
                         // Coherence Badge
                         Positioned(
-                          top: 14,
-                          right: 16,
+                          top: 12,
+                          right: 14,
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
@@ -439,7 +607,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                                 const Icon(Icons.favorite, color: Colors.redAccent, size: 12),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '${_autonomicCoherence.toStringAsFixed(1)}% Coherence',
+                                  '${_autonomicCoherence.toStringAsFixed(1)}%',
                                   style: const TextStyle(
                                     fontSize: 11,
                                     color: Colors.white,
@@ -454,14 +622,14 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
 
                         // Bottom Center Paradigm Selector inside Canvas
                         Positioned(
-                          bottom: 10,
+                          bottom: 8,
                           left: 0,
                           right: 0,
                           child: Center(
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                               decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.75),
+                                color: Colors.black.withValues(alpha: 0.8),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
@@ -473,25 +641,25 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                                       setState(() => _visualParadigm = p);
                                       HapticFeedback.selectionClick();
                                     },
-                                    borderRadius: BorderRadius.circular(16),
+                                    borderRadius: BorderRadius.circular(14),
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
                                       decoration: BoxDecoration(
                                         color: isSel ? themeColor.withValues(alpha: 0.3) : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(14),
                                       ),
                                       child: Row(
                                         children: [
                                           Icon(
                                             p.icon,
-                                            size: 14,
+                                            size: 13,
                                             color: isSel ? themeColor : Colors.white60,
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
                                             p.label,
                                             style: TextStyle(
-                                              fontSize: 10,
+                                              fontSize: 9.5,
                                               fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
                                               color: isSel ? Colors.white : Colors.white60,
                                             ),
@@ -511,11 +679,11 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                 },
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
               // 2. PRIMARY PLAY / PAUSE CONTROLS & SESSION TIME
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: const Color(0xFF13151A),
                   borderRadius: BorderRadius.circular(20),
@@ -526,10 +694,10 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                     // Large Glow Play Button
                     InkWell(
                       onTap: _toggleSession,
-                      borderRadius: BorderRadius.circular(36),
+                      borderRadius: BorderRadius.circular(32),
                       child: Container(
-                        width: 64,
-                        height: 64,
+                        width: 58,
+                        height: 58,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: _isPlaying ? Colors.redAccent.withValues(alpha: 0.2) : themeColor.withValues(alpha: 0.2),
@@ -541,14 +709,14 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                         child: Icon(
                           _isPlaying ? Icons.pause : Icons.play_arrow,
                           color: _isPlaying ? Colors.redAccent : themeColor,
-                          size: 32,
+                          size: 28,
                         ),
                       ),
                     ),
 
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 14),
 
-                    // Countdown Timer & Mode Details
+                    // Countdown Timer & Quick Pills
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -558,15 +726,14 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                               Text(
                                 _formatTime(_secondsRemaining),
                                 style: const TextStyle(
-                                  fontSize: 26,
+                                  fontSize: 24,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
                                   fontFamily: 'monospace',
                                 ),
                               ),
                               const Spacer(),
-                              // Quick Duration Pills
-                              ...[5, 15, 20].map((m) {
+                              ...[5, 10, 15, 20].map((m) {
                                 final isCur = _secondsRemaining == m * 60;
                                 return Padding(
                                   padding: const EdgeInsets.only(left: 4),
@@ -582,7 +749,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                                       child: Text(
                                         '${m}m',
                                         style: TextStyle(
-                                          fontSize: 10,
+                                          fontSize: 9.5,
                                           fontWeight: isCur ? FontWeight.bold : FontWeight.normal,
                                           color: isCur ? themeColor : Colors.white70,
                                         ),
@@ -593,10 +760,10 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                               }),
                             ],
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 3),
                           Text(
-                            _isIsochronic ? 'Open-Air Isochronic Acoustic Pulse' : 'Stereo Binaural Frequency Offset',
-                            style: const TextStyle(fontSize: 11, color: Colors.white60),
+                            _isIsochronic ? 'Open-Air Isochronic Pulse' : 'Stereo Binaural Frequency Offset',
+                            style: const TextStyle(fontSize: 10.5, color: Colors.white60),
                           ),
                         ],
                       ),
@@ -605,9 +772,83 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                 ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 14),
 
-              // 3. EXPANSIVE CLINICAL PROTOCOL MATRIX
+              // 3. CIRCADIAN SLEEPINESS (KSS) QUICK TUNER (FROM SPLASH SCREEN)
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF13151A),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.white10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'CIRCADIAN ALERTNESS (KSS)',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.1,
+                            color: Colors.white54,
+                          ),
+                        ),
+                        Text(
+                          _circadianKssScore >= 7
+                              ? 'Sleepy (KSS $_circadianKssScore)'
+                              : (_circadianKssScore >= 4
+                                  ? 'Equilibrium (KSS $_circadianKssScore)'
+                                  : 'Peak Alert (KSS $_circadianKssScore)'),
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: themeColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(9, (idx) {
+                        final kss = idx + 1;
+                        final isSel = _circadianKssScore == kss;
+                        return InkWell(
+                          onTap: () => _applyCircadianKss(kss),
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            width: (MediaQuery.of(context).size.width - 80) / 9,
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            decoration: BoxDecoration(
+                              color: isSel ? themeColor : Colors.black.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: isSel ? themeColor : Colors.white12),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '$kss',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+                                  color: isSel ? Colors.black : Colors.white70,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // 4. EXPANSIVE CLINICAL PROTOCOL MATRIX
               const Text(
                 'CLINICAL ENTRAINMENT PROTOCOLS',
                 style: TextStyle(
@@ -617,7 +858,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                   color: Colors.white54,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
 
               Wrap(
                 spacing: 8,
@@ -690,14 +931,14 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                 }).toList(),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
 
-              // 4. SOLFEGGIO & PYTHAGOREAN CARRIER FREQUENCY SELECTOR
+              // 5. SOLFEGGIO & PYTHAGOREAN CARRIER FREQUENCY SELECTOR
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: const Color(0xFF13151A),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: Colors.white10),
                 ),
                 child: Column(
@@ -709,7 +950,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                         const Text(
                           'ACOUSTIC CARRIER TONE',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 10.5,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.1,
                             color: Colors.white54,
@@ -718,7 +959,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                         Text(
                           '${_carrierHz.toInt()} Hz',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'monospace',
                             color: themeColor,
@@ -741,7 +982,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                               },
                               borderRadius: BorderRadius.circular(12),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                                 decoration: BoxDecoration(
                                   color: isCur ? themeColor.withValues(alpha: 0.25) : Colors.black.withValues(alpha: 0.3),
                                   borderRadius: BorderRadius.circular(12),
@@ -755,7 +996,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                                     Text(
                                       '${c.freqHz.toInt()} Hz',
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 11,
                                         fontWeight: FontWeight.bold,
                                         color: isCur ? Colors.white : Colors.white70,
                                         fontFamily: 'monospace',
@@ -764,7 +1005,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                                     Text(
                                       c.affinity,
                                       style: TextStyle(
-                                        fontSize: 9,
+                                        fontSize: 8.5,
                                         color: isCur ? themeColor : Colors.white38,
                                       ),
                                     ),
@@ -780,14 +1021,14 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                 ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
 
-              // 5. FINE-TUNING FREQUENCY SLIDER & RESONANCE BREATHING
+              // 6. CONTINUOUS BRAINWAVE DIAL & 5.5 BPM RESONANCE BREATHING
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: const Color(0xFF13151A),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: Colors.white10),
                 ),
                 child: Column(
@@ -799,7 +1040,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                         const Text(
                           'CONTINUOUS BRAINWAVE DIAL',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 10.5,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.1,
                             color: Colors.white54,
@@ -808,7 +1049,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                         Text(
                           '${_frequencyHz.toStringAsFixed(2)} Hz',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'monospace',
                             color: themeColor,
@@ -825,7 +1066,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                       inactiveColor: Colors.white12,
                       onChanged: (val) => _updateFrequency(val),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     // 5.5 BPM Resonance Breathing Indicator
                     AnimatedBuilder(
                       animation: _breathController,
@@ -880,7 +1121,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                 ),
               ),
 
-              const SizedBox(height: 28),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -1042,5 +1283,66 @@ class _AvsMultiModalPainter extends CustomPainter {
         oldDelegate.carrierHz != carrierHz ||
         oldDelegate.paradigm != paradigm ||
         oldDelegate.isPlaying != isPlaying;
+  }
+}
+
+/// Papercraft Coastal Dunes Backdrop Painter
+class _PapercraftBackdropPainter extends CustomPainter {
+  final double breathProgress;
+  final Color themeColor;
+
+  _PapercraftBackdropPainter({
+    required this.breathProgress,
+    required this.themeColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final dunePaint = Paint()
+      ..color = themeColor.withValues(alpha: 0.04)
+      ..style = PaintingStyle.fill;
+
+    // Coastal Dune 1
+    final path1 = Path();
+    path1.moveTo(0, size.height * 0.7);
+    path1.quadraticBezierTo(
+      size.width * 0.35,
+      size.height * (0.62 + breathProgress * 0.03),
+      size.width * 0.65,
+      size.height * 0.75,
+    );
+    path1.quadraticBezierTo(
+      size.width * 0.85,
+      size.height * 0.82,
+      size.width,
+      size.height * 0.72,
+    );
+    path1.lineTo(size.width, size.height);
+    path1.lineTo(0, size.height);
+    path1.close();
+    canvas.drawPath(path1, dunePaint);
+
+    // Coastal Dune 2 (Lower foreground)
+    final dunePaint2 = Paint()
+      ..color = themeColor.withValues(alpha: 0.06)
+      ..style = PaintingStyle.fill;
+
+    final path2 = Path();
+    path2.moveTo(0, size.height * 0.85);
+    path2.quadraticBezierTo(
+      size.width * 0.45,
+      size.height * (0.78 - breathProgress * 0.02),
+      size.width,
+      size.height * 0.88,
+    );
+    path2.lineTo(size.width, size.height);
+    path2.lineTo(0, size.height);
+    path2.close();
+    canvas.drawPath(path2, dunePaint2);
+  }
+
+  @override
+  bool shouldRepaint(covariant _PapercraftBackdropPainter oldDelegate) {
+    return oldDelegate.breathProgress != breathProgress || oldDelegate.themeColor != themeColor;
   }
 }
