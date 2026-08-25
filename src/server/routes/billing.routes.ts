@@ -15,7 +15,7 @@ function getDb(): Firestore {
 
 function getStripe(): Stripe {
   return new Stripe(process.env['STRIPE_SECRET_KEY'] || 'sk_test_placeholder', {
-    apiVersion: '2024-06-20' as any,
+    apiVersion: '2025-03-31.basil' as any,
   });
 }
 
@@ -48,6 +48,7 @@ export function createBillingRouter() {
             product_data: {
               name: 'PocketGull Lifetime Solo Founder License',
               description: '100% on-device offline AI scribing forever, standard SOAP templates, EHR export, and lifetime software updates (Zero recurring monthly fees).',
+              tax_code: 'txcd_10103001',
             },
             unit_amount: 29900, // $299.00
           },
@@ -61,6 +62,7 @@ export function createBillingRouter() {
             product_data: {
               name: 'PocketGull Clinic Pro (Annual Pass - 2 Months Free)',
               description: 'Ambient AI voice scribing, custom specialty note templates, medication & herb-drug safety screening, priority clinician support & onboarding.',
+              tax_code: 'txcd_10103001',
             },
             unit_amount: 49000, // $490.00 / yr
             recurring: { interval: 'year' },
@@ -75,6 +77,7 @@ export function createBillingRouter() {
             product_data: {
               name: 'PocketGull Clinic Turnkey Onboarding & Custom EHR Integration',
               description: 'Up to 5 clinician licenses, white-glove EHR template customization, 1-on-1 workflow integration, dedicated HIPAA BAA.',
+              tax_code: 'txcd_10103001',
             },
             unit_amount: 125000, // $1,250.00
           },
@@ -88,6 +91,7 @@ export function createBillingRouter() {
             product_data: {
               name: 'PocketGull Clinic Pro (Monthly)',
               description: 'Ambient AI voice scribing, custom specialty templates, medication & herb-drug safety checker, priority support.',
+              tax_code: 'txcd_10103001',
             },
             unit_amount: 4900, // $49.00 / mo
             recurring: { interval: 'month' },
@@ -102,6 +106,7 @@ export function createBillingRouter() {
             product_data: {
               name: 'PocketGull Independent Clinic Pilot License',
               description: 'Ambient Clinical Scribe + SOAP notes, RxGuard PGx & herb-drug screening, Socratic patient intake triage (Up to 3 clinicians)',
+              tax_code: 'txcd_10103001',
             },
             unit_amount: 29900, // $299.00
             recurring: { interval: 'month' },
@@ -116,6 +121,7 @@ export function createBillingRouter() {
             product_data: {
               name: 'PocketGull Clinical AI Implementation & FHIR Sprint',
               description: 'Turnkey 2-week implementation: HIPAA §164.514 Safe Harbor setup, Custom LoRA model fine-tuning, FHIR R4 / GA4GH Phenopackets pipeline integration',
+              tax_code: 'txcd_10103001',
             },
             unit_amount: 350000, // $3,500.00
           },
@@ -129,6 +135,7 @@ export function createBillingRouter() {
             product_data: {
               name: 'PocketGull Academic Lab & Residency Hub License',
               description: 'GA4GH Phenopackets v2 rare disease pipelines, 11-paradigm open science datasets, unlimited OSCE simulation training seats',
+              tax_code: 'txcd_10103001',
             },
             unit_amount: 120000, // $1,200.00 / yr
             recurring: { interval: 'year' },
@@ -143,6 +150,7 @@ export function createBillingRouter() {
             product_data: {
               name: 'PocketGull Health System Enterprise Tier',
               description: 'Unlimited clinician seats, Google SAIF Level 3 defense, dedicated Vertex AI endpoint deployment, priority SLA',
+              tax_code: 'txcd_10103001',
             },
             unit_amount: 99900, // $999.00 / mo
             recurring: { interval: 'month' },
@@ -259,6 +267,22 @@ export function createBillingRouter() {
     } catch (err: any) {
       console.error('[Billing] Webhook signature verification failed');
       return res.status(400).json({ error: 'Webhook Error', message: 'Webhook signature verification failed.' });
+    }
+
+    // Idempotency check: guard against duplicated Stripe webhook event deliveries
+    try {
+      const eventRef = getDb().collection('processed_stripe_events').doc(event.id);
+      const doc = await eventRef.get();
+      if (doc.exists) {
+        return res.json({ received: true, deduplicated: true });
+      }
+      await eventRef.set({
+        type: event.type,
+        processedAt: new Date(),
+        livemode: event.livemode
+      });
+    } catch (idemErr: any) {
+      console.warn('[Billing] Webhook idempotency ledger warning:', idemErr.message);
     }
 
     // Handle the event
