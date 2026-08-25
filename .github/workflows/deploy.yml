@@ -1,11 +1,10 @@
-# CI/CD Pipeline (HIPAA Compliant) - Automated Security & Egress Auditing
-name: CI/CD Pipeline (HIPAA Compliant)
+# Deployment Pipeline (Cloud Run) - Automated Production & Staging Deployment
+name: Deployment Pipeline (Cloud Run)
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: read

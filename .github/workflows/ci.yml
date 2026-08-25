@@ -1,4 +1,4 @@
-name: "CI — Lint & Test"
+name: "CI/CD Pipeline (HIPAA Compliant)"
 
 on:
   push:
@@ -14,8 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  node-lint-and-test:
-    name: Node Lint & Vitest
+  security-and-lint:
+    name: security-and-lint
     runs-on: ubuntu-latest
 
     steps:
@@ -84,3 +84,102 @@ jobs:
         run: |
           python3 pocketgull_api/train_clinical_risk_models.py || true
           python3 pocketgull_api/run_tests.py
+
+  test-e2e:
+    name: test-e2e
+    needs: [security-and-lint]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          disable-sudo: false
+          egress-policy: audit
+
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps --prefer-offline
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build Application
+        run: npm run build
+        env:
+          CI: true
+          NODE_ENV: 'production'
+          GEMINI_API_KEY: 'placeholder-key-for-build'
+          VITE_PUBLIC_API_URL: 'http://127.0.0.1:4000'
+          SKIP_HEALTHCARE_PROVISION: 'true'
+          ASTRO_TELEMETRY_DISABLED: '1'
+
+      - name: Start Preview Server
+        run: |
+          npm run preview > /tmp/server.log 2>&1 &
+          echo $! > .server.pid
+        env:
+          PORT: '4000'
+          CI: true
+          NODE_ENV: 'production'
+          PLAYWRIGHT_TESTING: 'true'
+          GEMINI_API_KEY: 'placeholder-key-for-build'
+          SKIP_HEALTHCARE_PROVISION: 'true'
+
+      - name: Wait for Preview Server
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fs http://127.0.0.1:4000/health > /dev/null 2>&1; then
+              echo "Preview server is ready on http://127.0.0.1:4000 (attempt $i)"
+              exit 0
+            fi
+            echo "Waiting for preview server (attempt $i/30)..."
+            sleep 2
+          done
+          echo "Preview server failed to start within 60s. Server logs:"
+          cat /tmp/server.log || true
+          exit 1
+
+      - name: Run E2E Tests
+        run: npm run test:e2e
+        env:
+          CI: true
+          PORT: '4000'
+          BASE_URL: 'http://127.0.0.1:4000'
+          PLAYWRIGHT_WORKERS: '4'
+          PLAYWRIGHT_TESTING: 'true'
+          GEMINI_API_KEY: 'placeholder-key-for-build'
+          SKIP_HEALTHCARE_PROVISION: 'true'
+
+      - name: Stop Preview Server
+        if: always()
+        run: |
+          if [ -f .server.pid ]; then
+            kill $(cat .server.pid) || true
+          fi
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
