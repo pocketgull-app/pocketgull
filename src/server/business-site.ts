@@ -593,6 +593,18 @@ export function renderBusinessSiteHtml(): string {
             <h3>Point-of-Care Screeners</h3>
             <p>Includes built-in visual acuity screeners (Snellen / Tumbling E) and vital telemetry loggers right at your fingertips.</p>
           </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🧬</div>
+            <h3>Research Data Dividend</h3>
+            <p>Empowers patients to opt-in to accredited medical research cohorts with Laplace differential privacy and automated Stripe Express compensation.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>FHIR R4 SMART Goal Engine</h3>
+            <p>Decomposes clinical objectives into interactive milestone quests with standard HL7 FHIR R4 Goal resource serialization.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -874,7 +886,7 @@ export function renderBusinessSiteHtml(): string {
     <div class="container footer-inner">
       <div>
         <div style="font-weight: 700; color: var(--text); margin-bottom: 0.25rem;">PocketGull LLC</div>
-        <div>Portland, Oregon &bull; Support: <a href="mailto:support@pocketgull.com" style="color: var(--teal-light); text-decoration: none;">support@pocketgull.com</a></div>
+        <div>Portland, Oregon &bull; Privacy &amp; DPO: <a href="mailto:dpo@pocketgull.app" style="color: var(--teal-light); text-decoration: none;">dpo@pocketgull.app</a> &bull; Support: <a href="mailto:support@pocketgull.com" style="color: var(--teal-light); text-decoration: none;">support@pocketgull.com</a></div>
       </div>
 
       <div class="footer-links">
