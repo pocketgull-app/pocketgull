@@ -3,7 +3,6 @@ import { SecureStorageService } from './secure-storage.service';
 
 /**
  * Granular Patient Consent Scope definition.
- * Inspired by Nishant Bhajaria's Privacy Engineering standard ("Consent-as-Code").
  * Each data category requires explicit, revocable patient permission.
  */
 export interface IPatientConsentScope {

@@ -99,6 +99,7 @@
     "dart:submissions": "dart run scripts/dart/package_submissions.dart",
     "dart:usability10": "dart run scripts/dart/prepare_usability10_dataset.dart",
     "dart:debt": "dart run scripts/dart/debt_zen_solver.dart",
+    "agy:verify": "dart run scripts/dart/verify_agy_skills.dart",
     "gcp:prune-storage": "node --no-deprecation ./scripts/apply-gcp-lifecycle-policies.mjs",
     "grants:sbir": "node --no-deprecation ./scripts/generate_sbir_grant_binder.mjs",
     "models:hub-export": "node --no-deprecation ./scripts/huggingface_model_hub_export.mjs",

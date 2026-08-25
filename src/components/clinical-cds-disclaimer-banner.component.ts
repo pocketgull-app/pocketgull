@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="w-full p-3 px-4 bg-zinc-950/90 border-t border-zinc-800 backdrop-blur-md font-mono text-[10.5px] text-zinc-400 flex flex-wrap items-center justify-between gap-3 z-40">
       <div class="flex items-center gap-2">
-        <span class="text-amber-400 text-xs">🛡️</span>
+        <span class="text-amber-400 text-xs" aria-hidden="true">🛡️</span>
         <span class="font-bold text-zinc-200">FDA CDS Guidance (21 U.S.C. 360j(o)) & HIPAA Security Rule Notice:</span>
         <span class="hidden md:inline text-zinc-400">
           Pocket-Gull Clinical Intelligence outputs serve as Clinical Decision Support (CDS) for independent licensed provider review. Patient data protected via FHIR R4 and DOMPurify sanitization.
