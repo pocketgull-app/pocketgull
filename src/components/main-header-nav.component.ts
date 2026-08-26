@@ -241,6 +241,13 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                 <!-- Section: Enterprise & Operations -->
                 <div class="space-y-1 pt-2 border-t border-zinc-100 dark:border-zinc-800">
                   <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🏢 Enterprise</span>
+                  <button type="button" (click)="openComplianceCertificate.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">📜</span>
+                    <div>
+                      <div>Statutory Certificate</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">HIPAA, FDA &amp; NIST Audit</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openSupportTicket.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">📬</span>
                     <div>
@@ -513,6 +520,7 @@ export class MainHeaderNavComponent {
   openTypefaceSite = output<void>();
   openDocsStudy = output<void>();
   openSupportTicket = output<void>();
+  openComplianceCertificate = output<void>();
   openEncryptedVault = output<void>();
   openSmartFhirSync = output<void>();
   openGlobalHealth = output<void>();

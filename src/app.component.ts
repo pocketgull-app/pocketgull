@@ -82,6 +82,8 @@ import { HumanDignityPactComponent } from './components/human-dignity-pact.compo
 import { DoctorShiftSalesDemoComponent } from './components/doctor-shift-sales-demo.component';
 import { GreenRoomLoungeComponent } from './components/green-room-lounge.component';
 import { BarrowsClinicalInquiryHubComponent } from './components/barrows-clinical-inquiry-hub.component';
+import { PasskeyStepUpModalComponent } from './components/modals/passkey-step-up-modal.component';
+import { InstitutionalComplianceModalComponent } from './components/modals/institutional-compliance-modal.component';
 import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 
 @Component({
@@ -95,6 +97,8 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     FormsModule,
     PocketgullTypefaceSiteComponent,
     BarrowsClinicalInquiryHubComponent,
+    PasskeyStepUpModalComponent,
+    InstitutionalComplianceModalComponent,
     MedicalChartComponent,
     AnalysisContainerComponent,
     DictationModalComponent,
@@ -213,6 +217,16 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
             <app-barrows-clinical-inquiry-hub></app-barrows-clinical-inquiry-hub>
           </div>
         </div>
+      }
+
+      <!-- NIST SP 800-63B FIDO2 Passkey Step-Up Challenge Modal -->
+      <app-passkey-step-up-modal></app-passkey-step-up-modal>
+
+      <!-- Institutional Statutory Compliance Certificate Modal (HIPAA, FDA, NIST, MSA) -->
+      @if (navShell.showComplianceCertificateModal()) {
+        <app-institutional-compliance-modal
+          (close)="navShell.closeComplianceCertificate()">
+        </app-institutional-compliance-modal>
       }
 
       @defer (on idle) {
@@ -434,6 +448,7 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
           (openSupportTicket)="showSupportTicketModal.set(true)"
+          (openComplianceCertificate)="navShell.openComplianceCertificate()"
           (openEncryptedVault)="vaultModal.open()"
           (openSmartFhirSync)="fhirModal.open()"
           (openGlobalHealth)="globalHealthModal.open()"
