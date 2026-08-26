@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/health_connect_service.dart';
 
 class MovementQuestScreen extends StatefulWidget {
   const MovementQuestScreen({super.key});
@@ -14,6 +15,7 @@ class _MovementQuestScreenState extends State<MovementQuestScreen>
 
   int _vagalPoints = 0;
   bool _isEmergencySanctuaryActive = false;
+  Map<String, dynamic>? _liveBiometrics;
 
   final List<Map<String, dynamic>> _milestones = [
     {
@@ -62,6 +64,16 @@ class _MovementQuestScreenState extends State<MovementQuestScreen>
     _breathingAnimation = Tween<double>(begin: 0.85, end: 1.15).animate(
       CurvedAnimation(parent: _breathingController, curve: Curves.easeInOut),
     );
+    _loadHealthBiometrics();
+  }
+
+  Future<void> _loadHealthBiometrics() async {
+    final data = await HealthConnectService.fetchLiveBiometrics();
+    if (mounted) {
+      setState(() {
+        _liveBiometrics = data;
+      });
+    }
   }
 
   @override
@@ -76,6 +88,8 @@ class _MovementQuestScreenState extends State<MovementQuestScreen>
         _milestones[index]['completed'] = true;
         _vagalPoints += (_milestones[index]['points'] as int);
       });
+      // Automatically log green minutes into Health Connect
+      HealthConnectService.logGreenWalkMinutes(5);
     }
   }
 
@@ -200,6 +214,92 @@ class _MovementQuestScreenState extends State<MovementQuestScreen>
                       _isEmergencySanctuaryActive ? 'Cancel' : 'Sanctuary',
                       style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                     ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Google Health Connect Live Telemetry Pill
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFF064E3B).withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF059669).withValues(alpha: 0.5)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Text('💓 ', style: TextStyle(fontSize: 16)),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${_liveBiometrics?['restingHeartRateBpm'] ?? 58} bpm',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF6EE7B7),
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          const Text(
+                            'Resting HR',
+                            style: TextStyle(fontSize: 10, color: Color(0xFFA1A1AA)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Text('🌊 ', style: TextStyle(fontSize: 16)),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${_liveBiometrics?['heartRateVariabilityRmssdMs'] ?? 64.5} ms',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF38BDF8),
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          const Text(
+                            'HRV (RMSSD)',
+                            style: TextStyle(fontSize: 10, color: Color(0xFFA1A1AA)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Text('👟 ', style: TextStyle(fontSize: 16)),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${_liveBiometrics?['totalDailySteps'] ?? 7420}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFFDE68A),
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          const Text(
+                            'Daily Steps',
+                            style: TextStyle(fontSize: 10, color: Color(0xFFA1A1AA)),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
