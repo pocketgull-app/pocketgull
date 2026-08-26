@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.30.0] - 2026-08-26
+
+**CMS Remote Patient Monitoring (RPM) Superbill Claim Engine (CPT 99453 / 99454 / 99457 / 99458 & 16-Day Statutory Rule), SMART on FHIR v2 Hospital EHR Discovery & Launch Context, 3D Anatomy Biomechanical Vector Strain Lens, and Android Health Connect Background Telemetry Sync**
+
+### Added
+- **[CMS Remote Patient Monitoring (RPM) Superbill Engine] (`CmsRpmSuperbillService`, `CmsRpmSuperbillModalComponent`)**:
+  - **CPT Reimbursement Schedule**: Automatically calculates CPT 99453 (\$19.34 initial setup), CPT 99454 (\$48.56 monthly data transmission), CPT 99457 (\$50.18 first 20 min clinical communication), and CPT 99458 (\$39.86 each add'l 20 min block).
+  - **16-Day Statutory Rule Verification**: 30-day compliance calendar auditing active transmission days against CMS statutory thresholds ($\ge 16$ days required for 99454 payout).
+  - **ICD-10-CM Cross-Mapping**: Automated crosswalk to `I10` (Essential Hypertension), `E11.9` (Type 2 Diabetes), `G47.33` (Sleep Apnea), `J44.9` (COPD), and `E78.5` (Hyperlipidemia).
+  - **Attestation & Export**: NIST SP 800-90A CSPRNG SHA-256 digital attestation seal, 1-click printable CMS 1500 layout, and HL7 FHIR R4 `Claim` resource JSON download.
+  - Added full test coverage: `cms-rpm-superbill.service.spec.ts` and `cms-rpm-superbill-modal.component.spec.ts`.
+- **[SMART on FHIR v2 Discovery & Launch Context] (`discovery.routes.ts`, `smart-on-fhir-launcher.service.ts`)**:
+  - `GET /.well-known/smart-configuration`: Returns standard SMART on FHIR v2 discovery JSON with PKCE `S256` support, OAuth2 authorization/token endpoints, and granular USCDI scopes.
+  - `GET /api/smart/launch`: Handles Epic and Cerner EHR launch tokens with parameterized redirection to patient chart.
+  - Added unit test suite: `smart-on-fhir-launcher.service.spec.ts`.
+- **[3D Anatomy Biomechanical Vector Strain Lens] (`body-3d-viewer.component.ts`, `body-viewer.component.ts`)**:
+  - Added `biomechanical_strain` view mode in Three.js whole-body twin.
+  - Rendered crisp skeletal geometry with semi-transparent phantom shell.
+  - Joint load vector and axial compression calculations for cervical spine ($C_1 - C_7$) and lumbar spine ($L_4 - L_5$).
+- **[Android Health Connect Telemetry Sync] (`companion-apps/patient_app/`)**:
+  - Integrated continuous background sync for resting heart rate, RMSSD HRV, SpO2, and daily step cadence.
+  - Added vagal tone breathing pacer and green-walk nature quest milestones (`health_telemetry_sync_test.dart`, `movement_quest_screen_test.dart`).
+
 ## [1.29.0] - 2026-08-26
 
 **Dr. Howard Barrows Clinical Inquiry & Problem-Based Learning (PBL) Workbench, FIDO2/WebAuthn Hardware Passkey Step-Up (NIST SP 800-63B Level AAL-2 / IAL-2), 100% Verified Institutional Statutory Compliance Certificate (HIPAA, FDA, NIST, MSA), Android Health Connect Live Biometric Telemetry (Pixel 9 Pro), and Anti-Creepy Pull-Only Interaction Doctrine**

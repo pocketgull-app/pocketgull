@@ -92,6 +92,27 @@ run(
   `--quiet`
 );
 
+console.log('\n🚀 Step 4b/5: Deploying to pocket-gull-v2 (Custom Domain Root pocketgull.app)...');
+try {
+  run(
+    `gcloud run deploy pocket-gull-v2 ` +
+    `--image ${IMAGE_TAG} ` +
+    `--project=${TARGET_PROJECT} ` +
+    `--platform managed ` +
+    `--region ${REGION} ` +
+    `--allow-unauthenticated ` +
+    `--memory 2Gi ` +
+    `--cpu 2 ` +
+    `--min-instances 0 ` +
+    `--max-instances 2 ` +
+    `--clear-secrets ` +
+    `--update-env-vars=OTEL_SDK_DISABLED=true,GOOGLE_CLOUD_PROJECT=${TARGET_PROJECT} ` +
+    `--quiet`
+  );
+} catch (e) {
+  console.warn('⚠️ pocket-gull-v2 deploy notice:', e.message);
+}
+
 // 5. Apply Lifecycle & Cost Controls
 console.log('\n🧹 Step 5/5: Applying storage lifecycle and cost control policies...');
 try {
