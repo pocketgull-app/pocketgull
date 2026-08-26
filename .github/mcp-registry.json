@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json.schemastore.org/mcp-registry.json",
+  "version": "1.0.0",
+  "servers": {
+    "dart-mcp-server": {
+      "type": "cli",
+      "command": "dart",
+      "args": ["run", "dart_mcp_server"],
+      "capabilities": ["tools", "resources"],
+      "description": "Dart 3 runtime, FHIR/JSON batch transformation, and Flutter companion testing engine"
+    },
+    "science": {
+      "type": "cli",
+      "command": "python",
+      "args": ["-m", "pocketgull_science_mcp"],
+      "capabilities": ["tools"],
+      "description": "PubChem, ChEMBL, GTEx, and ClinVar pharmacological & biophysical retrieval tools"
+    },
+    "gemini-api": {
+      "type": "cli",
+      "command": "node",
+      "args": ["dist/server/mcp/gemini_mcp_entry.js"],
+      "capabilities": ["tools", "prompts"],
+      "description": "Google Gemini multimodal live streaming, CDS clinical inference, and Genkit telemetry"
+    },
+    "data-agent-kit": {
+      "type": "cli",
+      "command": "npx",
+      "args": ["-y", "@google-cloud/data-agent-kit-mcp"],
+      "capabilities": ["tools", "resources"],
+      "description": "BigQuery, GCS, and Cloud Run infrastructure query and inspection tools"
+    }
+  }
+}

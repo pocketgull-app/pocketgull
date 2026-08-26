@@ -59,14 +59,21 @@ if (fs.promises && fs.promises.readdir) {
 
 // Now launch Playwright CLI with remaining args using spawnSync to ensure clean process context
 const { spawnSync } = require('child_process');
-const cliPath = path.resolve(__dirname, 'node_modules/@playwright/test/cli.js');
+const candidatePaths = [
+  path.resolve(__dirname, 'node_modules/@playwright/test/cli.js'),
+  path.resolve(process.cwd(), 'node_modules/@playwright/test/cli.js'),
+  path.resolve('c:/Users/philg/Pocketgull/pocketgull/node_modules/@playwright/test/cli.js')
+];
+const cliPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[2];
+const targetCwd = fs.existsSync(path.resolve(__dirname, 'playwright.config.ts')) ? __dirname : 'c:/Users/philg/Pocketgull/pocketgull';
+
 const userArgs = process.argv.slice(2);
 const cliArgs = userArgs[0] === 'test' ? userArgs : ['test', ...userArgs];
 
 const res = spawnSync(process.execPath, [cliPath, ...cliArgs], {
   stdio: 'inherit',
   env: process.env,
-  cwd: __dirname
+  cwd: targetCwd
 });
 
 process.exit(res.status ?? 0);

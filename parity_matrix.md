@@ -388,9 +388,6 @@ This document maps the components and services from the live Angular application
 | **n of 1 designer** | `src/components/n-of-1-designer.component.ts` | - | ❌ Missing in Flutter |
 | **n of 1 engine** | `src/services/n-of-1-engine.service.ts` | - | ❌ Missing in Flutter |
 | **nano.provider** | `src/services/ai/nano.provider.ts` | - | ❌ Missing in Flutter |
-| **nantucket passport storybook** | `src/components/nantucket-passport-storybook.component.ts` | - | ❌ Missing in Flutter |
-| **nantucket solution discovery** | `src/components/nantucket-solution-discovery.component.ts`<br>`src/services/nantucket-solution-discovery.service.ts` | - | ❌ Missing in Flutter |
-| **nantucket tick radar** | `src/components/nantucket-tick-radar.component.ts`<br>`src/services/nantucket-tick-radar.service.ts` | - | ❌ Missing in Flutter |
 | **native body viewer** | - | `pocketgull_flutter/lib/widgets/native_body_viewer.dart` | ⚠️ Flutter Only |
 | **native json export strategy** | `src/services/export/native-json-export-strategy.service.ts` | - | ❌ Missing in Flutter |
 | **navier stokes viewer** | `src/components/turing/navier-stokes-viewer.component.ts` | - | ❌ Missing in Flutter |

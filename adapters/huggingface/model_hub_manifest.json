@@ -70,5 +70,11 @@
     "name": "PocketGull Gemma 3 Dr. Elena Gullwing, DO Osteopathic Rounds Director",
     "hub_repo": "pocketgull-llc/gemma-3-osteopathic-rounds-director",
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-osteopathic-rounds-director"
+  },
+  {
+    "id": "gemma-3-sensory-ambient",
+    "name": "PocketGull Gemma 3 Context-Aware Ambient Telemetry Engine",
+    "hub_repo": "pocketgull-llc/gemma-3-sensory-ambient",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-sensory-ambient"
   }
 ]

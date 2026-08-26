@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { CellularAutomataViewerComponent } from './cellular-automata-viewer.component';
 import { PetriNetViewerComponent } from './petri-net-viewer.component';
 import { NavierStokesViewerComponent } from './navier-stokes-viewer.component';
+import { CernLhc3dVisualizerComponent } from '../anatomy-3d/cern-lhc-3d-visualizer.component';
+import { SocraticRoundsHudComponent } from '../socratic-rounds-hud.component';
+import { InfoCern1991ThemeShowcaseComponent } from '../info-cern-1991-theme-showcase.component';
+import { InsightGridComponent } from '../synthesis/insight-grid.component';
 
 @Component({
   selector: 'app-turing-suite',
@@ -11,7 +15,11 @@ import { NavierStokesViewerComponent } from './navier-stokes-viewer.component';
     CommonModule,
     CellularAutomataViewerComponent,
     PetriNetViewerComponent,
-    NavierStokesViewerComponent
+    NavierStokesViewerComponent,
+    CernLhc3dVisualizerComponent,
+    SocraticRoundsHudComponent,
+    InfoCern1991ThemeShowcaseComponent,
+    InsightGridComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -26,7 +34,7 @@ import { NavierStokesViewerComponent } from './navier-stokes-viewer.component';
             </h2>
           </div>
           <p class="text-xs text-purple-300/80 mt-1 max-w-2xl">
-            Modeling cellular morphogenesis, epigenetic state transitions, and concurrent biochemical pathways as formal Turing-complete state machines.
+            Modeling cellular morphogenesis, epigenetic state transitions, concurrent biochemical pathways, and quantum biophysics as formal Turing-complete state machines.
           </p>
         </div>
         <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-purple-900/60 border border-purple-500/50 text-purple-200 shrink-0">
@@ -47,6 +55,26 @@ import { NavierStokesViewerComponent } from './navier-stokes-viewer.component';
       <!-- Fluid Dynamics Section -->
       <div class="h-[420px]">
         <app-navier-stokes-viewer />
+      </div>
+
+      <!-- CERN LHC 3D Biophysical Visualizer -->
+      <div class="pt-4 border-t border-purple-900/40">
+        <app-cern-lhc-3d-visualizer />
+      </div>
+
+      <!-- Autonomous Socratic Clinical Rounds HUD -->
+      <div class="pt-4 border-t border-purple-900/40">
+        <app-socratic-rounds-hud />
+      </div>
+
+      <!-- NeXTSTEP WorldWideWeb v0.9 (CERN 1991) Theme Showcase -->
+      <div class="pt-4 border-t border-purple-900/40">
+        <app-info-cern-1991-theme-showcase />
+      </div>
+
+      <!-- Synthesized Cross-Paradigm Intelligence Grid -->
+      <div class="pt-4 border-t border-purple-900/40">
+        <app-insight-grid />
       </div>
     </div>
   `

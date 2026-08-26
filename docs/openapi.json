@@ -885,6 +885,197 @@
           }
         }
       }
+    },
+    "/api/billing/checkout": {
+      "post": {
+        "summary": "Create Stripe Checkout Session",
+        "description": "Generates a Stripe Checkout Session with US GAAP ASC 606 & ASC 958 revenue split metadata and SaaS tax code (txcd_10103001).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tier": { "type": "string", "enum": ["founder_lifetime", "clinic_annual", "clinic_onboarding", "clinic_pro_monthly", "pilot", "sprint", "academic", "enterprise"], "example": "clinic_pro_monthly" },
+                  "priceId": { "type": "string" },
+                  "customerEmail": { "type": "string", "format": "email", "example": "dr.smith@example.com" },
+                  "successUrl": { "type": "string" },
+                  "cancelUrl": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkout Session Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": { "type": "string" },
+                    "sessionId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/billing/portal": {
+      "post": {
+        "summary": "Create Stripe Customer Portal Session",
+        "description": "Generates a self-service Stripe Customer Portal session for subscription and invoice management.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["customerEmail"],
+                "properties": {
+                  "customerEmail": { "type": "string", "format": "email" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Customer Portal URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/billing/webhook": {
+      "post": {
+        "summary": "Stripe Webhook Listener",
+        "description": "Processes signed Stripe events with idempotency deduplication and posts double-entry journal records to GAAP General Ledger.",
+        "responses": {
+          "200": {
+            "description": "Webhook processed"
+          }
+        }
+      }
+    },
+    "/api/hsa/cards/link": {
+      "post": {
+        "summary": "Link IIAS-Compliant HSA/FSA Card",
+        "description": "Tokenizes an HSA/FSA debit card under IRS § 223 for adherence rewards and medical rebates.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["patientId", "cardLast4", "cardBrand"],
+                "properties": {
+                  "patientId": { "type": "string" },
+                  "cardLast4": { "type": "string", "example": "4242" },
+                  "cardBrand": { "type": "string", "example": "Visa" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Card linked successfully"
+          }
+        }
+      }
+    },
+    "/api/hsa/rebate/disburse": {
+      "post": {
+        "summary": "Disburse HSA Adherence Rebate",
+        "description": "Issues Stackelberg game-theoretic adherence reward to patient HSA/FSA account.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["patientId", "amountUsd", "actionType"],
+                "properties": {
+                  "patientId": { "type": "string" },
+                  "amountUsd": { "type": "number", "example": 25.00 },
+                  "actionType": { "type": "string", "example": "GLUCOSE_LOG_STREAK" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rebate disbursed"
+          }
+        }
+      }
+    },
+    "/api/research/payout/stripe-connect-link": {
+      "post": {
+        "summary": "Create Stripe Connect Express Onboarding Link",
+        "description": "Generates an onboarding link for patients to receive clinical trial data dividend payouts.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["patientId", "patientEmail"],
+                "properties": {
+                  "patientId": { "type": "string" },
+                  "patientEmail": { "type": "string", "format": "email" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stripe Connect Onboarding URL"
+          }
+        }
+      }
+    },
+    "/api/research/payout/request": {
+      "post": {
+        "summary": "Request Research Dividend Payout",
+        "description": "Disburses research dividends to patient's linked Stripe Connect account.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["patientId", "amountUsd"],
+                "properties": {
+                  "patientId": { "type": "string" },
+                  "amountUsd": { "type": "number", "example": 50.00 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dividend payout initiated"
+          }
+        }
+      }
     }
   },
   "components": {

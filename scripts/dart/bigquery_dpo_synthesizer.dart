@@ -70,9 +70,9 @@ class DpoPreferencePair {
 // Mock BigQuery extraction results
 final rawBigQueryBatch = <Map<String, dynamic>>[
   {
-    'consultation_id': 'bq-ack-2026-0811',
-    'patient_archetype': 'Homo Sapiens (Female, 34y, Outdoor Ecologist, Nantucket)',
-    'user_query': 'Found an engorged tick attached for ~40 hours after hiking Middle Moors. Feeling anxious about chronic Lyme.',
+    'consultation_id': 'bq-eco-2026-0811',
+    'patient_archetype': 'Homo Sapiens (Female, 34y, Coastal Ecologist)',
+    'user_query': 'Found an engorged tick attached for ~40 hours after field research in coastal brush. Seeking guidance on prophylaxis.',
     'clinician_feedback': 'Upregulate single-dose Doxycycline 72h window evidence and defuse panic with Seligman ABCDE reframe.',
     'accepted_plan': '1. IDSA Prophylaxis: Oral Doxycycline 200mg single dose within 72h (reduces Lyme transmission by 87%).\n2. Reassurance: 40h is well within the therapeutic window.\n3. Co-infection awareness: Monitor for Babesia microti fevers.',
     'rejected_plan': 'You should immediately take 4 weeks of triple IV antibiotics and never walk in the woods again.',

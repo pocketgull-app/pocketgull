@@ -562,6 +562,19 @@
     "history": [
       {
         "type": "AnalysisRun",
+        "date": "2026.08.25",
+        "summary": "Comprehensive AI analysis generated.",
+        "report": {
+          "Summary Overview": "# Clinical Assessment\nDetails of clinical assessment.\n\n# Diagnostic Workup\nDetails of diagnostic workup.\n\n# Nutritional Interventions\nDetails of nutritional interventions.\n\n# Biomarker Matrix\nDetails of biomarker matrix: Magnesium.\n\n# Immediate (24-72 hours)\nDetails of immediate monitoring.\n\n# Understanding Your health plan\nDetails of patient education.",
+          "Functional Protocols": "# Clinical Assessment\nDetails of clinical assessment.\n\n# Diagnostic Workup\nDetails of diagnostic workup.\n\n# Nutritional Interventions\nDetails of nutritional interventions.\n\n# Biomarker Matrix\nDetails of biomarker matrix: Magnesium.\n\n# Immediate (24-72 hours)\nDetails of immediate monitoring.\n\n# Understanding Your health plan\nDetails of patient education.",
+          "Nutrition": "# Clinical Assessment\nDetails of clinical assessment.\n\n# Diagnostic Workup\nDetails of diagnostic workup.\n\n# Nutritional Interventions\nDetails of nutritional interventions.\n\n# Biomarker Matrix\nDetails of biomarker matrix: Magnesium.\n\n# Immediate (24-72 hours)\nDetails of immediate monitoring.\n\n# Understanding Your health plan\nDetails of patient education.",
+          "Precision Nutrients": "# Clinical Assessment\nDetails of clinical assessment.\n\n# Diagnostic Workup\nDetails of diagnostic workup.\n\n# Nutritional Interventions\nDetails of nutritional interventions.\n\n# Biomarker Matrix\nDetails of biomarker matrix: Magnesium.\n\n# Immediate (24-72 hours)\nDetails of immediate monitoring.\n\n# Understanding Your health plan\nDetails of patient education.",
+          "Monitoring & Follow-up": "# Clinical Assessment\nDetails of clinical assessment.\n\n# Diagnostic Workup\nDetails of diagnostic workup.\n\n# Nutritional Interventions\nDetails of nutritional interventions.\n\n# Biomarker Matrix\nDetails of biomarker matrix: Magnesium.\n\n# Immediate (24-72 hours)\nDetails of immediate monitoring.\n\n# Understanding Your health plan\nDetails of patient education.",
+          "Patient Education": "# Clinical Assessment\nDetails of clinical assessment.\n\n# Diagnostic Workup\nDetails of diagnostic workup.\n\n# Nutritional Interventions\nDetails of nutritional interventions.\n\n# Biomarker Matrix\nDetails of biomarker matrix: Magnesium.\n\n# Immediate (24-72 hours)\nDetails of immediate monitoring.\n\n# Understanding Your health plan\nDetails of patient education."
+        }
+      },
+      {
+        "type": "AnalysisRun",
         "date": "1882.04.19",
         "summary": "Comprehensive Clinical Analysis",
         "report": {
@@ -632,7 +645,7 @@
   },
   {
     "id": "p_default_patient",
-    "name": "Alexander Vance",
+    "name": "Homo Sapiens (Male, Metabolic & Executive Stress, 44y)",
     "age": 42,
     "gender": "Male",
     "vitals": {
@@ -683,16 +696,16 @@
     "history": [
       {
         "type": "FinalizedPatientSummary",
-        "date": "2026.08.13",
+        "date": "2026.08.25",
         "summary": "Patient Summary updated (auto-saved).",
         "report": {
-          "Summary Overview": "### Clinical Assessment\nAlexander Vance is a 42-year-old male presenting for management of active clinical concerns and functional optimization. \n\n### Current Presentation & Vitals\n- **Vitals**: BP: 122/82, HR: 68 bpm, Temp: 98.6F, SpO2: 98%\n- **Active Concerns**:\n- **General Wellness**: No acute physical issues reported.\n\n### Clinical Priorities\n- **Symptom Management**: Focus on non-pharmacological and targeted interventions for general wellness.\n- **Lifestyle Modification**: Circadian alignment, metabolic optimization, and targeted movement.\n- **Patient Goals**: Optimize metabolic health, synchronize all personal biometrics from Google Health Connect, and reduce sleep latency.\n\n### Plan of Care\n- **Short-term**: Optimize daily movement and address acute stressors/pain.\n- **Long-term**: Functional rehabilitation and systemic health optimization.",
+          "Summary Overview": "### Clinical Assessment\nHomo Sapiens (Male, Metabolic & Executive Stress, 44y) is a 42-year-old male presenting for management of active clinical concerns and functional optimization. \n\n### Current Presentation & Vitals\n- **Vitals**: BP: 122/82, HR: 68 bpm, Temp: 98.6F, SpO2: 98%\n- **Active Concerns**:\n- **General Wellness**: No acute physical issues reported.\n\n### Clinical Priorities\n- **Symptom Management**: Focus on non-pharmacological and targeted interventions for general wellness.\n- **Lifestyle Modification**: Circadian alignment, metabolic optimization, and targeted movement.\n- **Patient Goals**: Optimize metabolic health, synchronize all personal biometrics from Google Health Connect, and reduce sleep latency.\n\n### Plan of Care\n- **Short-term**: Optimize daily movement and address acute stressors/pain.\n- **Long-term**: Functional rehabilitation and systemic health optimization.",
           "Functional Protocols": "### Diagnostic Workup & Lifestyle\n- **Exercise**: Structured moderate-intensity cardiovascular exercise 3x/week.\n- **Posture & Ergonomics**: Regular movement breaks and ergonomic assessment.\n- **Sleep**: Maintain consistent sleep/wake cycle.",
           "Nutrition": "### Nutritional Interventions\n- **Anti-inflammatory Diet**: Emphasize whole foods, lean proteins, omega-3 fats, and high-fiber vegetables.\n- **Hydration**: Target 2-3 liters of filtered water daily.\n\n### Local & Wild Sourcing\n- **Standard Supermarkets**: Source wild-caught salmon and mackerel in the seafood aisle. Frozen wild blueberries are highly abundant and cost-effective.\n- **Wild Foraging**: Forage for wild dandelions or stinging nettles in organic, pesticide-free meadows (blanch nettles thoroughly to deactivate stingers; they are rich in iron and vitamin C).",
           "Precision Nutrients": "### Biomarker Matrix & Suggested Supplements\n- **Magnesium Glycinate**: 300-400mg before bed.\n- **Vitamin D3**: Optimize levels to support immune and bone health.\n- **Omega-3 Fatty Acids**: Anti-inflammatory support.",
           "Monitoring & Follow-up": "### Immediate (24-72 hours) & Clinical Tracking\n- Monitor vitals and symptom logs.\n- Re-assess functional capacity in 4 weeks.",
           "Patient Education": "### Understanding Your Health Path\nBy focusing on nutrition, movement, sleep, and targeted supplementation, we can address the root functional causes of your symptoms and build a foundation for long-term health.",
-          "Maternal & Postpartum": "### Perinatal Health Assessment\nAlexander Vance is a 42-year-old male evaluated for perinatal functional optimization and maternal autonomic balance. Maternal blood pressure is 122/82 with stable SpO2 at 98%.\n\n### Perinatal Safety Thresholds\n| Metric | Target Range | Frequency | Action Threshold |\n| :--- | :--- | :--- | :--- |\n| Blood Pressure | < 130/80 mmHg | Daily | > 140/90 mmHg (Preeclampsia Rule-out) |\n| Fetal Movement |  10 kicks / 2 hrs | Daily | < 10 kicks in 2 hours |\n| Postpartum Mood | EPDS Score < 9 | Bi-weekly | EPDS  10 |\n\n### Integrated Care Protocol\n- **Western Support**: Pre-eclampsia monitoring, prenatal iron/folate supplementation.\n- **Eastern TCM**: Ren Mai (Conception Vessel) warming & Shen calming.\n- **Ayurvedic Garbhini**: Sattvic diet, warm sesame Abhyanga, Nadi Shodhana breathing.",
+          "Maternal & Postpartum": "### Perinatal Health Assessment\nHomo Sapiens (Male, Metabolic & Executive Stress, 44y) is a 42-year-old male evaluated for perinatal functional optimization and maternal autonomic balance. Maternal blood pressure is 122/82 with stable SpO2 at 98%.\n\n### Perinatal Safety Thresholds\n| Metric | Target Range | Frequency | Action Threshold |\n| :--- | :--- | :--- | :--- |\n| Blood Pressure | < 130/80 mmHg | Daily | > 140/90 mmHg (Preeclampsia Rule-out) |\n| Fetal Movement |  10 kicks / 2 hrs | Daily | < 10 kicks in 2 hours |\n| Postpartum Mood | EPDS Score < 9 | Bi-weekly | EPDS  10 |\n\n### Integrated Care Protocol\n- **Western Support**: Pre-eclampsia monitoring, prenatal iron/folate supplementation.\n- **Eastern TCM**: Ren Mai (Conception Vessel) warming & Shen calming.\n- **Ayurvedic Garbhini**: Sattvic diet, warm sesame Abhyanga, Nadi Shodhana breathing.",
           "Grow-Thyself Education": "### Ecological Cellular & Garden Metaphors\nYour cellular energy system operates like a living garden ecosystem. Nutrients and hydration are your fertile soil; circadian sleep and morning sunlight provide vital solar energy.\n\n### Ancestral Dietary Heritage & Cultural Swaps\n| Cultural Heritage | Traditional Swap | Bio-Individual Benefit | Local Sourcing Tip |\n| :--- | :--- | :--- | :--- |\n| African Heritage | Collard greens & okra broth | High folate, prebiotic fiber | Local farmers market |\n| Latino/Hispanic | Black beans & avocado oil | Stable glycemic index, oleic acid | Standard grocery produce |\n| East/South Asian | Miso & ginger jujube tea | Probiotic enzymes, digestion | Asian specialty market |\n\n### Daily Micro-Habits (Grow-Thyself Quests)\n- ** Morning Circadian Sun Reset**: 15 min morning light.\n- ** Vagal Tone Breathing**: 6.0 bpm resonant breathing.\n- ** Ancestral Mineralization**: Warm herbal mineral infusion.",
           "Epigenetic Longevity": "### Actuarial Risk & Biological Age Synthesis\nQuantitative Gompertz-Makeham hazard modeling indicates a biological age delta of **-4.5 years** relative to chronological age (42), projecting **+7.2 Quality-Adjusted Life Years (QALY)** gain.\n\n### CDC 4-Driver Hazard Reduction Matrix\n| Mortality Vector | Baseline Risk | Multi-Paradigm Strategy | Projected Hazard Ratio (HR) |\n| :--- | :--- | :--- | :--- |\n| Cardiovascular | Moderate | HRV 6.0 bpm Vagal Tone + CoQ10 | **0.62** (38% Risk Reduction) |\n| Metabolic | Low-Moderate | Sirtuin Activators + Low Glycemic | **0.55** (45% Risk Reduction) |\n| Neurodegenerative | Low | TCM Shen Harmonization + Neti/Nasya | **0.68** (32% Risk Reduction) |\n| Oncological | Low | Autophagic Rasayana & Anti-inflammatory | **0.74** (26% Risk Reduction) |\n\n### Multi-Paradigm Cell Longevity Protocol\n- **Western Epigenetic Support**: Sirtuin activation (NAD+/NMN), AMPK activation, HRV vagal tone.\n- **Eastern TCM Essence**: Zang-Fu meridian balancing, sleep architecture, Jing preservation.\n- **Ayurvedic Rasayana**: Ama detoxification, Agni metabolic fire, adaptogenic rejuvenation.",
           "Pre-Conception & Family Health": "### Pre-Conception Parental Epigenetic Matrix\n| Optimization Vector | Targeted Biomarker | Parental Protocol | Fetal Healthspan Impact |\n| :--- | :--- | :--- | :--- |\n| Folate Methylation | MTHFR C677T / Homocysteine | L-5-MTHF (800 mcg) + B12 | Neural tube & DNA fidelity |\n| Maternal Mitochondria | CoQ10 Ubiquinol / Fasting Insulin | Ubiquinol (300 mg) + Alpha-Lipoic | High oocyte cleavage ATP |\n| Paternal Spermatogenesis | Sperm DNA DFI / Zinc | Zinc (30 mg) + Selenium + Carnitine | Lower germline mutational load |\n| Environmental Detox | Heavy metals & Endocrine Disruptors | Filtered water & organic whole foods | Reduced epigenetic transgenerational risk |\n\n### Senior & Geriatric Caretaking Strategy\n- **Autonomic Vagal Tone**: HRV SDNN 6.0 bpm resonant breathing sessions to reduce agitation and improve sleep.\n- **TCM Kidney Jing & Shen**: Warm bone broths, Rehmannia, and Gingko Biloba to nourish brain marrow (*Sui Hai*).\n- **Ayurvedic Vata Pacification**: Warm sesame Abhyanga massage & Bacopa Monnieri (Brahmi) for joint/cognitive support.\n\n### Voluntary ACOG/ACMG Carrier Screening Guidance\nRecommends voluntary pre-conception carrier screening for autosomal recessive traits. Pre-conception optimization ensures offspring inherit optimal epigenetic programming while preserving human dignity."
@@ -700,5 +713,320 @@
         "annotations": {}
       }
     ]
+  },
+  {
+    "id": "p_local_1787668861958",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787668863623",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787668863641",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787668867774",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787668947341",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669017217",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669019169",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669038602",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669039566",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669042466",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669066150",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669088949",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669090214",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669091964",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669096297",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669172612",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669366743",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669368821",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669368937",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669372971",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
+  },
+  {
+    "id": "p_local_1787669446609",
+    "name": "New Patient",
+    "age": 0,
+    "gender": "Other",
+    "vitals": {
+      "bp": "",
+      "hr": "",
+      "temp": "",
+      "spO2": "",
+      "weight": "",
+      "height": ""
+    },
+    "history": []
   }
 ]

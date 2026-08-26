@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AndroscogginForagingPhytoncideComponent } from '../androscoggin-foraging-phytoncide.component';
 import { GrowThyselfLegacyVaultComponent } from '../grow-thyself-legacy-vault.component';
 import { TribalHealthSovereigntyCardComponent } from '../shared/tribal-health-sovereignty-card.component';
+import { GaapTribalStewardshipCardComponent } from '../shared/gaap-tribal-stewardship-card.component';
 
 @Component({
   selector: 'app-seven-generations-stewardship-lens-tab',
@@ -11,7 +12,8 @@ import { TribalHealthSovereigntyCardComponent } from '../shared/tribal-health-so
     CommonModule,
     AndroscogginForagingPhytoncideComponent,
     GrowThyselfLegacyVaultComponent,
-    TribalHealthSovereigntyCardComponent
+    TribalHealthSovereigntyCardComponent,
+    GaapTribalStewardshipCardComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -33,6 +35,9 @@ import { TribalHealthSovereigntyCardComponent } from '../shared/tribal-health-so
 
       <!-- Tribal Health Sovereignty, CARE Principles & Indigenous Herbal Codex -->
       <app-tribal-health-sovereignty-card></app-tribal-health-sovereignty-card>
+
+      <!-- US GAAP FASB ASC 958 Financial Revenue Allocation & Tribal Stewardship -->
+      <app-gaap-tribal-stewardship-card></app-gaap-tribal-stewardship-card>
 
       <!-- Grow Thyself Lifelong Vitality & Legacy Vault Component -->
       <app-grow-thyself-legacy-vault></app-grow-thyself-legacy-vault>

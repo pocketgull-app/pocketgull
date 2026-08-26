@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json.schemastore.org/mcp-registry.json",
+  "mcpServers": {
+    "dart-mcp-server": {
+      "command": "dart",
+      "args": ["run", "dart_mcp_server"],
+      "env": {
+        "DART_SDK_PATH": "C:\\tools\\dart-sdk",
+        "POCKETGULL_ENV": "production"
+      },
+      "description": "Dart 3 runtime, FHIR/JSON batch transformation, and Flutter companion testing engine"
+    },
+    "science": {
+      "command": "python",
+      "args": ["-m", "pocketgull_science_mcp"],
+      "env": {
+        "PUBCHEM_RATE_LIMIT": "5",
+        "CHEMBL_API_VERSION": "v29",
+        "DATA_CLASSIFICATION": "de-identified-mock",
+        "PYTHONPATH": "c:\\Users\\philg\\Pocketgull\\pocketgull\\pocketgull_api"
+      },
+      "description": "PubChem, ChEMBL, GTEx, and ClinVar pharmacological & biophysical retrieval tools"
+    },
+    "gemini-api": {
+      "command": "node",
+      "args": ["c:\\Users\\philg\\Pocketgull\\pocketgull\\dist\\server\\mcp\\gemini_mcp_entry.js"],
+      "env": {
+        "GCP_PROJECT_ID": "gen-lang-client-0540208645",
+        "GEMINI_MODEL_VERSION": "gemini-2.5-pro"
+      },
+      "description": "Google Gemini multimodal live streaming, CDS clinical inference, and Genkit telemetry"
+    },
+    "data-agent-kit": {
+      "command": "npx",
+      "args": ["-y", "@google-cloud/data-agent-kit-mcp"],
+      "env": {
+        "GCP_PROJECT_ID": "gen-lang-client-0540208645",
+        "BIGQUERY_DATASET": "github_enterprise_audit_log"
+      },
+      "description": "BigQuery, GCS, and Cloud Run infrastructure query and inspection tools"
+    }
+  }
+}

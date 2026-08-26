@@ -8,6 +8,7 @@
  */
 import { Router } from 'express';
 import type { Request, Response } from 'express';
+import { randomInt } from 'node:crypto';
 import { sanitizeAlphanumericIdentifier } from '../../utils/security-sanitizer';
 
 export interface IHsaRebateRequest {
@@ -57,7 +58,7 @@ hsaRouter.post('/cards/link', (req: Request, res: Response) => {
 
   res.status(200).json({
     success: true,
-    cardId: `HSA-CARD-${Math.floor(1000 + Math.random() * 9000)}`,
+    cardId: `HSA-CARD-${randomInt(1000, 10000)}`,
     patientId: patientId || 'P001',
     issuerName,
     cardType: cardType || 'HSA',

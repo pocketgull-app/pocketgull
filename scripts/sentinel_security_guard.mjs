@@ -99,6 +99,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'www.clinicaltrials.gov',
   'smarthealthit.org',
   'launch.smarthealthit.org',
+  'smarthealth.cards',
+  'pocketgull.internal',
   'caringinfo.org',
   'www.caringinfo.org',
   'foodwise.org',
@@ -136,6 +138,10 @@ const APPROVED_EGRESS_DOMAINS = [
   'aws.amazon.com',
   'amazonaws.com',
   'omronhealthcare.com',
+  'cochranelibrary.com',
+  'www.cochranelibrary.com',
+  'nice.org.uk',
+  'www.nice.org.uk',
   'www.omronhealthcare.com',
   'withings.com',
   'www.withings.com',
@@ -174,22 +180,11 @@ const APPROVED_EGRESS_DOMAINS = [
   'broadinstitute.org',
   'pan.ukbb.broadinstitute.org',
   'proteinatlas.org',
-  'www.proteinatlas.org',
-  'cochranelibrary.com',
-  'www.cochranelibrary.com',
-  'nice.org.uk',
-  'www.nice.org.uk',
-  'ohdsi.org',
-  'www.ohdsi.org',
   'ohif.org',
   'viewer.ohif.org',
   'firebaseapp.com',
   'web.app',
   'reactome.org',
-  'who.int',
-  'www.who.int',
-  'sccm.org',
-  'www.sccm.org',
   'santafe.edu',
   'www.santafe.edu',
   'arizona.edu',
@@ -409,6 +404,26 @@ function auditFile(filePath) {
         severity: 'CRITICAL',
         message: `Potential unmasked SSN/Direct Identifier detected: "${ssnMatch[0]}" under HIPAA §164.514 Safe Harbor.`,
         line: content.substring(0, ssnMatch.index).split('\n').length,
+      });
+    }
+  }
+
+  // 6. Kaizen Poka-Yoke: Prohibit untyped 'as any' in Clinical Dosage & Biochemistry Services
+  if (
+    (relativePath.includes('clinical-biochemistry') ||
+      relativePath.includes('rx-guard') ||
+      relativePath.includes('pharmacogenomics') ||
+      relativePath.includes('precision-nutrition')) &&
+    !relativePath.includes('spec.ts')
+  ) {
+    const looseAnyRegex = /:\s*any\b|\bas\s+any\b/g;
+    let anyMatch;
+    while ((anyMatch = looseAnyRegex.exec(content)) !== null) {
+      issues.push({
+        type: 'POKA_YOKE_LOOSE_ANY_TYPE',
+        severity: 'HIGH',
+        message: `Kaizen Poka-Yoke violation: Untyped 'any' cast detected in clinical dosage service. Use strict domain types.`,
+        line: content.substring(0, anyMatch.index).split('\n').length,
       });
     }
   }

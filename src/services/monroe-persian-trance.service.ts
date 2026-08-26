@@ -378,6 +378,19 @@ export class MonroePersianTranceService {
   }
 
   /**
+   * Environmental Telemetry Integration: Auto-harmonize playback with living atmospheric conditions
+   */
+  harmonizeWithEnvironmentalTelemetry(presetId: HemisphericSyncType, volumeOffsetDb: number = 0): void {
+    this.playPreset(presetId);
+    if (volumeOffsetDb !== 0 && this.mainGain && this.audioCtx) {
+      const linearOffset = Math.pow(10, volumeOffsetDb / 20);
+      const baseVol = this.mainVolume();
+      const targetGain = Math.max(0.01, Math.min(0.5, baseVol * linearOffset));
+      this.mainGain.gain.setTargetAtTime(targetGain, this.audioCtx.currentTime, 0.5);
+    }
+  }
+
+  /**
    * Launch adaptive flow tuned to Karolinska Sleepiness Scale
    */
   playAdaptiveKssFlow(kss: KarolinskaSleepinessLevel = this.currentKss()): void {

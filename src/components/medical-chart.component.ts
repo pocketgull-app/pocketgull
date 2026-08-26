@@ -17,6 +17,7 @@ import { LongitudinalTrendSparklineComponent } from './shared/longitudinal-trend
 import { GlobalHealthInitiativesService } from '../services/global-health-initiatives.service';
 import { EnvironmentalExposomicsToxicologyComponent } from './environmental-exposomics-toxicology.component';
 import { InstantBodyCarePlanSheetComponent } from './anatomy-3d/instant-body-care-plan-sheet.component';
+import { PatientScansComponent } from './patient-scans.component';
 
 @Component({
   selector: 'app-medical-chart',
@@ -34,7 +35,8 @@ import { InstantBodyCarePlanSheetComponent } from './anatomy-3d/instant-body-car
     SentinelTelemetryPlotterComponent,
     LongitudinalTrendSparklineComponent,
     EnvironmentalExposomicsToxicologyComponent,
-    InstantBodyCarePlanSheetComponent
+    InstantBodyCarePlanSheetComponent,
+    PatientScansComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -195,7 +197,7 @@ import { InstantBodyCarePlanSheetComponent } from './anatomy-3d/instant-body-car
               
               <!-- WHO 10-Year CVD Risk & ICD-11 Dual-Codes Bar -->
               @if(whoRisk(); as risk) {
-                <div class="px-3 py-2 bg-zinc-50 dark:bg-zinc-900/60 border-l-2 border-sky-500 border-y border-r border-zinc-200 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
+                <div class="px-3 py-2 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/80 border-l-4 border-l-sky-500 flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
                   <div class="flex items-center gap-2">
                     <span class="inline-block w-1.5 h-1.5 bg-sky-500 rounded-2xs"></span>
                     <span class="font-bold text-zinc-800 dark:text-zinc-200 text-[11px] uppercase tracking-wider">
@@ -319,8 +321,12 @@ import { InstantBodyCarePlanSheetComponent } from './anatomy-3d/instant-body-car
           </div>
 
           @if(isScansExpanded()) {
-            <div class="p-6 bg-[#F9FAFB]/50 dark:bg-zinc-900/50 min-h-0">
+            <div class="p-6 bg-[#F9FAFB]/50 dark:bg-zinc-900/50 min-h-0 space-y-6">
               <app-dicom-viewer class="shrink-0"></app-dicom-viewer>
+              <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">Diagnostic Scans &amp; Modalities</h4>
+                <app-patient-scans [scans]="patientScans()"></app-patient-scans>
+              </div>
             </div>
           }
         </pocket-gull-card>

@@ -28,7 +28,7 @@ You **MAY NOT**:
 Under the terms of the **MIT License**, any copy or substantial portion of the software **MUST include the original copyright notice**:
 
 ```text
-Copyright (c) 2026 Phil Gear. All rights reserved.
+Copyright (c) 2026 PocketGull LLC & Phillip Gear. All rights reserved.
 ```
 
-For questions regarding commercial licensing or trademark permissions, please visit [https://github.com/philgear/pocketgull](https://github.com/philgear/pocketgull).
+For questions regarding commercial licensing or trademark permissions, contact **dpo@pocketgull.app** or visit [https://github.com/pocketgull-app/pocketgull](https://github.com/pocketgull-app/pocketgull).

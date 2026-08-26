@@ -198,5 +198,20 @@ To prevent context window degradation, attention drift, and token exhaustion:
 - **Explicit Tool Contracts**: Every browser tool exposed to AI model contexts MUST be registered via `WebMcpRegistrationService`, declare strict JSON Schema inputs, and provide an explicit `AbortController` cancellation signal.
 - **Mandatory Spec Coverage**: Any addition or modification to registered WebMCP tools MUST include corresponding unit tests in `webmcp-registration.service.spec.ts` verifying registration, execution, and error handling.
 
+## Chrome Built-in AI & Gemma 4 Dev Trial Architecture Standards
+- **Gemma 4 Prompt API (`#gemma4-for-built-in-ai`)**: Prefer Chrome Built-in AI Prompt API for low-latency client-side clinical summarization and consults with speculative decoding (`samplingMode: 'most-predictable'`).
+- **Multimodal Visual Input (`#prompt-api-multimodal-input`)**: Pass canvas/image captures as Blob objects into `ai.languageModel` prompt input arrays for zero cloud transit visual analysis.
+- **ISMP Safety Proofreader (`#proofreader-api`)**: Integrate `window.ai.proofreader` / `ai.rewriter` with automated detection for high-risk trailing zeroes (`5.0 mg`) and naked decimals (`.5 mg`).
+- **Triage Acuity Classifier (`#classifier-api`)**: Categorize clinical notes with confidence scores into `STAT_EMERGENCY`, `URGENT`, or `ROUTINE`.
+- **Zero-Latency Vector Embeddings (`OnDeviceEmbedderService`)**: Use `window.ai.semanticEmbedder` to generate 256-dimensional embeddings with cosine similarity matching for PubMed literature ranking and clinical archetype retrieval.
+- **Enterprise Zero-Flag Invariant**: Ensure 100% functionality and zero uncaught exceptions in enterprise environments without experimental flags by providing deterministic local TypeScript fallbacks across all features.
+
+## Institutional Security Triad Governance Standard
+- **NIST SP 800-90A CSPRNG Invariant**: All session tokens, OAuth PKCE code verifiers, digital consent signatures, and entity identifiers MUST use CSPRNG OS kernel hardware entropy (`globalThis.crypto.getRandomValues()` / Node.js `node:crypto` `randomBytes`, `randomInt`). `Math.random()` is strictly prohibited in all security, authentication, and ID generation contexts.
+- **FDA 21 CFR Part 11 Electronic Records Integrity**: All state modifications, research dividend transactions, and clinical audits MUST generate immutable timestamped SHA-256 digital attestation seals to guarantee full provenance and non-repudiation.
+- **HIPAA § 164.312(c)(1) ePHI Data Integrity**: All ePHI payloads, FHIR R4 bundles, and clinical state trees MUST incorporate cryptographic integrity verification to corroborate that clinical data has not been altered or destroyed in an unauthorized manner.
+
 ## Clinical, Typographic & Security Canonical Reference
 - For core clinical & ophthalmological standards (LogMAR 0.0, ISMP/FDA dosage disambiguation, WCAG AAA 7:1), Marker font brand boundary, Amazon affiliate egress limits, anti-whaling dual-custody protocols, Tailwind CSS tokens, Five Eyes regulatory mapping, institutional thin-client resilience, and "Tell, Don't Ask" domain encapsulation, refer to the canonical root [GEMINI.md](file:///c:/Users/philg/Pocketgull/pocketgull/GEMINI.md).
+- For the cross-disciplinary Gemma 4 On-Device architecture spanning Medicine, Science, Education, and Fast/Slow-Loop agentic engineering, refer to [GEMMA4_EDGE_ARCHITECTURE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/GEMMA4_EDGE_ARCHITECTURE.md).
+

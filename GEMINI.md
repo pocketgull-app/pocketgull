@@ -135,3 +135,18 @@ export class MetricCardComponent {
 - **Intent-Revealing Domain Methods**: When a new business capability or computational requirement is needed, introduce an explicit, purpose-built domain method on the owning model/service rather than leaking raw state and performing external ad-hoc assembly.
 - **Prevention of Feature Envy & Anemic Models**: Ensure business calculations (such as clinical score aggregations, dosage calibrations, or state transitions) remain cohesive within their domain boundaries.
 
+## Chrome Built-in AI & Gemma 4 Dev Trial Governance Standard
+- **Gemma 4 Dev Trial & Prompt API (`chrome://flags/#gemma4-for-built-in-ai`)**: Utilize the Chrome Built-in AI Prompt API for instant on-device clinical generation and summarization with up to 70% throughput boost (`NanoProvider`).
+- **Multimodal Visual Input (`chrome://flags/#prompt-api-multimodal-input`)**: Convert canvas and image captures to Blobs for native on-device prompt input arrays (`[promptText, imageBlob]`) with zero network egress.
+- **Clinical Proofreader & ISMP Guard**: Enforce `window.ai.proofreader` / `ai.rewriter` with ISMP high-risk medication safety rules prohibiting trailing zeroes (`5.0 mg`) and naked decimals (`.5 mg`).
+- **Triage Acuity Classifier**: Classify incoming symptoms and notes via `window.ai.classifier` into `STAT_EMERGENCY`, `URGENT`, or `ROUTINE`.
+- **Zero-Latency Vector RAG (`OnDeviceEmbedderService`)**: Compute 256-dimensional semantic vector embeddings via `window.ai.semanticEmbedder` with a normalized cosine similarity ranking engine and deterministic n-gram hash projection fallback for non-flagged production environments.
+- **Enterprise Zero-Flag Invariant**: Enterprise users and standard browsers MUST never crash when experimental Chrome flags are missing; all components MUST seamlessly degrade to deterministic local TypeScript fallbacks.
+- **Cross-Disciplinary Strategy Reference**: For the complete strategic triad spanning Medicine (Zero-Egress HIPAA Scribing), Science (High-Throughput Literature Triage), Education (Socratic Adaptation), and Fast/Slow-Loop Agentic Engineering, refer to [GEMMA4_EDGE_ARCHITECTURE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/GEMMA4_EDGE_ARCHITECTURE.md).
+
+## Institutional Security Triad: NIST SP 800-90A, FDA 21 CFR Part 11 & HIPAA § 164.312(c)(1)
+- **NIST SP 800-90A (Hardware Entropy & Deterministic Random Bit Generation)**: All session identifiers, PKCE challenge verifiers, OAuth states, digital consent tokens, and security identifiers MUST be generated using NIST SP 800-90A compliant CSPRNG OS kernel hardware entropy (`globalThis.crypto.getRandomValues()` / Node.js `node:crypto` `randomBytes`, `randomInt`). The use of `Math.random()` in any security, authentication, transaction, or identification context is strictly prohibited.
+- **FDA 21 CFR Part 11 (Electronic Records & Electronic Signatures Integrity)**: All clinical data transactions, state transformations, research dividend ledger entries, and emergency overrides MUST generate immutable, timestamped SHA-256 digital attestation seals (`computeIntegrityDigest()`, `generateCryptographicReceipt()`) to ensure complete electronic provenance, non-repudiation, and audit traceability.
+- **HIPAA § 164.312(c)(1) (ePHI Data Integrity Verification)**: All electronic Protected Health Information (ePHI), FHIR R4 resource bundles, and patient state records MUST incorporate cryptographic data integrity mechanisms to corroborate that patient data has not been altered, tampered with, or destroyed in an unauthorized manner during storage, transit, or client-side evaluation.
+
+

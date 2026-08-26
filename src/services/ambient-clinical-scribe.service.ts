@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
+import { OnDeviceEmbedderService } from './ai/on-device-embedder.service';
 import { IPatient } from './patient.types';
 
 export interface ISoapSectionSubjective {
@@ -15,10 +16,17 @@ export interface ISoapSectionObjective {
   diagnosticLabsReviewed: string[];
 }
 
+export interface IDifferentialDiagnosis {
+  condition: string;
+  icd10: string;
+  likelihood: string;
+  semanticFitPercent?: number;
+}
+
 export interface ISoapSectionAssessment {
   primaryDiagnosis: string;
   icd10Code: string;
-  differentialDiagnoses: { condition: string; icd10: string; likelihood: string }[];
+  differentialDiagnoses: IDifferentialDiagnosis[];
   clinicalImpression: string;
 }
 
@@ -48,6 +56,7 @@ export interface IStructuredSoapEncounter {
 })
 export class AmbientClinicalScribeService {
   private patientState: PatientStateService | null = null;
+  private embedder = inject(OnDeviceEmbedderService);
 
   isRecording = signal<boolean>(false);
   activeTranscript = signal<string>('');
@@ -57,6 +66,38 @@ export class AmbientClinicalScribeService {
       this.patientState = inject(PatientStateService, { optional: true });
     } catch {
       this.patientState = null;
+    }
+  }
+
+  /**
+   * Performs zero-latency semantic ranking of differential diagnoses against dialogue transcript
+   */
+  async rankDifferentialDiagnoses(
+    transcript: string,
+    differentials: IDifferentialDiagnosis[]
+  ): Promise<IDifferentialDiagnosis[]> {
+    if (!transcript || !differentials || differentials.length === 0) {
+      return differentials;
+    }
+
+    try {
+      const queryVec = await this.embedder.computeEmbedding(transcript);
+      const ranked: IDifferentialDiagnosis[] = [];
+
+      for (const diff of differentials) {
+        const diffVec = await this.embedder.computeEmbedding(`${diff.condition} ${diff.icd10}`);
+        const sim = this.embedder.cosineSimilarity(queryVec, diffVec);
+        const semanticFitPercent = Math.max(10, Math.min(99, Math.round(sim * 100)));
+        ranked.push({
+          ...diff,
+          semanticFitPercent
+        });
+      }
+
+      return ranked.sort((a, b) => (b.semanticFitPercent || 0) - (a.semanticFitPercent || 0));
+    } catch (e) {
+      console.warn('[AmbientScribe] Differential ranking fallback:', e);
+      return differentials;
     }
   }
 

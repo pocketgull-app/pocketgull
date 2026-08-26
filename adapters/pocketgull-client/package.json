@@ -1,0 +1,30 @@
+{
+  "name": "@pocketgull/client",
+  "version": "1.28.0",
+  "description": "Canonical TypeScript/JavaScript SDK and Gateway Adapter for PocketGull Clinical CDS, Live Consult, and Ethical Research Data Dividends.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "pocketgull",
+    "clinical-cds",
+    "fhir-r4",
+    "hipaa",
+    "data-dividend",
+    "ai-consult",
+    "gemini"
+  ],
+  "author": "PocketGull Clinical Architecture Team <contact@pocketgull.app>",
+  "license": "Apache-2.0",
+  "homepage": "https://pocketgull.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pocketgull-app/pocketgull.git",
+    "directory": "adapters/pocketgull-client"
+  }
+}

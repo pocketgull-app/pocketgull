@@ -6,7 +6,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
 import { BODY_PART_MAPPING } from '../services/patient.types';
 import { DictationService } from '../services/dictation.service';
 import { PatientManagementService } from '../services/patient-management.service';
-import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { MarkdownService } from '../services/markdown.service';
 import { RichMediaService, IRichMediaCard } from '../services/rich-media.service';

@@ -22,7 +22,9 @@ import {
 import { FORMATTING_RULES, PHILOSOPHY_INSTRUCTIONS, SYSTEM_INSTRUCTIONS } from './clinical-prompts';
 import { ClinicalAssessmentsService } from './clinical-assessments/clinical-assessments.service';
 import { CoppaPrivacyShieldService } from './coppa-privacy-shield.service';
+import { HealthcareIntelligenceService } from './healthcare-intelligence.service';
 import { ISirOdeResult, IGcnInteractionResult } from './patient.types';
+import { IIntelligenceChatRequest, IIntelligenceChatResponse } from './api-contracts.types';
 
 
 export interface ITranscriptEntry {
@@ -69,6 +71,7 @@ export class ClinicalIntelligenceService {
     private themeService = inject(ThemeService, { optional: true });
     private assessments = inject(ClinicalAssessmentsService, { optional: true });
     readonly coppaShield = inject(CoppaPrivacyShieldService, { optional: true });
+    readonly healthcareIntelligence = inject(HealthcareIntelligenceService, { optional: true });
 
     public isPediatricMinorActive(): boolean {
         return !!this.coppaShield?.isPediatricContext() || this.rules.hasContext('pediatric_mode');

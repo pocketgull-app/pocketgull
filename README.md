@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://pocketgull.app"><img src="https://img.shields.io/badge/Live_App-pocketgull.app-0ea5e9?style=flat-square&logo=google-cloud&logoColor=white" alt="Live App"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-orange?style=flat-square" alt="License: MIT"></a>
-  <img src="https://img.shields.io/badge/version-v1.27.0-blue?style=flat-square" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.28.0-blue?style=flat-square" alt="Version">
   <a href="https://github.com/pocketgull-app/pocketgull/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/pocketgull-app/pocketgull/deploy.yml?style=flat-square&label=deploy" alt="Deploy"></a>
   <a href="https://github.com/pocketgull-app/pocketgull/actions/workflows/codeql.yml"><img src="https://img.shields.io/github/actions/workflow/status/pocketgull-app/pocketgull/codeql.yml?style=flat-square&label=CodeQL" alt="CodeQL"></a>
 </p>
@@ -501,19 +501,10 @@ If you reference Pocket Gull in research, please cite:
 [![RSA Fellow](https://img.shields.io/badge/RSA_Fellow-8192283-005A9C?style=flat-square&logoColor=white)](https://www.thersa.org)
 [![GitHub](https://img.shields.io/badge/GitHub-philgear-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/philgear)
 [![Google Dev](https://img.shields.io/badge/Google_Dev-philgear-4285F4?style=flat-square&logo=google&logoColor=white)](https://developers.google.com/profile/philgear)
-[![Email](https://img.shields.io/badge/Contact-leads%40pocketgull.app-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:leads@pocketgull.app)
-
----
-
-## ⚠️ Community Working Draft & Public Notice
-
-> **Important Notice:**
-> The *"Island Tick Detectives"* citizen science framework and educational concepts were discovered and transcribed from informal public meeting notes and community brainstorming discussions; **they are not an official town plan, municipal resource, or enacted school curriculum just yet**.
-> 
-> This repository and companion tools represent an independent, community-driven citizen science initiative. Content is a working draft, may contain errors at the bottom, is actively evolving and needs an editor, and is not an official resource or formal school board directive. For acute clinical emergencies, consult a licensed medical professional or visit the [Nantucket Cottage Hospital Walk-in Clinic](https://nantuckethospital.org/).
+[![Contact](https://img.shields.io/badge/Contact-dpo%40pocketgull.app-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:dpo@pocketgull.app)
 
 ---
 
 <p align="center">
-  <sub>© 2026 Pocket Gull · <a href="LICENSE">MIT License</a></sub>
+  <sub>© 2026 PocketGull LLC &amp; Phillip Gear · <a href="LICENSE">MIT License</a></sub>
 </p>

@@ -53,7 +53,7 @@ const safePlaceholders = {
   'fake_', 'mock_', 'dummy_', 'test_', 'placeholder', 'example.com', '555-0199', '12345',
   'philgear', 'pocketgull.app', 'loinc', 'icd-10', 'snomed', '0540208645', '793190615625',
   '4294967296', '9007199254740992', '1-800-273-8255', '1-800-662-4357', '1-800-222-1222',
-  '508-825-1000', 'nih.gov', 'cdc.gov', 'nci.nih.gov', 'mass.gov', 'nantuckethospital.org'
+  'nih.gov', 'cdc.gov', 'nci.nih.gov', 'mass.gov'
 };
 
 bool isSafePlaceholder(String text) {

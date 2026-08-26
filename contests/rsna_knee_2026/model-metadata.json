@@ -28,6 +28,7 @@
     "pocketgull",
     "pytorch",
     "rsna",
-    "socratic-reasoning"
+    "socratic-reasoning",
+    "synthetic"
   ]
 }

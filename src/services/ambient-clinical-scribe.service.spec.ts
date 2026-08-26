@@ -1,5 +1,7 @@
 import '@angular/compiler';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { AmbientClinicalScribeService } from './ambient-clinical-scribe.service';
+import { OnDeviceEmbedderService } from './ai/on-device-embedder.service';
 import { IPatient } from './patient.types';
 
 describe('AmbientClinicalScribeService - Ambient Dialogue-to-SOAP Scribe Suite', () => {
@@ -21,8 +23,18 @@ describe('AmbientClinicalScribeService - Ambient Dialogue-to-SOAP Scribe Suite',
     vitals: { bp: '148/92', hr: '76', spO2: '98%', temp: '36.6', weight: '82', height: '175' }
   };
 
+  const mockEmbedder = {
+    computeEmbedding: vi.fn().mockResolvedValue(new Float32Array(256).fill(0.1)),
+    cosineSimilarity: vi.fn().mockReturnValue(0.88)
+  };
+
   beforeEach(() => {
-    service = new AmbientClinicalScribeService();
+    const injector = Injector.create({
+      providers: [
+        { provide: OnDeviceEmbedderService, useValue: mockEmbedder }
+      ]
+    });
+    service = runInInjectionContext(injector, () => new AmbientClinicalScribeService());
   });
 
   it('1. Synthesizes structured SOAP note with Subjective, Objective, Assessment, and Plan', () => {
@@ -40,5 +52,16 @@ describe('AmbientClinicalScribeService - Ambient Dialogue-to-SOAP Scribe Suite',
     const note = service.generateSoapNote('', mockPatient);
     expect(note.fhirEncounterResource['resourceType']).toBe('Encounter');
     expect(note.fhirEncounterResource['status']).toBe('finished');
+  });
+
+  it('3. Ranks differential diagnoses with semantic fit percentage using OnDeviceEmbedderService', async () => {
+    const differentials = [
+      { condition: 'Conn Syndrome', icd10: 'E26.01', likelihood: 'Moderate' },
+      { condition: 'Renal Artery Stenosis', icd10: 'I70.1', likelihood: 'Low' }
+    ];
+    const ranked = await service.rankDifferentialDiagnoses('hypertension dizziness', differentials);
+    expect(mockEmbedder.computeEmbedding).toHaveBeenCalled();
+    expect(ranked.length).toBe(2);
+    expect(ranked[0].semanticFitPercent).toBe(88);
   });
 });

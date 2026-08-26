@@ -8,6 +8,7 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
+import { randomBytes } from 'node:crypto';
 import { sanitizeLogInput } from '../../utils/security-helper';
 
 export function createResearchRouter(): Router {
@@ -96,7 +97,7 @@ export function createResearchRouter(): Router {
         return res.status(400).json({ error: 'Invalid enrollment payload. Missing signatureName or cohortIds.' });
       }
 
-      const signatureHash = `sha256_${Math.random().toString(36).substring(2, 15)}_${Date.now()}`;
+      const signatureHash = `sha256_${randomBytes(8).toString('hex')}_${Date.now()}`;
       const safePatient = sanitizeLogInput(String(patientId || 'anonymous_patient'));
       console.log('[ResearchRoutes] Enrolled patient %s in %d cohorts. Signature Hash: %s', safePatient, cohortIds.length, signatureHash);
 
@@ -113,6 +114,27 @@ export function createResearchRouter(): Router {
     }
   });
 
+  // POST /api/research/payout/stripe-connect-link (Stripe Connect Express Onboarding)
+  router.post('/payout/stripe-connect-link', limiter, (req: Request, res: Response) => {
+    try {
+      const { patientId } = req.body || {};
+      const safePatient = sanitizeLogInput(String(patientId || 'patient_anon'));
+      const accountId = `acct_${randomBytes(6).toString('hex')}`;
+      const onboardingUrl = `https://connect.stripe.com/express/oauth/authorize?client_id=ca_pocketgull_live&state=${safePatient}&suggested_capabilities[]=transfers`;
+
+      res.status(200).json({
+        success: true,
+        accountId,
+        onboardingUrl,
+        expiresAt: new Date(Date.now() + 3600000).toISOString()
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[ResearchRoutes] Error generating Stripe Connect link:', sanitizeLogInput(msg));
+      res.status(500).json({ error: 'Internal error generating Stripe Connect link' });
+    }
+  });
+
   // POST /api/research/payout/request
   router.post('/payout/request', limiter, (req: Request, res: Response) => {
     try {
@@ -123,16 +145,19 @@ export function createResearchRouter(): Router {
       }
 
       // Mandiant Dual-Custody Check for high-value payouts (>= $500)
-      if (amount >= 500) {
+      const requiresDualCustody = amount >= 500;
+      if (requiresDualCustody) {
         console.log('[ResearchRoutes] High-value payout of $%d flagged for Dual-Custody Authorization', amount);
       }
 
-      const payoutTxId = `strp_po_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+      const payoutTxId = `tr_${Date.now()}_${randomBytes(4).toString('hex')}`;
       res.status(200).json({
         success: true,
         amountPaid: amount,
         transactionId: payoutTxId,
-        status: 'disbursed',
+        transferId: payoutTxId,
+        status: requiresDualCustody ? 'pending_dual_custody' : 'disbursed',
+        requiresDualCustody,
         timestamp: new Date().toISOString()
       });
     } catch (err: unknown) {

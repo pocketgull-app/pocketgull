@@ -9,6 +9,7 @@
  */
 import { Router } from 'express';
 import type { Request, Response } from 'express';
+import { randomBytes } from 'node:crypto';
 
 export interface ISmsInboundPayload {
   from: string;
@@ -53,7 +54,7 @@ function parseClinicalSms(rawText: string, fromPhone: string): {
 } {
   const text = (rawText || '').trim();
   const lower = text.toLowerCase();
-  const id = 'SMS-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 6);
+  const id = `SMS-${Date.now().toString(36)}-${randomBytes(3).toString('hex')}`;
   const now = new Date().toISOString();
 
   let commandType: ISmsInteractionLog['commandType'] = 'GENERAL';

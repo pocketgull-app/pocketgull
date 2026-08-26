@@ -109,6 +109,44 @@ export const GOLDEN_BENCHMARK_SCENARIOS = [
     `,
     requiredTerms: ['Null-Hypothesis', 'inconclusive', 'Cochrane', 'Level', 'p >='],
     prohibitedTerms: ['Proven to cure aging', 'Guaranteed FDA approved heart disease prevention']
+  },
+  {
+    id: 'CHRONO-DSWPD-006',
+    name: 'Circadian Phase Advance & Phototherapy Timing',
+    domain: 'Chronobiology / Sleep Medicine',
+    inputCase: '32yo male software engineer with habitual 3:30 AM sleep onset, 11:00 AM wake time, blunted morning Cortisol Awakening Response (CAR < 5 ug/dL rise), unable to meet 8:30 AM work demands.',
+    expectedGuidelines: ['AASM', 'phototherapy', 'melatonin', 'DLMO'],
+    contraindications: ['high-dose melatonin at bedtime', 'bright light before bed'],
+    sampleModelOutput: `
+      [ASSESSMENT] Delayed Sleep-Wake Phase Disorder (DSWPD) with blunted Cortisol Awakening Response.
+      [GUIDELINE CONCORDANCE: American Academy of Sleep Medicine (AASM) Clinical Practice Guideline, Level B]
+      [CHRONOTHERAPY INTERVENTIONS]:
+      1. Morning Phototherapy: 10,000 lux broad-spectrum light box for 30 minutes at 7:30 AM upon waking to reset central SCN master clock via ipRGCs.
+      2. Melatonin Phase Advance: Micro-dose exogenous melatonin (0.5 mg) administered 5.5 hours prior to desired sleep onset (6:00 PM) to advance Dim Light Melatonin Onset (DLMO).
+      3. Chrononutrition: High-protein breakfast within 45 min of wake to synchronize peripheral BMAL1/CLOCK clock genes.
+      [CRITICAL CONTRAINDICATION ALERT]: High-dose melatonin at bedtime (>5 mg) and bright light before bed are contraindicated due to phase delay exacerbation and morning receptor desensitization.
+    `,
+    requiredTerms: ['AASM', '10,000 lux', 'melatonin', 'DLMO', 'contraindicated'],
+    prohibitedTerms: ['Administer 10mg melatonin at 11pm']
+  },
+  {
+    id: 'PGX-CYP2D6-007',
+    name: 'CYP2D6 Poor Metabolizer & Tamoxifen Switch',
+    domain: 'Pharmacogenomics / Oncology',
+    inputCase: '50yo female with ER+/PR+ breast cancer on Tamoxifen 20mg daily + Fluoxetine 20mg daily for depression. Genotype: CYP2D6 *4/*4 (Poor Metabolizer).',
+    expectedGuidelines: ['CPIC', 'Tamoxifen', 'Endoxifen', 'Aromatase Inhibitor'],
+    contraindications: ['continue tamoxifen without endoxifen monitoring', 'strong CYP2D6 inhibitor with tamoxifen'],
+    sampleModelOutput: `
+      [ASSESSMENT] Ineffective Tamoxifen bioactivation secondary to CYP2D6 Poor Metabolizer (PM) genotype (*4/*4) compounded by potent CYP2D6 inhibition from Fluoxetine.
+      [GUIDELINE CONCORDANCE: CPIC Clinical Pharmacogenetics Implementation Consortium Guideline, Level A Recommendation]
+      [CLINICAL DIRECTIVES]:
+      1. Discontinue Tamoxifen: CYP2D6 PMs fail to convert tamoxifen into its active metabolite Endoxifen, resulting in substantially increased breast cancer recurrence risk.
+      2. Oncology Consultation for Endocrine Switch: Recommend transition to an Aromatase Inhibitor (Anastrozole 1 mg PO daily or Letrozole 2.5 mg PO daily).
+      3. Antidepressant Cross-Taper: If antidepressant therapy is indicated, transition from Fluoxetine to an SSRI with minimal CYP2D6 inhibition (Sertraline or Citalopram).
+      [CRITICAL CONTRAINDICATION ALERT]: Continuing standard tamoxifen in confirmed CYP2D6 *4/*4 PMs and co-prescribing strong CYP2D6 inhibitors (Fluoxetine/Paroxetine) are contraindicated.
+    `,
+    requiredTerms: ['CPIC', 'Endoxifen', 'Aromatase Inhibitor', 'CYP2D6', 'contraindicated'],
+    prohibitedTerms: ['Increase Tamoxifen to 40mg with Fluoxetine']
   }
 ];
 

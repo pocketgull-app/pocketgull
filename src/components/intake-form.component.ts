@@ -12,7 +12,7 @@ import { PocketGullButtonComponent } from './shared/pocket-gull-button.component
 import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { PocketGullBadgeComponent } from './shared/pocket-gull-badge.component';
 import { ContactlessVitalsScannerComponent } from './contactless-vitals-scanner.component';
-import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 
 interface INoteTimelineItem extends IBodyPartIssue {
   date: string;

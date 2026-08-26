@@ -13,7 +13,7 @@ Pocket Gull is an open-source clinical technology project operating under a **Be
   - Manages GitHub repository settings, Cloud Run deployments, and security key material.
   - Reviews and merges all pull requests adhering to strict pre-commit validation.
 - **Contributors**:
-  - Submit issues, bug reports, and pull requests following [CONTRIBUTING.md](https://github.com/philgear/pocketgull/blob/main/CONTRIBUTING.md).
+  - Submit issues, bug reports, and pull requests following [CONTRIBUTING.md](https://github.com/pocketgull-app/pocketgull/blob/main/CONTRIBUTING.md).
   - Ensure 100% strict compliance with HIPAA PII/PHI sanitization and automated unit testing rules.
 
 ---

@@ -1,0 +1,19 @@
+# AI Crawler & Model Training Exclusion Directive (.aiignore)
+# Governed under EU Directive 2019/790 Article 4(3) (Text & Data Mining Reservation)
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Copilot
+Disallow: /scripts/*dataset*.jsonl
+Disallow: /src/services/mandiant-clinical-defense.service.ts
+Disallow: /src/services/secure-key.ts

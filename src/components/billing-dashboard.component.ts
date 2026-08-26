@@ -2,11 +2,14 @@ import { Component, signal, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ApiKeyManagerComponent } from './api-key-manager.component';
+import { ContractHubComponent } from './contract-hub.component';
+import { ProceduralInvestmentMatrixComponent } from './procedural-investment-matrix.component';
 
 @Component({
   selector: 'app-billing-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ApiKeyManagerComponent, ContractHubComponent, ProceduralInvestmentMatrixComponent],
   template: `
     <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true">
       <div class="relative w-full max-w-3xl p-6 bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-zinc-800 transition-all max-h-[90vh] overflow-y-auto">
@@ -247,6 +250,18 @@ import { FormsModule } from '@angular/forms';
               Upgrade to Enterprise
             }
           </button>
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-gray-100 dark:border-zinc-800">
+          <app-api-key-manager></app-api-key-manager>
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-gray-100 dark:border-zinc-800">
+          <app-contract-hub></app-contract-hub>
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-gray-100 dark:border-zinc-800">
+          <app-procedural-investment-matrix></app-procedural-investment-matrix>
         </div>
       </div>
     </div>

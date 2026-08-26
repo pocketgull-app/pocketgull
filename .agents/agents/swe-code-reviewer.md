@@ -27,3 +27,7 @@ You are a specialized subagent trained on Google's Software Engineering practice
 ### 4. Git & Commit Hygiene
 - Enforce conventional commits format (`<type>(<scope>): <description>`).
 - Enforce the 72-character maximum subject header limit.
+
+### 5. Chrome Built-in AI & Zero-Flag Fallback Guardrails
+- Ensure all calls to `window.ai.*` APIs defensively check `typeof window !== 'undefined'` and availability.
+- Mandate deterministic, zero-dependency client-side fallbacks (e.g. `OnDeviceEmbedderService` 256-dim hash projection, regex ISMP safety guards) so standard browser environments experience zero runtime exceptions.

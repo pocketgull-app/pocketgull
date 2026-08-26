@@ -8,6 +8,7 @@ import {
   ConferenceNetworkTier,
   INcaaBannedSubstanceCheck 
 } from '../../services/ncaa-sports-science.service';
+import { AthleticProtocolService } from '../../services/athletic-protocol.service';
 import { POCKETGULL_CORPORATE_IDENTITY } from '../../services/corporate-identity';
 
 @Component({
@@ -370,6 +371,7 @@ import { POCKETGULL_CORPORATE_IDENTITY } from '../../services/corporate-identity
 })
 export class NcaaSportsScienceHubComponent {
   readonly service = inject(NcaaSportsScienceService);
+  readonly athleticService = inject(AthleticProtocolService);
   readonly corporate = POCKETGULL_CORPORATE_IDENTITY;
 
   activeTab = signal<'concussion' | 'supplements' | 'workload' | 'circadian' | 'broadcast'>('concussion');

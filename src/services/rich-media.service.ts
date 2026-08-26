@@ -243,7 +243,7 @@ export class RichMediaService {
 
     async searchPubmed(query: string, limit = 3): Promise<IPubmedCitation[]> {
         const encoded = encodeURIComponent(query);
-        const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encoded}&retmax=${limit}&retmode=json&sort=relevance`;
+        const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encoded}&retmax=${limit}&retmode=json&sort=relevance&tool=PocketGull&email=dpo@pocketgull.app`;
 
         try {
             const searchRes = await fetch(searchUrl);
@@ -251,7 +251,7 @@ export class RichMediaService {
             const ids: string[] = searchData?.esearchresult?.idlist ?? [];
             if (ids.length === 0) return [];
 
-            const summaryUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${ids.join(',')}&retmode=json`;
+            const summaryUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${ids.join(',')}&retmode=json&tool=PocketGull&email=dpo@pocketgull.app`;
             const summaryRes = await fetch(summaryUrl);
             const summaryData = await summaryRes.json();
             const result = summaryData?.result ?? {};

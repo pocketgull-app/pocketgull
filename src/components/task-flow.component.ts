@@ -3,7 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { DictationService } from '../services/dictation.service';
 import { RevealDirective } from '../directives/reveal.directive';
-import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import * as DOMPurify from 'dompurify';
 
 @Component({

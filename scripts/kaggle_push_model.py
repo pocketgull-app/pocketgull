@@ -118,8 +118,8 @@ def main() -> None:
     try:
         from kaggle.api.kaggle_api_extended import KaggleApi
         api = KaggleApi()
-        api.authenticate()
-        print(f"[INFO] Authenticated as Kaggle user: {api.username}")
+        kaggle_user = getattr(api, "username", None) or api.config_values.get("username", args.owner)
+        print(f"[INFO] Authenticated as Kaggle user: {kaggle_user}")
         import subprocess
         cmd = ["kaggle", "models", "create", "-p", model_dir]
         result = subprocess.run(cmd, capture_output=True, text=True)

@@ -9,7 +9,7 @@ import { PatientStateService } from '../services/patient-state.service';
 import { MarkdownService } from '../services/markdown.service';
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { ClinicalIcons } from '../assets/clinical-icons';
-import { SafeHtmlPipe } from '../pipes/safe-html-new.pipe';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { AdkLiveService } from '../services/ai/adk-live.service';
 import { getStoredApiKey } from '../services/secure-key';
 import { SecureStorageService } from '../services/secure-storage.service';

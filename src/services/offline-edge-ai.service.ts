@@ -6,7 +6,7 @@ export interface IEdgeModelStatus {
   name: string;
   sizeMb: number;
   isCached: boolean;
-  type: 'wasm-onnx' | 'window-ai-nano' | 'webgpu';
+  type: 'wasm-onnx' | 'window-ai-nano' | 'webgpu' | 'webnn-npu';
   quantization: 'q4f16' | 'fp16' | 'int8' | 'builtin';
   description: string;
 }
@@ -23,6 +23,15 @@ export class OfflineEdgeAiService {
 
   readonly availableModels = signal<IEdgeModelStatus[]>([
     {
+      id: 'gemma-4-builtin-ai',
+      name: 'Google Gemma 4 (Chrome Built-in AI)',
+      sizeMb: 0,
+      isCached: typeof navigator !== 'undefined' && 'ai' in (navigator as any),
+      type: 'window-ai-nano',
+      quantization: 'builtin',
+      description: 'Next-gen on-device SLM in Chrome Canary 153+ with +70% throughput, LiteRT-LM speculative decoding, and multimodal Prompt API.'
+    },
+    {
       id: 'gemma-2-2b-it-q4f16',
       name: 'Google Gemma 2 (2B-IT Q4F16)',
       sizeMb: 1350,
@@ -30,6 +39,15 @@ export class OfflineEdgeAiService {
       type: 'webgpu',
       quantization: 'q4f16',
       description: 'Google’s open-weight SLM optimized for WebGPU local browser execution with clinical prompt reasoning.'
+    },
+    {
+      id: 'gemini-nano-window-ai',
+      name: 'Chrome Built-In Gemini Nano (window.ai)',
+      sizeMb: 0,
+      isCached: typeof navigator !== 'undefined' && 'ai' in (navigator as any),
+      type: 'window-ai-nano',
+      quantization: 'builtin',
+      description: 'Native Chrome NPU/GPU execution via the W3C Prompt API with zero download requirements.'
     },
     {
       id: 'smollm2-1.7b-instruct-q4f16',
@@ -50,26 +68,17 @@ export class OfflineEdgeAiService {
       description: 'Lightweight on-device instruction-following SLM for constrained mobile & kiosk environments.'
     },
     {
-      id: 'gemini-nano-window-ai',
-      name: 'Chrome Built-In Gemini Nano (window.ai)',
-      sizeMb: 0,
-      isCached: typeof navigator !== 'undefined' && 'ai' in (navigator as any),
-      type: 'window-ai-nano',
-      quantization: 'builtin',
-      description: 'Native Chrome NPU/GPU execution via the W3C Prompt API with zero download requirements.'
-    },
-    {
       id: 'biobert-lite-onnx',
-      name: 'BioBERT-Lite Clinical Classifier (WASM/ONNX)',
+      name: 'BioBERT-Lite Clinical Classifier (WebNN/ONNX)',
       sizeMb: 15,
       isCached: true,
-      type: 'wasm-onnx',
+      type: 'webnn-npu',
       quantization: 'int8',
-      description: 'Fast biomedical entity recognizer and ICD-10 crosswalk classifier in WebAssembly.'
+      description: 'Fast biomedical entity recognizer and ICD-10 crosswalk classifier accelerated via WebNN / DirectML.'
     }
   ]);
 
-  readonly selectedModelId = signal<string>('gemma-2-2b-it-q4f16');
+  readonly selectedModelId = signal<string>('gemma-4-builtin-ai');
   readonly isDownloading = signal<boolean>(false);
   readonly downloadProgressPct = signal<number>(100);
   readonly lastInferenceLatencyMs = signal<number | null>(null);

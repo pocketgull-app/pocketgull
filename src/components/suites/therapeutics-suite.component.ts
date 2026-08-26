@@ -3,11 +3,17 @@ import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { AndroscogginForagingPhytoncideComponent } from '../androscoggin-foraging-phytoncide.component';
 import { DietaryAllergyShieldComponent } from '../dietary-allergy-shield.component';
+import { MolecularDockingViewerComponent } from '../molecular-docking-viewer.component';
 
 @Component({
   selector: 'app-therapeutics-suite',
   standalone: true,
-  imports: [CommonModule, AndroscogginForagingPhytoncideComponent, DietaryAllergyShieldComponent],
+  imports: [
+    CommonModule, 
+    AndroscogginForagingPhytoncideComponent, 
+    DietaryAllergyShieldComponent,
+    MolecularDockingViewerComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl space-y-6">
@@ -20,7 +26,7 @@ import { DietaryAllergyShieldComponent } from '../dietary-allergy-shield.compone
               <span>Therapeutics & Botanical Suite</span>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-mono font-bold uppercase">Botanical & Nutrients</span>
             </h3>
-            <p class="text-xs text-zinc-500 dark:text-zinc-400">Precision nutrient formulas, TCM herbal decoctions, Ayurvedic Rasayanas, and local wild phytoncides.</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Precision nutrient formulas, TCM herbal decoctions, Ayurvedic Rasayanas, and 3D molecular docking simulations.</p>
           </div>
         </div>
       </div>
@@ -35,6 +41,11 @@ import { DietaryAllergyShieldComponent } from '../dietary-allergy-shield.compone
         <div class="space-y-4">
           <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 font-mono">Therapeutic Allergy & Safety Shield</h4>
           <app-dietary-allergy-shield />
+        </div>
+
+        <!-- 3D AlphaFold Molecular Dynamics & Drug Docking Visualizer -->
+        <div class="space-y-4 col-span-1 lg:col-span-2">
+          <app-molecular-docking-viewer />
         </div>
       </div>
     </div>

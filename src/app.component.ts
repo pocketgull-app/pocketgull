@@ -73,6 +73,15 @@ import { VertexModelGardenPortalComponent } from './components/vertex-model-gard
 import { TalentHrPortalComponent } from './components/talent-hr-portal.component';
 import { OsceCaseSimulatorComponent } from './components/osce-case-simulator.component';
 import { PatentClaimsHudModalComponent } from './components/modals/patent-claims-hud-modal.component';
+import { UsageLicensingPaywallModalComponent } from './components/modals/usage-licensing-paywall-modal.component';
+import { NantucketTickCaseStudyComponent } from './components/case-studies/nantucket-tick-case-study.component';
+import { CommunityTestimonialModalComponent } from './components/modals/community-testimonial-modal.component';
+import { SmartHealthPassModalComponent } from './components/smart-health-pass-modal.component';
+import { AmbientLivingSpaceDashboardComponent } from './components/ambient-living-space-dashboard.component';
+import { HumanDignityPactComponent } from './components/human-dignity-pact.component';
+import { DoctorShiftSalesDemoComponent } from './components/doctor-shift-sales-demo.component';
+import { GreenRoomLoungeComponent } from './components/green-room-lounge.component';
+import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 
 @Component({
   selector: 'app-root',
@@ -121,7 +130,15 @@ import { PatentClaimsHudModalComponent } from './components/modals/patent-claims
     VertexModelGardenPortalComponent,
     TalentHrPortalComponent,
     OsceCaseSimulatorComponent,
-    PatentClaimsHudModalComponent
+    PatentClaimsHudModalComponent,
+    UsageLicensingPaywallModalComponent,
+    NantucketTickCaseStudyComponent,
+    CommunityTestimonialModalComponent,
+    SmartHealthPassModalComponent,
+    AmbientLivingSpaceDashboardComponent,
+    HumanDignityPactComponent,
+    DoctorShiftSalesDemoComponent,
+    GreenRoomLoungeComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -403,11 +420,17 @@ import { PatentClaimsHudModalComponent } from './components/modals/patent-claims
           (openGlobalHealth)="globalHealthModal.open()"
           (openArticles)="showArticlesModal.set(true)"
           (openPatentClaims)="showPatentClaimsModal.set(true)"
+          (openSmartHealthPass)="showSmartHealthPassModal.set(true)"
+          (openAmbientLivingSpace)="showAmbientLivingSpaceModal.set(true)"
+          (openHumanDignityPact)="showHumanDignityPactModal.set(true)"
+          (openDoctorShiftDemo)="showDoctorShiftSalesDemoModal.set(true)"
+          (openGreenRoom)="showGreenRoomLoungeModal.set(true)"
           (triggerSomaticGrounding)="triggerSomaticGrounding()">
         </app-main-header-nav>
 
         <app-intake-toolbar
           [hasReport]="hasReport()"
+          (openLicensingModal)="showLicensingModal.set(true)"
           (openSocraticIntake)="state.toggleSocraticIntake(true)"
           (exportPdf)="exportPdf()"
           (exportJson)="exportJson()"
@@ -701,9 +724,46 @@ import { PatentClaimsHudModalComponent } from './components/modals/patent-claims
         }
 
 
+    <!-- SMART Health Card & Cryptographic Pass Modal -->
+    @if (showSmartHealthPassModal()) {
+      <app-smart-health-pass-modal (closeModal)="showSmartHealthPassModal.set(false)"></app-smart-health-pass-modal>
+    }
+
+    <!-- Living Room Ambient Health Studio Modal -->
+    @if (showAmbientLivingSpaceModal()) {
+      <app-ambient-living-space-dashboard></app-ambient-living-space-dashboard>
+    }
+
+    <!-- Human Dignity Charter & Autonomy Pact Modal -->
+    @if (showHumanDignityPactModal()) {
+      <app-human-dignity-pact (closeModal)="showHumanDignityPactModal.set(false)"></app-human-dignity-pact>
+    }
+
     <!-- Patent & IP Claims Registry Modal -->
     @if (showPatentClaimsModal()) {
       <app-patent-claims-hud-modal (close)="showPatentClaimsModal.set(false)"></app-patent-claims-hud-modal>
+    }
+
+    <!-- Usage & Licensing Paywall Modal -->
+    @if (showLicensingModal()) {
+      <app-usage-licensing-paywall-modal 
+        (close)="showLicensingModal.set(false)"
+        (openCaseStudy)="showLicensingModal.set(false); showNantucketCaseStudy.set(true)">
+      </app-usage-licensing-paywall-modal>
+    }
+
+    <!-- Nantucket Island Tick Case Study Modal -->
+    @if (showNantucketCaseStudy()) {
+      <div class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+        <app-nantucket-tick-case-study 
+          (close)="showNantucketCaseStudy.set(false)">
+        </app-nantucket-tick-case-study>
+      </div>
+    }
+
+    <!-- Community Testimonials & Quotes Modal -->
+    @if (showTestimonialsModal()) {
+      <app-community-testimonial-modal (close)="showTestimonialsModal.set(false)"></app-community-testimonial-modal>
     }
 
     <!-- Socratic Patient Intake Studio Modal -->
@@ -1168,6 +1228,18 @@ import { PatentClaimsHudModalComponent } from './components/modals/patent-claims
         </div>
       </div>
     }
+    @if (showDoctorShiftSalesDemoModal()) {
+      <app-doctor-shift-sales-demo (closeModal)="showDoctorShiftSalesDemoModal.set(false)"></app-doctor-shift-sales-demo>
+    }
+    @if (showGreenRoomLoungeModal()) {
+      <app-green-room-lounge (closeModal)="showGreenRoomLoungeModal.set(false)"></app-green-room-lounge>
+    }
+    @if (showAmbientLivingSpaceModal()) {
+      <app-ambient-living-space-dashboard (closeModal)="showAmbientLivingSpaceModal.set(false)"></app-ambient-living-space-dashboard>
+    }
+    @if (showHumanDignityPactModal()) {
+      <app-human-dignity-pact (closeModal)="showHumanDignityPactModal.set(false)"></app-human-dignity-pact>
+    }
     <app-clinical-cds-disclaimer-banner></app-clinical-cds-disclaimer-banner>
     <app-zamecznik-canvas></app-zamecznik-canvas>
   `,
@@ -1190,6 +1262,11 @@ export class AppComponent implements OnDestroy {
   showModelGardenModal = signal(false);
   showTalentHrPortalModal = signal(false);
   showOsceSimulatorModal = signal(false);
+  showSmartHealthPassModal = signal(false);
+  showAmbientLivingSpaceModal = signal(false);
+  showHumanDignityPactModal = signal(false);
+  showDoctorShiftSalesDemoModal = signal(false);
+  showGreenRoomLoungeModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
   readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);
@@ -1258,6 +1335,10 @@ export class AppComponent implements OnDestroy {
   readonly showSupportTicketModal = signal<boolean>(false);
   readonly showArticlesModal = signal<boolean>(false);
   readonly showPatentClaimsModal = signal<boolean>(false);
+  readonly showLicensingModal = signal<boolean>(false);
+  readonly showNantucketCaseStudy = signal<boolean>(false);
+  readonly showTestimonialsModal = signal<boolean>(false);
+  licensing = inject(AppLicensingGuardService);
   readonly showHeaderThemeMenu = signal<boolean>(false);
   apiKeyInput = signal<string>('');
   showPassword = signal<boolean>(false);

@@ -1,0 +1,19 @@
+# GitHub Copilot Content Exclusion & AI Training Protection
+# Prevents Copilot code suggestion indexing in sensitive cryptographic, clinical dataset, and fine-tuning directories.
+
+# Fine-tuning & DPO Datasets
+scripts/*dataset*.jsonl
+scripts/clinical_cot_training_dataset.jsonl
+scripts/gemini_tuning_dataset.jsonl
+scripts/dpo_preference_dataset.jsonl
+scratch/
+
+# Post-Quantum Cryptographic Keys & Internal Seed Salts
+src/services/secure-key.ts
+src/services/secure-storage.service.ts
+src/services/mandiant-clinical-defense.service.ts
+
+# SBOM & Secret Audit Dumps
+sbom.cdx.json
+sbom.spdx.json
+cocomo2_report.json

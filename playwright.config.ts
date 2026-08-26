@@ -33,11 +33,17 @@ export default defineConfig({
     },
     {
       name: 'mobile-iphone',
-      use: { ...devices['iPhone 14'] },
+      use: {
+        ...devices['iPhone 14'],
+        defaultBrowserType: 'chromium',
+      },
     },
     {
       name: 'tablet-ipad-exam-room',
-      use: { ...devices['iPad (gen 7)'] },
+      use: {
+        ...devices['iPad (gen 7)'],
+        defaultBrowserType: 'chromium',
+      },
     },
     {
       name: 'chromebook-school-library',

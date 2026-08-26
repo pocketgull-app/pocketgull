@@ -36,7 +36,7 @@ export class NetworkStateService {
      */
     readonly activeProvider = computed(() => {
         if (this.patientState.isEmergencyMode() && !this.isOnline()) {
-            return 'Offline (Gemini Nano)';
+            return 'Offline (Gemma 4 / Built-in AI)';
         }
 
         if (this.useLocalInference()) {
@@ -48,7 +48,7 @@ export class NetworkStateService {
             } else if (path === 'local-webgpu') {
                 return `${prefix} (WebGPU - WebLLM)`;
             } else if (path === 'on-device-nano') {
-                return `${prefix} (Gemini Nano - window.ai)`;
+                return `${prefix} (Built-in AI - Gemma 4 / Nano)`;
             } else {
                 return `${prefix} (WebGPU - WebLLM)`;
             }
