@@ -169,9 +169,19 @@ export class SmartOnFhirLauncherService {
 }
 
 function generatePkceVerifier(): string {
-  return 'pkce-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  if (typeof globalThis.crypto !== 'undefined' && typeof globalThis.crypto.getRandomValues === 'function') {
+    const buffer = new Uint8Array(32);
+    globalThis.crypto.getRandomValues(buffer);
+    return 'pkce-' + Array.from(buffer, b => b.toString(16).padStart(2, '0')).join('');
+  }
+  return 'pkce-sec-fallback-' + Date.now().toString(16);
 }
 
 function generateStateNonce(): string {
-  return 'nonce-' + Math.random().toString(36).substring(2, 15);
+  if (typeof globalThis.crypto !== 'undefined' && typeof globalThis.crypto.getRandomValues === 'function') {
+    const buffer = new Uint8Array(16);
+    globalThis.crypto.getRandomValues(buffer);
+    return 'nonce-' + Array.from(buffer, b => b.toString(16).padStart(2, '0')).join('');
+  }
+  return 'nonce-sec-fallback-' + Date.now().toString(16);
 }
