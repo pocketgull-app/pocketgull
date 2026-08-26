@@ -18,6 +18,7 @@ export class NavigationShellService {
   readonly showDictationModal = signal<boolean>(false);
   readonly showBarrowsWorkbenchModal = signal<boolean>(false);
   readonly showComplianceCertificateModal = signal<boolean>(false);
+  readonly showCmsSuperbillModal = signal<boolean>(false);
 
   /**
    * Switches active main tab.
@@ -46,6 +47,9 @@ export class NavigationShellService {
 
   public openComplianceCertificate(): void { this.showComplianceCertificateModal.set(true); }
   public closeComplianceCertificate(): void { this.showComplianceCertificateModal.set(false); }
+
+  public openCmsSuperbill(): void { this.showCmsSuperbillModal.set(true); }
+  public closeCmsSuperbill(): void { this.showCmsSuperbillModal.set(false); }
 
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.

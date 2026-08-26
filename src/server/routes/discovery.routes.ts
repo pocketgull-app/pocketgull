@@ -1146,5 +1146,65 @@ export function createDiscoveryRouter(): Router {
     });
   });
 
+  // ── GET /.well-known/smart-configuration (SMART on FHIR v2 Discovery) ─────
+  router.get('/.well-known/smart-configuration', (req: Request, res: Response) => {
+    const host = req.get('host') || 'pocketgull.app';
+    const protocol = req.protocol || 'https';
+    const baseUrl = `${protocol}://${host}`;
+
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    res.json({
+      authorization_endpoint: `${baseUrl}/api/fitbit/auth`,
+      token_endpoint: `${baseUrl}/api/fitbit/callback`,
+      token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post', 'private_key_jwt'],
+      registration_endpoint: `${baseUrl}/api/smart/register`,
+      scopes_supported: [
+        'openid',
+        'profile',
+        'fhirUser',
+        'launch',
+        'launch/patient',
+        'patient/*.read',
+        'patient/*.rs',
+        'user/*.read',
+        'offline_access'
+      ],
+      response_types_supported: ['code'],
+      management_endpoint: `${baseUrl}/api/smart/manage`,
+      introspection_endpoint: `${baseUrl}/api/smart/introspect`,
+      revocation_endpoint: `${baseUrl}/api/fitbit/revoke`,
+      capabilities: [
+        'launch-ehr',
+        'launch-standalone',
+        'client-public',
+        'client-confidential-symmetric',
+        'client-confidential-asymmetric',
+        'context-ehr-patient',
+        'context-standalone-patient',
+        'permission-offline',
+        'permission-patient',
+        'permission-user'
+      ],
+      code_challenge_methods_supported: ['S256']
+    });
+  });
+
+  // ── GET /api/smart/launch (EHR Launch Handshake) ─────────────────────────
+  router.get('/api/smart/launch', (req: Request, res: Response) => {
+    const launch = req.query['launch'] as string | undefined;
+    const iss = req.query['iss'] as string | undefined;
+
+    if (!iss) {
+      return res.status(400).json({ error: 'Missing mandatory FHIR server issuance URL (iss parameter).' });
+    }
+
+    const safeIss = encodeURIComponent(iss);
+    const safeLaunch = launch ? encodeURIComponent(launch) : '';
+    res.redirect(`/?smart_iss=${safeIss}&smart_launch=${safeLaunch}&smart_mode=ehr`);
+  });
+
   return router;
 }

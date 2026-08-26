@@ -84,6 +84,7 @@ import { GreenRoomLoungeComponent } from './components/green-room-lounge.compone
 import { BarrowsClinicalInquiryHubComponent } from './components/barrows-clinical-inquiry-hub.component';
 import { PasskeyStepUpModalComponent } from './components/modals/passkey-step-up-modal.component';
 import { InstitutionalComplianceModalComponent } from './components/modals/institutional-compliance-modal.component';
+import { CmsRpmSuperbillModalComponent } from './components/modals/cms-rpm-superbill-modal.component';
 import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 
 @Component({
@@ -144,7 +145,8 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     AmbientLivingSpaceDashboardComponent,
     HumanDignityPactComponent,
     DoctorShiftSalesDemoComponent,
-    GreenRoomLoungeComponent
+    GreenRoomLoungeComponent,
+    CmsRpmSuperbillModalComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -227,6 +229,13 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
         <app-institutional-compliance-modal
           (close)="navShell.closeComplianceCertificate()">
         </app-institutional-compliance-modal>
+      }
+
+      <!-- CMS Remote Patient Monitoring (RPM) Superbill Modal (CPT 99453 / 99454) -->
+      @if (navShell.showCmsSuperbillModal()) {
+        <app-cms-rpm-superbill-modal
+          (close)="navShell.closeCmsSuperbill()">
+        </app-cms-rpm-superbill-modal>
       }
 
       @defer (on idle) {

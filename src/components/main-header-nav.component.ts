@@ -12,6 +12,7 @@ import { PocketgullBrandMarkComponent } from './shared/pocketgull-brand-mark.com
 import { AmbientFlowPlayerComponent } from './shared/ambient-flow-player.component';
 import { ConsoleIntegrityBadgeComponent } from './console-integrity-badge.component';
 import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscape.service';
+import { NavigationShellService } from '../services/navigation-shell.service';
 
 @Component({
   selector: 'app-main-header-nav',
@@ -276,6 +277,13 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                       <div class="text-[10px] text-zinc-400 font-normal">Physician Pilot & HHS § 1557</div>
                     </div>
                   </button>
+                  <button type="button" (click)="navShell?.openCmsSuperbill(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">📋</span>
+                    <div>
+                      <div>CMS RPM Superbill Claim</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">CPT 99453/99454 16-Day Telemetry</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openGreenRoom.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🌿</span>
                     <div>
@@ -498,6 +506,7 @@ export class MainHeaderNavComponent {
   tour = inject(WalkthroughTourService);
   session = inject(SessionStateService);
   soundscapeService = inject(AmbientFlowSoundscapeService);
+  navShell = inject(NavigationShellService, { optional: true });
 
   today = new Date();
   isMobileMenuOpen = signal<boolean>(false);
