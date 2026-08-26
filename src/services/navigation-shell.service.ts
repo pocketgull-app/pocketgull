@@ -16,6 +16,7 @@ export class NavigationShellService {
   readonly showApiKeyModal = signal<boolean>(false);
   readonly showPatientDirectoryModal = signal<boolean>(false);
   readonly showDictationModal = signal<boolean>(false);
+  readonly showBarrowsWorkbenchModal = signal<boolean>(false);
 
   /**
    * Switches active main tab.
@@ -39,6 +40,9 @@ export class NavigationShellService {
   public openDictation(): void { this.showDictationModal.set(true); }
   public closeDictation(): void { this.showDictationModal.set(false); }
 
+  public openBarrowsWorkbench(): void { this.showBarrowsWorkbenchModal.set(true); }
+  public closeBarrowsWorkbench(): void { this.showBarrowsWorkbenchModal.set(false); }
+
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
    */
@@ -50,5 +54,6 @@ export class NavigationShellService {
     this.showApiKeyModal.set(false);
     this.showPatientDirectoryModal.set(false);
     this.showDictationModal.set(false);
+    this.showBarrowsWorkbenchModal.set(false);
   }
 }

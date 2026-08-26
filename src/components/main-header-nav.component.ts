@@ -107,6 +107,13 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                       <div class="text-[10px] text-zinc-400 font-normal">House M.D. Multi-Agent CDS</div>
                     </div>
                   </button>
+                  <button type="button" (click)="openBarrowsWorkbench.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🔬</span>
+                    <div>
+                      <div>Dr. Barrows Workbench</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">PBL Inquiry &amp; Doctor Prep</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openKneeHologram.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🩻</span>
                     <div>
@@ -491,6 +498,7 @@ export class MainHeaderNavComponent {
   showAmbientPlayer = signal<boolean>(false);
 
   openSocraticRounds = output<void>();
+  openBarrowsWorkbench = output<void>();
   openKneeHologram = output<void>();
   openSmartHealthPass = output<void>();
   openSocraticIntake = output<void>();

@@ -81,6 +81,7 @@ import { AmbientLivingSpaceDashboardComponent } from './components/ambient-livin
 import { HumanDignityPactComponent } from './components/human-dignity-pact.component';
 import { DoctorShiftSalesDemoComponent } from './components/doctor-shift-sales-demo.component';
 import { GreenRoomLoungeComponent } from './components/green-room-lounge.component';
+import { BarrowsClinicalInquiryHubComponent } from './components/barrows-clinical-inquiry-hub.component';
 import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 
 @Component({
@@ -93,6 +94,7 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     CommonModule,
     FormsModule,
     PocketgullTypefaceSiteComponent,
+    BarrowsClinicalInquiryHubComponent,
     MedicalChartComponent,
     AnalysisContainerComponent,
     DictationModalComponent,
@@ -196,6 +198,22 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
       <app-encrypted-vault-modal #vaultModal></app-encrypted-vault-modal>
       <app-smart-fhir-sync-modal #fhirModal></app-smart-fhir-sync-modal>
       <app-global-health-initiatives-modal #globalHealthModal></app-global-health-initiatives-modal>
+
+      <!-- Dr. Howard Barrows Clinical Inquiry & Problem-Based Reasoning Workbench Modal -->
+      @if (navShell.showBarrowsWorkbenchModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Clinical Reasoning Workbench">
+          <div class="relative w-full max-w-5xl my-auto">
+            <button
+              type="button"
+              (click)="navShell.closeBarrowsWorkbench()"
+              class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-9 h-9 rounded-full bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-2xl z-10 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
+              aria-label="Close Clinical Workbench">
+              ✕
+            </button>
+            <app-barrows-clinical-inquiry-hub></app-barrows-clinical-inquiry-hub>
+          </div>
+        </div>
+      }
 
       @defer (on idle) {
         <app-dictation-modal></app-dictation-modal>
@@ -403,6 +421,7 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
         }
 
         <app-main-header-nav
+          (openBarrowsWorkbench)="navShell.openBarrowsWorkbench()"
           (openSocraticIntake)="state.toggleSocraticIntake(true)"
           (openModelGarden)="showModelGardenModal.set(true)"
           (openTalentHrPortal)="showTalentHrPortalModal.set(true)"
