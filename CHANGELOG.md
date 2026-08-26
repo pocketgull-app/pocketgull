@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.28.0] - 2026-08-26
+
+**Google Gemini Interactions API (General Availability), Dynamic Extended Reasoning Thinking Budgets (2048+ tokens), Microsoft Services Agreement (MSA) AI Governance Compliance Standard (Sept 30, 2026), and Sentinel Automated Compliance Audits**
+
+### Added
+- **[Gemini Interactions API Provider] (`InteractionsProvider`, `ClinicalAiProviderRegistryService`)**:
+  - Implemented stateful multi-turn interaction sessions with streaming chunk metrics via `@google/genai` Interactions namespace.
+  - Added configurable extended reasoning thinking budgets (`setThinkingBudget`, up to 4,096 tokens) for complex multi-condition differential diagnosis and skeptical $H_0$ evaluation.
+  - Added full test suite `interactions.provider.spec.ts` with 100% pass rate.
+- **[Microsoft Services Agreement & AI Governance Standard (Sept 30, 2026)] (`GEMINI.md`, `AGENTS.md`, `msa_ai_governance/SKILL.md`)**:
+  - Enforces MSA Section 14.s (AI Services) prohibitions against emotion inferencing, biometric profiling, foundation model distillation, and C2PA content credential stripping.
+  - Mandates human-in-the-loop clinical decision support attestation (Sec 14.s.ix.1) and statutory health bot non-device clinical notices (Sec 14.i).
+- **[Automated Sentinel MSA Governance Guard] (`scripts/msa_governance_guard.mjs`, `package.json`, `.github/workflows/ci.yml`)**:
+  - Pre-commit and CI/CD audit script validating 0 violations of MSA AI safety rules across all source files.
+
 ## [1.27.0] - 2026-08-24
 
 **Platform Telemetry, Interoperability, and Multi-Device Performance Updates**

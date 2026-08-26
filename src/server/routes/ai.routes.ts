@@ -66,6 +66,7 @@ interface IAiStreamRequest {
   systemInstruction?: string;
   model?: string;
   temperature?: number;
+  thinkingBudget?: number;
   lens?: string;
 }
 
@@ -500,6 +501,12 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
           systemInstruction: BASE_CLINICAL_PROMPT,
           temperature: body.temperature ?? 0.1
         };
+
+        if (body.thinkingBudget && body.thinkingBudget > 0) {
+          configOptions['thinkingConfig'] = {
+            thinkingBudget: Math.min(8192, Math.max(0, body.thinkingBudget))
+          };
+        }
 
         // User-provided clinical directives are injected as a prefixed context message, not as system prompt
         const contextPrefix = sanitizedInstruction
