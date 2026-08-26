@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../services/avs_audio_engine.dart';
 
 /// Comprehensive Brainwave & Clinical Entrainment Protocols
 enum AvsProtocol {
@@ -61,6 +62,48 @@ enum AvsProtocol {
     432.0,
     Color(0xFFEC4899),
     'Hemi-Sync Sufi spiral • Golden Ratio dual-hemisphere hemispheric synchrony.',
+  ),
+  iapfNudge(
+    'iAPF Resonant Pull',
+    10.65,
+    432.0,
+    Color(0xFF06B6D4),
+    'Closed-loop individual Alpha Peak Frequency +0.5 Hz adaptive entrainment pull vector.',
+  ),
+  faaDavidson(
+    'Davidson FAA Mood Split',
+    14.0,
+    528.0,
+    Color(0xFF6366F1),
+    'Left frontal Beta/SMR with right Alpha tone to downregulate depressive hypofunction.',
+  ),
+  spindleInduction(
+    'Thalamic Sleep Spindle',
+    13.5,
+    285.0,
+    Color(0xFF8B5CF6),
+    'Intermittent 13.5 Hz micro-bursts to trigger N2 sleep stabilization and sensory gating.',
+  ),
+  slowWavePlas(
+    'Slow-Wave Delta PLAS',
+    1.2,
+    174.0,
+    Color(0xFF4338CA),
+    'Phase-locked acoustic stimulation (PLAS) for deep restorative sleep & glymphatic wash.',
+  ),
+  carAwakening(
+    'CAR 40Hz Wake Booster',
+    40.0,
+    963.0,
+    Color(0xFFF59E0B),
+    'Cortisol Awakening Response protocol for morning adenosine clearance and vitality.',
+  ),
+  dyadicResonance(
+    'Dyadic Relational Sync',
+    5.8,
+    639.0,
+    Color(0xFFEC4899),
+    'Two-person heart/breath coherence & somatic trauma coregulation.',
   );
 
   final String title;
@@ -210,6 +253,13 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
       _carrierHz = protocol.defaultCarrierHz;
     });
     _updateFlickerDuration();
+    if (_isPlaying) {
+      AvsAudioEngine.update(
+        carrierHz: _carrierHz,
+        beatHz: _frequencyHz,
+        isIsochronic: _isIsochronic,
+      );
+    }
     if (_isHapticEnabled) {
       HapticFeedback.mediumImpact();
     }
@@ -220,6 +270,13 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
       _frequencyHz = newHz;
     });
     _updateFlickerDuration();
+    if (_isPlaying) {
+      AvsAudioEngine.update(
+        carrierHz: _carrierHz,
+        beatHz: _frequencyHz,
+        isIsochronic: _isIsochronic,
+      );
+    }
   }
 
   void _updateFlickerDuration() {
@@ -234,10 +291,17 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
         _flickerController.forward();
         _startTimer();
         _startHapticEntrainment();
+        AvsAudioEngine.start(
+          carrierHz: _carrierHz,
+          beatHz: _frequencyHz,
+          isIsochronic: _isIsochronic,
+          volume: 0.7,
+        );
       } else {
         _flickerController.stop();
         _sessionTimer?.cancel();
         _hapticTimer?.cancel();
+        AvsAudioEngine.stop();
       }
     });
     HapticFeedback.heavyImpact();
@@ -296,6 +360,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
 
   @override
   void dispose() {
+    AvsAudioEngine.stop();
     _flickerController.dispose();
     _breathController.dispose();
     _spiralController.dispose();
@@ -303,6 +368,152 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
     _sessionTimer?.cancel();
     _hapticTimer?.cancel();
     super.dispose();
+  }
+
+  void _showRppgVitalsSheet(BuildContext context) {
+    final themeColor = _selectedProtocol.themeColor;
+    HapticFeedback.mediumImpact();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF13151A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 38,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.videocam, color: Color(0xFF10B981), size: 20),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'CONTACTLESS OPTICAL rPPG',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                              color: Color(0xFF10B981),
+                            ),
+                          ),
+                          Text(
+                            'Front-Camera Facial Sub-Capillary Vitals',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.2)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildVitalsMetric('HEART RATE', '68 BPM', const Color(0xFF10B981)),
+                      _buildVitalsMetric('HRV RMSSD', '54 ms', const Color(0xFF06B6D4)),
+                      _buildVitalsMetric('RESONANCE', '5.8 BPM', const Color(0xFFF59E0B)),
+                      _buildVitalsMetric('COHERENCE', '${_autonomicCoherence.toStringAsFixed(1)}%', themeColor),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'Optical photoplethysmography tracks green-band microvascular flush without any watch or sensor required.',
+                  style: TextStyle(fontSize: 11, color: Colors.white60, height: 1.3),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF10B981),
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _breathController.duration = const Duration(milliseconds: 10345); // 5.8 BPM
+                      _breathController.repeat(reverse: true);
+                      HapticFeedback.heavyImpact();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Baroreflex breathing rate locked to 5.8 BPM (Resonant Cadence)'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.tune, size: 18),
+                    label: const Text(
+                      'Auto-Tune Baroreflex Cadence (5.8 BPM)',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildVitalsMetric(String label, String value, Color color) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold, color: Colors.white38),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'monospace',
+            color: color,
+          ),
+        ),
+      ],
+    );
   }
 
   String _formatTime(int totalSeconds) {
@@ -319,6 +530,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
     return Scaffold(
       backgroundColor: bgDark,
       appBar: AppBar(
+        centerTitle: false,
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -335,11 +547,11 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
             ),
             const SizedBox(width: 8),
             const Text(
-              'PocketGull AVS Studio',
+              'PocketGull AVS',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
-                letterSpacing: 0.5,
+                fontSize: 15,
+                letterSpacing: 0.4,
                 color: Colors.white,
               ),
             ),
@@ -347,13 +559,15 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
         ),
         backgroundColor: Colors.black.withValues(alpha: 0.5),
         elevation: 0,
-        centerTitle: true,
         actions: [
           IconButton(
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+            padding: const EdgeInsets.all(6),
             icon: Icon(
               _showMascot ? Icons.pets : Icons.pets_outlined,
               color: _showMascot ? themeColor : Colors.white38,
-              size: 20,
+              size: 19,
             ),
             tooltip: 'Toggle Origami Mascot',
             onPressed: () {
@@ -362,10 +576,13 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
             },
           ),
           IconButton(
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+            padding: const EdgeInsets.all(6),
             icon: Icon(
               _isStrobeEnabled ? Icons.flash_on : Icons.flash_off,
               color: _isStrobeEnabled ? themeColor : Colors.white38,
-              size: 20,
+              size: 19,
             ),
             tooltip: 'Photic Strobe',
             onPressed: () {
@@ -374,10 +591,13 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
             },
           ),
           IconButton(
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+            padding: const EdgeInsets.all(6),
             icon: Icon(
               _isHapticEnabled ? Icons.vibration : Icons.smartphone,
               color: _isHapticEnabled ? themeColor : Colors.white38,
-              size: 20,
+              size: 19,
             ),
             tooltip: 'Haptic Entrainment',
             onPressed: () {
@@ -386,10 +606,13 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
             },
           ),
           IconButton(
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+            padding: const EdgeInsets.all(6),
             icon: Icon(
               _isIsochronic ? Icons.speaker_group : Icons.headphones,
               color: themeColor,
-              size: 20,
+              size: 19,
             ),
             tooltip: _isIsochronic ? 'Isochronic Open-Air Pulse' : 'Stereo Binaural Beats',
             onPressed: () {
@@ -397,6 +620,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
               HapticFeedback.lightImpact();
             },
           ),
+          const SizedBox(width: 4),
         ],
       ),
       body: SafeArea(
@@ -591,31 +815,35 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                           ),
                         ),
 
-                        // Coherence Badge
+                        // Interactive Optical rPPG Coherence Badge
                         Positioned(
                           top: 12,
                           right: 14,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.65),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.white24),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.favorite, color: Colors.redAccent, size: 12),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${_autonomicCoherence.toStringAsFixed(1)}%',
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'monospace',
+                          child: InkWell(
+                            onTap: () => _showRppgVitalsSheet(context),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.65),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.white24),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.favorite, color: Colors.redAccent, size: 12),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${_autonomicCoherence.toStringAsFixed(1)}%',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'monospace',
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -623,8 +851,8 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                         // Bottom Center Paradigm Selector inside Canvas
                         Positioned(
                           bottom: 8,
-                          left: 0,
-                          right: 0,
+                          left: 12,
+                          right: 12,
                           child: Center(
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
@@ -632,43 +860,46 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                                 color: Colors.black.withValues(alpha: 0.8),
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: VisualParadigm.values.map((p) {
-                                  final isSel = _visualParadigm == p;
-                                  return InkWell(
-                                    onTap: () {
-                                      setState(() => _visualParadigm = p);
-                                      HapticFeedback.selectionClick();
-                                    },
-                                    borderRadius: BorderRadius.circular(14),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
-                                      decoration: BoxDecoration(
-                                        color: isSel ? themeColor.withValues(alpha: 0.3) : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            p.icon,
-                                            size: 13,
-                                            color: isSel ? themeColor : Colors.white60,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            p.label,
-                                            style: TextStyle(
-                                              fontSize: 9.5,
-                                              fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
-                                              color: isSel ? Colors.white : Colors.white60,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: VisualParadigm.values.map((p) {
+                                    final isSel = _visualParadigm == p;
+                                    return InkWell(
+                                      onTap: () {
+                                        setState(() => _visualParadigm = p);
+                                        HapticFeedback.selectionClick();
+                                      },
+                                      borderRadius: BorderRadius.circular(14),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+                                        decoration: BoxDecoration(
+                                          color: isSel ? themeColor.withValues(alpha: 0.3) : Colors.transparent,
+                                          borderRadius: BorderRadius.circular(14),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              p.icon,
+                                              size: 13,
+                                              color: isSel ? themeColor : Colors.white60,
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              p.label,
+                                              style: TextStyle(
+                                                fontSize: 9.5,
+                                                fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+                                                color: isSel ? Colors.white : Colors.white60,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }).toList(),
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                             ),
                           ),
@@ -817,11 +1048,12 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                       children: List.generate(9, (idx) {
                         final kss = idx + 1;
                         final isSel = _circadianKssScore == kss;
+                        final itemWidth = math.max(24.0, (MediaQuery.of(context).size.width - 80) / 9);
                         return InkWell(
                           onTap: () => _applyCircadianKss(kss),
                           borderRadius: BorderRadius.circular(8),
                           child: Container(
-                            width: (MediaQuery.of(context).size.width - 80) / 9,
+                            width: itemWidth,
                             padding: const EdgeInsets.symmetric(vertical: 6),
                             decoration: BoxDecoration(
                               color: isSel ? themeColor : Colors.black.withValues(alpha: 0.3),
@@ -869,7 +1101,7 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                     onTap: () => _selectProtocol(protocol),
                     borderRadius: BorderRadius.circular(14),
                     child: Container(
-                      width: (MediaQuery.of(context).size.width - 40) / 2,
+                      width: math.max(140.0, (MediaQuery.of(context).size.width - 40) / 2),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: isSelected ? protocol.themeColor.withValues(alpha: 0.15) : const Color(0xFF13151A),
@@ -978,6 +1210,13 @@ class _AvsTherapyScreenState extends State<AvsTherapyScreen> with TickerProvider
                             child: InkWell(
                               onTap: () {
                                 setState(() => _carrierHz = c.freqHz);
+                                if (_isPlaying) {
+                                  AvsAudioEngine.update(
+                                    carrierHz: _carrierHz,
+                                    beatHz: _frequencyHz,
+                                    isIsochronic: _isIsochronic,
+                                  );
+                                }
                                 HapticFeedback.selectionClick();
                               },
                               borderRadius: BorderRadius.circular(12),

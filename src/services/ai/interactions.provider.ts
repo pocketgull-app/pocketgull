@@ -114,7 +114,7 @@ export class InteractionsProvider implements IIntelligenceProvider {
      * Updates the thinking budget for clinical differential diagnoses.
      */
     setThinkingBudget(budget: number): void {
-        this.thinkingBudget.set(Math.max(0, budget));
+        this.thinkingBudget.set(Math.max(0, Math.min(8192, budget)));
     }
 
     /**

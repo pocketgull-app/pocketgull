@@ -52,6 +52,10 @@ export * from './vertex-model-garden-portal.component';
 export * from './talent-hr-portal.component';
 export * from './osce-case-simulator.component';
 export * from './clinical-reasoning-stream.component';
+export * from './adaptive-green-routing-hud.component';
+export * from './movement-healing-quest.component';
+export * from './anatomy-3d/biophilic-pathway-3d-viewer.component';
+export * from './citizen-science-walk-report.component';
 
 
 

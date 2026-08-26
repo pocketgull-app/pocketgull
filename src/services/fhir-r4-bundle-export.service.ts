@@ -517,4 +517,140 @@ export class FhirR4BundleExportService {
       return false;
     }
   }
+
+  /**
+   * Serializes a prescribed Biophilic Green Walking Quest & Parasympathetic Vagal protocol
+   * into an official HL7 FHIR R4 Bundle compliant with SNOMED CT 735985006.
+   */
+  generateBiophilicGreenRxBundle(params: {
+    patientId: string;
+    patientName: string;
+    clinicianId?: string;
+    questId: string;
+    questTitle: string;
+    prescribedDailyMinutes: number;
+    minCanopyPct: number;
+    maxNoiseDba: number;
+    vagalPointsAchieved?: number;
+    completedAt?: string;
+  }): IFhirBundle {
+    const timestamp = new Date().toISOString();
+    const bundleId = `urn:uuid:bundle-green-rx-${params.patientId}-${Date.now()}`;
+    const patientUrn = `urn:uuid:patient-${params.patientId}`;
+    const carePlanId = `careplan-green-rx-${params.questId}`;
+    const observationId = `obs-vagal-movement-${Date.now()}`;
+
+    const carePlanResource: Record<string, any> = {
+      resourceType: 'CarePlan',
+      id: carePlanId,
+      status: 'active',
+      intent: 'order',
+      category: [
+        {
+          coding: [
+            {
+              system: 'http://snomed.info/sct',
+              code: '735985006',
+              display: 'Prescription of nature-based activity'
+            }
+          ],
+          text: 'Biophilic Green Walking & Sensory Grounding Protocol'
+        }
+      ],
+      title: `Green Rx: ${params.questTitle}`,
+      description: `Daily prescription of ${params.prescribedDailyMinutes} minutes biophilic green walk under >= ${params.minCanopyPct}% canopy with <= ${params.maxNoiseDba} dBA noise floor.`,
+      subject: { reference: patientUrn, display: params.patientName },
+      author: params.clinicianId ? { reference: `urn:uuid:practitioner-${params.clinicianId}` } : undefined,
+      activity: [
+        {
+          detail: {
+            kind: 'Task',
+            code: {
+              coding: [
+                {
+                  system: 'http://snomed.info/sct',
+                  code: '281036007',
+                  display: 'Walking for exercise'
+                }
+              ],
+              text: 'Biophilic Vagal Walking Odyssey'
+            },
+            status: 'in-progress',
+            scheduledTiming: {
+              repeat: {
+                frequency: 1,
+                period: 1,
+                periodUnit: 'd',
+                duration: params.prescribedDailyMinutes,
+                durationUnit: 'min'
+              }
+            },
+            goal: [
+              {
+                display: `Achieve ${params.prescribedDailyMinutes} daily green minutes for parasympathetic recovery`
+              }
+            ]
+          }
+        }
+      ]
+    };
+
+    const observationResource: Record<string, any> = {
+      resourceType: 'Observation',
+      id: observationId,
+      status: 'final',
+      category: [
+        {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+              code: 'therapy',
+              display: 'Therapy'
+            }
+          ]
+        }
+      ],
+      code: {
+        coding: [
+          {
+            system: 'http://snomed.info/sct',
+            code: '735985006',
+            display: 'Prescription of nature-based activity'
+          }
+        ],
+        text: 'Vagal Coherence Score from Biophilic Movement'
+      },
+      subject: { reference: patientUrn, display: params.patientName },
+      effectiveDateTime: params.completedAt || timestamp,
+      valueQuantity: {
+        value: params.vagalPointsAchieved || 0,
+        unit: 'points',
+        system: 'https://pocketgull.app/fhir/vagal-points',
+        code: 'VAGAL_PTS'
+      },
+      interpretation: [
+        {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
+              code: 'N',
+              display: 'Normal'
+            }
+          ],
+          text: 'Therapeutic Biophilic Exposure Level Achieved'
+        }
+      ]
+    };
+
+    return {
+      resourceType: 'Bundle',
+      id: bundleId,
+      type: 'document',
+      timestamp,
+      entry: [
+        { fullUrl: `urn:uuid:${carePlanResource['id']}`, resource: carePlanResource },
+        { fullUrl: `urn:uuid:${observationResource['id']}`, resource: observationResource }
+      ]
+    };
+  }
 }

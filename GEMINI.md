@@ -157,5 +157,17 @@ export class MetricCardComponent {
 - **Clear Health Bot & Medical Device Demarcation (Sec 14.i & Medical Notice)**: Health bot insights, action plans, and wellness summaries MUST be clearly labeled as non-device wellness tools and include the mandatory clinical disclaimer directing users to qualified healthcare providers without replacing professional clinical judgment.
 - **Reverse Engineering & System Jailbreak Prohibition (Sec 14.s.ii, Sec 3.a.vi)**: Prompts, evaluation scripts, and tooling MUST NOT attempt to extract model weights, uncover internal hyperparameter configurations, or bypass system jailbreak filters.
 
+## Fair Play, Radical Transparency & Feature Shipping Invariants
+Every new feature, component, API endpoint, or clinical model shipped in Pocket-Gull MUST satisfy the 5-pillar verification checklist before being marked complete:
+
+| Principle | Statutory & Engineering Invariant | Verification Mechanism |
+| :--- | :--- | :--- |
+| **Accessibility (Local Equity)** | Feature MUST function on low-end hardware, Chromebooks, and constrained networks without requiring a paid cloud API key. | `OfflineEdgeAiService` & deterministic local TypeScript fallbacks (`isAvailable` signal check). |
+| **Honesty (Telemetry Disclosure)** | The UI MUST disclose model identity, inference latency (ms), token thinking budget, and certainty score rather than obscuring provenance. | `ClinicalReasoningStreamComponent` & Telemetry Badges (`[⚙️ Local Edge]` vs `[☁️ Gemini 3.7]`). |
+| **Falsifiability (Skeptical CDS)** | The system MUST warn clinicians when empirical evidence is weak ($p \ge 0.05$) or risk of bias is high rather than hallucinating false certainty. | `SkepticalEpistemologyService` & `SkepticalEpistemologyHud` ($H_0$ rejection tests). |
+| **Interoperability (Zero Lock-In)** | Patient data and clinical plans MUST be exportable in open, standard formats that any competitor, hospital, or open-source EHR can parse. | Universal **HL7 FHIR R4 Bundle** export (`fhir.serializer.ts`) & WebMCP OpenAPI schemas. |
+| **Safety Boundary (Human-in-the-Loop)** | High-impact actions, prescriptions, and financial transactions $\ge \$500$ MUST require affirmative clinician review and digital attestation. | FDA CDSR Notice & `MandiantClinicalDefenseService` Dual-Custody M-of-N signatures. |
+
+
 
 
