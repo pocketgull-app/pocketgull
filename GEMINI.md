@@ -168,6 +168,20 @@ Every new feature, component, API endpoint, or clinical model shipped in Pocket-
 | **Interoperability (Zero Lock-In)** | Patient data and clinical plans MUST be exportable in open, standard formats that any competitor, hospital, or open-source EHR can parse. | Universal **HL7 FHIR R4 Bundle** export (`fhir.serializer.ts`) & WebMCP OpenAPI schemas. |
 | **Safety Boundary (Human-in-the-Loop)** | High-impact actions, prescriptions, and financial transactions $\ge \$500$ MUST require affirmative clinician review and digital attestation. | FDA CDSR Notice & `MandiantClinicalDefenseService` Dual-Custody M-of-N signatures. |
 
+## Rachel Nabors Ethical Motion & Parasympathetic Bio-Rhythmic Pacing Standard
+- **Bio-Rhythmic Parasympathetic Pacing ($0.1\text{ Hz}$)**: Ambient glow oscillations, background gradients, and respiratory visualizers MUST operate on a calming $10\text{-second}$ cycle ($4\text{s}$ expansion / $6\text{s}$ contraction) to soothe the nervous system and counteract "screen apnea."
+- **Spatial Continuity & Origami Unfurling (FLIP)**: Modals, drawers, and overlay cards MUST visually unfurl along the $Z$-axis from their trigger elements using gentle spring curves (`cubic-bezier(0.16, 1, 0.3, 1)`).
+- **1-Shot Attestation Shimmer**: Cryptographic verification seals and claims play a single $800\text{ ms}$ luster pass upon completion, then permanently rest. Infinite flashing or pulsing badges are strictly prohibited.
+- **Strict Anti-Dark-Pattern Mandate**: Zero fake countdown timers, zero coercive confirmshaming, zero modal traps, and mandatory `prefers-reduced-motion: reduce` instantaneous zero-duration overrides.
+
+## Skunk Works Medical Aid, Enlightenment & 3-Act Trajectory Standard
+- **The Quiet Workshop Voice**: The platform communicates with deep warmth, quiet craftsmanship, and reassuring clarity. Clinical depth is delivered to make patients and clinicians feel safe, capable, and at ease rather than overwhelmed.
+- **Mandatory 3-Act Temporal Arc**: All clinical trajectories, care summaries, and patient roadmaps MUST be partitioned into:
+  1. `Where You've Been`: Genetic baseline, past physiological hurdles, and triggers—with zero fatalism.
+  2. `Where You Stand Today`: Grounded, calm active biometrics (HR, HRV, SpO2, steps) and living problem priorities.
+  3. `Where You're Going`: Clear 30-day, 60-day, and 90-day trajectory roadmap with achievable vitality milestones.
+- **Dual-Persona Velocity**: Clinician mode provides 45-second high-density Bionic Fixation notes ($650\text{ WPM}$); Patient mode provides empowering 5th-grade plain language ("Teaspoon explanations") with nature quest milestones.
+
 
 
 
