@@ -51,6 +51,7 @@ export * from './anatomy-3d/instant-body-care-plan-sheet.component';
 export * from './vertex-model-garden-portal.component';
 export * from './talent-hr-portal.component';
 export * from './osce-case-simulator.component';
+export * from './clinical-reasoning-stream.component';
 
 
 
