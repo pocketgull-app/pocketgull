@@ -85,6 +85,7 @@ import { BarrowsClinicalInquiryHubComponent } from './components/barrows-clinica
 import { PasskeyStepUpModalComponent } from './components/modals/passkey-step-up-modal.component';
 import { InstitutionalComplianceModalComponent } from './components/modals/institutional-compliance-modal.component';
 import { CmsRpmSuperbillModalComponent } from './components/modals/cms-rpm-superbill-modal.component';
+import { ClinicalTrajectoryReaderModalComponent } from './components/modals/clinical-trajectory-reader-modal.component';
 import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 
 @Component({
@@ -146,7 +147,8 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     HumanDignityPactComponent,
     DoctorShiftSalesDemoComponent,
     GreenRoomLoungeComponent,
-    CmsRpmSuperbillModalComponent
+    CmsRpmSuperbillModalComponent,
+    ClinicalTrajectoryReaderModalComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -236,6 +238,13 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
         <app-cms-rpm-superbill-modal
           (close)="navShell.closeCmsSuperbill()">
         </app-cms-rpm-superbill-modal>
+      }
+
+      <!-- High-Velocity Trajectory & Bionic Speed Reader Modal -->
+      @if (navShell.showTrajectoryReaderModal()) {
+        <app-clinical-trajectory-reader-modal
+          (close)="navShell.closeTrajectoryReader()">
+        </app-clinical-trajectory-reader-modal>
       }
 
       @defer (on idle) {
