@@ -247,7 +247,24 @@ scratch/
 !tests/fixtures/*.csv
 
 # ------------------------------------------------------------------------------
-# 11. Contests, Kaggle & Competition Workspaces
+# 11. ML Checkpoints, Models & Orbax Cache
+# ------------------------------------------------------------------------------
+checkpoints/
+*.orbax-checkpoint-tmp/
+pocketgull_api/checkpoints/
+pocketgull_api/.venv/
+pocketgull_api/**/__pycache__/
+pocketgull_api/**/*.pyc
+
+# ------------------------------------------------------------------------------
+# 12. Standalone Companion App Submodules
+# ------------------------------------------------------------------------------
+companion-apps/clan_logan_brand_system/
+companion-apps/clan_ross_brand_system/
+companion-apps/neuro_reader_app/
+
+# ------------------------------------------------------------------------------
+# 13. Contests, Kaggle & Competition Workspaces
 # ------------------------------------------------------------------------------
 contests/
 docs/contest/
