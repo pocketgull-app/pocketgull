@@ -453,6 +453,7 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
         }
 
         <app-main-header-nav
+          (openTuringSuite)="navShell.selectTab('analysis')"
           (openBarrowsWorkbench)="navShell.openBarrowsWorkbench()"
           (openSocraticIntake)="state.toggleSocraticIntake(true)"
           (openModelGarden)="showModelGardenModal.set(true)"

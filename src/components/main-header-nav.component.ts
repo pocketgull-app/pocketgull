@@ -93,7 +93,7 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                 <div class="flex items-center gap-2">
                   <span class="text-[11px] font-bold tracking-widest uppercase text-zinc-500">POCKETGULL WORKSTATION HUB</span>
                 </div>
-                <span class="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 border border-emerald-300 dark:border-emerald-800">[14 MODULES]</span>
+                <span class="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 border border-emerald-300 dark:border-emerald-800">[24 CLINICAL MODULES]</span>
               </div>
 
               <!-- Categorized Grid -->
@@ -101,6 +101,13 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                 <!-- Section: Clinical Intelligence & AI -->
                 <div class="space-y-1">
                   <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🧠 Clinical AI</span>
+                  <button type="button" (click)="openTuringSuite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🧮</span>
+                    <div>
+                      <div>Turing Diagnostic Suite</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Cellular Automata &amp; Petri Nets</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openSocraticRounds.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">👨‍⚕️</span>
                     <div>
@@ -520,6 +527,7 @@ export class MainHeaderNavComponent {
   isAppsHubOpen = signal<boolean>(false);
   showAmbientPlayer = signal<boolean>(false);
 
+  openTuringSuite = output<void>();
   openSocraticRounds = output<void>();
   openBarrowsWorkbench = output<void>();
   openKneeHologram = output<void>();
