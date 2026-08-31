@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open Scribe — On-Device Clinical Ambient Scribe & Socratic Demystifier</title>
+  <style>
+    :root {
+      --bg-space: #040405;
+      --panel-bg: rgba(18, 18, 22, 0.75);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --teal-glow: #14b8a6;
+      --amber-gold: #f59e0b;
+      --rose-alert: #f43f5e;
+      --indigo-accent: #6366f1;
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #18181b 0%, var(--bg-space) 80%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1080px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 1.25rem;
+      backdrop-filter: blur(16px);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-icon {
+      font-size: 2rem;
+      background: rgba(20, 184, 166, 0.15);
+      padding: 0.5rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(20, 184, 166, 0.3);
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 40%, var(--teal-glow) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .btn-record {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #0d9488;
+      color: white;
+      border: 1px solid #14b8a6;
+      border-radius: 9999px;
+      padding: 0.65rem 1.4rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(20, 184, 166, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-record.recording {
+      background: #dc2626;
+      border-color: #ef4444;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.6);
+      animation: pulseRecord 1.5s infinite;
+    }
+
+    @keyframes pulseRecord {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .control-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--teal-glow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .transcript-box {
+      width: 100%;
+      height: 110px;
+      background: #09090b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 0.75rem;
+      padding: 0.85rem;
+      color: #f4f4f5;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      resize: vertical;
+    }
+
+    .transcript-box:focus {
+      outline: none;
+      border-color: var(--teal-glow);
+    }
+
+    .view-toggle {
+      display: flex;
+      background: #18181b;
+      border: 1px solid var(--panel-border);
+      border-radius: 9999px;
+      padding: 0.25rem;
+      gap: 0.25rem;
+      width: fit-content;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.45rem 1.1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: #27272a;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .tab-btn.active.clinician {
+      color: var(--teal-glow);
+      border: 1px solid rgba(20, 184, 166, 0.4);
+    }
+
+    .tab-btn.active.patient {
+      color: var(--amber-gold);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .soap-card {
+      background: rgba(24, 24, 27, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 0.875rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .soap-header {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--teal-glow);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .soap-list {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      color: #d4d4d8;
+      line-height: 1.4;
+    }
+
+    .soap-list li {
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .soap-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--teal-glow);
+    }
+
+    .jargon-card {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 0.875rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .jargon-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #fbbf24;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .jargon-analogy {
+      font-size: 0.82rem;
+      color: #fef08a;
+      line-height: 1.4;
+      background: rgba(0,0,0,0.3);
+      padding: 0.6rem;
+      border-radius: 0.5rem;
+      border-left: 3px solid #f59e0b;
+    }
+
+    .act-card {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 0.875rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .act-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #a5b4fc;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.5rem;
+      width: fit-content;
+    }
+
+    .badge-teal {
+      background: rgba(20, 184, 166, 0.2);
+      border: 1px solid #14b8a6;
+      color: #5eead4;
+    }
+
+    .badge-rose {
+      background: rgba(244, 63, 94, 0.2);
+      border: 1px solid #f43f5e;
+      color: #fda4af;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    footer a {
+      color: var(--teal-glow);
+      text-decoration: none;
+    }
+
+    .sample-btn {
+      background: #27272a;
+      color: #d4d4d8;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sample-btn:hover {
+      background: #3f3f46;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Header -->
+    <header>
+      <div class="brand-group">
+        <div class="brand-icon">🎙️</div>
+        <div>
+          <h1>Open Scribe</h1>
+          <p class="subtitle">100% Offline Ambient Voice Scribe &amp; Socratic Demystifier</p>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button id="btnRecord" class="btn-record">
+          <span>🎙️ Start Ambient Scribe</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Encounter Input & Audio Waveform Panel -->
+    <div class="control-panel">
+      <div class="panel-title">
+        <span>🗣️ Live Clinical Dictation &amp; Dialogue</span>
+        <div style="display: flex; gap: 0.4rem;">
+          <button class="sample-btn" id="btnSample1">Knee &amp; Sleep Encounter</button>
+          <button class="sample-btn" id="btnSample2">HbA1c &amp; Kidney Labs</button>
+          <button class="sample-btn" id="btnSample3">Hypertension &amp; IRMAA</button>
+        </div>
+      </div>
+
+      <textarea id="transcriptInput" class="transcript-box" placeholder="Speak into your microphone or type/paste clinical dialogue here..."></textarea>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; color: var(--text-muted);">
+          <span>🔒 <strong>HIPAA Safe Harbor</strong>: 100% On-Device &bull; Zero Server Egress</span>
+        </div>
+
+        <!-- View Switcher -->
+        <div class="view-toggle">
+          <button id="tabClinician" class="tab-btn active clinician">🩺 Clinician SOAP</button>
+          <button id="tabPatient" class="tab-btn patient">🌿 Patient "Teaspoon" Summary</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clinician SOAP Output View -->
+    <div id="clinicianView" class="control-panel">
+      <div class="panel-title">
+        <span>📋 Multi-Paradigm Clinical SOAP Note</span>
+        <div id="icdBadgeGroup" style="display: flex; gap: 0.35rem;">
+          <span class="badge badge-teal">ICD-10: M17.11</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.85rem;">
+        
+        <!-- Subjective -->
+        <div class="soap-card">
+          <div class="soap-header">S &bull; Subjective</div>
+          <ul id="soapSubj" class="soap-list">
+            <li>Patient reports active right knee stiffness and difficulty descending stairs.</li>
+            <li>Sleep architecture disrupted by intermittent throbbing discomfort.</li>
+          </ul>
+        </div>
+
+        <!-- Objective -->
+        <div class="soap-card">
+          <div class="soap-header">O &bull; Objective</div>
+          <ul id="soapObj" class="soap-list">
+            <li>Vitals: BP 122/78 mmHg, HR 70 bpm, SpO2 98% on room air.</li>
+            <li>Physical Exam: Medial joint line tenderness, flexion limited to 110°.</li>
+          </ul>
+        </div>
+
+        <!-- Assessment -->
+        <div class="soap-card">
+          <div class="soap-header">A &bull; Assessment</div>
+          <ul id="soapAssess" class="soap-list">
+            <li>Unilateral primary osteoarthritis, right knee (M17.11).</li>
+            <li>Vata-Pitta kinetic chain imbalance with paraspinal compensatory tension.</li>
+          </ul>
+        </div>
+
+        <!-- Plan -->
+        <div class="soap-card">
+          <div class="soap-header">P &bull; Plan</div>
+          <ul id="soapPlan" class="soap-list">
+            <li>Prescribe 10 min daily Rachel Nabors 0.1 Hz parasympathetic breathing.</li>
+            <li>Standing 3D weight-bearing radiographs if unresolved in 4 weeks.</li>
+            <li>Medication: Acetaminophen 500mg daily PRN (ISMP verified).</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- ISMP Medication Safety Audit Notice -->
+      <div id="ismpNotice" style="background: rgba(20, 184, 166, 0.08); border: 1px solid rgba(20, 184, 166, 0.25); border-radius: 0.75rem; padding: 0.75rem; font-size: 0.78rem; display: flex; align-items: center; justify-content: space-between;">
+        <span>🛡️ <strong>ISMP Medication Guard</strong>: Zero trailing zeroes or dangerous abbreviations detected.</span>
+        <span class="badge badge-teal">ISMP / FDA SAFE</span>
+      </div>
+    </div>
+
+    <!-- Patient Teaspoon Output View (Hidden by default) -->
+    <div id="patientView" class="control-panel" style="display: none; border-color: rgba(245, 158, 11, 0.3);">
+      <div class="panel-title" style="color: #fbbf24;">
+        <span>🌿 Your Care Summary &amp; Teaspoon Explanation</span>
+        <span class="badge" style="background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fde68a;">5th-Grade Plain Language</span>
+      </div>
+
+      <p id="patientSummaryText" style="font-size: 0.88rem; color: #f4f4f5; line-height: 1.6; background: rgba(0,0,0,0.3); padding: 0.85rem; border-radius: 0.75rem; border-left: 3px solid #f59e0b;">
+        During today's visit, we focused on understanding your knee cartilage cushion. In simple terms, moving your knee gently circulates natural joint fluid like oil on a bicycle chain to keep you gliding comfortably.
+      </p>
+
+      <!-- Demystified Jargon Cards -->
+      <div id="jargonContainer" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.25rem;"></div>
+
+      <!-- 3-Act Trajectory Roadmap -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.85rem; margin-top: 0.5rem;">
+        
+        <div class="act-card">
+          <div class="act-title">Act I &bull; Where You've Been</div>
+          <p id="act1Text" style="font-size: 0.78rem; color: #d4d4d8; line-height: 1.4;">
+            Past flare-ups and physical fatigue were temporary signals from your body asking for restorative pacing rather than permanent setbacks.
+          </p>
+        </div>
+
+        <div class="act-card">
+          <div class="act-title">Act II &bull; Where You Stand Today</div>
+          <p id="act2Text" style="font-size: 0.78rem; color: #d4d4d8; line-height: 1.4;">
+            Your resting heart rate is 70 bpm and your oxygen is 98%. Your physiological foundation is steady and ready for recovery.
+          </p>
+        </div>
+
+        <div class="act-card">
+          <div class="act-title">Act III &bull; Where You're Going</div>
+          <div id="act3Roadmap" style="font-size: 0.78rem; color: #d4d4d8; display: flex; flex-direction: column; gap: 0.3rem;">
+            <div><strong>Day 1–30:</strong> 10 min daily calm breathing &amp; gentle quad activation.</div>
+            <div><strong>Day 31–60:</strong> Advance walking distance 15% with zero swelling.</div>
+            <div><strong>Day 61–90:</strong> Confident, unrestricted stair climbing &amp; daily vitality.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p><strong>Open Scribe (@pocketgull/open-scribe)</strong> &bull; Free &amp; Open Source for Clinicians and Patients.</p>
+      <p>Licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache 2.0</a> &bull; Zero Cloud API Keys Required.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // --- Sample Clinical Encounters ---
+    const SAMPLES = {
+      sample1: "Doctor, my right knee has been stiff and painful especially when I walk down stairs for the past 3 months. My stress has been high and I have trouble sleeping through the night because of the ache.",
+      sample2: "Patient presents for lab review. Recent laboratory testing reveals an HbA1c of 7.8% and an eGFR of 54 mL/min. Patient is concerned about kidney filtration efficiency. Recommending Lisinopril 10mg daily and gentle walking.",
+      sample3: "Patient consultation regarding mild hypertension with BP reading 138/86 mmHg. Also reviewed recent Medicare IRMAA surcharge notification and PDC medication refills."
+    };
+
+    const JARGON_DB = {
+      egfr: {
+        term: 'eGFR (Kidney Filter Score)',
+        plain: 'A score showing how quickly your kidneys clean waste from your blood.',
+        analogy: 'Think of your kidneys like a coffee filter cleaning water. A score of 90+ means clear flow; lower scores mean water filters more slowly, so we keep you well-hydrated to protect the filter mesh.',
+        action: 'Drink consistent water throughout the day, moderate salt, and avoid excessive ibuprofen.'
+      },
+      hba1c: {
+        term: 'HbA1c (3-Month Blood Sugar Memory)',
+        plain: 'A 90-day average showing how much sugar has attached to your red blood cells.',
+        analogy: 'Like dipping a coat hanger in sugar glaze each day. The thicker the glaze after 3 months, the higher the HbA1c. Steady daily walks vacuum up the sugar naturally.',
+        action: 'Take a gentle 10-minute walk after meals to help your muscles use up blood sugar.'
+      },
+      osteoarthritis: {
+        term: 'Osteoarthritis (Joint Cartilage Cushion)',
+        plain: 'The natural smooth cartilage cushion inside a joint has thinned over time.',
+        analogy: 'Like bicycle brake pads that have worn down over thousands of miles. Moving gently circulates warm fluid (like oil on a bike chain) to keep it gliding comfortably.',
+        action: 'Low-impact swimming, cycling, and daily stretching keep joint lubrication fluid moving.'
+      },
+      knee: {
+        term: 'Knee Joint Cartilage Balance',
+        plain: 'The shock-absorbing cartilage lining inside your knee joint.',
+        analogy: 'Think of the shocks on a car that cushion bumps in the road. Strengthening leg muscles acts like adding stronger springs to protect the shocks.',
+        action: 'Practice straight leg raises and gentle cycling without heavy impact.'
+      },
+      irmaa: {
+        term: 'IRMAA (Medicare Surcharge)',
+        plain: 'An extra monthly fee added to Medicare premiums based on tax returns from two years ago.',
+        analogy: 'Like receiving a higher utility bill today based on electricity used 2 years ago during a heatwave. If your income dropped (e.g. you retired), Medicare can adjust it today.',
+        action: 'Submit Social Security Form SSA-44 with retirement proof to remove the surcharge.'
+      },
+      hypertension: {
+        term: 'Hypertension (High Blood Pressure)',
+        plain: 'The physical pressure of blood pushing against your artery walls is higher than ideal.',
+        analogy: 'Think of water pressure inside a garden hose. Too much pressure strains the hose rubber and makes the pump (heart) work harder.',
+        action: 'Practice 0.1 Hz breathing (4s in, 6s out) for 5 minutes to immediately relax blood vessel walls.'
+      }
+    };
+
+    const transcriptInput = document.getElementById('transcriptInput');
+    const btnRecord = document.getElementById('btnRecord');
+    const tabClinician = document.getElementById('tabClinician');
+    const tabPatient = document.getElementById('tabPatient');
+    const clinicianView = document.getElementById('clinicianView');
+    const patientView = document.getElementById('patientView');
+
+    const soapSubj = document.getElementById('soapSubj');
+    const soapObj = document.getElementById('soapObj');
+    const soapAssess = document.getElementById('soapAssess');
+    const soapPlan = document.getElementById('soapPlan');
+    const icdBadgeGroup = document.getElementById('icdBadgeGroup');
+    const ismpNotice = document.getElementById('ismpNotice');
+
+    const patientSummaryText = document.getElementById('patientSummaryText');
+    const jargonContainer = document.getElementById('jargonContainer');
+    const act1Text = document.getElementById('act1Text');
+    const act2Text = document.getElementById('act2Text');
+    const act3Roadmap = document.getElementById('act3Roadmap');
+
+    // Speech Recognition
+    let recognition = null;
+    let isRecording = false;
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRec();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onresult = (event) => {
+        let text = '';
+        for (let i = 0; i < event.results.length; i++) {
+          text += event.results[i][0].transcript + ' ';
+        }
+        transcriptInput.value = text.trim();
+        synthesizeAll(text.trim());
+      };
+
+      recognition.onerror = (e) => {
+        console.warn('Speech error:', e);
+      };
+
+      recognition.onend = () => {
+        if (isRecording) {
+          try { recognition.start(); } catch {}
+        } else {
+          btnRecord.classList.remove('recording');
+          btnRecord.innerHTML = '<span>🎙️ Start Ambient Scribe</span>';
+        }
+      };
+    }
+
+    btnRecord.addEventListener('click', () => {
+      if (!recognition) {
+        alert('Web Speech API not supported in this browser. Please use Chrome/Edge or type in the text box.');
+        return;
+      }
+
+      if (isRecording) {
+        isRecording = false;
+        recognition.stop();
+        btnRecord.classList.remove('recording');
+        btnRecord.innerHTML = '<span>🎙️ Start Ambient Scribe</span>';
+      } else {
+        isRecording = true;
+        recognition.start();
+        btnRecord.classList.add('recording');
+        btnRecord.innerHTML = '<span>⏹ Stop Scribe Recording</span>';
+      }
+    });
+
+    // Tab Switching
+    tabClinician.addEventListener('click', () => {
+      tabClinician.classList.add('active', 'clinician');
+      tabPatient.classList.remove('active', 'patient');
+      clinicianView.style.display = 'flex';
+      patientView.style.display = 'none';
+    });
+
+    tabPatient.addEventListener('click', () => {
+      tabPatient.classList.add('active', 'patient');
+      tabClinician.classList.remove('active', 'clinician');
+      clinicianView.style.display = 'none';
+      patientView.style.display = 'flex';
+    });
+
+    // Sample Buttons
+    document.getElementById('btnSample1').addEventListener('click', () => {
+      transcriptInput.value = SAMPLES.sample1;
+      synthesizeAll(SAMPLES.sample1);
+    });
+    document.getElementById('btnSample2').addEventListener('click', () => {
+      transcriptInput.value = SAMPLES.sample2;
+      synthesizeAll(SAMPLES.sample2);
+    });
+    document.getElementById('btnSample3').addEventListener('click', () => {
+      transcriptInput.value = SAMPLES.sample3;
+      synthesizeAll(SAMPLES.sample3);
+    });
+
+    transcriptInput.addEventListener('input', (e) => {
+      synthesizeAll(e.target.value);
+    });
+
+    function sanitizeIsmp(text) {
+      // Trailing zeroes: 5.0 mg -> 5mg
+      let clean = text.replace(/\b(\d+)\.0+(\s*(?:mg|mcg|g|ml|mL))\b/g, '$1$2');
+      // Naked decimals: .5 mg -> 0.5mg
+      clean = clean.replace(/(^|\s)\.(\d+)(\s*(?:mg|mcg|g|ml|mL))\b/g, '$10.$2$3');
+      return clean;
+    }
+
+    function synthesizeAll(text) {
+      if (!text || !text.trim()) return;
+      const lower = text.toLowerCase();
+
+      // 1. Clinician View Synthesis
+      if (lower.includes('hba1c') || lower.includes('egfr')) {
+        icdBadgeGroup.innerHTML = '<span class="badge badge-teal">ICD-10: E11.9 (Type 2 DM)</span> <span class="badge badge-teal">ICD-10: N18.3 (CKD 3)</span>';
+        soapSubj.innerHTML = '<li>Patient presents for metabolic and renal function review.</li><li>Endorses mild afternoon fatigue; denies acute flank pain or dysuria.</li>';
+        soapObj.innerHTML = '<li>Vitals: BP 128/82 mmHg, HR 74 bpm, Weight 78 kg.</li><li>Labs: HbA1c 7.8% (elevated glycemic memory), eGFR 54 mL/min (moderate filtration impairment).</li>';
+        soapAssess.innerHTML = '<li>Type 2 diabetes mellitus without acute metabolic decompensation.</li><li>Chronic kidney disease Stage 3a (stable renal reserve).</li>';
+        soapPlan.innerHTML = '<li>Medication: Lisinopril 10mg daily (ISMP sanitized).</li><li>Lifestyle: 10-min post-prandial walking and hydration tracking.</li><li>Follow-up: Repeat renal panel and urine microalbumin in 90 days.</li>';
+      } else if (lower.includes('hypertension') || lower.includes('irmaa')) {
+        icdBadgeGroup.innerHTML = '<span class="badge badge-teal">ICD-10: I10 (Hypertension)</span> <span class="badge badge-teal">CMS: IRMAA Review</span>';
+        soapSubj.innerHTML = '<li>Patient discusses blood pressure elevations and administrative Medicare surcharge stress.</li>';
+        soapObj.innerHTML = '<li>Vitals: BP 138/86 mmHg sitting, regular pulse 72 bpm.</li>';
+        soapAssess.innerHTML = '<li>Essential primary hypertension with situational allostatic stress.</li><li>Medicare IRMAA eligibility review indicated.</li>';
+        soapPlan.innerHTML = '<li>Prescribe 5 minutes daily of Rachel Nabors 0.1 Hz breathing.</li><li>Provide Form SSA-44 guidance for income adjustment appeal.</li>';
+      } else {
+        icdBadgeGroup.innerHTML = '<span class="badge badge-teal">ICD-10: M17.11 (Right Knee OA)</span>';
+        soapSubj.innerHTML = '<li>Patient reports active right knee joint stiffness and descending stair discomfort.</li><li>Sleep interrupted by dull somatic ache.</li>';
+        soapObj.innerHTML = '<li>Physical Exam: Medial joint line tenderness, flexion limited to 110°.</li><li>Vitals: BP 122/78 mmHg, HR 70 bpm, SpO2 98%.</li>';
+        soapAssess.innerHTML = '<li>Unilateral primary osteoarthritis, right knee (M17.11).</li><li>Compensatory kinetic chain strain in lumbar paraspinal segments.</li>';
+        soapPlan.innerHTML = '<li>Prescribe 10 min daily Rachel Nabors 0.1 Hz parasympathetic breathing.</li><li>Low-impact quad strengthening and standing 3D X-rays if unresolved in 4 weeks.</li>';
+      }
+
+      // 2. Patient Teaspoon View Synthesis
+      let matchedJargon = [];
+      for (const [key, entry] of Object.entries(JARGON_DB)) {
+        if (lower.includes(key)) {
+          matchedJargon.push(entry);
+        }
+      }
+
+      if (matchedJargon.length === 0) {
+        matchedJargon.push(JARGON_DB.knee);
+      }
+
+      const primary = matchedJargon[0];
+      patientSummaryText.innerHTML = `During today's visit, we focused on understanding <strong>${primary.term}</strong>. In simple terms, ${primary.plain.toLowerCase()} ${primary.analogy}`;
+
+      jargonContainer.innerHTML = matchedJargon.map(j => `
+        <div class="jargon-card">
+          <div class="jargon-title">
+            <span>💡 ${j.term}</span>
+            <span style="font-size: 0.7rem; color: #f59e0b; font-weight: normal;">What it means for you</span>
+          </div>
+          <div class="jargon-analogy">${j.analogy}</div>
+          <div style="font-size: 0.78rem; color: #d4d4d8; margin-top: 0.2rem;">
+            <strong>Next empowering step:</strong> ${j.action}
+          </div>
+        </div>
+      `).join('');
+
+      // Trajectory Roadmap
+      if (lower.includes('hba1c') || lower.includes('egfr')) {
+        act1Text.innerText = "Your body has managed fluctuating metabolic demands with resilient cellular defenses.";
+        act2Text.innerText = "Your blood sugar memory and kidney filters are clearly identified and ready for steady nutritional pacing.";
+        act3Roadmap.innerHTML = `
+          <div><strong>Day 1–30:</strong> 10-minute gentle walk after dinner &amp; 8 glasses of pure water daily.</div>
+          <div><strong>Day 31–60:</strong> Maintain 80%+ medication consistency with smooth auto-refills.</div>
+          <div><strong>Day 61–90:</strong> Retest kidney filter score (eGFR) and celebrate stabilized blood sugar.</div>
+        `;
+      } else {
+        act1Text.innerText = "Past flare-ups and joint fatigue were temporary signals from your body asking for restorative pacing rather than permanent damage.";
+        act2Text.innerText = "Your resting heart rate is 70 bpm and your oxygen is 98%. Your physiological foundation is steady and ready for recovery.";
+        act3Roadmap.innerHTML = `
+          <div><strong>Day 1–30:</strong> 10 min daily calm breathing &amp; gentle quad activation.</div>
+          <div><strong>Day 31–60:</strong> Advance walking distance 15% with zero joint swelling.</div>
+          <div><strong>Day 61–90:</strong> Confident, unrestricted stair climbing &amp; daily vitality.</div>
+        `;
+      }
+    }
+
+    // Initialize with sample 1
+    synthesizeAll(SAMPLES.sample1);
+  </script>
+</body>
+</html>

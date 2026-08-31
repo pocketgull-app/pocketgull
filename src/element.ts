@@ -17,8 +17,8 @@ async function bootstrapCustomElement() {
         provide: AI_CONFIG,
         useFactory: () => ({
           apiKey: getStoredApiKey() || '',
-          defaultModel: { modelId: 'gemini-3.5-flash', temperature: 0.1 },
-          verificationModel: { modelId: 'gemini-3.5-flash', temperature: 0.0 }
+          defaultModel: { modelId: 'gemini-3.7-flash', temperature: 0.1 },
+          verificationModel: { modelId: 'gemini-3.7-flash', temperature: 0.0 }
         } as IAiProviderConfig)
       },
       {

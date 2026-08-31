@@ -31,7 +31,7 @@
   <img src="https://img.shields.io/badge/Angular-v22-DD0031?style=flat-square&logo=angular&logoColor=white" alt="Angular">
   <img src="https://img.shields.io/badge/Node.js-v24-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js">
   <img src="https://img.shields.io/badge/Three.js-v0.185-000000?style=flat-square&logo=threedotjs&logoColor=white" alt="Three.js">
-  <img src="https://img.shields.io/badge/Gemini-3.5_Flash-4285F4?style=flat-square&logo=google&logoColor=white" alt="Gemini">
+  <img src="https://img.shields.io/badge/Gemini-3.7_Flash-4285F4?style=flat-square&logo=google&logoColor=white" alt="Gemini">
   <a href="https://bestpractices.coreinfrastructure.org/projects/13644"><img src="https://img.shields.io/badge/CII-passing-brightgreen?style=flat-square" alt="CII Best Practices"></a>
   <a href="https://securityscorecards.dev/viewer/?uri=github.com/pocketgull-app/pocketgull"><img src="https://img.shields.io/badge/OpenSSF-10%2F10-blueviolet?style=flat-square" alt="OpenSSF Scorecard"></a>
   <a href="https://github.com/pocketgull-app/pocketgull"><img src="https://img.shields.io/badge/SLSA-Level_3-blueviolet?style=flat-square&logo=googlecloud" alt="SLSA 3"></a>

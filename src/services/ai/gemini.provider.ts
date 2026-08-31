@@ -71,11 +71,11 @@ export class GeminiProvider implements IIntelligenceProvider {
 
     async *generateReportStream$(patientData: string, lens: string, systemInstruction: string): AsyncIterable<string> {
         // Hybrid Routing Strategy (Google Cloud Gemini 3 GA Migration):
-        // Use gemini-3.6-flash for heavy reasoning/synthesis lenses,
-        // and gemini-3.5-flash for formatting/educational/structured lenses.
+        // Use gemini-3.7-flash for heavy reasoning/synthesis lenses,
+        // and gemini-3.7-flash for formatting/educational/structured lenses.
         const routingModelId = (lens === 'Summary Overview' || lens === 'Functional Protocols')
-            ? 'gemini-3.6-flash'
-            : 'gemini-2.5-flash';
+            ? 'gemini-3.7-flash'
+            : 'gemini-3.7-flash';
 
         const response = await this.fetchWithRetry('/api/ai/stream', {
             method: 'POST',

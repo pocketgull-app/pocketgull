@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SmartFhirLauncherComponent } from './smart-fhir-launcher.component';
 import { SmartOnFhirLauncherService } from '../services/fhir/smart-on-fhir-launcher.service';

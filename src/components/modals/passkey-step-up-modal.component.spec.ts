@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { PasskeyStepUpModalComponent } from './passkey-step-up-modal.component';
 import { WebauthnPasskeyService } from '../../services/webauthn-passkey.service';

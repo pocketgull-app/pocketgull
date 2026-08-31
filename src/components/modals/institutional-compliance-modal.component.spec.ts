@@ -1,5 +1,4 @@
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { InstitutionalComplianceModalComponent } from './institutional-compliance-modal.component';
 import { InstitutionalComplianceService } from '../../services/institutional-compliance.service';

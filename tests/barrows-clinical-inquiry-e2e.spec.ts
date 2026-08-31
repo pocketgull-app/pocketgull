@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import '@angular/compiler';
 import { BarrowsClinicalInquiryService } from '../src/services/barrows-clinical-inquiry.service';
 
 describe('Barrows Clinical Inquiry & Epistemological Handoff (E2E Integration)', () => {

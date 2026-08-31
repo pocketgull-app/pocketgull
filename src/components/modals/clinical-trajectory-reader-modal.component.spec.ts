@@ -1,5 +1,4 @@
-﻿import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
+import '@angular/compiler';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { ClinicalTrajectoryReaderModalComponent } from './clinical-trajectory-reader-modal.component';
 import { ClinicalTrajectoryReaderService } from '../../services/clinical-trajectory-reader.service';

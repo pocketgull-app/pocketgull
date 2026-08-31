@@ -1,0 +1,41 @@
+{
+  "name": "@pocketgull/open-scribe",
+  "version": "1.0.0",
+  "description": "Zero-dependency, open-source on-device clinical ambient voice scribe and Socratic plain-language demystifier.",
+  "author": "PocketGull Open Source Contributors",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "clinical-scribe",
+    "ambient-scribe",
+    "soap-note",
+    "plain-language",
+    "socratic-demystifier",
+    "ismp-medication-safety",
+    "hipaa-safe-harbor",
+    "web-speech-api",
+    "on-device-ai",
+    "zero-dependency"
+  ]
+}

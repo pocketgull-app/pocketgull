@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import '@angular/compiler';
 import { BarrowsClinicalInquiryService } from './barrows-clinical-inquiry.service';
 
 describe('BarrowsClinicalInquiryService', () => {
