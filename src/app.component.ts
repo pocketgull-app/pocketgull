@@ -86,6 +86,7 @@ import { PasskeyStepUpModalComponent } from './components/modals/passkey-step-up
 import { InstitutionalComplianceModalComponent } from './components/modals/institutional-compliance-modal.component';
 import { CmsRpmSuperbillModalComponent } from './components/modals/cms-rpm-superbill-modal.component';
 import { ClinicalTrajectoryReaderModalComponent } from './components/modals/clinical-trajectory-reader-modal.component';
+import { AustereResearchHudComponent } from './components/austere-research-hud/austere-research-hud.component';
 import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 
 @Component({
@@ -148,7 +149,8 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     DoctorShiftSalesDemoComponent,
     GreenRoomLoungeComponent,
     CmsRpmSuperbillModalComponent,
-    ClinicalTrajectoryReaderModalComponent
+    ClinicalTrajectoryReaderModalComponent,
+    AustereResearchHudComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -478,6 +480,7 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
           (openHumanDignityPact)="showHumanDignityPactModal.set(true)"
           (openDoctorShiftDemo)="showDoctorShiftSalesDemoModal.set(true)"
           (openGreenRoom)="showGreenRoomLoungeModal.set(true)"
+          (openAustereHud)="showAustereHudModal.set(true)"
           (triggerSomaticGrounding)="triggerSomaticGrounding()">
         </app-main-header-nav>
 
@@ -1293,6 +1296,11 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     @if (showHumanDignityPactModal()) {
       <app-human-dignity-pact (closeModal)="showHumanDignityPactModal.set(false)"></app-human-dignity-pact>
     }
+    @if (showAustereHudModal() || navShell.showAustereHudModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-labelledby="austere-modal-title">
+        <app-austere-research-hud (close)="showAustereHudModal.set(false); navShell.closeAustereHud()"></app-austere-research-hud>
+      </div>
+    }
     <app-clinical-cds-disclaimer-banner></app-clinical-cds-disclaimer-banner>
     <app-zamecznik-canvas></app-zamecznik-canvas>
   `,
@@ -1320,6 +1328,7 @@ export class AppComponent implements OnDestroy {
   showHumanDignityPactModal = signal(false);
   showDoctorShiftSalesDemoModal = signal(false);
   showGreenRoomLoungeModal = signal(false);
+  showAustereHudModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
   readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);

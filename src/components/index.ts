@@ -58,6 +58,7 @@ export * from './anatomy-3d/biophilic-pathway-3d-viewer.component';
 export * from './citizen-science-walk-report.component';
 export * from './google-health-sync-hud.component';
 export * from './barrows-clinical-inquiry-hub.component';
+export * from './austere-research-hud/austere-research-hud.component';
 
 
 

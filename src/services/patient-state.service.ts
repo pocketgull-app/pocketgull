@@ -165,6 +165,15 @@ export class PatientStateService {
 
   // --- Anti-Surveillance & Ephemeral Data Sovereignty Controls ---
   readonly ephemeralPrivacyMode = signal<boolean>(true);
+  readonly profileMode = signal<'STANDARD_CLINICAL' | 'AUSTERE_RESEARCH'>('STANDARD_CLINICAL');
+
+  setProfileMode(mode: 'STANDARD_CLINICAL' | 'AUSTERE_RESEARCH'): void {
+    this.profileMode.set(mode);
+    if (mode === 'AUSTERE_RESEARCH') {
+      this.ephemeralPrivacyMode.set(true);
+      this.logEnterpriseAudit('PRIVACY_MODE_TOGGLE', 'Austere Research Profile activated (Zero Cloud Egress, HIPAA Safe Harbor De-Identification)');
+    }
+  }
 
   // --- Enterprise Agent HIPAA & COPPA Audit Telemetry ---
   readonly enterpriseAuditLog = signal<Array<{

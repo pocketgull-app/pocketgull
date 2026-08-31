@@ -312,6 +312,13 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                       <div class="text-[10px] text-zinc-400 font-normal">200 Claims &amp; Clauses</div>
                     </div>
                   </button>
+                  <button type="button" (click)="openAustereHud.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🛡️</span>
+                    <div>
+                      <div>Austere Research Profile</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Zero-Egress HIPAA Safe Harbor HUD</div>
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -465,6 +472,10 @@ import { NavigationShellService } from '../services/navigation-shell.service';
               <span class="text-base">💳</span> <span>Billing &amp; Subscription</span>
             </button>
 
+            <button type="button" (click)="openAustereHud.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🛡️</span> <span>Austere Research Profile HUD</span>
+            </button>
+
             <button type="button" (click)="triggerSomaticGrounding.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🧘</span> <span>Somatic Grounding</span>
             </button>
@@ -555,6 +566,7 @@ export class MainHeaderNavComponent {
   openHumanDignityPact = output<void>();
   openDoctorShiftDemo = output<void>();
   openGreenRoom = output<void>();
+  openAustereHud = output<void>();
   triggerSomaticGrounding = output<void>();
 }
 

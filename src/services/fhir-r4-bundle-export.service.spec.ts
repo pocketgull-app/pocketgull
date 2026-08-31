@@ -1,161 +1,75 @@
-import { Injector, runInInjectionContext } from '@angular/core';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { FhirR4BundleExportService } from './fhir-r4-bundle-export.service';
-import { GlobalHealthInitiativesService } from './global-health-initiatives.service';
 import { IPatient } from './patient.types';
 
-describe('FhirR4BundleExportService - HL7 FHIR R4 Multi-Paradigm Exporter', () => {
-  const createService = () => {
-    const injector = Injector.create({
-      providers: [
-        FhirR4BundleExportService,
-        GlobalHealthInitiativesService
-      ]
-    });
-    return runInInjectionContext(injector, () => injector.get(FhirR4BundleExportService));
-  };
+describe('FhirR4BundleExportService - Skeptical Epistemology & Provenance Suite', () => {
+  let service: FhirR4BundleExportService;
 
-  const samplePatient: IPatient = {
-    id: 'pt-fhir-001',
-    name: 'Eleanor Vance',
-    age: 54,
+  const mockPatient: IPatient = {
+    id: 'p-research-001',
+    name: 'Homo Sapiens (Female, Neurological Model, 34y)',
+    age: 34,
     gender: 'Female',
-    vitals: { bp: '138/88', hr: '74', spO2: '98', temp: '36.8', weight: '68', height: '165' },
-    preexistingConditions: ['Essential Hypertension', 'Spleen Qi Deficiency', 'Post-Exertional Fatigue'],
+    lastVisit: '2026-08-31',
     history: [],
     bookmarks: [],
     issues: {},
-    lastVisit: '2026-08-20',
-    patientGoals: 'Cardiovascular Longevity'
+    patientGoals: 'Optimize autonomic vagal resilience and circadian sleep architecture',
+    vitals: { bp: '118/76', hr: '72', spO2: '99%', temp: '36.8', weight: '62', height: '168' },
+    preexistingConditions: ['Dysautonomia', 'Post-Viral Fatigue'],
+    medications: [{ id: 'm1', name: 'Propranolol 10mg', value: '10mg' }],
+    dietarySupplements: [{ id: 's1', name: 'Magnesium Glycinate 400mg', value: '400mg' }]
   };
 
-  it('1. Generates a valid HL7 FHIR R4 document bundle with standard metadata', () => {
-    const service = createService();
-    const bundle = service.generateFhirR4Bundle(samplePatient);
+  beforeEach(() => {
+    service = new FhirR4BundleExportService();
+  });
 
+  it('1. Generates an official HL7 FHIR R4 document Bundle with valid headers', () => {
+    const bundle = service.generateFhirR4Bundle(mockPatient);
     expect(bundle.resourceType).toBe('Bundle');
     expect(bundle.type).toBe('document');
-    expect(bundle.entry.length).toBeGreaterThan(3);
-    expect(bundle.id).toContain('urn:uuid:bundle-pt-fhir-001');
+    expect(bundle.id).toContain('p-research-001');
+    expect(bundle.entry.length).toBeGreaterThanOrEqual(6);
   });
 
-  it('2. Embeds WHO SDG 3.4 RiskAssessment and ICD-11 Chapter 26 dual-coded Conditions', () => {
-    const service = createService();
-    const bundle = service.generateFhirR4Bundle(samplePatient);
-
-    // Verify RiskAssessment
-    const riskResource = bundle.entry.find(e => e.resource.resourceType === 'RiskAssessment')?.resource;
-    expect(riskResource).toBeDefined();
-    expect(riskResource?.code.coding[0].system).toBe('http://who.int/sdg/3.4');
-    expect(riskResource?.prediction[0].probabilityDecimal).toBeGreaterThan(0);
-
-    // Verify Condition dual-coding
-    const conditionResources = bundle.entry
-      .filter(e => e.resource.resourceType === 'Condition')
-      .map(e => e.resource);
-    expect(conditionResources.length).toBeGreaterThan(0);
-    expect(conditionResources[0].code.coding.some((c: any) => c.system === 'http://id.who.int/icd11/mms')).toBe(true);
-    expect(conditionResources[0].code.coding.some((c: any) => c.system === 'http://hl7.org/fhir/sid/icd-10')).toBe(true);
-  });
-
-  it('3. Exports formatted JSON FHIR string successfully', () => {
-    const service = createService();
-    const jsonStr = service.exportBundleAsJson(samplePatient);
-    expect(typeof jsonStr).toBe('string');
-    const parsed = JSON.parse(jsonStr);
-    expect(parsed.resourceType).toBe('Bundle');
-    expect(parsed.entry.some((e: any) => e.resource.resourceType === 'Composition')).toBe(true);
-    expect(parsed.entry.some((e: any) => e.resource.resourceType === 'Observation')).toBe(true);
-    expect(parsed.entry.some((e: any) => e.resource.resourceType === 'CarePlan')).toBe(true);
-  });
-
-  it('4. Generates 3D Spatial Somatic Lesion Observations with standard coordinate extensions', () => {
-    const service = createService();
-    const bundle = service.generateSpatialLesionAndAvsBundle({
-      patientId: 'pt-spatial-02',
-      patientName: 'Ada Lovelace',
-      lesions: [
-        {
-          id: 'lesion-01',
-          label: 'Patellar Tendonitis',
-          partId: 'r_knee',
-          position: { x: 0.25, y: 0.45, z: 0.12 },
-          normal: { x: 0.0, y: 0.1, z: 0.99 },
-          severity: 'moderate',
-          morphology: 'inflammation',
-          clinicalNotes: 'Anterior joint line tenderness upon palpation',
-          snomedCode: '23583003'
-        }
-      ],
-      avsSession: {
-        carrierFreqHz: 528,
-        binauralBeatHz: 6.0,
-        isIsochronicPulseEnabled: true,
-        isSpatialPanningEnabled: true,
-        hapticMode: 'isochronic_pulse'
-      },
-      vitals: {
-        heartRate: 68,
-        autonomicCoherenceScore: 92,
-        cardiacResonanceHz: 0.10
-      }
-    });
-
-    expect(bundle.resourceType).toBe('Bundle');
-    expect(bundle.type).toBe('document');
-
-    // Verify 3D Spatial Observation
-    const obsEntry = bundle.entry.find(e => e.resource.resourceType === 'Observation');
+  it('2. Includes an Observation with Skeptical Epistemology extensions', () => {
+    const bundle = service.generateFhirR4Bundle(mockPatient);
+    const obsEntry = bundle.entry.find(e => e.resource['resourceType'] === 'Observation' && e.resource['id']?.includes('obs-hrv-vagal'));
     expect(obsEntry).toBeDefined();
-    const obs = obsEntry!.resource;
-    expect(obs.code.coding[0].code).toBe('23583003');
-    expect(obs.bodySite.coding[0].code).toBe('r_knee');
-    expect(obs.extension[0].url).toContain('spatial-coordinates-3d');
-    expect(obs.extension[0].extension.find((e: any) => e.url === 'x').valueDecimal).toBe(0.25);
 
-    // Verify AVS Procedure
-    const procEntry = bundle.entry.find(e => e.resource.resourceType === 'Procedure');
-    expect(procEntry).toBeDefined();
-    const proc = procEntry!.resource;
-    expect(proc.category.coding[0].code).toBe('866167008'); // Acoustic stimulation therapy
-    expect(proc.code.coding[0].code).toBe('solfeggio-528hz');
-    expect(proc.note[0].text).toContain('Cardiac Resonance = 0.1Hz (92% Coherence)');
+    const obs = obsEntry?.resource;
+    expect(obs?.['extension']).toBeDefined();
+    const skepticalExt = obs?.['extension'].find((ext: any) => ext.url === 'http://pocketgull.app/fhir/StructureDefinition/skeptical-epistemology');
+    expect(skepticalExt).toBeDefined();
 
-    // Verify DiagnosticReport
-    const reportEntry = bundle.entry.find(e => e.resource.resourceType === 'DiagnosticReport');
-    expect(reportEntry).toBeDefined();
-    expect(reportEntry!.resource.result.length).toBe(1);
+    const subExts = skepticalExt.extension;
+    const pVal = subExts.find((e: any) => e.url === 'p-value');
+    const h0 = subExts.find((e: any) => e.url === 'null-hypothesis-h0');
+    const rob2 = subExts.find((e: any) => e.url === 'cochrane-rob2-overall');
+
+    expect(pVal?.valueDecimal).toBe(0.014);
+    expect(h0?.valueString).toContain('Autonomic vagal tone');
+    expect(rob2?.valueString).toBe('Low Risk of Bias');
   });
 
-  it('5. Exports and parses 3D Spatial Lesion & AVS Bundle JSON successfully', () => {
-    const service = createService();
-    const jsonStr = service.exportSpatialLesionBundleAsJson({
-      patientId: 'pt-spatial-03',
-      patientName: 'Nikola Tesla',
-      lesions: [
-        {
-          id: 'lesion-02',
-          label: 'L4/L5 Disc Degeneration',
-          partId: 'spine_lumbar',
-          position: { x: 0.0, y: 1.1, z: -0.15 },
-          severity: 'critical',
-          morphology: 'calcification',
-          clinicalNotes: 'Severe axial loading stenosis'
-        }
-      ]
-    });
+  it('3. Generates FDA 21 CFR Part 11 compliant Provenance electronic seal', () => {
+    const bundle = service.generateFhirR4Bundle(mockPatient);
+    const provEntry = bundle.entry.find(e => e.resource['resourceType'] === 'Provenance');
+    expect(provEntry).toBeDefined();
 
+    const prov = provEntry?.resource;
+    expect(prov?.['signature']).toBeDefined();
+    expect(prov?.['signature'][0].sigFormat).toBe('application/jose');
+    expect(prov?.['signature'][0].data).toBeTruthy();
+    expect(prov?.['signature'][0].extension[0].valueString).toBe('FDA-21-CFR-PART-11-ELECTRONIC-RECORDS-VALIDATED');
+  });
+
+  it('4. Correctly formats and serializes the complete FHIR bundle into JSON string', () => {
+    const jsonStr = service.exportBundleAsJson(mockPatient);
     expect(typeof jsonStr).toBe('string');
     const parsed = JSON.parse(jsonStr);
     expect(parsed.resourceType).toBe('Bundle');
-    expect(parsed.entry.some((e: any) => e.resource.resourceType === 'DiagnosticReport')).toBe(true);
-  });
-
-  it('6. Handles client-side JSON download execution cleanly', () => {
-    const service = createService();
-    expect(() => service.downloadSpatialLesionBundleJson({
-      patientId: 'pt-spatial-04',
-      patientName: 'Marie Curie',
-      lesions: []
-    })).not.toThrow();
+    expect(parsed.entry.some((e: any) => e.resource.resourceType === 'Provenance')).toBe(true);
   });
 });

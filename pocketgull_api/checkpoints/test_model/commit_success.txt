@@ -1,0 +1,1 @@
+Checkpoint commit was successful to C:\Users\philg\Pocketgull\pocketgull\pocketgull_api\checkpoints\test_model

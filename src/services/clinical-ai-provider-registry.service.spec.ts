@@ -43,4 +43,13 @@ describe('ClinicalAiProviderRegistryService', () => {
     expect(result).toContain('Google Gemini 3.7 Interactions API');
     expect(result).toContain('Thinking Budget: 2048');
   });
+
+  it('5. Switches provider to onnx-neural-edge and executes JAX/Flax ONNX inference', async () => {
+    service.setActiveEngine('onnx-neural-edge');
+    expect(service.currentEngine().id).toBe('onnx-neural-edge');
+    expect(service.currentEngine().latencyMs).toBe(3);
+
+    const result = await service.executeUnifiedInference('Evaluate patient vital risk');
+    expect(result).toContain('JAX/Flax ONNX');
+  });
 });

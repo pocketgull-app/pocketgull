@@ -20,6 +20,7 @@ export class NavigationShellService {
   readonly showComplianceCertificateModal = signal<boolean>(false);
   readonly showCmsSuperbillModal = signal<boolean>(false);
   readonly showTrajectoryReaderModal = signal<boolean>(false);
+  readonly showAustereHudModal = signal<boolean>(false);
 
   /**
    * Switches active main tab.
@@ -55,6 +56,9 @@ export class NavigationShellService {
   public openTrajectoryReader(): void { this.showTrajectoryReaderModal.set(true); }
   public closeTrajectoryReader(): void { this.showTrajectoryReaderModal.set(false); }
 
+  public openAustereHud(): void { this.showAustereHudModal.set(true); }
+  public closeAustereHud(): void { this.showAustereHudModal.set(false); }
+
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
    */
@@ -70,5 +74,6 @@ export class NavigationShellService {
     this.showComplianceCertificateModal.set(false);
     this.showCmsSuperbillModal.set(false);
     this.showTrajectoryReaderModal.set(false);
+    this.showAustereHudModal.set(false);
   }
 }

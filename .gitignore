@@ -94,6 +94,8 @@ node_modules/
 dist/
 dist-ssr/
 out-tsc/
+*.tsbuildinfo
+.tsbuildinfo
 .angular/
 .angular/cache/
 .npm/

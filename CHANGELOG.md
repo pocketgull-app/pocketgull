@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.31.0] - 2026-08-31
+
+**JAX / Flax NNX OpenXLA Deep Learning Engine & ONNX Edge Exporter for `pocketgull_api`, Austere Clinical Research & Skeptical Epistemology Workbench, ISMP High-Risk Medication Safety Guard, and Strict Multi-Environment Language Server Resolution**
+
+### Added
+- **[JAX / Flax NNX OpenXLA Deep Learning Engine & ONNX WebGPU Runtime] (`pocketgull_api/`, `OnnxWebGpuEngineService`)**:
+  - **Flax NNX Neural Architecture** (`models/clinical_scorer.py`): Implemented `ClinicalRiskScorer(nnx.Module)` multi-layer perceptron with LayerNorm, Dropout, and Sigmoid activations for continuous non-linear clinical risk modeling.
+  - **Optax & Orbax Training Pipeline** (`training/train.py`): Configured Optax Adam optimizer (`1e-3`), `nnx.jit` training loop, and Orbax `StandardCheckpointer` with `AtomicityMode.COMMIT_FILE` for reliable cross-platform checkpoint persistence.
+  - **XLA JIT Inference Engine** (`inference/engine.py`): JIT-compiled inference engine with XLA graph pre-warming (`warmup(32)`), single `predict()`, and vectorized `vmap` batch scoring (`predict_batch()`).
+  - **ONNX Opset 20 Edge Exporter** (`export/export_onnx.py`): Serialized trained Flax NNX weights into verified dynamic-batch ONNX graphs for zero-egress edge deployment on resource-constrained devices.
+  - **Angular ONNX WebGPU Runtime Engine** (`src/services/onnx-webgpu-engine.service.ts`): Client-side neural forward evaluation with hardware backend detection (WebGPU / WASM SIMD), NIST SP 800-90A CSPRNG attestation digests, and unified registration in `ClinicalAiProviderRegistryService`.
+  - **JAX Pipeline Customization Skill** (`.agents/skills/jax-flax-nnx-pipeline/`): Repository skill documenting Flax NNX 0.12, Orbax Windows atomicity invariants, and JIT graph pre-warming.
+  - **FastAPI Microservice Endpoints** (`pocketgull_api/main.py`): Integrated `POST /v1/score` and `POST /v1/score_batch` with sub-millisecond scoring latency and added engine runtime metadata to `GET /health`.
+  - Added comprehensive verification test suites (`test_jax_ml_engine.py`, `onnx-webgpu-engine.service.spec.ts`) passing 100%.
+- **[Austere Clinical Research HUD & Skeptical Epistemology] (`AustereResearchService`, `AustereResearchHudComponent`)**:
+  - Purpose-built clinical research workbench for resource-constrained, wilderness, and disaster response environments.
+  - Computes empirical $H_0$ null-hypothesis falsification $p$-values and Cochrane Risk of Bias assessments.
+  - Emits HL7 FHIR R4 Bundle exports with custom skeptical epistemology extension elements (`fhir-skeptical-extensions.model.ts`).
+  - Added unit test suite: `austere-research.service.spec.ts`.
+- **[ISMP Clinical Medication Safety Guard] (`IsmpSafetyGuardService`)**:
+  - Enforces ISMP (Institute for Safe Medication Practices) and FDA safety guidelines across prescription and botanical recommendations.
+  - Prohibits trailing zeroes (`5.0 mg`) and naked decimals (`.5 mg`) to eliminate dosage transcription errors.
+  - Applies FDA Tall Man Lettering to look-alike sound-alike (SALAD) drug pairs.
+  - Added unit test suite: `ismp-safety-guard.service.spec.ts`.
+
+### Changed
+- **[Language Server & Pyright Environment]**: Updated `pocketgull_api/pyrightconfig.json`, root `pyrightconfig.json`, and `.vscode/settings.json` to resolve `pocketgull_api/.venv/Lib/site-packages` cleanly.
+- **[Python Package Hygiene]**: Replaced legacy fallback `from pocketgull_api.*` imports with direct package imports and modernized datetime handling to `datetime.now(timezone.utc)`.
+
 ## [1.30.0] - 2026-08-26
 
 **CMS Remote Patient Monitoring (RPM) Superbill Claim Engine (CPT 99453 / 99454 / 99457 / 99458 & 16-Day Statutory Rule), SMART on FHIR v2 Hospital EHR Discovery & Launch Context, 3D Anatomy Biomechanical Vector Strain Lens, and Android Health Connect Background Telemetry Sync**

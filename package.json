@@ -1,6 +1,6 @@
 {
   "name": "pocket-gull",
-  "version": "1.30.0",
+  "version": "1.31.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api"
@@ -119,7 +119,9 @@
     "precommit": "node scripts/pre-commit-check.cjs",
     "prepare": "node -e \"try { require('husky')() } catch (e) {}\" || true",
     "test": "vitest run --config vitest.config.ts && node scripts/run-python-tests.mjs",
+    "test:fast": "vitest run --changed",
     "test:watch": "vitest",
+    "typecheck:fast": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
     "test:python": "node scripts/run-python-tests.mjs",
     "test:e2e:ui": "playwright test --ui",
     "dns:update": "node scripts/update-porkbun-dns.js",
