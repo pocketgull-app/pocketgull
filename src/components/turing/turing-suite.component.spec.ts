@@ -24,7 +24,7 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
     });
   });
 
-  it('should initialize TuringSuiteComponent successfully', () => {
+  it('should initialize TuringSuiteComponent successfully with patient vitals', () => {
     const component = TestBed.runInInjectionContext(() => new TuringSuiteComponent());
     expect(component).toBeTruthy();
     expect(component.patientVitals()).toEqual({ bp: '120/80', hr: '74', spO2: '99', cgmGlucoseMgDl: '115' });
@@ -69,22 +69,41 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
   });
 
   describe('PetriNetViewerComponent', () => {
-    it('should initialize places and calculate deadlock state', () => {
+    it('should initialize with Immunometabolic model and places', () => {
       const petri = TestBed.runInInjectionContext(() => new PetriNetViewerComponent());
       expect(petri).toBeTruthy();
-      expect(petri.places().length).toBe(3);
+      expect(petri.activeModelId()).toBe('immunometabolic');
+      expect(petri.places().length).toBe(4);
       expect(petri.isDeadlocked()).toBe(false);
+      expect(petri.totalTokens()).toBeGreaterThan(0);
     });
 
-    it('should fire enabled transitions and update token counts', () => {
+    it('should switch between Mitochondrial and Cardiometabolic models', () => {
       const petri = TestBed.runInInjectionContext(() => new PetriNetViewerComponent());
+      
+      // Switch to Mitochondrial
+      petri.selectModel('mitochondrial');
+      expect(petri.activeModelId()).toBe('mitochondrial');
+      expect(petri.places().some(p => p.id === 'membrane_potential')).toBe(true);
+
+      // Switch to Cardiometabolic
+      petri.selectModel('cardiometabolic');
+      expect(petri.activeModelId()).toBe('cardiometabolic');
+      expect(petri.places().some(p => p.id === 'glut4_translocation')).toBe(true);
+    });
+
+    it('should fire enabled transitions and update token counts and trajectory history', () => {
+      const petri = TestBed.runInInjectionContext(() => new PetriNetViewerComponent());
+      const cascadeTransition = petri.transitions().find(t => t.id === 't_cascade')!;
+      expect(cascadeTransition).toBeDefined();
+      expect(petri.canFire(cascadeTransition)).toBe(true);
+
       const initialCytokines = petri.places().find(p => p.id === 'proinflammatory_cytokines')!.tokens;
       const initialLesions = petri.places().find(p => p.id === 'endothelial_damage')!.tokens;
 
-      const cascadeTransition = petri.transitions.find(t => t.id === 't_cascade')!;
-      expect(petri.canFire(cascadeTransition)).toBe(true);
-
       petri.fireTransition(cascadeTransition);
+      expect(petri.stepCount()).toBe(1);
+
       const postCytokines = petri.places().find(p => p.id === 'proinflammatory_cytokines')!.tokens;
       const postLesions = petri.places().find(p => p.id === 'endothelial_damage')!.tokens;
 
@@ -92,16 +111,52 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
       expect(postLesions).toBe(initialLesions + 1);
     });
 
-    it('should support NAD+ and Glutathione token injections', () => {
+    it('should support Endotoxin, Hypoxia, VNS, Mitochondrial, and AMPK perturbations', () => {
       const petri = TestBed.runInInjectionContext(() => new PetriNetViewerComponent());
-      const initialTreg = petri.places().find(p => p.id === 'anti_inflammatory_treg')!.tokens;
+      
+      // Endotoxin Surge
+      petri.injectEndotoxinSurge();
+      const stormTokens = petri.places().find(p => p.id === 'proinflammatory_cytokines')!.tokens;
+      expect(stormTokens).toBeGreaterThanOrEqual(4);
 
-      petri.injectNadTokens();
-      const updatedTreg = petri.places().find(p => p.id === 'anti_inflammatory_treg')!.tokens;
-      expect(updatedTreg).toBe(initialTreg + 2);
+      // Vagus Nerve Stimulation Rescue
+      petri.injectVagusNerveStimulation();
+      const tregTokens = petri.places().find(p => p.id === 'anti_inflammatory_treg')!.tokens;
+      expect(tregTokens).toBeGreaterThan(0);
 
-      petri.injectGlutathione();
-      expect(petri.places().find(p => p.id === 'anti_inflammatory_treg')!.tokens).toBe(updatedTreg + 1);
+      // Hypoxic Stress
+      petri.injectHypoxicStress();
+
+      // Mitochondrial Cofactors
+      petri.injectMitochondrialCofactor();
+
+      // AMPK Activation
+      petri.injectAmpkActivation();
+      expect(petri.totalTokens()).toBeGreaterThan(0);
+    });
+
+    it('should calculate SVG arc path with curvature', () => {
+      const petri = TestBed.runInInjectionContext(() => new PetriNetViewerComponent());
+      const path = petri.getArcPath(50, 50, 200, 150);
+      expect(path).toContain('M 50 50');
+      expect(path).toContain('200 150');
+    });
+
+    it('should toggle place token directly on user click', () => {
+      const petri = TestBed.runInInjectionContext(() => new PetriNetViewerComponent());
+      const place = petri.places()[0];
+      const initialTokens = place.tokens;
+      
+      petri.togglePlaceToken(place);
+      expect(petri.places()[0].tokens).toBe((initialTokens + 1) % (place.maxCapacity + 1));
+    });
+
+    it('should sync patient metabolism based on elevated glucose', () => {
+      const petri = TestBed.runInInjectionContext(() => new PetriNetViewerComponent());
+      mockPatientState.vitals.set({ bp: '130/80', hr: '75', spO2: '99', cgmGlucoseMgDl: '185' });
+      
+      petri.syncPatientMetabolism();
+      expect(petri.activeModelId()).toBe('cardiometabolic');
     });
   });
 
@@ -129,13 +184,31 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
       expect(ns.reynoldsNumber()).toBe(24);
     });
 
-    it('should induce slow wave deep sleep surge', () => {
+    it('should induce slow wave deep sleep surge and pulse hypertension', () => {
       const ns = TestBed.runInInjectionContext(() => new NavierStokesViewerComponent());
       ns.setSleepStage('wake');
       expect(ns.sleepStage()).toBe('wake');
 
       ns.induceSlowWaveDeepSleep();
       expect(ns.sleepStage()).toBe('n3');
+
+      ns.pulseHypertension();
+      expect(ns.sleepStage()).toBe('n3');
+    });
+  });
+
+  describe('TuringSuiteComponent Global Actions', () => {
+    it('should execute Sympathetic Shock, Vagal Restoration, and Engine Sync', () => {
+      const suite = TestBed.runInInjectionContext(() => new TuringSuiteComponent());
+      
+      suite.triggerSympatheticShock();
+      expect(suite.lastActionStatus()).toContain('Sympathetic Shock');
+
+      suite.triggerVagalRestoration();
+      expect(suite.lastActionStatus()).toContain('Vagal Restoration');
+
+      suite.syncAllEngines();
+      expect(suite.lastActionStatus()).toContain('synchronized');
     });
   });
 });
