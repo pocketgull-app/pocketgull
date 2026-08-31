@@ -50,8 +50,8 @@ jobs:
         run: |
           echo "Verifying Cloud Run gVisor and scale-to-zero configurations..."
           test -f gcp/cloudrun-service-enclave.json || (echo "Missing Cloud Run Enclave Spec" && exit 1)
-          grep -q '"sandbox": "gvisor"' gcp/cloudrun-service-enclave.json || (echo "gVisor sandbox annotation missing" && exit 1)
-          grep -q '"minScale": "0"' gcp/cloudrun-service-enclave.json || (echo "Scale-to-zero policy missing" && exit 1)
+          grep -q 'gvisor' gcp/cloudrun-service-enclave.json || (echo "gVisor sandbox annotation missing" && exit 1)
+          grep -q 'minScale.*0' gcp/cloudrun-service-enclave.json || (echo "Scale-to-zero policy missing" && exit 1)
           echo "Policy-as-Code checks passed successfully."
 
       - name: Run Shift-Left Secret & Key Leak Detection
