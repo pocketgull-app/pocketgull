@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://gist.githubusercontent.com/sargunv/c2ca41a08391cd06feaad97aece309e4/raw/empty-json-schema.json
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: pocket-gull
+  namespace: "gen-lang-client-0540208645"
+  labels:
+    cloud.googleapis.com/location: us-central1
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/launch-stage: GA
+    run.googleapis.com/description: "Pocket-Gull Clinical Care Engine & Multi-Agent Sanctuary"
+spec:
+  template:
+    metadata:
+      annotations:
+        # MicroVM gVisor Isolation Enclave & Direct VPC Egress
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/sandbox: gvisor
+        run.googleapis.com/vpc-access-egress: all-traffic
+        # Scale-to-Zero Equilibrium (0 baseline idle computing cost)
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "2"
+        run.googleapis.com/cpu-throttling: "true"
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+      - image: gcr.io/gen-lang-client-0540208645/pocket-gull:latest
+        resources:
+          limits:
+            cpu: "2"
+            memory: "2Gi"
+        env:
+        - name: OTEL_SDK_DISABLED
+          value: "true"
+        - name: GOOGLE_CLOUD_PROJECT
+          value: "gen-lang-client-0540208645"
+        - name: NODE_ENV
+          value: "production"
+        ports:
+        - name: http1
+          containerPort: 8080
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 2
+          periodSeconds: 5
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          periodSeconds: 15

@@ -27,7 +27,7 @@ import {
   IDiagnosticScan
 } from "./patient.types";
 import { MOCK_PATIENTS } from "../mock-patients";
-import { dataConnect } from '../lib/firebase';
+import { dataConnect, isDataConnectEnabled } from '../lib/firebase';
 import { listPatients, getPatientWithCarePlan, createPatient } from '../lib/dataconnect/esm/index.esm.js';
 
 // Re-export for use in other components
@@ -160,39 +160,41 @@ export class PatientManagementService implements OnDestroy {
   private async initRoster() {
     if (typeof window !== 'undefined') {
         let loaded: any[] = [];
-        try {
-          const res = await listPatients(dataConnect);
-          if (res.data && res.data.patients && res.data.patients.length > 0) {
-            const dbPatients = res.data.patients.map((p: any) => ({
-              id: p.id,
-              name: `${p.firstName} ${p.lastName}`,
-              age: 0,
-              gender: "Other" as const,
-              lastVisit: new Date(p.updatedAt).toISOString().split('T')[0].replace(/-/g, '.'),
-              preexistingConditions: [],
-              patientGoals: "",
-              vitals: { bp: "", hr: "", temp: "", spO2: "", weight: "", height: "" },
-              issues: {},
-              history: [],
-              bookmarks: []
-            }));
-            const merged: IPatient[] = [...dbPatients];
-            for (const p of MOCK_PATIENTS) {
-              if (!merged.some(item => item.id === p.id)) {
-                merged.push(p);
+        if (isDataConnectEnabled()) {
+          try {
+            const res = await listPatients(dataConnect);
+            if (res.data && res.data.patients && res.data.patients.length > 0) {
+              const dbPatients = res.data.patients.map((p: any) => ({
+                id: p.id,
+                name: `${p.firstName} ${p.lastName}`,
+                age: 0,
+                gender: "Other" as const,
+                lastVisit: new Date(p.updatedAt).toISOString().split('T')[0].replace(/-/g, '.'),
+                preexistingConditions: [],
+                patientGoals: "",
+                vitals: { bp: "", hr: "", temp: "", spO2: "", weight: "", height: "" },
+                issues: {},
+                history: [],
+                bookmarks: []
+              }));
+              const merged: IPatient[] = [...dbPatients];
+              for (const p of MOCK_PATIENTS) {
+                if (!merged.some(item => item.id === p.id)) {
+                  merged.push(p);
+                }
               }
+              this.patients.set(merged);
+              const defaultId = merged.find(p => p.id === 'p_mara_santos')?.id || merged.find(p => p.id === 'p_default_patient')?.id || merged[0]?.id || null;
+              const currentId = this.selectedPatientId();
+              if (!currentId || !merged.some(p => p.id === currentId)) {
+                this.selectedPatientId.set(defaultId);
+              }
+              this.rosterLoaded.set(true);
+              return;
             }
-            this.patients.set(merged);
-            const defaultId = merged.find(p => p.id === 'p_mara_santos')?.id || merged.find(p => p.id === 'p_default_patient')?.id || merged[0]?.id || null;
-            const currentId = this.selectedPatientId();
-            if (!currentId || !merged.some(p => p.id === currentId)) {
-              this.selectedPatientId.set(defaultId);
-            }
-            this.rosterLoaded.set(true);
-            return;
+          } catch (err) {
+            console.log('[PatientManagementService] SQL Connect offline, initializing roster via backend HTTP & local cache');
           }
-        } catch (err) {
-          console.log('[PatientManagementService] SQL Connect offline, initializing roster via backend HTTP & local cache');
         }
 
         try {
