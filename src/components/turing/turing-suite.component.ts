@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CellularAutomataViewerComponent } from './cellular-automata-viewer.component';
 import { PetriNetViewerComponent } from './petri-net-viewer.component';
@@ -7,6 +7,7 @@ import { CernLhc3dVisualizerComponent } from '../anatomy-3d/cern-lhc-3d-visualiz
 import { SocraticRoundsHudComponent } from '../socratic-rounds-hud.component';
 import { InfoCern1991ThemeShowcaseComponent } from '../info-cern-1991-theme-showcase.component';
 import { InsightGridComponent } from '../synthesis/insight-grid.component';
+import { PatientStateService } from '../../services/patient-state.service';
 
 @Component({
   selector: 'app-turing-suite',
@@ -36,6 +37,19 @@ import { InsightGridComponent } from '../synthesis/insight-grid.component';
           <p class="text-xs text-purple-300/80 mt-1 max-w-2xl">
             Modeling cellular morphogenesis, epigenetic state transitions, concurrent biochemical pathways, and quantum biophysics as formal Turing-complete state machines.
           </p>
+          @if (patientVitals()) {
+            <div class="mt-2.5 flex flex-wrap items-center gap-2 text-[10px] font-mono">
+              <span class="px-2 py-0.5 rounded-md bg-purple-950/80 border border-purple-500/40 text-purple-300">
+                ⚡ Active Vitals: BP {{ patientVitals()?.bp || '118/76' }} | HR {{ patientVitals()?.hr || 72 }} bpm
+              </span>
+              <span class="px-2 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-500/40 text-cyan-300">
+                Glucose: {{ patientVitals()?.cgmGlucoseMgDl || 110 }} mg/dL
+              </span>
+              <span class="px-2 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-500/40 text-emerald-300">
+                Live State Machine Linked
+              </span>
+            </div>
+          }
         </div>
         <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-purple-900/60 border border-purple-500/50 text-purple-200 shrink-0">
           Formal Logic Engine
@@ -44,16 +58,16 @@ import { InsightGridComponent } from '../synthesis/insight-grid.component';
 
       <!-- Suite Cards Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="h-[440px]">
+        <div class="h-[460px]">
           <app-cellular-automata-viewer />
         </div>
-        <div class="h-[440px]">
+        <div class="h-[460px]">
           <app-petri-net-viewer />
         </div>
       </div>
 
       <!-- Fluid Dynamics Section -->
-      <div class="h-[420px]">
+      <div class="h-[440px]">
         <app-navier-stokes-viewer />
       </div>
 
@@ -79,4 +93,7 @@ import { InsightGridComponent } from '../synthesis/insight-grid.component';
     </div>
   `
 })
-export class TuringSuiteComponent {}
+export class TuringSuiteComponent {
+  private readonly patientState = inject(PatientStateService, { optional: true });
+  readonly patientVitals = computed(() => this.patientState?.vitals() || null);
+}

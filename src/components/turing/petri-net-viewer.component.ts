@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PatientStateService } from '../../services/patient-state.service';
 
 export interface IPetriPlace {
   id: string;
@@ -27,11 +28,16 @@ export interface IPetriTransition {
         <div class="flex items-center gap-2">
           <span class="text-xl">🕸️</span>
           <div>
-            <h3 class="text-sm font-black uppercase tracking-wider text-cyan-300">
+            <h3 class="text-sm font-black uppercase tracking-wider text-cyan-300 flex items-center gap-2">
               Petri Net Concurrent Pathway Analyzer
+              @if (patientVitals()) {
+                <span class="text-[9px] px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-500/40 text-cyan-300">
+                  Glucose: {{ patientVitals()?.cgmGlucoseMgDl || 110 }} mg/dL
+                </span>
+              }
             </h3>
             <p class="text-[10px] text-cyan-400/80">
-              Token Flow & Clinical Deadlock Prevention Model
+              Token Flow, Metabolic Concurrency & Clinical Deadlock Prevention
             </p>
           </div>
         </div>
@@ -45,7 +51,7 @@ export interface IPetriTransition {
       </div>
 
       <!-- Places & Tokens Visualizer Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
         @for (place of places(); track place.id) {
           <div class="p-3 bg-cyan-950/40 border border-cyan-800/40 rounded-xl flex flex-col justify-between">
             <div class="text-[11px] font-bold uppercase text-cyan-300 flex items-center justify-between">
@@ -62,6 +68,23 @@ export interface IPetriTransition {
             </div>
           </div>
         }
+      </div>
+
+      <!-- Interactive Token Injection Perturbations Bar -->
+      <div class="mb-3 flex items-center gap-2 overflow-x-auto py-1 border-y border-cyan-900/30">
+        <span class="text-[10px] uppercase font-bold text-cyan-400/90 shrink-0">Inject Cofactors:</span>
+        <button (click)="injectNadTokens()"
+                class="px-2.5 py-1 rounded-lg bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-200 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0">
+          🧪 + NAD+ Pool (+2)
+        </button>
+        <button (click)="injectGlutathione()"
+                class="px-2.5 py-1 rounded-lg bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0">
+          🌿 + Glutathione Reductase
+        </button>
+        <button (click)="syncPatientMetabolism()"
+                class="px-2.5 py-1 rounded-lg bg-purple-950/70 hover:bg-purple-900 border border-purple-500/50 text-purple-200 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0">
+          ⚡ Sync Patient Tokens
+        </button>
       </div>
 
       <!-- Enabled Transitions Action Controls -->
@@ -102,11 +125,16 @@ export interface IPetriTransition {
   `]
 })
 export class PetriNetViewerComponent {
+  private readonly patientState = inject(PatientStateService, { optional: true });
+
   readonly places = signal<IPetriPlace[]>([
     { id: 'proinflammatory_cytokines', name: 'Cytokine Storm (IL-6)', tokens: 4, maxCapacity: 10 },
     { id: 'endothelial_damage', name: 'Endothelial Lesion', tokens: 2, maxCapacity: 10 },
     { id: 'anti_inflammatory_treg', name: 'T-Reg Restraint Signal', tokens: 3, maxCapacity: 10 }
   ]);
+
+  readonly patientVitals = computed(() => this.patientState?.vitals() || null);
+  readonly patientIssues = computed(() => this.patientState?.issues() || {});
 
   readonly transitions: IPetriTransition[] = [
     {
@@ -161,6 +189,55 @@ export class PetriNetViewerComponent {
     });
 
     this.places.set(list);
+  }
+
+  injectNadTokens() {
+    this.places.update(list => list.map(p => {
+      if (p.id === 'anti_inflammatory_treg') {
+        return { ...p, tokens: Math.min(p.maxCapacity, p.tokens + 2) };
+      }
+      return p;
+    }));
+  }
+
+  injectGlutathione() {
+    this.places.update(list => list.map(p => {
+      if (p.id === 'endothelial_damage') {
+        return { ...p, tokens: Math.max(0, p.tokens - 1) };
+      }
+      if (p.id === 'proinflammatory_cytokines') {
+        return { ...p, tokens: Math.max(0, p.tokens - 1) };
+      }
+      if (p.id === 'anti_inflammatory_treg') {
+        return { ...p, tokens: Math.min(p.maxCapacity, p.tokens + 1) };
+      }
+      return p;
+    }));
+  }
+
+  syncPatientMetabolism() {
+    const vitals = this.patientVitals();
+    const cgm = parseFloat(String(vitals?.cgmGlucoseMgDl || '110'));
+    const hasIssues = Object.keys(this.patientIssues()).length > 0;
+
+    let cytokines = 3;
+    let lesions = 1;
+    let treg = 4;
+
+    if (cgm > 140) {
+      cytokines += 2;
+      lesions += 2;
+      treg = Math.max(1, treg - 1);
+    }
+    if (hasIssues) {
+      lesions += 1;
+    }
+
+    this.places.set([
+      { id: 'proinflammatory_cytokines', name: 'Cytokine Storm (IL-6)', tokens: Math.min(10, cytokines), maxCapacity: 10 },
+      { id: 'endothelial_damage', name: 'Endothelial Lesion', tokens: Math.min(10, lesions), maxCapacity: 10 },
+      { id: 'anti_inflammatory_treg', name: 'T-Reg Restraint Signal', tokens: Math.min(10, treg), maxCapacity: 10 }
+    ]);
   }
 
   resetNet() {
