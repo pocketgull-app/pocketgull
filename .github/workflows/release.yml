@@ -99,23 +99,27 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
-      # --- GitHub Release ---
+      # --- GitHub Release (Tags Only) ---
 
       - name: Generate SPDX SBOM
+        if: startsWith(github.ref, 'refs/tags/v')
         run: npm run sbom:generate
 
       - name: Create Release Archive
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
           tar czf pocketgull-${{ github.ref_name }}.tar.gz \
             --exclude='node_modules' \
             --exclude='.git' \
             --exclude='.angular' \
             --exclude='dist' \
-            --exclude='pocketgull-${{ github.ref_name }}.tar.gz' \
+            --exclude='*.tar.gz' \
+            --warning=no-file-changed \
             .
 
       - name: Generate Release Notes
         id: notes
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
           echo "## Docker Image" >> release_notes.md
           echo "" >> release_notes.md
