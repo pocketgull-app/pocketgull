@@ -360,7 +360,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[Legal Sovereignty, HIPAA & GDPR Compliance] (`LegalConsentSovereigntyService`)**:
   - Implemented HIPAA Safe Harbor §164.514 de-identification, GDPR Art. 9 & 17 1-click data purging, and LegalZoom electronic estate trust binding.
 - **[Impact.com Affiliate Media Partner Channel Verification] (`ImpactPartnerChannelsService` & `ImpactMasterProgramAgreementService`)**:
-  - Integrated Impact.com media partner checklist (`___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL`), connected `pocketgull.app` primary domain, and enforced full Master Program Agreement (MPA) compliance.
+  - Integrated Impact.com media partner checklist (`IMPACT_CHECKLIST_INSTANCE_CONFIGURED`), connected `pocketgull.app` primary domain, and enforced full Master Program Agreement (MPA) compliance.
 - **[Encapsulated `src/partners/` Module Suite] (Gitignored Commercial Partner Connectors)**:
   - Created local `src/partners/` directory (added to `.gitignore`) containing official SeatGeek API/SDK compliance ([seatgeek.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/seatgeek.ts)), Ticketmaster/AXS ([ticketmaster.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/ticketmaster.ts)), Fly-Well Airlines ([airlines.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/airlines.ts)), and LegalZoom ([legalzoom.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/legalzoom.ts)).
 
