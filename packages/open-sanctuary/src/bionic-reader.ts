@@ -24,7 +24,8 @@ export function getOptimalRecognitionPoint(wordLength: number): number {
 export function formatBionicHtml(text: string, highlightClass = 'bionic-bold'): string {
   if (!text) return '';
 
-  return text.replace(/<[^>]+>|&[a-zA-Z0-9#]+;|([^\s<>]+)/g, (match) => {
+  // Disjoint token matching: HTML tags, HTML entities, or plain non-whitespace tokens (O(N) ReDoS-immune)
+  return text.replace(/<[^>\n]+>|&[a-zA-Z0-9#]+;|[^\s<>&]+/g, (match) => {
     // Preserve HTML tags and HTML entities untouched
     if ((match.startsWith('<') && match.endsWith('>')) || (match.startsWith('&') && match.endsWith(';'))) {
       return match;
@@ -56,7 +57,8 @@ export function tokenizeRsvp(text: string, baseWpm = 450, isWeighted = true): IR
   const tokens: IRSVPToken[] = [];
 
   rawWords.forEach((raw, idx) => {
-    const cleanWord = raw.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+    // Strip leading and trailing non-alphanumerics in two non-backtracking anchor-isolated passes (O(N))
+    const cleanWord = raw.replace(/^[^a-zA-Z0-9]+/, '').replace(/[^a-zA-Z0-9]+$/, '');
     const cleanLen = cleanWord.length || raw.length;
     const orpIdx = getOptimalRecognitionPoint(cleanLen);
 
