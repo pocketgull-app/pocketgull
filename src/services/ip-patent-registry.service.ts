@@ -107,11 +107,11 @@ export class IpPatentRegistryService {
     {
       id: 'cluster-6-dual-custody-defense',
       clusterNumber: 6,
-      title: 'Dual-Custody Anti-Whaling & Anti-Deepfake Clinical Defense Gateway',
+      title: 'Dual-Custody Zero-Trust Clinical Governance Gateway',
       claimRange: 'Claims 101 – 120',
       totalClaims: 20,
       inventors: ['PocketGull Clinical Cybersecurity Group'],
-      primaryServicePath: 'src/services/mandiant-clinical-defense.service.ts',
+      primaryServicePath: 'src/services/clinical-defense-guard.service.ts',
       abstract: 'Zero-trust multi-party (M-of-N) threshold cryptographic gatekeeper preventing unilateral AI voice mutations, enforcing hardware FIDO2 passkeys on high-impact clinical actions.',
       mathematicalFormulation: 'ThresholdSign(M, N, RequestHash),  Voice_Modality ≠ Auth_Credential',
       filingTier: 'Provisional Ready',
@@ -227,13 +227,13 @@ export class IpPatentRegistryService {
       governingLaw: 'HIPAA Safe Harbor / GDPR Art. 25'
     },
     {
-      id: 'clause-anti-whaling-dual-custody',
+      id: 'clause-dual-custody-governance',
       article: 'Article VI',
       section: 'Section 6.01',
-      title: 'Anti-Whaling Dual-Custody Multi-Signature Mandate',
+      title: 'Dual-Custody Zero-Trust Multi-Signature Mandate',
       summary: 'Enforces M-of-N multi-party cryptographic authorization and hardware FIDO2 passkeys for high-impact clinical actions.',
       fullText: 'No single administrative account, Chief Medical Officer (CMO), or automated AI agent possesses the unilateral authority to execute high-impact actions. All bulk patient exports (>50 records), batch state purges, or disbursements ≥ $500 strictly require dual authenticated signatures verified via hardware FIDO2 physical passkeys and threshold cryptographic signatures.',
-      governingLaw: 'Mandiant Clinical Defense / NIST SP 800-207'
+      governingLaw: 'NIST SP 800-207 Zero-Trust / HIPAA §164.312'
     }
   ]);
 

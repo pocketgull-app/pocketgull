@@ -1,9 +1,9 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ClinicalDefenseGuardService } from '../../services/clinical-defense-guard.service';
+import { ClinicalDefenseGuardService, IClinicalSecurityControl } from '../../services/clinical-defense-guard.service';
 
 @Component({
-  selector: 'app-mandiant-cyber-defense-card',
+  selector: 'app-clinical-defense-guard-card',
   standalone: true,
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,7 +26,7 @@ import { ClinicalDefenseGuardService } from '../../services/clinical-defense-gua
               </span>
             </div>
             <p class="text-xs text-zinc-400 font-medium">
-              Technical Safeguards, Cryptographic Provenance, OWASP LLM Hardening &amp; Dual-Custody Governance
+              Technical Safeguards, Cryptographic Provenance, OWASP LLM Hardening &amp; Dual-Custody Clinical Governance
             </p>
           </div>
         </div>
@@ -35,13 +35,13 @@ import { ClinicalDefenseGuardService } from '../../services/clinical-defense-gua
         <div class="flex items-center gap-3 bg-zinc-900/80 px-4 py-2 rounded-2xl border border-zinc-800 font-mono text-xs">
           <div class="flex flex-col">
             <span class="text-[9px] uppercase font-bold text-zinc-500">Security Score</span>
-            <span class="text-emerald-400 font-black text-sm">{{ posture()?.systemIntegrityScore }}%</span>
+            <span class="text-emerald-400 font-black text-sm">{{ posture().systemIntegrityScore }}%</span>
           </div>
           <div class="h-6 w-px bg-zinc-800"></div>
           <div class="flex flex-col">
             <span class="text-[9px] uppercase font-bold text-zinc-500">Defense Posture</span>
             <span class="text-teal-400 font-black">
-              {{ posture()?.threatLevel }}
+              {{ posture().threatLevel }}
             </span>
           </div>
         </div>
@@ -55,7 +55,7 @@ import { ClinicalDefenseGuardService } from '../../services/clinical-defense-gua
                   [class.text-white]="activeTab() === 'SECURITY_CONTROLS'"
                   [class.text-zinc-400]="activeTab() !== 'SECURITY_CONTROLS'"
                   class="px-3.5 py-1.5 rounded-xl font-bold transition cursor-pointer border-0">
-            🔒 Compliance Controls ({{ controls()?.length || 0 }})
+            🔒 Compliance Controls ({{ controls().length }})
           </button>
           <button (click)="activeTab.set('MITRE_ATLAS')"
                   [class.bg-teal-600]="activeTab() === 'MITRE_ATLAS'"
@@ -69,22 +69,14 @@ import { ClinicalDefenseGuardService } from '../../services/clinical-defense-gua
                   [class.text-white]="activeTab() === 'DFIR_LOCKER'"
                   [class.text-zinc-400]="activeTab() !== 'DFIR_LOCKER'"
                   class="px-3.5 py-1.5 rounded-xl font-bold transition cursor-pointer border-0">
-            📋 Immutable Forensic Audit Ledger
+            📋 Cryptographic Audit Trail
           </button>
         </div>
 
-        <div class="flex items-center gap-2">
-          @if (service.isContainmentModeActive()) {
-            <button (click)="resetLockdown()"
-                    class="px-3 py-1.5 rounded-xl text-xs font-bold font-mono bg-emerald-600 text-white transition cursor-pointer border-0">
-              Containment Active — Reset Defenses
-            </button>
-          } @else {
-            <button (click)="triggerEmergencyLockdown()"
-                    class="px-3 py-1.5 rounded-xl text-xs font-bold font-mono bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition cursor-pointer border-0">
-              Test Containment Protocol
-            </button>
-          }
+        <!-- Dual Custody Status Badge -->
+        <div class="flex items-center gap-2 text-xs font-mono bg-teal-950/40 text-teal-300 border border-teal-800/50 px-3 py-1 rounded-xl">
+          <span>⚖️</span>
+          <span>Dual-Custody Active (&ge; \${{ service.dualCustodyThresholdUsd() }})</span>
         </div>
       </div>
 
@@ -162,32 +154,25 @@ import { ClinicalDefenseGuardService } from '../../services/clinical-defense-gua
       <!-- Tab 3: Cryptographic Audit Trail -->
       @if (activeTab() === 'DFIR_LOCKER') {
         <div class="space-y-3">
-          @for (snapshot of forensicSnapshots(); track snapshot.snapshotId) {
-            <div class="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-              <div class="space-y-1">
+          @for (snap of forensicSnapshots(); track snap.snapshotId) {
+            <div class="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 flex flex-col gap-2">
+              <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
-                  <span class="font-mono text-xs font-bold text-zinc-200">{{ snapshot.snapshotId }}</span>
-                  <span [class.bg-rose-950]="snapshot.severity === 'CRITICAL'"
-                        [class.text-rose-400]="snapshot.severity === 'CRITICAL'"
-                        [class.bg-amber-950]="snapshot.severity === 'MEDIUM'"
-                        [class.text-amber-400]="snapshot.severity === 'MEDIUM'"
-                        [class.bg-blue-950]="snapshot.severity === 'INFO'"
-                        [class.text-blue-400]="snapshot.severity === 'INFO'"
-                        class="px-2 py-0.5 text-[9px] font-black uppercase rounded border border-zinc-700">
-                    {{ snapshot.severity }}
+                  <span class="text-xs font-mono font-bold text-teal-400">{{ snap.snapshotId }}</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-mono">
+                    {{ snap.eventCategory }}
                   </span>
-                  <span class="text-[10px] text-zinc-500 font-mono">{{ snapshot.timestamp }}</span>
                 </div>
-                <div class="text-xs text-zinc-300 font-medium">
-                  {{ snapshot.containmentApplied }}
-                </div>
-                <div class="text-[10px] text-zinc-400 font-mono">
-                  {{ snapshot.hhs405dAlignment }}
-                </div>
+                <span class="text-[11px] font-mono text-zinc-500">{{ snap.timestamp }}</span>
               </div>
 
-              <div class="font-mono text-[9px] text-zinc-500 bg-zinc-950 px-2.5 py-1.5 rounded-lg border border-zinc-800 break-all max-w-xs">
-                {{ snapshot.evidencePayloadHash }}
+              <p class="text-xs text-zinc-300 font-mono bg-zinc-950 p-2 rounded-lg border border-zinc-800">
+                {{ snap.containmentApplied }}
+              </p>
+
+              <div class="flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-zinc-400">
+                <span>Aligned: {{ snap.hhs405dAlignment }}</span>
+                <span class="text-zinc-500 truncate max-w-xs">Hash: {{ snap.evidencePayloadHash }}</span>
               </div>
             </div>
           }
@@ -197,22 +182,16 @@ import { ClinicalDefenseGuardService } from '../../services/clinical-defense-gua
     </div>
   `
 })
-export class MandiantCyberDefenseCardComponent {
+export class ClinicalDefenseGuardCardComponent {
   public service = inject(ClinicalDefenseGuardService);
 
-  public readonly activeTab = signal<'SECURITY_CONTROLS' | 'MITRE_ATLAS' | 'DFIR_LOCKER'>('SECURITY_CONTROLS');
-  public readonly posture = this.service.defensePosture;
-  public readonly controls = this.service.securityControls;
-  public readonly threatActors = this.service.threatActors;
-  public readonly atlasTactics = this.service.atlasTactics;
-  public readonly forensicSnapshots = this.service.forensicSnapshots;
+  public activeTab = signal<'SECURITY_CONTROLS' | 'MITRE_ATLAS' | 'DFIR_LOCKER'>('SECURITY_CONTROLS');
 
-  public triggerEmergencyLockdown(): void {
-    this.service.triggerEmergencyContainment();
-    this.activeTab.set('DFIR_LOCKER');
-  }
-
-  public resetLockdown(): void {
-    this.service.resetContainment();
-  }
+  public controls = this.service.securityControls;
+  public atlasTactics = this.service.atlasTactics;
+  public forensicSnapshots = this.service.forensicSnapshots;
+  public posture = this.service.defensePosture;
 }
+
+// Backwards-compatible export alias
+export { ClinicalDefenseGuardCardComponent as MandiantCyberDefenseCardComponent };

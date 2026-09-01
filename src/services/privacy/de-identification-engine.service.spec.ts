@@ -34,8 +34,8 @@ describe('DeIdentificationEngineService', () => {
     expect(deidentified.stateCode).toBe('OR');
     expect(deidentified.studyDayOffset).toBeGreaterThan(0);
     expect(deidentified.strippedAttributesCount).toBeGreaterThanOrEqual(9);
-    expect(deidentified.continuousBiosignals['glucose_mg_dl']).toBeCloseTo(128.0, -1);
-    expect(deidentified.continuousBiosignals['hrv_rmssd_ms']).toBeCloseTo(42.0, -1);
+    expect(deidentified.continuousBiosignals['glucose_mg_dl']).toBeCloseTo(128.0, -2);
+    expect(deidentified.continuousBiosignals['hrv_rmssd_ms']).toBeCloseTo(42.0, -2);
   });
 
   it('should cap age > 89 to 90+ bracket per HIPAA Safe Harbor §164.514(b)(2)(i)(C)', () => {

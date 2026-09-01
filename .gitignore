@@ -351,3 +351,14 @@ lora_test_run/
 playwright-report/
 test-results/
 
+# ------------------------------------------------------------------------------
+# 16. Internal Business, Grants, Legal, Draft Manuscripts & Hidden Stubs
+# ------------------------------------------------------------------------------
+docs/business/
+docs/grants/
+docs/legal/
+docs/prototypes/
+docs/internal/
+manuscripts/
+src/partners/hidden/
+

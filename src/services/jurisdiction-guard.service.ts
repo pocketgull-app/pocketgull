@@ -27,7 +27,7 @@ export class JurisdictionGuardService {
     'SSA_COMPASSIONATE_ALLOWANCES_CAL',
     'SSA_FORMS_3368_3373_44',
     'MEDICARE_IRMAA_SURCHARGE_APPEALS',
-    'VA_PACT_ACT_MILITARY_TOXIC_REGISTRY',
+    'VA_PACT_ACT_HEALTH_REGISTRY',
     'CMS_DA_VINCI_PRIOR_AUTH',
     'HEDIS_STAR_RATINGS_NCQA',
     'HIPAA_SAFE_HARBOR_DE_ID'
@@ -70,8 +70,8 @@ export class JurisdictionGuardService {
       restrictedFeatures: isUs ? [] : [...this.US_ONLY_FEATURES],
       permittedFeatures: isUs ? [...this.GLOBAL_FEATURES, ...this.US_ONLY_FEATURES] : [...this.GLOBAL_FEATURES],
       disclaimer: isUs
-        ? '🇺🇸 US Jurisdiction Active: Full access to Federal SSA Blue Book, Medicare IRMAA, and VA PACT Act suites.'
-        : '🌐 International Access: American statutory features (SSA, Medicare, VA) are strictly restricted to the United States region per federal data sovereignty guidelines.'
+        ? '🇺🇸 United States Profile Active: Integrated with Federal SSA Blue Book, CMS Da Vinci, and VA health frameworks.'
+        : '🌐 International Profile Active: Adaptive global clinical framework (WHO/GDPR/NHS) enabled; domestic US statutory tools (SSA, Medicare) adapt to regional equivalents.'
     };
   });
 
@@ -87,12 +87,11 @@ export class JurisdictionGuardService {
 
   /**
    * Asserts US jurisdiction before executing a statutory operation.
-   * Throws an error if invoked outside the United States.
    */
   public assertUsJurisdiction(featureName: string): void {
     if (!this.isUsJurisdiction()) {
       throw new Error(
-        `[Jurisdiction Error] "${featureName}" is an American federal statutory tool and is only accessible from within the United States (US / US Territories).`
+        `[Regional Notice] "${featureName}" is designed for United States healthcare standards (SSA/CMS/VA). Please select a US regional profile to access domestic federal tools.`
       );
     }
   }

@@ -8,17 +8,16 @@ describe('MandiantClinicalDefenseService Unit Suite', () => {
     service = new MandiantClinicalDefenseService();
   });
 
-  it('1. Initializes with tracked Mandiant healthcare threat actors (UNC2596, FIN12, APT41, UNC3944, UNC-DEEPWHALE)', () => {
-    const actors = service.threatActors();
-    expect(actors.length).toBeGreaterThanOrEqual(5);
-    expect(actors.some(a => a.name.includes('UNC2596'))).toBe(true);
-    expect(actors.some(a => a.name.includes('FIN12'))).toBe(true);
-    expect(actors.some(a => a.name.includes('APT41'))).toBe(true);
-    expect(actors.some(a => a.name.includes('Scattered Spider'))).toBe(true);
-    expect(actors.some(a => a.name.includes('UNC-DEEPWHALE'))).toBe(true);
+  it('1. Initializes with standard healthcare compliance controls (HIPAA, NIST SP 800-207, HHS 405d, OWASP)', () => {
+    const controls = service.securityControls();
+    expect(controls.length).toBeGreaterThanOrEqual(5);
+    expect(controls.some(c => c.standard === 'HIPAA_TECHNICAL_SAFEGUARDS')).toBe(true);
+    expect(controls.some(c => c.standard === 'NIST_SP_800_207_ZERO_TRUST')).toBe(true);
+    expect(controls.some(c => c.standard === 'HHS_405D_HICP')).toBe(true);
+    expect(controls.some(c => c.standard === 'OWASP_LLM_SECURITY')).toBe(true);
   });
 
-  it('2. Maps MITRE ATLAS Adversarial AI tactics including Anti-Whaling voice cloning', () => {
+  it('2. Maps MITRE ATLAS AI safeguards and prompt immutability rules', () => {
     const tactics = service.atlasTactics();
     expect(tactics.length).toBe(5);
     expect(tactics.some(t => t.mitreAtlasId === 'AML.T0043')).toBe(true);
@@ -68,7 +67,7 @@ describe('MandiantClinicalDefenseService Unit Suite', () => {
   it('6. Successfully triggers and resets emergency containment protocol', () => {
     service.triggerEmergencyContainment();
     expect(service.isContainmentModeActive()).toBe(true);
-    expect(service.defensePosture().threatLevel).toBe('DEFCON_1_CRITICAL');
+    expect(service.defensePosture().threatLevel).toBe('CONTAINED');
 
     const snapshots = service.forensicSnapshots();
     expect(snapshots[0].severity).toBe('CRITICAL');
@@ -76,6 +75,6 @@ describe('MandiantClinicalDefenseService Unit Suite', () => {
 
     service.resetContainment();
     expect(service.isContainmentModeActive()).toBe(false);
-    expect(service.defensePosture().threatLevel).toBe('DEFCON_4_GUARDED');
+    expect(service.defensePosture().threatLevel).toBe('SECURE_NOMINAL');
   });
 });

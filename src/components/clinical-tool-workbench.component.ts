@@ -11,7 +11,7 @@ import { TeledentistryOdontogramComponent } from './teledentistry-odontogram.com
 import { JoyPlayfulFlourishingCardComponent } from './joy-playful-flourishing-card.component';
 import { SsaDisabilityNavigatorComponent } from './shared/ssa-disability-navigator.component';
 import { JurisdictionMatrixCardComponent } from './shared/jurisdiction-matrix-card.component';
-import { MandiantCyberDefenseCardComponent } from './shared/mandiant-cyber-defense-card.component';
+import { ClinicalDefenseGuardCardComponent } from './shared/clinical-defense-guard-card.component';
 import { ClinicalMandarinateExamCardComponent } from './shared/clinical-mandarinate-exam-card.component';
 import { RxGuardLensComponent } from './rx-guard-lens.component';
 import { BiomarkerVelocityCardComponent } from './biomarker-velocity-card.component';
@@ -70,7 +70,7 @@ export interface IWorkbenchToolStatus {
     JoyPlayfulFlourishingCardComponent,
     SsaDisabilityNavigatorComponent,
     JurisdictionMatrixCardComponent,
-    MandiantCyberDefenseCardComponent,
+    ClinicalDefenseGuardCardComponent,
     ClinicalMandarinateExamCardComponent,
     RxGuardLensComponent,
     BiomarkerVelocityCardComponent,
@@ -364,29 +364,35 @@ export interface IWorkbenchToolStatus {
       } @else if (activeWorkbenchTab() === 'luminaries') {
         <app-historical-luminaries-game />
       } @else if (activeWorkbenchTab() === 'companion') {
-        <app-hobby-domain-companion />
-      } @else if (activeWorkbenchTab() === 'intimacy') {
-        <app-intimacy-relationship-vitality />
-      } @else if (activeWorkbenchTab() === 'articles') {
-        <app-articles-reader />
-      } @else if (activeWorkbenchTab() === 'saif') {
-        <app-saif-security-posture-card />
-      } @else if (activeWorkbenchTab() === 'modelStudio') {
-        <app-clinical-model-studio-card />
-      } @else if (activeWorkbenchTab() === 'phenopackets') {
-        <app-ga4gh-phenopackets-card />
-      } @else if (activeWorkbenchTab() === 'commercial') {
-        <app-clinical-commercial-hub />
+      } @else if (activeWorkbenchTab() === 'tools') {
+        <!-- Diagnostics Tools List Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (tool of tools(); track tool.id) {
+            <div class="p-5 rounded-3xl bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700 transition flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <h3 class="text-sm font-bold text-zinc-100">{{ tool.name }}</h3>
+                  <span class="px-2 py-0.5 text-[10px] font-mono rounded-full bg-zinc-800 text-zinc-400">
+                    {{ tool.category }}
+                  </span>
+                </div>
+                <p class="text-xs text-zinc-400 mb-4">{{ tool.description }}</p>
+              </div>
+              <div class="flex items-center justify-between pt-3 border-t border-zinc-800/60 text-xs">
+                <span class="text-emerald-400 font-mono text-[11px]">● Operational</span>
+                <button class="px-3 py-1 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium transition cursor-pointer border-0">
+                  Open Tool
+                </button>
+              </div>
+            </div>
+          }
+        </div>
       }
-
-      @if (showRoleDemoModal()) {
-        <app-role-demo-modal (closeModal)="showRoleDemoModal.set(false)" (onDemoLaunched)="activeWorkbenchTab.set($any($event))" />
-      }
-
     </div>
   `
 })
 export class ClinicalToolWorkbenchComponent {
+  readonly patientState = inject(PatientStateService);
   readonly stateMachine = inject(DoubleFlipStateMachineService);
   private readonly haptics = inject(BioHapticFeedbackService);
 
@@ -396,7 +402,7 @@ export class ClinicalToolWorkbenchComponent {
 
   readonly workbenchTabs: { id: 'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
     { id: 'commercial', label: 'Commercial & Revenue Hub ($299/mo - $3,500)', icon: '💼', activeClass: 'bg-emerald-600 text-white shadow-xs' },
-    { id: 'jurisdiction', label: 'Jurisdictional Governance Matrix (US / EU / UK Compliance)', icon: '🌐', activeClass: 'bg-indigo-600 text-white shadow-xs' },
+    { id: 'jurisdiction', label: 'Regional Compliance Matrix (US / UK / EU / CA / AU)', icon: '🌐', activeClass: 'bg-indigo-600 text-white shadow-xs' },
     { id: 'saif', label: 'Google SAIF (Secure AI Framework)', icon: '🛡️', activeClass: 'bg-emerald-600 text-white shadow-xs' },
     { id: 'modelStudio', label: 'Clinical Model Studio & LoRA/DPO', icon: '🤖', activeClass: 'bg-purple-600 text-white shadow-xs' },
     { id: 'phenopackets', label: 'GA4GH Phenopackets v2 (Harvard UDN / OCTRI)', icon: '🧬', activeClass: 'bg-emerald-600 text-white shadow-xs' },
@@ -412,7 +418,7 @@ export class ClinicalToolWorkbenchComponent {
     { id: 'dental', label: 'Teledentistry & Odontogram', icon: '🦷', activeClass: 'bg-teal-500 text-zinc-950 shadow-xs' },
     { id: 'joy', label: 'Joy & Play Matrix', icon: '☀️', activeClass: 'bg-amber-500 text-zinc-950 shadow-xs' },
     { id: 'ssa', label: 'SSA Disability Navigator', icon: '🏛️', activeClass: 'bg-blue-600 text-white shadow-xs' },
-    { id: 'mandiant', label: 'Mandiant Threat Defense', icon: '🛡️', activeClass: 'bg-red-600 text-white shadow-xs' },
+    { id: 'mandiant', label: 'Zero-Trust Security & Compliance', icon: '🛡️', activeClass: 'bg-teal-600 text-white shadow-xs' },
     { id: 'mandarinate', label: 'Keju AI Exam Arena', icon: '📜', activeClass: 'bg-amber-600 text-zinc-950 shadow-xs' },
     { id: 'rxguard', label: 'RxGuard PGx & Botanicals', icon: '🛡️', activeClass: 'bg-purple-600 text-white shadow-xs' },
     { id: 'velocity', label: 'BioTrajectory Velocity', icon: '📈', activeClass: 'bg-emerald-600 text-white shadow-xs' },
@@ -421,7 +427,6 @@ export class ClinicalToolWorkbenchComponent {
     { id: 'dxradar', label: 'DxRadar Socratic Engine', icon: '🎯', activeClass: 'bg-rose-600 text-white shadow-xs' },
     { id: 'nof1', label: 'N-of-1 Trial Designer', icon: '🧪', activeClass: 'bg-indigo-600 text-white shadow-xs' },
     { id: 'scribe', label: 'Ambient Clinical Scribe', icon: '🎙️', activeClass: 'bg-teal-600 text-white shadow-xs' },
-    { id: 'presentation', label: 'Grand Rounds Slides & CARE', icon: '📽️', activeClass: 'bg-cyan-600 text-white shadow-xs' }
   ];
 
   readonly tools = signal<IWorkbenchToolStatus[]>([

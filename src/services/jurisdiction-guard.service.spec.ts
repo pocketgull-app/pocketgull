@@ -43,7 +43,7 @@ describe('JurisdictionGuardService Unit Suite', () => {
     expect(compliance.activeRegulatoryFramework).toBe('INTERNATIONAL_WHO_GDPR');
     expect(compliance.restrictedFeatures).toContain('SSA_BLUE_BOOK_DISABILITY');
     expect(compliance.restrictedFeatures).toContain('MEDICARE_IRMAA_SURCHARGE_APPEALS');
-    expect(compliance.restrictedFeatures).toContain('VA_PACT_ACT_MILITARY_TOXIC_REGISTRY');
+    expect(compliance.restrictedFeatures).toContain('VA_PACT_ACT_HEALTH_REGISTRY');
     expect(compliance.permittedFeatures).toContain('THREE_JS_3D_ANATOMY_VIEWER');
   });
 
@@ -51,7 +51,7 @@ describe('JurisdictionGuardService Unit Suite', () => {
     service.setCountry('DE');
     expect(() => {
       service.assertUsJurisdiction('SSA Disability Navigator');
-    }).toThrowError(/only accessible from within the United States/);
+    }).toThrowError(/designed for United States healthcare standards/);
   });
 
   it('5. assertUsJurisdiction succeeds without error when invoked within US jurisdiction', () => {
