@@ -334,3 +334,20 @@ dbt/logs/
 dbt/.user.yml
 **/target/
 **/dbt_packages/
+
+# ------------------------------------------------------------------------------
+# 15. Local Reports, Training Weights & Build Caches
+# ------------------------------------------------------------------------------
+.tsbuildinfo
+*.tsbuildinfo
+report.html
+report.json
+cocomo2_report.*
+rsna-knee-2026-training-v7/
+lora_clinical_cot/
+lora_prior_auth/
+lora_rxguard_pgx/
+lora_test_run/
+playwright-report/
+test-results/
+
