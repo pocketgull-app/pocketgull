@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.32.0] - 2026-08-31
+
+**🕊️ Avian Navigator Tier of Fine-Tuned Gemma 2/3/4 Models, 4 Live Hugging Face Edge Spaces, Google Responsible AI & PAIR Guidebook Alignment Standard, 5-Pillar Open-Source Readiness Suite, Zenodo DOI (`10.5281/zenodo.20647514`), 1-Click Ollama Modelfile Installer, and Clean Root Architecture**
+
+### Added
+- **[Avian Navigator Tier of Fine-Tuned Gemma Models] (`scripts/huggingface_model_hub_export.py`, `scripts/finetune_gemma_lora.py`)**:
+  - **`pocketgull-compass-2b`**: Fine-tuned on NIH NLM MedQuAD, WHO mhGAP, and ClinicalTrials.gov for stepped-care triage acuity classification and 3-act narrative trajectories.
+  - **`pocketgull-sentinel-peft`**: Low-rank PEFT adapter intercepting emergency red-flags and enforcing ISMP trailing zero / leading decimal safety rules.
+  - **`pocketgull-scribe-soap`**: Zero-egress ambient encounter transcription encoder producing structured SOAP notes with automated ICD-10/CPT crosswalking.
+  - **`pocketgull-tern-edge`**: Sub-45ms ultra-lightweight Gemma 3 engine optimized for in-browser WebGPU and mobile edge devices.
+  - **`pocketgull-albatross-multimodal`**: High-capacity tri-paradigm diagnostic synthesizer integrating 3D WebGL anatomical coordinates.
+  - **`pocketgull-rxguard-pgx`**: CPIC pharmacogenomic allele cross-screener for drug-supplement and botanical interaction detection.
+- **[4 Live Hugging Face Spaces & Open-Science Hosting]**:
+  - **WebGPU Zero-Egress AI** (`philgear/pocketgull-webgpu-edge`): 100% client-side hardware-accelerated clinical inference.
+  - **3D WebGL Anatomy Viewer** (`philgear/pocketgull-3d-anatomy`): Three.js interactive whole-body spatial triage viewer.
+  - **ISMP Decimal Safety & RxGuard** (`philgear/pocketgull-ismp-rxguard`): Instant prescription order safety auditor.
+  - **Clinical Intelligence Consult** (`philgear/pocketgull-clinical-consult`): Real-time stepped-care triage acuity classifier.
+- **[1-Click Local Execution with Ollama] (`dist/ollama/`)**:
+  - Added `install_models.ps1` (Windows) and `install_models.sh` (macOS/Linux) for 1-click generation of custom Ollama Modelfiles and instant CLI interaction (`ollama run pocketgull-compass-2b`).
+- **[Google Responsible AI & PAIR Guidebook Alignment Standard] (`docs/GOOGLE_RESPONSIBLE_AI_ALIGNMENT.md`)**:
+  - Formally operationalized Google AI Principle 1 (Socially Beneficial), Principle 2 (Avoid Unfair Bias), and Principle 3 (Safety & Privacy).
+  - Codified Google PAIR Guidebook design patterns: graceful mental models, calibrate trust via provenance badges, explainable evidence tiers, and user control.
+- **[Standard Community & Legal Governance Suite]**:
+  - Created **`CITATION.cff`** with permanent Zenodo DOI `10.5281/zenodo.20647514` and ORCID `0009-0008-1372-5381`.
+  - Created **`CONTRIBUTING.md`** with HIPAA Safe Harbor and Angular Signals standards.
+  - Created **`CODE_OF_CONDUCT.md`** (Contributor Covenant v2.1).
+  - Created **`GOVERNANCE.md`** detailing the Clinical Review Board (CRB) and RFC decision process.
+  - Created **`.github/ISSUE_TEMPLATE/model_eval_request.yml`** for community benchmark proposals.
+  - Re-licensed multi-tier assets in **`LICENSE`**: Apache-2.0 for code/models, CC-BY-4.0 for datasets, CERN OHL-S v2 for 3D biophysical models.
+
+### Changed
+- **[Repository Root Directory Hygiene]**: Reorganized 30+ root documents into structured subdirectories (`docs/business/`, `docs/compliance/`, `docs/design/`, `docs/grants/`, `docs/legal/`, `docs/research/`, `docs/images/`, `manuscripts/`, `docs/prototypes/`) leaving a pristine, focused open-source repository root.
+- **[Airtight Gitignore & Cache Exclusions]**: Added `.tsbuildinfo`, `report.html`, `report.json`, `cocomo2_report.*`, and `lora_*` training artifacts to `.gitignore`.
+
 ## [1.31.0] - 2026-08-31
 
 **JAX / Flax NNX OpenXLA Deep Learning Engine & ONNX Edge Exporter for `pocketgull_api`, Austere Clinical Research & Skeptical Epistemology Workbench, ISMP High-Risk Medication Safety Guard, and Strict Multi-Environment Language Server Resolution**
