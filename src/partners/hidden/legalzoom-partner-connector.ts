@@ -20,7 +20,7 @@ export class LegalZoomPartnerConnectorService {
     partnerName: 'LegalZoom Digital Estate & Living Will Connector',
     category: 'LEGAL_ESTATE',
     isHidden: true,
-    impactChecklistId: 'IMPACT_CHECKLIST_ID',
+    impactChecklistId: '___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL',
     officialPortalUrl: 'https://www.legalzoom.com/partner-programs',
     sovereignDataDirectivesSupported: true,
     privacyGuardrail: 'HIPAA_SAFE_HARBOR_164_514'

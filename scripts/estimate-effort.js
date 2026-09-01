@@ -15,12 +15,9 @@ const projectRoot = path.normalize(path.resolve(__dirname, '..'));
 // Dynamically calculate KSLOC across modules
 function getDynamicKsloc() {
     const modules = [
-        { name: 'Web Client (Angular & SSR)', path: 'src', exts: ['.ts', '.js', '.html', '.css'] },
-        { name: 'Flutter Mobile Companion (Dart)', path: 'pocketgull_flutter/lib', exts: ['.dart'] },
-        { name: 'Python FastAPI Sidecar & ML Engines', path: 'pocketgull_api', exts: ['.py', '.ts'] },
-        { name: 'AVS Therapy Companion (Angular)', path: 'companion-apps/avs-therapy/src', exts: ['.ts', '.js', '.html', '.css'] },
-        { name: 'Automated Test Suites (Playwright & Vitest)', path: 'tests', exts: ['.ts', '.js'] },
-        { name: 'Clinical Tooling, Data Pipelines & Dart Scripts', path: 'scripts', exts: ['.ts', '.js', '.mjs', '.dart', '.py'] }
+        { name: 'Web Client (Angular)', path: 'src', exts: ['.ts', '.js', '.html', '.css'] },
+        { name: 'Backend API (Node)', path: 'pocketgull_api/src', exts: ['.ts'] },
+        { name: 'AVS Therapy Companion (Angular)', path: 'companion-apps/avs-therapy/src', exts: ['.ts', '.js', '.html', '.css'] }
     ];
 
     let totalSloc = 0;
@@ -35,7 +32,6 @@ function getDynamicKsloc() {
 
         const list = fs.readdirSync(resolvedDir);
         list.forEach(file => {
-            if (['node_modules', '.git', 'dist', '.dart_tool', 'build', '.angular', 'coverage', '.venv'].includes(file)) return;
             const fileRelativePath = path.join(relativeDir, file);
             const joinedPath = path.join(projectRoot, fileRelativePath);
             const fullPath = path.normalize(joinedPath);
@@ -64,16 +60,13 @@ function getDynamicKsloc() {
                 if (!fullFile.startsWith(projectRoot)) return;
 
                 const code = fs.readFileSync(fullFile, 'utf8');
-                let ext = path.extname(fullFile).substring(1).toLowerCase();
-                if (ext === 'dart') ext = 'ts';
-                if (ext === 'mjs') ext = 'js';
+                let ext = path.extname(fullFile).substring(1);
+                if (ext === 'dart') {
+                    ext = 'ts'; // map dart comments to TS parser
+                }
                 const stats = sloc(code, ext);
                 if (stats && stats.source) {
                     modSloc += stats.source;
-                } else {
-                    // Fallback line counter if sloc extension parser is unmapped
-                    const lines = code.split('\n').filter(l => l.trim().length > 0 && !l.trim().startsWith('//') && !l.trim().startsWith('#')).length;
-                    modSloc += lines;
                 }
             } catch(e) { /* ignore */ }
         });
@@ -93,35 +86,35 @@ const { total: KSLOC, breakdown } = getDynamicKsloc();
 
 // Post-Architecture Scale Factors (SF)
 const scaleFactors = {
-    prec: 1.24, // Precedentedness: High (Proven clinical & 3D WebGL paradigms)
-    flex: 2.03, // Development Flexibility: High (Modular standalone architecture)
-    resl: 1.41, // Architecture/Risk Resolution: Extra High (CodeQL, FHIR R4, Vitest)
-    team: 1.10, // Team Cohesion: Very High (Single/pair programming)
-    pmat: 3.12, // Process Maturity: High (Shift-left CI/CD & pre-commit)
+    prec: 3.72, // Precedentedness: Nominal (New project area but existing tech)
+    flex: 3.04, // Development Flexibility: Nominal
+    resl: 4.24, // Architecture/Risk Resolution: Nominal
+    team: 2.19, // Team Cohesion: High (Solo/Small tight team)
+    pmat: 4.68, // Process Maturity: Nominal
 };
 
 // Post-Architecture Cost Drivers (EM - Effort Multipliers)
 const effortMultipliers = {
-    rely: 1.26, // Required Software Reliability: Very High (Clinical CDS / HIPAA)
-    data: 1.14, // Data Base Size: High (Patient records / Gemini context)
-    cplx: 1.30, // Product Complexity: Very High (AI Live full-duplex / WebGPU rPPG)
-    ruse: 1.15, // Developed for Reusability: High (FHIR standard schemas)
+    rely: 1.10, // Required Software Reliability: High (Medical app)
+    data: 1.14, // Data Base Size: High (Patient records/Gemini context)
+    cplx: 1.17, // Product Complexity: High (AI/Three.js integration)
+    ruse: 1.07, // Developed for Reusability: Nominal
     docu: 1.00, // Documentation Match to Life-Cycle: Nominal
 
     // Platform Factors
-    time: 1.11, // Execution Time Constraint: High (Sub-second audio/triage)
-    pvol: 0.87, // Platform Volatility: Low (Modern web & container standards)
+    time: 1.11, // Execution Time Constraint: High (Real-time AI voice)
+    pvol: 0.87, // Platform Volatility: Low (Standard Web stack)
 
     // Personnel Factors
-    acap: 0.85, // Analyst Capability: High
-    pcap: 0.88, // Programmer Capability: High
-    pcon: 0.90, // Personnel Continuity: High
-    aexp: 0.91, // Applications Experience: High
+    acap: 0.71, // Analyst Capability: Extra High (Advanced agentic usage)
+    pcap: 0.76, // Programmer Capability: Extra High
+    pcon: 0.81, // Personnel Continuity: Very High
+    aexp: 0.88, // Applications Experience: High
     pexp: 0.91, // Platform Experience: High
     lexp: 0.95, // Language Experience: High
 
     // Project Factors
-    site: 0.90, // Multi-site Development: High
+    site: 0.80, // Multi-site Development: Extra High (Colocated/Solo)
     sced: 1.00, // Required Development Schedule: Nominal
 };
 

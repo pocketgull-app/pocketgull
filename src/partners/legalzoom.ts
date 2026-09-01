@@ -16,9 +16,9 @@ export class LegalZoomPartnerModuleService {
   readonly partnerConfig = signal<ILegalZoomPartnerConfig>({
     partnerId: 'partner_legalzoom_01',
     partnerName: 'LegalZoom Digital Estate & Living Will Connector',
-    impactChecklistId: 'IMPACT_CHECKLIST_ID',
+    impactChecklistId: '___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL',
     officialPartnerProgramUrl: 'https://www.legalzoom.com/partner-programs',
-    impactRadiusPartnerTrackingUrl: 'https://app.impact.com/secure/mediapartner/checklist/checklist-instance.ihtml?id=IMPACT_PARTNER_CHECKLIST_ID',
+    impactRadiusPartnerTrackingUrl: 'https://app.impact.com/secure/mediapartner/checklist/checklist-instance.ihtml?id=___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL',
     sovereignDataDirectivesSupported: true
   });
 

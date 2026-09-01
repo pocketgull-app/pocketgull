@@ -183,6 +183,7 @@ export function createBillingRouter() {
         automatic_tax: { enabled: true },
         phone_number_collection: { enabled: true },
         invoice_creation: mode === 'payment' ? { enabled: true } : undefined,
+        payment_method_types: ['card', 'link'],
         customer_update: mode === 'subscription' ? { address: 'auto', name: 'auto' } : undefined,
         subscription_data: mode === 'subscription' ? {
           metadata: {

@@ -23,11 +23,6 @@ describe('LensRsnaKneeComponent Unit Suite', () => {
 
     component = new LensRsnaKneeComponent();
     (component as any).patientStateService = mockPatientState;
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Offline test mode')));
-  });
-
-  afterEach(() => {
-    vi.unstubAllGlobals();
   });
 
   it('1. Initializes with 12 MSK abnormality targets and default kinematics', () => {

@@ -252,22 +252,6 @@ PARADIGM_DIRECTIVES = {
         "bundles with ML-KEM-768 / Dilithium3 digital signatures and SHA-256 state provenance digests. Ensure strict HIPAA Safe Harbor §164.514 de-identification. "
         "Output strict JSON with keys: 'sealedBundleEnvelope'."
     ),
-    "nih_medquad_qa": (
-        "[PARADIGM: NIH MEDQUAD CLINICAL EVIDENCE & HEALTH LITERACY]\n"
-        "You are Pocketgull Clinical Intelligence grounded in NIH (NLM, NHLBI, NIDDK, NINDS, Cancer.gov) Level A/B consensus literature. "
-        "Formulate structured clinical guidance partitioned into 'Where You Stand Today', 'Achievable Action Plan', and 'Evidence Grade'. "
-        "Enforce strict ISMP medication safety (no trailing zeros, mandatory leading zeros) and HIPAA de-identification."
-    ),
-    "who_mhgap_triage": (
-        "[PARADIGM: WHO MHGAP STEPPED-CARE & MENTAL HEALTH TRIAGE]\n"
-        "You are a WHO mhGAP stepped-care triage engine. Screen clinical and mental health presentations for organic rule-outs and emergency triggers. "
-        "Provide parasympathetic bio-rhythmic stabilization protocols (0.1 Hz breathing), structured non-pharmacological interventions, and evidence-grounded pharmacotherapy guardrails."
-    ),
-    "nih_clinicaltrials_protocol": (
-        "[PARADIGM: NIH CLINICALTRIALS.GOV PROTOCOL SYNTHESIS]\n"
-        "You are a clinical trials protocol analyzer. Extract structured study architecture, inclusion/exclusion eligibility criteria, and primary/secondary endpoints "
-        "from ClinicalTrials.gov NCT study protocols. Output valid structured JSON conforming to standardized trial schema."
-    ),
 }
 
 SAMPLE_DATASETS = {
@@ -730,61 +714,6 @@ SAMPLE_DATASETS = {
             "rejected": "Assigns aggressive upbeat rock track to exhausted clinician."
         }
     ],
-    "nih_medquad_qa": [
-        {
-            "input": "What are the evidence-based lifestyle modifications and first-line pharmacological recommendations for Stage 1 Hypertension according to NIH / ACC / AHA guidelines?",
-            "output": (
-                "[CLINICAL DIRECTIVE CONTEXT: NIH NHLBI & ACC/AHA Guideline Consensus]\n\n"
-                "**Where You Stand Today (Diagnostic Criteria)**\n"
-                "- Stage 1 Hypertension is defined as systolic blood pressure 130–139 mmHg or diastolic 80–89 mmHg.\n\n"
-                "**30-Day & 90-Day Trajectory Roadmap**\n"
-                "1. Dietary sodium restriction (<2300 mg/day; optimal <1500 mg/day).\n"
-                "2. DASH diet pattern with 3500-5000 mg/day dietary potassium.\n"
-                "3. Aerobic exercise 150 min/week moderate intensity.\n"
-                "4. First-line pharmacotherapy if ASCVD risk >= 10% (Chlorthalidone 12.5 mg or Amlodipine 5 mg PO daily).\n\n"
-                "*Evidence Grade: Level A (SPRINT Trial, PMID: 26551272).*"
-            ),
-            "chosen": "Provides structured NIH NHLBI DASH sodium thresholds, 150 min aerobic conditioning targets, and ASCVD risk stratification triggers.",
-            "rejected": "Recommends untested herbal mega-dosing to cure all hypertension overnight."
-        }
-    ],
-    "who_mhgap_triage": [
-        {
-            "input": "How does the WHO mhGAP Intervention Guide triage and structure stepped-care management for adults presenting with moderate-to-severe depressive episodes?",
-            "output": (
-                "[CLINICAL DIRECTIVE CONTEXT: WHO mhGAP Clinical Intervention Protocol]\n\n"
-                "**Where You Stand Today (Triage Stratification)**\n"
-                "- Mild Symptoms: Psychoeducation, sleep hygiene, and problem-solving counseling (do NOT initiate routine antidepressants).\n"
-                "- Moderate/Severe Episode (>= 2 weeks core symptoms):\n"
-                "  1. Structured brief psychological interventions (CBT or IPT).\n"
-                "  2. First-line SSRI pharmacotherapy (Fluoxetine 20 mg or Sertraline 50 mg PO daily).\n\n"
-                "**Where You're Going (Monitoring Horizon)**\n"
-                "- Advise patient of 2-4 week therapeutic latency.\n"
-                "- Maintain treatment >= 9-12 months following remission to prevent relapse.\n\n"
-                "*Evidence Grade: Level A (WHO mhGAP Guideline Module Depression).*"
-            ),
-            "chosen": "Grounds depression stepped-care in WHO mhGAP protocol, reserving SSRIs for moderate/severe episodes with CBT and 9-12 month maintenance.",
-            "rejected": "Immediately prescribes polypharmacy sedatives without psychosocial counseling or follow-up."
-        }
-    ],
-    "nih_clinicaltrials_protocol": [
-        {
-            "input": json.dumps({"nctId": "NCT04280788", "phase": "Phase 3", "disease": "Metastatic Non-Small Cell Lung Cancer"}, indent=2),
-            "output": json.dumps({
-                "protocolSchema": {
-                    "nctId": "NCT04280788",
-                    "studyDesign": "Quadruple-Blind Randomized Controlled Trial",
-                    "inclusionCriteria": ["Histologically confirmed NSCLC", "ECOG 0-1", "Adequate hematologic/renal function"],
-                    "exclusionCriteria": ["Active untreated CNS metastases", "Prior target inhibitor within 28 days"],
-                    "primaryOutcome": "Progression-Free Survival (PFS) at 12 months",
-                    "secondaryOutcomes": ["Overall Survival (OS)", "Objective Response Rate (ORR)"]
-                },
-                "evidenceGrade": "Level A (NIH Registry Standard)"
-            }, indent=2),
-            "chosen": "Synthesizes standardized NCT schema, inclusion/exclusion bounds, and primary endpoints.",
-            "rejected": "Extracts unstructured text without schema validation or safety exclusion criteria."
-        }
-    ],
 }
 
 
@@ -893,46 +822,24 @@ def train_with_unsloth(args: argparse.Namespace, dataset_samples: List[Dict[str,
         load_in_4bit=True,
     )
 
-    # Configure target modules to protect against catastrophic forgetting
-    is_gemma_3_or_4 = any(tag in args.model_name.lower() for tag in ["gemma-3", "gemma-4", "gemma3", "gemma4"])
-    if args.peft_mode == "attention_only":
-        target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"]
-        if is_gemma_3_or_4:
-            logger.info(f"🛡️ [Gemma 3/4 PEFT Anti-Forgetting Guard] Targeting {args.model_name} Attention Projections (MLP and Vision backbones 100% frozen to preserve biomedical knowledge).")
-        else:
-            logger.info("🛡️ [PEFT Anti-Forgetting Guard] Targeting Attention Projections only (MLP layers 100% frozen to preserve factual knowledge).")
-    else:
-        target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
-        logger.info(f"Configuring all linear projection layers for LoRA on {args.model_name}.")
-
-    logger.info(f"Configuring LoRA PEFT model (r={args.r}, alpha={args.alpha}, dropout={args.lora_dropout}, max_seq={args.max_seq_length})...")
+    logger.info("Configuring LoRA target modules for Gemma architecture...")
     model = FastLanguageModel.get_peft_model(
         model,
         r=args.r,
         lora_alpha=args.alpha,
-        lora_dropout=args.lora_dropout,
-        target_modules=target_modules,
+        lora_dropout=0,
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
         bias="none",
         use_gradient_checkpointing="unsloth",
         random_state=3407,
     )
 
-    # Dataset train / validation split to monitor overfitting
-    full_dataset = Dataset.from_list(dataset_samples)
-    if args.val_split > 0 and len(dataset_samples) >= 4:
-        split_data = full_dataset.train_test_split(test_size=args.val_split, seed=3407)
-        train_dataset = split_data["train"]
-        eval_dataset = split_data["test"]
-        logger.info(f"📊 Dataset partitioned: {len(train_dataset)} train samples, {len(eval_dataset)} validation samples.")
-    else:
-        train_dataset = full_dataset
-        eval_dataset = None
+    dataset = Dataset.from_list(dataset_samples)
 
     trainer = SFTTrainer(
         model=model,
         tokenizer=tokenizer,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
+        train_dataset=dataset,
         dataset_text_field="text",
         max_seq_length=args.max_seq_length,
         dataset_num_proc=2,
@@ -941,14 +848,11 @@ def train_with_unsloth(args: argparse.Namespace, dataset_samples: List[Dict[str,
             per_device_train_batch_size=args.batch_size,
             gradient_accumulation_steps=args.grad_accum,
             warmup_steps=5,
-            max_steps=args.max_steps if args.max_steps > 0 else len(train_dataset) * args.epochs,
+            max_steps=args.max_steps if args.max_steps > 0 else len(dataset_samples) * args.epochs,
             learning_rate=args.lr,
-            weight_decay=args.weight_decay,
             fp16=not FastLanguageModel.is_bfloat16_supported(),
             bf16=FastLanguageModel.is_bfloat16_supported(),
             logging_steps=1,
-            eval_strategy="steps" if eval_dataset else "no",
-            eval_steps=5 if eval_dataset else None,
             output_dir=args.output_dir,
             optim="adamw_8bit",
             seed=3407,
@@ -1017,37 +921,21 @@ def train_with_huggingface(args: argparse.Namespace, dataset_samples: List[Dict[
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    # Target module selection to prevent catastrophic forgetting
-    if args.peft_mode == "attention_only":
-        target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"]
-        logger.info("🛡️ [PEFT Anti-Forgetting Guard] Freezing MLP layers (targeting Q/K/V/O attention matrices only).")
-    else:
-        target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
-
     peft_config = LoraConfig(
         r=args.r,
         lora_alpha=args.alpha,
-        lora_dropout=args.lora_dropout,
+        lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
-        target_modules=target_modules,
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
     )
 
     model = get_peft_model(model, peft_config)
     if use_cuda and hasattr(model, "gradient_checkpointing_enable"):
         model.gradient_checkpointing_enable()
 
-    full_dataset = Dataset.from_list(dataset_samples)
-    if args.val_split > 0 and len(dataset_samples) >= 4:
-        split_data = full_dataset.train_test_split(test_size=args.val_split, seed=3407)
-        train_dataset = split_data["train"]
-        eval_dataset = split_data["test"]
-        logger.info(f"📊 Dataset split: {len(train_dataset)} training rows, {len(eval_dataset)} validation rows.")
-    else:
-        train_dataset = full_dataset
-        eval_dataset = None
-
-    effective_grad_accum = min(args.grad_accum, max(1, len(train_dataset)))
+    dataset = Dataset.from_list(dataset_samples)
+    effective_grad_accum = min(args.grad_accum, max(1, len(dataset_samples)))
 
     training_args = SFTConfig(
         dataset_text_field="text",
@@ -1055,15 +943,12 @@ def train_with_huggingface(args: argparse.Namespace, dataset_samples: List[Dict[
         per_device_train_batch_size=args.batch_size,
         gradient_accumulation_steps=effective_grad_accum,
         warmup_steps=1,
-        max_steps=args.max_steps if args.max_steps > 0 else len(train_dataset) * args.epochs,
+        max_steps=args.max_steps if args.max_steps > 0 else len(dataset_samples) * args.epochs,
         learning_rate=args.lr,
-        weight_decay=args.weight_decay,
         fp16=use_cuda,
         bf16=not use_cuda,
         use_cpu=not use_cuda,
         logging_steps=1,
-        eval_strategy="steps" if eval_dataset else "no",
-        eval_steps=5 if eval_dataset else None,
         output_dir=args.output_dir,
         gradient_checkpointing=use_cuda,
         optim="paged_adamw_8bit" if use_cuda else "adamw_torch",
@@ -1106,8 +991,7 @@ def train_with_huggingface(args: argparse.Namespace, dataset_samples: List[Dict[
     trainer = SFTTrainer(
         model=model,
         processing_class=tokenizer,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
+        train_dataset=dataset,
         args=training_args,
         callbacks=[cooldown_cb] if args.cooldown_seconds > 0 else None,
     )
@@ -1119,118 +1003,6 @@ def train_with_huggingface(args: argparse.Namespace, dataset_samples: List[Dict[
     model.save_pretrained(args.output_dir)
     tokenizer.save_pretrained(args.output_dir)
     logger.info("✅ Fine-tuning completed successfully and adapter weights saved.")
-
-
-# -----------------------------------------------------------------------------
-# DPO / ORPO Preference Training Engine (Epistemic Grounding & Safety)
-# -----------------------------------------------------------------------------
-def train_dpo_with_huggingface(args: argparse.Namespace, dataset_samples: List[Dict[str, str]]) -> None:
-    """Execute DPO (Direct Preference Optimization) fine-tuning using Hugging Face TRL."""
-    try:
-        import torch
-        from datasets import Dataset
-        from peft import LoraConfig, get_peft_model
-        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-        from trl import DPOConfig, DPOTrainer
-    except ImportError as e:
-        logger.error(f"Missing required DPO dependency: {e}")
-        logger.error("Install dependencies via: pip install torch transformers peft trl datasets bitsandbytes")
-        sys.exit(1)
-
-    logger.info(f"Initializing model for DPO Preference Tuning: {args.model_name}")
-    use_cuda = torch.cuda.is_available()
-    logger.info(f"Compute Backend Detected: {'CUDA/ROCm GPU' if use_cuda else 'Multi-Core CPU (Intel i7)'}")
-
-    if use_cuda:
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_compute_dtype=torch.float16,
-        )
-        model = AutoModelForCausalLM.from_pretrained(
-            args.model_name,
-            quantization_config=bnb_config,
-            device_map="auto",
-            low_cpu_mem_usage=True,
-        )
-    else:
-        model = AutoModelForCausalLM.from_pretrained(
-            args.model_name,
-            torch_dtype=torch.bfloat16,
-            low_cpu_mem_usage=True,
-        )
-
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name)
-    if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
-
-    # Target modules for PEFT anti-forgetting guard
-    if args.peft_mode == "attention_only":
-        target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"]
-        logger.info("🛡️ [DPO PEFT Anti-Forgetting Guard] Freezing MLP layers (Q/K/V/O attention matrices only).")
-    else:
-        target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
-
-    peft_config = LoraConfig(
-        r=args.r,
-        lora_alpha=args.alpha,
-        lora_dropout=args.lora_dropout,
-        bias="none",
-        task_type="CAUSAL_LM",
-        target_modules=target_modules,
-    )
-
-    full_dataset = Dataset.from_list(dataset_samples)
-    if args.val_split > 0 and len(dataset_samples) >= 4:
-        split_data = full_dataset.train_test_split(test_size=args.val_split, seed=3407)
-        train_dataset = split_data["train"]
-        eval_dataset = split_data["test"]
-        logger.info(f"📊 DPO dataset split: {len(train_dataset)} train pairs, {len(eval_dataset)} validation pairs.")
-    else:
-        train_dataset = full_dataset
-        eval_dataset = None
-
-    effective_grad_accum = min(args.grad_accum, max(1, len(train_dataset)))
-
-    dpo_args = DPOConfig(
-        beta=args.dpo_beta,
-        max_length=args.max_seq_length,
-        max_prompt_length=args.max_seq_length // 2,
-        per_device_train_batch_size=args.batch_size,
-        gradient_accumulation_steps=effective_grad_accum,
-        warmup_steps=1,
-        max_steps=args.max_steps if args.max_steps > 0 else len(train_dataset) * args.epochs,
-        learning_rate=args.lr,
-        weight_decay=args.weight_decay,
-        fp16=use_cuda,
-        bf16=not use_cuda,
-        logging_steps=1,
-        eval_strategy="steps" if eval_dataset else "no",
-        eval_steps=5 if eval_dataset else None,
-        output_dir=args.output_dir,
-        gradient_checkpointing=use_cuda,
-        optim="paged_adamw_8bit" if use_cuda else "adamw_torch",
-        dataloader_pin_memory=False,
-    )
-
-    trainer = DPOTrainer(
-        model=model,
-        ref_model=None,
-        peft_config=peft_config,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
-        processing_class=tokenizer,
-        args=dpo_args,
-    )
-
-    logger.info(f"Starting DPO Preference fine-tuning (Beta: {args.dpo_beta}, Epochs: {args.epochs})...")
-    trainer.train()
-
-    logger.info(f"Saving DPO fine-tuned LoRA adapter to {args.output_dir}")
-    trainer.model.save_pretrained(args.output_dir)
-    tokenizer.save_pretrained(args.output_dir)
-    logger.info("✅ DPO preference fine-tuning completed successfully.")
 
 
 # -----------------------------------------------------------------------------
@@ -1283,9 +1055,6 @@ def main() -> None:
             "multimodal_wound_derm_vision",
             "amazon_affiliate_egress_guard",
             "post_quantum_fhir_seal",
-            "nih_medquad_qa",
-            "who_mhgap_triage",
-            "nih_clinicaltrials_protocol",
         ],
         help="Target clinical paradigm instruction format",
     )
@@ -1296,25 +1065,14 @@ def main() -> None:
         choices=["sft", "dpo", "orpo"],
         help="Training mode: Supervised Fine-Tuning (sft), Direct Preference Optimization (dpo), or Odds Ratio Preference Optimization (orpo)",
     )
-    parser.add_argument("--dpo_beta", type=float, default=0.1, help="DPO reference constraint beta (default: 0.1 for conservative regularization)")
     parser.add_argument("--dataset_path", type=str, default=None, help="Path to custom JSONL training dataset")
     parser.add_argument("--output_dir", type=str, default="./lora_gemma_adapter", help="Directory to save output weights")
-    parser.add_argument("--r", type=int, default=16, help="LoRA rank parameter (use 8 or 16 for PEFT safety)")
+    parser.add_argument("--r", type=int, default=16, help="LoRA rank parameter")
     parser.add_argument("--alpha", type=int, default=32, help="LoRA alpha scaling parameter")
-    parser.add_argument("--lora_dropout", type=float, default=0.05, help="LoRA dropout for anti-overfitting regularization")
-    parser.add_argument(
-        "--peft_mode",
-        type=str,
-        default="attention_only",
-        choices=["attention_only", "all_linear"],
-        help="Target modules: 'attention_only' (freezes MLP layers to prevent factual forgetting) or 'all_linear'",
-    )
-    parser.add_argument("--weight_decay", type=float, default=0.01, help="L2 weight decay for regularization")
-    parser.add_argument("--val_split", type=float, default=0.15, help="Validation split ratio (0.0 to 0.3) to monitor overfitting")
     parser.add_argument("--lr", type=float, default=2e-4, help="Learning rate")
     parser.add_argument("--batch_size", type=int, default=1, help="Per-device train batch size (default: 1 for 8GB VRAM safety)")
     parser.add_argument("--grad_accum", type=int, default=8, help="Gradient accumulation steps")
-    parser.add_argument("--epochs", type=int, default=2, help="Training epoch count (default: 2 to prevent memorization)")
+    parser.add_argument("--epochs", type=int, default=3, help="Training epoch count")
     parser.add_argument("--max_steps", type=int, default=-1, help="Max training steps (-1 uses epochs)")
     parser.add_argument("--max_seq_length", type=int, default=1024, help="Maximum sequence token length (default: 1024 for low-VRAM)")
     parser.add_argument(
@@ -1358,8 +1116,6 @@ def main() -> None:
 
     logger.info("=== Pocketgull Gemma Paradigm Fine-Tuner ===")
     logger.info(f"Selected Paradigm : {args.paradigm}")
-    logger.info(f"Trainer Type      : {args.trainer_type.upper()}")
-    logger.info(f"PEFT Mode         : {args.peft_mode}")
     logger.info(f"Target Base Model : {args.model_name}")
 
     # Load formatted dataset samples
@@ -1367,20 +1123,13 @@ def main() -> None:
     logger.info(f"Loaded {len(samples)} training samples.")
 
     if args.dry_run:
-        logger.info("--- DRY-RUN MODE: Sample Formatted Training Payload ---")
-        if args.trainer_type in ["dpo", "orpo"] and "chosen" in samples[0]:
-            print(f"[PROMPT]\n{samples[0].get('prompt')}")
-            print(f"\n[CHOSEN (NIH/WHO Grounded)]\n{samples[0].get('chosen')}")
-            print(f"\n[REJECTED (Ungrounded/Overclaimed)]\n{samples[0].get('rejected')}")
-        else:
-            print(samples[0].get("text", samples[0]))
+        logger.info("--- DRY-RUN MODE: Sample Formatted Training Token Payload ---")
+        print(samples[0]["text"])
         logger.info("Dry-run validation complete. Exiting cleanly.")
         return
 
-    # Execute fine-tuning using selected trainer & available backend
-    if args.trainer_type in ["dpo", "orpo"]:
-        train_dpo_with_huggingface(args, samples)
-    elif HAS_UNSLOTH:
+    # Execute fine-tuning using available backend
+    if HAS_UNSLOTH:
         train_with_unsloth(args, samples)
     else:
         train_with_huggingface(args, samples)

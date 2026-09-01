@@ -193,7 +193,7 @@ interface IUsageResponse {
         </div>
 
         <!-- Clinician Flourishing & Burnout Reduction ROI Banner -->
-        <div class="p-5 bg-gradient-to-r from-emerald-950/30 via-teal-950/20 to-indigo-950/30 rounded-xl border border-teal-500/30 mb-4 shadow-sm">
+        <div class="p-5 bg-gradient-to-r from-emerald-950/30 via-teal-950/20 to-indigo-950/30 rounded-xl border border-teal-500/30 mb-6 shadow-sm">
           <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <div class="flex items-center gap-2">
@@ -214,33 +214,6 @@ interface IUsageResponse {
               <div class="p-2.5 rounded-lg bg-zinc-900/80 border border-teal-500/20">
                 <div class="text-lg font-black text-emerald-300">$500k+</div>
                 <div class="text-[10px] text-zinc-400">Turnover Cost Saved / MD</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CMS Remote Patient Monitoring (RPM) Medicare Claims Revenue Banner -->
-        <div class="p-5 bg-gradient-to-r from-teal-950/40 via-cyan-950/30 to-blue-950/40 rounded-xl border border-cyan-500/40 mb-6 shadow-sm">
-          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-xl">🏥</span>
-                <h3 class="text-sm font-bold text-cyan-300 uppercase tracking-wider font-mono">
-                  CMS Remote Patient Monitoring (RPM) Medicare Claims Revenue
-                </h3>
-              </div>
-              <p class="text-xs text-zinc-300 mt-1 max-w-2xl leading-relaxed">
-                PocketGull turns continuous biometric telemetry into recurring clinical practice revenue with automated 16-day transmission attestation, ICD-10 crosswalks, and 1-click CMS-1500 / FHIR R4 Claim generation for CPT 99453, 99454, 99457, and 99458.
-              </p>
-            </div>
-            <div class="flex gap-3 shrink-0 font-mono text-center">
-              <div class="p-2.5 rounded-lg bg-zinc-900/80 border border-cyan-500/30">
-                <div class="text-lg font-black text-cyan-300">$118 - $158</div>
-                <div class="text-[10px] text-zinc-400">Monthly Payout / Patient</div>
-              </div>
-              <div class="p-2.5 rounded-lg bg-zinc-900/80 border border-cyan-500/30">
-                <div class="text-lg font-black text-green-300">$141,696 / yr</div>
-                <div class="text-[10px] text-zinc-400">Practice Revenue / 100 Pts</div>
               </div>
             </div>
           </div>

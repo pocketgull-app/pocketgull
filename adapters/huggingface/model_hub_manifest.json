@@ -1,38 +1,80 @@
 [
   {
-    "id": "pocketgull-compass-2b",
-    "name": "PocketGull Compass (v1.0)",
-    "hub_repo": "philgear/pocketgull-compass-2b",
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-compass-2b"
+    "id": "gemma-3-clinical-rxguard",
+    "name": "PocketGull Gemma 3 RxGuard & PGx Interaction Screener",
+    "hub_repo": "pocketgull-llc/gemma-3-clinical-rxguard",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-clinical-rxguard"
   },
   {
-    "id": "pocketgull-sentinel-peft",
-    "name": "PocketGull Sentinel",
-    "hub_repo": "philgear/pocketgull-sentinel-peft",
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-sentinel-peft"
+    "id": "gemma-3-phenopackets-genomics",
+    "name": "PocketGull Gemma 3 GA4GH Phenopackets v2 Translator",
+    "hub_repo": "pocketgull-llc/gemma-3-phenopackets-genomics",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-phenopackets-genomics"
   },
   {
-    "id": "pocketgull-scribe-soap",
-    "name": "PocketGull Scribe",
-    "hub_repo": "philgear/pocketgull-scribe-soap",
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-scribe-soap"
+    "id": "gemma-3-ambient-soap-scribe",
+    "name": "PocketGull Gemma 3 Ambient Clinical SOAP & SBAR Scribe",
+    "hub_repo": "pocketgull-llc/gemma-3-ambient-soap-scribe",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-ambient-soap-scribe"
   },
   {
-    "id": "pocketgull-tern-edge",
-    "name": "PocketGull Tern (0.5B \u2013 2B)",
-    "hub_repo": "philgear/pocketgull-tern-edge",
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-tern-edge"
+    "id": "gemma-3-biomarker-velocity",
+    "name": "PocketGull Gemma 3 Biomarker Velocity & Resilience Forecaster",
+    "hub_repo": "pocketgull-llc/gemma-3-biomarker-velocity",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-biomarker-velocity"
   },
   {
-    "id": "pocketgull-albatross-multimodal",
-    "name": "PocketGull Albatross",
-    "hub_repo": "philgear/pocketgull-albatross-multimodal",
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-albatross-multimodal"
+    "id": "gemma-3-tri-paradigm-radar",
+    "name": "PocketGull Gemma 3 Tri-Paradigm Diagnostic Integrator",
+    "hub_repo": "pocketgull-llc/gemma-3-tri-paradigm-radar",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-tri-paradigm-radar"
   },
   {
-    "id": "pocketgull-rxguard-pgx",
-    "name": "PocketGull RxGuard & PGx Interaction Screener",
-    "hub_repo": "philgear/pocketgull-rxguard-pgx",
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-rxguard-pgx"
+    "id": "gemma-3-nof1-trial-designer",
+    "name": "PocketGull Gemma 3 N-of-1 Single-Case Trial Protocol Designer",
+    "hub_repo": "pocketgull-llc/gemma-3-nof1-trial-designer",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-nof1-trial-designer"
+  },
+  {
+    "id": "gemma-3-prior-auth-cms0057",
+    "name": "PocketGull Gemma 3 CMS-0057-F Fast-Track Prior Auth Assistant",
+    "hub_repo": "pocketgull-llc/gemma-3-prior-auth-cms0057",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-prior-auth-cms0057"
+  },
+  {
+    "id": "gemma-3-sdoh-equity-compass",
+    "name": "PocketGull Gemma 3 WHO/CDC SDoH Health Equity Classifier",
+    "hub_repo": "pocketgull-llc/gemma-3-sdoh-equity-compass",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-sdoh-equity-compass"
+  },
+  {
+    "id": "gemma-3-hipaa-tamper-sentinel",
+    "name": "PocketGull Gemma 3 HIPAA Safe Harbor & Clinical Integrity Sentinel",
+    "hub_repo": "pocketgull-llc/gemma-3-hipaa-tamper-sentinel",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-hipaa-tamper-sentinel"
+  },
+  {
+    "id": "gemma-3-ophthalmology-retina-cds",
+    "name": "PocketGull Gemma 3 Ophthalmology & LogMAR Visual Acuity CDS",
+    "hub_repo": "pocketgull-llc/gemma-3-ophthalmology-retina-cds",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-ophthalmology-retina-cds"
+  },
+  {
+    "id": "gemma-3-grand-rounds-care-presenter",
+    "name": "PocketGull Gemma 3 Grand Rounds 7-Slide & CARE Case Publisher",
+    "hub_repo": "pocketgull-llc/gemma-3-grand-rounds-care-presenter",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-grand-rounds-care-presenter"
+  },
+  {
+    "id": "gemma-3-osteopathic-rounds-director",
+    "name": "PocketGull Gemma 3 Dr. Elena Gullwing, DO Osteopathic Rounds Director",
+    "hub_repo": "pocketgull-llc/gemma-3-osteopathic-rounds-director",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-osteopathic-rounds-director"
+  },
+  {
+    "id": "gemma-3-sensory-ambient",
+    "name": "PocketGull Gemma 3 Context-Aware Ambient Telemetry Engine",
+    "hub_repo": "pocketgull-llc/gemma-3-sensory-ambient",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-sensory-ambient"
   }
 ]

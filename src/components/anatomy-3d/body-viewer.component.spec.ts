@@ -27,7 +27,7 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
   beforeEach(() => {
     mockPatientState = {
       bodyViewerMode: signal<'3d' | '2d' | 'quad' | 'cellular'>('3d'),
-      anatomyViewMode: signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain'>('skin'),
+      anatomyViewMode: signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic'>('skin'),
       selectedPartId: signal<string | null>(null),
       activePhilosophy: signal<'western' | 'eastern' | 'ayurvedic' | 'osteopathic'>('western'),
       issues: signal({}),

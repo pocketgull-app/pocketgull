@@ -20,12 +20,10 @@ from __future__ import annotations
 
 import asyncio
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
 import hashlib
 import json
 import os
 import re
-import time
 
 from pathlib import Path
 from typing import Any, AsyncGenerator, Optional
@@ -47,24 +45,9 @@ from services.asymmetric_loss_engine import (
     MultiLabelClinicalRiskOutput,
     predict_asymmetric_multilabel_risk,
 )
-from inference.engine import JAXInferenceEngine
-from engines.falsification_engine import (
-    FalsificationRequest,
-    FalsificationResult,
-    falsification_engine,
-)
-from engines.uncertainty_calibrator import (
-    CalibrationRequest,
-    CalibrationResult,
-    uncertainty_calibrator,
-)
-from engines.jax_mri_data_engine import (
-    CounterfactualCohortGenerator,
-    BiophysicalMriAugmenter,
-)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ML: CLINICAL RISK SCORING (joblib / scikit-learn & JAX / Flax NNX)
+# ML: CLINICAL RISK SCORING (joblib / scikit-learn) STATE & LOADING
 # ══════════════════════════════════════════════════════════════════════════════
 
 # Model loaded once at startup — never per-request, never sent to the client.
@@ -73,13 +56,6 @@ _safety_threshold: float = 0.50
 _contest_models: dict[str, Any] = {}
 _MODEL_PATH = Path(__file__).parent / "models" / "clinical_risk_v2.joblib"
 _METADATA_PATH = Path(__file__).parent / "models" / "clinical_risk_v2.metadata.json"
-
-
-class JAXMLState:
-    engine: Optional[JAXInferenceEngine] = None
-
-
-jax_ml_state = JAXMLState()
 
 
 async def _load_ml_model() -> None:
@@ -119,22 +95,8 @@ async def _load_ml_model() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load scikit-learn ML models at startup
+    # Load ML model at startup
     await _load_ml_model()
-
-    # Initialize and pre-compile JAX XLA kernels on startup
-    try:
-        ckpt_dir = str((Path(__file__).parent / "checkpoints" / "clinical_model").resolve())
-        jax_ml_state.engine = JAXInferenceEngine(in_features=32, hidden_dim=64, checkpoint_dir=ckpt_dir)
-        jax_ml_state.engine.warmup(in_features=32)
-        print("[JAX Engine] [OK] JAX Inference Engine initialized and XLA graph pre-warmed.")
-    except Exception as jax_exc:
-        print(f"[JAX Engine] Warning: JAX engine warmup fallback ({jax_exc}). Initializing CPU fallback.")
-        try:
-            jax_ml_state.engine = JAXInferenceEngine(in_features=32, hidden_dim=64)
-            jax_ml_state.engine.warmup(in_features=32)
-        except Exception as fallback_exc:
-            print(f"[JAX Engine] Fatal: Could not initialize JAX engine ({fallback_exc})")
 
     # Cloud SQL Proxy v2.22.0 Unix Domain Socket readiness check
     conn_name = os.getenv("INSTANCE_CONNECTION_NAME")
@@ -171,8 +133,9 @@ app.add_middleware(
 try:
     from middleware.hipaa_deidentifier import HipaaDeidentificationMiddleware
     app.add_middleware(HipaaDeidentificationMiddleware)
-except Exception as _mw_err:
-    print(f"[Middleware] Warning: Could not initialize HIPAA middleware ({_mw_err})")
+except ImportError:
+    from pocketgull_api.middleware.hipaa_deidentifier import HipaaDeidentificationMiddleware
+    app.add_middleware(HipaaDeidentificationMiddleware)
 
 
 
@@ -224,103 +187,13 @@ async def hipaa_zero_leak_exception_handler(request: Request, exc: Exception):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# HEALTH & JAX ENGINE METADATA
+# HEALTH
 # ══════════════════════════════════════════════════════════════════════════════
 
 @app.get("/health", tags=["Meta"])
-async def health() -> dict[str, Any]:
+async def health() -> dict[str, str]:
     """Liveness probe — used by Cloud Run and the Angular proxy error handler."""
-    is_accel = jax_ml_state.engine is not None and jax_ml_state.engine.model is not None
-    return {
-        "status": "ok",
-        "service": "pocket-gull-python-bridge",
-        "engine": "JAX / OpenXLA",
-        "accelerator": str(is_accel),
-    }
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# JAX / FLAX NNX CLINICAL RISK SCORING SCHEMAS & ENDPOINTS
-# ══════════════════════════════════════════════════════════════════════════════
-
-class VitalsPayload(BaseModel):
-    patient_id: str = Field(..., description="Anonymized patient UUID")
-    features: list[float] = Field(..., min_length=32, max_length=32, description="32-dimensional normalized clinical vitals feature vector")
-
-
-class BatchVitalsPayload(BaseModel):
-    batch: list[VitalsPayload] = Field(..., description="Batch of patient vitals payloads")
-
-
-class JaxRiskScoreResponse(BaseModel):
-    patient_id: str = Field(..., description="Anonymized patient UUID")
-    risk_score: float = Field(..., description="Sigmoid risk score [0.0, 1.0]")
-    acuity_level: str = Field(..., description="Clinical acuity: STAT_EMERGENCY | URGENT | ROUTINE")
-    latency_ms: float = Field(..., description="Inference latency in milliseconds")
-
-
-class JaxBatchScoreResponse(BaseModel):
-    results: list[JaxRiskScoreResponse] = Field(..., description="List of scored patient results")
-    total_latency_ms: float = Field(..., description="Total batch inference latency in milliseconds")
-
-
-def _classify_jax_acuity(score: float) -> str:
-    if score >= 0.75:
-        return "STAT_EMERGENCY"
-    elif score >= 0.40:
-        return "URGENT"
-    return "ROUTINE"
-
-
-@app.post("/v1/score", tags=["JAX ML"], response_model=JaxRiskScoreResponse)
-async def score_patient(payload: VitalsPayload) -> JaxRiskScoreResponse:
-    """Score a single patient feature vector using JIT-compiled JAX XLA engine."""
-    if jax_ml_state.engine is None:
-        raise HTTPException(
-            status_code=503,
-            detail="JAX Inference Engine is not initialized",
-        )
-    t0 = time.perf_counter()
-    try:
-        score = jax_ml_state.engine.predict(payload.features)
-    except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Inference execution failed: {str(exc)}",
-        )
-    latency_ms = (time.perf_counter() - t0) * 1000.0
-    return JaxRiskScoreResponse(
-        patient_id=payload.patient_id,
-        risk_score=round(score, 4),
-        acuity_level=_classify_jax_acuity(score),
-        latency_ms=round(latency_ms, 3),
-    )
-
-
-@app.post("/v1/score_batch", tags=["JAX ML"], response_model=JaxBatchScoreResponse)
-async def score_batch(payload: BatchVitalsPayload) -> JaxBatchScoreResponse:
-    """Score multiple patient feature vectors in parallel using vectorized JAX XLA engine."""
-    if jax_ml_state.engine is None:
-        raise HTTPException(
-            status_code=503,
-            detail="JAX Inference Engine is not initialized",
-        )
-    t0 = time.perf_counter()
-    if not payload.batch:
-        raise HTTPException(status_code=400, detail="Batch cannot be empty")
-    features_matrix = [item.features for item in payload.batch]
-    scores = jax_ml_state.engine.predict_batch(features_matrix)
-    results = [
-        JaxRiskScoreResponse(
-            patient_id=item.patient_id,
-            risk_score=round(s, 4),
-            acuity_level=_classify_jax_acuity(s),
-            latency_ms=0.0,
-        )
-        for item, s in zip(payload.batch, scores)
-    ]
-    total_latency = (time.perf_counter() - t0) * 1000.0
-    return JaxBatchScoreResponse(results=results, total_latency_ms=round(total_latency, 3))
+    return {"status": "ok", "service": "pocket-gull-python-bridge"}
 
 
 class GpuTelemetry(BaseModel):
@@ -349,12 +222,7 @@ async def get_hardware_telemetry() -> HardwareTelemetryResponse:
         import psutil  # type: ignore
         import platform
         cpu_val = psutil.cpu_percent(interval=None)
-        if isinstance(cpu_val, list):
-            cpu_percent = float(cpu_val[0]) if len(cpu_val) > 0 else 12.4
-        elif isinstance(cpu_val, (int, float)):
-            cpu_percent = float(cpu_val)
-        else:
-            cpu_percent = 12.4
+        cpu_percent = cpu_val if cpu_val else 12.4
         mem = psutil.virtual_memory()
         total_gb = round(mem.total / (1024**3), 1)
         used_gb = round(mem.used / (1024**3), 1)
@@ -1626,14 +1494,14 @@ class SurvivalCurveResponse(BaseModel):
 @app.post("/api/ml/survival-curve", tags=["Advanced Clinical ML"], response_model=SurvivalCurveResponse)
 async def predict_survival_curve(payload: SurvivalCurveRequest) -> SurvivalCurveResponse:
     """Predict dynamic multi-horizon time-to-event survival curves using Breslow baseline estimation."""
-    from survival_analysis_engine import CoxSurvivalEstimator
+    from pocketgull_api.survival_analysis_engine import CoxSurvivalEstimator
     
     model_path = os.path.join(os.path.dirname(__file__), 'models', 'survival_ckd_decompensation_model.joblib')
     if os.path.exists(model_path):
         import joblib
         model: CoxSurvivalEstimator = joblib.load(model_path)
     else:
-        from survival_analysis_engine import train_ckd_decompensation_survival_model
+        from pocketgull_api.survival_analysis_engine import train_ckd_decompensation_survival_model
         model = train_ckd_decompensation_survival_model()
 
     df = pd.DataFrame([{
@@ -1671,14 +1539,14 @@ class CausalTreatmentResponse(BaseModel):
 @app.post("/api/ml/causal-treatment-effect", tags=["Advanced Clinical ML"], response_model=CausalTreatmentResponse)
 async def predict_causal_treatment_effect(payload: CausalTreatmentRequest) -> CausalTreatmentResponse:
     """Predict counterfactual heterogeneous treatment effects with conformal 95% uncertainty bounds."""
-    from causal_treatment_engine import XLearnerCausalEstimator
+    from pocketgull_api.causal_treatment_engine import XLearnerCausalEstimator
     
     model_path = os.path.join(os.path.dirname(__file__), 'models', 'causal_treatment_optimizer.joblib')
     if os.path.exists(model_path):
         import joblib
         model: XLearnerCausalEstimator = joblib.load(model_path)
     else:
-        from causal_treatment_engine import train_vagal_breathing_causal_model
+        from pocketgull_api.causal_treatment_engine import train_vagal_breathing_causal_model
         model = train_vagal_breathing_causal_model()
 
     df = pd.DataFrame([{
@@ -1707,7 +1575,7 @@ class WaveformClassifyResponse(BaseModel):
 @app.post("/api/ml/classify-waveform", tags=["Advanced Clinical ML"], response_model=WaveformClassifyResponse)
 async def classify_raw_waveform(payload: WaveformClassifyRequest) -> WaveformClassifyResponse:
     """Classify 10-second ECG/PPG physiological waveforms with 1D-CNN temporal features."""
-    from waveform_1d_cnn import Waveform1DCNNClassifier
+    from pocketgull_api.waveform_1d_cnn import Waveform1DCNNClassifier
     clf = Waveform1DCNNClassifier()
     res = clf.classify_waveform(np.array(payload.signal))
     return WaveformClassifyResponse(**res)
@@ -1726,7 +1594,7 @@ class DrugHerbSynergyResponse(BaseModel):
 @app.post("/api/ml/drug-herb-synergy", tags=["Advanced Clinical ML"], response_model=DrugHerbSynergyResponse)
 async def evaluate_drug_herb_synergy(payload: DrugHerbSynergyRequest) -> DrugHerbSynergyResponse:
     """Evaluate CYP450 enzyme and P-gp transport interactions across multi-drug multi-herb regimens."""
-    from graph_synergy_engine import PharmacokineticGraphSynergyEngine
+    from pocketgull_api.graph_synergy_engine import PharmacokineticGraphSynergyEngine
     engine = PharmacokineticGraphSynergyEngine()
     res = engine.evaluate_regimen(payload.drugs, payload.botanicals)
     return DrugHerbSynergyResponse(**res)
@@ -1745,7 +1613,7 @@ class ComorbidityPropagationResponse(BaseModel):
 @app.post("/api/ml/comorbidity-propagation", tags=["Advanced Clinical ML"], response_model=ComorbidityPropagationResponse)
 async def propagate_comorbidities(payload: ComorbidityPropagationRequest) -> ComorbidityPropagationResponse:
     """Calculate multi-morbid conditional risk propagation and 3D anatomical tension hotspots."""
-    from cooccurrence_prior_engine import BayesianCooccurrenceEngine
+    from pocketgull_api.cooccurrence_prior_engine import BayesianCooccurrenceEngine
     engine = BayesianCooccurrenceEngine()
     res = engine.propagate_risks(payload.active_positive_instruments)
     return ComorbidityPropagationResponse(**res)
@@ -1792,11 +1660,12 @@ class SmartCarePlanExportRequest(BaseModel):
 @app.post("/api/fhir/smart/export-careplan", tags=["SMART on FHIR"])
 async def smart_careplan_export(payload: SmartCarePlanExportRequest) -> dict[str, Any]:
     """Serializes and writes back signed CarePlan to hospital EHR as FHIR R4 CarePlan and DocumentReference."""
-    now_iso = datetime.now(timezone.utc).isoformat()
+    from datetime import datetime
+    now_iso = datetime.utcnow().isoformat() + "Z"
 
     fhir_careplan = {
         "resourceType": "CarePlan",
-        "id": f"careplan-{payload.patient_id}-{int(datetime.now(timezone.utc).timestamp())}",
+        "id": f"careplan-{payload.patient_id}-{int(datetime.utcnow().timestamp())}",
         "status": "active",
         "intent": "plan",
         "title": payload.care_plan_title,
@@ -1833,7 +1702,7 @@ async def stream_live_telemetry(
 ) -> StreamingResponse:
     """Stream continuous 1-second interval live biosignals (HRV RMSSD, 1D-CNN Rhythm, and Vagal Coherence) via SSE."""
     async def event_generator() -> AsyncGenerator[str, None]:
-        from waveform_1d_cnn import Waveform1DCNNClassifier
+        from pocketgull_api.waveform_1d_cnn import Waveform1DCNNClassifier
         clf = Waveform1DCNNClassifier()
 
         for sec in range(sessions_seconds):
@@ -1885,7 +1754,7 @@ class ChronobiologyRequest(BaseModel):
 @app.post("/api/ml/chronobiology-matrix", tags=["Clinical Lenses"])
 async def evaluate_chronobiology_lens(payload: ChronobiologyRequest) -> dict[str, Any]:
     """Calculate circadian oscillator phase, DLMO clock time, T_min, and social jetlag protocol."""
-    from engines.chronobiology_engine import ChronobiologyMatrixEngine
+    from pocketgull_api.engines.chronobiology_engine import ChronobiologyMatrixEngine
     engine = ChronobiologyMatrixEngine()
     return engine.evaluate_chronobiology(
         wake_time_workday=payload.wake_time_workday,
@@ -1916,7 +1785,7 @@ class EpigeneticLongevityRequest(BaseModel):
 @app.post("/api/ml/epigenetic-longevity", tags=["Clinical Lenses"])
 async def evaluate_epigenetic_longevity_lens(payload: EpigeneticLongevityRequest) -> dict[str, Any]:
     """Calculate multi-system PhenoAge, Delta Age, 5-organ senescence velocity, and QALY extensions."""
-    from engines.epigenetic_longevity_engine import EpigeneticLongevityEngine
+    from pocketgull_api.engines.epigenetic_longevity_engine import EpigeneticLongevityEngine
     engine = EpigeneticLongevityEngine()
     return engine.compute_phenoage(
         chronological_age=payload.chronological_age,
@@ -1950,7 +1819,7 @@ class PerinatalTrajectoryRequest(BaseModel):
 @app.post("/api/ml/perinatal-trajectory", tags=["Clinical Lenses"])
 async def evaluate_perinatal_trajectory_lens(payload: PerinatalTrajectoryRequest) -> dict[str, Any]:
     """Calculate maternal Mean Arterial Pressure (MAP), preeclampsia risk, EPDS slope, and lactation needs."""
-    from engines.perinatal_trajectory_engine import PerinatalTrajectoryEngine
+    from pocketgull_api.engines.perinatal_trajectory_engine import PerinatalTrajectoryEngine
     engine = PerinatalTrajectoryEngine()
     return engine.evaluate_maternal_trajectory(
         gestational_age_weeks=payload.gestational_age_weeks,
@@ -1978,7 +1847,7 @@ class PeriodontalBridgeRequest(BaseModel):
 @app.post("/api/ml/periodontal-systemic-bridge", tags=["Clinical Lenses"])
 async def evaluate_periodontal_bridge_lens(payload: PeriodontalBridgeRequest) -> dict[str, Any]:
     """Calculate Periodontal Inflammatory Surface Area (PISA), systemic bacteremia spillover, and CIMT risk."""
-    from engines.periodontal_systemic_bridge_engine import PeriodontalSystemicBridgeEngine
+    from pocketgull_api.engines.periodontal_systemic_bridge_engine import PeriodontalSystemicBridgeEngine
     engine = PeriodontalSystemicBridgeEngine()
     return engine.evaluate_oral_systemic_axis(
         bleeding_on_probing_pct=payload.bleeding_on_probing_pct,
@@ -2005,7 +1874,7 @@ class TransgenerationalStewardshipRequest(BaseModel):
 @app.post("/api/ml/transgenerational-stewardship", tags=["Clinical Lenses"])
 async def evaluate_transgenerational_stewardship_lens(payload: TransgenerationalStewardshipRequest) -> dict[str, Any]:
     """Calculate cumulative EDC xenobiotic index, parental germline resilience, and 90-day gamete countdown."""
-    from engines.transgenerational_stewardship_engine import TransgenerationalStewardshipEngine
+    from pocketgull_api.engines.transgenerational_stewardship_engine import TransgenerationalStewardshipEngine
     engine = TransgenerationalStewardshipEngine()
     return engine.evaluate_stewardship_profile(
         tap_water_unfiltered=payload.tap_water_unfiltered,
@@ -2039,7 +1908,7 @@ class BiophysicalTwinRequest(BaseModel):
 @app.post("/api/ml/biophysical-twin-simulate", tags=["Breakthrough Innovations"])
 async def simulate_biophysical_twin(payload: BiophysicalTwinRequest) -> dict[str, Any]:
     """Run in-silico 24-hour predictive biophysical twin simulation across sleep pressure, cortisol, and alertness."""
-    from engines.biophysical_twin_engine import BiophysicalTwinEngine
+    from pocketgull_api.engines.biophysical_twin_engine import BiophysicalTwinEngine
     engine = BiophysicalTwinEngine()
     return engine.simulate_24h_twin(
         baseline_resting_hr=payload.baseline_resting_hr,
@@ -2063,7 +1932,7 @@ class ContactlessBiomarkersRequest(BaseModel):
 @app.post("/api/ml/contactless-biomarkers", tags=["Breakthrough Innovations"])
 async def extract_contactless_biomarkers(payload: ContactlessBiomarkersRequest) -> dict[str, Any]:
     """Extract contactless optical rPPG pulse telemetry and vocal acoustic jitter/stress biomarkers."""
-    from engines.edge_contactless_biomarkers_engine import ContactlessBiomarkersEngine
+    from pocketgull_api.engines.edge_contactless_biomarkers_engine import ContactlessBiomarkersEngine
     engine = ContactlessBiomarkersEngine()
     return engine.extract_rppg_and_vocal_biomarkers(
         rgb_mean_signals=payload.rgb_mean_signals if len(payload.rgb_mean_signals) > 0 else None,
@@ -2082,7 +1951,7 @@ class DeprescribingRequest(BaseModel):
 @app.post("/api/ml/deprescribing-simulation", tags=["Breakthrough Innovations"])
 async def simulate_deprescribing(payload: DeprescribingRequest) -> dict[str, Any]:
     """Simulate de-prescribing scenarios, prescribing cascade unwinding, ACB burden, and fall risk reduction."""
-    from engines.deprescribing_sandbox_engine import DeprescribingSandboxEngine
+    from pocketgull_api.engines.deprescribing_sandbox_engine import DeprescribingSandboxEngine
     engine = DeprescribingSandboxEngine()
     return engine.simulate_deprescribing(
         current_medications=payload.current_medications,
@@ -2104,7 +1973,7 @@ class Nof1TrialRequest(BaseModel):
 @app.post("/api/ml/nof1-trial-design", tags=["Breakthrough Innovations"])
 async def design_nof1_trial(payload: Nof1TrialRequest) -> dict[str, Any]:
     """Design randomized A-B-A-B crossover N-of-1 trial protocol and calculate empirical Bayesian efficacy."""
-    from engines.nof1_trial_designer_engine import Nof1TrialDesignerEngine
+    from pocketgull_api.engines.nof1_trial_designer_engine import Nof1TrialDesignerEngine
     engine = Nof1TrialDesignerEngine()
     return engine.design_and_analyze_nof1_trial(
         intervention_name=payload.intervention_name,
@@ -2128,7 +1997,7 @@ class EpigeneticLineageRequest(BaseModel):
 @app.post("/api/ml/epigenetic-lineage", tags=["Breakthrough Innovations"])
 async def evaluate_epigenetic_lineage(payload: EpigeneticLineageRequest) -> dict[str, Any]:
     """Model 3-generation transgenerational epigenetic lineage tree and germline transmission interruption."""
-    from engines.epigenetic_lineage_engine import EpigeneticLineageEngine
+    from pocketgull_api.engines.epigenetic_lineage_engine import EpigeneticLineageEngine
     engine = EpigeneticLineageEngine()
     return engine.evaluate_lineage_tree(
         g1_grandparent_cardiometabolic_history=payload.g1_grandparent_cardiometabolic_history,
@@ -2148,7 +2017,7 @@ class GenerateArticleRequest(BaseModel):
 @app.post("/api/ml/generate-patient-article", tags=["Clinical Publishing"])
 async def generate_patient_article(payload: GenerateArticleRequest) -> dict[str, Any]:
     """Generate patient-centered, evidence-grounded educational article with SEO schema and action plan."""
-    from engines.clinical_publishing_engine import ClinicalPublishingEngine
+    from pocketgull_api.engines.clinical_publishing_engine import ClinicalPublishingEngine
     engine = ClinicalPublishingEngine()
     return engine.generate_article(topic_key=payload.topic_key, target_audience=payload.target_audience)
 
@@ -2171,7 +2040,7 @@ class TcmMeridianRequest(BaseModel):
 @app.post("/api/ml/tcm-meridian-evaluate", tags=["Tri-Paradigm Integrative Medicine"])
 async def evaluate_tcm_meridian(payload: TcmMeridianRequest) -> dict[str, Any]:
     """Evaluate 5-Element Wu Xing balance, 12 Jing-Luo meridians, Zang-Fu disharmony, and Acupoints."""
-    from engines.tcm_meridian_engine import TcmMeridianEngine
+    from pocketgull_api.engines.tcm_meridian_engine import TcmMeridianEngine
     engine = TcmMeridianEngine()
     return engine.evaluate_tcm_profile(
         stress_irritability_level=payload.stress_irritability_level,
@@ -2197,7 +2066,7 @@ class AyurvedicTridoshaRequest(BaseModel):
 @app.post("/api/ml/ayurvedic-tridosha-evaluate", tags=["Tri-Paradigm Integrative Medicine"])
 async def evaluate_ayurvedic_tridosha(payload: AyurvedicTridoshaRequest) -> dict[str, Any]:
     """Evaluate Ayurvedic Tridosha (V-P-K), 7 Dhatu tissue ladder, Agni fire, Ama toxins, and Rasayana therapy."""
-    from engines.ayurvedic_tridosha_engine import AyurvedicTridoshaEngine
+    from pocketgull_api.engines.ayurvedic_tridosha_engine import AyurvedicTridoshaEngine
     engine = AyurvedicTridoshaEngine()
     return engine.evaluate_ayurvedic_profile(
         vata_symptoms_score=payload.vata_symptoms_score,
@@ -2218,7 +2087,7 @@ class AllopathicBridgeRequest(BaseModel):
 @app.post("/api/ml/allopathic-integrative-bridge", tags=["Tri-Paradigm Integrative Medicine"])
 async def evaluate_allopathic_integrative_bridge(payload: AllopathicBridgeRequest) -> dict[str, Any]:
     """Cross-triangulate Allopathic pharmaceuticals with TCM and Ayurvedic botanicals (CYP450, P-gp, Thermal)."""
-    from engines.allopathic_integrative_bridge_engine import AllopathicIntegrativeBridgeEngine
+    from pocketgull_api.engines.allopathic_integrative_bridge_engine import AllopathicIntegrativeBridgeEngine
     engine = AllopathicIntegrativeBridgeEngine()
     return engine.evaluate_tri_paradigm_safety(
         current_allopathic_drugs=payload.current_allopathic_drugs,
@@ -2247,7 +2116,7 @@ async def compute_multiscale_entropy_and_tone(payload: DspEntropyToneRequest) ->
     diffs = np.diff(rr)
     rmssd = float(np.sqrt(np.mean(diffs ** 2)))
     mean_rr = float(np.mean(rr))
-    hr_bpm = 60000.0 / mean_rr if mean_rr > 0 else 72.0
+    hr_bpm = float(60000.0 / mean_rr) if mean_rr > 0 else 72.0
 
     # Multiscale Entropy approximation across tau scales
     mse_scales: dict[str, float] = {}
@@ -2335,62 +2204,6 @@ async def infer_gemma3_edge(payload: Gemma3EdgeInferRequest) -> dict[str, Any]:
         "prompt_tokens_evaluated": len(structured_directive.split()),
         "completion_tokens_generated": len(generated_text.split())
     }
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SKEPTICAL EPISTEMOLOGY: H0 FALSIFICATION & CONFORMAL CALIBRATION
-# ══════════════════════════════════════════════════════════════════════════════
-
-@app.post("/v1/falsify", response_model=FalsificationResult, tags=["Skeptical Epistemology"])
-@app.post("/api/ml/falsify", response_model=FalsificationResult, tags=["Skeptical Epistemology"])
-async def evaluate_clinical_falsification(payload: FalsificationRequest) -> FalsificationResult:
-    """Vectorized Monte Carlo H0 Null-Hypothesis Falsification and Cochrane RoB 2 Risk of Bias analysis."""
-    return falsification_engine.evaluate_falsification(payload)
-
-
-@app.post("/v1/calibrate", response_model=CalibrationResult, tags=["Skeptical Epistemology"])
-@app.post("/api/ml/calibrate", response_model=CalibrationResult, tags=["Skeptical Epistemology"])
-async def calibrate_clinical_uncertainty(payload: CalibrationRequest) -> CalibrationResult:
-    """Conformal prediction set calibration with 95% coverage guarantee and epistemic deferral flags."""
-    return uncertainty_calibrator.calibrate(payload)
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# JAX HIGH-THROUGHPUT MRI DATA & COUNTERFACTUAL COHORT ENGINE
-# ══════════════════════════════════════════════════════════════════════════════
-
-class SyntheticCohortRequest(BaseModel):
-    num_samples: int = Field(default=10000, description="Number of synthetic patient feature profiles to generate")
-    seed: int = Field(default=42, description="PRNG seed for reproducible generation")
-    mechanism_balance: bool = Field(default=True, description="Enforce equal distribution across the 4 trauma vectors")
-
-
-class SyntheticCohortResponse(BaseModel):
-    num_samples: int
-    generation_time_ms: float
-    feature_matrix_shape: list[int]
-    target_matrix_shape: list[int]
-    class_prevalences: dict[str, float]
-
-
-@app.post("/v1/mri/synthesize-cohort", response_model=SyntheticCohortResponse, tags=["JAX MRI Data Engine"])
-@app.post("/api/ml/mri/synthesize-cohort", response_model=SyntheticCohortResponse, tags=["JAX MRI Data Engine"])
-async def synthesize_orthopedic_cohort(payload: SyntheticCohortRequest) -> SyntheticCohortResponse:
-    """High-throughput JAX/NumPy generation of balanced multi-modal orthopedic patient profiles in <50ms."""
-    result = CounterfactualCohortGenerator.generate_cohort(
-        num_samples=payload.num_samples,
-        seed=payload.seed,
-        mechanism_balance=payload.mechanism_balance,
-    )
-    return SyntheticCohortResponse(
-        num_samples=result["num_samples"],
-        generation_time_ms=result["generation_time_ms"],
-        feature_matrix_shape=result["feature_matrix_shape"],
-        target_matrix_shape=result["target_matrix_shape"],
-        class_prevalences=result["class_prevalences"],
-    )
-
-
 
 
 

@@ -24,10 +24,7 @@ export type FineTuningParadigm =
   | 'triage_acuity_routing'
   | 'multimodal_wound_derm_vision'
   | 'amazon_affiliate_egress_guard'
-  | 'post_quantum_fhir_seal'
-  | 'nih_medquad_qa'
-  | 'who_mhgap_triage'
-  | 'nih_clinicaltrials_protocol';
+  | 'post_quantum_fhir_seal';
 
 export interface IFineTuningRecord {
   paradigm: FineTuningParadigm;
@@ -636,64 +633,6 @@ export function generateAllParadigmsDataset(): IFineTuningRecord[] {
       }, null, 2),
       chosen: 'Applies post-quantum cryptographic envelope with SHA-256 state hashing and HIPAA §164.514 Safe Harbor de-identification verification.',
       rejected: 'Exports raw clinical history in unencrypted JSON with patient direct identifiers.'
-    },
-
-    // 24. NIH MedQuAD Clinical Q&A & Socratic Health Literacy
-    {
-      paradigm: 'nih_medquad_qa',
-      instruction: 'Formulate evidence-grounded clinical guidance for Stage 1 Hypertension lifestyle interventions according to NIH NHLBI guidelines.',
-      input: JSON.stringify({ indication: 'Stage 1 Essential Hypertension', bpRange: '134/86 mmHg', targetGuidelines: 'NIH NHLBI / ACC / AHA' }, null, 2),
-      output: JSON.stringify({
-        clinicalDirective: 'NIH NHLBI / ACC / AHA 2017 Consensus',
-        whereYouStandToday: 'Stage 1 Essential Hypertension (130-139 / 80-89 mmHg).',
-        lifestyleInterventions: [
-          'DASH diet pattern: Sodium restriction <2300 mg/day (optimal <1500 mg/day).',
-          'Potassium optimization 3500-5000 mg/day from whole dietary sources.',
-          'Aerobic conditioning 150 min/week moderate intensity.'
-        ],
-        pharmacotherapyTrigger: 'Initiate monotherapy (Chlorthalidone 12.5 mg or Amlodipine 5 mg) if 10-year ASCVD risk >= 10% or after 3-month lifestyle trial.',
-        evidenceTier: 'Level A (SPRINT & ACCORD Trials)'
-      }, null, 2),
-      chosen: 'Provides structured NIH NHLBI DASH sodium thresholds, 150 min aerobic conditioning targets, and ASCVD risk stratification triggers.',
-      rejected: 'Recommends untested herbal mega-dosing to cure all hypertension overnight.'
-    },
-
-    // 25. WHO mhGAP Stepped-Care Triage & Mental Health Protocol
-    {
-      paradigm: 'who_mhgap_triage',
-      instruction: 'Structure stepped-care triage and non-pharmacological stabilization for acute panic presentation adhering to WHO mhGAP protocols.',
-      input: JSON.stringify({ presentingSymptoms: 'Acute diaphoresis, dyspnea, palpitations, intense impending doom', age: 28, cardiacRiskFactors: 'None' }, null, 2),
-      output: JSON.stringify({
-        triageDirectives: {
-          organicRuleOut: 'Verify absence of red flags (substance toxicity, thyroid crisis, ACS).',
-          nonPharmacologicalStabilization: '0.1 Hz Bio-rhythmic parasympathetic pacing (4s inhale / 6s exhale) + 5-4-3-2-1 sensory grounding.',
-          pharmacologicalGuardrails: 'Avoid routine long-term benzodiazepines due to severe tolerance/dependence. If recurring Panic Disorder, consider first-line SSRI (Sertraline 25 mg titrated to 50 mg PO daily).'
-        },
-        whoModule: 'WHO mhGAP Version 2.0 (Anxiety & Panic Protocol)',
-        evidenceTier: 'Level A (WHO Consensus / NICE CG113)'
-      }, null, 2),
-      chosen: 'Grounds acute panic triage in organic rule-outs, parasympathetic 0.1 Hz pacing, and long-term benzodiazepine avoidance.',
-      rejected: 'Immediately orders chronic high-dose benzodiazepines without psychological intervention.'
-    },
-
-    // 26. NIH ClinicalTrials.gov Protocol Synthesis & Pre-Screening
-    {
-      paradigm: 'nih_clinicaltrials_protocol',
-      instruction: 'Extract and validate structured clinical research parameters from a ClinicalTrials.gov oncology study protocol.',
-      input: JSON.stringify({ nctId: 'NCT04280788', phase: 'Phase 3', disease: 'Metastatic Non-Small Cell Lung Cancer' }, null, 2),
-      output: JSON.stringify({
-        protocolSchema: {
-          nctId: 'NCT04280788',
-          studyDesign: 'Quadruple-Blind Randomized Controlled Trial',
-          inclusionCriteria: ['Histologically confirmed NSCLC', 'ECOG 0-1', 'Adequate hematologic/renal function'],
-          exclusionCriteria: ['Active untreated CNS metastases', 'Prior target inhibitor within 28 days'],
-          primaryOutcome: 'Progression-Free Survival (PFS) at 12 months',
-          secondaryOutcomes: ['Overall Survival (OS)', 'Objective Response Rate (ORR)']
-        },
-        evidenceGrade: 'Level A (NIH Registry Standard)'
-      }, null, 2),
-      chosen: 'Synthesizes standardized NCT schema, inclusion/exclusion bounds, and primary endpoints.',
-      rejected: 'Extracts unstructured text without schema validation or safety exclusion criteria.'
     }
   ];
 

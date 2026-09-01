@@ -1,6 +1,6 @@
 {
   "name": "pocket-gull",
-  "version": "1.31.0",
+  "version": "1.27.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api"
@@ -82,7 +82,6 @@
     "models:retrain": "node --no-deprecation scripts/retrain-models.mjs",
     "dataset:export": "node --no-deprecation scripts/export_fine_tuning_dataset.mjs",
     "sentinel:audit": "node --no-deprecation scripts/sentinel_security_guard.mjs",
-    "msa:audit": "node --no-deprecation scripts/msa_governance_guard.mjs",
     "taint:scan": "node --no-deprecation scripts/taint-analysis-guard.mjs",
     "evals:clinical": "node --no-deprecation scripts/run-clinical-evals.mjs",
     "doctor:wsl": "node --no-deprecation scripts/wsl_ai_doctor.mjs",
@@ -93,12 +92,6 @@
     "build": "node --no-deprecation scripts/build-all.mjs",
     "deploy": "node --no-deprecation scripts/deploy-production.mjs",
     "deploy:all": "node --no-deprecation scripts/deploy-production.mjs",
-    "gh:watch": "gh run watch",
-    "gh:status": "gh run list --limit 5",
-    "gh:failed": "gh run view --log-failed",
-    "gh:pr": "gh pr create --fill",
-    "gh:release": "node --no-deprecation scripts/gh-release.mjs",
-    "gh:attest:verify": "gh attestation verify oci://ghcr.io/pocketgull-app/pocketgull:latest --owner pocketgull-app",
     "dart:fonts": "dart run scripts/dart/deploy_fonts.dart",
     "dart:parity": "dart run scripts/dart/generate_parity.dart",
     "dart:docs": "dart run scripts/dart/generate_docs.dart",
@@ -125,9 +118,7 @@
     "precommit": "node scripts/pre-commit-check.cjs",
     "prepare": "node -e \"try { require('husky')() } catch (e) {}\" || true",
     "test": "vitest run --config vitest.config.ts && node scripts/run-python-tests.mjs",
-    "test:fast": "vitest run --changed",
     "test:watch": "vitest",
-    "typecheck:fast": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
     "test:python": "node scripts/run-python-tests.mjs",
     "test:e2e:ui": "playwright test --ui",
     "dns:update": "node scripts/update-porkbun-dns.js",

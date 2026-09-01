@@ -11,11 +11,6 @@ export * from './bionic-reading.service';
 export * from './skeptical-epistemology.service';
 export * from './clinical-assessments/clinical-assessments.service';
 export * from './ybocs/ybocs.service';
-export * from './austere-research.service';
-export * from './ismp-safety-guard.service';
-export * from './onnx-webgpu-engine.service';
-export * from './rx-guard.service';
-export * from './fhir-r4-bundle-export.service';
 
 // FHIR Domain Services Barrel Export
 export * from './fhir/fhir-integration.service';

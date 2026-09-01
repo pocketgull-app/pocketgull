@@ -38,4 +38,4 @@ export const SOLFEGGIO_CATALOG: ISolfeggioTone[] = [
 
 export type ColorTemperature = 'indigo' | 'emerald' | 'violet' | 'rose-earth';
 export type ViewMode = 'clinician' | 'patient';
-export type ProtocolMode = 'clinical' | 'athletic' | 'qeeg-closed-loop' | 'sleep-insomnia' | 'contactless-rppg' | 'spatial-geometry' | 'dyadic-sync';
+export type ProtocolMode = 'clinical' | 'athletic';

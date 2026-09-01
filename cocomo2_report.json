@@ -1,46 +1,71 @@
 {
-  "timestamp": "2026-09-01T01:05:39.089Z",
+  "timestamp": "2026-07-28T03:29:24.767Z",
   "metrics": {
-    "totalFiles": 6257,
-    "totalLines": 388326,
-    "totalKSLOC": 388.326,
-    "executableKSLOC": 280.795,
+    "totalFiles": 863,
+    "totalLines": 312981,
+    "totalKSLOC": 312.98,
     "languages": {
       "typescript": {
-        "files": 1287,
-        "lines": 222642
+        "ext": [
+          ".ts"
+        ],
+        "lines": 103770,
+        "files": 404,
+        "ksloc": 103.77
       },
       "dart": {
-        "files": 201,
-        "lines": 33890
+        "ext": [
+          ".dart"
+        ],
+        "lines": 28853,
+        "files": 167,
+        "ksloc": 28.853
       },
       "python": {
-        "files": 141,
-        "lines": 19381
+        "ext": [
+          ".py"
+        ],
+        "lines": 9430,
+        "files": 56,
+        "ksloc": 9.43
       },
       "css": {
-        "files": 12,
-        "lines": 4882
+        "ext": [
+          ".css"
+        ],
+        "lines": 6072,
+        "files": 9,
+        "ksloc": 6.072
       },
       "json_yaml": {
-        "files": 4457,
-        "lines": 94074
+        "ext": [
+          ".json",
+          ".yml",
+          ".yaml"
+        ],
+        "lines": 158990,
+        "files": 156,
+        "ksloc": 158.99
       },
       "markdown": {
-        "files": 159,
-        "lines": 13457
+        "ext": [
+          ".md"
+        ],
+        "lines": 5866,
+        "files": 71,
+        "ksloc": 5.866
       }
     }
   },
   "cocomo2": {
-    "effortPersonMonths": 944.03,
-    "scheduleMonths": 28.22,
-    "averageStaffing": 33.4,
-    "totalCostUSD": 14160462,
+    "effortPersonMonths": 1052.13,
+    "scheduleMonths": 29.15,
+    "averageStaffing": 36.1,
+    "totalCostUSD": 15781885,
     "parameters": {
       "A": 2.94,
-      "B": 0.999,
-      "D": 0.298,
+      "B": 0.91,
+      "E": 0.999,
       "EAF": 1.15,
       "monthlyBurdenedRateUSD": 15000
     }

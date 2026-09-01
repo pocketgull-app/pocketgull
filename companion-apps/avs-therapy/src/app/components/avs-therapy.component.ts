@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PatientStateService } from '../services/patient-state.service';
 import { ClinicalContextAvsService } from '../services/clinical-context-avs.service';
 import { LifestyleAdjunctService } from '../services/lifestyle-adjunct.service';
+import { BreathGuideComponent } from './breath-guide.component';
 import { AthleticProtocolService } from '../services/athletic-protocol.service';
 import { AthleticState } from '../services/patient.types';
 import { PythonBridgeService } from '../services/python-bridge.service';
@@ -18,30 +19,13 @@ import { SessionControlsComponent } from './session-controls.component';
 import { LifestyleAdjunctPanelComponent } from './lifestyle-adjunct-panel.component';
 import { PatientWaitingComponent } from './patient-waiting.component';
 
-// Next-Gen Innovation Components
-import { QeegHudComponent } from './qeeg-hud.component';
-import { SleepInsomniaPanelComponent } from './sleep-insomnia-panel.component';
-import { RppgCameraHudComponent } from './rppg-camera-hud.component';
-import { WebglSacredGeometryComponent } from './webgl-sacred-geometry.component';
-import { DyadicSyncHudComponent } from './dyadic-sync-hud.component';
-import { AvsExportModalComponent } from './avs-export-modal.component';
-
-// Next-Gen Services
-import { QeegEntrainmentService } from '../services/qeeg-entrainment.service';
-import { SleepInsomniaProtocolService } from '../services/sleep-insomnia-protocol.service';
-import { ContactlessRppgService } from '../services/contactless-rppg.service';
-import { SpatialAmbisonicsService } from '../services/spatial-ambisonics.service';
-import { DyadicCoRegulationService } from '../services/dyadic-co-regulation.service';
-import { AvsSessionScribeService } from '../services/avs-session-scribe.service';
-
-export type AvsInnovationTab = 'qeeg' | 'sleep' | 'rppg' | 'spatial' | 'dyadic' | 'coreg';
-
 @Component({
   selector: 'app-avs-therapy',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
+    BreathGuideComponent,
     AvsHeaderComponent,
     AvsVisualizerComponent,
     ClinicianConsoleComponent,
@@ -49,13 +33,7 @@ export type AvsInnovationTab = 'qeeg' | 'sleep' | 'rppg' | 'spatial' | 'dyadic' 
     CoRegulationPanelComponent,
     SessionControlsComponent,
     LifestyleAdjunctPanelComponent,
-    PatientWaitingComponent,
-    QeegHudComponent,
-    SleepInsomniaPanelComponent,
-    RppgCameraHudComponent,
-    WebglSacredGeometryComponent,
-    DyadicSyncHudComponent,
-    AvsExportModalComponent
+    PatientWaitingComponent
   ],
   templateUrl: './avs-therapy.component.html',
   styleUrl: './avs-therapy.component.css'
@@ -66,25 +44,12 @@ export class AvsTherapyComponent implements OnDestroy {
   readonly lifestyleAdj = inject(LifestyleAdjunctService);
   readonly athleticService = inject(AthleticProtocolService);
   private pythonBridge = inject(PythonBridgeService);
-
-  // Injected Next-Gen Services
-  readonly qeeg = inject(QeegEntrainmentService);
-  readonly sleep = inject(SleepInsomniaProtocolService);
-  readonly rppg = inject(ContactlessRppgService);
-  readonly spatial = inject(SpatialAmbisonicsService);
-  readonly dyadic = inject(DyadicCoRegulationService);
-  readonly scribe = inject(AvsSessionScribeService);
-
   private isBrowser = false;
 
   protocolMode = signal<ProtocolMode>('clinical');
   viewMode = signal<ViewMode>('clinician');
   athleticSport = signal('Sprinting');
   athleticState = signal<AthleticState>('priming');
-
-  // Navigation tab for the 6 next-gen clinical innovations
-  activeInnovationTab = signal<AvsInnovationTab>('qeeg');
-  isExportModalOpen = signal<boolean>(false);
 
   // --- Dynamic Telemetry & Settings Signals ---
   isActive = signal(false);
@@ -116,7 +81,7 @@ export class AvsTherapyComponent implements OnDestroy {
     if (this.isBrowser) {
       this.hasVibrator = !!navigator.vibrate;
 
-      // Closed-loop Gradient Tuning: Adjust targets dynamically based on physiological state deviations
+      // Closed-loop Gradient Tuning: Adjust targets dynamically based on physiological state deviations (RPP, heart rate)
       effect(() => {
         const liveVitals = this.patientState.vitals();
         if (liveVitals.hr) {
@@ -127,26 +92,36 @@ export class AvsTherapyComponent implements OnDestroy {
           if (!isNaN(hrVal) && !isNaN(sbpVal)) {
             const rpp = hrVal * sbpVal;
 
+            // If the session is active, dynamically adjust on-the-fly to guide biometrics to target
             if (this.isActive()) {
               if (rpp > 12000 || hrVal > 85) {
+                // High myocardial workload or tachycardia: step down target frequency and respiration rate
                 this.targetWave.set('theta');
                 this.targetBreathingRate.set(5.5);
                 this.colorTemp.set('violet');
               } else if (hrVal < 55 || sbpVal < 100) {
+                // Bradycardia or Hypotension: step up target frequency to maintain safe alertness
                 this.targetWave.set('alpha');
                 this.targetBreathingRate.set(6.5);
                 this.colorTemp.set('emerald');
               } else {
+                // Baseline target
                 this.targetWave.set('alpha');
                 this.targetBreathingRate.set(6.0);
                 this.colorTemp.set('indigo');
+              }
+            } else {
+              // Standby default recommendations
+              if (rpp > 12000 || hrVal > 85) {
+                this.targetWave.set('theta');
+                this.targetBreathingRate.set(5.5);
               }
             }
           }
         }
       }, { allowSignalWrites: true });
 
-      // Synchronize active AVS session state with PatientStateService
+      // Synchronize active AVS session state with the global PatientStateService for 3D body viewer entrainment
       effect(() => {
         const active = this.isActive();
         const rate = this.targetBreathingRate();
@@ -163,15 +138,6 @@ export class AvsTherapyComponent implements OnDestroy {
 
   // --- Computed Helpers ---
   targetBrainwaveFrequencyHz = computed(() => {
-    // If closed-loop qEEG is active, reflect real-time adaptive iAPF / SMR frequency
-    if (this.activeInnovationTab() === 'qeeg') {
-      return this.qeeg.targetFrequencyHz();
-    }
-    // If sleep insomnia engine is active, reflect phase-dependent curve
-    if (this.activeInnovationTab() === 'sleep') {
-      return this.sleep.dynamicTargetHz();
-    }
-
     const custom = this.customFrequency();
     if (custom !== null) return custom;
     const profile = WAVE_PROFILES.find(w => w.id === this.targetWave());
@@ -188,34 +154,25 @@ export class AvsTherapyComponent implements OnDestroy {
   });
 
   currentBaseFrequency = computed(() => {
+    // Dynamically adjust carrier frequency based on target wave for optimal resonance
     switch (this.targetWave()) {
-      case 'delta': return 150;
-      case 'theta': return 200;
-      case 'alpha': return 250;
-      case 'beta': return 350;
+      case 'delta': return 150; // Low frequency base for somatic resonance
+      case 'theta': return 200; // Calming frequency
+      case 'alpha': return 250; // Meditative balance
+      case 'beta': return 350;  // Focus-enhancing higher frequency
       default: return 200;
     }
   });
 
   pulseIntervalMs = computed(() => {
+    // Breathing pacing in milliseconds per complete cycle
     return Math.round((60 / this.targetBreathingRate()) * 1000);
   });
-
-  setInnovationTab(tab: AvsInnovationTab): void {
-    this.activeInnovationTab.set(tab);
-  }
-
-  openExportModal(): void {
-    this.isExportModalOpen.set(true);
-  }
-
-  closeExportModal(): void {
-    this.isExportModalOpen.set(false);
-  }
 
   // --- Event Handlers for UI Sliders ---
   onHrSliderChange(value: number) {
     this.targetHr.set(value);
+
     if (this.isActive() && this.voiceEnabled()) {
       this.speakGuidance("Target heart rate updated by practitioner. Directing entrainment toward " + value + " beats per minute.");
     }
@@ -223,6 +180,7 @@ export class AvsTherapyComponent implements OnDestroy {
 
   onBreathingSliderChange(value: number) {
     this.targetBreathingRate.set(value);
+
     if (this.isActive() && this.voiceEnabled()) {
       this.speakGuidance("Respiratory pacing adjusted. Breathing cycle is now set to " + value.toFixed(1) + " breaths per minute.");
     }
@@ -245,21 +203,21 @@ export class AvsTherapyComponent implements OnDestroy {
     }
   }
 
-  selectWaveProfile(wave: BrainwaveFrequency) {
-    this.targetWave.set(wave);
-    this.customFrequency.set(null);
-    if (this.isActive()) {
-      this.restartOscillators();
-      if (this.voiceEnabled()) {
-        this.speakGuidance(`Brainwave target updated to ${wave.toUpperCase()} frequency profile.`);
-      }
-    }
-  }
+  // --- Co-Regulation Protocol Handlers ---
 
+  /**
+   * Invoke Gemini to generate a personalized AVS co-regulation protocol
+   * from the patient's clinical context (PTSD, occupation, reason for visit).
+   * Falls back to a deterministic heuristic if Gemini is unavailable.
+   */
   async generateCoRegProtocol(): Promise<void> {
     await this.contextAvs.generateContextualProtocol();
   }
 
+  /**
+   * Apply the currently generated co-regulation protocol to the AVS session
+   * controls and start the session.
+   */
   applyProtocolToSession(): void {
     const proto = this.patientState.avsProtocol();
     if (!proto) return;
@@ -281,6 +239,7 @@ export class AvsTherapyComponent implements OnDestroy {
     const session = this.athleticService.session();
     if (!session) return;
 
+    // Auto-map athletic state to brainwave target
     const stateToWave: Record<AthleticState, BrainwaveFrequency> = {
       'priming': 'beta',
       'flow': 'alpha',
@@ -289,6 +248,7 @@ export class AvsTherapyComponent implements OnDestroy {
     };
 
     this.targetWave.set(stateToWave[this.athleticState()]);
+    // Set a matching breathing rate (e.g. faster for priming, slower for recovery)
     if (this.athleticState() === 'priming') this.targetBreathingRate.set(12.0);
     else if (this.athleticState() === 'recovery') this.targetBreathingRate.set(5.5);
     else this.targetBreathingRate.set(6.0);
@@ -297,10 +257,49 @@ export class AvsTherapyComponent implements OnDestroy {
     else this.restartOscillators();
   }
 
+  /** Scan chart and populate lifestyle adjunct recommendations (instant, no Gemini). */
   generateAdjuncts(): void {
     this.lifestyleAdj.generate();
   }
 
+  selectWaveProfile(profileId: BrainwaveFrequency) {
+    this.customFrequency.set(null);
+    this.targetWave.set(profileId);
+
+    if (this.isActive()) {
+      // Live reload audio oscillators with the new frequencies immediately
+      this.restartOscillators();
+
+      if (this.voiceEnabled()) {
+        this.speakGuidance(`Neurological target shifted to ${profileId} waves at ${this.targetBrainwaveFrequencyHz()} Hertz.`);
+      }
+    }
+  }
+
+  // --- Speech Therapy (WebSpeech API) ---
+  private speakGuidance(text: string) {
+    if (!this.isBrowser || !('speechSynthesis' in window)) return;
+
+    // Stop any active utterance to prevent queue build up
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Slow, calming, clinical voice configuration
+    utterance.rate = 0.8;
+    utterance.pitch = 0.95;
+
+    // Search for a warm, premium clinical/local voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const naturalVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Natural') || v.lang === 'en-US');
+    if (naturalVoice) {
+      utterance.voice = naturalVoice;
+    }
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // --- Session Controls ---
   toggleSession() {
     if (this.isActive()) {
       this.stopTherapy();
@@ -318,171 +317,222 @@ export class AvsTherapyComponent implements OnDestroy {
   }
 
   toggleVibration() {
+    if (!this.hasVibrator) return;
     this.vibrationEnabled.update(v => !v);
-    if (this.vibrationEnabled() && this.isActive()) {
-      this.startVibrationLoop();
-    } else {
-      this.stopVibrationLoop();
-    }
-  }
 
-  async startTherapy() {
-    this.isActive.set(true);
-    if (this.isBrowser) {
-      await this.initWebAudio();
-      this.startVoiceGuidanceLoop();
+    if (this.isActive()) {
       if (this.vibrationEnabled()) {
-        this.startVibrationLoop();
+        this.startHapticLoop();
+      } else {
+        this.stopHapticLoop();
       }
     }
   }
 
-  stopTherapy() {
-    this.isActive.set(false);
-    this.stopWebAudio();
-    this.stopVoiceGuidanceLoop();
-    this.stopVibrationLoop();
-  }
+  // --- AVS Brainwave Synthesis (Web Audio API) ---
+  private startTherapy() {
+    if (!this.isBrowser) return;
 
-  private async initWebAudio() {
+    this.isActive.set(true);
+    this.pythonBridge.startBiosignalStream('avs-session-' + Date.now());
+
     try {
+      // 1. Initialize Audio Context
       const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioCtxClass) return;
+      this.audioCtx = new AudioCtxClass();
 
-      if (!this.audioCtx || this.audioCtx.state === 'closed') {
-        this.audioCtx = new AudioCtxClass();
-      }
-      if (this.audioCtx.state === 'suspended') {
-        await this.audioCtx.resume();
+      // 2. Setup Stereo Channel Merger Node (Input 0 -> Left, Input 1 -> Right)
+      const merger = this.audioCtx.createChannelMerger(2);
+
+      // 3. Setup oscillators with the carrier and differential frequencies
+      const carrier = this.currentBaseFrequency();
+      const difference = this.targetBrainwaveFrequencyHz();
+
+      // Left Ear
+      this.oscLeft = this.audioCtx.createOscillator();
+      this.oscLeft.type = 'sine';
+      this.oscLeft.frequency.value = carrier;
+
+      // Right Ear (Carrier + Difference frequency creates the Binaural beat)
+      this.oscRight = this.audioCtx.createOscillator();
+      this.oscRight.type = 'sine';
+      this.oscRight.frequency.value = carrier + difference;
+
+      // Connect oscillators to corresponding channels
+      this.oscLeft.connect(merger, 0, 0);
+      this.oscRight.connect(merger, 0, 1);
+
+      // 4. Generate Soothing Pink/Brown Background Noise
+      const bufferSize = 4 * this.audioCtx.sampleRate;
+      const noiseBuffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+
+      let lastOut = 0.0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        // Filter to brown noise (extremely restorative low frequency rumble)
+        output[i] = (lastOut + (0.02 * white)) / 1.02;
+        lastOut = output[i];
+        output[i] *= 3.5; // Gain factor
       }
 
+      this.noiseNode = this.audioCtx.createBufferSource();
+      this.noiseNode.buffer = noiseBuffer;
+      this.noiseNode.loop = true;
+
+      // Low pass filter to keep noise deeply restorative
+      const filter = this.audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 180; // Cut off high frequencies
+
+      const noiseGain = this.audioCtx.createGain();
+      noiseGain.gain.value = 0.08; // Gentle background masking
+
+      this.noiseNode.connect(filter);
+      filter.connect(noiseGain);
+
+      // 5. Setup Master Gain
       this.mainGain = this.audioCtx.createGain();
-      this.mainGain.gain.setValueAtTime(0.25, this.audioCtx.currentTime);
+      this.mainGain.gain.setValueAtTime(0.18, this.audioCtx.currentTime); // Standard comfortable volume
+
+      // Connect components to Master Gain
+      merger.connect(this.mainGain);
+      noiseGain.connect(this.mainGain);
+
+      // Connect Master Gain to Speaker destination
       this.mainGain.connect(this.audioCtx.destination);
 
-      // Initialize Spatial Ambisonics Sub-system
-      this.spatial.initAudioGraph(this.audioCtx, this.mainGain);
+      // 6. Start Audio generators
+      this.oscLeft.start();
+      this.oscRight.start();
+      this.noiseNode.start();
 
-      this.restartOscillators();
+      // 7. Initiate Speech Induction Flow
+      if (this.voiceEnabled()) {
+        const hr = this.patientState.vitals().hr || '80';
+        this.speakGuidance(
+          `Initiating clinical biometric entrainment session. Active heart rate telemetry is ${hr} beats per minute. ` +
+          `Setting respiratory coherence pacing to ${this.targetBreathingRate()} breaths per minute. ` +
+          `Please match your breathing to the orange pulsing light. Inhale as it expands, exhale as it contracts. Let's begin.`
+        );
+      }
+
+      // 8. Start dynamic speech and haptic intervals
+      this.startSpeechGuidanceLoop();
+      if (this.vibrationEnabled()) {
+        this.startHapticLoop();
+      }
+
     } catch (e) {
-      console.debug('Web Audio API unavailable in current execution context', e);
+      console.error('[AVS Therapy] Failed to initialize Web Audio API: ', e);
     }
+  }
+
+  private stopTherapy() {
+    this.isActive.set(false);
+    this.pythonBridge.stopBiosignalStream();
+
+    // Stop WebSpeech
+    if (this.isBrowser && ('speechSynthesis' in window)) {
+      window.speechSynthesis.cancel();
+    }
+
+    // Clean up Audio Nodes
+    try {
+      if (this.oscLeft) { this.oscLeft.stop(); this.oscLeft.disconnect(); }
+      if (this.oscRight) { this.oscRight.stop(); this.oscRight.disconnect(); }
+      if (this.noiseNode) { this.noiseNode.stop(); this.noiseNode.disconnect(); }
+      if (this.mainGain) { this.mainGain.disconnect(); }
+      if (this.audioCtx) { this.audioCtx.close(); }
+    } catch (_) {}
+
+    this.oscLeft = null;
+    this.oscRight = null;
+    this.noiseNode = null;
+    this.mainGain = null;
+    this.audioCtx = null;
+
+    // Stop intervals
+    if (this.guidanceTimer) { clearInterval(this.guidanceTimer); this.guidanceTimer = null; }
+    this.stopHapticLoop();
   }
 
   private restartOscillators() {
-    if (!this.audioCtx || !this.mainGain) return;
+    if (!this.isActive() || !this.audioCtx) return;
 
-    if (this.oscLeft) {
-      try { this.oscLeft.stop(); this.oscLeft.disconnect(); } catch (e) {}
+    const carrier = this.currentBaseFrequency();
+    const difference = this.targetBrainwaveFrequencyHz();
+
+    if (this.oscLeft && this.oscRight) {
+      // Smooth frequency transition using AudioParams
+      const now = this.audioCtx.currentTime;
+      this.oscLeft.frequency.setTargetAtTime(carrier, now, 0.2);
+      this.oscRight.frequency.setTargetAtTime(carrier + difference, now, 0.2);
     }
-    if (this.oscRight) {
-      try { this.oscRight.stop(); this.oscRight.disconnect(); } catch (e) {}
-    }
-
-    const baseFreq = this.currentBaseFrequency();
-    const diffFreq = this.targetBrainwaveFrequencyHz();
-
-    // Channel splitters and mergers for binaural separation
-    const merger = this.audioCtx.createChannelMerger(2);
-
-    this.oscLeft = this.audioCtx.createOscillator();
-    this.oscLeft.type = 'sine';
-    this.oscLeft.frequency.setValueAtTime(baseFreq, this.audioCtx.currentTime);
-
-    this.oscRight = this.audioCtx.createOscillator();
-    this.oscRight.type = 'sine';
-    this.oscRight.frequency.setValueAtTime(baseFreq + diffFreq, this.audioCtx.currentTime);
-
-    this.oscLeft.connect(merger, 0, 0);
-    this.oscRight.connect(merger, 0, 1);
-
-    merger.connect(this.mainGain);
-
-    this.oscLeft.start();
-    this.oscRight.start();
   }
 
-  private stopWebAudio() {
-    if (this.oscLeft) {
-      try { this.oscLeft.stop(); this.oscLeft.disconnect(); } catch (e) {}
-      this.oscLeft = null;
-    }
-    if (this.oscRight) {
-      try { this.oscRight.stop(); this.oscRight.disconnect(); } catch (e) {}
-      this.oscRight = null;
-    }
-    if (this.audioCtx) {
-      try { this.audioCtx.close(); } catch (e) {}
-      this.audioCtx = null;
-    }
-    this.spatial.stopAmbisonics();
-  }
+  // --- Guidance Loop (Adaptive clinical voice checks) ---
+  private startSpeechGuidanceLoop() {
+    if (this.guidanceTimer) clearInterval(this.guidanceTimer);
 
-  private startVoiceGuidanceLoop() {
-    if (!this.isBrowser || !('speechSynthesis' in window)) return;
-    this.stopVoiceGuidanceLoop();
-
-    const phrases = [
-      "Inhale deeply and expand the diaphragm...",
-      "Slowly exhale and release all sympathetic tension...",
-      "Allow your brainwaves to synchronize with the acoustic pulse...",
-      "Relax your shoulders, feeling the heart rate gently settle...",
-      "Deep, rhythmic breathing to engage the vagal nerve tone..."
-    ];
-
-    let phraseIndex = 0;
+    let step = 0;
     this.guidanceTimer = setInterval(() => {
-      if (this.voiceEnabled() && this.isActive()) {
-        const text = phrases[phraseIndex % phrases.length];
-        this.speakGuidance(text);
-        phraseIndex++;
+      if (!this.isActive() || !this.voiceEnabled() || this.voicePacingEnabled()) return;
+
+      const hrVal = parseInt(this.patientState.vitals().hr || '80', 10);
+      step++;
+
+      if (step % 2 === 1) {
+        // Clinical biometric feedback
+        if (hrVal > this.targetHr()) {
+          this.speakGuidance(
+            `Elevated pulse detected. Focus on elongating your exhalation. ` +
+            `Exhale for ${Math.round(this.pulseIntervalMs() / 2000)} seconds, and let your baseline targets stabilize.`
+          );
+        } else {
+          this.speakGuidance(
+            `Coherence achieved. Heart rate is fully synchronized. Continuing ${this.targetWave()} brainwave entrainment.`
+          );
+        }
+      } else {
+        // Restorative imagery guidance
+        const prompts = [
+          "Visualize neural pathways firing with crystal clarity. Calm, steady, focused.",
+          "Inhale healing and vitality. Exhale tension, worry, and static noise.",
+          "Feel the rhythmic resonance aligning your somatic and autonomic systems. Deep clinical restoration.",
+          "Your nervous system is resetting. Neural pathways are finding quiet, cohesive flow."
+        ];
+        const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+        this.speakGuidance(randomPrompt);
       }
-    }, 18000);
+    }, 28000); // Trigger soothing updates every 28 seconds
   }
 
-  private stopVoiceGuidanceLoop() {
-    if (this.guidanceTimer) {
-      clearInterval(this.guidanceTimer);
-      this.guidanceTimer = null;
-    }
-    if (this.isBrowser && 'speechSynthesis' in window) {
-      try { window.speechSynthesis.cancel(); } catch (e) {}
-    }
-  }
+  // --- Physical Haptic Loop (`navigator.vibrate`) ---
+  private startHapticLoop() {
+    this.stopHapticLoop();
+    if (!this.isBrowser || !this.hasVibrator || !this.vibrationEnabled()) return;
 
-  private startVibrationLoop() {
-    if (!this.isBrowser || !this.hasVibrator) return;
-    this.stopVibrationLoop();
+    const pacingIntervalMs = this.pulseIntervalMs();
 
-    const interval = this.pulseIntervalMs();
+    // Heartbeat-like double vibration at the beginning of each inhalation cycle
+    const heartbeatPattern = [120, 80, 120];
+
     this.vibrationTimer = setInterval(() => {
-      if (this.vibrationEnabled() && this.isActive()) {
-        try {
-          navigator.vibrate([15, 30, 25]); // Double heart pulse pattern
-        } catch (e) {}
+      if (this.isActive() && this.vibrationEnabled()) {
+        navigator.vibrate(heartbeatPattern);
       }
-    }, interval);
+    }, pacingIntervalMs);
   }
 
-  private stopVibrationLoop() {
+  private stopHapticLoop() {
     if (this.vibrationTimer) {
       clearInterval(this.vibrationTimer);
       this.vibrationTimer = null;
     }
     if (this.isBrowser && this.hasVibrator) {
-      try { navigator.vibrate(0); } catch (e) {}
+      navigator.vibrate(0); // Cancel any active vibrations
     }
-  }
-
-  private speakGuidance(text: string) {
-    if (!this.isBrowser || !('speechSynthesis' in window)) return;
-    try {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.85;
-      utterance.pitch = 0.95;
-      utterance.volume = 0.6;
-      window.speechSynthesis.speak(utterance);
-    } catch (e) {}
   }
 
   ngOnDestroy() {

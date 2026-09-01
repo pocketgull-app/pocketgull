@@ -37,7 +37,7 @@ class ClinicalIntelligenceService {
 
   ClinicalIntelligenceService({required this.apiKey})
       : _model = GenerativeModel(
-          model: 'gemini-3.7-flash',
+          model: 'gemini-3.5-flash',
           apiKey: apiKey.isNotEmpty ? apiKey : 'placeholder_key',
           generationConfig: GenerationConfig(
             temperature: 0.2,

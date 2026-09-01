@@ -18,7 +18,7 @@ describe('LegalZoomPartnerModuleService (src/partners/legalzoom.ts)', () => {
 
   it('1. Initializes LegalZoom partner module inside src/partners/', () => {
     expect(service.partnerConfig().partnerId).toBe('partner_legalzoom_01');
-    expect(service.partnerConfig().impactChecklistId).toBe('IMPACT_CHECKLIST_ID');
+    expect(service.partnerConfig().impactChecklistId).toBe('___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL');
     expect(service.features().length).toBe(4);
   });
 });

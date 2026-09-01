@@ -7,7 +7,6 @@
   ],
   "extraPaths": [
     "pocketgull_api",
-    "pocketgull_api/.venv/Lib/site-packages",
     "packages/clinical-evidence-grade/src"
   ]
 }

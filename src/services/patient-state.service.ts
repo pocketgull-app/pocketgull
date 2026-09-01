@@ -165,15 +165,6 @@ export class PatientStateService {
 
   // --- Anti-Surveillance & Ephemeral Data Sovereignty Controls ---
   readonly ephemeralPrivacyMode = signal<boolean>(true);
-  readonly profileMode = signal<'STANDARD_CLINICAL' | 'AUSTERE_RESEARCH'>('STANDARD_CLINICAL');
-
-  setProfileMode(mode: 'STANDARD_CLINICAL' | 'AUSTERE_RESEARCH'): void {
-    this.profileMode.set(mode);
-    if (mode === 'AUSTERE_RESEARCH') {
-      this.ephemeralPrivacyMode.set(true);
-      this.logEnterpriseAudit('PRIVACY_MODE_TOGGLE', 'Austere Research Profile activated (Zero Cloud Egress, HIPAA Safe Harbor De-Identification)');
-    }
-  }
 
   // --- Enterprise Agent HIPAA & COPPA Audit Telemetry ---
   readonly enterpriseAuditLog = signal<Array<{
@@ -325,7 +316,7 @@ export class PatientStateService {
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
   readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular'>('3d');
-  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain'>('skin');
+  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic'>('skin');
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
   readonly draftSummaryItems = signal<IDraftSummaryItem[]>([]);

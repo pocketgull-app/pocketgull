@@ -19,169 +19,66 @@
     </app-avs-visualizer>
 
     @if (viewMode() === 'clinician') {
-      <!-- Next-Gen Clinical Innovation Tabs Toolbar -->
-      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-gray-200 dark:border-zinc-800/80 no-scrollbar">
-        <button (click)="setInnovationTab('qeeg')"
-                class="px-3 py-2 rounded-xl text-xs font-black tracking-wider uppercase transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
-                [class.bg-cyan-500/20]="activeInnovationTab() === 'qeeg'"
-                [class.text-cyan-400]="activeInnovationTab() === 'qeeg'"
-                [class.border]="activeInnovationTab() === 'qeeg'"
-                [class.border-cyan-500/40]="activeInnovationTab() === 'qeeg'"
-                [class.text-zinc-400]="activeInnovationTab() !== 'qeeg'"
-                [class.hover:bg-zinc-900]="activeInnovationTab() !== 'qeeg'">
-          <span>🧠</span> Closed-Loop qEEG
-        </button>
+      <app-clinician-console
+        [targetHr]="targetHr()"
+        [currentHr]="patientState.vitals().hr"
+        [targetBreathingRate]="targetBreathingRate()"
+        [targetWave]="targetWave()"
+        [selectedWaveDescription]="selectedWaveDescription()"
+        (targetHrChange)="onHrSliderChange($event)"
+        (targetBreathingRateChange)="onBreathingSliderChange($event)"
+        (targetWaveChange)="selectWaveProfile($event)">
+      </app-clinician-console>
 
-        <button (click)="setInnovationTab('sleep')"
-                class="px-3 py-2 rounded-xl text-xs font-black tracking-wider uppercase transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
-                [class.bg-indigo-500/20]="activeInnovationTab() === 'sleep'"
-                [class.text-indigo-400]="activeInnovationTab() === 'sleep'"
-                [class.border]="activeInnovationTab() === 'sleep'"
-                [class.border-indigo-500/40]="activeInnovationTab() === 'sleep'"
-                [class.text-zinc-400]="activeInnovationTab() !== 'sleep'"
-                [class.hover:bg-zinc-900]="activeInnovationTab() !== 'sleep'">
-          <span>🌙</span> Sleep / Insomnia
-        </button>
+      <app-circadian-dashboard
+        [targetBrainwaveFrequencyHz]="targetBrainwaveFrequencyHz()"
+        [colorTemp]="colorTemp()"
+        (frequencyChange)="onFrequencySliderChange($event)"
+        (colorTempChange)="selectColorTemp($event)">
+      </app-circadian-dashboard>
 
-        <button (click)="setInnovationTab('rppg')"
-                class="px-3 py-2 rounded-xl text-xs font-black tracking-wider uppercase transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
-                [class.bg-emerald-500/20]="activeInnovationTab() === 'rppg'"
-                [class.text-emerald-400]="activeInnovationTab() === 'rppg'"
-                [class.border]="activeInnovationTab() === 'rppg'"
-                [class.border-emerald-500/40]="activeInnovationTab() === 'rppg'"
-                [class.text-zinc-400]="activeInnovationTab() !== 'rppg'"
-                [class.hover:bg-zinc-900]="activeInnovationTab() !== 'rppg'">
-          <span>📷</span> Contactless rPPG
-        </button>
+      <app-co-regulation-panel
+        [protocolMode]="protocolMode()"
+        [avsProtocol]="patientState.avsProtocol()"
+        [athleticSession]="athleticService.session()"
+        [reasonForVisit]="patientState.reasonForVisit()"
+        [occupation]="patientState.occupation()"
+        [dietaryProtocol]="patientState.dietaryProtocol()"
+        [athleticSport]="athleticSport()"
+        [athleticState]="athleticState()"
+        [isGenerating]="patientState.isGeneratingAvsProtocol()"
+        [voicePacingEnabled]="voicePacingEnabled()"
+        (protocolModeChange)="protocolMode.set($event)"
+        (reasonForVisitChange)="patientState.reasonForVisit.set($event)"
+        (occupationChange)="patientState.occupation.set($event)"
+        (dietaryProtocolChange)="patientState.dietaryProtocol.set($event)"
+        (athleticSportChange)="athleticSport.set($event)"
+        (athleticStateChange)="athleticState.set($event)"
+        (generate)="protocolMode() === 'clinical' ? generateCoRegProtocol() : generateAthleticProtocol()"
+        (apply)="protocolMode() === 'clinical' ? applyProtocolToSession() : applyAthleticProtocol()">
+      </app-co-regulation-panel>
 
-        <button (click)="setInnovationTab('spatial')"
-                class="px-3 py-2 rounded-xl text-xs font-black tracking-wider uppercase transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
-                [class.bg-violet-500/20]="activeInnovationTab() === 'spatial'"
-                [class.text-violet-400]="activeInnovationTab() === 'spatial'"
-                [class.border]="activeInnovationTab() === 'spatial'"
-                [class.border-violet-500/40]="activeInnovationTab() === 'spatial'"
-                [class.text-zinc-400]="activeInnovationTab() !== 'spatial'"
-                [class.hover:bg-zinc-900]="activeInnovationTab() !== 'spatial'">
-          <span>🌌</span> Spatial 4D WebGL
-        </button>
-
-        <button (click)="setInnovationTab('dyadic')"
-                class="px-3 py-2 rounded-xl text-xs font-black tracking-wider uppercase transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
-                [class.bg-rose-500/20]="activeInnovationTab() === 'dyadic'"
-                [class.text-rose-400]="activeInnovationTab() === 'dyadic'"
-                [class.border]="activeInnovationTab() === 'dyadic'"
-                [class.border-rose-500/40]="activeInnovationTab() === 'dyadic'"
-                [class.text-zinc-400]="activeInnovationTab() !== 'dyadic'"
-                [class.hover:bg-zinc-900]="activeInnovationTab() !== 'dyadic'">
-          <span>👥</span> Dyadic Sync
-        </button>
-
-        <button (click)="setInnovationTab('coreg')"
-                class="px-3 py-2 rounded-xl text-xs font-black tracking-wider uppercase transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
-                [class.bg-orange-500/20]="activeInnovationTab() === 'coreg'"
-                [class.text-orange-400]="activeInnovationTab() === 'coreg'"
-                [class.border]="activeInnovationTab() === 'coreg'"
-                [class.border-orange-500/40]="activeInnovationTab() === 'coreg'"
-                [class.text-zinc-400]="activeInnovationTab() !== 'coreg'"
-                [class.hover:bg-zinc-900]="activeInnovationTab() !== 'coreg'">
-          <span>⚙️</span> Co-Regulation
-        </button>
-      </div>
-
-      <!-- Active Innovation View Body -->
-      @if (activeInnovationTab() === 'qeeg') {
-        <app-qeeg-hud></app-qeeg-hud>
-      }
-
-      @if (activeInnovationTab() === 'sleep') {
-        <app-sleep-insomnia-panel></app-sleep-insomnia-panel>
-      }
-
-      @if (activeInnovationTab() === 'rppg') {
-        <app-rppg-camera-hud></app-rppg-camera-hud>
-      }
-
-      @if (activeInnovationTab() === 'spatial') {
-        <app-webgl-sacred-geometry [frequencyHz]="targetBrainwaveFrequencyHz()"></app-webgl-sacred-geometry>
-      }
-
-      @if (activeInnovationTab() === 'dyadic') {
-        <app-dyadic-sync-hud></app-dyadic-sync-hud>
-      }
-
-      @if (activeInnovationTab() === 'coreg') {
-        <app-clinician-console
-          [targetHr]="targetHr()"
-          [currentHr]="patientState.vitals().hr"
-          [targetBreathingRate]="targetBreathingRate()"
-          [targetWave]="targetWave()"
-          [selectedWaveDescription]="selectedWaveDescription()"
-          (targetHrChange)="onHrSliderChange($event)"
-          (targetBreathingRateChange)="onBreathingSliderChange($event)"
-          (targetWaveChange)="selectWaveProfile($event)">
-        </app-clinician-console>
-
-        <app-circadian-dashboard
-          [targetBrainwaveFrequencyHz]="targetBrainwaveFrequencyHz()"
-          [colorTemp]="colorTemp()"
-          (frequencyChange)="onFrequencySliderChange($event)"
-          (colorTempChange)="selectColorTemp($event)">
-        </app-circadian-dashboard>
-
-        <app-co-regulation-panel
-          [protocolMode]="protocolMode()"
-          [avsProtocol]="patientState.avsProtocol()"
-          [athleticSession]="athleticService.session()"
-          [reasonForVisit]="patientState.reasonForVisit()"
-          [occupation]="patientState.occupation()"
-          [dietaryProtocol]="patientState.dietaryProtocol()"
-          [athleticSport]="athleticSport()"
-          [athleticState]="athleticState()"
-          [isGenerating]="patientState.isGeneratingAvsProtocol()"
-          [voicePacingEnabled]="voicePacingEnabled()"
-          (protocolModeChange)="protocolMode.set($event)"
-          (reasonForVisitChange)="patientState.reasonForVisit.set($event)"
-          (occupationChange)="patientState.occupation.set($event)"
-          (dietaryProtocolChange)="patientState.dietaryProtocol.set($event)"
-          (athleticSportChange)="athleticSport.set($event)"
-          (athleticStateChange)="athleticState.set($event)"
-          (generate)="protocolMode() === 'clinical' ? generateCoRegProtocol() : generateAthleticProtocol()"
-          (apply)="protocolMode() === 'clinical' ? applyProtocolToSession() : applyAthleticProtocol()">
-        </app-co-regulation-panel>
-
-        <app-lifestyle-adjunct-panel
-          [adjunct]="lifestyleAdj.adjunct()"
-          (generate)="generateAdjuncts()">
-        </app-lifestyle-adjunct-panel>
-      }
-
-      <!-- Master Session Controls & FHIR Export Action Bar -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-        <app-session-controls
-          [isActive]="isActive()"
-          [voiceEnabled]="voiceEnabled()"
-          [voicePacingEnabled]="voicePacingEnabled()"
-          [vibrationEnabled]="vibrationEnabled()"
-          [hasVibrator]="hasVibrator"
-          (toggleSession)="toggleSession()"
-          (toggleVoice)="toggleVoice()"
-          (toggleVoicePacing)="toggleVoicePacing()"
-          (toggleVibration)="toggleVibration()">
-        </app-session-controls>
-
-        <button (click)="openExportModal()"
-                class="px-4 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-          </svg>
-          Scribe & FHIR R4 Export
-        </button>
-      </div>
+      <app-session-controls
+        [isActive]="isActive()"
+        [voiceEnabled]="voiceEnabled()"
+        [voicePacingEnabled]="voicePacingEnabled()"
+        [vibrationEnabled]="vibrationEnabled()"
+        [hasVibrator]="hasVibrator"
+        (toggleSession)="toggleSession()"
+        (toggleVoice)="toggleVoice()"
+        (toggleVoicePacing)="toggleVoicePacing()"
+        (toggleVibration)="toggleVibration()">
+      </app-session-controls>
 
       <!-- Therapeutic Safety Guidelines -->
       <div class="text-[9px] text-gray-400 dark:text-zinc-500/80 leading-relaxed italic border-t border-gray-100 dark:border-zinc-900/50 pt-3">
-        AVS Clinical Disclaimer: Do not utilize audio-visual entrainment therapies if the patient has a known history of epilepsy or photosensitive seizures. ISCEV safety envelope active. Headphones recommended for binaural separation; speaker isochronic pulses available.
+        AVS Clinical Disclaimer: Do not utilize audio-visual entrainment therapies if the patient has a known history of epilepsy or photosensitive seizures. Headphones are strictly required for binaural beat neural stimulation.
       </div>
+
+      <app-lifestyle-adjunct-panel
+        [adjunct]="lifestyleAdj.adjunct()"
+        (generate)="generateAdjuncts()">
+      </app-lifestyle-adjunct-panel>
 
     } <!-- End Clinician View -->
 
@@ -193,10 +90,5 @@
     }
 
   </div>
-
-  <!-- Scribe & FHIR R4 Modal -->
-  @if (isExportModalOpen()) {
-    <app-avs-export-modal (close)="closeExportModal()"></app-avs-export-modal>
-  }
 
 </div>

@@ -43,9 +43,6 @@ jobs:
       - name: Sentinel Security & Log Injection Audit
         run: npm run sentinel:audit
 
-      - name: MSA & AI Services Governance Audit
-        run: npm run msa:audit
-
       - name: Generate CycloneDX SBOM (EU CRA Compliance)
         run: npm run sbom
 

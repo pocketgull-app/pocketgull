@@ -53,7 +53,7 @@ We reject burnout culture. We don't believe in late-night crunch or pointless co
 ## 💎 Compensation & Recognition
 
 1. **Transparent Pay**: Fair market rates for full-time roles, competitive stipends for fellows, and immediate Stripe/GitHub Sponsors payouts for micro-bounty deliverables.
-2. **Public Attribution & Portfolio Ownership**: Every contributor retains public credit on their git commits, co-authorship on published Kaggle notebooks, and permanent entry in [`docs/CONTRIBUTING_SPECIALISTS.md`](file:///c:/Users/philg/Pocketgull/pocketgull/docs/CONTRIBUTING_SPECIALISTS.md).
+2. **Public Attribution & Portfolio Ownership**: Every contributor retains public credit on their git commits, co-authorship on published Kaggle notebooks, and permanent entry in [`CONTRIBUTING_SPECIALISTS.md`](file:///c:/Users/philg/Pocketgull/pocketgull/CONTRIBUTING_SPECIALISTS.md).
 3. **Zero Financial Barrier**: You do not need expensive hardware. Our 1-click cloud environment ([`.devcontainer/`](file:///c:/Users/philg/Pocketgull/pocketgull/.devcontainer/devcontainer.json)) runs on any browser or Chromebook for free.
 
 ---

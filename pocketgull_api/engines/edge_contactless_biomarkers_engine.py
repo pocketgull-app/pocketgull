@@ -10,15 +10,15 @@ Extracts objective physiological vitals and cognitive/affective stress markers w
 
 import json
 import numpy as np
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 
 class ContactlessBiomarkersEngine:
     """Extracts vital signs and stress markers from contactless optical and vocal arrays."""
 
     def extract_rppg_and_vocal_biomarkers(
         self,
-        rgb_mean_signals: Optional[List[List[float]]] = None,
-        audio_waveform_sample: Optional[List[float]] = None,
+        rgb_mean_signals: List[List[float]] = None,
+        audio_waveform_sample: List[float] = None,
         sampling_rate_hz: int = 30
     ) -> Dict[str, Any]:
         """Processes RGB optical frames and audio waveform."""
@@ -30,13 +30,11 @@ class ContactlessBiomarkersEngine:
             r = 0.5 + 0.05 * np.sin(2 * np.pi * 1.2 * t)
             g = 0.6 + 0.08 * np.sin(2 * np.pi * 1.2 * t + np.pi / 4)
             b = 0.4 + 0.03 * np.sin(2 * np.pi * 1.2 * t + np.pi / 2)
-            resolved_signals: List[List[float]] = [[float(r[i]), float(g[i]), float(b[i])] for i in range(len(t))]
-        else:
-            resolved_signals = rgb_mean_signals
+            rgb_mean_signals = list(zip(r, g, b))
 
-        r_sig = np.array([pt[0] for pt in resolved_signals])
-        g_sig = np.array([pt[1] for pt in resolved_signals])
-        b_sig = np.array([pt[2] for pt in resolved_signals])
+        r_sig = np.array([pt[0] for pt in rgb_mean_signals])
+        g_sig = np.array([pt[1] for pt in rgb_mean_signals])
+        b_sig = np.array([pt[2] for pt in rgb_mean_signals])
 
         # POS Chrominance projection: S = 3*R - 2*G
         pulse_signal = 3.0 * r_sig - 2.0 * g_sig

@@ -51,14 +51,6 @@ export * from './anatomy-3d/instant-body-care-plan-sheet.component';
 export * from './vertex-model-garden-portal.component';
 export * from './talent-hr-portal.component';
 export * from './osce-case-simulator.component';
-export * from './clinical-reasoning-stream.component';
-export * from './adaptive-green-routing-hud.component';
-export * from './movement-healing-quest.component';
-export * from './anatomy-3d/biophilic-pathway-3d-viewer.component';
-export * from './citizen-science-walk-report.component';
-export * from './google-health-sync-hud.component';
-export * from './barrows-clinical-inquiry-hub.component';
-export * from './austere-research-hud/austere-research-hud.component';
 
 
 

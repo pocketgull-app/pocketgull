@@ -41,36 +41,6 @@ export function renderBusinessSiteHtml(): string {
   <meta property="og:description" content="Spend less time charting. More time with patients. Secure on-device medical documentation assistant." />
   <meta property="og:url" content="https://pocketgull.com" />
   <meta property="og:type" content="website" />
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "SoftwareApplication",
-        "name": "PocketGull",
-        "operatingSystem": "Web, iOS, Android, macOS, Linux, Windows",
-        "applicationCategory": "HealthApplication",
-        "softwareVersion": "1.31.0",
-        "description": "On-device ambient AI clinical assistant with JAX/Flax neural scoring, ISMP medication safety validation, and HL7 FHIR R4 export.",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        }
-      },
-      {
-        "@type": "MedicalWebPage",
-        "name": "PocketGull Clinical Intelligence & Care Plan Strategy",
-        "url": "https://pocketgull.com",
-        "description": "Evidence-grounded medical documentation, on-device machine learning, and systems medicine workbench.",
-        "medicalAudience": {
-          "@type": "MedicalAudience",
-          "audienceType": "Clinician"
-        }
-      }
-    ]
-  }
-  </script>
   
   <style>
     :root {
@@ -643,30 +613,6 @@ export function renderBusinessSiteHtml(): string {
             <div class="feature-icon">🎯</div>
             <h3>FHIR R4 SMART Goal Engine</h3>
             <p>Decomposes clinical objectives into interactive milestone quests with standard HL7 FHIR R4 Goal resource serialization.</p>
-          </div>
-
-          <div class="feature-card">
-            <div class="feature-icon">🧠</div>
-            <h3>JAX / Flax OpenXLA &amp; ONNX WebGPU Engine</h3>
-            <p>Continuous sub-millisecond clinical risk scoring and on-device neural acceleration running directly inside the clinician's browser with zero egress.</p>
-          </div>
-
-          <div class="feature-card">
-            <div class="feature-icon">🛡️</div>
-            <h3>ISMP Medication Safety Guard</h3>
-            <p>Enforces Institute for Safe Medication Practices &amp; FDA safety rules, automatically eliminating trailing zeroes and naked decimals to prevent 10x dosage errors.</p>
-          </div>
-
-          <div class="feature-card">
-            <div class="feature-icon">🏕️</div>
-            <h3>Austere Clinical Research &amp; Epistemology</h3>
-            <p>Offline-first wilderness and disaster response trial workbench with empirical H₀ null-hypothesis falsification (p &lt; 0.05) and Cochrane Risk of Bias assessments.</p>
-          </div>
-
-          <div class="feature-card">
-            <div class="feature-icon">📑</div>
-            <h3>CMS Remote Patient Monitoring (RPM) Superbill</h3>
-            <p>Generates automated CPT 99453, 99454, 99457, and 99458 claim documentation with statutory 16-day continuous biometric audit verification.</p>
           </div>
         </div>
       </div>

@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, computed, ElementRef, viewChild, AfterViewInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { PatientStateService } from '../../services/patient-state.service';
 
 export interface ICellularRulePreset {
   id: string;
@@ -58,16 +57,11 @@ const PRESETS: ICellularRulePreset[] = [
         <div class="flex items-center gap-2">
           <span class="text-xl">🧬</span>
           <div>
-            <h3 class="text-sm font-black uppercase tracking-wider text-purple-300 flex items-center gap-2">
+            <h3 class="text-sm font-black uppercase tracking-wider text-purple-300">
               Turing-Complete Morphogenetic Automata
-              @if (patientVitals()) {
-                <span class="text-[9px] px-2 py-0.5 rounded-full bg-purple-900/80 border border-purple-400/40 text-purple-200">
-                  HR: {{ patientVitals()?.hr || 72 }} bpm | SpO2: {{ patientVitals()?.spO2 || 98 }}%
-                </span>
-              }
             </h3>
             <p class="text-[10px] text-purple-400/80">
-              Cellular Automata Epigenetic Tissue Simulation & Perturbation Engine
+              Cellular Automata (B3/S23) Epigenetic Tissue Simulation
             </p>
           </div>
         </div>
@@ -81,52 +75,29 @@ const PRESETS: ICellularRulePreset[] = [
         </div>
       </div>
 
-      <!-- Preset Selector & Patient Sync Action -->
-      <div class="flex items-center justify-between gap-2 overflow-x-auto pb-2 mb-2 hide-scrollbar">
-        <div class="flex items-center gap-1.5">
-          @for (preset of presets; track preset.id) {
-            <button (click)="selectPreset(preset)"
-                    class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border"
-                    [class.bg-purple-600]="activePreset().id === preset.id"
-                    [class.text-white]="activePreset().id === preset.id"
-                    [class.border-purple-500]="activePreset().id === preset.id"
-                    [class.bg-zinc-900]="activePreset().id !== preset.id"
-                    [class.text-zinc-400]="activePreset().id !== preset.id"
-                    [class.border-zinc-800]="activePreset().id !== preset.id">
-              {{ preset.name }}
-            </button>
-          }
-        </div>
-        <button (click)="syncWithPatientTelemetry()" 
-                class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-purple-900/60 hover:bg-purple-800/80 border border-purple-500/50 text-purple-200 transition cursor-pointer whitespace-nowrap shrink-0">
-          ⚡ Sync Epigenetics
-        </button>
+      <!-- Preset Selector -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2 hide-scrollbar">
+        @for (preset of presets; track preset.id) {
+          <button (click)="selectPreset(preset)"
+                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border"
+                  [class.bg-purple-600]="activePreset().id === preset.id"
+                  [class.text-white]="activePreset().id === preset.id"
+                  [class.border-purple-500]="activePreset().id === preset.id"
+                  [class.bg-zinc-900]="activePreset().id !== preset.id"
+                  [class.text-zinc-400]="activePreset().id !== preset.id"
+                  [class.border-zinc-800]="activePreset().id !== preset.id">
+            {{ preset.name }}
+          </button>
+        }
       </div>
 
       <!-- Canvas Viewport -->
-      <div class="flex-1 w-full relative bg-black rounded-xl overflow-hidden border border-purple-900/30 min-h-[240px] flex items-center justify-center">
+      <div class="flex-1 w-full relative bg-black rounded-xl overflow-hidden border border-purple-900/30 min-h-[260px] flex items-center justify-center">
         <canvas #caCanvas (click)="onCanvasClick($event)" class="w-full h-full cursor-pointer block"></canvas>
       </div>
 
-      <!-- Perturbation Clinical Controls Bar -->
-      <div class="mt-2 flex items-center gap-2 overflow-x-auto py-1">
-        <span class="text-[10px] uppercase font-bold text-purple-400/90 shrink-0">Perturbations:</span>
-        <button (click)="injectCytokineStorm()"
-                class="px-2.5 py-1 rounded-lg bg-rose-950/70 hover:bg-rose-900 border border-rose-600/50 text-rose-300 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0">
-          🔥 Cytokine Surge
-        </button>
-        <button (click)="administerAntioxidantPulse()"
-                class="px-2.5 py-1 rounded-lg bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-600/50 text-emerald-300 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0">
-          🌿 Antioxidant Pulse
-        </button>
-        <button (click)="injectStemCellGlider()"
-                class="px-2.5 py-1 rounded-lg bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-600/50 text-cyan-300 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0">
-          ✨ Stem Cell Glider
-        </button>
-      </div>
-
       <!-- Controls & Metrics Footer -->
-      <div class="mt-2 flex flex-wrap items-center justify-between gap-3 text-xs pt-2 border-t border-purple-900/30">
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs pt-2 border-t border-purple-900/30">
         <div class="flex items-center gap-2">
           <button (click)="togglePlay()" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-[11px] uppercase tracking-wider transition cursor-pointer flex items-center gap-1">
             {{ isRunning() ? '⏸ Pause' : '▶ Play' }}
@@ -155,7 +126,6 @@ const PRESETS: ICellularRulePreset[] = [
 })
 export class CellularAutomataViewerComponent implements AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly patientState = inject(PatientStateService, { optional: true });
   private readonly caCanvas = viewChild<ElementRef<HTMLCanvasElement>>('caCanvas');
 
   readonly presets = PRESETS;
@@ -164,9 +134,6 @@ export class CellularAutomataViewerComponent implements AfterViewInit, OnDestroy
   readonly isRunning = signal<boolean>(true);
   readonly activeCellCount = signal<number>(0);
   readonly densityPercentage = signal<string>('0.0');
-
-  readonly patientVitals = computed(() => this.patientState?.vitals() || null);
-  readonly patientIssues = computed(() => this.patientState?.issues() || {});
 
   private grid: number[][] = [];
   private cols = 40;
@@ -178,67 +145,8 @@ export class CellularAutomataViewerComponent implements AfterViewInit, OnDestroy
   ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
     this.initGrid();
-    this.syncWithPatientTelemetry();
+    this.seedRandomGrid();
     this.startLoop();
-  }
-
-  syncWithPatientTelemetry() {
-    const vitals = this.patientVitals();
-    const hr = parseFloat(String(vitals?.hr || '72'));
-    const cgm = parseFloat(String(vitals?.cgmGlucoseMgDl || '110'));
-    const hasIssues = Object.keys(this.patientIssues()).length > 0;
-
-    if (cgm > 150 || hr > 95) {
-      // Acute metabolic stress
-      this.selectPreset(this.presets[1]); // HighLife
-    } else if (hasIssues) {
-      // Autophagy / repair reset
-      this.selectPreset(this.presets[3]); // Day & Night
-    } else {
-      // Immune homeostasis
-      this.selectPreset(this.presets[0]); // Conway
-    }
-  }
-
-  injectCytokineStorm() {
-    const midR = Math.floor(this.rows / 2);
-    const midC = Math.floor(this.cols / 2);
-    for (let r = midR - 4; r <= midR + 4; r++) {
-      for (let c = midC - 4; c <= midC + 4; c++) {
-        if (r >= 0 && r < this.rows && c >= 0 && c < this.cols) {
-          this.grid[r][c] = Math.random() > 0.3 ? 1 : 0;
-        }
-      }
-    }
-    this.updateMetrics();
-    this.draw();
-  }
-
-  administerAntioxidantPulse() {
-    for (let r = 0; r < this.rows; r++) {
-      for (let c = 0; c < this.cols; c++) {
-        if (Math.random() > 0.65) {
-          this.grid[r][c] = 0;
-        }
-      }
-    }
-    this.injectStemCellGlider();
-    this.updateMetrics();
-    this.draw();
-  }
-
-  injectStemCellGlider() {
-    const r = Math.floor(Math.random() * (this.rows - 6)) + 2;
-    const c = Math.floor(Math.random() * (this.cols - 6)) + 2;
-    // Glider pattern: [(0,1), (1,2), (2,0), (2,1), (2,2)]
-    const coords = [[0, 1], [1, 2], [2, 0], [2, 1], [2, 2]];
-    for (const [dr, dc] of coords) {
-      if (r + dr < this.rows && c + dc < this.cols) {
-        this.grid[r + dr][c + dc] = 1;
-      }
-    }
-    this.updateMetrics();
-    this.draw();
   }
 
   selectPreset(preset: ICellularRulePreset) {

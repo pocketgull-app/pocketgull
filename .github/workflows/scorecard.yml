@@ -39,17 +39,15 @@ jobs:
           results_file: results.sarif
           results_format: sarif
           repo_token: ${{ secrets.SCORECARD_TOKEN || secrets.GITHUB_TOKEN }}
-          publish_results: false
+          publish_results: true
 
       - name: Upload Scorecard Results to Security Tab
         uses: github/codeql-action/upload-sarif@fca7ace96b7d713c7035871441bd52efbe39e27e # v3.28.19
-        continue-on-error: true
         with:
           sarif_file: results.sarif
 
       - name: Upload SARIF Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: always()
         with:
           name: SARIF file
           path: results.sarif

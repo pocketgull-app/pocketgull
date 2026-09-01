@@ -1,9 +1,8 @@
 import { InjectionToken } from '@angular/core';
 
 export type AiModelId =
-    | 'gemini-3.7-flash'
-    | 'gemini-3.6-flash'
     | 'gemini-3.5-flash'
+    | 'gemini-3.6-flash'
     | 'gemini-3.1-flash-lite'
     | 'pubgemma-7b'
     | 'pubgemma-12b'

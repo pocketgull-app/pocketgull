@@ -2,15 +2,13 @@
   "venvPath": ".",
   "venv": ".venv",
   "extraPaths": [
-    ".",
-    ".venv/Lib/site-packages"
+    "."
   ],
   "executionEnvironments": [
     {
       "root": ".",
       "extraPaths": [
-        ".",
-        ".venv/Lib/site-packages"
+        "."
       ]
     }
   ],

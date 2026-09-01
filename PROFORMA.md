@@ -50,7 +50,7 @@ This document outlines the **5-Year Financial Pro Forma (2026–2030)**, unit ec
 
 | Valuation Stage / Horizon | Benchmark Horizon | Valuation Range | Valuation Multiple / Methodology |
 | :--- | :---: | :---: | :--- |
-| **1. Cost-to-Replicate Asset Floor** | *Current 2026* | **$15.9M – $24.9M** | Multi-Model Software Engineering Valuation (COCOMO II, COSYSMO, COCOTS, SLIM/QSM) across 388K+ lines (264K–280K executable KSLOC), 1,650 automated unit tests (417 suites), and 10 invention architectures. |
+| **1. Cost-to-Replicate Asset Floor** | *Current 2026* | **$15.9M – $24.9M** | Multi-Model Software Engineering Valuation (COCOMO II, COSYSMO, COCOTS, SLIM/QSM) across 338K+ SLOC, 1,322 automated tests, and 10 invention architectures. |
 | **2. Pre-Money Seed / Series A** | *2026 Pilot Stage* | **$18.0M – $28.0M** | Staked IP & 200 Patent Claims + Validated Clinical Pipeline + 93.2% Gross Margins + Live Zero-Egress WebGPU Telemetry. |
 | **3. Series B Growth Stage** | *2027 (Year 2)* | **$51.0M – $68.0M** | **12x – 16x ARR** ($4.25M ARR) driven by regional health system expansion, high net revenue retention (>135%), and EHR marketplace momentum. |
 | **4. Series C Scale Stage** | *2028 (Year 3)* | **$150M – $210M** | **10x – 14x ARR** ($14.8M ARR) driven by CMS CPT automation, FVEY international expansion (NHS/Australia), and enterprise contracts. |
@@ -64,7 +64,7 @@ Four independent software engineering estimation models establish the **$15.9M �
 
 | Model Architecture | Estimated Effort | Schedule (Calendar Mo) | Replacement Cost (USD) | Primary Valuation Focus |
 | :--- | :---: | :---: | :---: | :--- |
-| **COCOMO II (Post-Architecture)** | **763.6 – 944.0 Person-Mo** | **25.0 – 28.2 Months (25–33 FTEs)** | **$14,160,000 – $15,862,500** | Codebase volume (388K monorepo lines / 264K–280K executable KSLOC), reliability multipliers (RELY 1.26), and complexity (CPLX 1.30). |
+| **COCOMO II (Post-Architecture)** | **673.2 Person-Mo** | **23.4 Months (18 FTEs)** | **$15,862,500** | Codebase volume (338K SLOC), reliability multipliers (RELY 1.26), and complexity (CPLX 1.30). |
 | **COSYSMO (Systems Engineering)** | **148.0 Person-Mo** | **18.2 Months (6 FTEs)** | **$3,485,000** | Multi-system protocols (FHIR R4, DICOM, WebSockets, AudioWorklet PCM, WebGPU). |
 | **COCOTS (COTS Integration)** | **112.5 Person-Mo** | **14.5 Months (4 FTEs)** | **$2,645,000** | 18 Commercial-Off-The-Shelf integrations (Gemini API, Stripe, AWS HealthLake, Google Cloud Healthcare). |
 | **SLIM / QSM (Macro-Macro Estimation)** | **720.0 Person-Mo** | **24.0 Months (20 FTEs)** | **$16,980,000** | Macro productivity parameters ($PI = 18.5$) across polyglot microservice monorepos. |

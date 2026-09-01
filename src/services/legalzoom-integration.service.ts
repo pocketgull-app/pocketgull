@@ -33,7 +33,7 @@ export class LegalZoomIntegrationService {
       documentFormat: 'STANDARDIZED_FHIR_PDF_BUNDLE',
       exportMode: 'CLIENT_SIDE_SOVEREIGN_EXPORT',
       officialPartnerProgramUrl: 'https://www.legalzoom.com/partner-programs',
-      impactRadiusPartnerTrackingUrl: 'https://app.impact.com/secure/mediapartner/checklist/checklist-instance.ihtml?id=IMPACT_PARTNER_CHECKLIST_ID'
+      impactRadiusPartnerTrackingUrl: 'https://app.impact.com/secure/mediapartner/checklist/checklist-instance.ihtml?id=___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL'
     },
     {
       packageId: 'lz_estate_trust_bundle_02',
@@ -45,7 +45,7 @@ export class LegalZoomIntegrationService {
       documentFormat: 'JSON_ESTATE_DIRECTIVE',
       exportMode: 'CLIENT_SIDE_SOVEREIGN_EXPORT',
       officialPartnerProgramUrl: 'https://www.legalzoom.com/partner-programs',
-      impactRadiusPartnerTrackingUrl: 'https://app.impact.com/secure/mediapartner/checklist/checklist-instance.ihtml?id=IMPACT_PARTNER_CHECKLIST_ID'
+      impactRadiusPartnerTrackingUrl: 'https://app.impact.com/secure/mediapartner/checklist/checklist-instance.ihtml?id=___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL'
     }
   ]);
 

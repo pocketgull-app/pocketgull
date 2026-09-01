@@ -279,24 +279,10 @@ A custom in-memory `rateLimiter` middleware on the Express backend mitigates den
 - **Path Traversal Prevention:** `path.resolve` checks with strict parent-directory containment guard the static study docs router.
 - **Clear-Text Logging Redaction:** PII and secret values are redacted from all console/CI log outputs in the HIPAA compliance scanner.
 
-### CMS Remote Patient Monitoring (RPM) Superbill Claim Engine
-
-Automates Medicare reimbursement claims under **CPT 99453** (\$19.34 setup), **CPT 99454** (\$48.56 monthly transmission), **CPT 99457** (\$50.18 first 20 min clinical communication), and **CPT 99458** (\$39.86 each add'l 20 min). Features a 30-day compliance calendar auditing active transmission days against the statutory 16-day rule, automated ICD-10 cross-mapping, NIST SP 800-90A CSPRNG SHA-256 digital attestation seals, and 1-click export to CMS 1500 PDF and HL7 FHIR R4 `Claim` JSON.
-
-### SMART on FHIR v2 Discovery & EHR Launch
-
-Full hospital EHR interoperability supporting Epic, Oracle Cerner, and AthenaHealth via standardized `GET /.well-known/smart-configuration` discovery, PKCE `S256` authentication challenges, and parameterized launch tokens (`GET /api/smart/launch`).
-
-### 3D Anatomy Biomechanical Vector Strain Lens
-
-Procedural Three.js musculoskeletal twin visualizing axial compression and joint load distribution vectors for cervical spine ($C_1 - C_7$) and lumbar spine ($L_4 - L_5$).
-
 ---
 
 ## 📜 Feature Evolution Timeline
 
-- **v1.30.0 (2026-08-26)**: CMS Remote Patient Monitoring (RPM) Superbill Engine (CPT 99453/99454/99457/99458 & 16-Day Statutory Rule), SMART on FHIR v2 Hospital EHR Discovery & Launch Context, 3D Anatomy Biomechanical Vector Strain Lens, Android Health Connect Telemetry Sync.
-- **v1.29.0 (2026-08-26)**: Dr. Howard Barrows Clinical Inquiry & PBL Workbench, FIDO2/WebAuthn Hardware Passkey Step-Up Defense, 100% Institutional Statutory Compliance Certificate, Android Health Connect Pixel 9 Pro Live Stream.
 - **v1.2.0 (2026-07-22)**: 10-instrument Clinical & Life Sovereignty Assessment Suite (`ClinicalAssessmentsSuiteComponent`), Dynamic 3D Paradigm Viewport Synchronization (Western Organs, TCM Acupoints, Ayurvedic Chakras), Interactive 3D Raycast Tooltips & Quick Data Entry Overlay Card, Default Rice Papercraft design system.
 - **v1.1.0 (2026-07-21)**: AIGA 2025/2026 Model Augmentation & Telemetry Lens, Physiological Storm De-escalation Shield, Procedural Health Investments QALY Matrix, OSHA Worker Safety & Green Room Lounge, Lewiston-Auburn Foraging & Phytoncide Tracker, WHO ICD-11 Multilingual Health Passport.
 - **v1.0.0-rc12 (2026-07-21)**: 7-Day Chrono Weekly Meal Planner, Geolocational Micro-Climate Relocation Engine, KSS-Driven Medical Acronym Expansion Engine, OpenDyslexic PDF Exporting.

@@ -1,8 +1,0 @@
-﻿# Google Play Release Keystore Configuration Template
-# Copy this file to `key.properties` in the android/ directory and fill in your secure credentials.
-# Note: Never commit `key.properties` or `*.keystore` / `*.jks` to public git repositories.
-
-storePassword=YOUR_KEYSTORE_PASSWORD
-keyPassword=YOUR_KEY_PASSWORD
-keyAlias=pocketgull-upload-key
-storeFile=app/upload-keystore.jks
