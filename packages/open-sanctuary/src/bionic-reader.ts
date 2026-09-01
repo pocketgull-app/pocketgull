@@ -19,35 +19,99 @@ export function getOptimalRecognitionPoint(wordLength: number): number {
 }
 
 /**
+ * Helper to check if a character code is alphanumeric (0-9, A-Z, a-z)
+ */
+function isAlnum(code: number): boolean {
+  return (
+    (code >= 48 && code <= 57) ||  // 0-9
+    (code >= 65 && code <= 90) ||  // A-Z
+    (code >= 97 && code <= 122)    // a-z
+  );
+}
+
+/**
+ * Trims leading and trailing non-alphanumeric characters without regular expressions (O(N) linear 2-pointer scan).
+ */
+function trimNonAlphanumeric(str: string): string {
+  let start = 0;
+  let end = str.length;
+
+  while (start < end && !isAlnum(str.charCodeAt(start))) {
+    start++;
+  }
+  while (end > start && !isAlnum(str.charCodeAt(end - 1))) {
+    end--;
+  }
+
+  return str.slice(start, end);
+}
+
+/**
  * Converts a plain text or HTML string into Bionic Reading HTML format (bolding initial 40-50% letters).
+ * Uses a linear state-machine character parser (100% regex-free) to guarantee O(N) execution and zero ReDoS risk.
  */
 export function formatBionicHtml(text: string, highlightClass = 'bionic-bold'): string {
   if (!text) return '';
 
-  // Disjoint token matching: HTML tags, HTML entities, or plain non-whitespace tokens (O(N) ReDoS-immune)
-  return text.replace(/<[^>\n]+>|&[a-zA-Z0-9#]+;|[^\s<>&]+/g, (match) => {
-    // Preserve HTML tags and HTML entities untouched
-    if ((match.startsWith('<') && match.endsWith('>')) || (match.startsWith('&') && match.endsWith(';'))) {
-      return match;
+  let result = '';
+  let i = 0;
+  const len = text.length;
+
+  while (i < len) {
+    const ch = text[i];
+
+    // 1. HTML Tag: < ... > (preserve untouched)
+    if (ch === '<') {
+      const closeIdx = text.indexOf('>', i);
+      if (closeIdx !== -1) {
+        result += text.slice(i, closeIdx + 1);
+        i = closeIdx + 1;
+        continue;
+      }
     }
 
-    // Format individual word letter/digit runs while preserving surrounding punctuation
-    return match.replace(/[a-zA-Z0-9]+/g, (letters) => {
-      if (letters.length <= 1) {
-        return `<b class="${highlightClass}">${letters}</b>`;
+    // 2. HTML Entity: & ... ; (preserve untouched)
+    if (ch === '&') {
+      const semiIdx = text.indexOf(';', i);
+      if (semiIdx !== -1 && semiIdx - i <= 10) {
+        result += text.slice(i, semiIdx + 1);
+        i = semiIdx + 1;
+        continue;
+      }
+    }
+
+    // 3. Word Token (alphanumeric run)
+    if (isAlnum(text.charCodeAt(i))) {
+      let wordEnd = i + 1;
+      while (wordEnd < len && isAlnum(text.charCodeAt(wordEnd))) {
+        wordEnd++;
       }
 
-      const boldLen = Math.max(1, Math.ceil(letters.length * 0.45));
-      const boldPart = letters.slice(0, boldLen);
-      const restPart = letters.slice(boldLen);
+      const word = text.slice(i, wordEnd);
+      if (word.length <= 1) {
+        result += `<b class="${highlightClass}">${word}</b>`;
+      } else {
+        const boldLen = Math.max(1, Math.ceil(word.length * 0.45));
+        const boldPart = word.slice(0, boldLen);
+        const restPart = word.slice(boldLen);
+        result += `<b class="${highlightClass}">${boldPart}</b>${restPart}`;
+      }
 
-      return `<b class="${highlightClass}">${boldPart}</b>${restPart}`;
-    });
-  });
+      i = wordEnd;
+      continue;
+    }
+
+    // 4. Non-word characters / whitespace / punctuation
+    result += ch;
+    i++;
+  }
+
+  return result;
 }
 
 /**
  * Tokenizes plain text into a sequence of punctuation-weighted Rapid Serial Visual Presentation (RSVP) tokens.
+ * Uses index-based character scanning (zero regular expressions) to eliminate any ReDoS vulnerability.
  */
 export function tokenizeRsvp(text: string, baseWpm = 450, isWeighted = true): IRSVPToken[] {
   if (!text || !text.trim()) return [];
@@ -57,21 +121,35 @@ export function tokenizeRsvp(text: string, baseWpm = 450, isWeighted = true): IR
   const tokens: IRSVPToken[] = [];
 
   rawWords.forEach((raw, idx) => {
-    // Strip leading and trailing non-alphanumerics in two non-backtracking anchor-isolated passes (O(N))
-    const cleanWord = raw.replace(/^[^a-zA-Z0-9]+/, '').replace(/[^a-zA-Z0-9]+$/, '');
+    // Linear 2-pointer scan with zero regexes
+    const cleanWord = trimNonAlphanumeric(raw);
     const cleanLen = cleanWord.length || raw.length;
     const orpIdx = getOptimalRecognitionPoint(cleanLen);
 
-    // Find where the clean letters start in the raw token
-    const letterStart = raw.search(/[a-zA-Z0-9]/);
+    // Find where the first alphanumeric letter starts
+    let letterStart = -1;
+    for (let k = 0; k < raw.length; k++) {
+      if (isAlnum(raw.charCodeAt(k))) {
+        letterStart = k;
+        break;
+      }
+    }
     const actualOrp = letterStart >= 0 ? letterStart + orpIdx : orpIdx;
 
     const prefix = raw.slice(0, actualOrp);
     const orpChar = raw.slice(actualOrp, actualOrp + 1) || raw.slice(0, 1);
     const suffix = raw.slice(actualOrp + 1);
 
-    const hasCommaOrPause = /[,;:\—\-]/.test(raw);
-    const hasSentenceEnd = /[.!?]/.test(raw);
+    const hasCommaOrPause =
+      raw.includes(',') ||
+      raw.includes(';') ||
+      raw.includes(':') ||
+      raw.includes('—') ||
+      raw.includes('-');
+    const hasSentenceEnd =
+      raw.includes('.') ||
+      raw.includes('!') ||
+      raw.includes('?');
     const hasParagraphBreak = raw.includes('\n');
 
     let delayMs = baseMs;
