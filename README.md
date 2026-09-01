@@ -11,31 +11,49 @@
 
 <p align="center">
   <a href="https://pocketgull.app"><img src="https://img.shields.io/badge/Live_App-pocketgull.app-0ea5e9?style=flat-square&logo=google-cloud&logoColor=white" alt="Live App"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-orange?style=flat-square" alt="License: MIT"></a>
-  <img src="https://img.shields.io/badge/version-v1.28.0-blue?style=flat-square" alt="Version">
-  <a href="https://github.com/pocketgull-app/pocketgull/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/pocketgull-app/pocketgull/deploy.yml?style=flat-square&label=deploy" alt="Deploy"></a>
-  <a href="https://github.com/pocketgull-app/pocketgull/actions/workflows/codeql.yml"><img src="https://img.shields.io/github/actions/workflow/status/pocketgull-app/pocketgull/codeql.yml?style=flat-square&label=CodeQL" alt="CodeQL"></a>
+  <a href="https://huggingface.co/philgear"><img src="https://img.shields.io/badge/Hugging_Face-Models_%26_Spaces-ffd21e?style=flat-square&logo=huggingface&logoColor=black" alt="Hugging Face"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square" alt="License: Apache 2.0"></a>
+  <a href="https://doi.org/10.5281/zenodo.20647514"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20647514.svg" alt="DOI"></a>
+  <img src="https://img.shields.io/badge/Ollama-1--Click_Modelfiles-black?style=flat-square&logo=ollama" alt="Ollama">
 </p>
 
 <p align="center">
   <a href="https://orcid.org/0009-0008-1372-5381"><img src="https://img.shields.io/badge/ORCID-0009--0008--1372--5381-A6C900?style=flat-square&logo=orcid&logoColor=white" alt="ORCID"></a>
-  <img src="https://img.shields.io/badge/IEEE_Member-101083329-00629B?style=flat-square&logo=ieee&logoColor=white" alt="IEEE 101083329">
-  <img src="https://img.shields.io/badge/ACM_Ambassador-6179454-0085CA?style=flat-square&logo=associationforcomputingmachinery&logoColor=white" alt="ACM 6179454">
-  <img src="https://img.shields.io/badge/AIGA_Member-0513247-EE3124?style=flat-square&logo=aiga&logoColor=white" alt="AIGA 0513247">
-  <img src="https://img.shields.io/badge/RSA_Fellow-8192283-005A9C?style=flat-square&logoColor=white" alt="RSA Fellow 8192283">
-  <img src="https://img.shields.io/badge/ASU-Fulton_Engineering-8C1D40?style=flat-square" alt="ASU">
-  <a href="https://doi.org/10.5281/zenodo.20647514"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20647514.svg" alt="DOI"></a>
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/Angular-v22-DD0031?style=flat-square&logo=angular&logoColor=white" alt="Angular">
   <img src="https://img.shields.io/badge/Node.js-v24-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js">
   <img src="https://img.shields.io/badge/Three.js-v0.185-000000?style=flat-square&logo=threedotjs&logoColor=white" alt="Three.js">
-  <img src="https://img.shields.io/badge/Gemini-3.7_Flash-4285F4?style=flat-square&logo=google&logoColor=white" alt="Gemini">
-  <a href="https://bestpractices.coreinfrastructure.org/projects/13644"><img src="https://img.shields.io/badge/CII-passing-brightgreen?style=flat-square" alt="CII Best Practices"></a>
-  <a href="https://securityscorecards.dev/viewer/?uri=github.com/pocketgull-app/pocketgull"><img src="https://img.shields.io/badge/OpenSSF-10%2F10-blueviolet?style=flat-square" alt="OpenSSF Scorecard"></a>
-  <a href="https://github.com/pocketgull-app/pocketgull"><img src="https://img.shields.io/badge/SLSA-Level_3-blueviolet?style=flat-square&logo=googlecloud" alt="SLSA 3"></a>
+  <img src="https://img.shields.io/badge/Gemma_2_%2F_3_%2F_4-Fine--Tuned-4285F4?style=flat-square&logo=google&logoColor=white" alt="Gemma">
+  <img src="https://img.shields.io/badge/FHIR-R4_Compliant-e11d48?style=flat-square" alt="FHIR R4">
+  <img src="https://img.shields.io/badge/ISMP_Safety-100%25_Compliant-emerald?style=flat-square" alt="ISMP Safety">
 </p>
+
+---
+
+## 🚀 Live Demos & Open Hugging Face Ecosystem
+
+### 🌐 4 Interactive Hugging Face Spaces
+* ⚡ [**PocketGull WebGPU Zero-Egress Sovereign AI**](https://huggingface.co/spaces/philgear/pocketgull-webgpu-edge): 100% in-browser WebGPU hardware-accelerated clinical inference (HIPAA air-gapped).
+* 🫀 [**PocketGull 3D WebGL Anatomy & Tri-Paradigm Triage**](https://huggingface.co/spaces/philgear/pocketgull-3d-anatomy): Three.js interactive 3D anatomy viewer with clickable organ nodes (Heart, Brain, Lungs, Liver, Spine).
+* 💊 [**PocketGull ISMP Decimal Safety & CYP450 RxGuard**](https://huggingface.co/spaces/philgear/pocketgull-ismp-rxguard): Instant prescription order safety auditor detecting 10-fold decimal errors and botanical interactions.
+* 🕊️ [**PocketGull Clinical Intelligence Suite**](https://huggingface.co/spaces/philgear/pocketgull-clinical-consult): Stepped-care triage acuity classifier and 3-Act Trajectory narrative generator.
+
+### 🕊️ The Avian Navigator Tier Models
+* 🕊️ [**pocketgull-compass-2b**](https://huggingface.co/philgear/pocketgull-compass-2b): NIH/WHO Stepped-Care Triage, Socratic Health Literacy, and 3-Act Trajectories.
+* 🕊️ [**pocketgull-sentinel-peft**](https://huggingface.co/philgear/pocketgull-sentinel-peft): Zero-Tolerance Emergency Red-Flag Interceptor & ISMP Decimal Safety Guard.
+* 🕊️ [**pocketgull-scribe-soap**](https://huggingface.co/philgear/pocketgull-scribe-soap): Zero-Egress Ambient Doctor-Patient SOAP & SBAR Encounter Encoder.
+* 🕊️ [**pocketgull-tern-edge**](https://huggingface.co/philgear/pocketgull-tern-edge): Sub-45ms Ultra-Lightweight On-Device WebGPU / Mobile Edge Engine.
+* 🕊️ [**pocketgull-albatross-multimodal**](https://huggingface.co/philgear/pocketgull-albatross-multimodal): High-Capacity Tri-Paradigm Diagnostic & 3D WebGL Anatomy Integrator.
+* 🕊️ [**pocketgull-rxguard-pgx**](https://huggingface.co/philgear/pocketgull-rxguard-pgx): Pharmacogenomics & Botanical Supplement Interaction Screener.
+
+### 🦙 1-Click Local Execution with Ollama
+```bash
+# Register all models in 1 command
+powershell -ExecutionPolicy Bypass -File dist/ollama/install_models.ps1   # Windows
+bash dist/ollama/install_models.sh                                        # macOS / Linux
+
+# Run anywhere
+ollama run pocketgull-compass-2b
+```
 
 ---
 

@@ -9,7 +9,7 @@ Transforms single patients into empowered, statistically rigorous citizen-scient
 import json
 import math
 import numpy as np
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 class Nof1TrialDesignerEngine:
     """Designs and analyzes personalized N-of-1 crossover clinical trial protocols."""
@@ -18,8 +18,8 @@ class Nof1TrialDesignerEngine:
         self,
         intervention_name: str = "Resonance Frequency Breathing 10 min daily",
         target_outcome_metric: str = "Nocturnal HRV RMSSD (ms)",
-        baseline_phase_a_data: List[float] = None,
-        intervention_phase_b_data: List[float] = None,
+        baseline_phase_a_data: Optional[List[float]] = None,
+        intervention_phase_b_data: Optional[List[float]] = None,
         block_duration_days: int = 14,
         washout_duration_days: int = 7
     ) -> Dict[str, Any]:
@@ -46,17 +46,17 @@ class Nof1TrialDesignerEngine:
 
         # Pooled Standard Deviation & Cohen's d effect size
         n_a, n_b = len(arr_a), len(arr_b)
-        pooled_sd = np.sqrt(((n_a - 1) * (sd_a ** 2) + (n_b - 1) * (sd_b ** 2)) / (n_a + n_b - 2))
-        cohens_d = round(float((mean_b - mean_a) / max(0.01, pooled_sd)), 2)
+        pooled_sd = float(np.sqrt(((n_a - 1) * (sd_a ** 2) + (n_b - 1) * (sd_b ** 2)) / (n_a + n_b - 2)))
+        cohens_d = round((mean_b - mean_a) / max(0.01, pooled_sd), 2)
 
         # Welch's Two-Sample t-statistic & empirical p-value approximation
-        t_stat = (mean_b - mean_a) / np.sqrt((sd_a**2 / n_a) + (sd_b**2 / n_b))
+        t_stat = float((mean_b - mean_a) / np.sqrt((sd_a**2 / n_a) + (sd_b**2 / n_b)))
         # Norm CDF approximation for 2-sided p-value
-        p_val = round(float(2.0 * (1.0 - 0.5 * (1.0 + math.erf(abs(t_stat) / np.sqrt(2.0))))), 4)
+        p_val = round(2.0 * (1.0 - 0.5 * (1.0 + math.erf(abs(t_stat) / math.sqrt(2.0)))), 4)
 
         # Bayesian Posterior Probability of clinically meaningful benefit (P(Delta > 3.0ms | Data))
-        z_bayes = (ite_delta - 3.0) / (pooled_sd / np.sqrt(n_b))
-        posterior_benefit_prob = round(float(0.5 * (1.0 + math.erf(z_bayes / np.sqrt(2.0)))), 3)
+        z_bayes = float((ite_delta - 3.0) / (pooled_sd / np.sqrt(n_b)))
+        posterior_benefit_prob = round(0.5 * (1.0 + math.erf(z_bayes / math.sqrt(2.0))), 3)
 
 
         # Trial Schedule Blocks

@@ -48,6 +48,20 @@ from services.asymmetric_loss_engine import (
     predict_asymmetric_multilabel_risk,
 )
 from inference.engine import JAXInferenceEngine
+from engines.falsification_engine import (
+    FalsificationRequest,
+    FalsificationResult,
+    falsification_engine,
+)
+from engines.uncertainty_calibrator import (
+    CalibrationRequest,
+    CalibrationResult,
+    uncertainty_calibrator,
+)
+from engines.jax_mri_data_engine import (
+    CounterfactualCohortGenerator,
+    BiophysicalMriAugmenter,
+)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ML: CLINICAL RISK SCORING (joblib / scikit-learn & JAX / Flax NNX)
@@ -335,7 +349,12 @@ async def get_hardware_telemetry() -> HardwareTelemetryResponse:
         import psutil  # type: ignore
         import platform
         cpu_val = psutil.cpu_percent(interval=None)
-        cpu_percent = cpu_val if cpu_val else 12.4
+        if isinstance(cpu_val, list):
+            cpu_percent = float(cpu_val[0]) if len(cpu_val) > 0 else 12.4
+        elif isinstance(cpu_val, (int, float)):
+            cpu_percent = float(cpu_val)
+        else:
+            cpu_percent = 12.4
         mem = psutil.virtual_memory()
         total_gb = round(mem.total / (1024**3), 1)
         used_gb = round(mem.used / (1024**3), 1)
@@ -2316,6 +2335,62 @@ async def infer_gemma3_edge(payload: Gemma3EdgeInferRequest) -> dict[str, Any]:
         "prompt_tokens_evaluated": len(structured_directive.split()),
         "completion_tokens_generated": len(generated_text.split())
     }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SKEPTICAL EPISTEMOLOGY: H0 FALSIFICATION & CONFORMAL CALIBRATION
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.post("/v1/falsify", response_model=FalsificationResult, tags=["Skeptical Epistemology"])
+@app.post("/api/ml/falsify", response_model=FalsificationResult, tags=["Skeptical Epistemology"])
+async def evaluate_clinical_falsification(payload: FalsificationRequest) -> FalsificationResult:
+    """Vectorized Monte Carlo H0 Null-Hypothesis Falsification and Cochrane RoB 2 Risk of Bias analysis."""
+    return falsification_engine.evaluate_falsification(payload)
+
+
+@app.post("/v1/calibrate", response_model=CalibrationResult, tags=["Skeptical Epistemology"])
+@app.post("/api/ml/calibrate", response_model=CalibrationResult, tags=["Skeptical Epistemology"])
+async def calibrate_clinical_uncertainty(payload: CalibrationRequest) -> CalibrationResult:
+    """Conformal prediction set calibration with 95% coverage guarantee and epistemic deferral flags."""
+    return uncertainty_calibrator.calibrate(payload)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# JAX HIGH-THROUGHPUT MRI DATA & COUNTERFACTUAL COHORT ENGINE
+# ══════════════════════════════════════════════════════════════════════════════
+
+class SyntheticCohortRequest(BaseModel):
+    num_samples: int = Field(default=10000, description="Number of synthetic patient feature profiles to generate")
+    seed: int = Field(default=42, description="PRNG seed for reproducible generation")
+    mechanism_balance: bool = Field(default=True, description="Enforce equal distribution across the 4 trauma vectors")
+
+
+class SyntheticCohortResponse(BaseModel):
+    num_samples: int
+    generation_time_ms: float
+    feature_matrix_shape: list[int]
+    target_matrix_shape: list[int]
+    class_prevalences: dict[str, float]
+
+
+@app.post("/v1/mri/synthesize-cohort", response_model=SyntheticCohortResponse, tags=["JAX MRI Data Engine"])
+@app.post("/api/ml/mri/synthesize-cohort", response_model=SyntheticCohortResponse, tags=["JAX MRI Data Engine"])
+async def synthesize_orthopedic_cohort(payload: SyntheticCohortRequest) -> SyntheticCohortResponse:
+    """High-throughput JAX/NumPy generation of balanced multi-modal orthopedic patient profiles in <50ms."""
+    result = CounterfactualCohortGenerator.generate_cohort(
+        num_samples=payload.num_samples,
+        seed=payload.seed,
+        mechanism_balance=payload.mechanism_balance,
+    )
+    return SyntheticCohortResponse(
+        num_samples=result["num_samples"],
+        generation_time_ms=result["generation_time_ms"],
+        feature_matrix_shape=result["feature_matrix_shape"],
+        target_matrix_shape=result["target_matrix_shape"],
+        class_prevalences=result["class_prevalences"],
+    )
+
+
 
 
 

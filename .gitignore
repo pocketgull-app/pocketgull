@@ -153,6 +153,8 @@ __pycache__/
 *.ckpt
 *.joblib
 *.sav
+*.gguf
+*.bin
 model.sav
 /models/
 trained_models/
@@ -243,6 +245,9 @@ scratch/
 *.atr
 *.rec
 *.csv
+*.jsonl
+*.parquet
+.cache/
 !src/**/fixtures/*.csv
 !tests/fixtures/*.csv
 
