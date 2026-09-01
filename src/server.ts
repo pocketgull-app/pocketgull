@@ -87,7 +87,7 @@ const ALLOWED_GEMINI_MODELS = new Set([
 
 function normalizeAndValidateModel(model: unknown): string {
   if (typeof model !== 'string' || !model.trim()) {
-    return 'gemini-2.5-flash';
+    return 'gemini-3.7-flash';
   }
   const normalized = model.trim().replace(/^models\//, '');
   if (!ALLOWED_GEMINI_MODELS.has(normalized)) {

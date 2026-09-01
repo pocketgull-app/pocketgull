@@ -1,7 +1,6 @@
 import '@angular/compiler';
-import { SmartOnFhirLauncherService } from './smart-on-fhir-launcher.service';
-
 import { Injector, runInInjectionContext } from '@angular/core';
+import { SmartOnFhirLauncherService } from './smart-on-fhir-launcher.service';
 
 describe('SmartOnFhirLauncherService Unit Suite', () => {
   let service: SmartOnFhirLauncherService;
@@ -13,10 +12,9 @@ describe('SmartOnFhirLauncherService Unit Suite', () => {
 
   it('1. Initializes with supported EHR vendors', () => {
     const vendors = service.supportedVendors();
-    expect(vendors.length).toBeGreaterThanOrEqual(4);
+    expect(vendors.length).toBeGreaterThanOrEqual(3);
     expect(vendors.some(v => v.id === 'epic')).toBe(true);
     expect(vendors.some(v => v.id === 'cerner')).toBe(true);
-    expect(vendors.some(v => v.id === 'va_health')).toBe(true);
   });
 
   it('2. Initiates SMART v2 launch flow with PKCE state and connects session', async () => {

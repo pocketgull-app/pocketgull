@@ -19,7 +19,7 @@ export class TicketmasterPartnerModuleService {
     partnerId: 'partner_ticketmaster_seatgeek_01',
     partnerName: 'SeatGeek, Ticketmaster & AXS Fast-Track Arena Bio-Pass Connector',
     category: 'SPORTS_ARENA_TICKETING',
-    impactChecklistId: '___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL',
+    impactChecklistId: 'IMPACT_CHECKLIST_ID',
     supportedVenues: [
       'Stanford Stadium 🌲',
       'Gillette Stadium 🏈',

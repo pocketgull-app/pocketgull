@@ -207,7 +207,7 @@ Clinical Grounding Directive for 3D Lesions:
     apiKey: string = '',
     systemInstruction: string,
     voiceName: string = 'Aoede',
-    modelName: string = 'models/gemini-3.5-flash',
+    modelName: string = 'models/gemini-3.7-flash',
     occupationalProfile?: IOccupationalHazardProfile | null,
     isPediatric: boolean = false,
     childName?: string,
@@ -226,9 +226,10 @@ Clinical Grounding Directive for 3D Lesions:
     const enhancedInstruction = `${systemInstruction}${pedSegment}${occSegment}${lesionSegment}
 
 Vocal & Speech Delivery Style:
-- Speak in a warm, conversational, empathetic, and reassuring voice.
-- Use natural speech cadence with appropriate pauses for breathing and emphasis.
-- Dynamically adjust pitch and intonation to match clinical context.
+- Speak in a warm, kind, conversational, and uplifting voice with a gentle, good-natured smile in your tone.
+- Use natural speech cadence with reassuring pauses for breathing, encouragement, and emphasis.
+- Dynamically adjust pitch and intonation with genuine warmth and thoughtful clinical attentiveness.
+- Keep explanations clear, empowering, and optimistic so patients and clinicians feel safe and capable.
 - Avoid robotic or rapid-fire delivery.
 
 Macro Fleet Sentinel Context (Full-Duplex Diagnostics):

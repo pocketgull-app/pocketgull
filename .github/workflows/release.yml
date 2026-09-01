@@ -137,6 +137,6 @@ jobs:
           body_path: release_notes.md
           files: |
             pocketgull-${{ github.ref_name }}.tar.gz
-            sbom.spdx.json
+            sbom.cdx.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

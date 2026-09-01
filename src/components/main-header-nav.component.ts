@@ -12,6 +12,7 @@ import { PocketgullBrandMarkComponent } from './shared/pocketgull-brand-mark.com
 import { AmbientFlowPlayerComponent } from './shared/ambient-flow-player.component';
 import { ConsoleIntegrityBadgeComponent } from './console-integrity-badge.component';
 import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscape.service';
+import { NavigationShellService } from '../services/navigation-shell.service';
 
 @Component({
   selector: 'app-main-header-nav',
@@ -92,7 +93,7 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                 <div class="flex items-center gap-2">
                   <span class="text-[11px] font-bold tracking-widest uppercase text-zinc-500">POCKETGULL WORKSTATION HUB</span>
                 </div>
-                <span class="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 border border-emerald-300 dark:border-emerald-800">[14 MODULES]</span>
+                <span class="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 border border-emerald-300 dark:border-emerald-800">[24 CLINICAL MODULES]</span>
               </div>
 
               <!-- Categorized Grid -->
@@ -100,11 +101,25 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                 <!-- Section: Clinical Intelligence & AI -->
                 <div class="space-y-1">
                   <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🧠 Clinical AI</span>
+                  <button type="button" (click)="openTuringSuite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🧮</span>
+                    <div>
+                      <div>Turing Diagnostic Suite</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Cellular Automata &amp; Petri Nets</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openSocraticRounds.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">👨‍⚕️</span>
                     <div>
                       <div>Socratic Rounds</div>
                       <div class="text-[10px] text-zinc-400 font-normal">House M.D. Multi-Agent CDS</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openBarrowsWorkbench.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🔬</span>
+                    <div>
+                      <div>Dr. Barrows Workbench</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">PBL Inquiry &amp; Doctor Prep</div>
                     </div>
                   </button>
                   <button type="button" (click)="openKneeHologram.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
@@ -234,6 +249,13 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                 <!-- Section: Enterprise & Operations -->
                 <div class="space-y-1 pt-2 border-t border-zinc-100 dark:border-zinc-800">
                   <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🏢 Enterprise</span>
+                  <button type="button" (click)="openComplianceCertificate.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">📜</span>
+                    <div>
+                      <div>Statutory Certificate</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">HIPAA, FDA &amp; NIST Audit</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openSupportTicket.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">📬</span>
                     <div>
@@ -262,6 +284,20 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                       <div class="text-[10px] text-zinc-400 font-normal">Physician Pilot & HHS § 1557</div>
                     </div>
                   </button>
+                  <button type="button" (click)="navShell?.openCmsSuperbill(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">📋</span>
+                    <div>
+                      <div>CMS RPM Superbill Claim</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">CPT 99453/99454 16-Day Telemetry</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openTrajectoryReader(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">⚡</span>
+                    <div>
+                      <div>Rapid Trajectory & Speed Reader</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Past / Present / Future Arc (650 WPM)</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openGreenRoom.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🌿</span>
                     <div>
@@ -274,6 +310,13 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
                     <div>
                       <div>Patent &amp; IP Registry</div>
                       <div class="text-[10px] text-zinc-400 font-normal">200 Claims &amp; Clauses</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openAustereHud.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🛡️</span>
+                    <div>
+                      <div>Austere Research Profile</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Zero-Egress HIPAA Safe Harbor HUD</div>
                     </div>
                   </button>
                 </div>
@@ -429,6 +472,10 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
               <span class="text-base">💳</span> <span>Billing &amp; Subscription</span>
             </button>
 
+            <button type="button" (click)="openAustereHud.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🛡️</span> <span>Austere Research Profile HUD</span>
+            </button>
+
             <button type="button" (click)="triggerSomaticGrounding.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🧘</span> <span>Somatic Grounding</span>
             </button>
@@ -484,13 +531,16 @@ export class MainHeaderNavComponent {
   tour = inject(WalkthroughTourService);
   session = inject(SessionStateService);
   soundscapeService = inject(AmbientFlowSoundscapeService);
+  navShell = inject(NavigationShellService, { optional: true });
 
   today = new Date();
   isMobileMenuOpen = signal<boolean>(false);
   isAppsHubOpen = signal<boolean>(false);
   showAmbientPlayer = signal<boolean>(false);
 
+  openTuringSuite = output<void>();
   openSocraticRounds = output<void>();
+  openBarrowsWorkbench = output<void>();
   openKneeHologram = output<void>();
   openSmartHealthPass = output<void>();
   openSocraticIntake = output<void>();
@@ -505,6 +555,7 @@ export class MainHeaderNavComponent {
   openTypefaceSite = output<void>();
   openDocsStudy = output<void>();
   openSupportTicket = output<void>();
+  openComplianceCertificate = output<void>();
   openEncryptedVault = output<void>();
   openSmartFhirSync = output<void>();
   openGlobalHealth = output<void>();
@@ -515,6 +566,7 @@ export class MainHeaderNavComponent {
   openHumanDignityPact = output<void>();
   openDoctorShiftDemo = output<void>();
   openGreenRoom = output<void>();
+  openAustereHud = output<void>();
   triggerSomaticGrounding = output<void>();
 }
 

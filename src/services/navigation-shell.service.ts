@@ -16,6 +16,11 @@ export class NavigationShellService {
   readonly showApiKeyModal = signal<boolean>(false);
   readonly showPatientDirectoryModal = signal<boolean>(false);
   readonly showDictationModal = signal<boolean>(false);
+  readonly showBarrowsWorkbenchModal = signal<boolean>(false);
+  readonly showComplianceCertificateModal = signal<boolean>(false);
+  readonly showCmsSuperbillModal = signal<boolean>(false);
+  readonly showTrajectoryReaderModal = signal<boolean>(false);
+  readonly showAustereHudModal = signal<boolean>(false);
 
   /**
    * Switches active main tab.
@@ -39,6 +44,21 @@ export class NavigationShellService {
   public openDictation(): void { this.showDictationModal.set(true); }
   public closeDictation(): void { this.showDictationModal.set(false); }
 
+  public openBarrowsWorkbench(): void { this.showBarrowsWorkbenchModal.set(true); }
+  public closeBarrowsWorkbench(): void { this.showBarrowsWorkbenchModal.set(false); }
+
+  public openComplianceCertificate(): void { this.showComplianceCertificateModal.set(true); }
+  public closeComplianceCertificate(): void { this.showComplianceCertificateModal.set(false); }
+
+  public openCmsSuperbill(): void { this.showCmsSuperbillModal.set(true); }
+  public closeCmsSuperbill(): void { this.showCmsSuperbillModal.set(false); }
+
+  public openTrajectoryReader(): void { this.showTrajectoryReaderModal.set(true); }
+  public closeTrajectoryReader(): void { this.showTrajectoryReaderModal.set(false); }
+
+  public openAustereHud(): void { this.showAustereHudModal.set(true); }
+  public closeAustereHud(): void { this.showAustereHudModal.set(false); }
+
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
    */
@@ -50,5 +70,10 @@ export class NavigationShellService {
     this.showApiKeyModal.set(false);
     this.showPatientDirectoryModal.set(false);
     this.showDictationModal.set(false);
+    this.showBarrowsWorkbenchModal.set(false);
+    this.showComplianceCertificateModal.set(false);
+    this.showCmsSuperbillModal.set(false);
+    this.showTrajectoryReaderModal.set(false);
+    this.showAustereHudModal.set(false);
   }
 }

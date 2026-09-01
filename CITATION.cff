@@ -1,28 +1,26 @@
 cff-version: 1.2.0
-message: "If you use this software or datasets in your clinical research, please cite it as below."
+message: "If you use PocketGull in your clinical research, healthcare AI pipelines, or academic publications, please cite it as below."
+title: "Pocket-Gull: Sovereign Multi-Paradigm Clinical Intelligence & Stepped-Care Triage Suite"
+abstract: "A real-time medical Care Plan Strategy and Live AI Consult engine powered by fine-tuned Google Gemma models, featuring deterministic emergency red-flag interceptors, ISMP decimal medication safety audits, and Tri-Paradigm (Allopathic, TCM, Ayurvedic) 3-Act Trajectory synthesis."
 authors:
   - family-names: "Gear"
-    given-names: "Phil"
+    given-names: "Phillip"
     orcid: "https://orcid.org/0009-0008-1372-5381"
-    email: "leads@pocketgull.app"
-    website: "https://github.com/philgear"
-title: "Pocket-Gull: Living Medical Intelligence Engine & Open Clinical Science Suite"
-version: "1.28.0"
+    affiliation: "PocketGull LLC"
+version: "1.31.0"
 doi: "10.5281/zenodo.20647514"
-date-released: "2026-08-25"
-license: "MIT"
+date-released: "2026-09-01"
+license: "Apache-2.0"
+repository-code: "https://github.com/philgear/pocketgull"
 url: "https://pocketgull.app"
-repository-code: "https://github.com/pocketgull-app/pocketgull"
-identifiers:
-  - type: doi
-    value: "10.5281/zenodo.20647514"
-    description: "Zenodo Release Archive DOI"
-  - type: doi
-    value: "10.5281/zenodo.20647513"
-    description: "Zenodo Concept DOI (All Versions)"
-  - type: other
-    value: "1487569752"
-    description: "CMS National Provider Identifier (NPI)"
-  - type: other
-    value: "0009-0008-1372-5381"
-    description: "ORCID Researcher Identifier"
+keywords:
+  - "clinical-decision-support"
+  - "medical-llm"
+  - "gemma-2"
+  - "gemma-3"
+  - "gemma-4"
+  - "fhir-r4"
+  - "ismp-medication-safety"
+  - "hipaa-safe-harbor"
+  - "threejs-anatomy"
+  - "webgpu"

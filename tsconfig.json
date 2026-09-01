@@ -18,6 +18,8 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "allowJs": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./.tsbuildinfo",
     "noEmit": false,
     "outDir": "./dist/out-tsc",
     "paths": {

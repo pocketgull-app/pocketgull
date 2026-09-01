@@ -8,6 +8,16 @@ const firebaseApp = getApps().length === 0 ? initializeApp(environment.firebase)
 
 export const dataConnect = getDataConnect(firebaseApp, connectorConfig);
 
+export const isDataConnectEnabled = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return Boolean(
+    window.location.search.includes('useDataConnect=1') ||
+    window.location.search.includes('useEmulator=1') ||
+    (window as any).USE_FIREBASE_DATA_CONNECT ||
+    (window as any).USE_FIREBASE_EMULATOR
+  );
+};
+
 // Connect to local emulator during development if explicit flag or emulator parameter is specified
 if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
   try {

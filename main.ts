@@ -2,7 +2,8 @@
 import '@angular/compiler';
 import { bootstrapApplication, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideZonelessChangeDetection, isDevMode } from '@angular/core';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { dpopAuthInterceptor } from './src/interceptors/dpop-auth.interceptor';
 import { AppComponent } from './src/app.component';
 import { AI_CONFIG, IAiProviderConfig } from './src/services/ai-provider.types';
 import { IntelligenceProviderToken } from './src/services/ai/intelligence.provider.token';
@@ -18,7 +19,7 @@ import { getStoredApiKey } from './src/services/secure-key';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideHttpClient(withFetch()),
+    provideHttpClient(withFetch(), withInterceptors([dpopAuthInterceptor])),
     provideZonelessChangeDetection(),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
@@ -27,8 +28,8 @@ bootstrapApplication(AppComponent, {
       provide: AI_CONFIG,
       useFactory: () => ({
         apiKey: getStoredApiKey() || '',
-        defaultModel: { modelId: 'gemini-3.5-flash', temperature: 0.1 },
-        verificationModel: { modelId: 'gemini-3.5-flash', temperature: 0.0 }
+        defaultModel: { modelId: 'gemini-3.7-flash', temperature: 0.1 },
+        verificationModel: { modelId: 'gemini-3.7-flash', temperature: 0.0 }
       } as IAiProviderConfig)
     },
     {

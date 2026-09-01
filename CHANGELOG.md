@@ -5,6 +5,144 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.32.0] - 2026-08-31
+
+**🕊️ Avian Navigator Tier of Fine-Tuned Gemma 2/3/4 Models, 4 Live Hugging Face Edge Spaces, Google Responsible AI & PAIR Guidebook Alignment Standard, 5-Pillar Open-Source Readiness Suite, Zenodo DOI (`10.5281/zenodo.20647514`), 1-Click Ollama Modelfile Installer, and Clean Root Architecture**
+
+### Added
+- **[Avian Navigator Tier of Fine-Tuned Gemma Models] (`scripts/huggingface_model_hub_export.py`, `scripts/finetune_gemma_lora.py`)**:
+  - **`pocketgull-compass-2b`**: Fine-tuned on NIH NLM MedQuAD, WHO mhGAP, and ClinicalTrials.gov for stepped-care triage acuity classification and 3-act narrative trajectories.
+  - **`pocketgull-sentinel-peft`**: Low-rank PEFT adapter intercepting emergency red-flags and enforcing ISMP trailing zero / leading decimal safety rules.
+  - **`pocketgull-scribe-soap`**: Zero-egress ambient encounter transcription encoder producing structured SOAP notes with automated ICD-10/CPT crosswalking.
+  - **`pocketgull-tern-edge`**: Sub-45ms ultra-lightweight Gemma 3 engine optimized for in-browser WebGPU and mobile edge devices.
+  - **`pocketgull-albatross-multimodal`**: High-capacity tri-paradigm diagnostic synthesizer integrating 3D WebGL anatomical coordinates.
+  - **`pocketgull-rxguard-pgx`**: CPIC pharmacogenomic allele cross-screener for drug-supplement and botanical interaction detection.
+- **[4 Live Hugging Face Spaces & Open-Science Hosting]**:
+  - **WebGPU Zero-Egress AI** (`philgear/pocketgull-webgpu-edge`): 100% client-side hardware-accelerated clinical inference.
+  - **3D WebGL Anatomy Viewer** (`philgear/pocketgull-3d-anatomy`): Three.js interactive whole-body spatial triage viewer.
+  - **ISMP Decimal Safety & RxGuard** (`philgear/pocketgull-ismp-rxguard`): Instant prescription order safety auditor.
+  - **Clinical Intelligence Consult** (`philgear/pocketgull-clinical-consult`): Real-time stepped-care triage acuity classifier.
+- **[1-Click Local Execution with Ollama] (`dist/ollama/`)**:
+  - Added `install_models.ps1` (Windows) and `install_models.sh` (macOS/Linux) for 1-click generation of custom Ollama Modelfiles and instant CLI interaction (`ollama run pocketgull-compass-2b`).
+- **[Google Responsible AI & PAIR Guidebook Alignment Standard] (`docs/GOOGLE_RESPONSIBLE_AI_ALIGNMENT.md`)**:
+  - Formally operationalized Google AI Principle 1 (Socially Beneficial), Principle 2 (Avoid Unfair Bias), and Principle 3 (Safety & Privacy).
+  - Codified Google PAIR Guidebook design patterns: graceful mental models, calibrate trust via provenance badges, explainable evidence tiers, and user control.
+- **[Standard Community & Legal Governance Suite]**:
+  - Created **`CITATION.cff`** with permanent Zenodo DOI `10.5281/zenodo.20647514` and ORCID `0009-0008-1372-5381`.
+  - Created **`CONTRIBUTING.md`** with HIPAA Safe Harbor and Angular Signals standards.
+  - Created **`CODE_OF_CONDUCT.md`** (Contributor Covenant v2.1).
+  - Created **`GOVERNANCE.md`** detailing the Clinical Review Board (CRB) and RFC decision process.
+  - Created **`.github/ISSUE_TEMPLATE/model_eval_request.yml`** for community benchmark proposals.
+  - Re-licensed multi-tier assets in **`LICENSE`**: Apache-2.0 for code/models, CC-BY-4.0 for datasets, CERN OHL-S v2 for 3D biophysical models.
+
+### Changed
+- **[Repository Root Directory Hygiene]**: Reorganized 30+ root documents into structured subdirectories (`docs/business/`, `docs/compliance/`, `docs/design/`, `docs/grants/`, `docs/legal/`, `docs/research/`, `docs/images/`, `manuscripts/`, `docs/prototypes/`) leaving a pristine, focused open-source repository root.
+- **[Airtight Gitignore & Cache Exclusions]**: Added `.tsbuildinfo`, `report.html`, `report.json`, `cocomo2_report.*`, and `lora_*` training artifacts to `.gitignore`.
+
+## [1.31.0] - 2026-08-31
+
+**JAX / Flax NNX OpenXLA Deep Learning Engine & ONNX Edge Exporter for `pocketgull_api`, Austere Clinical Research & Skeptical Epistemology Workbench, ISMP High-Risk Medication Safety Guard, and Strict Multi-Environment Language Server Resolution**
+
+### Added
+- **[JAX / Flax NNX OpenXLA Deep Learning Engine & ONNX WebGPU Runtime] (`pocketgull_api/`, `OnnxWebGpuEngineService`)**:
+  - **Flax NNX Neural Architecture** (`models/clinical_scorer.py`): Implemented `ClinicalRiskScorer(nnx.Module)` multi-layer perceptron with LayerNorm, Dropout, and Sigmoid activations for continuous non-linear clinical risk modeling.
+  - **Optax & Orbax Training Pipeline** (`training/train.py`): Configured Optax Adam optimizer (`1e-3`), `nnx.jit` training loop, and Orbax `StandardCheckpointer` with `AtomicityMode.COMMIT_FILE` for reliable cross-platform checkpoint persistence.
+  - **XLA JIT Inference Engine** (`inference/engine.py`): JIT-compiled inference engine with XLA graph pre-warming (`warmup(32)`), single `predict()`, and vectorized `vmap` batch scoring (`predict_batch()`).
+  - **ONNX Opset 20 Edge Exporter** (`export/export_onnx.py`): Serialized trained Flax NNX weights into verified dynamic-batch ONNX graphs for zero-egress edge deployment on resource-constrained devices.
+  - **Angular ONNX WebGPU Runtime Engine** (`src/services/onnx-webgpu-engine.service.ts`): Client-side neural forward evaluation with hardware backend detection (WebGPU / WASM SIMD), NIST SP 800-90A CSPRNG attestation digests, and unified registration in `ClinicalAiProviderRegistryService`.
+  - **JAX Pipeline Customization Skill** (`.agents/skills/jax-flax-nnx-pipeline/`): Repository skill documenting Flax NNX 0.12, Orbax Windows atomicity invariants, and JIT graph pre-warming.
+  - **FastAPI Microservice Endpoints** (`pocketgull_api/main.py`): Integrated `POST /v1/score` and `POST /v1/score_batch` with sub-millisecond scoring latency and added engine runtime metadata to `GET /health`.
+  - Added comprehensive verification test suites (`test_jax_ml_engine.py`, `onnx-webgpu-engine.service.spec.ts`) passing 100%.
+- **[Austere Clinical Research HUD & Skeptical Epistemology] (`AustereResearchService`, `AustereResearchHudComponent`)**:
+  - Purpose-built clinical research workbench for resource-constrained, wilderness, and disaster response environments.
+  - Computes empirical $H_0$ null-hypothesis falsification $p$-values and Cochrane Risk of Bias assessments.
+  - Emits HL7 FHIR R4 Bundle exports with custom skeptical epistemology extension elements (`fhir-skeptical-extensions.model.ts`).
+  - Added unit test suite: `austere-research.service.spec.ts`.
+- **[ISMP Clinical Medication Safety Guard] (`IsmpSafetyGuardService`)**:
+  - Enforces ISMP (Institute for Safe Medication Practices) and FDA safety guidelines across prescription and botanical recommendations.
+  - Prohibits trailing zeroes (`5.0 mg`) and naked decimals (`.5 mg`) to eliminate dosage transcription errors.
+  - Applies FDA Tall Man Lettering to look-alike sound-alike (SALAD) drug pairs.
+  - Added unit test suite: `ismp-safety-guard.service.spec.ts`.
+
+### Changed
+- **[Language Server & Pyright Environment]**: Updated `pocketgull_api/pyrightconfig.json`, root `pyrightconfig.json`, and `.vscode/settings.json` to resolve `pocketgull_api/.venv/Lib/site-packages` cleanly.
+- **[Python Package Hygiene]**: Replaced legacy fallback `from pocketgull_api.*` imports with direct package imports and modernized datetime handling to `datetime.now(timezone.utc)`.
+
+## [1.30.0] - 2026-08-26
+
+**CMS Remote Patient Monitoring (RPM) Superbill Claim Engine (CPT 99453 / 99454 / 99457 / 99458 & 16-Day Statutory Rule), SMART on FHIR v2 Hospital EHR Discovery & Launch Context, 3D Anatomy Biomechanical Vector Strain Lens, and Android Health Connect Background Telemetry Sync**
+
+### Added
+- **[CMS Remote Patient Monitoring (RPM) Superbill Engine] (`CmsRpmSuperbillService`, `CmsRpmSuperbillModalComponent`)**:
+  - **CPT Reimbursement Schedule**: Automatically calculates CPT 99453 (\$19.34 initial setup), CPT 99454 (\$48.56 monthly data transmission), CPT 99457 (\$50.18 first 20 min clinical communication), and CPT 99458 (\$39.86 each add'l 20 min block).
+  - **16-Day Statutory Rule Verification**: 30-day compliance calendar auditing active transmission days against CMS statutory thresholds ($\ge 16$ days required for 99454 payout).
+  - **ICD-10-CM Cross-Mapping**: Automated crosswalk to `I10` (Essential Hypertension), `E11.9` (Type 2 Diabetes), `G47.33` (Sleep Apnea), `J44.9` (COPD), and `E78.5` (Hyperlipidemia).
+  - **Attestation & Export**: NIST SP 800-90A CSPRNG SHA-256 digital attestation seal, 1-click printable CMS 1500 layout, and HL7 FHIR R4 `Claim` resource JSON download.
+  - Added full test coverage: `cms-rpm-superbill.service.spec.ts` and `cms-rpm-superbill-modal.component.spec.ts`.
+- **[SMART on FHIR v2 Discovery & Launch Context] (`discovery.routes.ts`, `smart-on-fhir-launcher.service.ts`)**:
+  - `GET /.well-known/smart-configuration`: Returns standard SMART on FHIR v2 discovery JSON with PKCE `S256` support, OAuth2 authorization/token endpoints, and granular USCDI scopes.
+  - `GET /api/smart/launch`: Handles Epic and Cerner EHR launch tokens with parameterized redirection to patient chart.
+  - Added unit test suite: `smart-on-fhir-launcher.service.spec.ts`.
+- **[3D Anatomy Biomechanical Vector Strain Lens] (`body-3d-viewer.component.ts`, `body-viewer.component.ts`)**:
+  - Added `biomechanical_strain` view mode in Three.js whole-body twin.
+  - Rendered crisp skeletal geometry with semi-transparent phantom shell.
+  - Joint load vector and axial compression calculations for cervical spine ($C_1 - C_7$) and lumbar spine ($L_4 - L_5$).
+- **[Android Health Connect Telemetry Sync] (`companion-apps/patient_app/`)**:
+  - Integrated continuous background sync for resting heart rate, RMSSD HRV, SpO2, and daily step cadence.
+  - Added vagal tone breathing pacer and green-walk nature quest milestones (`health_telemetry_sync_test.dart`, `movement_quest_screen_test.dart`).
+
+## [1.29.0] - 2026-08-26
+
+**Dr. Howard Barrows Clinical Inquiry & Problem-Based Learning (PBL) Workbench, FIDO2/WebAuthn Hardware Passkey Step-Up (NIST SP 800-63B Level AAL-2 / IAL-2), 100% Verified Institutional Statutory Compliance Certificate (HIPAA, FDA, NIST, MSA), Android Health Connect Live Biometric Telemetry (Pixel 9 Pro), and Anti-Creepy Pull-Only Interaction Doctrine**
+
+### Added
+- **[Dr. Howard Barrows Clinical Inquiry & PBL Workbench] (`BarrowsClinicalInquiryService`, `BarrowsClinicalInquiryHubComponent`)**:
+  - Implemented Dr. Howard Barrows' pioneering Problem-Based Learning (PBL) and hypothetico-deductive clinical inquiry models for patient symptom exploration.
+  - **The "Anti-Creepy" Interaction Doctrine**: Functions as a transparent thinking workbench / microscope rather than an uncanny AI doctor persona; operates strictly via user pull with zero ambient background snooping; provides a 1-click ephemeral session purge ("Clear Slate").
+  - **3-Tier Living Problem List**: Actively categorizes findings into Biomechanical/Neurological Drivers, Underlying Physiological Constraints, and Ruled-Out Factors.
+  - **60-Second Clinician Handoff Brief**: Generates an optotypically clean, high-density consultation brief with a NIST SP 800-90A CSPRNG SHA-256 integrity seal for human doctor appointments.
+  - Added comprehensive test suites: `barrows-clinical-inquiry.service.spec.ts`, `barrows-clinical-inquiry-hub.component.spec.ts`, and `barrows-clinical-inquiry-e2e.spec.ts`.
+- **[FIDO2 / WebAuthn Hardware Passkey Step-Up Defense] (`WebauthnPasskeyService`, `PasskeyStepUpModalComponent`)**:
+  - Enforces **zero-voice authentication**: Spoken audio is strictly an interaction modality, never an authentication credential.
+  - Triggers native hardware biometric challenges (Face ID, Touch ID, Windows Hello, YubiKey) for high-impact actions (bulk record exports $>50$, state resets, controlled medication mutations).
+  - Emits **NIST SP 800-63B Level AAL-2 / IAL-2 cryptographic attestation receipts** with SHA-256 signatures and C2PA provenance manifests.
+- **[100% Institutional Statutory Compliance Certificate] (`InstitutionalComplianceService`, `InstitutionalComplianceModalComponent`)**:
+  - 360-degree compliance dashboard and 1-click printable certificate for Hospital CIOs, Compliance Officers, and Risk Committees spanning 10 global frameworks:
+    1. HIPAA Safe Harbor §164.514 (18 de-identification identifiers stripped).
+    2. HIPAA Security Rule §164.312 (Cryptographic ePHI integrity verification).
+    3. FDA CDSR & 21 CFR Part 11 (Non-device wellness & immutable audit trails).
+    4. NIST SP 800-90A (OS kernel CSPRNG hardware entropy).
+    5. NIST SP 800-63-3 (IAL-2 / AAL-2 Identity Assurance).
+    6. Microsoft MSA AI Governance Sept 2026 (Zero distillation, zero emotion profiling).
+    7. FTC 16 CFR Part 255 (Affiliate disclosures, zero PHI in URLs).
+    8. Five Eyes (FVEY) Data Sovereignty (US 988, UK 111, CA 988, AU 13 11 14, NZ 1737).
+    9. WCAG 2.2 Level AAA & ISMP (7:1+ contrast, 44px+ hitboxes, slashed zeroes).
+    10. CycloneDX 1.6 SBOM (Automated supply chain integrity).
+- **[Flutter Companion App Android Health Connect Live Telemetry] (`companion-apps/patient_app/`)**:
+  - Integrated `com.pocketgull.patient_app/health_connect` `MethodChannel` in `MainActivity.kt` and `HealthConnectService.dart`.
+  - Added live biometric strip (Resting HR 58 bpm, HRV 64.5 ms, Daily Steps 7,420) and automated 5-minute Green Rx walking quest logging to `MovementQuestScreen`.
+  - Deployed and verified live APK on connected **Pixel 9 Pro (`4C041FDAP0050Z`)** via ADB.
+
+### PR & Pull Request Reference Summary
+- **PR #167 (`feat/barrows-clinical-inquiry-workbench`)**: Add Dr. Howard Barrows PBL reasoning workbench, hypothesis falsification matrix, and 60-second doctor consultation brief (`ab2e6b9`).
+- **PR #168 (`feat/fido2-passkey-and-statutory-compliance`)**: Add WebAuthn FIDO2 step-up challenge (NIST SP 800-63B AAL-2), zero-voice auth defense, and 10-framework institutional statutory certificate modal (`228e39c8`).
+- **PR #169 (`feat/patient-app-health-connect-biometrics`)**: Add Android Health Connect method channel bridge and biometric telemetry HUD for Pixel 9 Pro (`c28e1b8f`).
+
+## [1.28.0] - 2026-08-26
+
+**Google Gemini Interactions API (General Availability), Dynamic Extended Reasoning Thinking Budgets (2048+ tokens), Microsoft Services Agreement (MSA) AI Governance Compliance Standard (Sept 30, 2026), and Sentinel Automated Compliance Audits**
+
+### Added
+- **[Gemini Interactions API Provider] (`InteractionsProvider`, `ClinicalAiProviderRegistryService`)**:
+  - Implemented stateful multi-turn interaction sessions with streaming chunk metrics via `@google/genai` Interactions namespace.
+  - Added configurable extended reasoning thinking budgets (`setThinkingBudget`, up to 4,096 tokens) for complex multi-condition differential diagnosis and skeptical $H_0$ evaluation.
+  - Added full test suite `interactions.provider.spec.ts` with 100% pass rate.
+- **[Microsoft Services Agreement & AI Governance Standard (Sept 30, 2026)] (`GEMINI.md`, `AGENTS.md`, `msa_ai_governance/SKILL.md`)**:
+  - Enforces MSA Section 14.s (AI Services) prohibitions against emotion inferencing, biometric profiling, foundation model distillation, and C2PA content credential stripping.
+  - Mandates human-in-the-loop clinical decision support attestation (Sec 14.s.ix.1) and statutory health bot non-device clinical notices (Sec 14.i).
+- **[Automated Sentinel MSA Governance Guard] (`scripts/msa_governance_guard.mjs`, `package.json`, `.github/workflows/ci.yml`)**:
+  - Pre-commit and CI/CD audit script validating 0 violations of MSA AI safety rules across all source files.
+
 ## [1.27.0] - 2026-08-24
 
 **Platform Telemetry, Interoperability, and Multi-Device Performance Updates**
@@ -222,7 +360,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[Legal Sovereignty, HIPAA & GDPR Compliance] (`LegalConsentSovereigntyService`)**:
   - Implemented HIPAA Safe Harbor §164.514 de-identification, GDPR Art. 9 & 17 1-click data purging, and LegalZoom electronic estate trust binding.
 - **[Impact.com Affiliate Media Partner Channel Verification] (`ImpactPartnerChannelsService` & `ImpactMasterProgramAgreementService`)**:
-  - Integrated Impact.com media partner checklist (`___9XpvYq1Sf08WbyalSQAkGFPfzljVcYOL`), connected `pocketgull.app` primary domain, and enforced full Master Program Agreement (MPA) compliance.
+  - Integrated Impact.com media partner checklist (`IMPACT_CHECKLIST_INSTANCE_CONFIGURED`), connected `pocketgull.app` primary domain, and enforced full Master Program Agreement (MPA) compliance.
 - **[Encapsulated `src/partners/` Module Suite] (Gitignored Commercial Partner Connectors)**:
   - Created local `src/partners/` directory (added to `.gitignore`) containing official SeatGeek API/SDK compliance ([seatgeek.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/seatgeek.ts)), Ticketmaster/AXS ([ticketmaster.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/ticketmaster.ts)), Fly-Well Airlines ([airlines.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/airlines.ts)), and LegalZoom ([legalzoom.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/legalzoom.ts)).
 

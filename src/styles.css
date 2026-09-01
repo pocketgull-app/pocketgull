@@ -3948,6 +3948,47 @@ textarea:focus-visible {
   color: #fbbf24 !important; /* amber-400 */
 }
 
+/* ==========================================================================
+   RACHEL NABORS ETHICAL MOTION & BIO-RHYTHMIC PACING UTILITIES
+   ========================================================================== */
+
+@keyframes parasympathetic-breath {
+  0%, 100% { transform: scale(1); opacity: 0.25; filter: blur(32px); }
+  40% { transform: scale(1.05); opacity: 0.45; filter: blur(44px); }
+}
+
+@keyframes origami-unfurl {
+  0% { transform: scale(0.96) translateY(10px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes attestation-luster {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.animate-origami-unfurl {
+  animation: origami-unfurl 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-vagal-glow {
+  animation: parasympathetic-breath 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-luster-sweep {
+  animation: attestation-luster 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-origami-unfurl,
+  .animate-vagal-glow,
+  .animate-luster-sweep {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
 
 
 

@@ -3,6 +3,9 @@
 **Pocket-Gull (Understory Clinical AI System)**  
 *Google Software Engineering & Clinical Safety Standards (Software as a Medical Device - SaMD)*
 
+> [!NOTE]
+> For our complete operationalization matrix mapping to **Google's Three AI Principles** and the **Google People + AI Guidebook (PAIR)**, see the [Google Responsible AI Alignment Document](docs/GOOGLE_RESPONSIBLE_AI_ALIGNMENT.md).
+
 ---
 
 ## 1. Ethical Principles & AI Co-Pilot Bounds

@@ -1,0 +1,54 @@
+name: "Model Evaluation & Benchmark Proposal"
+description: "Propose a new benchmark evaluation, dataset test, or LoRA adapter audit for the Avian Navigator model tier."
+title: "[MODEL-EVAL]: "
+labels: ["ai-ml", "benchmarks", "gemma"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 🕊️ Avian Navigator Model Evaluation Proposal
+        Propose a clinical evaluation benchmark, MedQA/USMLE audit, or dataset evaluation for PocketGull models.
+
+  - type: dropdown
+    id: target_model
+    attributes:
+      label: Target Model
+      options:
+        - "pocketgull-compass-2b (Stepped-Care Triage & 3-Act Trajectory)"
+        - "pocketgull-sentinel-peft (Emergency Interceptor & ISMP Decimal Safety)"
+        - "pocketgull-scribe-soap (Zero-Egress Ambient SOAP Encoder)"
+        - "pocketgull-tern-edge (WebGPU / Mobile Edge Engine)"
+        - "pocketgull-albatross-multimodal (Tri-Paradigm Diagnostic & 3D Anatomy)"
+        - "pocketgull-rxguard-pgx (Pharmacogenomics & Botanical Screener)"
+        - "All Avian Navigator Models"
+    validations:
+      required: true
+
+  - type: input
+    id: benchmark_dataset
+    attributes:
+      label: Evaluation Benchmark / Dataset
+      placeholder: "e.g., MedQA-USMLE, PubMedQA, MMLU-Clinical, Custom NIH Cohort"
+    validations:
+      required: true
+
+  - type: textarea
+    id: evaluation_protocol
+    attributes:
+      label: Evaluation Protocol & Metrics
+      description: What evaluation metrics will be measured? (e.g. Factual Accuracy, ISMP Decimal Safety, Hallucination Rate, Latency).
+      placeholder: "Measure 0-shot and 5-shot accuracy on MedQA with temperature 0.2 and ISMP decimal compliance audit."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: compliance_checklist
+    attributes:
+      label: Ethics & Data Sovereignty Checklist
+      options:
+        - label: "Dataset contains ZERO Protected Health Information (HIPAA §164.514 Safe Harbor verified)"
+          required: true
+        - label: "Dataset is open-source (CC-BY-4.0 / MIT / Apache 2.0 / Public Domain)"
+          required: true
+        - label: "Results will be published openly with reproducible evaluation scripts"
+          required: true

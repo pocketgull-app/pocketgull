@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
 import { IPatient } from './patient.types';
+import { IsmpSafetyGuardService } from './ismp-safety-guard.service';
 
 export type PGxPhenotype = 'Ultrarapid Metabolizer' | 'Normal Metabolizer' | 'Intermediate Metabolizer' | 'Poor Metabolizer' | 'Indeterminate';
 export type RiskSeverity = 'SAFE' | 'ADVISORY' | 'MODERATE_RISK' | 'CONTRAINDICATED';
@@ -40,12 +41,18 @@ export interface IRxGuardAssessment {
 })
 export class RxGuardService {
   private patientState: PatientStateService | null = null;
+  public readonly ismpGuard: IsmpSafetyGuardService;
 
   constructor() {
     try {
       this.patientState = inject(PatientStateService, { optional: true });
     } catch {
       this.patientState = null;
+    }
+    try {
+      this.ismpGuard = inject(IsmpSafetyGuardService, { optional: true }) || new IsmpSafetyGuardService();
+    } catch {
+      this.ismpGuard = new IsmpSafetyGuardService();
     }
   }
 

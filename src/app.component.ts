@@ -81,6 +81,12 @@ import { AmbientLivingSpaceDashboardComponent } from './components/ambient-livin
 import { HumanDignityPactComponent } from './components/human-dignity-pact.component';
 import { DoctorShiftSalesDemoComponent } from './components/doctor-shift-sales-demo.component';
 import { GreenRoomLoungeComponent } from './components/green-room-lounge.component';
+import { BarrowsClinicalInquiryHubComponent } from './components/barrows-clinical-inquiry-hub.component';
+import { PasskeyStepUpModalComponent } from './components/modals/passkey-step-up-modal.component';
+import { InstitutionalComplianceModalComponent } from './components/modals/institutional-compliance-modal.component';
+import { CmsRpmSuperbillModalComponent } from './components/modals/cms-rpm-superbill-modal.component';
+import { ClinicalTrajectoryReaderModalComponent } from './components/modals/clinical-trajectory-reader-modal.component';
+import { AustereResearchHudComponent } from './components/austere-research-hud/austere-research-hud.component';
 import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 
 @Component({
@@ -93,6 +99,9 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     CommonModule,
     FormsModule,
     PocketgullTypefaceSiteComponent,
+    BarrowsClinicalInquiryHubComponent,
+    PasskeyStepUpModalComponent,
+    InstitutionalComplianceModalComponent,
     MedicalChartComponent,
     AnalysisContainerComponent,
     DictationModalComponent,
@@ -138,7 +147,10 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     AmbientLivingSpaceDashboardComponent,
     HumanDignityPactComponent,
     DoctorShiftSalesDemoComponent,
-    GreenRoomLoungeComponent
+    GreenRoomLoungeComponent,
+    CmsRpmSuperbillModalComponent,
+    ClinicalTrajectoryReaderModalComponent,
+    AustereResearchHudComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -196,6 +208,46 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
       <app-encrypted-vault-modal #vaultModal></app-encrypted-vault-modal>
       <app-smart-fhir-sync-modal #fhirModal></app-smart-fhir-sync-modal>
       <app-global-health-initiatives-modal #globalHealthModal></app-global-health-initiatives-modal>
+
+      <!-- Dr. Howard Barrows Clinical Inquiry & Problem-Based Reasoning Workbench Modal -->
+      @if (navShell.showBarrowsWorkbenchModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Clinical Reasoning Workbench">
+          <div class="relative w-full max-w-5xl my-auto">
+            <button
+              type="button"
+              (click)="navShell.closeBarrowsWorkbench()"
+              class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-9 h-9 rounded-full bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-2xl z-10 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
+              aria-label="Close Clinical Workbench">
+              ✕
+            </button>
+            <app-barrows-clinical-inquiry-hub></app-barrows-clinical-inquiry-hub>
+          </div>
+        </div>
+      }
+
+      <!-- NIST SP 800-63B FIDO2 Passkey Step-Up Challenge Modal -->
+      <app-passkey-step-up-modal></app-passkey-step-up-modal>
+
+      <!-- Institutional Statutory Compliance Certificate Modal (HIPAA, FDA, NIST, MSA) -->
+      @if (navShell.showComplianceCertificateModal()) {
+        <app-institutional-compliance-modal
+          (close)="navShell.closeComplianceCertificate()">
+        </app-institutional-compliance-modal>
+      }
+
+      <!-- CMS Remote Patient Monitoring (RPM) Superbill Modal (CPT 99453 / 99454) -->
+      @if (navShell.showCmsSuperbillModal()) {
+        <app-cms-rpm-superbill-modal
+          (close)="navShell.closeCmsSuperbill()">
+        </app-cms-rpm-superbill-modal>
+      }
+
+      <!-- High-Velocity Trajectory & Bionic Speed Reader Modal -->
+      @if (navShell.showTrajectoryReaderModal()) {
+        <app-clinical-trajectory-reader-modal
+          (close)="navShell.closeTrajectoryReader()">
+        </app-clinical-trajectory-reader-modal>
+      }
 
       @defer (on idle) {
         <app-dictation-modal></app-dictation-modal>
@@ -403,6 +455,8 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
         }
 
         <app-main-header-nav
+          (openTuringSuite)="navShell.selectTab('analysis')"
+          (openBarrowsWorkbench)="navShell.openBarrowsWorkbench()"
           (openSocraticIntake)="state.toggleSocraticIntake(true)"
           (openModelGarden)="showModelGardenModal.set(true)"
           (openTalentHrPortal)="showTalentHrPortalModal.set(true)"
@@ -415,6 +469,7 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
           (openTypefaceSite)="showTypefaceSite.set(true)"
           (openDocsStudy)="showDocsStudy.set(true)"
           (openSupportTicket)="showSupportTicketModal.set(true)"
+          (openComplianceCertificate)="navShell.openComplianceCertificate()"
           (openEncryptedVault)="vaultModal.open()"
           (openSmartFhirSync)="fhirModal.open()"
           (openGlobalHealth)="globalHealthModal.open()"
@@ -425,6 +480,7 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
           (openHumanDignityPact)="showHumanDignityPactModal.set(true)"
           (openDoctorShiftDemo)="showDoctorShiftSalesDemoModal.set(true)"
           (openGreenRoom)="showGreenRoomLoungeModal.set(true)"
+          (openAustereHud)="showAustereHudModal.set(true)"
           (triggerSomaticGrounding)="triggerSomaticGrounding()">
         </app-main-header-nav>
 
@@ -1240,6 +1296,11 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     @if (showHumanDignityPactModal()) {
       <app-human-dignity-pact (closeModal)="showHumanDignityPactModal.set(false)"></app-human-dignity-pact>
     }
+    @if (showAustereHudModal() || navShell.showAustereHudModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-labelledby="austere-modal-title">
+        <app-austere-research-hud (close)="showAustereHudModal.set(false); navShell.closeAustereHud()"></app-austere-research-hud>
+      </div>
+    }
     <app-clinical-cds-disclaimer-banner></app-clinical-cds-disclaimer-banner>
     <app-zamecznik-canvas></app-zamecznik-canvas>
   `,
@@ -1267,6 +1328,7 @@ export class AppComponent implements OnDestroy {
   showHumanDignityPactModal = signal(false);
   showDoctorShiftSalesDemoModal = signal(false);
   showGreenRoomLoungeModal = signal(false);
+  showAustereHudModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
   readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);

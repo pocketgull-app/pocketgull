@@ -15,121 +15,102 @@ ADAPTERS_DIR = ROOT_DIR / "adapters" / "huggingface"
 
 CLINICAL_ADAPTERS = [
     {
-        "id": "gemma-3-clinical-rxguard",
-        "name": "PocketGull Gemma 3 RxGuard & PGx Interaction Screener",
+        "id": "pocketgull-compass-2b",
+        "name": "PocketGull Compass (v1.0)",
+        "base_model": "google/gemma-2-2b-it",
+        "discipline": "NIH/WHO Stepped-Care Triage, Socratic Health Literacy, and 3-Act Trajectories",
+        "description": "Grounds clinical triage in Level A NIH/WHO consensus with 100% ISMP decimal safety and zero catastrophic forgetting.",
+        "widgets": [
+            {"text": "Patient with BP 136/86 mmHg and fasting glucose 112 mg/dL. Formulate NIH stepped-care lifestyle modifications and follow-up timeline."},
+            {"text": "Provide WHO mhGAP stepped-care psychoeducational and lifestyle recommendations for mild generalized fatigue and sleep difficulty."}
+        ]
+    },
+    {
+        "id": "pocketgull-sentinel-peft",
+        "name": "PocketGull Sentinel",
+        "base_model": "google/gemma-2-2b-it",
+        "discipline": "Zero-Tolerance Emergency Red-Flag Interceptor & ISMP Decimal Safety Guard",
+        "description": "Deterministic safety gate detecting BE-FAST stroke, ACS chest pain, and C-SSRS suicidal crisis before clinical text generation.",
+        "widgets": [
+            {"text": "Patient suddenly developed right arm weakness, facial droop, and slurred speech 25 minutes ago. Evaluate emergency triage acuity."},
+            {"text": "Order text: 'Prescribe Lisinopril 10.0 mg PO daily and .5 mg Clonazepam PRN'. Perform ISMP decimal safety audit."}
+        ]
+    },
+    {
+        "id": "pocketgull-scribe-soap",
+        "name": "PocketGull Scribe",
+        "base_model": "google/gemma-3-4b-it",
+        "discipline": "Zero-Egress Ambient Doctor-Patient SOAP & SBAR Encoder",
+        "description": "Converts ambient patient-clinician conversation into structured SOAP records with ICD-10 and SNOMED-CT codes.",
+        "widgets": [
+            {"text": "Patient is a 52yo female reporting 3 weeks of progressive right knee pain aggravated by stairs. Denies erythema or fever. Exam reveals mild crepitus. Translate into 4-quadrant SOAP format."},
+            {"text": "Generate a concise SBAR nursing shift handoff for a patient admitted with Community-Acquired Pneumonia receiving Ceftriaxone."}
+        ]
+    },
+    {
+        "id": "pocketgull-tern-edge",
+        "name": "PocketGull Tern (0.5B – 2B)",
+        "base_model": "google/gemma-2-2b-it",
+        "discipline": "Sub-45ms Ultra-Lightweight On-Device WebGPU / Mobile Edge Engine",
+        "description": "Speculative decoding draft engine and local edge triage adapter for zero-cloud latency and complete privacy.",
+        "widgets": [
+            {"text": "Sub-45ms acute triage: 62yo male with sudden crushing retrosternal chest pressure radiating to left jaw, diaphoresis. Return immediate acuity tier and hotline."},
+            {"text": "Explain the difference between systolic and diastolic blood pressure at a 5th-grade reading level using a plumbing metaphor."}
+        ]
+    },
+    {
+        "id": "pocketgull-albatross-multimodal",
+        "name": "PocketGull Albatross",
+        "base_model": "google/gemma-3-12b-it",
+        "discipline": "High-Capacity Tri-Paradigm Diagnostic & 3D WebGL Anatomy Integrator",
+        "description": "Synthesizes multi-paradigm clinical rounds, somatic biomechanics, and 3D WebGL anatomical spatial models.",
+        "widgets": [
+            {"text": "Synthesize a multi-paradigm care plan for chronic tension headaches combining Western sleep hygiene, TCM Liver Qi stagnation points, and Ayurvedic Vata-pacifying nutrition."},
+            {"text": "Correlate right C5-C6 cervical radiculopathy with somatic biomechanics and Upper Trapezius myofascial trigger points."}
+        ]
+    },
+    {
+        "id": "pocketgull-rxguard-pgx",
+        "name": "PocketGull RxGuard & PGx Interaction Screener",
         "base_model": "google/gemma-3-4b-it",
         "discipline": "Pharmacogenomics & Botanical Supplement Interactions",
-        "description": "Screens Cytochrome P450 (CYP2D6, CYP2C19, SLCO1B1) interactions across allopathic prescriptions and botanical herbs."
-    },
-    {
-        "id": "gemma-3-phenopackets-genomics",
-        "name": "PocketGull Gemma 3 GA4GH Phenopackets v2 Translator",
-        "base_model": "google/gemma-3-12b-it",
-        "discipline": "Rare Disease Genomics & HPO Ontology",
-        "description": "Translates free-text clinical notes into compliant GA4GH Phenopackets Schema v2.0 JSON with HPO/LOINC concepts."
-    },
-    {
-        "id": "gemma-3-ambient-soap-scribe",
-        "name": "PocketGull Gemma 3 Ambient Clinical SOAP & SBAR Scribe",
-        "base_model": "google/gemma-3-4b-it",
-        "discipline": "Ambient Clinical NLP & Encounter Coding",
-        "description": "Converts ambient patient-clinician conversation into structured SOAP records with ICD-10 and SNOMED-CT codes."
-    },
-    {
-        "id": "gemma-3-biomarker-velocity",
-        "name": "PocketGull Gemma 3 Biomarker Velocity & Resilience Forecaster",
-        "base_model": "google/gemma-3-4b-it",
-        "discipline": "Biophysical Rate-of-Change & Organ Longevity",
-        "description": "Computes first-derivative rate of change across longitudinal blood panels and forecasts stealth organ degradation."
-    },
-    {
-        "id": "gemma-3-tri-paradigm-radar",
-        "name": "PocketGull Gemma 3 Tri-Paradigm Diagnostic Integrator",
-        "base_model": "google/gemma-3-12b-it",
-        "discipline": "Integrative Allopathic, TCM & Ayurvedic Synthesis",
-        "description": "Simultaneously examines care plan vectors through Western, TCM Zang-Fu, and Ayurvedic Tridosha lenses."
-    },
-    {
-        "id": "gemma-3-nof1-trial-designer",
-        "name": "PocketGull Gemma 3 N-of-1 Single-Case Trial Protocol Designer",
-        "base_model": "google/gemma-3-4b-it",
-        "discipline": "Personalized Clinical Biostatistics",
-        "description": "Generates 56-day ABAB crossover trial protocols with Bayesian posterior superiority calculations."
-    },
-    {
-        "id": "gemma-3-prior-auth-cms0057",
-        "name": "PocketGull Gemma 3 CMS-0057-F Fast-Track Prior Auth Assistant",
-        "base_model": "google/gemma-3-4b-it",
-        "discipline": "Regulatory Compliance & Payer Interoperability",
-        "description": "Formats Da Vinci PAS (Payer Alert Services) FHIR bundles for 72-hour expedited prior authorization."
-    },
-    {
-        "id": "gemma-3-sdoh-equity-compass",
-        "name": "PocketGull Gemma 3 WHO/CDC SDoH Health Equity Classifier",
-        "base_model": "google/gemma-3-4b-it",
-        "discipline": "Social Determinants of Health & Health Equity",
-        "description": "Screens 5 SDoH domains and maps community-grounded resources at an 8th-grade reading level."
-    },
-    {
-        "id": "gemma-3-hipaa-tamper-sentinel",
-        "name": "PocketGull Gemma 3 HIPAA Safe Harbor & Clinical Integrity Sentinel",
-        "base_model": "google/gemma-3-4b-it",
-        "discipline": "Clinical Data Integrity & HIPAA De-Identification",
-        "description": "Audits HIPAA §164.514 Safe Harbor de-identification, dual-custody verification, and prompt injection defense."
-    },
-    {
-        "id": "gemma-3-ophthalmology-retina-cds",
-        "name": "PocketGull Gemma 3 Ophthalmology & LogMAR Visual Acuity CDS",
-        "base_model": "google/gemma-3-4b-it",
-        "discipline": "Ophthalmological Decision Support",
-        "description": "Analyzes optical coherence tomography findings and optotypic visual acuity charts with zero lexical ambiguity."
-    },
-    {
-        "id": "gemma-3-grand-rounds-care-presenter",
-        "name": "PocketGull Gemma 3 Grand Rounds 7-Slide & CARE Case Publisher",
-        "base_model": "google/gemma-3-12b-it",
-        "discipline": "Academic Medical Case Publication",
-        "description": "Compiles 7-slide academic Grand Rounds decks and CARE Guidelines-compliant medical case reports."
-    },
-    {
-        "id": "gemma-3-osteopathic-rounds-director",
-        "name": "PocketGull Gemma 3 Dr. Elena Gullwing, DO Osteopathic Rounds Director",
-        "base_model": "google/gemma-3-12b-it",
-        "discipline": "Osteopathic Medicine, Somatic Dysfunction & Steering Committee Consensus",
-        "description": "Synthesizes multi-paradigm clinical rounds, somatic biomechanics, and holistic interdisciplinary steering committee consensus."
-    },
-    {
-        "id": "gemma-3-sensory-ambient",
-        "name": "PocketGull Gemma 3 Context-Aware Ambient Telemetry Engine",
-        "base_model": "google/gemma-3-4b-it",
-        "discipline": "Environmental Autonomics & Sensory Co-Regulation",
-        "description": "Translates living barometric, acoustic, and AQI sensor streams into exact acoustic frequency interventions (432 Hz Flute, 4.5 Hz Water Drum) with autonomic rationales."
+        "description": "Screens Cytochrome P450 (CYP2D6, CYP2C19, SLCO1B1) interactions across allopathic prescriptions and botanical herbs.",
+        "widgets": [
+            {"text": "Patient taking Warfarin and Simvastatin starts St. John's Wort and Ginkgo Biloba. Analyze Cytochrome P450 (CYP3A4, CYP2C9) interactions and bleed risk."},
+            {"text": "Evaluate CYP2D6 intermediate metabolizer phenotype implications for Codeine vs. Tramadol analgesia."}
+        ]
     }
 ]
 
 def generate_model_card(adapter: dict) -> str:
+    gemma_version = "gemma-4" if "gemma-4" in adapter['base_model'].lower() else ("gemma-3" if "gemma-3" in adapter['base_model'].lower() else "gemma-2")
+    widgets_yaml = "\n".join([f"- text: \"{w['text']}\"" for w in adapter.get('widgets', [])])
     return f"""---
 language:
 - en
 license: apache-2.0
 library_name: peft
 tags:
-- gemma-3
+- {gemma_version}
 - lora
 - clinical-nlp
 - healthcare
 - hipaa-safe-harbor
 - open-science
 - pocketgull
+- nih-medquad
+- who-mhgap
 base_model: {adapter['base_model']}
 pipeline_tag: text-generation
+widget:
+{widgets_yaml}
 ---
 
-# 🕊️ {adapter['name']}
+# {adapter['name']}
 
 **Organization**: [PocketGull LLC](https://pocketgull.com) (Oregon Registry: 258869891)  
 **Informatics Lead**: Phillip Gear (CMS NPI: 1487569752 | ORCID: [0009-0008-1372-5381](https://orcid.org/0009-0008-1372-5381))  
-**Base Foundation Model**: \`{adapter['base_model']}\`  
+**Base Foundation Model**: `{adapter['base_model']}`  
 **Discipline**: {adapter['discipline']}  
 **Open Science Provenance**: [Zenodo DOI 10.5281/zenodo.20647514](https://doi.org/10.5281/zenodo.20647514)  
 
@@ -189,7 +170,7 @@ print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 ```
 """
 
-def export_all_models():
+def export_all_models(push_to_hub: bool = False, token: str = None, username: str = "philgear"):
     ADAPTERS_DIR.mkdir(parents=True, exist_ok=True)
     manifest = []
     
@@ -223,7 +204,7 @@ def export_all_models():
         manifest.append({
             "id": adapter['id'],
             "name": adapter['name'],
-            "hub_repo": f"pocketgull-llc/{adapter['id']}",
+            "hub_repo": f"{username}/{adapter['id']}",
             "directory": str(model_dir)
         })
         
@@ -233,9 +214,57 @@ def export_all_models():
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     
     print("\n----------------------------------------------------------------")
-    print(f" [SUCCESS] Successfully packaged all {len(CLINICAL_ADAPTERS)} Gemma 3 Clinical LoRA Model Cards!")
+    print(f" [SUCCESS] Successfully packaged all {len(CLINICAL_ADAPTERS)} Gemma Clinical LoRA Model Cards!")
     print(f" Manifest: {manifest_path}")
     print("================================================================\n")
 
+    if push_to_hub:
+        try:
+            from huggingface_hub import HfApi, create_repo, upload_folder
+            effective_token = token or os.environ.get("HF_TOKEN")
+            if not effective_token:
+                print(" [ERROR] Cannot push to Hugging Face: No HF_TOKEN provided via --token or environment variable.")
+                return
+            
+            api = HfApi(token=effective_token)
+            try:
+                user_info = api.whoami()
+                target_user = user_info.get("name", username)
+                print(f" [AUTH] Authenticated as Hugging Face user: @{target_user}\n")
+            except Exception as e:
+                target_user = username
+                print(f" [AUTH] Using namespace: @{target_user} (Warning: {e})\n")
+
+            for adapter in CLINICAL_ADAPTERS:
+                repo_id = f"{target_user}/{adapter['id']}"
+                print(f" [PUSH] Uploading {adapter['name']} -> {repo_id}...")
+                try:
+                    create_repo(repo_id=repo_id, token=effective_token, repo_type="model", exist_ok=True)
+                    model_dir = ADAPTERS_DIR / adapter['id']
+                    upload_folder(
+                        folder_path=str(model_dir),
+                        repo_id=repo_id,
+                        repo_type="model",
+                        token=effective_token,
+                        commit_message=f"feat(model): publish {adapter['name']} [PocketGull Avian Navigator Tier]"
+                    )
+                    print(f" [PUBLISHED] https://huggingface.co/{repo_id}\n")
+                except Exception as upload_err:
+                    print(f" [FAIL] Failed to upload {repo_id}: {upload_err}\n")
+
+            print("================================================================")
+            print(" [SUCCESS] All Avian Navigator models pushed to Hugging Face Hub!")
+            print("================================================================\n")
+        except ImportError:
+            print(" [WARN] 'huggingface_hub' package not found. Run 'uv pip install huggingface_hub' to enable auto-upload.")
+
+
 if __name__ == "__main__":
-    export_all_models()
+    import argparse
+    parser = argparse.ArgumentParser(description="PocketGull Hugging Face Model Hub Packager & Publisher")
+    parser.add_argument("--push_to_hub", action="store_true", default=False, help="Upload models to Hugging Face Hub")
+    parser.add_argument("--token", type=str, default=None, help="Hugging Face write access token (or set HF_TOKEN env var)")
+    parser.add_argument("--username", type=str, default="philgear", help="Hugging Face username or organization")
+
+    args = parser.parse_args()
+    export_all_models(push_to_hub=args.push_to_hub, token=args.token, username=args.username)

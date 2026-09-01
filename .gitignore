@@ -4,7 +4,7 @@
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# 1. Operating Systems & Shells
+# 1. Operating Systems, Windows & Shells
 # ------------------------------------------------------------------------------
 .DS_Store
 .DS_Store?
@@ -21,6 +21,19 @@ $RECYCLE.BIN/
 *.swp
 *.swo
 *.lock
+*.blf
+*.regtrans-ms
+*.LOG1
+*.LOG2
+*.log1
+*.log2
+ntuser.*
+NTUSER.*
+.viminfo
+.wslconfig
+.zshrc
+.boto
+.thumbnails/
 
 # ------------------------------------------------------------------------------
 # 2. Editors & IDE Configurations
@@ -72,6 +85,7 @@ GoogleService-Info.plist
 docs/legal/
 *billing-secret*
 *stripe-secret*
+.dbus-keyrings/
 
 # ------------------------------------------------------------------------------
 # 4. Node.js, Angular, SSR & Package Managers
@@ -80,6 +94,8 @@ node_modules/
 dist/
 dist-ssr/
 out-tsc/
+*.tsbuildinfo
+.tsbuildinfo
 .angular/
 .angular/cache/
 .npm/
@@ -102,6 +118,9 @@ env/
 ENV/
 .venv*/
 venv*/
+.conda/
+.anaconda/
+anaconda3/
 pip-selfcheck.json
 __pycache__/
 *.py[cod]
@@ -114,6 +133,10 @@ __pycache__/
 .eggs/
 .ipynb_checkpoints/
 *.ipynb
+.ipython/
+.jupyter/
+.matplotlib/
+.spyder-py3/
 
 # ------------------------------------------------------------------------------
 # 6. Large Machine Learning Weights & Models (>50MB)
@@ -129,6 +152,10 @@ __pycache__/
 *.tflite
 *.ckpt
 *.joblib
+*.sav
+*.gguf
+*.bin
+model.sav
 /models/
 trained_models/
 lora_*/
@@ -181,7 +208,11 @@ sizes.txt
 bundle-analysis.json
 bundle-stats*.json
 cocomo2_report.*
+cocomo2_report.json
+cocomo2_report.md
 pocketgull_benchmark_plots.png
+NZXT_CAM_*.json
+build_error*.txt
 
 # ------------------------------------------------------------------------------
 # 9. Logs, PID Files & Ephemeral Runtime Cache
@@ -214,14 +245,35 @@ scratch/
 *.atr
 *.rec
 *.csv
+*.jsonl
+*.parquet
+.cache/
 !src/**/fixtures/*.csv
 !tests/fixtures/*.csv
 
 # ------------------------------------------------------------------------------
-# 11. Contests, Kaggle & Competition Workspaces
+# 11. ML Checkpoints, Models & Orbax Cache
+# ------------------------------------------------------------------------------
+checkpoints/
+*.orbax-checkpoint-tmp/
+pocketgull_api/checkpoints/
+pocketgull_api/.venv/
+pocketgull_api/**/__pycache__/
+pocketgull_api/**/*.pyc
+
+# ------------------------------------------------------------------------------
+# 12. Standalone Companion App Submodules
+# ------------------------------------------------------------------------------
+companion-apps/clan_logan_brand_system/
+companion-apps/clan_ross_brand_system/
+companion-apps/neuro_reader_app/
+
+# ------------------------------------------------------------------------------
+# 13. Contests, Kaggle & Competition Workspaces
 # ------------------------------------------------------------------------------
 contests/
 docs/contest/
+python_example_2026/
 kernel-metadata.json
 live_pocketgull_app.png
 scripts/capture-*.cjs
@@ -232,22 +284,47 @@ scripts/resize-icon.cjs
 # 12. Deployment Bundles & Release Archives
 # ------------------------------------------------------------------------------
 source.tgz
+source.tar.gz
 deploy.tgz
+deploy.tar.gz
 deploy_bundle.tar.gz
 deploy_source.tar.gz
 pocketgull-release.tar.gz
 pocketgull-v*.tar.gz
+*.tar.gz
+*.tgz
 *.zip
 
 # ------------------------------------------------------------------------------
 # 13. Workspace Caches & Agent Artifacts
 # ------------------------------------------------------------------------------
+.agent/
 .gemini/
 .antigravity-ide/
 .antigravity/
 .cagent/
 .sandboxd/
 .husky/_
+.gsd/
+.openclaw/
+.claude/
+.claude.json
+.codex/
+.factory/
+.copilot/
+.continue/
+.continuum/
+.securecoder/
+.sigma-file-manager/
+.skiko/
+.zenmap/
+.wordpress-playground/
+.dotnet/
+.bundle/
+.redhat/
+.ollama/
+.pi/
+.kube/
 
 # ------------------------------------------------------------------------------
 # 14. DBT & Data Pipelines
@@ -257,3 +334,20 @@ dbt/logs/
 dbt/.user.yml
 **/target/
 **/dbt_packages/
+
+# ------------------------------------------------------------------------------
+# 15. Local Reports, Training Weights & Build Caches
+# ------------------------------------------------------------------------------
+.tsbuildinfo
+*.tsbuildinfo
+report.html
+report.json
+cocomo2_report.*
+rsna-knee-2026-training-v7/
+lora_clinical_cot/
+lora_prior_auth/
+lora_rxguard_pgx/
+lora_test_run/
+playwright-report/
+test-results/
+

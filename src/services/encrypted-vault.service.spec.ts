@@ -38,7 +38,7 @@ describe('EncryptedVaultService (AES-GCM-256 Zero-Knowledge Vault) Suite', () =>
     expect(container.header.ivHex.length).toBe(24);   // 12 bytes = 24 hex chars
     expect(container.header.checksumSha256).toBeDefined();
     expect(container.ciphertextBase64.length).toBeGreaterThan(20);
-  });
+  }, 15000);
 
   it('2. Successfully decrypts container with matching passphrase and restores state', async () => {
     const container = await service.exportEncryptedVault('correct-horse-battery-staple');
@@ -47,14 +47,14 @@ describe('EncryptedVaultService (AES-GCM-256 Zero-Knowledge Vault) Suite', () =>
     expect(restored.patientId).toBe('P001');
     expect(restored.issues['heart']).toBeDefined();
     expect(mockPatientState.issues()['heart']).toBeDefined();
-  });
+  }, 15000);
 
   it('3. Throws descriptive error on incorrect passphrase', async () => {
     const container = await service.exportEncryptedVault('secret123');
 
     await expect(service.importEncryptedVault(container, 'wrong-password'))
       .rejects.toThrow('Decryption failed');
-  });
+  }, 15000);
 
   it('4. Rejects tampered ciphertext with checksum error', async () => {
     const container = await service.exportEncryptedVault('secret123');

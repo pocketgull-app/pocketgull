@@ -77,7 +77,7 @@ const PART_NAMES: Record<string, string> = {
     'chakra_muladhara': 'Muladhara (Root Earth Base Support Chakra)'
 };
 
-export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic';
+export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain';
 
 @Component({
     selector: 'app-body-3d-viewer',
@@ -2844,6 +2844,11 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 else if (mode === 'ayurvedic') {
                     if (layer === 'skin') { material.opacity = 0.65; material.depthWrite = true; }
                     else if (layer === 'chakra' || layer === 'aura') { material.opacity = 1.0; material.depthWrite = true; }
+                    else { material.opacity = 0; material.depthWrite = false; }
+                }
+                else if (mode === 'biomechanical_strain') {
+                    if (layer === 'skin') { material.opacity = 0.20; material.depthWrite = false; }
+                    else if (layer === 'bone') { material.opacity = 1.0; material.depthWrite = true; }
                     else { material.opacity = 0; material.depthWrite = false; }
                 }
             });
