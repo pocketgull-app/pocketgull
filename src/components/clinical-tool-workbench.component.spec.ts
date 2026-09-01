@@ -4,6 +4,7 @@ import { ClinicalToolWorkbenchComponent } from './clinical-tool-workbench.compon
 import { DoubleFlipStateMachineService } from '../services/double-flip-state-machine.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { BioHapticFeedbackService } from '../services/hardware/bio-haptic-feedback.service';
+import { PatientStateService } from '../services/patient-state.service';
 
 describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite', () => {
   let component: ClinicalToolWorkbenchComponent;
@@ -12,6 +13,7 @@ describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite',
   beforeEach(() => {
     stateMachine = new DoubleFlipStateMachineService();
     const injector = createEnvironmentInjector([
+      { provide: PatientStateService, useValue: { isDemoMode: () => false } },
       { provide: DoubleFlipStateMachineService, useValue: stateMachine },
       { provide: ClinicalIntelligenceService, useValue: {} },
       { provide: BioHapticFeedbackService, useValue: { triggerDualPulse: vi.fn() } }

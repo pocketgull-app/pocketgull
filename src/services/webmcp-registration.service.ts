@@ -1467,7 +1467,7 @@ export class WebMcpRegistrationService {
 
         const posture = svc.defensePosture();
         const actors = params?.threatActorId 
-          ? svc.threatActors().filter(a => a.actorId === params.threatActorId)
+          ? svc.threatActors().filter(a => a.controlId === params.threatActorId || a.actorId === params.threatActorId)
           : svc.threatActors();
 
         return {

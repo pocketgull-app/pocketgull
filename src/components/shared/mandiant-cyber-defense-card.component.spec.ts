@@ -18,12 +18,12 @@ describe('MandiantCyberDefenseCardComponent Unit Suite', () => {
     fixture.detectChanges();
   });
 
-  it('1. Renders Mandiant threat intelligence banner with tracked threat actors', () => {
+  it('1. Renders Zero-Trust Security & Compliance safeguards banner with active controls', () => {
     expect(component).toBeTruthy();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Google Mandiant Threat Intelligence & Clinical Cyber-Defense');
-    expect(compiled.textContent).toContain('UNC2596');
-    expect(compiled.textContent).toContain('FIN12');
+    expect(compiled.textContent).toContain('Zero-Trust Security & Compliance Safeguards');
+    expect(compiled.textContent).toContain('HICP-SEC-01');
+    expect(compiled.textContent).toContain('HIPAA §164.312');
   });
 
   it('2. Switches to MITRE ATLAS tab and displays clinical AI countermeasures', () => {

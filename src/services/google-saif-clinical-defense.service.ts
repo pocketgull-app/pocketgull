@@ -101,7 +101,7 @@ export class GoogleSaifClinicalDefenseService {
       complianceLevel: 'ACTIVE_DEFENSE',
       score: 98,
       description: 'Real-time detection of OWASP LLM01 prompt injections, zero-width unicode evasion, system prompt extraction, and anomalous egress spikes.',
-      activeControls: ['OWASP LLM01 Injection Scanner', 'Zero-Width Unicode Normalizer', 'Mandiant Anti-Whaling & Tarpit Active Defense'],
+      activeControls: ['OWASP LLM01 Injection Scanner', 'Zero-Width Unicode Normalizer', 'Zero-Trust Dual-Custody & Adaptive Rate Limiter'],
       lastAuditTimestamp: new Date()
     },
     {
