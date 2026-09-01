@@ -458,6 +458,7 @@ npm run deploy
 | [Privacy](PRIVACY.md) | Data model, DOMPurify, FHIR portability |
 | [Security](SECURITY.md) | Vulnerability reporting & threat model |
 | [Responsible AI](RESPONSIBLE_AI.md) | Ethical principles & safety testing |
+| [Google AI Alignment](docs/GOOGLE_RESPONSIBLE_AI_ALIGNMENT.md) | Operationalization of Google's 3 AI Principles & PAIR Guidebook |
 | [Contributing](CONTRIBUTING.md) | Code standards & PR guidelines |
 | [API Reference](pocketgull_api/openapi.yaml) | OpenAPI 3.0 specification |
 | [Pro Forma](PROFORMA.md) | 3-year SaaS financial projections |
