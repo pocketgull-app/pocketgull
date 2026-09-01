@@ -1,0 +1,30 @@
+# Development overrides for local Minikube / Skaffold
+global:
+  environment: development
+
+web:
+  replicaCount: 1
+  image:
+    repository: pocketgull-web
+    tag: latest
+    pullPolicy: Never
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+api:
+  replicaCount: 1
+  image:
+    repository: pocketgull-api
+    tag: latest
+    pullPolicy: Never
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+config:
+  frontendOrigin: "http://localhost:4000"
+  pythonApiUrl: "http://api-service:8080"
+  otelSdkDisabled: "true"

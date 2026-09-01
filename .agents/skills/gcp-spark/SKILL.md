@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v4
+  version: v9
   publisher: google
 ---
 
@@ -30,7 +30,22 @@ metadata:
     output schemas. Include the schema in your thought process BEFORE generating
     any code. Do NOT guess column names. Unless explicitly specified, assume
     that the assets are located in the same project. Avoid scanning for assets
-    across other projects as it can take a long time.
+    across other projects as it can take a long time. If an expected dataset or
+    table does not exist, use `@skill:discovering-gcp-data-assets` to discover
+    all similar tables in the namespace or project.
+
+    *MINOR TYPO RULE*: If there is a minor typo (e.g. `employees` vs
+    `employee`), you can fix the error and proceed.
+
+    *STRICT HALT RULE*: If the discovered table names differ from the requested
+    table by more than a minor typo (e.g. completely different words, prefixes,
+    or suffixes), you must IMMEDIATELY report the missing table and a neutral
+    list of all available alternatives in the same namespace to the user without
+    making any recommendations. You MUST ask the user which alternative to use
+    and then STOP EXECUTING your turn. Do NOT write any Spark code or notebooks.
+    Do NOT proceed with code generation, do NOT add fallback logic to code, and
+    do NOT automatically substitute any alternative table (even if its schema
+    seems to match) without explicit user permission.
 2.  **Verify source accessibility**: verify access/existence using `gcloud
     storage ls gs://<path-to-dataset>`. If accessing or reading a GCS path fails
     with a storage error e.g., permission errors like `403
@@ -41,6 +56,7 @@ metadata:
     next steps to resolve the issue. Do NOT scan all buckets for alternative
     fallback datasets when encountering GCS errors.
 3.  **Generate spark code**:
+
     *   **Output Format**: **ALWAYS** generate code in **Python Notebooks
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
     *   **Read and Write data**: **ALWAYS** Refer to
@@ -80,9 +96,16 @@ Before submitting a job, verify:
     `df.printSchema()` before writing
 -   [ ] **CSV files read with `header` and `inferSchema`** without these, the
     header row becomes data and all columns are strings
--   [ ] **Avoid toPandas()** Converting a pyspark dataframe to pandas by calling
-    toPandas() can lead to out of memory errors. Only acceptable for building
-    visualizations in Spark 3.5
+-   [ ] **Driver memory safety (`toPandas()` / `collect()`)** NEVER call
+    `.toPandas()` or `.collect()` on raw or un-aggregated DataFrames. ALWAYS
+    perform transformations, aggregations (`groupBy().agg()`), or data reduction
+    (`limit()`, `sample()`) in Spark before converting small summaries to Pandas
+    for plotting or display.
+-   [ ] **No inline pip install in Spark jobs**: NEVER run pip install or
+    subprocess package installations inside PySpark scripts. Pass dependencies
+    using --properties=spark.jars.packages=...,
+    --archives=gs://.../env.tar.gz#environment, --py-files, or a custom
+    --container-image.
 
 --------------------------------------------------------------------------------
 

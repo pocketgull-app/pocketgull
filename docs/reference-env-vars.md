@@ -76,7 +76,10 @@ npm run dev
 | `NODE_ENV` | No | `development` | Node.js environment. Set to `production` in Cloud Run. Controls SSR behaviour, logging verbosity, and telemetry. | `server.ts`, `telemetry.ts`, `Dockerfile` |
 | `NODE_OPTIONS` | No | -- | Node.js CLI flags. Dockerfile sets `--max-old-space-size=2048`. | `Dockerfile` |
 | `CI` | No | -- | Set in CI/CD environments. Disables interactive prompts and adjusts Playwright workers. | `server.ts`, `playwright.config.ts` |
-| `OTEL_SDK_DISABLED` | No | -- | Set to `true` to disable OpenTelemetry instrumentation. | `server.ts`, `Dockerfile` |
+| `OTEL_SDK_DISABLED` | No | `false` | Set to `true` to disable OpenTelemetry instrumentation. | `server.ts`, `otel.ts`, `Dockerfile` |
+| `OTEL_SERVICE_NAME` | No | `pocketgull-ssr` / `pocketgull-api` | CNCF OpenTelemetry service identifier for distributed traces. | `otel.ts`, `pocketgull_api/services/telemetry.py` |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | No | -- | Target OTLP gRPC/HTTP collector endpoint (e.g. `http://otel-collector:4318`). | `otel.ts`, `pocketgull_api/services/telemetry.py` |
+| `OTEL_TRACES_SAMPLER` | No | `parentbased_always_on` | Sampling strategy for OpenTelemetry traces. | `k8s/configmap.yaml` |
 
 ### Cloud Run Metadata
 

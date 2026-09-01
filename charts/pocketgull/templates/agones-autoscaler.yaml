@@ -1,0 +1,16 @@
+{{- if and .Values.agonesFleet.enabled .Values.agonesFleet.autoscaler.enabled }}
+apiVersion: "autoscaling.agones.dev/v1"
+kind: FleetAutoscaler
+metadata:
+  name: pocketgull-consult-autoscaler
+  labels:
+    {{- include "pocketgull.labels" . | nindent 4 }}
+spec:
+  fleetName: pocketgull-consult-fleet
+  policy:
+    type: Buffer
+    buffer:
+      bufferSize: {{ .Values.agonesFleet.autoscaler.bufferSize }}
+      minReplicas: {{ .Values.agonesFleet.autoscaler.minReplicas }}
+      maxReplicas: {{ .Values.agonesFleet.autoscaler.maxReplicas }}
+{{- end }}

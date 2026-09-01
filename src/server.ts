@@ -1,4 +1,7 @@
-process.env['OTEL_SDK_DISABLED'] = 'true';
+import { initOpenTelemetry } from './server/otel';
+
+// Initialize CNCF OpenTelemetry Distributed Tracing (respects OTEL_SDK_DISABLED)
+void initOpenTelemetry();
 
 // Global Defensive Exception & Promise Rejection Handlers
 process.on('unhandledRejection', (reason) => {

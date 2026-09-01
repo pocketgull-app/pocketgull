@@ -1,4 +1,5 @@
 import sys
+import os
 from fontTools.ttLib import TTFont
 from fontTools.agl import UV2AGL, toUnicode
 import unicodedata
@@ -126,7 +127,40 @@ def sanitize_and_refine_font(font_path, output_path):
         font['post'].formatType = 2.0
         font['post'].extraNames = []
         
-    # 6. Save refined font
+    # 6. Normalize name table for Adobe / OpenType standards
+    if 'name' in font:
+        base_name = os.path.basename(font_path)
+        subfamily = "Regular"
+        ps_name = "PocketGull-Regular"
+        full_name = "PocketGull Regular"
+        
+        if "Fineliner" in base_name:
+            subfamily = "Fineliner"
+            ps_name = "PocketGull-Fineliner"
+            full_name = "PocketGull Fineliner"
+        elif "Bold" in base_name:
+            subfamily = "Bold"
+            ps_name = "PocketGull-Bold"
+            full_name = "PocketGull Bold"
+        elif "Chiseltip" in base_name:
+            subfamily = "Chiseltip"
+            ps_name = "PocketGull-Chiseltip"
+            full_name = "PocketGull Chiseltip"
+        elif "Antigravity" in base_name:
+            subfamily = "Antigravity"
+            ps_name = "PocketGull-Antigravity"
+            full_name = "PocketGull Antigravity"
+            
+        font['name'].setName("PocketGull", 1, 3, 1, 0x409)
+        font['name'].setName(subfamily, 2, 3, 1, 0x409)
+        font['name'].setName(full_name, 4, 3, 1, 0x409)
+        font['name'].setName(ps_name, 6, 3, 1, 0x409)
+        font['name'].setName("PocketGull", 1, 1, 0, 0)
+        font['name'].setName(subfamily, 2, 1, 0, 0)
+        font['name'].setName(full_name, 4, 1, 0, 0)
+        font['name'].setName(ps_name, 6, 1, 0, 0)
+        
+    # 7. Save refined font
     font.save(output_path)
     print(f"[OK] Saved refined font to: {output_path}")
 

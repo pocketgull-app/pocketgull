@@ -174,6 +174,12 @@ try:
 except Exception as _mw_err:
     print(f"[Middleware] Warning: Could not initialize HIPAA middleware ({_mw_err})")
 
+try:
+    from services.telemetry import setup_opentelemetry
+    setup_opentelemetry(app)
+except Exception as _otel_err:
+    print(f"[Telemetry] Warning: Could not initialize OpenTelemetry ({_otel_err})")
+
 
 
 # ── Security Middleware & Exception Handler ───────────────────────────────────

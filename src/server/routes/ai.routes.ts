@@ -68,6 +68,7 @@ interface IAiStreamRequest {
   temperature?: number;
   thinkingBudget?: number;
   lens?: string;
+  cachedContentName?: string;
 }
 
 /** POST /api/ai/chat/start */
@@ -502,9 +503,16 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
           temperature: body.temperature ?? 0.1
         };
 
+        // FinOps Optimization: Support Gemini Context Caching for large clinical corpora (75% token discount)
+        const cachedContent = (req.headers['x-gemini-cached-content'] as string | undefined) || body.cachedContentName;
+        if (cachedContent && typeof cachedContent === 'string') {
+          configOptions['cachedContent'] = cachedContent;
+        }
+
+        // FinOps Optimization: Clamp thinking budget to prevent open-ended CoT loops
         if (body.thinkingBudget && body.thinkingBudget > 0) {
           configOptions['thinkingConfig'] = {
-            thinkingBudget: Math.min(8192, Math.max(0, body.thinkingBudget))
+            thinkingBudget: Math.min(4096, Math.max(0, body.thinkingBudget))
           };
         }
 
@@ -537,6 +545,19 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         });
 
         for await (const chunk of streamingResponse) {
+          // Stream FinOps token telemetry if present
+          if (chunk.usageMetadata) {
+            const usage = chunk.usageMetadata as Record<string, number | undefined>;
+            res.write(`data: ${JSON.stringify({
+              telemetry: {
+                promptTokens: usage['promptTokenCount'] || 0,
+                candidateTokens: usage['candidatesTokenCount'] || 0,
+                cachedTokens: usage['cachedContentTokenCount'] || 0,
+                totalTokens: usage['totalTokenCount'] || 0
+              }
+            })}\n\n`);
+          }
+
           if (chunk.functionCalls && chunk.functionCalls.length > 0) {
             const fc = chunk.functionCalls[0];
             res.write(`data: ${JSON.stringify({ text: `\n\n_⚡ Executing Science Skill: ${fc.name}..._\n\n` })}\n\n`);

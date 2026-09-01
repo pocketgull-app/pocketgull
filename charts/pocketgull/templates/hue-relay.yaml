@@ -1,0 +1,66 @@
+{{- if .Values.hueRelay.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hue-relay-deployment
+  labels:
+    app: hue-relay
+    {{- include "pocketgull.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.hueRelay.replicaCount }}
+  selector:
+    matchLabels:
+      app: hue-relay
+  template:
+    metadata:
+      labels:
+        app: hue-relay
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: hue-relay
+          image: "{{ .Values.hueRelay.image.repository }}:{{ .Values.hueRelay.image.tag }}"
+          imagePullPolicy: {{ .Values.hueRelay.image.pullPolicy }}
+          command: ["node", "scripts/hue-relay.js"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - containerPort: 8088
+          envFrom:
+            - configMapRef:
+                name: pocketgull-config
+            - secretRef:
+                name: pocketgull-secrets
+          volumeMounts:
+            - name: tmp-vol
+              mountPath: /tmp
+      volumes:
+        - name: tmp-vol
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hue-relay-service
+  labels:
+    app: hue-relay
+    {{- include "pocketgull.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.hueRelay.service.type }}
+  ports:
+    - port: {{ .Values.hueRelay.service.port }}
+      targetPort: {{ .Values.hueRelay.service.targetPort }}
+      protocol: TCP
+  selector:
+    app: hue-relay
+{{- end }}

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pocketgull-config
+  labels:
+    {{- include "pocketgull.labels" . | nindent 4 }}
+data:
+  FRONTEND_ORIGIN: {{ .Values.config.frontendOrigin | quote }}
+  PYTHON_API_URL: {{ .Values.config.pythonApiUrl | quote }}
+  NODE_ENV: {{ .Values.global.environment | quote }}
+  PYTHONUNBUFFERED: "1"
+  OTEL_SERVICE_NAME: {{ .Values.config.otelServiceName | quote }}
+  OTEL_TRACES_SAMPLER: {{ .Values.config.otelTracesSampler | quote }}
+  OTEL_SDK_DISABLED: {{ .Values.config.otelSdkDisabled | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otelExporterOtlpEndpoint | quote }}
