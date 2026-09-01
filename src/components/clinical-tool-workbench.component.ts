@@ -22,15 +22,7 @@ import { NOf1DesignerComponent } from './n-of-1-designer.component';
 import { AmbientClinicalScribeComponent } from './ambient-clinical-scribe.component';
 import { PresentationModalComponent } from './presentation-modal.component';
 import { RolePathwayDocumentationHubComponent } from './role-pathway-documentation-hub.component';
-import { RoleDemoModalComponent } from './role-demo-modal.component';
 import { HistoricalLuminariesGameComponent } from './historical-luminaries-game.component';
-import { HobbyDomainCompanionComponent } from './hobby-domain-companion.component';
-import { IntimacyRelationshipVitalityComponent } from './intimacy-relationship-vitality.component';
-import { ArticlesReaderComponent } from './articles-reader.component';
-import { SaifSecurityPostureCardComponent } from './shared/saif-security-posture-card.component';
-import { ClinicalModelStudioCardComponent } from './shared/clinical-model-studio-card.component';
-import { Ga4ghPhenopacketsCardComponent } from './shared/ga4gh-phenopackets-card.component';
-import { ClinicalCommercialHubComponent } from './shared/clinical-commercial-hub.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -81,15 +73,7 @@ export interface IWorkbenchToolStatus {
     AmbientClinicalScribeComponent,
     PresentationModalComponent,
     RolePathwayDocumentationHubComponent,
-    RoleDemoModalComponent,
-    HistoricalLuminariesGameComponent,
-    HobbyDomainCompanionComponent,
-    IntimacyRelationshipVitalityComponent,
-    ArticlesReaderComponent,
-    SaifSecurityPostureCardComponent,
-    ClinicalModelStudioCardComponent,
-    Ga4ghPhenopacketsCardComponent,
-    ClinicalCommercialHubComponent
+    HistoricalLuminariesGameComponent
   ],
 
   template: `
@@ -340,7 +324,7 @@ export interface IWorkbenchToolStatus {
       } @else if (activeWorkbenchTab() === 'jurisdiction') {
         <app-jurisdiction-matrix-card />
       } @else if (activeWorkbenchTab() === 'mandiant') {
-        <app-mandiant-cyber-defense-card />
+        <app-clinical-defense-guard-card />
       } @else if (activeWorkbenchTab() === 'mandarinate') {
         <app-clinical-mandarinate-exam-card />
       } @else if (activeWorkbenchTab() === 'rxguard') {
