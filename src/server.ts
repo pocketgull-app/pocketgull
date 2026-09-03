@@ -51,6 +51,7 @@ import { APP_VERSION } from './version';
 import AgonesSDK from '@google-cloud/agones-sdk';
 import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
 import { renderBusinessSiteHtml } from './server/business-site';
+import { renderNantucketCaseStudyHtml } from './server/nantucket-case-study';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
@@ -231,10 +232,15 @@ app.use((req, res, next) => {
 // Trust single reverse proxy hop on Google Cloud Run to prevent IP spoofing while enabling secure rate-limiting
 app.set('trust proxy', 1);
 
-// Explicit preview endpoints for business site
+// Explicit preview endpoints for business site & case studies
 app.get(['/business', '/preview'], (_req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   return res.send(renderBusinessSiteHtml());
+});
+
+app.get(['/case-studies/nantucket-tick-radar', '/case-studies/nantucket', '/nantucket'], (_req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderNantucketCaseStudyHtml());
 });
 
 // Primary Business Site Handler for pocketgull.com & www.pocketgull.com
@@ -264,6 +270,10 @@ app.use((req, res, next) => {
   if (isBusinessSite) {
     if (req.path === '/health' || req.path.startsWith('/api/') || req.path === '/articles' || req.path.startsWith('/articles/')) {
       return next();
+    }
+    if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderNantucketCaseStudyHtml());
     }
     const cleanPath = req.path.split('?')[0];
     const ext = extname(cleanPath).toLowerCase();
@@ -921,6 +931,12 @@ app.use((req, res, next) => {
   const cleanHost = (req.hostname || '').toLowerCase();
   const isBusinessDomain = (cleanHost === 'pocketgull.com' || cleanHost === 'www.pocketgull.com');
   const isBusinessPath = req.path === '/business' || req.path === '/enterprise' || req.path === '/app-builder' || req.path === '/portal';
+
+  if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderNantucketCaseStudyHtml());
+  }
 
   if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');

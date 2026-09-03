@@ -2139,6 +2139,9 @@ export class AppComponent implements OnDestroy {
       // Check initial Fitbit connection status for current patient
       this.fitbit.checkStatus().catch(() => {});
 
+      // Check URL query parameters for deep-linked case studies (e.g. ?case=nantucket or ?caseStudy=nantucket-tick-radar)
+      this.handleCaseStudyDeepLink();
+
       this.isMobile.set(window.innerWidth < 768);
 
       // 1. Check API key status from the server
@@ -2273,6 +2276,76 @@ export class AppComponent implements OnDestroy {
     this.clinicalIntelligence.loadArchivedAnalysis(darwinReport as Partial<Record<AnalysisLens, string>>);
     this.clinicalIntelligence.lastActivePhilosophy.set('western');
     this.clinicalIntelligence.lastPatientData.set(this.state.getAllDataForPrompt());
+  }
+
+  handleCaseStudyDeepLink(): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const caseParam = (params.get('case') || params.get('caseStudy') || '').toLowerCase();
+
+      if (caseParam === 'nantucket' || caseParam === 'nantucket-tick-radar') {
+        // Unlock session & enter demo/cockpit mode
+        this.session.isLocked.set(false);
+        this.state.isDemoMode.set(true);
+        this.isDemoMode.set(true);
+        this.hasApiKey.set(true);
+
+        // Populate patient state with Nantucket Landscaper presentation
+        this.state.occupation.set('Conservation Landscaper (Nantucket)');
+        this.state.reasonForVisit.set(
+          '42-year-old Nantucket conservation landscaper presenting with 8-day history of fatigue, migrating arthralgias in knees and neck, expanding atypical annular plaque on posterior thigh, night sweats, and resting tachycardia after clearing brush in Polpis.'
+        );
+
+        this.state.vitals.set({
+          hr: '92',
+          bp: '118/72',
+          spO2: '98',
+          temp: '38.2',
+          weight: '78 kg',
+          height: '178 cm',
+          cgmGlucoseMgDl: '95',
+          vitC: 'Normal',
+          vitD3: '28 ng/mL',
+          magnesium: '2.1 mg/dL',
+          zinc: '85 ug/dL',
+          b12: '450 pg/mL'
+        });
+
+        this.state.issues.set({
+          thigh_left: [{
+            id: 'thigh_left',
+            noteId: 'note_nantucket_thigh',
+            name: 'Left Thigh (Posterior)',
+            painLevel: 4,
+            description: '6cm expanding erythematous lesion without central clearing (atypical Lyme rash vs tick co-infection)',
+            symptoms: ['Expanding Erythema Migrans Plaque', 'Pruritus', 'Fever'],
+            recommendation: 'CDC Two-Tier Serology & Thin Blood Smear for Babesia microti tetrads'
+          }],
+          knee_left: [{
+            id: 'knee_left',
+            noteId: 'note_nantucket_knee',
+            name: 'Left Knee Joint',
+            painLevel: 5,
+            description: 'Migrating arthralgia with mild joint effusion',
+            symptoms: ['Migrating Joint Pain', 'Effusion', 'Stiffness'],
+            recommendation: 'Weight-bearing joint rest, Doxycycline 100mg BID + Atovaquone 750mg BID'
+          }]
+        });
+
+        // Trigger UI to focus on Left Thigh
+        this.state.selectedPartId.set('thigh_left');
+        this.isAnalysisCollapsed.set(false);
+        this.isChartCollapsed.set(false);
+
+        // Open the rich Nantucket Case Study modal for full clinical brief unless explicitly suppressed
+        if (params.get('modal') !== 'false') {
+          this.showNantucketCaseStudy.set(true);
+        }
+      }
+    } catch (err) {
+      console.warn('[AppComponent] URL case study deep link inspection failed:', err);
+    }
   }
 
   handleEmergencyBypass() {

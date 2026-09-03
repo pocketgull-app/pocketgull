@@ -73,6 +73,26 @@ export function renderBusinessSiteHtml(): string {
   </script>
   
   <style>
+    @font-face {
+      font-family: 'PocketGull';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('/fonts/PocketGull-Bold.woff2') format('woff2'),
+           url('/fonts/PocketGull-Bold.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'PocketGull';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
+           url('/fonts/PocketGull-Fineliner.ttf') format('truetype');
+    }
+    .font-brand {
+      font-family: 'PocketGull', -apple-system, BlinkMacSystemFont, sans-serif;
+      letter-spacing: -0.01em;
+    }
     :root {
       --bg: #09090b;
       --card: #18181b;
@@ -106,6 +126,59 @@ export function renderBusinessSiteHtml(): string {
       max-width: 1120px;
       margin: 0 auto;
       padding: 0 1.5rem;
+    }
+    /* ─── Doc Drill Interactive Socratic Drawer ─── */
+    .doc-drill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(20, 184, 166, 0.12);
+      border: 1px solid rgba(20, 184, 166, 0.35);
+      color: var(--teal-light);
+      font-size: 0.72rem;
+      font-family: ui-monospace, monospace;
+      font-weight: 600;
+      cursor: pointer;
+      vertical-align: middle;
+      margin: 0 0.2rem;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .doc-drill-badge:hover {
+      background: rgba(20, 184, 166, 0.25);
+      border-color: var(--teal-light);
+      transform: translateY(-1px);
+    }
+    .doc-drill-drawer {
+      position: fixed;
+      top: 0;
+      right: -480px;
+      width: 100%;
+      max-width: 440px;
+      height: 100vh;
+      background: #111114;
+      border-left: 1px solid var(--border);
+      box-shadow: -10px 0 30px rgba(0,0,0,0.85);
+      z-index: 1000;
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .doc-drill-drawer.open {
+      right: 0;
+    }
+    .doc-drill-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: none;
+    }
+    .doc-drill-backdrop.open {
+      display: block;
     }
     header {
       position: sticky;
@@ -483,13 +556,15 @@ export function renderBusinessSiteHtml(): string {
     <div class="container header-inner">
       <a href="/" class="logo-badge" aria-label="PocketGull Home">
         <span style="font-size: 1.5rem;">🕊️</span>
-        <span style="font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em;">PocketGull</span>
+        <span style="font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em;" class="font-brand">PocketGull</span>
       </a>
 
       <nav class="nav-links">
         <a href="#demo">Live Demo</a>
         <a href="#features">Features</a>
         <a href="#case-studies">Case Studies</a>
+        <a href="#clinical-typography">Typography</a>
+        <a href="javascript:void(0)" onclick="openDocDrill('Babesia microti')" style="color: var(--teal-light);">🔬 Doc Drill</a>
         <a href="#open-source">Open Source</a>
         <a href="#testimonials">Quotes</a>
         <a href="#stewardship">Stewardship</a>
@@ -699,16 +774,24 @@ export function renderBusinessSiteHtml(): string {
               <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">Location: Nantucket Island &bull; Polpis &amp; Madaket</span>
               <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin-top: 0.25rem;">Nantucket Island Tick-Borne Disease &amp; Co-Infection Crisis</h3>
             </div>
-            <a href="https://pocketgull.app" class="btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.8125rem;">
-              <span>🚀 Launch Case in App</span>
-            </a>
+            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+              <a href="https://pocketgull.app/?case=nantucket&autostart=true" class="btn-primary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
+                <span>🚀 Launch Case in Cockpit</span>
+              </a>
+              <a href="/case-studies/nantucket-tick-radar" class="btn-secondary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
+                <span>🌲 View Full Radar (URL) ↗</span>
+              </a>
+              <a href="https://github.com/pocketgull-app/nantucket-tick-radar" target="_blank" rel="noopener" class="btn-secondary" style="padding: 0.5rem 0.85rem; font-size: 0.8125rem; color: var(--text-muted);">
+                <span>📦 Repo ↗</span>
+              </a>
+            </div>
           </div>
 
           <div class="grid-3" style="margin-bottom: 1.5rem;">
             <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
               <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Vector Pressure</div>
               <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber-light); margin-top: 0.25rem;">&gt;40% Nymph Infection</div>
-              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">High rates of <em>Borrelia</em>, <em>Babesia microti</em>, and <em>Anaplasma</em> in island brush.</p>
+              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">High rates of <em>Borrelia</em>, <em>Babesia microti</em> <button type="button" class="doc-drill-badge" onclick="openDocDrill('Babesia microti')">🔬 Doc Drill</button>, and <em>Anaplasma</em> in island brush.</p>
             </div>
 
             <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
@@ -720,13 +803,81 @@ export function renderBusinessSiteHtml(): string {
             <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
               <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Systems Solution</div>
               <div style="font-size: 1.25rem; font-weight: 800; color: var(--teal-light); margin-top: 0.25rem;">Meadows Leverage L1-9</div>
-              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Dual antimicrobial protocol + MIT Mice Against Ticks ecological defense.</p>
+              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Dual antimicrobial protocol + MIT Mice Against Ticks <button type="button" class="doc-drill-badge" onclick="openDocDrill('Meadows Leverage L1-9')">🔬 Doc Drill</button> ecological defense.</p>
             </div>
           </div>
 
           <div style="background: #09090b; border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: #d4d4d8; line-height: 1.7;">
-            <strong style="color: var(--teal-light);">Clinical Impact Summary:</strong> A 42-year-old landscaper presented with atypical rash, night sweats, and autonomic vagal collapse (HRV RMSSD 18ms). PocketGull's offline Edge AI differential radar flagged concurrent <em>Babesia microti</em> hemolytic anemia on peripheral blood smear (Maltese cross tetrads) alongside <em>Borrelia burgdorferi</em> C6 ELISA serology. The clinician immediately initiated dual-therapy (Doxycycline + Atovaquone/Azithromycin) with zero cloud network egress required in remote field conservation zones.
+            <strong style="color: var(--teal-light);">Clinical Impact Summary:</strong> A 42-year-old landscaper presented with atypical rash, night sweats, and autonomic vagal collapse (HRV RMSSD 18ms <button type="button" class="doc-drill-badge" onclick="openDocDrill('Vagal Collapse / RMSSD')">🔬 Doc Drill</button>). PocketGull's offline Edge AI differential radar flagged concurrent <em>Babesia microti</em> hemolytic anemia on peripheral blood smear (Maltese cross tetrads <button type="button" class="doc-drill-badge" onclick="openDocDrill('Maltese cross tetrads')">🔬 Doc Drill</button>) alongside <em>Borrelia burgdorferi</em> C6 ELISA serology. The clinician immediately initiated dual-therapy (Doxycycline + Atovaquone/Azithromycin) with zero cloud network egress required in remote field conservation zones.
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clinical Typography & Optotypic Safety Section (Influenced by Typeface Specimen) -->
+    <section id="clinical-typography" class="section" style="background: #09090b; border-bottom: 1px solid var(--border);">
+      <div class="container">
+        <div class="section-title">
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: var(--teal-glow); border: 1px solid rgba(45, 212, 191, 0.3); color: var(--teal-light); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
+            <span>🔤 Open-Source Clinical Superfamily</span>
+          </div>
+          <h2>Louise Sloan 5:1 Optotypic Legibility &amp; ISMP Drug Safety</h2>
+          <p>Generic web fonts create fatal dosage errors on ICU displays and thermal prescription labels. PocketGull's SIL OFL 1.1 typeface family enforces zero-error medical legibility.</p>
+        </div>
+
+        <div class="grid-3" style="margin-bottom: 2rem;">
+          <div class="feature-card" style="border-color: rgba(20, 184, 166, 0.3);">
+            <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">ISMP Disambiguation</div>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin: 1rem 0; padding: 1rem; background: #000; border-radius: 0.5rem; border: 1px solid var(--border);">
+              <div style="text-align: center;">
+                <div style="font-size: 2.25rem; font-family: 'PocketGull', monospace; font-weight: 700; color: #fff;">0</div>
+                <div style="font-size: 0.7rem; color: var(--teal-light); font-mono;">Slashed Zero</div>
+              </div>
+              <div style="font-size: 1.25rem; color: var(--text-muted);">&ne;</div>
+              <div style="text-align: center;">
+                <div style="font-size: 2.25rem; font-family: 'PocketGull', sans-serif; font-weight: 700; color: var(--amber-light);">O</div>
+                <div style="font-size: 0.7rem; color: var(--amber-light); font-mono;">Capital Letter O</div>
+              </div>
+            </div>
+            <p style="font-size: 0.8125rem; color: var(--text-muted);">Eliminates catastrophic confusion between numeric dosages (e.g. 50 mg) and oxygen indicators.</p>
+          </div>
+
+          <div class="feature-card" style="border-color: rgba(20, 184, 166, 0.3);">
+            <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">1 vs l vs I Optical Triad</div>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin: 1rem 0; padding: 1rem; background: #000; border-radius: 0.5rem; border: 1px solid var(--border);">
+              <div style="text-align: center;">
+                <div style="font-size: 2rem; font-family: 'PocketGull', monospace; font-weight: 700; color: #fff;">1</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); font-mono;">Numeral</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: 2rem; font-family: 'PocketGull', sans-serif; font-weight: 700; color: var(--teal-light);">l</div>
+                <div style="font-size: 0.7rem; color: var(--teal-light); font-mono;">Curved l</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: 2rem; font-family: 'PocketGull', sans-serif; font-weight: 700; color: var(--amber-light);">I</div>
+                <div style="font-size: 0.7rem; color: var(--amber-light); font-mono;">Serifed I</div>
+              </div>
+            </div>
+            <p style="font-size: 0.8125rem; color: var(--text-muted);">Louise Sloan 5:1 invariants prevent misreading drug names like <em>Isordil</em> vs <em>lsordil</em> or unit quantities.</p>
+          </div>
+
+          <div class="feature-card" style="border-color: rgba(20, 184, 166, 0.3);">
+            <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">ISMP Dosage Decimal Guard</div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0; padding: 0.85rem; background: #000; border-radius: 0.5rem; border: 1px solid var(--border); font-family: ui-monospace, monospace; font-size: 0.8125rem;">
+              <div style="color: #f87171; text-decoration: line-through;">❌ 5.0 mg &bull; .5 mg (Dangerous)</div>
+              <div style="color: var(--teal-light); font-weight: bold;">✅ 5 mg &bull; 0.5 mg (Safe Standard)</div>
+            </div>
+            <p style="font-size: 0.8125rem; color: var(--text-muted);">Mandates leading zeros and prohibits trailing zeros, preventing 10-fold overdoses in emergency orders.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; align-items: center;">
+          <a href="https://typeface.pocketgull.app" target="_blank" rel="noopener" class="btn-primary" style="font-size: 0.875rem;">
+            <span>🌐 Explore Live Typeface Specimen &bull; typeface.pocketgull.app ↗</span>
+          </a>
+          <button type="button" class="btn-secondary" onclick="openDocDrill('Louise Sloan 5:1 Optotype Invariant')">
+            <span>🔬 Open Sloan Invariant Doc Drill</span>
+          </button>
         </div>
       </div>
     </section>
@@ -1491,7 +1642,121 @@ export function renderBusinessSiteHtml(): string {
     }
 
     setEyeDirection();
+
+    /* ─── Universal Doc Drill Socratic Engine ─── */
+    let currentDrillTerm = 'Babesia microti';
+    const DOC_DRILL_DB = {
+      'Babesia microti': {
+        category: 'VECTOR CO-INFECTION',
+        summary: 'Intraerythrocytic apicomplexan protozoan endemic to Nantucket and coastal New England, transmitted by Ixodes scapularis nymphs.',
+        clinicalTrap: 'Clinicians routinely mistake Babesiosis for refractory Lyme disease. Standard Lyme monotherapy (Doxycycline) does NOT clear Babesia. If hemolytic anemia, drenching sweats, or Maltese cross tetrads are present, dual therapy (Atovaquone + Azithromycin) is mandatory.',
+        citations: 'Lantos PM et al. Clin Infect Dis. 2021; Vannier EG et al. N Engl J Med. 2012.'
+      },
+      'Meadows Leverage L1-9': {
+        category: 'SYSTEMS BIOLOGY',
+        summary: 'Donella Meadows\' 12 Leverage Points hierarchy applied to ecological vector transmission and immunological response.',
+        clinicalTrap: 'Treating individual tick bites with antibiotics is Leverage Point 12 (shallow parameters). Disrupting the reservoir host transmission cycle (Leverage Point 1: Paradigm Change via MIT Mice Against Ticks) solves the crisis at the ecological source.',
+        citations: 'Meadows DH. Thinking in Systems: A Primer (2008); Esvelt KM et al. MIT Media Lab (2020).'
+      },
+      'Maltese cross tetrads': {
+        category: 'HEMATOLOGY & MICROSCOPY',
+        summary: 'Pathognomonic arrangement of four budding merozoites joined by a central cytoplasmic stalk within a red blood cell.',
+        clinicalTrap: 'Seen only in Babesia microti, distinguishing it from Plasmodium falciparum ring forms. Requires high-power oil immersion (1000x) Giemsa-stained thin blood smear.',
+        citations: 'CDC DPDx Babesiosis Laboratory Identification; Krause PJ et al.'
+      },
+      'Vagal Collapse / RMSSD': {
+        category: 'AUTONOMIC TONE',
+        summary: 'Root Mean Square of Successive Differences (RMSSD) reflecting parasympathetic vagal brake efficiency.',
+        clinicalTrap: 'Acute neuroborreliosis or systemic cytokine cascades suppress cholinergic anti-inflammatory pathway signaling, dropping RMSSD below 20ms and triggering postural orthostatic tachycardia.',
+        citations: 'Tracey KJ. The inflammatory reflex. Nature. 2002; Thayer JF et al. Neurosci Biobehav Rev. 2012.'
+      },
+      'Louise Sloan 5:1 Optotype Invariant': {
+        category: 'OPHTHALMIC TYPOGRAPHY',
+        summary: 'Standardized 5x5 grid with 1-unit stroke thickness resolving 5 arcminutes at visual axis (Snellen 20/20 / LogMAR 0.0).',
+        clinicalTrap: 'Consumer fonts with arbitrary thin strokes become illegible under low-contrast surgical lighting or bedside label thermal printers, risking dosage misreads.',
+        citations: 'Sloan LL. Am J Ophthalmol. 1959; ISO 8596 Visual Acuity Testing.'
+      }
+    };
+
+    function openDocDrill(term) {
+      currentDrillTerm = term;
+      const data = DOC_DRILL_DB[term] || {
+        category: 'CLINICAL CDS CONCEPT',
+        summary: 'Clinical and systems biology evidence grounding for ' + term + '.',
+        clinicalTrap: 'PocketGull applies Popperian falsifiability and zero-error legibility standards to all clinical telemetry and diagnostic recommendations.',
+        citations: 'PocketGull Clinical Intelligence Codex v1.31; FDA CDS Guidance.'
+      };
+
+      const body = document.getElementById('docDrillBody');
+      if (body) {
+        body.innerHTML = '<div style="background: #18181b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem;">' +
+          '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">Category: ' + data.category + '</div>' +
+          '<h4 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0.35rem 0 0.75rem;">' + term + '</h4>' +
+          '<p style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;">' + data.summary + '</p>' +
+        '</div>' +
+        '<div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 0.75rem; padding: 1.25rem;">' +
+          '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber-light); font-weight: 700; text-transform: uppercase;">⚠️ Socratic Clinical Invariant &amp; Trap</div>' +
+          '<p style="font-size: 0.8125rem; color: #fef3c7; line-height: 1.6; margin-top: 0.35rem;">' + data.clinicalTrap + '</p>' +
+        '</div>' +
+        '<div style="background: #09090b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem;">' +
+          '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Primary Citations</div>' +
+          '<p style="font-size: 0.75rem; color: #a1a1aa; margin-top: 0.25rem; font-style: italic;">' + data.citations + '</p>' +
+        '</div>';
+      }
+
+      document.getElementById('docDrillDrawer').classList.add('open');
+      document.getElementById('docDrillBackdrop').classList.add('open');
+    }
+
+    function closeDocDrill() {
+      document.getElementById('docDrillDrawer').classList.remove('open');
+      document.getElementById('docDrillBackdrop').classList.remove('open');
+    }
+
+    function submitDocDrillQuestion() {
+      const input = document.getElementById('docDrillQueryInput');
+      const q = input.value.trim();
+      if (!q) return;
+
+      const body = document.getElementById('docDrillBody');
+      const qCard = document.createElement('div');
+      qCard.style.cssText = 'background: #1e1e24; border: 1px solid var(--teal); border-radius: 0.75rem; padding: 1rem;';
+      qCard.innerHTML = '<div style="font-size: 0.7rem; color: var(--teal-light); font-family: ui-monospace, monospace; font-weight: bold;">💬 CLINICIAN QUERY</div>' +
+        '<div style="font-size: 0.85rem; color: #fff; margin: 0.25rem 0 0.75rem;">"' + q + '"</div>' +
+        '<div style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;">' +
+          '<strong style="color: var(--teal-light);">Doc Drill Socratic Analysis:</strong> Regarding <em>' + q + '</em> in relation to <strong>' + currentDrillTerm + '</strong>: PocketGull models the full multi-organ and vector ecology continuum. Always rule out intraerythrocytic Babesia co-infections when evaluating post-tick fatigue with thrombocytopenia or hemolytic signs, and check the 72-hour prophylactic window before administering single-dose doxycycline.' +
+        '</div>';
+      body.appendChild(qCard);
+      input.value = '';
+      body.scrollTop = body.scrollHeight;
+    }
   </script>
+
+  <!-- Universal Doc Drill Socratic Research Drawer -->
+  <div id="docDrillBackdrop" class="doc-drill-backdrop" onclick="closeDocDrill()"></div>
+  <aside id="docDrillDrawer" class="doc-drill-drawer" aria-label="Doc Drill Evidence Focus Drawer">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(9, 9, 11, 0.95);">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span style="font-size: 1.35rem;">🔬</span>
+        <div>
+          <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">PocketGull Socratic Educator</div>
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Doc Drill &bull; Evidence Focus</h3>
+        </div>
+      </div>
+      <button onclick="closeDocDrill()" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 0.375rem;" aria-label="Close Drawer">&times;</button>
+    </div>
+
+    <div id="docDrillBody" style="flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+      <!-- Pre-populated dynamically -->
+    </div>
+
+    <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--border); background: #0c0c0e;">
+      <form onsubmit="event.preventDefault(); submitDocDrillQuestion();" style="display: flex; gap: 0.5rem;">
+        <input type="text" id="docDrillQueryInput" placeholder="Ask Doc Drill about this concept..." style="flex: 1; background: #18181b; border: 1px solid var(--border); color: #fff; padding: 0.55rem 0.75rem; border-radius: 0.375rem; font-size: 0.8125rem;" />
+        <button type="submit" class="btn-primary" style="padding: 0.55rem 1rem; font-size: 0.8125rem;">Ask</button>
+      </form>
+    </div>
+  </aside>
 </body>
 </html>`;
 }
