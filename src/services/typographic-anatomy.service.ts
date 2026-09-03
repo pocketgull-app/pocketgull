@@ -8,6 +8,9 @@ export interface ITypographicAnatomyPart {
   japaneseName: string;
   chineseName: string;
   sanskritName: string;
+  koreanName?: string;
+  arabicName?: string;
+  hebrewName?: string;
   category: 'skeletal' | 'organ' | 'vascular' | 'neural' | 'muscular';
   snomedCode: string;
   pathD: string;
@@ -27,7 +30,7 @@ export interface ITypographicAnatomyPart {
 export class TypographicAnatomyService {
   private patientState = inject(PatientStateService, { optional: true });
 
-  readonly languageMode = signal<'latin' | 'english' | 'japanese' | 'chinese' | 'sanskrit'>('latin');
+  readonly languageMode = signal<'latin' | 'english' | 'japanese' | 'chinese' | 'sanskrit' | 'korean' | 'arabic' | 'hebrew'>('latin');
 
   /** Comprehensive 40+ Human Typographic Anatomy Taxonomy Catalog */
   readonly parts: ITypographicAnatomyPart[] = [
@@ -39,6 +42,9 @@ export class TypographicAnatomyService {
       japaneseName: '前頭骨',
       chineseName: '额骨',
       sanskritName: 'ललाटास्थि',
+      koreanName: '전두골',
+      arabicName: 'العظم الجبهي',
+      hebrewName: 'עצם המצח',
       category: 'skeletal',
       snomedCode: '74872008',
       pathD: 'M 80 32 C 86 18 114 18 120 32',
@@ -57,6 +63,9 @@ export class TypographicAnatomyService {
       japaneseName: '大脳',
       chineseName: '大脑',
       sanskritName: 'मस्तिष्कम्',
+      koreanName: '대뇌',
+      arabicName: 'المخ',
+      hebrewName: 'המוח הגדול',
       category: 'organ',
       snomedCode: '83678007',
       pathD: 'M 82 40 C 84 26 116 26 118 40',
@@ -76,6 +85,9 @@ export class TypographicAnatomyService {
       japaneseName: '小脳',
       chineseName: '小脑',
       sanskritName: 'अनुमस्तिष्कम्',
+      koreanName: '소뇌',
+      arabicName: 'المخيخ',
+      hebrewName: 'המוח הקטן',
       category: 'organ',
       snomedCode: '78333008',
       pathD: 'M 86 48 C 92 52 108 52 114 48',
@@ -94,6 +106,9 @@ export class TypographicAnatomyService {
       japaneseName: '下顎骨',
       chineseName: '下颌骨',
       sanskritName: 'हनु',
+      koreanName: '하악골',
+      arabicName: 'الفك السفلي',
+      hebrewName: 'לסת תחתונה',
       category: 'skeletal',
       snomedCode: '91609006',
       pathD: 'M 88 56 Q 100 64 112 56',
@@ -114,6 +129,9 @@ export class TypographicAnatomyService {
       japaneseName: '頸椎 C1-C7',
       chineseName: '颈椎 C1-C7',
       sanskritName: 'ग्रीवा-कशेरुका',
+      koreanName: '경추',
+      arabicName: 'الفقرات العنقية',
+      hebrewName: 'עמוד שדרה צווארי',
       category: 'skeletal',
       snomedCode: '122494005',
       pathD: 'M 100 60 V 78',
@@ -132,6 +150,9 @@ export class TypographicAnatomyService {
       japaneseName: '胸椎 T1-T12',
       chineseName: '胸椎 T1-T12',
       sanskritName: 'वक्ष-कशेरुका',
+      koreanName: '흉추',
+      arabicName: 'الفقرات الصدرية',
+      hebrewName: 'עמוד שדרה חזי',
       category: 'skeletal',
       snomedCode: '122495006',
       pathD: 'M 100 80 V 150',
@@ -150,6 +171,9 @@ export class TypographicAnatomyService {
       japaneseName: '腰椎 L1-L5',
       chineseName: '腰椎 L1-L5',
       sanskritName: 'कटि-कशेरुका',
+      koreanName: '요추',
+      arabicName: 'الفقرات القطنية',
+      hebrewName: 'עמוד שדרה מותני',
       category: 'skeletal',
       snomedCode: '122496007',
       pathD: 'M 100 152 V 195',
@@ -170,6 +194,9 @@ export class TypographicAnatomyService {
       japaneseName: '左鎖骨',
       chineseName: '左锁骨',
       sanskritName: 'वामाक्षक',
+      koreanName: '좌측 쇄골',
+      arabicName: 'الترقوة اليسرى',
+      hebrewName: 'עצם הבריח השמאלית',
       category: 'skeletal',
       snomedCode: '51299004',
       pathD: 'M 100 70 Q 118 68 132 72',
@@ -188,6 +215,9 @@ export class TypographicAnatomyService {
       japaneseName: '右鎖骨',
       chineseName: '右锁骨',
       sanskritName: 'दक्षाक्षक',
+      koreanName: '우측 쇄골',
+      arabicName: 'الترقوة اليمنى',
+      hebrewName: 'עצם הבריח הימנית',
       category: 'skeletal',
       snomedCode: '8887007',
       pathD: 'M 68 72 Q 82 68 100 70',
@@ -206,6 +236,9 @@ export class TypographicAnatomyService {
       japaneseName: '胸骨',
       chineseName: '胸骨',
       sanskritName: 'उरस्',
+      koreanName: '흉골',
+      arabicName: 'عظم القص',
+      hebrewName: 'עצם החזה',
       category: 'skeletal',
       snomedCode: '56873002',
       pathD: 'M 100 75 V 125',
@@ -224,6 +257,9 @@ export class TypographicAnatomyService {
       japaneseName: '肋骨 1-4',
       chineseName: '肋骨 1-4',
       sanskritName: 'पर्शुक १-४',
+      koreanName: '상부 늑골',
+      arabicName: 'الأضلاع العلوية',
+      hebrewName: 'צלעות עליונות',
       category: 'skeletal',
       snomedCode: '113197003',
       pathD: 'M 78 88 Q 100 92 122 88',
@@ -242,6 +278,9 @@ export class TypographicAnatomyService {
       japaneseName: '肋骨 5-10',
       chineseName: '肋骨 5-10',
       sanskritName: 'पर्शुक ५-१०',
+      koreanName: '하부 늑골',
+      arabicName: 'الأضلاع السفلية',
+      hebrewName: 'צלעות תחתונות',
       category: 'skeletal',
       snomedCode: '113197003',
       pathD: 'M 76 112 Q 100 118 124 112',
@@ -260,6 +299,9 @@ export class TypographicAnatomyService {
       japaneseName: '心臓 • 心筋',
       chineseName: '心脏 • 心肌',
       sanskritName: 'हृदयम् • हृत्पेशी',
+      koreanName: '심장 • 심근',
+      arabicName: 'القلب • عضلة القلب',
+      hebrewName: 'לב • שריר הלב',
       category: 'organ',
       snomedCode: '80891009',
       pathD: 'M 94 92 C 90 85 100 80 106 90 C 112 80 120 85 116 95 C 112 108 102 116 100 118 C 98 116 92 104 94 92',
@@ -279,6 +321,9 @@ export class TypographicAnatomyService {
       japaneseName: '左肺',
       chineseName: '左肺',
       sanskritName: 'वाम-फुप्फुस',
+      koreanName: '좌폐',
+      arabicName: 'الرئة اليسرى',
+      hebrewName: 'ריאה שמאלית',
       category: 'organ',
       snomedCode: '44714003',
       pathD: 'M 106 82 C 112 80 122 80 124 88 C 126 102 124 118 112 120',
@@ -298,6 +343,9 @@ export class TypographicAnatomyService {
       japaneseName: '右肺',
       chineseName: '右肺',
       sanskritName: 'दक्षिण-फुप्फुस',
+      koreanName: '우폐',
+      arabicName: 'الرئة اليمنى',
+      hebrewName: 'ריאה ימנית',
       category: 'organ',
       snomedCode: '45840003',
       pathD: 'M 94 82 C 88 80 78 80 76 88 C 74 102 76 118 88 120',
@@ -319,6 +367,9 @@ export class TypographicAnatomyService {
       japaneseName: '肝臓 • 右葉',
       chineseName: '肝脏 • 右叶',
       sanskritName: 'यकृत्',
+      koreanName: '간',
+      arabicName: 'الكبد',
+      hebrewName: 'כבד',
       category: 'organ',
       snomedCode: '10200004',
       pathD: 'M 76 128 C 76 138 82 146 98 146 C 102 146 104 135 102 128',
@@ -338,6 +389,9 @@ export class TypographicAnatomyService {
       japaneseName: '胃 • 胃体',
       chineseName: '胃 • 胃体',
       sanskritName: 'आमाशय',
+      koreanName: '위',
+      arabicName: 'المعدة',
+      hebrewName: 'קיבה',
       category: 'organ',
       snomedCode: '69695003',
       pathD: 'M 104 128 C 106 138 112 144 122 142 C 124 134 122 128 116 128',
@@ -356,6 +410,9 @@ export class TypographicAnatomyService {
       japaneseName: '右腎',
       chineseName: '右肾',
       sanskritName: 'दक्षिण-वृक्क',
+      koreanName: '우신',
+      arabicName: 'الكلية اليمنى',
+      hebrewName: 'כליה ימנית',
       category: 'organ',
       snomedCode: '64033007',
       pathD: 'M 82 150 C 80 156 80 162 86 164',
@@ -375,6 +432,9 @@ export class TypographicAnatomyService {
       japaneseName: '左腎',
       chineseName: '左肾',
       sanskritName: 'वाम-वृक्क',
+      koreanName: '좌신',
+      arabicName: 'الكلية اليسرى',
+      hebrewName: 'כליה שמאלית',
       category: 'organ',
       snomedCode: '18639004',
       pathD: 'M 118 150 C 120 156 120 162 114 164',
@@ -414,6 +474,9 @@ export class TypographicAnatomyService {
       japaneseName: '右大腿骨',
       chineseName: '右股骨',
       sanskritName: 'दक्षिण-ऊर्वस्थि',
+      koreanName: '우측 대퇴골',
+      arabicName: 'عظم الفخذ الأيمن',
+      hebrewName: 'עצם הירך הימנית',
       category: 'skeletal',
       snomedCode: '71341001',
       pathD: 'M 86 210 L 82 285',
@@ -432,6 +495,9 @@ export class TypographicAnatomyService {
       japaneseName: '左大腿骨',
       chineseName: '左股骨',
       sanskritName: 'वाम-ऊर्वस्थि',
+      koreanName: '좌측 대퇴골',
+      arabicName: 'عظم الفخذ الأيسر',
+      hebrewName: 'עצם הירך השמאלית',
       category: 'skeletal',
       snomedCode: '24029007',
       pathD: 'M 114 210 L 118 285',
@@ -450,6 +516,9 @@ export class TypographicAnatomyService {
       japaneseName: '右脛骨・腓骨',
       chineseName: '右胫骨与腓骨',
       sanskritName: 'दक्षिण-जङ्घास्थि',
+      koreanName: '우측 경골',
+      arabicName: 'قصبة الساق اليمنى',
+      hebrewName: 'עצם השוק הימנית',
       category: 'skeletal',
       snomedCode: '12611008',
       pathD: 'M 82 295 L 76 385',
@@ -468,6 +537,9 @@ export class TypographicAnatomyService {
       japaneseName: '左脛骨・腓骨',
       chineseName: '左胫骨与腓骨',
       sanskritName: 'वाम-जङ्घास्थि',
+      koreanName: '좌측 경골',
+      arabicName: 'قصبة الساق اليسرى',
+      hebrewName: 'עצם השוק השמאלית',
       category: 'skeletal',
       snomedCode: '56795003',
       pathD: 'M 118 295 L 124 385',
@@ -486,6 +558,9 @@ export class TypographicAnatomyService {
       japaneseName: '右上腕骨',
       chineseName: '右肱骨',
       sanskritName: 'दक्षिण-प्रगण्डास्थि',
+      koreanName: '우측 상완골',
+      arabicName: 'عظم العضد الأيمن',
+      hebrewName: 'עצם הזרוע הימנית',
       category: 'skeletal',
       snomedCode: '18188000',
       pathD: 'M 62 105 L 56 160',
@@ -504,6 +579,9 @@ export class TypographicAnatomyService {
       japaneseName: '左上腕骨',
       chineseName: '左肱骨',
       sanskritName: 'वाम-प्रगण्डास्थि',
+      koreanName: '좌측 상완골',
+      arabicName: 'عظم العضد الأيسر',
+      hebrewName: 'עצם הזרוע השמאלית',
       category: 'skeletal',
       snomedCode: '78277001',
       pathD: 'M 138 105 L 144 160',
@@ -524,6 +602,9 @@ export class TypographicAnatomyService {
       japaneseName: '大動脈 • O2: 99%',
       chineseName: '主动脉 • O2: 99%',
       sanskritName: 'महाधमनी',
+      koreanName: '대동맥',
+      arabicName: 'الشريان الأبهر',
+      hebrewName: 'אבי העורקים',
       category: 'vascular',
       snomedCode: '15825003',
       pathD: 'M 100 95 C 104 88 106 78 100 74',
@@ -543,6 +624,9 @@ export class TypographicAnatomyService {
       japaneseName: '大静脈 • CO2',
       chineseName: '腔静脉 • CO2',
       sanskritName: 'महाशिरा',
+      koreanName: '대정맥',
+      arabicName: 'الوريد الأجوف',
+      hebrewName: 'וריד נבוב',
       category: 'vascular',
       snomedCode: '76784001',
       pathD: 'M 96 74 V 110',
@@ -563,6 +647,9 @@ export class TypographicAnatomyService {
       case 'japanese': return part.japaneseName;
       case 'chinese': return part.chineseName;
       case 'sanskrit': return part.sanskritName;
+      case 'korean': return part.koreanName || part.name;
+      case 'arabic': return part.arabicName || part.name;
+      case 'hebrew': return part.hebrewName || part.name;
       default: return part.latinName;
     }
   }
@@ -601,8 +688,8 @@ export class TypographicAnatomyService {
   }
 
   cycleLanguage(): void {
-    const modes: Array<'latin' | 'english' | 'japanese' | 'chinese' | 'sanskrit'> = [
-      'latin', 'english', 'japanese', 'chinese', 'sanskrit'
+    const modes: Array<'latin' | 'english' | 'japanese' | 'chinese' | 'sanskrit' | 'korean' | 'arabic' | 'hebrew'> = [
+      'latin', 'english', 'japanese', 'chinese', 'sanskrit', 'korean', 'arabic', 'hebrew'
     ];
     const currentIndex = modes.indexOf(this.languageMode());
     const nextIndex = (currentIndex + 1) % modes.length;
