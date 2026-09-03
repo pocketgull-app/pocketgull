@@ -21,8 +21,20 @@ import { NavigationShellService } from '../../services/navigation-shell.service'
         <!-- M3 Side Sheet Header (Surface Container High) -->
         <header class="flex items-center justify-between px-4 py-2.5 bg-zinc-900/90 border-b border-zinc-800/80 shrink-0">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-8 h-8 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-300 text-sm shrink-0 font-bold shadow-inner">
-              🔬
+            <div class="w-8 h-8 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center p-1 shrink-0 shadow-inner">
+              <svg viewBox="0 0 134 100" class="w-6 h-5" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PocketGull Origami Seagull">
+                <g id="origami-gull" transform="translate(2, 6)">
+                  <polygon points="10,38 68,22 38,88 10,38" fill="#ffffff" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+                  <polygon points="10,38 38,88 28,60" fill="#e2e8f0"/>
+                  <polygon points="38,88 68,22 92,34 100,78 38,88" fill="#f8fafc" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+                  <polygon points="68,22 100,78 110,38 68,22" fill="#0d9488" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+                  <polygon points="100,78 110,38 94,52" fill="#0f766e"/>
+                  <polygon points="68,22 80,6 100,8 110,38 92,34 68,22" fill="#ffffff" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+                  <path d="M 82,18 Q 88,12 94,18" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+                  <polygon points="100,8 124,14 108,24 100,18" fill="#ea580c" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+                  <polygon points="100,18 124,14 110,38 100,18" fill="#f97316" stroke="#0f172a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+                </g>
+              </svg>
             </div>
             <div class="min-w-0">
               <span class="block text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400 truncate">Doc Drill • M3 Clinical Sheet</span>
