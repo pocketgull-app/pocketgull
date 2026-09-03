@@ -151,5 +151,49 @@ describe('AdkLiveService', () => {
       });
     }).not.toThrow();
   });
+
+  it('should dispatch physical genomics function calls and capture tool events', () => {
+    const service = new AdkLiveService();
+    let capturedEvent: any = null;
+    service.onToolCall = (ev) => {
+      capturedEvent = ev;
+    };
+
+    // 1. Test CRISPR R-Loop Live Tool Call
+    service.handleLiveFunctionCalls([
+      {
+        id: 'call_crispr_001',
+        name: 'evaluate_crispr_r_loop_mechanics',
+        args: {
+          guideRnaSeq: 'GACUUGACAGUCUACGAUCG',
+          targetDnaSeq: 'GACTTGACAGTCTACGATCG',
+          superhelicalSigma: -0.06
+        }
+      }
+    ]);
+
+    expect(capturedEvent).not.toBeNull();
+    expect(capturedEvent.name).toBe('evaluate_crispr_r_loop_mechanics');
+    expect(capturedEvent.result.netFreeEnergyDeltaGKcalPerMol).toBeDefined();
+    expect(capturedEvent.result.offTargetCleavageProbability).toBeGreaterThan(0);
+    expect(service.lastDispatchedToolCall()?.id).toBe('call_crispr_001');
+
+    // 2. Test Super-Enhancer Live Tool Call
+    service.handleLiveFunctionCalls([
+      {
+        id: 'call_se_002',
+        name: 'compute_super_enhancer_condensate',
+        args: {
+          med1ConcUm: 5.5,
+          brd4ConcUm: 4.0,
+          polIiConcUm: 2.2
+        }
+      }
+    ]);
+
+    expect(capturedEvent.name).toBe('compute_super_enhancer_condensate');
+    expect(capturedEvent.result.isCondensateFormed).toBe(true);
+    expect(capturedEvent.result.dropletRadiusNm).toBeGreaterThan(50);
+  });
 });
 

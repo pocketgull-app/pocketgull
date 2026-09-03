@@ -23,7 +23,7 @@ test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () =
     await suiteTab.click({ force: true });
 
     // 6. Verify Clinical Assessments Suite header renders
-    const suiteHeader = page.locator('text=Multimodal Clinical & Life Assessments');
+    const suiteHeader = page.locator('text=/Clinical & Life (Sovereignty|Assessments)/i').first();
     await expect(suiteHeader).toBeVisible({ timeout: 10000 });
 
     // 7. Verify 3D Double-Click OARS Flip interaction

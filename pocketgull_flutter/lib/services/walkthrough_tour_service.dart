@@ -90,6 +90,12 @@ class WalkthroughTourNotifier extends Notifier<WalkthroughTourState> {
         position: 'left',
       ),
       TourStep(
+        targetId: 'tour-epistemic-drawer',
+        title: 'Challenge Before You Commit',
+        body: 'Prevent confirmation bias: Review 3 orthogonal counter-hypotheses and perform bedside disconfirming exams before sealing your diagnostic assertion.',
+        position: 'left',
+      ),
+      TourStep(
         targetId: 'tour-voice-assistant',
         title: 'Voice & Consult Assistant',
         body: 'Engage in real-time clinical chat. Ask questions, log feedback, or trigger hands-free dictation.',

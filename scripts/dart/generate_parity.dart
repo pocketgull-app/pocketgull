@@ -103,11 +103,16 @@ void main() {
   buffer.writeln('- **Flutter Only (New Architecture/Components)**: $flutterOnly');
 
   final outputPath = '$root${sep}parity_matrix.md';
+  final docsPath = '$root${sep}docs${sep}research${sep}parity_matrix.md';
   File(outputPath).writeAsStringSync(buffer.toString());
+  if (File(docsPath).existsSync()) {
+    File(docsPath).writeAsStringSync(buffer.toString());
+  }
 
   print('  [OK] Matched Features: $matchCount');
   print('  [OK] Missing in Flutter: $missingFlutter');
   print('  [OK] Flutter Only: $flutterOnly');
   print('  [OK] Parity matrix generated at: $outputPath');
+  print('  [OK] Parity matrix mirrored at: $docsPath');
   print('\n✅ Parity audit complete!\n');
 }

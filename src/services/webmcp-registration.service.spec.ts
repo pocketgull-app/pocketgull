@@ -11,6 +11,8 @@ import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import { FederatedLearningService } from './federated-learning.service';
 import { OpenEvidenceCommonsService } from './open-evidence-commons.service';
 import { IpPatentRegistryService } from './ip-patent-registry.service';
+import { OpticalInnovationsService } from './optical-innovations.service';
+import { PatientTrajectoryService } from './patient-trajectory.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -33,7 +35,11 @@ describe('WebMcpRegistrationService', () => {
 
     mockModelContext = {
       registerTool: vi.fn((tool: any, options: any) => {
-        registeredTools.set(tool.name, tool);
+        const wrapped = {
+          ...tool,
+          execute: tool.execute || tool.handler
+        };
+        registeredTools.set(tool.name, wrapped);
       })
     };
 
@@ -98,7 +104,39 @@ describe('WebMcpRegistrationService', () => {
     };
 
     mockSkepticalService = {
-      evaluateCdsCompliance: vi.fn().mockReturnValue({ isFdaSection520oCompliant: true, overallConfidencePercent: 88 })
+      evaluateCdsCompliance: vi.fn().mockReturnValue({ isFdaSection520oCompliant: true, overallConfidencePercent: 88 }),
+      evaluateProtacHookEffectFalsification: vi.fn().mockReturnValue({
+        id: 'protac-polypharmacy-hook-effect',
+        totalSupplementsCount: 8,
+        optimalDoseCopt: 5,
+        hookRatio: 1.6,
+        isHookEffectSuppressed: true,
+        falsifiability: { pValue: 0.380 }
+      }),
+      evaluateLlpsPhaseBoundaryFalsification: vi.fn().mockReturnValue({
+        id: 'llps-phase-boundary',
+        moleculeName: 'Curcumin Liposomal + Resveratrol',
+        hydrophobicFloryChi: 1.42,
+        isPhaseBoundaryAchieved: false,
+        falsifiability: { pValue: 0.412 }
+      }),
+      evaluateQuantumThermalFalsification: vi.fn().mockReturnValue({
+        id: 'quantum-thermal-noise',
+        deviceOrClaimName: 'Scalar Bio-Resonance Frequency Harmonizer',
+        thermalNoiseKbTJoule: 4.28e-21,
+        isThermalNoiseOvercome: false,
+        falsifiability: { pValue: 0.945 }
+      }),
+      evaluateCannabinoidMicrotubuleFalsification: vi.fn().mockReturnValue({
+        id: 'cannabinoid-microtubules',
+        compound: 'CBD',
+        doseMicroMolar: 3.5,
+        tubulinAcetylationRatio: 1.45,
+        catastropheRateReductionPercent: 42.0,
+        gsk3BetaInhibitionPercent: 68.0,
+        isStabilizationFalsified: true,
+        falsifiability: { pValue: 0.018 }
+      })
     };
 
     mockMoeRouter = {
@@ -108,6 +146,49 @@ describe('WebMcpRegistrationService', () => {
 
     const mockNgZone = {
       run: (fn: Function) => fn()
+    };
+
+    const mockTrajectory = {
+      teaspoonExplanations: vi.fn().mockReturnValue([
+        {
+          clinicalTerm: 'L4-L5 Lumbar Disc Herniation with Radiculopathy',
+          teaspoonExplanation: 'Think of your spinal disc like a dense jelly cushion between two wooden blocks.',
+          anatomicalAnchor: 'Lumbar Spine (L4-L5)',
+          historicalTrigger: 'Prolonged sitting without lumbar lordosis support.',
+          empowermentReframe: 'Your body is signaling a mechanical adaptation request.'
+        }
+      ]),
+      dailyHabits: vi.fn().mockReturnValue([
+        { id: 'morning-priming', title: 'Morning Priming', isCompleted: true },
+        { id: 'midday-fuel', title: 'Midday Fuel', isCompleted: false },
+        { id: 'evening-restoration', title: 'Evening Restoration', isCompleted: false }
+      ]),
+      dailyAdherenceScore: vi.fn().mockReturnValue(33),
+      horizonMilestones: vi.fn().mockReturnValue([
+        { dayTarget: 30, phaseTitle: 'Phase I', completionPercent: 78 },
+        { dayTarget: 60, phaseTitle: 'Phase II', completionPercent: 82 },
+        { dayTarget: 90, phaseTitle: 'Phase III', completionPercent: 92 }
+      ]),
+      vitalityCertificate: vi.fn().mockReturnValue({
+        certificateId: 'PG-VIT-TEST',
+        patientName: 'Charles Darwin',
+        completedMilestone: '90-Day Functional Restoration'
+      }),
+      generateVitalityCertificate: vi.fn().mockReturnValue({
+        certificateId: 'PG-VIT-90DAY',
+        patientName: 'Charles Darwin',
+        completedMilestone: '90-Day Functional Restoration'
+      }),
+      recentEdgeConsult: vi.fn().mockReturnValue(null),
+      consultEdgeScribe: vi.fn().mockResolvedValue({
+        source: 'Chrome Built-in AI (Gemma 4 Edge)',
+        userNote: 'My lower back feels tight after sitting today',
+        anatomicalLinkage: 'Lumbar Spine (L4-L5 Disc & Paraspinal Musculature)',
+        teaspoonInsight: 'Sitting compresses the lumbar disc cushion.',
+        recommendedImmediateAction: 'Stand up, do 5 gentle standing lumbar extension glides.',
+        timestamp: '16:20',
+        egressAuditedZeroEgress: true
+      })
     };
 
     const injector = Injector.create({
@@ -122,6 +203,8 @@ describe('WebMcpRegistrationService', () => {
         { provide: FederatedLearningService, useValue: new FederatedLearningService() },
         { provide: OpenEvidenceCommonsService, useValue: new OpenEvidenceCommonsService() },
         { provide: IpPatentRegistryService, useValue: new IpPatentRegistryService() },
+        { provide: OpticalInnovationsService, useValue: new OpticalInnovationsService() },
+        { provide: PatientTrajectoryService, useValue: mockTrajectory },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -129,15 +212,30 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 51 WebMCP agentic tools on modelContext', () => {
+  it('should register all 65 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(51);
+    expect(registeredTools.size).toBe(65);
+    expect(registeredTools.has('get_clinical_evidence_citations')).toBe(true);
+    expect(registeredTools.has('get_patient_3act_trajectory')).toBe(true);
+    expect(registeredTools.has('configure_optical_therapy')).toBe(true);
+    expect(registeredTools.has('export_scaffold_geometry')).toBe(true);
+    expect(registeredTools.has('evaluate_protac_hook_effect')).toBe(true);
+    expect(registeredTools.has('evaluate_llps_phase_boundary')).toBe(true);
+    expect(registeredTools.has('evaluate_quantum_thermal_noise')).toBe(true);
+    expect(registeredTools.has('simulate_cahn_hilliard_llps')).toBe(true);
+    expect(registeredTools.has('evaluate_cannabinoid_microtubule_stabilization')).toBe(true);
+    expect(registeredTools.has('simulate_chromatin_loop_extrusion')).toBe(true);
+    expect(registeredTools.has('compute_transcriptional_condensate_phase')).toBe(true);
+    expect(registeredTools.has('evaluate_crispr_r_loop_energetics')).toBe(true);
+    expect(registeredTools.has('simulate_nucleosome_force_spectroscopy')).toBe(true);
+    expect(registeredTools.has('evaluate_linc_mechanotransduction')).toBe(true);
     expect(registeredTools.has('get_staked_patent_claims_summary')).toBe(true);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
     expect(registeredTools.has('evaluate_ssa_disability_and_blue_book_listings')).toBe(true);
     expect(registeredTools.has('get_jurisdictional_compliance_and_regulatory_matrix')).toBe(true);
+
     expect(registeredTools.has('query_mandiant_threat_intelligence_and_defense')).toBe(true);
     expect(registeredTools.has('administer_clinical_mandarinate_exam')).toBe(true);
     expect(registeredTools.has('pocketgull_trigger_federated_round')).toBe(true);
@@ -545,10 +643,14 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 51 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 65 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(51);
+    expect(registeredTools.size).toBe(65);
+    expect(registeredTools.has('get_clinical_evidence_citations')).toBe(true);
+    expect(registeredTools.has('get_patient_3act_trajectory')).toBe(true);
+    expect(registeredTools.has('configure_optical_therapy')).toBe(true);
+    expect(registeredTools.has('export_scaffold_geometry')).toBe(true);
     expect(registeredTools.has('get_staked_patent_claims_summary')).toBe(true);
     expect(registeredTools.has('open_zen_sanctuary')).toBe(true);
     expect(registeredTools.has('get_healing_postcards')).toBe(true);
@@ -614,13 +716,148 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('KEJU-CERT-');
   });
 
+  it('should execute evaluate_protac_hook_effect tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_protac_hook_effect');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ totalSupplementsCount: 8, cyp3a4SubstrateCount: 3, optimalDoseCopt: 5 });
+    expect(result.content[0].text).toContain('protac-polypharmacy-hook-effect');
+    expect(mockSkepticalService.evaluateProtacHookEffectFalsification).toHaveBeenCalledWith(8, 3, 5);
+  });
+
+  it('should execute evaluate_llps_phase_boundary tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_llps_phase_boundary');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      moleculeName: 'Curcumin Liposomal + Resveratrol',
+      claimedAggregateTarget: 'Amyloid-β & Hyperphosphorylated Tau Fibrils',
+      hydrophobicFloryChi: 1.42,
+      freeEnergyDeltaFMix: 0.12
+    });
+    expect(result.content[0].text).toContain('llps-phase-boundary');
+    expect(mockSkepticalService.evaluateLlpsPhaseBoundaryFalsification).toHaveBeenCalledWith(
+      'Curcumin Liposomal + Resveratrol',
+      'Amyloid-β & Hyperphosphorylated Tau Fibrils',
+      1.42,
+      0.12
+    );
+  });
+
+  it('should execute evaluate_quantum_thermal_noise tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_quantum_thermal_noise');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      deviceOrClaimName: 'Scalar Bio-Resonance Frequency Harmonizer',
+      claimedFieldTesla: 1e-6,
+      frequencyHz: 7.83
+    });
+    expect(result.content[0].text).toContain('quantum-thermal-noise');
+    expect(mockSkepticalService.evaluateQuantumThermalFalsification).toHaveBeenCalledWith(
+      'Scalar Bio-Resonance Frequency Harmonizer',
+      1e-6,
+      7.83
+    );
+  });
+
+  it('should execute simulate_cahn_hilliard_llps tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('simulate_cahn_hilliard_llps');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ timesteps: 25, mobility: 1.0, gradientEnergy: 0.5, meanConcentration: 0.0 });
+    expect(result.content[0].text).toContain('freeEnergyEvolution');
+    expect(result.content[0].text).toContain('gridSize');
+  });
+
+  it('should execute evaluate_cannabinoid_microtubule_stabilization tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_cannabinoid_microtubule_stabilization');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ compound: 'CBD', doseMicroMolar: 3.5 });
+    expect(result.content[0].text).toContain('acetylationLys40Ratio');
+    expect(result.content[0].text).toContain('axonalTransportVelocityUmPerSec');
+  });
+
+  it('should execute simulate_chromatin_loop_extrusion tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('simulate_chromatin_loop_extrusion');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ locusLengthKb: 2000, cohesinSpeedKbPerSec: 1.2 });
+    expect(result.content[0].text).toContain('tadInsulationScore');
+    expect(result.content[0].text).toContain('fractalGlobuleScalingGamma');
+  });
+
+  it('should execute compute_transcriptional_condensate_phase tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('compute_transcriptional_condensate_phase');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ med1ConcentrationUm: 5.0, brd4ConcentrationUm: 4.0 });
+    expect(result.content[0].text).toContain('dropletRadiusNm');
+    expect(result.content[0].text).toContain('transcriptionalBurstFrequencyPerHour');
+  });
+
+  it('should execute evaluate_crispr_r_loop_energetics tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_crispr_r_loop_energetics');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ guideRnaSeq: 'GACUUGACAGUCUACGAUCG', targetDnaSeq: 'GACTTGACAGTCTACGATCG' });
+    expect(result.content[0].text).toContain('netFreeEnergyDeltaGKcalPerMol');
+    expect(result.content[0].text).toContain('cleavageFalsificationVerdict');
+  });
+
+  it('should execute simulate_nucleosome_force_spectroscopy tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('simulate_nucleosome_force_spectroscopy');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ epigeneticState: 'HYPERACETYLATED_H3K27AC' });
+    expect(result.content[0].text).toContain('outerTurnRuptureForcePn');
+    expect(result.content[0].text).toContain('chromatinAccessibilityPercent');
+  });
+
+  it('should execute evaluate_linc_mechanotransduction tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_linc_mechanotransduction');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ ecmStiffnessKPa: 12.0 });
+    expect(result.content[0].text).toContain('yapTazNuclearToCytoplasmicRatio');
+    expect(result.content[0].text).toContain('transcriptionalMechanostate');
+  });
+
+  it('should execute export_scaffold_geometry tool for STL and glTF bundle', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('export_scaffold_geometry');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({
+      lesionRadiusX: 11.5,
+      targetOrgan: 'Lumbar Disc Herniation',
+      format: 'all'
+    });
+    expect(result.content[0].text).toContain('asciiStl');
+    expect(result.content[0].text).toContain('gltfJson');
+    expect(result.content[0].text).toContain('acousticPhaseMap');
+    expect(result.content[0].text).toContain('bioprinterProfile');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(51);
+    expect((service as any).mcpControllers.length).toBe(65);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
   });
+
 
   describe('normalizeToolInputSchema & getRegisteredTools (Chrome Model Context API update)', () => {
     it('should normalize native Object schema directly', () => {
@@ -662,6 +899,64 @@ describe('WebMcpRegistrationService', () => {
       expect(tools[0].inputSchema.properties.q.type).toBe('string');
       expect(typeof tools[1].inputSchema).toBe('object');
       expect(tools[1].inputSchema.properties.id.type).toBe('number');
+    });
+
+    it('should execute configure_optical_therapy tool and return telemetry', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('configure_optical_therapy');
+      expect(tool).toBeDefined();
+
+      const res = await tool.execute({
+        mode: 'photobiomodulation-670nm',
+        pbmAction: 'start',
+        circadianPhase: 'dawn-alert',
+        oknDirection: 'bilateral-respiratory',
+        dichopticLeftHz: 10.0,
+        dichopticRightHz: 10.5
+      });
+
+      expect(res.content[0].text).toContain('photobiomodulation-670nm');
+      expect(res.content[0].text).toContain('ISCEV Photosensitive Epilepsy (PSE) Shutter Active');
+    });
+
+    it('should execute get_patient_3act_trajectory tool and return 3-act clinical data', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('get_patient_3act_trajectory');
+      expect(tool).toBeDefined();
+
+      const res = await tool.execute({
+        symptomQuery: 'My lower back feels tight after sitting today',
+        generateCertificate: true
+      });
+
+      expect(res.content[0].text).toContain("Where You've Been");
+      expect(res.content[0].text).toContain("Where You Stand Today");
+      expect(res.content[0].text).toContain("Where You're Going");
+      expect(res.content[0].text).toContain('L4-L5');
+      expect(res.content[0].text).toContain('PG-VIT-');
+    });
+
+    it('should execute get_clinical_evidence_citations tool and return citations by category and PMID', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('get_clinical_evidence_citations');
+      expect(tool).toBeDefined();
+
+      // Query by category
+      const resCat = await tool.execute({
+        category: 'optical_pbm',
+        style: 'APA'
+      });
+      expect(resCat.content[0].text).toContain('optical_pbm');
+      expect(resCat.content[0].text).toContain('32559297');
+      expect(resCat.content[0].text).toContain('Shinhmar');
+
+      // Query by exact PMID
+      const resPmid = await tool.execute({
+        pmid: '35298459', // Brown 2022 CIE S 026
+        style: 'Vancouver'
+      });
+      expect(resPmid.content[0].text).toContain('PLOS Biol');
+      expect(resPmid.content[0].text).toContain('Recommendations for daytime');
     });
   });
 });

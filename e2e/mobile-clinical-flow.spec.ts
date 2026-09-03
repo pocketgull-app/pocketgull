@@ -57,6 +57,7 @@ test.describe('Mobile Clinical Flow & Touch Accessibility E2E', () => {
   });
 
   test('should render responsive mobile view of Business Site', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/business', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('body')).toContainText(/PocketGull/i, { timeout: 15000 });
 

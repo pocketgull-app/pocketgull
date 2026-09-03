@@ -20,6 +20,9 @@ if (!fs.existsSync(destDir)) {
 
 const files = fs.readdirSync(srcDir);
 for (const file of files) {
-    fs.copyFileSync(path.join(srcDir, file), path.join(destDir, file));
+    const srcPath = path.join(srcDir, file);
+    if (fs.statSync(srcPath).isFile()) {
+        fs.copyFileSync(srcPath, path.join(destDir, file));
+    }
 }
 console.log(`Copied ${files.length} font files to docs/study/public/fonts/`);

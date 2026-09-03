@@ -6,8 +6,14 @@ import {
   ISocraticChallenge,
   CochraneRiskOfBiasLevel,
   IBiohackEpistemicAssessment,
-  BiohackCategory
+  BiohackCategory,
+  IBiophysicalFalsificationCatalog
 } from '../services/skeptical-epistemology.service';
+import {
+  IGroundedClinicalAssertion,
+  createDefaultGroundedClinicalAssertion
+} from '../models/grounded-epistemic-assertion.model';
+import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 
 @Component({
   selector: 'app-skeptical-epistemology-hud',
@@ -232,6 +238,360 @@ import {
         }
       </div>
 
+      <!-- Frontier Biophysical & Quantum Epistemic Falsifiers -->
+      <div class="mt-6 border-t border-zinc-100 dark:border-zinc-800/80 pt-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 flex items-center gap-2">
+            <span>⚛️</span> Frontier Biophysical &amp; Quantum Epistemic Falsifiers
+          </h4>
+          <span class="text-[11px] font-mono text-zinc-500">
+            Cahn-Hilliard • 3-Body Hook Effect • Boltzmann k_B T Floor
+          </span>
+        </div>
+
+        <!-- Biophysical Falsifier Tab Buttons -->
+        <div class="flex flex-wrap gap-1.5 mb-4 font-mono text-xs">
+          <button
+            type="button"
+            (click)="activeBiophysTab.set('protac')"
+            class="px-3 py-1.5 rounded-lg border transition-all min-h-[36px]"
+            [ngClass]="activeBiophysTab() === 'protac' ? 'bg-teal-500/10 text-teal-300 border-teal-500/50 font-bold' : 'bg-zinc-900/40 text-zinc-400 border-zinc-800 hover:text-zinc-200'">
+            <span>🎯 PROTAC Hook Effect</span>
+          </button>
+          <button
+            type="button"
+            (click)="activeBiophysTab.set('llps')"
+            class="px-3 py-1.5 rounded-lg border transition-all min-h-[36px]"
+            [ngClass]="activeBiophysTab() === 'llps' ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/50 font-bold' : 'bg-zinc-900/40 text-zinc-400 border-zinc-800 hover:text-zinc-200'">
+            <span>💧 LLPS Phase Plaque</span>
+          </button>
+          <button
+            type="button"
+            (click)="activeBiophysTab.set('quantum')"
+            class="px-3 py-1.5 rounded-lg border transition-all min-h-[36px]"
+            [ngClass]="activeBiophysTab() === 'quantum' ? 'bg-rose-500/10 text-rose-300 border-rose-500/50 font-bold' : 'bg-zinc-900/40 text-zinc-400 border-zinc-800 hover:text-zinc-200'">
+            <span>⚛️ Quantum Thermal Noise</span>
+          </button>
+          <button
+            type="button"
+            (click)="activeBiophysTab.set('dualspin')"
+            class="px-3 py-1.5 rounded-lg border transition-all min-h-[36px]"
+            [ngClass]="activeBiophysTab() === 'dualspin' ? 'bg-sky-500/10 text-sky-300 border-sky-500/50 font-bold' : 'bg-zinc-900/40 text-zinc-400 border-zinc-800 hover:text-zinc-200'">
+            <span>🌀 Dual-Spin Superposition</span>
+          </button>
+          <button
+            type="button"
+            (click)="activeBiophysTab.set('pore')"
+            class="px-3 py-1.5 rounded-lg border transition-all min-h-[36px]"
+            [ngClass]="activeBiophysTab() === 'pore' ? 'bg-amber-500/10 text-amber-300 border-amber-500/50 font-bold' : 'bg-zinc-900/40 text-zinc-400 border-zinc-800 hover:text-zinc-200'">
+            <span>💎 Reticular Pore Sieve</span>
+          </button>
+        </div>
+
+        <!-- Tab 1: PROTAC Hook Effect Polypharmacy Guard -->
+        @if (activeBiophysTab() === 'protac') {
+          @let protac = biophysicalCatalog().protacPolypharmacy;
+          <div class="rounded-xl bg-zinc-950/80 p-4 border border-zinc-800 space-y-3 font-sans">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h5 class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+                {{ protac.name }}
+              </h5>
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded"
+                    [ngClass]="protac.isHookEffectSuppressed ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-800'">
+                {{ protac.isHookEffectSuppressed ? '⚠️ Hook Auto-Inhibition Flagged' : '✓ Optimal Binding' }}
+              </span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Total Stack Size:</span>
+                <span class="font-bold text-amber-300">{{ protac.totalSupplementsCount }} compounds</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Optimal C_opt:</span>
+                <span class="font-bold text-teal-300">{{ protac.optimalDoseCopt }} compounds</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Saturation Ratio:</span>
+                <span class="font-bold" [ngClass]="protac.hookRatio > 1.45 ? 'text-rose-400' : 'text-emerald-400'">{{ protac.hookRatio }}x (Limit 1.45x)</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">H₀ p-value:</span>
+                <span class="font-bold text-indigo-400">p = {{ protac.falsifiability.pValue }}</span>
+              </div>
+            </div>
+            @if (protac.falsifiability.skepticalWarningNotice) {
+              <div class="p-3 rounded-lg bg-amber-950/40 border border-amber-800/60 text-xs text-amber-200">
+                {{ protac.falsifiability.skepticalWarningNotice }}
+              </div>
+            }
+            <p class="text-xs text-zinc-300 leading-relaxed">
+              <strong class="text-teal-300 font-mono">Clinical Action:</strong> {{ protac.clinicalGuidance }}
+            </p>
+          </div>
+        }
+
+        <!-- Tab 2: LLPS Phase Separation Plaque Falsifier -->
+        @if (activeBiophysTab() === 'llps') {
+          @let llps = biophysicalCatalog().llpsPhaseBoundary;
+          <div class="rounded-xl bg-zinc-950/80 p-4 border border-zinc-800 space-y-3 font-sans">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h5 class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                LLPS Cahn-Hilliard Phase Boundary Falsifier ({{ llps.moleculeName }})
+              </h5>
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded"
+                    [ngClass]="llps.isPhaseBoundaryAchieved ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-rose-950 text-rose-300 border border-rose-800'">
+                {{ llps.isPhaseBoundaryAchieved ? '✓ Spinodal Dissolution Feasible' : '⚠️ Mechanistically Falsified' }}
+              </span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Flory Parameter χ:</span>
+                <span class="font-bold text-cyan-300">{{ llps.hydrophobicFloryChi }} (Crit &ge; 2.0)</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Mixing Free Energy:</span>
+                <span class="font-bold text-amber-300">ΔF = {{ llps.freeEnergyDeltaFMix }} (&lt; 0 required)</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Target Aggregate:</span>
+                <span class="font-bold text-zinc-300 truncate">{{ llps.claimedAggregateTarget }}</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Null H₀ p-value:</span>
+                <span class="font-bold text-indigo-400">p = {{ llps.falsifiability.pValue }}</span>
+              </div>
+            </div>
+            @if (llps.falsifiability.skepticalWarningNotice) {
+              <div class="p-3 rounded-lg bg-rose-950/40 border border-rose-800/60 text-xs text-rose-200">
+                {{ llps.falsifiability.skepticalWarningNotice }}
+              </div>
+            }
+            <p class="text-xs text-zinc-300 leading-relaxed">
+              <strong class="text-cyan-300 font-mono">Skeptical Summary:</strong> {{ llps.clinicalGuidance }}
+            </p>
+          </div>
+        }
+
+        <!-- Tab 3: Quantum Thermal Noise (k_B T) Falsifier -->
+        @if (activeBiophysTab() === 'quantum') {
+          @let q = biophysicalCatalog().quantumThermalNoise;
+          <div class="rounded-xl bg-zinc-950/80 p-4 border border-zinc-800 space-y-3 font-sans">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h5 class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                Quantum Thermal Dissipation Falsifier ({{ q.deviceOrClaimName }})
+              </h5>
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800">
+                {{ q.isThermalNoiseOvercome ? '✓ Coherence Sustained' : '✗ Falsified by Thermal Noise (k_B T)' }}
+              </span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Thermal Noise Floor (37°C):</span>
+                <span class="font-bold text-amber-300">k_B T = {{ q.thermalNoiseKbTJoule }} J</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Zeeman Energy:</span>
+                <span class="font-bold text-rose-400">{{ q.zeemanEnergyJoule }} J</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Photon Energy (hν):</span>
+                <span class="font-bold text-rose-400">{{ q.photonEnergyJoule }} J</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Null H₀ p-value:</span>
+                <span class="font-bold text-indigo-400">p = {{ q.falsifiability.pValue }} (Fail)</span>
+              </div>
+            </div>
+            @if (q.falsifiability.skepticalWarningNotice) {
+              <div class="p-3 rounded-lg bg-rose-950/40 border border-rose-800/60 text-xs text-rose-200">
+                {{ q.falsifiability.skepticalWarningNotice }}
+              </div>
+            }
+            <p class="text-xs text-zinc-300 leading-relaxed">
+              <strong class="text-rose-300 font-mono">Biophysical Verdict:</strong> {{ q.clinicalGuidance }}
+            </p>
+          </div>
+        }
+
+        <!-- Tab 4: Quantum Dual-Spin Superposition State -->
+        @if (activeBiophysTab() === 'dualspin') {
+          @let ds = biophysicalCatalog().quantumDualSpin;
+          <div class="rounded-xl bg-zinc-950/80 p-4 border border-zinc-800 space-y-3 font-sans">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h5 class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+                Zeeman-Steered Evidence Superposition (|Ψ⟩ = α|S⟩ + β|T⟩)
+              </h5>
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
+                {{ ds.dominantBranch }}
+              </span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 font-mono text-xs">
+              <div class="p-2.5 rounded bg-black/40 border border-zinc-800">
+                <div class="flex justify-between mb-1 text-teal-300 font-bold">
+                  <span>|S⟩ Conservative Yield:</span>
+                  <span>{{ (ds.singletYieldPhiS * 100) | number:'1.0-0' }}%</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+                  <div class="h-full bg-teal-500" [style.width.%]="ds.singletYieldPhiS * 100"></div>
+                </div>
+                <p class="text-[10px] text-zinc-400 mt-1.5">{{ ds.conservativeStandardOfCare }}</p>
+              </div>
+
+              <div class="p-2.5 rounded bg-black/40 border border-zinc-800">
+                <div class="flex justify-between mb-1 text-rose-300 font-bold">
+                  <span>|T⟩ Integrative Yield:</span>
+                  <span>{{ (ds.tripletYieldPhiT * 100) | number:'1.0-0' }}%</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+                  <div class="h-full bg-rose-500" [style.width.%]="ds.tripletYieldPhiT * 100"></div>
+                </div>
+                <p class="text-[10px] text-zinc-400 mt-1.5">{{ ds.integrativeTherapy }}</p>
+              </div>
+
+              <div class="p-2.5 rounded bg-black/40 border border-zinc-800 flex flex-col justify-between">
+                <div>
+                  <span class="text-[10px] text-zinc-500 block">Zeeman Tilt Angle:</span>
+                  <span class="font-bold text-sky-300">θ = {{ ds.zeemanAngleThetaRadians }} rad</span>
+                </div>
+                <div class="mt-2 text-[11px] text-zinc-300">
+                  <span>Patient Acuity: <strong class="text-amber-300">{{ ds.patientAcuityScore }}</strong></span>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-zinc-300 leading-relaxed">
+              <strong class="text-sky-300 font-mono">Epistemic Synthesis:</strong> {{ ds.clinicalGuidance }}
+            </p>
+          </div>
+        }
+
+        <!-- Tab 5: Reticular Pore Size-Exclusion Falsifier -->
+        @if (activeBiophysTab() === 'pore') {
+          @let ret = biophysicalCatalog().reticularPoreSieve;
+          <div class="rounded-xl bg-zinc-950/80 p-4 border border-zinc-800 space-y-3 font-sans">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h5 class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                Reticular Pore Sieving &amp; Chelation Selectivity Guard ({{ ret.binderName }})
+              </h5>
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded"
+                    [ngClass]="ret.isSelectivelySieved ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-amber-950 text-amber-300 border border-amber-800'">
+                {{ ret.isSelectivelySieved ? '✓ Selective Chelation' : '⚠️ Non-Selective Depletion Risk' }}
+              </span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Pore Aperture:</span>
+                <span class="font-bold text-amber-300">{{ ret.poreDiameterNm * 10 }} Å ({{ ret.poreDiameterNm }} nm)</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Toxin Radius (Pb2+):</span>
+                <span class="font-bold text-zinc-300">{{ ret.targetToxinRadiusAngstrom }} Å</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Mineral Radius (Mg2+):</span>
+                <span class="font-bold text-zinc-300">{{ ret.essentialMineralRadiusAngstrom }} Å</span>
+              </div>
+              <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                <span class="text-[10px] text-zinc-500 block">Null H₀ p-value:</span>
+                <span class="font-bold text-indigo-400">p = {{ ret.falsifiability.pValue }}</span>
+              </div>
+            </div>
+            @if (ret.falsifiability.skepticalWarningNotice) {
+              <div class="p-3 rounded-lg bg-amber-950/40 border border-amber-800/60 text-xs text-amber-200">
+                {{ ret.falsifiability.skepticalWarningNotice }}
+              </div>
+            }
+            <div class="text-xs text-zinc-300 leading-relaxed flex items-center gap-2">
+              <span class="text-amber-400 font-bold font-mono">Depletion Risk:</span>
+              <div class="flex flex-wrap gap-1">
+                @for (min of ret.depletionRiskMinerals; track min) {
+                  <span class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[11px] text-rose-300">{{ min }}</span>
+                }
+              </div>
+            </div>
+            <p class="text-xs text-zinc-300 leading-relaxed">
+              <strong class="text-amber-300 font-mono">Clinical Action:</strong> {{ ret.clinicalGuidance }}
+            </p>
+          </div>
+        }
+      </div>
+
+      <!-- Anti-Confirmation Bias & Socratic Falsification Envelope -->
+      <div class="mt-6 border-t border-zinc-100 dark:border-zinc-800/80 pt-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-2">
+            <span>🛡️</span> Anti-Confirmation Bias & Falsification Envelope
+          </h4>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold flex items-center gap-1"
+                  [ngClass]="groundedAssertion().pValueNullRejection < 0.05 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30'">
+              <span aria-hidden="true">{{ groundedAssertion().pValueNullRejection < 0.05 ? '✓' : '▲' }}</span>
+              <span>H₀ Status: p = {{ groundedAssertion().pValueNullRejection }}</span>
+            </span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold flex items-center gap-1 border border-zinc-800"
+                  [ngClass]="getBiasColorClass(groundedAssertion().cochraneRiskOfBias)">
+              <span aria-hidden="true">{{ groundedAssertion().cochraneRiskOfBias === 'Low Risk of Bias' ? '✓' : groundedAssertion().cochraneRiskOfBias === 'Some Concerns' ? '▲' : '⛔' }}</span>
+              <span>{{ groundedAssertion().cochraneRiskOfBias }}</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-zinc-950 p-4 border border-zinc-800 shadow-inner">
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+            <div>
+              <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-400">Primary Diagnostic Formulation</span>
+              <h5 class="text-sm font-semibold text-zinc-100 mt-0.5">{{ groundedAssertion().hypothesis }}</h5>
+            </div>
+            <div class="flex items-center gap-1.5 font-mono text-[11px]">
+              <span class="px-2 py-0.5 rounded bg-zinc-800 text-teal-300 border border-zinc-700">ICD-10: {{ groundedAssertion().icd10Code }}</span>
+              <span class="px-2 py-0.5 rounded bg-zinc-800 text-amber-300 border border-zinc-700">SNOMED: {{ groundedAssertion().snomedCtId }}</span>
+            </div>
+          </div>
+
+          <div class="text-xs text-zinc-400 mb-3 bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-800/60 font-mono">
+            <span class="text-indigo-400 font-semibold">H₀ Null Hypothesis:</span> {{ groundedAssertion().nullHypothesisH0 }}
+          </div>
+
+          <!-- 3 Mandatory Counter-Hypotheses -->
+          <div class="mt-3">
+            <span class="text-[11px] font-semibold text-rose-400 uppercase tracking-wider flex items-center gap-1 mb-2">
+              <span aria-hidden="true">▲</span> Mandatory Orthogonal Counter-Hypotheses (Anti-Premature Closure)
+            </span>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+              @for (ch of groundedAssertion().counterHypotheses; track $index) {
+                <div class="p-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 flex items-start gap-2">
+                  <span class="w-5 h-5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] font-mono font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                    ▲{{ $index + 1 }}
+                  </span>
+                  <span class="leading-snug">{{ ch }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Disconfirming Physical Exam Checklist -->
+          @if (groundedAssertion().disconfirmingPhysicalExams.length > 0) {
+            <div class="mt-3 pt-3 border-t border-zinc-800/80">
+              <span class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1 mb-1.5">
+                <span aria-hidden="true">🔍</span> Disconfirming Bedside Falsification Maneuvers
+              </span>
+              <div class="space-y-1">
+                @for (exam of groundedAssertion().disconfirmingPhysicalExams; track exam) {
+                  <div class="flex items-center gap-2 text-xs text-zinc-300">
+                    <span class="text-emerald-400 font-bold text-xs" aria-hidden="true">✓</span>
+                    <span>{{ exam }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
       <!-- Socratic Evidence Literacy Challenge -->
       @if (challenges().length > 0) {
         <div class="mt-6 border-t border-zinc-100 dark:border-zinc-800/80 pt-5">
@@ -317,10 +677,21 @@ export class SkepticalEpistemologyHudComponent {
   readonly contentText = input<string>('Clinical blood pressure evaluation p-value p = 0.04 with RCT randomization blinding.');
 
   private skepticalService = inject(SkepticalEpistemologyService);
+  private clinicalAi = inject(ClinicalIntelligenceService, { optional: true });
+
+  readonly groundedAssertion = computed<IGroundedClinicalAssertion>(() => {
+    return this.clinicalAi?.activeGroundedAssertion() ?? createDefaultGroundedClinicalAssertion();
+  });
 
   readonly categories: Array<'All' | BiohackCategory> = ['All', 'Thermal', 'Photonic', 'Metabolic', 'Nutraceutical'];
   readonly selectedCategory = signal<'All' | BiohackCategory>('All');
   readonly activeBiohackId = signal<string>('cold-immersion');
+
+  // Biophysical Falsifiers State
+  readonly activeBiophysTab = signal<'protac' | 'llps' | 'quantum' | 'dualspin' | 'pore'>('protac');
+  readonly biophysicalCatalog = computed<IBiophysicalFalsificationCatalog>(() => {
+    return this.skepticalService.getAllBiophysicalFalsifications();
+  });
 
   readonly allBiohacks = computed<IBiohackEpistemicAssessment[]>(() => {
     return this.skepticalService.getAllBiohacks();

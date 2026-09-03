@@ -34,6 +34,12 @@ import { BrandPackageGeneratorService } from './brand-package-generator.service'
 import { FederatedLearningService } from './federated-learning.service';
 import { OpenEvidenceCommonsService } from './open-evidence-commons.service';
 import { IpPatentRegistryService } from './ip-patent-registry.service';
+import { BiomolecularPhysicsService } from './biomolecular-physics.service';
+import { PhysicalGenomicsService } from './physical-genomics.service';
+import { ScaffoldExporterService } from './scaffold-exporter.service';
+import { OpticalInnovationsService } from './optical-innovations.service';
+import { PatientTrajectoryService } from './patient-trajectory.service';
+import { DataScienceCitationService } from './data-science-citation.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -74,7 +80,14 @@ export class WebMcpRegistrationService {
   private federatedLearningService = inject(FederatedLearningService, { optional: true });
   private evidenceCommonsService = inject(OpenEvidenceCommonsService, { optional: true });
   private ipPatentRegistry = inject(IpPatentRegistryService, { optional: true });
+  private biophysicsService = inject(BiomolecularPhysicsService, { optional: true });
+  private physicalGenomicsService = inject(PhysicalGenomicsService, { optional: true });
+  private scaffoldExporterService = inject(ScaffoldExporterService, { optional: true });
+  private opticalInnovationsService = inject(OpticalInnovationsService, { optional: true });
+  private patientTrajectoryService = inject(PatientTrajectoryService, { optional: true });
+  private citationService = inject(DataScienceCitationService, { optional: true });
   private ngZone = inject(NgZone);
+
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
 
@@ -1723,7 +1736,687 @@ export class WebMcpRegistrationService {
     modelContext.registerTool(ipTool, { signal: ipCtrl.signal });
     this.mcpControllers.push({ name: ipTool.name, controller: ipCtrl });
 
+    // 52. evaluate_protac_hook_effect
+    const protacCtrl = new AbortController();
+    const protacTool = {
+      name: 'evaluate_protac_hook_effect',
+      description: 'Evaluates polypharmacy and supplement regimens against the 3-body PROTAC Hook Effect bell curve and competitive CYP auto-inhibition limits.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          totalSupplementsCount: {
+            type: 'number',
+            description: 'Total number of active dietary supplements and nutraceuticals in the regimen (default: 8)'
+          },
+          cyp3a4SubstrateCount: {
+            type: 'number',
+            description: 'Number of compounds sharing the hepatic CYP3A4 metabolic pathway (default: 3)'
+          },
+          optimalDoseCopt: {
+            type: 'number',
+            description: 'Optimal maximum non-inhibitory supplement count C_opt (default: 5)'
+          }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const total = typeof args?.totalSupplementsCount === 'number' ? args.totalSupplementsCount : 8;
+          const cyp = typeof args?.cyp3a4SubstrateCount === 'number' ? args.cyp3a4SubstrateCount : 3;
+          const cOpt = typeof args?.optimalDoseCopt === 'number' ? args.optimalDoseCopt : 5;
+          const result = this.skepticalService.evaluateProtacHookEffectFalsification(total, cyp, cOpt);
+          return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to evaluate PROTAC hook effect: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(protacTool, { signal: protacCtrl.signal });
+    this.mcpControllers.push({ name: protacTool.name, controller: protacCtrl });
+
+    // 53. evaluate_llps_phase_boundary
+    const llpsCtrl = new AbortController();
+    const llpsTool = {
+      name: 'evaluate_llps_phase_boundary',
+      description: 'Evaluates aggregate clearing claims against Cahn-Hilliard thermodynamic spinodal phase boundaries and Flory-Huggins interaction parameters.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          moleculeName: {
+            type: 'string',
+            description: 'Name of the therapeutic molecule or botanical extract (e.g. "Curcumin Liposomal + Resveratrol")'
+          },
+          claimedAggregateTarget: {
+            type: 'string',
+            description: 'Claimed biological aggregate target (e.g. "Amyloid-β & Hyperphosphorylated Tau Fibrils")'
+          },
+          hydrophobicFloryChi: {
+            type: 'number',
+            description: 'Flory-Huggins interaction parameter χ (critical spinodal threshold >= 2.0, default: 1.42)'
+          },
+          freeEnergyDeltaFMix: {
+            type: 'number',
+            description: 'Mixing free energy ΔF_mix in normalized thermal units (must be < 0 for spontaneous phase separation, default: 0.12)'
+          }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const molecule = args?.moleculeName || 'Curcumin Liposomal + Resveratrol';
+          const target = args?.claimedAggregateTarget || 'Amyloid-β & Hyperphosphorylated Tau Fibrils';
+          const chi = typeof args?.hydrophobicFloryChi === 'number' ? args.hydrophobicFloryChi : 1.42;
+          const deltaF = typeof args?.freeEnergyDeltaFMix === 'number' ? args.freeEnergyDeltaFMix : 0.12;
+          const result = this.skepticalService.evaluateLlpsPhaseBoundaryFalsification(molecule, target, chi, deltaF);
+          return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to evaluate LLPS phase boundary: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(llpsTool, { signal: llpsCtrl.signal });
+    this.mcpControllers.push({ name: llpsTool.name, controller: llpsCtrl });
+
+    // 54. evaluate_quantum_thermal_noise
+    const qtnCtrl = new AbortController();
+    const qtnTool = {
+      name: 'evaluate_quantum_thermal_noise',
+      description: 'Falsifies bio-resonance, scalar energy, or EMF frequency claims against the physiological thermal collision dissipation floor (k_B T = 4.28e-21 J at 37°C).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          deviceOrClaimName: {
+            type: 'string',
+            description: 'Name of the bio-resonance device or therapeutic claim (default: "Scalar Bio-Resonance Frequency Harmonizer")'
+          },
+          claimedFieldTesla: {
+            type: 'number',
+            description: 'Claimed magnetic field strength in Tesla (default: 1e-6)'
+          },
+          frequencyHz: {
+            type: 'number',
+            description: 'Claimed operating electromagnetic frequency in Hertz (default: 7.83)'
+          }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const device = args?.deviceOrClaimName || 'Scalar Bio-Resonance Frequency Harmonizer';
+          const field = typeof args?.claimedFieldTesla === 'number' ? args.claimedFieldTesla : 1e-6;
+          const freq = typeof args?.frequencyHz === 'number' ? args.frequencyHz : 7.83;
+          const result = this.skepticalService.evaluateQuantumThermalFalsification(device, field, freq);
+          return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to evaluate quantum thermal noise: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(qtnTool, { signal: qtnCtrl.signal });
+    this.mcpControllers.push({ name: qtnTool.name, controller: qtnCtrl });
+
+    // 55. simulate_cahn_hilliard_llps
+    const chCtrl = new AbortController();
+    const chTool = {
+      name: 'simulate_cahn_hilliard_llps',
+      description: 'Simulates 2D Cahn-Hilliard Phase Field liquid-liquid phase separation (LLPS) PDE for membraneless organelle condensation and protein aggregation kinetics.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          timesteps: {
+            type: 'number',
+            description: 'Number of finite difference PDE integration timesteps (default: 50)'
+          },
+          mobility: {
+            type: 'number',
+            description: 'Molecular mobility M in the non-conserved/conserved kinetic equation (default: 1.0)'
+          },
+          gradientEnergy: {
+            type: 'number',
+            description: 'Interfacial gradient energy penalty kappa (default: 0.5)'
+          },
+          meanConcentration: {
+            type: 'number',
+            description: 'Initial average phase volume fraction c_0 [-1.0 to 1.0] (default: 0.0)'
+          }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const bs = this.biophysicsService || new BiomolecularPhysicsService();
+          const timesteps = typeof args?.timesteps === 'number' ? args.timesteps : 50;
+          const mobility = typeof args?.mobility === 'number' ? args.mobility : 1.0;
+          const gradientEnergy = typeof args?.gradientEnergy === 'number' ? args.gradientEnergy : 0.5;
+          const meanConcentration = typeof args?.meanConcentration === 'number' ? args.meanConcentration : 0.0;
+          const result = bs.simulateCahnHilliardLlps({ timesteps, mobility, gradientEnergy, meanConcentration });
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                gridSize: result.gridSize,
+                timesteps: result.timesteps,
+                meanConcentration: result.meanConcentration,
+                freeEnergyEvolution: result.freeEnergyEvolution,
+                condensateDropletsCount: result.condensateDropletsCount,
+                summary: result.summary
+              }, null, 2)
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to simulate Cahn-Hilliard LLPS: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(chTool, { signal: chCtrl.signal });
+    this.mcpControllers.push({ name: chTool.name, controller: chCtrl });
+
+    // 56. evaluate_cannabinoid_microtubule_stabilization
+    const cannaCtrl = new AbortController();
+    const cannaTool = {
+      name: 'evaluate_cannabinoid_microtubule_stabilization',
+      description: 'Evaluates phytocannabinoid (THC, CBD, CBG, CBN, BCP) and endocannabinoid modulation of cytoskeletal microtubule stability, Lys40 acetylation, and axonal transport velocity.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          compound: {
+            type: 'string',
+            enum: ['THC', 'CBD', 'CBG', 'CBN', 'CARYOPHYLLENE', 'ANANDAMIDE_2AG'],
+            description: 'Cannabinoid compound identifier (default: "CBD")'
+          },
+          doseMicroMolar: {
+            type: 'number',
+            description: 'Dose concentration in micromolar (0.01 - 20 μM, default: 2.5)'
+          },
+          baselineCatastrophePerMin: {
+            type: 'number',
+            description: 'Baseline unperturbed microtubule catastrophe frequency per minute (default: 0.85)'
+          }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const bs = this.biophysicsService || new BiomolecularPhysicsService();
+          const compound = args?.compound || 'CBD';
+          const dose = typeof args?.doseMicroMolar === 'number' ? args.doseMicroMolar : 2.5;
+          const baselineCat = typeof args?.baselineCatastrophePerMin === 'number' ? args.baselineCatastrophePerMin : 0.85;
+          const simResult = bs.simulateMicrotubuleDynamics(compound, dose, baselineCat);
+          const falsification = this.skepticalService.evaluateCannabinoidMicrotubuleFalsification(
+            simResult.compound,
+            simResult.doseMicroMolar,
+            simResult.acetylationLys40Ratio
+          );
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                simulation: simResult,
+                falsification
+              }, null, 2)
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to evaluate cannabinoid microtubule stabilization: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(cannaTool, { signal: cannaCtrl.signal });
+    this.mcpControllers.push({ name: cannaTool.name, controller: cannaCtrl });
+
+    // 57. simulate_chromatin_loop_extrusion
+    const loopCtrl = new AbortController();
+    const loopTool = {
+      name: 'simulate_chromatin_loop_extrusion',
+      description: 'Simulates 3D chromatin polymer dynamics, active loop extrusion by Cohesin motors, and generates the 2D Hi-C contact probability matrix across CTCF boundary barriers.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          locusLengthKb: { type: 'number', description: 'Genomic locus length in kilobases (default: 2000)' },
+          cohesinSpeedKbPerSec: { type: 'number', description: 'Cohesin extrusion velocity in kb/s (default: 1.0)' },
+          ctcfPermeability: { type: 'number', description: 'CTCF boundary permeability (0.0 strict barrier to 1.0 leaky, default: 0.20)' }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const gs = this.physicalGenomicsService || new PhysicalGenomicsService();
+          const locus = typeof args?.locusLengthKb === 'number' ? args.locusLengthKb : 2000;
+          const speed = typeof args?.cohesinSpeedKbPerSec === 'number' ? args.cohesinSpeedKbPerSec : 1.0;
+          const perm = typeof args?.ctcfPermeability === 'number' ? args.ctcfPermeability : 0.20;
+          const res = gs.simulateLoopExtrusion(locus, speed, perm);
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                locusLengthKb: res.locusLengthKb,
+                cohesinExtrusionSpeedKbPerSec: res.cohesinExtrusionSpeedKbPerSec,
+                activeLoopsCount: res.activeLoopsCount,
+                loopMeanSpanKb: res.loopMeanSpanKb,
+                tadInsulationScore: res.tadInsulationScore,
+                fractalGlobuleScalingGamma: res.fractalGlobuleScalingGamma,
+                summary: res.summary
+              }, null, 2)
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to simulate chromatin loop extrusion: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(loopTool, { signal: loopCtrl.signal });
+    this.mcpControllers.push({ name: loopTool.name, controller: loopCtrl });
+
+    // 58. compute_transcriptional_condensate_phase
+    const condCtrl = new AbortController();
+    const condTool = {
+      name: 'compute_transcriptional_condensate_phase',
+      description: 'Calculates liquid-liquid phase separation (LLPS) boundaries, droplet radius, surface tension, and transcriptional burst frequencies for multi-valent IDR condensates (MED1, BRD4, RNA Pol II) at super-enhancers.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          med1ConcentrationUm: { type: 'number', description: 'MED1 coactivator concentration in micromolar (default: 4.5)' },
+          brd4ConcentrationUm: { type: 'number', description: 'BRD4 acetyl-reader concentration in micromolar (default: 3.2)' },
+          rnaPolIiConcentrationUm: { type: 'number', description: 'RNA Polymerase II concentration in micromolar (default: 1.8)' },
+          chromatinDensityKbPerUm3: { type: 'number', description: 'Local chromatin density in kb/μm3 (default: 120.0)' }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const gs = this.physicalGenomicsService || new PhysicalGenomicsService();
+          const med1 = typeof args?.med1ConcentrationUm === 'number' ? args.med1ConcentrationUm : 4.5;
+          const brd4 = typeof args?.brd4ConcentrationUm === 'number' ? args.brd4ConcentrationUm : 3.2;
+          const pol = typeof args?.rnaPolIiConcentrationUm === 'number' ? args.rnaPolIiConcentrationUm : 1.8;
+          const chrom = typeof args?.chromatinDensityKbPerUm3 === 'number' ? args.chromatinDensityKbPerUm3 : 120.0;
+          const res = gs.computeSuperEnhancerCondensate(med1, brd4, pol, chrom);
+          return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to compute transcriptional condensate: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(condTool, { signal: condCtrl.signal });
+    this.mcpControllers.push({ name: condTool.name, controller: condCtrl });
+
+    // 59. evaluate_crispr_r_loop_energetics
+    const crisprCtrl = new AbortController();
+    const crisprTool = {
+      name: 'evaluate_crispr_r_loop_energetics',
+      description: 'Evaluates base-by-base thermodynamic free energy (ΔG) reaction coordinates, DNA unwinding torsional torque, seed-region mismatch penalties, and kinetic proofreading for CRISPR-Cas9/Cas12 off-target proofing.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          guideRnaSeq: { type: 'string', description: '20-nt Guide RNA spacer sequence (default: "GACUUGACAGUCUACGAUCG")' },
+          targetDnaSeq: { type: 'string', description: '20-nt Target DNA protospacer sequence (default: "GACTTGACAGTCTACGATCG")' },
+          pamMotif: { type: 'string', description: 'PAM motif sequence (default: "NGG")' },
+          superhelicalDensitySigma: { type: 'number', description: 'DNA superhelical topological density sigma (default: -0.06)' }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const gs = this.physicalGenomicsService || new PhysicalGenomicsService();
+          const guide = args?.guideRnaSeq || 'GACUUGACAGUCUACGAUCG';
+          const target = args?.targetDnaSeq || 'GACTTGACAGTCTACGATCG';
+          const pam = args?.pamMotif || 'NGG';
+          const sigma = typeof args?.superhelicalDensitySigma === 'number' ? args.superhelicalDensitySigma : -0.06;
+          const res = gs.evaluateCrisprMechanicalRLoop(guide, target, pam, sigma);
+          return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to evaluate CRISPR R-loop energetics: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(crisprTool, { signal: crisprCtrl.signal });
+    this.mcpControllers.push({ name: crisprTool.name, controller: crisprCtrl });
+
+    // 60. simulate_nucleosome_force_spectroscopy
+    const nucCtrl = new AbortController();
+    const nucTool = {
+      name: 'simulate_nucleosome_force_spectroscopy',
+      description: 'Simulates optical tweezers force spectroscopy (0-35 pN) of nucleosome unwrapping, outer-turn vs inner-core rupture forces, and epigenetic electrostatic charge modifications (H3K27ac vs H3K27me3).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          epigeneticState: {
+            type: 'string',
+            enum: ['UNMODIFIED_CANONICAL', 'HYPERACETYLATED_H3K27AC', 'POLYCOMB_H3K27ME3', 'HETEROCHROMATIN_H3K9ME3'],
+            description: 'Histone epigenetic modification state (default: "HYPERACETYLATED_H3K27AC")'
+          },
+          ionicStrengthMm: { type: 'number', description: 'Monovalent salt ionic strength in mM (default: 150)' }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const gs = this.physicalGenomicsService || new PhysicalGenomicsService();
+          const epi = args?.epigeneticState || 'HYPERACETYLATED_H3K27AC';
+          const salt = typeof args?.ionicStrengthMm === 'number' ? args.ionicStrengthMm : 150;
+          const res = gs.simulateNucleosomeForceSpectroscopy(epi, salt);
+          return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to simulate nucleosome force spectroscopy: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(nucTool, { signal: nucCtrl.signal });
+    this.mcpControllers.push({ name: nucTool.name, controller: nucCtrl });
+
+    // 61. evaluate_linc_mechanotransduction
+    const lincCtrl = new AbortController();
+    const lincTool = {
+      name: 'evaluate_linc_mechanotransduction',
+      description: 'Models mechanical force transmission from extracellular matrix (ECM) stiffness through SUN/Nesprin LINC bridges to the nuclear envelope, predicting YAP/TAZ nuclear translocation ratios.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          ecmStiffnessKPa: { type: 'number', description: 'Extracellular matrix stiffness in kPa (0.5 - 40 kPa, default: 8.5)' },
+          actinTensionNn: { type: 'number', description: 'Retrograde actin stress fiber tension in nN (default: 2.4)' }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const gs = this.physicalGenomicsService || new PhysicalGenomicsService();
+          const ecm = typeof args?.ecmStiffnessKPa === 'number' ? args.ecmStiffnessKPa : 8.5;
+          const actin = typeof args?.actinTensionNn === 'number' ? args.actinTensionNn : 2.4;
+          const res = gs.evaluateLincMechanotransduction(ecm, actin);
+          return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to evaluate LINC mechanotransduction: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(lincTool, { signal: lincCtrl.signal });
+    this.mcpControllers.push({ name: lincTool.name, controller: lincCtrl });
+
+    // -------------------------------------------------------------
+    // TOOL: export_scaffold_geometry
+    // Physical Bioprinter CAD/Mesh & Acoustic Holography Exporter
+    // -------------------------------------------------------------
+    const scaffoldCtrl = new AbortController();
+    const scaffoldTool = {
+      name: 'export_scaffold_geometry',
+      description: 'Exports physical 3D bioprinter CAD geometries (STL, glTF 2.0), acoustic phased-array phase maps, and G-code profiles for the acoustically levitated regenerative healing scaffold.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          lesionRadiusX: { type: 'number', description: 'Semi-major lesion axis in mm (default 12.0)' },
+          lesionRadiusY: { type: 'number', description: 'Semi-minor lesion axis in mm (default 9.5)' },
+          lesionRadiusZ: { type: 'number', description: 'Axial lesion depth in mm (default 4.0)' },
+          porosityPercent: { type: 'number', description: 'Scaffold porosity percentage 0-100 (default 78.0)' },
+          targetOrgan: { type: 'string', description: 'Target organ or tissue defect (e.g. "Lumbar Disc Herniation", "Articular Cartilage")' },
+          format: { type: 'string', enum: ['stl_ascii', 'stl_binary', 'gltf', 'acoustic_phase_map', 'gcode', 'all'], description: 'Export payload format (default "all")' }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const exporter = this.scaffoldExporterService || new ScaffoldExporterService();
+          const bundle = exporter.exportScaffoldBundle({
+            lesionRadiusX: typeof args?.lesionRadiusX === 'number' ? args.lesionRadiusX : 12.0,
+            lesionRadiusY: typeof args?.lesionRadiusY === 'number' ? args.lesionRadiusY : 9.5,
+            lesionRadiusZ: typeof args?.lesionRadiusZ === 'number' ? args.lesionRadiusZ : 4.0,
+            porosityPercent: typeof args?.porosityPercent === 'number' ? args.porosityPercent : 78.0,
+            targetOrgan: args?.targetOrgan || 'Lumbar Disc Herniation'
+          });
+
+          const fmt = args?.format || 'all';
+          let payload: any;
+          switch (fmt) {
+            case 'stl_ascii':
+              payload = { asciiStl: bundle.asciiStl, metadata: bundle.meshMetadata };
+              break;
+            case 'stl_binary':
+              payload = { binaryStlBase64: bundle.binaryStlBase64, byteLength: bundle.binaryStlBytes, metadata: bundle.meshMetadata };
+              break;
+            case 'gltf':
+              payload = { gltfJson: bundle.gltfJson, metadata: bundle.meshMetadata };
+              break;
+            case 'acoustic_phase_map':
+              payload = { acousticPhaseMap: bundle.acousticPhaseMap, metadata: bundle.meshMetadata };
+              break;
+            case 'gcode':
+              payload = { bioprinterProfile: bundle.bioprinterProfile, metadata: bundle.meshMetadata };
+              break;
+            default:
+              payload = bundle;
+          }
+
+          return {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to export scaffold geometry: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(scaffoldTool, { signal: scaffoldCtrl.signal });
+    this.mcpControllers.push({ name: scaffoldTool.name, controller: scaffoldCtrl });
+
+    // 63. configure_optical_therapy
+    const opticalCtrl = new AbortController();
+    const opticalTool = {
+      name: 'configure_optical_therapy',
+      description: 'Configures positive optical innovations and photobiomodulation therapies: 670nm deep red mitochondrial retinal PBM (UCL Cytochrome c oxidase activation), OKN/VOR vestibular gratings, CIE S 026 melanopic ipRGC circadian lux tuning, and dichoptic interocular optical beats.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          mode: {
+            type: 'string',
+            enum: ['photobiomodulation-670nm', 'okn-vor-grating', 'melanopic-iprgc-circadian', 'dichoptic-optical-beat', 'ganzfeld-orp-reticle'],
+            description: 'The target optical therapy mode.'
+          },
+          pbmAction: {
+            type: 'string',
+            enum: ['start', 'pause', 'reset'],
+            description: 'Action for 670nm photobiomodulation session timer.'
+          },
+          circadianPhase: {
+            type: 'string',
+            enum: ['dawn-alert', 'noon-zenith', 'dusk-depletion', 'night-ruby'],
+            description: 'CIE S 026 melanopic circadian phase to engage.'
+          },
+          oknDirection: {
+            type: 'string',
+            enum: ['left-to-right', 'right-to-left', 'bilateral-respiratory'],
+            description: 'Vestibular drift direction for OKN/VOR gratings.'
+          },
+          dichopticLeftHz: {
+            type: 'number',
+            description: 'Left eye flash frequency in Hz.'
+          },
+          dichopticRightHz: {
+            type: 'number',
+            description: 'Right eye flash frequency in Hz.'
+          }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const optical = this.opticalInnovationsService;
+          if (!optical) {
+            return {
+              content: [{ type: 'text', text: 'OpticalInnovationsService is not available in current injection context.' }],
+              isError: true
+            };
+          }
+
+          this.ngZone.run(() => {
+            if (args?.mode) optical.setMode(args.mode);
+            if (args?.pbmAction === 'start') optical.startPbmSession();
+            if (args?.pbmAction === 'pause') optical.pausePbmSession();
+            if (args?.pbmAction === 'reset') optical.resetPbmSession();
+            if (args?.circadianPhase) optical.setCircadianPhase(args.circadianPhase);
+            if (args?.oknDirection) optical.updateOknDirection(args.oknDirection);
+            if (typeof args?.dichopticLeftHz === 'number' && typeof args?.dichopticRightHz === 'number') {
+              optical.updateDichopticFrequencies(args.dichopticLeftHz, args.dichopticRightHz);
+            }
+          });
+
+          const result = {
+            activeMode: optical.activeMode(),
+            pbmTelemetry: optical.pbmState(),
+            oknTelemetry: optical.oknState(),
+            melanopicTelemetry: optical.melanopicState(),
+            dichopticTelemetry: optical.dichopticState(),
+            ganzfeldTelemetry: optical.ganzfeldState(),
+            safetyStatus: 'ISCEV Photosensitive Epilepsy (PSE) Shutter Active'
+          };
+
+          return {
+            content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to configure optical therapy: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(opticalTool, { signal: opticalCtrl.signal });
+    this.mcpControllers.push({ name: opticalTool.name, controller: opticalCtrl });
+
+    // 64. get_patient_3act_trajectory
+    const trajCtrl = new AbortController();
+    const trajTool = {
+      name: 'get_patient_3act_trajectory',
+      description: 'Retrieves the patient 3-Act Trajectory and Vitality Compass: Act 1 (Teaspoon Explanations with zero fatalism), Act 2 (Today Daily Vitality Loop completion and adherence score), and Act 3 (30/60/90-day horizon milestones and FDA Part 11 Vitality Certificate). Supports zero-egress on-device symptom consultation.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          symptomQuery: {
+            type: 'string',
+            description: 'Optional live patient symptom query to evaluate via on-device Edge Scribe (Gemma 4).'
+          },
+          generateCertificate: {
+            type: 'boolean',
+            description: 'Whether to generate an official FDA 21 CFR Part 11 Vitality Certificate.'
+          }
+        }
+      },
+      execute: async (args: any) => {
+        try {
+          const traj = this.patientTrajectoryService;
+          if (!traj) {
+            return {
+              content: [{ type: 'text', text: 'PatientTrajectoryService is not available in current injection context.' }],
+              isError: true
+            };
+          }
+
+          let edgeConsult: any = null;
+          if (args?.symptomQuery) {
+            edgeConsult = await traj.consultEdgeScribe(args.symptomQuery);
+          }
+
+          let cert: any = null;
+          if (args?.generateCertificate) {
+            this.ngZone.run(() => {
+              cert = traj.generateVitalityCertificate();
+            });
+          }
+
+          const response = {
+            act1WhereYouveBeen: {
+              title: "Where You've Been (The Foundation — Zero Shame)",
+              teaspoonExplanations: traj.teaspoonExplanations()
+            },
+            act2WhereYouStandToday: {
+              title: "Where You Stand Today (The Daily Vitality Loop)",
+              dailyAdherenceScore: traj.dailyAdherenceScore(),
+              habits: traj.dailyHabits()
+            },
+            act3WhereYoureGoing: {
+              title: "Where You're Going (The Horizon Milestones)",
+              milestones: traj.horizonMilestones(),
+              activeVitalityCertificate: cert || traj.vitalityCertificate()
+            },
+            onDeviceEdgeConsult: edgeConsult || traj.recentEdgeConsult(),
+            securityAttestation: '100% Zero-Egress On-Device HIPAA Safe Harbor Attested'
+          };
+
+          return {
+            content: [{ type: 'text', text: JSON.stringify(response, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to retrieve patient 3-Act trajectory: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(trajTool, { signal: trajCtrl.signal });
+    this.mcpControllers.push({ name: trajTool.name, controller: trajCtrl });
+
+    // 65. get_clinical_evidence_citations
+    const citeCtrl = new AbortController();
+    const citeTool = {
+      name: 'get_clinical_evidence_citations',
+      description: 'Retrieves peer-reviewed clinical citations, PMIDs, DOIs, Level of Evidence (LoE) grades, and takeaways for optical PBM (670nm), circadian ipRGC (CIE S 026), vestibular OKN/VOR, dichoptic SSVEP, biophilic vagal recovery, and contactless rPPG.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          category: {
+            type: 'string',
+            enum: ['optical_pbm', 'circadian_iprgc', 'vestibular_okn', 'dichoptic_ssvep', 'biophilic_vagal', 'contactless_rppg', 'allometry_scaling', 'quantum_biology', 'systems_thinking_dsrp', 'cosmic_perspective_startalk', 'all'],
+            description: 'Domain category to filter citations by.'
+          },
+          pmid: {
+            type: 'string',
+            description: 'Optional PubMed ID for exact lookup (e.g. 32559297, 34819619, 35298459).'
+          },
+          style: {
+            type: 'string',
+            enum: ['APA', 'IEEE', 'Vancouver'],
+            description: 'Citation formatting style.'
+          }
+        },
+        additionalProperties: false
+      },
+      execute: async (params: any) => {
+        try {
+          const service = this.citationService || new DataScienceCitationService();
+          if (params?.pmid) {
+            const single = service.getCitationByPmid(String(params.pmid));
+            if (!single) {
+              return {
+                content: [{ type: 'text', text: `No citation found for PMID: ${params.pmid}` }],
+                isError: true
+              };
+            }
+            return {
+              content: [{
+                type: 'text',
+                text: JSON.stringify({
+                  citation: single,
+                  formatted: service.formatCitation(single, params?.style || 'APA')
+                }, null, 2)
+              }]
+            };
+          }
+
+          const category = params?.category || 'all';
+          const citations = service.getCitationsByCategory(category);
+          const response = {
+            category,
+            totalFound: citations.length,
+            citations: citations.map(c => ({
+              ...c,
+              formatted: service.formatCitation(c, params?.style || 'APA')
+            }))
+          };
+
+          return {
+            content: [{ type: 'text', text: JSON.stringify(response, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to query clinical citations: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(citeTool, { signal: citeCtrl.signal });
+    this.mcpControllers.push({ name: citeTool.name, controller: citeCtrl });
   }
+
 
   /**
    * Aborts and unregisters all registered WebMCP tool controllers.

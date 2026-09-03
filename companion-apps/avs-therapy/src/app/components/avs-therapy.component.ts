@@ -25,6 +25,8 @@ import { RppgCameraHudComponent } from './rppg-camera-hud.component';
 import { WebglSacredGeometryComponent } from './webgl-sacred-geometry.component';
 import { DyadicSyncHudComponent } from './dyadic-sync-hud.component';
 import { AvsExportModalComponent } from './avs-export-modal.component';
+import { OpticalInnovationsHudComponent } from './optical-innovations-hud.component';
+import { BiophilicVagalOdysseyHudComponent } from './biophilic-vagal-odyssey-hud.component';
 
 // Next-Gen Services
 import { QeegEntrainmentService } from '../services/qeeg-entrainment.service';
@@ -33,8 +35,9 @@ import { ContactlessRppgService } from '../services/contactless-rppg.service';
 import { SpatialAmbisonicsService } from '../services/spatial-ambisonics.service';
 import { DyadicCoRegulationService } from '../services/dyadic-co-regulation.service';
 import { AvsSessionScribeService } from '../services/avs-session-scribe.service';
+import { OpticalInnovationsService } from '../services/optical-innovations.service';
 
-export type AvsInnovationTab = 'qeeg' | 'sleep' | 'rppg' | 'spatial' | 'dyadic' | 'coreg';
+export type AvsInnovationTab = 'qeeg' | 'sleep' | 'rppg' | 'spatial' | 'dyadic' | 'coreg' | 'optical' | 'odyssey';
 
 @Component({
   selector: 'app-avs-therapy',
@@ -55,7 +58,9 @@ export type AvsInnovationTab = 'qeeg' | 'sleep' | 'rppg' | 'spatial' | 'dyadic' 
     RppgCameraHudComponent,
     WebglSacredGeometryComponent,
     DyadicSyncHudComponent,
-    AvsExportModalComponent
+    AvsExportModalComponent,
+    OpticalInnovationsHudComponent,
+    BiophilicVagalOdysseyHudComponent
   ],
   templateUrl: './avs-therapy.component.html',
   styleUrl: './avs-therapy.component.css'
@@ -74,6 +79,7 @@ export class AvsTherapyComponent implements OnDestroy {
   readonly spatial = inject(SpatialAmbisonicsService);
   readonly dyadic = inject(DyadicCoRegulationService);
   readonly scribe = inject(AvsSessionScribeService);
+  readonly optical = inject(OpticalInnovationsService);
 
   private isBrowser = false;
 

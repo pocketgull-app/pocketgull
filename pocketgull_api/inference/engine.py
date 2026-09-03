@@ -100,3 +100,39 @@ class JAXInferenceEngine:
             return scores.squeeze(-1).tolist()
             
         return [self.predict(f) for f in batch_features]
+
+    @staticmethod
+    def encode_patient_features(
+        age: float = 35.0,
+        sbp: float = 120.0,
+        dbp: float = 80.0,
+        hr: float = 72.0,
+        rr: float = 16.0,
+        spo2: float = 98.0,
+        temp_c: float = 37.0,
+        glucose_mg_dl: float = 95.0,
+        crp_mg_l: float = 1.0,
+        frailty_score: Optional[float] = None,
+        pediatric_growth_zscore: Optional[float] = None,
+        target_dim: int = 32,
+    ) -> list[float]:
+        """
+        Encodes clinical encounter biometrics into a normalized 32-dim feature vector,
+        incorporating Geriatric Frailty Scores (Rockwood CFS 1-9) and Pediatric Growth z-scores.
+        """
+        features = [
+            (age - 50.0) / 30.0,
+            (sbp - 120.0) / 20.0,
+            (dbp - 80.0) / 15.0,
+            (hr - 75.0) / 20.0,
+            (rr - 16.0) / 4.0,
+            (spo2 - 95.0) / 5.0,
+            (temp_c - 37.0) / 1.0,
+            (glucose_mg_dl - 100.0) / 40.0,
+            (crp_mg_l - 1.0) / 5.0,
+            (frailty_score - 2.0) / 3.0 if frailty_score is not None else 0.0,
+            pediatric_growth_zscore if pediatric_growth_zscore is not None else 0.0,
+        ]
+        while len(features) < target_dim:
+            features.append(0.0)
+        return features[:target_dim]

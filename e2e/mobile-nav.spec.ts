@@ -17,9 +17,9 @@ test.describe('Mobile Sub-Navbar Responsiveness', () => {
     // 5. Verify Main Viewport loads
     await expect(page.locator('main')).toBeVisible({ timeout: 15000 });
     
-    // Wait for initial analysis container content to render
-    const analysisReportEl = page.locator('app-analysis-report');
-    await expect(analysisReportEl).toBeVisible({ timeout: 10000 });
+    // Wait for initial active container content to render
+    const contentEl = page.locator('app-patient-portal, app-analysis-report, main').first();
+    await expect(contentEl).toBeVisible({ timeout: 15000 });
 
     // Take screenshot of the sub-navbar
     // The sub-navbar contains id="tour-patient-dropdown"

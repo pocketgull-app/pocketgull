@@ -6,6 +6,7 @@ import {
   effect, 
   untracked, 
   afterNextRender, 
+  OnDestroy,
   ChangeDetectionStrategy 
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -150,6 +151,37 @@ export type TSlicePlane = 'axial' | 'sagittal' | 'coronal';
               </button>
             </div>
 
+            <!-- View Mode Switcher -->
+            <div class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-700 text-[10px] font-bold">
+              <button 
+                type="button"
+                (click)="viewLayout.set('2D_3D')"
+                [class.bg-orange-500]="viewLayout() === '2D_3D'"
+                [class.text-zinc-950]="viewLayout() === '2D_3D'"
+                [class.text-zinc-300]="viewLayout() !== '2D_3D'"
+                class="px-2.5 py-1 rounded-lg transition-all">
+                🩻 2D + 3D
+              </button>
+              <button 
+                type="button"
+                (click)="viewLayout.set('SIDE_BY_SIDE_CT_MRI')"
+                [class.bg-orange-500]="viewLayout() === 'SIDE_BY_SIDE_CT_MRI'"
+                [class.text-zinc-950]="viewLayout() === 'SIDE_BY_SIDE_CT_MRI'"
+                [class.text-zinc-300]="viewLayout() !== 'SIDE_BY_SIDE_CT_MRI'"
+                class="px-2.5 py-1 rounded-lg transition-all">
+                🔬 Pre-Op CT + MRI Side-by-Side
+              </button>
+              <button 
+                type="button"
+                (click)="viewLayout.set('FUSED_OVERLAY')"
+                [class.bg-orange-500]="viewLayout() === 'FUSED_OVERLAY'"
+                [class.text-zinc-950]="viewLayout() === 'FUSED_OVERLAY'"
+                [class.text-zinc-300]="viewLayout() !== 'FUSED_OVERLAY'"
+                class="px-2.5 py-1 rounded-lg transition-all">
+                🔀 Fused Overlay
+              </button>
+            </div>
+
             <!-- Measurement & AI Tool Toggles -->
             <div class="flex items-center gap-2">
               <button 
@@ -181,116 +213,286 @@ export type TSlicePlane = 'axial' | 'sagittal' | 'coronal';
                 class="px-2.5 py-1 rounded-lg border border-slate-700 text-[10px] font-bold transition cursor-pointer flex items-center gap-1">
                 <span>🌐</span> Nomina
               </button>
+
+              <button 
+                type="button"
+                (click)="sendDefectToBioreactor()"
+                [class.bg-teal-600]="bioreactorStatus() === 'Seeded'"
+                [class.text-zinc-950]="bioreactorStatus() === 'Seeded'"
+                [class.bg-slate-800]="bioreactorStatus() !== 'Seeded'"
+                [class.text-teal-300]="bioreactorStatus() !== 'Seeded'"
+                class="px-2.5 py-1 rounded-lg border border-teal-500/40 text-[10px] font-bold transition cursor-pointer flex items-center gap-1 shadow-sm hover:border-teal-400">
+                <span>🫧</span> {{ bioreactorStatus() === 'Seeded' ? '✓ Bioreactor Seeded' : (bioreactorStatus() === 'Seeding...' ? 'Seeding...' : 'Send to Bioreactor') }}
+              </button>
             </div>
 
           </div>
 
-          <!-- Dual 2D Slice + 3D Model Panels -->
+          <!-- Main Imaging Viewport -->
           @if (currentImageSrc()) {
-            <div class="flex-1 flex flex-col md:flex-row overflow-hidden min-h-[380px]">
-              
-              <!-- Left: 2D DICOM Slice with HU Filters & Overlays -->
-              <div class="w-full md:w-1/2 flex flex-col border-b md:border-b-0 md:border-r border-slate-800 relative bg-slate-950 select-none">
+            
+            <!-- VIEW 1: Standard 2D Slice + Right 3D Spatial Mesh -->
+            @if (viewLayout() === '2D_3D') {
+              <div class="flex-1 flex flex-col md:flex-row overflow-hidden min-h-[380px]">
                 
-                <!-- Corner HUD Overlays (DICOM Header Metadata) -->
-                <div class="absolute top-2 left-2 z-20 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-mono text-orange-400 uppercase tracking-wider border border-slate-800">
-                  {{ activePlane() }} • Slice {{ currentSlice() }}/{{ totalSlices() }}
+                <!-- Left: 2D DICOM Slice with HU Filters & Overlays -->
+                <div class="w-full md:w-1/2 flex flex-col border-b md:border-b-0 md:border-r border-slate-800 relative bg-slate-950 select-none">
+                  <!-- Corner HUD Overlays (DICOM Header Metadata) -->
+                  <div class="absolute top-2 left-2 z-20 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-mono text-orange-400 uppercase tracking-wider border border-slate-800">
+                    {{ activePlane() }} • Slice {{ currentSlice() }}/{{ totalSlices() }}
+                  </div>
+
+                  <div class="absolute top-2 right-2 z-20 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-mono text-cyan-300 border border-slate-800">
+                    W: {{ windowWidth() }} • L: {{ windowLevel() }} HU
+                  </div>
+
+                  <!-- Live 2D Slice Image Container with HU Contrast Matrix -->
+                  <div 
+                    class="flex-1 flex items-center justify-center p-3 relative overflow-hidden cursor-crosshair"
+                    (mousedown)="onCanvasMouseDown($event)">
+                    
+                    <img 
+                      [src]="currentImageSrc()" 
+                      alt="DICOM Slice" 
+                      class="max-h-full max-w-full object-contain pointer-events-none transition-all duration-200"
+                      [style.filter]="computedImageFilter()"
+                    />
+
+                    <!-- AI Anomaly Detection Bounding Box Overlay -->
+                    @if (showAiAnomalies()) {
+                      <div class="absolute top-1/3 left-1/3 w-36 h-28 border-2 border-dashed border-rose-500 rounded-lg pointer-events-none animate-pulse flex flex-col justify-between p-1 bg-rose-500/10">
+                        <span class="text-[9px] font-bold bg-rose-950/90 text-rose-300 px-1 py-0.5 rounded border border-rose-500/40 uppercase">
+                          AI: Lumbar Disc Degeneration
+                        </span>
+                        <span class="text-[8px] text-right text-rose-200 font-bold bg-slate-950/80 px-1 rounded self-end">
+                          94.2% Conf
+                        </span>
+                      </div>
+                    }
+
+                    <!-- Multilingual Nomina Callout Overlay -->
+                    @if (showNominaLabels()) {
+                      <div class="absolute bottom-4 left-4 p-2 bg-slate-900/90 border border-indigo-500/40 rounded-xl text-[10px] font-mono space-y-0.5 pointer-events-none">
+                        <div class="text-indigo-300 font-bold">VERTEBRA LUMBALIS (L4-L5)</div>
+                        <div class="text-amber-300 font-pocketgull-notofu">कशेरुका • Asthi Dhatu</div>
+                        <div class="text-emerald-300 font-pocketgull-notofu">腰椎 • Du Mai Channel</div>
+                      </div>
+                    }
+
+                    <!-- Interactive Caliper Measurement Line -->
+                    @if (caliperStart() && caliperEnd()) {
+                      <svg class="absolute inset-0 w-full h-full pointer-events-none">
+                        <line 
+                          [attr.x1]="caliperStart()!.x" 
+                          [attr.y1]="caliperStart()!.y" 
+                          [attr.x2]="caliperEnd()!.x" 
+                          [attr.y2]="caliperEnd()!.y" 
+                          stroke="#14b8a6" 
+                          stroke-width="2" 
+                          stroke-dasharray="4"
+                        />
+                        <circle [attr.cx]="caliperStart()!.x" [attr.cy]="caliperStart()!.y" r="4" fill="#14b8a6" />
+                        <circle [attr.cx]="caliperEnd()!.x" [attr.cy]="caliperEnd()!.y" r="4" fill="#14b8a6" />
+                        <text 
+                          [attr.x]="(caliperStart()!.x + caliperEnd()!.x) / 2 + 8" 
+                          [attr.y]="(caliperStart()!.y + caliperEnd()!.y) / 2 - 8" 
+                          fill="#14b8a6" 
+                          font-size="11" 
+                          font-weight="bold"
+                          class="font-mono bg-slate-950">
+                          {{ caliperDistanceMm() }} mm
+                        </text>
+                      </svg>
+                    }
+
+                  </div>
                 </div>
 
-                <div class="absolute top-2 right-2 z-20 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-mono text-cyan-300 border border-slate-800">
-                  W: {{ windowWidth() }} • L: {{ windowLevel() }} HU
+                <!-- Right: 3D Reconstruction Model Panel -->
+                <div class="w-full md:w-1/2 flex flex-col relative bg-slate-950">
+                  <div class="absolute top-2 left-2 z-10 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-mono text-orange-400 uppercase tracking-wider border border-slate-800">
+                    3D Spatial Mesh
+                  </div>
+                  <div class="flex-1 min-h-0 min-w-0">
+                    <app-medical-3d-viewer
+                      [threejsId]="getThreejsId(selectedStudy())"
+                      [severity]="getStudySeverity(selectedStudy())"
+                      [particles]="true">
+                    </app-medical-3d-viewer>
+                  </div>
                 </div>
 
-                <!-- Live 2D Slice Image Container with HU Contrast Matrix -->
-                <div 
-                  class="flex-1 flex items-center justify-center p-3 relative overflow-hidden cursor-crosshair"
-                  (mousedown)="onCanvasMouseDown($event)">
-                  
-                  <img 
-                    [src]="currentImageSrc()" 
-                    alt="DICOM Slice" 
-                    class="max-h-full max-w-full object-contain pointer-events-none transition-all duration-200"
-                    [style.filter]="computedImageFilter()"
-                  />
+              </div>
+            }
 
-                  <!-- AI Anomaly Detection Bounding Box Overlay -->
-                  @if (showAiAnomalies()) {
-                    <div class="absolute top-1/3 left-1/3 w-36 h-28 border-2 border-dashed border-rose-500 rounded-lg pointer-events-none animate-pulse flex flex-col justify-between p-1 bg-rose-500/10">
-                      <span class="text-[9px] font-bold bg-rose-950/90 text-rose-300 px-1 py-0.5 rounded border border-rose-500/40 uppercase">
-                        AI: Lumbar Disc Degeneration
-                      </span>
-                      <span class="text-[8px] text-right text-rose-200 font-bold bg-slate-950/80 px-1 rounded self-end">
-                        94.2% Conf
-                      </span>
+            <!-- VIEW 2: Pre-Op CT and Pre-Op MRI Side-by-Side Co-Registration -->
+            @if (viewLayout() === 'SIDE_BY_SIDE_CT_MRI') {
+              <div class="flex-1 flex flex-col md:flex-row overflow-hidden min-h-[380px]">
+                
+                <!-- Left Screen: Pre-Op High-Res CT (Bone Window) -->
+                <div class="w-full md:w-1/2 flex flex-col border-b md:border-b-0 md:border-r border-slate-800 relative bg-slate-950 select-none">
+                  <div class="absolute top-2 left-2 z-20 bg-amber-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-mono text-amber-300 uppercase tracking-wider border border-amber-700/60 flex items-center gap-1.5">
+                    <span>🦴</span> Pre-Op CT (Bone Window) • Slice {{ currentSlice() }}/{{ totalSlices() }}
+                  </div>
+                  <div class="absolute top-2 right-2 z-20 bg-slate-900/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-amber-400 border border-slate-800">
+                    W:2000 L:400 HU
+                  </div>
+
+                  <div class="flex-1 flex items-center justify-center p-3 relative overflow-hidden">
+                    <img 
+                      [src]="currentCtImageSrc()" 
+                      alt="Pre-Op CT Bone Slice" 
+                      class="max-h-full max-w-full object-contain pointer-events-none transition-all duration-150"
+                    />
+
+                    <!-- CT Specific Osseous Callout -->
+                    <div class="absolute bottom-3 left-3 bg-slate-900/90 border border-amber-500/40 px-2 py-1 rounded-lg text-[9px] font-mono text-amber-300">
+                      CT: Facet Sclerosis & Bony Spur (+780 HU)
                     </div>
-                  }
-
-                  <!-- Multilingual Nomina Callout Overlay -->
-                  @if (showNominaLabels()) {
-                    <div class="absolute bottom-4 left-4 p-2 bg-slate-900/90 border border-indigo-500/40 rounded-xl text-[10px] font-mono space-y-0.5 pointer-events-none">
-                      <div class="text-indigo-300 font-bold">VERTEBRA LUMBALIS (L4-L5)</div>
-                      <div class="text-amber-300 font-pocketgull-notofu">कशेरुका • Asthi Dhatu</div>
-                      <div class="text-emerald-300 font-pocketgull-notofu">腰椎 • Du Mai Channel</div>
-                    </div>
-                  }
-
-                  <!-- Interactive Caliper Measurement Line -->
-                  @if (caliperStart() && caliperEnd()) {
-                    <svg class="absolute inset-0 w-full h-full pointer-events-none">
-                      <line 
-                        [attr.x1]="caliperStart()!.x" 
-                        [attr.y1]="caliperStart()!.y" 
-                        [attr.x2]="caliperEnd()!.x" 
-                        [attr.y2]="caliperEnd()!.y" 
-                        stroke="#14b8a6" 
-                        stroke-width="2" 
-                        stroke-dasharray="4"
-                      />
-                      <circle [attr.cx]="caliperStart()!.x" [attr.cy]="caliperStart()!.y" r="4" fill="#14b8a6" />
-                      <circle [attr.cx]="caliperEnd()!.x" [attr.cy]="caliperEnd()!.y" r="4" fill="#14b8a6" />
-                      <text 
-                        [attr.x]="(caliperStart()!.x + caliperEnd()!.x) / 2 + 8" 
-                        [attr.y]="(caliperStart()!.y + caliperEnd()!.y) / 2 - 8" 
-                        fill="#14b8a6" 
-                        font-size="11" 
-                        font-weight="bold"
-                        class="font-mono bg-slate-950">
-                        {{ caliperDistanceMm() }} mm
-                      </text>
-                    </svg>
-                  }
-
+                  </div>
                 </div>
 
-                <!-- Slice Navigation Bar -->
-                <div class="p-2 bg-slate-900/80 border-t border-slate-800 flex items-center justify-between gap-2 text-xs">
-                  <span class="text-[10px] text-zinc-400 uppercase font-bold">Slice Index:</span>
+                <!-- Right Screen: Pre-Op T2 MRI (Soft Tissue & Thecal Sac) -->
+                <div class="w-full md:w-1/2 flex flex-col relative bg-slate-950 select-none">
+                  <div class="absolute top-2 left-2 z-20 bg-teal-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-mono text-teal-300 uppercase tracking-wider border border-teal-700/60 flex items-center gap-1.5">
+                    <span>🧠</span> Pre-Op T2 MRI (Soft Tissue) • Slice {{ currentSlice() }}/{{ totalSlices() }}
+                  </div>
+                  <div class="absolute top-2 right-2 z-20 bg-slate-900/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-teal-400 border border-slate-800">
+                    W:350 L:50 HU
+                  </div>
+
+                  <div class="flex-1 flex items-center justify-center p-3 relative overflow-hidden">
+                    <img 
+                      [src]="currentMriImageSrc()" 
+                      alt="Pre-Op T2 MRI Slice" 
+                      class="max-h-full max-w-full object-contain pointer-events-none transition-all duration-150"
+                    />
+
+                    <!-- MRI Specific Neural Callout -->
+                    <div class="absolute bottom-3 left-3 bg-slate-900/90 border border-teal-500/40 px-2 py-1 rounded-lg text-[9px] font-mono text-teal-300">
+                      MRI: L4-L5 Disc Herniation / Dural Compression (65%)
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            }
+
+            <!-- VIEW 3: Fused CT/MRI Alpha-Blend Cross-Overlay -->
+            @if (viewLayout() === 'FUSED_OVERLAY') {
+              <div class="flex-1 flex flex-col items-center justify-center relative bg-slate-950 p-4 min-h-[380px]">
+                
+                <!-- Alpha Blend Slider Bar -->
+                <div class="w-full max-w-md bg-slate-900/90 border border-slate-800 p-3 rounded-xl flex items-center justify-between gap-4 mb-3 z-20">
+                  <span class="text-xs font-bold text-amber-400 font-mono">100% CT (Bone)</span>
                   <input 
-                    type="range" min="1" [max]="totalSlices()" step="1" 
-                    [value]="currentSlice()" 
-                    (input)="updateSlice($event)"
-                    aria-label="DICOM Slice Index Navigator"
-                    class="flex-1 accent-orange-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                    type="range" min="0" max="100" step="1"
+                    [ngModel]="fusionBlendPercent()"
+                    (ngModelChange)="fusionBlendPercent.set(+$event)"
+                    class="flex-1 accent-orange-400 h-2 bg-slate-800 rounded-lg cursor-pointer" />
+                  <span class="text-xs font-bold text-teal-400 font-mono">100% MRI (Soft)</span>
+                </div>
+
+                <!-- Stacked Fused Canvas Container -->
+                <div class="relative max-h-[320px] max-w-[320px] flex items-center justify-center border border-slate-800 rounded-2xl overflow-hidden shadow-2xl bg-black">
+                  <!-- Base CT Image -->
+                  <img 
+                    [src]="currentCtImageSrc()" 
+                    alt="CT Layer" 
+                    class="w-full h-full object-contain pointer-events-none"
+                    [style.opacity]="(100 - fusionBlendPercent()) / 100"
                   />
-                  <span class="text-orange-400 font-bold text-[11px] w-12 text-right">{{ currentSlice() }} / {{ totalSlices() }}</span>
+                  <!-- Overlaid MRI Image with Alpha Blending -->
+                  <img 
+                    [src]="currentMriImageSrc()" 
+                    alt="MRI Layer" 
+                    class="absolute inset-0 w-full h-full object-contain pointer-events-none mix-blend-screen"
+                    [style.opacity]="fusionBlendPercent() / 100"
+                  />
                 </div>
 
-              </div>
-
-              <!-- Right: 3D Reconstruction Model Panel -->
-              <div class="w-full md:w-1/2 flex flex-col relative bg-slate-950">
-                <div class="absolute top-2 left-2 z-10 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-mono text-orange-400 uppercase tracking-wider border border-slate-800">
-                  3D Spatial Mesh
-                </div>
-                <div class="flex-1 min-h-0 min-w-0">
-                  <app-medical-3d-viewer
-                    [threejsId]="getThreejsId(selectedStudy())"
-                    [severity]="getStudySeverity(selectedStudy())"
-                    [particles]="true">
-                  </app-medical-3d-viewer>
+                <div class="mt-2 text-[10px] font-mono text-zinc-400">
+                  Fused Multi-Modality Co-Registration • Blend Ratio: {{ 100 - fusionBlendPercent() }}% CT / {{ fusionBlendPercent() }}% MRI
                 </div>
               </div>
+            }
 
+            <!-- Shared Slice & Cine-Loop Navigation Bar (Synchronized for all views) -->
+            <div class="p-2.5 bg-slate-900/90 border-t border-slate-800 flex flex-col gap-2 text-xs">
+              <!-- Main Playback Controls Row -->
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5">
+                  <button 
+                    type="button"
+                    (click)="toggleCinePlayback()"
+                    [class.bg-orange-500]="isPlayingCine()"
+                    [class.text-zinc-950]="isPlayingCine()"
+                    [class.bg-slate-800]="!isPlayingCine()"
+                    [class.text-orange-400]="!isPlayingCine()"
+                    class="px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 border border-orange-500/40 hover:bg-orange-500 hover:text-zinc-950 transition-all shadow-sm">
+                    @if (isPlayingCine()) {
+                      <span>⏸ Pause</span>
+                    } @else {
+                      <span>▶ Play Cine</span>
+                    }
+                  </button>
+
+                  <button 
+                    type="button"
+                    (click)="stepFrame(-1)"
+                    title="Previous Frame"
+                    class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-zinc-300 border border-slate-700">
+                    ⏮
+                  </button>
+                  <button 
+                    type="button"
+                    (click)="stepFrame(1)"
+                    title="Next Frame"
+                    class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-zinc-300 border border-slate-700">
+                    ⏭
+                  </button>
+
+                  <button 
+                    type="button"
+                    (click)="toggleLoopMode()"
+                    title="Toggle Loop Mode (Forward vs Ping-Pong)"
+                    class="px-2 py-1 rounded-lg text-[10px] font-mono bg-slate-800 hover:bg-slate-700 text-zinc-300 border border-slate-700">
+                    {{ cineLoopMode() === 'pingpong' ? '⮀ Ping-Pong' : '➔ Loop' }}
+                  </button>
+                </div>
+
+                <div class="flex items-center gap-1 text-[10px] font-mono">
+                  <span class="text-zinc-400">FPS:</span>
+                  @for (fps of [12, 24, 30, 60]; track fps) {
+                    <button
+                      type="button"
+                      (click)="setFps(fps)"
+                      [class.bg-orange-500]="cineFps() === fps"
+                      [class.text-zinc-950]="cineFps() === fps"
+                      [class.font-bold]="cineFps() === fps"
+                      [class.bg-slate-800]="cineFps() !== fps"
+                      [class.text-zinc-400]="cineFps() !== fps"
+                      class="px-1.5 py-0.5 rounded border border-slate-700 hover:text-white transition-colors">
+                      {{ fps }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Slider & Slice Index Readout -->
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[10px] text-zinc-400 uppercase font-bold">Synchronized Slice Scrub:</span>
+                <input 
+                  type="range" min="1" [max]="totalSlices()" step="1" 
+                  [value]="currentSlice()" 
+                  (input)="updateSlice($event)"
+                  aria-label="DICOM Slice Index Navigator"
+                  class="flex-1 accent-orange-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                />
+                <span class="text-orange-400 font-bold text-[11px] font-mono w-16 text-right">
+                  {{ currentSlice() }} / {{ totalSlices() }}
+                </span>
+              </div>
             </div>
 
             <!-- Bottom Analysis & Gemini Multimodal Action Bar -->
@@ -341,7 +543,7 @@ export type TSlicePlane = 'axial' | 'sagittal' | 'coronal';
     </div>
   `
 })
-export class DicomViewerComponent {
+export class DicomViewerComponent implements OnDestroy {
   dicomService = inject(DicomService);
   intelligenceService = inject(ClinicalIntelligenceService);
   patientManager = inject(PatientManagementService);
@@ -350,6 +552,10 @@ export class DicomViewerComponent {
   selectedStudy = this.dicomService.selectedStudy;
 
   currentImageSrc = signal<string | null>(null);
+  currentCtImageSrc = signal<string | null>(null);
+  currentMriImageSrc = signal<string | null>(null);
+  viewLayout = signal<'2D_3D' | 'SIDE_BY_SIDE_CT_MRI' | 'FUSED_OVERLAY'>('2D_3D');
+  fusionBlendPercent = signal<number>(50);
   isAnalyzing = signal(false);
 
   // Advanced Radiomics & Windowing Signals
@@ -362,6 +568,13 @@ export class DicomViewerComponent {
   currentSlice = signal<number>(16);
   totalSlices = signal<number>(32);
 
+  // Cine-Loop Video & Motion Signals
+  isPlayingCine = signal<boolean>(false);
+  cineFps = signal<number>(24);
+  cineLoopMode = signal<'forward' | 'pingpong'>('forward');
+  private cineDirection = 1;
+  private cineTimerId: any = null;
+
   // Measurement Caliper Signals
   isCaliperActive = signal<boolean>(false);
   caliperStart = signal<{ x: number, y: number } | null>(null);
@@ -370,6 +583,7 @@ export class DicomViewerComponent {
   // Overlay Toggles
   showAiAnomalies = signal<boolean>(true);
   showNominaLabels = signal<boolean>(false);
+  bioreactorStatus = signal<'Ready' | 'Seeding...' | 'Seeded'>('Ready');
 
   activePatientName = computed(() => {
     const pId = this.patientManager.selectedPatientId();
@@ -411,6 +625,10 @@ export class DicomViewerComponent {
     });
   }
 
+  ngOnDestroy(): void {
+    this.stopCine();
+  }
+
   async loadStudies() {
     await this.dicomService.searchStudies();
     const loaded = this.studies();
@@ -418,15 +636,146 @@ export class DicomViewerComponent {
       this.selectStudy(loaded[0]);
     } else {
       this.currentImageSrc.set(null);
+      this.currentCtImageSrc.set(null);
+      this.currentMriImageSrc.set(null);
     }
   }
 
   selectStudy(study: IDicomStudy) {
+    this.stopCine();
     this.dicomService.selectedStudy.set(study);
-    const src = this.dicomService.getRenderedImageUrl(study.studyInstanceUid, 'mock-series-uid', 'mock-instance-uid');
-    this.currentImageSrc.set(src);
+    if (study.frameCount) {
+      this.totalSlices.set(study.frameCount);
+    }
+    if (study.frameRateFps) {
+      this.cineFps.set(study.frameRateFps);
+    }
+    this.currentSlice.set(16);
+    this.refreshSliceImage();
     this.caliperStart.set(null);
     this.caliperEnd.set(null);
+  }
+
+  refreshSliceImage(): void {
+    const study = this.selectedStudy();
+    if (study) {
+      const src = this.dicomService.getRenderedImageUrl(
+        study.studyInstanceUid,
+        'mock-series-uid',
+        'mock-instance-uid',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        this.currentSlice()
+      );
+      this.currentImageSrc.set(src);
+
+      // Pre-Op High-Res Bone CT Stream
+      const ctSrc = this.dicomService.getRenderedImageUrl(
+        study.studyInstanceUid,
+        'mock-series-uid',
+        'mock-instance-uid',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        this.currentSlice(),
+        'CT'
+      );
+      this.currentCtImageSrc.set(ctSrc);
+
+      // Pre-Op Soft-Tissue T2 MRI Stream
+      const mriSrc = this.dicomService.getRenderedImageUrl(
+        study.studyInstanceUid,
+        'mock-series-uid',
+        'mock-instance-uid',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        this.currentSlice(),
+        'MR'
+      );
+      this.currentMriImageSrc.set(mriSrc);
+    }
+  }
+
+  toggleCinePlayback(): void {
+    if (this.isPlayingCine()) {
+      this.stopCine();
+    } else {
+      this.startCine();
+    }
+  }
+
+  startCine(): void {
+    this.isPlayingCine.set(true);
+    const intervalMs = Math.max(16, Math.round(1000 / this.cineFps()));
+    if (this.cineTimerId) clearInterval(this.cineTimerId);
+
+    this.cineTimerId = setInterval(() => {
+      let next = this.currentSlice() + this.cineDirection;
+      const max = this.totalSlices();
+
+      if (next > max) {
+        if (this.cineLoopMode() === 'pingpong') {
+          this.cineDirection = -1;
+          next = Math.max(1, max - 1);
+        } else {
+          next = 1;
+        }
+      } else if (next < 1) {
+        if (this.cineLoopMode() === 'pingpong') {
+          this.cineDirection = 1;
+          next = Math.min(max, 2);
+        } else {
+          next = max;
+        }
+      }
+
+      this.currentSlice.set(next);
+      this.refreshSliceImage();
+    }, intervalMs);
+  }
+
+  stopCine(): void {
+    this.isPlayingCine.set(false);
+    if (this.cineTimerId) {
+      clearInterval(this.cineTimerId);
+      this.cineTimerId = null;
+    }
+  }
+
+  stepFrame(delta: number): void {
+    let next = this.currentSlice() + delta;
+    if (next > this.totalSlices()) next = 1;
+    if (next < 1) next = this.totalSlices();
+    this.currentSlice.set(next);
+    this.refreshSliceImage();
+  }
+
+  setFps(fps: number): void {
+    this.cineFps.set(fps);
+    if (this.isPlayingCine()) {
+      this.stopCine();
+      this.startCine();
+    }
+  }
+
+  sendDefectToBioreactor(): void {
+    const study = this.selectedStudy();
+    if (!study) return;
+    this.bioreactorStatus.set('Seeding...');
+    this.dicomService.dispatchToBioreactor(study, this.currentSlice() * 64 + 1024);
+    setTimeout(() => {
+      this.bioreactorStatus.set('Seeded');
+      setTimeout(() => this.bioreactorStatus.set('Ready'), 3000);
+    }, 400);
+  }
+
+  toggleLoopMode(): void {
+    this.cineLoopMode.update(m => m === 'forward' ? 'pingpong' : 'forward');
   }
 
   applyWindowPreset(preset: TWindowPreset) {
@@ -475,7 +824,9 @@ export class DicomViewerComponent {
   updateSlice(event: Event) {
     const input = event.target as HTMLInputElement;
     this.currentSlice.set(Number(input.value));
+    this.refreshSliceImage();
   }
+
 
   onCanvasMouseDown(event: MouseEvent) {
     if (!this.isCaliperActive()) return;

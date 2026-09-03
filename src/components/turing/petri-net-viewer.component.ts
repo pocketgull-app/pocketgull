@@ -22,7 +22,7 @@ export interface IPetriTransition {
   y: number;
 }
 
-export type PetriModelType = 'immunometabolic' | 'mitochondrial' | 'cardiometabolic';
+export type PetriModelType = 'immunometabolic' | 'mitochondrial' | 'cardiometabolic' | 'signal_transduction';
 
 export interface IPetriModelConfig {
   id: PetriModelType;
@@ -183,6 +183,56 @@ const PETRI_MODELS: Record<PetriModelType, IPetriModelConfig> = {
         y: 155
       }
     ]
+  },
+  signal_transduction: {
+    id: 'signal_transduction',
+    title: 'Cellular Kinase Cascades (MAPK / mTOR / NF-κB vs AMPK)',
+    badge: 'Signaling & Kinases',
+    description: 'Models receptor tyrosine kinase (RTK) activation, mTORC1 protein translation, NF-κB nuclear translocation, and AMPK autophagy restoration.',
+    places: [
+      { id: 'mapk_erk', name: 'MAPK / ERK Signal', tokens: 4, maxCapacity: 10, color: '#ec4899', x: 70, y: 55 },
+      { id: 'mtorc1_anabolism', name: 'mTORC1 Anabolism', tokens: 5, maxCapacity: 10, color: '#f59e0b', x: 250, y: 55 },
+      { id: 'nfkb_nuclear', name: 'NF-κB Translocation', tokens: 3, maxCapacity: 10, color: '#ef4444', x: 70, y: 155 },
+      { id: 'ampk_autophagy', name: 'AMPK / ULK1 Autophagy', tokens: 3, maxCapacity: 10, color: '#10b981', x: 250, y: 155 }
+    ],
+    transitions: [
+      {
+        id: 't_growth_factor',
+        name: 'Growth Factor RTK Phosphorylation',
+        shortName: 'RTK Phosphorylation',
+        inputs: [{ placeId: 'mapk_erk', weight: 1 }],
+        outputs: [{ placeId: 'mtorc1_anabolism', weight: 2 }],
+        x: 160,
+        y: 45
+      },
+      {
+        id: 't_mtor_suppress_ampk',
+        name: 'mTORC1 Inhibition of Autophagy',
+        shortName: 'mTOR Suppression',
+        inputs: [{ placeId: 'mtorc1_anabolism', weight: 1 }, { placeId: 'ampk_autophagy', weight: 1 }],
+        outputs: [{ placeId: 'nfkb_nuclear', weight: 1 }],
+        x: 250,
+        y: 105
+      },
+      {
+        id: 't_ampk_restoration',
+        name: 'AMPK Energetic Stress Switch',
+        shortName: 'AMPK Switch',
+        inputs: [{ placeId: 'nfkb_nuclear', weight: 1 }],
+        outputs: [{ placeId: 'ampk_autophagy', weight: 2 }],
+        x: 70,
+        y: 105
+      },
+      {
+        id: 't_nfkb_feedback',
+        name: 'IκBα Negative Feedback Restraint',
+        shortName: 'IκBα Restraint',
+        inputs: [{ placeId: 'ampk_autophagy', weight: 1 }],
+        outputs: [{ placeId: 'mapk_erk', weight: 1 }],
+        x: 160,
+        y: 155
+      }
+    ]
   }
 };
 
@@ -255,6 +305,16 @@ const PETRI_MODELS: Record<PetriModelType, IPetriModelConfig> = {
                   [class.text-zinc-400]="activeModelId() !== 'cardiometabolic'"
                   [class.border-zinc-800]="activeModelId() !== 'cardiometabolic'">
             🩸 Cardiometabolic GLUT4
+          </button>
+          <button (click)="selectModel('signal_transduction')"
+                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition cursor-pointer border"
+                  [class.bg-cyan-600]="activeModelId() === 'signal_transduction'"
+                  [class.text-white]="activeModelId() === 'signal_transduction'"
+                  [class.border-cyan-400]="activeModelId() === 'signal_transduction'"
+                  [class.bg-zinc-900]="activeModelId() !== 'signal_transduction'"
+                  [class.text-zinc-400]="activeModelId() !== 'signal_transduction'"
+                  [class.border-zinc-800]="activeModelId() !== 'signal_transduction'">
+            🧬 Kinase Cascades
           </button>
         </div>
         <button (click)="syncPatientMetabolism()"
@@ -426,6 +486,10 @@ const PETRI_MODELS: Record<PetriModelType, IPetriModelConfig> = {
         <button (click)="injectAmpkActivation()"
                 class="px-2.5 py-1 rounded-lg bg-purple-950/70 hover:bg-purple-900 border border-purple-500/50 text-purple-200 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0">
           💊 Metformin / AMPK Trigger
+        </button>
+        <button (click)="injectRapamycinMtorInhibition()"
+                class="px-2.5 py-1 rounded-lg bg-pink-950/70 hover:bg-pink-900 border border-pink-500/50 text-pink-300 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0">
+          🔬 Rapamycin / mTOR Block
         </button>
       </div>
 
@@ -683,11 +747,24 @@ export class PetriNetViewerComponent implements AfterViewInit, OnDestroy {
 
   injectAmpkActivation() {
     this.places.update(list => list.map(p => {
-      if (p.id === 'glut4_translocation' || p.id === 'autophagy_flux' || p.id === 'mitophagy_pink1') {
+      if (p.id === 'glut4_translocation' || p.id === 'autophagy_flux' || p.id === 'mitophagy_pink1' || p.id === 'ampk_autophagy') {
         return { ...p, tokens: Math.min(p.maxCapacity, p.tokens + 3) };
       }
-      if (p.id === 'dag_lipotoxicity' || p.id === 'serum_glucose') {
+      if (p.id === 'dag_lipotoxicity' || p.id === 'serum_glucose' || p.id === 'mtorc1_anabolism') {
         return { ...p, tokens: Math.max(0, p.tokens - 2) };
+      }
+      return p;
+    }));
+    this.recordHistory();
+  }
+
+  injectRapamycinMtorInhibition() {
+    this.places.update(list => list.map(p => {
+      if (p.id === 'ampk_autophagy' || p.id === 'autophagy_flux') {
+        return { ...p, tokens: Math.min(p.maxCapacity, p.tokens + 3) };
+      }
+      if (p.id === 'mtorc1_anabolism' || p.id === 'nfkb_nuclear') {
+        return { ...p, tokens: Math.max(0, p.tokens - 3) };
       }
       return p;
     }));

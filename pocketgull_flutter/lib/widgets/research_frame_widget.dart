@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'draggable_window.dart';
+import 'orp_foveal_reticle_widget.dart';
+import '../providers/bionic_reading_provider.dart';
 
-class ResearchFrameWidget extends StatefulWidget {
+class ResearchFrameWidget extends ConsumerStatefulWidget {
   final VoidCallback onClose;
 
   const ResearchFrameWidget({super.key, required this.onClose});
 
   @override
-  State<ResearchFrameWidget> createState() => _ResearchFrameWidgetState();
+  ConsumerState<ResearchFrameWidget> createState() => _ResearchFrameWidgetState();
 }
 
-class _ResearchFrameWidgetState extends State<ResearchFrameWidget> {
+class _ResearchFrameWidgetState extends ConsumerState<ResearchFrameWidget> {
   late final WebViewController _controller;
   final TextEditingController _searchController = TextEditingController();
   String _currentEngine = 'wiki';
   String _activeUrl = 'https://en.m.wikipedia.org/wiki/Special:Search?search=clinical+anatomy';
+
+  static const String _defaultEvidenceText =
+      'Physical genomics and mechanical stretch induce robust nuclear actin reorganization, '
+      'modulating chromatin accessibility and transcriptional programs. In metabolic syndrome, '
+      'wearable step cadence directly correlates with extracellular matrix stiffness (8.5 - 10.2 kPa) '
+      'and cellular tension (2.4 - 3.1 nN). FDA and ISMP high-risk medication safety standards '
+      'mandate Tall Man lettering for look-alike sound-alike drugs such as hydrOXYzine versus '
+      'hydraLAZine, and buPROPion versus busPIRone, preventing catastrophic dispensing errors '
+      'during urgent hospital triage.';
 
   @override
   void initState() {
@@ -30,6 +42,12 @@ class _ResearchFrameWidgetState extends State<ResearchFrameWidget> {
   }
 
   void _loadEngineUrl(String query) {
+    if (_currentEngine == 'orp') {
+      final textToLoad = query.trim().isEmpty ? _defaultEvidenceText : query.trim();
+      ref.read(bionicReadingProvider.notifier).loadText(textToLoad);
+      return;
+    }
+
     final encoded = Uri.encodeComponent(query.trim().isEmpty ? 'clinical anatomy' : query.trim());
     String targetUrl;
 
@@ -59,6 +77,7 @@ class _ResearchFrameWidgetState extends State<ResearchFrameWidget> {
   }
 
   Future<void> _openExternalUrl() async {
+    if (_currentEngine == 'orp') return;
     final uri = Uri.parse(_activeUrl);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -94,8 +113,8 @@ class _ResearchFrameWidgetState extends State<ResearchFrameWidget> {
                         children: [
                           _buildEngineButton('wiki', 'Wiki'),
                           _buildEngineButton('europepmc', 'PMC'),
-                          _buildEngineButton('google', 'Google'),
                           _buildEngineButton('pubmed', 'PubMed'),
+                          _buildEngineButton('orp', 'ORP Reticle'),
                         ],
                       ),
                     ),
@@ -106,7 +125,7 @@ class _ResearchFrameWidgetState extends State<ResearchFrameWidget> {
                         controller: _searchController,
                         onSubmitted: (_) => _performSearch(),
                         decoration: InputDecoration(
-                          hintText: 'Research patient complaint...',
+                          hintText: _currentEngine == 'orp' ? 'Enter clinical text or search...' : 'Research patient complaint...',
                           hintStyle: const TextStyle(fontSize: 12),
                           isDense: true,
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -125,50 +144,26 @@ class _ResearchFrameWidgetState extends State<ResearchFrameWidget> {
                       onPressed: _performSearch,
                       visualDensity: VisualDensity.compact,
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.open_in_new, size: 20),
-                      tooltip: 'Open in new tab',
-                      onPressed: _openExternalUrl,
-                      visualDensity: VisualDensity.compact,
-                    ),
+                    if (_currentEngine != 'orp')
+                      IconButton(
+                        icon: const Icon(Icons.open_in_new, size: 20),
+                        tooltip: 'Open in new tab',
+                        onPressed: _openExternalUrl,
+                        visualDensity: VisualDensity.compact,
+                      ),
                   ],
                 ),
-                if (_currentEngine == 'google' || _currentEngine == 'pubmed') ...[
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEFF6FF),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: const Color(0xFFBFDBFE)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.info_outline, size: 14, color: Color(0xFF1D4ED8)),
-                        const SizedBox(width: 8),
-                        const Expanded(
-                          child: Text(
-                            'Google & PubMed restrict iframe embedding (X-Frame-Options). Click Open ↗ to view in browser.',
-                            style: TextStyle(fontSize: 10, color: Color(0xFF1E40AF)),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: _openExternalUrl,
-                          child: const Text(
-                            'Open ↗',
-                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
           ),
-          // Browser
+          // Body: Either ORP Foveal Reticle or WebView
           Expanded(
-            child: WebViewWidget(controller: _controller),
+            child: _currentEngine == 'orp'
+                ? const SingleChildScrollView(
+                    padding: EdgeInsets.all(16),
+                    child: OrpFovealReticleWidget(),
+                  )
+                : WebViewWidget(controller: _controller),
           ),
         ],
       ),
@@ -187,16 +182,20 @@ class _ResearchFrameWidgetState extends State<ResearchFrameWidget> {
         decoration: BoxDecoration(
           color: isSelected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(4),
-          boxShadow: isSelected ? [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 2)
-          ] : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 2)
+                ]
+              : null,
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.bold,
-            color: isSelected ? Colors.black87 : Colors.grey,
+            color: isSelected
+                ? (id == 'orp' ? const Color(0xFF0284C7) : Colors.black87)
+                : Colors.grey,
           ),
         ),
       ),

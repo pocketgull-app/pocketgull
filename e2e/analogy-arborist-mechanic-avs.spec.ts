@@ -1,15 +1,14 @@
 import { test, expect } from '@playwright/test';
+import { setupE2ePage, enterDemoMode } from './utils/setup';
 
 test.describe('Analogy Viewers, AVS Narrative Arc & Pet Bio-Auditory Protocols', () => {
-  test('verifies Arborist, Mechanic, and 4-Stage AVS Narrative Arc workflows', async ({ page }) => {
-    // 1. Navigate to application
-    await page.goto('/');
+  test.beforeEach(async ({ page }) => {
+    test.setTimeout(60000);
+    await setupE2ePage(page);
+    await enterDemoMode(page);
+  });
 
-    // Bypass splash lock if present
-    const bypassButton = page.locator('button:has-text("Enter Demo Mode"), button:has-text("Enter Application")').first();
-    if (await bypassButton.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await bypassButton.click();
-    }
+  test('verifies Arborist, Mechanic, and 4-Stage AVS Narrative Arc workflows', async ({ page }) => {
 
     // 2. Verify 3D Body / Analogy Mode Selector buttons exist
     const arboristBtn = page.locator('button:has-text("Arborist"), button:has-text("🌳")').first();
@@ -31,8 +30,8 @@ test.describe('Analogy Viewers, AVS Narrative Arc & Pet Bio-Auditory Protocols',
       await page.waitForTimeout(500);
     }
 
-    const museBtn = page.locator('button:has-text("Muse"), button:has-text("✨")').first();
-    if (await museBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    const museBtn = page.locator('button:has-text("Muse")').first();
+    if (await museBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
       await museBtn.click();
       await page.waitForTimeout(500);
     }

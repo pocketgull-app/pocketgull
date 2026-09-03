@@ -78,7 +78,7 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
       expect(petri.totalTokens()).toBeGreaterThan(0);
     });
 
-    it('should switch between Mitochondrial and Cardiometabolic models', () => {
+    it('should switch between Mitochondrial, Cardiometabolic, and Signal Transduction models', () => {
       const petri = TestBed.runInInjectionContext(() => new PetriNetViewerComponent());
       
       // Switch to Mitochondrial
@@ -90,6 +90,12 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
       petri.selectModel('cardiometabolic');
       expect(petri.activeModelId()).toBe('cardiometabolic');
       expect(petri.places().some(p => p.id === 'glut4_translocation')).toBe(true);
+
+      // Switch to Signal Transduction
+      petri.selectModel('signal_transduction');
+      expect(petri.activeModelId()).toBe('signal_transduction');
+      expect(petri.places().some(p => p.id === 'mapk_erk')).toBe(true);
+      expect(petri.places().some(p => p.id === 'mtorc1_anabolism')).toBe(true);
     });
 
     it('should fire enabled transitions and update token counts and trajectory history', () => {
@@ -111,7 +117,7 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
       expect(postLesions).toBe(initialLesions + 1);
     });
 
-    it('should support Endotoxin, Hypoxia, VNS, Mitochondrial, and AMPK perturbations', () => {
+    it('should support Endotoxin, Hypoxia, VNS, Mitochondrial, AMPK, and Rapamycin perturbations', () => {
       const petri = TestBed.runInInjectionContext(() => new PetriNetViewerComponent());
       
       // Endotoxin Surge
@@ -133,6 +139,12 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
       // AMPK Activation
       petri.injectAmpkActivation();
       expect(petri.totalTokens()).toBeGreaterThan(0);
+
+      // Rapamycin mTOR Inhibition
+      petri.selectModel('signal_transduction');
+      petri.injectRapamycinMtorInhibition();
+      const ampkTokens = petri.places().find(p => p.id === 'ampk_autophagy')!.tokens;
+      expect(ampkTokens).toBeGreaterThan(0);
     });
 
     it('should calculate SVG arc path with curvature', () => {
@@ -182,6 +194,24 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
       expect(ns.csfVelocity()).toBe('0.6');
       expect(ns.volumeExpansion()).toBe(0);
       expect(ns.reynoldsNumber()).toBe(24);
+    });
+
+    it('should switch between Glymphatic, Morphogen, and Shear Stress fluid modes', () => {
+      const ns = TestBed.runInInjectionContext(() => new NavierStokesViewerComponent());
+      
+      ns.setFluidMode('morphogen');
+      expect(ns.fluidMode()).toBe('morphogen');
+      expect(ns.pecletNumber()).toBe(48.5);
+
+      ns.injectMorphogenPulse();
+      expect(ns.fluidMode()).toBe('morphogen');
+
+      ns.setFluidMode('shear');
+      expect(ns.fluidMode()).toBe('shear');
+      expect(ns.wallShearStress()).toBe('1.42 Pa');
+
+      ns.pulseAtheroproneTurbulence();
+      expect(ns.fluidMode()).toBe('shear');
     });
 
     it('should induce slow wave deep sleep surge and pulse hypertension', () => {

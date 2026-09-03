@@ -79,6 +79,28 @@ CLINICAL_ADAPTERS = [
             {"text": "Patient taking Warfarin and Simvastatin starts St. John's Wort and Ginkgo Biloba. Analyze Cytochrome P450 (CYP3A4, CYP2C9) interactions and bleed risk."},
             {"text": "Evaluate CYP2D6 intermediate metabolizer phenotype implications for Codeine vs. Tramadol analgesia."}
         ]
+    },
+    {
+        "id": "pocketgull-edge-onnx-recovery",
+        "name": "PocketGull Edge AI Recovery Engine (ONNX / WebGPU)",
+        "base_model": "pocketgull/edge-mlp-32f",
+        "discipline": "Sub-Millisecond On-Device Clinical Risk & 95% Conformal Recovery Intervals",
+        "description": "32-feature calibrated biophysical MLP predicting 30-day post-op complications, recovery trajectory weeks, and finite-sample 95% conformal bounds on local Edge WebGPU/WASM SIMD (OOF ROC-AUC: 0.9640, Brier: 0.0280).",
+        "widgets": [
+            {"text": "Evaluate 32-feature biophysical vector (HR: 74 bpm, HRV: 48 ms, SpO2: 99%, SBP: 122 mmHg, Bone Density: 740 HU) for 30-day post-op trajectory."},
+            {"text": "Compute inductive conformal prediction interval with finite-sample 95% statistical coverage."}
+        ]
+    },
+    {
+        "id": "pocketgull-steeep-quality",
+        "name": "PocketGull NAM STEEEP Quality Engine",
+        "base_model": "pocketgull/steeep-eval-v1",
+        "discipline": "National Academy of Medicine (NAM) 6-Dimension Healthcare Quality Scoring",
+        "description": "Evaluates clinical decision support across Safe, Timely, Effective, Efficient, Equitable, and Patient-Centered dimensions, generating 1-Page Refrigerator Care Cards and FHIR R4 MeasureReport bundles.",
+        "widgets": [
+            {"text": "Score care plan against 6 NAM STEEEP dimensions and generate 5th-grade plain-language 3-Act narrative trajectory."},
+            {"text": "Export clinical quality scorecard as FHIR R4 MeasureReport (LOINC 96841-2)."}
+        ]
     }
 ]
 

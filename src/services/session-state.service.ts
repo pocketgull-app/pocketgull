@@ -9,8 +9,14 @@ export class SessionStateService {
   /** 
    * Streamlined Session: Default to unlocked with onboarding complete so clinicians
    * and users enter the full workspace immediately with zero lock friction.
+   * Can be locked explicitly via lock() or initialized as locked via pg_session_locked.
    */
-  readonly isLocked = signal(false);
+  readonly isLocked = signal(
+    typeof window !== 'undefined' && (
+      window.sessionStorage?.getItem('pg_session_locked') === 'true' ||
+      window.localStorage?.getItem('pg_session_locked') === 'true'
+    )
+  );
   readonly isOnboardingComplete = signal(true);
   private auth = inject(AuthService);
   private patientMgmt = inject(PatientManagementService, { optional: true });
@@ -22,12 +28,16 @@ export class SessionStateService {
   private timeoutId: any;
 
   constructor() {
-    // Session is unlocked by default
+    // Session state initialized
   }
 
   async unlock(): Promise<boolean> {
     const success = await this.auth.promptLocalBiometric();
     if (success) {
+      if (typeof window !== 'undefined') {
+        window.sessionStorage?.removeItem('pg_session_locked');
+        window.localStorage?.removeItem('pg_session_locked');
+      }
       this.isLocked.set(false);
       this.resetIdleTimer();
       return true;
@@ -40,6 +50,9 @@ export class SessionStateService {
   }
 
   lock() {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage?.setItem('pg_session_locked', 'true');
+    }
     if (this.patientMgmt) {
       this.patientMgmt.triggerImmediateSaveAndSync();
     }

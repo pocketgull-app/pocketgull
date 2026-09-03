@@ -27,13 +27,18 @@ test.describe('3D Body Viewer, Typographic Calligramme & Quad-Philosophy Suite',
     }
 
     // 3. Switch back to 2D Typographic Calligramme Lens
+    const toggle2dBtn = bodyViewer.locator('button', { hasText: /2D/i }).first();
+    if (await toggle2dBtn.isVisible()) {
+      await toggle2dBtn.click({ force: true });
+      await page.waitForTimeout(300);
+    }
     const typoLensBtn = bodyViewer.locator('button', { hasText: /Typo/i }).first();
     if (await typoLensBtn.isVisible()) {
       await typoLensBtn.click({ force: true });
       await page.waitForTimeout(500);
 
-      // Verify SVG textPath elements exist
-      const svgCalligramme = bodyViewer.locator('svg textPath').first();
+      // Verify SVG text or textPath elements exist
+      const svgCalligramme = bodyViewer.locator('svg text, svg textPath').first();
       await expect(svgCalligramme).toBeAttached();
     }
   });
@@ -42,6 +47,13 @@ test.describe('3D Body Viewer, Typographic Calligramme & Quad-Philosophy Suite',
     const bodyViewer = page.locator('app-body-viewer').first();
     await expect(bodyViewer).toBeVisible({ timeout: 25000 });
 
+    // Switch to 2D Atlas mode first
+    const toggle2dBtn = bodyViewer.locator('button', { hasText: /2D/i }).first();
+    if (await toggle2dBtn.isVisible()) {
+      await toggle2dBtn.click({ force: true });
+      await page.waitForTimeout(300);
+    }
+
     // Ensure we are in 2D Typo mode to inspect Nomina switcher
     const typoBtn = bodyViewer.locator('button', { hasText: /Typo/i }).first();
     if (await typoBtn.isVisible()) {
@@ -49,26 +61,13 @@ test.describe('3D Body Viewer, Typographic Calligramme & Quad-Philosophy Suite',
       await page.waitForTimeout(500);
     }
 
-    // Find Nomina Language buttons
-    const sanskritBtn = bodyViewer.locator('button', { hasText: /संस्कृतम्|Sanskrit/i }).first();
-    if (await sanskritBtn.isVisible()) {
-      await sanskritBtn.click({ force: true });
+    // Find Nomina Language cycle button
+    const nominaBtn = bodyViewer.locator('button', { hasText: /Nomina/i }).first();
+    if (await nominaBtn.isVisible()) {
+      await nominaBtn.click({ force: true });
       await page.waitForTimeout(500);
-      // Sanskrit text check in Calligramme
       const textElement = bodyViewer.locator('textPath, text').first();
       await expect(textElement).toBeVisible();
-    }
-
-    const chineseBtn = bodyViewer.locator('button', { hasText: /中文|Chinese/i }).first();
-    if (await chineseBtn.isVisible()) {
-      await chineseBtn.click({ force: true });
-      await page.waitForTimeout(500);
-    }
-
-    const latinBtn = bodyViewer.locator('button', { hasText: /Latin/i }).first();
-    if (await latinBtn.isVisible()) {
-      await latinBtn.click({ force: true });
-      await page.waitForTimeout(500);
     }
   });
 

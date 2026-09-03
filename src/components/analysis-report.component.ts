@@ -311,6 +311,16 @@ import { InterSystemCrosstalkCardComponent } from './analysis-report/inter-syste
                 <span class="text-purple-400 font-bold">07</span>
                 <span>Socratic Audit</span>
               </button>
+
+              <button (click)="changeLens('ASSESSMENTS')"
+                data-testid="tab-assessments"
+                [class]="activeLens() === 'ASSESSMENTS' 
+                  ? 'border-b-2 border-indigo-500 text-zinc-950 dark:text-white font-bold bg-indigo-500/5 -mb-px' 
+                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                class="py-2.5 px-3 uppercase tracking-wider text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                <span class="text-indigo-400 font-bold">08</span>
+                <span>Assessments</span>
+              </button>
             </div>
 
             <!-- Compact Dropdown for All Specialized Deep Dives -->

@@ -4,7 +4,7 @@
 
 PocketGull is an open-source felt-tip marker typeface designed for clinical intelligence, papercraft UI branding, and high-visibility medical charting.
 
-![Dieter Rams Principles Type Specimen](dieter_rams_specimen.png)
+<!-- Specimen: Dieter Rams Principles Type Specimen -->
 
 ### Features
 - **Master Vector SVG Geometry**: Extracted directly from original SVG wordmark paths.

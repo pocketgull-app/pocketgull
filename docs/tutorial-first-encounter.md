@@ -16,7 +16,9 @@ By the end of this tutorial, you will have:
 3. Examined an anatomical region on the interactive 3D body map
 4. Generated a real-time AI Care Plan Strategy across 5 specialized clinical lenses
 5. Explored evidence-grounded recommendations with inline research citations
-6. Exported a compliant care plan record
+6. Challenged diagnostic assumptions with the Bedside Anti-Confirmation Bias Drawer
+7. Selected the Rice Paper Washi Theme for glare-free astigmatism ergonomics
+8. Exported a compliant HL7 FHIR R4 record with FDA 21 CFR Part 11 Provenance
 
 This tutorial uses the built-in **Sandbox Demo Mode**, which runs entirely on simulated patient data. No real protected health information (PHI) is transmitted or stored at any point.
 
@@ -131,9 +133,32 @@ This is powered by real-time PubMed E-utilities and Google Programmable Search g
 
 ---
 
-## Step 6: Export the Care Plan
+## Step 6: Challenge Diagnostic Assumptions (Anti-Confirmation Bias Drawer)
 
-Once you've reviewed the care plan, you can export it in multiple formats.
+Before sealing any care plan or committing to an encounter diagnosis, PocketGull mandates a Popperian disconfirmation check to prevent premature cognitive anchoring.
+
+### Open the Socratic Falsification Drawer
+1. Scroll down to the **Skeptical Epistemology & Grounded Assertion** drawer (or tap the **"Challenge Hypothesis"** accordion).
+2. Review the empirical $H_0$ rejection score ($p$-value). When $p \ge 0.05$, the system cautions that presentation features do not statistically deviate from population baseline variance.
+3. Review the **3 Orthogonal Counter-Hypotheses** formulated to challenge the primary working diagnosis.
+4. Verify the **Bedside Disconfirming Physical Exams**. Check off each test performed to affirmatively rule out differential conditions before locking the clinical assertion.
+
+---
+
+## Step 7: Select Visual Ergonomics (Rice Paper Washi Theme)
+
+Exam rooms and hospital wards frequently feature bright ambient lighting where high-contrast OLED dark modes can produce optical halation and ocular fatigue for clinicians with astigmatism.
+
+### Switch to the Washi Theme
+1. Tap the **Theme Toggle** in the top navigation bar.
+2. Select **"Rice Paper Washi"**.
+3. Notice the warm ivory paper substrate (`#FAF8F0`), deep zinc typography (`#18181B`), and calming gear-teal accents (`#0D9488`). This custom palette delivers a $>12:1$ contrast ratio, easily surpassing the WCAG AAA $7:1$ threshold without glare.
+
+---
+
+## Step 8: Export the Care Plan with Part 11 Provenance
+
+Once you've reviewed the care plan and completed the epistemic challenge, you can export it in multiple interoperable formats.
 
 ### Export Options
 
@@ -141,15 +166,15 @@ Open the **Export** panel (printer icon or "Finalize & Archive" button) and choo
 
 | Format | Use Case |
 |---|---|
+| **FHIR R4 Bundle** | Full machine-readable interoperability bundle including `Condition` with `StructureDefinition/grounded-clinical-assertion` extensions and FDA 21 CFR Part 11 `Provenance` digital signature seals |
 | **PDF** | Printable clinical summary with QR code for digital verification |
-| **FHIR R4 Bundle** | Machine-readable interoperability standard (JSON) |
-| **Print Preview** | Formatted A4/Letter layout with letterhead and clinical styling |
+| **Print Preview** | Formatted A4/Letter layout with letterhead, 3-Act narrative trajectory, and clinical styling |
 
 The exported document includes:
-- Patient demographics (de-identified in demo mode)
-- All 5 lens analyses
-- Evidence citations
-- Clinician signature block
+- Patient demographics (HIPAA Safe Harbor de-identified)
+- All 5 lens analyses and evidence citations
+- The grounded epistemic assertion, counter-hypotheses, and physical exam checklist
+- Clinician signature block and SHA-256 digital attestation seal
 - QR code linking back to the digital record
 
 All exported content is sanitized through DOMPurify before rendering, ensuring HIPAA-compatible privacy compliance.
@@ -159,6 +184,15 @@ All exported content is sanitized through DOMPurify before rendering, ensuring H
 ## What's Next?
 
 You've completed your first patient encounter. Here are some directions to explore:
+
+### Hands-Free Bedside Voice Challenge
+While wearing sterile gloves or examining a patient, tap the mic and say:
+- *"challenge hypothesis"*
+- *"what disconfirms [diagnosis]"*
+- *"differential check"*
+- *"socratic challenge"*
+
+The AI assistant will orally present the counter-hypotheses and display the disconfirming exam checklist on-screen without requiring touch input.
 
 ### Voice Consultation
 Tap the **microphone icon** to start a bi-directional voice consult with Gemini. Speak naturally — the system supports real-time speech-to-text with barge-in interruption.
@@ -185,6 +219,7 @@ Use the **"New Patient"** button to create a custom patient profile from scratch
 | Care plan generation hangs | Check your internet connection — Gemini requires active connectivity |
 | Voice microphone not working | Grant microphone permissions when prompted by the browser |
 | Report appears empty | In demo mode, a pre-generated report is served; ensure you've selected a patient first |
+| Text glare or blurring | Switch to the Rice Paper Washi theme in the top header for astigmatism-friendly optical contrast |
 
 ---
 
@@ -192,14 +227,17 @@ Use the **"New Patient"** button to create a custom patient profile from scratch
 
 | Term | Definition |
 |---|---|
-| **KSS** | Karolinska Sleepiness Scale — a 1–9 self-report instrument measuring subjective sleepiness |
+| **CDS** | Clinical Decision Support — AI-assisted guidance for clinical decision-making |
+| **FDA 21 CFR Part 11** | Federal regulation establishing criteria for trustworthy, reliable electronic records and electronic signatures, requiring immutable cryptographic provenance seals |
 | **FHIR R4** | Fast Healthcare Interoperability Resources Release 4 — the HL7 standard for exchanging healthcare data |
-| **TCM** | Traditional Chinese Medicine — a system of medicine using tongue/pulse diagnosis and pattern differentiation |
+| **KSS** | Karolinska Sleepiness Scale — a 1–9 self-report instrument measuring subjective sleepiness |
+| **PHI** | Protected Health Information — individually identifiable health data governed by HIPAA |
+| **Popperian Falsification** | Scientific standard requiring that a diagnostic hypothesis be actively subjected to counter-hypotheses and disconfirming physical tests rather than merely seeking confirmatory evidence |
 | **Prakriti/Vikriti** | Ayurvedic constitutional assessment (prakriti = baseline, vikriti = current imbalance) |
 | **SSE** | Server-Sent Events — a one-way streaming protocol used for real-time AI response delivery |
-| **PHI** | Protected Health Information — individually identifiable health data governed by HIPAA |
-| **CDS** | Clinical Decision Support — AI-assisted guidance for clinical decision-making |
+| **TCM** | Traditional Chinese Medicine — a system of medicine using tongue/pulse diagnosis and pattern differentiation |
+| **Washi Theme** | High-contrast ivory-and-zinc clinical light palette engineered to eliminate optical halation for astigmatic eyes while maintaining WCAG AAA contrast |
 
 ---
 
-*This tutorial is part of the PocketGull Diátaxis documentation framework. For operational procedures, see the [Runbook](docs/runbook.md). For architectural rationale, see [DESIGN.md](DESIGN.md).*
+*This tutorial is part of the PocketGull Diátaxis documentation framework. For operational procedures, see the [Runbook](docs/runbook.md). For architectural rationale, see [DESIGN.md](DESIGN.md) and [EPISTEMIC_FALSIFICATION_SUITE.md](docs/EPISTEMIC_FALSIFICATION_SUITE.md).*

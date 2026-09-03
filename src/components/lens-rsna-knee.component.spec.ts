@@ -35,6 +35,10 @@ describe('LensRsnaKneeComponent Unit Suite', () => {
     expect(component.planes).toEqual(['All', 'Sagittal', 'Coronal', 'Axial']);
     expect(component.kinematics()).toBeDefined();
     expect(component.kinematics()?.qAngleDegrees).toBe(12.2);
+    expect(component.kinematics()?.wormsCartilageGrade).toBe(2);
+    expect(component.kinematics()?.boneMarrowLesionScore).toBe(2);
+    expect(component.kinematics()?.medialJointSpaceMm).toBe(3.8);
+    expect(component.kinematics()?.lateralJointSpaceMm).toBe(4.6);
   });
 
   it('2. Filters targets by imaging plane (Sagittal, Coronal, Axial)', () => {

@@ -115,7 +115,17 @@ class PatientManagementService {
         issues: const {},
         history: const [],
         bookmarks: const [],
-        scans: const [],
+        scans: const [
+          DiagnosticScan(
+            id: 'scan_lumbar_mri_01',
+            type: 'MRI',
+            title: 'Lumbar Spine MRI (L4-L5)',
+            date: '2024.11.18',
+            bodyPartId: 'spine',
+            description: '32-slice sagittal T2 cine series evaluating L4-L5 posterior disc protrusion and thecal sac clearance.',
+            status: 'REVIEWED',
+          ),
+        ],
         triageScore: 0,
         kaizenColor: 'green',
         activeTimerSeconds: null,

@@ -8,25 +8,31 @@ test.describe('Good Samaritan Emergency Mode E2E Flow', () => {
   });
 
   test('should bypass authentication, trigger CPR metronome pacing, and return to lock screen on exit', async ({ page }) => {
-    // 1. Setup & Navigate to lock screen with cleared session
+    // 1. Setup & Navigate to lock screen with cleared session but acknowledged consent
     await page.addInitScript(() => {
       window.sessionStorage.clear();
       window.localStorage.clear();
+      window.localStorage.setItem('pg_data_consent_v1', 'true');
+      window.sessionStorage.setItem('pg_session_locked', 'true');
     });
     await page.goto('/');
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    // Step 1: Click Enter Clinical Suite if on welcome screen
-    const enterSuiteBtn = page.locator('button', { hasText: /Enter (Suite|Clinical Suite)/i }).first();
-    if (await enterSuiteBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await enterSuiteBtn.click();
-      await page.waitForTimeout(500);
-    }
-
-    // Step 2: Ensure transition to First Aid Mode (either via splash button or existing active emergency state)
-    const emergencyBypassBtn = page.locator('button', { hasText: /Good Samaritan/i }).first();
-    if (await emergencyBypassBtn.isVisible().catch(() => false)) {
-      await emergencyBypassBtn.click();
+    // Step 2: Ensure transition to First Aid Mode (via 2-Step STAT confirmation or pointer hold)
+    const twoStepBtn = page.locator('button', { hasText: /2-Step STAT Confirmation/i }).first();
+    if (await twoStepBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await twoStepBtn.click();
+      await page.waitForTimeout(300);
+      const confirmOverrideBtn = page.locator('button', { hasText: /Confirm STAT/i }).first();
+      await expect(confirmOverrideBtn).toBeVisible({ timeout: 5000 });
+      await confirmOverrideBtn.click();
+    } else {
+      const emergencyBypassBtn = page.locator('button[aria-label*="Good Samaritan Mode"]').first();
+      if (await emergencyBypassBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await emergencyBypassBtn.dispatchEvent('pointerdown');
+        await page.waitForTimeout(2800);
+        await emergencyBypassBtn.dispatchEvent('pointerup');
+      }
     }
 
     // 3. Assert transition to First Aid Mode (red pulsing badge/banner)
@@ -34,7 +40,7 @@ test.describe('Good Samaritan Emergency Mode E2E Flow', () => {
     await expect(firstAidBadge).toBeVisible({ timeout: 15000 });
     await expect(firstAidBadge).toBeVisible({ timeout: 15000 });
 
-    const offlineEmergencyTitle = page.locator('text=Offline Emergency First Aid Active').first();
+    const offlineEmergencyTitle = page.locator('text=/Offline Emergency First Aid (Suite|Active)/i').first();
     await expect(offlineEmergencyTitle).toBeVisible({ timeout: 10000 });
 
     // 4. Verify CPR Metronome Activation

@@ -12,7 +12,7 @@ test.describe('Counterfactual Simulator & Ambient SOAP Note E2E Suite', () => {
 
   test('should open What-If Simulator and interact with sliders', async ({ page }) => {
     // Locate What-If Simulator toggle button in toolbar or drawer
-    const simBtn = page.locator('button', { hasText: 'What-If Simulator' }).first();
+    const simBtn = page.locator('button', { hasText: /what-if/i }).first();
     await expect(simBtn).toBeVisible({ timeout: 30000 });
     await simBtn.click();
 
@@ -31,7 +31,7 @@ test.describe('Counterfactual Simulator & Ambient SOAP Note E2E Suite', () => {
 
   test('should open Ambient SOAP Note Generator and verify FHIR R4 actions', async ({ page }) => {
     // Locate SOAP Note toggle button in toolbar or drawer
-    const soapBtn = page.locator('button', { hasText: 'SOAP Note' }).first();
+    const soapBtn = page.locator('button', { hasText: /soap note/i }).first();
     await expect(soapBtn).toBeVisible({ timeout: 30000 });
     await soapBtn.click();
 

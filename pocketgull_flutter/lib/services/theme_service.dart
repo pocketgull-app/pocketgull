@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Supported app themes matching TypeScript client.
-enum AppTheme { light, dark, system, spark, calm }
+enum AppTheme { light, dark, system, spark, calm, washi }
 
 class ThemeState {
   final AppTheme currentTheme;
@@ -28,6 +28,7 @@ class ThemeState {
   bool get isDark => resolvedBrightness == Brightness.dark;
   bool get isSpark => currentTheme == AppTheme.spark;
   bool get isCalm => currentTheme == AppTheme.calm;
+  bool get isWashi => currentTheme == AppTheme.washi;
 
   ThemeState copyWith({
     AppTheme? currentTheme,
@@ -101,6 +102,7 @@ class ThemeNotifier extends Notifier<ThemeState> {
         AppTheme.dark => Brightness.dark,
         AppTheme.spark => Brightness.dark,
         AppTheme.calm => Brightness.light,
+        AppTheme.washi => Brightness.light,
         AppTheme.light => Brightness.light,
         AppTheme.system => SchedulerBinding
             .instance.platformDispatcher.platformBrightness,
@@ -131,6 +133,14 @@ class PocketGullTheme {
   static const Color calmCardBackground = Color(0xFFFFFFFF);
   static const Color calmSageGreen = Color(0xFF3E6B5C);
 
+  // Rice Paper Washi High-Contrast Light Theme (Ocular Astigmatism Ergonomics & WCAG AAA)
+  static const Color washiBackground = Color(0xFFFAF8F0);
+  static const Color washiCardBackground = Color(0xFFFFFFFF);
+  static const Color washiInkPrimary = Color(0xFF18181B); // >12:1 contrast ratio against washi
+  static const Color washiInkSecondary = Color(0xFF27272A);
+  static const Color washiTealAccent = Color(0xFF0D9488);
+  static const Color washiBorder = Color(0xFFE4E4E7);
+
   // Standard Dark Obsidian
   static const Color darkBackground = Color(0xFF09090B);
   static const Color darkCardBackground = Color(0xFF18181B);
@@ -145,6 +155,8 @@ class PocketGullTheme {
         return _buildSparkTheme();
       case AppTheme.calm:
         return _buildCalmTheme();
+      case AppTheme.washi:
+        return _buildWashiTheme();
       case AppTheme.dark:
         return _buildDarkTheme();
       case AppTheme.light:
@@ -153,6 +165,41 @@ class PocketGullTheme {
             ? _buildDarkTheme()
             : _buildLightTheme();
     }
+  }
+
+  static ThemeData _buildWashiTheme() {
+    return ThemeData.light(useMaterial3: true).copyWith(
+      scaffoldBackgroundColor: washiBackground,
+      cardColor: washiCardBackground,
+      dividerColor: washiBorder,
+      colorScheme: const ColorScheme.light(
+        surface: washiBackground,
+        primary: washiTealAccent,
+        secondary: washiInkSecondary,
+        onSurface: washiInkPrimary,
+        outline: washiBorder,
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: washiBackground,
+        foregroundColor: washiInkPrimary,
+        elevation: 0,
+      ),
+      cardTheme: const CardThemeData(
+        color: washiCardBackground,
+        elevation: 1,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: washiBorder, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+        ),
+      ),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: washiInkPrimary, fontWeight: FontWeight.w500),
+        bodyMedium: TextStyle(color: washiInkPrimary),
+        bodySmall: TextStyle(color: washiInkSecondary),
+        titleLarge: TextStyle(color: washiInkPrimary, fontWeight: FontWeight.w700),
+        titleMedium: TextStyle(color: washiInkPrimary, fontWeight: FontWeight.w600),
+      ),
+    );
   }
 
   static ThemeData _buildSparkTheme() {

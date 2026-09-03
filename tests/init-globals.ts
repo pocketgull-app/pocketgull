@@ -491,8 +491,16 @@ if (typeof (globalThis as any).document === 'undefined') {
   mockBody.ownerDocument = doc;
   mockHead.ownerDocument = doc;
   mockDocElement.ownerDocument = doc;
+  doc.defaultView = globalThis;
 
   (globalThis as any).document = doc;
+}
+
+if (typeof (globalThis as any).window === 'undefined') {
+  (globalThis as any).window = globalThis;
+}
+if ((globalThis as any).document && !(globalThis as any).document.defaultView) {
+  (globalThis as any).document.defaultView = (globalThis as any).window || globalThis;
 }
 
 if (typeof (globalThis as any).localStorage === 'undefined') {

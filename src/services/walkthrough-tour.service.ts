@@ -43,7 +43,7 @@ export class WalkthroughTourService {
       title: 'Attending Clinician & EHR Scribe',
       subtitle: 'Patient charts, 3D anatomy, Ambient Scribe SOAP note synthesis & FHIR R4 handoff.',
       icon: '🩺',
-      stepCount: 11
+      stepCount: 12
     },
     {
       id: 'family-hero',
@@ -234,6 +234,13 @@ export class WalkthroughTourService {
             body: 'Tap a card to expand it. Double-tap to cycle through detail levels. Right-click or long-press for advanced actions—export to FHIR, consult Gemini on that specific finding, attach a note, or pin it to your telemetry dashboard.',
             position: 'left',
             badge: 'Progressive Disclosure'
+          },
+          {
+            targetId: 'tour-epistemic-falsification',
+            title: 'Challenge Before You Commit',
+            body: 'Combat confirmation bias: Popperian disconfirmation presents 3 orthogonal counter-hypotheses and bedside physical exam checklists to verify before sealing diagnostic assertions.',
+            position: 'left',
+            badge: 'Epistemic CDS'
           },
           {
             targetId: 'tour-voice-agent-window',

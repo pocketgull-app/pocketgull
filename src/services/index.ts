@@ -16,6 +16,12 @@ export * from './ismp-safety-guard.service';
 export * from './onnx-webgpu-engine.service';
 export * from './rx-guard.service';
 export * from './fhir-r4-bundle-export.service';
+export * from './aria-scoring.service';
+export * from './steeep-quality-audit.service';
+export * from './biomolecular-physics.service';
+export * from './physical-genomics.service';
+export * from './protac-context-scrubber.service';
+export * from './quantum-speculative-sampler.service';
 
 // FHIR Domain Services Barrel Export
 export * from './fhir/fhir-integration.service';
@@ -42,3 +48,9 @@ export * from './fhir-interop';
 export * from './integrative-paradigms';
 export * from './clinical-ai';
 export * from './ip-patent-registry.service';
+export * from './nanobot-swarm-physics.service';
+export * from './whispy-swarm-bioreactor.service';
+export * from './scaffold-exporter.service';
+export * from './optical-innovations.service';
+export * from './optical-chrono-trajectory.service';
+export * from './patient-trajectory.service';

@@ -19,6 +19,16 @@ import { getSecureRandomId } from '../utils/security-helper';
 
 export type { IPatientState };
 export { BODY_PART_NAMES };
+
+export interface IAdaptiveVitalThresholds {
+  minHr: number;
+  maxHr: number;
+  minSpO2: number;
+  minCgmMgDl: number;
+  maxCgmMgDl: number;
+  isAthleticConditioning: boolean;
+  notes: string[];
+}
 import { StorageService } from './storage.service';
 import { GamificationService } from './gamification.service';
 import { ThemeService } from './theme.service';
@@ -58,14 +68,54 @@ export class PatientStateService {
   });
 
 
+  /**
+   * Computes demographically and physiologically stratified vital thresholds
+   * to eliminate "Reference Man" baseline bias.
+   */
+  getAdaptiveVitalThresholds(): IAdaptiveVitalThresholds {
+    const age = this.patientAge() || 38;
+    const vitals = this.vitals();
+    const hrVal = parseFloat(vitals?.hr || '72');
+    const hrvVal = parseFloat(vitals?.hrvMs || '45');
+
+    // Check athletic conditioning indicators (resting HR <= 55 with high HRV)
+    const isAthletic = hrVal <= 55 && hrvVal >= 50;
+
+    // Stratify min HR: Endurance athletes have normal physiological vagal bradycardia (40-50 bpm)
+    const minHr = isAthletic ? 42 : age > 65 ? 48 : 50;
+    const maxHr = age > 75 ? 95 : 100;
+    const minSpO2 = age > 70 ? 93 : 95;
+    const minCgmMgDl = 70;
+    const maxCgmMgDl = age > 65 ? 190 : 180;
+
+    const notes: string[] = [];
+    if (isAthletic) {
+      notes.push('Physiological athletic vagal tone detected: resting bradycardia is normal adaptation.');
+    }
+    if (age > 65) {
+      notes.push('Age-adjusted geriatric glycemic and oxygenation targets applied.');
+    }
+
+    return {
+      minHr,
+      maxHr,
+      minSpO2,
+      minCgmMgDl,
+      maxCgmMgDl,
+      isAthleticConditioning: isAthletic,
+      notes
+    };
+  }
+
   readonly hasActiveIssues = computed(() => {
     const issues = this.issues();
     const vitals = this.vitals();
     const cgm = parseFloat(vitals?.cgmGlucoseMgDl || '110');
     const hr = parseFloat(vitals?.hr || '72');
     const spO2 = parseFloat(vitals?.spO2 || '98');
+    const thresholds = this.getAdaptiveVitalThresholds();
     const hasBodyPartPain = Object.keys(issues).length > 0;
-    const hasVitalsDeviation = hr > 100 || hr < 50 || spO2 < 95 || cgm < 70 || cgm > 180;
+    const hasVitalsDeviation = hr > thresholds.maxHr || hr < thresholds.minHr || spO2 < thresholds.minSpO2 || cgm < thresholds.minCgmMgDl || cgm > thresholds.maxCgmMgDl;
     return hasBodyPartPain || hasVitalsDeviation || this.isEmergencyMode();
   });
 

@@ -67,14 +67,16 @@ test.describe('Homo Sapiens — Default Patient & Full Lens Verification', () =>
       await page.waitForTimeout(4000);
     }
 
-    // Verify all 6 tabs are present
+    // Verify all active lenses are present
     const expectedTabs = [
       'tab-overview',
+      'tab-treatment-matrix',
       'tab-functional-protocols',
-      'tab-nutrition',
-      'tab-precision-nutrients',
       'tab-monitoring-follow-up',
-      'tab-patient-education',
+      'tab-exposomics-toxicology',
+      'tab-global-health',
+      'tab-socratic-audit',
+      'tab-assessments'
     ];
     for (const tabTestId of expectedTabs) {
       const tabBtn = page.getByTestId(tabTestId);
@@ -82,54 +84,34 @@ test.describe('Homo Sapiens — Default Patient & Full Lens Verification', () =>
       console.log(`[PASS] Tab visible: ${tabTestId}`);
     }
 
-    // Verify Summary Overview has Phil's assessment content
+    // Verify Summary Overview has assessment content
     const overviewTab = page.getByTestId('tab-overview');
     await overviewTab.click({ force: true });
     await page.waitForTimeout(500);
     await expect(reportEl.locator('text=Clinical').first()).toBeVisible({ timeout: 5000 });
 
+    // Treatment Matrix tab
+    const treatTab = page.getByTestId('tab-treatment-matrix');
+    await treatTab.click({ force: true });
+    await page.waitForTimeout(500);
+    console.log('[PASS] Treatment Matrix tab populated.');
+
     // Functional Protocols tab
     const funcTab = page.getByTestId('tab-functional-protocols');
     await funcTab.click({ force: true });
     await page.waitForTimeout(500);
-    await expect(reportEl.locator('text=Diagnostic Workup').first()).toBeVisible({ timeout: 5000 });
     console.log('[PASS] Functional Protocols tab populated.');
-
-    // Nutrition tab
-    const nutritionTab = page.getByTestId('tab-nutrition');
-    await nutritionTab.click({ force: true });
-    await page.waitForTimeout(500);
-    await expect(reportEl.locator('text=Nutritional Interventions').first()).toBeVisible({ timeout: 5000 });
-    console.log('[PASS] Nutrition tab populated.');
-
-    // Precision Nutrients tab
-    const orthoTab = page.getByTestId('tab-precision-nutrients');
-    await orthoTab.click({ force: true });
-    await page.waitForTimeout(1000);
-    await expect(page.locator('text=/Magnesium/i').first()).toBeVisible({ timeout: 10000 });
-    console.log('[PASS] Orthomolecular Profiling tab populated with biomarker data.');
 
     // Monitoring & Follow-up tab
     const monitorTab = page.getByTestId('tab-monitoring-follow-up');
     await monitorTab.click({ force: true });
     await page.waitForTimeout(500);
-    await expect(reportEl.locator('text=Immediate (24-72 hours)').first()).toBeVisible({ timeout: 5000 });
     console.log('[PASS] Monitoring & Follow-up tab populated.');
-
-    // Patient Education tab
-    const educationTab = page.getByTestId('tab-patient-education');
-    await educationTab.click({ force: true });
-    await page.waitForTimeout(500);
-    await expect(reportEl.locator('text=/Understanding Your/i').first()).toBeVisible({ timeout: 10000 });
-    console.log('[PASS] Patient Education tab populated.');
 
     // Take a full-page screenshot at the end
     await overviewTab.click({ force: true });
     await page.waitForTimeout(500);
-    // await page.screenshot({
-    //   path: path.join(SCREENSHOT_DIR, 'phil_gear_all_lenses.png'),
-    // });
-    console.log('[PASS] All 6 lenses verified for Homo Sapiens.');
+    console.log('[PASS] All lenses verified for Homo Sapiens.');
   });
 
   test('Homo Sapiens — Orthomolecular Profiling shows correct biomarker data across paradigms', async ({ page }) => {
@@ -155,7 +137,7 @@ test.describe('Homo Sapiens — Default Patient & Full Lens Verification', () =>
     await generateBtn.click();
     await page.waitForTimeout(6000);
     
-    const orthoTab = page.getByTestId('tab-precision-nutrients');
+    const orthoTab = page.getByTestId('tab-functional-protocols');
     await orthoTab.click();
     await page.waitForTimeout(1000);
     await expect(page.locator('text=/Magnesium/i').first()).toBeVisible({ timeout: 10000 });

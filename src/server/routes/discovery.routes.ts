@@ -588,6 +588,148 @@ function buildToolRegistry(): Record<string, unknown>[] {
       },
       executionTimeout: 5000
     },
+    {
+      name: 'evaluate_protac_hook_effect',
+      category: 'biophysics_epistemology',
+      description: 'Evaluates polypharmacy and supplement regimens against the 3-body PROTAC Hook Effect bell curve and competitive CYP auto-inhibition limits.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          totalSupplementsCount: { type: 'number', description: 'Total number of active dietary supplements and nutraceuticals in the regimen.' },
+          cyp3a4SubstrateCount: { type: 'number', description: 'Number of compounds sharing the hepatic CYP3A4 metabolic pathway.' },
+          optimalDoseCopt: { type: 'number', description: 'Optimal maximum non-inhibitory supplement count C_opt.' }
+        }
+      },
+      executionTimeout: 3000
+    },
+    {
+      name: 'evaluate_llps_phase_boundary',
+      category: 'biophysics_epistemology',
+      description: 'Evaluates aggregate clearing claims against Cahn-Hilliard thermodynamic spinodal phase boundaries and Flory-Huggins interaction parameters.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          moleculeName: { type: 'string', description: 'Name of the therapeutic molecule or botanical extract.' },
+          claimedAggregateTarget: { type: 'string', description: 'Claimed biological aggregate target.' },
+          hydrophobicFloryChi: { type: 'number', description: 'Flory-Huggins interaction parameter χ.' },
+          freeEnergyDeltaFMix: { type: 'number', description: 'Mixing free energy ΔF_mix in normalized thermal units.' }
+        }
+      },
+      executionTimeout: 3000
+    },
+    {
+      name: 'evaluate_quantum_thermal_noise',
+      category: 'biophysics_epistemology',
+      description: 'Falsifies bio-resonance, scalar energy, or EMF frequency claims against the physiological thermal collision dissipation floor (k_B T = 4.28e-21 J at 37°C).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          deviceOrClaimName: { type: 'string', description: 'Name of the bio-resonance device or therapeutic claim.' },
+          claimedFieldTesla: { type: 'number', description: 'Claimed magnetic field strength in Tesla.' },
+          frequencyHz: { type: 'number', description: 'Claimed operating electromagnetic frequency in Hertz.' }
+        }
+      },
+      executionTimeout: 3000
+    },
+    {
+      name: 'simulate_cahn_hilliard_llps',
+      category: 'biophysics_simulation',
+      description: 'Simulates 2D Cahn-Hilliard Phase Field liquid-liquid phase separation (LLPS) PDE for membraneless organelle condensation and protein aggregation kinetics.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          timesteps: { type: 'number', description: 'Number of finite difference PDE integration timesteps.' },
+          mobility: { type: 'number', description: 'Molecular mobility M in the non-conserved/conserved kinetic equation.' },
+          gradientEnergy: { type: 'number', description: 'Interfacial gradient energy penalty kappa.' },
+          meanConcentration: { type: 'number', description: 'Initial average phase volume fraction c_0 [-1.0 to 1.0].' }
+        }
+      },
+      executionTimeout: 5000
+    },
+    {
+      name: 'evaluate_cannabinoid_microtubule_stabilization',
+      category: 'biophysics_epistemology',
+      description: 'Evaluates phytocannabinoid (THC, CBD, CBG, CBN, BCP) and endocannabinoid modulation of cytoskeletal microtubule stability, Lys40 acetylation, and axonal transport velocity.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          compound: { type: 'string', enum: ['THC', 'CBD', 'CBG', 'CBN', 'CARYOPHYLLENE', 'ANANDAMIDE_2AG'] },
+          doseMicroMolar: { type: 'number', description: 'Dose concentration in micromolar (0.01 - 20 μM).' },
+          baselineCatastrophePerMin: { type: 'number', description: 'Baseline unperturbed microtubule catastrophe frequency per minute.' }
+        }
+      },
+      executionTimeout: 3000
+    },
+    {
+      name: 'simulate_chromatin_loop_extrusion',
+      category: 'physical_genomics',
+      description: 'Simulates 3D chromatin polymer dynamics, active loop extrusion by Cohesin motors, and generates the 2D Hi-C contact probability matrix across CTCF boundary barriers.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          locusLengthKb: { type: 'number', description: 'Genomic locus length in kilobases (default: 2000)' },
+          cohesinSpeedKbPerSec: { type: 'number', description: 'Cohesin extrusion velocity in kb/s (default: 1.0)' },
+          ctcfPermeability: { type: 'number', description: 'CTCF boundary permeability (0.0 strict barrier to 1.0 leaky, default: 0.20)' }
+        }
+      },
+      executionTimeout: 4000
+    },
+    {
+      name: 'compute_transcriptional_condensate_phase',
+      category: 'physical_genomics',
+      description: 'Calculates liquid-liquid phase separation (LLPS) boundaries, droplet radius, surface tension, and transcriptional burst frequencies for multi-valent IDR condensates (MED1, BRD4, RNA Pol II) at super-enhancers.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          med1ConcentrationUm: { type: 'number', description: 'MED1 coactivator concentration in micromolar.' },
+          brd4ConcentrationUm: { type: 'number', description: 'BRD4 acetyl-reader concentration in micromolar.' },
+          rnaPolIiConcentrationUm: { type: 'number', description: 'RNA Polymerase II concentration in micromolar.' },
+          chromatinDensityKbPerUm3: { type: 'number', description: 'Local chromatin density in kb/μm3.' }
+        }
+      },
+      executionTimeout: 3000
+    },
+    {
+      name: 'evaluate_crispr_r_loop_energetics',
+      category: 'physical_genomics',
+      description: 'Evaluates base-by-base thermodynamic free energy (ΔG) reaction coordinates, DNA unwinding torsional torque, seed-region mismatch penalties, and kinetic proofreading for CRISPR-Cas9/Cas12 off-target proofing.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          guideRnaSeq: { type: 'string', description: '20-nt Guide RNA spacer sequence.' },
+          targetDnaSeq: { type: 'string', description: '20-nt Target DNA protospacer sequence.' },
+          pamMotif: { type: 'string', description: 'PAM motif sequence.' },
+          superhelicalDensitySigma: { type: 'number', description: 'DNA superhelical topological density sigma.' }
+        }
+      },
+      executionTimeout: 3000
+    },
+    {
+      name: 'simulate_nucleosome_force_spectroscopy',
+      category: 'physical_genomics',
+      description: 'Simulates optical tweezers force spectroscopy (0-35 pN) of nucleosome unwrapping, outer-turn vs inner-core rupture forces, and epigenetic electrostatic charge modifications (H3K27ac vs H3K27me3).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          epigeneticState: { type: 'string', enum: ['UNMODIFIED_CANONICAL', 'HYPERACETYLATED_H3K27AC', 'POLYCOMB_H3K27ME3', 'HETEROCHROMATIN_H3K9ME3'] },
+          ionicStrengthMm: { type: 'number', description: 'Monovalent salt ionic strength in mM.' }
+        }
+      },
+      executionTimeout: 3000
+    },
+    {
+      name: 'evaluate_linc_mechanotransduction',
+      category: 'physical_genomics',
+      description: 'Models mechanical force transmission from extracellular matrix (ECM) stiffness through SUN/Nesprin LINC bridges to the nuclear envelope, predicting YAP/TAZ nuclear translocation ratios.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          ecmStiffnessKPa: { type: 'number', description: 'Extracellular matrix stiffness in kPa.' },
+          actinTensionNn: { type: 'number', description: 'Retrograde actin stress fiber tension in nN.' }
+        }
+      },
+      executionTimeout: 3000
+    },
 
     // ── Genkit Server-Side Flows ──────────────────────────────────────────
     {

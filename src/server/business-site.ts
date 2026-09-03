@@ -91,6 +91,10 @@ export function renderBusinessSiteHtml(): string {
       margin: 0;
       padding: 0;
     }
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg);
@@ -316,11 +320,17 @@ export function renderBusinessSiteHtml(): string {
       gap: 1.25rem;
     }
     @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
       .demo-grid {
         grid-template-columns: 1fr;
       }
       h1 {
         font-size: 2.35rem;
+      }
+      .container {
+        padding: 0 1rem;
       }
     }
     .demo-pane {

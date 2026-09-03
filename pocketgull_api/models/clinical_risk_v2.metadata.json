@@ -1,7 +1,7 @@
 {
   "model_type": "CalibratedClassifierCV(HistGradientBoostingClassifier)",
   "version": "2.0.0",
-  "training_date": "2026-07-28T00:19:59.700217+00:00Z",
+  "training_date": "2026-09-02T18:54:16.567147+00:00Z",
   "features": [
     "hr",
     "bp_systolic",
@@ -17,9 +17,9 @@
     "systolic_bp_deviation"
   ],
   "metrics": {
-    "roc_auc": 0.8161,
-    "brier_score": 0.1274,
-    "best_cv_auc": 0.7711
+    "roc_auc": 0.8167,
+    "brier_score": 0.1272,
+    "best_cv_auc": 0.7706
   },
   "best_hyperparameters": {
     "learning_rate": 0.05,

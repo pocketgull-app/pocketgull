@@ -8,19 +8,24 @@ describe('NcaaSportsScienceService Suite', () => {
     service = new NcaaSportsScienceService();
   });
 
-  it('1. Initializes with Big Ten and Pac-12 partner universities (UW, Purdue, UO)', () => {
+  it('1. Initializes with Big Ten, Pac-12, and ACC partner universities (UW, Purdue, UO, UVA)', () => {
     const partners = service.academicPartners();
-    expect(partners.length).toBeGreaterThanOrEqual(4);
+    expect(partners.length).toBeGreaterThanOrEqual(5);
     
     const uw = partners.find(p => p.name.includes('Washington'));
     const purdue = partners.find(p => p.name.includes('Purdue'));
     const uo = partners.find(p => p.name.includes('Oregon'));
+    const uva = partners.find(p => p.name.includes('Virginia'));
 
     expect(uw).toBeDefined();
     expect(purdue).toBeDefined();
     expect(uo).toBeDefined();
+    expect(uva).toBeDefined();
     expect(uw?.conference).toBe('Big Ten');
     expect(purdue?.network).toBe('Big Ten Network (BTN)');
+    expect(uva?.conference).toBe('ACC');
+    expect(uva?.network).toBe('ACC Network');
+    expect(uva?.nihCtsaHub).toContain('iTHRIV');
   });
 
   it('2. Computes Acute-to-Chronic Workload Ratio (ACWR) and injury tier correctly', () => {
