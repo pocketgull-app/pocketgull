@@ -16,7 +16,7 @@ import * as path from 'path';
  */
 
 export interface INihWhoRawRecord {
-  source: 'NIH_MEDQUAD' | 'WHO_MHGAP' | 'NIH_CLINICALTRIALS' | 'WHO_ESSENTIAL_MEDS';
+  source: 'NIH_MEDQUAD' | 'WHO_MHGAP' | 'NIH_CLINICALTRIALS' | 'WHO_ESSENTIAL_MEDS' | 'COCHRANE_LIBRARY' | 'WHO_EDL' | 'NIH_LANDMARK_RCT';
   sourceId: string;
   category: string;
   topic: string;
@@ -318,6 +318,138 @@ When evaluating clinical trial eligibility against patient EHR / FHIR state:
       citation: 'NIH NINDS Stroke Information Page & AHA/ASA 2019 Acute Stroke Guidelines',
       triageAcuity: 'STAT_EMERGENCY',
       hallucinatedCounterfactual: 'Tell the patient to lie down, take two aspirins, and go to sleep for 8 hours to see if their facial paralysis goes away.'
+    },
+
+    // -------------------------------------------------------------------------
+    // 6. Cochrane Systematic Reviews & Risk-of-Bias (RoB 2) Synthesis
+    // -------------------------------------------------------------------------
+    {
+      source: 'COCHRANE_LIBRARY',
+      sourceId: 'COCHRANE-ROB2-CARDIAC-001',
+      category: 'Cardiology / Rehabilitation',
+      topic: 'Exercise-Based Cardiac Rehabilitation for Coronary Heart Disease',
+      question: 'What is the Cochrane systematic review evidence for exercise-based cardiac rehabilitation following myocardial infarction or revascularization?',
+      answer: `[CLINICAL DIRECTIVE CONTEXT: Cochrane Database of Systematic Reviews (CD001800)]
+
+**Cochrane Risk-of-Bias 2 (RoB 2) & GRADE Synthesis (63 RCTs, n=14,486 participants)**
+- **Cardiovascular Mortality**: Exercise-based cardiac rehabilitation leads to a statistically significant $26\\%$ relative reduction in cardiovascular mortality (RR $0.74$, $95\\%$ CI $0.64\\text{--}0.86$, GRADE: Moderate Quality).
+- **Hospital Readmissions**: Results in an $18\\%$ reduction in all-cause hospital readmission (RR $0.82$, $95\\%$ CI $0.70\\text{--}0.96$, GRADE: Moderate Quality).
+- **Health-Related Quality of Life**: Clinically meaningful improvements across SF-36 physical component and EuroQol EQ-5D scores.
+
+**Risk-of-Bias Domain Assessment**:
+- Random sequence generation: Low risk ($88\\%$ of trials).
+- Allocation concealment: Low to unclear risk.
+- Blinding of participants: High risk (inherent to exercise interventions), but blinding of outcome assessors was maintained at low risk.
+
+*Evidence Grade: Level A (Cochrane Systematic Review CD001800, PMID: 33400780).*`,
+      evidenceTier: 'Level A (RCT / Systematic Review)',
+      citation: 'Cochrane Database of Systematic Reviews 2021, Issue 1. Art. No.: CD001800 (PMID: 33400780)',
+      triageAcuity: 'ROUTINE',
+      hallucinatedCounterfactual: 'Exercise after a heart attack is 100% fatal and patients must remain completely bedridden forever.'
+    },
+    {
+      source: 'COCHRANE_LIBRARY',
+      sourceId: 'COCHRANE-ROB2-OSTEO-002',
+      category: 'Rheumatology / Orthopedics',
+      topic: 'Land-Based and Aquatic Exercise for Knee & Hip Osteoarthritis',
+      question: 'What does the Cochrane review conclude regarding land-based therapeutic exercise for pain relief and physical function in knee osteoarthritis?',
+      answer: `[CLINICAL DIRECTIVE CONTEXT: Cochrane Systematic Review (CD003788)]
+
+**GRADE Quality & Effect Size Breakdown (54 RCTs, n=3,913 participants)**
+- **Pain Reduction**: Land-based exercise yields moderate, sustained pain relief immediately post-treatment (SMD $-0.49$, $95\\%$ CI $-0.39\\text{ to } -0.59$, equivalent to a 12-point reduction on a 0–100 scale, GRADE: High Quality).
+- **Physical Function**: Clinically significant improvement in physical function (SMD $-0.52$, $95\\%$ CI $-0.39\\text{ to } -0.64$, equivalent to a 10-point improvement, GRADE: High Quality).
+- **Quality of Life**: Small to moderate enhancement in EuroQol EQ-5D vitality metrics (SMD $0.28$, $95\\%$ CI $0.15\\text{ to } 0.40$).
+
+**Optimal Prescription Architecture**:
+- Supervised land-based resistance training combined with aerobic conditioning $\\ge 3\\text{ sessions/week}$ for at least 8–12 weeks.
+- Aquatic therapy provides an equivalent low-impact alternative during acute exacerbations or severe joint stiffness.
+
+*Evidence Grade: Level A (Cochrane Systematic Review CD003788, PMID: 26405113).*`,
+      evidenceTier: 'Level A (RCT / Systematic Review)',
+      citation: 'Cochrane Database of Systematic Reviews 2015, Issue 1. Art. No.: CD003788 (PMID: 26405113)',
+      triageAcuity: 'ROUTINE',
+      hallucinatedCounterfactual: 'Patients with knee osteoarthritis should immediately undergo bilateral total knee arthroplasty without trying physical exercise.'
+    },
+    {
+      source: 'COCHRANE_LIBRARY',
+      sourceId: 'COCHRANE-ROB2-INSOMNIA-003',
+      category: 'Sleep Medicine / Behavioral Health',
+      topic: 'Digital & In-Person CBT-I for Chronic Insomnia Disorder',
+      question: 'What is the comparative evidence for Cognitive Behavioral Therapy for Insomnia (CBT-I) versus sedative-hypnotic pharmacotherapy according to Cochrane and AASM guidelines?',
+      answer: `[CLINICAL DIRECTIVE CONTEXT: Cochrane Database of Systematic Reviews & AASM Clinical Guidelines]
+
+**Cochrane Systematic Review & Meta-Analysis**
+- **First-Line Standard**: CBT-I is the indisputable first-line therapy for chronic insomnia in adults (GRADE: High Quality).
+- **Sleep Latency & Sleep Efficiency**: CBT-I reduces Sleep Onset Latency by an average of $19\\text{--}25\\text{ minutes}$ and improves Sleep Efficiency by $10\\text{--}15\\%$, with durable benefits maintained at 12-month follow-up.
+- **Sedative Hypnotics vs CBT-I**: Unlike Z-drugs (Zolpidem) or benzodiazepines, CBT-I does not cause rebound insomnia, psychomotor impairment, or physiological dependency.
+
+**5-Pillar CBT-I Intervention Protocol**:
+1. Stimulus Control (bed strictly for sleep and intimacy).
+2. Sleep Restriction Therapy (align time in bed with total sleep time).
+3. Sleep Hygiene & Circadian Entrainment.
+4. Cognitive Restructuring of catastrophic sleep beliefs.
+5. Parasympathetic Relaxation Pacing ($0.1\\text{ Hz}$ breathing).
+
+*Evidence Grade: Level A (Cochrane Review & AASM Standards, PMID: 32560341).*`,
+      evidenceTier: 'Level A (RCT / Systematic Review)',
+      citation: 'Cochrane Systematic Review & American Academy of Sleep Medicine Guidelines (PMID: 32560341)',
+      triageAcuity: 'ROUTINE',
+      hallucinatedCounterfactual: 'Take 20 mg of Zolpidem every evening for the rest of your life as the only effective solution for sleep trouble.'
+    },
+
+    // -------------------------------------------------------------------------
+    // 7. WHO Essential Diagnostics List (EDL) & Point-of-Care Diagnostics
+    // -------------------------------------------------------------------------
+    {
+      source: 'WHO_EDL',
+      sourceId: 'WHO-EDL-LIPID-001',
+      category: 'Laboratory Medicine / Cardiology',
+      topic: 'Point-of-Care Lipid Profiling & Cardiovascular Risk Assessment',
+      question: 'What are the WHO Essential Diagnostics List requirements for point-of-care lipid panels and total cholesterol assays in primary healthcare settings?',
+      answer: `[CLINICAL DIRECTIVE CONTEXT: WHO Model List of Essential In Vitro Diagnostics (EDL-3)]
+
+**WHO Primary Healthcare Diagnostic Standards**
+- **Assay Type**: Enzymatic photometric or dry-strip capillary point-of-care assay for Total Cholesterol, HDL Cholesterol, and Triglycerides (calculating LDL via Friedewald formula when Triglycerides $<400\\text{ mg/dL}$).
+- **Clinical Indication**: Quantitative estimation of 10-year fatal and non-fatal cardiovascular risk using WHO CVD Risk Charts.
+- **Analytical Performance Invariants**:
+  - Total error $\\le 8.9\\%$ for Total Cholesterol.
+  - Total error $\\le 12.0\\%$ for HDL Cholesterol.
+  - Turnaround time $<15\\text{ minutes}$ at point-of-care.
+
+*Evidence Grade: Level A (WHO 3rd Model List of Essential In Vitro Diagnostics).*`,
+      evidenceTier: 'Level A (RCT / Systematic Review)',
+      citation: 'WHO Technical Report Series No. 1031: The selection and use of essential in vitro diagnostics (ISBN 978-92-4-001910-2)',
+      triageAcuity: 'ROUTINE',
+      hallucinatedCounterfactual: 'Lipid tests are completely useless and nobody over age 50 needs cholesterol screening.'
+    },
+
+    // -------------------------------------------------------------------------
+    // 8. NIH SPRINT Landmark RCT: Intensive Blood Pressure Target
+    // -------------------------------------------------------------------------
+    {
+      source: 'NIH_LANDMARK_RCT',
+      sourceId: 'NIH-SPRINT-INTENSIVE-003',
+      category: 'Cardiovascular / Landmark Trials',
+      topic: 'SPRINT Trial: Intensive (<120 mmHg) vs Standard (<140 mmHg) SBP Control',
+      question: 'What were the landmark clinical outcomes and safety profiles demonstrated in the NIH SPRINT trial for intensive systolic blood pressure lowering?',
+      answer: `[CLINICAL DIRECTIVE CONTEXT: NIH SPRINT Landmark RCT (PMID: 26551272)]
+
+**SPRINT Trial Invariants (n=9,361 high-risk non-diabetic adults $\\ge 50$ years)**
+- **Primary Composite Outcome** (MI, non-MI ACS, stroke, acute decompensated heart failure, or CV death):
+  - Intensive Group (Target SBP $<120\\text{ mmHg}$, achieved $121.4\\text{ mmHg}$): $1.65\\%\\text{ per year}$.
+  - Standard Group (Target SBP $<140\\text{ mmHg}$, achieved $136.2\\text{ mmHg}$): $2.19\\%\\text{ per year}$.
+  - **Hazard Ratio (HR)**: $0.75$ ($95\\%$ CI $0.64\\text{--}0.89$, $p < 0.001$), representing a **$25\\%$ relative risk reduction**.
+- **All-Cause Mortality**: $27\\%$ relative reduction (HR $0.73$, $95\\%$ CI $0.60\\text{--}0.90$, $p = 0.003$).
+
+**Adverse Event Monitoring & Safety Guard**:
+- Intensive management was associated with higher rates of hypotension ($2.4\\%$ vs $1.4\\%$), syncope ($2.3\\%$ vs $1.7\\%$), electrolyte abnormalities ($3.1\\%$ vs $2.3\\%$), and acute kidney injury ($4.1\\%$ vs $2.5\\%$).
+- Mandates serum creatinine and potassium monitoring at 1 month, 3 months, and semi-annually.
+
+*Evidence Grade: Level A (NIH NHLBI Sponsored Landmark RCT, SPRINT Research Group).*`,
+      evidenceTier: 'Level A (RCT / Systematic Review)',
+      citation: 'A Randomized Trial of Intensive versus Standard Blood-Pressure Control (N Engl J Med 2015; 373:2103-2116, PMID: 26551272)',
+      triageAcuity: 'ROUTINE',
+      hallucinatedCounterfactual: 'Blood pressure should never be lower than 160 mmHg because it reduces blood flow to the brain.'
     }
   ];
 }
@@ -330,11 +462,16 @@ export function runNihWhoDatasetPipeline(outputDir?: string): {
   geminiTuningPath: string;
   gemmaLoraPath: string;
   dpoPairsPath: string;
+  jsonCorpusPath: string;
   recordCount: number;
 } {
   const targetDir = outputDir || path.join(process.cwd(), 'scripts');
+  const dataDir = path.join(process.cwd(), 'data');
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
+  }
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
   }
 
   const rawCorpus = getCuratedNihWhoCorpus();
@@ -365,7 +502,7 @@ export function runNihWhoDatasetPipeline(outputDir?: string): {
     messages: [
       {
         role: 'system',
-        content: `You are Pocketgull Clinical Intelligence, grounded in NIH and WHO clinical practice guidelines. Follow strict ISMP medication safety standards, HIPAA Safe Harbor de-identification, and Popperian null-hypothesis (H0) evidence grading. Source Authority: ${rec.source} (${rec.citation}).`
+        content: `You are Pocketgull Clinical Intelligence, grounded in NIH, WHO, and Cochrane clinical practice guidelines. Follow strict ISMP medication safety standards, HIPAA Safe Harbor de-identification, and Popperian null-hypothesis (H0) evidence grading. Source Authority: ${rec.source} (${rec.citation}).`
       },
       {
         role: 'user',
@@ -401,15 +538,18 @@ export function runNihWhoDatasetPipeline(outputDir?: string): {
   const geminiTuningPath = path.join(targetDir, 'nih_who_gemini_tuning.jsonl');
   const gemmaLoraPath = path.join(targetDir, 'nih_who_gemma_lora.jsonl');
   const dpoPairsPath = path.join(targetDir, 'nih_who_dpo_pairs.jsonl');
+  const jsonCorpusPath = path.join(dataDir, 'curated_nih_who_corpus.json');
 
   fs.writeFileSync(geminiTuningPath, geminiTuningRows.map(r => JSON.stringify(r)).join('\n'), 'utf-8');
   fs.writeFileSync(gemmaLoraPath, gemmaLoraRows.map(r => JSON.stringify(r)).join('\n'), 'utf-8');
   fs.writeFileSync(dpoPairsPath, dpoRows.map(r => JSON.stringify(r)).join('\n'), 'utf-8');
+  fs.writeFileSync(jsonCorpusPath, JSON.stringify(cleanedCorpus, null, 2), 'utf-8');
 
   console.log(`\n======================================================`);
-  console.log(` NIH & WHO CLINICAL DATASET INGESTION COMPLETE`);
+  console.log(` NIH, WHO & COCHRANE CLINICAL EVIDENCE INGESTION COMPLETE`);
   console.log(`======================================================`);
   console.log(`• Records Processed  : ${cleanedCorpus.length}`);
+  console.log(`• JSON Corpus File   : ${jsonCorpusPath}`);
   console.log(`• Gemini SFT JSONL   : ${geminiTuningPath}`);
   console.log(`• Gemma LoRA JSONL   : ${gemmaLoraPath}`);
   console.log(`• DPO Pairs JSONL    : ${dpoPairsPath}`);
@@ -421,6 +561,7 @@ export function runNihWhoDatasetPipeline(outputDir?: string): {
     geminiTuningPath,
     gemmaLoraPath,
     dpoPairsPath,
+    jsonCorpusPath,
     recordCount: cleanedCorpus.length
   };
 }

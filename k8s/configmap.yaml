@@ -7,3 +7,6 @@ data:
   PYTHON_API_URL: "http://api-service:8080"
   NODE_ENV: "production"
   PYTHONUNBUFFERED: "1"
+  OTEL_SERVICE_NAME: "pocketgull"
+  OTEL_TRACES_SAMPLER: "parentbased_always_on"
+  OTEL_SDK_DISABLED: "false"

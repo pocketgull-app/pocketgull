@@ -1,0 +1,36 @@
+# PocketGull Typeface System Specification (WebMCP & LLM Index)
+
+> PocketGull is an open-source felt-tip marker and high-contrast clinical typeface superfamily. Designed for zero-error medical charting, papercraft UI branding, and ICU telemetry displays.
+
+## 🔤 Superfamily Font Matrix
+
+- **PocketGull Bold (Master 700/800)**: `PocketGull-Bold.ttf`
+  - *Description*: Exact 1:1 mathematical path import of the master GearArts vector trace (`P`, `o`, `c`, `k`, `e`, `t`, `g`, `u`, `l`, `l`).
+  - *Use Case*: Primary brand display & clinical header typography.
+- **PocketGull Fineliner (Light 400)**: `PocketGull-Fineliner.ttf`
+  - *Description*: 0.3mm fine felt pen stroke contraction for high-density tables.
+  - *Use Case*: Patient vitals, FHIR observation tables, lab values.
+- **PocketGull Chiseltip (Ultra-Bold 900)**: `PocketGull-Chiseltip.ttf`
+  - *Description*: Broad-nib calligraphic marker expansion (+15% scale X).
+  - *Use Case*: High-impact headlines, packaging, critical ICU alert banners.
+- **PocketGull Mono (Regular 400)**: `PocketGullMono-Regular.ttf`
+  - *Description*: Fixed-width monospaced felt marker font.
+  - *Use Case*: Streaming ECG telemetry, code blocks, medical calculations (`mmol/L`, `SpO2`).
+
+## 🏥 OpenType & Clinical Glyph Features
+
+- `calt` (Contextual Alternates): Automatic handwriting stroke variation substituting `l.alt` for repeating letters (`ll`).
+- `Apothecary & Measures`: `℞` (Prescription), `℃` (Celsius), `℉` (Fahrenheit), `µ` (Microgram/Microliter), `℥` (Ounce), `ℨ` (Dram).
+- `Clinical Telemetry Icons`: `🫀` Heart, `🫁` Lungs, `🧠` Brain, `🦴` Spine, `🩸` CGM, `🛡️` Shield.
+
+## 👁️ WCAG 2.1 AAA Legibility Certification
+
+- Contrast Ratio: 12.8:1 (Dark Charcoal `#1c1917` on Warm Cream `#fff8f0`)
+- Disambiguation: Clear distinction between `I`, `l`, `1` and `O`, `0`.
+- Bionic Reading: Felt-tip marker 40% fixation accentuation for rapid clinical scanning.
+
+## 🌐 Endpoints & Specimen
+
+- Web Specimen: https://typeface.pocketgull.app
+- Repository: https://github.com/pocketgull-app/PocketGull-typeface
+- License: SIL Open Font License 1.1 (OFL)

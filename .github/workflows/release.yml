@@ -99,6 +99,17 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
+      # --- CNCF Sigstore Cosign Keyless Image Signing ---
+
+      - name: Install Cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8ba6e37284d40cf845fe5 # v3.8.2
+
+      - name: Sign Container Image (Keyless OIDC)
+        if: github.event_name != 'pull_request'
+        run: |
+          cosign sign --yes "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}"
+
       # --- GitHub Release (Tags Only) ---
 
       - name: Generate SPDX SBOM
@@ -127,10 +138,16 @@ jobs:
           echo "docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}" >> release_notes.md
           echo '```' >> release_notes.md
           echo "" >> release_notes.md
-          echo "## Verification" >> release_notes.md
+          echo "## Cryptographic Attestations & Verification" >> release_notes.md
           echo "" >> release_notes.md
+          echo "### 1. SLSA Provenance Verification" >> release_notes.md
           echo '```bash' >> release_notes.md
           echo "gh attestation verify oci://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }} --owner ${{ github.repository_owner }}" >> release_notes.md
+          echo '```' >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### 2. CNCF Sigstore Cosign Keyless Verification" >> release_notes.md
+          echo '```bash' >> release_notes.md
+          echo "cosign verify --certificate-identity-regexp 'https://github.com/${{ github.repository }}' --certificate-oidc-issuer https://token.actions.githubusercontent.com ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}" >> release_notes.md
           echo '```' >> release_notes.md
 
       - name: Create GitHub Release

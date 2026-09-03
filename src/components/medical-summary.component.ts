@@ -22,6 +22,7 @@ import { PocketGullBadgeComponent } from './shared/pocket-gull-badge.component';
 import { MetricCardComponent } from './shared/metric-card.component';
 import { ClinicalDataCardComponent } from './clinical-data-card.component';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
+import { DocDrillService } from '../services/doc-drill.service';
 
 @Component({
   selector: 'app-medical-summary',
@@ -181,38 +182,46 @@ import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 
                   @if (isBiometricsExpanded()) {
                     <div class="mt-4 pt-4 border-t border-gray-100 dark:border-zinc-800 grid grid-cols-2 md:grid-cols-4 gap-4 animate-in">
-                    <app-metric-card
-                      title="Blood Pressure"
-                      [value]="state.vitals().bp || '--'"
-                      unit="mmHg"
-                      [status]="state.vitals().bp === '120/80' ? 'normal' : 'warning'"
-                      trendDirection="stable"
-                    ></app-metric-card>
+                    <div class="cursor-pointer transition hover:scale-[1.02]" (click)="docDrill.openDrill('Mean Arterial Pressure (MAP)', { category: 'VITALS' })" title="Click to drill down on Blood Pressure with Doc Drill">
+                      <app-metric-card
+                        title="Blood Pressure"
+                        [value]="state.vitals().bp || '--'"
+                        unit="mmHg"
+                        [status]="state.vitals().bp === '120/80' ? 'normal' : 'warning'"
+                        trendDirection="stable"
+                      ></app-metric-card>
+                    </div>
                     
-                    <app-metric-card
-                      title="Heart Rate"
-                      [value]="state.vitals().hr || '--'"
-                      unit="bpm"
-                      [status]="parseVitalNum(state.vitals().hr) > 100 ? 'warning' : 'normal'"
-                      trendDirection="up"
-                      trendText="+2.5%"
-                    ></app-metric-card>
+                    <div class="cursor-pointer transition hover:scale-[1.02]" (click)="docDrill.openDrill('Heart Rate Variability (rMSSD & SDNN)', { category: 'AUTONOMIC TONE' })" title="Click to drill down on Heart Rate & HRV with Doc Drill">
+                      <app-metric-card
+                        title="Heart Rate"
+                        [value]="state.vitals().hr || '--'"
+                        unit="bpm"
+                        [status]="parseVitalNum(state.vitals().hr) > 100 ? 'warning' : 'normal'"
+                        trendDirection="up"
+                        trendText="+2.5%"
+                      ></app-metric-card>
+                    </div>
                     
-                    <app-metric-card
-                      title="SpO2"
-                      [value]="state.vitals().spO2 || '--'"
-                      unit="%"
-                      [status]="parseVitalNum(state.vitals().spO2) < 95 ? 'critical' : 'normal'"
-                      trendDirection="stable"
-                    ></app-metric-card>
+                    <div class="cursor-pointer transition hover:scale-[1.02]" (click)="docDrill.openDrill('SpO2', { category: 'PULMONOLOGY' })" title="Click to drill down on SpO2 with Doc Drill">
+                      <app-metric-card
+                        title="SpO2"
+                        [value]="state.vitals().spO2 || '--'"
+                        unit="%"
+                        [status]="parseVitalNum(state.vitals().spO2) < 95 ? 'critical' : 'normal'"
+                        trendDirection="stable"
+                      ></app-metric-card>
+                    </div>
                     
-                    <app-metric-card
-                      title="Temperature"
-                      [value]="state.vitals().temp || '--'"
-                      unit="°F"
-                      status="normal"
-                      trendDirection="stable"
-                    ></app-metric-card>
+                    <div class="cursor-pointer transition hover:scale-[1.02]" (click)="docDrill.openDrill('Body Temperature Homeostasis', { category: 'HOMEOSTASIS' })" title="Click to drill down on Temperature with Doc Drill">
+                      <app-metric-card
+                        title="Temperature"
+                        [value]="state.vitals().temp || '--'"
+                        unit="°F"
+                        status="normal"
+                        trendDirection="stable"
+                      ></app-metric-card>
+                    </div>
                   </div>
                 }
               </section>
@@ -1223,6 +1232,7 @@ export class MedicalChartSummaryComponent {
   clinicalAssessments = inject(ClinicalAssessmentsService);
   ybocsService = inject(YbocsService);
   acronymService = inject(AcronymExpanderService);
+  readonly docDrill = inject(DocDrillService);
   http = inject(HttpClient);
   
   today = new Date();

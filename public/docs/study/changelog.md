@@ -3,6 +3,22 @@
 All notable changes to Pocket Gull are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v1.32.0 — 2026-09-02
+
+**Epistemic Falsification & Clinical Ergonomics Suite, Calibrated Edge AI ONNX WebGPU Engine, Columnar Apache Parquet Pipeline, STEEEP Quality Suite, and RSNA 2026 Multimodal Knee MRI Lens**
+
+### Added
+- **[4-Pillar Epistemic & Clinical Ergonomics Suite] (`src/services/fhir-r4-bundle-export.service.ts`, `pocketgull_flutter/lib/`)**:
+  - **HL7 FHIR R4 Epistemic Extensions & Part 11 Provenance**: Standardized `IFhirGroundedAssertionExtension` embedding 3 orthogonal counter-hypotheses, disconfirming bedside physical exams, $H_0$ rejection $p$-values, Cochrane RoB2 ratings, and cryptographic Part 11 `Provenance` digital signature seals (`sigFormat: application/jose`, SHA-256 digests). Parity achieved across TypeScript and Flutter.
+  - **Rice Paper Washi High-Contrast Light Theme**: Added `AppTheme.washi` with warm ivory washi substrate (`#FAF8F0`), zinc-900 typography (`#18181B`, $>12:1$ WCAG AAA contrast ratio), and `#0D9488` gear-teal accents to eliminate ocular halation and astigmatism fatigue.
+  - **Hands-Free Bedside Voice Socratic Disconfirmation**: Added `CommandAction.challengeHypothesis` in `dictation_service.dart` with verbal pattern matching for *"challenge hypothesis"*, *"what disconfirms"*, *"differential check"*, and *"socratic challenge"*, exhaustively handled in `intake_form_widget.dart` under Dart 3 pattern matching.
+  - **Hermetic Nelder-Mead OOF Decision Threshold Calibration**: Pure Dart 3 simplex coordinate ascent optimizer (`rsna_threshold_benchmark_test.dart`) calibrating 12 target pathology thresholds across 1,000 Out-of-Fold validation studies in sub-200ms with zero NumPy/SciPy or external C-dependencies.
+- **[Interactive Bedside Anti-Confirmation Bias Drawer] (`pocketgull_flutter/lib/widgets/anti_confirmation_bias_widget.dart`, `lib/providers/epistemic_assertion_provider.dart`)**:
+  - Embedded interactive bedside falsification drawer directly inside patient chart views (`'epistemic'` accordion).
+  - Enforces Popperian falsification by requiring affirmative clinician physical exam checkboxes before committing diagnostic seals.
+
+---
+
 ## v1.28.0 — 2026-08-25
 
 **Ethical Patient Research Data Dividend & Disease Cohort Marketplace, Express 100MB Body Parser Scaling, Flutter Sentinel Models & CI Parallelization**

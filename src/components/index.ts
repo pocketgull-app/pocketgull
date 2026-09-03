@@ -21,6 +21,7 @@ export * from './shared/clinical-tool-card.component';
 export * from './shared/pathways-moe-badge.component';
 export * from './shared/pocketgull-icon.component';
 export * from './shared/amazon-product-card.component';
+export * from './shared/foveal-reticle-rsvp.component';
 export * from './bibliotherapy-hobby-prescriber.component';
 
 // Modal Components Barrel Export
@@ -59,6 +60,11 @@ export * from './citizen-science-walk-report.component';
 export * from './google-health-sync-hud.component';
 export * from './barrows-clinical-inquiry-hub.component';
 export * from './austere-research-hud/austere-research-hud.component';
+export * from './aria-score-hud/aria-score-hud.component';
+export * from './steeep-quality-hud/steeep-quality-hud.component';
+export * from './edge-ml-hud/edge-ml-hud.component';
+export * from './turing/lens-biomolecular-physics.component';
+export * from './turing/lens-physical-genomics.component';
 
 
 

@@ -14,13 +14,20 @@ test.describe('Cohort Triage Matrix, HIPAA PDF Export & Card Ergonomics E2E Suit
   });
 
   test('should open Multi-Patient Cohort Triage Matrix and sort roster dynamically', async ({ page }) => {
+    // Open STUDIO dropdown in toolbar
+    const studioBtn = page.locator('button', { hasText: /STUDIO/i }).first();
+    if (await studioBtn.isVisible({ timeout: 30000 }).catch(() => false)) {
+      await studioBtn.click();
+      await page.waitForTimeout(300);
+    }
+
     // Locate Cohort Matrix toggle button
     const cohortBtn = page.locator('button', { hasText: 'Cohort Matrix' }).first();
-    await expect(cohortBtn).toBeVisible({ timeout: 30000 });
+    await expect(cohortBtn).toBeVisible({ timeout: 10000 });
     await cohortBtn.click();
 
-    // Verify Cohort Triage Matrix header renders
-    const header = page.getByText(/Multi-Patient Cohort Triage Matrix/i).first();
+    // Verify Cohort Matrix header renders
+    const header = page.getByText(/Multi-Patient Cohort (Diagnostic|Triage) Matrix/i).first();
     await expect(header).toBeVisible({ timeout: 10000 });
 
     // Verify roster table elements exist
@@ -37,9 +44,16 @@ test.describe('Cohort Triage Matrix, HIPAA PDF Export & Card Ergonomics E2E Suit
   });
 
   test('should open 1-Click HIPAA Audit & FHIR R4 Bundle PDF Export and trigger download log', async ({ page }) => {
+    // Open STUDIO dropdown in toolbar
+    const studioBtn = page.locator('button', { hasText: /STUDIO/i }).first();
+    if (await studioBtn.isVisible({ timeout: 30000 }).catch(() => false)) {
+      await studioBtn.click();
+      await page.waitForTimeout(300);
+    }
+
     // Locate HIPAA PDF toggle button
     const hipaaBtn = page.locator('button', { hasText: 'HIPAA PDF' }).first();
-    await expect(hipaaBtn).toBeVisible({ timeout: 30000 });
+    await expect(hipaaBtn).toBeVisible({ timeout: 10000 });
     await hipaaBtn.click();
 
     // Verify HIPAA PDF Export card renders

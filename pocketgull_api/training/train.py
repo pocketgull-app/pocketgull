@@ -21,6 +21,23 @@ try:
     HAS_JAX = True
 except ImportError:
     HAS_JAX = False
+    jax: Any = None
+    jnp: Any = None
+    class _DummyNNX:
+        @staticmethod
+        def jit(fn: Any) -> Any:
+            return fn
+        @staticmethod
+        def value_and_grad(*args: Any, **kwargs: Any) -> Any:
+            return lambda *a, **k: ((0.0, 0.0), None)
+        Rngs: Any = lambda *args, **kwargs: None
+        Optimizer: Any = lambda *args, **kwargs: None
+        Param: Any = None
+        split: Any = lambda *args, **kwargs: (None, None)
+    nnx: Any = _DummyNNX()
+    optax: Any = None
+    ocp: Any = None
+    ClinicalRiskScorer: Any = None
 
 
 def create_optimizer(learning_rate: float = 1e-3, decay_steps: int = 5000) -> Any:
@@ -40,26 +57,25 @@ def create_optimizer(learning_rate: float = 1e-3, decay_steps: int = 5000) -> An
     )
 
 
-if HAS_JAX:
-    @nnx.jit
-    def train_step(
-        model: Any,
-        optimizer: Any,
-        x: Any,
-        y: Any,
-    ) -> Tuple[Any, Any]:
-        """Single JIT-compiled optimization step."""
-        def loss_fn(model: Any):
-            logits = model(x)
-            loss = optax.sigmoid_binary_cross_entropy(logits=logits, labels=y).mean()
-            return loss, logits
-
-        (loss, logits), grads = nnx.value_and_grad(loss_fn, has_aux=True)(model)
-        optimizer.update(model, grads)
-        return loss, logits
-else:
-    def train_step(model: Any, optimizer: Any, x: Any, y: Any) -> Tuple[Any, Any]:
+@nnx.jit
+def train_step(
+    model: Any,
+    optimizer: Any,
+    x: Any,
+    y: Any,
+) -> Tuple[Any, Any]:
+    """Single JIT-compiled optimization step."""
+    if not HAS_JAX:
         return 0.0, 0.0
+
+    def loss_fn(model: Any):
+        logits = model(x)
+        loss = optax.sigmoid_binary_cross_entropy(logits=logits, labels=y).mean()
+        return loss, logits
+
+    (loss, logits), grads = nnx.value_and_grad(loss_fn, has_aux=True)(model)
+    optimizer.update(model, grads)
+    return loss, logits
 
 
 def run_training():

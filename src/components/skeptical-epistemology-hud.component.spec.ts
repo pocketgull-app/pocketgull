@@ -67,4 +67,24 @@ describe('SkepticalEpistemologyHudComponent', () => {
     expect(component.getBiasColorClass('Some Concerns')).toContain('text-amber');
     expect(component.getBiasColorClass('High Risk of Bias')).toContain('text-rose');
   });
+
+  it('8. Computes biophysical falsification catalog and supports tab switching', () => {
+    const catalog = component.biophysicalCatalog();
+    expect(catalog.protacPolypharmacy).toBeDefined();
+    expect(catalog.llpsPhaseBoundary).toBeDefined();
+    expect(catalog.quantumThermalNoise).toBeDefined();
+    expect(catalog.quantumDualSpin).toBeDefined();
+    expect(catalog.reticularPoreSieve).toBeDefined();
+
+    expect(component.activeBiophysTab()).toBe('protac');
+    component.activeBiophysTab.set('llps');
+    expect(component.activeBiophysTab()).toBe('llps');
+    component.activeBiophysTab.set('quantum');
+    expect(component.activeBiophysTab()).toBe('quantum');
+    component.activeBiophysTab.set('dualspin');
+    expect(component.activeBiophysTab()).toBe('dualspin');
+    component.activeBiophysTab.set('pore');
+    expect(component.activeBiophysTab()).toBe('pore');
+  });
 });
+

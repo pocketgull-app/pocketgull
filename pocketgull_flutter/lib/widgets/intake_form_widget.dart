@@ -6,6 +6,7 @@ import 'history_timeline_widget.dart';
 import '../models/patient_types.dart';
 import '../services/dictation_service.dart';
 import 'dictation_modal_widget.dart';
+import 'anti_confirmation_bias_widget.dart';
 
 class IntakeFormWidget extends ConsumerStatefulWidget {
   const IntakeFormWidget({super.key});
@@ -109,6 +110,29 @@ class _IntakeFormWidgetState extends ConsumerState<IntakeFormWidget> {
                 date: note.date,
               );
               ref.read(patientProvider.notifier).updateIssue(note.id, updatedNote);
+          }
+          break;
+        case CommandAction.challengeHypothesis:
+          // Bedside Socratic falsification challenge requested via hands-free voice
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('🛡️ Hands-Free Voice: Opening Socratic Disconfirmation Drawer...'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Color(0xFF0F172A),
+              ),
+            );
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              isScrollControlled: true,
+              builder: (ctx) => const Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: SingleChildScrollView(
+                  child: AntiConfirmationBiasWidget(),
+                ),
+              ),
+            );
           }
           break;
       }

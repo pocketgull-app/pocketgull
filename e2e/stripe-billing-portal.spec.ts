@@ -1,6 +1,33 @@
 import { test, expect } from '@playwright/test';
 import { setupE2ePage, enterDemoMode } from './utils/setup';
 
+
+/** Helper to open Billing modal across desktop and mobile viewports */
+async function openBillingModal(page: import('@playwright/test').Page) {
+  const directBtn = page.locator('button', { hasText: /billing & plan|billing & subscription/i }).first();
+  if (await directBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+    await directBtn.click({ force: true });
+    return;
+  }
+  // Open via Apps & Clinical Portals Hub
+  const appsHubBtn = page.locator('#btn-apps-hub-trigger, button:has-text("Apps & Portals")').first();
+  if (await appsHubBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await appsHubBtn.click();
+    await page.waitForTimeout(300);
+    const billingOpt = page.locator('button', { hasText: /billing & pricing|billing & subscription/i }).first();
+    await billingOpt.click();
+    return;
+  }
+  // Open via Mobile Menu Drawer if visible
+  const mobileMenuBtn = page.locator('button[aria-label="Open Mobile Navigation Menu"]').first();
+  if (await mobileMenuBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await mobileMenuBtn.click();
+    await page.waitForTimeout(300);
+    const mobileBillingBtn = page.locator('button', { hasText: /billing & subscription/i }).first();
+    await mobileBillingBtn.click();
+  }
+}
+
 test.describe('Stripe Billing & Self-Service Customer Portal E2E Suite', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
@@ -9,10 +36,8 @@ test.describe('Stripe Billing & Self-Service Customer Portal E2E Suite', () => {
   });
 
   test('should open Billing & Subscription modal and display active plan metrics', async ({ page }) => {
-    // 1. Locate and click Billing & Plan header button
-    const billingHeaderBtn = page.locator('button', { hasText: /billing & plan/i });
-    await expect(billingHeaderBtn).toBeVisible({ timeout: 15000 });
-    await billingHeaderBtn.click({ force: true });
+    // 1. Open Billing Modal
+    await openBillingModal(page);
 
     // 2. Verify Billing & Subscription modal dialog opens
     const modalDialog = page.locator('div[role="dialog"]');
@@ -52,9 +77,7 @@ test.describe('Stripe Billing & Self-Service Customer Portal E2E Suite', () => {
     });
 
     // 1. Open Billing Modal
-    const billingHeaderBtn = page.locator('button', { hasText: /billing & plan/i });
-    await expect(billingHeaderBtn).toBeVisible({ timeout: 15000 });
-    await billingHeaderBtn.click({ force: true });
+    await openBillingModal(page);
 
     const modalDialog = page.locator('div[role="dialog"]');
     await expect(modalDialog).toBeVisible();
@@ -88,9 +111,7 @@ test.describe('Stripe Billing & Self-Service Customer Portal E2E Suite', () => {
     });
 
     // 1. Open Billing Modal
-    const billingHeaderBtn = page.locator('button', { hasText: /billing & plan/i });
-    await expect(billingHeaderBtn).toBeVisible({ timeout: 15000 });
-    await billingHeaderBtn.click({ force: true });
+    await openBillingModal(page);
 
     const modalDialog = page.locator('div[role="dialog"]');
     await expect(modalDialog).toBeVisible();

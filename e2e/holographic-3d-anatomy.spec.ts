@@ -17,7 +17,28 @@ test.describe('Holographic 3D Skeletal Anatomy & Spatial Lenses Suite', () => {
     // 3. Ensure core analysis container is loaded
     await expect(page.locator('app-analysis-container')).toBeVisible({ timeout: 15000 });
 
-    // 4. Verify 3D Spatial Anatomy container is rendered
+    // 4. Open Patient Portal to render Holographic 3D Anatomy viewer
+    const directPortalBtn = page.locator('button', { hasText: /patient portal/i }).first();
+    if (await directPortalBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await directPortalBtn.click();
+    } else {
+      const appsHubBtn = page.locator('#btn-apps-hub-trigger, button:has-text("Apps & Portals")').first();
+      if (await appsHubBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await appsHubBtn.click();
+        await page.waitForTimeout(300);
+        const hubPortalBtn = page.locator('button', { hasText: /patient portal/i }).first();
+        if (await hubPortalBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await hubPortalBtn.click();
+        }
+      }
+    }
+
+    // Click 3D Spatial Anatomy tab inside Patient Portal
+    const anatomyTabBtn = page.getByRole('button', { name: /3D Spatial Anatomy/i }).first();
+    await expect(anatomyTabBtn).toBeVisible({ timeout: 15000 });
+    await anatomyTabBtn.click();
+
+    // Verify 3D Spatial Anatomy container is rendered
     const anatomyContainer = page.locator('app-holographic-3d-anatomy');
     await expect(anatomyContainer).toBeVisible({ timeout: 25000 });
 

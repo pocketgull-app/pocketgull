@@ -8,11 +8,13 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: local('PocketGull Icons'), local('Material Icons');
+  src: url('/fonts/PocketGull-Bold.woff2') format('woff2'),
+       local('PocketGull Bold'),
+       local('PocketGull');
 }
 
 .pg-icon {
-  font-family: 'PocketGull Icons', sans-serif;
+  font-family: 'PocketGull Icons', 'PocketGull Bold', 'PocketGull Mono', sans-serif;
   font-weight: normal;
   font-style: normal;
   font-size: 24px;
@@ -27,12 +29,23 @@
   filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1));
 }
 
-/* Clinical Icon Glyph Shortcuts */
-.pg-icon-heart::before { content: '🫀'; }
+/* Native Clinical Symbol Glyph Shortcuts (Official Unicode & Material PUA) */
+.pg-icon-rx::before { content: '\211E'; }            /* ℞ Prescription Order */
+.pg-icon-hospital::before { content: '\271A'; }      /* ✚ Clinical First Aid Cross */
+.pg-icon-monitor-heart::before { content: '\E87D'; } /* Cardiology ECG Waveform */
+.pg-icon-pill::before { content: '\E105'; }          /* Medication Capsule */
+.pg-icon-shield::before { content: '\E8E8'; }        /* HIPAA Defense Shield */
+.pg-icon-print::before { content: '\2399'; }         /* ⎙ 203 DPI Bedside Print */
+.pg-icon-eye::before { content: '\E8F4'; }           /* Ophthalmic Sloan Lens */
+.pg-icon-check::before { content: '\2705'; }         /* Attestation Verified */
+.pg-icon-warning::before { content: '\26A0'; }       /* ISMP Caution Triangle */
+.pg-icon-blood::before { content: '\E1A8'; }         /* Blood Infusion Drop */
+
+/* Physiological Anatomy Shortcuts */
+.pg-icon-heart::before { content: '\E87D'; }
 .pg-icon-lungs::before { content: '🫁'; }
 .pg-icon-brain::before { content: '🧠'; }
 .pg-icon-spine::before { content: '🦴'; }
 .pg-icon-tooth::before { content: '🦷'; }
-.pg-icon-cgm::before { content: '🩸'; }
-.pg-icon-shield::before { content: '🛡️'; }
+.pg-icon-cgm::before { content: '\E1A8'; }
 .pg-icon-seagull::before { content: '🐦'; }

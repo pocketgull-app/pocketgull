@@ -1,3 +1,53 @@
+
+/* ==========================================================================
+   PocketGull Sovereign Superfamily Edge Fonts (Offline-First)
+   ========================================================================== */
+
+@font-face {
+  font-family: 'PocketGull';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Bold.woff2') format('woff2'),
+       url('/fonts/PocketGull-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
+       url('/fonts/PocketGull-Fineliner.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Chiseltip.woff2') format('woff2'),
+       url('/fonts/PocketGull-Chiseltip.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PocketGull Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/PocketGullMono-Regular.woff2') format('woff2'),
+       url('/fonts/PocketGullMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PocketGull VF';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/PocketGull-VF.woff2') format('woff2'),
+       url('/fonts/PocketGull-VF.ttf') format('truetype');
+}
+
 /* latin-ext */
 @font-face {
   font-family: 'Cinzel';

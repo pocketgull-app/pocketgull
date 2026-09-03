@@ -13,7 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.resolve()))
 
 import numpy as np
-from typing import Optional
+from typing import Any, Optional
 
 try:
     import jax
@@ -28,6 +28,16 @@ try:
     HAS_JAX = True
 except ImportError:
     HAS_JAX = False
+    jax: Any = None
+    jnp: Any = None
+    nnx: Any = None
+    optax: Any = None
+    ocp: Any = None
+    onnx: Any = None
+    ClinicalRiskScorer: Any = None
+    create_optimizer: Any = None
+    train_step: Any = None
+    export_clinical_scorer_to_onnx: Any = None
 
 from fastapi.testclient import TestClient
 from inference.engine import JAXInferenceEngine

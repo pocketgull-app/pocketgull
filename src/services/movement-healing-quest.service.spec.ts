@@ -56,4 +56,18 @@ describe('MovementHealingQuestService', () => {
     service.setPlatform('WINDOWS_DESKTOP');
     expect(service.activePlatform()).toBe('WINDOWS_DESKTOP');
   });
+
+  it('6. Verifies optical innovation and acoustic frequencies on Biophilic Vagal Odyssey waypoints', () => {
+    const quest = service.activeQuest();
+    expect(quest.milestones[0].opticalInnovation).toContain('CIE S 026 Dawn Alert 285 EML');
+    expect(quest.milestones[0].acousticHz).toBe(528);
+
+    expect(quest.milestones[1].opticalInnovation).toContain('0.1Hz Sinusoidal OKN/VOR');
+    expect(quest.milestones[1].acousticHz).toBe(432);
+
+    expect(quest.milestones[2].opticalInnovation).toContain('670nm Deep Red Retinal Photobiomodulation');
+    expect(quest.milestones[2].pbmDurationSeconds).toBe(180);
+    expect(quest.milestones[2].vagalShiftTargetPercent).toBe(38.5);
+    expect(quest.milestones[2].acousticHz).toBe(7.83);
+  });
 });

@@ -21,6 +21,11 @@ export interface IKneeKinematicsAssessment {
   qAngleDegrees: number;
   alignment: 'Normal' | 'Genu Varum (Bow-legged)' | 'Genu Valgum (Knock-kneed)';
   kellgrenLawrenceGrade: 0 | 1 | 2 | 3 | 4;
+  wormsCartilageGrade: 0 | 1 | 2 | 3 | 4;
+  wormsCartilageDescription: string;
+  boneMarrowLesionScore: 0 | 1 | 2 | 3;
+  medialJointSpaceMm: number;
+  lateralJointSpaceMm: number;
   jointSpaceNarrowingMm: number;
   kineticChainRiskFactor: 'Low' | 'Moderate' | 'High' | 'Severe';
   biomechanicalSummary: string;
@@ -129,32 +134,37 @@ export interface IFhirR4DiagnosticReport {
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs mb-3 font-mono">
             <div class="p-2.5 bg-zinc-950/80 rounded-xl border border-zinc-800">
+              <div class="text-[10px] text-zinc-500 uppercase">WORMS Cartilage Grade</div>
+              <div class="text-sm font-bold text-amber-400 mt-0.5 flex items-center gap-1.5">
+                <span>🦴</span> Grade {{ k.wormsCartilageGrade }}
+              </div>
+              <div class="text-[10px] text-zinc-400">BML Score: {{ k.boneMarrowLesionScore }}/3</div>
+            </div>
+            <div class="p-2.5 bg-zinc-950/80 rounded-xl border border-zinc-800">
+              <div class="text-[10px] text-zinc-500 uppercase">Medial vs Lateral JSW</div>
+              <div class="text-sm font-bold text-zinc-100 mt-0.5">{{ k.medialJointSpaceMm }} / {{ k.lateralJointSpaceMm }} mm</div>
+              <div class="text-[10px] text-cyan-400">JSN Delta: {{ k.jointSpaceNarrowingMm }} mm</div>
+            </div>
+            <div class="p-2.5 bg-zinc-950/80 rounded-xl border border-zinc-800">
               <div class="text-[10px] text-zinc-500 uppercase">Q-Angle Biomechanics</div>
               <div class="text-sm font-bold text-zinc-100 mt-0.5">{{ k.qAngleDegrees }}°</div>
               <div class="text-[10px] text-cyan-400">{{ k.alignment }}</div>
             </div>
             <div class="p-2.5 bg-zinc-950/80 rounded-xl border border-zinc-800">
-              <div class="text-[10px] text-zinc-500 uppercase">Joint Space (JSN)</div>
-              <div class="text-sm font-bold text-zinc-100 mt-0.5">{{ k.jointSpaceNarrowingMm }} mm</div>
-              <div class="text-[10px] text-zinc-400">Normal baseline: 4.5mm</div>
-            </div>
-            <div class="p-2.5 bg-zinc-950/80 rounded-xl border border-zinc-800">
-              <div class="text-[10px] text-zinc-500 uppercase">Target 3D Limb</div>
-              <div class="text-sm font-bold text-emerald-400 mt-0.5 flex items-center gap-1">
-                <span>🦵</span> Left Knee (K-01)
-              </div>
-              <div class="text-[10px] text-zinc-400">Synced to 3D Viewport</div>
-            </div>
-            <div class="p-2.5 bg-zinc-950/80 rounded-xl border border-zinc-800">
               <div class="text-[10px] text-zinc-500 uppercase">Multi-Target AUC</div>
               <div class="text-sm font-bold text-purple-400 mt-0.5">0.9428</div>
-              <div class="text-[10px] text-zinc-400">Brier: 0.0412</div>
+              <div class="text-[10px] text-emerald-400">Brier: 0.0412</div>
             </div>
           </div>
 
-          <p class="text-xs text-zinc-300 italic bg-zinc-950/60 p-2.5 rounded-xl border border-zinc-800/80">
-            {{ k.biomechanicalSummary }}
-          </p>
+          <div class="p-2.5 bg-zinc-950/60 rounded-xl border border-zinc-800/80 space-y-1 text-xs">
+            <p class="text-amber-300/90 font-mono text-[11px]">
+              <strong>WORMS Evaluation:</strong> {{ k.wormsCartilageDescription }}
+            </p>
+            <p class="text-zinc-300 italic text-[11px]">
+              {{ k.biomechanicalSummary }}
+            </p>
+          </div>
         </div>
       }
 
@@ -343,9 +353,14 @@ export class LensRsnaKneeComponent implements OnInit {
     qAngleDegrees: 12.2,
     alignment: 'Genu Varum (Bow-legged)',
     kellgrenLawrenceGrade: 3,
+    wormsCartilageGrade: 2,
+    wormsCartilageDescription: 'WORMS Grade 2: Focal partial-thickness cartilage defect (<1 cm) along medial femoral condyle with subchondral marrow edema.',
+    boneMarrowLesionScore: 2,
+    medialJointSpaceMm: 3.8,
+    lateralJointSpaceMm: 4.6,
     jointSpaceNarrowingMm: 1.8,
     kineticChainRiskFactor: 'Severe',
-    biomechanicalSummary: 'Biomechanical assessment indicates Genu Varum (Q-Angle: 12.2°, KL Grade 3). Joint space: 1.8mm. Significant compensatory kinetic chain loading observed across ipsilateral ankle subtalar pronation and lumbopelvic rhythm.'
+    biomechanicalSummary: 'Biomechanical assessment indicates Genu Varum (Q-Angle: 12.2°, KL Grade 3, WORMS Cartilage Grade 2). Medial JSW: 3.8mm vs Lateral JSW: 4.6mm. Significant compensatory kinetic chain loading observed across ipsilateral ankle subtalar pronation and lumbopelvic rhythm.'
   });
 
   constructor() {

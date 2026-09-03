@@ -103,11 +103,12 @@ export class HipaaPdfExportService {
       });
     }
 
-    // Footer Audit Stamp
-    doc.setFontSize(8);
+    // Footer Audit Stamp & FDA CDS Notice
+    doc.setFontSize(7);
     doc.setFont('helvetica', 'italic');
     doc.setTextColor(100, 116, 139);
-    doc.text(`Confidential ePHI Document Reference | DOMPurify Sanitized | Generated via Pocket-Gull Clinical Intelligence Engine`, 14, 285);
+    doc.text(`FDA CDS Notice (21 U.S.C. § 360j(o)): Non-device decision support. Independent licensed clinician review required before clinical execution.`, 14, 282);
+    doc.text(`Confidential ePHI Document Reference | DOMPurify Sanitized | PocketGull LLC (Portland, OR)`, 14, 287);
 
     // Save PDF
     doc.save(`pocketgull_care_plan_${sanitizedName.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.pdf`);

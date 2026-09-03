@@ -1,0 +1,29 @@
+# Production overrides for GKE cluster
+global:
+  environment: production
+
+web:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+    limits:
+      cpu: 2000m
+      memory: 4096Mi
+
+api:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+    limits:
+      cpu: 4000m
+      memory: 8192Mi
+
+config:
+  frontendOrigin: "https://pocketgull.app"
+  pythonApiUrl: "http://api-service:8080"
+  otelSdkDisabled: "false"
+  otelExporterOtlpEndpoint: "http://otel-collector:4318"

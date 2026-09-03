@@ -99,4 +99,115 @@ describe('DicomViewerComponent Advanced Radiomics Suite', () => {
     component.toggleNominaLabels();
     expect(component.showNominaLabels()).toBe(true);
   });
+
+  it('should manage Cine-Loop playback state, FPS speed, and frame stepping', () => {
+    expect(component.isPlayingCine()).toBe(false);
+    expect(component.cineFps()).toBe(24);
+    expect(component.cineLoopMode()).toBe('forward');
+
+    component.toggleCinePlayback();
+    expect(component.isPlayingCine()).toBe(true);
+
+    component.setFps(60);
+    expect(component.cineFps()).toBe(60);
+
+    component.toggleLoopMode();
+    expect(component.cineLoopMode()).toBe('pingpong');
+
+    component.stopCine();
+    expect(component.isPlayingCine()).toBe(false);
+
+    // Frame stepping
+    component.currentSlice.set(10);
+    component.stepFrame(1);
+    expect(component.currentSlice()).toBe(11);
+
+    component.stepFrame(-1);
+    expect(component.currentSlice()).toBe(10);
+  });
+
+  it('should initialize multi-frame video studies with custom frame rate', () => {
+    const diatomStudy = {
+      studyInstanceUid: '1.2.840.113619.2.134.1.phil.diatom',
+      patientName: 'Homo Sapiens',
+      studyDescription: 'Diatom Frustule Micro-CT (Volumetric Scan)',
+      modalities: ['CT'],
+      isMultiFrameVideo: true,
+      frameCount: 32,
+      frameRateFps: 30
+    };
+
+    component.selectStudy(diatomStudy);
+    expect(component.totalSlices()).toBe(32);
+    expect(component.cineFps()).toBe(30);
+    expect(component.currentSlice()).toBe(16);
+    expect(mockDicomService.getRenderedImageUrl).toHaveBeenCalled();
+  });
+
+  it('should support Pre-Op CT and Pre-Op MRI Side-by-Side and Fused Overlay modes', () => {
+    expect(component.viewLayout()).toBe('2D_3D');
+
+    // Switch to Side-by-Side Mode
+    component.viewLayout.set('SIDE_BY_SIDE_CT_MRI');
+    expect(component.viewLayout()).toBe('SIDE_BY_SIDE_CT_MRI');
+
+    // Switch to Fused Overlay Mode
+    component.viewLayout.set('FUSED_OVERLAY');
+    expect(component.viewLayout()).toBe('FUSED_OVERLAY');
+
+    // Test Alpha Blend Fusion Slider
+    expect(component.fusionBlendPercent()).toBe(50);
+    component.fusionBlendPercent.set(75);
+    expect(component.fusionBlendPercent()).toBe(75);
+  });
+
+  it('should render both CT and MRI modality streams in synchronized lock-step', () => {
+    const study = {
+      studyInstanceUid: 'study-spine-preop',
+      patientName: 'Jane Doe',
+      studyDescription: 'Pre-Op Spine CT and MRI Series',
+      modalities: ['CT', 'MR']
+    };
+
+    component.selectStudy(study);
+    expect(component.currentCtImageSrc()).toBeTruthy();
+    expect(component.currentMriImageSrc()).toBeTruthy();
+
+    // Verify CT modality override parameter passed to service
+    expect(mockDicomService.getRenderedImageUrl).toHaveBeenCalledWith(
+      'study-spine-preop',
+      'mock-series-uid',
+      'mock-instance-uid',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      16,
+      'CT'
+    );
+
+    // Verify MR modality override parameter passed to service
+    expect(mockDicomService.getRenderedImageUrl).toHaveBeenCalledWith(
+      'study-spine-preop',
+      'mock-series-uid',
+      'mock-instance-uid',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      16,
+      'MR'
+    );
+  });
+
+  it('should dispatch defect to bioreactor and update status', () => {
+    mockDicomService.dispatchToBioreactor = vi.fn();
+    const study: any = { studyInstanceUid: 'study-bioreactor-test', frameCount: 32 };
+    component.selectedStudy.set(study);
+    component.currentSlice.set(10);
+    component.sendDefectToBioreactor();
+    expect(component.bioreactorStatus()).toBe('Seeding...');
+    expect(mockDicomService.dispatchToBioreactor).toHaveBeenCalledWith(study, 10 * 64 + 1024);
+  });
 });
+

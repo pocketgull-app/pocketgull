@@ -1,0 +1,206 @@
+/**
+ * PocketGull Typeface Superfamily
+ * Official Webfont Stylesheet (SIL Open Font License 1.1)
+ * https://typeface.pocketgull.app | https://github.com/pocketgull-app/pocketgull-typeface
+ */
+
+/* 1. Universal Proportional Superfamily */
+@font-face {
+  font-family: 'PocketGull';
+  src: url('PocketGull-Bold.woff2') format('woff2'),
+       url('fonts/PocketGull-Bold.woff2') format('woff2'),
+       url('PocketGull-Bold.ttf') format('truetype'),
+       url('fonts/PocketGull-Bold.ttf') format('truetype');
+  font-weight: 700 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  src: url('PocketGull-Fineliner.woff2') format('woff2'),
+       url('fonts/PocketGull-Fineliner.woff2') format('woff2'),
+       url('PocketGull-Fineliner.ttf') format('truetype'),
+       url('fonts/PocketGull-Fineliner.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  src: url('PocketGull-Chiseltip.woff2') format('woff2'),
+       url('fonts/PocketGull-Chiseltip.woff2') format('woff2'),
+       url('PocketGull-Chiseltip.ttf') format('truetype'),
+       url('fonts/PocketGull-Chiseltip.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Dedicated Family Names */
+@font-face {
+  font-family: 'PocketGull Bold';
+  src: url('PocketGull-Bold.woff2') format('woff2'),
+       url('fonts/PocketGull-Bold.woff2') format('woff2'),
+       url('PocketGull-Bold.ttf') format('truetype'),
+       url('fonts/PocketGull-Bold.ttf') format('truetype');
+  font-weight: 700 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PocketGull Fineliner';
+  src: url('PocketGull-Fineliner.woff2') format('woff2'),
+       url('fonts/PocketGull-Fineliner.woff2') format('woff2'),
+       url('PocketGull-Fineliner.ttf') format('truetype'),
+       url('fonts/PocketGull-Fineliner.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PocketGull Chiseltip';
+  src: url('PocketGull-Chiseltip.woff2') format('woff2'),
+       url('fonts/PocketGull-Chiseltip.woff2') format('woff2'),
+       url('PocketGull-Chiseltip.ttf') format('truetype'),
+       url('fonts/PocketGull-Chiseltip.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 2. PocketGull Mono (Fixed 600 UPM Clinical Telemetry & Terminal) */
+@font-face {
+  font-family: 'PocketGull Mono';
+  src: url('PocketGullMono-Regular.woff2') format('woff2'),
+       url('fonts/PocketGullMono-Regular.woff2') format('woff2'),
+       url('PocketGullMono-Regular.ttf') format('truetype'),
+       url('fonts/PocketGullMono-Regular.ttf') format('truetype');
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   Utility Classes & Stylistic Sets
+   ========================================================================== */
+.font-pocketgull {
+  font-family: 'PocketGull', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-pocketgull-bold {
+  font-family: 'PocketGull Bold', 'PocketGull', sans-serif;
+  font-weight: 700;
+}
+
+.font-pocketgull-fine {
+  font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif;
+  font-weight: 400;
+}
+
+.font-pocketgull-chisel {
+  font-family: 'PocketGull Chiseltip', 'PocketGull', sans-serif;
+  font-weight: 900;
+}
+
+.font-pocketgull-mono {
+  font-family: 'PocketGull Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+/* ISMP / FDA Clinical Disambiguation Safety Preset */
+.clinical-ismp-safe,
+.pocketgull-safe {
+  font-family: 'PocketGull', 'PocketGull Fineliner', sans-serif;
+  font-feature-settings: "zero" 1, "cv08" 1, "cv05" 1, "ss02" 1, "tnum" 1;
+}
+
+/* Sloan 5:1 Optotype Aperture Ratio (LogMAR 0.0 / Snellen 20/20) */
+.font-pocketgull-optotype-sloan,
+.font-pocketgull-sloan {
+  font-family: 'PocketGull Bold', 'PocketGull', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* Herman Bouma Lateral Anti-Crowding (b > 0.5 * theta) */
+.font-pocketgull-bouma-spacing,
+.font-pocketgull-bouma {
+  letter-spacing: 0.12em;
+  word-spacing: 0.25em;
+  line-height: 1.75;
+}
+
+/* 670nm Photobiomodulation (PBM) Deep-Red Night Mode */
+.font-pocketgull-670nm-pbm,
+.font-pocketgull-670nm {
+  background-color: #050000 !important;
+  color: #ff3333 !important;
+  border-color: #550000 !important;
+  text-shadow: 0 0 1px rgba(255, 51, 51, 0.4);
+}
+
+/* Pelli-Robson High-Contrast (WCAG AAA 14.1:1) */
+.font-pocketgull-pelli-robson-high-contrast {
+  color: #ffffff !important;
+  background-color: #000000 !important;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+/* 505nm Purkinje Shift Mesopic Cyan */
+.font-pocketgull-mesopic-cyan {
+  color: #2dd4bf !important;
+  text-shadow: 0 0 8px rgba(45, 212, 191, 0.3);
+}
+
+/* Bionic Saccadic Guidance Anchors */
+.bionic-fixation-anchor {
+  font-family: 'PocketGull Bold', 'PocketGull', sans-serif;
+  font-weight: 800;
+  color: inherit;
+}
+
+.bionic-peripheral-syllable {
+  font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+
+/* ==========================================================================
+   Pan-Asian & Indic Clinical Typography Extensions
+   ========================================================================== */
+
+/* Chinese Anatomical Logographs (Square Em-Box, Anti-Crowding) */
+.font-pocketgull-chinese,
+.clinical-chinese {
+  font-family: 'PocketGull', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans CJK SC', sans-serif;
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+  font-feature-settings: "palt" 0;
+}
+
+/* Sanskrit Devanagari (Shirorekha Aligned at Cap-Height, dev2 CTL Ligatures) */
+.font-pocketgull-sanskrit,
+.clinical-sanskrit {
+  font-family: 'PocketGull', 'Nirmala UI', 'Noto Sans Devanagari', sans-serif;
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+}
+
+/* Universal Pan-Script Clinical Fallback Chain */
+.clinical-multilingual {
+  font-family: 'PocketGull', 'PocketGull Bold', 'Nirmala UI', 'Microsoft YaHei', 'Noto Sans Devanagari', 'Noto Sans CJK SC', sans-serif;
+  line-height: 1.6;
+  vertical-align: baseline;
+}
+
+/* Native 8-Dot Unicode Braille (U+2800 - U+28FF) */
+.font-pocketgull-braille {
+  font-family: 'PocketGull Bold', 'PocketGull', monospace;
+  letter-spacing: 0.15em;
+  line-height: 1.6;
+}

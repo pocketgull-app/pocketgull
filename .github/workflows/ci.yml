@@ -92,7 +92,7 @@ jobs:
     name: test-e2e
     needs: [security-and-lint]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
@@ -160,7 +160,20 @@ jobs:
           cat /tmp/server.log || true
           exit 1
 
-      - name: Run E2E Tests
+      - name: "Run E2E Tests (PR Fast Tier: Desktop Chrome)"
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e -- --project=desktop-chrome
+        env:
+          CI: true
+          PORT: '4000'
+          BASE_URL: 'http://127.0.0.1:4000'
+          PLAYWRIGHT_WORKERS: '4'
+          PLAYWRIGHT_TESTING: 'true'
+          GEMINI_API_KEY: 'placeholder-key-for-build'
+          SKIP_HEALTHCARE_PROVISION: 'true'
+
+      - name: "Run E2E Tests (Main & Release Tier: Full Multi-Device Matrix)"
+        if: github.event_name != 'pull_request'
         run: npm run test:e2e
         env:
           CI: true

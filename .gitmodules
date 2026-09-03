@@ -2,3 +2,6 @@
 	path = python_example_2026
 	url = https://github.com/philgear/pocketgull-submissions.git
 	ignore = untracked
+[submodule "case-studies/nantucket-tick-radar"]
+	path = case-studies/nantucket-tick-radar
+	url = https://github.com/philgear/nantucket-tick-radar.git

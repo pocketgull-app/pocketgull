@@ -274,6 +274,13 @@ export class GlobalJurisdictionMatrixService {
           isMandatory: true,
           description: 'Default high-privacy settings, zero profiling by default, and child-safe clinical explanations for minor users.',
           optInRequired: true
+        },
+        {
+          statute: 'UKRIO Code of Practice for Research & Concordat to Support Research Integrity',
+          requirementName: 'UKRIO Research Integrity & Authorship Attribution Attestation',
+          isMandatory: true,
+          description: 'Rigorous attribution of prior art, non-hallucination of citations, reproducible scientific evidence, and protection of researcher institutional independence.',
+          optInRequired: false
         }
       ],
       emergencyDispatch: [

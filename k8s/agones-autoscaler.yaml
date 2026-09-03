@@ -8,6 +8,6 @@ spec:
   policy:
     type: Buffer
     buffer:
-      bufferSize: 3 # keep 3 Ready pods in reserve
-      minReplicas: 2
+      bufferSize: 2 # keep 2 Ready pods in reserve when active
+      minReplicas: 0 # scales to 0 when idle to eliminate baseline compute charges
       maxReplicas: 20

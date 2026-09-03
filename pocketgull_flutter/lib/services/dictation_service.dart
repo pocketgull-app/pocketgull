@@ -87,6 +87,25 @@ class DictationService {
       }
     }
 
+    // 4. "Challenge hypothesis", "What disconfirms", "Differential check", "Socratic challenge"
+    final socraticTriggers = [
+      'challenge hypothesis',
+      'what disconfirms',
+      'differential check',
+      'test counter hypothesis',
+      'socratic challenge',
+      'falsify diagnosis',
+    ];
+    for (var trigger in socraticTriggers) {
+      if (lower.startsWith(trigger) || lower.contains(trigger)) {
+        final remaining = lower.replaceFirst(trigger, '').trim();
+        return VoiceCommand(
+          action: CommandAction.challengeHypothesis,
+          remaining: remaining,
+        );
+      }
+    }
+
     return null;
   }
 
@@ -127,7 +146,7 @@ class DictationService {
   }
 }
 
-enum CommandAction { newNote, switchAndNote, setPain }
+enum CommandAction { newNote, switchAndNote, setPain, challengeHypothesis }
 
 class VoiceCommand {
   final CommandAction action;

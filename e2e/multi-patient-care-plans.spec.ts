@@ -17,7 +17,7 @@ test.describe('Multi-Patient Care Plan Strategy E2E Suite', () => {
     }
 
     // Verify analysis lenses populate
-    const overviewTab = page.locator('button', { hasText: 'Summary Overview' });
+    const overviewTab = page.getByTestId('tab-overview');
     await expect(overviewTab).toBeVisible({ timeout: 10000 });
 
     console.log('[PASS] Multi-Patient E2E Care Plan Verification complete.');

@@ -97,6 +97,39 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
     });
   });
 
+  // Intercept Python sidecar endpoints to prevent network timeout warnings during E2E tests
+  await page.route('**/api/python/**', async route => {
+    const url = route.request().url();
+    if (url.includes('/health')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ status: 'ok', latency_ms: 5 })
+      });
+      return;
+    }
+    if (url.includes('/risk-score')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          score: 0.35,
+          confidence: 0.95,
+          risk_level: 'MODERATE',
+          model_version: 'nnx_v1',
+          risk_factors: ['Borderline SBP'],
+          recommendations: ['Routine monitoring']
+        })
+      });
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ status: 'ok', success: true })
+    });
+  });
+
   // Intercept POST /api/patients bulk sync to ensure fast, deterministic E2E test execution across all browser engines
   await page.route('**/api/patients', async route => {
     if (route.request().method() === 'POST') {
@@ -217,17 +250,26 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
 
 /** Shared login + demo mode entry flow for all E2E tests */
 export async function enterDemoMode(page: Page) {
-  await page.setViewportSize({ width: 1440, height: 900 });
+  const existingViewport = page.viewportSize();
+  if (!existingViewport) {
+    await page.setViewportSize({ width: 1440, height: 900 });
+  }
   await page.goto('/');
 
-  let hasAttemptedPin = false;
   const startTime = Date.now();
   while (Date.now() - startTime < 30000) {
+    // Dismiss consent modal if it overlays the screen
+    const consentBtn = page.locator('button', { hasText: /I Understand — Continue/i }).first();
+    if (await consentBtn.isVisible().catch(() => false)) {
+      await consentBtn.click().catch(() => {});
+      await page.waitForTimeout(300).catch(() => {});
+    }
+
     // 0. If splash screen is no longer visible, app is unlocked!
     const splashMain = page.locator('.secure-splash-main');
     const isSplashVisible = await splashMain.isVisible().catch(() => false);
     if (!isSplashVisible) {
-      return;
+      break;
     }
 
     // 1. Enter Suite / Enter Clinical Suite button
@@ -274,17 +316,40 @@ export async function enterDemoMode(page: Page) {
 
   // Final wait for splash screen to disappear and hydrate viewport @defer blocks
   await page.locator('.secure-splash-main').waitFor({ state: 'detached', timeout: 15000 }).catch(() => {});
+  
+  // Secondary check for consent modal after splash detachment
+  const consentBtnAfter = page.locator('button', { hasText: /I Understand — Continue/i }).first();
+  if (await consentBtnAfter.isVisible().catch(() => false)) {
+    await consentBtnAfter.click().catch(() => {});
+    await page.waitForTimeout(300).catch(() => {});
+  }
+
   await page.evaluate(() => window.scrollTo(0, 600)).catch(() => {});
 }
 
-/** Shared patient selection helper for all E2E specs */
+/** Shared patient selection helper for all E2E specs with WHO/NIH demographic archetype mapping */
 export async function selectPatientByName(page: Page, name: string) {
+  // Map legacy names to HIPAA Safe Harbor WHO/NIH demographic archetypes
+  const archetypeAliasMap: Record<string, string> = {
+    'Sarah Jenkins': 'Homo Sapiens (Female, Asthma',
+    'Alexander Vance': 'Homo Sapiens (Male, Metabolic',
+    'Robert Davis': 'Homo Sapiens (Male, Metabolic',
+    'Diane Vance': 'Homo Sapiens (Female, Musculoskeletal',
+    'Marcus Aurelius Chen': 'Homo Sapiens (Male, Cardiovascular',
+    'Arthur Pendelton': 'Homo Sapiens (Male, Cognitive',
+    'Chloe Bennett': 'Homo Sapiens (Female, Autoimmune',
+    'Devon Brooks': 'Homo Sapiens (Male, Gastrointestinal',
+    'Maya Patel': 'Homo Sapiens (Female, Endocrine',
+    'James Wilson': 'Homo Sapiens (Male, Renal',
+  };
+  const targetName = archetypeAliasMap[name] || name;
+
   const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
   if (await dropdownBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
     await dropdownBtn.click();
     await page.waitForTimeout(500);
 
-    const option = page.locator('app-patient-dropdown .origin-top-left button', { hasText: name }).first();
+    const option = page.locator('app-patient-dropdown .group\\/list button', { hasText: targetName }).first();
     if (await option.isVisible({ timeout: 2000 }).catch(() => false)) {
       await option.click();
       await page.waitForTimeout(500);
@@ -293,19 +358,23 @@ export async function selectPatientByName(page: Page, name: string) {
 
     const searchInput = page.locator('app-patient-dropdown input[placeholder*="Search"]');
     if (await searchInput.isVisible().catch(() => false)) {
-      await searchInput.fill(name);
+      await searchInput.fill(targetName);
       await searchInput.dispatchEvent('input');
       await page.waitForTimeout(300);
-      const searchOption = page.locator('app-patient-dropdown .origin-top-left button', { hasText: name }).first();
+      const searchOption = page.locator('app-patient-dropdown .group\\/list button', { hasText: targetName }).first();
       if (await searchOption.isVisible({ timeout: 1000 }).catch(() => false)) {
         await searchOption.click();
         await page.waitForTimeout(500);
         return;
       }
+      // Clear search to restore full patient list before fallback
+      await searchInput.fill('');
+      await searchInput.dispatchEvent('input');
+      await page.waitForTimeout(200);
     }
 
-    // Fallback: If requested name was an archetype or developer stub (e.g. Alexander Vance), select first active patient
-    const fallbackOption = page.locator('app-patient-dropdown .origin-top-left button').first();
+    // Fallback: select first active patient from roster (never click action buttons in footer)
+    const fallbackOption = page.locator('app-patient-dropdown .group\\/list button').first();
     if (await fallbackOption.isVisible({ timeout: 1000 }).catch(() => false)) {
       await fallbackOption.click();
     } else {

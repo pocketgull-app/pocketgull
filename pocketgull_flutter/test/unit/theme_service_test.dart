@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Brightness;
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,5 +22,14 @@ void main() {
 
     expect(container.read(themeProvider).currentTheme, AppTheme.dark);
     expect(container.read(themeProvider).resolvedBrightness, Brightness.dark);
+
+    // Apply Washi theme (Ocular astigmatism high-contrast ergonomics)
+    container.read(themeProvider.notifier).setTheme(AppTheme.washi);
+    final washiState = container.read(themeProvider);
+    expect(washiState.currentTheme, AppTheme.washi);
+    expect(washiState.isWashi, isTrue);
+    expect(washiState.resolvedBrightness, Brightness.light);
+    expect(washiState.themeData.scaffoldBackgroundColor, const Color(0xFFFAF8F0));
+    expect(washiState.themeData.colorScheme.onSurface, const Color(0xFF18181B));
   });
 }

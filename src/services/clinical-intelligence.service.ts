@@ -25,6 +25,12 @@ import { CoppaPrivacyShieldService } from './coppa-privacy-shield.service';
 import { HealthcareIntelligenceService } from './healthcare-intelligence.service';
 import { ISirOdeResult, IGcnInteractionResult } from './patient.types';
 import { IIntelligenceChatRequest, IIntelligenceChatResponse } from './api-contracts.types';
+import {
+    IGroundedClinicalAssertion,
+    validateGroundedClinicalAssertion,
+    createDefaultGroundedClinicalAssertion
+} from '../models/grounded-epistemic-assertion.model';
+import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 
 
 export interface ITranscriptEntry {
@@ -39,7 +45,7 @@ export interface INodeContext {
     timestamp: Date;
 }
 
-export type AnalysisLens = 'Summary Overview' | 'Functional Protocols' | 'Nutrition' | 'Monitoring & Follow-up' | 'Patient Education' | 'Precision Nutrients' | 'Treatment Matrix' | 'PhysioNet Telemetry' | 'Maternal & Postpartum' | 'Grow-Thyself Education' | 'Epigenetic Longevity' | 'Pre-Conception & Family Health' | 'Chronobiology Matrix' | 'Functional Medicine Matrix' | 'Seven Generations Stewardship' | 'Console Debugging & Integrity' | 'Performance Optimization & Web Vitals' | 'Teledentistry & Systemic Health' | 'RSNA Knee Abnormality' | 'Tri-Paradigm Medicine' | 'Environmental Exposomics & Toxicology' | 'Global Health & WHO Initiatives' | 'Skeptical Epistemology & Socratic Audit';
+export type AnalysisLens = 'Summary Overview' | 'Functional Protocols' | 'Nutrition' | 'Monitoring & Follow-up' | 'Patient Education' | 'Precision Nutrients' | 'Treatment Matrix' | 'PhysioNet Telemetry' | 'Maternal & Postpartum' | 'Grow-Thyself Education' | 'Epigenetic Longevity' | 'Pre-Conception & Family Health' | 'Chronobiology Matrix' | 'Functional Medicine Matrix' | 'Seven Generations Stewardship' | 'Console Debugging & Integrity' | 'Performance Optimization & Web Vitals' | 'Teledentistry & Systemic Health' | 'RSNA Knee Abnormality' | 'Physical Genomics' | 'Physical Genomics & Genome Engineering' | 'Tri-Paradigm Medicine' | 'Environmental Exposomics & Toxicology' | 'Global Health & WHO Initiatives' | 'Skeptical Epistemology & Socratic Audit';
 
 export interface IClinicalMetrics {
     complexity: number; // 0-10
@@ -72,6 +78,9 @@ export class ClinicalIntelligenceService {
     private assessments = inject(ClinicalAssessmentsService, { optional: true });
     readonly coppaShield = inject(CoppaPrivacyShieldService, { optional: true });
     readonly healthcareIntelligence = inject(HealthcareIntelligenceService, { optional: true });
+    private skepticalService = inject(SkepticalEpistemologyService, { optional: true }) || new SkepticalEpistemologyService();
+
+    readonly activeGroundedAssertion = signal<IGroundedClinicalAssertion | null>(createDefaultGroundedClinicalAssertion());
 
     public isPediatricMinorActive(): boolean {
         return !!this.coppaShield?.isPediatricContext() || this.rules.hasContext('pediatric_mode');
@@ -1155,6 +1164,55 @@ Feel free to reference their research areas and publications if it supports the 
             cypInteraction: 'Standard therapeutic margin; check liver function panel',
             levelOfEvidence: 'Level C (Expert Consensus / Plausibility)'
         };
+    }
+
+    /**
+     * Generates or validates a Grounded Epistemic Assertion, enforcing
+     * the strict 3-counter-hypotheses anti-confirmation bias invariant.
+     */
+    async generateGroundedAssertion(
+        lens: AnalysisLens,
+        contextText: string
+    ): Promise<IGroundedClinicalAssertion> {
+        try {
+            const patientName = this.patientState.patientName() || 'Phil Gear';
+            const patientAge = this.patientState.patientAge() || 38;
+            const patientGender = this.patientState.patientGender() || 'Male';
+            const prompt = this.skepticalService.buildSystem2ThinkingPrompt(
+                `${patientName} (Age: ${patientAge}, Sex: ${patientGender})`,
+                `Lens: ${lens}. Symptoms & Context: ${contextText}`
+            );
+
+            const raw = await this.ai.sendMessage(prompt);
+            let parsed: unknown = null;
+            try {
+                const jsonMatch = raw.match(/\{[\s\S]*\}/);
+                parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+            } catch {
+                parsed = null;
+            }
+
+            const validation = validateGroundedClinicalAssertion(parsed);
+            if (validation.isValid) {
+                const assertion = parsed as IGroundedClinicalAssertion;
+                this.activeGroundedAssertion.set(assertion);
+                return assertion;
+            }
+
+            // If invalid or missing counter-hypotheses, generate a calibrated default anchored on patient state
+            const fallback = createDefaultGroundedClinicalAssertion({
+                hypothesis: `${lens} formulation for ${patientName}`,
+                nullHypothesisH0: `Observed findings in ${lens} are non-contributory or represent standard physiological variation.`,
+                attestationTimestamp: new Date().toISOString()
+            });
+            this.activeGroundedAssertion.set(fallback);
+            return fallback;
+        } catch (err) {
+            console.warn('[ClinicalIntelligenceService] Grounded assertion generation failed, using fallback:', err);
+            const fallback = createDefaultGroundedClinicalAssertion();
+            this.activeGroundedAssertion.set(fallback);
+            return fallback;
+        }
     }
 }
 

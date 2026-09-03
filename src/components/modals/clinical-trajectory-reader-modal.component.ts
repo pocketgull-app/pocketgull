@@ -2,6 +2,7 @@ import { Component, signal, computed, inject, Output, EventEmitter, OnDestroy } 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClinicalTrajectoryReaderService, TrajectoryPersona, IBionicWord } from '../../services/clinical-trajectory-reader.service';
+import { BionicReadingService, IClinicalBionicToken } from '../../services/bionic-reading.service';
 
 @Component({
   selector: 'app-clinical-trajectory-reader-modal',
@@ -88,20 +89,30 @@ import { ClinicalTrajectoryReaderService, TrajectoryPersona, IBionicWord } from 
             </div>
           </div>
 
-          <!-- RSVP Focus Word Screen -->
-          <div class="relative h-20 bg-zinc-950 rounded-lg border border-zinc-800 flex items-center justify-center overflow-hidden">
+          <!-- RSVP Focus Word Screen with Center-Locked ORP Foveal Reticle -->
+          <div class="relative h-24 bg-zinc-950 rounded-xl border border-teal-500/30 flex items-center justify-center overflow-hidden font-mono shadow-inner select-none">
             <!-- Center Vertical Guide Markers -->
-            <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-teal-500/20 pointer-events-none"></div>
-            <div class="absolute top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-teal-400/60"></div>
-            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-teal-400/60"></div>
+            <div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-teal-500/25 pointer-events-none"></div>
+            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]"></div>
+            <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]"></div>
 
-            @if (currentWord()) {
-              <div class="text-2xl md:text-3xl font-mono tracking-wide text-zinc-100 flex items-baseline">
-                <span class="text-teal-400 font-black">{{ currentWord()!.fixation }}</span>
-                <span class="text-zinc-200">{{ currentWord()!.suffix }}</span>
+            @if (currentClinicalToken(); as token) {
+              <div class="flex items-baseline text-2xl sm:text-3xl md:text-4xl tracking-tight leading-none">
+                <!-- Left of ORP: right-aligned to crosshair -->
+                <span class="w-[180px] sm:w-[220px] text-right text-zinc-300 font-semibold truncate pr-0.5">
+                  {{ token.leadingPunct }}{{ token.leftOfOrp }}
+                </span>
+                <!-- Centered ORP Character -->
+                <span class="text-amber-400 font-black text-3xl sm:text-4xl md:text-5xl px-0.5 underline decoration-amber-400 decoration-2 underline-offset-4 font-mono">
+                  {{ token.orpChar }}
+                </span>
+                <!-- Right of ORP: left-aligned from crosshair -->
+                <span class="w-[180px] sm:w-[220px] text-left text-zinc-400 font-normal truncate pl-0.5">
+                  {{ token.rightOfOrp }}{{ token.trailingPunct }}
+                </span>
               </div>
             } @else {
-              <div class="text-sm font-mono text-zinc-500">Press Play to begin 650 WPM stream</div>
+              <div class="text-sm font-mono text-zinc-500">Press Play to begin 600–900 WPM stream</div>
             }
           </div>
         </div>
@@ -237,6 +248,7 @@ export class ClinicalTrajectoryReaderModalComponent implements OnDestroy {
   @Output() close = new EventEmitter<void>();
 
   readonly trajectoryService = inject(ClinicalTrajectoryReaderService);
+  readonly bionic = inject(BionicReadingService);
 
   speedWpm = signal<number>(450);
   isPlaying = signal<boolean>(false);
@@ -250,6 +262,12 @@ export class ClinicalTrajectoryReaderModalComponent implements OnDestroy {
     const list = this.tokens();
     const idx = this.currentIndex();
     return list[idx] || null;
+  });
+
+  currentClinicalToken = computed<IClinicalBionicToken | null>(() => {
+    const word = this.currentWord();
+    if (!word) return null;
+    return this.bionic.parseClinicalToken(word.fullText || `${word.prefix}${word.fixation}${word.suffix}`);
   });
 
   constructor() {

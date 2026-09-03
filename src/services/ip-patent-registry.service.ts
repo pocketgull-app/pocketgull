@@ -168,6 +168,84 @@ export class IpPatentRegistryService {
       mathematicalFormulation: 'FIFE_vector = ⟨Feelings, Ideas, Functioning, Expectations⟩,  Simplify(Jargon, GradeLevel)',
       filingTier: 'Provisional Ready',
       targetAgencies: ['USPTO', 'WIPO PCT']
+    },
+    {
+      id: 'cluster-11-whispy-bioreactor',
+      clusterNumber: 11,
+      title: 'Closed-Loop Acoustic Holographic Containment Bioreactor for Supramolecular Healing Mists',
+      claimRange: 'Claims 201 – 220',
+      totalClaims: 20,
+      inventors: ['PocketGull Biophysical Nanomedicine Lab'],
+      primaryServicePath: 'src/services/whispy-swarm-bioreactor.service.ts',
+      abstract: 'Volumetric ultrasound bio-fabrication containment chamber levitating and sculpting aerosolized peptide coacervate droplets via scan-inverted Gor\'kov potential fields into porous regenerative scaffolds.',
+      mathematicalFormulation: 'U = 2πr³ρ₀ [⟨p²⟩/(3ρ₀²c₀²)·f₁ - ⟨v²⟩/2·f₂],  kgel ≈ [Ca²⁺]·e^(-ΔG/RT)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'EPO', 'FDA CDRH/CBER']
+    },
+    {
+      id: 'cluster-12-popperian-falsification-cds',
+      clusterNumber: 12,
+      title: 'Popperian Epistemic Falsification Engine with Cryptographic FHIR R4 Provenance',
+      claimRange: 'Claims 221 – 240',
+      totalClaims: 20,
+      inventors: ['PocketGull Applied Clinical Epistemology Group'],
+      primaryServicePath: 'src/services/fhir-r4-bundle-export.service.ts',
+      abstract: 'Clinical decision support method synthesizing 3 orthogonal disconfirming counter-hypotheses, computing runtime H0 rejection p-values, and gating diagnosis behind bedside exam checkboxes with FDA Part 11 seals.',
+      mathematicalFormulation: 'H0: μ = μpop,  p = 2·(1 - Φ(|z|)),  SHA256(Condition || H0 || {H1,H2,H3} || Sig)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'Joint Commission']
+    },
+    {
+      id: 'cluster-13-navier-stokes-turing-glymphatic',
+      clusterNumber: 13,
+      title: 'Coupled Navier-Stokes & Turing Reaction-Diffusion Glymphatic Modeling Engine',
+      claimRange: 'Claims 241 – 260',
+      totalClaims: 20,
+      inventors: ['PocketGull Computational Fluid Dynamics & Neuro-Vascular Lab'],
+      primaryServicePath: 'src/components/turing/navier-stokes-viewer.component.ts',
+      abstract: 'Coupled microfluidic Navier-Stokes momentum advection and Turing morphogen reaction-diffusion solver computing endothelial wall shear stress heatmaps and glymphatic clearance kinetics in living charts.',
+      mathematicalFormulation: '∂u/∂t + (u·∇)u = -(1/ρ)∇p + ν∇²u,  ∂Ci/∂t = Di∇²Ci + Ri(C) - u·∇Ci,  Pe = 48.5',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'NIH NINDS']
+    },
+    {
+      id: 'cluster-14-hermetic-nelder-mead-thresholds',
+      clusterNumber: 14,
+      title: 'Hermetic Client-Side Simplex Decision Threshold Calibration for Edge Medical AI',
+      claimRange: 'Claims 261 – 280',
+      totalClaims: 20,
+      inventors: ['PocketGull Edge AI & Mathematical Optimization Group'],
+      primaryServicePath: 'scripts/dart/rsna_threshold_benchmark_test.dart',
+      abstract: 'Client-side Nelder-Mead simplex coordinate ascent optimizer executing in sub-200ms on edge hardware without external C-dependencies to calibrate target-specific multi-label clinical decision thresholds.',
+      mathematicalFormulation: 'τ* = argmax_{τ∈[0,1]^K} Uclinical(y, ŷ > τ | OOF),  xr = x̄ + α(x̄ - x_{n+1})',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT']
+    },
+    {
+      id: 'cluster-15-statutory-rpm-superbill',
+      clusterNumber: 15,
+      title: 'Automated 16-Day Statutory Remote Patient Monitoring (RPM) Superbill Claim Engine',
+      claimRange: 'Claims 281 – 300',
+      totalClaims: 20,
+      inventors: ['PocketGull Telehealth & Healthcare Economics Division'],
+      primaryServicePath: 'src/services/cms-rpm-superbill.service.ts',
+      abstract: 'Automated compliance engine auditing asynchronous biometric device streams against CMS 16-day statutory thresholds (CPT 99453–99458) with NIST SP 800-90A CSPRNG SHA-256 digital attestation seals into FHIR Claims.',
+      mathematicalFormulation: 'TransmissionDays(30d) ≥ 16 ⟹ CPT 99454,  Seal = HMAC-SHA256(T || KNIST)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'CMS Health Informatics']
+    },
+    {
+      id: 'cluster-16-dichoptic-optical-photobiomodulation',
+      clusterNumber: 16,
+      title: 'Dichoptic Interocular Photostimulation, 670nm Mitochondrial Retinal Photobiomodulation & CIE S 026 ipRGC Engine',
+      claimRange: 'Claims 301 – 320',
+      totalClaims: 20,
+      inventors: ['PocketGull Neuro-Visual & Ophthalmic Therapeutics Group'],
+      primaryServicePath: 'src/services/optical-innovations.service.ts',
+      abstract: 'Ophthalmic photobiomodulation apparatus delivering calibrated 670nm monochromatic deep red radiation with 180s automatic dosage control for RPE cytochrome c oxidase activation, coupled with drifting OKN/VOR sinusoidal gratings, CIE S 026 melanopic circadian tuning, and dichoptic interocular optical beating.',
+      mathematicalFormulation: 'EML = K_m ∫ Ee,λ(λ) smel(λ) dλ,  Δfcortical = |fR - fL| = 0.5 Hz,  λPBM = 670 nm',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'FDA CDRH']
     }
   ]);
 

@@ -1,0 +1,66 @@
+{{- if .Values.agonesFleet.enabled }}
+apiVersion: "agones.dev/v1"
+kind: Fleet
+metadata:
+  name: pocketgull-consult-fleet
+  labels:
+    {{- include "pocketgull.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.agonesFleet.replicas }}
+  template:
+    metadata:
+      labels:
+        app: pocketgull-consult
+    spec:
+      ports:
+        - name: websocket
+          containerPort: 4200
+          protocol: TCP
+          portPolicy: Dynamic
+        - name: webrtc-voice
+          containerPort: 4201
+          protocol: UDP
+          portPolicy: Dynamic
+      health:
+        initialDelaySeconds: 15
+        periodSeconds: 5
+        failureThreshold: 3
+      template:
+        spec:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: pocketgull-server
+              image: "{{ .Values.agonesFleet.image.repository }}:{{ .Values.agonesFleet.image.tag }}"
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              env:
+                - name: AGONES_INTEGRATION
+                  value: "true"
+                - name: NODE_ENV
+                  value: {{ .Values.global.environment | quote }}
+                - name: OTEL_SERVICE_NAME
+                  value: "pocketgull-agones-consult"
+              resources:
+                requests:
+                  memory: "512Mi"
+                  cpu: "250m"
+                limits:
+                  memory: "1024Mi"
+                  cpu: "1000m"
+              volumeMounts:
+                - name: tmp-vol
+                  mountPath: /tmp
+          volumes:
+            - name: tmp-vol
+              emptyDir: {}
+{{- end }}

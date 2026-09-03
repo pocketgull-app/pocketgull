@@ -62,6 +62,7 @@ _Objective descriptions of system machinery (API schemas, config flags)._
 | COCOMO II Report | [cocomo2_report.md](file:///c:/Users/philg/Pocketgull/pocketgull/cocomo2_report.md) | Complete |
 | Audit Report | [AUDIT_REPORT.md](file:///c:/Users/philg/Pocketgull/pocketgull/AUDIT_REPORT.md) | Complete (new) |
 | Env Vars & CLI Reference | [docs/reference-env-vars.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/reference-env-vars.md) | Complete (new) |
+| Epistemic Falsification Suite | [docs/EPISTEMIC_FALSIFICATION_SUITE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/EPISTEMIC_FALSIFICATION_SUITE.md) | Complete (new) |
 
 ---
 
@@ -86,6 +87,7 @@ _Broader context and conceptual justifications._
 | Formally Verified State Architecture (SIGSOFT/SIGPLAN) | [docs/SIGSOFT_SIGPLAN_REACTIVE_STATE_ARCHITECTURE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGSOFT_SIGPLAN_REACTIVE_STATE_ARCHITECTURE.md) | Complete (new) |
 | Energetics & Green Computing (IEEE PES) | [docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md) | Complete (new) |
 | Sustainability, Performance & TCO Audit | [docs/EVALUATION_SUSTAINABILITY_AND_PERFORMANCE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/EVALUATION_SUSTAINABILITY_AND_PERFORMANCE.md) | Complete (new) |
+| Epistemic Falsification Architecture | [docs/EPISTEMIC_FALSIFICATION_SUITE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/EPISTEMIC_FALSIFICATION_SUITE.md) | Complete (new) |
 | Discovery Backlog | [QUESTIONS.md](file:///c:/Users/philg/Pocketgull/pocketgull/QUESTIONS.md) | Complete (new) |
 
 ---

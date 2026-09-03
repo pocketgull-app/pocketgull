@@ -30,10 +30,15 @@ spec:
         spec:
           containers:
           - name: pocketgull-app
-            image: gcr.io/gen-lang-client-0540208645/pocketgull:latest
+            image: us-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull:latest
             imagePullPolicy: Always
             securityContext:
+              readOnlyRootFilesystem: true
               allowPrivilegeEscalation: false
+              runAsNonRoot: true
+              capabilities:
+                drop:
+                  - ALL
             resources:
               requests:
                 memory: "512Mi"
@@ -52,3 +57,9 @@ spec:
               value: "true"
             - name: GCP_PROJECT_ID
               value: "gen-lang-client-0540208645"
+            volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+          volumes:
+          - name: tmp-volume
+            emptyDir: {}

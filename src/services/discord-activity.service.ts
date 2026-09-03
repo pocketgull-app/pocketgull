@@ -123,9 +123,12 @@ export class DiscordActivityService {
         return { host: data.host, port: data.port };
       }
 
-      // Demo/Fallback Agones allocation for testing
+      // Demo/Fallback Agones allocation for testing (unbiased 53-bit cryptographic mantissa)
       const fallbackHost = 'agones.pocketgull.app';
-      const fallbackPort = 7000 + Math.floor(Math.random() * 1000);
+      const randBuf = new Uint32Array(2);
+      crypto.getRandomValues(randBuf);
+      const unbiasedFloat = (randBuf[0] * 4294967296.0 + randBuf[1]) / 9007199254740992.0;
+      const fallbackPort = 7000 + Math.floor(unbiasedFloat * 1000);
       this.agonesNodeHost.set(fallbackHost);
       this.agonesNodePort.set(fallbackPort);
       console.log(`[Agones Fleet] Allocated GameServer pod on ${fallbackHost}:${fallbackPort}`);

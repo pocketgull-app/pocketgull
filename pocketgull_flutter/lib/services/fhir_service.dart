@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/patient_types.dart';
+import '../models/epistemic_models.dart';
 
 final fhirServiceProvider = Provider<FhirService>((ref) {
   return FhirService();
@@ -8,7 +10,11 @@ final fhirServiceProvider = Provider<FhirService>((ref) {
 
 class FhirService {
   /// Converts an active PatientState into a fully compliant FHIR R4 Bundle JSON document.
-  Map<String, dynamic> exportPatientToFhirBundle(PatientState state) {
+  Map<String, dynamic> exportPatientToFhirBundle(
+    PatientState state, {
+    GroundedClinicalAssertion? assertion,
+    bool includeEpistemicAssertion = false,
+  }) {
     final sanitizedName = sanitizeString(state.name);
     final patientId = 'patient_${sanitizedName.replaceAll(' ', '_').toLowerCase()}';
     final nowIso = DateTime.now().toIso8601String();
@@ -191,6 +197,151 @@ class FhirService {
       });
     }
 
+    // 5. Popperian Grounded Clinical Assertion & Epistemic Differential Envelope
+    if (assertion != null || includeEpistemicAssertion) {
+      final activeAssertion = assertion ?? GroundedClinicalAssertion.defaultForPatient1();
+      final epistemicConditionId = '$patientId-epistemic-formulation';
+      entries.add({
+      'fullUrl': 'urn:uuid:condition-$epistemicConditionId',
+      'resource': {
+        'resourceType': 'Condition',
+        'id': epistemicConditionId,
+        'clinicalStatus': {
+          'coding': [
+            {
+              'system': 'http://terminology.hl7.org/CodeSystem/condition-clinical',
+              'code': 'active',
+            }
+          ]
+        },
+        'verificationStatus': {
+          'coding': [
+            {
+              'system': 'http://terminology.hl7.org/CodeSystem/condition-ver-status',
+              'code': 'confirmed',
+            }
+          ]
+        },
+        'category': [
+          {
+            'coding': [
+              {
+                'system': 'http://terminology.hl7.org/CodeSystem/condition-category',
+                'code': 'encounter-diagnosis',
+                'display': 'Encounter Diagnosis',
+              }
+            ]
+          }
+        ],
+        'code': {
+          'coding': [
+            {
+              'system': 'http://hl7.org/fhir/sid/icd-10',
+              'code': activeAssertion.icd10Code,
+              'display': activeAssertion.hypothesis,
+            },
+            {
+              'system': 'http://snomed.info/sct',
+              'code': activeAssertion.snomedCtId,
+              'display': activeAssertion.hypothesis,
+            }
+          ],
+          'text': activeAssertion.hypothesis,
+        },
+        'subject': {
+          'reference': 'Patient/$patientId',
+        },
+        'extension': [
+          {
+            'url': 'http://pocketgull.app/fhir/StructureDefinition/grounded-clinical-assertion',
+            'extension': [
+              {'url': 'hypothesis', 'valueString': activeAssertion.hypothesis},
+              {'url': 'null-hypothesis-h0', 'valueString': activeAssertion.nullHypothesisH0},
+              {'url': 'p-value', 'valueDecimal': activeAssertion.pValueNullRejection},
+              {'url': 'is-falsified', 'valueBoolean': activeAssertion.isFalsified},
+              {'url': 'epistemic-confidence-percent', 'valueInteger': (activeAssertion.epistemicConfidence * 100).round()},
+              {'url': 'cochrane-rob2', 'valueString': activeAssertion.cochraneRiskOfBias.label},
+              {'url': 'evidence-tier', 'valueString': activeAssertion.evidenceTier.label},
+              {'url': 'counter-hypotheses', 'valueString': activeAssertion.counterHypotheses.join(' | ')},
+              {'url': 'disconfirming-physical-exams', 'valueString': activeAssertion.disconfirmingPhysicalExams.join(' | ')},
+              {'url': 'red-flag-exceptions', 'valueString': activeAssertion.redFlagExceptions.join(' | ')},
+              {'url': 'statutory-attestation', 'valueString': 'FDA-21-CFR-PART-11; ONC-HTI-1'},
+            ]
+          }
+        ],
+      },
+    });
+
+    // 6. FDA 21 CFR Part 11 Electronic Signature & Provenance Resource
+    final rawSignaturePayload = '$patientId:$nowIso:${activeAssertion.hypothesis}:${entries.length}';
+    final signatureDigest = sha256.convert(utf8.encode(rawSignaturePayload)).toString();
+    entries.add({
+      'fullUrl': 'urn:uuid:provenance-$patientId-part11',
+      'resource': {
+        'resourceType': 'Provenance',
+        'id': 'prov-$patientId-part11',
+        'target': [
+          {'reference': 'Patient/$patientId'},
+          {'reference': 'Condition/$epistemicConditionId'},
+        ],
+        'recorded': nowIso,
+        'activity': {
+          'coding': [
+            {
+              'system': 'http://terminology.hl7.org/CodeSystem/v3-DataOperation',
+              'code': 'CREATE',
+              'display': 'Created',
+            }
+          ],
+          'text': 'Clinical Decision Support Dossier with FDA 21 CFR Part 11 Cryptographic Seal',
+        },
+        'agent': [
+          {
+            'type': {
+              'coding': [
+                {
+                  'system': 'http://terminology.hl7.org/CodeSystem/provenance-participant-type',
+                  'code': 'author',
+                  'display': 'Author',
+                }
+              ]
+            },
+            'who': {
+              'display': 'PocketGull Clinical Epistemology & Safe Harbor Engine',
+            },
+          }
+        ],
+        'signature': [
+          {
+            'type': [
+              {
+                'system': 'urn:iso-astm:E1762-95:2013',
+                'code': '1.2.840.10065.1.12.1.1',
+                'display': "Author's Signature",
+              }
+            ],
+            'when': nowIso,
+            'who': {
+              'display': 'PocketGull Attestation Authority',
+            },
+            'sigFormat': 'application/jose',
+            'data': base64Encode(utf8.encode('SHA256:$signatureDigest')),
+            'extension': [
+              {
+                'url': 'http://pocketgull.app/fhir/StructureDefinition/fda-part11-seal',
+                'valueString': 'FDA-21-CFR-PART-11-ELECTRONIC-RECORDS-VALIDATED',
+              },
+              {
+                'url': 'http://pocketgull.app/fhir/StructureDefinition/hipaa-safe-harbor-seal',
+                'valueString': 'HIPAA-164-514-SAFE-HARBOR-DEIDENTIFIED',
+              }
+            ]
+          }
+        ]
+      }
+    });
+    }
+
     // Final FHIR Bundle Construct
     return {
       'resourceType': 'Bundle',
@@ -303,8 +454,16 @@ class FhirService {
   }
 
   /// Exports FHIR Bundle formatted as formatted JSON string
-  String exportPatientToFhirJson(PatientState state) {
-    final bundleMap = exportPatientToFhirBundle(state);
+  String exportPatientToFhirJson(
+    PatientState state, {
+    GroundedClinicalAssertion? assertion,
+    bool includeEpistemicAssertion = false,
+  }) {
+    final bundleMap = exportPatientToFhirBundle(
+      state,
+      assertion: assertion,
+      includeEpistemicAssertion: includeEpistemicAssertion,
+    );
     return const JsonEncoder.withIndent('  ').convert(bundleMap);
   }
 

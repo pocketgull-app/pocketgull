@@ -2,6 +2,7 @@ import '@angular/compiler';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { ClinicalTrajectoryReaderModalComponent } from './clinical-trajectory-reader-modal.component';
 import { ClinicalTrajectoryReaderService } from '../../services/clinical-trajectory-reader.service';
+import { BionicReadingService } from '../../services/bionic-reading.service';
 
 describe('ClinicalTrajectoryReaderModalComponent Unit Suite', () => {
   let component: ClinicalTrajectoryReaderModalComponent;
@@ -9,7 +10,8 @@ describe('ClinicalTrajectoryReaderModalComponent Unit Suite', () => {
   beforeEach(() => {
     const injector = Injector.create({
       providers: [
-        { provide: ClinicalTrajectoryReaderService, useClass: ClinicalTrajectoryReaderService }
+        { provide: ClinicalTrajectoryReaderService, useClass: ClinicalTrajectoryReaderService },
+        { provide: BionicReadingService, useClass: BionicReadingService }
       ]
     });
     component = runInInjectionContext(injector, () => new ClinicalTrajectoryReaderModalComponent());

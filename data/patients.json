@@ -696,7 +696,7 @@
     "history": [
       {
         "type": "FinalizedPatientSummary",
-        "date": "2026.08.25",
+        "date": "2026.09.02",
         "summary": "Patient Summary updated (auto-saved).",
         "report": {
           "Summary Overview": "### Clinical Assessment\nHomo Sapiens (Male, Metabolic & Executive Stress, 44y) is a 42-year-old male presenting for management of active clinical concerns and functional optimization. \n\n### Current Presentation & Vitals\n- **Vitals**: BP: 122/82, HR: 68 bpm, Temp: 98.6F, SpO2: 98%\n- **Active Concerns**:\n- **General Wellness**: No acute physical issues reported.\n\n### Clinical Priorities\n- **Symptom Management**: Focus on non-pharmacological and targeted interventions for general wellness.\n- **Lifestyle Modification**: Circadian alignment, metabolic optimization, and targeted movement.\n- **Patient Goals**: Optimize metabolic health, synchronize all personal biometrics from Google Health Connect, and reduce sleep latency.\n\n### Plan of Care\n- **Short-term**: Optimize daily movement and address acute stressors/pain.\n- **Long-term**: Functional rehabilitation and systemic health optimization.",

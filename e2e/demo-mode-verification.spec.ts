@@ -46,14 +46,16 @@ test.describe('Demo Mode Medicine Paradigms Verification', () => {
     await westernBtn.click();
     await page.waitForTimeout(1000); // Wait for transition/mock load
 
-    // Verify all 6 tabs/lenses are visible
+    // Verify all active tabs/lenses are visible
     const tabs = [
       'tab-overview',
+      'tab-treatment-matrix',
       'tab-functional-protocols',
-      'tab-nutrition',
-      'tab-precision-nutrients',
       'tab-monitoring-follow-up',
-      'tab-patient-education'
+      'tab-exposomics-toxicology',
+      'tab-global-health',
+      'tab-socratic-audit',
+      'tab-assessments'
     ];
 
     for (const tab of tabs) {
@@ -65,12 +67,11 @@ test.describe('Demo Mode Medicine Paradigms Verification', () => {
     const overviewText = page.locator('app-analysis-report').locator('text=Clinical Assessment').first();
     await expect(overviewText).toBeVisible({ timeout: 5000 });
 
-    // Verify Western Nutrition tab works (which we recently added)
-    const nutritionTab = page.getByTestId('tab-nutrition');
-    await nutritionTab.click({ force: true });
+    // Verify Western Treatment Matrix tab works
+    const treatTab = page.getByTestId('tab-treatment-matrix');
+    await treatTab.click({ force: true });
     await page.waitForTimeout(500);
-    // Nutrition-specific Western keyword
-    await expect(page.locator('app-analysis-report').locator('text=/Nutritional|Diet/i').first()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('app-analysis-report').locator('text=/Treatment|Intervention|Matrix/i').first()).toBeVisible({ timeout: 5000 });
 
     // Take Western Screenshot (from Summary Overview tab)
     const overviewTab = page.getByTestId('tab-overview');

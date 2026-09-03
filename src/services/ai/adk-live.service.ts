@@ -5,6 +5,7 @@
 import { Injectable, signal, NgZone, inject } from '@angular/core';
 import { sanitizeLogInput } from '../../utils/security-helper';
 import { ISpatialLesion } from '../spatial-lesion-markup.service';
+import { PhysicalGenomicsService } from '../physical-genomics.service';
 
 import type { IOccupationalHazardProfile } from '../actuarial-longevity.service';
 
@@ -12,6 +13,85 @@ export interface ILiveMessageEvent {
   text?: string;
   isFinal?: boolean;
 }
+
+export interface ILiveToolCallEvent {
+  id: string;
+  name: string;
+  args: Record<string, any>;
+  result: any;
+  timestamp: number;
+}
+
+export const PHYSICAL_GENOMICS_FUNCTION_DECLARATIONS = [
+  {
+    name: 'simulate_chromatin_loop_extrusion',
+    description: 'Simulates 3D chromatin polymer dynamics, cohesin loop extrusion, CTCF insulator barriers, and fractal globule contact decay.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        lengthKb: { type: 'NUMBER', description: 'Total genomic interval length in kilobases (e.g. 2000)' },
+        cohesinSpeedKbPerSec: { type: 'NUMBER', description: 'Extrusion velocity in kb/s (e.g. 1.0)' },
+        ctcfPermeability: { type: 'NUMBER', description: 'Permeability factor [0.0 to 1.0]' },
+        hasCtcfMutation: { type: 'BOOLEAN', description: 'Whether the central CTCF insulator is deleted or mutated' }
+      },
+      required: ['lengthKb', 'cohesinSpeedKbPerSec', 'ctcfPermeability']
+    }
+  },
+  {
+    name: 'compute_super_enhancer_condensate',
+    description: 'Computes multivalent liquid-liquid phase separation (LLPS), MED1/BRD4 condensate droplet radius, RNA Pol II enrichment, and transcriptional bursting frequency.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        med1ConcUm: { type: 'NUMBER', description: 'MED1 IDR coactivator concentration in micromolar (e.g. 4.5)' },
+        brd4ConcUm: { type: 'NUMBER', description: 'BRD4 bromodomain concentration in micromolar (e.g. 3.2)' },
+        polIiConcUm: { type: 'NUMBER', description: 'RNA Pol II concentration in micromolar (e.g. 1.8)' }
+      },
+      required: ['med1ConcUm', 'brd4ConcUm']
+    }
+  },
+  {
+    name: 'evaluate_crispr_r_loop_mechanics',
+    description: 'Evaluates base-by-base CRISPR Cas9 R-loop thermodynamic energy landscape, superhelical DNA unwinding torque, and cleavage probability.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        guideRnaSeq: { type: 'STRING', description: '20nt guide RNA sequence (e.g. GACUUGACAGUCUACGAUCG)' },
+        targetDnaSeq: { type: 'STRING', description: '20nt target DNA sequence' },
+        superhelicalSigma: { type: 'NUMBER', description: 'Superhelical density sigma (e.g. -0.06)' }
+      },
+      required: ['guideRnaSeq', 'targetDnaSeq']
+    }
+  },
+  {
+    name: 'simulate_nucleosome_force_spectroscopy',
+    description: 'Simulates single-molecule optical tweezers force spectroscopy of nucleosome core particle outer turn and inner core unwrapping.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        epigeneticState: { 
+          type: 'STRING', 
+          enum: ['HYPERACETYLATED_H3K27AC', 'POLYCOMB_H3K27ME3', 'UNMODIFIED_CANONICAL', 'HETEROCHROMATIN_H3K9ME3'],
+          description: 'Histone epigenetic tail post-translational modification state'
+        },
+        ionicStrengthMm: { type: 'NUMBER', description: 'Monovalent salt concentration in mM (e.g. 150)' }
+      },
+      required: ['epigeneticState']
+    }
+  },
+  {
+    name: 'evaluate_linc_mechanotransduction',
+    description: 'Evaluates LINC complex (SUN-Nesprin) force transmission from extracellular matrix (ECM) stiffness and actin tension to YAP/TAZ nuclear translocation.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        ecmStiffnessKPa: { type: 'NUMBER', description: 'Extracellular matrix Youngs modulus in kPa (e.g. 8.5)' },
+        actinTensionNn: { type: 'NUMBER', description: 'Actin stress fiber contractile tension in nN (e.g. 2.4)' }
+      },
+      required: ['ecmStiffnessKPa', 'actinTensionNn']
+    }
+  }
+];
 
 /**
  * Zero-copy chunked Base64 encoding helper.
@@ -62,6 +142,7 @@ export class AdkLiveService {
   public latencyMs = signal<number>(145); // Sub-200ms streaming latency tracker
   public selectedVoice = signal<string>('Aoede'); // HD Voice target
   public conversationHistory = signal<{ role: 'user' | 'model'; text: string }[]>([]);
+  public lastDispatchedToolCall = signal<ILiveToolCallEvent | null>(null);
 
   private audioContext: AudioContext | null = null;
   private mediaStream: MediaStream | null = null;
@@ -69,6 +150,13 @@ export class AdkLiveService {
   private analyserNode: AnalyserNode | null = null;
   private volumeAnimationFrame: number | null = null;
   private liveClient: any = null; // The Gemini Live WS connection
+  private genomicsService = (() => {
+    try {
+      return inject(PhysicalGenomicsService, { optional: true }) || new PhysicalGenomicsService();
+    } catch {
+      return new PhysicalGenomicsService();
+    }
+  })();
   
   public volumeLevel = signal(0); // 0-100 scale output
   // Audio playback queue
@@ -81,6 +169,7 @@ export class AdkLiveService {
   public onMessage?: (msg: ILiveMessageEvent) => void;
   public onModelTurnComplete?: () => void;
   public onInterrupted?: () => void;
+  public onToolCall?: (event: ILiveToolCallEvent) => void;
 
   public static readonly MAX_SESSION_DURATION_MS = 10 * 60 * 1000; // 10 minutes session duration ceiling
   private sessionDurationTimer: ReturnType<typeof setTimeout> | null = null;
@@ -345,7 +434,10 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
                 speechConfig: {
                   voiceConfig: { prebuiltVoiceConfig: { voiceName: voiceName } }
                 }
-              }
+              },
+              tools: [
+                { functionDeclarations: PHYSICAL_GENOMICS_FUNCTION_DECLARATIONS }
+              ]
             }
           }));
           this.reconnectAttemptCount = 0;
@@ -464,9 +556,14 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
       }
     }
     
+    // Function Calling / Live Tool Invocations
+    if (data.toolCall?.functionCalls) {
+      this.handleLiveFunctionCalls(data.toolCall.functionCalls);
+    }
+
     if (data.serverContent?.turnComplete) {
       if (this.onModelTurnComplete) {
-         this.runInZone(() => this.onModelTurnComplete!());
+        this.runInZone(() => this.onModelTurnComplete!());
       }
     }
     
@@ -477,6 +574,87 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
       if (this.onInterrupted) {
         this.runInZone(() => this.onInterrupted!());
       }
+    }
+  }
+
+  /**
+   * Dispatches Gemini Live tool function calls directly to clinical & physical genomics services.
+   */
+  public handleLiveFunctionCalls(functionCalls: Array<{ id: string; name: string; args: any }>): void {
+    const functionResponses = [];
+
+    for (const call of functionCalls) {
+      const { id, name, args } = call;
+      let result: any = { error: 'Unknown function' };
+
+      try {
+        if (name === 'simulate_chromatin_loop_extrusion') {
+          const barriers = [
+            { positionKb: 500, orientation: 'FORWARD' as const, bindingAffinityScore: 0.92 },
+            { positionKb: 1000, orientation: 'REVERSE' as const, bindingAffinityScore: 0.88, isMutatedOrDeleted: !!args?.hasCtcfMutation },
+            { positionKb: 1500, orientation: 'FORWARD' as const, bindingAffinityScore: 0.95 }
+          ];
+          result = this.genomicsService.simulateLoopExtrusion(
+            args?.lengthKb || 2000,
+            args?.cohesinSpeedKbPerSec || 1.0,
+            args?.ctcfPermeability ?? 0.20,
+            barriers
+          );
+        } else if (name === 'compute_super_enhancer_condensate') {
+          result = this.genomicsService.computeSuperEnhancerCondensate(
+            args?.med1ConcUm || 4.5,
+            args?.brd4ConcUm || 3.2,
+            args?.polIiConcUm || 1.8
+          );
+        } else if (name === 'evaluate_crispr_r_loop_mechanics') {
+          result = this.genomicsService.evaluateCrisprMechanicalRLoop(
+            args?.guideRnaSeq || 'GACUUGACAGUCUACGAUCG',
+            args?.targetDnaSeq || 'GACTTGACAGTCTACGATCG',
+            args?.superhelicalSigma ?? -0.06
+          );
+        } else if (name === 'simulate_nucleosome_force_spectroscopy') {
+          result = this.genomicsService.simulateNucleosomeForceSpectroscopy(
+            args?.epigeneticState || 'HYPERACETYLATED_H3K27AC',
+            args?.ionicStrengthMm || 150
+          );
+        } else if (name === 'evaluate_linc_mechanotransduction') {
+          result = this.genomicsService.evaluateLincMechanotransduction(
+            args?.ecmStiffnessKPa || 8.5,
+            args?.actinTensionNn || 2.4
+          );
+        }
+      } catch (err: any) {
+        result = { error: err.message || 'Execution error' };
+      }
+
+      const toolEvent: ILiveToolCallEvent = {
+        id,
+        name,
+        args: args || {},
+        result,
+        timestamp: Date.now()
+      };
+
+      this.runInZone(() => {
+        this.lastDispatchedToolCall.set(toolEvent);
+        if (this.onToolCall) {
+          this.onToolCall(toolEvent);
+        }
+      });
+
+      functionResponses.push({
+        id,
+        name,
+        response: { output: result }
+      });
+    }
+
+    if (this.liveClient && this.liveClient.readyState === WebSocket.OPEN) {
+      this.liveClient.send(JSON.stringify({
+        toolResponse: {
+          functionResponses
+        }
+      }));
     }
   }
   

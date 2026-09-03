@@ -182,6 +182,9 @@ Every new feature, component, API endpoint, or clinical model shipped in Pocket-
   3. `Where You're Going`: Clear 30-day, 60-day, and 90-day trajectory roadmap with achievable vitality milestones.
 - **Dual-Persona Velocity**: Clinician mode provides 45-second high-density Bionic Fixation notes ($650\text{ WPM}$); Patient mode provides empowering 5th-grade plain language ("Teaspoon explanations") with nature quest milestones.
 
-
-
-
+## Shift-Left Supply Chain, CodeQL & Monorepo Security Standard
+- **Zero Static Salt / Secret Literals**: Never hardcode string literals for salts, peppers, tokens, or encryption keys in scripts or tests (e.g. `DEID_SALT = "..."`). All pseudonymization salts and API secrets MUST use dynamic environment lookup (`os.environ.get(...)`, `process.env[...]`) with deterministic SHA-256 standard key digest fallbacks (`hashlib.sha256(b"DOMAIN_TAG").digest()`).
+- **Cryptographic Mantissa Scaling (Anti-Modulo Bias)**: Never use the modulo operator `%` on `crypto.getRandomValues()` or CSPRNG byte arrays. To obtain an integer in `[min, max]`, compute the unbiased 53-bit IEEE-754 mantissa float `(high * 4294967296.0 + low) / 9007199254740992.0` and scale with `min + Math.floor(unbiasedFloat * range)`.
+- **Exact Identifier Matching (Anti-Heuristic CodeQL Substring Warnings)**: Never perform bare substring containment (`"storage.googleapis.com" in collection`) on domain or service identifiers. Use exact equality matching (`any(svc == _GCS_SERVICE_NAME ... for svc in collection)`) to satisfy CodeQL URL substring sanitization rules.
+- **Continuous Monorepo Workspace Lockfile Sync**: Sub-workspace manifests (`companion-apps/avs-therapy/package.json`, `pocketgull_api/package.json`) MUST keep their `overrides` synchronized with root `package.json`. Pre-commit checks enforce `npm audit --audit-level=high` across all workspaces to prevent transitive dependency drift before pushing to GitHub.
+- **Tiered E2E Matrix & 30m CI Execution**: E2E Playwright tests enforce a 30-minute ceiling in CI workflows. Fast PR runs focus on primary browser targets while full multi-device matrices run on release gates.

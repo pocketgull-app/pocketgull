@@ -152,4 +152,12 @@ describe('SecureSplashComponent Sensory Suite', () => {
     expect(component.haptics?.isHapticsActive()).toBe(false);
     expect(component.haptics?.isMobileVibrationSupported()).toBe(true);
   });
+
+  it('6. Exposes Sloan 5:1 Bedside Thermal Print and Clinical Roles with native symbols', () => {
+    const component = createComponent();
+    expect(component.selectedIamRole).toBe('roles/aiplatform.user');
+    expect(typeof component.printQuickBedsideLabel).toBe('function');
+    // Calling printQuickBedsideLabel should execute safely without exceptions
+    expect(() => component.printQuickBedsideLabel()).not.toThrow();
+  });
 });

@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 import { CellularAutomataViewerComponent } from './cellular-automata-viewer.component';
 import { PetriNetViewerComponent } from './petri-net-viewer.component';
 import { NavierStokesViewerComponent } from './navier-stokes-viewer.component';
+import { LensBiomolecularPhysicsComponent } from './lens-biomolecular-physics.component';
 import { CernLhc3dVisualizerComponent } from '../anatomy-3d/cern-lhc-3d-visualizer.component';
 import { SocraticRoundsHudComponent } from '../socratic-rounds-hud.component';
 import { InfoCern1991ThemeShowcaseComponent } from '../info-cern-1991-theme-showcase.component';
+import { NanobotSwarm3dComponent } from './nanobot-swarm-3d.component';
+import { WhispySwarmBioreactor3dComponent } from './whispy-swarm-bioreactor-3d.component';
 import { InsightGridComponent } from '../synthesis/insight-grid.component';
 import { PatientStateService } from '../../services/patient-state.service';
 
@@ -17,6 +20,9 @@ import { PatientStateService } from '../../services/patient-state.service';
     CellularAutomataViewerComponent,
     PetriNetViewerComponent,
     NavierStokesViewerComponent,
+    LensBiomolecularPhysicsComponent,
+    NanobotSwarm3dComponent,
+    WhispySwarmBioreactor3dComponent,
     CernLhc3dVisualizerComponent,
     SocraticRoundsHudComponent,
     InfoCern1991ThemeShowcaseComponent,
@@ -105,6 +111,21 @@ import { PatientStateService } from '../../services/patient-state.service';
         <app-navier-stokes-viewer #nsViewer />
       </div>
 
+      <!-- Frontier Molecular Biophysics Suite (LLPS, PROTAC, Quantum, MOF) -->
+      <div class="pt-4 border-t border-purple-900/40">
+        <app-lens-biomolecular-physics #biophysViewer />
+      </div>
+
+      <!-- Nanobot Swarm Biomechanics & Telescope-Inspired Physics Engine -->
+      <div class="pt-4 border-t border-purple-900/40">
+        <app-nanobot-swarm-3d />
+      </div>
+
+      <!-- Whispy Healing Swarm Acoustic Holographic Bioreactor Tank -->
+      <div class="pt-4 border-t border-purple-900/40">
+        <app-whispy-swarm-bioreactor-3d />
+      </div>
+
       <!-- CERN LHC 3D Biophysical Visualizer -->
       <div class="pt-4 border-t border-purple-900/40">
         <app-cern-lhc-3d-visualizer />
@@ -133,6 +154,7 @@ export class TuringSuiteComponent {
   readonly caViewer = viewChild<CellularAutomataViewerComponent>('caViewer');
   readonly petriViewer = viewChild<PetriNetViewerComponent>('petriViewer');
   readonly nsViewer = viewChild<NavierStokesViewerComponent>('nsViewer');
+  readonly biophysViewer = viewChild<LensBiomolecularPhysicsComponent>('biophysViewer');
 
   readonly patientVitals = computed(() => this.patientState?.vitals() || null);
   readonly lastActionStatus = signal<string>('');

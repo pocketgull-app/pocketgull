@@ -13,6 +13,10 @@ export interface IHealingMilestone {
   landmarkHint: string;
   groundingTask: string;
   vagalPointsAwarded: number;
+  opticalInnovation?: string;
+  acousticHz?: number;
+  pbmDurationSeconds?: number;
+  vagalShiftTargetPercent?: number;
   isCompleted: boolean;
   completedAt?: string;
 }
@@ -44,7 +48,7 @@ export class MovementHealingQuestService {
   readonly activeQuest = signal<IBiophilicHealingQuest>({
     questId: 'quest-vagal-odyssey-01',
     title: 'The Biophilic Vagal Odyssey',
-    subtitle: 'Movement therapy, sensory grounding & restorative canopy immersion',
+    subtitle: 'Movement therapy, sensory grounding, optical PBM & restorative canopy immersion',
     difficulty: 'GENTLE_RECOVERY',
     totalDistanceMeters: 650,
     estimatedMinutes: 12,
@@ -60,36 +64,44 @@ export class MovementHealingQuestService {
       {
         id: 'm-1',
         order: 1,
-        title: 'Canopy Immersion Gate',
-        description: 'Walk 180 meters along the tree-lined boulevard under the green cedar canopy.',
+        title: 'Canopy Immersion Gate & 480nm ipRGC Dawn Alert',
+        description: 'Walk 180 meters along the tree-lined boulevard under the green cedar canopy with cyan daylight entrainment.',
         targetMeters: 180,
         minCanopyPct: 80,
         landmarkHint: 'Pass the old stone water fountain and feel the cool shaded breeze.',
         groundingTask: 'Notice 3 distinct shades of green in the leaves above you.',
+        opticalInnovation: 'CIE S 026 Dawn Alert 285 EML (Cyan Blue 480nm ipRGC Melanopsin Entrainment)',
+        acousticHz: 528,
         vagalPointsAwarded: 40,
         isCompleted: false
       },
       {
         id: 'm-2',
         order: 2,
-        title: 'Acoustic Grounding Waypoint',
-        description: 'Traverse the quiet pedestrian path with noise levels below 45 dBA.',
+        title: 'Acoustic Grounding Waypoint & 0.1Hz OKN/VOR Vestibular Reset',
+        description: 'Traverse the quiet pedestrian path with noise levels below 45 dBA and bilateral sinusoidal visual tracking.',
         targetMeters: 250,
         minCanopyPct: 85,
         landmarkHint: 'Look for the copper sundial near the rose garden boundary.',
         groundingTask: 'Take 5 gentle deep belly breaths (4s in, 6s out).',
+        opticalInnovation: '0.1Hz Sinusoidal OKN/VOR Bilateral Vestibular Drift (Smooth Pursuit)',
+        acousticHz: 432,
         vagalPointsAwarded: 50,
         isCompleted: false
       },
       {
         id: 'm-3',
         order: 3,
-        title: 'Sanctuary Bench & Vagal Reset',
-        description: 'Arrive at the shaded garden bench for a 3-minute restorative rest.',
+        title: 'Sanctuary Bench & 3-Min 670nm Retinal PBM Recharge',
+        description: 'Arrive at the shaded garden bench for a 3-minute 670nm deep red mitochondrial ATP restoration session.',
         targetMeters: 220,
         minCanopyPct: 90,
         landmarkHint: 'Cedar pavilion bench with clean water refilling station.',
-        groundingTask: 'Complete one 4-7-8 parasympathetic calming breathing cycle.',
+        groundingTask: 'Complete 3-min seated 670nm PBM light bath with foveal focus on Bionic ORP reticle.',
+        opticalInnovation: '670nm Deep Red Retinal Photobiomodulation (+21.4% ATP) + Bionic ORP Reticle',
+        acousticHz: 7.83,
+        pbmDurationSeconds: 180,
+        vagalShiftTargetPercent: 38.5,
         vagalPointsAwarded: 60,
         isCompleted: false
       }

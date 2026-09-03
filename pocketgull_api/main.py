@@ -62,6 +62,15 @@ from engines.jax_mri_data_engine import (
     CounterfactualCohortGenerator,
     BiophysicalMriAugmenter,
 )
+from services.physical_genomics_api_service import (
+    PhysicalGenomicsPredictRequest,
+    PhysicalGenomicsPredictResponse,
+    PharmacologicalRescueRequest,
+    PharmacologicalRescueResponse,
+    HologramFhirBundleRequest,
+    HologramFhirBundleResponse,
+    physical_genomics_service,
+)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ML: CLINICAL RISK SCORING (joblib / scikit-learn & JAX / Flax NNX)
@@ -173,6 +182,12 @@ try:
     app.add_middleware(HipaaDeidentificationMiddleware)
 except Exception as _mw_err:
     print(f"[Middleware] Warning: Could not initialize HIPAA middleware ({_mw_err})")
+
+try:
+    from services.telemetry import setup_opentelemetry
+    setup_opentelemetry(app)
+except Exception as _otel_err:
+    print(f"[Telemetry] Warning: Could not initialize OpenTelemetry ({_otel_err})")
 
 
 
@@ -2389,6 +2404,32 @@ async def synthesize_orthopedic_cohort(payload: SyntheticCohortRequest) -> Synth
         target_matrix_shape=result["target_matrix_shape"],
         class_prevalences=result["class_prevalences"],
     )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHYSICAL GENOMICS, CRISPR MECHANICS & 3D HOLOGRAM SUITE
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.post("/v1/genomics/physical/predict", response_model=PhysicalGenomicsPredictResponse, tags=["Physical Genomics"])
+@app.post("/api/genomics/physical/predict", response_model=PhysicalGenomicsPredictResponse, tags=["Physical Genomics"])
+async def predict_physical_genomics(payload: PhysicalGenomicsPredictRequest) -> PhysicalGenomicsPredictResponse:
+    """Multi-task biophysical prediction across Hi-C loops, LLPS, Cas9 R-loops, and LINC strain."""
+    return physical_genomics_service.predict_multi_task_genomics(payload)
+
+
+@app.post("/v1/genomics/pharmacology/rescue", response_model=PharmacologicalRescueResponse, tags=["Physical Genomics"])
+@app.post("/api/genomics/pharmacology/rescue", response_model=PharmacologicalRescueResponse, tags=["Physical Genomics"])
+async def optimize_pharmacological_rescue(payload: PharmacologicalRescueRequest) -> PharmacologicalRescueResponse:
+    """Pharmacodynamic small-molecule Hill dose-response and normalization optimization."""
+    return physical_genomics_service.optimize_pharmacological_rescue(payload)
+
+
+@app.post("/v1/genomics/hologram/bundle", response_model=HologramFhirBundleResponse, tags=["Physical Genomics"])
+@app.post("/api/genomics/hologram/bundle", response_model=HologramFhirBundleResponse, tags=["Physical Genomics"])
+async def assemble_hologram_fhir_bundle(payload: HologramFhirBundleRequest) -> HologramFhirBundleResponse:
+    """Assembles a validated FHIR R4 Bundle containing DiagnosticReport and Media with LOINC 98253-8."""
+    return physical_genomics_service.assemble_hologram_fhir_bundle(payload)
+
 
 
 

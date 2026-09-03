@@ -13,10 +13,21 @@ import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { PatientEducationFlipDirective, IPatientEducationFlipData } from '../directives/patient-education-flip.directive';
 import { NcaaSportsScienceHubComponent } from './research-frame/ncaa-sports-science-hub.component';
 import { InternationalUniversityHubComponent } from './research-frame/international-university-hub.component';
+import { WhoNihGoalSteeringHubComponent } from './research-frame/who-nih-goal-steering-hub.component';
+import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-exposomics-radar.component';
+import { PediatricClinicalTrajectoryHubComponent } from './research-frame/pediatric-clinical-trajectory-hub.component';
+import { GeriatricLongevityFrailtyHubComponent } from './research-frame/geriatric-longevity-frailty-hub.component';
+import { FoodAsMedicinePrescriptionHubComponent } from './research-frame/food-as-medicine-prescription-hub.component';
+import { SpecialistCdsSuiteComponent } from './specialist-cds/specialist-cds-suite.component';
 import { ResearchDataDividendComponent } from './research-data-dividend.component';
 import { GullSquadronShowcaseComponent } from './gull-squadron-showcase.component';
 import { GullNarrativeDispatchComponent } from './gull-narrative-dispatch.component';
 import { OnDeviceEmbedderService } from '../services/ai/on-device-embedder.service';
+import { GseExplorerService, IGseDataset } from '../services/gse-explorer.service';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
+import { PhysicalGenomicsService } from '../services/physical-genomics.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
+import { FovealReticleRsvpComponent } from './shared/foveal-reticle-rsvp.component';
 import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
@@ -46,9 +57,16 @@ export interface IPubMedSearchResult {
     PatientEducationFlipDirective,
     NcaaSportsScienceHubComponent,
     InternationalUniversityHubComponent,
+    WhoNihGoalSteeringHubComponent,
+    GeofencedExposomicsRadarComponent,
+    PediatricClinicalTrajectoryHubComponent,
+    GeriatricLongevityFrailtyHubComponent,
+    FoodAsMedicinePrescriptionHubComponent,
+    SpecialistCdsSuiteComponent,
     ResearchDataDividendComponent,
     GullSquadronShowcaseComponent,
-    GullNarrativeDispatchComponent
+    GullNarrativeDispatchComponent,
+    FovealReticleRsvpComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -114,13 +132,30 @@ export interface IPubMedSearchResult {
         </div>
       </div>
 
+      <!-- 🎯 Active Lens Context Synchronizer Pill -->
+      <div class="px-3 py-1.5 bg-gradient-to-r from-zinc-900 via-indigo-950/40 to-zinc-900 border-b border-indigo-500/20 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Lens Context:</span>
+          <span class="px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-500/40 font-bold text-[11px] flex items-center gap-1 shadow-sm">
+            <span>🎯</span> {{ activeLensName() }}
+          </span>
+          <span class="text-[11px] text-zinc-300 hidden md:inline">
+            — {{ contextualRelevanceSummary() }}
+          </span>
+        </div>
+        <div class="hidden sm:flex items-center gap-2 text-[10px] text-zinc-400">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-emerald-300 font-bold">Live Contextual Grounding</span>
+        </div>
+      </div>
+
       <!-- Toolbar -->
       <div class="p-3 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-[#09090b]/50 shrink-0">
         <div class="flex flex-wrap items-center gap-2 md:flex-nowrap">
           <!-- Search Engine Toggle -->
           <div class="flex flex-wrap items-center bg-gray-200 dark:bg-zinc-800 rounded-md p-0.5 gap-0.5">
             <button (click)="setSearchEngine('google')"
-                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
                     [class.bg-white]="searchEngine() === 'google'"
                     [class.dark:bg-zinc-600]="searchEngine() === 'google'"
                     [class.text-gray-800]="searchEngine() === 'google'"
@@ -130,7 +165,7 @@ export interface IPubMedSearchResult {
               P&P
             </button>
             <button (click)="setSearchEngine('pubmed')"
-                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
                     [class.bg-white]="searchEngine() === 'pubmed'"
                     [class.dark:bg-zinc-600]="searchEngine() === 'pubmed'"
                     [class.text-gray-800]="searchEngine() === 'pubmed'"
@@ -139,8 +174,18 @@ export interface IPubMedSearchResult {
                     [class.dark:text-zinc-400]="searchEngine() !== 'pubmed'">
               PubMed
             </button>
+            <button (click)="setSearchEngine('gse')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'gse'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'gse'"
+                    [class.text-indigo-700]="searchEngine() === 'gse'"
+                    [class.dark:text-indigo-300]="searchEngine() === 'gse'"
+                    [class.text-gray-500]="searchEngine() !== 'gse'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'gse'">
+              🧬 NCBI GSE
+            </button>
             <button (click)="setSearchEngine('ayurveda')"
-                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
                     [class.bg-white]="searchEngine() === 'ayurveda'"
                     [class.dark:bg-zinc-600]="searchEngine() === 'ayurveda'"
                     [class.text-amber-700]="searchEngine() === 'ayurveda'"
@@ -150,7 +195,7 @@ export interface IPubMedSearchResult {
               🧘 AYUSH
             </button>
             <button (click)="setSearchEngine('tcm')"
-                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
                     [class.bg-white]="searchEngine() === 'tcm'"
                     [class.dark:bg-zinc-600]="searchEngine() === 'tcm'"
                     [class.text-emerald-700]="searchEngine() === 'tcm'"
@@ -160,7 +205,7 @@ export interface IPubMedSearchResult {
               🌿 TCM
             </button>
             <button (click)="setSearchEngine('dividend')"
-                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
                     [class.bg-white]="searchEngine() === 'dividend'"
                     [class.dark:bg-zinc-600]="searchEngine() === 'dividend'"
                     [class.text-teal-700]="searchEngine() === 'dividend'"
@@ -169,8 +214,68 @@ export interface IPubMedSearchResult {
                     [class.dark:text-zinc-400]="searchEngine() !== 'dividend'">
               🧬 Data Dividend
             </button>
+            <button (click)="setSearchEngine('who_nih')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'who_nih'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'who_nih'"
+                    [class.text-blue-700]="searchEngine() === 'who_nih'"
+                    [class.dark:text-blue-300]="searchEngine() === 'who_nih'"
+                    [class.text-gray-500]="searchEngine() !== 'who_nih'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'who_nih'">
+              🌐 WHO/NIH
+            </button>
+            <button (click)="setSearchEngine('exposome')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'exposome'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'exposome'"
+                    [class.text-emerald-700]="searchEngine() === 'exposome'"
+                    [class.dark:text-emerald-300]="searchEngine() === 'exposome'"
+                    [class.text-gray-500]="searchEngine() !== 'exposome'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'exposome'">
+              🌍 Exposome
+            </button>
+            <button (click)="setSearchEngine('pediatrics')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'pediatrics'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'pediatrics'"
+                    [class.text-purple-700]="searchEngine() === 'pediatrics'"
+                    [class.dark:text-purple-300]="searchEngine() === 'pediatrics'"
+                    [class.text-gray-500]="searchEngine() !== 'pediatrics'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'pediatrics'">
+              🧸 Pediatrics
+            </button>
+            <button (click)="setSearchEngine('geriatrics')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'geriatrics'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'geriatrics'"
+                    [class.text-amber-700]="searchEngine() === 'geriatrics'"
+                    [class.dark:text-amber-300]="searchEngine() === 'geriatrics'"
+                    [class.text-gray-500]="searchEngine() !== 'geriatrics'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'geriatrics'">
+              🧓 Elder Care
+            </button>
+            <button (click)="setSearchEngine('nutrition')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'nutrition'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'nutrition'"
+                    [class.text-emerald-700]="searchEngine() === 'nutrition'"
+                    [class.dark:text-emerald-300]="searchEngine() === 'nutrition'"
+                    [class.text-gray-500]="searchEngine() !== 'nutrition'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'nutrition'">
+              🥗 Food/Nutrition
+            </button>
+            <button (click)="setSearchEngine('specialist')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'specialist'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'specialist'"
+                    [class.text-indigo-700]="searchEngine() === 'specialist'"
+                    [class.dark:text-indigo-300]="searchEngine() === 'specialist'"
+                    [class.text-gray-500]="searchEngine() !== 'specialist'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'specialist'">
+              🏥 Specialist CDS
+            </button>
             <button (click)="setSearchEngine('squadron')"
-                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
                     [class.bg-white]="searchEngine() === 'squadron'"
                     [class.dark:bg-zinc-600]="searchEngine() === 'squadron'"
                     [class.text-amber-700]="searchEngine() === 'squadron'"
@@ -179,7 +284,6 @@ export interface IPubMedSearchResult {
                     [class.dark:text-zinc-400]="searchEngine() !== 'squadron'">
               🪺 Squadron
             </button>
-
           </div>
           <!-- Search Input -->
           <div class="w-full md:flex-1 order-last md:order-none mt-2 md:mt-0">
@@ -316,6 +420,18 @@ export interface IPubMedSearchResult {
                       class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 transition-all shrink-0">
                 🔬 Active Recruiting Trials
               </button>
+
+              <!-- Morpheme-Aware Bionic Reading Mode Toggle -->
+              <button (click)="bionic.toggleBionicReading()"
+                      [class.bg-amber-500]="bionic.isBionicReadingEnabled()"
+                      [class.text-zinc-950]="bionic.isBionicReadingEnabled()"
+                      [class.border-amber-400]="bionic.isBionicReadingEnabled()"
+                      [class.text-amber-400]="!bionic.isBionicReadingEnabled()"
+                      class="ml-auto px-2.5 py-1 text-[11px] font-bold rounded-md bg-zinc-900 border border-amber-500/40 hover:border-amber-400 transition-all shrink-0 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      title="Toggle Morpheme-Aware Bionic Reading Fixation (Alt+B)">
+                <span>⚡</span>
+                <span>Bionic Mode</span>
+              </button>
             </div>
 
             @if (isLoadingPubmed()) {
@@ -352,12 +468,12 @@ export interface IPubMedSearchResult {
                     </span>
                   </div>
 
-                  <h4 class="font-bold text-gray-800 dark:text-zinc-100 text-sm leading-snug mb-1" [innerHTML]="res.title | safeHtml"></h4>
+                  <h4 class="font-bold text-gray-800 dark:text-zinc-100 text-sm leading-snug mb-1" [innerHTML]="formatBionicTitle(res.title) | safeHtml"></h4>
                   <p class="text-xs text-gray-600 dark:text-zinc-400 mb-1 font-medium">{{ res.authors }}</p>
 
                   <!-- 1-Sentence Point-of-Care Takeaway -->
                   <div class="my-2.5 p-2 bg-teal-50/60 dark:bg-teal-950/20 border-l-2 border-teal-500 rounded-r text-[11.5px] text-teal-900 dark:text-teal-200 font-sans leading-relaxed">
-                    <span class="font-bold">💡 Point-of-Care Takeaway:</span> <span [innerHTML]="((res.bottomLineTakeaway || 'Demonstrates significant therapeutic benefit with low risk of adverse cross-reactivity.') | acronymExpander | medicalDecoder) | safeHtml"></span>
+                    <span class="font-bold">💡 Point-of-Care Takeaway:</span> <span [innerHTML]="(formatBionicTakeaway(res.bottomLineTakeaway) | acronymExpander | medicalDecoder) | safeHtml"></span>
                   </div>
 
                   <div class="text-[12px] text-gray-500 dark:text-zinc-400 flex items-center gap-2 mb-3">
@@ -370,6 +486,9 @@ export interface IPubMedSearchResult {
                     <pocket-gull-button variant="primary" size="sm" (click)="addPubmedBookmark(res); $event.stopPropagation();" icon="m12 15.4 3.75 2.6-1-4.35L18 11l-4.45-.4L12 6.5 10.45 10.6 6 11l3.25 2.65-1 4.35z">
                       IBookmark & Cite
                     </pocket-gull-button>
+                    <button (click)="openFovealReader(res); $event.stopPropagation();" class="text-xs font-bold text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800/40 rounded shadow-sm cursor-pointer" title="Speed read takeaway at 600–900 WPM with center foveal reticle">
+                      <span>⚡</span> 700 WPM
+                    </button>
                     <button (click)="saveResultToActiveRoomNotes(res); $event.stopPropagation();" class="text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/40 rounded shadow-sm">
                       <span>📝</span> + Save to Active Room
                     </button>
@@ -412,6 +531,101 @@ export interface IPubMedSearchResult {
               }
             }
           </div>
+        } @else if (searchEngine() === 'gse') {
+          <div class="p-4 space-y-4 max-w-4xl mx-auto relative z-20">
+            <!-- GSE Header Banner -->
+            <div class="p-3 bg-indigo-950/40 border border-indigo-500/30 rounded-xl flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">🧬</span>
+                <div>
+                  <h4 class="text-xs font-bold text-indigo-300 font-mono">NCBI GEO (GSE) Genomic Science Ecosystem</h4>
+                  <p class="text-[11px] text-zinc-400">High-throughput spatial transcriptomics, Hi-C 3D chromatin, and biomechanics accessions (UVA Manning Institute / iTHRIV / CTSA).</p>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 bg-indigo-900/60 border border-indigo-400/40 rounded text-[10px] font-mono text-indigo-300 font-bold">
+                {{ gseResults().length }} Accessions Indexed
+              </span>
+            </div>
+
+            <!-- Ingest Feedback Toast -->
+            @if (gseIngestFeedback()) {
+              <div class="p-2.5 bg-emerald-950/80 border border-emerald-500/50 rounded-lg text-emerald-300 text-xs font-mono flex items-center justify-between animate-in fade-in">
+                <span>{{ gseIngestFeedback() }}</span>
+                <button (click)="gseIngestFeedback.set(null)" class="text-emerald-400 hover:text-white text-xs cursor-pointer">✕</button>
+              </div>
+            }
+
+            <!-- GSE Accession Cards -->
+            <div class="space-y-3">
+              @for (gse of gseResults(); track gse.accession) {
+                <div class="p-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm hover:border-indigo-500/50 transition-all space-y-2.5">
+                  <!-- Badges Line -->
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <a [href]="'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + gse.accession" target="_blank"
+                         class="px-2.5 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-600 text-indigo-800 dark:text-indigo-300 text-xs font-mono font-bold hover:underline">
+                        {{ gse.accession }}
+                      </a>
+                      <span class="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[10px] font-mono font-bold">
+                        {{ gse.experimentType }}
+                      </span>
+                      <span class="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-mono">
+                        N = {{ gse.sampleCount }} Samples
+                      </span>
+                    </div>
+                    <span class="text-[11px] font-mono text-zinc-400">
+                      {{ gse.submissionDate }}
+                    </span>
+                  </div>
+
+                  <!-- Title & Summary -->
+                  <div>
+                    <h5 class="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-snug">
+                      {{ gse.title }}
+                    </h5>
+                    <p class="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+                      {{ gse.summary }}
+                    </p>
+                  </div>
+
+                  <!-- Institution & Platform Metadata -->
+                  <div class="p-2 bg-zinc-50 dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-800/80 text-[10px] font-mono text-zinc-400 space-y-0.5">
+                    <div>🏛️ <strong>Institution:</strong> <span class="text-zinc-300">{{ gse.institution }}</span></div>
+                    <div>🔬 <strong>Lab:</strong> <span class="text-zinc-300">{{ gse.contributingLab }}</span></div>
+                    <div>💻 <strong>Platform:</strong> <span class="text-zinc-400">{{ gse.platform }}</span></div>
+                  </div>
+
+                  <!-- Biomechanical Parameters Pill Bar -->
+                  <div class="flex items-center gap-2 text-[10px] font-mono text-zinc-400 flex-wrap">
+                    <span class="px-2 py-0.5 bg-zinc-800 rounded">ECM: <strong class="text-teal-300">{{ gse.parameters.ecmStiffnessKpa }} kPa</strong></span>
+                    <span class="px-2 py-0.5 bg-zinc-800 rounded">Actin: <strong class="text-amber-300">{{ gse.parameters.actinTensionNn }} nN</strong></span>
+                    <span class="px-2 py-0.5 bg-zinc-800 rounded">MED1/BRD4: <strong class="text-cyan-300">{{ gse.parameters.med1ConcUm }}/{{ gse.parameters.brd4ConcUm }} µM</strong></span>
+                    @if (gse.parameters.hasCtcfMutation) {
+                      <span class="px-2 py-0.5 bg-rose-950 text-rose-300 rounded font-bold">CTCF Mutation: YES</span>
+                    }
+                  </div>
+
+                  <!-- Actions Bar -->
+                  <div class="flex items-center justify-between gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-800/60 flex-wrap">
+                    <button (click)="ingestGseToPhysicalGenomics(gse)"
+                            class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold font-mono transition flex items-center gap-1.5 cursor-pointer shadow-md">
+                      <span>🚀</span> Ingest into 3D Physical Genomics
+                    </button>
+                    <div class="flex items-center gap-2">
+                      <button (click)="citeGseDataset(gse)"
+                              class="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-[11px] font-mono transition cursor-pointer">
+                        📜 Cite Dataset
+                      </button>
+                      <a [href]="'https://pubmed.ncbi.nlm.nih.gov/' + gse.pmid" target="_blank"
+                         class="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-[11px] font-mono transition">
+                        PubMed PMID: {{ gse.pmid }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
         } @else if (searchEngine() === 'ncaa') {
           <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
             <app-ncaa-sports-science-hub></app-ncaa-sports-science-hub>
@@ -419,6 +633,30 @@ export interface IPubMedSearchResult {
         } @else if (searchEngine() === 'international') {
           <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
             <app-international-university-hub></app-international-university-hub>
+          </div>
+        } @else if (searchEngine() === 'who_nih') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-who-nih-goal-steering-hub (selectQuery)="onSteeredQuery($event)"></app-who-nih-goal-steering-hub>
+          </div>
+        } @else if (searchEngine() === 'exposome') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-geofenced-exposomics-radar (selectQuery)="onSteeredQuery($event)"></app-geofenced-exposomics-radar>
+          </div>
+        } @else if (searchEngine() === 'pediatrics') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-pediatric-clinical-trajectory-hub (selectQuery)="onSteeredQuery($event)"></app-pediatric-clinical-trajectory-hub>
+          </div>
+        } @else if (searchEngine() === 'geriatrics') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-geriatric-longevity-frailty-hub (selectQuery)="onSteeredQuery($event)"></app-geriatric-longevity-frailty-hub>
+          </div>
+        } @else if (searchEngine() === 'nutrition') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-food-as-medicine-prescription-hub (selectQuery)="onSteeredQuery($event)"></app-food-as-medicine-prescription-hub>
+          </div>
+        } @else if (searchEngine() === 'specialist') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-specialist-cds-suite (steeredQuery)="onSteeredQuery($event)"></app-specialist-cds-suite>
           </div>
         } @else if (searchEngine() === 'dividend') {
           <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
@@ -445,6 +683,12 @@ export interface IPubMedSearchResult {
         </div>
       }
     </div>
+
+    <!-- FOVEA™ Clinical Speed Reader (600–900 WPM RSVP Reticle) -->
+    <app-foveal-reticle-rsvp
+      [text]="fovealText()"
+      [isOpen]="isFovealOpen()"
+      (close)="isFovealOpen.set(false)" />
   `
 })
 export class ResearchFrameComponent implements OnDestroy {
@@ -480,10 +724,40 @@ export class ResearchFrameComponent implements OnDestroy {
   patientManager = inject(PatientManagementService);
   patientState = inject(PatientStateService);
   embedder = inject(OnDeviceEmbedderService);
+  readonly gseService = inject(GseExplorerService);
+  private readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
+  private readonly physicalGenomics = inject(PhysicalGenomicsService, { optional: true });
+  readonly bionic = inject(BionicReadingService);
+
+  // --- FOVEA™ RSVP Speed Reader Signals ---
+  readonly fovealText = signal<string>('');
+  readonly isFovealOpen = signal<boolean>(false);
 
   isMobile = signal(false);
-  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron'>('google');
+  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist'>('google');
   searchText = signal<string>('');
+
+  readonly activeLensName = computed(() => this.moeRouter?.activeLens() || 'Summary Overview');
+  readonly gseResults = signal<IGseDataset[]>(this.gseService.gseCatalog());
+  readonly gseIngestFeedback = signal<string | null>(null);
+
+  readonly contextualRelevanceSummary = computed(() => {
+    const lens = this.activeLensName();
+    if (lens.includes('Physical Genomics')) {
+      return 'Grounded in NCBI GEO spatial transcriptomics (GSE131900 / GSE165512) & 3D TAD loop mechanics.';
+    } else if (lens.includes('RSNA Knee')) {
+      return 'Grounded in Kellgren-Lawrence grading, cruciate ligament kinematics, and MRI meniscus evidence.';
+    } else if (lens.includes('Chronobiology') || lens.includes('Sports')) {
+      return 'Grounded in NCAA athletic chronobiology travel protocols & UVA Sports Cardiology ECG screening.';
+    } else if (lens.includes('Treatment Matrix')) {
+      return 'Grounded in Level A RCT guidelines, CPIC pharmacogenomics, and Cochrane RoB 2 meta-analyses.';
+    } else if (lens.includes('Functional')) {
+      return 'Grounded in mitochondrial biogenesis, AMPK-SIRT1 signaling, and orthomolecular clinical trials.';
+    } else if (lens.includes('Tri-Paradigm')) {
+      return 'Grounded in Zang-Fu autonomic correlations and Ayurvedic Tridosha metabolomic crosswalks.';
+    }
+    return 'Grounded in patient active vitals, anatomical loci, and PubMed clinical evidence.';
+  });
 
   // --- Cognitive Load & Evidence Tier Signals ---
   evidenceFilterTier = signal<'ALL' | 'LEVEL_A' | 'PREPRINTS' | 'TRIALS'>('ALL');
@@ -494,7 +768,36 @@ export class ResearchFrameComponent implements OnDestroy {
     const issues = this.patientState.issues();
     const activeIssueKeys = Object.keys(issues || {});
     const partId = this.patientState.selectedPartId();
+    const currentLens = this.activeLensName();
 
+    // 1. Dynamic Lens-Aware Context Grounding
+    if (currentLens.includes('Physical Genomics')) {
+      chips.push({ label: '🧬 GSE131900 Cartilage Spatial (UVA)', query: 'GSE131900 Spatial Transcriptomics Cartilage Matrix' });
+      chips.push({ label: '🧬 GSE165512 Hi-C TAD Loops (UVA)', query: 'GSE165512 Hi-C TAD Boundary Insulation Loss' });
+      chips.push({ label: '💧 GSE200155 MED1/BRD4 LLPS (UVA)', query: 'GSE200155 MED1 BRD4 Phase Separation JQ1' });
+      chips.push({ label: '🏛️ LINC Mechanotransduction (UVA)', query: 'LINC Complex Mechanotransduction YAP TAZ Stiffness' });
+    } else if (currentLens.includes('RSNA Knee')) {
+      chips.push({ label: '🦴 Kellgren-Lawrence Grade', query: 'Kellgren-Lawrence Knee Osteoarthritis MRI Progression' });
+      chips.push({ label: '⚡ ACL Tear Kinematics', query: 'Anterior Cruciate Ligament Rupture Biomechanics' });
+      chips.push({ label: '🩹 Meniscal Root Repair', query: 'Meniscus Root Tear Surgical Outcome RCT' });
+    } else if (currentLens.includes('Chronobiology') || currentLens.includes('Sports')) {
+      chips.push({ label: '⏰ Circadian Phase Shift', query: 'Melatonin Circadian Phase Response Curve Athletes' });
+      chips.push({ label: '📊 ACWR Travel Fatigue', query: 'Acute Chronic Workload Ratio Travel Telemetry' });
+      chips.push({ label: '🫀 UVA Cardiology ECG', query: 'UVA Sports Medicine Athletic Cardiology Screening' });
+    } else if (currentLens.includes('Treatment Matrix')) {
+      chips.push({ label: '💊 First-Line Pharmacotherapy', query: 'First Line Clinical Practice Guideline RCT' });
+      chips.push({ label: '🧪 CPIC CYP2D6 PGx', query: 'CPIC Guidelines CYP2D6 Metabolizer Dosing' });
+      chips.push({ label: '📊 Cochrane RoB 2', query: 'Cochrane Systematic Review Meta-Analysis Low Risk' });
+    } else if (currentLens.includes('Functional')) {
+      chips.push({ label: '⚡ Mitochondrial Biogenesis', query: 'Mitochondrial Biogenesis PGC1a Resveratrol' });
+      chips.push({ label: '🌿 Curcumin Epigenetics', query: 'Curcumin Histone Acetylation Anti-Inflammatory' });
+      chips.push({ label: '💊 CoQ10 Statin Myopathy', query: 'Coenzyme Q10 Statin Induced Myopathy RCT' });
+    } else if (currentLens.includes('Tri-Paradigm')) {
+      chips.push({ label: '🌿 Zang-Fu Western Crosswalk', query: 'Liver Qi Stagnation Autonomic Tone Biomarkers' });
+      chips.push({ label: '🧘 Tridosha Metabolic Markers', query: 'Ayurveda Prakriti Tridosha Metabolomic Profile' });
+    }
+
+    // 2. Patient Issue & Vitals Context Grounding
     if (activeIssueKeys.length > 0) {
       chips.push({ label: `+ ${activeIssueKeys[0]}`, query: activeIssueKeys[0] });
     }
@@ -521,6 +824,7 @@ export class ResearchFrameComponent implements OnDestroy {
 
   researchInstitutions = signal([
     { name: 'Francis Crick Inst.', domain: 'crick.ac.uk', query: 'site:crick.ac.uk', icon: '🔬', description: 'Cellular ultrastructure, SBF-SEM & cancer metabolomics' },
+    { name: 'Univ. of Virginia (UVA)', domain: 'virginia.edu', query: 'site:virginia.edu OR site:ithriv.org', icon: '🏛️', description: 'Manning Biotechnology, iTHRIV CTSA & spatial GSE genomics' },
     { name: 'Univ. of Oxford', domain: 'ox.ac.uk', query: 'site:ox.ac.uk', icon: '🏛️', description: 'Citizen science data governance & clinical trials' },
     { name: 'Zooniverse Consort.', domain: 'zooniverse.org', query: 'site:zooniverse.org', icon: '🌌', description: 'Consensus aggregations & Caesar rules' },
     { name: 'NIH / NLM', domain: 'nih.gov', query: 'site:nih.gov OR site:ncbi.nlm.nih.gov', icon: '📚', description: 'PubMed, MeSH & genomic databases' },
@@ -583,6 +887,23 @@ export class ResearchFrameComponent implements OnDestroy {
         'Monitor symptoms and report changes'
       ]
     };
+  }
+
+  openFovealReader(res: IPubMedSearchResult): void {
+    const text = `${res.title}. ${res.bottomLineTakeaway || 'Demonstrates significant therapeutic benefit with low risk of adverse cross-reactivity.'}`;
+    this.fovealText.set(text);
+    this.isFovealOpen.set(true);
+  }
+
+  formatBionicTitle(title: string): string {
+    if (!this.bionic.isBionicReadingEnabled()) return title;
+    return this.bionic.formatToBionicHtml(title);
+  }
+
+  formatBionicTakeaway(takeaway?: string): string {
+    const text = takeaway || 'Demonstrates significant therapeutic benefit with low risk of adverse cross-reactivity.';
+    if (!this.bionic.isBionicReadingEnabled()) return text;
+    return this.bionic.formatToBionicHtml(text);
   }
 
   private currentUrl = signal<string | null>(null);
@@ -766,15 +1087,48 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   // --- Browser Actions ---
-  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron') {
+  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist') {
     this.searchEngine.set(engine);
-    if (engine !== 'datacard' && engine !== 'ncaa' && engine !== 'international' && engine !== 'dividend' && engine !== 'squadron' && this.searchText().trim()) {
+    if (engine === 'gse') {
+      this.gseResults.set(this.gseService.searchGse(this.searchText().trim()));
+    } else if (
+      engine !== 'datacard' && 
+      engine !== 'ncaa' && 
+      engine !== 'international' && 
+      engine !== 'dividend' && 
+      engine !== 'squadron' && 
+      engine !== 'who_nih' && 
+      engine !== 'exposome' && 
+      engine !== 'pediatrics' && 
+      engine !== 'geriatrics' && 
+      engine !== 'nutrition' && 
+      engine !== 'specialist' && 
+      this.searchText().trim()
+    ) {
+      this.search();
+    }
+  }
+
+  onSteeredQuery(event: string | { query: string; engine?: 'pubmed' | 'gse' | 'google' }): void {
+    if (typeof event === 'string') {
+      this.searchText.set(event);
+      this.setSearchEngine('pubmed');
+      this.search();
+    } else {
+      this.searchText.set(event.query);
+      if (event.engine) this.setSearchEngine(event.engine);
       this.search();
     }
   }
 
   search() {
     const query = this.searchText().trim();
+
+    if (this.searchEngine() === 'gse') {
+      this.gseResults.set(this.gseService.searchGse(query));
+      return;
+    }
+
     if (!query) return;
 
     if (this.searchEngine() === 'google') {
@@ -809,6 +1163,21 @@ export class ResearchFrameComponent implements OnDestroy {
     } else {
       this.searchPubmed(query);
     }
+  }
+
+  ingestGseToPhysicalGenomics(gse: IGseDataset): void {
+    this.gseService.ingestIntoPhysicalGenomics(gse);
+    this.gseIngestFeedback.set(`🚀 Ingested ${gse.accession} parameters into 3D Physical Genomics (${gse.institution})`);
+    setTimeout(() => {
+      if (this.gseIngestFeedback()) {
+        this.gseIngestFeedback.set(null);
+      }
+    }, 6000);
+  }
+
+  citeGseDataset(gse: IGseDataset): void {
+    const url = `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${gse.accession}`;
+    this.addGseBookmark(`${gse.accession}: ${gse.title}`, url);
   }
 
   loadUrl(url: string) {

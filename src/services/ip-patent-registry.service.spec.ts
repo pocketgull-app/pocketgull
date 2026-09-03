@@ -11,12 +11,12 @@ describe('IpPatentRegistryService', () => {
     service = TestBed.inject(IpPatentRegistryService);
   });
 
-  it('should initialize with all 10 patent claim clusters', () => {
-    expect(service.totalClusters()).toBe(10);
+  it('should initialize with all 16 patent claim clusters', () => {
+    expect(service.totalClusters()).toBe(16);
   });
 
-  it('should sum exactly 200 total staked patent claims', () => {
-    expect(service.totalClaims()).toBe(200);
+  it('should sum exactly 320 total staked patent claims', () => {
+    expect(service.totalClaims()).toBe(320);
   });
 
   it('should load all 7 core statutory copyright and invention clauses', () => {
@@ -25,11 +25,11 @@ describe('IpPatentRegistryService', () => {
 
   it('should return complete patent summary with charter document link', () => {
     const summary = service.getPatentSummary();
-    expect(summary.totalClaimClusters).toBe(10);
-    expect(summary.totalClaimsCount).toBe(200);
+    expect(summary.totalClaimClusters).toBe(16);
+    expect(summary.totalClaimsCount).toBe(320);
     expect(summary.charterDocumentPath).toBe('docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md');
     expect(summary.clausesDocumentPath).toBe('docs/legal/INVENTION_ASSIGNMENT_AND_COPYRIGHT_CLAUSES.md');
-    expect(summary.clusters.length).toBe(10);
+    expect(summary.clusters.length).toBe(16);
     expect(summary.statutoryClauses.length).toBe(7);
   });
 

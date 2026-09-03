@@ -22,6 +22,10 @@ import { SoapNoteGeneratorComponent } from './soap-note-generator.component';
 import { CohortTriageMatrixComponent } from './cohort-triage-matrix.component';
 import { HipaaPdfExportComponent } from './hipaa-pdf-export.component';
 import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.component';
+import { EdgeMlHudComponent } from './edge-ml-hud/edge-ml-hud.component';
+import { SteeepQualityHudComponent } from './steeep-quality-hud/steeep-quality-hud.component';
+import { LensBiomolecularPhysicsComponent } from './turing/lens-biomolecular-physics.component';
+import { LensPhysicalGenomicsComponent } from './turing/lens-physical-genomics.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,7 +46,11 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
     MyChartBriefModalComponent, 
     FamilyTreePedigreeComponent, 
     PatientStoryModalComponent, 
-    ClinicalUxEvaluationHubComponent
+    ClinicalUxEvaluationHubComponent,
+    EdgeMlHudComponent,
+    SteeepQualityHudComponent,
+    LensBiomolecularPhysicsComponent,
+    LensPhysicalGenomicsComponent
   ],
   template: `
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)] bg-[#F3F4F6] dark:bg-zinc-950">
@@ -113,6 +121,42 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
                 </div>
               }
 
+              <!-- Edge ML ONNX WebGPU Engine Button -->
+              <button type="button" (click)="showEdgeAiModal.set(!showEdgeAiModal())"
+                title="Open Edge ML &amp; ONNX WebGPU Continuous Risk Scoring Engine"
+                [class]="showEdgeAiModal()
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-400 bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-500/40 bg-teal-500/10 text-teal-300 hover:bg-teal-600 hover:text-white transition cursor-pointer'">
+                <span>[⚡ EDGE AI]</span>
+              </button>
+
+              <!-- NAM STEEEP Quality Audit Button -->
+              <button type="button" (click)="showSteeepModal.set(!showSteeepModal())"
+                title="Open National Academy of Medicine (NAM) STEEEP 6-Axis Quality Radar"
+                [class]="showSteeepModal()
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-400 bg-amber-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-600 hover:text-white transition cursor-pointer'">
+                <span>[📊 STEEEP]</span>
+              </button>
+
+              <!-- Frontier Molecular Biophysics Button -->
+              <button type="button" (click)="showBiophysicsModal.set(!showBiophysicsModal())"
+                title="Open Frontier Molecular Biophysics & Chemical Systems Suite (LLPS, PROTAC, Quantum Cryptochrome, MOF)"
+                [class]="showBiophysicsModal()
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-cyan-400 bg-cyan-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-600 hover:text-white transition cursor-pointer'">
+                <span>[⚛️ BIOPHYSICS]</span>
+              </button>
+
+              <!-- Physical Genomics & 3D Genome Engineering Button -->
+              <button type="button" (click)="showGenomicsModal.set(!showGenomicsModal())"
+                title="Open Physical Genomics & 3D Genome Engineering Suite (Loop Extrusion, Super-Enhancers, CRISPR R-Loop, Nucleosome Tweezers)"
+                [class]="showGenomicsModal()
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-400 bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-500/40 bg-teal-500/10 text-teal-300 hover:bg-teal-600 hover:text-white transition cursor-pointer'">
+                <span>[🧬 GENOMICS]</span>
+              </button>
+
               <!-- Ambient SOAP Note Generator Button -->
               <button type="button" (click)="showSoapModal.set(!showSoapModal())"
                 title="Open Ambient Real-Time FHIR R4 SOAP Note Generator"
@@ -134,8 +178,8 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
               <!-- Clinical Studio Overflow Dropdown -->
               <div class="relative">
                 <button type="button" (click)="showToolsMenu.set(!showToolsMenu())"
-                  title="Clinical Studio & Advanced Analysis Tools"
-                  [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showToolsMenu())
+                  title="Clinical Studio &amp; Advanced Analysis Tools"
+                  [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showEdgeAiModal() || showSteeepModal() || showBiophysicsModal() || showToolsMenu())
                     ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-600 bg-zinc-800 text-zinc-100 transition cursor-pointer'
                     : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
                   <span>STUDIO ▾</span>
@@ -143,6 +187,26 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
 
                 @if (showToolsMenu()) {
                   <div class="absolute right-0 top-full mt-1 w-56 p-1.5 bg-zinc-950 border border-zinc-800 shadow-2xl z-50 flex flex-col gap-1 text-xs font-mono">
+                    <button (click)="showEdgeAiModal.set(!showEdgeAiModal()); showToolsMenu.set(false)"
+                      class="w-full text-left px-3 py-2 text-teal-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      <span>⚡ Edge AI &amp; ONNX WebGPU</span>
+                      @if (showEdgeAiModal()) { <span class="text-teal-400">✓</span> }
+                    </button>
+                    <button (click)="showSteeepModal.set(!showSteeepModal()); showToolsMenu.set(false)"
+                      class="w-full text-left px-3 py-2 text-amber-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      <span>📊 NAM STEEEP Quality Radar</span>
+                      @if (showSteeepModal()) { <span class="text-amber-400">✓</span> }
+                    </button>
+                    <button (click)="showBiophysicsModal.set(!showBiophysicsModal()); showToolsMenu.set(false)"
+                      class="w-full text-left px-3 py-2 text-cyan-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      <span>⚛️ Molecular Biophysics</span>
+                      @if (showBiophysicsModal()) { <span class="text-cyan-400">✓</span> }
+                    </button>
+                    <button (click)="showGenomicsModal.set(!showGenomicsModal()); showToolsMenu.set(false)"
+                      class="w-full text-left px-3 py-2 text-teal-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      <span>🧬 Physical Genomics</span>
+                      @if (showGenomicsModal()) { <span class="text-teal-400">✓</span> }
+                    </button>
                     <button (click)="showCohortMatrixModal.set(!showCohortMatrixModal()); showToolsMenu.set(false)"
                       class="w-full text-left px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
                       <span>📊 Cohort Matrix</span>
@@ -155,7 +219,7 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
                     </button>
                     <button (click)="showMyChartModal.set(true); showToolsMenu.set(false)"
                       class="w-full text-left px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
-                      <span>🏥 MyChart Brief</span>
+                      <span>📋 Brief Care Card</span>
                     </button>
                     <button (click)="showPedigreeModal.set(true); showToolsMenu.set(false)"
                       class="w-full text-left px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
@@ -183,6 +247,34 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
         <div class="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden relative">
           <div class="flex-1 min-h-0 min-w-0 h-full flex flex-col overflow-y-auto transition-all duration-300 p-4 sm:p-6">
             
+            <!-- Edge AI & ONNX WebGPU Continuous Risk Scoring Panel -->
+            @if (showEdgeAiModal()) {
+              <div class="mb-4 w-full shrink-0">
+                <app-edge-ml-hud></app-edge-ml-hud>
+              </div>
+            }
+
+            <!-- NAM STEEEP Quality Audit Panel -->
+            @if (showSteeepModal()) {
+              <div class="mb-4 w-full shrink-0">
+                <app-steeep-quality-hud></app-steeep-quality-hud>
+              </div>
+            }
+
+            <!-- Frontier Molecular Biophysics Suite Panel -->
+            @if (showBiophysicsModal()) {
+              <div class="mb-4 w-full shrink-0">
+                <app-lens-biomolecular-physics />
+              </div>
+            }
+
+            <!-- Physical Genomics & 3D Genome Engineering Suite Panel -->
+            @if (showGenomicsModal()) {
+              <div class="mb-4 w-full shrink-0">
+                <app-lens-physical-genomics />
+              </div>
+            }
+
             <!-- Cohort Triage Matrix Panel -->
             @if (showCohortMatrixModal()) {
               <div class="mb-4 w-full shrink-0">
@@ -318,11 +410,6 @@ import { ClinicalUxEvaluationHubComponent } from './clinical-ux-evaluation-hub.c
     @if (showEvaluationHubModal()) {
       <app-clinical-ux-evaluation-hub (closed)="showEvaluationHubModal.set(false)"></app-clinical-ux-evaluation-hub>
     }
-
-    <!-- NN/g Usability & Clinical Evaluation Hub Modal -->
-    @if (showEvaluationHubModal()) {
-      <app-clinical-ux-evaluation-hub (closed)="showEvaluationHubModal.set(false)"></app-clinical-ux-evaluation-hub>
-    }
   `,
   styles: [`
     :host { display: block; height: 100%; width: 100%; }
@@ -375,6 +462,10 @@ export class AnalysisContainerComponent {
   viewMode = signal<'lenses' | 'suites'>('lenses');
   showSimulatorModal = signal(false);
   showSoapModal = signal(false);
+  showEdgeAiModal = signal(false);
+  showSteeepModal = signal(false);
+  showBiophysicsModal = signal(false);
+  showGenomicsModal = signal(false);
   showCohortMatrixModal = signal(false);
   showHipaaPdfModal = signal(false);
   showEvaluationHubModal = signal(false);

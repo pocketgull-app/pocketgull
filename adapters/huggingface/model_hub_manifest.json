@@ -34,5 +34,17 @@
     "name": "PocketGull RxGuard & PGx Interaction Screener",
     "hub_repo": "philgear/pocketgull-rxguard-pgx",
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-rxguard-pgx"
+  },
+  {
+    "id": "pocketgull-edge-onnx-recovery",
+    "name": "PocketGull Edge AI Recovery Engine (ONNX / WebGPU)",
+    "hub_repo": "philgear/pocketgull-edge-onnx-recovery",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-edge-onnx-recovery"
+  },
+  {
+    "id": "pocketgull-steeep-quality",
+    "name": "PocketGull NAM STEEEP Quality Engine",
+    "hub_repo": "philgear/pocketgull-steeep-quality",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-steeep-quality"
   }
 ]

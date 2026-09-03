@@ -6,12 +6,16 @@
  *  - CMS Remote Patient Monitoring (RPM) Compliance Dashboard
  */
 import { test, expect } from '@playwright/test';
+import { setupE2ePage, enterDemoMode } from './utils/setup';
 
 test.describe('Wachter & Brookings AI Governance Suite', () => {
+  test.beforeEach(async ({ page }) => {
+    test.setTimeout(60000);
+    await setupE2ePage(page);
+    await enterDemoMode(page);
+  });
 
   test('should render active report page and expose FDA 520(o) CDS badge', async ({ page }) => {
-    await page.goto('/');
-
     // Verify main page loaded
     const title = await page.title();
     expect(title).toBeDefined();
@@ -22,7 +26,6 @@ test.describe('Wachter & Brookings AI Governance Suite', () => {
   });
 
   test('should display Clinical Tools modal with FDA 520(o) CDS and CMS RPM Billing buttons', async ({ page }) => {
-    await page.goto('/');
 
     // Check if clinical tools button exists or can be opened
     const toolsButton = page.locator('button:has-text("Clinical Tools"), button:has-text("Tools"), [title*="Clinical Tools"]');

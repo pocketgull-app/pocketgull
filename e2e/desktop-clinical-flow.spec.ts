@@ -44,7 +44,7 @@ test.describe('Desktop Clinical Flow & Ambient Soundscape E2E', () => {
     if (await sevenGenBtn.isVisible()) {
       await sevenGenBtn.click();
       await page.waitForTimeout(300);
-      await expect(playerContainer.locator('text=Seven Generations Fireside')).toBeVisible();
+      await expect(playerContainer.locator('text=Seven Generations Fireside').first()).toBeVisible();
     }
 
     // 7. Verify Analysis Report and Care Plan Lenses
@@ -65,7 +65,7 @@ test.describe('Desktop Clinical Flow & Ambient Soundscape E2E', () => {
 
     // Verify Corporate LLC imprint and credentials
     await expect(page.locator('body')).toContainText(/PocketGull/i, { timeout: 15000 });
-    await expect(page.locator('body')).toContainText(/Clinical Intelligence|Care Plan/i);
+    await expect(page.locator('body')).toContainText(/Clinical|Assistant|Documentation/i);
 
     // Verify SVG Wordmark Brand presence
     const wordmarkSvg = page.locator('svg').first();

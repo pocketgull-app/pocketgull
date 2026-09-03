@@ -74,4 +74,68 @@ describe('FhirBundleFactoryService', () => {
     expect(sanitized).not.toContain('<script>');
     expect(sanitized).toContain('Healthy Heart Plan');
   });
+
+  it('7. Creates LOINC 98252-0 Biophysical Observation resource with multi-paradigm extensions', () => {
+    const obs = factory.createBiophysicalObservationResource('p-101', {
+      hookRatio: 1.52,
+      floryChi: 2.45,
+      thermalKbT: 4.28e-21,
+      singletYield: 0.82,
+      tripletYield: 0.18,
+      poreDiameter: 0.75,
+      tubulinAcetylationRatio: 1.45,
+      cannabinoidCompound: 'Cannabidiol (CBD)',
+      cannabinoidDose: 2.5
+    });
+
+    expect(obs['resourceType']).toBe('Observation');
+    expect(obs['status']).toBe('final');
+    expect(obs['code']['coding'][0]['code']).toBe('98252-0');
+    expect(obs['component'].length).toBe(6);
+    expect(obs['extension'].length).toBe(6);
+
+    const hookExt = obs['extension'].find((x: any) => x.url === 'http://pocketgull.app/fhir/StructureDefinition/protac-hook-effect');
+    expect(hookExt.extension.find((e: any) => e.url === 'hook-saturation-ratio').valueDecimal).toBe(1.52);
+
+    const floryExt = obs['extension'].find((x: any) => x.url === 'http://pocketgull.app/fhir/StructureDefinition/llps-phase-boundary');
+    expect(floryExt.extension.find((e: any) => e.url === 'hydrophobic-flory-chi').valueDecimal).toBe(2.45);
+
+    const cannaExt = obs['extension'].find((x: any) => x.url === 'http://pocketgull.app/fhir/StructureDefinition/cannabinoid-microtubule-stabilization');
+    expect(cannaExt).toBeDefined();
+    expect(cannaExt.extension.find((e: any) => e.url === 'tubulin-acetylation-ratio').valueDecimal).toBe(1.45);
+  });
+
+  it('8. Creates LOINC 98253-8 Physical Genomics Observation resource with 3D genome engineering extensions', () => {
+    const obs = factory.createPhysicalGenomicsObservationResource('p-101', {
+      tadInsulationScore: 0.91,
+      fractalScalingGamma: 1.08,
+      activeLoopsCount: 7,
+      condensateRadiusNm: 155.0,
+      burstFrequencyPerHour: 42.0,
+      crisprNetDeltaG: -19.2,
+      crisprCleavageProbPct: 98.4,
+      nucleosomeOuterRuptureForcePn: 4.5,
+      nucleosomeInnerRuptureForcePn: 19.8,
+      lincBridgeForcePn: 16.2,
+      yapTazNuclearRatio: 2.1,
+      mechanostate: 'STIFF_PRO_FIBROTIC_ONCOGENIC'
+    });
+
+    expect(obs['resourceType']).toBe('Observation');
+    expect(obs['status']).toBe('final');
+    expect(obs['code']['coding'][0]['code']).toBe('98253-8');
+    expect(obs['component'].length).toBe(7);
+    expect(obs['extension'].length).toBe(5);
+
+    const loopExt = obs['extension'].find((x: any) => x.url === 'http://pocketgull.app/fhir/StructureDefinition/loop-extrusion-polymer');
+    expect(loopExt.extension.find((e: any) => e.url === 'tad-insulation-score').valueDecimal).toBe(0.91);
+
+    const crisprExt = obs['extension'].find((x: any) => x.url === 'http://pocketgull.app/fhir/StructureDefinition/crispr-r-loop-mechanics');
+    expect(crisprExt.extension.find((e: any) => e.url === 'net-delta-g-kcal-per-mol').valueDecimal).toBe(-19.2);
+
+    const lincExt = obs['extension'].find((x: any) => x.url === 'http://pocketgull.app/fhir/StructureDefinition/linc-mechanotransduction');
+    expect(lincExt.extension.find((e: any) => e.url === 'mechanostate').valueString).toBe('STIFF_PRO_FIBROTIC_ONCOGENIC');
+  });
 });
+
+

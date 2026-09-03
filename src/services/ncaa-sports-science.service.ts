@@ -141,6 +141,19 @@ export class NcaaSportsScienceService {
       nihCtsaHub: 'Pacific Regional CTSA Consortium'
     },
     {
+      id: 'uva_cavaliers',
+      name: 'University of Virginia (UVA Cavaliers)',
+      division: 'D1',
+      researchTier: 'R1',
+      conference: 'ACC',
+      network: 'ACC Network',
+      flagshipLab: 'UVA Manning Institute of Biotechnology & Human Performance Center',
+      researchFocus: 'High-throughput NCBI GEO (GSE) spatial transcriptomics, 3D spinal/gait kinematics, athletic cardiology ECG screening, and cartilage regenerative biomechanics',
+      sportsMedicineCenter: 'UVA Health Sports Medicine Center (Charlottesville, VA)',
+      irbSiloId: 'IRB-UVA-2026-R1-MED-1928',
+      nihCtsaHub: 'Integrated Translational Health Research Institute of Virginia (iTHRIV)'
+    },
+    {
       id: 'd2_regional_athletics',
       name: 'Great Northwest & Midwest D2 Sports Science Cohort',
       division: 'D2',
