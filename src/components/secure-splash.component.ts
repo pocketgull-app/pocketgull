@@ -25,6 +25,7 @@ import { AvsEngineService, SOLFEGGIO_CATALOG, BRAINWAVE_PRESETS } from '../servi
 import { BleWearablesService } from '../services/hardware/ble-wearables.service';
 import { VibroacousticHapticService } from '../services/hardware/vibroacoustic-haptic.service';
 import { AvsCymaticsVisualizerComponent } from './avs-cymatics-visualizer.component';
+import { BioAdaptiveTypographyService } from '../services/bio-adaptive-typography.service';
 
 @Component({
   selector: 'app-secure-splash',
@@ -34,7 +35,8 @@ import { AvsCymaticsVisualizerComponent } from './avs-cymatics-visualizer.compon
   template: `
     <main [style.background]="telemetryGradient()"
           [style.filter]="desaturationFilter()"
-          class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 backdrop-blur-md sm:backdrop-blur-xl secure-splash-main animate-in fade-in duration-[400ms] overflow-y-auto overscroll-contain">
+          [style.--sloan-letter-spacing]="bioTypography?.letterSpacingEm() || '0em'"
+          class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 backdrop-blur-md sm:backdrop-blur-xl secure-splash-main bio-adaptive-sloan animate-in fade-in duration-[400ms] overflow-y-auto overscroll-contain">
       <app-papercraft-backdrop
         [wavePeriod]="wavePeriod()"
         [motionEnabled]="!theme.reduceMotion()"
@@ -159,6 +161,22 @@ import { AvsCymaticsVisualizerComponent } from './avs-cymatics-visualizer.compon
             
             <div class="py-1 flex justify-center">
               <app-pocketgull-brand-mark [size]="'responsive'" [showSubtext]="!isLocked()" />
+            </div>
+
+            <!-- 👁️ Sloan 5:1 Optotype Calibration & 203 DPI Bedside Badge -->
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/80 text-zinc-600 dark:text-zinc-300 text-[9.5px] font-mono mt-2 shadow-2xs">
+              <span class="flex items-center gap-1 font-bold text-teal-600 dark:text-teal-400">
+                <span class="pg-icon pg-icon-eye text-xs leading-none"></span>
+                <span>Sloan 5:1 Invariant</span>
+              </span>
+              <span class="text-zinc-400 dark:text-zinc-500">•</span>
+              <span>55cm Calibrated</span>
+              <span class="text-zinc-400 dark:text-zinc-500">•</span>
+              <button type="button" (click)="printQuickBedsideLabel($event)" title="Test 203 DPI Bedside Label Print"
+                class="flex items-center gap-1 text-teal-700 dark:text-teal-300 font-bold hover:underline cursor-pointer">
+                <span class="pg-icon pg-icon-print text-[10px] leading-none"></span>
+                <span>203 DPI Demo</span>
+              </button>
             </div>
 
             @if (isLocked()) {
@@ -359,17 +377,17 @@ import { AvsCymaticsVisualizerComponent } from './avs-cymatics-visualizer.compon
                      </button>
                    </div>
 
-                   <!-- Role Selector -->
+                   <!-- Role Selector with Native Clinical Symbols -->
                    <div class="flex items-center justify-between gap-1.5">
                      <label for="splash-iam-role-select" class="text-[10px] font-semibold text-zinc-600 dark:text-zinc-400">Clinical Role:</label>
                      <select 
                        id="splash-iam-role-select"
                        [(ngModel)]="selectedIamRole" 
                        class="text-[10.5px] bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-2 py-1 text-zinc-800 dark:text-zinc-200">
-                       <option value="roles/aiplatform.user">Attending Clinician (CDS)</option>
-                       <option value="roles/healthcare.datasetAdmin">Medical Director (Admin)</option>
-                       <option value="roles/bigquery.jobUser">Clinical Researcher (Trials)</option>
-                       <option value="roles/viewer">Sovereign Patient (Self)</option>
+                       <option value="roles/aiplatform.user">✚ Attending Clinician (CDS)</option>
+                       <option value="roles/healthcare.datasetAdmin">🛡️ Medical Director (Admin)</option>
+                       <option value="roles/bigquery.jobUser">🔬 Clinical Researcher (Trials)</option>
+                       <option value="roles/viewer">👁️ Sovereign Patient (Self)</option>
                      </select>
                    </div>
 
@@ -1446,6 +1464,27 @@ import { AvsCymaticsVisualizerComponent } from './avs-cymatics-visualizer.compon
           </div>
         </div>
       }
+      <!-- Hidden Bedside 203 DPI Printable Thermal Label Container for Splash Kiosk Demo -->
+      <div class="printable-thermal-label hidden print:block font-mono" style="font-family: 'PocketGull Bold', 'PocketGull', monospace;">
+        <div style="font-size: 11px; font-weight: 800; border-bottom: 2px solid #000; padding-bottom: 3px; display: flex; justify-content: space-between;">
+          <span>POCKETGULL HEALTH • 203 DPI</span>
+          <span>STAT eMAR DEMO</span>
+        </div>
+        <div style="font-size: 10px; font-weight: 700; margin-top: 4px;">
+          PATIENT: {{ bioTypography?.thermalLabelPayload()?.patientName || 'SAPIENS, H. (34y F)' }} (BED 04 NEURO-ICU)
+        </div>
+        <div style="background: #000; color: #fff; padding: 3px 6px; font-size: 12px; font-weight: 800; margin: 4px 0;">
+          {{ bioTypography?.thermalLabelPayload()?.primaryRx || 'STAT RX: CEFAZOLIN 2 g IV' }}
+        </div>
+        <div style="font-size: 10px; font-variant-numeric: slashed-zero tabular-nums;">
+          {{ bioTypography?.thermalLabelPayload()?.dosageSchedule || 'DOSE: 2000 mg Q8H • ⌀18G IV' }}<br>
+          {{ bioTypography?.thermalLabelPayload()?.allergyAlert || 'ALLERGY ALERT: PENICILLIN (ANAPHYLAXIS)' }}
+        </div>
+        <div style="font-size: 9px; border-top: 1px solid #000; margin-top: 4px; padding-top: 2px; display: flex; justify-content: space-between;">
+          <span>MRN: #9842-01 [⠠⠓⠠⠎ ⠼⠉⠙]</span>
+          <span>SLOAN 5:1 APERTURE DILATED</span>
+        </div>
+      </div>
     </main>
   `,
   styles: [`
@@ -1775,6 +1814,7 @@ export class SecureSplashComponent implements OnInit {
   theme = inject(ThemeService);
   state = inject(PatientStateService);
   public readonly petAuditory = inject(PetAuditoryService);
+  public readonly bioTypography = inject(BioAdaptiveTypographyService, { optional: true });
   public readonly tranceService = inject(MonroePersianTranceService, { optional: true });
   public readonly avsEngine = inject(AvsEngineService, { optional: true });
   public readonly bleWearables = inject(BleWearablesService, { optional: true });
@@ -1798,6 +1838,26 @@ export class SecureSplashComponent implements OnInit {
   // --- Enterprise Single Sign-On (SSO) State ---
   selectedIamRole = 'roles/aiplatform.user';
   selectedSsoProvider = signal<'google' | 'smart-fhir' | 'webauthn'>('google');
+
+  /**
+   * 1-Click Bedside 203 DPI Thermal Label Demonstration for Hospital Kiosks
+   */
+  printQuickBedsideLabel(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (typeof document !== 'undefined') {
+      document.body.classList.add('printing-thermal');
+      if (this.bioTypography) {
+        this.bioTypography.printBedsideThermalLabel();
+      } else if (typeof window !== 'undefined') {
+        window.print();
+      }
+      setTimeout(() => {
+        document.body.classList.remove('printing-thermal');
+      }, 1000);
+    }
+  }
   selectedHospitalIssuer = signal<string>('Epic Systems MyChart');
 
   readonly solarAngleDeg = computed(() => {
