@@ -1,6 +1,8 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
 
+export type TypographicLanguageMode = 'latin' | 'english' | 'japanese' | 'chinese' | 'sanskrit' | 'korean' | 'arabic' | 'hebrew' | 'cyrillic';
+
 export interface ITypographicAnatomyPart {
   id: string;
   name: string;
@@ -11,6 +13,7 @@ export interface ITypographicAnatomyPart {
   koreanName?: string;
   arabicName?: string;
   hebrewName?: string;
+  cyrillicName?: string;
   category: 'skeletal' | 'organ' | 'vascular' | 'neural' | 'muscular';
   snomedCode: string;
   pathD: string;
@@ -30,7 +33,7 @@ export interface ITypographicAnatomyPart {
 export class TypographicAnatomyService {
   private patientState = inject(PatientStateService, { optional: true });
 
-  readonly languageMode = signal<'latin' | 'english' | 'japanese' | 'chinese' | 'sanskrit' | 'korean' | 'arabic' | 'hebrew'>('latin');
+  readonly languageMode = signal<TypographicLanguageMode>('latin');
 
   /** Comprehensive 40+ Human Typographic Anatomy Taxonomy Catalog */
   readonly parts: ITypographicAnatomyPart[] = [
@@ -45,6 +48,7 @@ export class TypographicAnatomyService {
       koreanName: '전두골',
       arabicName: 'العظم الجبهي',
       hebrewName: 'עצם המצח',
+      cyrillicName: 'Лобная кость',
       category: 'skeletal',
       snomedCode: '74872008',
       pathD: 'M 80 32 C 86 18 114 18 120 32',
@@ -66,6 +70,7 @@ export class TypographicAnatomyService {
       koreanName: '대뇌',
       arabicName: 'المخ',
       hebrewName: 'המוח הגדול',
+      cyrillicName: 'Головной мозг',
       category: 'organ',
       snomedCode: '83678007',
       pathD: 'M 82 40 C 84 26 116 26 118 40',
@@ -88,6 +93,7 @@ export class TypographicAnatomyService {
       koreanName: '소뇌',
       arabicName: 'المخيخ',
       hebrewName: 'המוח הקטן',
+      cyrillicName: 'Мозжечок',
       category: 'organ',
       snomedCode: '78333008',
       pathD: 'M 86 48 C 92 52 108 52 114 48',
@@ -109,6 +115,7 @@ export class TypographicAnatomyService {
       koreanName: '하악골',
       arabicName: 'الفك السفلي',
       hebrewName: 'לסת תחתונה',
+      cyrillicName: 'Нижняя челюсть',
       category: 'skeletal',
       snomedCode: '91609006',
       pathD: 'M 88 56 Q 100 64 112 56',
@@ -132,6 +139,7 @@ export class TypographicAnatomyService {
       koreanName: '경추',
       arabicName: 'الفقرات العنقية',
       hebrewName: 'עמוד שדרה צווארי',
+      cyrillicName: 'Шейный отдел',
       category: 'skeletal',
       snomedCode: '122494005',
       pathD: 'M 100 60 V 78',
@@ -153,6 +161,7 @@ export class TypographicAnatomyService {
       koreanName: '흉추',
       arabicName: 'الفقرات الصدرية',
       hebrewName: 'עמוד שדרה חזי',
+      cyrillicName: 'Грудной отдел',
       category: 'skeletal',
       snomedCode: '122495006',
       pathD: 'M 100 80 V 150',
@@ -174,6 +183,7 @@ export class TypographicAnatomyService {
       koreanName: '요추',
       arabicName: 'الفقرات القطنية',
       hebrewName: 'עמוד שדרה מותני',
+      cyrillicName: 'Поясничный отдел',
       category: 'skeletal',
       snomedCode: '122496007',
       pathD: 'M 100 152 V 195',
@@ -197,6 +207,7 @@ export class TypographicAnatomyService {
       koreanName: '좌측 쇄골',
       arabicName: 'الترقوة اليسرى',
       hebrewName: 'עצם הבריח השמאלית',
+      cyrillicName: 'Левая ключица',
       category: 'skeletal',
       snomedCode: '51299004',
       pathD: 'M 100 70 Q 118 68 132 72',
@@ -218,6 +229,7 @@ export class TypographicAnatomyService {
       koreanName: '우측 쇄골',
       arabicName: 'الترقوة اليمنى',
       hebrewName: 'עצם הבריח הימנית',
+      cyrillicName: 'Правая ключица',
       category: 'skeletal',
       snomedCode: '8887007',
       pathD: 'M 68 72 Q 82 68 100 70',
@@ -239,6 +251,7 @@ export class TypographicAnatomyService {
       koreanName: '흉골',
       arabicName: 'عظم القص',
       hebrewName: 'עצם החזה',
+      cyrillicName: 'Грудина',
       category: 'skeletal',
       snomedCode: '56873002',
       pathD: 'M 100 75 V 125',
@@ -260,6 +273,7 @@ export class TypographicAnatomyService {
       koreanName: '상부 늑골',
       arabicName: 'الأضلاع العلوية',
       hebrewName: 'צלעות עליונות',
+      cyrillicName: 'Верхние рёбра',
       category: 'skeletal',
       snomedCode: '113197003',
       pathD: 'M 78 88 Q 100 92 122 88',
@@ -281,6 +295,7 @@ export class TypographicAnatomyService {
       koreanName: '하부 늑골',
       arabicName: 'الأضلاع السفلية',
       hebrewName: 'צלעות תחתונות',
+      cyrillicName: 'Нижние рёбра',
       category: 'skeletal',
       snomedCode: '113197003',
       pathD: 'M 76 112 Q 100 118 124 112',
@@ -302,6 +317,7 @@ export class TypographicAnatomyService {
       koreanName: '심장 • 심근',
       arabicName: 'القلب • عضلة القلب',
       hebrewName: 'לב • שריר הלב',
+      cyrillicName: 'Сердце • Миокард',
       category: 'organ',
       snomedCode: '80891009',
       pathD: 'M 94 92 C 90 85 100 80 106 90 C 112 80 120 85 116 95 C 112 108 102 116 100 118 C 98 116 92 104 94 92',
@@ -324,6 +340,7 @@ export class TypographicAnatomyService {
       koreanName: '좌폐',
       arabicName: 'الرئة اليسرى',
       hebrewName: 'ריאה שמאלית',
+      cyrillicName: 'Левое лёгкое',
       category: 'organ',
       snomedCode: '44714003',
       pathD: 'M 106 82 C 112 80 122 80 124 88 C 126 102 124 118 112 120',
@@ -346,6 +363,7 @@ export class TypographicAnatomyService {
       koreanName: '우폐',
       arabicName: 'الرئة اليمنى',
       hebrewName: 'ריאה ימנית',
+      cyrillicName: 'Правое лёгкое',
       category: 'organ',
       snomedCode: '45840003',
       pathD: 'M 94 82 C 88 80 78 80 76 88 C 74 102 76 118 88 120',
@@ -370,6 +388,7 @@ export class TypographicAnatomyService {
       koreanName: '간',
       arabicName: 'الكبد',
       hebrewName: 'כבד',
+      cyrillicName: 'Печень',
       category: 'organ',
       snomedCode: '10200004',
       pathD: 'M 76 128 C 76 138 82 146 98 146 C 102 146 104 135 102 128',
@@ -392,6 +411,7 @@ export class TypographicAnatomyService {
       koreanName: '위',
       arabicName: 'المعدة',
       hebrewName: 'קיבה',
+      cyrillicName: 'Желудок',
       category: 'organ',
       snomedCode: '69695003',
       pathD: 'M 104 128 C 106 138 112 144 122 142 C 124 134 122 128 116 128',
@@ -413,6 +433,7 @@ export class TypographicAnatomyService {
       koreanName: '우신',
       arabicName: 'الكلية اليمنى',
       hebrewName: 'כליה ימנית',
+      cyrillicName: 'Правая почка',
       category: 'organ',
       snomedCode: '64033007',
       pathD: 'M 82 150 C 80 156 80 162 86 164',
@@ -435,6 +456,7 @@ export class TypographicAnatomyService {
       koreanName: '좌신',
       arabicName: 'الكلية اليسرى',
       hebrewName: 'כליה שמאלית',
+      cyrillicName: 'Левая почка',
       category: 'organ',
       snomedCode: '18639004',
       pathD: 'M 118 150 C 120 156 120 162 114 164',
@@ -477,6 +499,7 @@ export class TypographicAnatomyService {
       koreanName: '우측 대퇴골',
       arabicName: 'عظم الفخذ الأيمن',
       hebrewName: 'עצם הירך הימנית',
+      cyrillicName: 'Правая бедренная кость',
       category: 'skeletal',
       snomedCode: '71341001',
       pathD: 'M 86 210 L 82 285',
@@ -498,6 +521,7 @@ export class TypographicAnatomyService {
       koreanName: '좌측 대퇴골',
       arabicName: 'عظم الفخذ الأيسر',
       hebrewName: 'עצם הירך השמאלית',
+      cyrillicName: 'Левая бедренная кость',
       category: 'skeletal',
       snomedCode: '24029007',
       pathD: 'M 114 210 L 118 285',
@@ -519,6 +543,7 @@ export class TypographicAnatomyService {
       koreanName: '우측 경골',
       arabicName: 'قصبة الساق اليمنى',
       hebrewName: 'עצם השוק הימנית',
+      cyrillicName: 'Правая большеберцовая кость',
       category: 'skeletal',
       snomedCode: '12611008',
       pathD: 'M 82 295 L 76 385',
@@ -540,6 +565,7 @@ export class TypographicAnatomyService {
       koreanName: '좌측 경골',
       arabicName: 'قصبة الساق اليسرى',
       hebrewName: 'עצם השוק השמאלית',
+      cyrillicName: 'Левая большеберцовая кость',
       category: 'skeletal',
       snomedCode: '56795003',
       pathD: 'M 118 295 L 124 385',
@@ -561,6 +587,7 @@ export class TypographicAnatomyService {
       koreanName: '우측 상완골',
       arabicName: 'عظم العضد الأيمن',
       hebrewName: 'עצם הזרוע הימנית',
+      cyrillicName: 'Правая плечевая кость',
       category: 'skeletal',
       snomedCode: '18188000',
       pathD: 'M 62 105 L 56 160',
@@ -582,6 +609,7 @@ export class TypographicAnatomyService {
       koreanName: '좌측 상완골',
       arabicName: 'عظم العضد الأيسر',
       hebrewName: 'עצם הזרוע השמאלית',
+      cyrillicName: 'Левая плечевая кость',
       category: 'skeletal',
       snomedCode: '78277001',
       pathD: 'M 138 105 L 144 160',
@@ -605,6 +633,7 @@ export class TypographicAnatomyService {
       koreanName: '대동맥',
       arabicName: 'الشريان الأبهر',
       hebrewName: 'אבי העורקים',
+      cyrillicName: 'Аорта',
       category: 'vascular',
       snomedCode: '15825003',
       pathD: 'M 100 95 C 104 88 106 78 100 74',
@@ -627,6 +656,7 @@ export class TypographicAnatomyService {
       koreanName: '대정맥',
       arabicName: 'الوريد الأجوف',
       hebrewName: 'וריד נבוב',
+      cyrillicName: 'Полая вена',
       category: 'vascular',
       snomedCode: '76784001',
       pathD: 'M 96 74 V 110',
@@ -650,6 +680,7 @@ export class TypographicAnatomyService {
       case 'korean': return part.koreanName || part.name;
       case 'arabic': return part.arabicName || part.name;
       case 'hebrew': return part.hebrewName || part.name;
+      case 'cyrillic': return part.cyrillicName || part.name;
       default: return part.latinName;
     }
   }
@@ -688,8 +719,8 @@ export class TypographicAnatomyService {
   }
 
   cycleLanguage(): void {
-    const modes: Array<'latin' | 'english' | 'japanese' | 'chinese' | 'sanskrit' | 'korean' | 'arabic' | 'hebrew'> = [
-      'latin', 'english', 'japanese', 'chinese', 'sanskrit', 'korean', 'arabic', 'hebrew'
+    const modes: TypographicLanguageMode[] = [
+      'latin', 'english', 'japanese', 'chinese', 'sanskrit', 'korean', 'arabic', 'hebrew', 'cyrillic'
     ];
     const currentIndex = modes.indexOf(this.languageMode());
     const nextIndex = (currentIndex + 1) % modes.length;

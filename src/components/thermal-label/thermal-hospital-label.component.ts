@@ -121,6 +121,12 @@ import { ClinicalProvenanceService, IClinicalTranslationReceipt } from '../../se
                   צפזולין 2 גרם דרך הוריד • דם (90° ד)
                 </span>
               </div>
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-bold text-zinc-600">🌐 Cyrillic:</span>
+                <span class="font-bold text-zinc-900" style="font-family: 'PocketGull', sans-serif;">
+                  Цефазолин 2 г в/в • Сердце • АД 120/80
+                </span>
+              </div>
             </div>
 
             <!-- Simulated Barcode Footer -->
@@ -244,7 +250,7 @@ export class ThermalHospitalLabelComponent {
   }
 
   async generateSeal(): Promise<void> {
-    const text = "℞ CEFAZOLIN 2 g IV • DOSE: 2000 mg Q8H • 头孢唑林 • سيفازولين • צפזולין <bdi>120/80</bdi>";
+    const text = "℞ CEFAZOLIN 2 g IV • DOSE: 2000 mg Q8H • Цефазолин 2 г в/в • 头孢唑林 • سيفازولين • צפזולין <bdi>120/80</bdi>";
     const receipt = await this.provenanceService.generateCryptographicReceipt({
       displayedText: text,
       snomedCodes: ['74281007', '29857009', '75367002'],

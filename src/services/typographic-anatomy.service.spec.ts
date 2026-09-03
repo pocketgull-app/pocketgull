@@ -46,6 +46,9 @@ describe('TypographicAnatomyService', () => {
 
     service.languageMode.set('hebrew');
     expect(service.getLabelForPart(heart)).toContain('לב');
+
+    service.languageMode.set('cyrillic');
+    expect(service.getLabelForPart(heart)).toContain('Сердце');
   });
 
   it('should cycle languages smoothly', () => {
