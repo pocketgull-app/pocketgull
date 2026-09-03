@@ -19,22 +19,20 @@ test.describe('Good Samaritan Emergency Mode E2E Flow', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     // Step 2: Ensure transition to First Aid Mode (via 2-Step STAT confirmation or pointer hold)
+    await expect(page.locator('app-secure-splash')).toBeVisible({ timeout: 25000 });
     const twoStepBtn = page.locator('button', { hasText: /2-Step STAT Confirmation/i }).first();
-    await twoStepBtn.scrollIntoViewIfNeeded().catch(() => {});
-    if (await twoStepBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await twoStepBtn.isVisible({ timeout: 8000 }).catch(() => false)) {
+      await twoStepBtn.scrollIntoViewIfNeeded();
       await twoStepBtn.click();
-      await page.waitForTimeout(300);
       const confirmOverrideBtn = page.locator('button', { hasText: /Confirm STAT/i }).first();
-      await expect(confirmOverrideBtn).toBeVisible({ timeout: 5000 });
+      await expect(confirmOverrideBtn).toBeVisible({ timeout: 10000 });
       await confirmOverrideBtn.click();
     } else {
       const emergencyBypassBtn = page.locator('button[aria-label*="Good Samaritan Mode"]').first();
-      await emergencyBypassBtn.scrollIntoViewIfNeeded().catch(() => {});
-      if (await emergencyBypassBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-        await emergencyBypassBtn.dispatchEvent('pointerdown');
-        await page.waitForTimeout(2800);
-        await emergencyBypassBtn.dispatchEvent('pointerup');
-      }
+      await emergencyBypassBtn.scrollIntoViewIfNeeded();
+      await emergencyBypassBtn.dispatchEvent('pointerdown');
+      await page.waitForTimeout(2800);
+      await emergencyBypassBtn.dispatchEvent('pointerup');
     }
 
     // 3. Assert transition to First Aid Mode (red pulsing badge/banner)

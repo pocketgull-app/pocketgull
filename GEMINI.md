@@ -30,6 +30,7 @@ Pocket-Gull is a real-time medical Care Plan Strategy and Live AI Consult engine
 - **Naming**: Use camelCase for variables and functions, PascalCase for classes and components. Suffix observable streams with `$`.
 - **Structure**: Keep components small and focused. Extract heavy logic into injectable services.
 - **Documentation**: Provide TSDoc style comments for complex service methods or AI integration points.
+- **GitHub PR, Issue & Markdown Hygiene**: In all commit messages, PR descriptions, issue comments, and markdown documents, NEVER emit bare `@`-prefixed words (e.g., Angular control flow `@defer`, `@switch`, `@case`, `@for`, `@let`, `@component`, or scoped npm packages `@google/genai`). Always wrap `@` tokens in inline code backticks (`` `@defer` ``) to prevent GitHub from auto-linking and spamming real GitHub user accounts. When running `gh pr create/edit` in the shell, always pass `--body-file <file>` to prevent shell backslash escaping artifacts.
 
 ## Testing Philosophy
 - Wait for explicit user instruction before writing or modifying tests, unless fixing a build error.

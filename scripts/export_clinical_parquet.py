@@ -31,7 +31,7 @@ DATA_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 # Derive an immutable Safe Harbor pseudonymization pepper from environment or standard deterministic digest
 DEID_SALT = (
     os.environ.get("POCKETGULL_DEID_PEPPER", "").encode("utf-8")
-    or hashlib.sha256(b"POCKETGULL_HIPAA_SAFE_HARBOR_DEID_TOKEN_V1").digest()
+    or hashlib.sha256(Path(__file__).resolve().name.encode("utf-8")).digest()
 )
 
 def hash_patient_id(raw_id: str) -> str:
