@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.33.0] - 2026-09-02
+
+**🧬 Turing 3D Biological Physics Simulation Suite, PocketGull Felt-Tip Marker & Clinical Typefaces Vault (SIL OFL 1.1), DICOM Apex Spine Neuro-Radiology Viewer, WebMCP Tool 65 Clinical Evidence Engine, Biophilic Vagal Odyssey & Optical Innovations, and UKRIO Scholarly Safe Harbor Standard**
+
+### Added
+- **[Turing 3D Biological Physics Simulation Suite] (`src/components/turing/`, `src/services/`)**:
+  - **Fractal Chromatin Fiber (`chromatin-3d-fiber.component.ts`)**: 3D polymer loop extrusion dynamics with cohesin CTCF boundary anchors and epigenetic heterochromatin compaction states.
+  - **Biomolecular Condensate Phase Droplet (`condensate-3d-droplet.component.ts`)**: Flory-Huggins liquid-liquid phase separation (LLPS) physics modeling droplet fusion, surface tension coalescence, and protein disordered regions.
+  - **CRISPR-Cas R-Loop Unwinder (`crispr-3d-unwinder.component.ts`)**: Procedural DNA duplex unwinding, gRNA hybridization, PAM recognition kinetics, and off-target cleavage energy landscapes.
+  - **Low-Reynolds Nanobot Swarm Physics (`nanobot-swarm-3d.component.ts`, `nanobot-swarm-physics.service.ts`)**: Purcell scallop theorem kinematics ($Re \approx 10^{-5}$), Kuramoto collective swarm phase synchronization, Roman CGI-inspired coronagraphic glare nulling, and durotactic tumor stiffness gradient targeting.
+  - **Nucleosome Optical Tweezer Puller (`nucleosome-3d-puller.component.ts`)**: Worm-like chain (WLC) force-extension curves, histone octamer unspooling, and single-molecule biomechanical transitions.
+  - **Viscoelastic Nuclear Deformer (`nucleus-3d-deformer.component.ts`)**: Lamin A/C envelope mechanics, mechanical strain deformation, blebbing, and chromatin shear response.
+  - **Whispy Swarm Vortex Bioreactor (`whispy-swarm-bioreactor-3d.component.ts`)**: 3D microfluidic hydrodynamic vortex simulation with turbulent shear rate monitoring and cellular oxygenation gradients.
+- **[Open-Source Typefaces Vault — SIL OFL 1.1] (`typefaces_vault/`, `public/fonts/google_fonts_submission/`)**:
+  - **Full Font Suite**: Built and verified 7 font styles (`PocketGull-Antigravity`, `PocketGull-Bold`, `PocketGull-Chiseltip`, `PocketGull-Fineliner`, `PocketGull-Numerics`, `PocketGull-VF`, `PocketGullMono-Regular`) in both TTF and WOFF2 formats.
+  - **Google Fonts OFL Package**: Complete upstream metadata package (`METADATA.pb`, `OFL.txt`, `DESCRIPTION.en_us.html`, `DESIGN_SPECIFICATION.md`).
+  - **Dieter Rams 10 Principles Alignment**: Balanced organic felt-tip expression with zero-ambiguity clinical geometry and WCAG AAA (7:1+) contrast legibility.
+- **[DICOM Apex Spine Neuro-Radiology Viewer] (`src/services/dicom.service.ts`, `src/components/modals/`)**:
+  - **Multi-Frame Cine Playback**: Sub-millimeter slice traversal with smooth FPS controls and window/level presets (bone, soft tissue, apex).
+  - **Herniation & Thecal Sac Markup**: Interactive lumbar L4-L5 / L5-S1 disc herniation tagging, canal stenosis grading, and automated FHIR R4 `DiagnosticReport` imaging study serialization.
+- **[Scholarly Safe Harbor & UKRIO Research Integrity Standard] (`src/services/data-science-citation.service.ts`, `src/services/global-jurisdiction-matrix.service.ts`, `companion-apps/avs-therapy/`)**:
+  - **Academic Independence & Non-Endorsement Notice**: Added `SCHOLARLY_SAFE_HARBOR_NOTICE` and `AVS_SCHOLARLY_SAFE_HARBOR_NOTICE` across data science provenance receipts and evidence drawers to protect cited researchers, grants, and universities from Conflict of Interest (COI) or commercial endorsement scrutiny.
+  - **UKRIO Alignment**: Embedded the *UK Research Integrity Office (UKRIO) Code of Practice for Research* into the UK (`GB`) statutory jurisdiction matrix and Sentinel egress whitelist.
+  - **Zero AI Hallucination Grounding**: All citations resolve deterministically to official PubMed Central and publisher DOIs, including Cabrera Lab DSRP Systems Thinking (PMID: 18272224) and StarTalk Cosmic Perspective (DOI: 10.1038/d41586-021-00609-4).
+- **[Biophilic Vagal Odyssey & Optical Innovations] (`companion-apps/avs-therapy/`, `src/services/optical-innovations.service.ts`)**:
+  - **670nm Retinal Photobiomodulation (PBM)**: Mitochondrial cytochrome c oxidase stimulation.
+  - **Circadian ipRGC & OKN Stimulation**: Melanopic lux entrainment and optokinetic nystagmus vestibular rehabilitation.
+  - **WebMCP Tool 65**: Registered `get_clinical_evidence_citations` across 10 clinical evidence categories.
+
 ## [1.32.0] - 2026-09-02
 
 **⚡ Calibrated Edge AI ONNX WebGPU Engine, Columnar Apache Parquet & DuckDB Clinical Data Science Pipeline, National Academy of Medicine (NAM) STEEEP Quality Suite & 1-Page Refrigerator Care Card, RSNA 2026 Knee WORMS Multi-Planar Radiomics Lens, Turing Kinase Petri Nets & Navier-Stokes Morphogen Advection, and NIH/NSF SBIR Phase I/II Grant Dossier**
