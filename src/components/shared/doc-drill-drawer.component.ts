@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, HostListener } from
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DocDrillService, DocDrillPersona } from '../../services/doc-drill.service';
+import { NavigationShellService } from '../../services/navigation-shell.service';
 
 @Component({
   selector: 'app-doc-drill-drawer',
@@ -81,6 +82,35 @@ import { DocDrillService, DocDrillPersona } from '../../services/doc-drill.servi
         <div class="flex-1 overflow-y-auto p-4 text-xs leading-relaxed text-zinc-200 space-y-3 custom-scrollbar">
           <!-- Foundational Topic Synthesis (M3 Elevated Card) -->
           <div class="p-3.5 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 shadow-sm" [innerHTML]="docDrill.currentBrief()"></div>
+
+          <!-- M3 Clinical Decision Support & Care Plan Conversion Bridge -->
+          <div class="p-3.5 rounded-2xl bg-gradient-to-r from-teal-950/60 via-zinc-900/80 to-zinc-900/90 border border-teal-500/30 flex items-center justify-between gap-3 shadow-inner">
+            <div class="min-w-0">
+              @if (docDrill.persona() === 'clinician') {
+                <div class="text-[10.5px] font-mono font-bold uppercase tracking-wider text-teal-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+                  PocketGull Pro • Clinical Co-Pilot
+                </div>
+                <div class="text-[11px] text-zinc-300 mt-0.5">Stream Gemini Live audio consult & cross-check patient vitals</div>
+              } @else {
+                <div class="text-[10.5px] font-mono font-bold uppercase tracking-wider text-teal-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+                  Personalized Care Plan
+                </div>
+                <div class="text-[11px] text-zinc-300 mt-0.5">Discuss this biomarker with a verified functional clinician</div>
+              }
+            </div>
+            <button
+              type="button"
+              (click)="onConsultCta()"
+              class="min-h-[38px] px-3.5 py-1.5 rounded-xl text-[11px] font-bold bg-teal-400 text-[#003731] hover:bg-teal-300 active:scale-95 transition cursor-pointer shrink-0 shadow-md flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
+              @if (docDrill.persona() === 'clinician') {
+                <span>🎙️</span> Launch Consult
+              } @else {
+                <span>📅</span> Book Review
+              }
+            </button>
+          </div>
 
           <!-- Q&A Conversation Stream -->
           @for (msg of docDrill.messages(); track msg.id) {
@@ -180,6 +210,7 @@ import { DocDrillService, DocDrillPersona } from '../../services/doc-drill.servi
 })
 export class DocDrillDrawerComponent {
   readonly docDrill = inject(DocDrillService);
+  private readonly navShell = inject(NavigationShellService);
   questionText: string = '';
 
   @HostListener('window:keydown.escape')
@@ -200,5 +231,15 @@ export class DocDrillDrawerComponent {
     const query = this.questionText;
     this.questionText = '';
     this.docDrill.askQuestion(query);
+  }
+
+  onConsultCta(): void {
+    if (this.docDrill.persona() === 'clinician') {
+      this.navShell.selectTab('analysis');
+      this.docDrill.close();
+    } else {
+      this.navShell.selectTab('chart');
+      this.docDrill.close();
+    }
   }
 }
