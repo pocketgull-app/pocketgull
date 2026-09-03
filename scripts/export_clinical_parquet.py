@@ -28,7 +28,11 @@ from sklearn.model_selection import GroupKFold
 DATA_OUTPUT_DIR = Path(__file__).resolve().parent.parent / "data" / "parquet"
 DATA_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-DEID_SALT = b"pocketgull_scientific_epistemology_salt_2026"
+# Derive an immutable Safe Harbor pseudonymization pepper from environment or standard deterministic digest
+DEID_SALT = (
+    os.environ.get("POCKETGULL_DEID_PEPPER", "").encode("utf-8")
+    or hashlib.sha256(b"POCKETGULL_HIPAA_SAFE_HARBOR_DEID_TOKEN_V1").digest()
+)
 
 def hash_patient_id(raw_id: str) -> str:
     """Generates an immutable HIPAA Safe Harbor de-identified pseudonymous token."""

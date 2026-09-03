@@ -30,6 +30,7 @@ _ALL_SERVICES = "allServices"
 _DATA_READ = "DATA_READ"
 _DATA_WRITE = "DATA_WRITE"
 _VPC_SC_WILDCARD = "*"
+_GCS_SERVICE_NAME = "storage.googleapis.com"
 
 _ORG_POLICY_API = "https://orgpolicy.googleapis.com/v2/projects"
 _CLOUD_RESOURCE_MANAGER_API = "https://cloudresourcemanager.googleapis.com/v3"
@@ -395,9 +396,9 @@ def check_vpc_sc_perimeter_enabled(
         continue
 
       restricted_services = status.get("restrictedServices") or []
-      if (
-          "storage.googleapis.com" in restricted_services
-          or _VPC_SC_WILDCARD in restricted_services
+      if any(
+          svc == _GCS_SERVICE_NAME or svc == _VPC_SC_WILDCARD
+          for svc in restricted_services
       ):
         return True
 

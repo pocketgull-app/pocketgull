@@ -19,11 +19,11 @@
   "license": "MIT",
   "private": true,
   "bin": {
-    "gull": "./scripts/gull.js"
+    "gull": "scripts/gull.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pocketgull-app/pocketgull.git"
+    "url": "git+https://github.com/pocketgull-app/pocketgull.git"
   },
   "engines": {
     "node": "24.x"
@@ -102,6 +102,8 @@
     "gh:pr": "gh pr create --fill",
     "gh:release": "node --no-deprecation scripts/gh-release.mjs",
     "gh:attest:verify": "gh attestation verify oci://ghcr.io/pocketgull-app/pocketgull:latest --owner pocketgull-app",
+    "specimen:rams": "dart run scripts/dart/render_rams_specimen.dart",
+    "social:cards": "dart run scripts/dart/render_social_cards.dart",
     "dart:fonts": "dart run scripts/dart/deploy_fonts.dart",
     "dart:parity": "dart run scripts/dart/generate_parity.dart",
     "dart:docs": "dart run scripts/dart/generate_docs.dart",
@@ -154,8 +156,21 @@
     "@angular/service-worker": "^22.1.0",
     "@angular/ssr": "^22.1.2",
     "@aws-crypto/sha256-js": "^5.2.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.1100.0",
+    "@aws-sdk/client-healthlake": "^3.1100.0",
+    "@aws-sdk/credential-provider-node": "^3.972.43",
+    "@aws-sdk/protocol-http": "^3.374.0",
+    "@aws-sdk/signature-v4": "^3.374.0",
+    "@aws-sdk/signature-v4-multi-region": "^3.996.41",
+    "@aws-sdk/token-providers": "^3.1088.0",
+    "@aws-sdk/types": "^3.974.2",
+    "@aws-sdk/xml-builder": "^3.972.36",
+    "@genkit-ai/google-genai": "^1.40.0",
     "@google-cloud/agones-sdk": "^1.58.0",
+    "@google-cloud/bigquery": "^8.3.1",
     "@google-cloud/secret-manager": "^6.3.0",
+    "@google/adk": "^1.5.0",
+    "@google/genai": "^2.15.0",
     "@mcp-b/webmcp-polyfill": "^2.2.0",
     "@mlc-ai/web-llm": "^0.2.83",
     "@opentelemetry/api": "^1.9.0",
@@ -177,6 +192,7 @@
     "dompurify": "^3.4.13",
     "express": "^5.2.1",
     "firebase": "^12.17.0",
+    "genkit": "^1.40.1",
     "google-auth-library": "^11.0.0",
     "helmet": "^8.1.0",
     "http-proxy-middleware": "4.2.0",
@@ -195,21 +211,7 @@
     "tailwindcss": "^3.4.19",
     "three": "^0.185.0",
     "ws": "^8.21.0",
-    "zod": "^4.3.6",
-    "@aws-sdk/client-bedrock-runtime": "^3.1100.0",
-    "@aws-sdk/client-healthlake": "^3.1100.0",
-    "@aws-sdk/credential-provider-node": "^3.972.43",
-    "@aws-sdk/protocol-http": "^3.374.0",
-    "@aws-sdk/signature-v4": "^3.374.0",
-    "@aws-sdk/signature-v4-multi-region": "^3.996.41",
-    "@aws-sdk/token-providers": "^3.1088.0",
-    "@aws-sdk/types": "^3.974.2",
-    "@aws-sdk/xml-builder": "^3.972.36",
-    "@genkit-ai/google-genai": "^1.40.0",
-    "@google-cloud/bigquery": "^8.3.1",
-    "@google/adk": "^1.5.0",
-    "@google/genai": "^2.15.0",
-    "genkit": "^1.40.1"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@axe-core/puppeteer": "^4.11.1",
@@ -221,6 +223,7 @@
     "@types/node": "^26.1.2",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/ws": "^8.18.1",
+    "harfbuzzjs": "^1.6.1",
     "husky": "^9.1.7",
     "jsdom": "^30.0.1",
     "lighthouse": "^13.0.3",
@@ -277,7 +280,7 @@
     "@opentelemetry/sdk-trace-base": "^2.9.0",
     "@opentelemetry/otlp-transformer": "^0.220.0",
     "uuid": "11.1.1",
-    "qs": ">=6.15.2",
+    "qs": ">=6.16.0",
     "@anthropic-ai/sdk": "^0.92.0",
     "@babel/core": ">=7.29.7",
     "dompurify": "^3.4.13",
@@ -292,7 +295,8 @@
     "js-yaml": ">=4.3.1",
     "brace-expansion": "^2.1.4",
     "svgo": "^4.0.2",
-    "fast-uri": "^4.1.2",
+    "fast-uri": "^4.1.4",
+    "postcss-selector-parser": ">=6.1.4",
     "ip-address": ">=10.4.0",
     "@angular/build": {
       "undici": "8.10.0",
@@ -356,5 +360,14 @@
     "@google/genai@2.18.0": true,
     "puppeteer@25.8.0": true,
     "@firebase/util@1.15.3": true
-  }
+  },
+  "main": "server.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "bugs": {
+    "url": "https://github.com/pocketgull-app/pocketgull/issues"
+  },
+  "homepage": "https://github.com/pocketgull-app/pocketgull#readme"
 }
