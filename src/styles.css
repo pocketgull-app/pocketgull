@@ -4046,6 +4046,35 @@ textarea:focus-visible {
   }
 }
 
+/* ─── Doc Drill Interactive Socratic Node Badges ─── */
+.doc-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  background: rgba(20, 184, 166, 0.12);
+  border-bottom: 1.5px dotted #14b8a6;
+  color: #14b8a6;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.doc-node:hover {
+  background: rgba(20, 184, 166, 0.25);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.2);
+}
+
+.doc-node:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #14b8a6;
+}
+
+
 
 
 

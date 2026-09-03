@@ -88,6 +88,7 @@ import { CmsRpmSuperbillModalComponent } from './components/modals/cms-rpm-super
 import { ClinicalTrajectoryReaderModalComponent } from './components/modals/clinical-trajectory-reader-modal.component';
 import { AustereResearchHudComponent } from './components/austere-research-hud/austere-research-hud.component';
 import { AppLicensingGuardService } from './services/app-licensing-guard.service';
+import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.component';
 
 @Component({
   selector: 'app-root',
@@ -150,7 +151,8 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     GreenRoomLoungeComponent,
     CmsRpmSuperbillModalComponent,
     ClinicalTrajectoryReaderModalComponent,
-    AustereResearchHudComponent
+    AustereResearchHudComponent,
+    DocDrillDrawerComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -863,6 +865,10 @@ import { AppLicensingGuardService } from './services/app-licensing-guard.service
     @if (showDocsStudy()) {
       <app-docs-study></app-docs-study>
     }
+
+    <!-- Universal Doc Drill & Evidence Focus Socratic Drawer -->
+    <app-doc-drill-drawer />
+
 
     <!-- Vertex AI Model Garden & Developer API Portal Modal Site -->
     @if (showModelGardenModal()) {

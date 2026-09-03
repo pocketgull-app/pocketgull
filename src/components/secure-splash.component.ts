@@ -26,6 +26,7 @@ import { BleWearablesService } from '../services/hardware/ble-wearables.service'
 import { VibroacousticHapticService } from '../services/hardware/vibroacoustic-haptic.service';
 import { AvsCymaticsVisualizerComponent } from './avs-cymatics-visualizer.component';
 import { BioAdaptiveTypographyService } from '../services/bio-adaptive-typography.service';
+import { DocDrillService } from '../services/doc-drill.service';
 
 @Component({
   selector: 'app-secure-splash',
@@ -165,17 +166,23 @@ import { BioAdaptiveTypographyService } from '../services/bio-adaptive-typograph
 
             <!-- 👁️ Sloan 5:1 Optotype Calibration & 203 DPI Bedside Badge -->
             <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/80 text-zinc-600 dark:text-zinc-300 text-[9.5px] font-mono mt-2 shadow-2xs">
-              <span class="flex items-center gap-1 font-bold text-teal-600 dark:text-teal-400">
+              <button type="button" (click)="docDrill?.openDrill('Louise Sloan 5:1 Invariant', { category: 'OPHTHALMOLOGY' })"
+                class="flex items-center gap-1 font-bold text-teal-600 dark:text-teal-400 hover:underline cursor-pointer"
+                title="Drill down on Sloan 5:1 Optotype Invariant">
                 <span class="pg-icon pg-icon-eye text-xs leading-none"></span>
                 <span>Sloan 5:1 Invariant</span>
-              </span>
+              </button>
               <span class="text-zinc-400 dark:text-zinc-500">•</span>
-              <span>55cm Calibrated</span>
+              <button type="button" (click)="docDrill?.openDrill('Bedside 203 DPI Thermal Label Physics', { category: 'HARDWARE INTEROP' })"
+                class="flex items-center gap-1 text-teal-700 dark:text-teal-300 font-bold hover:underline cursor-pointer"
+                title="Drill down on 203 DPI Bedside Thermal Physics">
+                <span class="pg-icon pg-icon-print text-[10px] leading-none"></span>
+                <span>203 DPI Physics</span>
+              </button>
               <span class="text-zinc-400 dark:text-zinc-500">•</span>
               <button type="button" (click)="printQuickBedsideLabel($event)" title="Test 203 DPI Bedside Label Print"
-                class="flex items-center gap-1 text-teal-700 dark:text-teal-300 font-bold hover:underline cursor-pointer">
-                <span class="pg-icon pg-icon-print text-[10px] leading-none"></span>
-                <span>203 DPI Demo</span>
+                class="text-amber-700 dark:text-amber-400 font-bold hover:underline cursor-pointer">
+                <span>Print Demo</span>
               </button>
             </div>
 
@@ -1815,6 +1822,7 @@ export class SecureSplashComponent implements OnInit {
   state = inject(PatientStateService);
   public readonly petAuditory = inject(PetAuditoryService);
   public readonly bioTypography = inject(BioAdaptiveTypographyService, { optional: true });
+  public readonly docDrill = inject(DocDrillService, { optional: true });
   public readonly tranceService = inject(MonroePersianTranceService, { optional: true });
   public readonly avsEngine = inject(AvsEngineService, { optional: true });
   public readonly bleWearables = inject(BleWearablesService, { optional: true });
