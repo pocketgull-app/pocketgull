@@ -1,0 +1,88 @@
+{
+  "schemes": [
+    {
+      "name": "PocketGull Washi (Tactile Rice Paper)",
+      "background": "#FAF8F2",
+      "foreground": "#292524",
+      "cursorColor": "#0D9488",
+      "selectionBackground": "#E7E2D6",
+      "black": "#292524",
+      "red": "#DC2626",
+      "green": "#0D9488",
+      "yellow": "#D97706",
+      "blue": "#0284C7",
+      "purple": "#7C3AED",
+      "cyan": "#0F766E",
+      "white": "#E7E2D6",
+      "brightBlack": "#78716C",
+      "brightRed": "#EF4444",
+      "brightGreen": "#14B8A6",
+      "brightYellow": "#F59E0B",
+      "brightBlue": "#38BDF8",
+      "brightPurple": "#8B5CF6",
+      "brightCyan": "#2DD4BF",
+      "brightWhite": "#FFFFFF"
+    },
+    {
+      "name": "PocketGull Washi Dark (Sumi Ink & Bamboo)",
+      "background": "#181816",
+      "foreground": "#FAF8F2",
+      "cursorColor": "#2DD4BF",
+      "selectionBackground": "#2E2D29",
+      "black": "#181816",
+      "red": "#F87171",
+      "green": "#2DD4BF",
+      "yellow": "#FBBF24",
+      "blue": "#38BDF8",
+      "purple": "#A78BFA",
+      "cyan": "#5EEAD4",
+      "white": "#FAF8F2",
+      "brightBlack": "#57534E",
+      "brightRed": "#FCA5A5",
+      "brightGreen": "#5EEAD4",
+      "brightYellow": "#FDE047",
+      "brightBlue": "#7DD3FC",
+      "brightPurple": "#C4B5FD",
+      "brightCyan": "#99F6E4",
+      "brightWhite": "#FFFFFF"
+    },
+    {
+      "name": "PocketGull Obsidian (Ophthalmic Dark)",
+      "background": "#09090B",
+      "foreground": "#F8FAFC",
+      "cursorColor": "#3EBC9E",
+      "selectionBackground": "#1E293B",
+      "black": "#18181B",
+      "red": "#F43F5E",
+      "green": "#10B981",
+      "yellow": "#F59E0B",
+      "blue": "#0284C7",
+      "purple": "#8B5CF6",
+      "cyan": "#3EBC9E",
+      "white": "#F4F4F5",
+      "brightBlack": "#3F3F46",
+      "brightRed": "#FB7185",
+      "brightGreen": "#34D399",
+      "brightYellow": "#FBBF24",
+      "brightBlue": "#38BDF8",
+      "brightPurple": "#A78BFA",
+      "brightCyan": "#5EEAD4",
+      "brightWhite": "#FFFFFF"
+    }
+  ],
+  "profileDefaults": {
+    "font": {
+      "face": "PocketGull Mono",
+      "size": 11.5,
+      "features": {
+        "cv08": 1,
+        "cv05": 1,
+        "ss02": 1,
+        "zero": 1
+      }
+    },
+    "colorScheme": "PocketGull Washi (Tactile Rice Paper)",
+    "cursorShape": "bar",
+    "cursorHeight": 25
+  }
+}

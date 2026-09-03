@@ -1,0 +1,67 @@
+{
+  "version": 2,
+  "final_space": true,
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "text",
+          "style": "diamond",
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b0",
+          "foreground": "#FAF8F2",
+          "background": "#0D9488",
+          "template": " 🌾 WASHI POCKETGULL "
+        },
+        {
+          "type": "path",
+          "style": "powerline",
+          "powerline_symbol": "\ue0b0",
+          "foreground": "#292524",
+          "background": "#E7E2D6",
+          "options": {
+            "style": "full",
+            "folder_icon": "📁 "
+          },
+          "template": " {{ .Path }} "
+        },
+        {
+          "type": "git",
+          "style": "powerline",
+          "powerline_symbol": "\ue0b0",
+          "foreground": "#FFFFFF",
+          "background": "#D97706",
+          "template": "  {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }} *{{ end }}{{ if gt .Ahead 0 }} ▲{{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ▼{{ .Behind }}{{ end }} "
+        },
+        {
+          "type": "executiontime",
+          "style": "diamond",
+          "trailing_diamond": "\ue0b0",
+          "foreground": "#292524",
+          "background": "#D5CEBD",
+          "options": {
+            "threshold": 10
+          },
+          "template": " ⏱ {{ .FormattedMs }} "
+        }
+      ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "right",
+      "segments": [
+        {
+          "type": "text",
+          "style": "diamond",
+          "leading_diamond": "\ue0b2",
+          "trailing_diamond": "\ue0b4",
+          "foreground": "#0D9488",
+          "background": "#EFEAE1",
+          "template": " ⠠⠏⠕⠉⠅⠑⠞⠠⠛⠥⠇⠇ ⠠⠍⠕⠝⠕ • WASHI RICE PAPER "
+        }
+      ]
+    }
+  ]
+}
