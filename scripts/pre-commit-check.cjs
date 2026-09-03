@@ -247,7 +247,8 @@ const secretPatterns = [
   { name: 'Generic Private Key Header', regex: /-----BEGIN [A-Z0-9_-]+ PRIVATE KEY-----/g },
   { name: 'AWS Access Key ID', regex: /(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}/g },
   { name: 'Stripe Secret Key', regex: /sk_live_[0-9a-zA-Z]{24}/g },
-  { name: 'Generic Password/Key Assignment', regex: /(api[-_]?key|secret[-_]?key|password|db[-_]?pass)\s*[:=]\s*['"`][a-zA-Z0-9_\-*!@#%^&()]{16,}['"`]/gi }
+  { name: 'Generic Password/Salt/Token Assignment', regex: /(api[-_]?key|secret[-_]?key|password|db[-_]?pass|salt|pepper|token|auth[-_]?key)\s*[:=]\s*(?:b)?['"`][a-zA-Z0-9_\-*!@#%^&()]{16,}['"`]/gi },
+  { name: 'Biased Cryptographic Modulo (CodeQL)', regex: /crypto\.getRandomValues\([^)]+\)(\[[0-9]+\])?\s*%/g }
 ];
 
 // Gather files modified/staged in git to scan for secrets
@@ -424,6 +425,17 @@ console.log('✅ Static ReDoS & Regex Security Audit completed.\n');
 const taintScript = path.resolve(workspaceRoot, 'scripts/taint-analysis-guard.mjs');
 const taintPassed = runNodeScript(taintScript, [], 'Global Taint-Tracking Data Flow Security Guard');
 if (!taintPassed) {
+  process.exit(1);
+}
+
+// Check 10: Multi-Workspace Dependency Vulnerability Audit (Shift-Left Dependabot Gate)
+console.log('🔹 Running: Multi-Workspace Dependency Vulnerability Audit...');
+try {
+  execSync('npm audit --audit-level=high', { stdio: 'inherit', cwd: workspaceRoot, env: cleanEnv });
+  console.log('✅ Multi-Workspace Dependency Vulnerability Audit passed.\n');
+} catch (error) {
+  console.error('❌ Multi-Workspace Dependency Vulnerability Audit failed! High/Critical vulnerabilities detected.');
+  console.error('⚠️  Run "npm audit fix" or update package.json "overrides" across root and sub-workspaces before committing.\n');
   process.exit(1);
 }
 
