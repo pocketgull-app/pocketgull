@@ -4,6 +4,8 @@ import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { DictationService } from '../services/dictation.service';
 import { GlobalHealthInitiativesService } from '../services/global-health-initiatives.service';
+import { BioAdaptiveTypographyService } from '../services/bio-adaptive-typography.service';
+import { VisualAcuityService } from '../services/visual-acuity.service';
 
 describe('MedicalChartComponent', () => {
   const createComponent = () => {
@@ -44,6 +46,8 @@ describe('MedicalChartComponent', () => {
         { provide: PatientManagementService, useValue: mockPatientManager },
         { provide: DictationService, useValue: mockDictation },
         { provide: GlobalHealthInitiativesService, useClass: GlobalHealthInitiativesService },
+        { provide: VisualAcuityService, useClass: VisualAcuityService },
+        { provide: BioAdaptiveTypographyService, useClass: BioAdaptiveTypographyService },
         { provide: ElementRef, useValue: new ElementRef(document.createElement('div')) },
         { provide: PLATFORM_ID, useValue: 'browser' }
       ]
@@ -79,5 +83,19 @@ describe('MedicalChartComponent', () => {
     expect(chart.isBiometricExpanded()).toBe(true);
     chart.isBiometricExpanded.set(false);
     expect(chart.isBiometricExpanded()).toBe(false);
+  });
+
+  it('4. Integrates Bio-Adaptive Sloan 5:1 Phoropter and thermal printing', () => {
+    const chart = createComponent();
+    expect(chart.bioTypography).toBeDefined();
+    expect(chart.bioTypography.phoropterMode()).toBe('STANDARD_20_20');
+    expect(chart.bioTypography.sloanDilationFactor()).toBe(1.0);
+
+    chart.bioTypography.setPhoropterMode('MESOPIC_ICU');
+    expect(chart.bioTypography.sloanDilationFactor()).toBe(1.20);
+
+    const payload = chart.bioTypography.thermalLabelPayload();
+    expect(payload.mrn).toBe('#9842-01');
+    expect(payload.zplCode).toContain('^XA');
   });
 });

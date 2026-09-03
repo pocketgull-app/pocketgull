@@ -65,6 +65,39 @@ body, html {
   font-feature-settings: "tnum" 1, "zero" 1;
 }
 
+/* Bio-Adaptive Sloan 5:1 Optotype Aperture Primitives */
+.bio-adaptive-sloan {
+  letter-spacing: var(--sloan-letter-spacing, 0em);
+  font-feature-settings: "zero" 1, "cv08" 1, "cv05" 1, "ss02" 1, "tnum" 1;
+  font-variant-numeric: slashed-zero tabular-nums;
+  transition: letter-spacing 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 203 DPI Calibrated Bedside Thermal Print Media Styles for Patient Chart */
+@media print {
+  body.printing-thermal * {
+    visibility: hidden !important;
+  }
+  body.printing-thermal .printable-thermal-label,
+  body.printing-thermal .printable-thermal-label * {
+    visibility: visible !important;
+  }
+  body.printing-thermal .printable-thermal-label {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 3.5in !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0.2in !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
 .gpu-layer, .will-change-transform {
   will-change: transform, opacity;
   transform: translateZ(0);

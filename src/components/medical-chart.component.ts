@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, computed, signal, viewChild, ElementRef, effect, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
+import { BioAdaptiveTypographyService } from '../services/bio-adaptive-typography.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { IPatientState, IPatient, HistoryEntry } from '../services/patient.types';
 import { BodyViewerComponent } from './anatomy-3d/body-viewer.component';
@@ -40,7 +41,7 @@ import { PatientScansComponent } from './patient-scans.component';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="w-full min-h-full flex flex-col gap-3 sm:gap-4 p-3 sm:p-6 bg-[#F9FAFB] dark:bg-transparent">
+    <div class="w-full min-h-full flex flex-col gap-3 sm:gap-4 p-3 sm:p-6 bg-[#F9FAFB] dark:bg-transparent bio-adaptive-sloan" [style.--sloan-letter-spacing]="bioTypography.letterSpacingEm()">
  
        <!-- Review Mode Banner -->
       @if(isReviewMode() && state.viewingPastVisit(); as visit) {
@@ -129,6 +130,119 @@ import { PatientScansComponent } from './patient-scans.component';
           class="hidden sm:flex items-center gap-1 px-2 py-1 text-[10px] font-mono font-bold uppercase tracking-wider border border-zinc-300 dark:border-zinc-700 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer shrink-0">
           <span>{{ activeWorkspaceTab() === 'all' ? '[ MULTI-PANEL ]' : '[ ALL PANELS ]' }}</span>
         </button>
+      </div>
+
+      <!-- 👁️ Bio-Adaptive Sloan 5:1 Phoropter & Bedside Thermal Action Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 backdrop-blur-sm text-xs font-mono mb-2">
+        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <div class="flex items-center gap-1 text-[11px] font-bold text-teal-600 dark:text-teal-400 mr-1">
+            <span class="pg-icon pg-icon-eye text-sm leading-none"></span>
+            <span class="tracking-wider uppercase">Sloan 5:1 Lens:</span>
+          </div>
+
+          <!-- Phoropter Mode Pills -->
+          <button type="button" (click)="bioTypography.setPhoropterMode('STANDARD_20_20')"
+            [class.bg-teal-500]="bioTypography.phoropterMode() === 'STANDARD_20_20'"
+            [class.text-white]="bioTypography.phoropterMode() === 'STANDARD_20_20'"
+            [class.border-teal-500]="bioTypography.phoropterMode() === 'STANDARD_20_20'"
+            [class.bg-white]="bioTypography.phoropterMode() !== 'STANDARD_20_20'"
+            [class.dark:bg-zinc-800]="bioTypography.phoropterMode() !== 'STANDARD_20_20'"
+            [class.text-zinc-600]="bioTypography.phoropterMode() !== 'STANDARD_20_20'"
+            [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'STANDARD_20_20'"
+            class="px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500">
+            20/20 Std
+          </button>
+
+          <button type="button" (click)="bioTypography.setPhoropterMode('AUTO_DISTANCE')"
+            [class.bg-teal-500]="bioTypography.phoropterMode() === 'AUTO_DISTANCE'"
+            [class.text-white]="bioTypography.phoropterMode() === 'AUTO_DISTANCE'"
+            [class.border-teal-500]="bioTypography.phoropterMode() === 'AUTO_DISTANCE'"
+            [class.bg-white]="bioTypography.phoropterMode() !== 'AUTO_DISTANCE'"
+            [class.dark:bg-zinc-800]="bioTypography.phoropterMode() !== 'AUTO_DISTANCE'"
+            [class.text-zinc-600]="bioTypography.phoropterMode() !== 'AUTO_DISTANCE'"
+            [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'AUTO_DISTANCE'"
+            class="px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500">
+            📱 Distance ({{ bioTypography.distanceCm() }}cm)
+          </button>
+
+          <button type="button" (click)="bioTypography.setPhoropterMode('MESOPIC_ICU')"
+            [class.bg-teal-500]="bioTypography.phoropterMode() === 'MESOPIC_ICU'"
+            [class.text-white]="bioTypography.phoropterMode() === 'MESOPIC_ICU'"
+            [class.border-teal-500]="bioTypography.phoropterMode() === 'MESOPIC_ICU'"
+            [class.bg-white]="bioTypography.phoropterMode() !== 'MESOPIC_ICU'"
+            [class.dark:bg-zinc-800]="bioTypography.phoropterMode() !== 'MESOPIC_ICU'"
+            [class.text-zinc-600]="bioTypography.phoropterMode() !== 'MESOPIC_ICU'"
+            [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'MESOPIC_ICU'"
+            class="px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500">
+            🌙 ICU Mesopic
+          </button>
+
+          <button type="button" (click)="bioTypography.setPhoropterMode('STAT_TRAUMA')"
+            [class.bg-red-500]="bioTypography.phoropterMode() === 'STAT_TRAUMA'"
+            [class.text-white]="bioTypography.phoropterMode() === 'STAT_TRAUMA'"
+            [class.border-red-500]="bioTypography.phoropterMode() === 'STAT_TRAUMA'"
+            [class.bg-white]="bioTypography.phoropterMode() !== 'STAT_TRAUMA'"
+            [class.dark:bg-zinc-800]="bioTypography.phoropterMode() !== 'STAT_TRAUMA'"
+            [class.text-zinc-600]="bioTypography.phoropterMode() !== 'STAT_TRAUMA'"
+            [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'STAT_TRAUMA'"
+            class="px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-red-500">
+            ⚡ STAT Trauma
+          </button>
+
+          <button type="button" (click)="bioTypography.setPhoropterMode('LOW_VISION')"
+            [class.bg-amber-500]="bioTypography.phoropterMode() === 'LOW_VISION'"
+            [class.text-white]="bioTypography.phoropterMode() === 'LOW_VISION'"
+            [class.border-amber-500]="bioTypography.phoropterMode() === 'LOW_VISION'"
+            [class.bg-white]="bioTypography.phoropterMode() !== 'LOW_VISION'"
+            [class.dark:bg-zinc-800]="bioTypography.phoropterMode() !== 'LOW_VISION'"
+            [class.text-zinc-600]="bioTypography.phoropterMode() !== 'LOW_VISION'"
+            [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'LOW_VISION'"
+            class="px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-amber-500">
+            👓 Low Vision
+          </button>
+        </div>
+
+        <!-- Live Telemetry Readout & 203 DPI Thermal Print Trigger -->
+        <div class="flex items-center gap-2">
+          <div class="hidden md:flex items-center gap-2 text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
+            <span>DILATION: <strong class="text-teal-600 dark:text-teal-400 font-bold">{{ bioTypography.sloanDilationFactor().toFixed(2) }}x</strong></span>
+            <span>•</span>
+            <span>5.0' ARC</span>
+          </div>
+
+          <button type="button" (click)="printBedsideThermalTicket()"
+            class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold text-[10px] uppercase tracking-wider shadow-sm transition cursor-pointer">
+            <span class="pg-icon pg-icon-print text-xs leading-none"></span>
+            <span>Print 203 DPI</span>
+          </button>
+
+          <button type="button" (click)="bioTypography.downloadZplPayload()" title="Download Zebra ZPL II payload"
+            class="px-2 py-1 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:border-teal-500 text-zinc-700 dark:text-zinc-300 font-bold text-[10px] uppercase tracking-wider transition cursor-pointer">
+            💾 ZPL
+          </button>
+        </div>
+      </div>
+
+      <!-- Hidden Bedside 203 DPI Printable Thermal Label Container -->
+      <div class="printable-thermal-label hidden print:block font-mono" style="font-family: 'PocketGull Bold', 'PocketGull', monospace;">
+        <div style="font-size: 11px; font-weight: 800; border-bottom: 2px solid #000; padding-bottom: 3px; display: flex; justify-content: space-between;">
+          <span>POCKETGULL HEALTH • 203 DPI</span>
+          <span>STAT eMAR</span>
+        </div>
+        <div style="font-size: 10px; font-weight: 700; margin-top: 4px;">
+          PATIENT: {{ bioTypography.thermalLabelPayload().patientName }} ({{ bioTypography.thermalLabelPayload().bed }})
+        </div>
+        <div style="background: #000; color: #fff; padding: 3px 6px; font-size: 12px; font-weight: 800; margin: 4px 0;">
+          {{ bioTypography.thermalLabelPayload().primaryRx }}
+        </div>
+        <div style="font-size: 10px; font-variant-numeric: slashed-zero tabular-nums;">
+          {{ bioTypography.thermalLabelPayload().dosageSchedule }}<br>
+          {{ bioTypography.thermalLabelPayload().allergyAlert }}
+        </div>
+        <div style="font-size: 9px; border-top: 1px solid #000; margin-top: 4px; padding-top: 2px; display: flex; justify-content: space-between;">
+          <span>MRN: {{ bioTypography.thermalLabelPayload().mrn }} [{{ bioTypography.thermalLabelPayload().brailleMrn }}]</span>
+          <span>{{ bioTypography.thermalLabelPayload().sloanApertureStatus }}</span>
+        </div>
       </div>
 
       <!-- 🧬 SECTION 1: 3D ANATOMY & SUMMARY -->
@@ -426,6 +540,7 @@ export class MedicalChartComponent {
   patientManager = inject(PatientManagementService);
   dictation = inject(DictationService);
   globalHealth = inject(GlobalHealthInitiativesService);
+  bioTypography = inject(BioAdaptiveTypographyService);
 
   historyContainer = viewChild<ElementRef<HTMLDivElement>>('historyContainer');
 
@@ -613,5 +728,15 @@ export class MedicalChartComponent {
   openBookmarkInResearchFrame(url: string) {
     this.state.toggleResearchFrame(true);
     this.state.requestResearchUrl(url);
+  }
+
+  printBedsideThermalTicket(): void {
+    if (typeof document !== 'undefined') {
+      document.body.classList.add('printing-thermal');
+      this.bioTypography.printBedsideThermalLabel();
+      setTimeout(() => {
+        document.body.classList.remove('printing-thermal');
+      }, 1000);
+    }
   }
 }
