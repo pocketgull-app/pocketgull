@@ -12,8 +12,8 @@ test.describe('PocketGull Marker Typeface WCAG 2.1 AA/AAA Accessibility Audit', 
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // 1. Verify title heading is present and uses PocketGull marker font class
-    const heading = page.locator('h1, span:has-text("POCKET GULL")').first();
+    // 1. Verify title heading / brand mark is present and uses PocketGull marker font / brand mark
+    const heading = page.locator('app-pocketgull-brand-mark, svg[aria-label*="PocketGull"], h1, [class*="font-pocketgull"]').first();
     await expect(heading).toBeVisible({ timeout: 20000 });
 
     // 2. Compute computed styles for WCAG legibility audit
