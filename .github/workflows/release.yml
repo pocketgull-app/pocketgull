@@ -103,7 +103,7 @@ jobs:
 
       - name: Install Cosign
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8ba6e37284d40cf845fe5 # v3.8.2
+        uses: sigstore/cosign-installer@3454372f43399081ed03b604cb2d021dabca52bb # v3.8.2
 
       - name: Sign Container Image (Keyless OIDC)
         if: github.event_name != 'pull_request'
