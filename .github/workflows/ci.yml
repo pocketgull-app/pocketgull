@@ -160,7 +160,7 @@ jobs:
           cat /tmp/server.log || true
           exit 1
 
-      - name: Run E2E Tests (PR Fast Tier: Desktop Chrome)
+      - name: "Run E2E Tests (PR Fast Tier: Desktop Chrome)"
         if: github.event_name == 'pull_request'
         run: npm run test:e2e -- --project=desktop-chrome
         env:
@@ -172,7 +172,7 @@ jobs:
           GEMINI_API_KEY: 'placeholder-key-for-build'
           SKIP_HEALTHCARE_PROVISION: 'true'
 
-      - name: Run E2E Tests (Main & Release Tier: Full Multi-Device Matrix)
+      - name: "Run E2E Tests (Main & Release Tier: Full Multi-Device Matrix)"
         if: github.event_name != 'pull_request'
         run: npm run test:e2e
         env:
