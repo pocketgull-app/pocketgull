@@ -55,5 +55,19 @@ describe('SocraticMultilingualTranslatorService Unit Suite', () => {
     expect(result.targetLanguage.code).toBe('sw');
     expect(result.translatedText).toContain('Kiswahili');
   });
+
+  it('6. Resolves regional diglossia/vernacular speech into canonical SNOMED-CT ontology', () => {
+    // Arabic Ammiya
+    const arabicRes = service.resolveDialectalToCanonicalOntology('قلبي واجعني أوي', 'ar-EG');
+    expect(arabicRes.canonicalSnomedCode).toBe('29857009'); // Chest pain
+    expect(arabicRes.formalClinicalEhrNote).toContain('SNOMED-CT: 29857009');
+    expect(arabicRes.bidiDirection).toBe('rtl');
+
+    // Cantonese Yue
+    const cantoneseRes = service.resolveDialectalToCanonicalOntology('心口好痛，有啲喘唔到氣', 'zh-yue');
+    expect(cantoneseRes.canonicalSnomedCode).toBe('29857009');
+    expect(cantoneseRes.formalClinicalEhrNote).toContain('12-lead ECG underway');
+    expect(cantoneseRes.bidiDirection).toBe('ltr');
+  });
 });
 
