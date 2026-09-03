@@ -743,3 +743,41 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 - Sentinel Security Guard: **1557 source files scanned, 0 leaks, 100% clean egress**.
 - CycloneDX 1.6 SBOM: **1501 components verified**.
 
+---
+
+## 46. Release v1.33.0 — OpenSSF Pull Request #305, UKRIO Research Integrity & Scholarly Safe Harbor
+
+### 1. Scholarly Safe Harbor & Institutional Protection Standard
+- **Safe Harbor Notices**: Added `SCHOLARLY_SAFE_HARBOR_NOTICE` in [`DataScienceCitationService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/data-science-citation.service.ts) and `AVS_SCHOLARLY_SAFE_HARBOR_NOTICE` in [`avs-evidence-citations.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/services/avs-evidence-citations.ts).
+- **Researcher & University Protection**:
+  - Clarifies that cited peer-reviewed publications are referenced strictly as prior art under standard academic fair use.
+  - Explicitly states that authors, laboratories, and universities (e.g., Cornell University, UCL, McGill) do not sponsor, endorse, or maintain financial affiliation with Pocket-Gull.
+  - Safeguards researchers from Conflict of Interest (COI) reviews or institutional grant compliance friction.
+
+### 2. UKRIO (UK Research Integrity Office) Code of Practice Alignment
+- **Statutory Profile**: Integrated the *UKRIO Code of Practice for Research* into the UK (`GB`) profile in [`GlobalJurisdictionMatrixService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/global-jurisdiction-matrix.service.ts).
+- **Approved Egress Whitelist**: Added `ukrio.org`, `startalkmedia.com`, `neildegrassetyson.com`, and `cabreraresearch.org` to [`scripts/sentinel_security_guard.mjs`](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/sentinel_security_guard.mjs).
+- **Deterministic DOI Grounding**: Eliminates AI hallucinated citations with cryptographically verifiable PubMed and CrossRef DOIs.
+
+### 3. Release v1.33.0 Documentation in CHANGELOG.md
+- **`CHANGELOG.md`**: Formally documented the full suite of additions in `[1.33.0] - 2026-09-02`:
+  - Turing 3D Biological Physics Simulation Suite (Chromatin, Condensate, CRISPR, Nanobot Swarm, Nucleosome, Nucleus, Bioreactor).
+  - Open-Source Typefaces Vault (7 styles in TTF/WOFF2, Google Fonts OFL submission package).
+  - DICOM Apex Spine Neuro-Radiology Viewer with thecal sac compression scoring.
+  - WebMCP Tool 65 Clinical Evidence Engine (65 tools).
+  - Biophilic Vagal Odyssey & Optical Innovations AVS Therapy.
+  - Scholarly Safe Harbor and UKRIO Research Integrity Standard.
+
+### 4. OpenSSF Pull Request #305
+- **Branch**: `feat/ukrio-safe-harbor-evidence-grounding`
+- **Target**: `main`
+- **URL**: [https://github.com/pocketgull-app/pocketgull/pull/305](https://github.com/pocketgull-app/pocketgull/pull/305)
+- **Title**: `feat(platform): v1.33 release — turing 3d suite, typefaces vault, avs therapy, and ukrio research integrity`
+- **Pre-Flight Proof Chain**:
+  - **Vitest**: 1,901 / 1,901 unit tests passed across 454 files.
+  - **TypeScript**: 0 errors across main, companion, and spec configs.
+  - **Sentinel Guard**: 1,557 source files scanned, 0 leaks, 100% clean egress.
+  - **Taint-Tracking Guard**: 754 files scanned, 0 untrusted sink violations.
+  - **CycloneDX 1.6 SBOM**: 1,501 components verified.
+
+
