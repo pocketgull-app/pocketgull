@@ -6,10 +6,17 @@
   <title>Open Scribe — On-Device Clinical Ambient Scribe & Socratic Demystifier</title>
   <style>
     :root {
-      --bg-space: #040405;
-      --panel-bg: rgba(18, 18, 22, 0.75);
-      --panel-border: rgba(255, 255, 255, 0.08);
-      --teal-glow: #14b8a6;
+      /* Material Design 3 (M3) System Color Tokens */
+      --md-sys-color-primary: #14b8a6;
+      --md-sys-color-on-primary: #003731;
+      --md-sys-color-surface: #040405;
+      --md-sys-color-surface-container: rgba(18, 18, 22, 0.75);
+      --md-sys-color-outline: rgba(255, 255, 255, 0.08);
+
+      --bg-space: var(--md-sys-color-surface);
+      --panel-bg: var(--md-sys-color-surface-container);
+      --panel-border: var(--md-sys-color-outline);
+      --teal-glow: var(--md-sys-color-primary);
       --amber-gold: #f59e0b;
       --rose-alert: #f43f5e;
       --indigo-accent: #6366f1;
