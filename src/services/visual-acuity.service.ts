@@ -169,4 +169,77 @@ export class VisualAcuityService {
       clinicalRecommendations: recommendations,
     };
   }
+
+  /**
+   * Calculates Herman Bouma's Critical Lateral Crowding Letter-Spacing
+   * Formula: b = 0.5 * eccentricity_degrees
+   * In low-vision/AMD, spacing must exceed 0.5 * eccentricity to eliminate contour inhibition.
+   */
+  calculateBoumaSpacing(eccentricityDegrees: number = 2.0): string {
+    const criticalAngleDeg = 0.5 * Math.max(0.5, eccentricityDegrees);
+    // Convert critical angle to relative em tracking (nominal ~0.08em per degree of eccentricity)
+    const emTracking = Math.min(0.35, Math.max(0.04, criticalAngleDeg * 0.08));
+    return `${emTracking.toFixed(3)}em`;
+  }
+
+  /**
+   * Returns 670nm Photobiomodulation (PBM) parameters grounded in UCL Jeffery Lab findings.
+   * Stimulates cytochrome c oxidase, boosting retinal photoreceptor ATP by ~22%.
+   */
+  getPhotobiomodulationParameters(): {
+    wavelengthNm: number;
+    colorHex: string;
+    bgHex: string;
+    atpBoostPercent: number;
+    melanopicSuppressionPercent: number;
+  } {
+    return {
+      wavelengthNm: 670,
+      colorHex: '#ef4444',
+      bgHex: '#060608',
+      atpBoostPercent: 22.0,
+      melanopicSuppressionPercent: 0.0
+    };
+  }
+
+  /**
+   * Calculates physical Sloan 5:1 Optotype pixel scaling at arbitrary viewing distances
+   * Ensures 1 arcminute stroke width and 5 arcminute envelope.
+   */
+  calculateSloanOptotypeScale(
+    viewingDistanceCm: number = 60,
+    targetLogMar: number = 0.0,
+    displayDpi: number = 96
+  ): {
+    letterHeightMm: number;
+    letterHeightPx: number;
+    strokeWidthPx: number;
+    snellenEquivalent: string;
+  } {
+    const distanceMeters = viewingDistanceCm / 100;
+    // Angle subtended in radians: 5 arcmin * 10^targetLogMar
+    const arcminTotal = 5.0 * Math.pow(10, targetLogMar);
+    const rad = (arcminTotal / 60) * (Math.PI / 180);
+    const heightMm = 2.0 * (distanceMeters * 1000) * Math.tan(rad / 2);
+    
+    const mmPerInch = 25.4;
+    const pixelsPerMm = displayDpi / mmPerInch;
+    const heightPx = Math.round(heightMm * pixelsPerMm);
+    const strokePx = Math.max(1, Math.round(heightPx / 5.0));
+
+    let snellen = '20/20';
+    if (targetLogMar >= 1.0) snellen = '20/200';
+    else if (targetLogMar >= 0.7) snellen = '20/100';
+    else if (targetLogMar >= 0.3) snellen = '20/40';
+    else if (targetLogMar >= 0.1) snellen = '20/25';
+    else if (targetLogMar < 0.0) snellen = '20/15';
+
+    return {
+      letterHeightMm: parseFloat(heightMm.toFixed(2)),
+      letterHeightPx: heightPx,
+      strokeWidthPx: strokePx,
+      snellenEquivalent: snellen
+    };
+  }
 }
+

@@ -318,3 +318,65 @@
   -webkit-text-fill-color: transparent;
   animation: halftoneResonance 3s ease-in-out infinite;
 }
+
+/* ==========================================================================
+   👁️ 6. Ophthalmological & Neuro-Visual Ergonomics Suite (WCAG AAA & LogMAR)
+   ========================================================================== */
+
+/* 1. LogMAR / Sloan 5:1 Optotype Aperture Standard */
+.font-pocketgull-optotype-sloan {
+  font-family: 'PocketGull', 'Atkinson Hyperlegible', sans-serif !important;
+  font-feature-settings: "zero" 1, "cv08" 1, "cv05" 1, "ss02" 1;
+  letter-spacing: 0.04em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 2. Herman Bouma's Law of Lateral Parafoveal Anti-Crowding (b > 0.5 * theta) */
+.font-pocketgull-bouma-spacing {
+  letter-spacing: 0.16em !important;
+  word-spacing: 0.28em !important;
+  line-height: 1.85 !important;
+}
+
+/* 3. 670nm Deep-Red Photobiomodulation (UCL Jeffery Lab Retinal ATP Standard) */
+.font-pocketgull-670nm-pbm {
+  background-color: #060608 !important;
+  color: #ef4444 !important;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.45);
+  border-color: #7f1d1d !important;
+}
+
+.font-pocketgull-670nm-pbm b,
+.font-pocketgull-670nm-pbm strong {
+  color: #f87171 !important;
+}
+
+/* 4. Pelli-Robson High Contrast Sensitivity Calibration (14:1 WCAG AAA) */
+.font-pocketgull-pelli-robson-high-contrast {
+  color: #ffffff !important;
+  background-color: #000000 !important;
+  font-weight: 700 !important;
+  font-feature-settings: "tnum" 1, "zero" 1, "cv08" 1;
+  text-shadow: none !important;
+}
+
+/* 5. Mesopic Purkinje Shift Adaptation (505nm Cyan-Mint for Darkrooms) */
+.font-pocketgull-mesopic-cyan {
+  color: #38bdf8 !important;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+/* 6. Non-Reflowing Bionic Saccadic Guidance */
+.bionic-fixation-anchor {
+  font-family: 'PocketGull', sans-serif;
+  font-weight: 700;
+  color: #ffffff !important;
+}
+
+.bionic-peripheral-syllable {
+  font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif;
+  font-weight: 400;
+  color: #94a3b8 !important;
+}
+

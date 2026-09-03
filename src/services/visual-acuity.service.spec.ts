@@ -62,4 +62,29 @@ describe('VisualAcuityService Unit Suite', () => {
     const plate1 = service.ISHIHARA_PLATES[0];
     expect(plate1.correctAnswer).toBe('12');
   });
+
+  it('should calculate Herman Boumas lateral crowding letter spacing', () => {
+    const spacing2Deg = service.calculateBoumaSpacing(2.0);
+    expect(spacing2Deg).toBe('0.080em');
+
+    const spacing4Deg = service.calculateBoumaSpacing(4.0);
+    expect(spacing4Deg).toBe('0.160em');
+  });
+
+  it('should return 670nm photobiomodulation parameters with 22% ATP boost', () => {
+    const pbm = service.getPhotobiomodulationParameters();
+    expect(pbm.wavelengthNm).toBe(670);
+    expect(pbm.colorHex).toBe('#ef4444');
+    expect(pbm.atpBoostPercent).toBe(22.0);
+    expect(pbm.melanopicSuppressionPercent).toBe(0.0);
+  });
+
+  it('should compute physical Sloan 5:1 optotype scaling for LogMAR 0.0 at 60cm', () => {
+    const scale = service.calculateSloanOptotypeScale(60, 0.0, 96);
+    expect(scale.letterHeightMm).toBeGreaterThan(0.7);
+    expect(scale.letterHeightPx).toBeGreaterThan(2);
+    expect(scale.strokeWidthPx).toBeGreaterThanOrEqual(1);
+    expect(scale.snellenEquivalent).toBe('20/20');
+  });
 });
+
