@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "PocketGull Obsidian Ophthalmic Theme",
+  "version": "1.0.0",
+  "description": "Deep obsidian void, luminous clinical telemetry contrast, and WCAG AAA eye strain protection.",
+  "theme": {
+    "colors": {
+      "frame": [11, 11, 15],
+      "frame_inactive": [14, 14, 20],
+      "frame_incognito": [7, 7, 9],
+      "frame_incognito_inactive": [11, 11, 15],
+      "toolbar": [9, 9, 11],
+      "tab_text": [248, 250, 252],
+      "tab_background_text": [100, 116, 139],
+      "background_tab": [18, 18, 26],
+      "background_tab_incognito": [14, 14, 20],
+      "bookmark_text": [248, 250, 252],
+      "ntp_background": [9, 9, 11],
+      "ntp_text": [248, 250, 252],
+      "ntp_link": [56, 189, 248],
+      "omnibox_background": [20, 20, 29],
+      "omnibox_text": [248, 250, 252],
+      "toolbar_button_icon": [56, 189, 248]
+    }
+  }
+}

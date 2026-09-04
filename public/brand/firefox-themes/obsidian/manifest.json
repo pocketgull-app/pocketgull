@@ -1,0 +1,32 @@
+{
+  "manifest_version": 2,
+  "name": "PocketGull Obsidian Ophthalmic Theme",
+  "version": "1.0.0",
+  "description": "Deep obsidian void, luminous clinical telemetry contrast, and WCAG AAA eye strain protection for Mozilla Firefox.",
+  "theme": {
+    "colors": {
+      "frame": "#0B0B0F",
+      "frame_inactive": "#0E0E14",
+      "tab_background_text": "#64748B",
+      "tab_line": "#10B981",
+      "tab_loading": "#38BDF8",
+      "tab_selected": "#09090B",
+      "toolbar": "#09090B",
+      "toolbar_text": "#F8FAFC",
+      "toolbar_field": "#14141D",
+      "toolbar_field_text": "#F8FAFC",
+      "toolbar_field_border": "#27273A",
+      "toolbar_field_focus": "#1E1E28",
+      "toolbar_top_separator": "#1E1E28",
+      "toolbar_bottom_separator": "#1E1E28",
+      "popup": "#0E0E14",
+      "popup_text": "#F8FAFC",
+      "popup_border": "#1E1E28",
+      "sidebar": "#0E0E14",
+      "sidebar_text": "#CBD5E1",
+      "sidebar_border": "#1E1E28",
+      "ntp_background": "#09090B",
+      "ntp_text": "#F8FAFC"
+    }
+  }
+}

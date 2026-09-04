@@ -32,6 +32,13 @@ export default defineConfig({
       use: { ...devices['Pixel 7'] },
     },
     {
+      name: 'mobile-iphone-se',
+      use: {
+        ...devices['iPhone SE'],
+        defaultBrowserType: 'chromium',
+      },
+    },
+    {
       name: 'mobile-iphone',
       use: {
         ...devices['iPhone 14'],

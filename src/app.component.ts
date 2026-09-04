@@ -551,11 +551,7 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
                [class.hidden]="isChartCollapsed()"
                [class.max-md:hidden]="mobileActiveTab() !== 'chart' && !state.isSparkModeActive()">
                <div class="md:h-full w-full md:overflow-hidden flex-1 flex flex-col min-h-0">
-                 @defer (on immediate) {
-                   <app-medical-chart class="no-print md:h-full block md:overflow-y-auto w-full max-md:overflow-visible"></app-medical-chart>
-                 } @placeholder {
-                   <div class="h-full w-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold">Loading Chart Engine...</div>
-                 }
+                 <app-medical-chart class="no-print md:h-full block md:overflow-y-auto w-full max-md:overflow-visible"></app-medical-chart>
                </div>
             </div>
 
@@ -643,11 +639,7 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
                       [class.shadow-none]="isChartCollapsed()"
                       [class.bg-[#F9FAFB]]="isChartCollapsed()"
                       [class.dark:bg-[#09090b]]="isChartCollapsed()">
-                     @defer (on immediate) {
                        <app-analysis-container class="flex flex-col flex-1 min-h-0 min-w-0 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)]" appReveal [revealDelay]="100"></app-analysis-container>
-                     } @placeholder {
-                       <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Core AI Synthesis...</div>
-                     }
                  </div>
                  
 

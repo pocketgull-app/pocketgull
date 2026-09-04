@@ -1,0 +1,27 @@
+{
+  "name": "pocketgull-ide-theme",
+  "displayName": "PocketGull Bio-Rhythmic Themes (Washi & Obsidian)",
+  "description": "Tactile Washi Rice Paper and Circadian Ophthalmic Obsidian color themes with optical disambiguation and WCAG AAA contrast.",
+  "version": "1.0.0",
+  "publisher": "pocketgull",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "PocketGull Washi Rice Paper",
+        "uiTheme": "vs",
+        "path": "./themes/pocketgull-washi-color-theme.json"
+      },
+      {
+        "label": "PocketGull Obsidian Ophthalmic",
+        "uiTheme": "vs-dark",
+        "path": "./themes/pocketgull-obsidian-color-theme.json"
+      }
+    ]
+  }
+}

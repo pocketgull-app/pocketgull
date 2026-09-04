@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 📜 PocketGull Washi Rice Paper Palette -->
+    <color name="pg_washi_background">#FAF8F2</color>
+    <color name="pg_washi_surface">#F5F2E9</color>
+    <color name="pg_washi_surface_variant">#EFEAE1</color>
+    <color name="pg_washi_text_primary">#292524</color>
+    <color name="pg_washi_text_secondary">#78716C</color>
+    <color name="pg_washi_outline">#E7E2D6</color>
+    <color name="pg_washi_primary">#0D9488</color> <!-- Celadon Bamboo Teal -->
+    <color name="pg_washi_on_primary">#FFFFFF</color>
+    <color name="pg_washi_secondary">#D97706</color> <!-- Persimmon Amber -->
+    <color name="pg_washi_on_secondary">#FFFFFF</color>
+    <color name="pg_washi_tertiary">#0284C7</color> <!-- Medical Indigo -->
+
+    <!-- 👁️ PocketGull Obsidian Ophthalmic Palette -->
+    <color name="pg_obsidian_background">#09090B</color>
+    <color name="pg_obsidian_surface">#0E0E14</color>
+    <color name="pg_obsidian_surface_variant">#14141D</color>
+    <color name="pg_obsidian_text_primary">#F8FAFC</color>
+    <color name="pg_obsidian_text_secondary">#94A3B8</color>
+    <color name="pg_obsidian_outline">#1E1E28</color>
+    <color name="pg_obsidian_primary">#38BDF8</color> <!-- Clinical Surgical Cyan -->
+    <color name="pg_obsidian_on_primary">#000000</color>
+    <color name="pg_obsidian_secondary">#10B981</color> <!-- Telemetric Emerald -->
+    <color name="pg_obsidian_on_secondary">#000000</color>
+    <color name="pg_obsidian_tertiary">#FBBF24</color> <!-- Amber Gold -->
+</resources>

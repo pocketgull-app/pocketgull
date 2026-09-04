@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { SocraticJargonDictionaryService } from './socratic-jargon-dictionary.service';
 import { PlainLanguageGlossaryService } from './plain-language-glossary.service';
+import { ParquetKnowledgeDbService, IContextChip } from './parquet-knowledge-db.service';
 import { getStoredApiKey } from './secure-key';
 
 export type DocDrillPersona = 'clinician' | 'patient';
@@ -29,6 +30,7 @@ export interface IDocDrillMessage {
 export class DocDrillService {
   private readonly jargonDict = inject(SocraticJargonDictionaryService);
   private readonly plainGlossary = inject(PlainLanguageGlossaryService);
+  private readonly parquetDb = inject(ParquetKnowledgeDbService);
 
   // ─── Reactive Signals ───
   readonly isOpen = signal<boolean>(false);
@@ -46,7 +48,22 @@ export class DocDrillService {
     if (!topic) return '';
     return this.persona() === 'clinician' ? topic.clinicianBrief : topic.patientBrief;
   });
-  readonly currentChips = computed(() => this.activeTopic()?.suggestedChips ?? []);
+
+  // Dynamic Columnar Parquet-derived Context Chips
+  readonly currentContextChips = computed<IContextChip[]>(() => {
+    const topic = this.activeTopic();
+    const persona = this.persona();
+    const asked = this.messages().map(m => m.content);
+    return this.parquetDb.queryContextChips(topic?.id, persona, asked);
+  });
+
+  readonly currentChips = computed<string[]>(() => {
+    const dynamic = this.currentContextChips();
+    if (dynamic.length > 0) {
+      return dynamic.map(c => c.label);
+    }
+    return this.activeTopic()?.suggestedChips ?? [];
+  });
 
   // ─── Knowledge Base Registry ───
   private readonly knowledgeMap: Record<string, IDocDrillTopic> = {
@@ -304,6 +321,106 @@ export class DocDrillService {
         <p class="text-zinc-300">It explains exactly what data was used, how safety was tested, what the system is good at, and where a human doctor must always make the final decision. Nothing is hidden in a "black box."</p>
       `,
       suggestedChips: ['What is a PAIR Data Card?', 'How do Healthsheets work in clinical CDS?', 'Why is transparency essential in medicine?']
+    },
+    'pemda-p': {
+      id: 'pemda-p',
+      term: 'PEMDA+ (P): Primary Intent & Tactile Inking',
+      category: 'PEMDA_PLUS',
+      citation: 'PocketGull Clinical Typography Specification §1 (2026)',
+      formulaOrStandard: 'Parenthetical boundary: Human gesture precedes algorithmic automation',
+      clinicianBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Foundational Human Gesture</h4>
+        <p class="mb-2 text-zinc-300">Like parentheses in arithmetic that govern execution priority, (P) Primary Intent establishes that human touch, physician-patient intimacy, and felt-marker cardstock handwriting are the foundational anchor of healthcare before computational layers intervene.</p>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Clinical Implementation</h4>
+        <p class="text-zinc-300">PocketGull utilizes genuine scanned marker inkings with micro-modulations to ground electronic health records in human authenticity rather than sterile corporate geometry.</p>
+      `,
+      patientBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">The Warmth of a Real Human Touch</h4>
+        <p class="mb-2 text-zinc-300">When you visit a doctor, the most reassuring moment is often when they write a caring note by hand. (P) Primary Intent keeps that warm, handmade feeling in every corner of PocketGull so technology never feels cold or distant.</p>
+      `,
+      suggestedChips: ['Why felt-marker ink?', 'Human gesture vs synthetic design', 'How does design reduce patient anxiety?']
+    },
+    'pemda-e': {
+      id: 'pemda-e',
+      term: 'PEMDA+ [E]: Empirical Optics & Exponential Clarity',
+      category: 'PEMDA_PLUS',
+      citation: 'Louise Sloan (1959) & Herman Bouma (1970)',
+      formulaOrStandard: 'Optotype 5:1 Grid + Bouma Radius r ≈ 0.5 × eccentricity',
+      clinicianBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Biophysical Mathematical Foundation</h4>
+        <p class="mb-2 text-zinc-300">Just as Exponents multiply power, [E] Empirical Optics powers clinical readability through Louise Sloan 5:1 optotype proportions and Bouma lateral spacing, scientifically counteracting retinal bloom and parafoveal crowding.</p>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Optotypic Invariant</h4>
+        <p class="text-zinc-300">Text resolves cleanly at LogMAR 0.0 (Snellen 20/20) at 50–70cm reading distances across constrained COW workstations and high-stress ICU monitors.</p>
+      `,
+      patientBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Letters Tested by Eye Scientists</h4>
+        <p class="mb-2 text-zinc-300">Every number and word is mathematically spaced so that even in dim room lighting or when your eyes feel tired, you can read your vitals clearly without squinting.</p>
+      `,
+      suggestedChips: ['Louise Sloan 5:1 grid proof', 'Bouma lateral crowding law', 'Why 50-70cm reading distance?']
+    },
+    'pemda-m': {
+      id: 'pemda-m',
+      term: 'PEMDA+ {M}: Multi-Style Superfamily Hierarchy',
+      category: 'PEMDA_PLUS',
+      citation: 'PocketGull Typeface Architecture Standard (2026)',
+      formulaOrStandard: 'Harmonized 4-master hierarchy: Bold 700, Fineliner 400, Chiseltip 900, Mono 400',
+      clinicianBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Multiplicative Structural Clarity</h4>
+        <p class="mb-2 text-zinc-300">Multiplication expands capacity. {M} establishes a complete 4-style superfamily where Bold provides focal fixation, Fineliner offers clean editorial prose, Chiseltip anchors high-acuity alerts, and Mono locks ICU vitals to fixed 600 UPM pitch.</p>
+      `,
+      patientBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Clear Visual Organization</h4>
+        <p class="mb-2 text-zinc-300">Different weights guide your eyes naturally—important warnings stand out in bold, while details and stories are gentle and easy to read.</p>
+      `,
+      suggestedChips: ['Explore the 4 font masters', 'Why fixed-pitch monospace for vitals?', 'Focal fixation design']
+    },
+    'pemda-d': {
+      id: 'pemda-d',
+      term: 'PEMDA+ {D}: Disambiguation Safety & Division',
+      category: 'PEMDA_PLUS',
+      citation: 'ISMP Medication Safety Alert & FDA CDER Guideline',
+      formulaOrStandard: 'Division of error vectors: cv08 (slashed 0), cv05 (curved l), ss02 (serifed I)',
+      clinicianBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Dividing Clinical Error Vectors</h4>
+        <p class="mb-2 text-zinc-300">Division eliminates confusable pairs. {D} separates <code>0</code> from <code>O</code> via slashed zeros, <code>1</code> from <code>l</code> via curved stems, and <code>I</code> from <code>l</code> via bilateral serifs to eradicate fatal 10-fold dosage errors.</p>
+      `,
+      patientBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Zero Confusion on Numbers</h4>
+        <p class="mb-2 text-zinc-300">A slashed zero (0) and distinct letters guarantee that medication instructions can never be mistaken or misread.</p>
+      `,
+      suggestedChips: ['ISMP slashed zero rules', 'Curved l vs number 1', 'Preventing 10-fold dosage errors']
+    },
+    'pemda-a': {
+      id: 'pemda-a',
+      term: 'PEMDA+ (A): Universal Accessibility & Addition',
+      category: 'PEMDA_PLUS',
+      citation: 'WCAG AAA Standard & Unicode Consortium U+2800',
+      formulaOrStandard: 'Addition of inclusive modalities: 256 Braille Glyphs + 7:1 Contrast',
+      clinicianBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Additive Inclusivity Modality</h4>
+        <p class="mb-2 text-zinc-300">Addition brings in every reader. (A) integrates the entire 256-glyph Unicode Braille block directly into the font alongside WCAG AAA 7:1 obsidian contrast and Fitts\'s Law 44px hitboxes.</p>
+      `,
+      patientBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Designed for Everyone</h4>
+        <p class="mb-2 text-zinc-300">Whether reading on a bright tablet or with low vision, high-contrast colors and built-in Braille ensure care instructions are accessible to all.</p>
+      `,
+      suggestedChips: ['Unicode Braille matrix', 'WCAG AAA 7:1 contrast ratio', 'Fitts law 44px touch targets']
+    },
+    'pemda-plus': {
+      id: 'pemda-plus',
+      term: 'PEMDA+ (+): The Quiet Workshop Voice & Human Healing',
+      category: 'PEMDA_PLUS',
+      citation: 'Rachel Nabors Ethical Motion Standard (2026)',
+      formulaOrStandard: 'Bio-rhythmic 0.1 Hz parasympathetic breathing resonance (4s in / 6s out)',
+      clinicianBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">The Calming Clinical Transference</h4>
+        <p class="mb-2 text-zinc-300">The (+) is the transcendent summation of the entire hierarchy: communicating with quiet craftsmanship, reassuring clinical clarity, and bio-rhythmic 0.1 Hz motion that soothes the autonomic nervous system.</p>
+      `,
+      patientBrief: `
+        <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Peaceful Healing Rhythm</h4>
+        <p class="mb-2 text-zinc-300">Gentle pulses match a slow, calming breath (4 seconds in, 6 seconds out) to help ease stress and screen apnea while you review your health.</p>
+      `,
+      suggestedChips: ['0.1 Hz parasympathetic breathing', 'Counteracting screen apnea', 'The Quiet Workshop voice']
     }
   };
 
@@ -369,7 +486,16 @@ export class DocDrillService {
       }
     }
 
-    // Local Socratic heuristic fallback
+    // 1. Check in-browser Parquet columnar knowledge database for authoritative curated answer
+    const parquetAnswer = this.parquetDb.resolveChipAnswer(cleanQuery, topic?.id, currentPersona);
+    if (parquetAnswer) {
+      setTimeout(() => {
+        this.addDrillResponse(parquetAnswer);
+      }, 160);
+      return;
+    }
+
+    // 2. Local Socratic heuristic fallback
     setTimeout(() => {
       const localResponse = this.generateLocalSocraticAnswer(cleanQuery, topic, currentPersona);
       this.addDrillResponse(localResponse);
@@ -415,6 +541,13 @@ export class DocDrillService {
     if (lower.includes('noto') || lower.includes('tofu')) return this.knowledgeMap['noto'];
     if (lower.includes('ember') || lower.includes('dalton') || lower.includes('maag')) return this.knowledgeMap['ember'];
     if (lower.includes('pair') || lower.includes('data card') || lower.includes('datacard') || lower.includes('healthsheet') || lower.includes('transparency')) return this.knowledgeMap['pair'];
+    if (lower.includes('pemda-p') || lower.includes('primary intent') || lower.includes('felt-marker') || lower.includes('inking')) return this.knowledgeMap['pemda-p'];
+    if (lower.includes('pemda-e') || lower.includes('empirical optics') || lower.includes('exponential clarity')) return this.knowledgeMap['pemda-e'];
+    if (lower.includes('pemda-m') || lower.includes('multi-style') || lower.includes('superfamily hierarchy')) return this.knowledgeMap['pemda-m'];
+    if (lower.includes('pemda-d') || lower.includes('disambiguation safety') || lower.includes('division')) return this.knowledgeMap['pemda-d'];
+    if (lower.includes('pemda-a') || lower.includes('universal accessibility') || lower.includes('addition')) return this.knowledgeMap['pemda-a'];
+    if (lower.includes('pemda-plus') || lower.includes('pemda+') || lower.includes('quiet workshop') || lower.includes('human healing')) return this.knowledgeMap['pemda-plus'];
+    if (lower.includes('pemda')) return this.knowledgeMap['pemda-plus'];
 
     // Check SocraticJargonDictionaryService
     const jargonDef = this.jargonDict.getDefinition(term);

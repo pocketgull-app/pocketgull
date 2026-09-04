@@ -30,7 +30,12 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
       try {
         const val = await arg.jsonValue();
         if (val && typeof val === 'object') {
-          parts.push(JSON.stringify(val));
+          const str = JSON.stringify(val);
+          if (str === '{}' || str === '{"name":"Error"}') {
+            parts.push(arg.toString());
+          } else {
+            parts.push(str);
+          }
         } else {
           parts.push(val);
         }

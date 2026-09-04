@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "PocketGull Washi Rice Paper Theme",
+  "version": "1.0.0",
+  "description": "Tactile unbleached mulberry washi paper, deep charcoal sumi ink, and celadon bamboo accents.",
+  "theme": {
+    "colors": {
+      "frame": [239, 234, 225],
+      "frame_inactive": [245, 242, 233],
+      "frame_incognito": [229, 223, 208],
+      "frame_incognito_inactive": [239, 234, 225],
+      "toolbar": [250, 248, 242],
+      "tab_text": [41, 37, 36],
+      "tab_background_text": [120, 113, 108],
+      "background_tab": [229, 223, 208],
+      "background_tab_incognito": [220, 214, 198],
+      "bookmark_text": [41, 37, 36],
+      "ntp_background": [250, 248, 242],
+      "ntp_text": [41, 37, 36],
+      "ntp_link": [13, 148, 136],
+      "omnibox_background": [255, 255, 255],
+      "omnibox_text": [28, 25, 23],
+      "toolbar_button_icon": [13, 148, 136]
+    }
+  }
+}

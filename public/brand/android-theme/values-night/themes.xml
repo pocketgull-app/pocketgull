@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 👁️ PocketGull Nightfall Obsidian Theme (Material Design 3 / WCAG AAA) -->
+    <style name="Theme.PocketGull" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/pg_obsidian_primary</item>
+        <item name="colorOnPrimary">@color/pg_obsidian_on_primary</item>
+        <item name="colorSecondary">@color/pg_obsidian_secondary</item>
+        <item name="colorOnSecondary">@color/pg_obsidian_on_secondary</item>
+        <item name="colorTertiary">@color/pg_obsidian_tertiary</item>
+
+        <item name="android:colorBackground">@color/pg_obsidian_background</item>
+        <item name="colorSurface">@color/pg_obsidian_surface</item>
+        <item name="colorSurfaceVariant">@color/pg_obsidian_surface_variant</item>
+        <item name="colorOnSurface">@color/pg_obsidian_text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/pg_obsidian_text_secondary</item>
+        <item name="colorOutline">@color/pg_obsidian_outline</item>
+
+        <!-- Status bar and navigation bar optotype styling -->
+        <item name="android:statusBarColor">@color/pg_obsidian_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/pg_obsidian_background</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>

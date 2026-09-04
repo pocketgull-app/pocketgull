@@ -1,0 +1,32 @@
+{
+  "manifest_version": 2,
+  "name": "PocketGull Washi Rice Paper Theme",
+  "version": "1.0.0",
+  "description": "Tactile unbleached mulberry washi paper, deep charcoal sumi ink, and celadon bamboo accents for Mozilla Firefox.",
+  "theme": {
+    "colors": {
+      "frame": "#EFEAE1",
+      "frame_inactive": "#F5F2E9",
+      "tab_background_text": "#78716C",
+      "tab_line": "#D97706",
+      "tab_loading": "#0D9488",
+      "tab_selected": "#FAF8F2",
+      "toolbar": "#FAF8F2",
+      "toolbar_text": "#292524",
+      "toolbar_field": "#FFFFFF",
+      "toolbar_field_text": "#1C1917",
+      "toolbar_field_border": "#D6D0C2",
+      "toolbar_field_focus": "#FFFFFF",
+      "toolbar_top_separator": "#E7E2D6",
+      "toolbar_bottom_separator": "#E7E2D6",
+      "popup": "#FAF8F2",
+      "popup_text": "#292524",
+      "popup_border": "#E7E2D6",
+      "sidebar": "#F5F2E9",
+      "sidebar_text": "#44403C",
+      "sidebar_border": "#E7E2D6",
+      "ntp_background": "#FAF8F2",
+      "ntp_text": "#292524"
+    }
+  }
+}
