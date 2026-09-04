@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, HostListener } from
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DocDrillService, DocDrillPersona } from '../../services/doc-drill.service';
+import { IContextChip } from '../../services/parquet-knowledge-db.service';
 import { NavigationShellService } from '../../services/navigation-shell.service';
 
 @Component({
@@ -151,8 +152,31 @@ import { NavigationShellService } from '../../services/navigation-shell.service'
           }
         </div>
 
-        <!-- M3 Assistive Suggestion Chips -->
-        @if (docDrill.currentChips().length > 0) {
+        <!-- M3 Assistive Suggestion Chips (Columnar Parquet-Ranked) -->
+        @if (docDrill.currentContextChips().length > 0) {
+          <div class="flex items-center gap-2 px-4 py-2.5 bg-zinc-900/60 border-t border-zinc-800/70 overflow-x-auto no-scrollbar shrink-0">
+            @for (chip of docDrill.currentContextChips(); track chip.id) {
+              <button 
+                type="button"
+                (click)="onContextChipClick(chip)"
+                [title]="chip.pillar ? 'PEMDA+ Pillar: ' + chip.pillar : chip.label"
+                class="min-h-[32px] px-3 py-1 rounded-lg text-[10.5px] font-mono border flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none transition whitespace-nowrap cursor-pointer shrink-0"
+                [ngClass]="{
+                  'text-teal-300 bg-zinc-900/90 border-zinc-700/60 hover:border-teal-400 hover:bg-teal-500/15': chip.type === 'deepDive',
+                  'text-amber-300 bg-amber-950/20 border-amber-500/40 hover:border-amber-400 hover:bg-amber-500/15': chip.type === 'contrast',
+                  'text-purple-300 bg-purple-950/20 border-purple-500/40 hover:border-purple-400 hover:bg-purple-500/15': chip.type === 'plainLanguage',
+                  'text-rose-300 bg-rose-950/20 border-rose-500/40 hover:border-rose-400 hover:bg-rose-500/15': chip.type === 'safety',
+                  'text-cyan-300 bg-cyan-950/20 border-cyan-500/40 hover:border-cyan-400 hover:bg-cyan-500/15': chip.type === 'pemda'
+                }">
+                <span>{{ chip.icon }}</span>
+                <span>{{ cleanChipLabel(chip.label) }}</span>
+                @if (chip.pillar) {
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-zinc-800/80 text-zinc-400 border border-zinc-700/50">{{ chip.pillar }}</span>
+                }
+              </button>
+            }
+          </div>
+        } @else if (docDrill.currentChips().length > 0) {
           <div class="flex items-center gap-2 px-4 py-2.5 bg-zinc-900/60 border-t border-zinc-800/70 overflow-x-auto no-scrollbar shrink-0">
             @for (chip of docDrill.currentChips(); track chip) {
               <button 
@@ -234,6 +258,14 @@ export class DocDrillDrawerComponent {
 
   onChipClick(chip: string): void {
     this.docDrill.askQuestion(chip);
+  }
+
+  onContextChipClick(chip: IContextChip): void {
+    this.docDrill.askQuestion(chip.query);
+  }
+
+  cleanChipLabel(label: string): string {
+    return label.replace(/^[\p{Emoji}\u2000-\u3300]\s*/u, '');
   }
 
   onSubmitQuestion(event: Event): void {

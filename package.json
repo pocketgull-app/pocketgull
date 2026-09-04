@@ -93,6 +93,8 @@
     "sbom": "node --no-deprecation scripts/generate_cyclonedx_sbom.mjs",
     "sbom:generate": "node --no-deprecation scripts/generate_cyclonedx_sbom.mjs",
     "mcp:warmup": "node --no-deprecation scripts/mcp-warmup.js",
+    "preflight": "node --no-deprecation scripts/barbasol_gate.mjs",
+    "barbasol": "node --no-deprecation scripts/barbasol_gate.mjs",
     "build": "node --no-deprecation scripts/build-all.mjs",
     "deploy": "node --no-deprecation scripts/deploy-production.mjs",
     "deploy:all": "node --no-deprecation scripts/deploy-production.mjs",

@@ -1,0 +1,34 @@
+; PocketGull Obsidian Ophthalmic Windows Theme
+[Theme]
+DisplayName=PocketGull Obsidian Ophthalmic
+ThemeId={B82D9E33-8A45-5D3F-95E3-A12E29D9C4F2}
+
+[Control Panel\Desktop]
+Wallpaper=C:\Users\philg\Pocketgull\pocketgull\public\images\synaptic_quilling_backdrop.jpg
+Pattern=
+PicturePosition=4
+TileWallpaper=0
+
+[VisualStyles]
+Path=%SystemRoot%\resources\Themes\Aero\Aero.msstyles
+ColorStyle=NormalColor
+Size=NormalSize
+AutoColorization=0
+ColorizationColor=0XC40284C7
+SystemMode=Dark
+AppMode=Dark
+VisualStyleVersion=10
+
+[Control Panel\Colors]
+ActiveTitle=2 132 199
+InactiveTitle=30 41 59
+Background=9 9 11
+Window=9 9 11
+WindowText=248 250 252
+Hilight=30 41 59
+HilightText=56 189 248
+HotTrackingColor=16 185 129
+Menu=15 15 20
+MenuBar=15 15 20
+MenuText=248 250 252
+Scrollbar=30 41 59

@@ -1,0 +1,34 @@
+; PocketGull Washi Rice Paper Windows Theme
+[Theme]
+DisplayName=PocketGull Washi Rice Paper
+ThemeId={A71C8F22-7934-4C2E-84D2-901F18C8B3E1}
+
+[Control Panel\Desktop]
+Wallpaper=C:\Users\philg\Pocketgull\pocketgull\public\images\rice_paper_texture.png
+Pattern=
+PicturePosition=4
+TileWallpaper=1
+
+[VisualStyles]
+Path=%SystemRoot%\resources\Themes\Aero\Aero.msstyles
+ColorStyle=NormalColor
+Size=NormalSize
+AutoColorization=0
+ColorizationColor=0XC40D9488
+SystemMode=Light
+AppMode=Light
+VisualStyleVersion=10
+
+[Control Panel\Colors]
+ActiveTitle=13 148 136
+InactiveTitle=231 226 214
+Background=250 248 242
+Window=250 248 242
+WindowText=41 37 36
+Hilight=231 226 214
+HilightText=28 25 23
+HotTrackingColor=217 119 6
+Menu=239 234 225
+MenuBar=239 234 225
+MenuText=41 37 36
+Scrollbar=231 226 214

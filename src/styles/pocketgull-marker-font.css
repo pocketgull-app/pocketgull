@@ -75,7 +75,7 @@
 @font-face {
   font-family: 'PocketGull Mono';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 400 500 600 700;
   font-display: swap;
   src: url('/fonts/PocketGullMono-Regular.woff2') format('woff2'),
        url('/assets/fonts/PocketGullMono-Regular.woff2') format('woff2'),
@@ -83,16 +83,16 @@
        url('/assets/fonts/PocketGullMono-Regular.ttf') format('truetype');
 }
 
-/* PocketGull Variable Font (VF) */
+/* PocketGull Bold Dedicated Family */
 @font-face {
-  font-family: 'PocketGull VF';
+  font-family: 'PocketGull Bold';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 700 800;
   font-display: swap;
-  src: url('/fonts/PocketGull-VF.woff2') format('woff2'),
-       url('/assets/fonts/PocketGull-VF.woff2') format('woff2'),
-       url('/fonts/PocketGull-VF.ttf') format('truetype'),
-       url('/assets/fonts/PocketGull-VF.ttf') format('truetype');
+  src: url('/fonts/PocketGull-Bold.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Bold.woff2') format('woff2'),
+       url('/fonts/PocketGull-Bold.ttf') format('truetype'),
+       url('/assets/fonts/PocketGull-Bold.ttf') format('truetype');
 }
 
 /* ==========================================================================
@@ -103,7 +103,7 @@
 .font-pocketgull-marker,
 .font-pocketgull-brand,
 .font-pocketgull-handwritten {
-  font-family: 'PocketGull', 'Outfit', 'Plus Jakarta Sans', 'Atkinson Hyperlegible Next', sans-serif !important;
+  font-family: 'PocketGull Bold', 'PocketGull', sans-serif !important;
   font-weight: 700;
   letter-spacing: -0.015em;
   -webkit-font-smoothing: antialiased;
@@ -113,7 +113,7 @@
 
 /* 🖋️ Single Unified PocketGull Geometric Display Typeface Stack */
 .font-pocketgull {
-  font-family: 'PocketGull', 'Outfit', 'Plus Jakarta Sans', 'Atkinson Hyperlegible Next', sans-serif !important;
+  font-family: 'PocketGull Bold', 'PocketGull', sans-serif !important;
   font-weight: 800;
   letter-spacing: -0.015em;
   text-transform: none;
@@ -125,7 +125,7 @@
 
 /* 📊 PocketGull Monospace & Tabular Clinical Telemetry Stack */
 .font-pocketgull-mono {
-  font-family: 'PocketGull Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-family: 'PocketGull Mono', monospace !important;
   font-feature-settings: "tnum" 1, "zero" 1;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
@@ -135,7 +135,7 @@
 /* 🖋️ PocketGull Chisel / Black Display Variant (900 Weight) */
 .font-pocketgull-chiseltip,
 .font-pocketgull-chisel {
-  font-family: 'PocketGull Chiseltip', 'PocketGull', 'Outfit', 'Plus Jakarta Sans', sans-serif !important;
+  font-family: 'PocketGull Chiseltip', 'PocketGull', sans-serif !important;
   font-weight: 900;
   letter-spacing: -0.025em;
   text-transform: uppercase;
@@ -146,7 +146,7 @@
 
 /* ✍️ PocketGull Fineliner / Regular Variant (400 Weight) */
 .font-pocketgull-fineliner {
-  font-family: 'PocketGull Fineliner', 'PocketGull', 'Plus Jakarta Sans', sans-serif !important;
+  font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif !important;
   font-weight: 400;
   letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
@@ -155,7 +155,7 @@
 
 /* 🏥 PocketGull Clinical High-Legibility Typeface */
 .font-pocketgull-inter {
-  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif !important;
   font-weight: 500;
   letter-spacing: -0.005em;
   line-height: 1.55;
@@ -164,12 +164,12 @@
 }
 
 /* ==========================================================================
-   🌐 3. PocketGull VF — No-Tofu Primary Font Cascade
+   🌐 3. PocketGull Superfamily Cascade — Zero External Font Reliance
    ========================================================================== */
 
 :root {
-  --font-pocketgull-notofu: 'PocketGull VF', 'PocketGull', 'Atkinson Hyperlegible', 'Inter', 'Noto Sans', 'WenQuanYi Zen Hei', 'IPA Gothic', 'Noto Sans CJK KR', 'Malgun Gothic', 'Noto Sans Thai', 'Loma', 'Noto Sans Devanagari', 'Noto Sans Bengali', 'Noto Sans Tamil', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans Ethiopic', 'FreeSans', 'Unifont', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-pocketgull-sans: 'PocketGull VF', 'PocketGull', 'Atkinson Hyperlegible', 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-pocketgull-notofu: 'PocketGull Fineliner', 'PocketGull', 'PocketGull Bold', sans-serif;
+  --font-pocketgull-sans: 'PocketGull Fineliner', 'PocketGull', sans-serif;
 }
 
 .font-pocketgull-notofu {
@@ -195,14 +195,14 @@
 }
 
 .font-pocketgull-tabular {
-  font-family: 'PocketGull Mono', 'JetBrains Mono', var(--font-pocketgull-sans) !important;
+  font-family: 'PocketGull Mono', monospace !important;
   font-feature-settings: "tnum" 1, "zero" 1;
   font-variant-numeric: tabular-nums;
 }
 
 /* 🖋️ Marker Heavy Bold Emphasis */
 .marker-bold-emphasis {
-  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-family: 'PocketGull Bold', 'PocketGull', sans-serif !important;
   font-weight: 900;
   background: linear-gradient(120deg, rgba(251, 146, 60, 0.25) 0%, rgba(249, 115, 22, 0.35) 100%);
   border-radius: 4px;
@@ -379,4 +379,22 @@
   font-weight: 400;
   color: #94a3b8 !important;
 }
+
+
+    /* Universal PocketGull Typography for All Buttons & Form Controls */
+    button, input, optgroup, select, textarea,
+    .btn, [class*="btn-"], [class*="-btn"], .weight-btn, .preset-pill,
+    .samsa-glyph-btn, .tab-btn, .prompt-theme-btn, .btn-copy-code,
+    .doc-drill-chip, .doc-drill-send, .btn-download-hero, .btn-pbm-toggle,
+    .header-nav a, .btn-hero-primary, .btn-hero-secondary, .btn-hero-outline {
+      font-family: 'PocketGull Bold', 'PocketGull', sans-serif !important;
+      font-weight: 700 !important;
+      letter-spacing: -0.01em;
+    }
+
+    /* Monospace telemetry and code buttons */
+    .btn-mono, button[data-weight="500"], .prompt-theme-btn, .samsa-metric-val, .axis-badge-readout {
+      font-family: 'PocketGull Mono', monospace !important;
+      font-feature-settings: "tnum" 1, "zero" 1;
+    }
 

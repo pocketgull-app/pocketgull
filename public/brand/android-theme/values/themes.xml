@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 📜 PocketGull Daylight Washi Theme (Material Design 3) -->
+    <style name="Theme.PocketGull" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/pg_washi_primary</item>
+        <item name="colorOnPrimary">@color/pg_washi_on_primary</item>
+        <item name="colorSecondary">@color/pg_washi_secondary</item>
+        <item name="colorOnSecondary">@color/pg_washi_on_secondary</item>
+        <item name="colorTertiary">@color/pg_washi_tertiary</item>
+        
+        <item name="android:colorBackground">@color/pg_washi_background</item>
+        <item name="colorSurface">@color/pg_washi_surface</item>
+        <item name="colorSurfaceVariant">@color/pg_washi_surface_variant</item>
+        <item name="colorOnSurface">@color/pg_washi_text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/pg_washi_text_secondary</item>
+        <item name="colorOutline">@color/pg_washi_outline</item>
+
+        <!-- Status bar and navigation bar optotype styling -->
+        <item name="android:statusBarColor">@color/pg_washi_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/pg_washi_background</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

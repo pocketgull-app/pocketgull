@@ -30,7 +30,12 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
       try {
         const val = await arg.jsonValue();
         if (val && typeof val === 'object') {
-          parts.push(JSON.stringify(val));
+          const str = JSON.stringify(val);
+          if (str === '{}' || str === '{"name":"Error"}') {
+            parts.push(arg.toString());
+          } else {
+            parts.push(str);
+          }
         } else {
           parts.push(val);
         }
@@ -113,11 +118,14 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-          score: 0.35,
+          risk_score: 0.15,
+          score: 0.15,
           confidence: 0.95,
-          risk_level: 'MODERATE',
+          risk_level: 'low',
           model_version: 'nnx_v1',
-          risk_factors: ['Borderline SBP'],
+          contributing_factors: ['Normal baseline vitals'],
+          risk_factors: ['Normal baseline vitals'],
+          note: 'Routine monitoring',
           recommendations: ['Routine monitoring']
         })
       });
@@ -250,10 +258,7 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
 
 /** Shared login + demo mode entry flow for all E2E tests */
 export async function enterDemoMode(page: Page) {
-  const existingViewport = page.viewportSize();
-  if (!existingViewport) {
-    await page.setViewportSize({ width: 1440, height: 900 });
-  }
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
 
   const startTime = Date.now();

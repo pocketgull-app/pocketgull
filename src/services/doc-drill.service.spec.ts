@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { DocDrillService } from './doc-drill.service';
 import { SocraticJargonDictionaryService } from './socratic-jargon-dictionary.service';
 import { PlainLanguageGlossaryService } from './plain-language-glossary.service';
+import { ParquetKnowledgeDbService } from './parquet-knowledge-db.service';
 
 describe('DocDrillService', () => {
   let service: DocDrillService;
@@ -11,7 +12,8 @@ describe('DocDrillService', () => {
       providers: [
         DocDrillService,
         SocraticJargonDictionaryService,
-        PlainLanguageGlossaryService
+        PlainLanguageGlossaryService,
+        ParquetKnowledgeDbService
       ]
     });
     service = TestBed.inject(DocDrillService);
@@ -83,5 +85,18 @@ describe('DocDrillService', () => {
     expect(service.messages().length).toBeGreaterThanOrEqual(1);
     const userMsg = service.messages().find(m => m.sender === 'user');
     expect(userMsg?.content).toBe('Why is 5.0 mg banned?');
+  });
+
+  it('should resolve PEMDA+ pillars and supply columnar Parquet context chips', () => {
+    service.openDrill('PEMDA+ Primary Intent');
+    expect(service.currentTitle()).toContain('Primary Intent');
+    expect(service.currentCategory()).toBe('PEMDA_PLUS');
+
+    const contextChips = service.currentContextChips();
+    expect(contextChips.length).toBeGreaterThan(0);
+    expect(contextChips.some(c => c.type === 'deepDive' || c.type === 'pemda')).toBe(true);
+
+    const stringChips = service.currentChips();
+    expect(stringChips.length).toBeGreaterThan(0);
   });
 });

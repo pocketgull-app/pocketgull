@@ -260,19 +260,12 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
       <!-- 2. Center 3D Viewport Window (Holographic Diagnostic Twin - Luminous Papyrus/Light Canvas) -->
       <div class="flex-1 w-full relative min-h-[540px] sm:min-h-[640px] overflow-hidden bg-transparent border border-gray-300 dark:border-zinc-800 rounded-lg shadow-xl thematic-3d-container flex flex-col">
         @if (state.bodyViewerMode() === '3d') {
-          @defer {
-            <app-body-3d-viewer 
-              class="w-full h-full flex-1 flex flex-col min-h-[540px]"
-              [anatomyViewMode]="state.anatomyViewMode()"
-              [customModelUrl]="null"
-              (partSelected)="onPartSelected($event)">
-            </app-body-3d-viewer>
-          } @placeholder {
-            <div class="w-full h-full flex flex-col items-center justify-center text-zinc-500 gap-4">
-              <div class="w-8 h-8 rounded-sm border-2 border-zinc-700 border-t-teal-500 animate-spin"></div>
-              <p class="text-sm font-medium uppercase tracking-widest text-zinc-400">Loading 3D Engine...</p>
-            </div>
-          }
+          <app-body-3d-viewer 
+            class="w-full h-full flex-1 flex flex-col min-h-[540px]"
+            [anatomyViewMode]="state.anatomyViewMode()"
+            [customModelUrl]="null"
+            (partSelected)="onPartSelected($event)">
+          </app-body-3d-viewer>
         } @else if (state.bodyViewerMode() === 'quad') {
           <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
             <app-quad-philosophy-matrix class="w-full block"></app-quad-philosophy-matrix>

@@ -31,19 +31,19 @@
   --md-sys-typescale-body-large-font: 'PocketGull Fineliner', var(--font-sans);
   --md-sys-typescale-label-large-font: 'PocketGull Mono', var(--font-mono);
 
-  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif;
-  --font-serif: 'Cinzel', 'Libre Caslon Text', 'Georgia', serif;
-  --font-caslon: 'Libre Caslon Text', 'Georgia', serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-rounded: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif;
+  --font-sans: 'PocketGull Fineliner', 'PocketGull', sans-serif;
+  --font-heading: 'PocketGull Bold', 'PocketGull', sans-serif;
+  --font-serif: 'PocketGull Bold', 'PocketGull', serif;
+  --font-caslon: 'PocketGull Bold', 'PocketGull', serif;
+  --font-mono: 'PocketGull Mono', monospace;
+  --font-rounded: 'PocketGull Fineliner', 'PocketGull', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body, html {
-  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif;
   line-height: 1.65;
   letter-spacing: -0.012em;
 }
@@ -121,23 +121,23 @@ body, html {
 
 
 h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', 'Inter', sans-serif;
+  font-family: 'PocketGull Bold', 'PocketGull', sans-serif;
   font-weight: 800;
   letter-spacing: -0.015em;
   line-height: 1.25;
 }
 
 .font-sans, .ui-sans-serif {
-  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif;
 }
 
 .font-mono, .ui-monospace, code, kbd, samp, pre {
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-family: 'PocketGull Mono', monospace !important;
   font-feature-settings: "zero", "ss01", "ss02";
 }
 
 .font-rounded, .ui-rounded {
-  font-family: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
+  font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif !important;
 }
 
 /* ==========================================================================
@@ -4082,4 +4082,109 @@ textarea:focus-visible {
 
 
 
+
+
+    /* Universal PocketGull Typography for All Buttons & Form Controls */
+    button, input, optgroup, select, textarea,
+    .btn, [class*="btn-"], [class*="-btn"], .weight-btn, .preset-pill,
+    .samsa-glyph-btn, .tab-btn, .prompt-theme-btn, .btn-copy-code,
+    .doc-drill-chip, .doc-drill-send, .btn-download-hero, .btn-pbm-toggle,
+    .header-nav a, .btn-hero-primary, .btn-hero-secondary, .btn-hero-outline {
+      font-family: 'PocketGull Bold', 'PocketGull', sans-serif !important;
+      font-weight: 700 !important;
+      letter-spacing: -0.01em;
+    }
+
+    /* Monospace telemetry and code buttons */
+    .btn-mono, button[data-weight="500"], .prompt-theme-btn, .samsa-metric-val, .axis-badge-readout {
+      font-family: 'PocketGull Mono', monospace !important;
+      font-feature-settings: "tnum" 1, "zero" 1;
+    }
+
+
+    /* ==========================================================================
+       Themed Clinical Scrollbars for The Drill Down Frame & Modal Panels
+       ========================================================================== */
+    .doc-drill-panel,
+    .doc-drill-panel *,
+    .doc-drill-body,
+    .doc-drill-chips,
+    #letterPreview,
+    .code-block-wrapper pre,
+    .tester-output-area {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(45, 212, 191, 0.45) rgba(15, 23, 42, 0.6);
+    }
+
+    .doc-drill-panel::-webkit-scrollbar,
+    .doc-drill-panel *::-webkit-scrollbar,
+    .doc-drill-body::-webkit-scrollbar,
+    .doc-drill-chips::-webkit-scrollbar,
+    #letterPreview::-webkit-scrollbar,
+    .code-block-wrapper pre::-webkit-scrollbar,
+    .tester-output-area::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .doc-drill-panel::-webkit-scrollbar-track,
+    .doc-drill-panel *::-webkit-scrollbar-track,
+    .doc-drill-body::-webkit-scrollbar-track,
+    .doc-drill-chips::-webkit-scrollbar-track,
+    #letterPreview::-webkit-scrollbar-track,
+    .code-block-wrapper pre::-webkit-scrollbar-track,
+    .tester-output-area::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 9999px;
+    }
+
+    .doc-drill-panel::-webkit-scrollbar-thumb,
+    .doc-drill-panel *::-webkit-scrollbar-thumb,
+    .doc-drill-body::-webkit-scrollbar-thumb,
+    .doc-drill-chips::-webkit-scrollbar-thumb,
+    #letterPreview::-webkit-scrollbar-thumb,
+    .code-block-wrapper pre::-webkit-scrollbar-thumb,
+    .tester-output-area::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(45, 212, 191, 0.7), rgba(20, 184, 166, 0.45));
+      border-radius: 9999px;
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      box-shadow: 0 0 8px rgba(45, 212, 191, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .doc-drill-panel::-webkit-scrollbar-thumb:hover,
+    .doc-drill-panel *::-webkit-scrollbar-thumb:hover,
+    .doc-drill-body::-webkit-scrollbar-thumb:hover,
+    .doc-drill-chips::-webkit-scrollbar-thumb:hover,
+    #letterPreview::-webkit-scrollbar-thumb:hover,
+    .code-block-wrapper pre::-webkit-scrollbar-thumb:hover,
+    .tester-output-area::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #2dd4bf, #0d9488);
+      box-shadow: 0 0 12px rgba(45, 212, 191, 0.6);
+    }
+
+    /* 670nm Photobiomodulation Deep-Red Scrollbars */
+    [data-theme="pbm"] .doc-drill-panel,
+    [data-theme="pbm"] .doc-drill-panel *,
+    [data-theme="pbm"] .doc-drill-body,
+    [data-theme="pbm"] #letterPreview {
+      scrollbar-color: rgba(239, 68, 68, 0.5) rgba(20, 0, 0, 0.8);
+    }
+
+    [data-theme="pbm"] .doc-drill-panel::-webkit-scrollbar-thumb,
+    [data-theme="pbm"] .doc-drill-panel *::-webkit-scrollbar-thumb,
+    [data-theme="pbm"] .doc-drill-body::-webkit-scrollbar-thumb,
+    [data-theme="pbm"] #letterPreview::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.8), rgba(185, 28, 28, 0.5));
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.35);
+    }
+
+    [data-theme="pbm"] .doc-drill-panel::-webkit-scrollbar-thumb:hover,
+    [data-theme="pbm"] .doc-drill-panel *::-webkit-scrollbar-thumb:hover,
+    [data-theme="pbm"] .doc-drill-body::-webkit-scrollbar-thumb:hover,
+    [data-theme="pbm"] #letterPreview::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #ef4444, #b91c1c);
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.7);
+    }
 

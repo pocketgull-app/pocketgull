@@ -35,6 +35,11 @@ export interface IExamResult {
   clinicalRecommendations: string[];
 }
 
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
 export class VisualAcuityService {
   /**
    * ETDRS Standard Optotype Scale
