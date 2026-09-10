@@ -443,6 +443,20 @@ function auditFile(filePath) {
     }
   }
 
+  // 7. CARE Principles & De-Alchemization Guard: Prohibit performative lore & fictional vault buzzwords
+  if (!relativePath.includes('sentinel_security_guard') && !relativePath.includes('spec.ts') && !relativePath.includes('.md')) {
+    const prohibitedLoreRegex = /\b(sovereign\s+vault|sacred\s+clan|ancestral\s+alchemy|biocultural\s+alchemy|elder\s+registr(?:y|ies))\b/i;
+    const match = prohibitedLoreRegex.exec(content);
+    if (match) {
+      issues.push({
+        type: 'PERFORMATIVE_LORE_VIOLATION',
+        severity: 'HIGH',
+        message: `De-Alchemization violation: Found performative lore phrase "${match[0]}". Use factual technical terms (e.g. "Encrypted Local Storage", "Long-Term Health Archive").`,
+        line: content.substring(0, match.index).split('\n').length,
+      });
+    }
+  }
+
   return issues;
 }
 
