@@ -14,7 +14,22 @@ export class SessionStateService {
   readonly isLocked = signal(
     typeof window !== 'undefined' && (
       window.sessionStorage?.getItem('pg_session_locked') === 'true' ||
-      window.localStorage?.getItem('pg_session_locked') === 'true'
+      window.localStorage?.getItem('pg_session_locked') === 'true' ||
+      (() => {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          return (
+            params.get('splash') === 'true' ||
+            params.get('splash') === '1' ||
+            params.get('lock') === 'true' ||
+            params.get('lock') === '1' ||
+            params.get('auth') === '1' ||
+            params.get('auth') === 'true'
+          );
+        } catch {
+          return false;
+        }
+      })()
     )
   );
   readonly isOnboardingComplete = signal(true);

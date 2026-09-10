@@ -326,6 +326,13 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                       <div class="text-[10px] text-teal-600 dark:text-teal-400 font-normal">Pediatric Waiver • CarePlan • IEEE 11073 • ITA</div>
                     </div>
                   </button>
+                  <button type="button" (click)="session.lock(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🔒</span>
+                    <div>
+                      <div>Lock Session &amp; Splash Screen</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">HIPAA Security Lock / Biometric Screen</div>
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -404,6 +411,15 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                 @default { A }
               }
             </span>
+          </button>
+
+          <!-- Desktop Lock Session / Secure Splash Trigger -->
+          <button (click)="session.lock()"
+                  aria-label="Lock Session & Open Secure Splash Screen"
+                  title="Lock Session (HIPAA / Secure Splash Screen)"
+                  class="px-2.5 py-1.5 rounded-xs transition font-mono text-xs font-bold cursor-pointer bg-zinc-900 text-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 border border-zinc-700 hover:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center gap-1 shrink-0 shadow-xs">
+            <span>🔒</span>
+            <span class="hidden lg:inline text-[11px] uppercase tracking-wider">Lock</span>
           </button>
         </div>
 

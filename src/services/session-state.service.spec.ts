@@ -48,4 +48,34 @@ describe('SessionStateService Streamlining & Invariant Suite', () => {
   it('4. Allows resetting idle timer safely', () => {
     expect(() => service.resetIdleTimer()).not.toThrow();
   });
+
+  it('5. Initializes as locked when URL parameters specify splash or lock', () => {
+    const originalLocation = window.location;
+    try {
+      delete (window as any).location;
+      (window as any).location = new URL('http://localhost/?splash=true');
+
+      const mockAuth = {
+        currentUser: signal(null),
+        isAuthenticated: signal(false),
+        promptLocalBiometric: async () => true,
+      };
+      const mockPatientMgmt = {
+        activePatient: signal(null),
+        selectedPatientId: signal(null),
+        triggerImmediateSaveAndSync: () => {},
+      };
+      const injector = Injector.create({
+        providers: [
+          { provide: AuthService, useValue: mockAuth },
+          { provide: PatientManagementService, useValue: mockPatientMgmt },
+        ],
+      });
+
+      const urlService = runInInjectionContext(injector, () => new SessionStateService());
+      expect(urlService.isLocked()).toBe(true);
+    } finally {
+      (window as any).location = originalLocation;
+    }
+  });
 });
