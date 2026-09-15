@@ -161,9 +161,21 @@ export class BionicReadingService {
       };
     }
 
-    // Extract leading punctuation, core word (with internal hyphens/slashes/periods), and trailing punctuation
-    const match = token.match(/^([^\w]*)([a-zA-Z0-9]+(?:[-./][a-zA-Z0-9]+)*)([^\w]*)$/);
-    if (!match) {
+    // Extract leading punctuation, core word, and trailing punctuation in linear O(N) time (ReDoS immune)
+    let start = 0;
+    while (start < token.length && !/[a-zA-Z0-9]/.test(token.charAt(start))) {
+      start++;
+    }
+    let end = token.length;
+    while (end > start && !/[a-zA-Z0-9]/.test(token.charAt(end - 1))) {
+      end--;
+    }
+
+    const leadingPunct = token.slice(0, start);
+    const coreWord = token.slice(start, end);
+    const trailingPunct = token.slice(end);
+
+    if (!coreWord) {
       const orp = BionicReadingService.calculateOrpIndex(token.length);
       return {
         leadingPunct: '',
@@ -180,8 +192,6 @@ export class BionicReadingService {
         holdMultiplier: 1.0
       };
     }
-
-    const [, leadingPunct, coreWord, trailingPunct] = match;
     const lowerCore = coreWord.toLowerCase();
     const len = coreWord.length;
 

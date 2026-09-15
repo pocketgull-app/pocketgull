@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:50e0f57a-7a94-469b-a498-8bed53f03cba",
+  "serialNumber": "urn:uuid:6f1e04b6-15f9-40fd-995a-896bb73bfcbf",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-15T18:32:57.749Z",
+    "timestamp": "2026-09-15T18:44:13.659Z",
     "tools": {
       "components": [
         {
@@ -13271,8 +13271,8 @@
     {
       "type": "library",
       "name": "adm-zip",
-      "version": "0.6.0",
-      "purl": "pkg:npm/adm-zip@0.6.0",
+      "version": "0.6.1",
+      "purl": "pkg:npm/adm-zip@0.6.1",
       "scope": "required",
       "licenses": [
         {
@@ -13284,7 +13284,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "5e57abc8c85bba4b1d2ada1f9d667d4a4fb80944db9ace0c6ff114df6499c13a00c99e51815a2cfe48bc9fecabd0b5873862ae6a46d74eeb983472d08e175d82"
+          "content": "5f0ae36bc9f1f5ee68d8dd66cb80ec28278aa5dae7002cabd70b5b3f1043806ccaccac84f6446d04503c99695d23e455943ec205935663fc10dbec9dc0e47a91"
         }
       ]
     },
@@ -19158,8 +19158,8 @@
     {
       "type": "library",
       "name": "hono",
-      "version": "4.13.3",
-      "purl": "pkg:npm/hono@4.13.3",
+      "version": "4.13.8",
+      "purl": "pkg:npm/hono@4.13.8",
       "scope": "required",
       "licenses": [
         {
@@ -19171,7 +19171,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "afc00eda6607a0bc521e481a7cd782fc15f26f6bd64710f78de9b84ecfa9b5abfca131b91484627c08ee2449992386d2bef7369ecd06c662188999c7a8dde633"
+          "content": "fc69e0ecd7e8ca4665da98ee916e59ebef18c66dc13d17fce864db427b7449bc9292f6b1e1fc8be07dc7858d5c0a90469a25bd5c3445cd157e0972b65bc42e75"
         }
       ]
     },
