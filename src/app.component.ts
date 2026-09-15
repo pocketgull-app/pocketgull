@@ -1451,7 +1451,12 @@ export class AppComponent implements OnDestroy {
   isDemoMode = this.state.isDemoMode;
   readonly showCompanionSyncModal = signal<boolean>(false);
   readonly showSupportTicketModal = signal<boolean>(false);
-  readonly showArticlesModal = signal<boolean>(false);
+  readonly showArticlesModal = signal<boolean>(
+    typeof window !== 'undefined' &&
+    (window.location.search.includes('modal=articles') ||
+     window.location.hash === '#articles' ||
+     window.location.pathname.startsWith('/articles'))
+  );
   readonly showPatentClaimsModal = signal<boolean>(false);
   readonly showLicensingModal = signal<boolean>(false);
   readonly showNantucketCaseStudy = signal<boolean>(false);

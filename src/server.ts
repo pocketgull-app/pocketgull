@@ -51,6 +51,7 @@ import { APP_VERSION } from './version';
 import AgonesSDK from '@google-cloud/agones-sdk';
 import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
 import { renderBusinessSiteHtml } from './server/business-site';
+import { renderArticlesHtml } from './server/articles-site';
 import { renderNantucketCaseStudyHtml } from './server/nantucket-case-study';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
@@ -268,8 +269,13 @@ app.use((req, res, next) => {
     /(^|\.)pocketgull\.com$/.test(rawHost);
 
   if (isBusinessSite) {
-    if (req.path === '/health' || req.path.startsWith('/api/') || req.path === '/articles' || req.path.startsWith('/articles/')) {
+    if (req.path === '/health' || req.path.startsWith('/api/')) {
       return next();
+    }
+    if (req.path === '/articles' || req.path.startsWith('/articles/')) {
+      const slug = req.path.replace(/^\/articles\/?/, '').split('?')[0];
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderArticlesHtml(slug));
     }
     if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -450,6 +456,13 @@ app.get('/.well-known/agent.json', manifestRateLimiter, (req: express.Request, r
 
 const discoveryRouter = createDiscoveryRouter();
 app.use(manifestRateLimiter, discoveryRouter);
+
+// Universal SSR Articles Hub & Breakthrough Inventions Handler
+app.get(['/articles', '/articles/:slug'], manifestRateLimiter, (req, res) => {
+  const slug = (req.params as Record<string, string>)['slug'] || '';
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderArticlesHtml(slug));
+});
 
 app.get('/api/config', manifestRateLimiter, (req, res) => {
   const isConfigured = !!(geminiApiKeyCached || process.env['GEMINI_API_KEY'] || process.env['GOOGLE_APPLICATION_CREDENTIALS'] || process.env['K_SERVICE']);
