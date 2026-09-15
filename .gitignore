@@ -367,5 +367,6 @@ src/partners/hidden/
 # ------------------------------------------------------------------------------
 tmp/
 .foundry/
+scripts/.taskbar_state.json
 
 

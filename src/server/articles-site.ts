@@ -44,18 +44,89 @@ export function renderArticlesHtml(requestedSlug?: string): string {
     ? `https://pocketgull.com/articles/${post.slug}`
     : 'https://pocketgull.com/articles';
 
+  const jsonLd = post ? JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    "headline": post.title,
+    "description": post.excerpt,
+    "url": canonicalUrl,
+    "mainEntity": {
+      "@type": "MedicalScholarlyArticle",
+      "headline": post.title,
+      "datePublished": post.date || "2026-09-15T00:00:00Z",
+      "author": {
+        "@type": "Organization",
+        "name": "PocketGull Skunk Works Clinical Research",
+        "url": "https://pocketgull.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "PocketGull",
+        "url": "https://pocketgull.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://pocketgull.com/brand/pocketgull-logo.png"
+        }
+      }
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://pocketgull.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Articles",
+          "item": "https://pocketgull.com/articles"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": post.title,
+          "item": canonicalUrl
+        }
+      ]
+    }
+  }, null, 2) : JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "PocketGull Clinical Breakthroughs & Health Literacy Hub",
+    "description": "Explore evidence-grounded medical insights, 15 clinical paradigms, 3D anatomical staging, and multi-timeline action matrices.",
+    "url": "https://pocketgull.com/articles",
+    "publisher": {
+      "@type": "Organization",
+      "name": "PocketGull",
+      "url": "https://pocketgull.com"
+    }
+  }, null, 2);
+
   return `<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#09090b" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
   <title>${pageTitle}</title>
   <meta name="description" content="${pageDesc}" />
   <meta property="og:title" content="${pageTitle}" />
   <meta property="og:description" content="${pageDesc}" />
   <meta property="og:url" content="${canonicalUrl}" />
-  <meta property="og:type" content="article" />
+  <meta property="og:type" content="${post ? 'article' : 'website'}" />
+  <meta property="og:site_name" content="PocketGull" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${pageTitle}" />
+  <meta name="twitter:description" content="${pageDesc}" />
+  <meta name="twitter:site" content="@pocketgull" />
   <link rel="canonical" href="${canonicalUrl}" />
+  <script type="application/ld+json">
+${jsonLd}
+  </script>
   
   <style>
     @font-face {
