@@ -10,7 +10,8 @@ import datetime
 from pathlib import Path
 
 STATE_FILE = Path(__file__).parent / ".taskbar_state.json"
-KERNEL_ID = "philgear/rsna-knee-2026-training-v8"
+TRAIN_KERNEL_ID = "philgear/rsna-knee-2026-training-v8"
+INFER_KERNEL_ID = "philgear/rsna-knee-2026-pytorch-inference"
 COMPETITION_ID = "rsna-knee-abnormality-detection"
 
 def get_status() -> dict:
@@ -35,6 +36,7 @@ def get_status() -> dict:
     # Query Kaggle API
     k_status = "UNKNOWN"
     k_msg = None
+    active_kernel_id = INFER_KERNEL_ID
     sub_id = None
     sub_status = "UNKNOWN"
     sub_score = None
@@ -45,15 +47,44 @@ def get_status() -> dict:
         api = KaggleApi()
         api.authenticate()
 
-        # 1. Kernel Status
+        # 1. Kernel Status (Checks both inference and training, prioritizes active running kernel)
+        infer_status = "UNKNOWN"
+        train_status = "UNKNOWN"
+        infer_msg = None
+        train_msg = None
+
         try:
-            k_res = api.kernels_status(KERNEL_ID)
-            raw_status = getattr(k_res, "status", "UNKNOWN")
-            k_status = str(raw_status).replace("KernelWorkerStatus.", "")
-            k_msg = getattr(k_res, "failure_message", getattr(k_res, "failureMessage", None))
+            i_res = api.kernels_status(INFER_KERNEL_ID)
+            infer_status = str(getattr(i_res, "status", "UNKNOWN")).replace("KernelWorkerStatus.", "")
+            infer_msg = getattr(i_res, "failure_message", getattr(i_res, "failureMessage", None))
         except Exception as e:
-            k_status = "ERROR"
-            k_msg = str(e)
+            infer_status = "ERROR"
+            infer_msg = str(e)
+
+        try:
+            t_res = api.kernels_status(TRAIN_KERNEL_ID)
+            train_status = str(getattr(t_res, "status", "UNKNOWN")).replace("KernelWorkerStatus.", "")
+            train_msg = getattr(t_res, "failure_message", getattr(t_res, "failureMessage", None))
+        except Exception as e:
+            train_status = "ERROR"
+            train_msg = str(e)
+
+        if infer_status in ("RUNNING", "QUEUED"):
+            active_kernel_id = INFER_KERNEL_ID
+            k_status = f"Infer:{infer_status}" if infer_status == "RUNNING" else "Infer:QUEUED"
+            k_msg = infer_msg
+        elif train_status in ("RUNNING", "QUEUED"):
+            active_kernel_id = TRAIN_KERNEL_ID
+            k_status = f"Train:{train_status}" if train_status == "RUNNING" else "Train:QUEUED"
+            k_msg = train_msg
+        elif infer_status == "COMPLETE":
+            active_kernel_id = INFER_KERNEL_ID
+            k_status = "COMPLETE"
+            k_msg = None
+        else:
+            active_kernel_id = TRAIN_KERNEL_ID
+            k_status = train_status
+            k_msg = train_msg
 
         # 2. Submission Status
         try:
@@ -72,10 +103,9 @@ def get_status() -> dict:
         k_msg = str(e)
 
     # Track elapsed time
-    if k_status == "RUNNING":
+    if "RUNNING" in k_status or "QUEUED" in k_status:
         if not kernel_start_time:
-            # Set to when version 1 was pushed (~10:42 AM today = epoch ~1773682956)
-            kernel_start_time = time.time() - (60 * 60)  # Default estimate ~60m if fresh
+            kernel_start_time = time.time()
         elapsed_sec = max(0, time.time() - kernel_start_time)
         elapsed_min = int(elapsed_sec // 60)
         elapsed_str = f"{elapsed_min}m"
@@ -101,9 +131,9 @@ def get_status() -> dict:
     notifications = []
     if prev_k_status and prev_k_status != k_status:
         if k_status == "COMPLETE":
-            notifications.append(f"Training Complete! ({KERNEL_ID})")
+            notifications.append(f"Kernel Complete! ({active_kernel_id.split('/')[-1]})")
         elif k_status == "FAILED" or "ERROR" in k_status:
-            notifications.append(f"Training Alert: {k_status} ({k_msg or ''})")
+            notifications.append(f"Kernel Alert: {k_status} ({k_msg or ''})")
 
     if prev_sub_status and prev_sub_status != sub_status:
         if sub_status == "COMPLETE":
@@ -116,7 +146,7 @@ def get_status() -> dict:
 
     # Update state
     new_state = {
-        "kernel_start_time": kernel_start_time if k_status == "RUNNING" else None,
+        "kernel_start_time": kernel_start_time if ("RUNNING" in k_status or "QUEUED" in k_status) else None,
         "prev_k_status": k_status,
         "prev_sub_status": sub_status,
         "prev_sub_score": sub_score,
@@ -132,14 +162,14 @@ def get_status() -> dict:
     sub_score_part = f" ({sub_score:.3f})" if sub_score is not None else ""
     tooltip_lines = [
         "RSNA Knee Monitor",
-        f"Train: {k_status} ({elapsed_str})",
+        f"Kaggle: {k_status} ({elapsed_str})",
         f"Sub: {sub_status}{sub_score_part}",
         f"Updated: {now_str}"
     ]
     tooltip = "\n".join(tooltip_lines)[:127]
 
     return {
-        "kernel_id": KERNEL_ID,
+        "kernel_id": active_kernel_id,
         "kernel_status": k_status,
         "kernel_msg": k_msg,
         "kernel_elapsed_min": elapsed_min,
