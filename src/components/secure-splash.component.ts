@@ -27,6 +27,7 @@ import { VibroacousticHapticService } from '../services/hardware/vibroacoustic-h
 import { AvsCymaticsVisualizerComponent } from './avs-cymatics-visualizer.component';
 import { BioAdaptiveTypographyService } from '../services/bio-adaptive-typography.service';
 import { DocDrillService } from '../services/doc-drill.service';
+import { ClinicalDefenseGuardService } from '../services/clinical-defense-guard.service';
 
 @Component({
   selector: 'app-secure-splash',
@@ -1354,7 +1355,8 @@ import { DocDrillService } from '../services/doc-drill.service';
           <div class="flex items-center justify-center">
             <button type="button"
                     (click)="showEmergencyConfirmModal.set(true)"
-                    class="text-[9.5px] uppercase tracking-wider font-semibold text-rose-500 hover:text-rose-400 hover:underline transition-colors bg-transparent border-none cursor-pointer py-0.5">
+                    class="text-xs uppercase tracking-wider font-bold text-rose-400 dark:text-rose-300 hover:text-rose-200 hover:underline transition-colors bg-transparent border-none cursor-pointer min-h-[48px] px-3 py-2 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none rounded-lg"
+                    aria-label="Open 2-step STAT emergency confirmation modal">
               Or use 2-Step STAT Confirmation &rarr;
             </button>
           </div>
@@ -1441,18 +1443,24 @@ import { DocDrillService } from '../services/doc-drill.service';
       }
       <!-- Good Samaritan 2-Step Emergency CDS Confirmation Modal -->
       @if (showEmergencyConfirmModal()) {
-        <div class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+        <div class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-md animate-in fade-in duration-200"
+             role="alertdialog"
+             aria-modal="true"
+             aria-labelledby="stat-dialog-title"
+             aria-describedby="stat-dialog-desc"
+             (keydown.escape)="showEmergencyConfirmModal.set(false)"
+             tabindex="-1">
           <div class="w-full max-w-md bg-white dark:bg-zinc-950 border border-rose-500/50 dark:border-rose-500/40 rounded-3xl p-6 shadow-2xl relative animate-in zoom-in-95 duration-200 flex flex-col pointer-events-auto">
             <div class="flex items-center gap-2.5 mb-3 text-rose-600 dark:text-rose-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 animate-pulse shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 animate-pulse shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
               </svg>
-              <h2 class="text-sm font-black uppercase tracking-[0.16em]">
+              <h2 id="stat-dialog-title" class="text-sm font-black uppercase tracking-[0.16em]">
                 STAT Good Samaritan Override
               </h2>
             </div>
 
-            <p class="text-xs text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed mb-4">
+            <p id="stat-dialog-desc" class="text-xs text-zinc-700 dark:text-zinc-200 font-medium leading-relaxed mb-4">
               Declaring a STAT emergency bypass starts the offline-first resuscitation assistant and the synchronized 110 BPM CPR pacing metronome.
               Per Mandiant Anti-Whaling &amp; CDS Governance, all STAT activations generate an immutable SHA-256 forensic audit entry.
             </p>
@@ -1460,12 +1468,12 @@ import { DocDrillService } from '../services/doc-drill.service';
             <div class="flex items-center gap-2.5">
               <button type="button"
                       (click)="showEmergencyConfirmModal.set(false)"
-                      class="flex-1 py-3 px-4 rounded-xl border border-zinc-300 dark:border-zinc-700 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer">
+                      class="flex-1 py-3 px-4 min-h-[48px] rounded-xl border border-zinc-300 dark:border-zinc-700 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:outline-none">
                 Cancel
               </button>
               <button type="button"
                       (click)="showEmergencyConfirmModal.set(false); handleEmergencyBypass()"
-                      class="flex-1 py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold uppercase tracking-wider shadow-lg transition cursor-pointer active:scale-[0.98]">
+                      class="flex-1 py-3 px-4 min-h-[48px] bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold uppercase tracking-wider shadow-lg transition cursor-pointer active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none">
                 Confirm STAT Override
               </button>
             </div>
@@ -2097,6 +2105,7 @@ export class SecureSplashComponent implements OnInit {
 
   // Gesture Unlock State & Wacom Digital Ink (WILL 3.0)
   public wacomInk = inject(WacomCryptoInkService);
+  private clinicalDefense = inject(ClinicalDefenseGuardService, { optional: true });
   ssoProviderStatus = signal<'ready' | 'authenticating' | 'authenticated'>('ready');
   lastKineticProof = signal<any>(null);
   private currentWacomPoints: any[] = [];
@@ -3074,6 +3083,24 @@ export class SecureSplashComponent implements OnInit {
     
     this.isChecking.set(true);
     this.errorMsg.set('');
+
+    // NIST SP 800-63B Continuous Liveness & Anti-Automation Bot Guard
+    if (this.wacomInk.strokeHistory().length > 0) {
+      const kinCheck = this.wacomInk.validateBiologicalHumanKinematics(this.wacomInk.strokeHistory());
+      if (!kinCheck.isHuman) {
+        this.isChecking.set(false);
+        this.triggerParticleBurst(110, 110, '#ef4444', 25);
+        this.playErrorChime();
+        this.gestureError.set(true);
+        this.errorMsg.set(kinCheck.reason || 'Bot automation detected. Natural motor dexterity required.');
+        setTimeout(() => {
+          if (this.gestureError()) {
+            this.clearDrawing();
+          }
+        }, 2200);
+        return;
+      }
+    }
     
     const isBeachItem = this.detectBeachItem();
     
@@ -3296,6 +3323,12 @@ export class SecureSplashComponent implements OnInit {
   handleEmergencyBypass(): void {
     this.playSuccessChime();
     this.stopAmbientSoundscape();
+    this.clinicalDefense?.auditStatEmergencyOverride(
+      'emergency-physician@pocketgull.app',
+      'STAT Emergency Clinical Bypass invoked at Splash Gatekeeper under HIPAA §164.512 emergency care exceptions.'
+    );
+    this.session.isLocked.set(false);
+    this.session.resetIdleTimer();
     this.emergencyBypass.emit();
   }
 }

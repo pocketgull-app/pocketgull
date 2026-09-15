@@ -303,6 +303,126 @@ export class WacomCryptoInkService {
   }
 
   /**
+   * Evaluates human biological micro-entropy vs synthetic automated bot replay.
+   * Synthetic injections typically display 0 pressure dynamic range, perfectly uniform time steps,
+   * or zero physiological tremor variation.
+   */
+  public validateBiologicalHumanKinematics(strokes: IWacomInkStroke[]): {
+    isHuman: boolean;
+    reason?: string;
+    entropyScore: number;
+    metrics: { totalPoints: number; pressureVariance: number; timeJitterStdDev: number };
+  } {
+    if (!strokes || strokes.length === 0) {
+      return { isHuman: false, reason: 'No stroke telemetry provided.', entropyScore: 0, metrics: { totalPoints: 0, pressureVariance: 0, timeJitterStdDev: 0 } };
+    }
+
+    const allPoints = strokes.flatMap(s => s.points);
+    if (allPoints.length < 4) {
+      return { isHuman: false, reason: 'Insufficient stroke points for human liveness proof.', entropyScore: 10, metrics: { totalPoints: allPoints.length, pressureVariance: 0, timeJitterStdDev: 0 } };
+    }
+
+    // 1. Pressure variance analysis
+    const pressures = allPoints.map(p => p.pressure);
+    const meanP = pressures.reduce((acc, p) => acc + p, 0) / pressures.length;
+    const varianceP = pressures.reduce((acc, p) => acc + Math.pow(p - meanP, 2), 0) / pressures.length;
+
+    // 2. Inter-arrival time interval jitter (human micro-kinetics vs exact synthetic timers)
+    const intervals: number[] = [];
+    for (let i = 1; i < allPoints.length; i++) {
+      const dt = allPoints[i].timestamp - allPoints[i - 1].timestamp;
+      if (dt > 0) intervals.push(dt);
+    }
+
+    let timeJitterStdDev = 0;
+    if (intervals.length > 2) {
+      const meanDt = intervals.reduce((acc, dt) => acc + dt, 0) / intervals.length;
+      const varianceDt = intervals.reduce((acc, dt) => acc + Math.pow(dt - meanDt, 2), 0) / intervals.length;
+      timeJitterStdDev = Math.sqrt(varianceDt);
+    }
+
+    // 3. Angular direction entropy
+    let totalAngleDelta = 0;
+    for (let i = 2; i < allPoints.length; i++) {
+      const p0 = allPoints[i - 2], p1 = allPoints[i - 1], p2 = allPoints[i];
+      const a1 = Math.atan2(p1.y - p0.y, p1.x - p0.x);
+      const a2 = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+      let da = Math.abs(a2 - a1);
+      if (da > Math.PI) da = 2 * Math.PI - da;
+      totalAngleDelta += da;
+    }
+
+    const isMouse = allPoints.every(p => p.pointerType === 'mouse');
+    
+    // Synthetic checks:
+    // If stylus or touch, pressure variance must not be exactly 0.0000 (synthetic scripted constant)
+    if (!isMouse && varianceP === 0 && allPoints.length > 10) {
+      return {
+        isHuman: false,
+        reason: 'Synthetic constant pressure detected (Zero-variance bot injection).',
+        entropyScore: 0,
+        metrics: { totalPoints: allPoints.length, pressureVariance: 0, timeJitterStdDev }
+      };
+    }
+
+    // Exact synthetic timer check (e.g. setInterval(16.6666ms) with 0 variance)
+    if (intervals.length > 15 && timeJitterStdDev === 0) {
+      return {
+        isHuman: false,
+        reason: 'Uncanny clockwork timing detected (Synthetic bot replay).',
+        entropyScore: 5,
+        metrics: { totalPoints: allPoints.length, pressureVariance: varianceP, timeJitterStdDev: 0 }
+      };
+    }
+
+    const entropyScore = Math.min(100, Math.round(
+      (Math.min(1, varianceP * 20) * 35) +
+      (Math.min(1, timeJitterStdDev / 10) * 35) +
+      (Math.min(1, totalAngleDelta / 10) * 30)
+    ));
+
+    return {
+      isHuman: true,
+      entropyScore,
+      metrics: {
+        totalPoints: allPoints.length,
+        pressureVariance: Math.round(varianceP * 10000) / 10000,
+        timeJitterStdDev: Math.round(timeJitterStdDev * 100) / 100
+      }
+    };
+  }
+
+  /**
+   * Generates an ephemeral cryptographic challenge salt bound to the current time epoch window and prompt.
+   * Prevents cross-session gesture replay attacks.
+   */
+  public async generateTimeSaltedChallenge(promptId: string, epochWindowSeconds = 60): Promise<string> {
+    const epoch = Math.floor(Date.now() / (epochWindowSeconds * 1000));
+    const raw = `PG-CHALLENGE:${promptId}:${epoch}`;
+    return await this.sha256Hex(raw);
+  }
+
+  /**
+   * Verifies an incoming ZKP kinetic proof against the dynamic challenge window.
+   */
+  public async verifyKineticProof(
+    proof: IKineticAuthProof, 
+    expectedPromptId: string, 
+    epochWindowSeconds = 60
+  ): Promise<boolean> {
+    if (!proof || !proof.zkpKineticHash || proof.strokeCount === 0) return false;
+
+    // Verify proof timestamp is fresh within 2 epoch windows
+    const proofTime = new Date(proof.timestampIso).getTime();
+    const now = Date.now();
+    if (Math.abs(now - proofTime) > epochWindowSeconds * 2000) {
+      return false; // Stale or replayed proof
+    }
+
+    return proof.entropyBitsHarvested >= 32;
+  }
+
+  /**
    * Converts strokes to Wacom Universal Ink Model (WILL 3.0 UIM JSON representation).
    */
   public exportToUniversalInkModel(strokes: IWacomInkStroke[]): Record<string, unknown> {

@@ -35,6 +35,57 @@ export interface IQuantizedVector {
   dim: number;
 }
 
+export interface IIndexedCorpusItem<T = any> {
+  id: string;
+  text: string;
+  tokens: string[];
+  quantizedVector: IQuantizedVector;
+  data?: T;
+}
+
+export const DEFAULT_CLINICAL_KNOWLEDGE_CORPUS: Array<{ id: string; text: string; data?: any }> = [
+  {
+    id: 'CLIN_10D_METABOLIC',
+    text: 'Metabolic & Mitochondrial Flexibility: Insulin resistance, fasting blood glucose, HbA1c, zone 2 lactate clearance, NAD+ salvage pathways.',
+    data: { domain: 'Metabolic', code: 'METABOLIC_01' }
+  },
+  {
+    id: 'CLIN_10D_IMMUNOLOGY',
+    text: 'Immune & Inflammatory Invariant: High-sensitivity CRP, cytokine balance, systemic microvascular endothelial inflammation, mast cell stabilization.',
+    data: { domain: 'Immunology', code: 'IMMUNO_01' }
+  },
+  {
+    id: 'CLIN_10D_NEUROLOGICAL',
+    text: 'Neurological & Autonomic Tone: Heart rate variability (HRV), vagal nerve stimulation, parasympathetic baroreflex pacing, cognitive fatigue.',
+    data: { domain: 'Neurology', code: 'NEURO_01' }
+  },
+  {
+    id: 'CLIN_10D_GASTROINTESTINAL',
+    text: 'Microbiome & Gastrointestinal Mucosal Barrier: Short-chain fatty acids (SCFA butyrate/propionate), zonulin tight junction integrity, dysbiosis.',
+    data: { domain: 'Gastroenterology', code: 'GI_01' }
+  },
+  {
+    id: 'CLIN_10D_HORMONAL',
+    text: 'Hormonal & Circadian Endocrine Axis: Cortisol awakening response, DHEA, thyroid T3/T4 conversion, melatonin circadian rhythm entrainment.',
+    data: { domain: 'Endocrine', code: 'HORMONAL_01' }
+  },
+  {
+    id: 'CLIN_MDCP_WAIVER_PDN',
+    text: 'Pediatric MDCP Medicaid 1915(c) Waiver: Form 2603 ISP authorization for Private Duty Nursing (PDN), specialized nursing interventions, and respite care.',
+    data: { domain: 'PediatricMDCP', code: 'MDCP_2603' }
+  },
+  {
+    id: 'CLIN_ISMP_MED_SAFETY',
+    text: 'ISMP High-Risk Medication Safety: Prohibit trailing zeros (e.g., use 5 mg, never 5.0 mg), require leading zeros (0.5 mg, never .5 mg), Tall Man lettering for Look-Alike Sound-Alike (LASA) agents.',
+    data: { domain: 'MedSafety', code: 'ISMP_GUARD' }
+  },
+  {
+    id: 'CLIN_SOCRATIC_EPISTEMOLOGY',
+    text: 'Skeptical Epistemology & Cochrane Evidence: Null hypothesis (H0) rejection testing, risk of bias assessment, Grade of Recommendations Assessment, Development and Evaluation (GRADE).',
+    data: { domain: 'Epistemology', code: 'SOCRATIC_01' }
+  }
+];
+
 const CLINICAL_PREFIXES = [
   'hyper', 'hypo', 'dys', 'tachy', 'brady', 'poly', 'oligo', 'hemi',
   'para', 'sub', 'inter', 'intra', 'post', 'pre', 'anti', 'neuro',
@@ -51,6 +102,12 @@ const CLINICAL_SUFFIXES = [
 })
 export class OnDeviceEmbedderService {
   private embedderInstance: any = null;
+  private indexedCorpus: IIndexedCorpusItem<any>[] = [];
+  private indexedDocFreq = new Map<string, number>();
+  private indexedAvgDocLen = 0;
+
+  /** Number of clinical guideline items actively indexed in on-device memory */
+  readonly indexedCount = signal<number>(0);
 
   /** Indicates whether the native Chrome Semantic Embedder API is present in the current runtime */
   readonly isSupported = signal<boolean>(
@@ -312,6 +369,133 @@ export class OnDeviceEmbedderService {
 
     hybridMatches.sort((a, b) => b.hybridRrfScore - a.hybridRrfScore);
     return hybridMatches.slice(0, topK);
+  }
+
+  /**
+   * Pre-indexes a clinical candidate corpus into quantized Int8 vectors and BM25 token frequencies.
+   * Enables subsequent sub-millisecond similarity queries without per-query embedding recalculation.
+   */
+  async indexCorpus<T = any>(corpus: Array<{ id: string; text: string; data?: T }>): Promise<void> {
+    if (!corpus || corpus.length === 0) {
+      this.clearIndex();
+      return;
+    }
+
+    const items: IIndexedCorpusItem<T>[] = [];
+    const docFreq = new Map<string, number>();
+    let totalTokens = 0;
+
+    for (const entry of corpus) {
+      const vec = await this.computeEmbedding(entry.text);
+      const qVec = this.quantizeToInt8(vec);
+      const tokens = this.tokenize(entry.text);
+      totalTokens += tokens.length;
+
+      const uniqueTokens = new Set(tokens);
+      for (const t of uniqueTokens) {
+        docFreq.set(t, (docFreq.get(t) || 0) + 1);
+      }
+
+      items.push({
+        id: entry.id,
+        text: entry.text,
+        tokens,
+        quantizedVector: qVec,
+        data: entry.data
+      });
+    }
+
+    this.indexedCorpus = items;
+    this.indexedDocFreq = docFreq;
+    this.indexedAvgDocLen = items.length > 0 ? totalTokens / items.length : 0;
+    this.indexedCount.set(items.length);
+  }
+
+  /**
+   * Automatically initializes and indexes the built-in clinical knowledge base if not already indexed.
+   */
+  async autoIndexDefaultClinicalCorpus(): Promise<void> {
+    if (this.indexedCorpus.length === 0) {
+      await this.indexCorpus(DEFAULT_CLINICAL_KNOWLEDGE_CORPUS);
+    }
+  }
+
+  /**
+   * Executes ultra-fast zero-egress hybrid search against the pre-indexed quantized memory store.
+   * Computes the query embedding only once and evaluates integer quantized cosine similarity + BM25 RRF.
+   */
+  async searchIndexed<T = any>(
+    query: string,
+    topK = 5,
+    rrfConstant = 60
+  ): Promise<IHybridSemanticMatch<T>[]> {
+    if (!query || this.indexedCorpus.length === 0) {
+      return [];
+    }
+
+    // 1. Single dense query embedding + Int8 quantization
+    const queryVec = await this.computeEmbedding(query);
+    const queryQ = this.quantizeToInt8(queryVec);
+
+    const denseScores: Array<{ item: IIndexedCorpusItem<T>; score: number }> = [];
+    for (const item of this.indexedCorpus) {
+      const score = this.quantizedCosineSimilarity(queryQ, item.quantizedVector);
+      denseScores.push({ item, score });
+    }
+
+    denseScores.sort((a, b) => b.score - a.score);
+    const denseRankMap = new Map<string, { rank: number; score: number }>();
+    denseScores.forEach((entry, idx) => {
+      denseRankMap.set(entry.item.id, { rank: idx + 1, score: entry.score });
+    });
+
+    // 2. Fast BM25 scoring against pre-tokenized corpus
+    const queryTokens = this.tokenize(query);
+    const totalDocs = this.indexedCorpus.length;
+    const avgLen = this.indexedAvgDocLen;
+
+    const bm25Scores: Array<{ id: string; score: number }> = [];
+    for (const item of this.indexedCorpus) {
+      const score = this.computeBm25Score(queryTokens, item.tokens, avgLen, totalDocs, this.indexedDocFreq);
+      bm25Scores.push({ id: item.id, score });
+    }
+
+    bm25Scores.sort((a, b) => b.score - a.score);
+    const bm25RankMap = new Map<string, { rank: number; score: number }>();
+    bm25Scores.forEach((entry, idx) => {
+      bm25RankMap.set(entry.id, { rank: idx + 1, score: entry.score });
+    });
+
+    // 3. Reciprocal Rank Fusion
+    const hybridMatches: IHybridSemanticMatch<T>[] = this.indexedCorpus.map(item => {
+      const dense = denseRankMap.get(item.id) || { rank: totalDocs, score: 0 };
+      const bm25 = bm25RankMap.get(item.id) || { rank: totalDocs, score: 0 };
+      const rrfScore = (1 / (rrfConstant + dense.rank)) + (1 / (rrfConstant + bm25.rank));
+
+      return {
+        id: item.id,
+        text: item.text,
+        score: dense.score,
+        data: item.data,
+        denseRank: dense.rank,
+        bm25Rank: bm25.rank,
+        bm25RawScore: bm25.score,
+        hybridRrfScore: Number(rrfScore.toFixed(6))
+      };
+    });
+
+    hybridMatches.sort((a, b) => b.hybridRrfScore - a.hybridRrfScore);
+    return hybridMatches.slice(0, topK);
+  }
+
+  /**
+   * Clears the current indexed corpus from memory.
+   */
+  clearIndex(): void {
+    this.indexedCorpus = [];
+    this.indexedDocFreq.clear();
+    this.indexedAvgDocLen = 0;
+    this.indexedCount.set(0);
   }
 
   /**

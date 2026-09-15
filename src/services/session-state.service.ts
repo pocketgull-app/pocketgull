@@ -6,31 +6,21 @@ import { PatientManagementService } from './patient-management.service';
   providedIn: 'root'
 })
 export class SessionStateService {
-  /** 
-   * Streamlined Session: Default to unlocked with onboarding complete so clinicians
-   * and users enter the full workspace immediately with zero lock friction.
-   * Can be locked explicitly via lock() or initialized as locked via pg_session_locked.
+  /**
+   * Secure Session: Default to locked so the splash screen is the initial entry
+   * gatekeeper, requiring biometric / gesture / demo unlock.
    */
   readonly isLocked = signal(
-    typeof window !== 'undefined' && (
-      window.sessionStorage?.getItem('pg_session_locked') === 'true' ||
-      window.localStorage?.getItem('pg_session_locked') === 'true' ||
-      (() => {
-        try {
-          const params = new URLSearchParams(window.location.search);
-          return (
-            params.get('splash') === 'true' ||
-            params.get('splash') === '1' ||
-            params.get('lock') === 'true' ||
-            params.get('lock') === '1' ||
-            params.get('auth') === '1' ||
-            params.get('auth') === 'true'
-          );
-        } catch {
-          return false;
+    (() => {
+      try {
+        if (typeof globalThis !== 'undefined' && globalThis.sessionStorage) {
+          return globalThis.sessionStorage.getItem('pg_session_unlocked') !== 'true';
         }
-      })()
-    )
+      } catch {
+        // Fallback for restricted storage environments
+      }
+      return true;
+    })()
   );
   readonly isOnboardingComplete = signal(true);
   private auth = inject(AuthService);
@@ -49,9 +39,16 @@ export class SessionStateService {
   async unlock(): Promise<boolean> {
     const success = await this.auth.promptLocalBiometric();
     if (success) {
-      if (typeof window !== 'undefined') {
-        window.sessionStorage?.removeItem('pg_session_locked');
-        window.localStorage?.removeItem('pg_session_locked');
+      try {
+        if (typeof globalThis !== 'undefined' && globalThis.sessionStorage) {
+          globalThis.sessionStorage.setItem('pg_session_unlocked', 'true');
+          globalThis.sessionStorage.removeItem('pg_session_locked');
+        }
+        if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+          globalThis.localStorage.removeItem('pg_session_locked');
+        }
+      } catch {
+        // Ignore storage write errors in private browsing/sandboxed contexts
       }
       this.isLocked.set(false);
       this.resetIdleTimer();
@@ -65,8 +62,13 @@ export class SessionStateService {
   }
 
   lock() {
-    if (typeof window !== 'undefined') {
-      window.sessionStorage?.setItem('pg_session_locked', 'true');
+    try {
+      if (typeof globalThis !== 'undefined' && globalThis.sessionStorage) {
+        globalThis.sessionStorage.removeItem('pg_session_unlocked');
+        globalThis.sessionStorage.setItem('pg_session_locked', 'true');
+      }
+    } catch {
+      // Ignore storage write errors
     }
     if (this.patientMgmt) {
       this.patientMgmt.triggerImmediateSaveAndSync();

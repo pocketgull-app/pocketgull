@@ -99,4 +99,40 @@ describe('OnDeviceEmbedderService', () => {
     expect(simIdentical).toBeCloseTo(1.0, 2);
     expect(simOrthogonal).toBeCloseTo(0.0, 2);
   });
+
+  it('9. Pre-indexes custom corpus and executes sub-millisecond searchIndexed queries', async () => {
+    const customCorpus = [
+      { id: 'CARD_1', text: 'Supraventricular tachycardia, vagal maneuver baroreflex stimulation', data: { specialty: 'Cardiology' } },
+      { id: 'DERM_1', text: 'Eczema atopic dermatitis topical barrier repair', data: { specialty: 'Dermatology' } },
+      { id: 'PEDS_1', text: 'Pediatric MDCP Medicaid waiver PDN respite care', data: { specialty: 'Pediatrics' } }
+    ];
+
+    await service.indexCorpus(customCorpus);
+    expect(service.indexedCount()).toBe(3);
+
+    const matches = await service.searchIndexed('Vagal nerve tachycardia arrhythmia', 2);
+    expect(matches.length).toBe(2);
+    expect(matches[0].id).toBe('CARD_1');
+    expect(matches[0].data?.specialty).toBe('Cardiology');
+    expect(matches[0].hybridRrfScore).toBeGreaterThan(0);
+
+    service.clearIndex();
+    expect(service.indexedCount()).toBe(0);
+    const emptyMatches = await service.searchIndexed('anything');
+    expect(emptyMatches).toEqual([]);
+  });
+
+  it('10. Automatically indexes default clinical knowledge corpus with 10D functional medicine & ISMP rules', async () => {
+    await service.autoIndexDefaultClinicalCorpus();
+    expect(service.indexedCount()).toBeGreaterThanOrEqual(8);
+
+    const ismpMatch = await service.searchIndexed('High risk medication trailing zero LASA guard', 1);
+    expect(ismpMatch.length).toBe(1);
+    expect(ismpMatch[0].id).toBe('CLIN_ISMP_MED_SAFETY');
+    expect(ismpMatch[0].data.domain).toBe('MedSafety');
+
+    const hrvMatch = await service.searchIndexed('Heart rate variability parasympathetic vagal tone', 1);
+    expect(hrvMatch.length).toBe(1);
+    expect(hrvMatch[0].id).toBe('CLIN_10D_NEUROLOGICAL');
+  });
 });

@@ -458,20 +458,27 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
         throw new Error("AudioWorklet not supported or module missing.");
       }
       
-      this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'audio-processor');
-      
+      let pooledPcm16: Int16Array | null = null;
+      let pooledUint8: Uint8Array | null = null;
+
       this.audioWorkletNode.port.onmessage = (e) => {
         if (!this.isListening() || this.liveClient?.readyState !== WebSocket.OPEN) return;
         
-        const inputData = e.data; // Float32Array from worklet
-        const pcm16 = new Int16Array(inputData.length);
-        for (let i = 0; i < inputData.length; i++) {
-          let s = Math.max(-1, Math.min(1, inputData[i]));
-          pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+        const inputData: Float32Array = e.data; // Float32Array from worklet
+        const len = inputData.length;
+        
+        // Re-use or resize pooled buffers to eliminate heap allocation jitter
+        if (!pooledPcm16 || pooledPcm16.length !== len) {
+          pooledPcm16 = new Int16Array(len);
+          pooledUint8 = new Uint8Array(pooledPcm16.buffer);
+        }
+
+        for (let i = 0; i < len; i++) {
+          const s = Math.max(-1, Math.min(1, inputData[i]));
+          pooledPcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
         }
         
-        const uint8Array = new Uint8Array(pcm16.buffer);
-        const b64 = uint8ArrayToBase64(uint8Array);
+        const b64 = uint8ArrayToBase64(pooledUint8!);
 
         this.liveClient.send(JSON.stringify({
           realtimeInput: {
