@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:6f1e04b6-15f9-40fd-995a-896bb73bfcbf",
+  "serialNumber": "urn:uuid:cc8e65b5-bb88-48f1-81ef-d3ad0f1d1f81",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-15T18:44:13.659Z",
+    "timestamp": "2026-09-15T20:59:47.559Z",
     "tools": {
       "components": [
         {
@@ -23,9 +23,9 @@
     ],
     "component": {
       "type": "application",
-      "bom-ref": "pkg:npm/pocket-gull@1.32.0",
+      "bom-ref": "pkg:npm/pocket-gull@1.34.0",
       "name": "pocket-gull",
-      "version": "1.32.0",
+      "version": "1.34.0",
       "description": "Insight beneath the surface. Real-time medical Care Plan Strategy and Live AI Consult engine powered by Google Gemini.",
       "licenses": [
         {
@@ -34,7 +34,7 @@
           }
         }
       ],
-      "purl": "pkg:npm/pocket-gull@1.32.0"
+      "purl": "pkg:npm/pocket-gull@1.34.0"
     },
     "properties": [
       {

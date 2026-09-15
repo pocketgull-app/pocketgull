@@ -239,6 +239,7 @@ def main():
     parser.add_argument('--submit', type=str, help="Submit kernel (e.g. philgear/rsna-knee-2026-pytorch-inference)")
     parser.add_argument('--version', type=int, default=1, help="Kernel version to submit")
     parser.add_argument('--message', type=str, default="Agentic Harness Submission", help="Submission message")
+    parser.add_argument('--monitor', action='store_true', help="Launch Windows Taskbar tray monitor")
 
     args = parser.parse_args()
     harness = RSNAAgenticHarness()
@@ -258,6 +259,12 @@ def main():
 
     if args.submit:
         harness.submit_kernel(args.submit, version=args.version, message=args.message)
+
+    if args.monitor:
+        bat_path = os.path.join(os.path.dirname(__file__), 'start_taskbar_monitor.bat')
+        import subprocess
+        subprocess.Popen([bat_path], shell=True)
+        print("[OK] Launched RSNA Taskbar Monitor into Windows Notification Tray.")
 
 
 if __name__ == '__main__':

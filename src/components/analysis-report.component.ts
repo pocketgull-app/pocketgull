@@ -9,6 +9,8 @@ import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { ParadigmLyricsService } from '../services/paradigm-lyrics.service';
 import { DictationService } from '../services/dictation.service';
 import { CompassionateAnalogyService } from '../services/compassionate-analogy.service';
+import { getStoredApiKey } from '../services/secure-key';
+import { SecureStorageService } from '../services/secure-storage.service';
 import { generate } from 'lean-qr';
 
 declare var webkitSpeechRecognition: any;
@@ -2363,12 +2365,13 @@ export class AnalysisReportComponent implements OnDestroy {
     organDonor: 'Yes'
   });
 
+  protected readonly secureStorage = inject(SecureStorageService, { optional: true });
   readonly hasApiKey = computed(() => {
-    // This line was part of the user's provided snippet, but it was incomplete and syntactically incorrect.
-    // Assuming the user intended to add a computed property named `hasApiKey` and keep the existing injections.
-    // The `inject(AiCacheService);` was already present as `protected readonly cache = inject(AiCacheService);`
-    // and is kept in its original place for syntactical correctness.
-    return true; // Placeholder for actual logic
+    const key = getStoredApiKey(this.secureStorage || undefined);
+    const hasLocalKey = Boolean(key && key.trim().length > 0);
+    const hasSessionKey = Boolean(this.secureStorage?.getItem('GEMINI_API_KEY'));
+    const hasStudioKey = typeof window !== 'undefined' && Boolean((window as any).aistudio?.hasSelectedApiKey);
+    return hasLocalKey || hasSessionKey || hasStudioKey;
   });
   protected readonly cache = inject(AiCacheService);
   protected readonly markdownService = inject(MarkdownService);

@@ -1,6 +1,6 @@
 {
   "name": "pocket-gull",
-  "version": "1.32.0",
+  "version": "1.34.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api"
@@ -76,7 +76,6 @@
     "postinstall": "npx --no-install patch-package || true",
     "dev": "node --no-deprecation --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
     "dev:all": "node --no-deprecation --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
-    "wp:publish": "node --no-deprecation scripts/publish_article_to_wordpress.mjs",
     "data:ingest": "node --no-deprecation scripts/ingest-public-data.mjs",
     "data:evidence": "npx tsx scripts/ingest_nih_who_corpus.ts",
     "data:parquet": ".\\.venv\\Scripts\\python.exe scripts/export_clinical_parquet.py",

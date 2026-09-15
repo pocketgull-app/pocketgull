@@ -1,0 +1,21 @@
+# 🦙 Ollama Modelfile for PocketGull Scribe (4B)
+# Grounded in NIH NLM MedQuAD, WHO mhGAP Guidelines & Level A Clinical Consensus
+# License: Apache-2.0 | Publisher: PocketGull LLC (Phillip Gear / @philgear)
+# HF Repo: https://huggingface.co/philgear/pocketgull-scribe-soap
+
+FROM gemma2:2b
+
+# Runtime Parameters
+PARAMETER temperature 0.2
+PARAMETER top_p 0.95
+PARAMETER stop "<end_of_turn>"
+PARAMETER stop "<eos>"
+
+# Clinical System Instruction
+SYSTEM """You are PocketGull Scribe, an ambient clinical documentation encoder. Transform messy, fragmented doctor-patient encounter transcripts into clean, standardized 4-quadrant SOAP (Subjective, Objective, Assessment, Plan) and SBAR clinical notes. Enforce 100% ISMP decimal compliance and FHIR R4 clinical coding alignment."""
+
+# Clinical Prompt Template
+TEMPLATE """<start_of_turn>user
+{{ .Prompt }}<end_of_turn>
+<start_of_turn>model
+{{ .Response }}<end_of_turn>"""

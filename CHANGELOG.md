@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.34.0] - 2026-09-15
+
+**🏁 Monorepo Finalization & Commercial Turnkey Architecture, Legacy WordPress Decommissioning & Native GenAI App Engine Consolidation, Zero-Orphan Integration, Placeholder Alert Elimination, 97.7% High-Performance Core Font Subsetting, ISMP/FDA Life-Critical Disambiguation, and Multi-Model Software Valuation ($17.2M–$24.9M)**
+
+### Added
+- **[Commercialization & Enterprise Growth Hub] (`src/components/shared/clinical-commercial-hub.component.ts`, `src/components/main-header-nav.component.ts`, `src/services/navigation-shell.service.ts`)**:
+  - **Commercialization & Growth Hub (`ClinicalCommercialHubComponent`)**: Integrated practice monetization and enterprise sales engine into the top navigation (`[💼 Commercial Hub]`), Apps Hub dropdown, and mobile slide-out drawer. Provides self-serve Stripe subscription tiers, automated HIPAA Business Associate Agreement (BAA) generation, CDISC ODM export, and practice revenue ROI modeling.
+  - **Clinical Role Demo Portal (`RoleDemoModalComponent`)**: Mounted `[✨ Role Demo]` quick-launcher in the primary header. Empowers institutional purchasers, CMOs, clinical directors, attending physicians, and residents to experience tailored workflows with specialized clinical personas and customized data lenses.
+- **[Zero-Orphan Clinical Workflow Integration] (`src/components/`, `src/app.component.ts`, `src/components/modals/`)**:
+  - **Past Visit Review Engine (`VisitReviewComponent`)**: Mounted directly into Column 2 and the mobile navigation drawer when reviewing historical timeline visits via `isViewingVisitDetails()`. Allows clinicians to review past encounters, structured organ pain scores, and jump seamlessly into organ-specific intake forms.
+  - **Dual-Mode Clinical Trajectory Compass (`PatientTrajectoryComponent`, `ClinicalTrajectoryReaderModalComponent`)**: Integrated the 3-Act trajectory compass into the trajectory reader modal with an accessible mode switcher (`⚡ RSVP Reader` vs `🧭 3-Act Compass`), uniting high-speed RSVP foveal reading with longitudinal milestone tracking.
+  - **Couples & Cardiovascular Intimacy Suite (`IntimacyRelationshipVitalityComponent`)**: Mounted into the Analysis Report Assessments tab (`❤️ Intimacy Vitality (Princeton III)`) and Apps Hub dropdown, delivering Princeton III consensus risk assessment, PDE-5 inhibitor vs organic nitrate safety warnings, and parasympathetic bio-pacing.
+- **[Empirical Multi-Model Software Cost Valuation] (`scripts/generate-cocomo2-report.mjs`, `software_evaluation_cost_report.md`, `docs/valuation_and_positioning.md`)**:
+  - **COCOMO II Post-Architecture Model**: Evaluated 451,611 SLOC (340.33 KSLOC executable code across Angular 22, Flutter/Dart, and Python FastAPI). Recomputed traditional development effort at **1,143.98 Person-Months** (95.3 engineer-years, 38.3 FTEs, 29.89 months TDEV).
+  - **Asset Floor Valuation**: Formally established replacement cost at **$17,159,656 USD** (standard burdened rate) and **$21,449,625 USD** (regulated medical software rate), with comprehensive systems engineering (COSYSMO) and COTS integration (COCOTS) reaching **$24.9M USD**.
+  - **FinOps Scale-to-Zero Verification**: Documented $0.20–$1.50/month idle infrastructure overhead and >97% gross margin per clinical SaaS seat ($3.50–$6.20/mo marginal cost vs $249–$499/seat pricing).
+
+### Changed
+- **[Zero-Egress Clinical Articles Hub & GenAI App Engine Consolidation] (`src/services/wordpress-articles.service.ts`, `src/components/articles-reader.component.ts`, `src/server/business-site.ts`)**:
+  - **Native GenAI App Engine Consolidation**: Consolidated clinical health literacy and patient education article delivery onto native Google Cloud Vertex GenAI App Engine and Angular SSR. Promoted `ClinicalArticlesService` (`IClinicalArticle`) with zero-egress deterministic fallback datasets, peer-reviewed clinical metadata, and backward-compatible aliases (`IWordPressPost`, `WordPressArticlesService`).
+  - **Commercial Web Portal (`pocketgull.com`) Modernization**: Updated software version metadata to `1.34.0`, integrated interactive deep links (`?role-demo=true`, `?hub=commercial`), optimized font subsets (`-Core.woff2`), and published empirical trust bar metrics ($17.2M COCOMO II valuation, 2,074 tests, scale-to-zero FinOps).
+- **[Defensive UI & Alert Elimination] (`src/app.component.ts`, `src/components/analysis-report.component.ts`)**:
+  - **Zero Placeholder Alerts**: Replaced all native browser `alert(...)` dialogues in core user flows with authentic reactive services:
+    - `connectEpic()`: Launches the interactive SMART-on-FHIR modal pre-configured for Epic Sandbox OAuth2.
+    - `connectAppleHealth()`: Launches the Companion Sync Modal with QR-code pairing and BLE telemetry hooks.
+    - `uploadData()`: Chained file input selection with fallback to the zero-knowledge client-side encrypted vault (`EncryptedVaultModalComponent`).
+    - `connectGoogleHealth()` / `connectAwsHealth()`: Navigates to the Patient Directory modal rather than throwing unhandled prompts.
+  - **Authentic API Key State**: Replaced dummy `hasApiKey = computed(() => true)` with SSR-safe checks across `SecureStorageService`, obfuscated storage (`getStoredApiKey`), and Chrome AI Studio runtime context.
+- **[High-Performance Font Subsetting & ISMP Safety] (`src/styles/pocketgull-marker-font.css`, `index.html`)**:
+  - **97.7% Initial Font Payload Reduction**: Prioritized lightweight `PocketGull-Bold-Core.woff2` (15.6 KB) and `PocketGull-Fineliner-Core.woff2` (15.3 KB) in `@font-face` definitions and `index.html` font preloading, replacing the unsubsetted 673.5 KB font and eliminating ~650 KB from the critical render path.
+  - **OpenType Life-Critical Disambiguation**: Enforced slashed zero (`cv08`), curved lowercase `l` (`cv05`), serifed capital `I` (`ss02`), and tabular numerals (`tnum`) across `.font-pocketgull-sans-clinical` to prevent lethal medication dosage errors.
+
+### Removed
+- **[Legacy WordPress Decommissioning]**:
+  - Completely removed legacy WordPress infrastructure, including `Dockerfile.wordpress`, `docker-compose.wordpress.yml`, `wordpress-theme/`, `scripts/publish_article_to_wordpress.mjs`, `docs/WORDPRESS.md`, and `"wp:publish"` npm script.
+  - Eliminated PHP/Apache runtime attack vectors, MariaDB container requirements, and external REST API egress dependencies, reducing the monorepo attack surface to zero external CMS egress.
+
 ## [1.33.0] - 2026-09-02
 
 **🧬 Turing 3D Biological Physics Simulation Suite, PocketGull Felt-Tip Marker & Clinical Typefaces Vault (SIL OFL 1.1), DICOM Apex Spine Neuro-Radiology Viewer, WebMCP Tool 65 Clinical Evidence Engine, Biophilic Vagal Odyssey & Optical Innovations, and UKRIO Scholarly Safe Harbor Standard**

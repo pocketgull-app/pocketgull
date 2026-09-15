@@ -68,6 +68,28 @@ import { NavigationShellService } from '../services/navigation-shell.service';
       <div class="flex items-center gap-2 shrink-0">
         <app-console-integrity-badge class="hidden lg:inline-flex" />
 
+        <!-- 🌟 Experience by Role Demo Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-role-demo-trigger"
+          (click)="navShell?.openRoleDemo()"
+          aria-label="Experience PocketGull by Clinical Role"
+          class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">✨</span>
+          <span>Role Demo</span>
+        </button>
+
+        <!-- 💼 Commercialization & Practice Growth Hub Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-commercial-hub-trigger"
+          (click)="navShell?.openCommercialHub()"
+          aria-label="Open Commercialization & Monetization Hub"
+          class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">💼</span>
+          <span>Commercial Hub</span>
+        </button>
+
         <!-- 🌟 Clinical Apps & Portals Hub Dropdown Button (Desktop) -->
         <div class="relative hidden md:block">
           <button 
@@ -101,6 +123,20 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                 <!-- Section: Clinical Intelligence & AI -->
                 <div class="space-y-1">
                   <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🧠 Clinical AI</span>
+                  <button type="button" (click)="navShell?.openRoleDemo(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-teal-700 dark:text-teal-300 cursor-pointer border border-teal-500/20 bg-teal-50/40 dark:bg-teal-950/20">
+                    <span class="text-sm">✨</span>
+                    <div>
+                      <div>Experience by Clinical Role</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Clinician, Resident, Researcher, Executive</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openIntimacyVitality(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-rose-700 dark:text-rose-300 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">❤️</span>
+                    <div>
+                      <div>Cardiovascular Intimacy & Couples</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Princeton III • Nitrates/PDE-5 • Pacing</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openTuringSuite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🧮</span>
                     <div>
@@ -248,7 +284,14 @@ import { NavigationShellService } from '../services/navigation-shell.service';
 
                 <!-- Section: Enterprise & Operations -->
                 <div class="space-y-1 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🏢 Enterprise</span>
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🏢 Enterprise & Commercial</span>
+                  <button type="button" (click)="navShell?.openCommercialHub(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/20">
+                    <span class="text-sm">💼</span>
+                    <div>
+                      <div>Commercialization & Growth Hub</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Onboarding, Stripe Tiers, CDISC & BAA Kit</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openComplianceCertificate.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">📜</span>
                     <div>
@@ -461,6 +504,14 @@ import { NavigationShellService } from '../services/navigation-shell.service';
             <!-- MDCP Governance Hub -->
             <button type="button" (click)="openMdcpHub(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">📋</span> <span>MDCP Governance Hub</span>
+            </button>
+
+            <button type="button" (click)="navShell?.openRoleDemo(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">✨</span> <span>Experience by Role Demo</span>
+            </button>
+
+            <button type="button" (click)="navShell?.openCommercialHub(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">💼</span> <span>Commercialization & Growth Hub</span>
             </button>
 
             <!-- Ambient Flow Background Music Player -->

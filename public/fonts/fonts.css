@@ -1,7 +1,7 @@
 /**
- * PocketGull Typeface Superfamily
+ * PocketGull Font Superfamily
  * Official Webfont Stylesheet (Apache License 2.0)
- * https://font.pocketgull.app | https://github.com/pocketgull-app/pocketgull-typeface
+ * https://font.pocketgull.app | https://github.com/pocketgull-app/pocketgull-font
  */
 
 /* 0. Variable Font Superfamily (Toyota Production System 16-Axis Continuous Design Space) */
@@ -237,10 +237,69 @@
 
 @font-face {
   font-family: 'PocketGull Soft';
-  src: url('fonts/woff2/PocketGull-Soft.woff2?v=3.3.0') format('woff2'),
-       url('PocketGull-Soft.woff2?v=3.3.0') format('woff2'),
-       url('fonts/ttf/PocketGull-Soft.ttf?v=3.3.0') format('truetype'),
-       url('PocketGull-Soft.ttf?v=3.3.0') format('truetype');
+  src: url('fonts/woff2/PocketGull-Soft-Regular.woff2?v=3.100') format('woff2'),
+       url('PocketGull-Soft-Regular.woff2?v=3.100') format('woff2'),
+       url('fonts/ttf/PocketGull-Soft-Regular.ttf?v=3.100') format('truetype'),
+       url('PocketGull-Soft-Regular.ttf?v=3.100') format('truetype');
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PocketGull Soft';
+  src: url('fonts/woff2/PocketGull-Soft-Bold.woff2?v=3.100') format('woff2'),
+       url('PocketGull-Soft-Bold.woff2?v=3.100') format('woff2'),
+       url('fonts/woff2/PocketGull-Soft.woff2?v=3.100') format('woff2'),
+       url('PocketGull-Soft.woff2?v=3.100') format('woff2'),
+       url('fonts/ttf/PocketGull-Soft-Bold.ttf?v=3.100') format('truetype'),
+       url('PocketGull-Soft-Bold.ttf?v=3.100') format('truetype'),
+       url('fonts/ttf/PocketGull-Soft.ttf?v=3.100') format('truetype'),
+       url('PocketGull-Soft.ttf?v=3.100') format('truetype');
+  font-weight: 700 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PocketGull Slab';
+  src: url('fonts/woff2/PocketGull-Slab-Regular.woff2?v=3.100') format('woff2'),
+       url('PocketGull-Slab-Regular.woff2?v=3.100') format('woff2'),
+       url('fonts/ttf/PocketGull-Slab-Regular.ttf?v=3.100') format('truetype'),
+       url('PocketGull-Slab-Regular.ttf?v=3.100') format('truetype');
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PocketGull Slab';
+  src: url('fonts/woff2/PocketGull-Slab-Bold.woff2?v=3.100') format('woff2'),
+       url('PocketGull-Slab-Bold.woff2?v=3.100') format('woff2'),
+       url('fonts/ttf/PocketGull-Slab-Bold.ttf?v=3.100') format('truetype'),
+       url('PocketGull-Slab-Bold.ttf?v=3.100') format('truetype');
+  font-weight: 700 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PocketGull Serif';
+  src: url('fonts/woff2/PocketGull-Serif-Regular.woff2?v=3.100') format('woff2'),
+       url('PocketGull-Serif-Regular.woff2?v=3.100') format('woff2'),
+       url('fonts/ttf/PocketGull-Serif-Regular.ttf?v=3.100') format('truetype'),
+       url('PocketGull-Serif-Regular.ttf?v=3.100') format('truetype');
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PocketGull Serif';
+  src: url('fonts/woff2/PocketGull-Serif-Bold.woff2?v=3.100') format('woff2'),
+       url('PocketGull-Serif-Bold.woff2?v=3.100') format('woff2'),
+       url('fonts/ttf/PocketGull-Serif-Bold.ttf?v=3.100') format('truetype'),
+       url('PocketGull-Serif-Bold.ttf?v=3.100') format('truetype');
   font-weight: 700 800;
   font-style: normal;
   font-display: swap;

@@ -5,8 +5,9 @@ import { ClinicalAssessmentsSuiteComponent } from '../clinical-assessments-suite
 import { MultiParadigmVennComponent } from '../multi-paradigm-venn.component';
 import { KaizenQualitySuiteComponent } from '../kaizen-quality-suite.component';
 import { TeledentistrySystemicLensComponent } from './teledentistry-systemic-lens.component';
+import { IntimacyRelationshipVitalityComponent } from '../intimacy-relationship-vitality.component';
 
-export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentistry' | 'suggestions';
+export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentistry' | 'intimacy' | 'suggestions';
 
 @Component({
   selector: 'app-assessments-lens-tab',
@@ -17,7 +18,8 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
     ClinicalAssessmentsSuiteComponent,
     MultiParadigmVennComponent,
     KaizenQualitySuiteComponent,
-    TeledentistrySystemicLensComponent
+    TeledentistrySystemicLensComponent,
+    IntimacyRelationshipVitalityComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -79,6 +81,17 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
           🦷 Teledentistry (32-Tooth)
         </button>
+        <button (click)="screenerTab.set('intimacy')"
+          data-testid="tab-intimacy-vitality"
+          [class.bg-white]="screenerTab() === 'intimacy'"
+          [class.dark:bg-zinc-800]="screenerTab() === 'intimacy'"
+          [class.text-rose-600]="screenerTab() === 'intimacy'"
+          [class.dark:text-rose-400]="screenerTab() === 'intimacy'"
+          [class.text-zinc-500]="screenerTab() !== 'intimacy'"
+          [class.shadow-xs]="screenerTab() === 'intimacy'"
+          class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
+          ❤️ Intimacy Vitality (Princeton III)
+        </button>
         <button (click)="screenerTab.set('suggestions')"
           [class.bg-white]="screenerTab() === 'suggestions'"
           [class.dark:bg-zinc-800]="screenerTab() === 'suggestions'"
@@ -110,6 +123,10 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
       } @else if (screenerTab() === 'teledentistry') {
         <div class="w-full">
           <app-teledentistry-systemic-lens></app-teledentistry-systemic-lens>
+        </div>
+      } @else if (screenerTab() === 'intimacy') {
+        <div class="w-full">
+          <app-intimacy-relationship-vitality></app-intimacy-relationship-vitality>
         </div>
       } @else {
         <!-- Intake & Motivational interviewing Suggestions Panel -->

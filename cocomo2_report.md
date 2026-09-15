@@ -1,29 +1,29 @@
 # 📊 COCOMO II Software Cost & Effort Estimation Report
 
-**Generated**: 8/31/2026, 6:05:39 PM
+**Generated**: 9/15/2026, 1:47:20 PM
 **Target System**: Pocket Gull Medical Intelligence Monorepo
 
 ## 1. Codebase Size & Language Metrics
 
 | Language / Layer | Files | Source Lines (SLOC) | KSLOC |
 | :--- | :--- | :--- | :--- |
-| **TypeScript (Angular Core Web)** | 1,287 | 222,642 | 222.64 |
-| **Dart (Flutter Mobile Suite)** | 201 | 33,890 | 33.89 |
-| **Python (FastAPI Sidecar & ML)** | 141 | 19,381 | 19.38 |
-| **CSS / Styling System** | 12 | 4,882 | 4.88 |
-| **JSON & YAML Manifests** | 4,457 | 94,074 | 94.07 |
-| **Markdown Documentation** | 159 | 13,457 | 13.46 |
-| **TOTAL MONOREPO** | **6,257** | **388,326** | **388.33 KSLOC** |
+| **TypeScript (Angular Core Web)** | 1,419 | 264,728 | 264.73 |
+| **Dart (Flutter Mobile Suite)** | 256 | 44,581 | 44.58 |
+| **Python (FastAPI Sidecar & ML)** | 171 | 25,955 | 25.95 |
+| **CSS / Styling System** | 12 | 5,069 | 5.07 |
+| **JSON & YAML Manifests** | 4,492 | 93,639 | 93.64 |
+| **Markdown Documentation** | 161 | 17,639 | 17.64 |
+| **TOTAL MONOREPO** | **6,511** | **451,611** | **451.61 KSLOC** |
 
 ## 2. COCOMO II Post-Architecture Model Output
 
 | Metric | COCOMO II Estimation |
 | :--- | :--- |
-| **Executable Code Base (KSLOC)** | **280.80 KSLOC** (TS + Dart + Python + CSS) |
-| **Effort Estimate** | **944.03 Person-Months** |
-| **Estimated Development Time (TDEV)** | **28.22 Months** |
-| **Average Full-Time Staffing** | **33.4 Engineers** |
-| **Estimated Commercial Value / Replacement Cost** | **$14,160,462 USD** ($15k/month burdened rate) |
+| **Executable Code Base (KSLOC)** | **340.33 KSLOC** (TS + Dart + Python + CSS) |
+| **Effort Estimate** | **1143.98 Person-Months** |
+| **Estimated Development Time (TDEV)** | **29.89 Months** |
+| **Average Full-Time Staffing** | **38.3 Engineers** |
+| **Estimated Commercial Value / Replacement Cost** | **$17,159,656 USD** ($15k/month burdened rate) |
 
 ## 3. Scale Factors & Effort Multipliers (EAF)
 

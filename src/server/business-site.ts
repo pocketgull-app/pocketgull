@@ -50,7 +50,7 @@ export function renderBusinessSiteHtml(): string {
         "name": "PocketGull",
         "operatingSystem": "Web, iOS, Android, macOS, Linux, Windows",
         "applicationCategory": "HealthApplication",
-        "softwareVersion": "1.31.0",
+        "softwareVersion": "1.34.0",
         "description": "On-device ambient AI clinical assistant with JAX/Flax neural scoring, ISMP medication safety validation, and HL7 FHIR R4 export.",
         "offers": {
           "@type": "Offer",
@@ -78,7 +78,8 @@ export function renderBusinessSiteHtml(): string {
       font-style: normal;
       font-weight: 700;
       font-display: swap;
-      src: url('/fonts/PocketGull-Bold.woff2') format('woff2'),
+      src: url('/fonts/PocketGull-Bold-Core.woff2') format('woff2'),
+           url('/fonts/PocketGull-Bold.woff2') format('woff2'),
            url('/fonts/PocketGull-Bold.ttf') format('truetype');
     }
     @font-face {
@@ -86,7 +87,8 @@ export function renderBusinessSiteHtml(): string {
       font-style: normal;
       font-weight: 400;
       font-display: swap;
-      src: url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
+      src: url('/fonts/PocketGull-Fineliner-Core.woff2') format('woff2'),
+           url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
            url('/fonts/PocketGull-Fineliner.ttf') format('truetype');
     }
     .font-brand {
@@ -598,19 +600,20 @@ export function renderBusinessSiteHtml(): string {
             <span>Launch Free in Browser</span>
             <span>→</span>
           </a>
-          <a href="#demo" class="btn-secondary" style="padding: 0.875rem 1.75rem; font-size: 1rem;">
-            <span>✨ Try Interactive Demo</span>
+          <a href="https://pocketgull.app/?role-demo=true" class="btn-secondary" style="padding: 0.875rem 1.75rem; font-size: 1rem; border-color: rgba(45, 212, 191, 0.4); color: #fff;">
+            <span>✨ Experience by Clinical Role</span>
           </a>
-          <a href="/articles" class="btn-secondary" style="padding: 0.875rem 1.75rem; font-size: 1rem;">
-            <span>📰 Read Clinical Articles</span>
+          <a href="#demo" class="btn-secondary" style="padding: 0.875rem 1.75rem; font-size: 1rem;">
+            <span>🎙️ Ambient Scribe Demo</span>
           </a>
         </div>
 
         <div class="trust-bar">
+          <div><span>✓</span> 2,074 Verified Automated Tests</div>
+          <div><span>✓</span> $17.2M Audited Valuation (COCOMO II)</div>
+          <div><span>✓</span> Scale-to-Zero ($0.20/mo Idle FinOps)</div>
+          <div><span>✓</span> Zero Cloud PHI Egress (NIST ML-KEM-768)</div>
           <div><span>✓</span> 42% Charting Time Saved</div>
-          <div><span>✓</span> Private Local Processing</div>
-          <div><span>✓</span> 1-Click EHR Export (Epic, Cerner)</div>
-          <div><span>✓</span> Zero Cloud Audio Stored</div>
         </div>
       </div>
     </section>
@@ -1684,7 +1687,7 @@ export function renderBusinessSiteHtml(): string {
         category: 'CLINICAL CDS CONCEPT',
         summary: 'Clinical and systems biology evidence grounding for ' + term + '.',
         clinicalTrap: 'PocketGull applies Popperian falsifiability and zero-error legibility standards to all clinical telemetry and diagnostic recommendations.',
-        citations: 'PocketGull Clinical Intelligence Codex v1.31; FDA CDS Guidance.'
+        citations: 'PocketGull Clinical Intelligence Codex v1.34; FDA CDS Guidance.'
       };
 
       const body = document.getElementById('docDrillBody');

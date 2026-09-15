@@ -10,6 +10,7 @@ import { AnalysisContainerComponent } from './components/analysis-container.comp
 import { DictationModalComponent } from './components/modals/dictation-modal.component';
 import { TaskFlowComponent } from './components/task-flow.component';
 import { IntakeFormComponent } from './components/intake-form.component';
+import { VisitReviewComponent } from './components/visit-review.component';
 import { VoiceAssistantComponent } from './components/voice-assistant.component';
 import { getStoredApiKey, setStoredApiKey } from './services/secure-key';
 import { SecureStorageService } from './services/secure-storage.service';
@@ -91,6 +92,9 @@ import { CollaborationDockComponent } from './components/collaboration-dock.comp
 import { KneeHologramHudComponent } from './components/knee-hologram-hud.component';
 import { ResearchDataDividendComponent } from './components/research-data-dividend.component';
 import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governance-hub.component';
+import { ClinicalCommercialHubComponent } from './components/shared/clinical-commercial-hub.component';
+import { RoleDemoModalComponent } from './components/role-demo-modal.component';
+import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
 
 @Component({
   selector: 'app-root',
@@ -112,6 +116,7 @@ import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governanc
     ResearchFrameComponent,
     ResearchTabComponent,
     IntakeFormComponent,
+    VisitReviewComponent,
     VoiceAssistantComponent,
     RevealDirective,
     WalkthroughTourComponent,
@@ -158,7 +163,10 @@ import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governanc
     CollaborationDockComponent,
     KneeHologramHudComponent,
     ResearchDataDividendComponent,
-    MdcpGovernanceHubComponent
+    MdcpGovernanceHubComponent,
+    ClinicalCommercialHubComponent,
+    RoleDemoModalComponent,
+    IntimacyRelationshipVitalityComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -216,6 +224,43 @@ import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governanc
       <app-encrypted-vault-modal #vaultModal></app-encrypted-vault-modal>
       <app-smart-fhir-sync-modal #fhirModal></app-smart-fhir-sync-modal>
       <app-global-health-initiatives-modal #globalHealthModal></app-global-health-initiatives-modal>
+
+      <!-- Practice Commercialization & Practice Growth Hub Modal -->
+      @if (navShell.showCommercialHubModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Commercialization Hub">
+          <div class="relative w-full max-w-5xl my-auto">
+            <button
+              type="button"
+              (click)="navShell.closeCommercialHub()"
+              class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-9 h-9 rounded-full bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-2xl z-10 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
+              aria-label="Close Commercialization Hub">
+              ✕
+            </button>
+            <app-clinical-commercial-hub></app-clinical-commercial-hub>
+          </div>
+        </div>
+      }
+
+      <!-- Role-Tailored Interactive Clinical Demo Modal -->
+      @if (navShell.showRoleDemoModal()) {
+        <app-role-demo-modal (closeModal)="navShell.closeRoleDemo()" (onDemoLaunched)="navShell.selectTab('analysis')"></app-role-demo-modal>
+      }
+
+      <!-- Cardiovascular Intimacy Safety & Couples Vitality Studio Modal -->
+      @if (navShell.showIntimacyVitalityModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Intimacy & Couples Vitality Studio">
+          <div class="relative w-full max-w-5xl my-auto">
+            <button
+              type="button"
+              (click)="navShell.closeIntimacyVitality()"
+              class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-9 h-9 rounded-full bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-2xl z-10 cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-400"
+              aria-label="Close Intimacy Vitality Studio">
+              ✕
+            </button>
+            <app-intimacy-relationship-vitality></app-intimacy-relationship-vitality>
+          </div>
+        </div>
+      }
 
       <!-- Dr. Howard Barrows Clinical Inquiry & Problem-Based Reasoning Workbench Modal -->
       @if (navShell.showBarrowsWorkbenchModal()) {
@@ -541,12 +586,12 @@ import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governanc
                           [class.text-gray-700]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'analysis'">
                     📊 Analysis
                   </button>
-                  @if (state.selectedPartId()) {
+                  @if (state.selectedPartId() || isViewingVisitDetails()) {
                     <button (click)="mobileActiveTab.set('tasks')"
                             class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
                             [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
                             [class.text-gray-700]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'tasks'">
-                      📋 Tasks
+                      📋 {{ isViewingVisitDetails() ? 'Review' : 'Tasks' }}
                     </button>
                   }
                 </div>
@@ -637,6 +682,12 @@ import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governanc
                       <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Tasks...</div>
                     }
                   </div>
+               </div>
+            } @else if (isViewingVisitDetails() && !state.isLiveAgentActive() && !state.isSparkModeActive()) {
+               <div class="shrink-0 w-full md:w-[400px] flex flex-col h-full z-20 transition-all duration-300 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden"
+                    [class.max-md:hidden]="mobileActiveTab() !== 'tasks'"
+                    [class.tab-fade-enter]="mobileActiveTab() === 'tasks'">
+                  <app-visit-review [visit]="$any(state.viewingPastVisit())"></app-visit-review>
                </div>
             }
 
@@ -955,7 +1006,7 @@ import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governanc
       </div>
     }
 
-    <!-- WordPress Articles & 6th Grade / Bionic Knowledge Hub Modal -->
+    <!-- Clinical Knowledge Hub & 6th Grade / Bionic Articles Modal -->
     @if (showArticlesModal()) {
       <div class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 no-print animate-in fade-in duration-200">
         <div class="bg-zinc-950 text-zinc-100 w-full max-w-6xl max-h-[92dvh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-zinc-800 relative">
@@ -1388,6 +1439,8 @@ export class AppComponent implements OnDestroy {
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
   readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);
+  readonly fhirModalRef = viewChild(SmartFhirSyncModalComponent);
+  readonly vaultModalRef = viewChild(EncryptedVaultModalComponent);
 
   @HostListener('window:close-docs-study')
   onCloseDocsStudy() {
@@ -1539,7 +1592,7 @@ export class AppComponent implements OnDestroy {
       }, patientName + ' (Cognition)');
     } catch (e) {
       console.error("Failed to generate simplified PDF", e);
-      alert("Failed to generated simplified export. " + (e as Error).message);
+      this.translationError.set("Failed to generate simplified export: " + (e as Error).message);
     } finally {
       this.rules.setContext('dyslexia_mode', false);
       this.isSimplifying.set(false);
@@ -1563,7 +1616,7 @@ export class AppComponent implements OnDestroy {
       }, patientName + ' (Pediatric Overview)');
     } catch (e) {
       console.error("Failed to generate child PDF", e);
-      alert("Failed to generated child export. " + (e as Error).message);
+      this.translationError.set("Failed to generate child export: " + (e as Error).message);
     } finally {
       this.rules.setContext('pediatric_mode', false);
       this.isSimplifyingChild.set(false);
@@ -1611,13 +1664,19 @@ export class AppComponent implements OnDestroy {
   }
 
   connectEpic() {
-    alert("Epic Integration placeholder: Connecting to Epic MyChart...");
+    const fhir = this.fhirModalRef();
+    if (fhir) {
+      fhir.selectPreset('epic_sandbox');
+      fhir.open();
+    } else {
+      this.navShell.openCompanionSync();
+    }
   }
 
   async connectGoogleHealth() {
     const patient = this.patientMgmt.selectedPatient();
     if (!patient) {
-      alert("No patient selected to sync to Google Health FHIR Store.");
+      this.navShell.showPatientDirectoryModal.set(true);
       return;
     }
 
@@ -1655,7 +1714,7 @@ export class AppComponent implements OnDestroy {
   async importGoogleHealth() {
     const patient = this.patientMgmt.selectedPatient();
     if (!patient) {
-      alert("No patient selected to import data from Google Health.");
+      this.navShell.showPatientDirectoryModal.set(true);
       return;
     }
 
@@ -1714,7 +1773,7 @@ export class AppComponent implements OnDestroy {
   async connectAwsHealth() {
     const patient = this.patientMgmt.selectedPatient();
     if (!patient) {
-      alert("No patient selected to sync to AWS HealthLake FHIR Store.");
+      this.navShell.showPatientDirectoryModal.set(true);
       return;
     }
 
@@ -1753,11 +1812,8 @@ export class AppComponent implements OnDestroy {
     this.showDocsStudy.set(false);
   }
 
-
-
-
   connectAppleHealth() {
-    alert("Apple HealthKit: Awaiting sync from iOS Companion App...");
+    this.showCompanionSyncModal.set(true);
   }
 
   uploadData() {
@@ -1770,7 +1826,12 @@ export class AppComponent implements OnDestroy {
         fileInput.value = '';
         fileInput.click();
       } else {
-        alert("Upload data modal placeholder");
+        const vault = this.vaultModalRef();
+        if (vault) {
+          vault.open();
+        } else {
+          this.navShell.showPatientDirectoryModal.set(true);
+        }
       }
     }
   }
@@ -2397,6 +2458,26 @@ export class AppComponent implements OnDestroy {
         if (params.get('modal') !== 'false') {
           this.showNantucketCaseStudy.set(true);
         }
+      }
+
+      // Handle Role Demo deep link (?role-demo=true)
+      const roleDemoParam = params.get('role-demo') || params.get('role') || params.get('roleDemo');
+      if (roleDemoParam === 'true' || roleDemoParam === '1' || roleDemoParam === 'demo') {
+        this.session.isLocked.set(false);
+        this.state.isDemoMode.set(true);
+        this.isDemoMode.set(true);
+        this.hasApiKey.set(true);
+        this.navShell.openRoleDemo();
+      }
+
+      // Handle Commercial Hub deep link (?hub=commercial)
+      const hubParam = (params.get('hub') || params.get('commercial') || '').toLowerCase();
+      if (hubParam === 'commercial' || hubParam === 'monetization' || hubParam === 'pricing') {
+        this.session.isLocked.set(false);
+        this.state.isDemoMode.set(true);
+        this.isDemoMode.set(true);
+        this.hasApiKey.set(true);
+        this.navShell.openCommercialHub();
       }
     } catch (err) {
       console.warn('[AppComponent] URL case study deep link inspection failed:', err);

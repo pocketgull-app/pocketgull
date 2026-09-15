@@ -22,6 +22,9 @@ export class NavigationShellService {
   readonly showTrajectoryReaderModal = signal<boolean>(false);
   readonly showAustereHudModal = signal<boolean>(false);
   readonly showMdcpHubModal = signal<boolean>(false);
+  readonly showCommercialHubModal = signal<boolean>(false);
+  readonly showRoleDemoModal = signal<boolean>(false);
+  readonly showIntimacyVitalityModal = signal<boolean>(false);
 
   /**
    * Switches active main tab.
@@ -63,6 +66,15 @@ export class NavigationShellService {
   public openMdcpHub(): void { this.showMdcpHubModal.set(true); }
   public closeMdcpHub(): void { this.showMdcpHubModal.set(false); }
 
+  public openCommercialHub(): void { this.showCommercialHubModal.set(true); }
+  public closeCommercialHub(): void { this.showCommercialHubModal.set(false); }
+
+  public openRoleDemo(): void { this.showRoleDemoModal.set(true); }
+  public closeRoleDemo(): void { this.showRoleDemoModal.set(false); }
+
+  public openIntimacyVitality(): void { this.showIntimacyVitalityModal.set(true); }
+  public closeIntimacyVitality(): void { this.showIntimacyVitalityModal.set(false); }
+
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
    */
@@ -80,5 +92,8 @@ export class NavigationShellService {
     this.showTrajectoryReaderModal.set(false);
     this.showAustereHudModal.set(false);
     this.showMdcpHubModal.set(false);
+    this.showCommercialHubModal.set(false);
+    this.showRoleDemoModal.set(false);
+    this.showIntimacyVitalityModal.set(false);
   }
 }

@@ -1,7 +1,7 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { WordPressArticlesService, IWordPressPost, IActionStage } from '../services/wordpress-articles.service';
+import { ClinicalArticlesService, IClinicalArticle, IActionStage } from '../services/wordpress-articles.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
 import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-slider.component';
 
@@ -448,12 +448,12 @@ import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-sl
   `
 })
 export class ArticlesReaderComponent implements OnInit {
-  private articlesService = inject(WordPressArticlesService);
+  private articlesService = inject(ClinicalArticlesService);
   private bionicReading = inject(BionicReadingService);
 
   readonly posts = computed(() => this.articlesService.allPosts());
   readonly isLoading = computed(() => this.articlesService.isLoading());
-  readonly activePost = computed<IWordPressPost | null>(() => this.articlesService.activePost());
+  readonly activePost = computed<IClinicalArticle | null>(() => this.articlesService.activePost());
 
   readonly readingLevel = signal<'standard' | 'grade6'>('standard');
   readonly activeTimelineTab = signal<'present' | 'shortTerm' | 'longTerm'>('present');
@@ -473,8 +473,8 @@ export class ArticlesReaderComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // Attempt background sync
-    this.articlesService.fetchWordPressArticles();
+    // Load native clinical articles on-device
+    this.articlesService.fetchClinicalArticles();
   }
 
   getActiveActionStage(cam: any): IActionStage | null {
@@ -488,7 +488,7 @@ export class ArticlesReaderComponent implements OnInit {
   }
 
   syncArticles(): void {
-    this.articlesService.fetchWordPressArticles();
+    this.articlesService.fetchClinicalArticles();
   }
 
   toggleBionic(): void {
@@ -497,7 +497,6 @@ export class ArticlesReaderComponent implements OnInit {
 
   speakArticle(): void {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      alert('Speech Synthesis is not supported in this browser environment.');
       return;
     }
 
