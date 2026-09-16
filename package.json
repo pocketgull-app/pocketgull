@@ -298,6 +298,9 @@
     "postcss-selector-parser": ">=6.1.4",
     "ip-address": ">=10.4.0",
     "browserslist": ">=4.28.7",
+    "astro": ">=7.2.8",
+    "sharp": ">=0.35.4",
+    "smol-toml": ">=1.7.1",
     "@angular/build": {
       "undici": "8.10.0",
       "esbuild": {

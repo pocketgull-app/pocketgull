@@ -146,7 +146,9 @@ export interface IThemeOption {
     { id: 'spark', name: 'Spark Emergency Glow', category: 'Special Diagnostic', icon: '✨', bgHex: '#0a0503', borderHex: '#2e1208', textHex: '#fb923c', accentHex: '#f97316', description: 'Ember glow high-contrast emergency diagnostic lens.' },
     { id: 'pool', name: 'Circadian Aquatic Pool', category: 'Special Diagnostic', icon: '🌊', bgHex: '#081F3D', borderHex: '#0E3A70', textHex: '#E0F2FE', accentHex: '#38bdf8', description: 'Deep ocean pool blue light filtering lens.' },
     { id: 'mandala', name: 'Sacred Mandala Violet', category: 'Special Diagnostic', icon: '🧘', bgHex: '#16112D', borderHex: '#2A2052', textHex: '#F5F3FF', accentHex: '#a855f7', description: 'Solfeggio 528Hz meditative violet lens.' },
-    { id: 'curie', name: 'Curie Atomic Radium', category: 'Special Diagnostic', icon: '⚛️', bgHex: '#0F1416', borderHex: '#162025', textHex: '#E2F8EE', accentHex: '#00ff66', description: 'Madame Curie 1950s atomic lead-shielded green radium glow.' }
+    { id: 'curie', name: 'Curie Atomic Radium', category: 'Special Diagnostic', icon: '⚛️', bgHex: '#0F1416', borderHex: '#162025', textHex: '#E2F8EE', accentHex: '#00ff66', description: 'Madame Curie 1950s atomic lead-shielded green radium glow.' },
+    { id: 'scotopic', name: 'Scotopic 650nm Red', category: 'Special Diagnostic', icon: '🚨', bgHex: '#050000', borderHex: '#3D0A0A', textHex: '#FF6655', accentHex: '#FF2211', description: 'Monochromatic 650nm deep red preserving dark adaptation and rhodopsin in emergency night missions.' },
+    { id: 'epaper', name: 'Disaster Triage E-Paper', category: 'Tactile Paper', icon: '📟', bgHex: '#F5F5F0', borderHex: '#D1D1CC', textHex: '#111111', accentHex: '#222222', description: '1-bit high-contrast tactile e-paper display for direct sunlight mass-casualty triage.' }
   ];
 
   getThemesByCategory(cat: string) {
@@ -159,7 +161,7 @@ export interface IThemeOption {
 
   cyclePrimaryTheme() {
     const current = this.themeService.currentTheme();
-    const sequence: AppTheme[] = ['light', 'dark', 'system', 'spark', 'papercraft', 'hemp', 'rice', 'white-marble', 'black-marble', 'papyrus', 'pool', 'mandala', 'curie'];
+    const sequence: AppTheme[] = ['light', 'dark', 'system', 'spark', 'papercraft', 'hemp', 'rice', 'white-marble', 'black-marble', 'papyrus', 'pool', 'mandala', 'curie', 'scotopic', 'epaper'];
     const idx = sequence.indexOf(current);
     const next = sequence[(idx + 1) % sequence.length];
     this.themeService.currentTheme.set(next);

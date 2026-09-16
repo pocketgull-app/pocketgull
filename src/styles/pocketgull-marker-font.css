@@ -97,6 +97,48 @@
        url('/assets/fonts/PocketGull-VF.ttf') format('truetype');
 }
 
+/* PocketGull Math (OpenType Math Architecture v3.100) */
+@font-face {
+  font-family: 'PocketGull Math';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Math.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Math.woff2') format('woff2'),
+       url('/brand/fonts/PocketGull-Math.woff2') format('woff2'),
+       url('/fonts/PocketGull-Math.ttf') format('truetype'),
+       url('/assets/fonts/PocketGull-Math.ttf') format('truetype'),
+       url('/brand/fonts/PocketGull-Math.ttf') format('truetype');
+}
+
+/* PocketGull Chem (Clinical Chemistry & Pharmacology) */
+@font-face {
+  font-family: 'PocketGull Chem';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Chem.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Chem.woff2') format('woff2'),
+       url('/brand/fonts/PocketGull-Chem.woff2') format('woff2'),
+       url('/fonts/PocketGull-Chem.ttf') format('truetype'),
+       url('/assets/fonts/PocketGull-Chem.ttf') format('truetype'),
+       url('/brand/fonts/PocketGull-Chem.ttf') format('truetype');
+}
+
+/* PocketGull Genome (Clinical Genomics & CRISPR Monospace) */
+@font-face {
+  font-family: 'PocketGull Genome';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Genome.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Genome.woff2') format('woff2'),
+       url('/brand/fonts/PocketGull-Genome.woff2') format('woff2'),
+       url('/fonts/PocketGull-Genome.ttf') format('truetype'),
+       url('/assets/fonts/PocketGull-Genome.ttf') format('truetype'),
+       url('/brand/fonts/PocketGull-Genome.ttf') format('truetype');
+}
+
 /* ==========================================================================
    🖋️ 2. Typeface Utility Classes with Quaker Dovetail Kerning
    ========================================================================== */
@@ -200,6 +242,60 @@
   font-family: 'PocketGull Mono', 'JetBrains Mono', var(--font-pocketgull-sans) !important;
   font-feature-settings: "tnum" 1, "zero" 1;
   font-variant-numeric: tabular-nums;
+}
+
+/* 🧮 PocketGull Math — High-Precision Mathematical & Telemetric Typography Stack */
+.font-pocketgull-math {
+  font-family: 'PocketGull Math', 'PocketGull Mono', 'JetBrains Mono', 'Cambria Math', 'Latin Modern Math', 'STIX Two Math', monospace !important;
+  font-feature-settings: "cv05" 1, "cv08" 1, "ss01" 1, "ss02" 1, "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 🧪 PocketGull Chem — Clinical Chemistry & Pharmacological Stack */
+.font-pocketgull-chem {
+  font-family: 'PocketGull Chem', 'PocketGull', 'Atkinson Hyperlegible Next', sans-serif !important;
+  font-feature-settings: "cv05" 1, "cv08" 1, "tnum" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 🧬 PocketGull Genome — Genomic Sequences & Alignment Stack */
+.font-pocketgull-genome {
+  font-family: 'PocketGull Genome', 'PocketGull Mono', 'JetBrains Mono', monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 📐 Mathematical Display & Formula Containers */
+.clinical-formula,
+.math-display {
+  font-family: 'PocketGull Math', 'PocketGull Mono', 'Cambria Math', monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1, "cv08" 1;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.math-inline {
+  font-family: 'PocketGull Math', 'PocketGull Mono', monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+/* KaTeX Global Font Fallback Cascade */
+.katex,
+.katex-display,
+.katex-html {
+  font-family: 'PocketGull Math', 'KaTeX_Main', 'KaTeX_Math', 'Cambria Math', sans-serif !important;
 }
 
 /* 🖋️ Marker Heavy Bold Emphasis */
@@ -380,5 +476,22 @@
   font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif;
   font-weight: 400;
   color: #94a3b8 !important;
+}
+
+/* 7. Optotypic Clinical Telemetry & Conformal Disambiguation Guard (ISMP / FDA Standards) */
+.font-clinical-telemetry,
+.conformal-interval-badge {
+  font-family: 'PocketGull Math', 'PocketGull Mono', 'JetBrains Mono', monospace !important;
+  font-feature-settings: "cv08" 1, "cv05" 1, "ss02" 1, "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: -0.01em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.clinical-dosage-guard {
+  font-family: 'PocketGull Chem', 'PocketGull Math', monospace !important;
+  font-feature-settings: "cv08" 1, "cv05" 1, "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
 }
 

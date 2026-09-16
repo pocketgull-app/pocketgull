@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
+  <defs>
+    <style>
+      @import url('/fonts/fonts.css');
+      .bg { fill: #0b0f19; }
+      .card { fill: #111827; stroke: #1f2937; stroke-width: 1.5; rx: 12; }
+      .title { font-family: 'PocketGull', sans-serif; font-weight: 700; fill: #f9fafb; font-size: 20px; }
+      .subtitle { font-family: 'PocketGull Mono', monospace; fill: #10b981; font-size: 11px; letter-spacing: 0.08em; }
+      .label { font-family: 'Atkinson Hyperlegible', sans-serif; fill: #9ca3af; font-size: 11px; }
+      .genome-text { font-family: 'PocketGull-Genome', 'PocketGull Mono', monospace; font-size: 14px; font-weight: 600; }
+      .math-formula { font-family: 'PocketGull Math', 'PocketGull Mono', monospace; fill: #38bdf8; font-size: 13.5px; }
+      .crispr-symbol { font-family: 'PocketGull-Genome', monospace; fill: #f59e0b; font-size: 22px; }
+      .base-a { fill: #10b981; }
+      .base-c { fill: #38bdf8; }
+      .base-g { fill: #f59e0b; }
+      .base-t { fill: #ef4444; }
+      .callout { fill: #1f2937; stroke: #374151; stroke-width: 1; rx: 6; }
+    </style>
+  </defs>
+
+  <rect width="1000" height="700" class="bg"/>
+
+  <!-- Header -->
+  <g transform="translate(40, 30)">
+    <text x="0" y="24" class="title">PocketGull Genome: Clinical Molecular Specimen Plate</text>
+    <text x="0" y="44" class="subtitle">BIOINFORMATICS &amp; CRISPR/CAS9 ARCHITECTURE • 600 UPM FIXED PITCH • IUPAC ZERO-JITTER</text>
+  </g>
+
+  <!-- CARD 1: FASTA Sequence Alignment -->
+  <g transform="translate(40, 85)">
+    <rect width="440" height="320" class="card"/>
+    <text x="20" y="30" class="title" font-size="14">Multi-Sequence Alignment (FASTA / MSA)</text>
+    <text x="20" y="48" class="subtitle">STRICT 600 UPM ZERO-KERNING BOUNDARIES</text>
+
+    <g transform="translate(20, 75)">
+      <text x="0" y="16" class="label">HOMO SAPIENS TP53 EXON 5 (5' → 3'):</text>
+      <rect x="0" y="26" width="400" height="42" class="callout"/>
+      <g transform="translate(15, 52)">
+        <text class="genome-text"><tspan class="base-a">A</tspan><tspan class="base-t">T</tspan><tspan class="base-g">G</tspan><tspan class="base-g">G</tspan><tspan class="base-a">A</tspan><tspan class="base-g">G</tspan><tspan class="base-g">G</tspan><tspan class="base-a">A</tspan><tspan class="base-g">G</tspan><tspan class="base-c">C</tspan><tspan class="base-c">C</tspan><tspan class="base-g">G</tspan><tspan class="base-c">C</tspan><tspan class="base-a">A</tspan><tspan class="base-g">G</tspan><tspan class="base-t">T</tspan><tspan class="base-c">C</tspan><tspan class="base-a">A</tspan><tspan class="base-g">G</tspan><tspan class="base-a">A</tspan><tspan class="base-t">T</tspan><tspan class="base-c">C</tspan></text>
+      </g>
+
+      <g transform="translate(0, 85)">
+        <text x="0" y="16" class="label">PAN TROGLODYTES (CHIMPANZEE 100% HOMOLOGY):</text>
+        <rect x="0" y="26" width="400" height="42" class="callout"/>
+        <g transform="translate(15, 52)">
+          <text class="genome-text"><tspan class="base-a">A</tspan><tspan class="base-t">T</tspan><tspan class="base-g">G</tspan><tspan class="base-g">G</tspan><tspan class="base-a">A</tspan><tspan class="base-g">G</tspan><tspan class="base-g">G</tspan><tspan class="base-a">A</tspan><tspan class="base-g">G</tspan><tspan class="base-c">C</tspan><tspan class="base-c">C</tspan><tspan class="base-g">G</tspan><tspan class="base-c">C</tspan><tspan class="base-a">A</tspan><tspan class="base-g">G</tspan><tspan class="base-t">T</tspan><tspan class="base-c">C</tspan><tspan class="base-a">A</tspan><tspan class="base-g">G</tspan><tspan class="base-a">A</tspan><tspan class="base-t">T</tspan><tspan class="base-c">C</tspan></text>
+        </g>
+      </g>
+
+      <g transform="translate(0, 170)">
+        <text x="0" y="16" class="label">IUPAC DEGENERATE BASES &amp; QUALITY SCORES:</text>
+        <rect x="0" y="26" width="400" height="42" class="callout"/>
+        <text x="15" y="52" class="genome-text" fill="#a78bfa">R Y S W K M B D H V N  |  Q30 ≥ 99.9%</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 2: CRISPR-Cas9 Molecular Construct -->
+  <g transform="translate(520, 85)">
+    <rect width="440" height="320" class="card"/>
+    <text x="20" y="30" class="title" font-size="14">CRISPR-Cas9 Molecular Editing Construct</text>
+    <text x="20" y="48" class="subtitle">DOUBLE-STRAND BREAKS &amp; PAM RECOGNITION</text>
+
+    <g transform="translate(20, 75)">
+      <g transform="translate(0, 0)">
+        <text x="0" y="16" class="label">1. Cas9 DSB Cleavage Scissors (U+E920):</text>
+        <rect x="0" y="24" width="400" height="42" class="callout"/>
+        <text x="15" y="52" class="crispr-symbol">✂</text>
+        <text x="45" y="51" class="math-formula">Target Cleavage: 3 bp upstream of PAM motif</text>
+      </g>
+
+      <g transform="translate(0, 80)">
+        <text x="0" y="16" class="label">2. PAM Recognition Bracket Badge (U+E921):</text>
+        <rect x="0" y="24" width="400" height="42" class="callout"/>
+        <text x="15" y="52" class="crispr-symbol"></text>
+        <text x="45" y="51" class="math-formula">SpCas9 PAM: 5'-NGG-3' Recognition Domain</text>
+      </g>
+
+      <g transform="translate(0, 160)">
+        <text x="0" y="16" class="label">3. Base-Pairing Hydrogen Bonds (U+E923 - U+E925):</text>
+        <rect x="0" y="24" width="400" height="42" class="callout"/>
+        <text x="15" y="52" class="genome-text" fill="#34d399">A = T (2 H-Bonds)  |  G ≡ C (3 H-Bonds)  |  G · U</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: Biochemical Reaction Kinetics & Michaelis-Menten -->
+  <g transform="translate(40, 435)">
+    <rect width="920" height="235" class="card"/>
+    <text x="20" y="30" class="title" font-size="14">Enzyme Kinetics &amp; Reversible Catalysis (PocketGull Chem &amp; Math)</text>
+    <text x="20" y="48" class="subtitle">THERMODYNAMIC EQUILIBRIUM HARPOONS &amp; REVERSIBLE TRANSITION STATES</text>
+
+    <g transform="translate(20, 68)">
+      <g transform="translate(0, 0)">
+        <text x="0" y="16" class="label">ENZYMATIC CATALYSIS EQUILIBRIUM MECHANISM:</text>
+        <rect x="0" y="24" width="420" height="48" class="callout"/>
+        <text x="20" y="54" class="math-formula" font-size="16">E + S  ⇌  ES  →  E + P  (k₁ / k₋₁ ⇌ kcat)</text>
+      </g>
+
+      <g transform="translate(460, 0)">
+        <text x="0" y="16" class="label">MICHAELIS-MENTEN RATE EQUATION:</text>
+        <rect x="0" y="24" width="420" height="48" class="callout"/>
+        <text x="20" y="54" class="math-formula" font-size="16">v = ( V_max · [S] ) / ( K_m + [S] )</text>
+      </g>
+
+      <g transform="translate(0, 95)">
+        <text x="0" y="16" class="label">EPIGENETIC BASE CALLING (METHYLATION):</text>
+        <rect x="0" y="24" width="880" height="42" class="callout"/>
+        <text x="20" y="51" class="genome-text" fill="#10b981">m⁵C (5-Methylcytosine)  •  m⁶A (N⁶-Methyladenosine)  •  Direct RNA Nanopore Detection</text>
+      </g>
+    </g>
+  </g>
+</svg>

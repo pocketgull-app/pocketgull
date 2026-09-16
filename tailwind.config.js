@@ -31,6 +31,12 @@ module.exports = {
                         600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', 950: '#052e16',
                     }
                 }
+            },
+            fontFamily: {
+                'pocketgull-math': ['"PocketGull Math"', '"PocketGull Mono"', 'JetBrains Mono', 'monospace'],
+                'pocketgull-chem': ['"PocketGull Chem"', '"PocketGull"', 'Atkinson Hyperlegible Next', 'sans-serif'],
+                'pocketgull-genome': ['"PocketGull Genome"', '"PocketGull Mono"', 'JetBrains Mono', 'monospace'],
+                'pocketgull-mono': ['"PocketGull Mono"', 'JetBrains Mono', 'monospace'],
             }
         },
     },

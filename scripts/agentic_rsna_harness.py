@@ -218,14 +218,18 @@ def get_series_slice_paths_physically_sorted(series_dir):
             return
         print(f"[INFO] Submitting {kernel_slug} v{version} to {COMPETITION_ID}...")
         try:
-            res = self.api.competition_submit(
-                file_name='submission.csv',
-                message=message,
-                competition=COMPETITION_ID,
-                kernel=kernel_slug,
-                version=version
-            )
-            print(f"[SUCCESS] Submission dispatched: {res}")
+            import subprocess
+            cmd = [
+                r"C:\Users\philg\anaconda3\Scripts\kaggle.exe",
+                "competitions", "submit",
+                COMPETITION_ID,
+                "-f", "submission.csv",
+                "-k", kernel_slug,
+                "-v", str(version),
+                "-m", message
+            ]
+            res = subprocess.run(cmd, capture_output=True, text=True, check=True)
+            print(f"[SUCCESS] Submission dispatched: {res.stdout.strip()}")
         except Exception as e:
             print(f"[ERROR] Submission failed: {e}")
 

@@ -64,12 +64,12 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
             <span class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Null-Hypothesis Test (H₀): {{ fals.metricName }}
             </span>
-            <span class="text-xs font-mono font-medium text-indigo-600 dark:text-indigo-400">
+            <span class="text-xs font-pocketgull-math font-medium text-indigo-600 dark:text-indigo-400">
               p-value = {{ fals.pValue }}
             </span>
           </div>
 
-          <p class="mt-1 text-xs text-zinc-600 dark:text-zinc-300 font-mono">
+          <p class="mt-1 text-xs text-zinc-600 dark:text-zinc-300 font-pocketgull-math">
             H₀: {{ fals.nullHypothesisH0 }}
           </p>
 

@@ -235,7 +235,7 @@ export type PatentHudTab = 'inventions' | 'clauses' | 'math' | 'charter';
                     <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-100 mt-1">
                       {{ cluster.title }}
                     </h4>
-                    <div class="mt-2.5 p-2.5 bg-zinc-950 text-teal-400 border border-zinc-800 font-mono text-[11px] overflow-x-auto">
+                    <div class="mt-2.5 p-2.5 bg-zinc-950 text-teal-400 border border-zinc-800 font-pocketgull-math clinical-formula text-[12px] overflow-x-auto">
                       <code>{{ cluster.mathematicalFormulation }}</code>
                     </div>
                   </div>

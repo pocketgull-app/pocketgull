@@ -267,10 +267,11 @@ jobs:
     environment:
       name: production # Enables manual approval gates in GitHub
     
-    # Required permissions for Workload Identity Federation
+    # Required permissions for Workload Identity Federation and SLSA Attestation
     permissions:
       contents: 'read'
       id-token: 'write'
+      attestations: 'write'
     
     steps:
       - name: Harden Runner
@@ -305,17 +306,32 @@ jobs:
             -t $IMAGE_PATH:latest .
 
       - name: Push Docker Image
+        id: push-image
         run: |
           IMAGE_PATH=gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull
           docker push $IMAGE_PATH:${{ github.sha }}
           docker push $IMAGE_PATH:latest
+
+          # Extract immutable image digest (OpenSSF / SLSA Standard)
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_PATH:${{ github.sha }}" | cut -d'@' -f2)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+          echo "image_target=$IMAGE_PATH@$DIGEST" >> $GITHUB_OUTPUT
+          echo "Resolved immutable container digest: $DIGEST"
+
+      # --- OpenSSF SLSA Provenance Attestation ---
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@db473fddc028af60658334401dc6fa3ffd8669fd # v2.3.0
+        with:
+          subject-name: "gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull"
+          subject-digest: "${{ steps.push-image.outputs.digest }}"
+          push-to-registry: false
           
-      - name: Deploy to Cloud Run
+      - name: Deploy to Cloud Run (Immutable Digest)
         uses: google-github-actions/deploy-cloudrun@2028e2d7d30a78c6910e0632e48dd561b064884d # v2.3.0
         with:
           service: 'pocket-gull'
           region: 'us-central1'
-          image: 'gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull:${{ github.sha }}'
+          image: '${{ steps.push-image.outputs.image_target }}'
           env_vars: |
             NODE_ENV=production
             OTEL_SDK_DISABLED=true

@@ -1,0 +1,1 @@
+﻿& "C:\Users\philg\anaconda3\python.exe" -m kaggle competitions submit rsna-knee-abnormality-detection -f contests\rsna_knee_2026\inference_output_v9\submission.csv -m "Gen-9 High-Res 392x392 2.5D DINOv2 + Staged Metaplasticity + Bayesian Calibration"

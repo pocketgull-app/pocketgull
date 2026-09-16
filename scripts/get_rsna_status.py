@@ -10,7 +10,7 @@ import datetime
 from pathlib import Path
 
 STATE_FILE = Path(__file__).parent / ".taskbar_state.json"
-TRAIN_KERNEL_ID = "philgear/rsna-knee-2026-training-v8"
+TRAIN_KERNEL_ID = "philgear/rsna-knee-2026-training-v9"
 INFER_KERNEL_ID = "philgear/rsna-knee-2026-pytorch-inference"
 COMPETITION_ID = "rsna-knee-abnormality-detection"
 
