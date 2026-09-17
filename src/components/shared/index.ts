@@ -7,7 +7,6 @@ import { PocketGullButtonComponent } from './pocket-gull-button.component';
 import { PocketGullCardComponent } from './pocket-gull-card.component';
 import { PocketGullInputComponent } from './pocket-gull-input.component';
 import { ThemeStudioDrawerComponent } from './theme-studio-drawer.component';
-import { ZamecznikCanvasComponent } from './zamecznik-canvas.component';
 
 export * from './clinical-icon.component';
 export * from './clinical-tool-card.component';
@@ -21,7 +20,6 @@ export * from './multilingual-specimen.component';
 export * from './pocketgull-sans-bench.component';
 export * from './typographic-3d-body.component';
 export * from './theme-studio-drawer.component';
-export * from './zamecznik-canvas.component';
 export * from './quad-philosophy-matrix.component';
 export * from './cellular-biophysics-viewer.component';
 export * from './awcim-integrative-prescriber.component';
@@ -46,6 +44,5 @@ export const SHARED_POCKETGULL_COMPONENTS = [
   PocketGullCardComponent,
   PocketGullInputComponent,
   ThemeStudioDrawerComponent,
-  ZamecznikCanvasComponent,
 ] as const;
 

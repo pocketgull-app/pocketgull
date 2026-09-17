@@ -48,7 +48,6 @@ import { FitbitService } from './services/hardware/fitbit.service';
 import { ConsentService } from './services/consent.service';
 import { ConsentModalComponent } from './components/modals/consent-modal.component';
 import { ResearchTabComponent } from './components/research-tab.component';
-import { ZamecznikCanvasComponent } from './components/shared/zamecznik-canvas.component';
 import { CompanionSyncModalComponent } from './components/modals/companion-sync-modal.component';
 import { GlossaryModalComponent } from './components/modals/glossary-modal.component';
 import { PocketgullTypefaceSiteComponent } from './components/shared/pocketgull-typeface-site.component';
@@ -126,7 +125,6 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
     FhirCallbackComponent,
     PocketGullInputComponent,
     ConsentModalComponent,
-    ZamecznikCanvasComponent,
     CompanionSyncModalComponent,
     GlossaryModalComponent,
     ClinicalCdsDisclaimerBannerComponent,
@@ -877,8 +875,8 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
       <app-smart-health-pass-modal (closeModal)="showSmartHealthPassModal.set(false)"></app-smart-health-pass-modal>
     }
 
-    <!-- Living Room Ambient Health Studio Modal -->
-    @if (showAmbientLivingSpaceModal()) {
+    <!-- Living Room Ambient Health Studio Modal (Developer Showcase) -->
+    @if (navShell.developerMode() && showAmbientLivingSpaceModal()) {
       <app-ambient-living-space-dashboard></app-ambient-living-space-dashboard>
     }
 
@@ -887,8 +885,8 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
       <app-human-dignity-pact (closeModal)="showHumanDignityPactModal.set(false)"></app-human-dignity-pact>
     }
 
-    <!-- Patent & IP Claims Registry Modal -->
-    @if (showPatentClaimsModal()) {
+    <!-- Patent & IP Claims Registry Modal (Developer & IP Showcase) -->
+    @if (navShell.developerMode() && showPatentClaimsModal()) {
       <app-patent-claims-hud-modal (close)="showPatentClaimsModal.set(false)"></app-patent-claims-hud-modal>
     }
 
@@ -939,8 +937,8 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
       </div>
     }
 
-    <!-- PocketGull Typeface Specimen Suite Modal Site -->
-    @if (showTypefaceSite()) {
+    <!-- PocketGull Typeface Specimen Suite Modal Site (Developer & Typography Showcase) -->
+    @if (navShell.developerMode() && showTypefaceSite()) {
       <div class="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-300">
         <div class="relative w-full max-w-7xl max-h-[90vh] bg-white dark:bg-zinc-950 rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-y-auto">
           <button (click)="showTypefaceSite.set(false)" class="absolute top-6 right-6 z-[10000] px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-amber-500 hover:text-zinc-950 rounded-full transition-colors font-bold text-xs">
@@ -985,8 +983,8 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
       </div>
     }
 
-    <!-- Human Resources & Domain Specialist Agent-Wrangling Portal Modal Site -->
-    @if (showTalentHrPortalModal()) {
+    <!-- Human Resources & Domain Specialist Agent-Wrangling Portal Modal Site (Developer & HR Showcase) -->
+    @if (navShell.developerMode() && showTalentHrPortalModal()) {
       <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-300 no-print" role="dialog" aria-modal="true" aria-labelledby="talent-portal-title">
         <div class="relative w-full max-w-7xl max-h-[92vh] bg-zinc-950 rounded-3xl shadow-2xl border border-teal-900/50 overflow-y-auto flex flex-col">
           <div class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800">
@@ -1467,7 +1465,6 @@ export class AppComponent implements OnDestroy {
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
-  readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);
   readonly fhirModalRef = viewChild(SmartFhirSyncModalComponent);
   readonly vaultModalRef = viewChild(EncryptedVaultModalComponent);
 
@@ -1477,7 +1474,6 @@ export class AppComponent implements OnDestroy {
   }
 
   triggerSomaticGrounding(): void {
-    this.zamecznikCanvas()?.open();
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('somatic-grounding-activate'));
     }

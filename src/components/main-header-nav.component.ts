@@ -69,27 +69,29 @@ import { NavigationShellService } from '../services/navigation-shell.service';
       <div class="flex items-center gap-2 shrink-0">
         <app-console-integrity-badge class="hidden lg:inline-flex" />
 
-        <!-- 🌟 Experience by Role Demo Trigger (Desktop) -->
-        <button 
-          type="button" 
-          id="btn-role-demo-trigger"
-          (click)="navShell?.openRoleDemo()"
-          aria-label="Experience PocketGull by Clinical Role"
-          class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-          <span class="text-xs">✨</span>
-          <span>Role Demo</span>
-        </button>
+        @if (navShell?.developerMode()) {
+          <!-- 🌟 Experience by Role Demo Trigger (Desktop) -->
+          <button 
+            type="button" 
+            id="btn-role-demo-trigger"
+            (click)="navShell?.openRoleDemo()"
+            aria-label="Experience PocketGull by Clinical Role"
+            class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+            <span class="text-xs">✨</span>
+            <span>Role Demo</span>
+          </button>
 
-        <!-- 💼 Commercialization & Practice Growth Hub Trigger (Desktop) -->
-        <button 
-          type="button" 
-          id="btn-commercial-hub-trigger"
-          (click)="navShell?.openCommercialHub()"
-          aria-label="Open Commercialization & Monetization Hub"
-          class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-          <span class="text-xs">💼</span>
-          <span>Commercial Hub</span>
-        </button>
+          <!-- 💼 Commercialization & Practice Growth Hub Trigger (Desktop) -->
+          <button 
+            type="button" 
+            id="btn-commercial-hub-trigger"
+            (click)="navShell?.openCommercialHub()"
+            aria-label="Open Commercialization & Monetization Hub"
+            class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+            <span class="text-xs">💼</span>
+            <span>Commercial Hub</span>
+          </button>
+        }
 
         <!-- 🏛️ USWDS Federal Health Workstation Trigger (Desktop) -->
         <button 
@@ -271,27 +273,22 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                       <div class="text-[10px] text-zinc-400 font-normal">Box Breathing Pacer</div>
                     </div>
                   </button>
-                  <button type="button" (click)="openAmbientLivingSpace.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">🏡</span>
-                    <div>
-                      <div>Living Room Ambient</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Dieter Rams Display Mode</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openHumanDignityPact.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">🕊️</span>
-                    <div>
-                      <div>Dignity Charter</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Human Rights & Autonomy</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openTypefaceSite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">🔤</span>
-                    <div>
-                      <div>Typeface Suite</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">William Caslon Fonts</div>
-                    </div>
-                  </button>
+                  @if (navShell?.developerMode()) {
+                    <button type="button" (click)="openAmbientLivingSpace.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">🏡</span>
+                      <div>
+                        <div>Living Room Ambient</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">Dieter Rams Display Mode</div>
+                      </div>
+                    </button>
+                    <button type="button" (click)="openTypefaceSite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">🔤</span>
+                      <div>
+                        <div>Typeface Suite</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">William Caslon Fonts</div>
+                      </div>
+                    </button>
+                  }
                 </div>
 
                 <!-- Section: Enterprise & Operations -->
@@ -325,55 +322,36 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                       <div class="text-[10px] text-zinc-400 font-normal">Autonomous Ticketing</div>
                     </div>
                   </button>
-                  <button type="button" (click)="openTalentHrPortal.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">💼</span>
-                    <div>
-                      <div>Executive Demo</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Health System ROI</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openBillingDashboard.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">💳</span>
-                    <div>
-                      <div>Billing &amp; Pricing</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Usage &amp; Plans</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openDoctorShiftDemo.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">🏥</span>
-                    <div>
-                      <div>Hospital Shift Demo</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Physician Pilot & HHS § 1557</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="navShell?.openCmsSuperbill(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">📋</span>
-                    <div>
-                      <div>CMS RPM Superbill Claim</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">CPT 99453/99454 16-Day Telemetry</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="navShell?.openTrajectoryReader(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">⚡</span>
-                    <div>
-                      <div>Rapid Trajectory & Speed Reader</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Past / Present / Future Arc (650 WPM)</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openGreenRoom.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">🌿</span>
-                    <div>
-                      <div>Green Room Lounge</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Clinician Debrief & Reflection</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openPatentClaims.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">⚖️</span>
-                    <div>
-                      <div>Patent &amp; IP Registry</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">200 Claims &amp; Clauses</div>
-                    </div>
-                  </button>
+                  @if (navShell?.developerMode()) {
+                    <button type="button" (click)="openTalentHrPortal.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">💼</span>
+                      <div>
+                        <div>Executive Demo</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">Health System ROI</div>
+                      </div>
+                    </button>
+                    <button type="button" (click)="openDoctorShiftDemo.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">🏥</span>
+                      <div>
+                        <div>Hospital Shift Demo</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">Physician Pilot & HHS § 1557</div>
+                      </div>
+                    </button>
+                    <button type="button" (click)="openGreenRoom.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">🌿</span>
+                      <div>
+                        <div>Green Room Lounge</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">Clinician Debrief & Reflection</div>
+                      </div>
+                    </button>
+                    <button type="button" (click)="openPatentClaims.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">⚖️</span>
+                      <div>
+                        <div>Patent &amp; IP Registry</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">200 Claims &amp; Clauses</div>
+                      </div>
+                    </button>
+                  }
                   <button type="button" (click)="openAustereHud.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🛡️</span>
                     <div>
@@ -396,6 +374,24 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                     </div>
                   </button>
                 </div>
+              </div>
+
+              <!-- Developer & Auxiliary Demos Gatekeeper Toggle -->
+              <div class="pt-2.5 mt-2.5 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-1">
+                <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">Developer Demos:</span>
+                <button type="button" (click)="navShell?.toggleDeveloperMode()" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded border transition cursor-pointer"
+                        [class.bg-emerald-100]="navShell?.developerMode()"
+                        [class.dark:bg-emerald-950]="navShell?.developerMode()"
+                        [class.text-emerald-800]="navShell?.developerMode()"
+                        [class.dark:text-emerald-300]="navShell?.developerMode()"
+                        [class.border-emerald-400]="navShell?.developerMode()"
+                        [class.bg-zinc-100]="!navShell?.developerMode()"
+                        [class.dark:bg-zinc-800]="!navShell?.developerMode()"
+                        [class.text-zinc-500]="!navShell?.developerMode()"
+                        [class.border-zinc-300]="!navShell?.developerMode()"
+                        [class.dark:border-zinc-700]="!navShell?.developerMode()">
+                  {{ navShell?.developerMode() ? '🛠️ DEV MODE: ON' : '🔒 DEV MODE: OFF' }}
+                </button>
               </div>
             </div>
           }

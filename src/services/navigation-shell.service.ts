@@ -27,6 +27,35 @@ export class NavigationShellService {
   readonly showIntimacyVitalityModal = signal<boolean>(false);
   readonly showFederalUswdsPortal = signal<boolean>(false);
 
+  /** Developer Mode: Gates investor pitch portals, experimental showcases, and auxiliary demos. Defaults to false. */
+  readonly developerMode = signal<boolean>(
+    (() => {
+      try {
+        if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+          return globalThis.localStorage.getItem('pg_developer_mode') === 'true';
+        }
+      } catch {
+        // Fallback for sandboxed environments
+      }
+      return false;
+    })()
+  );
+
+  /**
+   * Toggles developer mode and persists to localStorage.
+   */
+  public toggleDeveloperMode(): void {
+    const next = !this.developerMode();
+    this.developerMode.set(next);
+    try {
+      if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+        globalThis.localStorage.setItem('pg_developer_mode', next ? 'true' : 'false');
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
   /**
    * Switches active main tab.
    */
