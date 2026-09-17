@@ -677,9 +677,9 @@ function executeWebMcpToolDirect(toolName, jsonArgsStr) {
   });
 }
 
-function generateHandoffDirect(id, specialty = 'tcm_master') {
+function generateHandoffDirect(id, specialty = 'tcm_herbalist') {
   if (!id) {
-    console.error('\x1b[31mError: Please specify patient ID. (e.g. node scripts/gull.js handoff p001 tcm_master)\x1b[0m');
+    console.error('\x1b[31mError: Please specify patient ID. (e.g. node scripts/gull.js handoff p001 tcm_herbalist)\x1b[0m');
     return;
   }
 

@@ -73,7 +73,7 @@ export class GeminiContextCacheService {
     }
 
     const ttlSec = options.ttlSeconds ?? 300;
-    const model = options.model || 'models/gemini-2.5-flash';
+    const model = options.model || 'models/gemini-3.8-flash';
     const displayName = options.displayName || `FHIR Patient Context (${fhirHash.substring(0, 8)})`;
 
     const now = new Date();

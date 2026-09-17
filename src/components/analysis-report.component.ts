@@ -1189,18 +1189,18 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                     </div>
                   </div>
 
-                  <!-- 🎛️ Audiophile DSP Mastering & Psychoacoustic Studio Rack -->
+                  <!-- 🎛️ Audiophile DSP Studio & Psychoacoustic Studio Rack -->
                   <div class="mt-4 p-4 rounded-2xl bg-zinc-950/90 border border-amber-500/30 font-mono text-xs shadow-xl">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-amber-900/40 pb-2">
                       <div class="flex items-center gap-2">
                         <span class="text-base">🎛️</span>
-                        <h4 class="font-black text-amber-300 uppercase tracking-wider text-xs">Audiophile Master Rack • 24-Bit Studio DSP Engine</h4>
+                        <h4 class="font-black text-amber-300 uppercase tracking-wider text-xs">Audiophile Studio Rack • 24-Bit Studio DSP Engine</h4>
                         <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/40">
                           {{ avsService.bitrateLabel() }}
                         </span>
                       </div>
                       <div class="flex items-center gap-2">
-                        <span class="text-[11px] text-zinc-400">THD+N &lt; 0.0001% • 32-bit Float Internal Master</span>
+                        <span class="text-[11px] text-zinc-400">THD+N &lt; 0.0001% • 32-bit Float Internal Bus</span>
                       </div>
                     </div>
 
@@ -1270,7 +1270,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                         <span class="text-[10px] text-zinc-500 mt-2 block">Anti-fatigue psychoacoustic pinna</span>
                       </div>
 
-                      <!-- 4. Noise Bed & Mastering Dynamics -->
+                      <!-- 4. Noise Bed & Dynamic Limiting -->
                       <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 flex flex-col justify-between">
                         <div>
                           <div class="flex justify-between items-center mb-1">
@@ -1278,7 +1278,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                             <span class="font-bold font-mono text-emerald-400">16s Loop</span>
                           </div>
                           <div class="flex items-center justify-between text-[11px] text-zinc-300 mt-1">
-                            <span>Mastering Limiter:</span>
+                            <span>Studio Peak Limiter:</span>
                             <span class="text-emerald-400 font-bold font-mono">-16dB Opto</span>
                           </div>
                           <div class="flex items-center justify-between text-[11px] text-zinc-300 mt-0.5">

@@ -1687,10 +1687,10 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
 
     .origami-unfold-svg {
       transform-style: preserve-3d;
-      animation: origami-master-unfold 7s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+      animation: origami-primary-unfold 7s cubic-bezier(0.25, 1, 0.5, 1) infinite;
     }
 
-    @keyframes origami-master-unfold {
+    @keyframes origami-primary-unfold {
       0% { transform: scale(0.6) rotate(-35deg) rotateX(60deg); filter: blur(2px); opacity: 0; }
       12% { transform: scale(0.85) rotate(-15deg) rotateX(25deg); filter: blur(0px); opacity: 1; }
       40% { transform: scale(1.06) rotate(4deg) rotateX(0deg); }

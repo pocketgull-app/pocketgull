@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-RSNA Knee 2026 — Master Agentic Closed-Loop Harness
+RSNA Knee 2026 — Primary Agentic Closed-Loop Harness
 
 Autonomous feedback loop engine for the RSNA Knee Abnormality Detection competition:
 1. Audits local weak/gold labels and volumetric preprocessing pipelines.
@@ -30,7 +30,7 @@ COMPETITION_ID = 'rsna-knee-abnormality-detection'
 
 
 class RSNAAgenticHarness:
-    """Master Closed-Loop ML Harness for RSNA Knee 2026."""
+    """Primary Closed-Loop ML Harness for RSNA Knee 2026."""
 
     def __init__(self, username: str = 'philgear'):
         self.username = username

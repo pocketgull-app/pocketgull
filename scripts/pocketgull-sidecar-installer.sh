@@ -236,8 +236,8 @@ action_run_vitest() {
     read -p "Press Enter to return to Sidecar Main Menu..."
 }
 
-# ── Master Interactive Sidecar Menu Loop ──────────────────────────────────────
-master_sidecar_menu() {
+# ── Main Interactive Sidecar Menu Loop ───────────────────────────────────────
+main_sidecar_menu() {
     while true; do
         draw_sidecar_header
         echo -e " ${SPARK_GOLD_BG}\033[38;5;16m${BOLD} 🧭 POCKETGULL CLINICAL SIDECAR & A2A COMMAND CENTER MENU ${RESET}\n"
@@ -286,5 +286,5 @@ master_sidecar_menu() {
     done
 }
 
-# Launch Master Interactive Menu
-master_sidecar_menu
+# Launch Main Interactive Menu
+main_sidecar_menu

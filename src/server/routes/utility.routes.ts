@@ -129,7 +129,7 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
           'name': 'generate_specialist_handoff',
           'description': 'Serializes patient state into an expanded base64 handoff URL and SBAR note for specialists',
           'parameters': {
-            'specialty': { 'type': 'string', 'enum': ['do_osteopathic', 'gastroenterology', 'orthomolecular', 'tcm_master', 'ayurvedic_vaidya', 'psychiatry_ybocs'] }
+            'specialty': { 'type': 'string', 'enum': ['do_osteopathic', 'gastroenterology', 'orthomolecular', 'tcm_herbalist', 'tcm_master', 'ayurvedic_vaidya', 'psychiatry_ybocs'] }
           }
         },
         {

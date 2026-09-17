@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
 
-test.describe('Master Project Quality & Agentic Readiness Audit', () => {
+test.describe('Comprehensive Project Quality & Agentic Readiness Audit', () => {
   const consoleErrors: string[] = [];
   const pageExceptions: string[] = [];
 

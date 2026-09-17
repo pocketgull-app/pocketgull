@@ -42,7 +42,7 @@ PROJECT_TAGS = [
     "physionet"
 ]
 
-# Combined master taxonomy
+# Combined unified taxonomy
 ALL_TAGS = sorted(list(set(CLINICAL_TAGS + AI_ML_TAGS + PROJECT_TAGS)))
 
 
@@ -84,5 +84,5 @@ def get_standard_tags(
 
 
 if __name__ == "__main__":
-    print(f"[OK] Pocketgull Master Tag Taxonomy ({len(ALL_TAGS)} tags):")
+    print(f"[OK] Pocketgull Unified Tag Taxonomy ({len(ALL_TAGS)} tags):")
     print(", ".join(ALL_TAGS))

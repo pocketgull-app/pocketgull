@@ -53,7 +53,7 @@ export class SpatialAmbisonicsService {
     this.isochronicDutyCycle.set(Math.max(0.1, Math.min(0.9, cycle)));
   }
 
-  initAudioGraph(ctx: AudioContext, masterNode: AudioNode): void {
+  initAudioGraph(ctx: AudioContext, destinationNode: AudioNode): void {
     if (!this.isBrowser || !ctx) return;
     this.audioCtx = ctx;
 
@@ -67,7 +67,7 @@ export class SpatialAmbisonicsService {
         this.pannerNode.maxDistance = 10000;
         this.pannerNode.rolloffFactor = 1;
         this.pannerNode.coneInnerAngle = 360;
-        this.pannerNode.connect(masterNode);
+        this.pannerNode.connect(destinationNode);
       }
 
       // Create Isochronic Gain Node for speaker modulation
@@ -76,13 +76,13 @@ export class SpatialAmbisonicsService {
       if (this.pannerNode) {
         this.isochronicGainNode.connect(this.pannerNode);
       } else {
-        this.isochronicGainNode.connect(masterNode);
+        this.isochronicGainNode.connect(destinationNode);
       }
 
       // Create Noise Generator
       this.noiseGainNode = ctx.createGain();
       this.noiseGainNode.gain.setValueAtTime(this.noiseVolume(), ctx.currentTime);
-      this.noiseGainNode.connect(masterNode);
+      this.noiseGainNode.connect(destinationNode);
 
       this.updateNoiseGraph();
       this.startOrbitalPanningLoop();

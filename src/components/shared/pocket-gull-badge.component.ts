@@ -81,7 +81,7 @@ export type BadgeSeverity = 'info' | 'success' | 'warning' | 'error' | 'neutral'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PocketGullBadgeComponent {
-  label = input.required<string>();
+  label = input<string>('');
   severity = input<BadgeSeverity>('neutral');
   hasIcon = input<boolean>(false);
 

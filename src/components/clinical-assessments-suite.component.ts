@@ -299,7 +299,7 @@ import { getAssessment } from '../services/clinical-assessments/assessment-regis
           <!-- Grow-Thyself Life Domain Breakdown Bar -->
           @if (svc.activeTab() === 'growthyself') {
             <div class="pt-3 border-t border-zinc-200/60 dark:border-zinc-800/60 flex items-center gap-3 text-xs font-mono flex-wrap">
-              <span class="font-bold uppercase text-zinc-400">Master Life Domain Breakdown:</span>
+              <span class="font-bold uppercase text-zinc-400">Comprehensive Life Domain Breakdown:</span>
               <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 font-bold">🎯 Purpose: {{ svc.growThyselfBreakdown().purpose }}</span>
               <span class="px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20 font-bold">🫁 Somatic: {{ svc.growThyselfBreakdown().somatic }}</span>
               <span class="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 font-bold">🍏 Nutrition: {{ svc.growThyselfBreakdown().nutrition }}</span>

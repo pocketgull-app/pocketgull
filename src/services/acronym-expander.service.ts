@@ -83,7 +83,7 @@ export const MEDICAL_ACRONYM_DICTIONARY: Record<string, IAcronymDefinition> = {
   'GSH': {
     shortForm: 'GSH',
     fullTitle: 'Reduced Glutathione',
-    plainEnglishExplanation: 'Master intracellular antioxidant protecting cells from free radicals.',
+    plainEnglishExplanation: 'Primary intracellular antioxidant protecting cells from free radicals.',
     category: 'Lab/Biomarker'
   },
   'CoQ10': {

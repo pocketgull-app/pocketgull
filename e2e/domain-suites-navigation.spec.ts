@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { setupE2ePage, enterDemoMode } from './utils/setup';
 
-test.describe('10-Dimensional Master Domain Suites E2E Verification', () => {
+test.describe('10-Dimensional Domain Suites E2E Verification', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(90000);
     await page.addInitScript(() => {
@@ -13,7 +13,7 @@ test.describe('10-Dimensional Master Domain Suites E2E Verification', () => {
     await setupE2ePage(page);
   });
 
-  test('should display 10-Dimensional Master Paradigm Synthesizer & navigate all 10 domain suites', async ({ page }) => {
+  test('should display 10-Dimensional Unified Paradigm Synthesizer & navigate all 10 domain suites', async ({ page }) => {
     // Perform full login and enter demo mode
     await enterDemoMode(page);
 
@@ -47,7 +47,7 @@ test.describe('10-Dimensional Master Domain Suites E2E Verification', () => {
     ];
 
     // Click "Show All" toggle if present so all 12 domain suite buttons are rendered
-    const showAllSuitesBtn = page.locator('button', { hasText: /Show All|All 12|Master Suites/i }).first();
+    const showAllSuitesBtn = page.locator('button', { hasText: /Show All|All 12|Domain Suites/i }).first();
     if (await showAllSuitesBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await showAllSuitesBtn.click();
       await page.waitForTimeout(500);
