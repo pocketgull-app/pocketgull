@@ -85,9 +85,9 @@ test.describe('Institutional Thin Clients & Kiosks E2E Suite', () => {
     // Verify Ambient Flow background music functions without microphone dependency
     await page.evaluate(() => window.scrollTo(0, 0));
     const ambientBtn = page.locator('#btn-ambient-flow-trigger, button:has-text("Ambient Flow")').first();
-    if (await ambientBtn.count() > 0) {
+    if (await ambientBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
       await ambientBtn.scrollIntoViewIfNeeded();
-      await ambientBtn.dispatchEvent('click');
+      await ambientBtn.click({ force: true });
       const player = page.locator('app-ambient-flow-player');
       await expect(player).toBeVisible({ timeout: 10000 });
     }

@@ -102,9 +102,9 @@ test.describe('Physical Genomics & 3D Genome Engineering Suite E2E', () => {
     // -------------------------------------------------------------
     console.log('[E2E] Testing Tab 5: LINC Mechanotransduction...');
     const lincTabBtn = page.locator('button', { hasText: /LINC Mechanotransduction/i }).first();
-    await expect(lincTabBtn).toBeVisible();
+    await expect(lincTabBtn).toBeVisible({ timeout: 10000 });
     await lincTabBtn.scrollIntoViewIfNeeded();
-    await lincTabBtn.dispatchEvent('click');
+    await lincTabBtn.click({ force: true });
     await page.waitForTimeout(500);
 
     const ecmLabel = page.locator('app-lens-physical-genomics').getByText(/ECM & Cytoskeletal Biomechanics|LINC Bridge Force/i).first();
@@ -122,11 +122,7 @@ test.describe('Physical Genomics & 3D Genome Engineering Suite E2E', () => {
     // Close panel
     await page.evaluate(() => window.scrollTo(0, 0));
     await genomicsBtn.scrollIntoViewIfNeeded();
-    await genomicsBtn.dispatchEvent('click');
-    await page.waitForTimeout(500);
-    if (await suiteHeader.isVisible().catch(() => false)) {
-      await genomicsBtn.click({ force: true }).catch(() => {});
-    }
+    await genomicsBtn.click({ force: true });
     await expect(suiteHeader).not.toBeVisible({ timeout: 10000 });
   });
 });

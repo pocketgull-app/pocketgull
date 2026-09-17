@@ -25,8 +25,19 @@ Pocket Gull is committed to continuous refinement (**Kaizen**) in integrative cl
 - [x] **Universal Health Hero Quests & 4 Companion Modes**: Family & Kids, Friend Pact, Pet Co-Care, and Solo Mastery with 1-click printable habit charts.
 - [x] **9-Language Cognitive Localization**: Instant multi-language switching across EN, ES, FR, DE, ZH, JA, HI, AR (RTL), and PT.
 - [x] **Digital Health Equity & Exposomics**: Graceful degradation on legacy devices (<2GB RAM), 100% offline PWA caching, and client-side privacy-first geofencing.
+- [x] **USWDS 3.0 Federal Health & VA Community Care Portal (v1.35.0)**: Objective 38 CFR § 4.87 DBQ and Medical Nexus statement generator (*"at least as likely as not [$\ge 50\%$ probability]"*) for combat blast overpressure; 18 U.S.C. § 701 Safe Harbor demarcation.
+- [x] **7-Pillar SOTA Causal & Waveform ML Engine (v1.36.0)**: Doubly Robust AIPW counterfactual simulation, 100–500 Hz Pan-Tompkins QRS/PPG DSP, irregular time-series Neural ODEs, Mahalanobis Epistemic OOD Detector, and Mondrian Inductive Conformal Prediction (95% finite-sample coverage).
+- [x] **Lifespan Posology Suite (v1.36.0)**: Pediatric formulas (Mosteller BSA, Clark's, Fried's, Young's), Geriatric Beers Criteria 2023 anticholinergic burden, Cockcroft-Gault $CrCl$ titration, and Maternal LactMed RID $< 10\%$ safety.
+- [x] **PocketGull-Sign-VF Variable Font Superfamily v3.3.0 (v1.36.0)**: 4-axis continuous variable manual control (`MRPH`, `wght`, `opsz`, `AZIM`) with clinical slashed zero (`cv08`), curved `l` (`cv05`), and serifed `I` (`ss02`).
+- [x] **Inclusivity & Master Terminology Modernization (v1.36.0)**: Complete codebase purge of non-inclusive legacy jargon while preserving authentic proper nouns and literary masterpieces.
 
 ---
+
+## 🎯 Active Horizon: PR #343 Green-Lighting & Data Dividend Suite (v1.36.1 - v1.37.0)
+- [ ] **PR #343 E2E Test Suite Stabilization**: Resolve 3 remaining Playwright locators (`accessibility.spec.ts`, `institutional-thin-clients.spec.ts`, `physical-genomics-suite.spec.ts`) to merge dependency security (`hono` 4.13.8, `adm-zip` 0.6.1) and SSR articles hub.
+- [ ] **Data Dividend & Exchange Formalization (Issues #271–#274)**: Wire automated Stripe Connect Express payouts and BigQuery Analytics Hub cohort listing to `ResearchDataDividendComponent`.
+- [ ] **Compile-Time Poka-Yoke Guards (Issue #276)**: Add strict TypeScript eslint rule banning untyped `any` casts in clinical posology and vital sign services.
+- [ ] **Epic & Oracle Cerner App Orchard Certification**: Complete formal FHIR R4 packaging for EHR app marketplace deployment.
 
 ## 🔮 H1 2027: Enterprise EHR & SMART-on-FHIR App Store Launch
 - [x] **FHIR R5 Resource Store Synchronization**: Bi-directional synchronization with Google Cloud Healthcare API (Zero-Cost Local Dry-Run for AWS HealthLake).

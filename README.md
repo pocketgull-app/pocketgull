@@ -124,6 +124,11 @@ Integrated interactive diagnostic tools accessible via the unified **Clinical To
 | **✨ 5-Persona Clinical Simulator** | Role-Adaptive Walkthrough | Instant 1-click sandbox testing as Attending Physician, Triage Nurse, Patient/Family, Bioinformatician, or Hospital Executive | Role-based clinical workflow specialization |
 | **🧭 3-Act Trajectory Compass** | Prognostic Longitudinal Care | Temporal narrative mapping (Where You've Been, Where You Stand, Where You're Going) + RSVP retinal fixation speed-reader | 45-second high-density Bionic reading notes |
 | **📋 Ambulatory Scribe & Review Drawer** | Clinical Documentation History | Real-time encounter transcript viewer with structured SOAP and SBAR differential staging | 1-click Epic/Cerner clipboard export |
+| **⚡ 7-Pillar SOTA ML & Causal Engine** | Causal Inference & Biosignals | Doubly Robust AIPW counterfactuals (`causal_inference.py`), 100–500 Hz Pan-Tompkins QRS/PPG DSP, Neural ODEs, Mahalanobis Epistemic OOD Detector, and Mondrian Inductive Conformal Prediction | 95% finite-sample coverage guarantee, Mayer wave spectral power ($0.1\text{ Hz}$) |
+| **⚖️ Lifespan Posology Suite** | Pediatric, Elder & Maternal Dosing | Mosteller BSA ($BSA = \sqrt{\frac{W \times H}{3600}}$), Clark's/Fried's/Young's rules, Cockcroft-Gault $CrCl$, AGS Beers Criteria 2023 anticholinergic burden, and LactMed RID $< 10\%$ | Section 508 accessible posology calculator |
+| **🏛️ USWDS 3.0 Federal Health Portal** | Veteran Care & Disability Adjudication | Objective 38 CFR § 4.87 DBQ & Medical Nexus Statement Generator (*"at least as likely as not [$\ge 50\%$ probability]"*) for combat blast overpressure tinnitus/hearing loss | VA Community Care Network (CCN), 18 U.S.C. § 701 Safe Harbor demarcation |
+| **🛠️ WebMCP Clinical Agent Tool Catalog** | Agentic EHR Interoperability | Standardized Model-Context Protocol OpenAPI schemas exposing FHIR R4 observations, condition coding, and trajectory queries to local LLMs | Bidirectional agentic tooling (`WebMcpToolCatalogService`) |
+| **💓 Active Pivot & Pulse Synthesizer** | Cybernetic Vital Telemetry | Real-time cybernetic vital sign feedback loops evaluating living telemetry against clinical pivot thresholds | Live overview telemetry card (`ActivePivotMonitorCardComponent`) |
 
 ### 🩺 Multi-Paradigm Clinical Lenses
 
@@ -363,7 +368,7 @@ pocketgull/
 │   ├── patient_app/              # Flutter patient-facing app
 │   └── provider_app/             # Flutter provider-facing app
 ├── pocketgull_api/               # Python FastAPI ML sidecar
-├── docs/study/                   # Astro documentation site
+├── docs/                         # Clinical architecture, specifications & RFCs
 ├── e2e/                          # Playwright E2E tests
 ├── tests/                        # Vitest unit tests
 ├── scripts/                      # Build, deploy & security scripts
@@ -436,7 +441,6 @@ All patient data serialized across API boundaries conforms to the **FHIR R4 Bund
 | `companion-apps/patient_app` | Dart/Flutter | Patient-facing mobile app |
 | `companion-apps/provider_app` | Dart/Flutter | Provider-facing mobile app |
 | `pocketgull_api` | Python | FastAPI ML scoring sidecar |
-| `docs/study` | Astro/MDX | Documentation portal |
 
 ---
 
@@ -447,12 +451,12 @@ Pocket-Gull provides a complete suite of production binaries, CLI tools, on-devi
 | Program / Artifact | Format & Type | Purpose & Compatibility | Build / Launch Command |
 | :--- | :--- | :--- | :--- |
 | **`gull` Clinical CLI Diagnostic Engine** | Node.js Executable (`bin: gull`) | Terminal diagnostic console with real-time ASCII EKG animation, patient directory, and FHIR export | `node scripts/gull.js [list\|show\|export]` |
-| **Chrome Web Store EHR Sidepanel Extension** | Manifest V3 Zip Package (`.zip`) | Outpatient EHR browser sidepanel integrating directly with Epic, Cerner, and AthenaHealth | `node scripts/build-chrome-extension.mjs`<br>*(Outputs: `pocketgull-chrome-extension-v1.34.0.zip`)* |
+| **Chrome Web Store EHR Sidepanel Extension** | Manifest V3 Zip Package (`.zip`) | Outpatient EHR browser sidepanel integrating directly with Epic, Cerner, and AthenaHealth | `node scripts/build-chrome-extension.mjs`<br>*(Outputs: `pocketgull-chrome-extension-v1.36.0.zip`)* |
 | **Ollama Avian Navigator Models** | GGUF / Gemma 2B-12B Modelfiles | 6 local edge AI models with custom clinical system instructions and ISMP dosage guards | `powershell -ExecutionPolicy Bypass -File ollama/install_models.ps1`<br>`bash ollama/install_models.sh` |
 | **Multi-Store Mobile Companion Suite** | Flutter `.aab`, `.apk`, `.ipa` | Patient & provider mobile companion apps with biometric Face ID, Play Integrity, and Fire OS support | `node scripts/build-mobile-stores.mjs`<br>*(Targets: Google Play, Amazon Appstore, Apple App Store)* |
 | **On-Device ONNX Clinical Recovery Model** | FP16 ONNX Runtime (`.onnx`) | Sub-millisecond continuous recovery scoring executing on device via WebAssembly/WebGPU | `public/models/clinical_recovery_model.onnx`<br>`public/models/clinical_edge_weights.json` |
-| **OpenType & WebFont Typographic Binaries** | WOFF2 / TTF Font Binaries | Clinical typography engine featuring ultra-fast Core subsets (15 KB) with ISMP zero-error disambiguation | `public/fonts/PocketGull-Bold-Core.woff2`<br>`public/fonts/PocketGull-Fineliner-Core.woff2` |
-| **Production Container Image** | Docker OCI Container (`ghcr.io`) | Hermetic SSR container image signed with CNCF Sigstore Cosign keyless OIDC and SLSA Level 3 provenance | `docker pull ghcr.io/pocketgull-app/pocketgull:v1.34.0` |
+| **OpenType & WebFont Typographic Binaries** | WOFF2 / TTF Font Binaries | Clinical typography engine featuring PocketGull-Sign-VF 4-axis variable engine and ultra-fast Core subsets (15 KB) with ISMP zero-error disambiguation | `public/fonts/PocketGull-Sign-VF.woff2`<br>`public/fonts/PocketGull-Bold-Core.woff2` |
+| **Production Container Image** | Docker OCI Container (`ghcr.io`) | Hermetic SSR container image signed with CNCF Sigstore Cosign keyless OIDC and SLSA Level 3 provenance | `docker pull ghcr.io/pocketgull-app/pocketgull:v1.36.0` |
 | **Institutional & Regulatory Deliverables** | CycloneDX 1.6 SBOM, GAAP CSV, BAA | Audited machine-readable software bill of materials, tribal stewardship statement, and HIPAA BAA | `npm run sbom`<br>`PocketGull_GAAP_Tribal_Stewardship_Statement.csv` |
 
 ---
@@ -476,17 +480,20 @@ npm run deploy
 
 | Document | Description |
 | :--- | :--- |
-| [Architecture](docs/study/src/pages/architecture.mdx) | System design & data flow |
-| [Changelog](CHANGELOG.md) | Complete release history |
-| [Clinical Paradigms](docs/study/src/pages/clinical-paradigms.mdx) | Western, TCM, Ayurvedic frameworks |
-| [Design System](DESIGN.md) | Dieter Rams aesthetics & agent personas |
-| [Privacy](PRIVACY.md) | Data model, DOMPurify, FHIR portability |
-| [Security](SECURITY.md) | Vulnerability reporting & threat model |
-| [Responsible AI](RESPONSIBLE_AI.md) | Ethical principles & safety testing |
+| [Architecture](docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md) | System design, data flow & reactive state |
+| [Changelog](CHANGELOG.md) | Complete release history through v1.36.0 |
+| [Clinical Paradigms](docs/TRI_PARADIGM_SYNTHESIS_INTEGRATION.md) | Western, TCM, Ayurvedic & Orthomolecular frameworks |
+| [Federal USWDS Demarcation](docs/FEDERAL_DESIGN_SYSTEM_DEMARCATION.md) | USWDS 3.0, VA Community Care & 18 U.S.C. § 701 Safe Harbor |
+| [Gemma 4 Edge Architecture](docs/GEMMA4_EDGE_ARCHITECTURE.md) | Chrome built-in AI, Prompt API & on-device zero-egress models |
+| [Design System](docs/design/DESIGN.md) | Dieter Rams aesthetics & agent personas |
+| [Privacy & HIPAA](docs/SIGSAC_HIPAA_ZERO_TRUST_PRIVACY.md) | Safe Harbor §164.514, DOMPurify, FHIR portability |
+| [Security Policy](SECURITY.md) | Vulnerability reporting & threat model |
+| [Responsible AI](RESPONSIBLE_AI.md) | Ethical principles, HITL & safety testing |
 | [Google AI Alignment](docs/GOOGLE_RESPONSIBLE_AI_ALIGNMENT.md) | Operationalization of Google's 3 AI Principles & PAIR Guidebook |
+| [Epistemic Falsification](docs/EPISTEMIC_FALSIFICATION_SUITE.md) | Popperian $H_0$ ruling out & skeptical CDS |
 | [Contributing](CONTRIBUTING.md) | Code standards & PR guidelines |
 | [API Reference](pocketgull_api/openapi.yaml) | OpenAPI 3.0 specification |
-| [Pro Forma](PROFORMA.md) | 3-year SaaS financial projections |
+| [Valuation & FinOps](docs/valuation_and_positioning.md) | COCOMO II software valuation & scale-to-zero FinOps |
 
 ---
 
@@ -524,7 +531,7 @@ If you reference Pocket Gull in research, please cite:
   month     = sep,
   year      = 2026,
   publisher = {Zenodo},
-  version   = {v1.34.0},
+  version   = {v1.36.0},
   doi       = {10.5281/zenodo.20647514},
   url       = {https://doi.org/10.5281/zenodo.20647514}
 }

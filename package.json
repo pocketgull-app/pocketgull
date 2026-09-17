@@ -1,6 +1,6 @@
 {
   "name": "pocket-gull",
-  "version": "1.34.0",
+  "version": "1.36.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api"
@@ -16,7 +16,7 @@
     "voice-assistant",
     "medical-intake"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "private": true,
   "bin": {
     "gull": "scripts/gull.js"

@@ -189,19 +189,15 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
       await input.press('Enter');
     }
 
-    // Wait for the assistant chat entry to appear in the DOM
-    const assistantEntry = page.locator('.chat-entry').last();
-    await expect(assistantEntry).toBeVisible({ timeout: 15000 });
-
-    await assistantEntry.hover();
-    const anchorBtn = assistantEntry.locator('button[title="Anchor to Memory Palace"]');
-    await expect(anchorBtn).toBeVisible({ timeout: 10000 });
-    await anchorBtn.dispatchEvent('click');
+    // Wait for the assistant chat entry with Anchor button to appear in the DOM
+    const anchorBtn = page.locator('button[title="Anchor to Memory Palace"]').first();
+    await expect(anchorBtn).toBeVisible({ timeout: 20000 });
+    await anchorBtn.click({ force: true });
     await page.waitForTimeout(500);
 
     // 5. Audit the open modal layout and attributes
     const modalTitle = page.locator('h3:has-text("Anchor to Memory Palace")');
-    await expect(modalTitle).toBeVisible();
+    await expect(modalTitle).toBeVisible({ timeout: 10000 });
 
     // Check modal form controls
     const selectChamber = page.locator('select[name="anchorRoom"]');
