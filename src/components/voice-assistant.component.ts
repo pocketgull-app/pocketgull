@@ -480,6 +480,11 @@ export interface IChatEntry {
                                                                     title="Insert into patient chart notes">
                                                                 📝 Chart
                                                             </button>
+                                                            <button type="button" (click)="actionAnchor(entry.text); $event.stopPropagation()" 
+                                                                    class="px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 border border-teal-500/30 hover:bg-teal-100 cursor-pointer" 
+                                                                    title="Anchor to Memory Palace">
+                                                                🏛️ Anchor
+                                                            </button>
                                                         }
                                                         <!-- Explicit Evidence & Telemetry Audit Button -->
                                                         <button type="button" (click)="toggleChatEntryFlip(idx); $event.stopPropagation()"
