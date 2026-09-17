@@ -4,14 +4,11 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
-const docsDir = path.resolve(rootDir, 'docs/study');
-
 const cleanEnv = {
   ...process.env,
   NODE_ENV: 'production',
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || 'placeholder-key-for-build',
-  VITE_PUBLIC_API_URL: process.env.VITE_PUBLIC_API_URL || 'http://127.0.0.1:4000',
-  ASTRO_TELEMETRY_DISABLED: '1'
+  VITE_PUBLIC_API_URL: process.env.VITE_PUBLIC_API_URL || 'http://127.0.0.1:4000'
 };
 delete cleanEnv.INIT_CWD;
 delete cleanEnv.npm_config_local_prefix;

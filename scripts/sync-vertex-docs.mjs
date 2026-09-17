@@ -1,9 +1,8 @@
 import { execSync } from 'child_process';
 import path from 'path';
 
-console.log("🚀 Syncing PocketGull PR Docs to Vertex AI Search GCS Bucket...");
 const bucket = "gs://gen-lang-client-0540208645-genaiapp_com/docs/prs";
-const localPath = path.resolve(process.cwd(), "docs/study/src/pages/prs");
+const localPath = path.resolve(process.cwd(), "public/docs/study");
 
 try {
   // Sync the local PRs to the GCS bucket

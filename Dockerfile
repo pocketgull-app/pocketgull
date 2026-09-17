@@ -18,7 +18,6 @@ ENV NODE_ENV=development
 COPY package*.json ./
 COPY packages/core-sdk/package*.json ./packages/core-sdk/
 COPY packages/pocketgull-github-app/package*.json ./packages/pocketgull-github-app/
-COPY docs/study/package*.json ./docs/study/
 COPY companion-apps/avs-therapy/package*.json ./companion-apps/avs-therapy/
 COPY pocketgull_api/package*.json ./pocketgull_api/
 RUN npm ci --legacy-peer-deps --include-workspace-root --workspaces --include=dev

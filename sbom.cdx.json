@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:433c11a4-3775-4f30-8843-2fb673c02f57",
+  "serialNumber": "urn:uuid:7b85ebf7-954e-46d9-b66f-1b12862c16f6",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-17T09:07:54.697Z",
+    "timestamp": "2026-09-17T09:36:41.140Z",
     "tools": {
       "components": [
         {
@@ -211,8 +211,8 @@
     {
       "type": "library",
       "name": "@angular/animations",
-      "version": "22.1.5",
-      "purl": "pkg:npm/@angular%2Fanimations@22.1.5",
+      "version": "22.1.7",
+      "purl": "pkg:npm/@angular%2Fanimations@22.1.7",
       "scope": "required",
       "licenses": [
         {
@@ -224,7 +224,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "956c5b6d9eefd89dd5abf1536f78ac46c11bdac42d23db5c483b99ce1219a4e4bd91d19fe9683f1827f5bb8d6937a089038fbe893410dbd82a55b94046a41fa6"
+          "content": "b2c7e8e347822d835d0f5ae637560a245a41385e2347b3f026808baa9e56b43f4aceb5da13efcb3e958081f55da42075bf080e3748fa1ce57e4f47bfd2eb8f61"
         }
       ]
     },
@@ -271,8 +271,8 @@
     {
       "type": "library",
       "name": "@angular/common",
-      "version": "22.1.5",
-      "purl": "pkg:npm/@angular%2Fcommon@22.1.5",
+      "version": "22.1.7",
+      "purl": "pkg:npm/@angular%2Fcommon@22.1.7",
       "scope": "required",
       "licenses": [
         {
@@ -284,15 +284,15 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "2a007e3130e8b654e7ebb60ae2c0933452e36be1be10c0aa1e8e5b07572f44ac3b19df40b408b99200e6633324edfb49f6a2763b7d335d1e7a1e9c37ec9d824d"
+          "content": "48b5b801d1f663c1bd48cfe2151369090b649afab9e51708416b000d3f72a59ec5c71727251b2be10fd69db5016ee0ac96c0a4ae0cd4d62f560e25b49bb81c9f"
         }
       ]
     },
     {
       "type": "library",
       "name": "@angular/compiler",
-      "version": "22.1.5",
-      "purl": "pkg:npm/@angular%2Fcompiler@22.1.5",
+      "version": "22.1.7",
+      "purl": "pkg:npm/@angular%2Fcompiler@22.1.7",
       "scope": "required",
       "licenses": [
         {
@@ -304,15 +304,15 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "1af334a0d0ae234f54a792e4d194025f9c80d9c1b21d807fad9b1afc41939f3c2ec602c396138e6b5f506956a8c430a8f6f3b8dc8c7dac6ed22e9a44bfea9dd7"
+          "content": "aa1a07001ca1f34e674f85f2e16776904e45be44dcef0720f10a6cf841fafb3e0a45fc0688be5cc1d828a065a34c095d1427aa4e027404eff4741e861d98dd91"
         }
       ]
     },
     {
       "type": "library",
       "name": "@angular/compiler-cli",
-      "version": "22.1.5",
-      "purl": "pkg:npm/@angular%2Fcompiler-cli@22.1.5",
+      "version": "22.1.7",
+      "purl": "pkg:npm/@angular%2Fcompiler-cli@22.1.7",
       "scope": "required",
       "licenses": [
         {
@@ -324,15 +324,15 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "5f278b942aa78148992bc10c428d8315f0f10e815d96c39ef7c78aefef8df42b3ba844d368c3379aef2265b4f6a3a2a1130ce369b5be9aa8a9b6cd7f79c121c9"
+          "content": "54683c2b2b746329907e7514164efdbc568cfb1e71988307cbe0598773f62e1feec6a0974d6849247f243872ad206187e7fc0a8411264b2d827b375c22e33dc6"
         }
       ]
     },
     {
       "type": "library",
       "name": "@angular/core",
-      "version": "22.1.5",
-      "purl": "pkg:npm/@angular%2Fcore@22.1.5",
+      "version": "22.1.7",
+      "purl": "pkg:npm/@angular%2Fcore@22.1.7",
       "scope": "required",
       "licenses": [
         {
@@ -344,7 +344,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "ba22fec552f8dbae0d12e73713920b77a99e4aff48e17b7cd95407bd894055895c8c7956638f7255ed3f6a9ce7714386c542b3bcaf3f1836f21441fb59f25817"
+          "content": "4fd6edd4f220a0dee7f93c461d3520bb412ca26946310f3860c5db301f8de87843f02d6a6719f4b826e702d0948dc79c8356a6f22a0ac4d4ced1e208f68ba2a1"
         }
       ]
     },
@@ -391,8 +391,8 @@
     {
       "type": "library",
       "name": "@angular/forms",
-      "version": "22.1.5",
-      "purl": "pkg:npm/@angular%2Fforms@22.1.5",
+      "version": "22.1.7",
+      "purl": "pkg:npm/@angular%2Fforms@22.1.7",
       "scope": "required",
       "licenses": [
         {
@@ -404,15 +404,15 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "13ba4310ab52bced4c370db6d9972fa61cd3e06010f43ef6e6fd91abb7edf28ad3daabc74ba46556711ce62a0f0e1613003d0799bc039aeb7191cbb1a9cd7a54"
+          "content": "a1cd034f7f42dd96e82690f1f312940a5b609f9e8b1e2d246eff9384d2bf7424992e08c5da777e9ae30c45817e6a67658d0a76abbfa19b63919a138ddc2345a2"
         }
       ]
     },
     {
       "type": "library",
       "name": "@angular/platform-browser",
-      "version": "22.1.5",
-      "purl": "pkg:npm/@angular%2Fplatform-browser@22.1.5",
+      "version": "22.1.7",
+      "purl": "pkg:npm/@angular%2Fplatform-browser@22.1.7",
       "scope": "required",
       "licenses": [
         {
@@ -424,15 +424,15 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "c515fb4ef1f315cbabe5b85952a4fb40f91ecdc4ae591cdc96d72caea87752c667109da9fa8962945c8bab9c809de3b5de17df3627c59319e0a12c55c0ac271f"
+          "content": "e1d4f7a86c3764755051c1ca00bcccc7d313a3ea7100ccc720fc5cf075044a496a5dfaba19168821f14cbc4d11b2ab88f62aaee9a7660fa94e004ccb592f03c4"
         }
       ]
     },
     {
       "type": "library",
       "name": "@angular/platform-browser-dynamic",
-      "version": "22.1.5",
-      "purl": "pkg:npm/@angular%2Fplatform-browser-dynamic@22.1.5",
+      "version": "22.1.7",
+      "purl": "pkg:npm/@angular%2Fplatform-browser-dynamic@22.1.7",
       "scope": "required",
       "licenses": [
         {
@@ -444,7 +444,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "c6cd6853dd10e7e73f85c20bddd3af20a3facc06396c02fefdda6f6e257e1a0d1a164d5289669d1a7ac4f7d548161cd1e06445a7bd35b8e470fdca60a7864d37"
+          "content": "a75d3dda08d1e1907c53787ae0e224cab47cc6eff9c53c1ae55b062e42e181039afbabffece2e1591573acdffb39efa3054eab42de84faaaf48237a8d844c36d"
         }
       ]
     },
@@ -471,8 +471,8 @@
     {
       "type": "library",
       "name": "@angular/router",
-      "version": "22.1.5",
-      "purl": "pkg:npm/@angular%2Frouter@22.1.5",
+      "version": "22.1.7",
+      "purl": "pkg:npm/@angular%2Frouter@22.1.7",
       "scope": "required",
       "licenses": [
         {
@@ -484,7 +484,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "45880bda24c6a4c15ca99b578dc8f1195a86ada0df39d93f7a96cb2bccffbf2e5c23e5b6b95762bb96a2b7bc61bfcd8aa1a593f25514dec0dce23748d7ba8772"
+          "content": "0b161ad989b92f45a6a93a07536234678544a6871daf22e5bf1e6cbcb7e8f4cdee39a3f7ffd89c07f8234bfbd73db6d0c55f3f199e7d13feff2c5d786a722846"
         }
       ]
     },

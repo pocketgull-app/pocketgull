@@ -2241,6 +2241,10 @@ export class AppComponent implements OnDestroy {
       (window as any).__openZamecznikCanvas = () => {
         this.triggerSomaticGrounding();
       };
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('docs') === 'true' || window.location.hash === '#docs') {
+        this.showDocsStudy.set(true);
+      }
     }
 
     effect(() => {

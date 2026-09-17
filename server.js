@@ -131,16 +131,11 @@ console.log(`[SERVER] Starting...`);
 console.log(`[SERVER] Current working directory: ${rootDir}`);
 console.log(`[SERVER] Expected dist folder: ${distFolder}`);
 
-// Serve Astro Study Docs independently of Swagger
-app.use('/docs/study', (req, res, next) => {
-  // Only redirect directory-style paths that lack a trailing slash and have no file extension.
-  if (req.path !== '/' && req.path !== '' && !req.path.endsWith('/') && !req.path.includes('.')) {
-    const safePath = req.path.replace(/[^a-zA-Z0-9\-_\/]/g, '');
-    return res.redirect(301, `/docs/study${safePath}/`);
-  }
-  next();
+// Route documentation requests directly to Angular Docs Codex
+app.get(['/docs/study', '/docs/study/index.html', '/docs'], (req, res) => {
+  return res.redirect(302, '/?docs=true');
 });
-app.use('/docs/study', express.static(join(distFolder, 'docs', 'study'), { index: 'index.html', extensions: ['html'] }));
+app.use('/docs/study', express.static(join(distFolder, 'docs', 'study')));
 
 // Load OpenAPI documentation dynamically
 let swaggerDocument;
