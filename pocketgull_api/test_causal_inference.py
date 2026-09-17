@@ -1,6 +1,5 @@
 """Unit tests for DoublyRobustCausalEstimator in pocketgull_api."""
 
-import pytest
 import numpy as np
 from engines.causal_inference import DoublyRobustCausalEstimator
 

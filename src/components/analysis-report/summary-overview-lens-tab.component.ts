@@ -8,6 +8,7 @@ import { PlanDifferentialInspectorComponent } from '../plan-differential-inspect
 import { GoalPlanningCardComponent } from '../goal-planning-card.component';
 import { ResearchDataDividendComponent } from '../research-data-dividend.component';
 import { BiologicalAgeWaterfallHudComponent } from '../biological-age-waterfall-hud.component';
+import { ActivePivotMonitorCardComponent } from '../active-pivot-monitor-card.component';
 
 @Component({
   selector: 'app-summary-overview-lens-tab',
@@ -18,6 +19,7 @@ import { BiologicalAgeWaterfallHudComponent } from '../biological-age-waterfall-
     AiConfidenceHudComponent, 
     PlanDifferentialInspectorComponent,
     GoalPlanningCardComponent,
+    ActivePivotMonitorCardComponent,
     ResearchDataDividendComponent,
     BiologicalAgeWaterfallHudComponent
   ],
@@ -82,6 +84,9 @@ import { BiologicalAgeWaterfallHudComponent } from '../biological-age-waterfall-
 
       <!-- Clinical SMART Goals & Quests Card -->
       <app-goal-planning-card class="block"></app-goal-planning-card>
+
+      <!-- Active Pivot & Pulse Cybernetic Telemetry Card (Multi-Specialty Risk Suite) -->
+      <app-active-pivot-monitor-card class="block"></app-active-pivot-monitor-card>
 
       <!-- Living Biological Clock & Waterfall HUD -->
       <app-biological-age-waterfall-hud class="block"></app-biological-age-waterfall-hud>
