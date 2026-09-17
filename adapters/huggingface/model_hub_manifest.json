@@ -46,5 +46,29 @@
     "name": "PocketGull NAM STEEEP Quality Engine",
     "hub_repo": "philgear/pocketgull-steeep-quality",
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-steeep-quality"
+  },
+  {
+    "id": "pocketgull-causal-posology-4b",
+    "name": "PocketGull Causal Posology & Lifespan Dosage Suite",
+    "hub_repo": "philgear/pocketgull-causal-posology-4b",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-causal-posology-4b"
+  },
+  {
+    "id": "pocketgull-veteran-nexus-2b",
+    "name": "PocketGull VA Nexus & Disability Adjudicator",
+    "hub_repo": "philgear/pocketgull-veteran-nexus-2b",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-veteran-nexus-2b"
+  },
+  {
+    "id": "pocketgull-waveform-qrs-1d",
+    "name": "PocketGull 1D Waveform Biosignal DSP & QRS Detector",
+    "hub_repo": "philgear/pocketgull-waveform-qrs-1d",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-waveform-qrs-1d"
+  },
+  {
+    "id": "pocketgull-skeptic-cds-4b",
+    "name": "PocketGull Skeptical Epistemology & H0 CDS Auditor",
+    "hub_repo": "philgear/pocketgull-skeptic-cds-4b",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-skeptic-cds-4b"
   }
 ]

@@ -1,42 +1,42 @@
 {
-  "timestamp": "2026-09-15T20:47:20.901Z",
+  "timestamp": "2026-09-17T17:44:14.149Z",
   "metrics": {
-    "totalFiles": 6511,
-    "totalLines": 451611,
-    "totalKSLOC": 451.611,
-    "executableKSLOC": 340.333,
+    "totalFiles": 6602,
+    "totalLines": 467722,
+    "totalKSLOC": 467.722,
+    "executableKSLOC": 364.547,
     "languages": {
       "typescript": {
-        "files": 1419,
-        "lines": 264728
+        "files": 1475,
+        "lines": 281443
       },
       "dart": {
         "files": 256,
         "lines": 44581
       },
       "python": {
-        "files": 171,
-        "lines": 25955
+        "files": 189,
+        "lines": 33461
       },
       "css": {
-        "files": 12,
-        "lines": 5069
+        "files": 9,
+        "lines": 5062
       },
       "json_yaml": {
-        "files": 4492,
-        "lines": 93639
+        "files": 4509,
+        "lines": 85037
       },
       "markdown": {
-        "files": 161,
-        "lines": 17639
+        "files": 164,
+        "lines": 18138
       }
     }
   },
   "cocomo2": {
-    "effortPersonMonths": 1143.98,
-    "scheduleMonths": 29.89,
-    "averageStaffing": 38.3,
-    "totalCostUSD": 17159656,
+    "effortPersonMonths": 1225.28,
+    "scheduleMonths": 30.5,
+    "averageStaffing": 40.2,
+    "totalCostUSD": 18379268,
     "parameters": {
       "A": 2.94,
       "B": 0.999,

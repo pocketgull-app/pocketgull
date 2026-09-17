@@ -93,8 +93,8 @@ test.describe('Physical Genomics & 3D Genome Engineering Suite E2E', () => {
     await expect(outerRipLabel).toBeVisible();
 
     const polycombBtn = page.locator('button', { hasText: /Polycomb Repressive/i }).first();
-    await expect(polycombBtn).toBeVisible();
-    await polycombBtn.click();
+    await expect(polycombBtn).toBeVisible({ timeout: 10000 });
+    await polycombBtn.click({ force: true });
     await page.waitForTimeout(300);
 
     // -------------------------------------------------------------

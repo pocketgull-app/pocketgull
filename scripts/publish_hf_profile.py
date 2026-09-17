@@ -52,12 +52,17 @@ Architecting **sovereign, zero-egress clinical intelligence engines** and privac
 | [**pocketgull-tern-edge**](https://huggingface.co/philgear/pocketgull-tern-edge) | Gemma 2 (2B) | Sub-45ms Ultra-Lightweight On-Device WebGPU / Mobile Edge Engine |
 | [**pocketgull-albatross-multimodal**](https://huggingface.co/philgear/pocketgull-albatross-multimodal) | Gemma 3 (12B) | High-Capacity Tri-Paradigm Diagnostic & 3D WebGL Anatomy Integrator |
 | [**pocketgull-rxguard-pgx**](https://huggingface.co/philgear/pocketgull-rxguard-pgx) | Gemma 3 (4B) | Pharmacogenomics & Botanical Supplement Interaction Screener |
+| [**pocketgull-causal-posology-4b**](https://huggingface.co/philgear/pocketgull-causal-posology-4b) | Gemma 3 (4B) | Lifespan Posology, Beers 2023 Criteria, LactMed RID (<10%), and Doubly Robust AIPW |
+| [**pocketgull-veteran-nexus-2b**](https://huggingface.co/philgear/pocketgull-veteran-nexus-2b) | Gemma 3 (1B) | VA Community Care Network (CCN) & 38 CFR § 4.87 DBQ Nexus Generator |
+| [**pocketgull-waveform-qrs-1d**](https://huggingface.co/philgear/pocketgull-waveform-qrs-1d) | 1D Dilated CNN | 1D Temporal Dilated Residual CNN for 100-500 Hz Biosignals & Mayer Wave DSP |
+| [**pocketgull-skeptic-cds-4b**](https://huggingface.co/philgear/pocketgull-skeptic-cds-4b) | Gemma 3 (4B) | Falsifiable Clinical Decision Support, Cochrane RoB 2, and H0 Null Testing |
 
 ---
 
 ## 🚀 Live Interactive Demos (Hugging Face Spaces)
 
 * ⚡ [**PocketGull WebGPU Zero-Egress Sovereign Clinical AI**](https://huggingface.co/spaces/philgear/pocketgull-webgpu-edge): 100% in-browser WebGPU hardware-accelerated clinical inference with zero network calls (HIPAA air-gapped).
+* ⚖️ [**PocketGull Lifespan Posology & Beers / LactMed Lab**](https://huggingface.co/spaces/philgear/pocketgull-posology-lab): Interactive lifespan dosage calculator with Young/Clark/Fried rules, Beers 2023 alerts, LactMed RID (<10%), and ISMP decimal audits.
 * 🫀 [**PocketGull 3D WebGL Anatomy & Tri-Paradigm Triage**](https://huggingface.co/spaces/philgear/pocketgull-3d-anatomy): Three.js interactive 3D human anatomy viewer with clickable organ nodes (Heart, Brain, Lungs, Liver, Spine).
 * 💊 [**PocketGull ISMP Decimal Safety & CYP450 RxGuard**](https://huggingface.co/spaces/philgear/pocketgull-ismp-rxguard): Instant prescription auditor detecting 10-fold decimal errors and botanical herb-drug interactions.
 * 🕊️ [**PocketGull Clinical Intelligence Suite (Triage & 3-Act Trajectory)**](https://huggingface.co/spaces/philgear/pocketgull-clinical-consult): Stepped-care triage, emergency red-flag rule-outs, and 3-Act Trajectory generator.

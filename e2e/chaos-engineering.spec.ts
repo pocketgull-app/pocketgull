@@ -192,9 +192,7 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
   });
 
   test('Resilience - Voice Assistant WebSocket connection failure handled gracefully', async ({ page }) => {
-    const rosterResponsePromise = page.waitForResponse('**/api/patients', { timeout: 15000 }).catch(() => null);
     await enterDemoMode(page);
-    await rosterResponsePromise;
 
     await expect(page.locator('main')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('app-analysis-report, app-analysis-container').first()).toBeVisible({ timeout: 15000 });

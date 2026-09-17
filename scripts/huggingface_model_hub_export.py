@@ -101,6 +101,51 @@ CLINICAL_ADAPTERS = [
             {"text": "Score care plan against 6 NAM STEEEP dimensions and generate 5th-grade plain-language 3-Act narrative trajectory."},
             {"text": "Export clinical quality scorecard as FHIR R4 MeasureReport (LOINC 96841-2)."}
         ]
+    },
+    {
+        "id": "pocketgull-causal-posology-4b",
+        "name": "PocketGull Causal Posology & Lifespan Dosage Suite",
+        "base_model": "google/gemma-3-4b-it",
+        "discipline": "Lifespan Posology, Beers 2023 Criteria, LactMed RID, and Doubly Robust AIPW",
+        "description": "Precision clinical posology calibrating drug dosages across neonatal, pediatric, adult, and geriatric tiers. Enforces AGS Beers 2023 elder criteria, LactMed Relative Infant Dose (<10%), Cockcroft-Gault renal reductions, and Doubly Robust AIPW counterfactual trajectory simulations.",
+        "widgets": [
+            {"text": "Patient: 78yo female, wt 54 kg, SCr 1.9 mg/dL. Prescribed Gabapentin 300 mg TID and Diphenhydramine 50 mg QHS. Evaluate Cockcroft-Gault CrCl, Beers 2023 anticholinergic risk, and renal dose adjustment."},
+            {"text": "Lactating mother (infant 3 months old) prescribed Sertraline 50 mg daily. Compute estimated LactMed Relative Infant Dose (RID) and infant exposure safety tier."},
+            {"text": "Pediatric patient: 4yo child, wt 36 lbs, ht 102 cm. Calculate Clark's rule, Young's rule, and Mosteller BSA fraction for Amoxicillin."}
+        ]
+    },
+    {
+        "id": "pocketgull-veteran-nexus-2b",
+        "name": "PocketGull VA Nexus & Disability Adjudicator",
+        "base_model": "google/gemma-3-1b-it",
+        "discipline": "VA Community Care Network (CCN) & 38 CFR § 4.87 DBQ Nexus Generator",
+        "description": "Synthesizes objective medical nexus opinions for combat veterans adhering to 38 CFR § 4.87. Specializes in acoustic blast overpressure, high-frequency sensorineural hearing loss, and constant tinnitus with clear 'at least as likely as not' legal-medical nexus rationale.",
+        "widgets": [
+            {"text": "Veteran: US Army 11B Infantry, 2 deployments to Iraq, documented acoustic trauma from 4 IED detonations. Audiogram reveals bilateral 4000 Hz notch at 55 dB and bilateral constant ringing. Formulate 38 CFR § 4.87 nexus statement."},
+            {"text": "Generate a clinical Disability Benefits Questionnaire (DBQ) statement linking service-connected blast overpressure exposure to secondary chronic vestibular migraine."}
+        ]
+    },
+    {
+        "id": "pocketgull-waveform-qrs-1d",
+        "name": "PocketGull 1D Waveform Biosignal DSP & QRS Detector",
+        "base_model": "pocketgull/waveform-dilated-cnn-1d",
+        "discipline": "1D Temporal Dilated Residual CNN for 100-500 Hz ECG/PPG Biosignal Streams",
+        "description": "High-throughput 1D dilated convolutional neural network performing real-time Pan-Tompkins QRS complex peak detection, fiducial alignment, Mayer wave sympathetic oscillation power (0.04-0.15 Hz), and RR-interval variability scoring on raw physiological telemetry.",
+        "widgets": [
+            {"text": "Process 500 Hz single-lead ECG telemetry buffer: detect QRS fiducial peaks, compute instantaneous heart rate, and flag ventricular ectopic beats."},
+            {"text": "Compute Mayer wave power spectral density in 0.04-0.15 Hz sympathetic band from 5-minute continuous PPG pulse interval series."}
+        ]
+    },
+    {
+        "id": "pocketgull-skeptic-cds-4b",
+        "name": "PocketGull Skeptical Epistemology & H0 CDS Auditor",
+        "base_model": "google/gemma-3-4b-it",
+        "discipline": "Falsifiable Clinical Decision Support, Cochrane Risk of Bias, and H0 Null Testing",
+        "description": "Rigorous epistemological safety auditor that challenges AI-generated clinical recommendations. Tests null hypothesis (H0) rejection validity, flags underpowered studies (p >= 0.05), calculates Fragility Index (<3 reversal events), and assesses Cochrane RoB 2 commercial sponsorship bias.",
+        "widgets": [
+            {"text": "Clinical claim: 'Novel botanical extract demonstrated 14% reduction in systolic blood pressure (p=0.048, n=24, industry sponsored)'. Perform Cochrane RoB 2 audit and Fragility Index calculation."},
+            {"text": "Evaluate whether empirical literature supports off-label prescribing for fibromyalgia in a patient with severe somatic symptom disorder."}
+        ]
     }
 ]
 
