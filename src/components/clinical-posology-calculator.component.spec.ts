@@ -5,10 +5,12 @@ import { PatientStateService } from '../services/patient-state.service';
 import { ClinicalPosologyService } from '../services/clinical-posology.service';
 import { EnvironmentalHeatPosologyService } from '../services/environmental-heat-posology.service';
 import { ComplexAdaptiveSystemsService } from '../services/complex-adaptive-systems.service';
+import { SoapNoteGeneratorService } from '../services/soap-note-generator.service';
 
 describe('ClinicalPosologyCalculatorComponent', () => {
   let component: ClinicalPosologyCalculatorComponent;
   let mockState: any;
+  let mockSoapNoteService: any;
   let injector: EnvironmentInjector;
 
   beforeEach(() => {
@@ -24,8 +26,16 @@ describe('ClinicalPosologyCalculatorComponent', () => {
       logEnterpriseAudit: vi.fn()
     };
 
+    mockSoapNoteService = {
+      assessment: signal('Baseline Assessment'),
+      plan: signal('Baseline Plan'),
+      objective: signal('Baseline Objective'),
+      subjective: signal('Baseline Subjective')
+    };
+
     injector = createEnvironmentInjector([
       { provide: PatientStateService, useValue: mockState },
+      { provide: SoapNoteGeneratorService, useValue: mockSoapNoteService },
       ClinicalPosologyService,
       EnvironmentalHeatPosologyService,
       ComplexAdaptiveSystemsService
@@ -132,18 +142,39 @@ describe('ClinicalPosologyCalculatorComponent', () => {
     expect(elderTraj.act3WhereYoureGoing.warningSignsToMonitor.some(s => s.toLowerCase().includes('unsteady'))).toBe(true);
   });
 
-  it('10. Toggles persona between Clinician CDS lens and Family Teaspoon lens', () => {
+  it('10. Toggles across 4 personas (patient, family, clinician, community) and updates 3-Act fields', () => {
     expect(component.personaMode()).toBe('clinician');
+
+    // 1. Patient Plain Voice
+    component.togglePersona('patient');
+    expect(component.personaMode()).toBe('patient');
+    const patientTraj = component.posologyTrajectory();
+    expect(patientTraj.act1WhereYouveBeen.patientSelfCareRationale).toBeDefined();
+    expect(patientTraj.act2WhereYouStandToday.patientHabitRoutine).toBeDefined();
+    expect(patientTraj.act3WhereYoureGoing.patientVitalityMilestone).toBeDefined();
+
+    // 2. Family Caregiver Voice
     component.togglePersona('family');
     expect(component.personaMode()).toBe('family');
+    const familyTraj = component.posologyTrajectory();
+    expect(familyTraj.act1WhereYouveBeen.plainLanguageRationale).toBeDefined();
+    expect(familyTraj.act2WhereYouStandToday.plainLanguageAdvice).toBeDefined();
+    expect(familyTraj.act3WhereYoureGoing.plainLanguageGuidance).toBeDefined();
 
-    const traj = component.posologyTrajectory();
-    expect(traj.act1WhereYouveBeen.plainLanguageRationale).toBeDefined();
-    expect(traj.act2WhereYouStandToday.plainLanguageAdvice).toBeDefined();
-    expect(traj.act3WhereYoureGoing.plainLanguageGuidance).toBeDefined();
+    // 3. Community (SDOH) Lens
+    component.togglePersona('community');
+    expect(component.personaMode()).toBe('community');
+    const communityTraj = component.posologyTrajectory();
+    expect(communityTraj.act1WhereYouveBeen.communitySdohRationale).toBeDefined();
+    expect(communityTraj.act2WhereYouStandToday.communitySafetySupport).toBeDefined();
+    expect(communityTraj.act3WhereYoureGoing.communityFollowUpProtocol).toBeDefined();
 
+    // 4. Clinician CDS Lens
     component.togglePersona('clinician');
     expect(component.personaMode()).toBe('clinician');
+    const clinicianTraj = component.posologyTrajectory();
+    expect(clinicianTraj.act1WhereYouveBeen.clinicalRationale).toBeDefined();
+    expect(clinicianTraj.act2WhereYouStandToday.clinicalSafetyStamp).toBeDefined();
   });
 
   it('11. Applies calibrated dose to care plan, copies FHIR R4 MedicationStatement, and exports ASU Python simulation', () => {
@@ -159,6 +190,8 @@ describe('ClinicalPosologyCalculatorComponent', () => {
       expect.stringContaining('Posology 3-Act care plan applied')
     );
     expect(component.showAppliedToast()).toBe(true);
+    expect(mockSoapNoteService.assessment()).toContain('Posology Precision Calibration');
+    expect(mockSoapNoteService.plan()).toContain('Calibrated Dose');
 
     // Copy FHIR R4
     component.copyFhirMedicationStatement();
@@ -172,5 +205,28 @@ describe('ClinicalPosologyCalculatorComponent', () => {
     expect(writeTextSpy).toHaveBeenCalledTimes(2);
     expect(writeTextSpy.mock.calls[1][0]).toContain('simulate_allometric_and_csd');
     expect(component.showCopiedAsuToast()).toBe(true);
+  });
+
+  it('12. Prints 1-page AVS refrigerator handout and copies EHR SOAP note snippet', () => {
+    const writeTextSpy = vi.fn().mockResolvedValue(undefined);
+    (globalThis as any).navigator.clipboard = { writeText: writeTextSpy };
+    const printSpy = vi.fn();
+    (globalThis as any).window.print = printSpy;
+
+    // Print AVS Handout
+    component.printAvsHandout();
+    expect(printSpy).toHaveBeenCalled();
+    expect(component.showPrintedToast()).toBe(true);
+
+    // Copy EHR SOAP Note Snippet
+    component.copyEhrSoapSnippet();
+    expect(writeTextSpy).toHaveBeenCalled();
+    const soapSnippet = writeTextSpy.mock.calls[0][0];
+    expect(soapSnippet).toContain('CLINICAL POSOLOGY & PRECISION DOSAGE NOTE');
+    expect(soapSnippet).toContain('S (Subjective):');
+    expect(soapSnippet).toContain('O (Objective):');
+    expect(soapSnippet).toContain('A (Assessment):');
+    expect(soapSnippet).toContain('P (Plan):');
+    expect(component.showCopiedEhrToast()).toBe(true);
   });
 });

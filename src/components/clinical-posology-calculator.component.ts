@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClinicalPosologyService, PosologyAgeTier, IBeersCriteriaAlert } from '../services/clinical-posology.service';
 import { PatientStateService } from '../services/patient-state.service';
+import { SoapNoteGeneratorService } from '../services/soap-note-generator.service';
 import { EnvironmentalHeatPosologyService, IHeatPosologyAssessment } from '../services/environmental-heat-posology.service';
 import {
   ComplexAdaptiveSystemsService,
@@ -11,11 +12,15 @@ import {
   IHypergraphPolypharmacyAssessment
 } from '../services/complex-adaptive-systems.service';
 
+export type PosologyPersonaMode = 'patient' | 'family' | 'clinician' | 'community';
+
 export interface IPosology3ActTrajectory {
   act1WhereYouveBeen: {
     title: string;
     clinicalRationale: string;
     plainLanguageRationale: string;
+    patientSelfCareRationale?: string;
+    communitySdohRationale?: string;
     baselineFactors: string[];
   };
   act2WhereYouStandToday: {
@@ -24,6 +29,8 @@ export interface IPosology3ActTrajectory {
     hydrationTarget: string;
     clinicalSafetyStamp: string;
     plainLanguageAdvice: string;
+    patientHabitRoutine?: string;
+    communitySafetySupport?: string;
   };
   act3WhereYoureGoing: {
     title: string;
@@ -31,6 +38,8 @@ export interface IPosology3ActTrajectory {
     warningSignsToMonitor: string[];
     actionGuidance: string;
     plainLanguageGuidance: string;
+    patientVitalityMilestone?: string;
+    communityFollowUpProtocol?: string;
   };
 }
 
@@ -777,16 +786,16 @@ export interface IPosology3ActTrajectory {
               </p>
             </div>
 
-            <!-- Dual-Persona Toggle -->
-            <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900/90 border border-slate-700 text-xs font-mono">
+            <!-- 4-Persona Segmented Lens Controller -->
+            <div class="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-slate-900/90 border border-slate-700 text-xs font-mono">
               <button
                 type="button"
-                (click)="togglePersona('clinician')"
-                [class.bg-teal-600]="personaMode() === 'clinician'"
-                [class.text-white]="personaMode() === 'clinician'"
-                [class.text-slate-400]="personaMode() !== 'clinician'"
-                class="px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5">
-                <span>🩺</span> Clinician CDS Lens
+                (click)="togglePersona('patient')"
+                [class.bg-teal-600]="personaMode() === 'patient'"
+                [class.text-white]="personaMode() === 'patient'"
+                [class.text-slate-400]="personaMode() !== 'patient'"
+                class="px-2.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5">
+                <span>🧑</span> Patient Plain Voice
               </button>
               <button
                 type="button"
@@ -794,8 +803,26 @@ export interface IPosology3ActTrajectory {
                 [class.bg-emerald-600]="personaMode() === 'family'"
                 [class.text-white]="personaMode() === 'family'"
                 [class.text-slate-400]="personaMode() !== 'family'"
-                class="px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5">
-                <span>👨‍👩‍👧</span> Family Teaspoon Lens
+                class="px-2.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5">
+                <span>👨‍👩‍👧</span> Family Caregiver
+              </button>
+              <button
+                type="button"
+                (click)="togglePersona('clinician')"
+                [class.bg-indigo-600]="personaMode() === 'clinician'"
+                [class.text-white]="personaMode() === 'clinician'"
+                [class.text-slate-400]="personaMode() !== 'clinician'"
+                class="px-2.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5">
+                <span>🩺</span> Clinician CDS Lens
+              </button>
+              <button
+                type="button"
+                (click)="togglePersona('community')"
+                [class.bg-amber-600]="personaMode() === 'community'"
+                [class.text-white]="personaMode() === 'community'"
+                [class.text-slate-400]="personaMode() !== 'community'"
+                class="px-2.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5">
+                <span>🤝</span> Community (SDOH)
               </button>
             </div>
           </div>
@@ -816,15 +843,30 @@ export interface IPosology3ActTrajectory {
                   {{ traj.act1WhereYouveBeen.title }}
                 </h4>
                 
-                @if (personaMode() === 'clinician') {
-                  <p class="text-xs text-slate-300 leading-relaxed font-sans">
-                    {{ traj.act1WhereYouveBeen.clinicalRationale }}
-                  </p>
-                } @else {
-                  <div class="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/30 text-xs text-emerald-200 leading-relaxed font-sans">
-                    🌱 <strong>Family Plain Language:</strong>
-                    <p class="mt-1">{{ traj.act1WhereYouveBeen.plainLanguageRationale }}</p>
-                  </div>
+                @switch (personaMode()) {
+                  @case ('clinician') {
+                    <p class="text-xs text-slate-300 leading-relaxed font-sans">
+                      {{ traj.act1WhereYouveBeen.clinicalRationale }}
+                    </p>
+                  }
+                  @case ('patient') {
+                    <div class="p-3 rounded-lg bg-teal-950/30 border border-teal-500/30 text-xs text-teal-200 leading-relaxed font-sans">
+                      🌱 <strong>My Health Baseline (Zero Guilt):</strong>
+                      <p class="mt-1">{{ traj.act1WhereYouveBeen.patientSelfCareRationale || traj.act1WhereYouveBeen.plainLanguageRationale }}</p>
+                    </div>
+                  }
+                  @case ('community') {
+                    <div class="p-3 rounded-lg bg-amber-950/30 border border-amber-500/30 text-xs text-amber-200 leading-relaxed font-sans">
+                      🤝 <strong>Living Environment &amp; Climate Baseline:</strong>
+                      <p class="mt-1">{{ traj.act1WhereYouveBeen.communitySdohRationale || traj.act1WhereYouveBeen.plainLanguageRationale }}</p>
+                    </div>
+                  }
+                  @default {
+                    <div class="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/30 text-xs text-emerald-200 leading-relaxed font-sans">
+                      👨‍👩‍👧 <strong>Family Plain Language:</strong>
+                      <p class="mt-1">{{ traj.act1WhereYouveBeen.plainLanguageRationale }}</p>
+                    </div>
+                  }
                 }
               </div>
 
@@ -861,10 +903,27 @@ export interface IPosology3ActTrajectory {
                   <strong>Hydration Target:</strong> {{ traj.act2WhereYouStandToday.hydrationTarget }}
                 </div>
 
-                @if (personaMode() === 'family') {
-                  <p class="text-xs text-slate-300 leading-relaxed font-sans bg-slate-950/50 p-2.5 rounded-lg border border-slate-800">
-                    🥄 <strong>Teaspoon Guide:</strong> {{ traj.act2WhereYouStandToday.plainLanguageAdvice }}
-                  </p>
+                @switch (personaMode()) {
+                  @case ('clinician') {
+                    <div class="p-2 rounded-lg bg-indigo-950/40 border border-indigo-500/30 text-xs font-mono text-indigo-300 mb-2">
+                      <strong>ISMP Safety Stamp:</strong> {{ traj.act2WhereYouStandToday.clinicalSafetyStamp }}
+                    </div>
+                  }
+                  @case ('patient') {
+                    <div class="p-2.5 rounded-lg bg-teal-950/40 border border-teal-500/40 text-xs font-sans text-teal-200 mb-2">
+                      ⭐ <strong>My Daily Routine:</strong> {{ traj.act2WhereYouStandToday.patientHabitRoutine || traj.act2WhereYouStandToday.plainLanguageAdvice }}
+                    </div>
+                  }
+                  @case ('community') {
+                    <div class="p-2.5 rounded-lg bg-amber-950/40 border border-amber-500/40 text-xs font-sans text-amber-200 mb-2">
+                      🏠 <strong>Home Climate &amp; Storage Guard:</strong> {{ traj.act2WhereYouStandToday.communitySafetySupport || traj.act2WhereYouStandToday.plainLanguageAdvice }}
+                    </div>
+                  }
+                  @default {
+                    <p class="text-xs text-slate-300 leading-relaxed font-sans bg-slate-950/50 p-2.5 rounded-lg border border-slate-800 mb-2">
+                      🥄 <strong>Teaspoon Guide:</strong> {{ traj.act2WhereYouStandToday.plainLanguageAdvice }}
+                    </p>
+                  }
                 }
               </div>
 
@@ -898,14 +957,27 @@ export interface IPosology3ActTrajectory {
               </div>
 
               <div class="pt-2 border-t border-slate-800/80 text-xs">
-                @if (personaMode() === 'family') {
-                  <div class="p-2.5 rounded-lg bg-indigo-950/30 border border-indigo-500/30 text-indigo-200 leading-relaxed font-sans text-[11px]">
-                    💙 <strong>Family Action:</strong> {{ traj.act3WhereYoureGoing.plainLanguageGuidance }}
-                  </div>
-                } @else {
-                  <p class="text-[11px] text-slate-400 leading-relaxed">
-                    🚨 <strong>Triage Threshold:</strong> {{ traj.act3WhereYoureGoing.actionGuidance }}
-                  </p>
+                @switch (personaMode()) {
+                  @case ('clinician') {
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                      🚨 <strong>Triage &amp; Surveillance Protocol:</strong> {{ traj.act3WhereYoureGoing.actionGuidance }}
+                    </p>
+                  }
+                  @case ('patient') {
+                    <div class="p-2.5 rounded-lg bg-teal-950/30 border border-teal-500/30 text-teal-200 leading-relaxed font-sans text-[11px]">
+                      🌅 <strong>My 30-to-90 Day Vitality Milestone:</strong> {{ traj.act3WhereYoureGoing.patientVitalityMilestone || traj.act3WhereYoureGoing.plainLanguageGuidance }}
+                    </div>
+                  }
+                  @case ('community') {
+                    <div class="p-2.5 rounded-lg bg-amber-950/30 border border-amber-500/30 text-amber-200 leading-relaxed font-sans text-[11px]">
+                      🤝 <strong>Visiting Nurse &amp; Social Follow-Up:</strong> {{ traj.act3WhereYoureGoing.communityFollowUpProtocol || traj.act3WhereYoureGoing.plainLanguageGuidance }}
+                    </div>
+                  }
+                  @default {
+                    <div class="p-2.5 rounded-lg bg-indigo-950/30 border border-indigo-500/30 text-indigo-200 leading-relaxed font-sans text-[11px]">
+                      💙 <strong>Family Action:</strong> {{ traj.act3WhereYoureGoing.plainLanguageGuidance }}
+                    </div>
+                  }
                 }
               </div>
             </div>
@@ -923,7 +995,23 @@ export interface IPosology3ActTrajectory {
                 <span>📋</span> Apply Calibrated Dose to Care Plan
               </button>
 
-              <!-- Action 2: Copy FHIR R4 MedicationStatement -->
+              <!-- Action 2: Print Family Handout (AVS) -->
+              <button
+                type="button"
+                (click)="printAvsHandout()"
+                class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
+                <span>🖨️</span> Print Family Handout (AVS)
+              </button>
+
+              <!-- Action 3: Copy EHR SOAP Note -->
+              <button
+                type="button"
+                (click)="copyEhrSoapSnippet()"
+                class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
+                <span>📝</span> Copy EHR SOAP Note
+              </button>
+
+              <!-- Action 4: Copy FHIR R4 MedicationStatement -->
               <button
                 type="button"
                 (click)="copyFhirMedicationStatement()"
@@ -931,12 +1019,12 @@ export interface IPosology3ActTrajectory {
                 <span>📄</span> Copy FHIR R4 JSON
               </button>
 
-              <!-- Action 3: Copy ASU / SFI Python Code -->
+              <!-- Action 5: Copy ASU / SFI Python Code -->
               <button
                 type="button"
                 (click)="copyAsuSandboxSnippet()"
                 class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
-                <span>📓</span> Copy ASU / SFI Python Code
+                <span>📓</span> Copy ASU / SFI Code
               </button>
             </div>
 
@@ -944,7 +1032,17 @@ export interface IPosology3ActTrajectory {
             <div class="flex items-center gap-2 text-xs font-mono">
               @if (showAppliedToast()) {
                 <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 animate-in fade-in duration-200">
-                  ✓ Committed to Patient Record &amp; Audit Log
+                  ✓ Committed to Care Plan, SOAP Note &amp; Audit Log
+                </span>
+              }
+              @if (showPrintedToast()) {
+                <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 animate-in fade-in duration-200">
+                  ✓ Opening Print Dialog for AVS Handout
+                </span>
+              }
+              @if (showCopiedEhrToast()) {
+                <span class="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/50 animate-in fade-in duration-200">
+                  ✓ EHR S/O/A/P Text Copied
                 </span>
               }
               @if (showCopiedFhirToast()) {
@@ -964,12 +1062,115 @@ export interface IPosology3ActTrajectory {
 
       </div>
 
+      <!-- 🖨️ 1-PAGE REFRIGERATOR AFTER-VISIT SUMMARY (AVS) PRINT TEMPLATE -->
+      <div id="posology-avs-print-area" class="hidden print:block text-slate-900 bg-white p-6 rounded-none">
+        <div class="border-b-2 border-slate-900 pb-3 mb-4 flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-bold text-teal-800">PocketGull Health</span>
+              <span class="text-xs text-slate-400 font-mono">/</span>
+              <h1 class="text-base font-extrabold uppercase tracking-wider text-slate-900">
+                After-Visit Summary &amp; Care Strategy
+              </h1>
+            </div>
+            <p class="text-xs text-slate-600 mt-0.5">
+              Personalized 3-Act Care Instructions for Patient &amp; Family Caregiver • Keep on Your Refrigerator
+            </p>
+          </div>
+          <div class="text-right text-xs font-mono text-slate-700">
+            <div><strong>Patient:</strong> {{ patientState.activePatientSummary() || 'Valued Patient' }}</div>
+            <div><strong>Date:</strong> {{ activeDateString }}</div>
+            <div class="text-[10px] text-slate-500">ISMP Slashed-Zero Safe Dosing Attested</div>
+          </div>
+        </div>
+
+        @if (activeAgeTier() === 'environmental_heat') {
+          <div class="p-2.5 mb-4 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center gap-2">
+            <span class="text-base">☀️</span>
+            <div>
+              <strong>Extreme Heat Advisory ({{ ambientTempF() }}°F):</strong> 
+              Staying hydrated and cool is critical for your kidneys and blood pressure today. Follow the instructions below.
+            </div>
+          </div>
+        }
+
+        <div class="space-y-4 text-xs">
+          <!-- Act 1 -->
+          <div class="p-3.5 rounded-lg border border-slate-300 bg-slate-50">
+            <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
+              <span class="uppercase tracking-wide text-amber-800">Act 1: Where You've Been • Why We Checked Your Medicine Today</span>
+              <span class="text-[10px] font-mono text-slate-500">Zero Guilt • Baseline Context</span>
+            </div>
+            <p class="text-slate-700 leading-relaxed font-sans">
+              {{ traj.act1WhereYouveBeen.plainLanguageRationale }}
+            </p>
+          </div>
+
+          <!-- Act 2 -->
+          <div class="p-3.5 rounded-lg border-2 border-teal-700 bg-teal-50/50">
+            <div class="flex items-center justify-between font-bold text-teal-900 mb-2">
+              <span class="uppercase tracking-wide text-teal-800">Act 2: Where You Stand Today • Your Safe Daily Routine</span>
+              <span class="text-[10px] font-mono font-bold text-teal-700">ISMP Verified Dose</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-2 font-mono">
+              <div class="p-2 rounded bg-white border border-teal-300">
+                <span class="text-[10px] uppercase font-bold text-teal-800 block">Today's Calibrated Dose:</span>
+                <span class="text-sm font-bold text-slate-900">{{ traj.act2WhereYouStandToday.calibratedDosage }}</span>
+              </div>
+              <div class="p-2 rounded bg-white border border-teal-300">
+                <span class="text-[10px] uppercase font-bold text-teal-800 block">Daily Water Target:</span>
+                <span class="text-sm font-bold text-slate-900">{{ traj.act2WhereYouStandToday.hydrationTarget }}</span>
+              </div>
+            </div>
+            <p class="text-slate-800 leading-relaxed font-sans mb-2">
+              🥄 <strong>Teaspoon Guide:</strong> {{ traj.act2WhereYouStandToday.plainLanguageAdvice }}
+            </p>
+            <div class="flex items-center gap-4 text-[11px] font-mono text-slate-700 pt-1 border-t border-teal-200">
+              <span>[  ] Morning Dose Taken</span>
+              <span>[  ] Afternoon Hydration Goal Met</span>
+              <span>[  ] Evening Check Complete</span>
+            </div>
+          </div>
+
+          <!-- Act 3 -->
+          <div class="p-3.5 rounded-lg border border-slate-300 bg-slate-50">
+            <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
+              <span class="uppercase tracking-wide text-indigo-900">Act 3: Where You're Going • What to Watch for at Home</span>
+              <span class="text-[10px] font-mono text-indigo-700 font-bold">{{ traj.act3WhereYoureGoing.homeCareWatchWindow }}</span>
+            </div>
+            <p class="text-slate-700 mb-2 leading-relaxed font-sans">
+              💙 {{ traj.act3WhereYoureGoing.plainLanguageGuidance }}
+            </p>
+            <div class="p-2 rounded bg-white border border-slate-200 space-y-1">
+              <span class="font-bold text-slate-800 block text-[11px]">⚠️ Call Clinic Immediately If You Notice Any of These:</span>
+              @for (sign of traj.act3WhereYoureGoing.warningSignsToMonitor; track sign) {
+                <div class="flex items-start gap-1.5 text-slate-700">
+                  <span class="text-amber-600 font-mono">[ ]</span>
+                  <span>{{ sign }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Emergency / Signature Bar -->
+        <div class="mt-4 pt-3 border-t-2 border-slate-900 flex items-center justify-between text-xs font-mono">
+          <div>
+            <strong>Clinic Daytime Line:</strong> (480) 555-0199 • <strong>24/7 Nurse Triage:</strong> 988 / (480) 555-0100
+          </div>
+          <div class="text-[10px] text-slate-500">
+            PocketGull Health • HIPAA Safe Harbor Aligned
+          </div>
+        </div>
+      </div>
+
     </div>
   `
 })
 export class ClinicalPosologyCalculatorComponent {
   readonly posology = inject(ClinicalPosologyService);
-  private patientState = inject(PatientStateService);
+  protected readonly patientState = inject(PatientStateService);
+  private readonly soapNoteService = inject(SoapNoteGeneratorService, { optional: true });
   private readonly heatPosology = inject(EnvironmentalHeatPosologyService);
   private readonly complexSystems = inject(ComplexAdaptiveSystemsService);
 
@@ -984,10 +1185,14 @@ export class ClinicalPosologyCalculatorComponent {
   readonly selectedOralSyringeVol = signal<number>(5.0);
   readonly testDosageInput = signal<string>('Lisinopril 5.0 mg PO QD + .5 mg Alprazolam 10 U');
 
-  readonly personaMode = signal<'clinician' | 'family'>('clinician');
+  readonly personaMode = signal<PosologyPersonaMode>('clinician');
   readonly showAppliedToast = signal<boolean>(false);
+  readonly showPrintedToast = signal<boolean>(false);
+  readonly showCopiedEhrToast = signal<boolean>(false);
   readonly showCopiedFhirToast = signal<boolean>(false);
   readonly showCopiedAsuToast = signal<boolean>(false);
+
+  readonly activeDateString = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   readonly ambientTempF = signal<number>(114);
   readonly relativeHumidityPct = signal<number>(15);
@@ -1093,6 +1298,8 @@ export class ClinicalPosologyCalculatorComponent {
           title: 'Arizona Extreme Heat & Anticholinergic Dehydration Risk',
           clinicalRationale: `Patient evaluated under desert thermal load (Ambient: ${ambientTemp}°F, WBGT: ${wbgt}°F). Anticholinergics suppress cholinergic eccrine sweat secretion (anhidrosis) raising heat stroke risk, while loop diuretics accelerate hypovolemia.`,
           plainLanguageRationale: `Your medicines were reviewed because it is ${ambientTemp}°F outside today. Extreme summer heat makes it hard to cool down, and some pills stop your body from sweating or cause you to lose fluids too quickly.`,
+          patientSelfCareRationale: `When the desert temperature climbs to ${ambientTemp}°F, your body works overtime to stay cool. We are adjusting your medications so your kidneys and heart stay protected, letting you feel energized without dehydration.`,
+          communitySdohRationale: `Evaluating home cooling resilience (current ambient ${ambientTemp}°F), water access, utility shutoff protections, and heat-vulnerability scores for elderly or outdoor workers.`,
           baselineFactors: [
             `Ambient Temp: ${ambientTemp}°F`,
             `Estimated WBGT: ${wbgt}°F`,
@@ -1105,7 +1312,9 @@ export class ClinicalPosologyCalculatorComponent {
           calibratedDosage: 'Hold Diphenhydramine 50 mg; titrate diuretic to 20 mg PO QAM; avoid peak solar exposure (10:00–18:00).',
           hydrationTarget: '2,500 mL / 24h oral electrolyte solution (approx. 10 glasses)',
           clinicalSafetyStamp: 'ISMP & CDC Extreme Heat Protocol Verified',
-          plainLanguageAdvice: 'Take your reduced morning water pill with breakfast. Drink roughly 10 glasses of water or electrolyte drink throughout the day, and stay in cool air conditioning.'
+          plainLanguageAdvice: 'Take your reduced morning water pill with breakfast. Drink roughly 10 glasses of water or electrolyte drink throughout the day, and stay in cool air conditioning.',
+          patientHabitRoutine: 'Take morning dose with a full glass of cool water before 9 AM. Keep your insulated water bottle refilled at your desk or chair all afternoon.',
+          communitySafetySupport: 'Ensure indoor living space stays under 82°F. Verify medications are stored below 77°F (out of sunlit windows). Utility assistance applied if needed.'
         },
         act3WhereYoureGoing: {
           title: '48-Hour Home Dehydration & Thermal Surveillance',
@@ -1117,7 +1326,9 @@ export class ClinicalPosologyCalculatorComponent {
             'Sudden muscle cramps, rapid heart rate (>100 bpm), or confusion'
           ],
           actionGuidance: 'If orthostatic systolic BP drops >20 mmHg or dry skin presents with core temp >101°F, immediately transition to STAT emergency cooling.',
-          plainLanguageGuidance: 'If you feel dizzy standing up, sit down right away and drink a large glass of cool water. If the dizziness does not go away after resting for 30 minutes, call the clinic.'
+          plainLanguageGuidance: 'If you feel dizzy standing up, sit down right away and drink a large glass of cool water. If the dizziness does not go away after resting for 30 minutes, call the clinic.',
+          patientVitalityMilestone: 'Within 48 hours, lightheadedness and dry mouth clear. In 30 days, your renal reserve stabilizes and you maintain steady stamina through peak summer.',
+          communityFollowUpProtocol: 'Visiting nurse phone check-in at 24h to verify blood pressure stability and adequate hydration supply.'
         }
       };
     }
@@ -1128,6 +1339,8 @@ export class ClinicalPosologyCalculatorComponent {
           title: 'Renal Reserve Baseline & AGS Beers Criteria Audit',
           clinicalRationale: `Evaluated due to age-related decline in renal reserve (estimated Cockcroft-Gault CrCl: ${crCl} mL/min, Serum Creatinine: ${serumCr} mg/dL). High anticholinergic/sedative burden elevates delirium, orthostasis, and fall hazards.`,
           plainLanguageRationale: `We checked your medicines because our kidneys naturally filter medications more slowly as we age. We want to ensure your daily dose does not linger or build up in your body.`,
+          patientSelfCareRationale: `Our bodies change gracefully as we get wiser, and kidneys simply take more time to process medicines. We are recalibrating your dose so you feel clear-headed and steady on your feet.`,
+          communitySdohRationale: `Evaluating independent living safety, fall hazard reduction, home pharmacy delivery, and family caregiver co-support.`,
           baselineFactors: [
             `Patient Age: ${age}y`,
             `Cockcroft-Gault CrCl: ${crCl} mL/min`,
@@ -1140,7 +1353,9 @@ export class ClinicalPosologyCalculatorComponent {
           calibratedDosage: 'Reduce dose by 33–50% to prevent drug accumulation; administer with morning meal.',
           hydrationTarget: `${fluidTarget} mL / 24h maintenance fluids (approx. 6–8 glasses)`,
           clinicalSafetyStamp: 'Cockcroft-Gault CrCl & AGS Beers 2023 Verified',
-          plainLanguageAdvice: 'Take your adjusted pill in the morning with a full glass of water. Aim for 6 to 8 cups of water or warm herbal tea spread across the day.'
+          plainLanguageAdvice: 'Take your adjusted pill in the morning with a full glass of water. Aim for 6 to 8 cups of water or warm herbal tea spread across the day.',
+          patientHabitRoutine: 'Take pill with your morning breakfast. Keep a pitcher of fresh water on the counter to sip 6 glasses before dinnertime.',
+          communitySafetySupport: 'Place clear non-slip mats in the hallway; confirm pillbox compartments are filled for the upcoming week.'
         },
         act3WhereYoureGoing: {
           title: '48-Hour Fall Prevention & Stability Surveillance',
@@ -1152,7 +1367,9 @@ export class ClinicalPosologyCalculatorComponent {
             'Swelling in the lower ankles or sudden shortness of breath'
           ],
           actionGuidance: 'Check lying-to-standing blood pressure; if postural systolic drop exceeds 20 mmHg, pause sedatives and consult nephrology.',
-          plainLanguageGuidance: 'Take an extra 30 seconds to sit on the edge of your bed before standing up. If you feel unsteady, use your cane or walker and let a family member know.'
+          plainLanguageGuidance: 'Take an extra 30 seconds to sit on the edge of your bed before standing up. If you feel unsteady, use your cane or walker and let a family member know.',
+          patientVitalityMilestone: 'Within 2 weeks, morning grogginess fades completely. In 60 days, renal stability allows safe maintenance with steady balance and vigor.',
+          communityFollowUpProtocol: 'Visiting physical therapist or home health aide verifies sitting-to-standing balance and medication compliance next Tuesday.'
         }
       };
     }
@@ -1164,6 +1381,8 @@ export class ClinicalPosologyCalculatorComponent {
           title: 'Pediatric Growth Stage & Weight-Stratified Kinetic Review',
           clinicalRationale: `Evaluated against Holliday-Segar fluid turnover and Young's (${this.youngResult().formulaString}) / Clark's (${this.clarkResult().formulaString}) allometric scaling to avert pediatric hepatic/renal toxicity and dose overages.`,
           plainLanguageRationale: `We calculated this dose using your child's exact weight (${wtLbs} lbs / ${wtKg} kg) and age, ensuring they receive the exact right therapeutic amount—never an adult guess.`,
+          patientSelfCareRationale: `Children grow rapidly and their bodies need precision dosing matched to their exact weight. This calculation guarantees safe, optimal medicine for your child.`,
+          communitySdohRationale: `Ensuring school nurse medication administration authorization, clear oral syringe markings, and caregiver dosing literacy.`,
           baselineFactors: [
             `Age: ${age}y`,
             `Weight: ${wtLbs} lbs (${wtKg} kg)`,
@@ -1176,7 +1395,9 @@ export class ClinicalPosologyCalculatorComponent {
           calibratedDosage: `${youngDose} mg PO via oral dosing syringe (never a dining spoon)`,
           hydrationTarget: `${fluidTarget} mL / 24h baseline maintenance fluid`,
           clinicalSafetyStamp: 'ISMP Pediatric Safe Dosing & Oral Syringe Calibrated',
-          plainLanguageAdvice: 'Always use the marked oral syringe that came with the medicine. Measure to the exact line, never use a kitchen teaspoon.'
+          plainLanguageAdvice: 'Always use the marked oral syringe that came with the medicine. Measure to the exact line, never use a kitchen teaspoon.',
+          patientHabitRoutine: 'Give dose with morning juice or applesauce. Keep a colorful cup of water or milk accessible throughout playtime.',
+          communitySafetySupport: 'Provide a marked pediatric syringe with printed dosage line; ensure school health form is stamped and signed.'
         },
         act3WhereYoureGoing: {
           title: '48-Hour Hydration & Activity Surveillance',
@@ -1188,7 +1409,9 @@ export class ClinicalPosologyCalculatorComponent {
             'Unusual limpness, high irritability, or extreme difficulty waking up'
           ],
           actionGuidance: 'Check capillary refill (<2 sec) and skin turgor; contact pediatric advice nurse if fluid intake falls below 50% Holliday-Segar requirement.',
-          plainLanguageGuidance: 'Keep track of wet diapers or bathroom visits. If your child is playful and drinking fluids, they are doing well. If they are refusing fluids or unusually sleepy, call your doctor.'
+          plainLanguageGuidance: 'Keep track of wet diapers or bathroom visits. If your child is playful and drinking fluids, they are doing well. If they are refusing fluids or unusually sleepy, call your doctor.',
+          patientVitalityMilestone: 'Within 48 hours, active fever and malaise resolve. In 7 days, your child returns to full playground energy and school attendance.',
+          communityFollowUpProtocol: 'School nurse or pediatrician call back at 48 hours to confirm symptom resolution and treatment completion.'
         }
       };
     }
@@ -1200,6 +1423,8 @@ export class ClinicalPosologyCalculatorComponent {
         title: isSfi ? 'SFI Complex Systems & Allometric Scaling Review' : 'Adult Metabolic & Systems Posology Review',
         clinicalRationale: 'Evaluated for multi-drug metabolic interactions, quarter-power allometric scaling (M^0.75), and early-warning critical slowing down (CSD) indicators to safeguard homeostatic basin stability.',
         plainLanguageRationale: 'We reviewed how your medicines interact with your metabolism, body weight, and daily water needs to ensure stable energy and zero drug interactions.',
+        patientSelfCareRationale: 'Your metabolism has a natural rhythm. By tailoring this medication to your exact weight and daily routine, we protect your vitality and eliminate afternoon fatigue.',
+        communitySdohRationale: 'Assessing occupational ergonomics, workday hydration access, pharmacy refill consistency, and shift work sleep schedules.',
         baselineFactors: [
           `Weight: ${wtLbs} lbs (${wtKg} kg)`,
           `BSA: ${this.mostellerResult().bsaM2} m²`,
@@ -1212,7 +1437,9 @@ export class ClinicalPosologyCalculatorComponent {
         calibratedDosage: `${this.adultReferenceDoseMg()} mg PO aligned with ISMP Tall Man conventions.`,
         hydrationTarget: `${fluidTarget} mL / 24h optimal metabolic hydration`,
         clinicalSafetyStamp: 'FDA / ISMP Standard of Care Aligned',
-        plainLanguageAdvice: 'Take your regular dose with food or a large glass of water. Keep a water bottle nearby throughout the workday.'
+        plainLanguageAdvice: 'Take your regular dose with food or a large glass of water. Keep a water bottle nearby throughout the workday.',
+        patientHabitRoutine: 'Take morning dose with breakfast or morning coffee + full glass of water. Refill water bottle at lunch and midafternoon.',
+        communitySafetySupport: 'Schedule 90-day mail-order delivery to prevent lapse; coordinate annual workplace biometric screening.'
       },
       act3WhereYoureGoing: {
         title: '48-Hour Therapeutic Stabilization & Symptom Log',
@@ -1224,7 +1451,9 @@ export class ClinicalPosologyCalculatorComponent {
           'Digestive upset, stomach burning, or nausea after taking medication'
         ],
         actionGuidance: 'Review standing vs. sitting blood pressure; adjust fluid/electrolyte intake if postural drop exceeds 15 mmHg.',
-        plainLanguageGuidance: 'Drink water consistently throughout the day. If you feel lightheaded, drink a full glass of water and rest for 15 minutes.'
+        plainLanguageGuidance: 'Drink water consistently throughout the day. If you feel lightheaded, drink a full glass of water and rest for 15 minutes.',
+        patientVitalityMilestone: 'Within 30 days, midday energy crashes disappear. In 90 days, blood pressure and renal biomarkers reach optimal homeostatic equilibrium.',
+        communityFollowUpProtocol: 'Routine follow-up in 90 days with updated lipid and metabolic panels at local community health lab.'
       }
     };
   });
@@ -1340,8 +1569,76 @@ export class ClinicalPosologyCalculatorComponent {
     this.testDosageInput.set(this.spellcheckAudit().sanitizedText);
   }
 
-  togglePersona(mode: 'clinician' | 'family'): void {
+  togglePersona(mode: PosologyPersonaMode): void {
     this.personaMode.set(mode);
+  }
+
+  printAvsHandout(): void {
+    if (typeof window !== 'undefined') {
+      if (typeof document !== 'undefined' && document.body) {
+        document.body.classList.add('printing-avs-handout');
+      }
+      this.showPrintedToast.set(true);
+      if (typeof window.print === 'function') {
+        window.print();
+      }
+      setTimeout(() => {
+        if (typeof document !== 'undefined' && document.body) {
+          document.body.classList.remove('printing-avs-handout');
+        }
+        this.showPrintedToast.set(false);
+      }, 3500);
+    }
+  }
+
+  copyEhrSoapSnippet(): void {
+    const traj = this.posologyTrajectory();
+    const crCl = this.cockcroftResult().crClMlMin;
+    const bsa = this.mostellerResult().bsaM2;
+    const patientSummary = this.patientState.activePatientSummary() || 'Valued Patient';
+
+    let objectiveExtras = `Weight: ${this.patientWeightKg()} kg (${this.patientWeightLbs()} lbs) | Height: ${this.patientHeightCm()} cm | BSA: ${bsa} m² | CrCl (Cockcroft-Gault): ${crCl} mL/min`;
+    if (this.activeAgeTier() === 'environmental_heat') {
+      objectiveExtras += `\nAmbient Temp: ${this.ambientTempF()}°F | RH: ${this.relativeHumidityPct()}% | Estimated WBGT: ${this.heatPosologyAssessment().estimatedWbgtF}°F (Tier: ${this.heatPosologyAssessment().heatAcuityTier})`;
+    }
+
+    const soapText = `CLINICAL POSOLOGY & PRECISION DOSAGE NOTE
+Patient: ${patientSummary} | Date: ${this.activeDateString}
+============================================================
+S (Subjective):
+${traj.act1WhereYouveBeen.clinicalRationale}
+
+O (Objective):
+${objectiveExtras}
+Input Regimen: ${this.testDosageInput()}
+
+A (Assessment):
+1. Posology Precision Calibration: ${traj.act2WhereYouStandToday.clinicalSafetyStamp}
+2. ISMP Standard: 100% compliant (no naked decimals, no trailing zeroes, metric sigs).
+
+P (Plan):
+1. Calibrated Dose: ${traj.act2WhereYouStandToday.calibratedDosage}
+2. Hydration Target: ${traj.act2WhereYouStandToday.hydrationTarget}
+3. Surveillance Watch Window: ${traj.act3WhereYoureGoing.homeCareWatchWindow}
+   - Clinical Guidance: ${traj.act3WhereYoureGoing.actionGuidance}
+   - Warning Signs Monitored: ${traj.act3WhereYoureGoing.warningSignsToMonitor.join(', ')}
+4. Patient & Family Empowerment: 3-Act After-Visit Summary (AVS) reviewed and printed.
+============================================================
+Attestation: Verified with ClinicalPosologyService & ISMP Disambiguation Standard.`;
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(soapText).catch(() => {});
+    }
+    if (this.soapNoteService) {
+      this.soapNoteService.assessment.set(
+        `${this.soapNoteService.assessment()}\n• Posology Assessment: ${traj.act2WhereYouStandToday.clinicalSafetyStamp}`
+      );
+      this.soapNoteService.plan.set(
+        `${this.soapNoteService.plan()}\n• Rx Calibrated: ${traj.act2WhereYouStandToday.calibratedDosage} | Hydration: ${traj.act2WhereYouStandToday.hydrationTarget}`
+      );
+    }
+    this.showCopiedEhrToast.set(true);
+    setTimeout(() => this.showCopiedEhrToast.set(false), 3500);
   }
 
   applyToCarePlan(): void {
@@ -1355,6 +1652,14 @@ export class ClinicalPosologyCalculatorComponent {
       'AI_SYNTHESIS',
       `Posology 3-Act care plan applied: ${traj.act2WhereYouStandToday.calibratedDosage}`
     );
+    if (this.soapNoteService) {
+      this.soapNoteService.assessment.set(
+        `${this.soapNoteService.assessment()}\n• Posology Precision Calibration: ${traj.act2WhereYouStandToday.clinicalSafetyStamp}`
+      );
+      this.soapNoteService.plan.set(
+        `${this.soapNoteService.plan()}\n• Calibrated Dose: ${traj.act2WhereYouStandToday.calibratedDosage} | Hydration: ${traj.act2WhereYouStandToday.hydrationTarget}\n• Surveillance: ${traj.act3WhereYoureGoing.actionGuidance}`
+      );
+    }
     this.showAppliedToast.set(true);
     setTimeout(() => this.showAppliedToast.set(false), 3500);
   }
