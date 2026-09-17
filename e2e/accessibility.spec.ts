@@ -173,7 +173,7 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
     await toggleAgentBtn.click();
 
     // 3. Click quick prompt button to post a message into chatHistory
-    const quickBtn = page.locator('app-voice-assistant button:has-text("Critical evidence?")');
+    const quickBtn = page.locator('app-voice-assistant button', { hasText: /Critical Evidence/i }).first();
     await expect(quickBtn).toBeVisible({ timeout: 10000 });
     await quickBtn.click();
 

@@ -1498,6 +1498,7 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
 
               <label class="flex items-start gap-2 text-[10.5px] text-zinc-600 dark:text-zinc-400 cursor-pointer pt-1">
                 <input 
+                  id="stat-attestation-checkbox"
                   type="checkbox"
                   [checked]="emergencyAttestationAccepted()"
                   (change)="emergencyAttestationAccepted.set(!emergencyAttestationAccepted())"

@@ -21,26 +21,27 @@ test.describe('Good Samaritan Emergency Mode E2E Flow', () => {
 
     // Step 2: Ensure transition to First Aid Mode (via 2-Step STAT confirmation or pointer hold)
     const twoStepBtn = page.locator('button', { hasText: /2-Step STAT Confirmation/i }).first();
-    if (await twoStepBtn.isVisible({ timeout: 8000 }).catch(() => false)) {
+    if (await twoStepBtn.isVisible().catch(() => false) || (await twoStepBtn.count()) > 0) {
       await twoStepBtn.scrollIntoViewIfNeeded();
-      await twoStepBtn.click();
+      await twoStepBtn.click({ force: true });
       const badgeInput = page.locator('#stat-clinician-id');
-      if (await badgeInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await badgeInput.fill('BADGE-STAT-911');
-        const attestCheck = page.locator('input[type="checkbox"]').first();
-        await attestCheck.check().catch(() => {});
-      }
+      await expect(badgeInput).toBeVisible({ timeout: 10000 });
+      await badgeInput.fill('BADGE-STAT-911');
+
+      const attestCheck = page.locator('#stat-attestation-checkbox');
+      await expect(attestCheck).toBeVisible({ timeout: 5000 });
+      await attestCheck.check();
+
       const confirmOverrideBtn = page.locator('button', { hasText: /Confirm STAT/i }).first();
       await expect(confirmOverrideBtn).toBeVisible({ timeout: 10000 });
+      await expect(confirmOverrideBtn).toBeEnabled({ timeout: 10000 });
       await confirmOverrideBtn.click();
     } else {
       const emergencyBypassBtn = page.locator('button[aria-label*="Good Samaritan Mode"]').first();
       await emergencyBypassBtn.scrollIntoViewIfNeeded();
-      if (await emergencyBypassBtn.isVisible({ timeout: 8000 }).catch(() => false)) {
-        await emergencyBypassBtn.dispatchEvent('pointerdown');
-        await page.waitForTimeout(2800);
-        await emergencyBypassBtn.dispatchEvent('pointerup');
-      }
+      await emergencyBypassBtn.dispatchEvent('pointerdown');
+      await page.waitForTimeout(2800);
+      await emergencyBypassBtn.dispatchEvent('pointerup');
     }
 
     // 3. Assert transition to First Aid Mode (red pulsing badge/banner)

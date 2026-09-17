@@ -2418,6 +2418,8 @@ export class AppComponent implements OnDestroy {
   }
 
   loadDemoMode() {
+    this.session.isLocked.set(false);
+    this.session.isOnboardingComplete.set(true);
     this.isDemoMode.set(true);
     this.state.isDemoMode.set(true);
     this.hasApiKey.set(true);

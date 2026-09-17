@@ -33,7 +33,7 @@ import { NavigationShellService } from '../services/navigation-shell.service';
         </a>
 
         <!-- System Status Indicator (Accessible Button) -->
-        <button type="button" class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all cursor-pointer group relative no-print shrink-0" 
+        <button type="button" class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all cursor-pointer group relative no-print shrink-0" 
              (click)="network.toggleForceOffline()"
              [title]="network.isOnline() ? 'Click to simulate offline' : 'Click to disable offline override'">
           <div class="relative flex h-2 w-2">
@@ -44,11 +44,11 @@ import { NavigationShellService } from '../services/navigation-shell.service';
             <span class="relative inline-flex rounded-full status-dot h-2 w-2"
                   [style.background-color]="network.isOnline() ? 'var(--spectral-stable)' : 'var(--spectral-critical)'"></span>
           </div>
-          <span class="text-xs font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">{{ network.isOnline() ? 'System Ready' : (network.forceOffline() ? 'App Forced Offline' : 'System Offline') }}</span>
+          <span class="text-[11px] sm:text-xs font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">{{ network.isOnline() ? 'System Ready' : (network.forceOffline() ? 'App Forced Offline' : 'System Offline') }}</span>
         </button>
 
-        <!-- Ambient Flow Background Music Quick Indicator (Desktop) -->
-        <div class="hidden xl:flex items-center gap-2">
+        <!-- Ambient Flow Background Music Quick Indicator (Desktop & Thin-Clients) -->
+        <div class="hidden md:flex items-center gap-2">
           <button 
             type="button" 
             (click)="showAmbientPlayer.set(!showAmbientPlayer())"
