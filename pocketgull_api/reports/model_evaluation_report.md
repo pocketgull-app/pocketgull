@@ -8,7 +8,7 @@
 
 | Challenge / Model Target | Model File | ROC-AUC | Brier Score | Recall | Precision | Custom Metrics |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **clinical_risk_v2** | `clinical_risk_v2.joblib` | **0.7741** | **0.1553** | 0.3333 | 0.7113 | age_conditioned_auroc=0.7546, prevalence_based_reward=0.2877 |
+| **clinical_risk_v2** | `clinical_risk_v2.joblib` | **0.7742** | **0.1549** | 0.3478 | 0.7129 | age_conditioned_auroc=0.7532, prevalence_based_reward=0.301 |
 
 ---
 

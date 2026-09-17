@@ -7,6 +7,8 @@ Unit and Integration Tests for PocketGull's 5 Advanced Clinical ML Engines:
 5. Multi-Morbid Bayesian Co-Occurrence Propagation
 """
 
+import sys
+sys.modules['numexpr'] = None
 import numpy as np
 import pandas as pd
 from fastapi.testclient import TestClient

@@ -1,0 +1,9 @@
+{
+  "model_name": "endotoxin_sibi_spike_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "model_name": "cyp_phenoconversion_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ]
+}

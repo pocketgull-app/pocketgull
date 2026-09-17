@@ -1,0 +1,9 @@
+{
+  "model_name": "ms_pira_velocity_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 9,
+  "classes": [
+    0,
+    1
+  ]
+}
