@@ -19,7 +19,9 @@ describe('ClinicalPosologyCalculatorComponent', () => {
         hr: '72',
         weight: '154 lbs',
         height: "5'6\""
-      })
+      }),
+      addChecklistItem: vi.fn(),
+      logEnterpriseAudit: vi.fn()
     };
 
     injector = createEnvironmentInjector([
@@ -109,5 +111,66 @@ describe('ClinicalPosologyCalculatorComponent', () => {
     const hypergraph = component.sfiHypergraphResult();
     expect(hypergraph.hyperedgeOrder).toBeGreaterThan(0);
     expect(hypergraph.attractorBasinState).toBeDefined();
+  });
+
+  it('9. Computes Structured 3-Act Trajectory across environmental heat and geriatric tiers', () => {
+    // Environmental Heat Tier
+    component.selectAgeTier('environmental_heat');
+    const heatTraj = component.posologyTrajectory();
+    expect(heatTraj.act1WhereYouveBeen.title).toContain('Heat');
+    expect(heatTraj.act1WhereYouveBeen.baselineFactors.length).toBeGreaterThan(0);
+    expect(heatTraj.act2WhereYouStandToday.calibratedDosage).toContain('Diphenhydramine');
+    expect(heatTraj.act2WhereYouStandToday.hydrationTarget).toContain('2,500 mL');
+    expect(heatTraj.act3WhereYoureGoing.warningSignsToMonitor.length).toBeGreaterThanOrEqual(3);
+    expect(heatTraj.act3WhereYoureGoing.homeCareWatchWindow).toBe('Next 48 Hours');
+
+    // Geriatric Elder Tier
+    component.selectAgeTier('geriatric_elder');
+    const elderTraj = component.posologyTrajectory();
+    expect(elderTraj.act1WhereYouveBeen.title).toContain('Renal Reserve');
+    expect(elderTraj.act2WhereYouStandToday.clinicalSafetyStamp).toContain('Beers');
+    expect(elderTraj.act3WhereYoureGoing.warningSignsToMonitor.some(s => s.toLowerCase().includes('unsteady'))).toBe(true);
+  });
+
+  it('10. Toggles persona between Clinician CDS lens and Family Teaspoon lens', () => {
+    expect(component.personaMode()).toBe('clinician');
+    component.togglePersona('family');
+    expect(component.personaMode()).toBe('family');
+
+    const traj = component.posologyTrajectory();
+    expect(traj.act1WhereYouveBeen.plainLanguageRationale).toBeDefined();
+    expect(traj.act2WhereYouStandToday.plainLanguageAdvice).toBeDefined();
+    expect(traj.act3WhereYoureGoing.plainLanguageGuidance).toBeDefined();
+
+    component.togglePersona('clinician');
+    expect(component.personaMode()).toBe('clinician');
+  });
+
+  it('11. Applies calibrated dose to care plan, copies FHIR R4 MedicationStatement, and exports ASU Python simulation', () => {
+    // Mock navigator.clipboard
+    const writeTextSpy = vi.fn().mockResolvedValue(undefined);
+    (globalThis as any).navigator.clipboard = { writeText: writeTextSpy };
+
+    // Apply to Care Plan
+    component.applyToCarePlan();
+    expect(mockState.addChecklistItem).toHaveBeenCalled();
+    expect(mockState.logEnterpriseAudit).toHaveBeenCalledWith(
+      'AI_SYNTHESIS',
+      expect.stringContaining('Posology 3-Act care plan applied')
+    );
+    expect(component.showAppliedToast()).toBe(true);
+
+    // Copy FHIR R4
+    component.copyFhirMedicationStatement();
+    expect(writeTextSpy).toHaveBeenCalled();
+    const fhirPayload = JSON.parse(writeTextSpy.mock.calls[0][0]);
+    expect(fhirPayload.resourceType).toBe('MedicationStatement');
+    expect(component.showCopiedFhirToast()).toBe(true);
+
+    // Copy ASU Python Snippet
+    component.copyAsuSandboxSnippet();
+    expect(writeTextSpy).toHaveBeenCalledTimes(2);
+    expect(writeTextSpy.mock.calls[1][0]).toContain('simulate_allometric_and_csd');
+    expect(component.showCopiedAsuToast()).toBe(true);
   });
 });

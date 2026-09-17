@@ -1434,7 +1434,6 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
     }
 
     <app-clinical-cds-disclaimer-banner></app-clinical-cds-disclaimer-banner>
-    <app-zamecznik-canvas></app-zamecznik-canvas>
   `,
   styles: [`
     :host { display: block; min-height: 100%; }
@@ -2234,9 +2233,6 @@ export class AppComponent implements OnDestroy {
 
   constructor() {
     if (typeof window !== 'undefined') {
-      (window as any).__openZamecznikCanvas = () => {
-        this.triggerSomaticGrounding();
-      };
       const params = new URLSearchParams(window.location.search);
       if (params.get('docs') === 'true' || window.location.hash === '#docs') {
         this.showDocsStudy.set(true);
