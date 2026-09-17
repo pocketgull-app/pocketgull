@@ -1727,3 +1727,79 @@ body.eco-dark-canopy {
   vertical-align: middle;
   letter-spacing: 0.08em;
 }
+
+/* Expert S.1: PocketGull Sign VF (Continuous 4-Axis Variable Manual & Telemetry Engine) */
+@font-face {
+  font-family: 'PocketGull Sign VF';
+  src: url('fonts/woff2/PocketGull-Sign-VF.woff2?v=3.3.0') format('woff2-variations'),
+       url('PocketGull-Sign-VF.woff2?v=3.3.0') format('woff2-variations'),
+       url('fonts/ttf/PocketGull-Sign-VF.ttf?v=3.3.0') format('truetype-variations'),
+       url('PocketGull-Sign-VF.ttf?v=3.3.0') format('truetype-variations');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 80%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+}
+
+.font-sign-vf {
+  font-family: 'PocketGull Sign VF', 'PocketGull Sign', 'PocketGull ASL', monospace !important;
+  display: inline-block;
+  vertical-align: middle;
+  letter-spacing: 0.08em;
+  font-variation-settings: 'MRPH' 0, 'wght' 400, 'opsz' 36, 'AZIM' 0;
+}
+
+/* Multi-Paradigm Healthcare & Clinical OpenType Suite */
+.font-paradigm-allopathic {
+  font-family: 'PocketGull', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-feature-settings: "zero" 1, "cv08" 1, "cv05" 1, "ss02" 1, "cv11" 1, "tnum" 1, "frac" 1 !important;
+  font-variant-numeric: tabular-nums slashed-zero diagonal-fractions !important;
+}
+
+.font-paradigm-ayurvedic {
+  font-family: 'PocketGull', sans-serif !important;
+  font-feature-settings: "mark" 1, "mkmk" 1, "dev2" 1, "blwf" 1, "abvf" 1 !important;
+  line-height: 1.7 !important;
+}
+
+.font-paradigm-tcm {
+  font-family: 'PocketGull', sans-serif !important;
+  font-feature-settings: "dlig" 1, "calt" 1, "palt" 0 !important;
+  line-height: 1.65 !important;
+}
+
+.font-paradigm-osteopathic {
+  font-family: 'PocketGull', 'PocketGull Mono', monospace, sans-serif !important;
+  font-feature-settings: "ss02" 1, "tnum" 1, "case" 1 !important;
+}
+
+.font-paradigm-homeopathic {
+  font-family: 'PocketGull', 'PocketGull Math', serif, sans-serif !important;
+  font-feature-settings: "sinf" 1, "subs" 1, "sups" 1 !important;
+}
+
+.font-pocketgull-chem-formula {
+  font-family: 'PocketGull Chem', 'PocketGull Math', 'PocketGull Mono', monospace !important;
+  font-feature-settings: "sinf" 1, "subs" 1, "calt" 1, "tnum" 1 !important;
+}
+
+.font-parasympathetic-breathing {
+  font-family: 'PocketGull VF', sans-serif !important;
+  animation: parasympatheticPacing 10s ease-in-out infinite;
+}
+
+@keyframes parasympatheticPacing {
+  0%, 100% { font-variation-settings: 'wght' 400, 'opsz' 14; }
+  40%      { font-variation-settings: 'wght' 440, 'opsz' 15.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .font-parasympathetic-breathing {
+    animation: none !important;
+    font-variation-settings: 'wght' 400, 'opsz' 14 !important;
+  }
+}
+
+
