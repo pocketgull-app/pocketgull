@@ -70,5 +70,17 @@
     "name": "PocketGull Skeptical Epistemology & H0 CDS Auditor",
     "hub_repo": "philgear/pocketgull-skeptic-cds-4b",
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-skeptic-cds-4b"
+  },
+  {
+    "id": "pocketgull-thermal-posology-1b",
+    "name": "PocketGull Thermal Strain & Heat Posology Engine",
+    "hub_repo": "philgear/pocketgull-thermal-posology-1b",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-thermal-posology-1b"
+  },
+  {
+    "id": "pocketgull-lateral-flow-edge",
+    "name": "PocketGull Edge Lateral Flow & Biomarker Vision Scanner",
+    "hub_repo": "philgear/pocketgull-lateral-flow-edge",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-lateral-flow-edge"
   }
 ]

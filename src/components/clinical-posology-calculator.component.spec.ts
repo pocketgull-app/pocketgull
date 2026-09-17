@@ -3,6 +3,7 @@ import { signal, runInInjectionContext, createEnvironmentInjector, EnvironmentIn
 import { ClinicalPosologyCalculatorComponent } from './clinical-posology-calculator.component';
 import { PatientStateService } from '../services/patient-state.service';
 import { ClinicalPosologyService } from '../services/clinical-posology.service';
+import { EnvironmentalHeatPosologyService } from '../services/environmental-heat-posology.service';
 
 describe('ClinicalPosologyCalculatorComponent', () => {
   let component: ClinicalPosologyCalculatorComponent;
@@ -22,7 +23,8 @@ describe('ClinicalPosologyCalculatorComponent', () => {
 
     injector = createEnvironmentInjector([
       { provide: PatientStateService, useValue: mockState },
-      ClinicalPosologyService
+      ClinicalPosologyService,
+      EnvironmentalHeatPosologyService
     ], undefined as any);
 
     runInInjectionContext(injector, () => {
@@ -76,5 +78,17 @@ describe('ClinicalPosologyCalculatorComponent', () => {
     component.loadPreset('ayurvedic_tcm');
     const ayurAudit = component.spellcheckAudit();
     expect(ayurAudit.multiParadigmFontClass).toContain('ayurvedic');
+  });
+
+  it('7. Switches to environmental heat tier and computes Stull WBGT & thermal strain', () => {
+    component.selectAgeTier('environmental_heat');
+    expect(component.activeAgeTier()).toBe('environmental_heat');
+    expect(component.selectedStation()).toBe('KPHX');
+    expect(component.ambientTempF()).toBe(114);
+
+    const heatAssessment = component.heatPosologyAssessment();
+    expect(heatAssessment.estimatedWbgtF).toBeGreaterThanOrEqual(85);
+    expect(heatAssessment.anhidrosisSweatRiskPct).toBeGreaterThan(50);
+    expect(heatAssessment.hourlyHydrationRequirementMl).toBeGreaterThan(600);
   });
 });

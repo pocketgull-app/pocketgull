@@ -86,8 +86,7 @@ test.describe('Institutional Thin Clients & Kiosks E2E Suite', () => {
     await page.evaluate(() => window.scrollTo(0, 0));
     const ambientBtn = page.locator('#btn-ambient-flow-trigger, button:has-text("Ambient Flow")').first();
     if (await ambientBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await ambientBtn.scrollIntoViewIfNeeded();
-      await ambientBtn.click({ force: true });
+      await ambientBtn.dispatchEvent('click');
       await page.waitForTimeout(400);
       const player = page.locator('app-ambient-flow-player');
       if (await player.isVisible().catch(() => false)) {

@@ -146,6 +146,28 @@ CLINICAL_ADAPTERS = [
             {"text": "Clinical claim: 'Novel botanical extract demonstrated 14% reduction in systolic blood pressure (p=0.048, n=24, industry sponsored)'. Perform Cochrane RoB 2 audit and Fragility Index calculation."},
             {"text": "Evaluate whether empirical literature supports off-label prescribing for fibromyalgia in a patient with severe somatic symptom disorder."}
         ]
+    },
+    {
+        "id": "pocketgull-thermal-posology-1b",
+        "name": "PocketGull Thermal Strain & Heat Posology Engine",
+        "base_model": "google/gemma-3-1b-it",
+        "discipline": "Microclimatic NOAA WBGT Forecasts, Drug-Induced Anhidrosis, and Arid Climate Posology",
+        "description": "Calibrates drug posology against Wet Bulb Globe Temperature (WBGT) and environmental heat waves. Developed in collaboration with clinical frameworks aligned with the Julie Ann Wrigley Global Futures Laboratory. Flags medication-induced anhidrosis sweat failure (anticholinergics, carbonic anhydrase inhibitors), dehydration-induced AKI (diuretics, ACEi/ARBs, SGLT2i), and lithium retention under extreme heat (>110°F / 43°C).",
+        "widgets": [
+            {"text": "Phoenix ambient temperature 114°F, 16% relative humidity, direct sun. Patient: 74yo on Diphenhydramine 50mg, Furosemide 40mg, Lisinopril 20mg. Compute WBGT, anhidrosis risk, AKI hazard, and hourly hydration posology."},
+            {"text": "Pediatric patient 6yo prescribed Topiramate for focal seizures during a declared excessive heat emergency. Evaluate sweat gland inhibition, core hyperthermia danger, and clinical monitoring directives."}
+        ]
+    },
+    {
+        "id": "pocketgull-lateral-flow-edge",
+        "name": "PocketGull Edge Lateral Flow & Biomarker Vision Scanner",
+        "base_model": "pocketgull/edge-densitometry-vision",
+        "discipline": "Zero-Cloud Computer Vision Densitometry for Rapid Antigen & Salivary Strips",
+        "description": "Low-cost point-of-care edge ML model that reads and quantifies rapid lateral flow immunoassay cassettes and salivary biomarker strips directly on smartphone cameras. Verifies control line validity (>0.18 OD), quantifies test-to-control optical density ratios, and outputs structured HL7 FHIR R4 Observation bundles (LOINC 94558-4) with zero cloud egress.",
+        "widgets": [
+            {"text": "Perform 1D optical intensity profile scan across rapid antigen strip cassette: detect control line at index 75% and faint test line at index 42%. Return validity, optical ratio, and qualitative diagnostic status."},
+            {"text": "Construct HIPAA-compliant FHIR R4 Observation resource with SNOMED CT positive finding (10828004) and LOINC 94558-4 for SARS-CoV-2 rapid lateral flow surveillance."}
+        ]
     }
 ]
 
