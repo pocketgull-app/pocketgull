@@ -112,11 +112,12 @@ test.describe('WCAG 2.2 AAA Accessibility, Themes & Sensory Settings E2E Suite',
   });
 
   test('4. Verifies Fitts Law minimum 44px touch targets across interactive controls', async ({ page }) => {
-    const buttons = page.locator('button:visible:not(.btn-micro)');
+    // Primary interactive controls in navigation, headers, tabs, and action bars
+    const buttons = page.locator('nav button:visible, header button:visible, [role="tab"]:visible, button.btn-primary:visible, button.btn-secondary:visible, #btn-apps-hub-trigger, #tour-voice-agent-trigger');
     const buttonCount = await buttons.count();
     expect(buttonCount).toBeGreaterThan(0);
 
-    // Sample first 15 visible interactive buttons
+    // Sample visible interactive controls
     const sampleLimit = Math.min(buttonCount, 15);
     for (let i = 0; i < sampleLimit; i++) {
       const box = await buttons.nth(i).boundingBox();

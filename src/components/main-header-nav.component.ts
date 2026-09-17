@@ -51,6 +51,7 @@ import { NavigationShellService } from '../services/navigation-shell.service';
         <div class="hidden md:flex items-center gap-2">
           <button 
             type="button" 
+            id="btn-ambient-flow-trigger"
             (click)="showAmbientPlayer.set(!showAmbientPlayer())"
             [class.bg-teal-500/20]="soundscapeService.isPlaying()"
             [class.text-teal-700]="soundscapeService.isPlaying()"
