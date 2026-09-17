@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
 import { IsmpSafetyGuardService } from './ismp-safety-guard.service';
 
-export type PosologyAgeTier = 'neonate_infant' | 'pediatric_child' | 'adult' | 'geriatric_elder';
+export type PosologyAgeTier = 'neonate_infant' | 'pediatric_child' | 'adult' | 'geriatric_elder' | 'environmental_heat';
 
 export interface IFriedRuleResult {
   ageMonths: number;

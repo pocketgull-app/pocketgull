@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClinicalPosologyService, PosologyAgeTier, IBeersCriteriaAlert } from '../services/clinical-posology.service';
 import { PatientStateService } from '../services/patient-state.service';
+import { EnvironmentalHeatPosologyService, IHeatPosologyAssessment } from '../services/environmental-heat-posology.service';
 
 @Component({
   selector: 'app-clinical-posology-calculator',
@@ -52,6 +53,12 @@ import { PatientStateService } from '../services/patient-state.service';
                   [class.text-white]="activeAgeTier() === 'geriatric_elder'"
                   class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
             <span>🧓</span> Elder (65+y)
+          </button>
+          <button (click)="selectAgeTier('environmental_heat')"
+                  [class.bg-orange-600]="activeAgeTier() === 'environmental_heat'"
+                  [class.text-white]="activeAgeTier() === 'environmental_heat'"
+                  class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
+            <span>☀️</span> Heat &amp; WBGT (ASU)
           </button>
         </div>
       </div>
@@ -361,6 +368,90 @@ import { PatientStateService } from '../services/patient-state.service';
             </div>
           }
 
+          <!-- TIER 5: ENVIRONMENTAL HEAT & WBGT (Julie Ann Wrigley Global Futures Lab) -->
+          @if (activeAgeTier() === 'environmental_heat') {
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/30 flex items-center gap-1.5">
+                  <span>☀️</span> Thermal Strain &amp; Heat-Vulnerability Posology (ASU)
+                </span>
+                <span class="text-xs font-mono text-orange-600 dark:text-orange-400 font-bold">
+                  Stull WBGT &amp; Drug Anhidrosis
+                </span>
+              </div>
+
+              <!-- Microclimatic Station Observation Picker -->
+              <div class="p-3 rounded-lg bg-orange-50/50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/40 flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-bold text-orange-900 dark:text-orange-200">NOAA Microclimate Station:</span>
+                <div class="flex items-center gap-1 text-xs font-mono">
+                  <button (click)="loadStationObservation('KPHX')"
+                          [class.bg-orange-600]="selectedStation() === 'KPHX'"
+                          [class.text-white]="selectedStation() === 'KPHX'"
+                          class="px-2 py-1 rounded border border-orange-400/50 cursor-pointer">
+                    Phoenix (KPHX - 114°F)
+                  </button>
+                  <button (click)="loadStationObservation('KSDL')"
+                          [class.bg-orange-600]="selectedStation() === 'KSDL'"
+                          [class.text-white]="selectedStation() === 'KSDL'"
+                          class="px-2 py-1 rounded border border-orange-400/50 cursor-pointer">
+                    Scottsdale (KSDL - 111°F)
+                  </button>
+                  <button (click)="loadStationObservation('KTUS')"
+                          [class.bg-orange-600]="selectedStation() === 'KTUS'"
+                          [class.text-white]="selectedStation() === 'KTUS'"
+                          class="px-2 py-1 rounded border border-orange-400/50 cursor-pointer">
+                    Tucson (KTUS - 106°F)
+                  </button>
+                </div>
+              </div>
+
+              <!-- WBGT Readout & OSHA Flag Banner -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-orange-200 dark:border-orange-900/40">
+                  <span class="text-[11px] font-bold text-orange-900 dark:text-orange-300 block mb-1">Wet Bulb Globe Temperature (WBGT):</span>
+                  <div class="flex items-baseline gap-2 font-mono">
+                    <span class="text-2xl font-black text-orange-600 dark:text-orange-400">
+                      {{ heatPosologyAssessment().estimatedWbgtF.toFixed(1) }}°F
+                    </span>
+                    <span class="text-xs text-slate-500 font-bold">({{ heatPosologyAssessment().estimatedWbgtC.toFixed(1) }}°C)</span>
+                  </div>
+                  <div class="mt-2 text-[11px] font-bold font-mono px-2 py-1 rounded inline-block"
+                       [ngClass]="{
+                         'bg-red-500 text-white': heatPosologyAssessment().heatAcuityTier === 'EXTREME_STAT' || heatPosologyAssessment().heatAcuityTier === 'SEVERE_DANGER',
+                         'bg-yellow-400 text-black': heatPosologyAssessment().heatAcuityTier === 'HIGH_ALERT',
+                         'bg-emerald-500 text-white': heatPosologyAssessment().heatAcuityTier === 'LOW_NORMAL' || heatPosologyAssessment().heatAcuityTier === 'MODERATE_CAUTION'
+                       }">
+                    OSHA TIER: {{ heatPosologyAssessment().heatAcuityTier.replace('_', ' ') }}
+                  </div>
+                </div>
+
+                <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-orange-200 dark:border-orange-900/40 space-y-1.5">
+                  <span class="text-[11px] font-bold text-orange-900 dark:text-orange-300 block">Thermal Strain &amp; Sweat Failure:</span>
+                  <div class="flex items-center justify-between text-xs font-mono">
+                    <span>Anhidrosis Sweat Risk:</span>
+                    <strong class="text-rose-600 dark:text-rose-400">{{ heatPosologyAssessment().anhidrosisSweatRiskPct }}%</strong>
+                  </div>
+                  <div class="flex items-center justify-between text-xs font-mono">
+                    <span>Acute Kidney Injury Tier:</span>
+                    <strong class="text-amber-600 dark:text-amber-400">{{ heatPosologyAssessment().acuteKidneyInjuryRiskTier }}</strong>
+                  </div>
+                  <div class="flex items-center justify-between text-xs font-mono pt-1 border-t border-slate-200 dark:border-zinc-800">
+                    <span>Hourly Hydration Posology:</span>
+                    <strong class="text-cyan-600 dark:text-cyan-400">{{ heatPosologyAssessment().hourlyHydrationRequirementMl }} mL/hr</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Clinical Adjudication Directive -->
+              <div class="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-950 dark:text-orange-200 text-xs font-mono">
+                🌡️ <strong>Planetary Health Adjudication:</strong> {{ heatPosologyAssessment().clinicalAdjudication }}
+                <div class="mt-1 text-[11px] text-slate-600 dark:text-zinc-400">
+                  Prescription: {{ heatPosologyAssessment().electrolytePrescription }}
+                </div>
+              </div>
+            </div>
+          }
+
         </div>
       </div>
 
@@ -486,6 +577,7 @@ import { PatientStateService } from '../services/patient-state.service';
 export class ClinicalPosologyCalculatorComponent {
   readonly posology = inject(ClinicalPosologyService);
   private patientState = inject(PatientStateService);
+  private readonly heatPosology = inject(EnvironmentalHeatPosologyService);
 
   readonly activeAgeTier = signal<PosologyAgeTier>('adult');
   readonly infantAgeMonths = signal<number>(6);
@@ -497,6 +589,11 @@ export class ClinicalPosologyCalculatorComponent {
   readonly isFemale = signal<boolean>(false);
   readonly selectedOralSyringeVol = signal<number>(5.0);
   readonly testDosageInput = signal<string>('Lisinopril 5.0 mg PO QD + .5 mg Alprazolam 10 U');
+
+  readonly ambientTempF = signal<number>(114);
+  readonly relativeHumidityPct = signal<number>(15);
+  readonly isDirectSun = signal<boolean>(true);
+  readonly selectedStation = signal<'KPHX' | 'KSDL' | 'KTUS'>('KPHX');
 
   readonly beersRegistry: ReadonlyArray<IBeersCriteriaAlert> = this.posology.BEERS_CRITERIA_REGISTRY;
 
@@ -531,12 +628,37 @@ export class ClinicalPosologyCalculatorComponent {
     )
   );
 
+  readonly heatPosologyAssessment = computed<IHeatPosologyAssessment>(() => {
+    return this.heatPosology.evaluateHeatPosology({
+      ambientTempF: this.ambientTempF(),
+      relativeHumidityPct: this.relativeHumidityPct(),
+      isDirectSun: this.isDirectSun(),
+      patientAge: this.patientAge(),
+      patientWeightKg: this.patientWeightKg(),
+      baselineEgfr: 42,
+      activeMedications: [
+        'Diphenhydramine 50mg',
+        'Topiramate 50mg',
+        'Furosemide 40mg',
+        'Lisinopril 20mg'
+      ]
+    });
+  });
+
   readonly spellcheckAudit = computed(() =>
     this.posology.auditDosageText(this.testDosageInput(), this.patientAge(), this.patientWeightLbs())
   );
 
   constructor() {
     this.syncWithActivePatient();
+  }
+
+  loadStationObservation(station: 'KPHX' | 'KSDL' | 'KTUS'): void {
+    this.selectedStation.set(station);
+    const obs = this.heatPosology.getMicroclimaticObservation(station);
+    this.ambientTempF.set(obs.ambientTempF);
+    this.relativeHumidityPct.set(obs.rhPct);
+    this.isDirectSun.set(obs.isDirectSun);
   }
 
   selectAgeTier(tier: PosologyAgeTier): void {
@@ -562,6 +684,9 @@ export class ClinicalPosologyCalculatorComponent {
       this.patientHeightCm.set(165);
       this.serumCreatinineMgDl.set(1.6);
       this.testDosageInput.set('Diphenhydramine 25.0 mg QHS + Diazepam 5.0 mg QD');
+    } else if (tier === 'environmental_heat') {
+      this.loadStationObservation('KPHX');
+      this.testDosageInput.set('Hold Diphenhydramine 50 mg + Titrate Furosemide 20 mg PO QD in >110°F Heat');
     }
   }
 
