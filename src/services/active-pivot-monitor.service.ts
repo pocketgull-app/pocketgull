@@ -109,7 +109,13 @@ export class ActivePivotMonitorService {
   readonly lastEvaluatedTimestamp = signal<string>(new Date().toISOString());
   readonly predictiveAlerts = signal<IPredictiveBreachAlert[]>([]);
   readonly oodStatus = signal<IOodEvaluationResult | null>(null);
-  readonly waveformMorphology = signal<IWaveformMorphologySummary | null>(null);
+  readonly waveformMorphology = computed<IWaveformMorphologySummary | null>(() => {
+    if (!this.waveformDsp) return null;
+    const patient = this.patientState?.asPatientSnapshot();
+    const hr = parseInt(String(patient?.vitals?.hr || '74'), 10) || 74;
+    const syntheticPpg = this.waveformDsp.generateSyntheticPpgWaveform(6, hr, 0.45);
+    return this.waveformDsp.analyzeWaveform(syntheticPpg, 100);
+  });
 
   readonly pendingTriggersCount = computed(() => {
     return this.activeTriggers().filter(t => !t.isExecuted).length;
@@ -445,7 +451,6 @@ export class ActivePivotMonitorService {
       augmentationIndexPct = dspSummary.augmentationIndexPct;
       estimatedPwvMPerS = dspSummary.estimatedPwvMPerS;
       arterialComplianceTier = dspSummary.arterialComplianceTier;
-      this.waveformMorphology.set(dspSummary);
     }
 
     // TCM Sphygmology (Cun, Guan, Chi)

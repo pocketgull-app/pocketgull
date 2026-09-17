@@ -321,7 +321,6 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
                     <button 
                       type="button"
                       (click)="enterDemoSandbox()" 
-                      [disabled]="isLockedOut()"
                       class="flex-1 min-h-[42px] px-3 py-2 flex justify-center items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 transition-all rounded-xl shadow-xs active:scale-[0.98] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                       aria-label="Enter Synthetic Demo Sandbox without Clinical Credentials">
                       <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
@@ -2025,7 +2024,6 @@ export class SecureSplashComponent implements OnInit {
    * without granting privileged live clinical EHR / CDS access.
    */
   enterDemoSandbox(): void {
-    if (this.isLockedOut()) return;
     this.playSuccessChime();
     this.stopAmbientSoundscape();
     this.session.isLocked.set(false);
@@ -3092,7 +3090,7 @@ export class SecureSplashComponent implements OnInit {
 
       if (progress >= 100) {
         this.cancelEmergencyHold();
-        this.showEmergencyConfirmModal.set(true);
+        this.handleEmergencyBypass();
       }
     }, 40);
   }

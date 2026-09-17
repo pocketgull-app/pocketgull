@@ -24,6 +24,12 @@ test.describe('Good Samaritan Emergency Mode E2E Flow', () => {
     if (await twoStepBtn.isVisible({ timeout: 8000 }).catch(() => false)) {
       await twoStepBtn.scrollIntoViewIfNeeded();
       await twoStepBtn.click();
+      const badgeInput = page.locator('#stat-clinician-id');
+      if (await badgeInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await badgeInput.fill('BADGE-STAT-911');
+        const attestCheck = page.locator('input[type="checkbox"]').first();
+        await attestCheck.check().catch(() => {});
+      }
       const confirmOverrideBtn = page.locator('button', { hasText: /Confirm STAT/i }).first();
       await expect(confirmOverrideBtn).toBeVisible({ timeout: 10000 });
       await confirmOverrideBtn.click();
