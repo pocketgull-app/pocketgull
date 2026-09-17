@@ -62,9 +62,14 @@ describe('LensRsnaKneeComponent Unit Suite', () => {
     const aclTarget = component.targets().find(t => t.key === 'acl')!;
     component.focusTargetIn3D(aclTarget);
 
+    expect(component.activeFocusedTargetKey()).toBe('acl');
     expect(mockPatientState.selectPart).toHaveBeenCalledWith('leg_left');
     expect(mockPatientState.issues()['leg_left']).toBeDefined();
     expect(mockPatientState.issues()['leg_left'][0].name).toContain('ACL Tear');
+
+    const mclTarget = component.targets().find(t => t.key === 'mcl')!;
+    component.focusTargetIn3D(mclTarget);
+    expect(component.activeFocusedTargetKey()).toBe('mcl');
   });
 
   it('4. Loads preset clinical impressions and updates NLP model prediction', async () => {
@@ -75,8 +80,23 @@ describe('LensRsnaKneeComponent Unit Suite', () => {
     expect(component.customReportText).toContain('Intact cruciate');
   });
 
-  it('5. Exports FHIR R4 DiagnosticReport Bundle', () => {
-    component.exportFhirBundle();
+  it('5. Exports FHIR R4 DiagnosticReport Bundle fallback when loopService is absent', async () => {
+    await component.exportFhirBundle();
+    expect(component.fhirExported()).toBe(true);
+  });
+
+  it('6. Exports comprehensive FHIR R4 CarePlan Bundle when loopService is present', async () => {
+    const mockLoopService = {
+      generateFhirCarePlanBundle: vi.fn().mockReturnValue({
+        resourceType: 'Bundle',
+        type: 'collection',
+        entry: [{ resource: { resourceType: 'CarePlan' } }]
+      })
+    };
+    (component as any).loopService = mockLoopService;
+
+    await component.exportFhirBundle();
+    expect(mockLoopService.generateFhirCarePlanBundle).toHaveBeenCalledWith('P001');
     expect(component.fhirExported()).toBe(true);
   });
 });

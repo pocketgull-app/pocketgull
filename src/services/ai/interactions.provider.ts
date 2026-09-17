@@ -111,6 +111,13 @@ export class InteractionsProvider implements IIntelligenceProvider {
     }
 
     /**
+     * Updates the active Gemini model ID.
+     */
+    setActiveModel(model: string): void {
+        this.activeModel.set(model);
+    }
+
+    /**
      * Updates the thinking budget for clinical differential diagnoses.
      */
     setThinkingBudget(budget: number): void {
@@ -121,9 +128,7 @@ export class InteractionsProvider implements IIntelligenceProvider {
      * Generates a clinical report stream using the Interactions API backend endpoint.
      */
     async *generateReportStream$(patientData: string, lens: string, systemInstruction: string): AsyncIterable<string> {
-        const routingModelId = (lens === 'Summary Overview' || lens === 'Functional Protocols')
-            ? 'gemini-3.7-flash'
-            : 'gemini-2.5-flash';
+        const routingModelId = this.activeModel() || 'gemini-3.8-flash';
 
         const budget = (lens === 'Summary Overview' || lens === 'Functional Protocols')
             ? this.thinkingBudget()

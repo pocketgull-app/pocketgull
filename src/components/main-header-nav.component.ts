@@ -90,6 +90,17 @@ import { NavigationShellService } from '../services/navigation-shell.service';
           <span>Commercial Hub</span>
         </button>
 
+        <!-- 🏛️ USWDS Federal Health Workstation Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-federal-uswds-trigger"
+          (click)="navShell?.openFederalUswdsPortal()"
+          aria-label="Open USWDS Federal Health & CDS Workstation"
+          class="hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-[#005ea2] dark:text-blue-300 border border-blue-300 dark:border-blue-700/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">🏛️</span>
+          <span>Federal Edition</span>
+        </button>
+
         <!-- 🌟 Clinical Apps & Portals Hub Dropdown Button (Desktop) -->
         <div class="relative hidden md:block">
           <button 
@@ -284,7 +295,14 @@ import { NavigationShellService } from '../services/navigation-shell.service';
 
                 <!-- Section: Enterprise & Operations -->
                 <div class="space-y-1 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🏢 Enterprise & Commercial</span>
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🏛️ Federal &amp; Enterprise</span>
+                  <button type="button" (click)="navShell?.openFederalUswdsPortal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-blue-700 dark:text-blue-300 cursor-pointer border border-blue-500/20 bg-blue-50/40 dark:bg-blue-950/20">
+                    <span class="text-sm">🏛️</span>
+                    <div>
+                      <div>USWDS Federal Health Edition</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">21st Century IDEA • Section 508 • VA/CMS CDS</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="navShell?.openCommercialHub(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/20">
                     <span class="text-sm">💼</span>
                     <div>

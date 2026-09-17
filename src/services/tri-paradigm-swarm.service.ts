@@ -52,59 +52,69 @@ export class TriParadigmSwarmService {
     const symptoms = symptomsOverride || (this.state ? this.state.selectedIssues().map(i => i.description || i.name) : []);
     const activeSymptoms = symptoms.length > 0 ? symptoms : ['Chronic Fatigue', 'Brain Fog', 'Epigastric Bloating'];
     const patientId = this.state?.activePatientSummary() ? 'P-GULL-ACTIVE' : 'P-GULL-DEMO';
+    const tcmData = this.state?.tcmIntake ? this.state.tcmIntake() : null;
+    const ayurvedaData = this.state?.ayurvedicIntake ? this.state.ayurvedicIntake() : null;
+    const vitalsData = this.state?.vitals ? this.state.vitals() : null;
 
     // 1. Western Allopathic Specialist Perspective (Gulliver)
+    const bpText = vitalsData?.bp ? ` (Vascular baseline: ${vitalsData.bp}, HR ${vitalsData.hr || '72'} bpm)` : '';
     const western: IParadigmPerspective = {
       paradigm: 'western',
       specialistName: 'Dr. Gulliver (Western Allopathic Internal Medicine)',
       avatarIcon: '🔬',
-      primaryDiagnosis: `Rule out metabolic dysfunction, subclinical thyroiditis, or post-viral syndrome associated with ${activeSymptoms[0] || 'symptoms'}.`,
+      primaryDiagnosis: `Rule out metabolic dysfunction, subclinical thyroiditis, or neuro-vascular strain associated with ${activeSymptoms.slice(0, 2).join(' & ') || 'active symptoms'}${bpText}.`,
       keyInterventions: [
         'Order Comprehensive Metabolic Panel (CMP) & hs-CRP baseline',
         'Serum Free T3, Free T4, and TPO Autoantibody screen',
         '24-hour salivary cortisol circadian curve test'
       ],
       riskFlags: [
-        'Monitor for autoimmune thyroid antibodies',
-        'Exclude electrolyte disturbances before starting high-dose regimens'
+        'Monitor for autoimmune thyroid antibodies and electrolyte shifts',
+        'Deconflict botanical co-administration with hepatic CYP3A4/2C9 substrates'
       ],
-      confidenceScore: 88
+      confidenceScore: 89
     };
 
     // 2. Eastern TCM Zang-Fu Specialist Perspective (Swoop)
+    const tcmDiag = tcmData?.tcmPattern
+      ? `${tcmData.tcmPattern} with ${tcmData.pulseQuality || 'wiry'} pulse waveform and ${tcmData.tongueColor || 'pale'} tongue body (${tcmData.tongueCoating || 'thin'} coating).`
+      : 'Spleen Qi Deficiency with Dampness accumulation and Liver Qi Stagnation disrupting Digestive Fire.';
     const eastern: IParadigmPerspective = {
       paradigm: 'eastern',
       specialistName: 'Elder Swoop (Eastern TCM Zang-Fu & Meridian Harmony)',
       avatarIcon: '☯️',
-      primaryDiagnosis: `Spleen Qi Deficiency with Dampness accumulation and Liver Qi Stagnation disrupting Digestive Fire.`,
+      primaryDiagnosis: tcmDiag,
       keyInterventions: [
-        'Prescribe Liu Jun Zi Tang (Six Gentlemen Decoction) for Spleen Qi reinforcement',
-        'Acupressure at ST36 (Zusanli) and SP6 (Sanyinjiao) daily',
-        'Warm, cooked grain dietary protocol; avoid cold/raw food intake'
+        'Prescribe modified Xiao Yao San or Liu Jun Zi Tang decoction for Zang-Fu harmony',
+        'Acupressure at LV-3 (Taichong), ST-36 (Zusanli), and SP-6 (Sanyinjiao) daily',
+        'Warm, cooked digestive grain diet; eliminate cold/raw food ingestion'
       ],
       riskFlags: [
-        'Avoid excessive bitter-cold herbs which further injure Spleen Yang',
-        'Monitor for worsening Damp-Heat progression'
+        'Avoid excessive bitter-cold purgative herbs that injure Spleen Yang',
+        'Maintain 3-hour kinetic clearance separation from morning Western pharmaceuticals'
       ],
-      confidenceScore: 85
+      confidenceScore: 88
     };
 
-    // 3. Functional Medicine Bio-Stacker Perspective (Sentinel)
+    // 3. Functional Medicine & Ayurvedic Bio-Stacker Perspective (Sentinel)
+    const ayurDiag = ayurvedaData?.ayurvedicImbalance
+      ? `${ayurvedaData.ayurvedicImbalance} characterized by ${ayurvedaData.agniType || 'vishamagni'} Agni and ${ayurvedaData.amaScore ?? 4.5}/10 metabolic endotoxin burden.`
+      : 'Mitochondrial ATP turnover deficit coupled with zonulin-mediated intestinal hyperpermeability and kinetic Vata dispersion.';
     const functional: IParadigmPerspective = {
       paradigm: 'functional',
       specialistName: 'Dr. Sentinel (Functional Medicine & Cellular Bio-Stacker)',
       avatarIcon: '🧬',
-      primaryDiagnosis: `Mitochondrial ATP turnover deficit coupled with zonulin-mediated intestinal hyperpermeability.`,
+      primaryDiagnosis: ayurDiag,
       keyInterventions: [
-        'CoQ10 (Ubiquinol) 200mg + PQQ 20mg morning mitochondrial stack',
-        'L-Glutamine 5g + Zinc Carnosine 75mg mucosal repair protocol',
-        'Time-Restricted Feeding (16:8 TRF) synchronized with SCN clock circadian genes'
+        'CoQ10 (Ubiquinol) 200mg + PQQ 20mg morning mitochondrial biogenesis stack',
+        'Ashwagandha (KSM-66) 600mg + Zinc Carnosine 75mg mucosal and Vata stability protocol',
+        'Circadian Time-Restricted Feeding (16:8 TRF) aligned with SCN BMAL1/PER2 rhythm'
       ],
       riskFlags: [
-        'Assess GI-MAP stool dysbiosis before intense mitochondrial uncoupling',
+        'Assess GI-MAP and mucosal permeability before initiating high-potency extracts',
         'Maintain electrolyte hydration during fasting windows'
       ],
-      confidenceScore: 91
+      confidenceScore: 92
     };
 
     // 4. Synthesize Points of Consensus & Divergence

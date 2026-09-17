@@ -3,6 +3,7 @@ import { IIntelligenceProvider } from './intelligence.provider';
 import { GeminiProvider } from './gemini.provider';
 import { PubGemmaProvider } from './pubgemma.provider';
 import { LemonadeProvider } from './lemonade.provider';
+import { OllamaProvider } from './ollama.provider';
 import { NanoProvider } from './nano.provider';
 import { WebLLMProvider } from './webllm.provider';
 import { IClinicalMetrics } from '../clinical-intelligence.service';
@@ -31,6 +32,7 @@ export class HybridProvider implements IIntelligenceProvider {
   private gemini = inject(GeminiProvider);
   private nvidia = inject(PubGemmaProvider); // Local NVIDIA server
   private lemonade = inject(LemonadeProvider); // Local Lemonade Server (AMD Radeon Vulkan / Gemma 3 4B)
+  private ollama = inject(OllamaProvider); // Local Ollama instance (Gemma 4 / Moondream)
   private nano = inject(NanoProvider); // On-device Chrome Nano
   private webgpu = inject(WebLLMProvider); // Local WebGPU (WebLLM)
   private network = inject(NetworkStateService);
@@ -51,10 +53,13 @@ export class HybridProvider implements IIntelligenceProvider {
 
     if (useLocal) {
       // Local-first preference
+      if (this.ollama.isConnected()) {
+        chain.push(this.ollama);
+      }
       if (path === 'local-lemonade' || this.lemonade.isConnected()) {
         chain.push(this.lemonade, this.webgpu, this.nano);
       } else if (path === 'local-nvidia') {
-        chain.push(this.nvidia, this.webgpu, this.nano);
+        chain.push(this.ollama, this.nvidia, this.webgpu, this.nano);
       } else if (path === 'local-webgpu') {
         chain.push(this.webgpu, this.nano);
       } else if (path === 'on-device-nano') {
@@ -71,11 +76,14 @@ export class HybridProvider implements IIntelligenceProvider {
       // Cloud-first preference
       chain.push(this.gemini);
       
-      // Local backups based on telemetry
+      // Local backups based on telemetry & connectivity
+      if (this.ollama.isConnected()) {
+        chain.push(this.ollama);
+      }
       if (path === 'local-lemonade' || this.lemonade.isConnected()) {
         chain.push(this.lemonade, this.webgpu, this.nano);
       } else if (path === 'local-nvidia') {
-        chain.push(this.nvidia, this.webgpu, this.nano);
+        chain.push(this.ollama, this.nvidia, this.webgpu, this.nano);
       } else if (path === 'local-webgpu') {
         chain.push(this.webgpu, this.nano);
       } else if (path === 'on-device-nano') {

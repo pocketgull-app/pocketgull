@@ -56,6 +56,16 @@ In the event of an identified patient safety hazard, zero-day vulnerability, or 
 
 ---
 
+## ⚖️ 5. Anti-Impersonation & Non-Governmental Demarcation (18 U.S.C. § 701)
+
+PocketGull is an independent, non-governmental software platform developed to support private clinical practices, community health centers, and authorized providers participating in the **Veterans Community Care Network (CCN)** under the **VA MISSION Act of 2018 (P.L. 115-182)**.
+
+1. **Zero Impersonation Policy**: PocketGull strictly prohibits claiming official government agency status, displaying unauthorized federal insignia, or mimicking official `.gov` ownership on non-governmental hosts (18 U.S.C. § 701, 18 U.S.C. § 912).
+2. **Mandatory Demarcation Standard**: All public-facing instances default to the **Community Practice Mode**, displaying the legally vetted disclaimer: *"Independent Healthcare Practice • Built with U.S. Web Design System (USWDS 3.0) for VA Community Care & CMS Interoperability"*.
+3. **Reference Policy**: The full legal and operational protocol is codified in [`docs/FEDERAL_DESIGN_SYSTEM_DEMARCATION.md`](file:///c:/Users/philg/Pocketgull/pocketgull/docs/FEDERAL_DESIGN_SYSTEM_DEMARCATION.md).
+
+---
+
 <p align="center">
   <sub>© 2026 PocketGull LLC & Phillip Gear. Distributed under the Apache-2.0 License.</sub>
 </p>

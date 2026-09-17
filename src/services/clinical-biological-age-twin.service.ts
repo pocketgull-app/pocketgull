@@ -13,7 +13,8 @@
  * - Full Angular 22 Signals reactivity.
  */
 
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { PatientStateService } from './patient-state.service';
 
 export interface IBiomarkerInput {
   chronologicalAge: number; // years
@@ -137,6 +138,146 @@ export class ClinicalBiologicalAgeTwinService {
       .filter(a => a.impact === 'protective')
       .sort((a, b) => a.deltaYears - b.deltaYears)
   );
+
+  /**
+   * Updates a single biomarker value in the active panel (triggers reactive re-evaluation at 60 FPS)
+   */
+  updateBiomarker(key: keyof IBiomarkerInput, value: number): void {
+    this.activeBiomarkers.update(curr => ({
+      ...curr,
+      [key]: value
+    }));
+  }
+
+  /**
+   * Resets active panel to canonical NHANES III baseline healthy values
+   */
+  resetToBaseline(): void {
+    this.activeBiomarkers.set({
+      ...this.CANONICAL_US_BASELINES,
+      unitSystem: 'US'
+    });
+  }
+
+  private readonly patientState = inject(PatientStateService, { optional: true });
+
+  /**
+   * Returns canonical reference baselines
+   */
+  getBaseline(): typeof this.CANONICAL_US_BASELINES {
+    return { ...this.CANONICAL_US_BASELINES };
+  }
+
+  /**
+   * Synchronizes active biomarker panel with patient demographics, vitals, and CMP labs
+   */
+  syncFromPatientState(state?: {
+    patientAge?: () => number;
+    vitals?: () => any;
+    functionalMedicineTelemetry?: () => any;
+  } | null): void {
+    const ps = state || this.patientState;
+    if (!ps) return;
+
+    const age = ps.patientAge ? ps.patientAge() : 0;
+    const v = ps.vitals ? ps.vitals() : null;
+    const fmt = ps.functionalMedicineTelemetry ? ps.functionalMedicineTelemetry() : null;
+
+    this.activeBiomarkers.update(curr => {
+      const updated = { ...curr };
+
+      if (age && age > 0) {
+        updated.chronologicalAge = age;
+      }
+
+      if (v) {
+        // Fasting / Continuous Glucose
+        const rawGlucose = v.cgmGlucoseMgDl || v.glucose || v.cmpLabs?.glucose;
+        if (rawGlucose !== undefined && rawGlucose !== null && rawGlucose !== '') {
+          const g = parseFloat(String(rawGlucose));
+          if (!isNaN(g) && g > 0) updated.glucose = Math.round(g);
+        }
+
+        // Blood Pressure (systolic)
+        if (v.bp && typeof v.bp === 'string' && v.bp.includes('/')) {
+          const sys = parseInt(v.bp.split('/')[0], 10);
+          if (!isNaN(sys) && sys > 0) updated.systolicBp = sys;
+        }
+
+        // Resting Heart Rate
+        if (v.hr) {
+          const hr = parseInt(String(v.hr), 10);
+          if (!isNaN(hr) && hr > 0) updated.restingHr = hr;
+        }
+
+        // hs-CRP
+        const rawCrp = v.crp || v.cmpLabs?.hsCrp;
+        if (rawCrp !== undefined && rawCrp !== null && rawCrp !== '') {
+          const c = parseFloat(String(rawCrp));
+          if (!isNaN(c) && c > 0) updated.hsCrp = c;
+        }
+
+        // Albumin
+        if (v.cmpLabs?.albumin) {
+          const alb = parseFloat(String(v.cmpLabs.albumin));
+          if (!isNaN(alb) && alb > 0) updated.albumin = alb;
+        }
+
+        // Creatinine
+        if (v.cmpLabs?.creatinine) {
+          const cr = parseFloat(String(v.cmpLabs.creatinine));
+          if (!isNaN(cr) && cr > 0) updated.creatinine = cr;
+        }
+
+        // Alkaline Phosphatase
+        if (v.cmpLabs?.alp || v.cmpLabs?.alkPhos) {
+          const alp = parseFloat(String(v.cmpLabs.alp || v.cmpLabs.alkPhos));
+          if (!isNaN(alp) && alp > 0) updated.alp = Math.round(alp);
+        }
+      }
+
+      // Functional Medicine telemetry fallback for hs-CRP if not set from labs
+      if (fmt?.hsCrpEstimate && (!v?.crp && !v?.cmpLabs?.hsCrp)) {
+        const num = parseFloat(String(fmt.hsCrpEstimate).replace(/[^0-9.]/g, ''));
+        if (!isNaN(num) && num > 0) updated.hsCrp = num;
+      }
+
+      return updated;
+    });
+  }
+
+  /**
+   * Pushes current simulated/adjusted biomarkers back into PatientStateService
+   */
+  pushBiomarkersToPatientState(state?: {
+    updateCmpLabs?: (cmpLabs: any) => void;
+    vitals?: { update?: (fn: (v: any) => any) => void };
+  } | null): void {
+    const ps = state || (this.patientState as any);
+    if (!ps) return;
+
+    const b = this.activeBiomarkers();
+
+    if (ps.updateCmpLabs) {
+      ps.updateCmpLabs({
+        glucose: String(b.glucose),
+        albumin: String(b.albumin),
+        creatinine: String(b.creatinine),
+        alp: String(b.alp),
+        hsCrp: String(b.hsCrp)
+      });
+    }
+
+    if (ps.vitals && typeof ps.vitals.update === 'function') {
+      ps.vitals.update((v: any) => ({
+        ...v,
+        cgmGlucoseMgDl: String(b.glucose),
+        crp: String(b.hsCrp),
+        bp: b.systolicBp ? `${b.systolicBp}/${(v?.bp || '120/80').split('/')[1] || '80'}` : v?.bp,
+        hr: b.restingHr ? String(b.restingHr) : v?.hr
+      }));
+    }
+  }
 
   /**
    * Calculates Canonical Morgan Levine PhenoAge (2018) + Waterfall Attributions
@@ -515,6 +656,76 @@ export class ClinicalBiologicalAgeTwinService {
       rejuvenationYears,
       projectedMortalityRiskReduction,
       trajectoryMilestones: milestones
+    };
+  }
+
+  /**
+   * Queries Python FastAPI sidecar for Platinum ML Biological Age Acceleration Risk.
+   * Identifies accelerated phenotypic aging hazard (>3.5 years advance beyond chronological baseline).
+   * Gracefully falls back to local Levine Gompertz calculation if sidecar is unavailable.
+   */
+  async predictMlBiologicalAgeAcceleration(input?: IBiomarkerInput): Promise<{
+    score: number;
+    riskLevel: string;
+    confidence: number;
+    factors: string[];
+    isMlModel: boolean;
+  }> {
+    const raw = input ?? this.activeBiomarkers();
+    const isSI = raw.unitSystem === 'SI';
+    const normalized = {
+      ...raw,
+      albumin: isSI ? raw.albumin / 10.0 : raw.albumin,
+      creatinine: isSI ? raw.creatinine / 88.42 : raw.creatinine,
+      glucose: isSI ? raw.glucose / 0.0555 : raw.glucose
+    };
+
+    const payload = {
+      albumin_g_dl: normalized.albumin,
+      creatinine_mg_dl: normalized.creatinine,
+      fasting_glucose_mg_dl: normalized.glucose,
+      hs_crp_mg_l: normalized.hsCrp,
+      lymphocyte_pct: normalized.lymphocytePct,
+      mcv_fl: normalized.mcv,
+      rdw_pct: normalized.rdw,
+      alk_phosphatase_u_l: normalized.alp,
+      wbc_count_10e3: normalized.wbc,
+      chronological_age: normalized.chronologicalAge
+    };
+
+    try {
+      const response = await fetch('/api/python/ml/predict/biological-age', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (response.ok) {
+        const bundle = await response.json();
+        const obs = bundle?.entry?.find((e: any) => e?.resource?.resourceType === 'Observation')?.resource;
+        const score = obs?.valueQuantity?.value ?? 0.5;
+        const note = obs?.note?.[0]?.text ?? '';
+        const interpretation = obs?.interpretation?.[0]?.coding?.[0]?.code ?? 'moderate';
+        return {
+          score,
+          riskLevel: interpretation,
+          confidence: 0.96,
+          factors: [note].filter(Boolean),
+          isMlModel: true
+        };
+      }
+    } catch {
+      // Offline fallback
+    }
+
+    const localEval = this.calculatePhenoAge(raw);
+    const accelYears = localEval.ageDelta;
+    const fallbackScore = Math.min(1.0, Math.max(0.0, 0.5 + accelYears * 0.1));
+    return {
+      score: fallbackScore,
+      riskLevel: accelYears >= 3.5 ? 'high' : accelYears >= 1.0 ? 'moderate' : 'low',
+      confidence: 0.60,
+      factors: ['Levine PhenoAge Gompertz deterministic offline calculation.'],
+      isMlModel: false
     };
   }
 }

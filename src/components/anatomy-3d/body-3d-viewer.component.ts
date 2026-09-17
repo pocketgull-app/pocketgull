@@ -23,6 +23,7 @@ import { LidarScanUploadModalComponent } from '../modals/lidar-scan-upload-modal
 import { SpatialLesionMarkupService } from '../../services/spatial-lesion-markup.service';
 import { AvsEngineService } from '../../services/avs-engine.service';
 import { VeoService } from '../../services/veo.service';
+import { ClinicalSpecialtyRiskSuiteService } from '../../services/clinical-specialty-risk-suite.service';
 import { IBodyPartIssue } from '../../services/patient.types';
 
 const PART_NAMES: Record<string, string> = {
@@ -247,6 +248,36 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             <span>📸</span>
             <span>LiDAR Scan</span>
           </button>
+
+          <!-- 🧠 MS Neuro-Lesion 3D Layer Toggle -->
+          @if (isMsActive()) {
+            <button (click)="showMsLesions.set(!showMsLesions())"
+              [class.bg-purple-600]="showMsLesions()"
+              [class.text-white]="showMsLesions()"
+              [class.bg-white]="!showMsLesions()"
+              [class.dark:bg-zinc-900]="!showMsLesions()"
+              [class.text-purple-700]="!showMsLesions()"
+              [class.dark:text-purple-400]="!showMsLesions()"
+              class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-purple-500 shadow-xs"
+              title="Toggle 3D Central Nervous System (CNS) MS Demyelinating Lesion Beacons">
+              <span>🧠</span>
+              <span class="text-[10px] uppercase font-bold">{{ showMsLesions() ? 'MS Lesions ON' : 'MS Lesions' }}</span>
+            </button>
+
+            <!-- 🌡️ Uhthoff Thermal Conduction Field Toggle -->
+            <button (click)="showUhthoffThermal.set(!showUhthoffThermal())"
+              [class.bg-amber-600]="showUhthoffThermal()"
+              [class.text-white]="showUhthoffThermal()"
+              [class.bg-white]="!showUhthoffThermal()"
+              [class.dark:bg-zinc-900]="!showUhthoffThermal()"
+              [class.text-amber-700]="!showUhthoffThermal()"
+              [class.dark:text-amber-400]="!showUhthoffThermal()"
+              class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-amber-500 shadow-xs"
+              title="Toggle 3D Uhthoff Thermal Conduction Reserve Field">
+              <span>🌡️</span>
+              <span class="text-[10px] uppercase font-bold">{{ showUhthoffThermal() ? 'Uhthoff Field ON' : 'Uhthoff Field' }}</span>
+            </button>
+          }
         </div>
 
         <!-- 🔪 3D Anatomical Cross-Section & Slice Plane Controls -->
@@ -557,6 +588,19 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     protected readonly fireflyTexture = inject(AdobeFireflyTextureService);
     protected readonly radarService = inject(SocraticComorbidityRadarService, { optional: true });
     protected readonly veoService = inject(VeoService, { optional: true });
+    protected readonly riskSuite = inject(ClinicalSpecialtyRiskSuiteService, { optional: true });
+
+    // 🧠 Multiple Sclerosis & Uhthoff Thermal Overlays
+    readonly showMsLesions = signal<boolean>(true);
+    readonly showUhthoffThermal = signal<boolean>(true);
+    readonly isMsActive = computed(() => {
+      const patientId = this.patientManagement.selectedPatientId();
+      if (['p_mara_santos', 'p_poms_adolescent', 'p_loms_elder'].includes(patientId || '')) return true;
+      const patient = this.patientManagement.selectedPatient();
+      const conditions = (patient?.preexistingConditions || []) as string[];
+      return conditions.some(c => c.toLowerCase().includes('sclerosis') || c.toLowerCase().includes('demyelinat'));
+    });
+
     private readonly platformId = inject(PLATFORM_ID);
     private readonly canvasContainer = viewChild<ElementRef<HTMLDivElement>>('canvasContainer');
 
@@ -1457,6 +1501,36 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 this.loadCustomModel(url);
             }
         });
+
+        // React to MS patient and overlay toggle changes
+        effect(() => {
+            const patientId = this.patientManagement.selectedPatientId();
+            const showLesions = this.showMsLesions();
+            const showThermal = this.showUhthoffThermal();
+            const isMs = this.isMsActive();
+
+            if (this.msNeuroLesionGroup) {
+                this.msNeuroLesionGroup.visible = isMs && showLesions;
+                if (isMs) {
+                    this.populateMsLesionNodes(patientId);
+                }
+            }
+            if (this.uhthoffThermalGroup) {
+                this.uhthoffThermalGroup.visible = isMs && showThermal;
+                if (isMs) {
+                    const reserve = this.riskSuite?.computeUhthoffThermalReserve(37.0, 72, 8) ?? 0.6;
+                    this.updateUhthoffThermalColor(reserve);
+                }
+            }
+        });
+
+        // React to 3D spatial lesion markup updates in real-time
+        effect(() => {
+            const _ = this.lesionMarkup.activeLesions();
+            if (this.scene) {
+                this.updateLesionPins();
+            }
+        });
     }
 
     private updateThemeLightingAndMaterials() {
@@ -2193,6 +2267,8 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         this.createTcmMeridians();
         this.createAyurvedicAura();
         this.createCurieIsotopeNodes();
+        this.createMsNeuroLesionNodes();
+        this.createUhthoffThermalOverlay();
 
         this.updatePartColors();
         this.updateTransparency(this.anatomyViewMode());
@@ -2465,6 +2541,139 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         const particleCloud = new THREE.Points(pGeo, pMat);
         particleCloud.userData['isCurieCloud'] = true;
         this.curieIsotopeGroup.add(particleCloud);
+    }
+
+    private msNeuroLesionGroup: THREE.Group | null = null;
+    private uhthoffThermalGroup: THREE.Group | null = null;
+    private uhthoffThermalMaterial: THREE.MeshStandardMaterial | null = null;
+
+    private createMsNeuroLesionNodes() {
+        this.msNeuroLesionGroup = new THREE.Group();
+        this.msNeuroLesionGroup.name = 'msNeuroLesions';
+        this.mannequinGroup.add(this.msNeuroLesionGroup);
+        const patientId = this.patientManagement.selectedPatientId();
+        this.populateMsLesionNodes(patientId);
+        this.msNeuroLesionGroup.visible = this.isMsActive() && this.showMsLesions();
+    }
+
+    public populateMsLesionNodes(patientId?: string) {
+        if (!this.msNeuroLesionGroup) return;
+
+        // Clear existing lesion nodes
+        while (this.msNeuroLesionGroup.children.length > 0) {
+            const child = this.msNeuroLesionGroup.children[0] as THREE.Object3D;
+            this.disposeHierarchy(child);
+            this.msNeuroLesionGroup.remove(child);
+        }
+
+        const id = patientId || this.patientManagement.selectedPatientId();
+        let lesions: { id: string; pos: [number, number, number]; color: number; label: string; size: number }[] = [];
+
+        if (id === 'p_mara_santos') {
+            lesions = [
+                { id: 'ms_optic_nerve', pos: [0.03, 1.76, 0.11], color: 0xa855f7, label: 'Left Optic Nerve Demyelinating Plaque (Optic Neuritis)', size: 0.022 },
+                { id: 'ms_periventricular_r', pos: [0.06, 1.82, 0.02], color: 0xec4899, label: 'Right Periventricular White Matter (PIRA Smoldering)', size: 0.028 },
+                { id: 'ms_periventricular_l', pos: [-0.06, 1.81, -0.02], color: 0xec4899, label: 'Left Periventricular White Matter Plaque', size: 0.025 },
+                { id: 'ms_juxtacortical', pos: [0.07, 1.85, 0.05], color: 0xc084fc, label: 'Juxtacortical Subcortical Plaque', size: 0.020 }
+            ];
+        } else if (id === 'p_poms_adolescent') {
+            lesions = [
+                { id: 'ms_brainstem', pos: [0.0, 1.73, -0.02], color: 0xef4444, label: 'Brainstem Infratentorial Relapse Plaque (Diplopia)', size: 0.032 },
+                { id: 'ms_cerebellum_l', pos: [-0.05, 1.71, -0.05], color: 0xf43f5e, label: 'Left Middle Cerebellar Peduncle Plaque', size: 0.026 },
+                { id: 'ms_corpus_callosum', pos: [0.0, 1.80, 0.04], color: 0xf87171, label: 'Anterior Callosal Radiating Demyelination', size: 0.024 }
+            ];
+        } else if (id === 'p_loms_elder') {
+            lesions = [
+                { id: 'ms_cervical_cord', pos: [0.0, 1.55, -0.05], color: 0xd97706, label: 'Cervical Cord Atrophy (C2-C5 Spastic Paraparesis Motor Tract)', size: 0.035 },
+                { id: 'ms_thoracic_cord', pos: [0.0, 1.38, -0.07], color: 0xb45309, label: 'Thoracic Spinal Cord Dorsal Column Plaque', size: 0.030 }
+            ];
+        } else {
+            // Default demyelinating plaque profile
+            lesions = [
+                { id: 'ms_periventricular', pos: [0.05, 1.82, 0.02], color: 0xa855f7, label: 'Periventricular Demyelinating Plaque', size: 0.025 },
+                { id: 'ms_optic_nerve', pos: [0.03, 1.76, 0.11], color: 0xc084fc, label: 'Optic Pathway Plaque', size: 0.020 }
+            ];
+        }
+
+        lesions.forEach(l => {
+            const group = new THREE.Group();
+            group.position.set(l.pos[0], l.pos[1], l.pos[2]);
+
+            // Inner emissive core
+            const coreGeo = new THREE.SphereGeometry(l.size, 16, 16);
+            const coreMat = new THREE.MeshStandardMaterial({
+                color: l.color,
+                emissive: l.color,
+                emissiveIntensity: 0.9,
+                roughness: 0.1
+            });
+            const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+            coreMesh.userData['isMsLesion'] = true;
+            coreMesh.userData['id'] = l.id;
+            coreMesh.userData['label'] = l.label;
+            group.add(coreMesh);
+
+            // Translucent outer halo ring
+            const haloGeo = new THREE.RingGeometry(l.size * 1.2, l.size * 1.8, 24);
+            const haloMat = new THREE.MeshBasicMaterial({
+                color: l.color,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.75
+            });
+            const haloMesh = new THREE.Mesh(haloGeo, haloMat);
+            haloMesh.userData['isMsLesion'] = true;
+            haloMesh.userData['id'] = l.id;
+            haloMesh.userData['label'] = l.label;
+            group.add(haloMesh);
+
+            this.msNeuroLesionGroup!.add(group);
+        });
+    }
+
+    private createUhthoffThermalOverlay() {
+        this.uhthoffThermalGroup = new THREE.Group();
+        this.uhthoffThermalGroup.name = 'uhthoffThermalOverlay';
+        this.mannequinGroup.add(this.uhthoffThermalGroup);
+
+        // Cylindrical conduction mantle around spinal neuraxis
+        const mantleGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.85, 24, 1, true);
+        this.uhthoffThermalMaterial = new THREE.MeshStandardMaterial({
+            color: 0x06b6d4,
+            emissive: 0x06b6d4,
+            emissiveIntensity: 0.45,
+            transparent: true,
+            opacity: 0.22,
+            side: THREE.DoubleSide,
+            wireframe: false
+        });
+        const mantleMesh = new THREE.Mesh(mantleGeo, this.uhthoffThermalMaterial);
+        mantleMesh.position.set(0, 1.48, -0.02);
+        mantleMesh.userData['isUhthoffField'] = true;
+        this.uhthoffThermalGroup.add(mantleMesh);
+
+        // Calvarial cranial thermal mantle
+        const cranialGeo = new THREE.SphereGeometry(0.16, 20, 20);
+        const cranialMesh = new THREE.Mesh(cranialGeo, this.uhthoffThermalMaterial);
+        cranialMesh.position.set(0, 1.80, 0);
+        cranialMesh.userData['isUhthoffField'] = true;
+        this.uhthoffThermalGroup.add(cranialMesh);
+
+        const reserve = this.riskSuite?.computeUhthoffThermalReserve(37.0, 72, 8) ?? 0.6;
+        this.updateUhthoffThermalColor(reserve);
+        this.uhthoffThermalGroup.visible = this.isMsActive() && this.showUhthoffThermal();
+    }
+
+    public updateUhthoffThermalColor(reserve: number = 0.6) {
+        if (!this.uhthoffThermalMaterial) return;
+        let colorHex = 0x06b6d4; // Cyan (> 0.5°C reserve: safe baseline)
+        if (reserve <= 0.3) {
+            colorHex = 0xef4444; // Red / Crimson (critically narrow reserve: imminent conduction block)
+        } else if (reserve <= 0.5) {
+            colorHex = 0xf59e0b; // Amber / Orange (moderate heat vulnerability)
+        }
+        this.uhthoffThermalMaterial.color.setHex(colorHex);
+        this.uhthoffThermalMaterial.emissive.setHex(colorHex);
     }
 
     private createArborealTreeModel() {
@@ -2979,6 +3188,20 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                             c.material.emissiveIntensity = neuralGlow;
                         }
                     });
+                }
+
+                // MS Neuro-Lesion Beacons & Uhthoff Thermal Conduction Oscillations
+                if (this.msNeuroLesionGroup && this.msNeuroLesionGroup.visible && !motionFreeze) {
+                    const pulse = 1.0 + Math.sin(time * 3.5) * 0.12;
+                    this.msNeuroLesionGroup.children.forEach(group => {
+                        group.scale.set(pulse, pulse, pulse);
+                    });
+                }
+                if (this.uhthoffThermalGroup && this.uhthoffThermalGroup.visible && !motionFreeze) {
+                    const thermalWave = 0.22 + Math.sin(time * 1.5) * 0.08;
+                    if (this.uhthoffThermalMaterial) {
+                        this.uhthoffThermalMaterial.opacity = thermalWave;
+                    }
                 }
                 
                 // 2. Gentle floating animation

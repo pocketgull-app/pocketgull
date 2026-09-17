@@ -11,6 +11,7 @@ import { BodyMeshFactoryService } from '../../services/body-mesh-factory.service
 import { RaycastSelectionService } from '../../services/raycast-selection.service';
 import { SeverityParticleService } from '../../services/severity-particle.service';
 import { SpatialLesionMarkupService } from '../../services/spatial-lesion-markup.service';
+import { ClinicalSpecialtyRiskSuiteService } from '../../services/clinical-specialty-risk-suite.service';
 
 // Mock Angular effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
 vi.mock('@angular/core', async (importOriginal) => {
@@ -31,6 +32,7 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     const actuarialService = { getOccupationalProfile: (occ: string) => ({ professionTitle: occ, socCode: occ === 'Polymath' ? '11-1021-POLY' : '27-2021-SWIM', snomedCode: '417893002', snomedDisplay: 'Cognitive Context Switching Overload' }) };
     const mockPatientState = {
       issues: signal({}),
+      conditions: signal(['Multiple Sclerosis']),
       occupation: signal(occupation),
       occupationalProfile: signal(actuarialService.getOccupationalProfile(occupation))
     };
@@ -39,7 +41,8 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
       providers: [
         { provide: PLATFORM_ID, useValue: 'browser' },
         { provide: PatientStateService, useValue: mockPatientState },
-        { provide: PatientManagementService, useValue: {} },
+        { provide: PatientManagementService, useValue: { selectedPatientId: signal('p_mara_santos') } },
+        { provide: ClinicalSpecialtyRiskSuiteService, useValue: { computeUhthoffThermalReserve: () => 0.45 } },
         { provide: ThemeService, useValue: { isDarkMode: signal(true) } },
         { provide: EnvironmentalTelemetryService, useValue: {} },
         { provide: BodyMeshFactoryService, useValue: {} },
@@ -164,5 +167,23 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     expect(viewer.lesionMarkup.activeSeverity()).toBe('moderate');
 
     viewer.updateLesionPins();
+  });
+
+  it('verifies 3D MS neuro-lesions and Uhthoff thermal overlay state', () => {
+    const viewer = createViewer();
+    expect(viewer.isMsActive()).toBe(true);
+    expect(viewer.showMsLesions()).toBe(true);
+    expect(viewer.showUhthoffThermal()).toBe(true);
+
+    viewer.showMsLesions.set(false);
+    expect(viewer.showMsLesions()).toBe(false);
+
+    viewer.showUhthoffThermal.set(false);
+    expect(viewer.showUhthoffThermal()).toBe(false);
+
+    // Thermal color updates according to reserve threshold
+    viewer.updateUhthoffThermalColor(0.25); // Critical reserve -> Crimson alert
+    viewer.updateUhthoffThermalColor(0.45); // Moderate reserve -> Amber
+    viewer.updateUhthoffThermalColor(0.70); // Optimal reserve -> Cyan
   });
 });

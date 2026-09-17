@@ -93,4 +93,48 @@ describe('WhoNihGoalSteeringHubComponent Suite', () => {
     expect(emitted?.engine).toBe('gse');
     expect(emitted?.query).toContain('GSE131900');
   });
+
+  it('5. Adopts NMSS Pathways to Cures goal into active patient care plan', () => {
+    component.activeFramework.set('NMSS_CURES');
+    fixture.detectChanges();
+
+    const nmssGoals = component.filteredGoals();
+    expect(nmssGoals.length).toBe(3);
+    const stopGoal = nmssGoals.find(g => g.targetCode === 'NMSS STOP-01');
+    expect(stopGoal).toBeDefined();
+
+    component.adoptGoalToCarePlan(stopGoal!);
+
+    expect(patientState.activeCarePlanNotes()).toContain('NMSS STOP-01');
+    expect(component.adoptedGoalId()).toBe(stopGoal!.id);
+  });
+
+  it('6. Triggers universal precision synthesis and updates active care plan', async () => {
+    patientState.loadedPatientId.set('p_mara_santos');
+    fixture.detectChanges();
+
+    await component.triggerUniversalSynthesis();
+    fixture.detectChanges();
+
+    const lastPlan = component.lastPlan();
+    expect(lastPlan).toBeDefined();
+    expect(lastPlan?.patientId).toBe('p_mara_santos');
+    expect(lastPlan?.patientName).toContain('Homo Sapiens');
+    expect(lastPlan?.act1WhereYouveBeen).toContain('RRMS');
+    expect(patientState.activeCarePlanNotes()).toContain('Homo Sapiens');
+  });
+
+  it('7. Renders 6-pillar synthesized plan cards in DOM after synthesis', async () => {
+    patientState.loadedPatientId.set('p_poms_adolescent');
+    fixture.detectChanges();
+
+    await component.triggerUniversalSynthesis();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Active Synthesized Plan');
+    expect(compiled.textContent).toContain('Act 1 (Baseline)');
+    expect(compiled.textContent).toContain('Act 2 (Grounded Today)');
+    expect(compiled.textContent).toContain('Act 3 (30/60/90-Day Roadmap)');
+  });
 });

@@ -25,6 +25,7 @@ export class NavigationShellService {
   readonly showCommercialHubModal = signal<boolean>(false);
   readonly showRoleDemoModal = signal<boolean>(false);
   readonly showIntimacyVitalityModal = signal<boolean>(false);
+  readonly showFederalUswdsPortal = signal<boolean>(false);
 
   /**
    * Switches active main tab.
@@ -75,6 +76,9 @@ export class NavigationShellService {
   public openIntimacyVitality(): void { this.showIntimacyVitalityModal.set(true); }
   public closeIntimacyVitality(): void { this.showIntimacyVitalityModal.set(false); }
 
+  public openFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(true); }
+  public closeFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(false); }
+
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
    */
@@ -95,5 +99,6 @@ export class NavigationShellService {
     this.showCommercialHubModal.set(false);
     this.showRoleDemoModal.set(false);
     this.showIntimacyVitalityModal.set(false);
+    this.showFederalUswdsPortal.set(false);
   }
 }

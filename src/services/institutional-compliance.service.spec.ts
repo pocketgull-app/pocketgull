@@ -12,13 +12,13 @@ describe('InstitutionalComplianceService Unit Suite', () => {
     service = runInInjectionContext(injector, () => injector.get(InstitutionalComplianceService));
   });
 
-  it('1. Initializes with 10 statutory compliance standards', () => {
+  it('1. Initializes with 12 statutory compliance standards', () => {
     expect(service).toBeTruthy();
-    expect(service.statutoryStandards().length).toBe(10);
+    expect(service.statutoryStandards().length).toBe(12);
     expect(service.complianceScore()).toBe(100);
   });
 
-  it('2. Enforces HIPAA, FDA, NIST, MSA, FTC, FVEY, and WCAG standards', () => {
+  it('2. Enforces HIPAA, FDA, NIST, MSA, FTC, FVEY, WCAG, USWDS, and Section 508 standards', () => {
     const ids = service.statutoryStandards().map(s => s.frameworkId);
     expect(ids).toContain('HIPAA-SAFE-HARBOR');
     expect(ids).toContain('HIPAA-SECURITY-RULE');
@@ -30,6 +30,8 @@ describe('InstitutionalComplianceService Unit Suite', () => {
     expect(ids).toContain('FVEY-SOVEREIGNTY');
     expect(ids).toContain('WCAG-AAA-OPTO');
     expect(ids).toContain('CYCLONEDX-SBOM');
+    expect(ids).toContain('USWDS-3-IDEA-ACT');
+    expect(ids).toContain('SECTION-508-REHAB');
   });
 
   it('3. Generates complete institutional compliance certificate with C2PA manifest', () => {

@@ -109,4 +109,93 @@ describe('ClinicalBiologicalAgeTwinService Unit Suite', () => {
     expect(projection.trajectoryMilestones.length).toBe(3);
     expect(projection.trajectoryMilestones[2].day).toBe(90);
   });
+
+  it('6. Synchronizes active biomarker panel from PatientStateService', () => {
+    const mockPatientState = {
+      patientAge: () => 52,
+      vitals: () => ({
+        cgmGlucoseMgDl: '118',
+        bp: '134/82',
+        hr: '76',
+        crp: '2.8',
+        cmpLabs: {
+          albumin: '4.1',
+          creatinine: '1.15',
+          alp: '78'
+        }
+      }),
+      functionalMedicineTelemetry: () => ({
+        hsCrpEstimate: '2.8 mg/L'
+      })
+    };
+
+    service.syncFromPatientState(mockPatientState);
+
+    const b = service.activeBiomarkers();
+    expect(b.chronologicalAge).toBe(52);
+    expect(b.glucose).toBe(118);
+    expect(b.systolicBp).toBe(134);
+    expect(b.restingHr).toBe(76);
+    expect(b.hsCrp).toBe(2.8);
+    expect(b.albumin).toBe(4.1);
+    expect(b.creatinine).toBe(1.15);
+    expect(b.alp).toBe(78);
+  });
+
+  it('7. Pushes simulated biomarkers back into PatientStateService', () => {
+    let updatedCmp: any = null;
+    let updatedVitals: any = null;
+
+    const mockPatientState = {
+      updateCmpLabs: (cmp: any) => { updatedCmp = cmp; },
+      vitals: {
+        update: (fn: (v: any) => any) => { updatedVitals = fn({ bp: '120/80', hr: '70' }); }
+      }
+    };
+
+    service.updateBiomarker('glucose', 88);
+    service.updateBiomarker('hsCrp', 0.7);
+    service.updateBiomarker('albumin', 4.7);
+    service.pushBiomarkersToPatientState(mockPatientState);
+
+    expect(updatedCmp).toBeDefined();
+    expect(updatedCmp.glucose).toBe('88');
+    expect(updatedCmp.hsCrp).toBe('0.7');
+    expect(updatedCmp.albumin).toBe('4.7');
+    expect(updatedVitals.cgmGlucoseMgDl).toBe('88');
+    expect(updatedVitals.crp).toBe('0.7');
+  });
+
+  it('8. Predicts ML biological age acceleration risk with offline fallback', async () => {
+    const mockBundle = {
+      entry: [{
+        resource: {
+          resourceType: 'Observation',
+          valueQuantity: { value: 0.91 },
+          interpretation: [{ coding: [{ code: 'high' }] }],
+          note: [{ text: 'High Biological Age Acceleration Risk' }]
+        }
+      }]
+    };
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => mockBundle
+    } as any);
+
+    const mlResult = await service.predictMlBiologicalAgeAcceleration();
+    expect(mlResult.isMlModel).toBe(true);
+    expect(mlResult.score).toBe(0.91);
+    expect(mlResult.riskLevel).toBe('high');
+
+    // Offline fallback
+    globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+    const fallbackResult = await service.predictMlBiologicalAgeAcceleration();
+    expect(fallbackResult.isMlModel).toBe(false);
+    expect(fallbackResult.score).toBeGreaterThanOrEqual(0.0);
+    expect(fallbackResult.score).toBeLessThanOrEqual(1.0);
+
+    globalThis.fetch = originalFetch;
+  });
 });
+

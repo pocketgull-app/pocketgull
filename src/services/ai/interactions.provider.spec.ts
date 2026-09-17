@@ -70,4 +70,9 @@ describe('InteractionsProvider', () => {
         provider.purgeAllSessions();
         expect(provider.lastError()).toBeNull();
     });
+
+    it('7. should allow switching active model to gemini-3.8-flash', () => {
+        provider.setActiveModel('gemini-3.8-flash');
+        expect(provider.activeModel()).toBe('gemini-3.8-flash');
+    });
 });

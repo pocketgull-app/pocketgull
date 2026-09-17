@@ -450,7 +450,7 @@ Strictly map any extracted clinical issues or symptoms to one of the following e
 Return all results structured into the response schema.`;
 
     const response = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
+      model: 'googleai/gemini-3.8-flash',
       messages: [
         {
           role: 'user',
@@ -530,7 +530,7 @@ ${anatomicalSite ? 'Anatomical Site: ' + anatomicalSite : ''}
 ${patientSymptoms ? 'Reported Symptoms: ' + patientSymptoms : ''}`;
 
     const response = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
+      model: 'googleai/gemini-3.8-flash',
       messages: [
         {
           role: 'user',

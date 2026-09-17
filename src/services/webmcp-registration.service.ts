@@ -40,6 +40,7 @@ import { ScaffoldExporterService } from './scaffold-exporter.service';
 import { OpticalInnovationsService } from './optical-innovations.service';
 import { PatientTrajectoryService } from './patient-trajectory.service';
 import { DataScienceCitationService } from './data-science-citation.service';
+import { ClinicalKneeRecoveryLoopService, PresetKneeScenario } from './clinical-knee-recovery-loop.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -86,8 +87,8 @@ export class WebMcpRegistrationService {
   private opticalInnovationsService = inject(OpticalInnovationsService, { optional: true });
   private patientTrajectoryService = inject(PatientTrajectoryService, { optional: true });
   private citationService = inject(DataScienceCitationService, { optional: true });
+  private kneeLoopService = inject(ClinicalKneeRecoveryLoopService, { optional: true });
   private ngZone = inject(NgZone);
-
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
 
@@ -97,6 +98,7 @@ export class WebMcpRegistrationService {
   public registerTools(callbacks: {
     onNavigateToBodyPart?: (partId: string) => void;
     onAddBookmark?: (bookmark: any) => void;
+    onSetKneeSlicingPlane?: (plane: 'Sagittal' | 'Coronal' | 'Axial', targetKey?: string, flexionAngleDegrees?: number) => void;
   }): void {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
@@ -2415,6 +2417,159 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(citeTool, { signal: citeCtrl.signal });
     this.mcpControllers.push({ name: citeTool.name, controller: citeCtrl });
+
+    // 47. inspect_knee_mri_findings
+    const kneeCtrl = new AbortController();
+    const kneeTool = {
+      name: 'inspect_knee_mri_findings',
+      description: 'Retrieves the 12-target RSNA knee MRI abnormality profile, KOOS functional subscores (Pain, Symptoms, ADL, Sport/Rec, QoL), kinetic chain vulnerabilities (AMI, valgus collapse), and 4-phase rehabilitation roadmap.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string', description: 'Patient identifier to evaluate (e.g., "P001").' },
+          scenario: {
+            type: 'string',
+            enum: ['acute_acl_effusion', 'isolated_meniscus', 'patellofemoral_oa', 'post_op_acl', 'healthy_baseline'],
+            description: 'Optional clinical scenario preset to simulate or analyze.'
+          }
+        }
+      },
+      execute: async (params?: any) => {
+        try {
+          const service = this.kneeLoopService;
+          if (!service) {
+            return {
+              content: [{
+                type: 'text',
+                text: JSON.stringify({
+                  status: 'simulated_fallback',
+                  mriTargets: {
+                    acl: 0.934,
+                    medial_meniscus: 0.965,
+                    pf_oa: 0.962,
+                    effusion: 0.890,
+                    contusion: 0.945
+                  },
+                  koosSubscales: { pain: 42, symptoms: 48, adl: 54, sportRec: 20, qol: 30, compositeKoos: 38.8 },
+                  activeRehabPhase: { phaseNumber: 1, title: 'Acute Calming & Effusion Reduction' },
+                  recoveryVelocity: {
+                    ratio: 1.15,
+                    status: 'accelerated',
+                    message: 'Optimal tissue remodeling velocity observed.',
+                    projectedFullRecoveryDay: 68
+                  },
+                  qAngle: 12.2,
+                  biomechanicalAlignment: 'Genu Varum'
+                }, null, 2)
+              }]
+            };
+          }
+
+          if (params?.scenario) {
+            service.setScenario(params.scenario as PresetKneeScenario);
+          }
+
+          const pid = params?.patientId || this.state.getCurrentState()?.id || 'P001';
+          const mriTargets = service.mriTargets();
+          const koos = service.koosScores();
+          const report = service.recoveryReport();
+          const fhirBundle = service.generateFhirCarePlanBundle(pid);
+
+          const response = {
+            patientId: pid,
+            mriTargets,
+            koosSubscales: koos,
+            activeRehabPhase: report.activePhase,
+            recoveryVelocity: {
+              ratio: report.velocityRatio,
+              status: report.velocityStatus,
+              message: report.statusMessage,
+              projectedFullRecoveryDay: report.projectedFullRecoveryDay
+            },
+            kineticVulnerabilities: report.kineticVulnerabilities,
+            fhirCarePlanBundleId: fhirBundle.id
+          };
+
+          return {
+            content: [{ type: 'text', text: JSON.stringify(response, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to inspect knee MRI findings: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(kneeTool, { signal: kneeCtrl.signal });
+    this.mcpControllers.push({ name: kneeTool.name, controller: kneeCtrl });
+
+    // 48. set_knee_3d_slicing_plane
+    const sliceCtrl = new AbortController();
+    const sliceTool = {
+      name: 'set_knee_3d_slicing_plane',
+      description: 'Controls the 3D holographic knee joint slicer, orienting the tri-planar viewport to Sagittal, Coronal, or Axial slices and focusing on a specific abnormality target.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          plane: {
+            type: 'string',
+            enum: ['Sagittal', 'Coronal', 'Axial'],
+            description: 'Imaging slice plane to view ("Sagittal", "Coronal", or "Axial").'
+          },
+          targetKey: {
+            type: 'string',
+            description: 'Target anatomical lesion to focus (e.g., "acl", "mcl", "medial_meniscus", "lateral_meniscus", "medial_oa", "pf_oa", "effusion", "bakers_cyst").'
+          },
+          flexionAngleDegrees: {
+            type: 'number',
+            description: 'Biomechanical joint flexion angle in degrees (0 to 90).'
+          }
+        },
+        required: ['plane']
+      },
+      execute: async (params: any) => {
+        try {
+          const plane = params?.plane;
+          if (!['Sagittal', 'Coronal', 'Axial'].includes(plane)) {
+            throw new Error(`Invalid plane: ${plane}. Must be Sagittal, Coronal, or Axial.`);
+          }
+          const targetKey = params?.targetKey;
+          const flexion = typeof params?.flexionAngleDegrees === 'number' ? params.flexionAngleDegrees : undefined;
+
+          if (callbacks.onSetKneeSlicingPlane) {
+            this.ngZone.run(() => {
+              callbacks.onSetKneeSlicingPlane!(plane, targetKey, flexion);
+            });
+          }
+
+          // Also focus part in state
+          this.ngZone.run(() => {
+            this.state.selectPart('leg_left');
+          });
+
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                status: 'success',
+                plane,
+                targetKey: targetKey || 'general',
+                flexionAngleDegrees: flexion ?? 15,
+                message: `3D Slicer successfully oriented to ${plane} plane focusing on ${targetKey || 'knee joint'}.`
+              }, null, 2)
+            }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to set knee slicing plane: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(sliceTool, { signal: sliceCtrl.signal });
+    this.mcpControllers.push({ name: sliceTool.name, controller: sliceCtrl });
   }
 
 

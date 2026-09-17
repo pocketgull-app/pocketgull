@@ -8,6 +8,14 @@ const __dirname = dirname(__filename);
 
 export default defineConfig({
     root: __dirname,
+    resolve: {
+        alias: {
+            'react/jsx-dev-runtime': path.resolve(__dirname, 'packages/uswds-react-cds/tests/react-shim.ts'),
+            'react/jsx-runtime': path.resolve(__dirname, 'packages/uswds-react-cds/tests/react-shim.ts'),
+            'react-dom/server': path.resolve(__dirname, 'packages/uswds-react-cds/tests/react-shim.ts'),
+            'react': path.resolve(__dirname, 'packages/uswds-react-cds/tests/react-shim.ts'),
+        }
+    },
     test: {
         globals: true,
         environment: 'node',
@@ -17,7 +25,8 @@ export default defineConfig({
         ],
         include: [
             './src/**/*.spec.ts',
-            './tests/**/*.spec.ts'
+            './tests/**/*.spec.ts',
+            './packages/**/*.spec.ts'
         ],
         exclude: [
             '**/node_modules/**',

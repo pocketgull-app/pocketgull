@@ -57,6 +57,7 @@ import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
 import { rsnaKneeRouter } from './server/routes/rsna-knee.routes';
+import { cdsHooksRouter } from './server/routes/cds-hooks.routes';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -75,6 +76,8 @@ const studyDocsRoot = resolve(browserDistFolder, 'docs', 'study');
 // No custom rate limiter — use express-rate-limit (recognised by CodeQL)
 
 const ALLOWED_GEMINI_MODELS = new Set([
+  'gemini-3.8-flash',
+  'gemini-3.8-pro',
   'gemini-3.7-flash',
   'gemini-3.6-flash',
   'gemini-3.5-flash',
@@ -482,6 +485,7 @@ app.use('/api/support', supportRouter);
 app.use('/api/v1/agent-builder', manifestRateLimiter, vertexAgentRouter);
 app.use('/api/agent-builder', manifestRateLimiter, vertexAgentRouter);
 app.use('/api/ml/rsna-knee', manifestRateLimiter, rsnaKneeRouter);
+app.use('/cds-services', cdsHooksRouter);
 
 app.all('/api/python/*splat', manifestRateLimiter, (req, res) => {
   res.status(200).json({
@@ -955,6 +959,15 @@ app.use((req, res, next) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     return res.send(renderBusinessSiteHtml());
+  }
+
+  if (process.env['SKIP_SSR'] === 'true' || req.query['csr'] === '1') {
+    const indexPath = join(browserDistFolder, 'index.html');
+    if (fs.existsSync(indexPath) && ((req.headers.accept || '').includes('text/html') || !extname(req.path))) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+      return res.status(200).sendFile(indexPath);
+    }
   }
 
   const engine = getAngularApp();
