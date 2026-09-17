@@ -3988,11 +3988,17 @@
           key.addEventListener('click', () => {
             boxGlyphKeys.forEach(k => k.classList.remove('active'));
             key.classList.add('active');
-            const g = key.getAttribute('data-glyph');
-            const cp = key.getAttribute('data-cp');
-            const name = key.getAttribute('data-name');
-            const role = key.getAttribute('data-role');
-            boxGlyphInspectorInfo.innerHTML = `<strong style="color: var(--cyan);">[${g}] ${cp} ${name}</strong><br>Pitch: 600 UPM fixed &bull; Role: ${role} &bull; Alignment: 100% gapless continuous bounding box`;
+            const g = key.getAttribute('data-glyph') || '';
+            const cp = key.getAttribute('data-cp') || '';
+            const name = key.getAttribute('data-name') || '';
+            const role = key.getAttribute('data-role') || '';
+            boxGlyphInspectorInfo.replaceChildren();
+            const strongEl = document.createElement('strong');
+            strongEl.style.color = 'var(--cyan)';
+            strongEl.textContent = `[${g}] ${cp} ${name}`;
+            boxGlyphInspectorInfo.appendChild(strongEl);
+            boxGlyphInspectorInfo.appendChild(document.createElement('br'));
+            boxGlyphInspectorInfo.appendChild(document.createTextNode(`Pitch: 600 UPM fixed \u2022 Role: ${role} \u2022 Alignment: 100% gapless continuous bounding box`));
           });
         });
       }

@@ -1615,7 +1615,38 @@ export function renderBusinessSiteHtml(): string {
       newCard.style.flexDirection = 'column';
       newCard.style.justifyContent = 'space-between';
       newCard.style.borderColor = 'rgba(20, 184, 166, 0.4)';
-      newCard.innerHTML = '<div><div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;"><span style="font-size: 1.5rem;">✨</span><div><h4 style="font-size: 0.9375rem; color: #fff; font-weight: 700;">' + author + '</h4><p style="font-size: 0.75rem; color: #a1a1aa;">' + role + '</p></div></div><blockquote style="font-size: 0.8125rem; color: #d4d4d8; font-style: italic; line-height: 1.6; border-left: 2px solid #2dd4bf; padding-left: 0.75rem;">"' + quote + '"</blockquote></div><div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #27272a; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #2dd4bf; font-weight: bold;">⚡ Community Submission Verified</div>';
+
+      const topSection = document.createElement('div');
+      const headerRow = document.createElement('div');
+      headerRow.style.cssText = 'display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;';
+      const starSpan = document.createElement('span');
+      starSpan.style.fontSize = '1.5rem';
+      starSpan.textContent = '✨';
+      const authorWrap = document.createElement('div');
+      const authorHeading = document.createElement('h4');
+      authorHeading.style.cssText = 'font-size: 0.9375rem; color: #fff; font-weight: 700;';
+      authorHeading.textContent = author;
+      const roleP = document.createElement('p');
+      roleP.style.cssText = 'font-size: 0.75rem; color: #a1a1aa;';
+      roleP.textContent = role;
+      authorWrap.appendChild(authorHeading);
+      authorWrap.appendChild(roleP);
+      headerRow.appendChild(starSpan);
+      headerRow.appendChild(authorWrap);
+
+      const blockquote = document.createElement('blockquote');
+      blockquote.style.cssText = 'font-size: 0.8125rem; color: #d4d4d8; font-style: italic; line-height: 1.6; border-left: 2px solid #2dd4bf; padding-left: 0.75rem;';
+      blockquote.textContent = '"' + quote + '"';
+
+      topSection.appendChild(headerRow);
+      topSection.appendChild(blockquote);
+
+      const footerDiv = document.createElement('div');
+      footerDiv.style.cssText = 'margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #27272a; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #2dd4bf; font-weight: bold;';
+      footerDiv.textContent = '⚡ Community Submission Verified';
+
+      newCard.appendChild(topSection);
+      newCard.appendChild(footerDiv);
 
       container.prepend(newCard);
 
@@ -1724,11 +1755,38 @@ export function renderBusinessSiteHtml(): string {
       const body = document.getElementById('docDrillBody');
       const qCard = document.createElement('div');
       qCard.style.cssText = 'background: #1e1e24; border: 1px solid var(--teal); border-radius: 0.75rem; padding: 1rem;';
-      qCard.innerHTML = '<div style="font-size: 0.7rem; color: var(--teal-light); font-family: ui-monospace, monospace; font-weight: bold;">💬 CLINICIAN QUERY</div>' +
-        '<div style="font-size: 0.85rem; color: #fff; margin: 0.25rem 0 0.75rem;">"' + q + '"</div>' +
-        '<div style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;">' +
-          '<strong style="color: var(--teal-light);">Doc Drill Socratic Analysis:</strong> Regarding <em>' + q + '</em> in relation to <strong>' + currentDrillTerm + '</strong>: PocketGull models the full multi-organ and vector ecology continuum. Always rule out intraerythrocytic Babesia co-infections when evaluating post-tick fatigue with thrombocytopenia or hemolytic signs, and check the 72-hour prophylactic window before administering single-dose doxycycline.' +
-        '</div>';
+
+      const tagDiv = document.createElement('div');
+      tagDiv.style.cssText = 'font-size: 0.7rem; color: var(--teal-light); font-family: ui-monospace, monospace; font-weight: bold;';
+      tagDiv.textContent = '💬 CLINICIAN QUERY';
+
+      const queryDiv = document.createElement('div');
+      queryDiv.style.cssText = 'font-size: 0.85rem; color: #fff; margin: 0.25rem 0 0.75rem;';
+      queryDiv.textContent = '"' + q + '"';
+
+      const analysisDiv = document.createElement('div');
+      analysisDiv.style.cssText = 'font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;';
+
+      const strongPrefix = document.createElement('strong');
+      strongPrefix.style.color = 'var(--teal-light)';
+      strongPrefix.textContent = 'Doc Drill Socratic Analysis: ';
+
+      const emQ = document.createElement('em');
+      emQ.textContent = q;
+
+      const strongTerm = document.createElement('strong');
+      strongTerm.textContent = currentDrillTerm;
+
+      analysisDiv.appendChild(strongPrefix);
+      analysisDiv.appendChild(document.createTextNode('Regarding '));
+      analysisDiv.appendChild(emQ);
+      analysisDiv.appendChild(document.createTextNode(' in relation to '));
+      analysisDiv.appendChild(strongTerm);
+      analysisDiv.appendChild(document.createTextNode(': PocketGull models the full multi-organ and vector ecology continuum. Always rule out intraerythrocytic Babesia co-infections when evaluating post-tick fatigue with thrombocytopenia or hemolytic signs, and check the 72-hour prophylactic window before administering single-dose doxycycline.'));
+
+      qCard.appendChild(tagDiv);
+      qCard.appendChild(queryDiv);
+      qCard.appendChild(analysisDiv);
       body.appendChild(qCard);
       input.value = '';
       body.scrollTop = body.scrollHeight;
