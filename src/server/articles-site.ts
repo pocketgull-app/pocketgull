@@ -7,26 +7,75 @@ import { FALLBACK_SEED_ARTICLES, IWordPressPost } from '../services/wordpress-ar
 
 function escapeHtml(str: string): string {
   return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function sanitizeSlug(raw?: string): string {
+  if (!raw) return '';
+  const trimmed = raw.trim();
+  let start = 0;
+  let end = trimmed.length;
+  while (start < end && trimmed.charCodeAt(start) === 47 /* '/' */) {
+    start++;
+  }
+  while (end > start && trimmed.charCodeAt(end - 1) === 47 /* '/' */) {
+    end--;
+  }
+  return trimmed.substring(start, end);
 }
 
 function applyBionicText(html: string): string {
-  return html.replace(/(<p[^>]*>)(.*?)(<\/p>)/gi, (_match, open, inner, close) => {
-    const transformed = inner.split(/(\s+)/).map((word: string) => {
-      if (!word.trim() || word.startsWith('<') || word.startsWith('&')) return word;
+  if (!html) return '';
+  const pOpen = '<p';
+  const pClose = '</p>';
+  let result = '';
+  let cursor = 0;
+  const lowerHtml = html.toLowerCase();
+
+  while (cursor < html.length) {
+    const startIdx = lowerHtml.indexOf(pOpen, cursor);
+    if (startIdx === -1) {
+      result += html.slice(cursor);
+      break;
+    }
+    result += html.slice(cursor, startIdx);
+
+    const tagEnd = html.indexOf('>', startIdx);
+    if (tagEnd === -1) {
+      result += html.slice(startIdx);
+      break;
+    }
+    const openTag = html.slice(startIdx, tagEnd + 1);
+
+    const closeIdx = lowerHtml.indexOf(pClose, tagEnd + 1);
+    if (closeIdx === -1) {
+      result += html.slice(startIdx);
+      break;
+    }
+
+    const inner = html.slice(tagEnd + 1, closeIdx);
+    const closeTag = html.slice(closeIdx, closeIdx + pClose.length);
+
+    const words = inner.split(' ');
+    const transformed = words.map((word: string) => {
+      if (!word || word.startsWith('<') || word.startsWith('&')) return word;
       const mid = Math.ceil(word.length / 2);
       return `<b>${word.slice(0, mid)}</b>${word.slice(mid)}`;
-    }).join('');
-    return `${open}${transformed}${close}`;
-  });
+    }).join(' ');
+
+    result += `${openTag}${transformed}${closeTag}`;
+    cursor = closeIdx + pClose.length;
+  }
+
+  return result;
 }
 
 export function renderArticlesHtml(requestedSlug?: string): string {
-  const cleanSlug = (requestedSlug || '').trim().replace(/^\/+|\/+$/g, '');
+  const cleanSlug = sanitizeSlug(requestedSlug);
   const isSingle = Boolean(cleanSlug && cleanSlug !== 'all');
   const post: IWordPressPost | undefined = isSingle
     ? FALLBACK_SEED_ARTICLES.find(p => p.slug === cleanSlug || String(p.id) === cleanSlug)
