@@ -27,9 +27,9 @@ export class SessionStateService {
   private patientMgmt = inject(PatientManagementService, { optional: true });
 
   /**
-   * Represents the inactivity timer in seconds (disabled by default for smooth workflow).
+   * Represents the inactivity timer in seconds (10 minutes per HIPAA § 164.312(a)(2)(iii) workstation security).
    */
-  private readonly TIMEOUT_SECONDS = 30 * 60; // 30 minutes
+  private readonly TIMEOUT_SECONDS = 10 * 60; // 10 minutes
   private timeoutId: any;
 
   constructor() {

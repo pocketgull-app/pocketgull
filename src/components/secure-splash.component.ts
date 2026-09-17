@@ -276,24 +276,26 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
                       </div>
                     }
                    
-                   <canvas
-                     #gestureCanvas
-                     width="240"
-                     height="240"
-                     class="absolute inset-0 bg-transparent rounded-3xl cursor-crosshair touch-none transition-colors"
-                     [class.border-red-500]="gestureError()"
-                     [class.border-emerald-500]="isChecking()"
-                     (pointerdown)="startDrawing($event)"
-                     (pointermove)="draw($event)"
-                     (pointerup)="stopDrawing($event)"
-                     (pointerleave)="stopDrawing($event)"
-                     (mousedown)="startDrawing($event)"
-                     (mousemove)="draw($event)"
-                     (mouseup)="stopDrawing($event)"
-                     (mouseleave)="stopDrawing($event)"
-                     (touchstart)="startDrawing($event)"
-                     (touchmove)="draw($event)"
-                     (touchend)="stopDrawing($event)"></canvas>
+                    <canvas
+                      #gestureCanvas
+                      width="240"
+                      height="240"
+                      class="absolute inset-0 bg-transparent rounded-3xl cursor-crosshair touch-none transition-colors"
+                      [class.border-red-500]="gestureError()"
+                      [class.border-emerald-500]="isChecking()"
+                      [class.pointer-events-none]="isLockedOut()"
+                      [class.opacity-30]="isLockedOut()"
+                      (pointerdown)="startDrawing($event)"
+                      (pointermove)="draw($event)"
+                      (pointerup)="stopDrawing($event)"
+                      (pointerleave)="stopDrawing($event)"
+                      (mousedown)="startDrawing($event)"
+                      (mousemove)="draw($event)"
+                      (mouseup)="stopDrawing($event)"
+                      (mouseleave)="stopDrawing($event)"
+                      (touchstart)="startDrawing($event)"
+                      (touchmove)="draw($event)"
+                      (touchend)="stopDrawing($event)"></canvas>
                   </div>
 
                   <!-- Wacom Digital Ink (WILL 3.0) & Pressure-Tilt Dynamic Telemetry Badge -->
@@ -307,23 +309,37 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
                     <span class="px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[8px] font-bold">WILL 3.0</span>
                   </div>
 
-                  <!-- Gesture Pad Controls & Express Entry -->
+                  <!-- Gesture Pad Controls & Persona Partitioning (Demo Mode vs Clinical Signature) -->
                   <div class="flex items-center justify-center gap-2.5 mt-1 w-full max-w-[260px] z-30">
                     <button 
                       type="button"
                       (click)="clearDrawing()" 
-                      [disabled]="isChecking() || (strokes.length === 0 && currentStroke.length === 0)"
+                      [disabled]="isChecking() || isLockedOut() || (strokes.length === 0 && currentStroke.length === 0)"
                       class="flex-1 min-h-[42px] px-3 py-2 text-[11px] uppercase font-bold tracking-widest bg-white/80 dark:bg-zinc-800/90 hover:bg-white dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 transition rounded-xl disabled:opacity-30 disabled:cursor-not-allowed shadow-xs flex items-center justify-center cursor-pointer">
                       Clear Pad
                     </button>
                     <button 
                       type="button"
-                      (click)="handleUnlockSession()" 
-                      class="flex-1 min-h-[42px] px-4 py-2 flex justify-center items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-[#3ebc9e] to-[#2fa085] hover:brightness-110 text-white transition-all rounded-xl shadow-md active:scale-[0.98] cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                      <span>Enter Suite</span>
+                      (click)="enterDemoSandbox()" 
+                      [disabled]="isLockedOut()"
+                      class="flex-1 min-h-[42px] px-3 py-2 flex justify-center items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 transition-all rounded-xl shadow-xs active:scale-[0.98] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Enter Synthetic Demo Sandbox without Clinical Credentials">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+                      <span>Demo Mode</span>
                     </button>
                   </div>
+
+                  <!-- NIST SP 800-63B Progressive Lockout & Biometric Feedback Banner -->
+                  @if (isLockedOut()) {
+                    <div class="w-full max-w-[260px] mt-2 p-2 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-600 dark:text-rose-400 text-[10.5px] font-bold flex items-center justify-center gap-1.5 text-center animate-pulse">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                      <span>Locked: NIST SP 800-63B backoff ({{ lockoutSecondsRemaining() }}s)</span>
+                    </div>
+                  } @else if (errorMsg()) {
+                    <div class="w-full max-w-[260px] mt-2 p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-[10px] font-medium text-center">
+                      {{ errorMsg() }}
+                    </div>
+                  }
                } @else {
                  <!-- Dedicated Enterprise Single Sign-On (SSO) Tab Panel -->
                  <div class="w-full max-w-xs p-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-md flex flex-col gap-3 text-left">
@@ -434,11 +450,16 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
                  </div>
                }
 
-               <!-- Washi Rice Paper Daily Medical Quote Banner -->
-               <div class="mt-1 px-4 py-2.5 paper-rice-panel rounded-xl text-center max-w-xs transition-all hover:scale-[1.02] shadow-xs">
-                 <p class="text-[11.5px] italic text-zinc-800 dark:text-zinc-200 font-serif leading-snug">{{ todayQuote().text }}</p>
-                 <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-700 dark:text-indigo-300 mt-1">{{ todayQuote().author }}</p>
-               </div>
+                <!-- Washi Rice Paper Daily Medical Quote Banner -->
+                <div class="mt-1 px-4 py-2.5 paper-rice-panel rounded-xl text-center max-w-xs transition-all hover:scale-[1.02] shadow-xs">
+                  <p class="text-[11.5px] italic text-zinc-800 dark:text-zinc-200 font-serif leading-snug">{{ todayQuote().text }}</p>
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-700 dark:text-indigo-300 mt-1">{{ todayQuote().author }}</p>
+                </div>
+
+                <!-- Mandatory Statutory Healthcare Demarcation Banner (18 U.S.C. § 1030 & HIPAA § 164.312) -->
+                <div class="mt-2 px-3 py-1.5 rounded-lg bg-zinc-900/60 dark:bg-black/40 border border-zinc-700/40 text-[9px] text-zinc-400 dark:text-zinc-400 text-center max-w-xs font-mono">
+                  <span>⚖️ Authorized medical personnel only. All access attempts &amp; CDS transactions are cryptographically recorded pursuant to HIPAA § 164.312 &amp; 18 U.S.C. § 1030.</span>
+                </div>
                
                <!-- Hidden input for Playwright E2E tests compatibility -->
                <input 
@@ -1446,6 +1467,46 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
               Per Mandiant Anti-Whaling &amp; CDS Governance, all STAT activations generate an immutable SHA-256 forensic audit entry.
             </p>
 
+            <div class="flex flex-col gap-3 mb-4 text-left">
+              <div>
+                <label for="stat-indication-select" class="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mb-1">
+                  Emergency Clinical Indication (HIPAA § 164.512):
+                </label>
+                <select 
+                  id="stat-indication-select"
+                  [ngModel]="emergencyIndication()"
+                  (ngModelChange)="emergencyIndication.set($event)"
+                  class="w-full text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2 text-zinc-800 dark:text-zinc-200">
+                  <option value="STAT_CODE_BLUE">🚨 Cardiopulmonary Arrest / CPR Resuscitation</option>
+                  <option value="UNCONSCIOUS_TRAUMA">🚑 Unconscious Trauma / Unknown Patient Identity</option>
+                  <option value="CRITICAL_SEPSIS">🩸 Severe Sepsis / Acute Hemodynamic Shock</option>
+                  <option value="DISASTER_TRIAGE">⚠️ Mass Casualty / Code Black Disaster Triage</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="stat-clinician-id" class="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mb-1">
+                  Attending Clinician NPI / Hospital Badge ID:
+                </label>
+                <input 
+                  id="stat-clinician-id"
+                  type="text"
+                  placeholder="e.g. NPI-1982736450 or BADGE-MED-442"
+                  [ngModel]="emergencyClinicianId()"
+                  (ngModelChange)="emergencyClinicianId.set($event)"
+                  class="w-full text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2 text-zinc-800 dark:text-zinc-200 font-mono">
+              </div>
+
+              <label class="flex items-start gap-2 text-[10.5px] text-zinc-600 dark:text-zinc-400 cursor-pointer pt-1">
+                <input 
+                  type="checkbox"
+                  [checked]="emergencyAttestationAccepted()"
+                  (change)="emergencyAttestationAccepted.set(!emergencyAttestationAccepted())"
+                  class="mt-0.5 rounded border-zinc-400 text-rose-600 focus:ring-rose-500">
+                <span>I legally attest under 45 CFR § 164.512 and penalty of perjury that this emergency clinical override is medically necessary to prevent imminent severe harm or death.</span>
+              </label>
+            </div>
+
             <div class="flex items-center gap-2.5">
               <button type="button"
                       (click)="showEmergencyConfirmModal.set(false)"
@@ -1453,8 +1514,9 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
                 Cancel
               </button>
               <button type="button"
-                      (click)="showEmergencyConfirmModal.set(false); handleEmergencyBypass()"
-                      class="flex-1 py-3 px-4 min-h-[48px] bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold uppercase tracking-wider shadow-lg transition cursor-pointer active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none">
+                      (click)="confirmStatEmergencyOverride()"
+                      [disabled]="!emergencyAttestationAccepted() || emergencyClinicianId().trim().length < 4"
+                      class="flex-1 py-3 px-4 min-h-[48px] bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold uppercase tracking-wider shadow-lg transition cursor-pointer active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none">
                 Confirm STAT Override
               </button>
             </div>
@@ -1958,6 +2020,90 @@ export class SecureSplashComponent implements OnInit {
     this.unlockSession.emit();
   }
 
+  /**
+   * Enter synthetic, de-identified demo sandbox (HIPAA § 164.514 Safe Harbor archetype)
+   * without granting privileged live clinical EHR / CDS access.
+   */
+  enterDemoSandbox(): void {
+    if (this.isLockedOut()) return;
+    this.playSuccessChime();
+    this.stopAmbientSoundscape();
+    this.session.isLocked.set(false);
+    this.session.isOnboardingComplete.set(true);
+    this.session.resetIdleTimer();
+    if (typeof sessionStorage !== 'undefined') {
+      try {
+        sessionStorage.setItem('pg_session_onboarded', '1');
+      } catch (e) { /* ignore */ }
+    }
+    this.loadDemo.emit();
+  }
+
+  // NIST SP 800-63B Rate Limiting & Progressive Account Lockout State
+  readonly failedAttempts = signal<number>(0);
+  readonly isLockedOut = signal<boolean>(false);
+  readonly lockoutSecondsRemaining = signal<number>(0);
+  private lockoutIntervalId: any = null;
+
+  // HIPAA § 164.512 Break-Glass Emergency Clinical Overrides
+  readonly emergencyClinicianId = signal<string>('');
+  readonly emergencyIndication = signal<string>('STAT_CODE_BLUE');
+  readonly emergencyAttestationAccepted = signal<boolean>(false);
+
+  registerFailedAttempt(reason: string): void {
+    const nextAttempts = this.failedAttempts() + 1;
+    this.failedAttempts.set(nextAttempts);
+
+    if (nextAttempts >= 3) {
+      this.triggerLockout(30);
+    } else {
+      const remaining = 3 - nextAttempts;
+      this.errorMsg.set(`${reason} (${remaining} attempt${remaining === 1 ? '' : 's'} remaining before lockout)`);
+    }
+  }
+
+  triggerLockout(seconds: number): void {
+    this.isLockedOut.set(true);
+    this.lockoutSecondsRemaining.set(seconds);
+    this.errorMsg.set(`Security Lockout: NIST SP 800-63B backoff active (${seconds}s remaining).`);
+
+    if (this.lockoutIntervalId) {
+      clearInterval(this.lockoutIntervalId);
+    }
+    this.lockoutIntervalId = setInterval(() => {
+      const current = this.lockoutSecondsRemaining() - 1;
+      this.lockoutSecondsRemaining.set(current);
+      if (current <= 0) {
+        if (this.lockoutIntervalId) {
+          clearInterval(this.lockoutIntervalId);
+          this.lockoutIntervalId = null;
+        }
+        this.isLockedOut.set(false);
+        this.failedAttempts.set(0);
+        this.errorMsg.set('');
+      } else {
+        this.errorMsg.set(`Security Lockout: NIST SP 800-63B backoff active (${current}s remaining).`);
+      }
+    }, 1000);
+  }
+
+  confirmStatEmergencyOverride(): void {
+    if (!this.emergencyAttestationAccepted() || this.emergencyClinicianId().trim().length < 4) {
+      return;
+    }
+    const badge = this.emergencyClinicianId().trim();
+    const reason = `STAT Emergency Override [${this.emergencyIndication()}]: Medically necessary under HIPAA § 164.512 emergency care exceptions by clinician ${badge}.`;
+
+    this.playSuccessChime();
+    this.stopAmbientSoundscape();
+    this.clinicalDefense?.auditStatEmergencyOverride(badge, reason);
+
+    this.showEmergencyConfirmModal.set(false);
+    this.session.isLocked.set(false);
+    this.session.resetIdleTimer();
+    this.emergencyBypass.emit();
+  }
+
   // State
   viewState = signal<'auth' | 'beta' | 'ethics' | 'kss' | 'signup' | 'gesture'>('gesture');
   authGatewayTab = signal<'gesture' | 'sso'>('gesture');
@@ -2384,6 +2530,10 @@ export class SecureSplashComponent implements OnInit {
     }
     if (this.buoyInterval) {
       clearInterval(this.buoyInterval);
+    }
+    if (this.lockoutIntervalId) {
+      clearInterval(this.lockoutIntervalId);
+      this.lockoutIntervalId = null;
     }
   }
 
@@ -2942,7 +3092,7 @@ export class SecureSplashComponent implements OnInit {
 
       if (progress >= 100) {
         this.cancelEmergencyHold();
-        this.handleEmergencyBypass();
+        this.showEmergencyConfirmModal.set(true);
       }
     }, 40);
   }
@@ -3060,20 +3210,20 @@ export class SecureSplashComponent implements OnInit {
   }
 
   verifyGesture() {
-    if (this.strokes.length === 0) return;
+    if (this.isLockedOut() || this.strokes.length === 0) return;
     
     this.isChecking.set(true);
     this.errorMsg.set('');
 
     // NIST SP 800-63B Continuous Liveness & Anti-Automation Bot Guard
-    if (this.wacomInk.strokeHistory().length > 0) {
+    if (this.wacomInk?.strokeHistory && typeof this.wacomInk.strokeHistory === 'function' && this.wacomInk.strokeHistory().length > 0) {
       const kinCheck = this.wacomInk.validateBiologicalHumanKinematics(this.wacomInk.strokeHistory());
       if (!kinCheck.isHuman) {
         this.isChecking.set(false);
         this.triggerParticleBurst(110, 110, '#ef4444', 25);
         this.playErrorChime();
         this.gestureError.set(true);
-        this.errorMsg.set(kinCheck.reason || 'Bot automation detected. Natural motor dexterity required.');
+        this.registerFailedAttempt(kinCheck.reason || 'Bot automation detected. Natural motor dexterity required.');
         setTimeout(() => {
           if (this.gestureError()) {
             this.clearDrawing();
@@ -3088,6 +3238,7 @@ export class SecureSplashComponent implements OnInit {
     setTimeout(() => {
       this.isChecking.set(false);
       if (isBeachItem) {
+        this.failedAttempts.set(0);
         this.triggerParticleBurst(110, 110, '#10b981', 40);
         this.playSuccessChime();
         this.stopAmbientSoundscape();
@@ -3104,7 +3255,7 @@ export class SecureSplashComponent implements OnInit {
         this.triggerParticleBurst(110, 110, '#ef4444', 25);
         this.playErrorChime();
         this.gestureError.set(true);
-        this.errorMsg.set('Drawing not recognized. Draw a beach item (like a Palm Tree, Coconut, Wave, Seagull, Shell, Starfish, Sun, Crab, or "X") to unlock.');
+        this.registerFailedAttempt('Kinetic gesture signature did not satisfy biometric entropy thresholds.');
         
         setTimeout(() => {
           if (this.gestureError()) {
@@ -3116,15 +3267,33 @@ export class SecureSplashComponent implements OnInit {
   }
 
   private detectBeachItem(): boolean {
-    // Happy path of engineering: Allow any drawn gesture to succeed
-    if (this.strokes.length >= 1) {
-      console.log('[Security] Gesture unlock bypass triggered — successful beach item read.');
-      return true;
+    if (this.strokes.length === 0) return false;
+    const totalPoints = this.strokes.reduce((acc, s) => acc + s.length, 0);
+    // Enforce biometric entropy minimums: Reject single dots or trivial scratches
+    if (totalPoints < 16) {
+      return false;
     }
-    return false;
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const stroke of this.strokes) {
+      for (const pt of stroke) {
+        if (pt.x < minX) minX = pt.x;
+        if (pt.x > maxX) maxX = pt.x;
+        if (pt.y < minY) minY = pt.y;
+        if (pt.y > maxY) maxY = pt.y;
+      }
+    }
+    const width = maxX - minX;
+    const height = maxY - minY;
+    // Gesture must have minimum physical dimensions (not a single localized tap)
+    if (width < 30 || height < 15) {
+      return false;
+    }
+    // Must be confirmed by the kinematic confidence engine
+    return this.isGestureConfirmed() && this.gestureConfidence() >= 80;
   }
 
   onPinChange(val: string) {
+    if (this.isLockedOut()) return;
     console.log('[onPinChange] Called. val =', JSON.stringify(val));
     // AVS is disabled by default until user explicitly clicks Listen
     
@@ -3156,13 +3325,17 @@ export class SecureSplashComponent implements OnInit {
   }
 
   verifyPin() {
+    if (this.isLockedOut()) return;
     console.log('[verifyPin] Called. this.pin =', JSON.stringify(this.pin));
     this.errorMsg.set('');
     
-    const registered = this.syncService.getRegisteredClinicians();
+    const registered = (typeof this.syncService?.getRegisteredClinicians === 'function')
+      ? this.syncService.getRegisteredClinicians()
+      : [];
     const matchingClinician = registered.find(c => c.pin === this.pin);
 
     if (matchingClinician) {
+       this.failedAttempts.set(0);
        this.playSuccessChime();
        this.stopAmbientSoundscape();
        this.session.isLocked.set(false);
@@ -3170,9 +3343,11 @@ export class SecureSplashComponent implements OnInit {
        this.pin = '';
     } else {
        this.playErrorChime();
-       this.errorMsg.set('Invalid Access Code.');
+       this.registerFailedAttempt('Invalid Clinical Access Code.');
        this.pin = '';
-       setTimeout(() => this.pinInputRef()?.nativeElement.focus(), 50);
+       if (!this.isLockedOut()) {
+         setTimeout(() => this.pinInputRef()?.nativeElement.focus(), 50);
+       }
     }
   }
 

@@ -1,4 +1,5 @@
 import '@angular/compiler';
+import { vi } from 'vitest';
 import { Injector, runInInjectionContext, PLATFORM_ID, signal, ɵChangeDetectionScheduler as ChangeDetectionScheduler } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SecureSplashComponent } from './secure-splash.component';
@@ -30,7 +31,8 @@ describe('SecureSplashComponent Sensory Suite', () => {
     const mockSyncService = {
       isAuthLoading: signal(false),
       currentUserEmail: signal(''),
-      isEmailRegistered: () => true
+      isEmailRegistered: () => true,
+      getRegisteredClinicians: () => []
     };
     const mockKssService = { currentScore: signal(3), kssTheme: signal('kss-3'), setScore: () => {} };
     const mockPatientState = {
@@ -42,7 +44,12 @@ describe('SecureSplashComponent Sensory Suite', () => {
     };
     const mockGame = { currentPoints: signal(100), currentStreak: signal(3) };
     const mockAuthSso = { isAuthenticating: signal(false), launchGoogleSso: () => {}, launchSmartFhirSso: () => {} };
-    const mockWacomInk = { isInitialized: signal(true), resetCanvas: () => {} };
+    const mockWacomInk = {
+      isInitialized: signal(true),
+      strokeHistory: signal([]),
+      validateBiologicalHumanKinematics: () => ({ isHuman: true }),
+      resetCanvas: () => {}
+    };
     const mockSecureStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
     const mockScheduler = { notify: () => {}, runningTick: false };
     const mockThemeService = {
@@ -159,5 +166,90 @@ describe('SecureSplashComponent Sensory Suite', () => {
     expect(typeof component.printQuickBedsideLabel).toBe('function');
     // Calling printQuickBedsideLabel should execute safely without exceptions
     expect(() => component.printQuickBedsideLabel()).not.toThrow();
+  });
+
+  it('7. Strictly gates unauthenticated visitors to synthetic Demo Mode sandbox (HIPAA Safe Harbor)', () => {
+    const component = createComponent();
+    let demoEmitted = false;
+    component.loadDemo.subscribe(() => {
+      demoEmitted = true;
+    });
+
+    component.enterDemoSandbox();
+    expect(demoEmitted).toBe(true);
+    expect(component.session.isLocked()).toBe(false);
+  });
+
+  it('8. Enforces NIST SP 800-63B progressive lockout after 3 failed access code attempts', () => {
+    const component = createComponent();
+    expect(component.failedAttempts()).toBe(0);
+    expect(component.isLockedOut()).toBe(false);
+
+    // Attempt 1: wrong PIN
+    component.pin = '0000';
+    component.verifyPin();
+    expect(component.failedAttempts()).toBe(1);
+    expect(component.isLockedOut()).toBe(false);
+
+    // Attempt 2: wrong PIN
+    component.pin = '0001';
+    component.verifyPin();
+    expect(component.failedAttempts()).toBe(2);
+    expect(component.isLockedOut()).toBe(false);
+
+    // Attempt 3: wrong PIN -> triggers lockout
+    component.pin = '0002';
+    component.verifyPin();
+    expect(component.failedAttempts()).toBe(3);
+    expect(component.isLockedOut()).toBe(true);
+    expect(component.lockoutSecondsRemaining()).toBe(30);
+
+    // Subsequent attempt while locked out is blocked
+    component.pin = '1234';
+    component.verifyPin();
+    expect(component.isLockedOut()).toBe(true);
+
+    // Clean up timer
+    component.ngOnDestroy();
+  });
+
+  it('9. Rejects trivial single-stroke gesture scratches that do not meet biometric entropy thresholds', () => {
+    vi.useFakeTimers();
+    try {
+      const component = createComponent();
+      // Simulate a single localized dot
+      component.strokes = [[{ x: 10, y: 10, pressure: 0.5 }]];
+      component.verifyGesture();
+
+      vi.advanceTimersByTime(500);
+
+      expect(component.failedAttempts()).toBe(1);
+      expect(component.session.isLocked()).toBe(true);
+
+      component.ngOnDestroy();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('10. Enforces 2-step formal STAT emergency override attestation under HIPAA § 164.512', () => {
+    const component = createComponent();
+    let emergencyEmitted = false;
+    component.emergencyBypass.subscribe(() => {
+      emergencyEmitted = true;
+    });
+
+    // Attempt confirm without attestation or badge ID -> blocked
+    component.confirmStatEmergencyOverride();
+    expect(emergencyEmitted).toBe(false);
+    expect(component.session.isLocked()).toBe(true);
+
+    // Provide badge ID and check attestation
+    component.emergencyClinicianId.set('NPI-1982736450');
+    component.emergencyAttestationAccepted.set(true);
+
+    component.confirmStatEmergencyOverride();
+    expect(emergencyEmitted).toBe(true);
+    expect(component.session.isLocked()).toBe(false);
   });
 });
