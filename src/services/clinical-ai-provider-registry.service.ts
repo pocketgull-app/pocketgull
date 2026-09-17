@@ -45,10 +45,10 @@ export class ClinicalAiProviderRegistryService {
     },
     {
       id: 'gcp-gemini',
-      name: 'Google Gemini 2.5 Flash / Pro',
+      name: 'Google Gemini 3.8 Flash / Pro',
       vendor: 'Google Cloud Platform',
       type: 'Cloud LLM',
-      latencyMs: 140,
+      latencyMs: 120,
       privacyLevel: 'HIPAA BAA Cloud',
       isAvailable: true
     },
@@ -143,7 +143,7 @@ export class ClinicalAiProviderRegistryService {
         return '[Google Quantum AI VQE] Quantum simulation ready.';
       case 'gcp-gemini':
       default:
-        return `[Google Gemini 2.5 Flash] Clinical Care Strategy: Hydration, 500mg Vitamin C, rest, and autonomic biofeedback entrainment.`;
+        return `[Google Gemini 3.8 Flash] Clinical Care Strategy: Hydration, 500mg Vitamin C, rest, and autonomic biofeedback entrainment.`;
     }
   }
 }

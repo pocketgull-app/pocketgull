@@ -4,6 +4,7 @@ import { ClinicalPosologyCalculatorComponent } from './clinical-posology-calcula
 import { PatientStateService } from '../services/patient-state.service';
 import { ClinicalPosologyService } from '../services/clinical-posology.service';
 import { EnvironmentalHeatPosologyService } from '../services/environmental-heat-posology.service';
+import { ComplexAdaptiveSystemsService } from '../services/complex-adaptive-systems.service';
 
 describe('ClinicalPosologyCalculatorComponent', () => {
   let component: ClinicalPosologyCalculatorComponent;
@@ -24,7 +25,8 @@ describe('ClinicalPosologyCalculatorComponent', () => {
     injector = createEnvironmentInjector([
       { provide: PatientStateService, useValue: mockState },
       ClinicalPosologyService,
-      EnvironmentalHeatPosologyService
+      EnvironmentalHeatPosologyService,
+      ComplexAdaptiveSystemsService
     ], undefined as any);
 
     runInInjectionContext(injector, () => {
@@ -90,5 +92,22 @@ describe('ClinicalPosologyCalculatorComponent', () => {
     expect(heatAssessment.estimatedWbgtF).toBeGreaterThanOrEqual(85);
     expect(heatAssessment.anhidrosisSweatRiskPct).toBeGreaterThan(50);
     expect(heatAssessment.hourlyHydrationRequirementMl).toBeGreaterThan(600);
+  });
+
+  it('8. Switches to SFI complex adaptive systems tier and computes WBE allometry and CSD metrics', () => {
+    component.selectAgeTier('sfi_complex_adaptive');
+    expect(component.activeAgeTier()).toBe('sfi_complex_adaptive');
+
+    const allometric = component.sfiAllometricResult();
+    expect(allometric.allometricMetabolicFactor).toBeGreaterThan(0);
+    expect(allometric.wbeCalibratedClearanceRateMlMin).toBeGreaterThan(0);
+
+    const csd = component.sfiCsdMetrics();
+    expect(csd.earlyWarningLeadTimeHours).toBeDefined();
+    expect(csd.tippingPointAcuity).toBeDefined();
+
+    const hypergraph = component.sfiHypergraphResult();
+    expect(hypergraph.hyperedgeOrder).toBeGreaterThan(0);
+    expect(hypergraph.attractorBasinState).toBeDefined();
   });
 });

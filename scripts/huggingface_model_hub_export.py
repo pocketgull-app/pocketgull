@@ -168,6 +168,29 @@ CLINICAL_ADAPTERS = [
             {"text": "Perform 1D optical intensity profile scan across rapid antigen strip cassette: detect control line at index 75% and faint test line at index 42%. Return validity, optical ratio, and qualitative diagnostic status."},
             {"text": "Construct HIPAA-compliant FHIR R4 Observation resource with SNOMED CT positive finding (10828004) and LOINC 94558-4 for SARS-CoV-2 rapid lateral flow surveillance."}
         ]
+    },
+    {
+        "id": "pocketgull-circular-posology-1b",
+        "name": "PocketGull Circular Posology & Planetary Health Engine",
+        "base_model": "google/gemma-3-1b-it",
+        "discipline": "FDA SLEP Extended Stability, SIRUM Redistribution, Aquatic Ecotoxicity, and Anthroponics",
+        "description": "Grounds medication lifecycle in planetary health economics and circular posology. Evaluates FDA Shelf Life Extension Program (SLEP) stability for solid oral tablets beyond labeled dates, gates SIRUM charity repository redistribution for sealed blisters, audits critical aquatic ecotoxicity (synthetic estrogens, fluoroquinolones, macrolides) with strict no-flush directives, and models liquid gold anthroponic nitrogen/phosphorus closed loops.",
+        "widgets": [
+            {"text": "Patient has Ibuprofen 400mg tablets expired 18 months ago, stored in cool dry blister. Evaluate FDA SLEP extended stability and chemical potency retention estimate."},
+            {"text": "Audit unneeded Ethinylestradiol and Ciprofloxacin: check aquatic ecotoxicity tier, endocrine disruption hazard, and municipal take-back directive."}
+        ]
+    },
+    {
+        "id": "pocketgull-allometric-sfi-1b",
+        "name": "PocketGull SFI Complex Adaptive Systems & Allometric Posology",
+        "base_model": "google/gemma-3-1b-it",
+        "discipline": "West-Brown-Enquist (WBE) Fractal Hydrodynamics, Critical Slowing Down (CSD), and Polypharmacy Hypergraphs",
+        "description": "Complex systems clinical engine developed in alignment with theoretical frameworks from the Santa Fe Institute and the ASU-SFI Center for Biosocial Complex Systems. Replaces naive linear (mg/kg) dosing with West-Brown-Enquist (WBE) M^0.75 fractal branching hydrodynamic network scaling. Detects physiological Critical Slowing Down (CSD) through lag-1 autocorrelation inflation (rho_1 -> 1) 2-48 hours before clinical collapse. Models non-linear simplicial hyperedge cascades across polypharmacy regimens and extreme environmental heat.",
+        "widgets": [
+            {"text": "Pediatric patient 12 kg prescribed Amoxicillin: compare WBE fractal clearance (M^0.75), naive linear per-kg scaling, and vascular transit time scale (M^0.25)."},
+            {"text": "Analyze 30-point continuous cardiac telemetry: compute rolling lag-1 autocorrelation (rho_1), rolling variance, resilience recovery rate lambda, and tipping point acuity tier."},
+            {"text": "Patient on Oxybutynin 10mg, Topiramate 50mg, and Lisinopril 20mg in Phoenix 114°F heat (WBGT 91°F): compute multi-body simplicial hyperedge risk and attractor basin state."}
+        ]
     }
 ]
 

@@ -4,6 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ClinicalPosologyService, PosologyAgeTier, IBeersCriteriaAlert } from '../services/clinical-posology.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { EnvironmentalHeatPosologyService, IHeatPosologyAssessment } from '../services/environmental-heat-posology.service';
+import {
+  ComplexAdaptiveSystemsService,
+  IWbeAllometricScalingResult,
+  ICriticalSlowingDownMetrics,
+  IHypergraphPolypharmacyAssessment
+} from '../services/complex-adaptive-systems.service';
 
 @Component({
   selector: 'app-clinical-posology-calculator',
@@ -59,6 +65,12 @@ import { EnvironmentalHeatPosologyService, IHeatPosologyAssessment } from '../se
                   [class.text-white]="activeAgeTier() === 'environmental_heat'"
                   class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
             <span>☀️</span> Heat &amp; WBGT (ASU)
+          </button>
+          <button (click)="selectAgeTier('sfi_complex_adaptive')"
+                  [class.bg-teal-600]="activeAgeTier() === 'sfi_complex_adaptive'"
+                  [class.text-white]="activeAgeTier() === 'sfi_complex_adaptive'"
+                  class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
+            <span>🧬</span> SFI Allometry &amp; CSD
           </button>
         </div>
       </div>
@@ -452,6 +464,156 @@ import { EnvironmentalHeatPosologyService, IHeatPosologyAssessment } from '../se
             </div>
           }
 
+          <!-- TIER 6: SANTA FE INSTITUTE & ASU-SFI COMPLEX ADAPTIVE SYSTEMS -->
+          @if (activeAgeTier() === 'sfi_complex_adaptive') {
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/30 flex items-center gap-1.5">
+                  <span>🧬</span> SFI Complex Adaptive Systems &amp; Fractal Allometry
+                </span>
+                <span class="text-xs font-mono text-teal-600 dark:text-teal-400 font-bold">
+                  WBE M^0.75 &amp; Critical Slowing Down
+                </span>
+              </div>
+
+              <!-- 1. West-Brown-Enquist (WBE) Fractal Hydrodynamic Scaling -->
+              <div class="p-3.5 rounded-xl bg-white/70 dark:bg-zinc-900/70 border border-teal-200 dark:border-teal-900/40 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-1.5">
+                    <span>📐</span> West-Brown-Enquist (WBE) Fractal Scaling vs. Naive Linear
+                  </span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold">
+                    M^0.75 FRACTAL POWER LAW
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center font-mono">
+                  <div class="p-2 rounded-lg bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900/30">
+                    <span class="text-[10px] text-slate-500 block">Metabolic Factor (M^0.75)</span>
+                    <span class="text-sm font-bold text-teal-700 dark:text-teal-300">{{ sfiAllometricResult().allometricMetabolicFactor }}×</span>
+                  </div>
+                  <div class="p-2 rounded-lg bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900/30">
+                    <span class="text-[10px] text-slate-500 block">Vascular Transit (M^0.25)</span>
+                    <span class="text-sm font-bold text-teal-700 dark:text-teal-300">{{ sfiAllometricResult().vascularTransitScaleFactor }}×</span>
+                  </div>
+                  <div class="p-2 rounded-lg bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900/30">
+                    <span class="text-[10px] text-slate-500 block">Cardiac Pacing (M^-0.25)</span>
+                    <span class="text-sm font-bold text-teal-700 dark:text-teal-300">{{ sfiAllometricResult().intrinsicCardiacPacingScale }}×</span>
+                  </div>
+                  <div class="p-2 rounded-lg bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900/30">
+                    <span class="text-[10px] text-slate-500 block">WBE vs. Linear Variance</span>
+                    <span class="text-sm font-bold"
+                          [class.text-emerald-600]="sfiAllometricResult().allometricDiscrepancyPct >= 0"
+                          [class.text-rose-600]="sfiAllometricResult().allometricDiscrepancyPct < 0">
+                      {{ sfiAllometricResult().allometricDiscrepancyPct > 0 ? '+' : '' }}{{ sfiAllometricResult().allometricDiscrepancyPct }}%
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Clearance Comparison Matrix -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs font-mono">
+                  <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700">
+                    <span class="text-[10.5px] text-slate-500 block">WBE Fractal Clearance:</span>
+                    <span class="text-xs font-bold text-teal-600 dark:text-teal-400">{{ sfiAllometricResult().wbeCalibratedClearanceRateMlMin }} mL/min</span>
+                  </div>
+                  <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700">
+                    <span class="text-[10.5px] text-slate-500 block">Naive Linear per-kg:</span>
+                    <span class="text-xs font-bold text-slate-700 dark:text-zinc-300">{{ sfiAllometricResult().linearPerKgClearanceMlMin }} mL/min</span>
+                  </div>
+                  <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700">
+                    <span class="text-[10.5px] text-slate-500 block">Mosteller BSA Scaled:</span>
+                    <span class="text-xs font-bold text-cyan-600 dark:text-cyan-400">{{ sfiAllometricResult().bsaClearanceMlMin }} mL/min</span>
+                  </div>
+                </div>
+
+                <p class="text-[11px] text-slate-600 dark:text-zinc-400 leading-relaxed font-sans bg-teal-50/50 dark:bg-teal-950/20 p-2.5 rounded-lg border border-teal-200/50 dark:border-teal-900/30">
+                  🔬 <strong>Fractal Morphometrics:</strong> {{ sfiAllometricResult().clinicalAllometricInsight }}
+                </p>
+              </div>
+
+              <!-- 2. Critical Slowing Down (CSD) Early Warning -->
+              <div class="p-3.5 rounded-xl bg-white/70 dark:bg-zinc-900/70 border border-teal-200 dark:border-teal-900/40 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-1.5">
+                    <span>⚡</span> Critical Slowing Down (CSD) Tipping Point Detector
+                  </span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase"
+                        [class.bg-emerald-100]="sfiCsdMetrics().tippingPointAcuity === 'RESILIENT_STABLE'"
+                        [class.text-emerald-800]="sfiCsdMetrics().tippingPointAcuity === 'RESILIENT_STABLE'"
+                        [class.bg-amber-100]="sfiCsdMetrics().tippingPointAcuity === 'EARLY_WARNING_CSD'"
+                        [class.text-amber-800]="sfiCsdMetrics().tippingPointAcuity === 'EARLY_WARNING_CSD'"
+                        [class.bg-orange-100]="sfiCsdMetrics().tippingPointAcuity === 'IMMINENT_BIFURCATION'"
+                        [class.text-orange-800]="sfiCsdMetrics().tippingPointAcuity === 'IMMINENT_BIFURCATION'"
+                        [class.bg-rose-100]="sfiCsdMetrics().tippingPointAcuity === 'PHASE_COLLAPSE'"
+                        [class.text-rose-800]="sfiCsdMetrics().tippingPointAcuity === 'PHASE_COLLAPSE'">
+                    {{ sfiCsdMetrics().tippingPointAcuity.replace('_', ' ') }}
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center font-mono">
+                  <div class="p-2 rounded-lg bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">
+                    <span class="text-[10px] text-slate-500 block">Lag-1 Autocorr (ρ₁)</span>
+                    <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">{{ sfiCsdMetrics().lag1Autocorrelation }}</span>
+                  </div>
+                  <div class="p-2 rounded-lg bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">
+                    <span class="text-[10px] text-slate-500 block">Rolling Variance (σ²)</span>
+                    <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">{{ sfiCsdMetrics().rollingVariance }}</span>
+                  </div>
+                  <div class="p-2 rounded-lg bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">
+                    <span class="text-[10px] text-slate-500 block">Recovery Rate (λ)</span>
+                    <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">{{ sfiCsdMetrics().resilienceRecoveryRate }}</span>
+                  </div>
+                  <div class="p-2 rounded-lg bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">
+                    <span class="text-[10px] text-slate-500 block">Lead Time Window</span>
+                    <span class="text-xs font-bold text-amber-600 dark:text-amber-400">{{ sfiCsdMetrics().earlyWarningLeadTimeHours }}h Early Warning</span>
+                  </div>
+                </div>
+
+                <div class="text-[11px] font-mono text-slate-700 dark:text-zinc-300 p-2.5 rounded-lg bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">
+                  ⚠️ <strong>Dynamical State:</strong> {{ sfiCsdMetrics().forensicPhysiologicalState }}
+                </div>
+              </div>
+
+              <!-- 3. Hypergraph Polypharmacy Simplicial Cascade -->
+              <div class="p-3.5 rounded-xl bg-white/70 dark:bg-zinc-900/70 border border-teal-200 dark:border-teal-900/40 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-1.5">
+                    <span>🕸️</span> Polypharmacy Hypergraph &amp; Environmental Simplex
+                  </span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase"
+                        [class.bg-emerald-100]="sfiHypergraphResult().attractorBasinState === 'HOMEOSTATIC_BASIN'"
+                        [class.text-emerald-800]="sfiHypergraphResult().attractorBasinState === 'HOMEOSTATIC_BASIN'"
+                        [class.bg-amber-100]="sfiHypergraphResult().attractorBasinState === 'PERMEABLE_MARGIN'"
+                        [class.text-amber-800]="sfiHypergraphResult().attractorBasinState === 'PERMEABLE_MARGIN'"
+                        [class.bg-rose-100]="sfiHypergraphResult().attractorBasinState === 'PATHOLOGICAL_ATTRACTOR'"
+                        [class.text-rose-800]="sfiHypergraphResult().attractorBasinState === 'PATHOLOGICAL_ATTRACTOR'">
+                    {{ sfiHypergraphResult().attractorBasinState.replace('_', ' ') }}
+                  </span>
+                </div>
+
+                <div class="flex items-center justify-between text-xs font-mono p-2 rounded-lg bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">
+                  <span>Hyperedge Order: <strong>{{ sfiHypergraphResult().hyperedgeOrder }}-body Simplex</strong></span>
+                  <span>Percolation Risk Score: <strong class="text-rose-600 dark:text-rose-400">{{ sfiHypergraphResult().percolationCascadeRiskScore }}/100</strong></span>
+                </div>
+
+                @if (sfiHypergraphResult().dominantCascadePathways.length > 0) {
+                  <div class="space-y-1">
+                    <span class="text-[10px] uppercase font-bold text-slate-500 block font-mono">Active Hyperedges:</span>
+                    @for (pathway of sfiHypergraphResult().dominantCascadePathways; track pathway) {
+                      <div class="text-[11px] font-mono p-2 rounded bg-rose-50 dark:bg-rose-950/30 text-rose-900 dark:text-rose-300 border border-rose-200 dark:border-rose-900/30">
+                        {{ pathway }}
+                      </div>
+                    }
+                  </div>
+                }
+
+                <div class="p-2.5 rounded-lg bg-teal-50/60 dark:bg-teal-950/20 border border-teal-200 dark:border-teal-900/30 text-xs font-mono text-teal-950 dark:text-teal-200">
+                  🛡️ <strong>Systems Directive:</strong> {{ sfiHypergraphResult().systemsInterventionDirective }}
+                </div>
+              </div>
+            </div>
+          }
+
         </div>
       </div>
 
@@ -578,6 +740,7 @@ export class ClinicalPosologyCalculatorComponent {
   readonly posology = inject(ClinicalPosologyService);
   private patientState = inject(PatientStateService);
   private readonly heatPosology = inject(EnvironmentalHeatPosologyService);
+  private readonly complexSystems = inject(ComplexAdaptiveSystemsService);
 
   readonly activeAgeTier = signal<PosologyAgeTier>('adult');
   readonly infantAgeMonths = signal<number>(6);
@@ -649,6 +812,34 @@ export class ClinicalPosologyCalculatorComponent {
     this.posology.auditDosageText(this.testDosageInput(), this.patientAge(), this.patientWeightLbs())
   );
 
+  readonly sfiAllometricResult = computed<IWbeAllometricScalingResult>(() => {
+    return this.complexSystems.calculateWbeAllometricScaling(
+      this.patientWeightKg(),
+      this.adultReferenceDoseMg(),
+      this.patientHeightCm()
+    );
+  });
+
+  readonly sfiCsdMetrics = computed<ICriticalSlowingDownMetrics>(() => {
+    // Construct representative 20-sample physiological cardiac time series
+    const base = 75.0;
+    const series: number[] = [];
+    for (let i = 0; i < 20; i++) {
+      series.push(base + Math.sin(i / 2.5) * 6.0 + ((i % 3) - 1) * 1.5);
+    }
+    return this.complexSystems.evaluateCriticalSlowingDown(series);
+  });
+
+  readonly sfiHypergraphResult = computed<IHypergraphPolypharmacyAssessment>(() => {
+    const rawInput = this.testDosageInput();
+    const parsedMeds = rawInput.split('+').map(s => s.trim()).filter(Boolean);
+    const meds = parsedMeds.length > 0 ? parsedMeds : ['Lisinopril 20mg', 'Furosemide 40mg'];
+    return this.complexSystems.evaluateHypergraphCascade(
+      meds,
+      this.heatPosologyAssessment().estimatedWbgtF
+    );
+  });
+
   constructor() {
     this.syncWithActivePatient();
   }
@@ -687,6 +878,11 @@ export class ClinicalPosologyCalculatorComponent {
     } else if (tier === 'environmental_heat') {
       this.loadStationObservation('KPHX');
       this.testDosageInput.set('Hold Diphenhydramine 50 mg + Titrate Furosemide 20 mg PO QD in >110°F Heat');
+    } else if (tier === 'sfi_complex_adaptive') {
+      this.patientAge.set(42);
+      this.patientWeightLbs.set(165);
+      this.patientHeightCm.set(175);
+      this.testDosageInput.set('Oxybutynin 10 mg + Topiramate 50 mg + Lisinopril 20 mg PO QD');
     }
   }
 
