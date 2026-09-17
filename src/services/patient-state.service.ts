@@ -561,7 +561,7 @@ export class PatientStateService {
 
   // --- Clinician Manual Override & Smart Data Presence Computed Signals ---
   readonly showAllInstrumentsOverride = signal<boolean>(false);
-  readonly activeDrilldownComponent = signal<'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'foraging' | 'vagal' | null>(null);
+  readonly activeDrilldownComponent = signal<'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'vagal' | null>(null);
 
   readonly hasOccupationalData = computed(() => {
     const occ = this.occupation();

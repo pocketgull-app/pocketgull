@@ -1006,7 +1006,7 @@ export class VoiceAssistantComponent implements OnDestroy {
 
     panelMode = signal<'selection' | 'chat' | 'dictation'>('chat');
 
-    openDrilldown(target: 'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'foraging' | 'vagal') {
+    openDrilldown(target: 'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'vagal') {
       this.state.activeDrilldownComponent.set(target);
     }
 
