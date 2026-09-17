@@ -40,10 +40,8 @@ export * from './anatomy-3d/medical-3d-viewer.component';
 // Space Health & HSA Incentive Barrel Exports
 export * from './space-health-hud.component';
 export * from './hsa-incentive-network.component';
-export * from './deep-space-cds-terminal.component';
 export * from './planetary-health-hud.component';
 export * from './socratic-multilingual-terminal.component';
-export * from './body-explorer-game.component';
 export * from './eyes-free-accessibility-hub.component';
 export * from './eyes-free-camera-scribe.component';
 export * from './nng-usability-hud.component';

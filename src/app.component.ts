@@ -890,8 +890,8 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
       <app-patent-claims-hud-modal (close)="showPatentClaimsModal.set(false)"></app-patent-claims-hud-modal>
     }
 
-    <!-- Usage & Licensing Paywall Modal -->
-    @if (showLicensingModal()) {
+    <!-- Usage & Licensing Paywall Modal (Developer / Admin Settings) -->
+    @if (navShell.developerMode() && showLicensingModal()) {
       <app-usage-licensing-paywall-modal 
         (close)="showLicensingModal.set(false)"
         (openCaseStudy)="showLicensingModal.set(false); showNantucketCaseStudy.set(true)">
