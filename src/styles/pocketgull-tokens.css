@@ -77,11 +77,11 @@
   --pg-duration-slow: 400ms;
   --pg-biorhythm-cycle: 10s;
 
-  /* 🪶 8. Typography Stacks */
+  /* 🪶 8. Sovereign PocketGull Typography Stacks (Zero-Fallback) */
   --font-pocketgull-brand: 'PocketGull', 'PocketGull Bold', sans-serif;
-  --font-pocketgull-clinical: 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', 'Inter', -apple-system, sans-serif;
-  --font-pocketgull-mono: 'JetBrains Mono', 'PocketGull Mono', monospace;
-  --font-pocketgull-serif: 'Libre Caslon Text', 'Georgia', serif;
+  --font-pocketgull-clinical: 'PocketGull', 'PocketGull Bold', sans-serif;
+  --font-pocketgull-mono: 'PocketGull Mono', monospace;
+  --font-pocketgull-serif: 'PocketGull', serif;
 }
 
 /* ☀️ Light Parchment Theme (High-Illumination / Paper Exam Room) */

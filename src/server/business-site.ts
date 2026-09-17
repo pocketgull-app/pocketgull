@@ -78,8 +78,7 @@ export function renderBusinessSiteHtml(): string {
       font-style: normal;
       font-weight: 700;
       font-display: swap;
-      src: url('/fonts/PocketGull-Bold-Core.woff2') format('woff2'),
-           url('/fonts/PocketGull-Bold.woff2') format('woff2'),
+      src: url('/fonts/PocketGull-Bold.woff2') format('woff2'),
            url('/fonts/PocketGull-Bold.ttf') format('truetype');
     }
     @font-face {
@@ -87,8 +86,7 @@ export function renderBusinessSiteHtml(): string {
       font-style: normal;
       font-weight: 400;
       font-display: swap;
-      src: url('/fonts/PocketGull-Fineliner-Core.woff2') format('woff2'),
-           url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
+      src: url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
            url('/fonts/PocketGull-Fineliner.ttf') format('truetype');
     }
     .font-brand {

@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Atkinson+Hyperlegible+Next:ital,wght@0,400..800;1,400..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap');
 @import './styles/pocketgull-marker-font.css';
 @import './styles/pocketgull-icon-font.css';
 @import './styles/pocketgull-tokens.css';
@@ -25,26 +24,26 @@
   --md-sys-color-outline: #272732;
   --md-sys-color-outline-variant: #3f3f4e;
 
-  /* Material Design 3 Typography Roles Mapped to PocketGull */
-  --md-sys-typescale-display-large-font: 'PocketGull Bold', var(--font-sans);
-  --md-sys-typescale-headline-medium-font: 'PocketGull Bold', var(--font-sans);
-  --md-sys-typescale-title-medium-font: 'PocketGull Bold', var(--font-sans);
-  --md-sys-typescale-body-large-font: 'PocketGull Fineliner', var(--font-sans);
-  --md-sys-typescale-label-large-font: 'PocketGull Mono', var(--font-mono);
+  /* Material Design 3 Typography Roles Mapped to Sovereign PocketGull */
+  --md-sys-typescale-display-large-font: 'PocketGull Bold', 'PocketGull', sans-serif;
+  --md-sys-typescale-headline-medium-font: 'PocketGull Bold', 'PocketGull', sans-serif;
+  --md-sys-typescale-title-medium-font: 'PocketGull Bold', 'PocketGull', sans-serif;
+  --md-sys-typescale-body-large-font: 'PocketGull Fineliner', 'PocketGull', sans-serif;
+  --md-sys-typescale-label-large-font: 'PocketGull Mono', monospace;
 
-  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif;
-  --font-serif: 'Cinzel', 'Libre Caslon Text', 'Georgia', serif;
-  --font-caslon: 'Libre Caslon Text', 'Georgia', serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-rounded: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  font-family: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'PocketGull Bold', 'PocketGull', sans-serif;
+  --font-serif: 'PocketGull', serif;
+  --font-caslon: 'PocketGull', serif;
+  --font-mono: 'PocketGull Mono', monospace;
+  --font-rounded: 'PocketGull', 'PocketGull Bold', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body, html {
-  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.65;
   letter-spacing: -0.012em;
 }
