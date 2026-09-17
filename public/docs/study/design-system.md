@@ -95,3 +95,48 @@ Every AI agent, orchestrator node, and UI moment in Pocket Gull has a name. They
 - **Props**: Red Cross Armband, Defibrillator Paddle, CPR Metronome
 - **ADK Mapping**: `offline_emergency_bypass`
 - **SVG Animation**: `cpr-pulse-metronome` — 110 BPM heart pulse
+
+---
+
+## 4. Circadian Terminal Engine & Typography (Oh My Posh)
+
+PocketGull extends Dieter Rams' *"Weniger, aber besser"* philosophy into the developer's command line with a circadian-pacing Oh My Posh terminal engine.
+
+### Circadian Theme Architecture
+
+| Environment | Hours | Palette | Theme File | Rationale |
+|:---|:---|:---|:---|:---|
+| **PocketGull Washi** | 07:00 – 18:00 | Warm paper parchment (`#FAF8F2`), Gear Teal (`#0F766E`), Sumi ink (`#18181B`) | [`pocketgull-washi.omp.json`](/brand/terminal/pocketgull-washi.omp.json) | High daytime ambient light clarity without ocular glare. |
+| **PocketGull Ophthalmic** | 18:00 – 07:00 | Deep Obsidian (`#18181B`), Clinical Teal (`#0F766E`), Gold telemetry (`#FBBF24`) | [`pocketgull-ophthalmic.omp.json`](/brand/terminal/pocketgull-ophthalmic.omp.json) | Dark-adapted contrast conforming to WCAG 2.1 AAA standards. |
+
+### Zero-Tofu Font Integration
+The terminal theme is strictly tuned for **Pocket Gull Mono**:
+- Standard Asclepius Rod (`⚕ POCKETGULL`)
+- ISO rounded diamond caps (`\uE0B6`, `\uE0B4`) & chevron separators (`\uE0B0`)
+- Powerline Git branch (`\uE0A0`) & stopwatch latency indicator (`⏱`)
+- Socratic Braille transcription badge (`⠠⠏⠕⠉⠅⠑⠞⠠⠛⠥⠇⠇ ⠠⠍⠕⠝⠕`)
+- **Zero Third-Party Nerd Font Dependencies**: Eliminates missing Private Use Area (PUA) rectangular tofu boxes (`\uFFFD`).
+
+### Quick Installation (PowerShell Profile)
+Add this circadian loader to your `$PROFILE`:
+
+```powershell
+# PocketGull Circadian Terminal Engine
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+    $shellType = if ($PSVersionTable.PSVersion.Major -ge 6) { 'pwsh' } else { 'powershell' }
+    $h = (Get-Date).Hour
+    $washiTheme = "C:\Users\philg\Pocketgull\pocketgull\public\brand\terminal\pocketgull-washi.omp.json"
+    $ophthalmicTheme = "C:\Users\philg\Pocketgull\pocketgull\public\brand\terminal\pocketgull-ophthalmic.omp.json"
+    
+    $cfg = if ($h -ge 7 -and $h -lt 18 -and (Test-Path $washiTheme)) { $washiTheme } 
+           elseif (Test-Path $ophthalmicTheme) { $ophthalmicTheme } 
+           else { $null }
+    
+    if ($cfg) {
+        oh-my-posh init $shellType --config $cfg | Invoke-Expression
+    } else {
+        oh-my-posh init $shellType | Invoke-Expression
+    }
+}
+```
+
