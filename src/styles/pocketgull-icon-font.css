@@ -49,3 +49,19 @@
 .pg-icon-tooth::before { content: '🦷'; }
 .pg-icon-cgm::before { content: '\E1A8'; }
 .pg-icon-seagull::before { content: '🐦'; }
+
+/* Origami & Papercraft Progressive Reveal Shortcuts */
+.pg-icon-step-1::before { content: '\2460'; }        /* ① Step 1 Inward Fold */
+.pg-icon-step-2::before { content: '\2461'; }        /* ② Step 2 Booklet Fold */
+.pg-icon-step-3::before { content: '\2462'; }        /* ③ Step 3 Unfurl Story */
+.pg-icon-step-4::before { content: '\2463'; }        /* ④ Step 4 Horizon */
+.pg-icon-step-5::before { content: '\2464'; }        /* ⑤ Step 5 Attestation */
+.pg-icon-fold-left::before { content: '\21B6'; }     /* ↶ Fold Inward Left */
+.pg-icon-fold-right::before { content: '\21B7'; }    /* ↷ Fold Inward Right */
+.pg-icon-scissors::before { content: '\2702'; }      /* ✂ Detachable Token Cut Line */
+.pg-icon-dove::before { content: '🕊'; }             /* 🕊 Sanctuary Dove */
+.pg-icon-feather::before { content: '🪶'; }          /* 🪶 Attestation Feather Seal */
+.pg-icon-token::before { content: '🤝'; }            /* 🤝 Caregiver Pocket Token */
+.pg-icon-gift::before { content: '🎁'; }             /* 🎁 Progressive Reveal Gift */
+.pg-icon-seedling::before { content: '🌱'; }         /* 🌱 Vitality Horizon */
+

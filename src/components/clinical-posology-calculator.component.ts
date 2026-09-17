@@ -1112,7 +1112,21 @@ export interface IPosology3ActTrajectory {
           </div>
         }
 
-        <div class="space-y-4 text-xs">
+        <!-- 💌 Caregiver Love Note / Dedication Seal -->
+        <div class="p-3 mb-3 rounded-xl border border-teal-200 bg-teal-50/50 flex items-start gap-2.5">
+          <span class="text-base">💌</span>
+          <div class="text-xs w-full">
+            <div class="font-bold text-teal-950 font-mono text-[10px] uppercase tracking-wider flex items-center justify-between">
+              <span>Personal Caregiver Note &bull; Keep on Your Refrigerator</span>
+              <span class="text-[9px] font-sans text-teal-700 italic">Pocket Sanctuary</span>
+            </div>
+            <div class="text-slate-800 italic font-serif text-sm mt-0.5">
+              &ldquo;{{ caregiverLoveNote() }}&rdquo;
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3 text-xs">
           <!-- Act 1 -->
           <div class="p-3.5 rounded-xl border border-amber-300/80 bg-amber-50/40">
             <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
@@ -1124,6 +1138,14 @@ export interface IPosology3ActTrajectory {
             <p class="text-slate-800 leading-relaxed font-sans">
               {{ traj.act1WhereYouveBeen.plainLanguageRationale }}
             </p>
+          </div>
+
+          <!-- 🕊️ Origami Folding Guideline 1 (Horizontal) -->
+          <div class="my-2 relative flex items-center justify-center text-[10px] font-mono text-slate-400 select-none">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-dashed border-slate-300"></div></div>
+            <span class="relative bg-white px-2.5 flex items-center gap-1.5 text-slate-500 font-bold">
+              <span>🕊️</span> 1. FOLD INWARD ALONG THIS LINE TO FORM POCKET PARCEL <span>↶</span>
+            </span>
           </div>
 
           <!-- Act 2 -->
@@ -1166,6 +1188,14 @@ export interface IPosology3ActTrajectory {
             </div>
           </div>
 
+          <!-- 🕊️ Origami Folding Guideline 2 (Vertical / Booklet Fold) -->
+          <div class="my-2 relative flex items-center justify-center text-[10px] font-mono text-slate-400 select-none">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-dashed border-slate-300"></div></div>
+            <span class="relative bg-white px-2.5 flex items-center gap-1.5 text-slate-500 font-bold">
+              <span>↶</span> 2. FOLD IN HALF TO TUCK INTO POCKET BOOKLET OR REFRIGERATOR MAGNET <span>↶</span>
+            </span>
+          </div>
+
           <!-- Act 3 -->
           <div class="p-3.5 rounded-xl border border-indigo-200 bg-indigo-50/30">
             <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
@@ -1193,6 +1223,36 @@ export interface IPosology3ActTrajectory {
           </div>
         </div>
 
+        <!-- 🤝 Pass-it-Forward Caregiver Pocket Token (Tear or Cut) -->
+        <div class="mt-4 p-3.5 rounded-xl border-2 border-dashed border-teal-600 bg-teal-50/40 text-slate-900">
+          <div class="flex items-center justify-between border-b border-dashed border-teal-400 pb-1.5 mb-2">
+            <div class="flex items-center gap-1.5 font-bold font-mono text-[11px] text-teal-900">
+              <span>🤝</span> CAREGIVER POCKET TOKEN &bull; PASS TO FAMILY OR NEIGHBOR
+            </div>
+            <span class="text-[10px] font-mono text-teal-700 flex items-center gap-1">
+              <span>✂️</span> Cut or Tear Along Dotted Line
+            </span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[10px] font-mono">
+            <div>
+              <span class="text-slate-500 block">Patient:</span>
+              <strong class="text-slate-900">{{ patientState.activePatientSummary() || 'Valued Patient' }}</strong>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Emergency Lifeline:</span>
+              <strong class="text-rose-700">988 / (480) 555-0100</strong>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Today's Calibrated Dose:</span>
+              <strong class="text-teal-900">{{ traj.act2WhereYouStandToday.calibratedDosage }}</strong>
+            </div>
+          </div>
+          <div class="mt-2 text-[9px] text-slate-600 italic font-serif flex items-center justify-between">
+            <span>🪶 &ldquo;Carry this in your wallet or purse so your loved one is always protected.&rdquo;</span>
+            <span class="font-mono not-italic text-teal-800 font-bold">PocketGull Care Token</span>
+          </div>
+        </div>
+
         <!-- Emergency / Signature Bar -->
         <div class="mt-4 pt-3 border-t-2 border-slate-900 flex flex-wrap items-center justify-between text-xs font-mono gap-2">
           <div>
@@ -1209,13 +1269,38 @@ export interface IPosology3ActTrajectory {
         <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto no-print" (click)="closeAvsPreview()">
           <div class="relative max-w-3xl w-full bg-white text-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-300 animate-in fade-in zoom-in-95 duration-200" (click)="$event.stopPropagation()">
             <!-- Modal Header Bar -->
-            <div class="bg-slate-900 text-white px-4 py-3 sm:px-6 flex items-center justify-between">
+            <div class="bg-slate-900 text-white px-4 py-3 sm:px-6 flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-mono font-bold uppercase tracking-wider">
-                  👁️ Live Refrigerator Handout Preview
-                </span>
-                <span class="text-xs text-slate-400 font-mono hidden sm:inline">1-Page High-Contrast Format</span>
+                <!-- Mode Toggle -->
+                <div class="inline-flex rounded-xl bg-slate-800 p-0.5 border border-slate-700 text-xs font-mono">
+                  <button
+                    type="button"
+                    (click)="setPreviewDisplayMode('flat')"
+                    [class.bg-teal-600]="previewDisplayMode() === 'flat'"
+                    [class.text-white]="previewDisplayMode() === 'flat'"
+                    [class.text-slate-400]="previewDisplayMode() !== 'flat'"
+                    class="px-2.5 py-1 rounded-lg transition font-bold cursor-pointer flex items-center gap-1">
+                    <span>📄</span> Flat Handout
+                  </button>
+                  <button
+                    type="button"
+                    (click)="setPreviewDisplayMode('origami')"
+                    [class.bg-amber-600]="previewDisplayMode() === 'origami'"
+                    [class.text-white]="previewDisplayMode() === 'origami'"
+                    [class.text-slate-400]="previewDisplayMode() !== 'origami'"
+                    class="px-2.5 py-1 rounded-lg transition font-bold cursor-pointer flex items-center gap-1">
+                    <span>🕊️</span> Origami Story Unfurl
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  (click)="toggleEditLoveNote()"
+                  class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 text-xs font-mono transition flex items-center gap-1 cursor-pointer">
+                  <span>💌</span> {{ isEditingLoveNote() ? 'Done Note' : 'Edit Note' }}
+                </button>
               </div>
+
               <div class="flex items-center gap-2">
                 <button
                   (click)="printAvsHandout()"
@@ -1231,138 +1316,440 @@ export interface IPosology3ActTrajectory {
               </div>
             </div>
 
-            <!-- Handout Card Body (Identical to Printout) -->
-            <div class="p-6 sm:p-8 overflow-y-auto max-h-[80vh] space-y-4">
-              <div class="border-b-2 border-slate-900 pb-3 mb-2 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                  <div class="w-9 h-9 rounded-xl bg-teal-800 text-white flex items-center justify-center font-bold text-base shadow-sm">
-                    🪶
-                  </div>
-                  <div>
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-2xl font-extrabold tracking-tight text-teal-900 font-pocketgull-brand">PocketGull</span>
-                      <span class="text-[10px] font-extrabold uppercase tracking-widest text-teal-800 bg-teal-100/90 px-2 py-0.5 rounded border border-teal-300">Health</span>
-                    </div>
-                    <div class="text-[10px] text-slate-500 font-mono">Clinical Intelligence &amp; Care Strategy Engine</div>
-                  </div>
-                </div>
-                <div class="text-right text-xs font-mono text-slate-700 space-y-0.5">
-                  <div><strong>Patient:</strong> {{ patientState.activePatientSummary() || 'Valued Patient' }}</div>
-                  <div><strong>Date:</strong> {{ activeDateString }}</div>
-                  <div class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300">
-                    <span>✓</span> ISMP Slashed-Zero Safe Dosing Attested
-                  </div>
-                </div>
+            <!-- Optional Note Editor Drawer -->
+            @if (isEditingLoveNote()) {
+              <div class="bg-amber-50/90 border-b border-amber-200 px-4 py-2.5 flex items-center gap-2 text-xs">
+                <span class="text-base">✍️</span>
+                <label class="font-bold text-amber-900 font-mono text-[11px] shrink-0">Caregiver Dedication:</label>
+                <input
+                  type="text"
+                  [value]="caregiverLoveNote()"
+                  (input)="setLoveNote($any($event.target).value)"
+                  class="flex-1 px-3 py-1 rounded-lg border border-amber-300 bg-white text-slate-900 text-xs font-serif focus:outline-none focus:border-teal-500"
+                  placeholder="Type a warm personal note for your family..."
+                />
               </div>
+            }
 
-              <div>
-                <h1 class="text-base font-extrabold uppercase tracking-wider text-slate-900">
-                  After-Visit Summary &bull; Care Strategy &bull; {{ activeAgeTier() | uppercase }}
-                </h1>
-                <p class="text-xs text-slate-600 mt-0.5">
-                  Personalized 3-Act Care Instructions for Patient &amp; Family Caregiver &bull; Keep on Your Refrigerator
-                </p>
-              </div>
-
-              @if (activeAgeTier() === 'environmental_heat') {
-                <div class="p-2.5 mb-2 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center gap-2">
-                  <span class="text-base">☀️</span>
-                  <div>
-                    <strong>Extreme Heat Advisory ({{ ambientTempF() }}°F):</strong> 
-                    Staying hydrated and cool is critical for your kidneys and blood pressure today. Follow the instructions below.
-                  </div>
-                </div>
-              }
-
-              <!-- Act 1 -->
-              <div class="p-3.5 rounded-xl border border-amber-300/80 bg-amber-50/40">
-                <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
-                  <span class="uppercase tracking-wide text-amber-900 font-mono text-[11px]">
-                    Act 1: Where You've Been &bull; Why We Checked Your Medicine Today
-                  </span>
-                  <span class="text-[10px] font-mono text-amber-800 bg-amber-100 px-2 py-0.5 rounded">Zero Guilt Baseline</span>
-                </div>
-                <p class="text-slate-800 leading-relaxed font-sans">
-                  {{ traj.act1WhereYouveBeen.plainLanguageRationale }}
-                </p>
-              </div>
-
-              <!-- Act 2 -->
-              <div class="p-3.5 rounded-xl border-2 border-teal-700 bg-teal-50/30">
-                <div class="flex items-center justify-between font-bold text-teal-900 mb-2">
-                  <span class="uppercase tracking-wide text-teal-900 font-mono text-[11px]">
-                    Act 2: Where You Stand Today &bull; Your Safe Daily Routine
-                  </span>
-                  <span class="text-[10px] font-mono font-bold text-teal-800 bg-teal-100 px-2 py-0.5 rounded">ISMP Verified Dose</span>
-                </div>
-                <div class="grid grid-cols-2 gap-3 mb-2 font-mono">
-                  <div class="p-2 rounded-lg bg-white border border-teal-300 shadow-sm">
-                    <span class="text-[10px] uppercase font-bold text-teal-800 block">Today's Calibrated Dose:</span>
-                    <span class="text-sm font-bold text-slate-900">{{ traj.act2WhereYouStandToday.calibratedDosage }}</span>
-                  </div>
-                  <div class="p-2 rounded-lg bg-white border border-teal-300 shadow-sm">
-                    <span class="text-[10px] uppercase font-bold text-teal-800 block">Daily Water Target:</span>
-                    <span class="text-sm font-bold text-slate-900">{{ traj.act2WhereYouStandToday.hydrationTarget }}</span>
-                  </div>
-                </div>
-                <p class="text-slate-900 leading-relaxed font-sans mb-3">
-                  🥄 <strong>Teaspoon Guide:</strong> {{ traj.act2WhereYouStandToday.plainLanguageAdvice }}
-                </p>
-                <div class="p-2.5 rounded-lg bg-white border border-teal-200">
-                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-800 block mb-1">Daily Routine Checklist (Check with pen):</span>
-                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] font-mono text-slate-800">
-                    <div class="flex items-center gap-1.5">
-                      <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
-                      <span>Morning Dose Taken</span>
+            <!-- MODE A: FLAT REFRIGERATOR HANDOUT -->
+            @if (previewDisplayMode() === 'flat') {
+              <div class="p-6 sm:p-8 overflow-y-auto max-h-[80vh] space-y-4">
+                <div class="border-b-2 border-slate-900 pb-3 mb-2 flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-teal-800 text-white flex items-center justify-center font-bold text-base shadow-sm">
+                      🪶
                     </div>
-                    <div class="flex items-center gap-1.5">
-                      <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
-                      <span>Afternoon Hydration Goal Met</span>
+                    <div>
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-2xl font-extrabold tracking-tight text-teal-900 font-pocketgull-brand">PocketGull</span>
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-teal-800 bg-teal-100/90 px-2 py-0.5 rounded border border-teal-300">Health</span>
+                      </div>
+                      <div class="text-[10px] text-slate-500 font-mono">Clinical Intelligence &amp; Care Strategy Engine</div>
                     </div>
-                    <div class="flex items-center gap-1.5">
-                      <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
-                      <span>Evening Check Complete</span>
+                  </div>
+                  <div class="text-right text-xs font-mono text-slate-700 space-y-0.5">
+                    <div><strong>Patient:</strong> {{ patientState.activePatientSummary() || 'Valued Patient' }}</div>
+                    <div><strong>Date:</strong> {{ activeDateString }}</div>
+                    <div class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300">
+                      <span>✓</span> ISMP Slashed-Zero Safe Dosing Attested
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Act 3 -->
-              <div class="p-3.5 rounded-xl border border-indigo-200 bg-indigo-50/30">
-                <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
-                  <span class="uppercase tracking-wide text-indigo-900 font-mono text-[11px]">
-                    Act 3: Where You're Going &bull; What to Watch for at Home
-                  </span>
-                  <span class="text-[10px] font-mono text-indigo-800 font-bold bg-indigo-100 px-2 py-0.5 rounded">
-                    {{ traj.act3WhereYoureGoing.homeCareWatchWindow }}
-                  </span>
-                </div>
-                <p class="text-slate-800 mb-2 leading-relaxed font-sans">
-                  💙 {{ traj.act3WhereYoureGoing.plainLanguageGuidance }}
-                </p>
-                <div class="p-2.5 rounded-lg bg-rose-50/60 border border-rose-300 space-y-1.5">
-                  <span class="font-bold text-rose-900 text-[11px] font-mono flex items-center gap-1">
-                    <span>⚠️</span> Call Clinic Immediately If You Notice Any of These:
-                  </span>
-                  @for (sign of traj.act3WhereYoureGoing.warningSignsToMonitor; track sign) {
-                    <div class="flex items-start gap-2 text-slate-800 text-xs">
-                      <span class="w-3.5 h-3.5 rounded border border-rose-400 bg-white inline-block shrink-0 mt-0.5"></span>
-                      <span>{{ sign }}</span>
-                    </div>
-                  }
-                </div>
-              </div>
-
-              <!-- Emergency / Signature Bar -->
-              <div class="mt-4 pt-3 border-t-2 border-slate-900 flex flex-wrap items-center justify-between text-xs font-mono gap-2">
                 <div>
-                  <strong>Clinic Daytime Line:</strong> (480) 555-0199 &bull; <strong>24/7 Nurse Triage:</strong> 988 / (480) 555-0100
+                  <h1 class="text-base font-extrabold uppercase tracking-wider text-slate-900">
+                    After-Visit Summary &bull; Care Strategy &bull; {{ activeAgeTier() | uppercase }}
+                  </h1>
+                  <p class="text-xs text-slate-600 mt-0.5">
+                    Personalized 3-Act Care Instructions for Patient &amp; Family Caregiver &bull; Keep on Your Refrigerator
+                  </p>
                 </div>
-                <div class="text-[10px] text-slate-500 font-pocketgull-brand">
-                  PocketGull Health &bull; HIPAA Safe Harbor &sect; 164.514 &bull; HL7 FHIR R4 Ready
+
+                <!-- 💌 Caregiver Love Note -->
+                <div class="p-3 rounded-xl border border-teal-200 bg-teal-50/50 flex items-start gap-2.5">
+                  <span class="text-base">💌</span>
+                  <div class="text-xs w-full">
+                    <div class="font-bold text-teal-950 font-mono text-[10px] uppercase tracking-wider flex items-center justify-between">
+                      <span>Personal Caregiver Note &bull; Keep on Your Refrigerator</span>
+                      <span class="text-[9px] font-sans text-teal-700 italic">Pocket Sanctuary</span>
+                    </div>
+                    <div class="text-slate-800 italic font-serif text-sm mt-0.5">
+                      &ldquo;{{ caregiverLoveNote() }}&rdquo;
+                    </div>
+                  </div>
+                </div>
+
+                @if (activeAgeTier() === 'environmental_heat') {
+                  <div class="p-2.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center gap-2">
+                    <span class="text-base">☀️</span>
+                    <div>
+                      <strong>Extreme Heat Advisory ({{ ambientTempF() }}°F):</strong> 
+                      Staying hydrated and cool is critical for your kidneys and blood pressure today. Follow the instructions below.
+                    </div>
+                  </div>
+                }
+
+                <!-- Act 1 -->
+                <div class="p-3.5 rounded-xl border border-amber-300/80 bg-amber-50/40">
+                  <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
+                    <span class="uppercase tracking-wide text-amber-900 font-mono text-[11px]">
+                      Act 1: Where You've Been &bull; Why We Checked Your Medicine Today
+                    </span>
+                    <span class="text-[10px] font-mono text-amber-800 bg-amber-100 px-2 py-0.5 rounded">Zero Guilt Baseline</span>
+                  </div>
+                  <p class="text-slate-800 leading-relaxed font-sans">
+                    {{ traj.act1WhereYouveBeen.plainLanguageRationale }}
+                  </p>
+                </div>
+
+                <!-- 🕊️ Origami Folding Guideline 1 (Horizontal) -->
+                <div class="my-2 relative flex items-center justify-center text-[10px] font-mono text-slate-400 select-none">
+                  <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-dashed border-slate-300"></div></div>
+                  <span class="relative bg-white px-2.5 flex items-center gap-1.5 text-slate-500 font-bold">
+                    <span>🕊️</span> 1. FOLD INWARD ALONG THIS LINE TO FORM POCKET PARCEL <span>↶</span>
+                  </span>
+                </div>
+
+                <!-- Act 2 -->
+                <div class="p-3.5 rounded-xl border-2 border-teal-700 bg-teal-50/30">
+                  <div class="flex items-center justify-between font-bold text-teal-900 mb-2">
+                    <span class="uppercase tracking-wide text-teal-900 font-mono text-[11px]">
+                      Act 2: Where You Stand Today &bull; Your Safe Daily Routine
+                    </span>
+                    <span class="text-[10px] font-mono font-bold text-teal-800 bg-teal-100 px-2 py-0.5 rounded">ISMP Verified Dose</span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3 mb-2 font-mono">
+                    <div class="p-2 rounded-lg bg-white border border-teal-300 shadow-sm">
+                      <span class="text-[10px] uppercase font-bold text-teal-800 block">Today's Calibrated Dose:</span>
+                      <span class="text-sm font-bold text-slate-900">{{ traj.act2WhereYouStandToday.calibratedDosage }}</span>
+                    </div>
+                    <div class="p-2 rounded-lg bg-white border border-teal-300 shadow-sm">
+                      <span class="text-[10px] uppercase font-bold text-teal-800 block">Daily Water Target:</span>
+                      <span class="text-sm font-bold text-slate-900">{{ traj.act2WhereYouStandToday.hydrationTarget }}</span>
+                    </div>
+                  </div>
+                  <p class="text-slate-900 leading-relaxed font-sans mb-3">
+                    🥄 <strong>Teaspoon Guide:</strong> {{ traj.act2WhereYouStandToday.plainLanguageAdvice }}
+                  </p>
+                  <div class="p-2.5 rounded-lg bg-white border border-teal-200">
+                    <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-800 block mb-1">Daily Routine Checklist (Check with pen):</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] font-mono text-slate-800">
+                      <div class="flex items-center gap-1.5">
+                        <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
+                        <span>Morning Dose Taken</span>
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
+                        <span>Afternoon Hydration Goal Met</span>
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
+                        <span>Evening Check Complete</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 🕊️ Origami Folding Guideline 2 (Vertical / Booklet Fold) -->
+                <div class="my-2 relative flex items-center justify-center text-[10px] font-mono text-slate-400 select-none">
+                  <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-dashed border-slate-300"></div></div>
+                  <span class="relative bg-white px-2.5 flex items-center gap-1.5 text-slate-500 font-bold">
+                    <span>↶</span> 2. FOLD IN HALF TO TUCK INTO POCKET BOOKLET OR REFRIGERATOR MAGNET <span>↶</span>
+                  </span>
+                </div>
+
+                <!-- Act 3 -->
+                <div class="p-3.5 rounded-xl border border-indigo-200 bg-indigo-50/30">
+                  <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
+                    <span class="uppercase tracking-wide text-indigo-900 font-mono text-[11px]">
+                      Act 3: Where You're Going &bull; What to Watch for at Home
+                    </span>
+                    <span class="text-[10px] font-mono text-indigo-800 font-bold bg-indigo-100 px-2 py-0.5 rounded">
+                      {{ traj.act3WhereYoureGoing.homeCareWatchWindow }}
+                    </span>
+                  </div>
+                  <p class="text-slate-800 mb-2 leading-relaxed font-sans">
+                    💙 {{ traj.act3WhereYoureGoing.plainLanguageGuidance }}
+                  </p>
+                  <div class="p-2.5 rounded-lg bg-rose-50/60 border border-rose-300 space-y-1.5">
+                    <span class="font-bold text-rose-900 text-[11px] font-mono flex items-center gap-1">
+                      <span>⚠️</span> Call Clinic Immediately If You Notice Any of These:
+                    </span>
+                    @for (sign of traj.act3WhereYoureGoing.warningSignsToMonitor; track sign) {
+                      <div class="flex items-start gap-2 text-slate-800 text-xs">
+                        <span class="w-3.5 h-3.5 rounded border border-rose-400 bg-white inline-block shrink-0 mt-0.5"></span>
+                        <span>{{ sign }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- 🤝 Pass-it-Forward Caregiver Pocket Token -->
+                <div class="mt-4 p-3.5 rounded-xl border-2 border-dashed border-teal-600 bg-teal-50/40 text-slate-900">
+                  <div class="flex items-center justify-between border-b border-dashed border-teal-400 pb-1.5 mb-2">
+                    <div class="flex items-center gap-1.5 font-bold font-mono text-[11px] text-teal-900">
+                      <span>🤝</span> CAREGIVER POCKET TOKEN &bull; PASS TO FAMILY OR NEIGHBOR
+                    </div>
+                    <span class="text-[10px] font-mono text-teal-700 flex items-center gap-1">
+                      <span>✂️</span> Cut or Tear Along Dotted Line
+                    </span>
+                  </div>
+                  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[10px] font-mono">
+                    <div>
+                      <span class="text-slate-500 block">Patient:</span>
+                      <strong class="text-slate-900">{{ patientState.activePatientSummary() || 'Valued Patient' }}</strong>
+                    </div>
+                    <div>
+                      <span class="text-slate-500 block">Emergency Lifeline:</span>
+                      <strong class="text-rose-700">988 / (480) 555-0100</strong>
+                    </div>
+                    <div>
+                      <span class="text-slate-500 block">Today's Calibrated Dose:</span>
+                      <strong class="text-teal-900">{{ traj.act2WhereYouStandToday.calibratedDosage }}</strong>
+                    </div>
+                  </div>
+                  <div class="mt-2 text-[9px] text-slate-600 italic font-serif flex items-center justify-between">
+                    <span>🪶 &ldquo;Carry this in your wallet or purse so your loved one is always protected.&rdquo;</span>
+                    <span class="font-mono not-italic text-teal-800 font-bold">PocketGull Care Token</span>
+                  </div>
+                </div>
+
+                <!-- Emergency / Signature Bar -->
+                <div class="mt-4 pt-3 border-t-2 border-slate-900 flex flex-wrap items-center justify-between text-xs font-mono gap-2">
+                  <div>
+                    <strong>Clinic Daytime Line:</strong> (480) 555-0199 &bull; <strong>24/7 Nurse Triage:</strong> 988 / (480) 555-0100
+                  </div>
+                  <div class="text-[10px] text-slate-500 font-pocketgull-brand">
+                    PocketGull Health &bull; HIPAA Safe Harbor &sect; 164.514 &bull; HL7 FHIR R4 Ready
+                  </div>
                 </div>
               </div>
-            </div>
+            }
+
+            <!-- MODE B: 3D ORIGAMI PROGRESSIVE STORY UNFURL -->
+            @if (previewDisplayMode() === 'origami') {
+              <div class="p-6 sm:p-8 overflow-y-auto max-h-[80vh] space-y-5 bg-gradient-to-b from-stone-50 to-amber-50/40">
+                <!-- Origami Pacing Progress Header -->
+                <div class="flex items-center justify-between text-xs font-mono border-b border-stone-200 pb-3">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-6 h-6 rounded-full bg-teal-800 text-white flex items-center justify-center font-bold text-xs">
+                      {{ origamiUnfurlStep() + 1 }}
+                    </span>
+                    <span class="font-bold text-slate-900">
+                      @switch (origamiUnfurlStep()) {
+                        @case (0) { Sealed Pocket Parcel }
+                        @case (1) { Act 1: The Sanctuary }
+                        @case (2) { Act 2: The Daily Rhythm }
+                        @case (3) { Act 3: Horizon &amp; The Gift }
+                      }
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-1">
+                    @for (dot of [0, 1, 2, 3]; track dot) {
+                      <span
+                        class="w-2.5 h-2.5 rounded-full transition-all"
+                        [class.bg-teal-600]="origamiUnfurlStep() >= dot"
+                        [class.bg-slate-300]="origamiUnfurlStep() < dot"></span>
+                    }
+                  </div>
+                </div>
+
+                <!-- STEP 0: SEALED PARCEL (CLOSED STATE) -->
+                @if (origamiUnfurlStep() === 0) {
+                  <div class="max-w-md mx-auto p-6 rounded-2xl bg-white border-2 border-stone-300 shadow-xl text-center space-y-4 animate-in fade-in zoom-in-95 duration-300">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-teal-800 text-white flex items-center justify-center text-2xl shadow-lg border-2 border-teal-600">
+                      🪶
+                    </div>
+                    <div>
+                      <div class="text-xs font-mono font-bold uppercase tracking-widest text-teal-800">A Personal Care Parcel For</div>
+                      <div class="text-2xl font-bold text-slate-900 mt-1 font-pocketgull-brand">
+                        {{ patientState.activePatientSummary() || 'Valued Patient' }}
+                      </div>
+                      <div class="text-xs text-slate-500 font-mono mt-0.5">{{ activeDateString }}</div>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-xs italic font-serif text-slate-800">
+                      &ldquo;{{ caregiverLoveNote() }}&rdquo;
+                    </div>
+
+                    <div class="pt-2">
+                      <button
+                        type="button"
+                        (click)="nextOrigamiStep()"
+                        class="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold font-mono text-xs uppercase tracking-wider transition cursor-pointer shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                        <span>🕊️</span> Break Seal &bull; Unfold Chapter 1 (Sanctuary) <span>➡️</span>
+                      </button>
+                    </div>
+                  </div>
+                }
+
+                <!-- STEP 1: ACT 1 SANCTUARY -->
+                @if (origamiUnfurlStep() === 1) {
+                  <div class="max-w-lg mx-auto p-6 rounded-2xl bg-white border-2 border-amber-300 shadow-xl space-y-4 animate-in slide-in-from-top-4 duration-300">
+                    <div class="flex items-center justify-between text-xs font-mono border-b border-amber-200 pb-2">
+                      <span class="font-bold text-amber-900 uppercase">Act 1: Where You've Been</span>
+                      <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px]">Zero Guilt Baseline</span>
+                    </div>
+
+                    <!-- Parasympathetic 10s breath prompt -->
+                    <div class="p-3 rounded-xl bg-teal-50/80 border border-teal-200 text-xs flex items-center gap-2.5">
+                      <span class="text-lg">🌿</span>
+                      <div class="text-teal-950 leading-relaxed font-sans">
+                        <strong>The Grounding Breath:</strong> Before reviewing today's plan, take three slow breaths. Inhale 4 seconds... exhale 6 seconds. You are safe.
+                      </div>
+                    </div>
+
+                    <p class="text-sm text-slate-800 leading-relaxed font-sans">
+                      {{ traj.act1WhereYouveBeen.plainLanguageRationale }}
+                    </p>
+
+                    <div class="flex items-center justify-between pt-3 border-t border-stone-200">
+                      <button
+                        type="button"
+                        (click)="prevOrigamiStep()"
+                        class="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-slate-700 font-mono text-xs font-bold transition cursor-pointer">
+                        ⬅️ Refold Parcel
+                      </button>
+                      <button
+                        type="button"
+                        (click)="nextOrigamiStep()"
+                        class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-mono text-xs font-bold transition cursor-pointer shadow-md flex items-center gap-1.5">
+                        <span>Unfold Chapter 2: Today's Routine</span> <span>➡️</span>
+                      </button>
+                    </div>
+                  </div>
+                }
+
+                <!-- STEP 2: ACT 2 DAILY RHYTHM -->
+                @if (origamiUnfurlStep() === 2) {
+                  <div class="max-w-lg mx-auto p-6 rounded-2xl bg-white border-2 border-teal-700 shadow-xl space-y-4 animate-in slide-in-from-top-4 duration-300">
+                    <div class="flex items-center justify-between text-xs font-mono border-b border-teal-200 pb-2">
+                      <span class="font-bold text-teal-900 uppercase">Act 2: Where You Stand Today</span>
+                      <span class="px-2 py-0.5 rounded bg-teal-100 text-teal-800 font-bold text-[10px]">ISMP Verified Safe Dose</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 font-mono">
+                      <div class="p-3 rounded-xl bg-teal-50 border border-teal-200">
+                        <span class="text-[10px] uppercase font-bold text-teal-800 block">Today's Calibrated Dose:</span>
+                        <span class="text-base font-bold text-slate-900">{{ traj.act2WhereYouStandToday.calibratedDosage }}</span>
+                      </div>
+                      <div class="p-3 rounded-xl bg-teal-50 border border-teal-200">
+                        <span class="text-[10px] uppercase font-bold text-teal-800 block">Daily Water Target:</span>
+                        <span class="text-base font-bold text-slate-900">{{ traj.act2WhereYouStandToday.hydrationTarget }}</span>
+                      </div>
+                    </div>
+
+                    <p class="text-xs text-slate-900 leading-relaxed font-sans">
+                      🥄 <strong>Teaspoon Explanation:</strong> {{ traj.act2WhereYouStandToday.plainLanguageAdvice }}
+                    </p>
+
+                    <div class="p-3 rounded-xl bg-stone-50 border border-stone-200 space-y-2">
+                      <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-800 block">Daily Habit Checklist:</span>
+                      <div class="space-y-1.5 text-xs font-mono text-slate-800">
+                        <div class="flex items-center gap-2">
+                          <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block bg-white"></span>
+                          <span>Morning Calibrated Dose Taken</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block bg-white"></span>
+                          <span>Afternoon Water Target Reached</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block bg-white"></span>
+                          <span>Evening Vitals &amp; Check Complete</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-3 border-t border-stone-200">
+                      <button
+                        type="button"
+                        (click)="prevOrigamiStep()"
+                        class="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-slate-700 font-mono text-xs font-bold transition cursor-pointer">
+                        ⬅️ Previous Chapter
+                      </button>
+                      <button
+                        type="button"
+                        (click)="nextOrigamiStep()"
+                        class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-mono text-xs font-bold transition cursor-pointer shadow-md flex items-center gap-1.5">
+                        <span>Reveal Act 3 &amp; The Gift</span> <span>➡️</span>
+                      </button>
+                    </div>
+                  </div>
+                }
+
+                <!-- STEP 3: ACT 3 HORIZON & THE GIFT -->
+                @if (origamiUnfurlStep() === 3) {
+                  <div class="max-w-xl mx-auto p-6 rounded-2xl bg-white border-2 border-indigo-400 shadow-2xl space-y-4 animate-in slide-in-from-top-4 duration-300">
+                    <div class="flex items-center justify-between text-xs font-mono border-b border-indigo-200 pb-2">
+                      <span class="font-bold text-indigo-900 uppercase">Act 3: Where You're Going &bull; The Gift</span>
+                      <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 font-bold text-[10px]">
+                        {{ traj.act3WhereYoureGoing.homeCareWatchWindow }}
+                      </span>
+                    </div>
+
+                    <p class="text-xs text-slate-800 leading-relaxed font-sans">
+                      💙 {{ traj.act3WhereYoureGoing.plainLanguageGuidance }}
+                    </p>
+
+                    <!-- Red flag alert -->
+                    <div class="p-3 rounded-xl bg-rose-50 border border-rose-300 space-y-1 text-xs">
+                      <span class="font-bold text-rose-900 font-mono flex items-center gap-1 text-[11px]">
+                        <span>⚠️</span> Call Clinic Immediately If You Observe:
+                      </span>
+                      @for (sign of traj.act3WhereYoureGoing.warningSignsToMonitor; track sign) {
+                        <div class="flex items-start gap-1.5 text-slate-800">
+                          <span class="text-rose-500">•</span>
+                          <span>{{ sign }}</span>
+                        </div>
+                      }
+                    </div>
+
+                    <!-- 🎁 THE GIFT: CAREGIVER POCKET TOKEN -->
+                    <div class="p-4 rounded-xl border-2 border-dashed border-teal-600 bg-gradient-to-r from-teal-50 to-emerald-50 text-slate-900 shadow-md">
+                      <div class="flex items-center justify-between border-b border-dashed border-teal-400 pb-1.5 mb-2">
+                        <span class="font-bold font-mono text-xs text-teal-950 flex items-center gap-1.5">
+                          <span>🎁</span> THE CAREGIVER POCKET TOKEN &bull; PASS TO NEXT PERSON
+                        </span>
+                        <span class="text-[10px] font-mono text-teal-700 flex items-center gap-1">
+                          <span>✂️</span> Cut / Tear Here
+                        </span>
+                      </div>
+                      <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                        <div>
+                          <span class="text-slate-500 block text-[10px]">Protected Patient:</span>
+                          <strong>{{ patientState.activePatientSummary() || 'Valued Patient' }}</strong>
+                        </div>
+                        <div>
+                          <span class="text-slate-500 block text-[10px]">24/7 Lifeline / Triage:</span>
+                          <strong class="text-rose-700">988 / (480) 555-0100</strong>
+                        </div>
+                      </div>
+                      <div class="mt-2 text-[10px] text-slate-600 italic font-serif flex items-center justify-between">
+                        <span>🪶 &ldquo;Carry this token so your loved one is never alone in an emergency.&rdquo;</span>
+                        <span class="font-mono not-italic text-teal-800 font-bold">PocketGull Token</span>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-3 border-t border-stone-200">
+                      <button
+                        type="button"
+                        (click)="resetOrigamiStep()"
+                        class="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-slate-700 font-mono text-xs font-bold transition cursor-pointer">
+                        🔄 Fold Back to Start
+                      </button>
+                      <button
+                        type="button"
+                        (click)="printAvsHandout()"
+                        class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-mono text-xs font-bold transition cursor-pointer shadow-lg flex items-center gap-1.5">
+                        <span>🖨️</span> Print This Complete Handout
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
           </div>
         </div>
       }
@@ -1395,6 +1782,10 @@ export class ClinicalPosologyCalculatorComponent {
   readonly showCopiedFhirToast = signal<boolean>(false);
   readonly showCopiedAsuToast = signal<boolean>(false);
   readonly showAvsPreview = signal<boolean>(false);
+  readonly caregiverLoveNote = signal<string>('For our family: You are surrounded with steady care and calm support. We take this journey one day at a time.');
+  readonly isEditingLoveNote = signal<boolean>(false);
+  readonly previewDisplayMode = signal<'flat' | 'origami'>('flat');
+  readonly origamiUnfurlStep = signal<number>(0);
 
   readonly activeDateString = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
@@ -1801,10 +2192,38 @@ export class ClinicalPosologyCalculatorComponent {
 
   toggleAvsPreview(): void {
     this.showAvsPreview.update(v => !v);
+    if (!this.showAvsPreview()) {
+      this.origamiUnfurlStep.set(0);
+    }
   }
 
   closeAvsPreview(): void {
     this.showAvsPreview.set(false);
+    this.origamiUnfurlStep.set(0);
+  }
+
+  toggleEditLoveNote(): void {
+    this.isEditingLoveNote.update(v => !v);
+  }
+
+  setLoveNote(val: string): void {
+    this.caregiverLoveNote.set(val);
+  }
+
+  setPreviewDisplayMode(mode: 'flat' | 'origami'): void {
+    this.previewDisplayMode.set(mode);
+  }
+
+  nextOrigamiStep(): void {
+    this.origamiUnfurlStep.update(s => Math.min(s + 1, 3));
+  }
+
+  prevOrigamiStep(): void {
+    this.origamiUnfurlStep.update(s => Math.max(s - 1, 0));
+  }
+
+  resetOrigamiStep(): void {
+    this.origamiUnfurlStep.set(0);
   }
 
   copyEhrSoapSnippet(): void {
