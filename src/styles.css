@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Atkinson+Hyperlegible+Next:ital,wght@0,400..800;1,400..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap');
 @import './styles/pocketgull-marker-font.css';
 @import './styles/pocketgull-icon-font.css';
+@import './styles/pocketgull-tokens.css';
 
 @tailwind base;
 @tailwind components;
@@ -101,10 +102,13 @@ body, html {
     visibility: hidden !important;
   }
   body.printing-avs-handout #posology-avs-print-area,
-  body.printing-avs-handout #posology-avs-print-area * {
+  body.printing-avs-handout #posology-avs-print-area *,
+  body.printing-avs-handout #organ-avs-print-area,
+  body.printing-avs-handout #organ-avs-print-area * {
     visibility: visible !important;
   }
-  body.printing-avs-handout #posology-avs-print-area {
+  body.printing-avs-handout #posology-avs-print-area,
+  body.printing-avs-handout #organ-avs-print-area {
     position: fixed !important;
     left: 0 !important;
     top: 0 !important;

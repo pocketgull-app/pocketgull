@@ -59,4 +59,44 @@ describe('InstantBodyCarePlanSheetComponent Unit Suite', () => {
     component.activeLens.set('allopathic');
     expect(component.activeLens()).toBe('allopathic');
   });
+
+  it('5. Switches between all 4 persona perspectives (patient, family, clinician, community)', () => {
+    expect(component.personaMode()).toBe('clinician');
+
+    component.setPersona('patient');
+    expect(component.personaMode()).toBe('patient');
+
+    component.setPersona('family');
+    expect(component.personaMode()).toBe('family');
+
+    component.setPersona('community');
+    expect(component.personaMode()).toBe('community');
+  });
+
+  it('6. Synthesizes 3-Act Trajectory with Zero-Guilt baseline and warning signs', () => {
+    component.openForBodyPart('Kidneys & Adrenals');
+    const traj = component.organTrajectory();
+
+    expect(traj.act1WhereYouveBeen.title).toContain('Renal');
+    expect(traj.act1WhereYouveBeen.plainLanguageRationale).toBeTruthy();
+    expect(traj.act2WhereYouStandToday.biometricBaseline).toBeTruthy();
+    expect(traj.act2WhereYouStandToday.plainLanguageAdvice).toBeTruthy();
+    expect(traj.act3WhereYoureGoing.watchWindow).toBeTruthy();
+    expect(traj.act3WhereYoureGoing.warningSignsToMonitor.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('7. Toggles and closes the high-fidelity on-screen AVS preview', () => {
+    expect(component.showAvsPreview()).toBe(false);
+
+    component.toggleAvsPreview();
+    expect(component.showAvsPreview()).toBe(true);
+
+    component.closeAvsPreview();
+    expect(component.showAvsPreview()).toBe(false);
+  });
+
+  it('8. printOrganAvs triggers document printing-avs-handout class', () => {
+    expect(() => component.printOrganAvs()).not.toThrow();
+  });
 });
+

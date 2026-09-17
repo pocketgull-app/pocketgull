@@ -703,11 +703,11 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
 
-  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com https://cloud.google.com`;
+  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cloud.google.com`;
 
   const scriptSrcAttr = `'self' 'unsafe-inline' 'unsafe-hashes'`;
-  const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com data:`;
-  const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com data:`;
+  const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
+  const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com data:`;
   const styleSrcAttr = `'self' 'unsafe-inline'`;
 
   const connectSrc = `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;

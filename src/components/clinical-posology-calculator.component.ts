@@ -995,7 +995,14 @@ export interface IPosology3ActTrajectory {
                 <span>📋</span> Apply Calibrated Dose to Care Plan
               </button>
 
-              <!-- Action 2: Print Family Handout (AVS) -->
+              <!-- Action 2: Preview & Print Family Handout (AVS) -->
+              <button
+                type="button"
+                (click)="toggleAvsPreview()"
+                class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
+                <span>👁️</span> Preview Handout
+              </button>
+
               <button
                 type="button"
                 (click)="printAvsHandout()"
@@ -1065,23 +1072,34 @@ export interface IPosology3ActTrajectory {
       <!-- 🖨️ 1-PAGE REFRIGERATOR AFTER-VISIT SUMMARY (AVS) PRINT TEMPLATE -->
       <div id="posology-avs-print-area" class="hidden print:block text-slate-900 bg-white p-6 rounded-none">
         <div class="border-b-2 border-slate-900 pb-3 mb-4 flex items-center justify-between">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-xl font-bold text-teal-800">PocketGull Health</span>
-              <span class="text-xs text-slate-400 font-mono">/</span>
-              <h1 class="text-base font-extrabold uppercase tracking-wider text-slate-900">
-                After-Visit Summary &amp; Care Strategy
-              </h1>
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-teal-800 text-white flex items-center justify-center font-bold text-base shadow-sm">
+              🪶
             </div>
-            <p class="text-xs text-slate-600 mt-0.5">
-              Personalized 3-Act Care Instructions for Patient &amp; Family Caregiver • Keep on Your Refrigerator
-            </p>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-2xl font-extrabold tracking-tight text-teal-900 font-pocketgull-brand">PocketGull</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-teal-800 bg-teal-100/90 px-2 py-0.5 rounded border border-teal-300">Health</span>
+              </div>
+              <div class="text-[10px] text-slate-500 font-mono">Clinical Intelligence &amp; Care Strategy Engine</div>
+            </div>
           </div>
-          <div class="text-right text-xs font-mono text-slate-700">
+          <div class="text-right text-xs font-mono text-slate-700 space-y-0.5">
             <div><strong>Patient:</strong> {{ patientState.activePatientSummary() || 'Valued Patient' }}</div>
             <div><strong>Date:</strong> {{ activeDateString }}</div>
-            <div class="text-[10px] text-slate-500">ISMP Slashed-Zero Safe Dosing Attested</div>
+            <div class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300">
+              <span>✓</span> ISMP Slashed-Zero Safe Dosing Attested
+            </div>
           </div>
+        </div>
+
+        <div class="mb-4">
+          <h1 class="text-base font-extrabold uppercase tracking-wider text-slate-900">
+            After-Visit Summary &bull; Care Strategy &bull; {{ activeAgeTier() | uppercase }}
+          </h1>
+          <p class="text-xs text-slate-600 mt-0.5">
+            Personalized 3-Act Care Instructions for Patient &amp; Family Caregiver &bull; Keep on Your Refrigerator
+          </p>
         </div>
 
         @if (activeAgeTier() === 'environmental_heat') {
@@ -1096,56 +1114,78 @@ export interface IPosology3ActTrajectory {
 
         <div class="space-y-4 text-xs">
           <!-- Act 1 -->
-          <div class="p-3.5 rounded-lg border border-slate-300 bg-slate-50">
+          <div class="p-3.5 rounded-xl border border-amber-300/80 bg-amber-50/40">
             <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
-              <span class="uppercase tracking-wide text-amber-800">Act 1: Where You've Been • Why We Checked Your Medicine Today</span>
-              <span class="text-[10px] font-mono text-slate-500">Zero Guilt • Baseline Context</span>
+              <span class="uppercase tracking-wide text-amber-900 font-mono text-[11px]">
+                Act 1: Where You've Been &bull; Why We Checked Your Medicine Today
+              </span>
+              <span class="text-[10px] font-mono text-amber-800 bg-amber-100 px-2 py-0.5 rounded">Zero Guilt Baseline</span>
             </div>
-            <p class="text-slate-700 leading-relaxed font-sans">
+            <p class="text-slate-800 leading-relaxed font-sans">
               {{ traj.act1WhereYouveBeen.plainLanguageRationale }}
             </p>
           </div>
 
           <!-- Act 2 -->
-          <div class="p-3.5 rounded-lg border-2 border-teal-700 bg-teal-50/50">
+          <div class="p-3.5 rounded-xl border-2 border-teal-700 bg-teal-50/30">
             <div class="flex items-center justify-between font-bold text-teal-900 mb-2">
-              <span class="uppercase tracking-wide text-teal-800">Act 2: Where You Stand Today • Your Safe Daily Routine</span>
-              <span class="text-[10px] font-mono font-bold text-teal-700">ISMP Verified Dose</span>
+              <span class="uppercase tracking-wide text-teal-900 font-mono text-[11px]">
+                Act 2: Where You Stand Today &bull; Your Safe Daily Routine
+              </span>
+              <span class="text-[10px] font-mono font-bold text-teal-800 bg-teal-100 px-2 py-0.5 rounded">ISMP Verified Dose</span>
             </div>
             <div class="grid grid-cols-2 gap-3 mb-2 font-mono">
-              <div class="p-2 rounded bg-white border border-teal-300">
+              <div class="p-2 rounded-lg bg-white border border-teal-300 shadow-sm">
                 <span class="text-[10px] uppercase font-bold text-teal-800 block">Today's Calibrated Dose:</span>
                 <span class="text-sm font-bold text-slate-900">{{ traj.act2WhereYouStandToday.calibratedDosage }}</span>
               </div>
-              <div class="p-2 rounded bg-white border border-teal-300">
+              <div class="p-2 rounded-lg bg-white border border-teal-300 shadow-sm">
                 <span class="text-[10px] uppercase font-bold text-teal-800 block">Daily Water Target:</span>
                 <span class="text-sm font-bold text-slate-900">{{ traj.act2WhereYouStandToday.hydrationTarget }}</span>
               </div>
             </div>
-            <p class="text-slate-800 leading-relaxed font-sans mb-2">
+            <p class="text-slate-900 leading-relaxed font-sans mb-3">
               🥄 <strong>Teaspoon Guide:</strong> {{ traj.act2WhereYouStandToday.plainLanguageAdvice }}
             </p>
-            <div class="flex items-center gap-4 text-[11px] font-mono text-slate-700 pt-1 border-t border-teal-200">
-              <span>[  ] Morning Dose Taken</span>
-              <span>[  ] Afternoon Hydration Goal Met</span>
-              <span>[  ] Evening Check Complete</span>
+            <div class="p-2.5 rounded-lg bg-white border border-teal-200">
+              <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-800 block mb-1">Daily Routine Checklist (Check with pen):</span>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] font-mono text-slate-800">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
+                  <span>Morning Dose Taken</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
+                  <span>Afternoon Hydration Goal Met</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
+                  <span>Evening Check Complete</span>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Act 3 -->
-          <div class="p-3.5 rounded-lg border border-slate-300 bg-slate-50">
+          <div class="p-3.5 rounded-xl border border-indigo-200 bg-indigo-50/30">
             <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
-              <span class="uppercase tracking-wide text-indigo-900">Act 3: Where You're Going • What to Watch for at Home</span>
-              <span class="text-[10px] font-mono text-indigo-700 font-bold">{{ traj.act3WhereYoureGoing.homeCareWatchWindow }}</span>
+              <span class="uppercase tracking-wide text-indigo-900 font-mono text-[11px]">
+                Act 3: Where You're Going &bull; What to Watch for at Home
+              </span>
+              <span class="text-[10px] font-mono text-indigo-800 font-bold bg-indigo-100 px-2 py-0.5 rounded">
+                {{ traj.act3WhereYoureGoing.homeCareWatchWindow }}
+              </span>
             </div>
-            <p class="text-slate-700 mb-2 leading-relaxed font-sans">
+            <p class="text-slate-800 mb-2 leading-relaxed font-sans">
               💙 {{ traj.act3WhereYoureGoing.plainLanguageGuidance }}
             </p>
-            <div class="p-2 rounded bg-white border border-slate-200 space-y-1">
-              <span class="font-bold text-slate-800 block text-[11px]">⚠️ Call Clinic Immediately If You Notice Any of These:</span>
+            <div class="p-2.5 rounded-lg bg-rose-50/60 border border-rose-300 space-y-1.5">
+              <span class="font-bold text-rose-900 text-[11px] font-mono flex items-center gap-1">
+                <span>⚠️</span> Call Clinic Immediately If You Notice Any of These:
+              </span>
               @for (sign of traj.act3WhereYoureGoing.warningSignsToMonitor; track sign) {
-                <div class="flex items-start gap-1.5 text-slate-700">
-                  <span class="text-amber-600 font-mono">[ ]</span>
+                <div class="flex items-start gap-2 text-slate-800 text-xs">
+                  <span class="w-3.5 h-3.5 rounded border border-rose-400 bg-white inline-block shrink-0 mt-0.5"></span>
                   <span>{{ sign }}</span>
                 </div>
               }
@@ -1154,15 +1194,178 @@ export interface IPosology3ActTrajectory {
         </div>
 
         <!-- Emergency / Signature Bar -->
-        <div class="mt-4 pt-3 border-t-2 border-slate-900 flex items-center justify-between text-xs font-mono">
+        <div class="mt-4 pt-3 border-t-2 border-slate-900 flex flex-wrap items-center justify-between text-xs font-mono gap-2">
           <div>
-            <strong>Clinic Daytime Line:</strong> (480) 555-0199 • <strong>24/7 Nurse Triage:</strong> 988 / (480) 555-0100
+            <strong>Clinic Daytime Line:</strong> (480) 555-0199 &bull; <strong>24/7 Nurse Triage:</strong> 988 / (480) 555-0100
           </div>
-          <div class="text-[10px] text-slate-500">
-            PocketGull Health • HIPAA Safe Harbor Aligned
+          <div class="text-[10px] text-slate-500 font-pocketgull-brand">
+            PocketGull Health &bull; HIPAA Safe Harbor &sect; 164.514 &bull; HL7 FHIR R4 Ready
           </div>
         </div>
       </div>
+
+      <!-- 👁️ High-Fidelity On-Screen Refrigerator Handout Preview Modal -->
+      @if (showAvsPreview()) {
+        <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto no-print" (click)="closeAvsPreview()">
+          <div class="relative max-w-3xl w-full bg-white text-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-300 animate-in fade-in zoom-in-95 duration-200" (click)="$event.stopPropagation()">
+            <!-- Modal Header Bar -->
+            <div class="bg-slate-900 text-white px-4 py-3 sm:px-6 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-mono font-bold uppercase tracking-wider">
+                  👁️ Live Refrigerator Handout Preview
+                </span>
+                <span class="text-xs text-slate-400 font-mono hidden sm:inline">1-Page High-Contrast Format</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  (click)="printAvsHandout()"
+                  class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs font-mono transition flex items-center gap-1.5 cursor-pointer shadow-md active:scale-95">
+                  <span>🖨️</span> Print Now
+                </button>
+                <button
+                  (click)="closeAvsPreview()"
+                  class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold cursor-pointer transition"
+                  aria-label="Close Preview">
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <!-- Handout Card Body (Identical to Printout) -->
+            <div class="p-6 sm:p-8 overflow-y-auto max-h-[80vh] space-y-4">
+              <div class="border-b-2 border-slate-900 pb-3 mb-2 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-teal-800 text-white flex items-center justify-center font-bold text-base shadow-sm">
+                    🪶
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-2xl font-extrabold tracking-tight text-teal-900 font-pocketgull-brand">PocketGull</span>
+                      <span class="text-[10px] font-extrabold uppercase tracking-widest text-teal-800 bg-teal-100/90 px-2 py-0.5 rounded border border-teal-300">Health</span>
+                    </div>
+                    <div class="text-[10px] text-slate-500 font-mono">Clinical Intelligence &amp; Care Strategy Engine</div>
+                  </div>
+                </div>
+                <div class="text-right text-xs font-mono text-slate-700 space-y-0.5">
+                  <div><strong>Patient:</strong> {{ patientState.activePatientSummary() || 'Valued Patient' }}</div>
+                  <div><strong>Date:</strong> {{ activeDateString }}</div>
+                  <div class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300">
+                    <span>✓</span> ISMP Slashed-Zero Safe Dosing Attested
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h1 class="text-base font-extrabold uppercase tracking-wider text-slate-900">
+                  After-Visit Summary &bull; Care Strategy &bull; {{ activeAgeTier() | uppercase }}
+                </h1>
+                <p class="text-xs text-slate-600 mt-0.5">
+                  Personalized 3-Act Care Instructions for Patient &amp; Family Caregiver &bull; Keep on Your Refrigerator
+                </p>
+              </div>
+
+              @if (activeAgeTier() === 'environmental_heat') {
+                <div class="p-2.5 mb-2 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center gap-2">
+                  <span class="text-base">☀️</span>
+                  <div>
+                    <strong>Extreme Heat Advisory ({{ ambientTempF() }}°F):</strong> 
+                    Staying hydrated and cool is critical for your kidneys and blood pressure today. Follow the instructions below.
+                  </div>
+                </div>
+              }
+
+              <!-- Act 1 -->
+              <div class="p-3.5 rounded-xl border border-amber-300/80 bg-amber-50/40">
+                <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
+                  <span class="uppercase tracking-wide text-amber-900 font-mono text-[11px]">
+                    Act 1: Where You've Been &bull; Why We Checked Your Medicine Today
+                  </span>
+                  <span class="text-[10px] font-mono text-amber-800 bg-amber-100 px-2 py-0.5 rounded">Zero Guilt Baseline</span>
+                </div>
+                <p class="text-slate-800 leading-relaxed font-sans">
+                  {{ traj.act1WhereYouveBeen.plainLanguageRationale }}
+                </p>
+              </div>
+
+              <!-- Act 2 -->
+              <div class="p-3.5 rounded-xl border-2 border-teal-700 bg-teal-50/30">
+                <div class="flex items-center justify-between font-bold text-teal-900 mb-2">
+                  <span class="uppercase tracking-wide text-teal-900 font-mono text-[11px]">
+                    Act 2: Where You Stand Today &bull; Your Safe Daily Routine
+                  </span>
+                  <span class="text-[10px] font-mono font-bold text-teal-800 bg-teal-100 px-2 py-0.5 rounded">ISMP Verified Dose</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-2 font-mono">
+                  <div class="p-2 rounded-lg bg-white border border-teal-300 shadow-sm">
+                    <span class="text-[10px] uppercase font-bold text-teal-800 block">Today's Calibrated Dose:</span>
+                    <span class="text-sm font-bold text-slate-900">{{ traj.act2WhereYouStandToday.calibratedDosage }}</span>
+                  </div>
+                  <div class="p-2 rounded-lg bg-white border border-teal-300 shadow-sm">
+                    <span class="text-[10px] uppercase font-bold text-teal-800 block">Daily Water Target:</span>
+                    <span class="text-sm font-bold text-slate-900">{{ traj.act2WhereYouStandToday.hydrationTarget }}</span>
+                  </div>
+                </div>
+                <p class="text-slate-900 leading-relaxed font-sans mb-3">
+                  🥄 <strong>Teaspoon Guide:</strong> {{ traj.act2WhereYouStandToday.plainLanguageAdvice }}
+                </p>
+                <div class="p-2.5 rounded-lg bg-white border border-teal-200">
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-800 block mb-1">Daily Routine Checklist (Check with pen):</span>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] font-mono text-slate-800">
+                    <div class="flex items-center gap-1.5">
+                      <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
+                      <span>Morning Dose Taken</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
+                      <span>Afternoon Hydration Goal Met</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <span class="w-4 h-4 rounded border-2 border-teal-700 inline-block"></span>
+                      <span>Evening Check Complete</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Act 3 -->
+              <div class="p-3.5 rounded-xl border border-indigo-200 bg-indigo-50/30">
+                <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
+                  <span class="uppercase tracking-wide text-indigo-900 font-mono text-[11px]">
+                    Act 3: Where You're Going &bull; What to Watch for at Home
+                  </span>
+                  <span class="text-[10px] font-mono text-indigo-800 font-bold bg-indigo-100 px-2 py-0.5 rounded">
+                    {{ traj.act3WhereYoureGoing.homeCareWatchWindow }}
+                  </span>
+                </div>
+                <p class="text-slate-800 mb-2 leading-relaxed font-sans">
+                  💙 {{ traj.act3WhereYoureGoing.plainLanguageGuidance }}
+                </p>
+                <div class="p-2.5 rounded-lg bg-rose-50/60 border border-rose-300 space-y-1.5">
+                  <span class="font-bold text-rose-900 text-[11px] font-mono flex items-center gap-1">
+                    <span>⚠️</span> Call Clinic Immediately If You Notice Any of These:
+                  </span>
+                  @for (sign of traj.act3WhereYoureGoing.warningSignsToMonitor; track sign) {
+                    <div class="flex items-start gap-2 text-slate-800 text-xs">
+                      <span class="w-3.5 h-3.5 rounded border border-rose-400 bg-white inline-block shrink-0 mt-0.5"></span>
+                      <span>{{ sign }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Emergency / Signature Bar -->
+              <div class="mt-4 pt-3 border-t-2 border-slate-900 flex flex-wrap items-center justify-between text-xs font-mono gap-2">
+                <div>
+                  <strong>Clinic Daytime Line:</strong> (480) 555-0199 &bull; <strong>24/7 Nurse Triage:</strong> 988 / (480) 555-0100
+                </div>
+                <div class="text-[10px] text-slate-500 font-pocketgull-brand">
+                  PocketGull Health &bull; HIPAA Safe Harbor &sect; 164.514 &bull; HL7 FHIR R4 Ready
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
 
     </div>
   `
@@ -1191,6 +1394,7 @@ export class ClinicalPosologyCalculatorComponent {
   readonly showCopiedEhrToast = signal<boolean>(false);
   readonly showCopiedFhirToast = signal<boolean>(false);
   readonly showCopiedAsuToast = signal<boolean>(false);
+  readonly showAvsPreview = signal<boolean>(false);
 
   readonly activeDateString = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
@@ -1482,6 +1686,7 @@ export class ClinicalPosologyCalculatorComponent {
       this.patientWeightLbs.set(45);
       this.patientHeightCm.set(115);
       this.testDosageInput.set('Amoxicillin 250 mg PO TID + 5.0 mL oral syringe');
+      this.patientState.focusAnatomicalOrgan?.('head');
     } else if (tier === 'adult') {
       this.patientAge.set(35);
       this.patientWeightLbs.set(154);
@@ -1493,14 +1698,17 @@ export class ClinicalPosologyCalculatorComponent {
       this.patientHeightCm.set(165);
       this.serumCreatinineMgDl.set(1.6);
       this.testDosageInput.set('Diphenhydramine 25.0 mg QHS + Diazepam 5.0 mg QD');
+      this.patientState.focusAnatomicalOrgan?.('kidneys');
     } else if (tier === 'environmental_heat') {
       this.loadStationObservation('KPHX');
       this.testDosageInput.set('Hold Diphenhydramine 50 mg + Titrate Furosemide 20 mg PO QD in >110°F Heat');
+      this.patientState.focusAnatomicalOrgan?.('chest');
     } else if (tier === 'sfi_complex_adaptive') {
       this.patientAge.set(42);
       this.patientWeightLbs.set(165);
       this.patientHeightCm.set(175);
       this.testDosageInput.set('Oxybutynin 10 mg + Topiramate 50 mg + Lisinopril 20 mg PO QD');
+      this.patientState.focusAnatomicalOrgan?.('heart');
     }
   }
 
@@ -1589,6 +1797,14 @@ export class ClinicalPosologyCalculatorComponent {
         this.showPrintedToast.set(false);
       }, 3500);
     }
+  }
+
+  toggleAvsPreview(): void {
+    this.showAvsPreview.update(v => !v);
+  }
+
+  closeAvsPreview(): void {
+    this.showAvsPreview.set(false);
   }
 
   copyEhrSoapSnippet(): void {

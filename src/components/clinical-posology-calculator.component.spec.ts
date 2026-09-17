@@ -23,7 +23,8 @@ describe('ClinicalPosologyCalculatorComponent', () => {
         height: "5'6\""
       }),
       addChecklistItem: vi.fn(),
-      logEnterpriseAudit: vi.fn()
+      logEnterpriseAudit: vi.fn(),
+      focusAnatomicalOrgan: vi.fn()
     };
 
     mockSoapNoteService = {
@@ -228,5 +229,22 @@ describe('ClinicalPosologyCalculatorComponent', () => {
     expect(soapSnippet).toContain('A (Assessment):');
     expect(soapSnippet).toContain('P (Plan):');
     expect(component.showCopiedEhrToast()).toBe(true);
+  });
+
+  it('13. Toggles and closes high-fidelity on-screen AVS preview and focuses anatomical organ', () => {
+    expect(component.showAvsPreview()).toBe(false);
+
+    component.toggleAvsPreview();
+    expect(component.showAvsPreview()).toBe(true);
+
+    component.closeAvsPreview();
+    expect(component.showAvsPreview()).toBe(false);
+
+    // Verify selectAgeTier focuses target organ in patientState
+    component.selectAgeTier('geriatric_elder');
+    expect(mockState.focusAnatomicalOrgan).toHaveBeenCalledWith('kidneys');
+
+    component.selectAgeTier('pediatric_child');
+    expect(mockState.focusAnatomicalOrgan).toHaveBeenCalledWith('head');
   });
 });

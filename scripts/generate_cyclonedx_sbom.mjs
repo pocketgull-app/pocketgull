@@ -37,14 +37,21 @@ function generateSbom() {
   const serialNumber = `urn:uuid:${crypto.randomUUID()}`;
   const timestamp = new Date().toISOString();
 
+  const isProdOnly = process.argv.includes('--prod') || process.argv.includes('--production');
+
   const components = [];
   const componentMap = new Map();
+
+  const rootDevDeps = new Set(Object.keys(rootPkg.devDependencies || {}));
 
   if (lockfile && lockfile.packages) {
     for (const [pkgPath, pkgData] of Object.entries(lockfile.packages)) {
       if (!pkgPath || pkgPath === '') continue; // Skip root entry
 
       const name = pkgData.name || pkgPath.replace(/^node_modules\//, '').replace(/^.*\/node_modules\//, '');
+
+      // In production mode, strictly filter out development-only packages
+      if (isProdOnly && (pkgData.dev || rootDevDeps.has(name))) continue;
       const version = pkgData.version || '0.0.0';
       const key = `${name}@${version}`;
 
@@ -94,7 +101,7 @@ function generateSbom() {
             type: 'application',
             author: 'PocketGull Team',
             name: 'pocketgull-cyclonedx-generator',
-            version: '1.0.0'
+            version: '1.1.0'
           }
         ]
       },
@@ -106,9 +113,9 @@ function generateSbom() {
       ],
       component: {
         type: 'application',
-        'bom-ref': `pkg:npm/pocket-gull@${rootPkg.version || '1.23.0'}`,
+        'bom-ref': `pkg:npm/pocket-gull@${rootPkg.version || '1.36.0'}`,
         name: rootPkg.name || 'pocket-gull',
-        version: rootPkg.version || '1.23.0',
+        version: rootPkg.version || '1.36.0',
         description: rootPkg.description || 'PocketGull Clinical AI Intelligence & Digital Twin Platform',
         licenses: [
           {
@@ -117,7 +124,7 @@ function generateSbom() {
             }
           }
         ],
-        purl: `pkg:npm/pocket-gull@${rootPkg.version || '1.23.0'}`
+        purl: `pkg:npm/pocket-gull@${rootPkg.version || '1.36.0'}`
       },
       properties: [
         {
@@ -127,23 +134,28 @@ function generateSbom() {
         {
           name: 'us:eo14028:compliance',
           value: 'NTIA Minimum Elements for SBOM'
+        },
+        {
+          name: 'pocketgull:sbom:profile',
+          value: isProdOnly ? 'Production Runtime Container' : 'Full Development Monorepo'
         }
       ]
     },
     components: components
   };
 
-  // Write to root sbom.cdx.json
-  const outPathRoot = path.join(rootDir, 'sbom.cdx.json');
+  // Output filename based on profile
+  const outFileName = isProdOnly ? 'sbom.prod.cdx.json' : 'sbom.cdx.json';
+  const outPathRoot = path.join(rootDir, outFileName);
   fs.writeFileSync(outPathRoot, JSON.stringify(sbom, null, 2), 'utf8');
 
-  // Write to dist/sbom.cdx.json if dist exists
+  // Write to dist/ if dist exists
   const distDir = path.join(rootDir, 'dist');
   if (fs.existsSync(distDir)) {
-    fs.writeFileSync(path.join(distDir, 'sbom.cdx.json'), JSON.stringify(sbom, null, 2), 'utf8');
+    fs.writeFileSync(path.join(distDir, outFileName), JSON.stringify(sbom, null, 2), 'utf8');
   }
 
-  console.log(`✅ [CRA SBOM] Successfully generated CycloneDX 1.6 SBOM with ${components.length} components.`);
+  console.log(`✅ [CRA SBOM] Successfully generated CycloneDX 1.6 ${isProdOnly ? 'Production Runtime' : 'Full Monorepo'} SBOM with ${components.length} components.`);
   console.log(`📄 Output: ${outPathRoot}`);
 }
 

@@ -1,17 +1,17 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:e4ca74a9-3ab9-4553-a345-5e12afdd5938",
+  "serialNumber": "urn:uuid:4802a6b7-c1b7-4416-a063-3b35120e7e3e",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-17T17:12:13.821Z",
+    "timestamp": "2026-09-17T20:09:50.883Z",
     "tools": {
       "components": [
         {
           "type": "application",
           "author": "PocketGull Team",
           "name": "pocketgull-cyclonedx-generator",
-          "version": "1.0.0"
+          "version": "1.1.0"
         }
       ]
     },
@@ -23,18 +23,18 @@
     ],
     "component": {
       "type": "application",
-      "bom-ref": "pkg:npm/pocket-gull@1.34.0",
+      "bom-ref": "pkg:npm/pocket-gull@1.36.0",
       "name": "pocket-gull",
-      "version": "1.34.0",
+      "version": "1.36.0",
       "description": "Insight beneath the surface. Real-time medical Care Plan Strategy and Live AI Consult engine powered by Google Gemini.",
       "licenses": [
         {
           "license": {
-            "id": "MIT"
+            "id": "Apache-2.0"
           }
         }
       ],
-      "purl": "pkg:npm/pocket-gull@1.34.0"
+      "purl": "pkg:npm/pocket-gull@1.36.0"
     },
     "properties": [
       {
@@ -44,6 +44,10 @@
       {
         "name": "us:eo14028:compliance",
         "value": "NTIA Minimum Elements for SBOM"
+      },
+      {
+        "name": "pocketgull:sbom:profile",
+        "value": "Full Development Monorepo"
       }
     ]
   },
