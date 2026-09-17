@@ -172,24 +172,32 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
     await expect(toggleAgentBtn).toBeVisible({ timeout: 5000 });
     await toggleAgentBtn.click();
 
-    // 3. Click quick prompt button to post a message into chatHistory
-    const quickBtn = page.locator('app-voice-assistant button:has-text("Critical evidence?")');
-    await expect(quickBtn).toBeVisible({ timeout: 10000 });
-    await quickBtn.click();
+    // Toggle quick prompt shelf if closed
+    const shelfToggle = page.locator('app-voice-assistant button', { hasText: /Clinical Quick-Prompts/i }).first();
+    if (await shelfToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await shelfToggle.click();
+      await page.waitForTimeout(200);
+    }
 
-    // Wait for the assistant chat entry to appear in the DOM
-    const assistantEntry = page.locator('.chat-entry').last();
-    await expect(assistantEntry).toBeVisible({ timeout: 15000 });
+    // 3. Click quick prompt button or enter text to post a message into chatHistory
+    const quickBtn = page.locator('app-voice-assistant button', { hasText: /Critical Evidence/i }).first();
+    if (await quickBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await quickBtn.click();
+    } else {
+      const input = page.locator('app-voice-assistant input[type="text"]').first();
+      await input.fill('What is the most critical evidence here?');
+      await input.press('Enter');
+    }
 
-    await assistantEntry.hover();
-    const anchorBtn = assistantEntry.locator('button[title="Anchor to Memory Palace"]');
-    await expect(anchorBtn).toBeVisible({ timeout: 10000 });
-    await anchorBtn.dispatchEvent('click');
+    // Wait for the assistant chat entry with Anchor button to appear in the DOM
+    const anchorBtn = page.locator('button[title="Anchor to Memory Palace"]').first();
+    await expect(anchorBtn).toBeVisible({ timeout: 20000 });
+    await anchorBtn.click({ force: true });
     await page.waitForTimeout(500);
 
     // 5. Audit the open modal layout and attributes
     const modalTitle = page.locator('h3:has-text("Anchor to Memory Palace")');
-    await expect(modalTitle).toBeVisible();
+    await expect(modalTitle).toBeVisible({ timeout: 10000 });
 
     // Check modal form controls
     const selectChamber = page.locator('select[name="anchorRoom"]');

@@ -15,7 +15,6 @@ TARGET_DIRS = [
     r"c:\Users\philg\Pocketgull\pocketgull\public\assets\fonts",
     r"c:\Users\philg\Pocketgull\pocketgull\public\fonts\google_fonts_submission\ofl\pocketgull",
     r"c:\Users\philg\Pocketgull\pocketgull\src\assets\fonts",
-    r"c:\Users\philg\Pocketgull\pocketgull\wordpress-theme\pocketgull-articles\fonts",
 ]
 
 def sanitize_font_file(file_path):

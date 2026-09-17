@@ -9,6 +9,8 @@ import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { ParadigmLyricsService } from '../services/paradigm-lyrics.service';
 import { DictationService } from '../services/dictation.service';
 import { CompassionateAnalogyService } from '../services/compassionate-analogy.service';
+import { getStoredApiKey } from '../services/secure-key';
+import { SecureStorageService } from '../services/secure-storage.service';
 import { generate } from 'lean-qr';
 
 declare var webkitSpeechRecognition: any;
@@ -89,12 +91,14 @@ import { AvsEngineService, AvsBitrateTier } from '../services/avs-engine.service
 import { PositivePsychologyFlourishingHubComponent } from './positive-psychology-flourishing-hub.component';
 import { SystemsEquilibriumHudComponent, SystemsNavMode } from './analysis-report/systems-equilibrium-hud.component';
 import { InterSystemCrosstalkCardComponent } from './analysis-report/inter-system-crosstalk-card.component';
+import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precondition-alert-banner.component';
 
 @Component({
   selector: 'app-analysis-report',
   standalone: true,
   imports: [
     CommonModule,
+    DynamicPreconditionAlertBannerComponent,
     SystemsEquilibriumHudComponent,
     InterSystemCrosstalkCardComponent,
     PositivePsychologyFlourishingHubComponent,
@@ -381,7 +385,7 @@ import { InterSystemCrosstalkCardComponent } from './analysis-report/inter-syste
       <!--Analysis Engine Body-->
       <div class="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8 pb-24 min-w-0">
         
-
+        <app-dynamic-precondition-alert-banner class="block w-full mb-4" />
 
         @if (hasAnyReport() && activeLens() !== 'EMT Handoff' && !state.isEmergencyMode()) {
           <div class="mb-6 p-4 rounded-xl border transition-all duration-300"
@@ -1185,18 +1189,18 @@ import { InterSystemCrosstalkCardComponent } from './analysis-report/inter-syste
                     </div>
                   </div>
 
-                  <!-- 🎛️ Audiophile DSP Mastering & Psychoacoustic Studio Rack -->
+                  <!-- 🎛️ Audiophile DSP Studio & Psychoacoustic Studio Rack -->
                   <div class="mt-4 p-4 rounded-2xl bg-zinc-950/90 border border-amber-500/30 font-mono text-xs shadow-xl">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-amber-900/40 pb-2">
                       <div class="flex items-center gap-2">
                         <span class="text-base">🎛️</span>
-                        <h4 class="font-black text-amber-300 uppercase tracking-wider text-xs">Audiophile Master Rack • 24-Bit Studio DSP Engine</h4>
+                        <h4 class="font-black text-amber-300 uppercase tracking-wider text-xs">Audiophile Studio Rack • 24-Bit Studio DSP Engine</h4>
                         <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/40">
                           {{ avsService.bitrateLabel() }}
                         </span>
                       </div>
                       <div class="flex items-center gap-2">
-                        <span class="text-[11px] text-zinc-400">THD+N &lt; 0.0001% • 32-bit Float Internal Master</span>
+                        <span class="text-[11px] text-zinc-400">THD+N &lt; 0.0001% • 32-bit Float Internal Bus</span>
                       </div>
                     </div>
 
@@ -1266,7 +1270,7 @@ import { InterSystemCrosstalkCardComponent } from './analysis-report/inter-syste
                         <span class="text-[10px] text-zinc-500 mt-2 block">Anti-fatigue psychoacoustic pinna</span>
                       </div>
 
-                      <!-- 4. Noise Bed & Mastering Dynamics -->
+                      <!-- 4. Noise Bed & Dynamic Limiting -->
                       <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 flex flex-col justify-between">
                         <div>
                           <div class="flex justify-between items-center mb-1">
@@ -1274,7 +1278,7 @@ import { InterSystemCrosstalkCardComponent } from './analysis-report/inter-syste
                             <span class="font-bold font-mono text-emerald-400">16s Loop</span>
                           </div>
                           <div class="flex items-center justify-between text-[11px] text-zinc-300 mt-1">
-                            <span>Mastering Limiter:</span>
+                            <span>Studio Peak Limiter:</span>
                             <span class="text-emerald-400 font-bold font-mono">-16dB Opto</span>
                           </div>
                           <div class="flex items-center justify-between text-[11px] text-zinc-300 mt-0.5">
@@ -2361,12 +2365,13 @@ export class AnalysisReportComponent implements OnDestroy {
     organDonor: 'Yes'
   });
 
+  protected readonly secureStorage = inject(SecureStorageService, { optional: true });
   readonly hasApiKey = computed(() => {
-    // This line was part of the user's provided snippet, but it was incomplete and syntactically incorrect.
-    // Assuming the user intended to add a computed property named `hasApiKey` and keep the existing injections.
-    // The `inject(AiCacheService);` was already present as `protected readonly cache = inject(AiCacheService);`
-    // and is kept in its original place for syntactical correctness.
-    return true; // Placeholder for actual logic
+    const key = getStoredApiKey(this.secureStorage || undefined);
+    const hasLocalKey = Boolean(key && key.trim().length > 0);
+    const hasSessionKey = Boolean(this.secureStorage?.getItem('GEMINI_API_KEY'));
+    const hasStudioKey = typeof window !== 'undefined' && Boolean((window as any).aistudio?.hasSelectedApiKey);
+    return hasLocalKey || hasSessionKey || hasStudioKey;
   });
   protected readonly cache = inject(AiCacheService);
   protected readonly markdownService = inject(MarkdownService);

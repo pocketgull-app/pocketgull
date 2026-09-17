@@ -91,7 +91,7 @@ export class BioSymphonyEngineService {
 
   // --- Web Audio Context & Nodes ---
   private audioCtx: AudioContext | null = null;
-  private masterGain: GainNode | null = null;
+  private mainGain: GainNode | null = null;
   private droneGain: GainNode | null = null;
   private droneOsc1: OscillatorNode | null = null;
   private droneOsc2: OscillatorNode | null = null;
@@ -124,16 +124,16 @@ export class BioSymphonyEngineService {
         await this.audioCtx.resume();
       }
 
-      this.masterGain = this.audioCtx.createGain();
-      this.masterGain.gain.setValueAtTime(this.volumeLevel(), this.audioCtx.currentTime);
-      this.masterGain.connect(this.audioCtx.destination);
+      this.mainGain = this.audioCtx.createGain();
+      this.mainGain.gain.setValueAtTime(this.volumeLevel(), this.audioCtx.currentTime);
+      this.mainGain.connect(this.audioCtx.destination);
 
       // 1. Setup Respiratory Resonant Sweeper Filter
       this.respiratoryFilter = this.audioCtx.createBiquadFilter();
       this.respiratoryFilter.type = 'lowpass';
       this.respiratoryFilter.frequency.setValueAtTime(600, this.audioCtx.currentTime);
       this.respiratoryFilter.Q.setValueAtTime(3.5, this.audioCtx.currentTime);
-      this.respiratoryFilter.connect(this.masterGain);
+      this.respiratoryFilter.connect(this.mainGain);
 
       // 2. Setup 432Hz Sub-Bass & Harmonic Drone
       this.setupHarmonicDrones();
@@ -166,9 +166,9 @@ export class BioSymphonyEngineService {
     if (this.melodyIntervalTimer) clearInterval(this.melodyIntervalTimer);
     if (this.respiratorySweepTimer) clearInterval(this.respiratorySweepTimer);
 
-    if (this.audioCtx && this.masterGain) {
+    if (this.audioCtx && this.mainGain) {
       const now = this.audioCtx.currentTime;
-      this.masterGain.gain.linearRampToValueAtTime(0.001, now + 0.6);
+      this.mainGain.gain.linearRampToValueAtTime(0.001, now + 0.6);
       setTimeout(() => {
         try {
           this.audioCtx?.close();
@@ -242,7 +242,7 @@ export class BioSymphonyEngineService {
   }
 
   private setupBinauralWaves(): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
 
     if (this.binauralLeftOsc) {
       try { this.binauralLeftOsc.stop(); } catch { /* Stop */ }
@@ -263,7 +263,7 @@ export class BioSymphonyEngineService {
 
     const binGain = this.audioCtx.createGain();
     binGain.gain.setValueAtTime(0.12, now);
-    binGain.connect(this.masterGain);
+    binGain.connect(this.mainGain);
 
     // Left Channel (Pan -1)
     const panLeft = this.audioCtx.createStereoPanner ? this.audioCtx.createStereoPanner() : null;
@@ -306,7 +306,7 @@ export class BioSymphonyEngineService {
   }
 
   private triggerHeartbeatKick(): void {
-    if (!this.audioCtx || !this.masterGain) return;
+    if (!this.audioCtx || !this.mainGain) return;
 
     const now = this.audioCtx.currentTime;
     const kickOsc = this.audioCtx.createOscillator();
@@ -321,7 +321,7 @@ export class BioSymphonyEngineService {
     kickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
 
     kickOsc.connect(kickGain);
-    kickGain.connect(this.masterGain);
+    kickGain.connect(this.mainGain);
 
     kickOsc.start(now);
     kickOsc.stop(now + 0.24);

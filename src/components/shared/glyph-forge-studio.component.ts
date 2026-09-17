@@ -165,7 +165,7 @@ export type TNibStyle = 'bold' | 'chiseltip' | 'fineliner' | 'variable' | 'mono'
           <!-- Character Preset Strip -->
           <div class="p-4 bg-slate-900/90 border border-slate-800 rounded-2xl space-y-3">
             <span class="text-[11px] font-bold text-rose-400 uppercase tracking-wider block">
-              3. PocketGull Master Glyphs
+              3. PocketGull Core Specimen Glyphs
             </span>
             <div class="flex flex-wrap gap-1.5">
               @for (char of characterPresets; track char) {

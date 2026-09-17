@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
+import { ClinicalBiologicalAgeTwinService } from './clinical-biological-age-twin.service';
 
 export type TrajectoryPersona = 'clinician' | 'patient';
 
@@ -23,6 +24,9 @@ export interface ITrajectoryProfile {
   futureHorizon: ITrajectoryNode[];
   currentVitalityScore: number;
   projectedVitalityScore: number;
+  biologicalPhenoAge?: number;
+  chronologicalAge?: number;
+  ageDelta?: number;
   digestSeal: string;
   generatedAt: string;
 }
@@ -41,6 +45,7 @@ export interface IBionicWord {
 })
 export class ClinicalTrajectoryReaderService {
   private readonly patientState = inject(PatientStateService, { optional: true });
+  private readonly biologicalAgeTwin = inject(ClinicalBiologicalAgeTwinService, { optional: true });
 
   readonly persona = signal<TrajectoryPersona>('clinician');
   readonly rsvpSpeedWpm = signal<number>(450);
@@ -129,6 +134,52 @@ export class ClinicalTrajectoryReaderService {
       }
     ];
 
+    const bioEval = this.biologicalAgeTwin?.calculatePhenoAge({
+      chronologicalAge: 34,
+      albumin: 4.5,
+      creatinine: 0.82,
+      glucose: 88,
+      hsCrp: 0.9,
+      lymphocytePct: 32,
+      mcv: 89,
+      rdw: 12.4,
+      alp: 62,
+      wbc: 5.8,
+      unitSystem: 'US',
+      systolicBp: parseInt((vitals.bloodPressure || '120/80').split('/')[0], 10) || 120,
+      restingHr: vitals.heartRate
+    }) || {
+      chronologicalAge: 34,
+      biologicalPhenoAge: 31.8,
+      ageDelta: -2.2,
+      tenYearMortalityRisk: 0.011,
+      mortalityHazardRatio: 0.82,
+      attributions: [],
+      organDecay: [],
+      vitalityIndex: 88,
+      generatedAt: new Date().toISOString()
+    };
+
+    const topAccelerator = bioEval.attributions.find(a => a.impact === 'accelerating');
+
+    presentFulcrum.push({
+      id: 'pres-bioage',
+      title: isClinician ? 'Levine PhenoAge & Organ Decay' : 'Your Biological Age & Healthspan',
+      description: isClinician
+        ? `Biological PhenoAge: ${bioEval.biologicalPhenoAge}y (Chronological: ${bioEval.chronologicalAge}y, Delta: ${bioEval.ageDelta > 0 ? '+' : ''}${bioEval.ageDelta}y). Primary driver: ${topAccelerator?.name || 'hs-CRP'}. 10-year mortality HR: ${bioEval.mortalityHazardRatio}x.`
+        : `Your biological age is ${bioEval.biologicalPhenoAge} years (${Math.abs(bioEval.ageDelta)} years ${bioEval.ageDelta <= 0 ? 'younger than' : 'above'} your calendar age). Your active vitality index is ${bioEval.vitalityIndex}/100.`,
+      category: 'metabolic',
+      timeframe: 'Living Biometric Clock',
+      status: 'current',
+      metrics: {
+        'Bio Age': `${bioEval.biologicalPhenoAge} yrs`,
+        'Age Delta': `${bioEval.ageDelta > 0 ? '+' : ''}${bioEval.ageDelta} yrs`,
+        'Mortality HR': `${bioEval.mortalityHazardRatio}x`,
+        'Vitality': `${bioEval.vitalityIndex}%`
+      },
+      code: 'LOINC:89243-0'
+    });
+
     const futureHorizon: ITrajectoryNode[] = [
       {
         id: 'fut-1',
@@ -156,12 +207,12 @@ export class ClinicalTrajectoryReaderService {
         id: 'fut-3',
         title: isClinician ? '90-Day Vitality Horizon & Re-Test' : '90 Days Ahead: Optimal Vitality',
         description: isClinician
-          ? 'Target: Attainment of 92% Vitality Index, repeat homocysteine & hs-CRP panel, transition to maintenance.'
-          : 'Goal: Achieving 92% vitality score, boundless daily energy, and celebrating your health recovery milestone!',
+          ? `Target: Attainment of ${bioEval.vitalityIndex >= 85 ? 95 : 92}% Vitality Index, repeat homocysteine & hs-CRP panel, transition to maintenance.`
+          : `Goal: Reaching 95% vitality score, biological rejuvenation, and celebrating your health recovery milestone!`,
         category: 'milestone',
         timeframe: '90-Day Horizon',
         status: 'target',
-        metrics: { 'Target Vitality': '92%' }
+        metrics: { 'Target Vitality': '95%' }
       }
     ];
 
@@ -174,8 +225,11 @@ export class ClinicalTrajectoryReaderService {
       pastFoundation,
       presentFulcrum,
       futureHorizon,
-      currentVitalityScore: 78,
+      currentVitalityScore: bioEval.vitalityIndex || 88,
       projectedVitalityScore: 92,
+      biologicalPhenoAge: bioEval.biologicalPhenoAge,
+      chronologicalAge: bioEval.chronologicalAge,
+      ageDelta: bioEval.ageDelta,
       digestSeal,
       generatedAt: new Date().toISOString()
     };

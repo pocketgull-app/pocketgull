@@ -129,4 +129,57 @@ describe('WacomCryptoInkService Suite', () => {
     service.activeBrushMode.set('ocean-wave');
     expect(service.activeBrushMode()).toBe('ocean-wave');
   });
+
+  it('9. Validates human biological kinematics and calculates micro-entropy score', () => {
+    const naturalPoints: IWacomInkPoint[] = [
+      { x: 10, y: 10, pressure: 0.35, tiltX: 5, tiltY: -3, timestamp: 100, pointerType: 'pen' },
+      { x: 30, y: 28, pressure: 0.52, tiltX: 8, tiltY: -2, timestamp: 135, pointerType: 'pen' },
+      { x: 60, y: 55, pressure: 0.78, tiltX: 12, tiltY: 4, timestamp: 172, pointerType: 'pen' },
+      { x: 95, y: 88, pressure: 0.61, tiltX: 10, tiltY: 2, timestamp: 215, pointerType: 'pen' },
+      { x: 120, y: 110, pressure: 0.40, tiltX: 6, tiltY: 0, timestamp: 260, pointerType: 'pen' }
+    ];
+    const naturalStroke = service.finalizeStroke(naturalPoints)!;
+    const result = service.validateBiologicalHumanKinematics([naturalStroke]);
+
+    expect(result.isHuman).toBe(true);
+    expect(result.entropyScore).toBeGreaterThan(20);
+    expect(result.metrics.pressureVariance).toBeGreaterThan(0);
+  });
+
+  it('10. Detects and flags zero-variance synthetic scripted stroke bot injections', () => {
+    // 20 points with exactly 0.50000 constant pressure and exact 16.666ms interval
+    const botPoints: IWacomInkPoint[] = Array.from({ length: 20 }, (_, i) => ({
+      x: i * 5,
+      y: i * 5,
+      pressure: 0.5,
+      tiltX: 0,
+      tiltY: 0,
+      timestamp: 1000 + i * 20,
+      pointerType: 'pen'
+    }));
+
+    const botStroke = service.finalizeStroke(botPoints)!;
+    const botCheck = service.validateBiologicalHumanKinematics([botStroke]);
+
+    expect(botCheck.isHuman).toBe(false);
+    expect(botCheck.reason).toContain('Synthetic constant pressure');
+  });
+
+  it('11. Generates and verifies time-salted dynamic challenges for kinetic ZKP proofs', async () => {
+    const challenge = await service.generateTimeSaltedChallenge('beach-seashell-01', 60);
+    expect(challenge).toBeDefined();
+    expect(challenge.length).toBe(64); // SHA-256 hex string
+
+    const naturalPoints: IWacomInkPoint[] = [
+      { x: 10, y: 10, pressure: 0.35, tiltX: 5, tiltY: -3, timestamp: 100, pointerType: 'pen' },
+      { x: 30, y: 28, pressure: 0.52, tiltX: 8, tiltY: -2, timestamp: 135, pointerType: 'pen' },
+      { x: 60, y: 55, pressure: 0.78, tiltX: 12, tiltY: 4, timestamp: 172, pointerType: 'pen' },
+      { x: 95, y: 88, pressure: 0.61, tiltX: 10, tiltY: 2, timestamp: 215, pointerType: 'pen' }
+    ];
+    const naturalStroke = service.finalizeStroke(naturalPoints)!;
+    const proof = await service.generateKineticEntropyProof([naturalStroke], 'clinician@hospital.org', challenge);
+
+    const isValid = await service.verifyKineticProof(proof, 'beach-seashell-01');
+    expect(isValid).toBe(true);
+  });
 });

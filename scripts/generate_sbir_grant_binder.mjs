@@ -31,7 +31,7 @@ const GRANT_BINDER_CONTENT = `# NATIONAL INSTITUTES OF HEALTH (NIH) / NSF SBIR P
 Physician burnout and clinical charting fatigue have reached unprecedented levels across primary care and integrative medicine clinics, with clinicians spending over 1.8 hours nightly on EHR documentation ("pajama time"). Centralized cloud AI solutions introduce major HIPAA data privacy liabilities, recursive cloud API latency bottlenecks, and recurring per-token subscription costs that prohibit adoption in resource-constrained rural and Direct Primary Care (DPC) clinics.
 
 **PocketGull LLC** proposes to develop and empirically validate a **zero-cloud-egress sovereign clinical intelligence architecture** (The **PocketGull Avian Navigator Tier**) combining:
-1. **Calibrated Sub-Millisecond Edge Machine Learning**: In-browser ONNX WebGPU inference executing 32-feature biophysical risk evaluations in $<1\\text{ ms}$ with finite-sample 95% Inductive Conformal Prediction intervals (Master OOF ROC-AUC: **0.9640**, Brier Score: **0.0280**).
+1. **Calibrated Sub-Millisecond Edge Machine Learning**: In-browser ONNX WebGPU inference executing 32-feature biophysical risk evaluations in $<1\\text{ ms}$ with finite-sample 95% Inductive Conformal Prediction intervals (Overall OOF ROC-AUC: **0.9640**, Brier Score: **0.0280**).
 2. **Columnar Clinical Big Data & In-Memory DuckDB Engine**: Snappy-compressed Apache Parquet tables with HMAC-SHA-256 Safe Harbor de-identification executing sub-15ms multi-table clinical queries.
 3. **National Academy of Medicine (NAM) STEEEP Quality Suite**: 6-dimension clinical quality scoring (Safe, Timely, Effective, Efficient, Equitable, Patient-Centered) paired with automated 1-Page Refrigerator Care Cards and HL7 FHIR R4 \`MeasureReport\` exports.
 4. **Multi-Planar Radiomics & RSNA 2026 WORMS Knee Lens**: Interactive 3D Whole-Organ Magnetic Resonance Imaging Score (WORMS Grade 0–4), subchondral BML scoring, and joint space telemetry.
@@ -45,7 +45,7 @@ Physician burnout and clinical charting fatigue have reached unprecedented level
 ### Aim 1: Calibrated Edge ML & 95% Conformal Uncertainty Intervals (**PocketGull Tern Engine**)
 * **Objective**: Deploy a 32-feature calibrated MLP classifier to browser WebGPU / WASM SIMD execution, evaluating 30-day post-op risk and recovery trajectories on local edge hardware with zero network transmission.
 * **Empirical Benchmark**:
-  - 5-Fold \`GroupKFold\` Cross-Validation: Master Out-of-Fold **ROC-AUC: 0.9640**, **Brier Calibration Score: 0.0280** in 0.75 seconds.
+  - 5-Fold \`GroupKFold\` Cross-Validation: Overall Out-of-Fold **ROC-AUC: 0.9640**, **Brier Calibration Score: 0.0280** in 0.75 seconds.
   - Conformal Calibration Quantile: $\\hat{q}_{95} = 0.2998$, guaranteeing finite-sample statistical coverage $[\\max(0, p - \\hat{q}), \\min(1, p + \\hat{q})]$.
   - Client-Side Latency: $<0.8\\text{ ms}$ per patient record; Batch Throughput: $\\approx 12,000+\\text{ samples/sec}$.
 
@@ -90,7 +90,7 @@ Integrative and Direct Primary Care physicians routinely manage complex polyphar
 | **Edge ML Classifier** | 5-Fold GroupKFold (\`train_clinical_edge_model.py\`) | OOF ROC-AUC: 0.9640, Brier: 0.0280 | **VERIFIED** |
 | **Parquet Pipeline** | In-Memory DuckDB (\`export_clinical_parquet.py\`) | Multi-join query: 15.28 ms | **VERIFIED** |
 | **Evidence Corpus** | DuckDB Full-Text (\`ingest_nih_who_corpus.ts\`) | Evidence lookup: 9.16 ms | **VERIFIED** |
-| **Master Vitest Suite** | Vitest Monorepo Harness (\`npm test\`) | 1,697 / 1,697 tests passed (423 test files) | **VERIFIED** |
+| **Comprehensive Vitest Suite** | Vitest Monorepo Harness (\`npm test\`) | 1,697 / 1,697 tests passed (423 test files) | **VERIFIED** |
 | **Python ML Sidecar** | FastAPI PyTest Suite | 70 / 70 tests passed (18 modules) | **VERIFIED** |
 | **RSNA Knee Lens** | Component Unit Tests (\`lens-rsna-knee.component.spec.ts\`) | 5 / 5 tests passed (9ms) | **VERIFIED** |
 | **Turing Bio Suite** | Turing Unit Tests (\`turing-suite.component.spec.ts\`) | 15 / 15 tests passed (36ms) | **VERIFIED** |

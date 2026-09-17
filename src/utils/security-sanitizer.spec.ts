@@ -39,7 +39,7 @@ describe('PocketGull Enterprise Security & Data Sanitization Suite', () => {
     it('accepts exact base domains and legitimate subdomains', () => {
       expect(isSafeSubdomainUrl('https://pocketgull.app')).toBe(true);
       expect(isSafeSubdomainUrl('https://api.pocketgull.app/v1/auth')).toBe(true);
-      expect(isSafeSubdomainUrl('https://wordpress.pocketgull.com')).toBe(true);
+      expect(isSafeSubdomainUrl('https://articles.pocketgull.com')).toBe(true);
       expect(isSafeSubdomainUrl('https://clinical.staging.pocketgull.com')).toBe(true);
     });
 

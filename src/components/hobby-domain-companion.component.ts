@@ -302,7 +302,7 @@ import { PatientStateService } from '../services/patient-state.service';
                 @if (selectedPhotoUrl()) {
                   <div class="mt-2 flex items-center gap-3">
                     <img [src]="selectedPhotoUrl()" class="w-14 h-14 rounded-lg object-cover border border-amber-500/40">
-                    <span class="text-[10px] text-emerald-400 font-mono">✅ Photo loaded into Local Sovereign Vault</span>
+                    <span class="text-[10px] text-emerald-400 font-mono">✅ Photo loaded into Encrypted Local Storage</span>
                   </div>
                 }
               </div>

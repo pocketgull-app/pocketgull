@@ -2,10 +2,12 @@ import { Component, signal, computed, inject, ChangeDetectionStrategy, output } 
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { ClinicalMoERouterService } from '../../services/clinical-moe-router.service';
+import { UniversalPivotPulseSynthesizerService } from '../../services/universal-pivot-pulse-synthesizer.service';
+import { OllamaProvider } from '../../services/ai/ollama.provider';
 
 export interface IGlobalHealthGoal {
   id: string;
-  framework: 'WHO_SDG' | 'WHO_HEARTS' | 'NIH_HEALTHY_PEOPLE_2030' | 'NIH_CTSA_ITHRIV';
+  framework: 'WHO_SDG' | 'WHO_HEARTS' | 'NIH_HEALTHY_PEOPLE_2030' | 'NIH_CTSA_ITHRIV' | 'NMSS_CURES';
   title: string;
   targetCode: string;
   description: string;
@@ -30,13 +32,13 @@ export interface IGlobalHealthGoal {
         <div>
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 font-mono text-xs font-semibold uppercase tracking-wider mb-2">
             <span>🌐</span>
-            <span>WHO &amp; NIH Strategic Goal Alignment Hub</span>
+            <span>WHO, NIH &amp; NMSS Strategic Goal Alignment Hub</span>
           </div>
           <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
             Evidence-Steered Global Health &amp; Clinical Translational Trajectories
           </h2>
           <p class="text-xs sm:text-sm text-zinc-400 mt-1">
-            Harmonizes patient telemetry with WHO SDG 3.4, WHO HEARTS protocol, and NIH Healthy People 2030 to steer evidence discovery toward positive clinical outcomes.
+            Harmonizes patient telemetry with WHO SDG 3.4, WHO HEARTS protocol, NIH Healthy People 2030, and NMSS Pathways to Cures to steer evidence discovery toward positive clinical outcomes.
           </p>
         </div>
 
@@ -44,12 +46,71 @@ export interface IGlobalHealthGoal {
         <div class="bg-zinc-950 px-4 py-3 rounded-2xl border border-zinc-800 space-y-1 text-right">
           <div class="flex items-center justify-end gap-2 text-[10px] font-mono text-emerald-400">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="font-bold">SDG 3.4 &amp; NIH CTSA Active</span>
+            <span class="font-bold">SDG 3.4, NIH CTSA &amp; NMSS Active</span>
           </div>
           <div class="text-[10px] font-mono text-zinc-400">
-            Partner: <span class="text-zinc-200 font-semibold">UVA Health / iTHRIV Consortium</span>
+            Partner: <span class="text-zinc-200 font-semibold">UVA Health / iTHRIV / NMSS</span>
           </div>
         </div>
+      </div>
+
+      <!-- 🌟 Universal Precision Care Synthesizer Banner -->
+      <div class="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-zinc-950 to-blue-950/70 border border-emerald-500/40 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xl">✨</span>
+              <h3 class="text-base font-bold text-white tracking-tight">
+                Universal Precision Care Synthesizer (6-Pillars &amp; 3D Anatomy)
+              </h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                {{ isOllamaConnected() ? '⚡ Ollama Gemma 4 (Local Edge)' : '🛡️ Deterministic CDS (Offline)' }}
+              </span>
+            </div>
+            <p class="text-xs text-zinc-300">
+              Synthesizes an individualized 6-Pillar Care Plan (Act 1 Baseline, Act 2 Grounded Today, Act 3 Roadmap, Continuous Pulse, Agile Pivot Triggers, Precision Nutrients) and illuminates 3D anatomical lesion beacons with Solfeggio acoustic pinning.
+            </p>
+          </div>
+
+          <button (click)="triggerUniversalSynthesis()"
+                  [disabled]="isSynthesizing()"
+                  class="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 disabled:opacity-50 text-white rounded-xl text-xs font-mono font-bold transition-all shadow-lg flex items-center gap-2 cursor-pointer shrink-0">
+            @if (isSynthesizing()) {
+              <span class="animate-spin text-sm">⏳</span>
+              <span>Synthesizing Care Plan...</span>
+            } @else {
+              <span>✨</span>
+              <span>Synthesize Precision Plan</span>
+            }
+          </button>
+        </div>
+
+        @if (lastPlan(); as plan) {
+          <div class="p-4 rounded-xl bg-zinc-900/90 border border-emerald-500/30 text-xs space-y-3 animate-in fade-in duration-300">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+              <div class="font-bold text-emerald-400 font-mono">
+                📋 Active Synthesized Plan: {{ plan.patientName }} ({{ plan.patientId }})
+              </div>
+              <span class="text-[10px] font-mono text-zinc-400">
+                Adopted into Care Plan Studio &amp; 3D Anatomy Pins Active
+              </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-zinc-300">
+              <div class="p-2.5 rounded-lg bg-zinc-950/70 border border-zinc-800">
+                <div class="text-[10px] uppercase font-mono font-bold text-zinc-400 mb-1">Act 1 (Baseline)</div>
+                <p class="text-[11px] leading-relaxed line-clamp-3">{{ plan.act1WhereYouveBeen }}</p>
+              </div>
+              <div class="p-2.5 rounded-lg bg-zinc-950/70 border border-zinc-800">
+                <div class="text-[10px] uppercase font-mono font-bold text-zinc-400 mb-1">Act 2 (Grounded Today)</div>
+                <p class="text-[11px] leading-relaxed line-clamp-3">{{ plan.act2WhereYouStandToday }}</p>
+              </div>
+              <div class="p-2.5 rounded-lg bg-zinc-950/70 border border-zinc-800">
+                <div class="text-[10px] uppercase font-mono font-bold text-emerald-400 mb-1">Act 3 (30/60/90-Day Roadmap)</div>
+                <p class="text-[11px] leading-relaxed line-clamp-3">{{ plan.act3WhereYoureGoing }}</p>
+              </div>
+            </div>
+          </div>
+        }
       </div>
 
       <!-- Framework Filter Tabs -->
@@ -111,14 +172,21 @@ export interface IGlobalHealthGoal {
             </div>
 
             <!-- Action & Evidence Steering -->
-            <div class="pt-3 border-t border-zinc-800/80 flex items-center justify-between gap-2">
+            <div class="pt-3 border-t border-zinc-800/80 flex items-center justify-between gap-2 flex-wrap">
               <span class="text-[10px] font-mono text-zinc-500">
                 🏛️ {{ goal.institutionPartner }}
               </span>
-              <button (click)="steerResearch(goal)"
-                      class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md">
-                <span>🎯</span> Steer Evidence
-              </button>
+              <div class="flex items-center gap-1.5">
+                <button (click)="adoptGoalToCarePlan(goal)"
+                        class="px-2.5 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-mono font-bold transition flex items-center gap-1 cursor-pointer shadow-sm">
+                  <span>{{ adoptedGoalId() === goal.id ? '✅' : '📋' }}</span>
+                  <span>{{ adoptedGoalId() === goal.id ? 'Adopted!' : 'Adopt Plan' }}</span>
+                </button>
+                <button (click)="steerResearch(goal)"
+                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md">
+                  <span>🎯</span> Steer Evidence
+                </button>
+              </div>
             </div>
 
           </div>
@@ -142,14 +210,27 @@ export interface IGlobalHealthGoal {
 export class WhoNihGoalSteeringHubComponent {
   private readonly patientState = inject(PatientStateService);
   private readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
+  protected readonly synthesizer = inject(UniversalPivotPulseSynthesizerService);
+  protected readonly ollama = inject(OllamaProvider, { optional: true });
+
+  readonly isSynthesizing = computed(() => this.synthesizer.isSynthesizing());
+  readonly lastPlan = computed(() => this.synthesizer.lastSynthesizedPlan());
+  readonly isOllamaConnected = computed(() => !!this.ollama?.isConnected());
 
   readonly selectQuery = output<{ query: string; engine: 'pubmed' | 'gse' | 'google' }>();
 
   readonly syncTimestamp = new Date().toISOString().split('T')[0];
-  readonly activeFramework = signal<'ALL' | 'WHO_SDG' | 'WHO_HEARTS' | 'NIH_HEALTHY_PEOPLE_2030' | 'NIH_CTSA_ITHRIV'>('ALL');
+  readonly activeFramework = signal<'ALL' | 'WHO_SDG' | 'WHO_HEARTS' | 'NIH_HEALTHY_PEOPLE_2030' | 'NIH_CTSA_ITHRIV' | 'NMSS_CURES'>('ALL');
+  readonly adoptedGoalId = signal<string | null>(null);
+
+  async triggerUniversalSynthesis(): Promise<void> {
+    const patientId = this.patientState.loadedPatientId() || undefined;
+    await this.synthesizer.synthesizePrecisionPlan(patientId);
+  }
 
   readonly frameworks = [
     { key: 'ALL' as const, label: 'All Frameworks', icon: '🌐' },
+    { key: 'NMSS_CURES' as const, label: 'NMSS Pathways to Cures', icon: '🧠' },
     { key: 'WHO_SDG' as const, label: 'WHO SDG 3.4', icon: '🎯' },
     { key: 'WHO_HEARTS' as const, label: 'WHO HEARTS CVD', icon: '🫀' },
     { key: 'NIH_HEALTHY_PEOPLE_2030' as const, label: 'NIH Healthy People 2030', icon: '🇺🇸' },
@@ -163,6 +244,45 @@ export class WhoNihGoalSteeringHubComponent {
     const glucose = parseFloat(vitals?.cgmGlucoseMgDl || '110');
 
     return [
+      {
+        id: 'nmss-cures-stop',
+        framework: 'NMSS_CURES',
+        title: 'NMSS Pathways to Cures: STOP (Halt Disease Activity & Smoldering PIRA)',
+        targetCode: 'NMSS STOP-01',
+        description: 'Eliminate both focal relapses and insidious neuro-axonal destruction by maintaining sNfL < 10 pg/mL and suppressing compartmentalized microglial inflammation.',
+        currentPatientMetric: 'sNfL ~ 18.2 pg/mL (Subclinical PIRA Active)',
+        targetBenchmark: 'sNfL < 10.0 pg/mL, 0 Gad+ Lesions, 0 PIRA',
+        progressPct: 50,
+        status: 'ATTENTION_REQUIRED',
+        evidenceKeywords: 'NMSS Pathways to Cures STOP Smoldering Multiple Sclerosis sNfL Microglia Trial',
+        institutionPartner: 'National Multiple Sclerosis Society (NMSS)'
+      },
+      {
+        id: 'nmss-cures-restore',
+        framework: 'NMSS_CURES',
+        title: 'NMSS Pathways to Cures: RESTORE (Remyelination & Mitochondrial Rescue)',
+        targetCode: 'NMSS RESTORE-02',
+        description: 'Promote oligodendrocyte precursor cell (OPC) differentiation and axonal ATP rescue via Clemastine/Metformin remyelination protocols and CoQ10.',
+        currentPatientMetric: 'Axonal ATP Depletion / Spasticity',
+        targetBenchmark: 'T25FW < 5.0 s, Active Myelin Repair',
+        progressPct: 40,
+        status: 'ATTENTION_REQUIRED',
+        evidenceKeywords: 'Oligodendrocyte Precursor Cells Clemastine Remyelination Trial Multiple Sclerosis',
+        institutionPartner: 'NMSS / Pathways to Cures Consortium'
+      },
+      {
+        id: 'nmss-cures-end',
+        framework: 'NMSS_CURES',
+        title: 'NMSS Pathways to Cures: END (Environmental Risk Eradication & Prevention)',
+        targetCode: 'NMSS END-03',
+        description: 'Eradicate modifiable environmental triggers via aggressive Vitamin D repletion (60–80 ng/mL), Epstein-Barr Virus (EBV) surveillance, and microbiome regulation.',
+        currentPatientMetric: 'Serum 25(OH)D ~ 18 ng/mL (Deficient)',
+        targetBenchmark: '25(OH)D 60–80 ng/mL, EBNA-1 Vigilance',
+        progressPct: 30,
+        status: 'CRITICAL_GAP',
+        evidenceKeywords: 'Vitamin D3 Multiple Sclerosis Epstein Barr Virus EBNA1 Prevention Trial',
+        institutionPartner: 'National MS Society & ECTRIMS'
+      },
       {
         id: 'sdg-3-4-cvd',
         framework: 'WHO_SDG',
@@ -244,5 +364,15 @@ export class WhoNihGoalSteeringHubComponent {
       query: goal.evidenceKeywords,
       engine: isGse ? 'gse' : 'pubmed'
     });
+  }
+
+  adoptGoalToCarePlan(goal: IGlobalHealthGoal): void {
+    this.patientState.adoptCarePlanSuggestion({
+      summary: `### Strategic Framework Goal Adopted: ${goal.title}\nTarget Benchmark: ${goal.targetBenchmark}\nInstitution: ${goal.institutionPartner}`,
+      protocols: `Guideline Protocol (${goal.targetCode}): Focused on reaching ${goal.targetBenchmark}. Monitored via PocketGull Research Frame.`,
+      nutrition: `Evidence-grounded lifestyle interventions aligned with ${goal.framework} standards.`
+    });
+    this.adoptedGoalId.set(goal.id);
+    setTimeout(() => this.adoptedGoalId.set(null), 3000);
   }
 }

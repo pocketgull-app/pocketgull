@@ -33,7 +33,7 @@ import { BioSymphonyEngineService, DastgahScaleName, BinauralEntrainmentMode } f
           </div>
         </div>
 
-        <!-- Master Play / Pause Sound Button -->
+        <!-- Global Play / Pause Sound Button -->
         <button 
           (click)="symphony.togglePlay()"
           [class.bg-emerald-500]="!symphony.isPlaying()"

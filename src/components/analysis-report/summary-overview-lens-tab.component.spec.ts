@@ -42,4 +42,9 @@ describe('SummaryOverviewLensTabComponent', () => {
     component.activeViewMode.set('differential');
     expect(component.activeViewMode()).toBe('differential');
   });
+
+  it('should have access to patient state and clinical intelligence services', () => {
+    expect(component.patientState).toBeDefined();
+    expect(component.intel).toBeDefined();
+  });
 });

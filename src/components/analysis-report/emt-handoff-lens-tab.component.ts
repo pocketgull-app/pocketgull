@@ -248,120 +248,153 @@ import { PatientManagementService } from '../../services/patient-management.serv
 
       <!-- First Aid Quick Guides -->
       <pocket-gull-card title="Emergency Offline Treatment Guides" [icon]="ClinicalIcons.Medication">
-        <div class="flex flex-wrap gap-2 mb-4 border-b border-zinc-800 pb-3 font-pocketgull">
-           <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'bleeding' ? null : 'bleeding')"
-             [class]="activeFirstAidGuide() === 'bleeding' ? 'bg-red-500/20 text-red-300 border-red-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
-             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
+        <div role="tablist" aria-label="Emergency Offline Treatment Categories" class="flex flex-wrap gap-2 mb-4 border-b border-zinc-800 pb-3 font-pocketgull-inter">
+           <button type="button" 
+             id="tab-bleeding"
+             role="tab"
+             [attr.aria-selected]="activeFirstAidGuide() === 'bleeding'"
+             aria-controls="guide-bleeding"
+             (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'bleeding' ? null : 'bleeding')"
+             [class]="activeFirstAidGuide() === 'bleeding' ? 'bg-red-950/90 text-red-100 border-red-400 shadow-md font-bold' : 'bg-zinc-900/90 border-zinc-700 text-zinc-200 hover:text-white hover:border-zinc-500'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[48px] focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none">
              🩸 Bleeding Control
            </button>
-           <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'choking' ? null : 'choking')"
-             [class]="activeFirstAidGuide() === 'choking' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
-             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
+           <button type="button" 
+             id="tab-choking"
+             role="tab"
+             [attr.aria-selected]="activeFirstAidGuide() === 'choking'"
+             aria-controls="guide-choking"
+             (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'choking' ? null : 'choking')"
+             [class]="activeFirstAidGuide() === 'choking' ? 'bg-amber-950/90 text-amber-100 border-amber-400 shadow-md font-bold' : 'bg-zinc-900/90 border-zinc-700 text-zinc-200 hover:text-white hover:border-zinc-500'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[48px] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none">
              💨 Choking / Heimlich
            </button>
-           <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'overdose' ? null : 'overdose')"
-             [class]="activeFirstAidGuide() === 'overdose' ? 'bg-purple-500/20 text-purple-300 border-purple-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
-             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
+           <button type="button" 
+             id="tab-overdose"
+             role="tab"
+             [attr.aria-selected]="activeFirstAidGuide() === 'overdose'"
+             aria-controls="guide-overdose"
+             (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'overdose' ? null : 'overdose')"
+             [class]="activeFirstAidGuide() === 'overdose' ? 'bg-purple-950/90 text-purple-100 border-purple-400 shadow-md font-bold' : 'bg-zinc-900/90 border-zinc-700 text-zinc-200 hover:text-white hover:border-zinc-500'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[48px] focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:outline-none">
              💊 Overdose Response
            </button>
-           <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'stroke' ? null : 'stroke')"
-             [class]="activeFirstAidGuide() === 'stroke' ? 'bg-sky-500/20 text-sky-300 border-sky-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
-             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
+           <button type="button" 
+             id="tab-stroke"
+             role="tab"
+             [attr.aria-selected]="activeFirstAidGuide() === 'stroke'"
+             aria-controls="guide-stroke"
+             (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'stroke' ? null : 'stroke')"
+             [class]="activeFirstAidGuide() === 'stroke' ? 'bg-sky-950/90 text-sky-100 border-sky-400 shadow-md font-bold' : 'bg-zinc-900/90 border-zinc-700 text-zinc-200 hover:text-white hover:border-zinc-500'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[48px] focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none">
              🧠 Stroke (FAST)
            </button>
-           <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'burns' ? null : 'burns')"
-             [class]="activeFirstAidGuide() === 'burns' ? 'bg-orange-500/20 text-orange-300 border-orange-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
-             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
+           <button type="button" 
+             id="tab-burns"
+             role="tab"
+             [attr.aria-selected]="activeFirstAidGuide() === 'burns'"
+             aria-controls="guide-burns"
+             (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'burns' ? null : 'burns')"
+             [class]="activeFirstAidGuide() === 'burns' ? 'bg-orange-950/90 text-orange-100 border-orange-400 shadow-md font-bold' : 'bg-zinc-900/90 border-zinc-700 text-zinc-200 hover:text-white hover:border-zinc-500'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[48px] focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:outline-none">
              🔥 Burn Care
            </button>
-           <button type="button" (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'heat' ? null : 'heat')"
-             [class]="activeFirstAidGuide() === 'heat' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-md font-black' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'"
-             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
+           <button type="button" 
+             id="tab-heat"
+             role="tab"
+             [attr.aria-selected]="activeFirstAidGuide() === 'heat'"
+             aria-controls="guide-heat"
+             (click)="activeFirstAidGuide.set(activeFirstAidGuide() === 'heat' ? null : 'heat')"
+             [class]="activeFirstAidGuide() === 'heat' ? 'bg-amber-950/90 text-amber-100 border-amber-400 shadow-md font-bold' : 'bg-zinc-900/90 border-zinc-700 text-zinc-200 hover:text-white hover:border-zinc-500'"
+             class="px-3 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[48px] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none">
              ☀️ Heat Stroke
            </button>
         </div>
         
-        <div class="text-xs sm:text-sm leading-relaxed text-zinc-300 font-pocketgull-inter">
+        <div role="tabpanel" 
+             [attr.id]="activeFirstAidGuide() ? ('guide-' + activeFirstAidGuide()) : null"
+             [attr.aria-labelledby]="activeFirstAidGuide() ? ('tab-' + activeFirstAidGuide()) : null"
+             class="text-sm sm:text-base leading-relaxed text-zinc-200 font-pocketgull-inter">
           @if (activeFirstAidGuide() === 'bleeding') {
-            <div class="space-y-2 animate-in fade-in duration-200">
+            <div class="space-y-3 animate-in fade-in duration-200">
               @if (patientAgeCategory() === 'infant') {
-                <p class="font-pocketgull font-bold text-red-400">🩸 Infant Bleeding Control (Direct Pressure Only):</p>
-                <ol class="list-decimal pl-5 space-y-1">
-                  <li><strong>Direct Pressure:</strong> Place sterile gauze or clean cloth on the wound. Apply continuous, firm direct pressure using 2-3 fingers.</li>
-                  <li><strong>No Windlass Tourniquets:</strong> Avoid adult windlass tourniquets on infants. Continue firm direct pressure until EMS arrives.</li>
-                  <li><strong>Elevation &amp; Warmth:</strong> Elevate the limb slightly if possible. Keep infant warm to prevent hypothermia.</li>
+                <h3 class="font-pocketgull-inter font-bold text-base text-red-300">🩸 Infant Bleeding Control (Direct Pressure Only):</h3>
+                <ol class="list-decimal pl-5 space-y-1.5 text-zinc-200">
+                  <li><strong class="text-white">Direct Pressure:</strong> Place sterile gauze or clean cloth on the wound. Apply continuous, firm direct pressure using 2-3 fingers.</li>
+                  <li><strong class="text-white">No Windlass Tourniquets:</strong> Avoid adult windlass tourniquets on infants. Continue firm direct pressure until EMS arrives.</li>
+                  <li><strong class="text-white">Elevation &amp; Warmth:</strong> Elevate the limb slightly if possible. Keep infant warm to prevent hypothermia.</li>
                 </ol>
               } @else if (isPatientPregnant()) {
-                <p class="font-pocketgull font-bold text-red-400">🩸 Severe Bleeding Control (Pregnancy Specific):</p>
-                <ol class="list-decimal pl-5 space-y-1">
-                  <li><strong>Direct Pressure:</strong> Apply firm, continuous direct pressure with sterile dressings.</li>
-                  <li><strong>Tourniquet:</strong> If bleeding is life-threatening on a limb, apply a tourniquet 2-3 inches above the wound. Tighten until bleeding stops.</li>
-                  <li><strong>Left Lateral Position:</strong> Maintain left lateral tilt (elevate right hip) to prevent supine hypotensive syndrome (uterus pressing inferior vena cava) while managing bleeding.</li>
+                <h3 class="font-pocketgull-inter font-bold text-base text-red-300">🩸 Severe Bleeding Control (Pregnancy Specific):</h3>
+                <ol class="list-decimal pl-5 space-y-1.5 text-zinc-200">
+                  <li><strong class="text-white">Direct Pressure:</strong> Apply firm, continuous direct pressure with sterile dressings.</li>
+                  <li><strong class="text-white">Tourniquet:</strong> If bleeding is life-threatening on a limb, apply a tourniquet 2-3 inches above the wound. Tighten until bleeding stops.</li>
+                  <li><strong class="text-white">Left Lateral Position:</strong> Maintain left lateral tilt (elevate right hip) to prevent supine hypotensive syndrome (uterus pressing inferior vena cava) while managing bleeding.</li>
                 </ol>
               } @else {
-                <p class="font-pocketgull font-bold text-red-400">🩸 Bleeding Control Protocol:</p>
-                <ol class="list-decimal pl-5 space-y-1">
-                  <li><strong>Direct Pressure:</strong> Place sterile gauze or clean cloth directly on the wound and apply firm, continuous pressure.</li>
-                  <li><strong>Elevation:</strong> Elevate the injured limb above the level of the heart if possible.</li>
-                  <li><strong>Tourniquet (Severe Bleeding):</strong> If bleeding is life-threatening on a limb and direct pressure fails, apply a tourniquet 2-3 inches above the wound (never on a joint). Tighten until bleeding stops. Record time.</li>
+                <h3 class="font-pocketgull-inter font-bold text-base text-red-300">🩸 Bleeding Control Protocol:</h3>
+                <ol class="list-decimal pl-5 space-y-1.5 text-zinc-200">
+                  <li><strong class="text-white">Direct Pressure:</strong> Place sterile gauze or clean cloth directly on the wound and apply firm, continuous pressure.</li>
+                  <li><strong class="text-white">Elevation:</strong> Elevate the injured limb above the level of the heart if possible.</li>
+                  <li><strong class="text-white">Tourniquet (Severe Bleeding):</strong> If bleeding is life-threatening on a limb and direct pressure fails, apply a tourniquet 2-3 inches above the wound (never on a joint). Tighten until bleeding stops. Record time.</li>
                 </ol>
               }
             </div>
           } @else if (activeFirstAidGuide() === 'choking') {
-            <div class="space-y-2 animate-in fade-in duration-200">
+            <div class="space-y-3 animate-in fade-in duration-200">
               @if (patientAgeCategory() === 'infant') {
-                <p class="font-pocketgull font-bold text-amber-400">💨 Infant Choking Protocol (Back Blows &amp; Chest Thrusts):</p>
-                <ol class="list-decimal pl-5 space-y-1">
-                  <li><strong>Assess:</strong> Look for ineffective cough, blue lips, or silent choking. Do NOT perform abdominal Heimlich thrusts.</li>
-                  <li><strong>5 Back Blows:</strong> Support the infant's head and neck. Place face down along your forearm, resting on your thigh with the head lower than the chest. Deliver 5 firm back blows with the heel of your hand between the shoulder blades.</li>
-                  <li><strong>5 Chest Thrusts:</strong> Support the head and flip the infant face up along your forearm. Place 2 fingers on the center of the breastbone (just below the nipple line) and compress 5 times. Repeat cycles.</li>
+                <h3 class="font-pocketgull-inter font-bold text-base text-amber-300">💨 Infant Choking Protocol (Back Blows &amp; Chest Thrusts):</h3>
+                <ol class="list-decimal pl-5 space-y-1.5 text-zinc-200">
+                  <li><strong class="text-white">Assess:</strong> Look for ineffective cough, blue lips, or silent choking. Do NOT perform abdominal Heimlich thrusts.</li>
+                  <li><strong class="text-white">5 Back Blows:</strong> Support the infant's head and neck. Place face down along your forearm, resting on your thigh with the head lower than the chest. Deliver 5 firm back blows with the heel of your hand between the shoulder blades.</li>
+                  <li><strong class="text-white">5 Chest Thrusts:</strong> Support the head and flip the infant face up along your forearm. Place 2 fingers on the center of the breastbone (just below the nipple line) and compress 5 times. Repeat cycles.</li>
                 </ol>
               } @else if (isPatientPregnant()) {
-                <p class="font-pocketgull font-bold text-amber-400">💨 Pregnancy Choking Protocol (Chest Thrusts):</p>
-                <ol class="list-decimal pl-5 space-y-1">
-                  <li><strong>Assess:</strong> Confirm patient cannot speak or cough. Do NOT perform abdominal Heimlich thrusts.</li>
-                  <li><strong>Chest Thrust Position:</strong> Wrap arms around the patient's chest from behind, placing your hands in the center of the breastbone (sternum).</li>
-                  <li><strong>Deliver Chest Thrusts:</strong> Pull backward with quick, distinct inward thrusts until the airway is cleared or the patient becomes unresponsive.</li>
+                <h3 class="font-pocketgull-inter font-bold text-base text-amber-300">💨 Pregnancy Choking Protocol (Chest Thrusts):</h3>
+                <ol class="list-decimal pl-5 space-y-1.5 text-zinc-200">
+                  <li><strong class="text-white">Assess:</strong> Confirm patient cannot speak or cough. Do NOT perform abdominal Heimlich thrusts.</li>
+                  <li><strong class="text-white">Chest Thrust Position:</strong> Wrap arms around the patient's chest from behind, placing your hands in the center of the breastbone (sternum).</li>
+                  <li><strong class="text-white">Deliver Chest Thrusts:</strong> Pull backward with quick, distinct inward thrusts until the airway is cleared or the patient becomes unresponsive.</li>
                 </ol>
               } @else {
-                <p class="font-pocketgull font-bold text-amber-400">💨 Conscious Choking Protocol (Heimlich):</p>
-                <ol class="list-decimal pl-5 space-y-1">
-                  <li><strong>Confirm Choking:</strong> Ask "Are you choking?" Look for hands clutched to throat, inability to speak/cough.</li>
-                  <li><strong>Abdominal Thrusts:</strong> Stand behind the person. Wrap arms around waist. Place thumb side of fist slightly above the navel. Grasp fist with other hand.</li>
-                  <li><strong>Deliver Thrusts:</strong> Perform quick, upward and inward thrusts until the object is expelled or the person becomes unconscious.</li>
+                <h3 class="font-pocketgull-inter font-bold text-base text-amber-300">💨 Conscious Choking Protocol (Heimlich):</h3>
+                <ol class="list-decimal pl-5 space-y-1.5 text-zinc-200">
+                  <li><strong class="text-white">Confirm Choking:</strong> Ask "Are you choking?" Look for hands clutched to throat, inability to speak/cough.</li>
+                  <li><strong class="text-white">Abdominal Thrusts:</strong> Stand behind the person. Wrap arms around waist. Place thumb side of fist slightly above the navel. Grasp fist with other hand.</li>
+                  <li><strong class="text-white">Deliver Thrusts:</strong> Perform quick, upward and inward thrusts until the object is expelled or the person becomes unconscious.</li>
                 </ol>
               }
             </div>
           } @else if (activeFirstAidGuide() === 'overdose') {
-            <div class="space-y-2 animate-in fade-in duration-200">
-              <p class="font-pocketgull font-bold text-purple-400">💊 Opioid Overdose Response Protocol:</p>
-              <ol class="list-decimal pl-5 space-y-1">
-                <li><strong>Assess:</strong> Look for slow/stopped breathing, blue/gray lips/nails, unresponsive to sternum rub.</li>
-                <li><strong>Call &amp; Narcan:</strong> Administer Naloxone (Narcan) nasal spray (spray entire bottle into one nostril). Call emergency services.</li>
-                <li><strong>Rescue Breathing:</strong> If not breathing, perform rescue breathing (1 breath every 5 seconds) and prepare CPR if pulse is absent.</li>
+            <div class="space-y-3 animate-in fade-in duration-200">
+              <h3 class="font-pocketgull-inter font-bold text-base text-purple-300">💊 Opioid Overdose Response Protocol:</h3>
+              <ol class="list-decimal pl-5 space-y-1.5 text-zinc-200">
+                <li><strong class="text-white">Assess:</strong> Look for slow/stopped breathing, blue/gray lips/nails, unresponsive to sternum rub.</li>
+                <li><strong class="text-white">Call &amp; Narcan:</strong> Administer Naloxone (Narcan) nasal spray (spray entire bottle into one nostril). Call emergency services.</li>
+                <li><strong class="text-white">Rescue Breathing:</strong> If not breathing, perform rescue breathing (1 breath every 5 seconds) and prepare CPR if pulse is absent.</li>
               </ol>
             </div>
           } @else if (activeFirstAidGuide() === 'stroke') {
-            <div class="space-y-2 animate-in fade-in duration-200">
-              <p class="font-pocketgull font-bold text-sky-400">🧠 Stroke FAST Check Protocol:</p>
-              <ul class="space-y-1.5 pl-4">
-                <li><strong>F - Face Drooping:</strong> Ask the person to smile. Does one side of the face droop?</li>
-                <li><strong>A - Arm Weakness:</strong> Ask the person to raise both arms. Does one arm drift downward?</li>
-                <li><strong>S - Speech Difficulty:</strong> Ask the person to repeat a simple phrase. Is their speech slurred or strange?</li>
-                <li><strong>T - Time to call 911:</strong> If they show any of these signs, note the time and call emergency services immediately.</li>
+            <div class="space-y-3 animate-in fade-in duration-200">
+              <h3 class="font-pocketgull-inter font-bold text-base text-sky-300">🧠 Stroke FAST Check Protocol:</h3>
+              <ul class="space-y-2 pl-4 text-zinc-200">
+                <li><strong class="text-white">F - Face Drooping:</strong> Ask the person to smile. Does one side of the face droop?</li>
+                <li><strong class="text-white">A - Arm Weakness:</strong> Ask the person to raise both arms. Does one arm drift downward?</li>
+                <li><strong class="text-white">S - Speech Difficulty:</strong> Ask the person to repeat a simple phrase. Is their speech slurred or strange?</li>
+                <li><strong class="text-white">T - Time to call 911:</strong> If they show any of these signs, note the time and call emergency services immediately.</li>
               </ul>
             </div>
           } @else if (activeFirstAidGuide() === 'burns') {
-            <div class="space-y-2 animate-in fade-in duration-200">
-              <p class="font-pocketgull font-bold text-orange-400">🔥 Burn Care Protocol:</p>
-              <ol class="list-decimal pl-5 space-y-1">
-                <li><strong>Cool Immediately:</strong> Run cool (not cold/ice) water over the burn for 10-20 minutes.</li>
-                <li><strong>Cover Loosely:</strong> Cover with a clean, dry, non-adherent dressing or plastic wrap. Do not apply butter, ointments, or toothpaste.</li>
-                <li><strong>Demographic Warnings:</strong>
+            <div class="space-y-3 animate-in fade-in duration-200">
+              <h3 class="font-pocketgull-inter font-bold text-base text-orange-300">🔥 Burn Care Protocol:</h3>
+              <ol class="list-decimal pl-5 space-y-1.5 text-zinc-200">
+                <li><strong class="text-white">Cool Immediately:</strong> Run cool (not cold/ice) water over the burn for 10-20 minutes.</li>
+                <li><strong class="text-white">Cover Loosely:</strong> Cover with a clean, dry, non-adherent dressing or plastic wrap. Do not apply butter, ointments, or toothpaste.</li>
+                <li><strong class="text-white">Demographic Warnings:</strong>
                   @if (patientAgeCategory() === 'infant') {
-                    <strong>Infants are at high risk of hypothermia!</strong> Do not cool large burns (over 10% body surface area) for long periods. Keep the baby warm.
+                    <strong class="text-amber-200">Infants are at high risk of hypothermia!</strong> Do not cool large burns (over 10% body surface area) for long periods. Keep the baby warm.
                   } @else if (patientAgeCategory() === 'geriatric') {
-                    <strong>Elderly skin is thin and heals slowly!</strong> Be extremely gentle; do not pop blisters, and monitor for signs of shock.
+                    <strong class="text-amber-200">Elderly skin is thin and heals slowly!</strong> Be extremely gentle; do not pop blisters, and monitor for signs of shock.
                   } @else {
                     Avoid popping blisters. Seek emergency care for third-degree (charred/white skin) or face/hand/joint burns.
                   }
@@ -369,14 +402,14 @@ import { PatientManagementService } from '../../services/patient-management.serv
               </ol>
             </div>
           } @else if (activeFirstAidGuide() === 'heat') {
-            <div class="space-y-2 animate-in fade-in duration-200">
-              <p class="font-pocketgull font-bold text-amber-400">☀️ Heat Stroke Protocol:</p>
-              <ol class="list-decimal pl-5 space-y-1">
-                <li><strong>Assess:</strong> Look for body temperature >103°F, red/hot/dry skin (or heavy sweating), rapid pulse, confusion/unconsciousness.</li>
-                <li><strong>Cool Rapidly:</strong> Move patient to shade/AC. Cool with water spray, wet sheets, fan, or ice packs in armpits, groin, and neck.</li>
-                <li><strong>Hydration Warning:</strong>
+            <div class="space-y-3 animate-in fade-in duration-200">
+              <h3 class="font-pocketgull-inter font-bold text-base text-amber-300">☀️ Heat Stroke Protocol:</h3>
+              <ol class="list-decimal pl-5 space-y-1.5 text-zinc-200">
+                <li><strong class="text-white">Assess:</strong> Look for body temperature &gt;103°F, red/hot/dry skin (or heavy sweating), rapid pulse, confusion/unconsciousness.</li>
+                <li><strong class="text-white">Cool Rapidly:</strong> Move patient to shade/AC. Cool with water spray, wet sheets, fan, or ice packs in armpits, groin, and neck.</li>
+                <li><strong class="text-white">Hydration Warning:</strong>
                   @if (patientAgeCategory() === 'infant' || patientAgeCategory() === 'geriatric') {
-                    <strong>Do NOT force fluids</strong> if the patient is confused, drowsy, or vomiting, as they may aspirate. Seek immediate EMS transport.
+                    <strong class="text-amber-200">Do NOT force fluids</strong> if the patient is confused, drowsy, or vomiting, as they may aspirate. Seek immediate EMS transport.
                   } @else {
                     If fully conscious and able to swallow, give sips of cool water or electrolyte drink. Do not give aspirin or acetaminophen.
                   }
@@ -384,7 +417,7 @@ import { PatientManagementService } from '../../services/patient-management.serv
               </ol>
             </div>
           } @else {
-            <p class="text-zinc-500 italic text-center py-4">Select an emergency guide above for offline step-by-step first aid instructions.</p>
+            <p class="text-zinc-300 font-medium italic text-center py-4">Select an emergency guide above for offline step-by-step first aid instructions.</p>
           }
         </div>
       </pocket-gull-card>

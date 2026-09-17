@@ -13,6 +13,7 @@ import { OpenEvidenceCommonsService } from './open-evidence-commons.service';
 import { IpPatentRegistryService } from './ip-patent-registry.service';
 import { OpticalInnovationsService } from './optical-innovations.service';
 import { PatientTrajectoryService } from './patient-trajectory.service';
+import { ClinicalKneeRecoveryLoopService } from './clinical-knee-recovery-loop.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -205,6 +206,7 @@ describe('WebMcpRegistrationService', () => {
         { provide: IpPatentRegistryService, useValue: new IpPatentRegistryService() },
         { provide: OpticalInnovationsService, useValue: new OpticalInnovationsService() },
         { provide: PatientTrajectoryService, useValue: mockTrajectory },
+        { provide: ClinicalKneeRecoveryLoopService, useValue: new ClinicalKneeRecoveryLoopService() },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -212,10 +214,12 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 65 WebMCP agentic tools on modelContext', () => {
+  it('should register all 67 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(65);
+    expect(registeredTools.size).toBe(67);
+    expect(registeredTools.has('inspect_knee_mri_findings')).toBe(true);
+    expect(registeredTools.has('set_knee_3d_slicing_plane')).toBe(true);
     expect(registeredTools.has('get_clinical_evidence_citations')).toBe(true);
     expect(registeredTools.has('get_patient_3act_trajectory')).toBe(true);
     expect(registeredTools.has('configure_optical_therapy')).toBe(true);
@@ -643,10 +647,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 65 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 67 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(65);
+    expect(registeredTools.size).toBe(67);
     expect(registeredTools.has('get_clinical_evidence_citations')).toBe(true);
     expect(registeredTools.has('get_patient_3act_trajectory')).toBe(true);
     expect(registeredTools.has('configure_optical_therapy')).toBe(true);
@@ -852,7 +856,7 @@ describe('WebMcpRegistrationService', () => {
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(65);
+    expect((service as any).mcpControllers.length).toBe(67);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
@@ -957,6 +961,51 @@ describe('WebMcpRegistrationService', () => {
       });
       expect(resPmid.content[0].text).toContain('PLOS Biol');
       expect(resPmid.content[0].text).toContain('Recommendations for daytime');
+    });
+
+    it('should execute inspect_knee_mri_findings tool and return 12-target findings and KOOS subscales', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('inspect_knee_mri_findings');
+      expect(tool).toBeDefined();
+
+      const res = await tool.execute({
+        patientId: 'P001',
+        scenario: 'acute_acl_effusion'
+      });
+
+      expect(res.content[0].text).toContain('mriTargets');
+      expect(res.content[0].text).toContain('koosSubscales');
+      expect(res.content[0].text).toContain('activeRehabPhase');
+      expect(res.content[0].text).toContain('recoveryVelocity');
+    });
+
+    it('should execute set_knee_3d_slicing_plane tool and trigger onSetKneeSlicingPlane callback', async () => {
+      let calledPlane = '';
+      let calledTarget = '';
+      let calledFlexion = 0;
+
+      service.registerTools({
+        onSetKneeSlicingPlane: (plane, targetKey, flexion) => {
+          calledPlane = plane;
+          calledTarget = targetKey || '';
+          calledFlexion = flexion || 0;
+        }
+      });
+
+      const tool = registeredTools.get('set_knee_3d_slicing_plane');
+      expect(tool).toBeDefined();
+
+      const res = await tool.execute({
+        plane: 'Coronal',
+        targetKey: 'mcl',
+        flexionAngleDegrees: 30
+      });
+
+      expect(calledPlane).toBe('Coronal');
+      expect(calledTarget).toBe('mcl');
+      expect(calledFlexion).toBe(30);
+      expect(res.content[0].text).toContain('Coronal');
+      expect(res.content[0].text).toContain('mcl');
     });
   });
 });

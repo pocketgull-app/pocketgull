@@ -3347,6 +3347,98 @@ html.theme-mandala .bg-slate-900:hover {
   color: #ffffff !important;
 }
 
+/* ─── Scotopic 650nm Emergency HUD (Dark Adaptation Preserved) ─── */
+html.theme-scotopic {
+  background-color: #050000 !important;
+  color: #ff6655 !important;
+}
+html.theme-scotopic body,
+html.theme-scotopic app-root {
+  background-color: #050000 !important;
+  color: #ff6655 !important;
+}
+html.theme-scotopic .bg-white,
+html.theme-scotopic .bg-zinc-900,
+html.theme-scotopic .bg-zinc-950,
+html.theme-scotopic .pocket-gull-card,
+html.theme-scotopic .paper-card,
+html.theme-scotopic .sub-panel,
+html.theme-scotopic .card {
+  background-color: #0e0202 !important;
+  border-color: #3d0a0a !important;
+  color: #ff6655 !important;
+}
+html.theme-scotopic h1,
+html.theme-scotopic h2,
+html.theme-scotopic h3,
+html.theme-scotopic h4,
+html.theme-scotopic h5 {
+  color: #ff2211 !important;
+}
+html.theme-scotopic .text-gray-900,
+html.theme-scotopic .text-gray-800,
+html.theme-scotopic .text-zinc-100,
+html.theme-scotopic .text-zinc-200 {
+  color: #ff6655 !important;
+}
+html.theme-scotopic .border,
+html.theme-scotopic .border-zinc-700,
+html.theme-scotopic .border-zinc-800 {
+  border-color: #3d0a0a !important;
+}
+
+/* ─── Disaster Triage E-Paper Mode (1-Bit High-Contrast Reflectance) ─── */
+html.theme-epaper {
+  background-color: #f5f5f0 !important;
+  color: #111111 !important;
+}
+html.theme-epaper body,
+html.theme-epaper app-root {
+  background-color: #f5f5f0 !important;
+  color: #111111 !important;
+}
+html.theme-epaper .bg-white,
+html.theme-epaper .bg-zinc-900,
+html.theme-epaper .bg-zinc-950,
+html.theme-epaper .pocket-gull-card,
+html.theme-epaper .paper-card,
+html.theme-epaper .sub-panel,
+html.theme-epaper .card {
+  background-color: #ffffff !important;
+  border: 1px solid #d1d1cc !important;
+  color: #111111 !important;
+}
+html.theme-epaper h1,
+html.theme-epaper h2,
+html.theme-epaper h3,
+html.theme-epaper h4,
+html.theme-epaper h5 {
+  color: #000000 !important;
+}
+html.theme-epaper .text-gray-900,
+html.theme-epaper .text-gray-800,
+html.theme-epaper .text-zinc-100,
+html.theme-epaper .text-zinc-200 {
+  color: #111111 !important;
+}
+html.theme-epaper .border,
+html.theme-epaper .border-zinc-700,
+html.theme-epaper .border-zinc-800 {
+  border-color: #d1d1cc !important;
+}
+
+/* ─── Plain Language & Cognitive Accommodation Mode ─── */
+html.plain-language-mode p,
+html.plain-language-mode li,
+html.plain-language-mode span {
+  line-height: 1.75 !important;
+  letter-spacing: 0.015em !important;
+}
+html.plain-language-mode p {
+  margin-bottom: 1.25rem !important;
+  max-width: 68ch !important;
+}
+
 /* ─── Accessibility & Readability Text Scaling ─── */
 html.text-scale-large {
   font-size: 112% !important;

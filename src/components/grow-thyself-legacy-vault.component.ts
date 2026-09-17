@@ -15,7 +15,7 @@ import { GrowThyselfLegacyEngineService, UserLegacyArchetype } from '../services
           <div class="flex items-center gap-3">
             <span class="text-3xl">🌱</span>
             <div>
-              <h2 class="text-xl font-bold text-gray-100">Grow Thyself: Lifelong Vitality & Legacy Sovereign Vault</h2>
+              <h2 class="text-xl font-bold text-gray-100">Grow Thyself: Lifelong Vitality & Legacy Archive</h2>
               <p class="text-xs text-gray-400 mt-1">
                 Reflection lenses for active lifelong vital contributions on Earth, and posthumous open-science data directives for seven generations hence.
               </p>

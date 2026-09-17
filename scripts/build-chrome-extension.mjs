@@ -15,8 +15,19 @@ const EXT_DIR = path.join(ROOT_DIR, 'extension');
 const pkg = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'package.json'), 'utf8'));
 const OUTPUT_ZIP = path.join(ROOT_DIR, `pocketgull-chrome-extension-v${pkg.version}.zip`);
 
+import AdmZip from 'adm-zip';
+
 export async function packageChromeExtension() {
   console.log('📦 Packaging Pocket-Gull Chrome Web Store Extension...');
+
+  // Ensure manifest version matches package.json
+  const manifestPath = path.join(EXT_DIR, 'manifest.json');
+  if (fs.existsSync(manifestPath)) {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    manifest.version = pkg.version;
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+    console.log(`  ✅ Synced manifest.json version -> ${pkg.version}`);
+  }
 
   // Ensure icons directory exists
   const iconsDir = path.join(EXT_DIR, 'icons');
@@ -46,7 +57,12 @@ export async function packageChromeExtension() {
 </html>`);
   }
 
-  console.log('✅ Extension assets built successfully.');
+  // Compress using AdmZip
+  const zip = new AdmZip();
+  zip.addLocalFolder(EXT_DIR);
+  zip.writeZip(OUTPUT_ZIP);
+
+  console.log('✅ Extension assets packaged successfully.');
   console.log(`📍 Output Zip location: ${OUTPUT_ZIP}`);
 }
 

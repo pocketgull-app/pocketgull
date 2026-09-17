@@ -2,11 +2,12 @@ import { Component, ChangeDetectionStrategy, inject, input } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component';
+import { BiologicalAgeWaterfallHudComponent } from '../biological-age-waterfall-hud.component';
 
 @Component({
   selector: 'app-epigenetic-longevity-lens-tab',
   standalone: true,
-  imports: [CommonModule, PocketGullBadgeComponent],
+  imports: [CommonModule, PocketGullBadgeComponent, BiologicalAgeWaterfallHudComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-5 bg-zinc-950 border border-purple-500/30 rounded-2xl shadow-xl space-y-4 font-mono text-zinc-100 backdrop-blur-md">
@@ -43,6 +44,11 @@ import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component'
           <span class="text-emerald-400 font-extrabold text-base">98.2%</span>
           <span class="text-[10px] text-zinc-400 block mt-1">High ATP efficiency</span>
         </div>
+      </div>
+
+      <!-- Living Biological Clock & Waterfall HUD -->
+      <div class="pt-2">
+        <app-biological-age-waterfall-hud></app-biological-age-waterfall-hud>
       </div>
 
       <!-- Content Slot -->

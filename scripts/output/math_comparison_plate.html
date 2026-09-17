@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PocketGull Math vs. Computer Modern Comparison Plate</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <style>
+    body {
+      background: #09090b;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Atkinson Hyperlegible', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 800" width="1100" height="800">
+  <defs>
+    <style>
+      @import url('/fonts/fonts.css');
+      .bg { fill: #09090b; }
+      .card { fill: #121217; stroke: #272732; stroke-width: 1.5; rx: 12; }
+      .title { font-family: 'PocketGull', 'Atkinson Hyperlegible Next', sans-serif; font-weight: 700; fill: #f4f4f5; font-size: 22px; }
+      .subtitle { font-family: 'PocketGull Mono', monospace; fill: #14b8a6; font-size: 11px; letter-spacing: 0.06em; }
+      .section-hdr { font-family: 'PocketGull', sans-serif; font-weight: 700; fill: #f4f4f5; font-size: 15px; }
+      .section-sub { font-family: 'PocketGull Mono', monospace; fill: #a1a1aa; font-size: 11px; }
+      .label-bad { font-family: 'PocketGull Mono', monospace; fill: #ef4444; font-size: 11px; font-weight: 600; }
+      .label-good { font-family: 'PocketGull Mono', monospace; fill: #10b981; font-size: 11px; font-weight: 600; }
+      .cm-text { font-family: 'Latin Modern Math', 'Computer Modern', serif; fill: #71717a; font-size: 24px; font-style: italic; }
+      .pg-math { font-family: 'PocketGull Math', monospace; fill: #38bdf8; font-size: 24px; font-feature-settings: "cv05" 1, "cv08" 1, "ss02" 1, "tnum" 1; }
+      .box-raw { font-family: monospace; fill: #e4e4e7; font-size: 11.5px; line-height: 1.4; }
+      .callout { fill: #181820; stroke: #272732; stroke-width: 1; rx: 8; }
+      .desc-text { font-family: 'Atkinson Hyperlegible', sans-serif; fill: #d4d4d8; font-size: 12px; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="800" class="bg"/>
+
+  <!-- Header -->
+  <g transform="translate(40, 35)">
+    <text x="0" y="24" class="title">PocketGull Math vs. Legacy Computer Modern</text>
+    <text x="0" y="46" class="subtitle">EMPIRICAL PROOF PLATE: DARK-MODE TELEMETRY & ISMP DISAMBIGUATION</text>
+  </g>
+
+  <!-- QUADRANT 1: Dark Mode Hairline Anorexia -->
+  <g transform="translate(40, 95)">
+    <rect width="495" height="325" class="card"/>
+    <text x="24" y="32" class="section-hdr">1. The Dark-Mode "Hairline Anorexia" Problem</text>
+    <text x="24" y="50" class="section-sub">1978 INK-SPREAD DESIGN VS. 2026 OLED CALIBRATED STEM</text>
+
+    <!-- Legacy Computer Modern Box -->
+    <g transform="translate(24, 75)">
+      <rect width="447" height="90" class="callout"/>
+      <text x="16" y="24" class="label-bad">✕ LEGACY COMPUTER MODERN (HAIRLINE COLLAPSE ON OLED)</text>
+      <text x="16" y="62" class="cm-text">ℒ_ASL = - ∑ y_k (1 - p_k)^γ  [Stem &lt; 20 UPM: Wiped out]</text>
+    </g>
+
+    <!-- PocketGull Math Box -->
+    <g transform="translate(24, 185)">
+      <rect width="447" height="110" class="callout" stroke="#059669" stroke-width="1.2"/>
+      <text x="16" y="24" class="label-good">✓ POCKETGULL MATH (68 UPM HUMANIST CALIBRATED STEM)</text>
+      <text x="16" y="65" class="pg-math">ℒ_ASL = - ∑ y_k (1 - p_k)^γ</text>
+      <text x="16" y="94" class="desc-text" fill="#34d399">Humanist stroke width remains solid on dark HUDs without retinal glare.</text>
+    </g>
+  </g>
+
+  <!-- QUADRANT 2: ISMP Clinical Disambiguation -->
+  <g transform="translate(565, 95)">
+    <rect width="495" height="325" class="card"/>
+    <text x="24" y="32" class="section-hdr">2. ISMP Life-Critical Character Disambiguation</text>
+    <text x="24" y="50" class="section-sub">ELIMINATING VARIABLE COLLISIONS IN CLINICAL FORMULAS</text>
+
+    <g transform="translate(24, 75)">
+      <!-- Row 1: nu vs v -->
+      <rect width="447" height="52" class="callout"/>
+      <text x="16" y="32" class="desc-text">Greek ν vs. Latin v:</text>
+      <text x="180" y="34" class="cm-text" font-size="18">ν ≈ v (Collision)</text>
+      <text x="320" y="35" class="pg-math" font-size="18">ν ≠ v (Distinct Branch)</text>
+    </g>
+
+    <g transform="translate(24, 137)">
+      <!-- Row 2: 0 vs O -->
+      <rect width="447" height="52" class="callout"/>
+      <text x="16" y="32" class="desc-text">Zero vs. Capital O:</text>
+      <text x="180" y="34" class="cm-text" font-size="18">0 vs O (Identical)</text>
+      <text x="320" y="35" class="pg-math" font-size="18">0̸ vs O (Slashed cv08)</text>
+    </g>
+
+    <g transform="translate(24, 199)">
+      <!-- Row 3: 1 vs l vs I -->
+      <rect width="447" height="52" class="callout"/>
+      <text x="16" y="32" class="desc-text">One vs. l vs. I:</text>
+      <text x="180" y="34" class="cm-text" font-size="18">1 / l / I (Fatal)</text>
+      <text x="320" y="35" class="pg-math" font-size="18">1 / l / I (Curved &amp; Serifs)</text>
+    </g>
+
+    <g transform="translate(24, 261)">
+      <!-- Row 4: 2 vs Z -->
+      <rect width="447" height="52" class="callout"/>
+      <text x="16" y="32" class="desc-text">Two vs. Capital Z:</text>
+      <text x="180" y="34" class="cm-text" font-size="18">2 vs Z (Blur hazard)</text>
+      <text x="320" y="35" class="pg-math" font-size="18">2 vs Z (Crossbar cv11)</text>
+    </g>
+  </g>
+
+  <!-- QUADRANT 3: Stepped Delimiters (MathVariants .v1 - .v4) -->
+  <g transform="translate(40, 445)">
+    <rect width="495" height="320" class="card"/>
+    <text x="24" y="32" class="section-hdr">3. Stepped Delimiters (MathVariants .v1 to .v4)</text>
+    <text x="24" y="50" class="section-sub">SCALES FRACTIONS &amp; INTEGRALS WITHOUT CORNER DISTORTION</text>
+
+    <g transform="translate(24, 75)">
+      <rect width="447" height="220" class="callout"/>
+      
+      <!-- Delimiter Visualizer -->
+      <g transform="translate(30, 110)">
+        <text x="0" y="0" class="pg-math" font-size="28">( [ { √ </text>
+        <text x="0" y="35" class="section-sub">Level 1 (1200 UPM)</text>
+      </g>
+      <g transform="translate(130, 110)">
+        <text x="0" y="0" class="pg-math" font-size="38">( [ { √ </text>
+        <text x="0" y="35" class="section-sub">Level 2 (1600 UPM)</text>
+      </g>
+      <g transform="translate(250, 110)">
+        <text x="0" y="0" class="pg-math" font-size="48">( [ { </text>
+        <text x="0" y="35" class="section-sub">Level 3 (2000 UPM)</text>
+      </g>
+      <g transform="translate(360, 110)">
+        <text x="0" y="0" class="pg-math" font-size="58">( [ </text>
+        <text x="0" y="35" class="section-sub">Level 4 (2400)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- QUADRANT 4: Zero-Shear Text & Markdown Graphs -->
+  <g transform="translate(565, 445)">
+    <rect width="495" height="320" class="card"/>
+    <text x="24" y="32" class="section-hdr">4. Zero-Shear Unicode &amp; ASCII Markdown Graphs</text>
+    <text x="24" y="50" class="section-sub">UNIFIED 1000 UPM GRID ELIMINATES FALLBACK COLUMN DRIFT</text>
+
+    <g transform="translate(24, 75)">
+      <rect width="447" height="220" class="callout"/>
+      <text x="16" y="35" class="box-raw" xml:space="preserve">┌───────────────────────────────────────────────┐</text>
+      <text x="16" y="55" class="box-raw" xml:space="preserve">│ GENERATION 9 PIPELINE GRAPH                   │</text>
+      <text x="16" y="75" class="box-raw" xml:space="preserve">├───────────────────────────────────────────────┤</text>
+      <text x="16" y="95" class="box-raw" xml:space="preserve">│ [Input MRI: 392×392] ──► ViT ──► η=2×10⁻⁶     │</text>
+      <text x="16" y="115" class="box-raw" xml:space="preserve">│                                 │             │</text>
+      <text x="16" y="135" class="box-raw" xml:space="preserve">│                                 ▼             │</text>
+      <text x="16" y="155" class="box-raw" xml:space="preserve">│               StudyMIL Head (z = ∑ᵢ αᵢ hᵢ)    │</text>
+      <text x="16" y="175" class="box-raw" xml:space="preserve">│                                 ▼             │</text>
+      <text x="16" y="195" class="box-raw" xml:space="preserve">│          ℒ_ASL (γ₊=1.0) ──► Macro-AUC ≥ 0.850 │</text>
+      <text x="16" y="215" class="box-raw" xml:space="preserve">└───────────────────────────────────────────────┘</text>
+    </g>
+  </g>
+</svg>
+
+</body>
+</html>

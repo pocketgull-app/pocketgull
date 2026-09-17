@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClinicalTrajectoryReaderService, TrajectoryPersona, IBionicWord } from '../../services/clinical-trajectory-reader.service';
 import { BionicReadingService, IClinicalBionicToken } from '../../services/bionic-reading.service';
+import { PatientTrajectoryComponent } from '../patient-trajectory.component';
 
 @Component({
   selector: 'app-clinical-trajectory-reader-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PatientTrajectoryComponent],
   template: `
     <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="traj-reader-title">
       <!-- Rachel Nabors Parasympathetic Ambient Respiration Glow (10s Cycle) -->
@@ -34,27 +35,56 @@ import { BionicReadingService, IClinicalBionicToken } from '../../services/bioni
             </p>
           </div>
 
-          <!-- Persona Selector -->
-          <div class="inline-flex rounded-lg bg-zinc-900 p-1 border border-zinc-800 shrink-0">
-            <button
-              (click)="setPersona('clinician')"
-              [class.bg-teal-600]="trajectoryService.persona() === 'clinician'"
-              [class.text-white]="trajectoryService.persona() === 'clinician'"
-              [class.text-zinc-400]="trajectoryService.persona() !== 'clinician'"
-              class="px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
-              👨‍⚕️ Clinician Note
-            </button>
-            <button
-              (click)="setPersona('patient')"
-              [class.bg-emerald-600]="trajectoryService.persona() === 'patient'"
-              [class.text-white]="trajectoryService.persona() === 'patient'"
-              [class.text-zinc-400]="trajectoryService.persona() !== 'patient'"
-              class="px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
-              🌱 Patient Horizon
-            </button>
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Mode Switcher -->
+            <div class="inline-flex rounded-lg bg-zinc-900 p-1 border border-zinc-800 shrink-0">
+              <button
+                (click)="activeMode.set('rsvp')"
+                [class.bg-teal-600]="activeMode() === 'rsvp'"
+                [class.text-white]="activeMode() === 'rsvp'"
+                [class.text-zinc-400]="activeMode() !== 'rsvp'"
+                class="px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                ⚡ RSVP Reader
+              </button>
+              <button
+                (click)="activeMode.set('compass')"
+                [class.bg-teal-600]="activeMode() === 'compass'"
+                [class.text-white]="activeMode() === 'compass'"
+                [class.text-zinc-400]="activeMode() !== 'compass'"
+                class="px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                🧭 3-Act Compass
+              </button>
+            </div>
+
+            <!-- Persona Selector -->
+            @if (activeMode() === 'rsvp') {
+              <div class="inline-flex rounded-lg bg-zinc-900 p-1 border border-zinc-800 shrink-0">
+                <button
+                  (click)="setPersona('clinician')"
+                  [class.bg-teal-600]="trajectoryService.persona() === 'clinician'"
+                  [class.text-white]="trajectoryService.persona() === 'clinician'"
+                  [class.text-zinc-400]="trajectoryService.persona() !== 'clinician'"
+                  class="px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                  👨‍⚕️ Clinician Note
+                </button>
+                <button
+                  (click)="setPersona('patient')"
+                  [class.bg-emerald-600]="trajectoryService.persona() === 'patient'"
+                  [class.text-white]="trajectoryService.persona() === 'patient'"
+                  [class.text-zinc-400]="trajectoryService.persona() !== 'patient'"
+                  class="px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                  🌱 Patient Horizon
+                </button>
+              </div>
+            }
           </div>
         </div>
 
+        @if (activeMode() === 'compass') {
+          <div class="mb-6">
+            <app-patient-trajectory></app-patient-trajectory>
+          </div>
+        } @else {
         <!-- RSVP Speed Reading Teleprompter Box -->
         <div class="mb-6 p-4 rounded-xl bg-zinc-900 border border-zinc-800/80">
           <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-3">
@@ -213,6 +243,7 @@ import { BionicReadingService, IClinicalBionicToken } from '../../services/bioni
             </div>
           </div>
         </div>
+        }
 
         <!-- Footer Actions & Integrity Seal -->
         <div class="pt-4 border-t border-zinc-800 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -250,6 +281,7 @@ export class ClinicalTrajectoryReaderModalComponent implements OnDestroy {
   readonly trajectoryService = inject(ClinicalTrajectoryReaderService);
   readonly bionic = inject(BionicReadingService);
 
+  activeMode = signal<'rsvp' | 'compass'>('rsvp');
   speedWpm = signal<number>(450);
   isPlaying = signal<boolean>(false);
   currentIndex = signal<number>(0);

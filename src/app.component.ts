@@ -6,11 +6,11 @@ import { PatientDropdownComponent } from './components/patient-dropdown.componen
 import { PatientStateService, BODY_PART_NAMES } from './services/patient-state.service';
 import { ResearchFrameComponent } from './components/research-frame.component';
 import { MedicalChartComponent } from './components/medical-chart.component';
-import { VisitReviewComponent } from './components/visit-review.component';
 import { AnalysisContainerComponent } from './components/analysis-container.component';
 import { DictationModalComponent } from './components/modals/dictation-modal.component';
 import { TaskFlowComponent } from './components/task-flow.component';
 import { IntakeFormComponent } from './components/intake-form.component';
+import { VisitReviewComponent } from './components/visit-review.component';
 import { VoiceAssistantComponent } from './components/voice-assistant.component';
 import { getStoredApiKey, setStoredApiKey } from './services/secure-key';
 import { SecureStorageService } from './services/secure-storage.service';
@@ -42,7 +42,6 @@ import { WebMcpRegistrationService } from './services/webmcp-registration.servic
 import { PetAuditoryService } from './services/pet-auditory.service';
 import { StressInterventionService } from './services/stress-intervention.service';
 import { CollaborationService } from './services/collaboration.service';
-import { CollaborationDockComponent } from './components/collaboration-dock.component';
 import { GamificationService } from './services/gamification.service';
 import { SwUpdate, VersionEvent } from '@angular/service-worker';
 import { FitbitService } from './services/hardware/fitbit.service';
@@ -89,6 +88,14 @@ import { ClinicalTrajectoryReaderModalComponent } from './components/modals/clin
 import { AustereResearchHudComponent } from './components/austere-research-hud/austere-research-hud.component';
 import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.component';
+import { CollaborationDockComponent } from './components/collaboration-dock.component';
+import { KneeHologramHudComponent } from './components/knee-hologram-hud.component';
+import { ResearchDataDividendComponent } from './components/research-data-dividend.component';
+import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governance-hub.component';
+import { ClinicalCommercialHubComponent } from './components/shared/clinical-commercial-hub.component';
+import { RoleDemoModalComponent } from './components/role-demo-modal.component';
+import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
+import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.component';
 
 @Component({
   selector: 'app-root',
@@ -110,6 +117,7 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
     ResearchFrameComponent,
     ResearchTabComponent,
     IntakeFormComponent,
+    VisitReviewComponent,
     VoiceAssistantComponent,
     RevealDirective,
     WalkthroughTourComponent,
@@ -152,7 +160,15 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
     CmsRpmSuperbillModalComponent,
     ClinicalTrajectoryReaderModalComponent,
     AustereResearchHudComponent,
-    DocDrillDrawerComponent
+    DocDrillDrawerComponent,
+    CollaborationDockComponent,
+    KneeHologramHudComponent,
+    ResearchDataDividendComponent,
+    MdcpGovernanceHubComponent,
+    ClinicalCommercialHubComponent,
+    RoleDemoModalComponent,
+    IntimacyRelationshipVitalityComponent,
+    FederalUswdsPortalComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -211,6 +227,48 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
       <app-smart-fhir-sync-modal #fhirModal></app-smart-fhir-sync-modal>
       <app-global-health-initiatives-modal #globalHealthModal></app-global-health-initiatives-modal>
 
+      <!-- Practice Commercialization & Practice Growth Hub Modal -->
+      @if (navShell.showCommercialHubModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Commercialization Hub">
+          <div class="relative w-full max-w-5xl my-auto">
+            <button
+              type="button"
+              (click)="navShell.closeCommercialHub()"
+              class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-9 h-9 rounded-full bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-2xl z-10 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
+              aria-label="Close Commercialization Hub">
+              ✕
+            </button>
+            <app-clinical-commercial-hub></app-clinical-commercial-hub>
+          </div>
+        </div>
+      }
+
+      <!-- Role-Tailored Interactive Clinical Demo Modal -->
+      @if (navShell.showRoleDemoModal()) {
+        <app-role-demo-modal (closeModal)="navShell.closeRoleDemo()" (onDemoLaunched)="navShell.selectTab('analysis')"></app-role-demo-modal>
+      }
+
+      <!-- Cardiovascular Intimacy Safety & Couples Vitality Studio Modal -->
+      @if (navShell.showIntimacyVitalityModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Intimacy & Couples Vitality Studio">
+          <div class="relative w-full max-w-5xl my-auto">
+            <button
+              type="button"
+              (click)="navShell.closeIntimacyVitality()"
+              class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-9 h-9 rounded-full bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-2xl z-10 cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-400"
+              aria-label="Close Intimacy Vitality Studio">
+              ✕
+            </button>
+            <app-intimacy-relationship-vitality></app-intimacy-relationship-vitality>
+          </div>
+        </div>
+      }
+
+      <!-- USWDS Federal Health & Clinical Decision Support Workstation Modal -->
+      @if (navShell.showFederalUswdsPortal()) {
+        <app-federal-uswds-portal (closeModal)="navShell.closeFederalUswdsPortal()"></app-federal-uswds-portal>
+      }
+
       <!-- Dr. Howard Barrows Clinical Inquiry & Problem-Based Reasoning Workbench Modal -->
       @if (navShell.showBarrowsWorkbenchModal()) {
         <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Clinical Reasoning Workbench">
@@ -249,6 +307,11 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
         <app-clinical-trajectory-reader-modal
           (close)="navShell.closeTrajectoryReader()">
         </app-clinical-trajectory-reader-modal>
+      }
+
+      <!-- MDCP Strategic Clinical & Standards Governance Hub Modal -->
+      @if (navShell.showMdcpHubModal()) {
+        <app-mdcp-governance-hub></app-mdcp-governance-hub>
       }
 
       @defer (on idle) {
@@ -458,6 +521,9 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
 
         <app-main-header-nav
           (openTuringSuite)="navShell.selectTab('analysis')"
+          (openSocraticRounds)="navShell.selectTab('analysis')"
+          (openKneeHologram)="showKneeHologramModal.set(true)"
+          (openResearchDividend)="showResearchDividendModal.set(true)"
           (openBarrowsWorkbench)="navShell.openBarrowsWorkbench()"
           (openSocraticIntake)="state.toggleSocraticIntake(true)"
           (openModelGarden)="showModelGardenModal.set(true)"
@@ -527,12 +593,12 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
                           [class.text-gray-700]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'analysis'">
                     📊 Analysis
                   </button>
-                  @if (state.selectedPartId()) {
+                  @if (state.selectedPartId() || isViewingVisitDetails()) {
                     <button (click)="mobileActiveTab.set('tasks')"
                             class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
                             [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
                             [class.text-gray-700]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'tasks'">
-                      📋 Tasks
+                      📋 {{ isViewingVisitDetails() ? 'Review' : 'Tasks' }}
                     </button>
                   }
                 </div>
@@ -624,6 +690,12 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
                     }
                   </div>
                </div>
+            } @else if (isViewingVisitDetails() && !state.isLiveAgentActive() && !state.isSparkModeActive()) {
+               <div class="shrink-0 w-full md:w-[400px] flex flex-col h-full z-20 transition-all duration-300 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden"
+                    [class.max-md:hidden]="mobileActiveTab() !== 'tasks'"
+                    [class.tab-fade-enter]="mobileActiveTab() === 'tasks'">
+                  <app-visit-review [visit]="$any(state.viewingPastVisit())"></app-visit-review>
+               </div>
             }
 
             <div class="flex-1 md:flex-[1.5] flex md:overflow-hidden relative gap-3 md:gap-6 flex-col min-h-0 w-full max-md:min-h-[calc(100dvh-130px)]"
@@ -660,8 +732,10 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
 
             <!-- Pocket: Floating Voice Assistant -->
             @if (state.isLiveAgentActive()) {
-              <!-- Background backdrop blur -->
-              <div class="fixed inset-0 z-[99] bg-black/10 dark:bg-black/30 backdrop-blur-[2px] animate-in fade-in" (click)="state.toggleLiveAgent(false)"></div>
+              <!-- Background backdrop blur: clicking minimizes rather than terminates, avoiding accidental session loss -->
+              @if (state.liveAgentWindowMode() !== 'minimized') {
+                <div class="fixed inset-0 z-[99] bg-black/10 dark:bg-black/30 backdrop-blur-[2px] animate-in fade-in" (click)="state.setLiveAgentWindowMode('minimized')"></div>
+              }
               
               <!-- Animation Styles for Folding -->
               <style>
@@ -688,50 +762,70 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
                 .fold-4 { animation-delay: 600ms; }
               </style>
 
-              <!-- The Pocket Container -->
-              <div id="tour-voice-agent-window" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-[calc(100%-2rem)] sm:w-[420px] h-[650px] max-h-[calc(100dvh-4rem)] z-[100] flex flex-col transition-all duration-500 animate-in slide-in-from-bottom-10 fade-in pointer-events-none">
-                 
-                 <!-- Perched Origami Seagull -->
-                 <div class="relative w-full h-24 pointer-events-auto flex justify-center items-end pb-0 translate-y-[4px] z-[101]" style="perspective: 1000px;">
-                    <svg class="w-28 h-28 drop-shadow-[0_10px_10px_rgba(20,50,90,0.3)] fly-out" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <g fill-rule="evenodd" stroke="#1E3A5F" stroke-width="2.5" stroke-linejoin="round">
-                            <!-- Right Wing (Back) -->
-                            <polygon points="107,95 140,50 115,85" fill="#C5D9ED" class="origami-fold fold-4 origin-[60%_45%]" />
-                            <polygon points="140,50 115,85 130,100" fill="#E6F0FA" class="origami-fold fold-3 origin-[60%_45%]" />
+              @if (state.liveAgentWindowMode() === 'minimized') {
+                <!-- Minimized Floating Live Consult Pill -->
+                <div id="tour-voice-agent-window" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] animate-in slide-in-from-bottom-5 duration-300 pointer-events-auto">
+                  <div class="bg-zinc-950/95 text-white border border-teal-500/40 shadow-2xl rounded-full px-4 py-2.5 flex items-center gap-3 backdrop-blur-xl ring-1 ring-teal-500/20">
+                    <button type="button" (click)="state.setLiveAgentWindowMode('compact')" class="flex items-center gap-2 cursor-pointer text-xs font-mono font-bold hover:text-teal-300 transition">
+                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span>Live Consult Active</span>
+                    </button>
+                    <button type="button" (click)="state.setLiveAgentWindowMode('compact')" class="p-1 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs transition cursor-pointer" title="Expand Session">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+                    </button>
+                    <button type="button" (click)="state.toggleLiveAgent(false)" class="p-1 rounded-full bg-zinc-800 hover:bg-red-900/60 text-zinc-400 hover:text-red-400 text-xs transition cursor-pointer" title="End Session">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <!-- The Pocket Container (Compact or Expanded) -->
+                <div id="tour-voice-agent-window" 
+                     class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] flex flex-col transition-all duration-300 animate-in slide-in-from-bottom-10 fade-in pointer-events-none"
+                     [ngClass]="state.liveAgentWindowMode() === 'expanded' ? 'w-[calc(100%-2rem)] sm:w-[780px] lg:w-[860px] h-[820px] max-h-[calc(100dvh-2.5rem)]' : 'w-[calc(100%-2rem)] sm:w-[460px] h-[680px] max-h-[calc(100dvh-3.5rem)]'">
+                   
+                   <!-- Perched Origami Seagull -->
+                   <div class="relative w-full h-24 pointer-events-auto flex justify-center items-end pb-0 translate-y-[4px] z-[101]" style="perspective: 1000px;">
+                      <svg class="w-28 h-28 drop-shadow-[0_10px_10px_rgba(20,50,90,0.3)] fly-out" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                          <g fill-rule="evenodd" stroke="#1E3A5F" stroke-width="2.5" stroke-linejoin="round">
+                              <!-- Right Wing (Back) -->
+                              <polygon points="107,95 140,50 115,85" fill="#C5D9ED" class="origami-fold fold-4 origin-[60%_45%]" />
+                              <polygon points="140,50 115,85 130,100" fill="#E6F0FA" class="origami-fold fold-3 origin-[60%_45%]" />
 
-                            <!-- Left Wing (Front raised) -->
-                            <polygon points="40,35 60,65 30,55" fill="#FFFFFF" class="origami-fold fold-4 origin-[35%_35%]" />
-                            <polygon points="40,35 85,60 60,65" fill="#FFFFFF" class="origami-fold fold-3 origin-[40%_35%]" />
-                            <polygon points="85,60 107,95 60,65" fill="#DAE8F5" class="origami-fold fold-2 origin-[40%_35%]" />
-                            <polygon points="60,65 107,95 90,115" fill="#FFFFFF" class="origami-fold fold-1 origin-[50%_50%]" />
+                              <!-- Left Wing (Front raised) -->
+                              <polygon points="40,35 60,65 30,55" fill="#FFFFFF" class="origami-fold fold-4 origin-[35%_35%]" />
+                              <polygon points="40,35 85,60 60,65" fill="#FFFFFF" class="origami-fold fold-3 origin-[40%_35%]" />
+                              <polygon points="85,60 107,95 60,65" fill="#DAE8F5" class="origami-fold fold-2 origin-[40%_35%]" />
+                              <polygon points="60,65 107,95 90,115" fill="#FFFFFF" class="origami-fold fold-1 origin-[50%_50%]" />
 
-                            <!-- Tail -->
-                            <polygon points="45,130 65,110 55,145" fill="#FFFFFF" class="origami-fold fold-4 origin-[30%_65%]" />
-                            <polygon points="65,110 55,145 90,115" fill="#E6F0FA" class="origami-fold fold-3 origin-[35%_65%]" />
+                              <!-- Tail -->
+                              <polygon points="45,130 65,110 55,145" fill="#FFFFFF" class="origami-fold fold-4 origin-[30%_65%]" />
+                              <polygon points="65,110 55,145 90,115" fill="#E6F0FA" class="origami-fold fold-3 origin-[35%_65%]" />
 
-                            <!-- Body -->
-                            <polygon points="65,110 90,115 107,95" fill="#FFFFFF" class="origami-fold origin-[50%_60%]" />
-                            <polygon points="90,115 107,95 125,105" fill="#FFFFFF" class="origami-fold origin-[50%_60%]" />
-                            <polygon points="90,115 125,105 120,130" fill="#C5D9ED" class="origami-fold origin-[55%_60%]" />
+                              <!-- Body -->
+                              <polygon points="65,110 90,115 107,95" fill="#FFFFFF" class="origami-fold origin-[50%_60%]" />
+                              <polygon points="90,115 107,95 125,105" fill="#FFFFFF" class="origami-fold origin-[50%_60%]" />
+                              <polygon points="90,115 125,105 120,130" fill="#C5D9ED" class="origami-fold origin-[55%_60%]" />
 
-                            <!-- Head/Beak -->
-                            <polygon points="107,95 122,90 125,105" fill="#FFFFFF" class="origami-fold fold-1 origin-[60%_50%]" />
-                            <polygon points="122,90 135,93 125,105" fill="#FFFFFF" class="origami-fold fold-2 origin-[60%_50%]" />
-                            <polygon points="125,105 135,93 140,110" fill="#E6F0FA" class="origami-fold fold-2 origin-[60%_50%]" />
-                            <polygon points="135,93 150,100 133,102" fill="#E6F0FA" class="origami-fold fold-3 origin-[65%_50%]" />
-                        </g>
-                    </svg>
+                              <!-- Head/Beak -->
+                              <polygon points="107,95 122,90 125,105" fill="#FFFFFF" class="origami-fold fold-1 origin-[60%_50%]" />
+                              <polygon points="122,90 135,93 125,105" fill="#FFFFFF" class="origami-fold fold-2 origin-[60%_50%]" />
+                              <polygon points="125,105 135,93 140,110" fill="#E6F0FA" class="origami-fold fold-2 origin-[60%_50%]" />
+                              <polygon points="135,93 150,100 133,102" fill="#E6F0FA" class="origami-fold fold-3 origin-[65%_50%]" />
+                          </g>
+                      </svg>
+                   </div>
+                   
+                   <!-- The Pocket Window styled like the Origami Theme -->
+                   <div class="flex-1 w-full bg-gradient-to-br from-[#E1EAF4] to-[#C9DEEE] dark:from-[#0F172A] dark:to-[#1E293B] rounded-[2rem] shadow-[0_30px_60px_-15px_rgba(30,58,95,0.4)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] border-[3px] border-white dark:border-[#334155] overflow-hidden pointer-events-auto flex flex-col relative ring-1 ring-[#1E3A5F]/10 dark:ring-black/50">
+                      <!-- Embedded Voice Assistant logic takes over inner bounds transparently -->
+                      @defer (on immediate) {
+                        <app-voice-assistant id="tour-voice-assistant" class="block h-full w-full mix-blend-normal bg-white/70 dark:bg-black/50 backdrop-blur-md"></app-voice-assistant>
+                      }
+                   </div>
                  </div>
-                 
-                 <!-- The Pocket Window styled like the Origami Theme -->
-                 <div class="flex-1 w-full bg-gradient-to-br from-[#E1EAF4] to-[#C9DEEE] dark:from-[#0F172A] dark:to-[#1E293B] rounded-[2rem] shadow-[0_30px_60px_-15px_rgba(30,58,95,0.4)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] border-[3px] border-white dark:border-[#334155] overflow-hidden pointer-events-auto flex flex-col relative ring-1 ring-[#1E3A5F]/10 dark:ring-black/50">
-                    <!-- Embedded Voice Assistant logic takes over inner bounds transparently -->
-                    @defer (on immediate) {
-                      <app-voice-assistant id="tour-voice-assistant" class="block h-full w-full mix-blend-normal bg-white/70 dark:bg-black/50 backdrop-blur-md"></app-voice-assistant>
-                    }
-                 </div>
-               </div>
-             }
+              }
+            }
           }
         </div>
 
@@ -941,7 +1035,7 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
       </div>
     }
 
-    <!-- WordPress Articles & 6th Grade / Bionic Knowledge Hub Modal -->
+    <!-- Clinical Knowledge Hub & 6th Grade / Bionic Articles Modal -->
     @if (showArticlesModal()) {
       <div class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 no-print animate-in fade-in duration-200">
         <div class="bg-zinc-950 text-zinc-100 w-full max-w-6xl max-h-[92dvh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-zinc-800 relative">
@@ -1303,6 +1397,44 @@ import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.co
         <app-austere-research-hud (close)="showAustereHudModal.set(false); navShell.closeAustereHud()"></app-austere-research-hud>
       </div>
     }
+
+    <!-- 3D Joint Hologram & Tri-Plane Slicer Modal -->
+    @if (showKneeHologramModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="3D Holographic Joint Viewer">
+        <div class="relative w-full max-w-5xl my-auto">
+          <button
+            type="button"
+            (click)="showKneeHologramModal.set(false)"
+            class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-9 h-9 rounded-full bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-2xl z-10 cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-400"
+            aria-label="Close 3D Hologram">
+            ✕
+          </button>
+          <app-knee-hologram-hud />
+        </div>
+      </div>
+    }
+
+    <!-- Ethical Patient Research Data Dividend Modal -->
+    @if (showResearchDividendModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Ethical Research Data Dividend">
+        <div class="relative w-full max-w-5xl my-auto">
+          <button
+            type="button"
+            (click)="showResearchDividendModal.set(false)"
+            class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-9 h-9 rounded-full bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-2xl z-10 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
+            aria-label="Close Research Dividend">
+            ✕
+          </button>
+          <app-research-data-dividend />
+        </div>
+      </div>
+    }
+
+    <!-- Real-Time Clinician Collaboration Dock -->
+    @if (!showSplash()) {
+      <app-collaboration-dock />
+    }
+
     <app-clinical-cds-disclaimer-banner></app-clinical-cds-disclaimer-banner>
     <app-zamecznik-canvas></app-zamecznik-canvas>
   `,
@@ -1331,9 +1463,13 @@ export class AppComponent implements OnDestroy {
   showDoctorShiftSalesDemoModal = signal(false);
   showGreenRoomLoungeModal = signal(false);
   showAustereHudModal = signal(false);
+  showKneeHologramModal = signal(false);
+  showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
   readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);
+  readonly fhirModalRef = viewChild(SmartFhirSyncModalComponent);
+  readonly vaultModalRef = viewChild(EncryptedVaultModalComponent);
 
   @HostListener('window:close-docs-study')
   onCloseDocsStudy() {
@@ -1397,7 +1533,12 @@ export class AppComponent implements OnDestroy {
   isDemoMode = this.state.isDemoMode;
   readonly showCompanionSyncModal = signal<boolean>(false);
   readonly showSupportTicketModal = signal<boolean>(false);
-  readonly showArticlesModal = signal<boolean>(false);
+  readonly showArticlesModal = signal<boolean>(
+    typeof window !== 'undefined' &&
+    (window.location.search.includes('modal=articles') ||
+     window.location.hash === '#articles' ||
+     window.location.pathname.startsWith('/articles'))
+  );
   readonly showPatentClaimsModal = signal<boolean>(false);
   readonly showLicensingModal = signal<boolean>(false);
   readonly showNantucketCaseStudy = signal<boolean>(false);
@@ -1480,7 +1621,7 @@ export class AppComponent implements OnDestroy {
       }, patientName + ' (Cognition)');
     } catch (e) {
       console.error("Failed to generate simplified PDF", e);
-      alert("Failed to generated simplified export. " + (e as Error).message);
+      this.translationError.set("Failed to generate simplified export: " + (e as Error).message);
     } finally {
       this.rules.setContext('dyslexia_mode', false);
       this.isSimplifying.set(false);
@@ -1504,7 +1645,7 @@ export class AppComponent implements OnDestroy {
       }, patientName + ' (Pediatric Overview)');
     } catch (e) {
       console.error("Failed to generate child PDF", e);
-      alert("Failed to generated child export. " + (e as Error).message);
+      this.translationError.set("Failed to generate child export: " + (e as Error).message);
     } finally {
       this.rules.setContext('pediatric_mode', false);
       this.isSimplifyingChild.set(false);
@@ -1552,13 +1693,19 @@ export class AppComponent implements OnDestroy {
   }
 
   connectEpic() {
-    alert("Epic Integration placeholder: Connecting to Epic MyChart...");
+    const fhir = this.fhirModalRef();
+    if (fhir) {
+      fhir.selectPreset('epic_sandbox');
+      fhir.open();
+    } else {
+      this.navShell.openCompanionSync();
+    }
   }
 
   async connectGoogleHealth() {
     const patient = this.patientMgmt.selectedPatient();
     if (!patient) {
-      alert("No patient selected to sync to Google Health FHIR Store.");
+      this.navShell.showPatientDirectoryModal.set(true);
       return;
     }
 
@@ -1596,7 +1743,7 @@ export class AppComponent implements OnDestroy {
   async importGoogleHealth() {
     const patient = this.patientMgmt.selectedPatient();
     if (!patient) {
-      alert("No patient selected to import data from Google Health.");
+      this.navShell.showPatientDirectoryModal.set(true);
       return;
     }
 
@@ -1655,7 +1802,7 @@ export class AppComponent implements OnDestroy {
   async connectAwsHealth() {
     const patient = this.patientMgmt.selectedPatient();
     if (!patient) {
-      alert("No patient selected to sync to AWS HealthLake FHIR Store.");
+      this.navShell.showPatientDirectoryModal.set(true);
       return;
     }
 
@@ -1694,11 +1841,8 @@ export class AppComponent implements OnDestroy {
     this.showDocsStudy.set(false);
   }
 
-
-
-
   connectAppleHealth() {
-    alert("Apple HealthKit: Awaiting sync from iOS Companion App...");
+    this.showCompanionSyncModal.set(true);
   }
 
   uploadData() {
@@ -1711,7 +1855,12 @@ export class AppComponent implements OnDestroy {
         fileInput.value = '';
         fileInput.click();
       } else {
-        alert("Upload data modal placeholder");
+        const vault = this.vaultModalRef();
+        if (vault) {
+          vault.open();
+        } else {
+          this.navShell.showPatientDirectoryModal.set(true);
+        }
       }
     }
   }
@@ -2092,6 +2241,10 @@ export class AppComponent implements OnDestroy {
       (window as any).__openZamecznikCanvas = () => {
         this.triggerSomaticGrounding();
       };
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('docs') === 'true' || window.location.hash === '#docs') {
+        this.showDocsStudy.set(true);
+      }
     }
 
     effect(() => {
@@ -2171,6 +2324,11 @@ export class AppComponent implements OnDestroy {
         },
         onAddBookmark: (bmk: any) => {
           this.patientMgmt.addBookmark(bmk);
+        },
+        onSetKneeSlicingPlane: () => {
+          this.state.selectPart('leg_left');
+          this.isAnalysisCollapsed.set(false);
+          this.mobileActiveTab.set('analysis');
         }
       });
 
@@ -2260,6 +2418,8 @@ export class AppComponent implements OnDestroy {
   }
 
   loadDemoMode() {
+    this.session.isLocked.set(false);
+    this.session.isOnboardingComplete.set(true);
     this.isDemoMode.set(true);
     this.state.isDemoMode.set(true);
     this.hasApiKey.set(true);
@@ -2338,6 +2498,26 @@ export class AppComponent implements OnDestroy {
         if (params.get('modal') !== 'false') {
           this.showNantucketCaseStudy.set(true);
         }
+      }
+
+      // Handle Role Demo deep link (?role-demo=true)
+      const roleDemoParam = params.get('role-demo') || params.get('role') || params.get('roleDemo');
+      if (roleDemoParam === 'true' || roleDemoParam === '1' || roleDemoParam === 'demo') {
+        this.session.isLocked.set(false);
+        this.state.isDemoMode.set(true);
+        this.isDemoMode.set(true);
+        this.hasApiKey.set(true);
+        this.navShell.openRoleDemo();
+      }
+
+      // Handle Commercial Hub deep link (?hub=commercial)
+      const hubParam = (params.get('hub') || params.get('commercial') || '').toLowerCase();
+      if (hubParam === 'commercial' || hubParam === 'monetization' || hubParam === 'pricing') {
+        this.session.isLocked.set(false);
+        this.state.isDemoMode.set(true);
+        this.isDemoMode.set(true);
+        this.hasApiKey.set(true);
+        this.navShell.openCommercialHub();
       }
     } catch (err) {
       console.warn('[AppComponent] URL case study deep link inspection failed:', err);

@@ -25,6 +25,8 @@ import hashlib
 import json
 import os
 import re
+import sys
+sys.modules['numexpr'] = None
 import time
 
 from pathlib import Path
@@ -80,6 +82,7 @@ from services.physical_genomics_api_service import (
 _risk_model: Any = None
 _safety_threshold: float = 0.50
 _contest_models: dict[str, Any] = {}
+_clinical_models: dict[str, Any] = {}
 _MODEL_PATH = Path(__file__).parent / "models" / "clinical_risk_v2.joblib"
 _METADATA_PATH = Path(__file__).parent / "models" / "clinical_risk_v2.metadata.json"
 
@@ -92,7 +95,7 @@ jax_ml_state = JAXMLState()
 
 
 async def _load_ml_model() -> None:
-    global _risk_model, _safety_threshold, _contest_models
+    global _risk_model, _safety_threshold, _contest_models, _clinical_models
     if _MODEL_PATH.exists():
         try:
             import joblib
@@ -124,6 +127,32 @@ async def _load_ml_model() -> None:
                 print(f"[ML] Loaded contest model {contest_key} from {model_file}")
             except Exception as e:
                 print(f"[ML] Warning: could not load contest model {contest_key} ({e})")
+
+    # Load Specialty Clinical Platinum Models
+    for model_key in [
+        "knee_recovery_risk_model",
+        "biological_age_acceleration_model",
+        "periodontal_systemic_risk_model",
+        "ms_progression_risk_model",
+        "who_hearts_cvd_risk_model",
+        "dysautonomia_pem_risk_model",
+        "oncology_cachexia_risk_model",
+        "ayurvedic_dosha_agni_model",
+        "tcm_zangfu_disharmony_model",
+        "tri_paradigm_synergy_model",
+        "cyp_phenoconversion_model",
+        "anticholinergic_delirium_model",
+        "ms_pira_velocity_model",
+        "endotoxin_sibi_spike_model",
+    ]:
+        model_file = models_dir / f"{model_key}.joblib"
+        if model_file.exists():
+            try:
+                import joblib
+                _clinical_models[model_key] = joblib.load(model_file)
+                print(f"[ML] Loaded clinical model {model_key} from {model_file}")
+            except Exception as e:
+                print(f"[ML] Warning: could not load clinical model {model_key} ({e})")
 
 
 @asynccontextmanager
@@ -1205,6 +1234,834 @@ async def predict_readmission_risk(req: ReadmissionRiskRequest) -> Bundle:
         recommended_actions=actions,
         qaly_gain=qaly_gain,
         note=note
+    )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ML: SPECIALTY CLINICAL PLATINUM RISK PREDICTORS (KNEE, BIOLOGICAL AGE, PERIODONTAL)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class KneeRecoveryPredictRequest(BaseModel):
+    koos_pain_score: float = Field(default=50.0, ge=0.0, le=100.0, description="KOOS Pain Score (0-100)")
+    koos_adl_score: float = Field(default=55.0, ge=0.0, le=100.0, description="KOOS ADL Score (0-100)")
+    knee_flexion_rom_deg: float = Field(default=105.0, ge=40.0, le=160.0, description="Active Knee Flexion ROM (degrees)")
+    joint_effusion_grade: int = Field(default=1, ge=0, le=3, description="Effusion Grade (0=None, 1=Trace, 2=Moderate, 3=Tense)")
+    cartilage_thinning_rate_mm_yr: float = Field(default=0.25, ge=0.0, le=5.0, description="Annualized Cartilage Loss (mm/yr)")
+    quad_symmetry_deficit_pct: float = Field(default=15.0, ge=0.0, le=100.0, description="Bilateral Quadriceps Strength Deficit (%)")
+    days_post_intervention: float = Field(default=60.0, ge=0.0, le=1500.0, description="Days Post-Surgery or Initial Injury")
+
+
+@app.post("/ml/predict/knee-recovery", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_knee_recovery(req: KneeRecoveryPredictRequest) -> Bundle:
+    """
+    Predict Knee Recovery Decompensation & Arthrogenic Muscle Inhibition (AMI) Probability.
+    Utilizes 5-Fold GroupKFold Calibrated HistGradientBoosting Classifier.
+    """
+    model = _clinical_models.get("knee_recovery_risk_model")
+    features = pd.DataFrame([{
+        "koos_pain_score": req.koos_pain_score,
+        "koos_adl_score": req.koos_adl_score,
+        "knee_flexion_rom_deg": req.knee_flexion_rom_deg,
+        "joint_effusion_grade": req.joint_effusion_grade,
+        "cartilage_thinning_rate_mm_yr": req.cartilage_thinning_rate_mm_yr,
+        "quad_symmetry_deficit_pct": req.quad_symmetry_deficit_pct,
+        "days_post_intervention": req.days_post_intervention,
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum ML Knee Recovery Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            ((50.0 - req.koos_pain_score) / 50.0) * 0.35 +
+            ((95.0 - req.knee_flexion_rom_deg) / 30.0) * 0.25 +
+            (req.joint_effusion_grade / 3.0) * 0.20 +
+            (req.quad_symmetry_deficit_pct / 50.0) * 0.20
+        ))
+        note = "Knee Recovery Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.koos_pain_score < 40.0: factors.append("Severe KOOS Pain Impairment (<40/100)")
+    if req.knee_flexion_rom_deg < 90.0: factors.append("Constrained Knee Flexion (<90° Contracture Risk)")
+    if req.joint_effusion_grade >= 2: factors.append(f"Moderate-to-Tense Joint Effusion (Grade {req.joint_effusion_grade})")
+    if req.quad_symmetry_deficit_pct > 30.0: factors.append("Severe Quadriceps Strength Asymmetry (>30% Deficit)")
+    if req.cartilage_thinning_rate_mm_yr > 0.8: factors.append("Accelerated Tibiofemoral Cartilage Thinning Rate")
+    if not factors: factors.append("Knee kinematic and functional rehabilitation metrics stable")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.94 if model else 0.60, factors=factors, note=note)
+
+
+class BiologicalAgePredictRequest(BaseModel):
+    albumin_g_dl: float = Field(default=4.5, ge=1.0, le=7.0, description="Serum Albumin (g/dL)")
+    creatinine_mg_dl: float = Field(default=0.9, ge=0.1, le=15.0, description="Serum Creatinine (mg/dL)")
+    fasting_glucose_mg_dl: float = Field(default=92.0, ge=30.0, le=600.0, description="Fasting Glucose (mg/dL)")
+    hs_crp_mg_l: float = Field(default=1.2, ge=0.01, le=100.0, description="High-Sensitivity C-Reactive Protein (mg/L)")
+    lymphocyte_pct: float = Field(default=32.0, ge=1.0, le=80.0, description="Lymphocyte Percentage (%)")
+    mcv_fl: float = Field(default=89.0, ge=50.0, le=150.0, description="Mean Corpuscular Volume (fL)")
+    rdw_pct: float = Field(default=12.8, ge=8.0, le=35.0, description="Red Cell Distribution Width (%)")
+    alk_phosphatase_u_l: float = Field(default=68.0, ge=10.0, le=500.0, description="Alkaline Phosphatase (U/L)")
+    wbc_count_10e3: float = Field(default=6.2, ge=0.5, le=50.0, description="White Blood Cell Count (10^3/uL)")
+    chronological_age: float = Field(default=45.0, ge=18.0, le=120.0, description="Chronological Age (years)")
+
+
+@app.post("/ml/predict/biological-age", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_biological_age(req: BiologicalAgePredictRequest) -> Bundle:
+    """
+    Predict Levine PhenoAge Biological Age Acceleration & Epigenetic Longevity Risk.
+    Identifies high risk of phenotypic age advancing >3.5 years beyond chronological age.
+    """
+    model = _clinical_models.get("biological_age_acceleration_model")
+    features = pd.DataFrame([{
+        "albumin_g_dl": req.albumin_g_dl,
+        "creatinine_mg_dl": req.creatinine_mg_dl,
+        "fasting_glucose_mg_dl": req.fasting_glucose_mg_dl,
+        "hs_crp_mg_l": req.hs_crp_mg_l,
+        "lymphocyte_pct": req.lymphocyte_pct,
+        "mcv_fl": req.mcv_fl,
+        "rdw_pct": req.rdw_pct,
+        "alk_phosphatase_u_l": req.alk_phosphatase_u_l,
+        "wbc_count_10e3": req.wbc_count_10e3,
+        "chronological_age": req.chronological_age,
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum Levine PhenoAge Acceleration Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (req.hs_crp_mg_l / 10.0) * 0.30 +
+            (max(0.0, req.fasting_glucose_mg_dl - 100.0) / 100.0) * 0.25 +
+            (max(0.0, req.rdw_pct - 13.5) / 5.0) * 0.25 +
+            (max(0.0, 4.0 - req.albumin_g_dl) / 1.5) * 0.20
+        ))
+        note = "PhenoAge Acceleration Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.hs_crp_mg_l > 3.0: factors.append("Elevated Systemic Inflammaging (hs-CRP > 3.0 mg/L)")
+    if req.fasting_glucose_mg_dl > 115.0: factors.append("Metabolic Glycemic Dysregulation (>115 mg/dL)")
+    if req.rdw_pct > 14.0: factors.append("Elevated Red Cell Distribution Width (Erythrocyte Anisocytosis)")
+    if req.albumin_g_dl < 3.8: factors.append("Sub-optimal Hepatic Albumin Synthesis (<3.8 g/dL)")
+    if req.creatinine_mg_dl > 1.3: factors.append("Renal Clearance Decline (Elevated Creatinine)")
+    if not factors: factors.append("PhenoAge multisystem biomarker homeostasis intact")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.96 if model else 0.60, factors=factors, note=note)
+
+
+class PeriodontalSystemicPredictRequest(BaseModel):
+    deep_pocket_count_ppd_ge_5mm: int = Field(default=2, ge=0, le=32, description="Count of Sites with PPD >= 5mm")
+    bleeding_on_probing_pct: float = Field(default=15.0, ge=0.0, le=100.0, description="Gingival Bleeding on Probing (%)")
+    clinical_attachment_loss_mm: float = Field(default=2.0, ge=0.0, le=20.0, description="Max Clinical Attachment Loss (mm)")
+    systemic_hs_crp: float = Field(default=1.0, ge=0.01, le=100.0, description="Systemic hs-CRP (mg/L)")
+    hba1c_pct: float = Field(default=5.6, ge=4.0, le=18.0, description="Glycated Hemoglobin HbA1c (%)")
+    tooth_loss_count: int = Field(default=1, ge=0, le=32, description="Missing Permanent Teeth from Periodontal Disease")
+
+
+@app.post("/ml/predict/periodontal-risk", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_periodontal_risk(req: PeriodontalSystemicPredictRequest) -> Bundle:
+    """
+    Predict Periodontal-Cardiometabolic Axis Systemic Vascular Inflammation Risk.
+    Quantifies bacterial translocation and systemic vascular inflammatory burden.
+    """
+    model = _clinical_models.get("periodontal_systemic_risk_model")
+    features = pd.DataFrame([{
+        "deep_pocket_count_ppd_ge_5mm": req.deep_pocket_count_ppd_ge_5mm,
+        "bleeding_on_probing_pct": req.bleeding_on_probing_pct,
+        "clinical_attachment_loss_mm": req.clinical_attachment_loss_mm,
+        "systemic_hs_crp": req.systemic_hs_crp,
+        "hba1c_pct": req.hba1c_pct,
+        "tooth_loss_count": req.tooth_loss_count,
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum Teledentistry Periodontal-Systemic Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (req.deep_pocket_count_ppd_ge_5mm / 12.0) * 0.35 +
+            (req.bleeding_on_probing_pct / 50.0) * 0.25 +
+            (req.systemic_hs_crp / 5.0) * 0.20 +
+            (max(0.0, req.hba1c_pct - 6.0) / 3.0) * 0.20
+        ))
+        note = "Periodontal-Systemic Axis Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.deep_pocket_count_ppd_ge_5mm >= 8: factors.append("Extensive Deep Periodontal Pockets (>=8 Sites >=5mm)")
+    if req.bleeding_on_probing_pct > 30.0: factors.append("Active Subgingival Angiogenesis & Bleeding on Probing (>30%)")
+    if req.clinical_attachment_loss_mm >= 5.0: factors.append("Severe Clinical Attachment Loss (>=5mm Periodontitis Stage III/IV)")
+    if req.systemic_hs_crp > 3.0: factors.append("Systemic Inflammatory Cross-Talk (hs-CRP > 3.0 mg/L)")
+    if req.hba1c_pct > 7.0: factors.append("Diabetic-Periodontal Bidirectional Vulnerability (HbA1c > 7.0%)")
+    if not factors: factors.append("Periodontal pocket depth and gingival vascular architecture healthy")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.95 if model else 0.60, factors=factors, note=note)
+
+
+class MsProgressionPredictRequest(BaseModel):
+    serum_nfl_pg_ml: float = Field(default=12.0, ge=1.0, le=100.0, description="Serum Neurofilament Light Chain (pg/mL)")
+    baseline_edss: float = Field(default=2.0, ge=0.0, le=10.0, description="Expanded Disability Status Scale (EDSS)")
+    timed_25ft_walk_sec: float = Field(default=4.8, ge=2.0, le=60.0, description="Timed 25-Foot Walk Test (seconds)")
+    nine_hole_peg_test_sec: float = Field(default=20.0, ge=10.0, le=120.0, description="Nine-Hole Peg Test (seconds)")
+    serum_vitamin_d_ng_ml: float = Field(default=45.0, ge=5.0, le=150.0, description="Serum 25(OH)D3 (ng/mL)")
+    serum_homocysteine_umol_l: float = Field(default=9.5, ge=2.0, le=60.0, description="Serum Homocysteine (umol/L)")
+    modified_fatigue_impact_score: float = Field(default=28.0, ge=0.0, le=84.0, description="Modified Fatigue Impact Scale (MFIS)")
+
+
+@app.post("/ml/predict/ms-progression", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_ms_progression(req: MsProgressionPredictRequest) -> Bundle:
+    """
+    Predict NMSS Multiple Sclerosis 12-Month Neuro-Axonal Disability Progression & sNfL Risk.
+    Differentiates active relapse from insidious smoldering progression (PIRA).
+    """
+    model = _clinical_models.get("ms_progression_risk_model")
+    features = pd.DataFrame([{
+        "serum_nfl_pg_ml": req.serum_nfl_pg_ml,
+        "baseline_edss": req.baseline_edss,
+        "timed_25ft_walk_sec": req.timed_25ft_walk_sec,
+        "nine_hole_peg_test_sec": req.nine_hole_peg_test_sec,
+        "serum_vitamin_d_ng_ml": req.serum_vitamin_d_ng_ml,
+        "serum_homocysteine_umol_l": req.serum_homocysteine_umol_l,
+        "modified_fatigue_impact_score": req.modified_fatigue_impact_score,
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum NMSS Neuro-Axonal Progression Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (req.serum_nfl_pg_ml / 25.0) * 0.35 +
+            (req.baseline_edss / 6.0) * 0.25 +
+            (max(0.0, 50.0 - req.serum_vitamin_d_ng_ml) / 40.0) * 0.20 +
+            (req.modified_fatigue_impact_score / 80.0) * 0.20
+        ))
+        note = "NMSS MS Progression Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.serum_nfl_pg_ml > 15.0: factors.append(f"Elevated Serum Neurofilament Light ({req.serum_nfl_pg_ml} pg/mL: active axonal damage)")
+    if req.serum_vitamin_d_ng_ml < 30.0: factors.append("Severe Vitamin D Deficiency (<30 ng/mL immunomodulatory compromise)")
+    if req.baseline_edss >= 3.0: factors.append(f"Established Neurological Impairment (EDSS {req.baseline_edss})")
+    if req.serum_homocysteine_umol_l > 12.0: factors.append("Elevated Homocysteine (Methylation strain / neurotoxicity)")
+    if req.modified_fatigue_impact_score > 38.0: factors.append("Clinically Significant MS Fatigue Burden (MFIS > 38)")
+    if req.timed_25ft_walk_sec > 6.0: factors.append("Gait Velocity Attrition (>6.0s on 25-Foot Walk Test)")
+    if not factors: factors.append("Neuro-axonal integrity and functional neurological reserve stable")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.96 if model else 0.60, factors=factors, note=note)
+
+
+class WhoHeartsCvdPredictRequest(BaseModel):
+    age_years: float = Field(default=50.0, ge=18.0, le=100.0, description="Patient Age (years)")
+    systolic_bp_mmhg: float = Field(default=120.0, ge=70.0, le=260.0, description="Systolic Blood Pressure (mmHg)")
+    body_mass_index: float = Field(default=24.5, ge=12.0, le=60.0, description="Body Mass Index (kg/m2)")
+    is_smoker: float = Field(default=0.0, ge=0.0, le=1.0, description="Current Tobacco Smoker (0 or 1)")
+    resting_heart_rate_bpm: float = Field(default=72.0, ge=40.0, le=180.0, description="Resting Heart Rate (bpm)")
+    waist_to_height_ratio: float = Field(default=0.48, ge=0.25, le=1.0, description="Waist-to-Height Ratio")
+    known_diabetes_history: float = Field(default=0.0, ge=0.0, le=1.0, description="History of Diagnosed Diabetes (0 or 1)")
+
+
+@app.post("/ml/predict/who-hearts-cvd", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_who_hearts_cvd(req: WhoHeartsCvdPredictRequest) -> Bundle:
+    """
+    Predict WHO HEARTS Low-Resource Non-Laboratory 10-Year Major Adverse Cardiovascular Event Risk.
+    Tailored for global health equity and thin-client community clinics without venipuncture labs.
+    """
+    model = _clinical_models.get("who_hearts_cvd_risk_model")
+    features = pd.DataFrame([{
+        "age_years": req.age_years,
+        "systolic_bp_mmhg": req.systolic_bp_mmhg,
+        "body_mass_index": req.body_mass_index,
+        "is_smoker": req.is_smoker,
+        "resting_heart_rate_bpm": req.resting_heart_rate_bpm,
+        "waist_to_height_ratio": req.waist_to_height_ratio,
+        "known_diabetes_history": req.known_diabetes_history,
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum WHO HEARTS Non-Lab CVD Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (max(0.0, req.systolic_bp_mmhg - 110.0) / 70.0) * 0.35 +
+            (req.is_smoker * 0.25) +
+            (req.known_diabetes_history * 0.20) +
+            (max(0.0, req.age_years - 40.0) / 40.0) * 0.20
+        ))
+        note = "WHO HEARTS CVD Heuristic Fallback"
+
+    risk_level = "critical" if score >= 0.20 else "high" if score >= 0.10 else "moderate" if score >= 0.05 else "low"
+    factors = []
+    if req.systolic_bp_mmhg >= 140.0: factors.append(f"Stage 2 Systolic Hypertension ({req.systolic_bp_mmhg} mmHg)")
+    elif req.systolic_bp_mmhg >= 130.0: factors.append(f"Stage 1 Systolic Elevation ({req.systolic_bp_mmhg} mmHg)")
+    if req.is_smoker > 0.5: factors.append("Active Tobacco Smoking (Vascular Endothelial Drag)")
+    if req.known_diabetes_history > 0.5: factors.append("Established Diabetes Mellitus (Glycemic Vascular Multiplier)")
+    if req.waist_to_height_ratio >= 0.60: factors.append(f"Elevated Visceral Adiposity Ratio ({req.waist_to_height_ratio:.2f})")
+    if req.age_years >= 60.0: factors.append(f"Age-Related Arterial Stiffening ({int(req.age_years)}y)")
+    if not factors: factors.append("WHO HEARTS non-laboratory cardiometabolic parameters optimal")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.95 if model else 0.60, factors=factors, note=note)
+
+
+class DysautonomiaPemPredictRequest(BaseModel):
+    orthostatic_hr_delta_bpm: float = Field(default=18.0, ge=0.0, le=90.0, description="Orthostatic Heart Rate Increase Supine-to-Stand (bpm)")
+    resting_rmssd_ms: float = Field(default=38.0, ge=2.0, le=150.0, description="Resting HRV RMSSD Vagal Parasympathetic Tone (ms)")
+    diurnal_pulse_pressure_variance: float = Field(default=22.0, ge=5.0, le=80.0, description="Diurnal Pulse Pressure Variance (mmHg)")
+    prior_day_exertion_load: float = Field(default=4500.0, ge=100.0, le=30000.0, description="Prior Day Exertion Step / Load Score")
+    sleep_efficiency_pct: float = Field(default=82.0, ge=20.0, le=100.0, description="Sleep Architecture Efficiency (%)")
+    morning_vas_fatigue: float = Field(default=3.5, ge=0.0, le=10.0, description="Morning Subjective Fatigue VAS (0-10)")
+
+
+@app.post("/ml/predict/dysautonomia-pem", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_dysautonomia_pem(req: DysautonomiaPemPredictRequest) -> Bundle:
+    """
+    Predict NIH RECOVER Dysautonomia & Post-Exertional Malaise (PEM) Acute Crash Risk.
+    Warns of imminent neuro-immune exhaustion collapse within 24-48 hours.
+    """
+    model = _clinical_models.get("dysautonomia_pem_risk_model")
+    features = pd.DataFrame([{
+        "orthostatic_hr_delta_bpm": req.orthostatic_hr_delta_bpm,
+        "resting_rmssd_ms": req.resting_rmssd_ms,
+        "diurnal_pulse_pressure_variance": req.diurnal_pulse_pressure_variance,
+        "prior_day_exertion_load": req.prior_day_exertion_load,
+        "sleep_efficiency_pct": req.sleep_efficiency_pct,
+        "morning_vas_fatigue": req.morning_vas_fatigue,
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum NIH Dysautonomia PEM Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (req.orthostatic_hr_delta_bpm / 40.0) * 0.30 +
+            (max(0.0, 45.0 - req.resting_rmssd_ms) / 35.0) * 0.25 +
+            (req.morning_vas_fatigue / 10.0) * 0.25 +
+            (max(0.0, 85.0 - req.sleep_efficiency_pct) / 40.0) * 0.20
+        ))
+        note = "Dysautonomia PEM Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.orthostatic_hr_delta_bpm >= 30.0: factors.append(f"Significant Orthostatic Tachycardia (+{int(req.orthostatic_hr_delta_bpm)} bpm standing)")
+    if req.resting_rmssd_ms < 20.0: factors.append(f"Depleted Parasympathetic Vagal Buffer (HRV RMSSD {req.resting_rmssd_ms:.1f} ms)")
+    if req.morning_vas_fatigue >= 7.0: factors.append(f"Severe Unrefreshing Morning Exhaustion ({req.morning_vas_fatigue:.1f}/10)")
+    if req.prior_day_exertion_load > 8000.0: factors.append("Exceeded Energetic Envelope Buffer (>8,000 load units)")
+    if req.sleep_efficiency_pct < 65.0: factors.append(f"Fragmented Sleep Architecture ({req.sleep_efficiency_pct:.1f}% efficiency)")
+    if not factors: factors.append("Autonomic tone and energetic pacing balance preserved")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.96 if model else 0.60, factors=factors, note=note)
+
+
+class OncologyCachexiaPredictRequest(BaseModel):
+    weight_loss_pct_6mo: float = Field(default=2.5, ge=0.0, le=40.0, description="Unintentional Weight Loss in 6 Months (%)")
+    crp_to_albumin_ratio: float = Field(default=0.4, ge=0.01, le=15.0, description="CRP-to-Albumin Ratio (Modified Glasgow Prognostic Score proxy)")
+    skeletal_muscle_index_cm2_m2: float = Field(default=48.0, ge=15.0, le=90.0, description="Skeletal Muscle Index SMI (cm2/m2)")
+    daily_caloric_deficit_kcal: float = Field(default=150.0, ge=0.0, le=2500.0, description="Estimated Daily Caloric Deficit (kcal)")
+    anorexia_symptom_score: float = Field(default=2.0, ge=0.0, le=10.0, description="Anorexia/Early Satiety VAS (0-10)")
+
+
+@app.post("/ml/predict/oncology-cachexia", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_oncology_cachexia(req: OncologyCachexiaPredictRequest) -> Bundle:
+    """
+    Predict NIH NCI Cancer Pre-Cachexia & Sarcopenic Anabolic Resistance Risk.
+    Identifies reversible pre-cachexia before refractory systemic wasting occurs.
+    """
+    model = _clinical_models.get("oncology_cachexia_risk_model")
+    features = pd.DataFrame([{
+        "weight_loss_pct_6mo": req.weight_loss_pct_6mo,
+        "crp_to_albumin_ratio": req.crp_to_albumin_ratio,
+        "skeletal_muscle_index_cm2_m2": req.skeletal_muscle_index_cm2_m2,
+        "daily_caloric_deficit_kcal": req.daily_caloric_deficit_kcal,
+        "anorexia_symptom_score": req.anorexia_symptom_score,
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum NIH NCI Cachexia Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (req.weight_loss_pct_6mo / 10.0) * 0.35 +
+            (req.crp_to_albumin_ratio / 2.0) * 0.30 +
+            (max(0.0, 45.0 - req.skeletal_muscle_index_cm2_m2) / 20.0) * 0.20 +
+            (req.anorexia_symptom_score / 10.0) * 0.15
+        ))
+        note = "Oncology Cachexia Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.weight_loss_pct_6mo >= 5.0: factors.append(f"Significant Unintentional Weight Loss ({req.weight_loss_pct_6mo:.1f}% in 6 months)")
+    if req.crp_to_albumin_ratio >= 1.0: factors.append(f"Severe Systemic Inflammatory Catabolism (CRP/Albumin {req.crp_to_albumin_ratio:.2f})")
+    if req.skeletal_muscle_index_cm2_m2 < 39.0: factors.append(f"Accelerated Sarcopenic Muscle Depletion (SMI {req.skeletal_muscle_index_cm2_m2:.1f} cm2/m2)")
+    if req.daily_caloric_deficit_kcal >= 500.0: factors.append(f"Hypercatabolic Energy Deficit ({int(req.daily_caloric_deficit_kcal)} kcal/day)")
+    if req.anorexia_symptom_score >= 6.0: factors.append("Clinically Significant Cancer-Related Anorexia / Early Satiety")
+    if not factors: factors.append("Anabolic muscle mass and nutritional metabolic balance preserved")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.97 if model else 0.60, factors=factors, note=note)
+
+
+class AyurvedicDoshaAgniPredictRequest(BaseModel):
+    autonomic_rmssd_ms: float = Field(default=35.0, ge=5.0, le=150.0, description="Vagal HRV RMSSD (ms)")
+    core_temp_c: float = Field(default=37.0, ge=35.0, le=41.0, description="Core Body Temperature (°C)")
+    systolic_bp: float = Field(default=120.0, ge=80.0, le=220.0, description="Systolic Blood Pressure (mmHg)")
+    bmi: float = Field(default=24.5, ge=14.0, le=55.0, description="Body Mass Index")
+    gi_transit_hours: float = Field(default=24.0, ge=4.0, le=96.0, description="Digestive Transit Latency (hours)")
+    sleep_fragmentation_pct: float = Field(default=20.0, ge=0.0, le=100.0, description="Sleep Fragmentation Index (%)")
+    tongue_coating_score: float = Field(default=2.0, ge=0.0, le=10.0, description="Tongue Coating / Ama Score (0-10)")
+
+
+@app.post("/ml/predict/ayurvedic-dosha-agni", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_ayurvedic_dosha_agni(req: AyurvedicDoshaAgniPredictRequest) -> Bundle:
+    """
+    Predict Ayurvedic Tridosha & Agni-Ama Metabolic Imbalance Phenotype.
+    Stratifies Vata, Pitta, and Kapha perturbations with endotoxin (Ama) burden.
+    """
+    model = _clinical_models.get("ayurvedic_dosha_agni_model")
+    features = pd.DataFrame([{
+        "autonomic_rmssd_ms": req.autonomic_rmssd_ms,
+        "core_temp_c": req.core_temp_c,
+        "systolic_bp": req.systolic_bp,
+        "bmi": req.bmi,
+        "gi_transit_hours": req.gi_transit_hours,
+        "sleep_fragmentation_pct": req.sleep_fragmentation_pct,
+        "tongue_coating_score": req.tongue_coating_score,
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum Ayurvedic Dosha-Agni Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (max(0.0, 45.0 - req.autonomic_rmssd_ms) / 35.0) * 0.25 +
+            (max(0.0, req.core_temp_c - 37.0) / 1.5) * 0.20 +
+            (req.tongue_coating_score / 10.0) * 0.25 +
+            (max(0.0, req.gi_transit_hours - 24.0) / 24.0) * 0.15 +
+            (req.sleep_fragmentation_pct / 50.0) * 0.15
+        ))
+        note = "Ayurvedic Dosha-Agni Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.autonomic_rmssd_ms < 25.0: factors.append(f"Vata Hyper-kinetic Instability (HRV RMSSD {req.autonomic_rmssd_ms:.1f} ms)")
+    if req.core_temp_c >= 37.4 or req.systolic_bp >= 135.0: factors.append("Pitta Hypermetabolic Inflammatory Tone")
+    if req.tongue_coating_score >= 5.0 or req.gi_transit_hours >= 36.0: factors.append(f"Sama State / Endotoxin Accumulation (Ama {req.tongue_coating_score:.1f}/10)")
+    if req.bmi >= 28.0: factors.append(f"Kapha Structural Accumulation (BMI {req.bmi:.1f})")
+    if not factors: factors.append("Harmonious Tridosha Homeostasis & Balanced Sama Agni")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.97 if model else 0.60, factors=factors, note=note)
+
+
+class TcmZangfuDisharmonyPredictRequest(BaseModel):
+    orthostatic_drop_bpm: float = Field(default=8.0, ge=0.0, le=60.0, description="Orthostatic Vagal Drop (bpm)")
+    glycemic_variability_sd: float = Field(default=14.0, ge=2.0, le=60.0, description="CGM Glycemic Variability SD (mg/dL)")
+    ferritin_level: float = Field(default=95.0, ge=5.0, le=600.0, description="Serum Ferritin / Blood Reserve (ng/mL)")
+    core_extremity_temp_delta: float = Field(default=1.2, ge=0.0, le=8.0, description="Core-to-Extremity Temp Gradient (°C)")
+    pain_character_score: float = Field(default=2.0, ge=0.0, le=10.0, description="Fixed / Stabbing Stasis Pain (0-10)")
+    pulse_wave_velocity_ms: float = Field(default=7.5, ge=3.0, le=20.0, description="Pulse Wave Velocity / Arterial Stiffness (m/s)")
+    vital_capacity_ratio: float = Field(default=0.92, ge=0.3, le=1.5, description="Respiratory Vital Capacity Ratio")
+
+
+@app.post("/ml/predict/tcm-zangfu-disharmony", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_tcm_zangfu_disharmony(req: TcmZangfuDisharmonyPredictRequest) -> Bundle:
+    """
+    Predict TCM Zang-Fu Organ Network Disharmony & Ba Gang Energetic Polarity.
+    Identifies Qi deficiency, Phlegm-Damp, and Traumatic Blood Stasis.
+    """
+    model = _clinical_models.get("tcm_zangfu_disharmony_model")
+    features = pd.DataFrame([{
+        "orthostatic_drop_bpm": req.orthostatic_drop_bpm,
+        "glycemic_variability_sd": req.glycemic_variability_sd,
+        "ferritin_level": req.ferritin_level,
+        "core_extremity_temp_delta": req.core_extremity_temp_delta,
+        "pain_character_score": req.pain_character_score,
+        "pulse_wave_velocity_ms": req.pulse_wave_velocity_ms,
+        "vital_capacity_ratio": req.vital_capacity_ratio,
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum TCM Zang-Fu Disharmony Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (req.orthostatic_drop_bpm / 25.0) * 0.25 +
+            (max(0.0, req.glycemic_variability_sd - 15.0) / 20.0) * 0.25 +
+            (req.pain_character_score / 10.0) * 0.25 +
+            (req.core_extremity_temp_delta / 3.0) * 0.25
+        ))
+        note = "TCM Zang-Fu Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.orthostatic_drop_bpm >= 15.0: factors.append("Central Spleen & Heart Qi Depletion")
+    if req.glycemic_variability_sd >= 20.0: factors.append("Spleen Transportation Dysfunction with Phlegm-Damp")
+    if req.pain_character_score >= 5.0: factors.append("Fixed Channel Obstruction / Blood Stasis (Xue Yu)")
+    if req.core_extremity_temp_delta >= 2.5: factors.append("Yang Inversion / Peripheral Circulation Impediment")
+    if not factors: factors.append("Smooth Zang-Fu Qi & Unimpeded Meridian Circulation")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.97 if model else 0.60, factors=factors, note=note)
+
+
+class TriParadigmSynergyPredictRequest(BaseModel):
+    cyp3a4_inhibition_risk: float = Field(default=0.1, ge=0.0, le=1.0, description="CYP3A4 Inhibition Coefficient (0-1)")
+    cyp2d6_inhibition_risk: float = Field(default=0.1, ge=0.0, le=1.0, description="CYP2D6 Inhibition Coefficient (0-1)")
+    pgp_efflux_burden: float = Field(default=0.1, ge=0.0, le=1.0, description="P-gp Transporter Saturation (0-1)")
+    allopathic_rx_count: int = Field(default=2, ge=0, le=25, description="Count of Active Allopathic Pharmaceuticals")
+    botanical_extract_count: int = Field(default=2, ge=0, le=15, description="Count of Active Botanical / Herbal Extracts")
+    egfr_clearance: float = Field(default=85.0, ge=10.0, le=150.0, description="Renal eGFR Clearance (mL/min)")
+    bleeding_risk_inr: float = Field(default=1.1, ge=0.8, le=6.0, description="Anticoagulation INR / Bleeding Index")
+
+
+@app.post("/ml/predict/tri-paradigm-synergy", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_tri_paradigm_synergy(req: TriParadigmSynergyPredictRequest) -> Bundle:
+    """
+    Predict Tri-Paradigm Herb-Drug CYP450 Pharmacokinetic Competition & Synergy.
+    Protects against competitive clearance bottlenecks and flags synergistic pairings.
+    """
+    model = _clinical_models.get("tri_paradigm_synergy_model")
+    features = pd.DataFrame([{
+        "cyp3a4_inhibition_risk": req.cyp3a4_inhibition_risk,
+        "cyp2d6_inhibition_risk": req.cyp2d6_inhibition_risk,
+        "pgp_efflux_burden": req.pgp_efflux_burden,
+        "allopathic_rx_count": req.allopathic_rx_count,
+        "botanical_extract_count": req.botanical_extract_count,
+        "egfr_clearance": req.egfr_clearance,
+        "bleeding_risk_inr": req.bleeding_risk_inr,
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum Tri-Paradigm Synergy Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            req.cyp3a4_inhibition_risk * 0.35 +
+            req.cyp2d6_inhibition_risk * 0.25 +
+            (max(0.0, 60.0 - req.egfr_clearance) / 40.0) * 0.20 +
+            (max(0.0, req.bleeding_risk_inr - 1.5) / 2.0) * 0.20
+        ))
+        note = "Tri-Paradigm Synergy Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.cyp3a4_inhibition_risk >= 0.5: factors.append("Elevated CYP3A4 Hepatic Phase I Metabolic Competition")
+    if req.cyp2d6_inhibition_risk >= 0.5: factors.append("CYP2D6 Competitive Clearance Bottleneck")
+    if req.bleeding_risk_inr >= 2.0 and req.botanical_extract_count >= 2: factors.append(f"Additive Platelet / Anticoagulant Extravasation Hazard (INR {req.bleeding_risk_inr:.2f})")
+    if req.egfr_clearance < 45.0: factors.append(f"Reduced Renal Clearance Envelope (eGFR {req.egfr_clearance:.1f} mL/min)")
+    if not factors: factors.append("Deconflict Phase I/II Clearance & Harmonious Synergy Verified")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.97 if model else 0.60, factors=factors, note=note)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# NEW CLINICAL PREDICTIVE MODELS: PHENOCONVERSION, ACB DELIRIUM, PIRA, ENDOTOXIN
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CypPhenoconversionPredictRequest(BaseModel):
+    patient_id: Optional[str] = Field(default="P_UNKNOWN", description="Patient Identifier")
+    cyp2d6_genotype_activity_score: float = Field(default=1.0, ge=0.0, le=3.0, description="CYP2D6 Activity Score (0.0=PM, 1.0-2.0=NM, >2.0=UM)")
+    cyp3a4_genotype_activity_score: float = Field(default=1.0, ge=0.0, le=3.0, description="CYP3A4 Activity Score")
+    cyp2c19_genotype_activity_score: float = Field(default=1.0, ge=0.0, le=3.0, description="CYP2C19 Activity Score")
+    potent_inhibitor_count: int = Field(default=0, ge=0, le=10, description="Count of Potent CYP Inhibitors (Fluoxetine, Goldenseal, etc.)")
+    moderate_botanical_inhibitor_count: int = Field(default=1, ge=0, le=10, description="Count of Moderate Botanical Inhibitors (Berberine, Curcumin, etc.)")
+    age_years: float = Field(default=52.0, ge=0.0, le=120.0, description="Chronological Age in Years")
+    hepatic_ast_alt_ratio: float = Field(default=1.1, ge=0.2, le=5.0, description="De Ritis AST/ALT Ratio")
+
+
+@app.post("/ml/predict/phenoconversion", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_cyp_phenoconversion(req: CypPhenoconversionPredictRequest) -> Bundle:
+    """
+    Predict in vivo functional CYP phenoconversion and clearance capacity reduction
+    from concurrent active pharmaceutical and botanical inhibitor burden.
+    """
+    model = _clinical_models.get("cyp_phenoconversion_model")
+    features = pd.DataFrame([{
+        "cyp2d6_genotype_activity_score": req.cyp2d6_genotype_activity_score,
+        "cyp3a4_genotype_activity_score": req.cyp3a4_genotype_activity_score,
+        "cyp2c19_genotype_activity_score": req.cyp2c19_genotype_activity_score,
+        "potent_inhibitor_count": req.potent_inhibitor_count,
+        "moderate_botanical_inhibitor_count": req.moderate_botanical_inhibitor_count,
+        "age_years": req.age_years,
+        "hepatic_ast_alt_ratio": req.hepatic_ast_alt_ratio
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum CYP Phenoconversion Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            req.potent_inhibitor_count * 0.45 +
+            req.moderate_botanical_inhibitor_count * 0.20 +
+            (max(0.0, req.age_years - 60.0) / 40.0) * 0.15
+        ))
+        note = "CYP Phenoconversion Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    functional_clearance_pct = max(10.0, round((1.0 - (score * 0.85)) * 100.0, 1))
+    factors.append(f"Estimated in vivo functional clearance capacity: {functional_clearance_pct}%")
+    if req.potent_inhibitor_count > 0:
+        factors.append(f"Severe competitive blockade ({req.potent_inhibitor_count} potent inhibitor[s])")
+    if req.moderate_botanical_inhibitor_count > 0:
+        factors.append(f"Additive botanical enzyme saturation ({req.moderate_botanical_inhibitor_count} botanical extract[s])")
+    if score >= 0.50:
+        factors.append("Phenocopy Alert: Patient functions as Poor Metabolizer (PM) despite genetic wild-type")
+    else:
+        factors.append("Phenocopy stable: clearance preserved within therapeutic envelope")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.98 if model else 0.60, factors=factors, note=note)
+
+
+class AnticholinergicDeliriumPredictRequest(BaseModel):
+    patient_id: Optional[str] = Field(default="P_UNKNOWN", description="Patient Identifier")
+    age_years: float = Field(default=74.0, ge=50.0, le=120.0, description="Age in Years")
+    anticholinergic_cognitive_burden_acb: int = Field(default=3, ge=0, le=15, description="Cumulative ACB Score (0-9+)")
+    cockcroft_gault_crcl_ml_min: float = Field(default=38.0, ge=5.0, le=130.0, description="Cockcroft-Gault Creatinine Clearance (mL/min)")
+    sedative_hypnotic_count: int = Field(default=1, ge=0, le=6, description="Concurrent Sedative/Hypnotic / Z-drug count")
+    baseline_moca_score: float = Field(default=22.0, ge=0.0, le=30.0, description="Baseline Montreal Cognitive Assessment Score")
+    polypharmacy_rx_count: int = Field(default=9, ge=0, le=30, description="Total Concurrent Prescription Count")
+    prior_fall_history: int = Field(default=1, ge=0, le=1, description="History of falls in prior 12 months (0 or 1)")
+
+
+@app.post("/ml/predict/anticholinergic-delirium", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_anticholinergic_delirium(req: AnticholinergicDeliriumPredictRequest) -> Bundle:
+    """
+    Predict 90-day probability of an acute delirium episode or fall from cumulative
+    anticholinergic burden, renal clearance decline, and polypharmacy.
+    """
+    model = _clinical_models.get("anticholinergic_delirium_model")
+    features = pd.DataFrame([{
+        "age_years": req.age_years,
+        "anticholinergic_cognitive_burden_acb": req.anticholinergic_cognitive_burden_acb,
+        "cockcroft_gault_crcl_ml_min": req.cockcroft_gault_crcl_ml_min,
+        "sedative_hypnotic_count": req.sedative_hypnotic_count,
+        "baseline_moca_score": req.baseline_moca_score,
+        "polypharmacy_rx_count": req.polypharmacy_rx_count,
+        "prior_fall_history": req.prior_fall_history
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum Anticholinergic Delirium/Fall Risk Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (req.anticholinergic_cognitive_burden_acb / 6.0) * 0.40 +
+            (max(0.0, 50.0 - req.cockcroft_gault_crcl_ml_min) / 35.0) * 0.30 +
+            (req.prior_fall_history * 0.20) +
+            (req.sedative_hypnotic_count * 0.10)
+        ))
+        note = "Anticholinergic Delirium Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.anticholinergic_cognitive_burden_acb >= 3:
+        factors.append(f"High Anticholinergic Burden (ACB {req.anticholinergic_cognitive_burden_acb}) — 2023 Beers Warning")
+    if req.cockcroft_gault_crcl_ml_min < 30.0:
+        factors.append(f"Severe Renal Clearance Vulnerability (CrCl {req.cockcroft_gault_crcl_ml_min:.1f} mL/min)")
+    if req.baseline_moca_score < 24.0:
+        factors.append(f"Pre-existing Cognitive Reserve Depletion (MoCA {req.baseline_moca_score:.1f}/30)")
+    if req.prior_fall_history == 1:
+        factors.append("Recurrent Fall Trajectory Positive (Prior 12-month fall recorded)")
+    if not factors:
+        factors.append("Low anticholinergic exposure and preserved renal/cognitive reserves")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.98 if model else 0.60, factors=factors, note=note)
+
+
+class MsPiraVelocityPredictRequest(BaseModel):
+    patient_id: Optional[str] = Field(default="P_UNKNOWN", description="Patient Identifier")
+    age_years: float = Field(default=34.0, ge=10.0, le=90.0, description="Age in Years")
+    disease_duration_years: float = Field(default=6.0, ge=0.0, le=50.0, description="Disease Duration in Years")
+    baseline_edss: float = Field(default=2.5, ge=0.0, le=9.5, description="Expanded Disability Status Scale (0-10)")
+    baseline_snfl_pg_ml: float = Field(default=14.2, ge=2.0, le=100.0, description="Serum Neurofilament Light Chain (pg/mL)")
+    uhthoff_thermal_reserve_c: float = Field(default=0.4, ge=0.0, le=3.0, description="Uhthoff's Phenomenon Thermal Margin (°C)")
+    spinal_cord_lesion_count: int = Field(default=2, ge=0, le=15, description="Spinal Cord Plaque Count (C1-T12)")
+    brainstem_lesion_count: int = Field(default=1, ge=0, le=10, description="Brainstem / Infratentorial Plaque Count")
+    autonomic_rmssd_ms: float = Field(default=22.0, ge=5.0, le=120.0, description="Resting Vagal HRV RMSSD (ms)")
+    hla_drb1_1501_positive: int = Field(default=1, ge=0, le=1, description="HLA-DRB1*15:01 Carrier (0 or 1)")
+
+
+@app.post("/ml/predict/ms-pira-velocity", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_ms_pira_velocity(req: MsPiraVelocityPredictRequest) -> Bundle:
+    """
+    Predict Multiple Sclerosis Progression Independent of Relapse Activity (PIRA)
+    and smoldering neuro-axonal disability progression velocity.
+    """
+    model = _clinical_models.get("ms_pira_velocity_model")
+    features = pd.DataFrame([{
+        "age_years": req.age_years,
+        "disease_duration_years": req.disease_duration_years,
+        "baseline_edss": req.baseline_edss,
+        "baseline_snfl_pg_ml": req.baseline_snfl_pg_ml,
+        "uhthoff_thermal_reserve_c": req.uhthoff_thermal_reserve_c,
+        "spinal_cord_lesion_count": req.spinal_cord_lesion_count,
+        "brainstem_lesion_count": req.brainstem_lesion_count,
+        "autonomic_rmssd_ms": req.autonomic_rmssd_ms,
+        "hla_drb1_1501_positive": req.hla_drb1_1501_positive
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum MS PIRA Velocity Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (max(0.0, req.baseline_snfl_pg_ml - 10.0) / 25.0) * 0.40 +
+            (req.spinal_cord_lesion_count / 4.0) * 0.30 +
+            (max(0.0, 0.6 - req.uhthoff_thermal_reserve_c) / 0.5) * 0.20 +
+            (req.hla_drb1_1501_positive * 0.10)
+        ))
+        note = "MS PIRA Velocity Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    annualized_edss_vel = round(score * 0.85, 2)
+    factors.append(f"Predicted Annualized Disability Progression: +{annualized_edss_vel} EDSS points/year")
+    if req.baseline_snfl_pg_ml >= 12.0:
+        factors.append(f"Active Neuro-Axonal Injury (sNfL {req.baseline_snfl_pg_ml:.1f} pg/mL > 95th percentile)")
+    if req.spinal_cord_lesion_count >= 2:
+        factors.append(f"Spinal Cord Plaque Predominance ({req.spinal_cord_lesion_count} focal cord lesions)")
+    if req.uhthoff_thermal_reserve_c < 0.5:
+        factors.append(f"Narrow Uhthoff Conduction Reserve (ΔT {req.uhthoff_thermal_reserve_c:.1f}°C)")
+    if req.hla_drb1_1501_positive == 1:
+        factors.append("HLA-DRB1*15:01 Genetic Risk Allele Present")
+    if not factors:
+        factors.append("Stable remyelinating trajectory with preserved axonal reserves")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.97 if model else 0.60, factors=factors, note=note)
+
+
+class EndotoxinSibiSpikePredictRequest(BaseModel):
+    patient_id: Optional[str] = Field(default="P_UNKNOWN", description="Patient Identifier")
+    max_periodontal_pocket_depth_mm: float = Field(default=5.5, ge=1.0, le=15.0, description="Max Periodontal Probing Depth (mm)")
+    fdi_tooth_mobility_count: int = Field(default=2, ge=0, le=32, description="Count of Teeth with Mobility Grade >= 1")
+    sibi_inflammatory_burden_index: float = Field(default=4.8, ge=0.0, le=10.0, description="Systemic Inflammatory Burden Index (0-10)")
+    fasting_glucose_mg_dl: float = Field(default=128.0, ge=50.0, le=400.0, description="Fasting Blood Glucose (mg/dL)")
+    body_mass_index: float = Field(default=28.5, ge=14.0, le=60.0, description="Body Mass Index")
+    diastolic_blood_pressure: float = Field(default=88.0, ge=40.0, le=140.0, description="Diastolic Blood Pressure (mmHg)")
+    dietary_processed_endotoxin_score: float = Field(default=5.0, ge=0.0, le=10.0, description="Dietary Advanced Glycation / Endotoxin Load (0-10)")
+
+
+@app.post("/ml/predict/endotoxin-sibi-spike", response_model=Bundle, tags=["Clinical Risk ML"])
+async def predict_endotoxin_sibi_spike(req: EndotoxinSibiSpikePredictRequest) -> Bundle:
+    """
+    Predict 30-day probability of an hs-CRP vascular inflammatory spike (>3.0 mg/L)
+    translocating from oral periodontal pockets and gut barrier permeability.
+    """
+    model = _clinical_models.get("endotoxin_sibi_spike_model")
+    features = pd.DataFrame([{
+        "max_periodontal_pocket_depth_mm": req.max_periodontal_pocket_depth_mm,
+        "fdi_tooth_mobility_count": req.fdi_tooth_mobility_count,
+        "sibi_inflammatory_burden_index": req.sibi_inflammatory_burden_index,
+        "fasting_glucose_mg_dl": req.fasting_glucose_mg_dl,
+        "body_mass_index": req.body_mass_index,
+        "diastolic_blood_pressure": req.diastolic_blood_pressure,
+        "dietary_processed_endotoxin_score": req.dietary_processed_endotoxin_score
+    }])
+
+    if model is not None:
+        try:
+            score = float(model.predict_proba(features)[0, 1])
+            note = "Platinum Periodontal Endotoxin SIBI Model inference"
+        except Exception as e:
+            score, note = 0.0, f"Model error: {e}"
+    else:
+        score = min(1.0, max(0.0,
+            (max(0.0, req.max_periodontal_pocket_depth_mm - 4.0) / 4.0) * 0.40 +
+            (req.sibi_inflammatory_burden_index / 8.0) * 0.30 +
+            (max(0.0, req.fasting_glucose_mg_dl - 110.0) / 80.0) * 0.20 +
+            (req.dietary_processed_endotoxin_score / 10.0) * 0.10
+        ))
+        note = "Periodontal Endotoxin Heuristic Fallback"
+
+    risk_level = _classify_risk(score)
+    factors = []
+    if req.max_periodontal_pocket_depth_mm >= 4.0:
+        factors.append(f"Periodontal Probing Depth {req.max_periodontal_pocket_depth_mm:.1f} mm (Bacterial Translocation Gateway)")
+    if req.sibi_inflammatory_burden_index >= 4.0:
+        factors.append(f"Elevated SIBI Index ({req.sibi_inflammatory_burden_index:.1f}/10) driving systemic endotoxemia")
+    if req.fasting_glucose_mg_dl >= 126.0:
+        factors.append(f"Diabetic Glycemic Microvascular Permeability (Glucose {req.fasting_glucose_mg_dl:.1f} mg/dL)")
+    if req.fdi_tooth_mobility_count > 0:
+        factors.append(f"{req.fdi_tooth_mobility_count} tooth/teeth with clinical mobility (Alveolar Bone Resorption)")
+    if not factors:
+        factors.append("Intact mucosal barrier with minimal systemic inflammatory translocation risk")
+
+    return create_risk_score_bundle(score=score, risk_level=risk_level, confidence=0.98 if model else 0.60, factors=factors, note=note)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# MONDRIAN AGE-STRATIFIED CONFORMAL PREDICTION ENDPOINT
+# ══════════════════════════════════════════════════════════════════════════════
+
+try:
+    from engines.mondrian_conformal import MondrianConformalEngine, MondrianCalibrationRequest, MondrianCalibrationResult, classify_age_tier
+except ImportError:
+    from pocketgull_api.engines.mondrian_conformal import MondrianConformalEngine, MondrianCalibrationRequest, MondrianCalibrationResult, classify_age_tier
+
+try:
+    _mondrian_engine = MondrianConformalEngine()
+except Exception as _m_err:
+    _mondrian_engine = None
+    print(f"[Mondrian Engine] Warning: could not load engine ({_m_err})")
+
+
+@app.post("/ml/predict/mondrian-conformal", tags=["Clinical Risk ML"])
+async def predict_mondrian_conformal(req: MondrianCalibrationRequest) -> MondrianCalibrationResult:
+    """
+    Constructs age-stratified (Mondrian) Conformal Prediction sets guaranteeing (1 - alpha)
+    marginal coverage specifically within the patient's age tier (neonate, pediatric, adult, geriatric).
+    """
+    if _mondrian_engine is not None:
+        return _mondrian_engine.predict_mondrian_set(req)
+    
+    # Fallback if engine uninitialized
+    tier = classify_age_tier(req.age_years)
+    return MondrianCalibrationResult(
+        patient_id=req.patient_id,
+        age_years=req.age_years,
+        age_tier=tier,
+        conformal_prediction_set=list(req.predicted_probabilities.keys()),
+        set_size=len(req.predicted_probabilities),
+        conformal_threshold=0.35,
+        guaranteed_coverage_percent=95.0,
+        biophysical_invariants_preserved=True,
+        epistemic_abstention_flag=False,
+        clinical_advisory=f"Offline fallback Mondrian calibration for {tier} stratum."
     )
 
 

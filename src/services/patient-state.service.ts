@@ -365,6 +365,7 @@ export class PatientStateService {
   readonly loadedPatientId = signal<string | null>(null);
   readonly selectedNoteId = signal<string | null>(null);
   readonly isLiveAgentActive = signal<boolean>(false);
+  readonly liveAgentWindowMode = signal<'compact' | 'expanded' | 'minimized'>('compact');
   readonly liveAgentInput = signal<string>('');
   readonly isResearchFrameVisible = signal<boolean>(false);
   readonly isSynthesisDashboardVisible = signal<boolean>(false);
@@ -379,6 +380,9 @@ export class PatientStateService {
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
   readonly draftSummaryItems = signal<IDraftSummaryItem[]>([]);
+  readonly activeCarePlanNotes = signal<string>('');
+  readonly activeCarePlanAdoptedTimestamp = signal<string | null>(null);
+  readonly carePlanAdoptedNotification = signal<string | null>(null);
   /** AI-derived anatomical findings mapped to severity tier for 3D overlay. */
   readonly aiAnomalyHighlights = signal<Record<string, 'critical' | 'moderate' | 'mild'>>({});
   /** Toggle the semi-transparent reference mannequin ghost overlay. */
@@ -906,6 +910,20 @@ export class PatientStateService {
 
   toggleLiveAgent(active: boolean) {
     this.isLiveAgentActive.set(active);
+    if (active && this.liveAgentWindowMode() === 'minimized') {
+      this.liveAgentWindowMode.set('compact');
+    }
+  }
+
+  setLiveAgentWindowMode(mode: 'compact' | 'expanded' | 'minimized') {
+    this.liveAgentWindowMode.set(mode);
+    if (mode !== 'minimized' && !this.isLiveAgentActive()) {
+      this.isLiveAgentActive.set(true);
+    }
+  }
+
+  toggleLiveAgentExpand() {
+    this.liveAgentWindowMode.update(m => m === 'expanded' ? 'compact' : 'expanded');
   }
 
   toggleResearchFrame(visible?: boolean) {
@@ -933,6 +951,20 @@ export class PatientStateService {
     if (engine) this.requestedSearchEngine.set(engine);
     if (query) this.requestedResearchQuery.set(query);
     this.toggleResearchFrame(true);
+  }
+
+  /**
+   * Adopts an evidence-grounded care plan suggestion (e.g. from Research Frame NMSS Cures Hub)
+   * directly into the patient's active state, Care Plan Studio, and FHIR export.
+   */
+  adoptCarePlanSuggestion(planUpdate: { summary: string; protocols?: string; nutrition?: string }): void {
+    const formatted = `${planUpdate.summary}${planUpdate.protocols ? '\n\n' + planUpdate.protocols : ''}${planUpdate.nutrition ? '\n\n' + planUpdate.nutrition : ''}`;
+    this.activeCarePlanNotes.set(formatted);
+    const now = new Date().toISOString();
+    this.activeCarePlanAdoptedTimestamp.set(now);
+    this.carePlanAdoptedNotification.set('Care Plan Adopted & Synchronized with Research Frame Evidence');
+    setTimeout(() => this.carePlanAdoptedNotification.set(null), 4000);
+    this.game?.completeQuest('explore_evidence');
   }
 
   toggleSynthesisDashboard(visible?: boolean) {

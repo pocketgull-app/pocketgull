@@ -47,7 +47,7 @@ if (errors.length > 0) {
   process.exit(1);
 } else {
   console.log('✅ Caslon Typography Audit Passed!');
-  console.log('  - Master Caslon Serif stack: Libre Caslon Text');
+  console.log('  - Primary Caslon Serif stack: Libre Caslon Text');
   console.log('  - Display Sans stack: Outfit / Plus Jakarta Sans');
   console.log('  - Body Sans stack: Inter (with cv05, cv08, cv11 features)');
   console.log('  - Proportional Leading: 1.55 - 1.65');

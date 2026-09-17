@@ -90,7 +90,7 @@ export const UNIVERSAL_TRANSLATIONS: Record<SupportedLanguage, {
             role: 'Kitchen Sous Chef',
             action: 'Help pick out 3 different colorful foods (like green broccoli, red peppers, and orange carrots) for dinner.',
             scienceRationale: 'Diverse phytonutrients and dietary fiber nurture the gut microbiome and protect long-term cardiovascular health.',
-            badgeName: 'Rainbow Master'
+            badgeName: 'Rainbow Champion'
           },
           {
             id: 'hydration',

@@ -9,6 +9,7 @@ import asyncio
 import importlib.util
 import inspect
 import warnings
+import unittest
 
 # Filter harmless third-party deprecation & core-count warnings in test runner
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -48,20 +49,44 @@ def run_all_tests():
         
         # Find all test functions
         test_functions = [
-            func for name, func in inspect.getmembers(module, inspect.isfunction)
+            (name, func) for name, func in inspect.getmembers(module, inspect.isfunction)
             if name.startswith("test_")
         ]
         
-        print(f"\nFile: {file} ({len(test_functions)} tests found)")
+        # Also inspect unittest.TestCase subclasses
+        test_case_instances = []
+        for name, cls in inspect.getmembers(module, inspect.isclass):
+            if issubclass(cls, unittest.TestCase) and cls is not unittest.TestCase:
+                suite = unittest.defaultTestLoader.loadTestsFromTestCase(cls)
+                for test in suite:
+                    test_case_instances.append((test._testMethodName, test))
+
+        total_file_tests = len(test_functions) + len(test_case_instances)
+        print(f"\nFile: {file} ({total_file_tests} tests found)")
         
-        for test_func in test_functions:
-            print(f"  Running {test_func.__name__}... ", end="")
+        for name, test_func in test_functions:
+            print(f"  Running {name}... ", end="")
             total_run += 1
             try:
                 if inspect.iscoroutinefunction(test_func):
                     asyncio.run(test_func())
                 else:
                     test_func()
+                print("\033[92mPASS\033[0m")
+            except AssertionError as e:
+                total_failed += 1
+                print("\033[91mFAIL (Assertion Error)\033[0m")
+                print(f"    Details: {e}")
+            except Exception as e:
+                total_failed += 1
+                print("\033[91mFAIL (Unexpected Exception)\033[0m")
+                print(f"    Details: {e}")
+
+        for name, test_case in test_case_instances:
+            print(f"  Running {name}... ", end="")
+            total_run += 1
+            try:
+                test_case.run()
                 print("\033[92mPASS\033[0m")
             except AssertionError as e:
                 total_failed += 1

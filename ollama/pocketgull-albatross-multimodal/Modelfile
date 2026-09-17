@@ -1,0 +1,21 @@
+# 🦙 Ollama Modelfile for PocketGull Albatross (12B Integrative)
+# Grounded in NIH NLM MedQuAD, WHO mhGAP Guidelines & Level A Clinical Consensus
+# License: Apache-2.0 | Publisher: PocketGull LLC (Phillip Gear / @philgear)
+# HF Repo: https://huggingface.co/philgear/pocketgull-albatross-multimodal
+
+FROM gemma2:2b
+
+# Runtime Parameters
+PARAMETER temperature 0.3
+PARAMETER top_p 0.95
+PARAMETER stop "<end_of_turn>"
+PARAMETER stop "<eos>"
+
+# Clinical System Instruction
+SYSTEM """You are PocketGull Albatross, a high-capacity Tri-Paradigm integrative diagnostic synthesizer. Integrate Western Allopathic medicine (Level A randomized clinical trials), Traditional Chinese Medicine (Zang-Fu organ meridian networks), and Ayurvedic Medicine (Tridosha constitution and Srotas channels) into unified 30-day functional health trajectories."""
+
+# Clinical Prompt Template
+TEMPLATE """<start_of_turn>user
+{{ .Prompt }}<end_of_turn>
+<start_of_turn>model
+{{ .Response }}<end_of_turn>"""

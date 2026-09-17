@@ -78,11 +78,28 @@ if (existsSync(sourceTar)) {
   run(`gcloud builds submit --tag ${IMAGE_TAG} --project=${TARGET_PROJECT} --quiet`);
 }
 
+// 3b. Resolve Immutable Digest (OpenSSF / SLSA Standard: Deploy by Immutable Content Digest)
+console.log('\n🔒 Step 3b/5: Resolving immutable image digest (OpenSSF / SLSA Provenance Standard)...');
+let deployTarget = IMAGE_TAG;
+try {
+  const digestRaw = execSync(
+    `gcloud container images describe ${IMAGE_TAG} --format="value(image_summary.digest)" --project=${TARGET_PROJECT}`,
+    { encoding: 'utf8', cwd: rootDir }
+  ).trim();
+  if (digestRaw && digestRaw.startsWith('sha256:')) {
+    deployTarget = `gcr.io/${TARGET_PROJECT}/${SERVICE_NAME}@${digestRaw}`;
+    console.log(`✅ Resolved immutable image digest: ${digestRaw}`);
+    console.log(`🔒 OpenSSF Immutable Target: ${deployTarget}`);
+  }
+} catch (e) {
+  console.warn('⚠️ Could not resolve immutable digest, falling back to tag:', e.message);
+}
+
 // 4. Deploy to Google Cloud Run
 console.log('\n🚀 Step 4/5: Deploying image to Google Cloud Run (Scale-to-Zero & Zero Secret Injections)...');
 run(
   `gcloud run deploy ${SERVICE_NAME} ` +
-  `--image ${IMAGE_TAG} ` +
+  `--image ${deployTarget} ` +
   `--project=${TARGET_PROJECT} ` +
   `--platform managed ` +
   `--region ${REGION} ` +
@@ -101,7 +118,7 @@ console.log('\n🚀 Step 4b/5: Deploying to pocket-gull-v2 (Custom Domain Root p
 try {
   run(
     `gcloud run deploy pocket-gull-v2 ` +
-    `--image ${IMAGE_TAG} ` +
+    `--image ${deployTarget} ` +
     `--project=${TARGET_PROJECT} ` +
     `--platform managed ` +
     `--region ${REGION} ` +

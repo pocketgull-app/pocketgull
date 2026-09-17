@@ -508,6 +508,13 @@ export class CarePlanPrintPreviewComponent {
         this.renderQrCode();
       }
     });
+
+    effect(() => {
+      const adopted = this.patientState.activeCarePlanNotes();
+      if (adopted) {
+        this.editableNotes.set(adopted);
+      }
+    });
   }
 
   renderQrCode() {

@@ -213,12 +213,12 @@ def main():
             f.write(json.dumps(s) + "\n")
     print(f"  [OK] Saved {len(combined_samples)} samples to {combined_path}")
 
-    # Append to master clinical_cot_training_dataset.jsonl
-    master_path = os.path.join(OUTPUT_DIR, "clinical_cot_training_dataset.jsonl")
-    with open(master_path, "a", encoding="utf-8") as f:
-        for s in combined_samples[:6]:  # Add 6 exemplary samples directly to master
+    # Append to main clinical_cot_training_dataset.jsonl
+    main_path = os.path.join(OUTPUT_DIR, "clinical_cot_training_dataset.jsonl")
+    with open(main_path, "a", encoding="utf-8") as f:
+        for s in combined_samples[:6]:  # Add 6 exemplary samples directly to main dataset
             f.write(json.dumps(s) + "\n")
-    print(f"  [OK] Appended 6 exemplary sensory telemetry samples to master {master_path}")
+    print(f"  [OK] Appended 6 exemplary sensory telemetry samples to main {main_path}")
 
 
 if __name__ == "__main__":

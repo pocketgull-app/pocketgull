@@ -139,7 +139,7 @@ export const ALL_AGES_ORGAN_CARDS: IOrganCard[] = [
         <!-- Victory Banner -->
         <div class="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/80 to-teal-950/80 border-2 border-emerald-400 text-center space-y-3 animate-in zoom-in-95">
           <div class="text-4xl">🌟 🏆 🌈</div>
-          <h3 class="text-2xl font-black text-white">Congratulations, Master Body Explorer!</h3>
+          <h3 class="text-2xl font-black text-white">Congratulations, Champion Body Explorer!</h3>
           <p class="text-sm text-emerald-200">
             You matched all 7 superpowers of the human body! Every cell is celebrating your curiosity!
           </p>

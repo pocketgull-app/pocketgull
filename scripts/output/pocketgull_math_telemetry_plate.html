@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PocketGull Math Telemetry Plate</title>
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <style>
+    body {
+      background: #09090b;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Atkinson Hyperlegible', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
+  <defs>
+    <style>
+      @import url('/fonts/fonts.css');
+      .bg { fill: #09090b; }
+      .card { fill: #121217; stroke: #272732; stroke-width: 1.5; rx: 12; }
+      .title { font-family: 'PocketGull', 'Atkinson Hyperlegible Next', sans-serif; font-weight: 700; fill: #f4f4f5; font-size: 20px; }
+      .subtitle { font-family: 'PocketGull Mono', 'JetBrains Mono', monospace; fill: #14b8a6; font-size: 11px; letter-spacing: 0.05em; }
+      .label { font-family: 'Atkinson Hyperlegible', sans-serif; fill: #a1a1aa; font-size: 11px; }
+      .math-text { font-family: 'PocketGull Math', 'PocketGull Mono', monospace; font-feature-settings: "cv05" 1, "cv08" 1, "ss01" 1, "ss02" 1, "tnum" 1, "zero" 1; fill: #f4f4f5; font-size: 14px; }
+      .math-formula { font-family: 'PocketGull Math', 'PocketGull Mono', monospace; fill: #70f7e4; font-size: 13px; font-weight: 500; }
+      .math-val { font-family: 'PocketGull Math', 'PocketGull Mono', monospace; font-feature-settings: "tnum" 1, "zero" 1; fill: #38bdf8; font-size: 16px; font-weight: 700; }
+      .grid-line { stroke: #272732; stroke-dasharray: 2 4; stroke-width: 1; }
+      .axis { stroke: #3f3f4e; stroke-width: 1.5; }
+      .roc-line { stroke: #14b8a6; stroke-width: 2.5; fill: none; }
+      .roc-diag { stroke: #52525b; stroke-dasharray: 4 4; stroke-width: 1.5; fill: none; }
+      .area-fill { fill: url(#rocGrad); opacity: 0.25; }
+    </style>
+    <linearGradient id="rocGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#14b8a6" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#14b8a6" stop-opacity="0.0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1000" height="700" class="bg"/>
+
+  <g transform="translate(40, 30)">
+    <text x="0" y="24" class="title">PocketGull Math Superfamily Telemetry Plate</text>
+    <text x="0" y="44" class="subtitle">OPENTYPE MATH TABLE v3.100 • OPTOTYPIC ISMP ZERO-AMBIGUITY TELEMETRY</text>
+  </g>
+
+  <!-- CARD 1: Machine Learning Telemetry & ROC-AUC -->
+  <g transform="translate(40, 90)">
+    <rect width="440" height="320" class="card"/>
+    <text x="20" y="30" class="title" font-size="14">RSNA Knee Abnormality Gen-9 ROC-AUC</text>
+    <text x="20" y="48" class="subtitle">DINOv2 (392x392) + STAGED METAPLASTICITY</text>
+
+    <g transform="translate(50, 65)">
+      <line x1="0" y1="200" x2="340" y2="200" class="axis"/>
+      <line x1="0" y1="0" x2="0" y2="200" class="axis"/>
+      
+      <line x1="0" y1="50" x2="340" y2="50" class="grid-line"/>
+      <line x1="0" y1="100" x2="340" y2="100" class="grid-line"/>
+      <line x1="0" y1="150" x2="340" y2="150" class="grid-line"/>
+      <line x1="85" y1="0" x2="85" y2="200" class="grid-line"/>
+      <line x1="170" y1="0" x2="170" y2="200" class="grid-line"/>
+      <line x1="255" y1="0" x2="255" y2="200" class="grid-line"/>
+
+      <line x1="0" y1="200" x2="340" y2="0" class="roc-diag"/>
+
+      <path d="M 0 200 C 15 80, 50 25, 340 0" class="roc-line"/>
+      <path d="M 0 200 C 15 80, 50 25, 340 0 L 340 200 Z" class="area-fill"/>
+
+      <text x="170" y="222" class="math-text" font-size="11" text-anchor="middle">False Positive Rate (1 - Specificity)</text>
+      <text x="-10" y="100" class="math-text" font-size="11" text-anchor="middle" transform="rotate(-90 -10 100)">True Positive Rate (Sensitivity)</text>
+    </g>
+
+    <text x="240" y="250" class="math-val">AUC = 0.854</text>
+    <text x="240" y="268" class="math-text" font-size="11" fill="#a1a1aa">95% CI [0.832, 0.876]</text>
+    <text x="240" y="284" class="math-text" font-size="11" fill="#34d399">p &lt; 0.001 (H0 Rejected)</text>
+  </g>
+
+  <!-- CARD 2: Mathematical CDS Formulations -->
+  <g transform="translate(520, 90)">
+    <rect width="440" height="320" class="card"/>
+    <text x="20" y="30" class="title" font-size="14">Empirical Mathematical Formulations</text>
+    <text x="20" y="48" class="subtitle">CLINICAL OPTIMIZATION & OBJECTIVE FUNCTIONS</text>
+
+    <g transform="translate(20, 75)">
+      <text x="0" y="15" class="label">1. Multi-Label Asymmetric Focal Loss (ASL):</text>
+      <rect x="0" y="25" width="400" height="42" fill="#09090b" stroke="#272732" rx="6"/>
+      <text x="15" y="52" class="math-formula">L_ASL = - sum [ y(1 - p)^gamma+ log(p) + (1 - y)(p_m)^gamma- log(1 - p_m) ]</text>
+    </g>
+
+    <g transform="translate(20, 155)">
+      <text x="0" y="15" class="label">2. Staged Metaplasticity Cosine Schedule:</text>
+      <rect x="0" y="25" width="400" height="42" fill="#09090b" stroke="#272732" rx="6"/>
+      <text x="15" y="52" class="math-formula">eta_t = eta_min + 1/2(eta_max - eta_min)[ 1 + cos( pi * t / T_max ) ]</text>
+    </g>
+
+    <g transform="translate(20, 235)">
+      <text x="0" y="15" class="label">3. pgphototrek Optical Hyperfocal Distance (H):</text>
+      <rect x="0" y="25" width="400" height="42" fill="#09090b" stroke="#272732" rx="6"/>
+      <text x="15" y="52" class="math-formula">H = ( f^2 / [ N * c ] ) + f  ==>  DoF_near = s(H - f) / (H + s - 2f)</text>
+    </g>
+  </g>
+
+  <!-- CARD 3: Host Machine Hardware Telemetry -->
+  <g transform="translate(40, 440)">
+    <rect width="440" height="220" class="card"/>
+    <text x="20" y="30" class="title" font-size="14">Host Machine Hardware Topology</text>
+    <text x="20" y="48" class="subtitle">INTEL i7-14700KF + AMD RX 6650 XT + LEMONADE</text>
+
+    <g transform="translate(20, 65)">
+      <g transform="translate(0, 0)">
+        <text x="0" y="16" class="label">CPU CORES / THREADS</text>
+        <text x="0" y="38" class="math-val">20 Cores / 28 Threads</text>
+        <text x="0" y="54" class="math-text" font-size="11" fill="#a1a1aa">8P @ 5.6 GHz + 12E @ 4.3 GHz</text>
+      </g>
+      <g transform="translate(220, 0)">
+        <text x="0" y="16" class="label">SYSTEM MEMORY (DDR5)</text>
+        <text x="0" y="38" class="math-val">32.0 GB @ 5600 MT/s</text>
+        <text x="0" y="54" class="math-text" font-size="11" fill="#a1a1aa">Bandwidth: 89.6 GB/s</text>
+      </g>
+      <g transform="translate(0, 75)">
+        <text x="0" y="16" class="label">GPU ARCHITECTURE</text>
+        <text x="0" y="38" class="math-val">AMD Radeon RX 6650 XT</text>
+        <text x="0" y="54" class="math-text" font-size="11" fill="#a1a1aa">32 CUs (2,048 SPs) • Vulkan / DirectML</text>
+      </g>
+      <g transform="translate(220, 75)">
+        <text x="0" y="16" class="label">LOCAL INFERENCE DAEMON</text>
+        <text x="0" y="38" class="math-val">Lemonade Server (-fa)</text>
+        <text x="0" y="54" class="math-text" font-size="11" fill="#34d399">Port 13305 • Gemma 3 4B (8K Ctx)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 4: pgphototrek Celestial & Optical Telemetry -->
+  <g transform="translate(520, 440)">
+    <rect width="440" height="220" class="card"/>
+    <text x="20" y="30" class="title" font-size="14">pgphototrek Optical & Ephemeris Telemetry</text>
+    <text x="20" y="48" class="subtitle">PACIFIC NORTHWEST ATELIER & DARK SKY VAULT</text>
+
+    <g transform="translate(20, 65)">
+      <g transform="translate(0, 0)">
+        <text x="0" y="16" class="label">SOLAR ALTITUDE / AZIMUTH</text>
+        <text x="0" y="38" class="math-val">+42.3° / 180.0° S</text>
+        <text x="0" y="54" class="math-text" font-size="11" fill="#a1a1aa">Portland Coordinates: 45.5152° N, 122.6784° W</text>
+      </g>
+      <g transform="translate(220, 0)">
+        <text x="0" y="16" class="label">OPTICAL EXPOSURE (EV)</text>
+        <text x="0" y="38" class="math-val">EV100 = 14.3</text>
+        <text x="0" y="54" class="math-text" font-size="11" fill="#a1a1aa">f/8.0 • 1/250s • ISO 100</text>
+      </g>
+      <g transform="translate(0, 75)">
+        <text x="0" y="16" class="label">DARK SKY VAULT QUALITY</text>
+        <text x="0" y="38" class="math-val">Bortle Class 1 (SQM 21.98)</text>
+        <text x="0" y="54" class="math-text" font-size="11" fill="#a1a1aa">Oregon Outback Sanctuary</text>
+      </g>
+      <g transform="translate(220, 75)">
+        <text x="0" y="16" class="label">SOMATIC PACER PACING</text>
+        <text x="0" y="38" class="math-val">0.10 Hz (6 Breaths/min)</text>
+        <text x="0" y="54" class="math-text" font-size="11" fill="#34d399">PocketGull Sloan Optotype 5:1</text>
+      </g>
+    </g>
+  </g>
+</svg>
+
+</body>
+</html>

@@ -82,7 +82,7 @@ import { PatientStateService } from '../services/patient-state.service';
               </div>
 
               <p class="text-[10px] text-zinc-400 leading-relaxed">
-                Suprachiasmatic nucleus (SCN) master clock alignment with peripheral organ clocks.
+                Suprachiasmatic nucleus (SCN) central pacemaker clock alignment with peripheral organ clocks.
               </p>
             </div>
 

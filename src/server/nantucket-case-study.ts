@@ -1026,11 +1026,38 @@ export function renderNantucketCaseStudyHtml(): string {
       const body = document.getElementById('docDrillBody');
       const qCard = document.createElement('div');
       qCard.style.cssText = 'background: #1e1e24; border: 1px solid var(--teal); border-radius: 0.75rem; padding: 1rem;';
-      qCard.innerHTML = '<div style="font-size: 0.7rem; color: var(--teal-light); font-family: ui-monospace, monospace; font-weight: bold;">💬 CLINICIAN QUERY</div>' +
-        '<div style="font-size: 0.85rem; color: #fff; margin: 0.25rem 0 0.75rem;">"' + q + '"</div>' +
-        '<div style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;">' +
-          '<strong style="color: var(--teal-light);">Doc Drill Socratic Analysis:</strong> Regarding <em>' + q + '</em> in relation to <strong>' + currentDrillTerm + '</strong>: PocketGull models the full multi-organ and vector ecology continuum. Always rule out intraerythrocytic Babesia co-infections when evaluating post-tick fatigue with thrombocytopenia or hemolytic signs, and check the 72-hour prophylactic window before administering single-dose doxycycline.' +
-        '</div>';
+
+      const tagDiv = document.createElement('div');
+      tagDiv.style.cssText = 'font-size: 0.7rem; color: var(--teal-light); font-family: ui-monospace, monospace; font-weight: bold;';
+      tagDiv.textContent = '💬 CLINICIAN QUERY';
+
+      const queryDiv = document.createElement('div');
+      queryDiv.style.cssText = 'font-size: 0.85rem; color: #fff; margin: 0.25rem 0 0.75rem;';
+      queryDiv.textContent = '"' + q + '"';
+
+      const analysisDiv = document.createElement('div');
+      analysisDiv.style.cssText = 'font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;';
+
+      const strongPrefix = document.createElement('strong');
+      strongPrefix.style.color = 'var(--teal-light)';
+      strongPrefix.textContent = 'Doc Drill Socratic Analysis: ';
+
+      const emQ = document.createElement('em');
+      emQ.textContent = q;
+
+      const strongTerm = document.createElement('strong');
+      strongTerm.textContent = currentDrillTerm;
+
+      analysisDiv.appendChild(strongPrefix);
+      analysisDiv.appendChild(document.createTextNode('Regarding '));
+      analysisDiv.appendChild(emQ);
+      analysisDiv.appendChild(document.createTextNode(' in relation to '));
+      analysisDiv.appendChild(strongTerm);
+      analysisDiv.appendChild(document.createTextNode(': PocketGull models the full multi-organ and vector ecology continuum. Always rule out intraerythrocytic Babesia co-infections when evaluating post-tick fatigue with thrombocytopenia or hemolytic signs, and check the 72-hour prophylactic window before administering single-dose doxycycline.'));
+
+      qCard.appendChild(tagDiv);
+      qCard.appendChild(queryDiv);
+      qCard.appendChild(analysisDiv);
       body.appendChild(qCard);
       input.value = '';
       body.scrollTop = body.scrollHeight;

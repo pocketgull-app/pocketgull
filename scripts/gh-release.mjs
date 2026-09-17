@@ -27,7 +27,7 @@ function main() {
   // 1. Read current version from package.json
   const pkgPath = path.join(rootDir, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-  const version = pkg.version || '1.32.0';
+  const version = pkg.version || '1.34.0';
   const tag = `v${version}`;
 
   console.log(`📦 Target Release Tag: ${tag}`);
@@ -82,15 +82,19 @@ function main() {
       onnxModel: 'public/models/clinical_recovery_model.onnx',
       edgeWeights: 'public/models/clinical_edge_weights.json',
       grantBinder: 'docs/grants/SBIR_PHASE_I_POCKETGULL_PROPOSAL.md',
-      modelHubManifest: 'adapters/huggingface/model_hub_manifest.json'
+      modelHubManifest: 'adapters/huggingface/model_hub_manifest.json',
+      chromeExtension: `pocketgull-chrome-extension-v${version}.zip`
     },
     empiricalBenchmarks: {
       edgeMlOofRocAuc: 0.9640,
       edgeMlBrierScore: 0.0280,
       duckDbJoinLatencyMs: 15.28,
       duckDbEvidenceSearchMs: 9.16,
-      vitestPassedTests: 1697,
-      pythonMlPassedTests: 70
+      vitestPassedTests: 2074,
+      pythonMlPassedTests: 70,
+      totalSloc: 451611,
+      cocomo2ReplacementValuation: 17219301,
+      cocomo2PersonYears: 38.3
     }
   };
 

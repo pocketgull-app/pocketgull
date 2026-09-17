@@ -75,7 +75,7 @@ import { PatientStateService } from '../../services/patient-state.service';
           </div>
         </div>
 
-        <!-- 2. Circadian Master Clock SCN Input -->
+        <!-- 2. Central Circadian Pacemaker SCN Input -->
         <div class="p-5 bg-zinc-900/80 rounded-2xl border border-amber-500/20 flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-3">
@@ -147,7 +147,7 @@ import { PatientStateService } from '../../services/patient-state.service';
         </h4>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
           <div class="p-3 bg-zinc-950/80 rounded-xl border border-zinc-800">
-            <span class="text-[10px] text-amber-400 font-bold uppercase block mb-1">1. Master SCN Clock</span>
+            <span class="text-[10px] text-amber-400 font-bold uppercase block mb-1">1. Central SCN Pacemaker Clock</span>
             <p class="text-zinc-400 text-[11px]">Light & meal cues synchronize BMAL1 / PER2 transcriptional feedback loops in the hypothalamus.</p>
           </div>
           <div class="p-3 bg-zinc-950/80 rounded-xl border border-zinc-800">

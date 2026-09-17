@@ -15,3 +15,5 @@ export * from './p_charles_darwin';
 export * from './p_marie_curie';
 export * from './p_srinivasa_ramanujan';
 export * from './p_default_patient';
+export * from './p_poms_adolescent';
+export * from './p_loms_elder';

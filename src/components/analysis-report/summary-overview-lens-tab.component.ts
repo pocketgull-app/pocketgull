@@ -7,6 +7,8 @@ import { AiConfidenceHudComponent } from '../ai-confidence-hud.component';
 import { PlanDifferentialInspectorComponent } from '../plan-differential-inspector.component';
 import { GoalPlanningCardComponent } from '../goal-planning-card.component';
 import { ResearchDataDividendComponent } from '../research-data-dividend.component';
+import { BiologicalAgeWaterfallHudComponent } from '../biological-age-waterfall-hud.component';
+import { ActivePivotMonitorCardComponent } from '../active-pivot-monitor-card.component';
 
 @Component({
   selector: 'app-summary-overview-lens-tab',
@@ -17,7 +19,9 @@ import { ResearchDataDividendComponent } from '../research-data-dividend.compone
     AiConfidenceHudComponent, 
     PlanDifferentialInspectorComponent,
     GoalPlanningCardComponent,
-    ResearchDataDividendComponent
+    ActivePivotMonitorCardComponent,
+    ResearchDataDividendComponent,
+    BiologicalAgeWaterfallHudComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -80,6 +84,12 @@ import { ResearchDataDividendComponent } from '../research-data-dividend.compone
 
       <!-- Clinical SMART Goals & Quests Card -->
       <app-goal-planning-card class="block"></app-goal-planning-card>
+
+      <!-- Active Pivot & Pulse Cybernetic Telemetry Card (Multi-Specialty Risk Suite) -->
+      <app-active-pivot-monitor-card class="block"></app-active-pivot-monitor-card>
+
+      <!-- Living Biological Clock & Waterfall HUD -->
+      <app-biological-age-waterfall-hud class="block"></app-biological-age-waterfall-hud>
 
       <!-- Research Data Dividend & Cohort Exchange Card -->
       <app-research-data-dividend class="block"></app-research-data-dividend>

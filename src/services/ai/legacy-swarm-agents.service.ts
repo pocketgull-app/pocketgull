@@ -45,9 +45,9 @@ export class LegacySwarmAgentsService {
       agentType: 'AENEAS_LEGACY_STEWARD',
       agentName: 'Aeneas (Seven-Generations Legacy Steward)',
       avatarIcon: '🏛️',
-      messageText: 'Sovereign Vault Secured: Your oral history reflections & phytoncide exposure maps are encrypted with 53-bit IEEE-754 mantissa entropy for 7+ generations.',
+      messageText: 'Encrypted Local Health Record: Your oral history reflections & health metric tracking are secured locally using 53-bit IEEE-754 mantissa entropy for long-term provenance.',
       timestamp: new Date().toISOString(),
-      actionableSuggestion: 'View Encrypted Vault Directives.'
+      actionableSuggestion: 'View Local Encryption Directives.'
     }
   ]);
 

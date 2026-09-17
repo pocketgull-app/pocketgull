@@ -113,9 +113,9 @@ import { PositivePsychologyService, IAbcdeReframe, IThreeGoodThingsEntry, IPerma
                       <span>{{ dim.name }}</span>
                     </span>
                     <div class="flex items-center gap-1">
-                      <button (click)="posPsych.updateDimensionScore(dim.key, -0.5)" class="w-5 h-5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center font-bold text-xs">-</button>
+                      <button (click)="posPsych.updateDimensionScore(dim.key, -0.5)" class="w-7 h-7 min-w-[28px] min-h-[28px] rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center font-bold text-xs touch-manipulation cursor-pointer" aria-label="Decrease PERMA score">-</button>
                       <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold font-mono text-[11px]">{{ dim.score.toFixed(1) }}/10</span>
-                      <button (click)="posPsych.updateDimensionScore(dim.key, 0.5)" class="w-5 h-5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center font-bold text-xs">+</button>
+                      <button (click)="posPsych.updateDimensionScore(dim.key, 0.5)" class="w-7 h-7 min-w-[28px] min-h-[28px] rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center font-bold text-xs touch-manipulation cursor-pointer" aria-label="Increase PERMA score">+</button>
                     </div>
                   </div>
 

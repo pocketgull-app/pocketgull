@@ -114,38 +114,41 @@ TEMPLATE \"\"\"<start_of_turn>user
 """
 
 def package_all_models():
-    output_root = Path("dist") / "ollama"
-    output_root.mkdir(parents=True, exist_ok=True)
+    targets = [Path("dist") / "ollama", Path("ollama")]
 
-    install_cmds_ps1 = ["# PocketGull 1-Click Ollama Model Registration (PowerShell)", ""]
-    install_cmds_sh = ["#!/usr/bin/env bash", "# PocketGull 1-Click Ollama Model Registration (macOS / Linux)", ""]
+    for output_root in targets:
+        output_root.mkdir(parents=True, exist_ok=True)
 
-    for model_id, config in MODELS.items():
-        model_dir = output_root / model_id
-        model_dir.mkdir(parents=True, exist_ok=True)
-        
-        modelfile_content = generate_modelfile(model_id, config)
-        modelfile_path = model_dir / "Modelfile"
-        modelfile_path.write_text(modelfile_content, encoding="utf-8")
-        
-        print(f" [OLLAMA] Generated Modelfile for {model_id} -> {modelfile_path}")
+        install_cmds_ps1 = ["# PocketGull 1-Click Ollama Model Registration (PowerShell)", ""]
+        install_cmds_sh = ["#!/usr/bin/env bash", "# PocketGull 1-Click Ollama Model Registration (macOS / Linux)", ""]
 
-        # Add CLI command
-        alias = model_id.replace("pocketgull-", "")
-        install_cmds_ps1.append(f'ollama create {model_id} -f "{modelfile_path}"')
-        install_cmds_ps1.append(f'ollama create {alias} -f "{modelfile_path}"')
-        install_cmds_sh.append(f'ollama create {model_id} -f "{modelfile_path}"')
-        install_cmds_sh.append(f'ollama create {alias} -f "{modelfile_path}"')
+        for model_id, config in MODELS.items():
+            model_dir = output_root / model_id
+            model_dir.mkdir(parents=True, exist_ok=True)
+            
+            modelfile_content = generate_modelfile(model_id, config)
+            modelfile_path = model_dir / "Modelfile"
+            modelfile_path.write_text(modelfile_content, encoding="utf-8")
+            
+            # Relative command path
+            rel_path = f"{output_root.name}/{model_id}/Modelfile" if output_root.name == "ollama" else f"dist/ollama/{model_id}/Modelfile"
+            alias = model_id.replace("pocketgull-", "")
+            install_cmds_ps1.append(f'ollama create {model_id} -f "{rel_path}"')
+            install_cmds_ps1.append(f'ollama create {alias} -f "{rel_path}"')
+            install_cmds_sh.append(f'ollama create {model_id} -f "{rel_path}"')
+            install_cmds_sh.append(f'ollama create {alias} -f "{rel_path}"')
 
-    # Write quick registration scripts
-    (output_root / "install_models.ps1").write_text("\n".join(install_cmds_ps1) + "\n", encoding="utf-8")
-    (output_root / "install_models.sh").write_text("\n".join(install_cmds_sh) + "\n", encoding="utf-8")
+        # Write quick registration scripts
+        (output_root / "install_models.ps1").write_text("\n".join(install_cmds_ps1) + "\n", encoding="utf-8")
+        (output_root / "install_models.sh").write_text("\n".join(install_cmds_sh) + "\n", encoding="utf-8")
+
+        print(f" [OLLAMA] Packaged 6 Modelfiles and install scripts in: {output_root}")
 
     print("\n================================================================")
-    print(f" [SUCCESS] Packaged all 6 Ollama Modelfiles in: {output_root}")
+    print(f" [SUCCESS] Packaged all 6 Ollama Modelfiles in: dist/ollama and ollama/")
     print(f" Quick install scripts generated:")
-    print(f"   Windows:    powershell -ExecutionPolicy Bypass -File dist/ollama/install_models.ps1")
-    print(f"   Mac/Linux:  bash dist/ollama/install_models.sh")
+    print(f"   Windows:    powershell -ExecutionPolicy Bypass -File ollama/install_models.ps1")
+    print(f"   Mac/Linux:  bash ollama/install_models.sh")
     print("================================================================\n")
 
 if __name__ == "__main__":

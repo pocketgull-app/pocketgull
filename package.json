@@ -1,6 +1,6 @@
 {
   "name": "pocket-gull",
-  "version": "1.32.0",
+  "version": "1.36.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api"
@@ -16,7 +16,7 @@
     "voice-assistant",
     "medical-intake"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "private": true,
   "bin": {
     "gull": "scripts/gull.js"
@@ -76,7 +76,6 @@
     "postinstall": "npx --no-install patch-package || true",
     "dev": "node --no-deprecation --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
     "dev:all": "node --no-deprecation --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
-    "wp:publish": "node --no-deprecation scripts/publish_article_to_wordpress.mjs",
     "data:ingest": "node --no-deprecation scripts/ingest-public-data.mjs",
     "data:evidence": "npx tsx scripts/ingest_nih_who_corpus.ts",
     "data:parquet": ".\\.venv\\Scripts\\python.exe scripts/export_clinical_parquet.py",
@@ -264,8 +263,8 @@
     "@esbuild/win32-arm64": "0.28.1",
     "@esbuild/win32-ia32": "0.28.1",
     "@esbuild/win32-x64": "0.28.1",
-    "adm-zip": ">=0.6.0",
-    "hono": ">=4.13.1",
+    "adm-zip": ">=0.6.1",
+    "hono": ">=4.13.8",
     "@hono/node-server": ">=2.1.0",
     "express-rate-limit": ">=8.3.0",
     "immutable": ">=5.1.5",
@@ -294,7 +293,6 @@
     "launch-editor": ">=2.14.1",
     "js-yaml": ">=4.3.1",
     "brace-expansion": "^2.1.4",
-    "svgo": "^4.0.2",
     "fast-uri": "^4.1.4",
     "postcss-selector-parser": ">=6.1.4",
     "ip-address": ">=10.4.0",

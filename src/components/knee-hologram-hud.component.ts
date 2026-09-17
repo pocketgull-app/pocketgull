@@ -1,4 +1,4 @@
-import { Component, ElementRef, viewChild, AfterViewInit, OnDestroy, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ElementRef, viewChild, input, effect, AfterViewInit, OnDestroy, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -51,7 +51,7 @@ export interface IKneeAbnormalityLocus {
               [class.bg-cyan-500]="activePlane() === 'Sagittal'"
               [class.text-zinc-950]="activePlane() === 'Sagittal'"
               [class.text-cyan-400]="activePlane() !== 'Sagittal'"
-              class="px-2.5 py-1 rounded-lg font-bold transition text-[11px] min-h-[32px] touch-manipulation">
+              class="px-2.5 py-1 rounded-lg font-bold transition text-[11px] min-h-[32px] touch-manipulation cursor-pointer">
               Sagittal (ACL)
             </button>
             <button 
@@ -59,7 +59,7 @@ export interface IKneeAbnormalityLocus {
               [class.bg-teal-500]="activePlane() === 'Coronal'"
               [class.text-zinc-950]="activePlane() === 'Coronal'"
               [class.text-teal-400]="activePlane() !== 'Coronal'"
-              class="px-2.5 py-1 rounded-lg font-bold transition text-[11px] min-h-[32px] touch-manipulation">
+              class="px-2.5 py-1 rounded-lg font-bold transition text-[11px] min-h-[32px] touch-manipulation cursor-pointer">
               Coronal (MCL/Meniscus)
             </button>
             <button 
@@ -67,14 +67,25 @@ export interface IKneeAbnormalityLocus {
               [class.bg-amber-400]="activePlane() === 'Axial'"
               [class.text-zinc-950]="activePlane() === 'Axial'"
               [class.text-amber-300]="activePlane() !== 'Axial'"
-              class="px-2.5 py-1 rounded-lg font-bold transition text-[11px] min-h-[32px] touch-manipulation">
+              class="px-2.5 py-1 rounded-lg font-bold transition text-[11px] min-h-[32px] touch-manipulation cursor-pointer">
               Axial (Patella/Baker's)
             </button>
           </div>
 
           <button 
+            (click)="toggleStressHeatmap()"
+            [class.bg-rose-500]="showStressHeatmap()"
+            [class.text-white]="showStressHeatmap()"
+            [class.bg-zinc-900]="!showStressHeatmap()"
+            [class.text-zinc-400]="!showStressHeatmap()"
+            class="px-3 py-1.5 rounded-xl border border-zinc-800 transition text-[11px] min-h-[36px] font-mono font-bold flex items-center gap-1.5 cursor-pointer">
+            <span>🔥</span>
+            <span>{{ showStressHeatmap() ? 'FEA Stress ON' : 'FEA Stress OFF' }}</span>
+          </button>
+
+          <button 
             (click)="toggleAutoRotate()"
-            class="px-3 py-1.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-300 hover:text-cyan-300 transition text-[11px] min-h-[36px]">
+            class="px-3 py-1.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-300 hover:text-cyan-300 transition text-[11px] min-h-[36px] cursor-pointer">
             {{ isAutoRotating() ? '⏸ Pause Spin' : '▶ 360° Spin' }}
           </button>
         </div>
@@ -93,8 +104,32 @@ export interface IKneeAbnormalityLocus {
               <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
               <span class="text-zinc-200">Joint Flexion: {{ flexionAngle() }}°</span>
             </div>
-            <span>Slice Plane: <span class="text-cyan-300">{{ activePlane() }}</span></span>
+            <span>Slice Plane: <span class="text-cyan-300 font-bold">{{ activePlane() }}</span></span>
             <span>Target Loci: <span class="text-amber-300">12 RSNA Markers</span></span>
+            @if (selectedLocus(); as locus) {
+              <span class="text-emerald-400 text-[10px]">🎯 Slicing: {{ locus.name }}</span>
+            }
+            @if (showStressHeatmap()) {
+              <div class="mt-1 pt-1.5 border-t border-zinc-800/80 flex flex-col gap-0.5 text-[10px]">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-zinc-400">Medial Bias:</span>
+                  <span class="text-rose-400 font-bold font-mono">{{ medialContactBias() }}% load</span>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-zinc-400">Peak Shear:</span>
+                  <span class="text-amber-300 font-bold font-mono">{{ peakVonMisesMpa() }} MPa</span>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-zinc-400">WORMS Defect:</span>
+                  <span class="text-teal-300 font-mono">Grade {{ wormsGrade() }}</span>
+                </div>
+                <div class="mt-1 flex items-center gap-1.5 text-[9px] font-mono">
+                  <span class="text-cyan-400">1.5M</span>
+                  <div class="w-16 h-1.5 rounded-full bg-gradient-to-r from-cyan-400 via-amber-400 to-rose-500"></div>
+                  <span class="text-rose-400">7.5M</span>
+                </div>
+              </div>
+            }
           </div>
 
           <!-- Flexion Angle Slider in Canvas Footer -->
@@ -138,7 +173,7 @@ export interface IKneeAbnormalityLocus {
                 {{ locus.clinicalNote }}
               </p>
               <div class="flex items-center justify-between text-[10px] font-mono text-zinc-400 pt-1">
-                <span>Plane: {{ locus.plane }}</span>
+                <span>Plane: <strong class="text-zinc-200">{{ locus.plane }}</strong></span>
                 <span class="text-cyan-300 font-bold">Likelihood: {{ (locus.likelihood * 100).toFixed(0) }}%</span>
               </div>
             </div>
@@ -149,7 +184,7 @@ export interface IKneeAbnormalityLocus {
             @for (locus of lociList; track locus.id) {
               <button 
                 (click)="selectLocus(locus)"
-                class="w-full text-left p-2 rounded-lg bg-zinc-950/70 border border-zinc-800 hover:border-cyan-500/40 transition flex items-center justify-between text-xs font-mono min-h-[44px] touch-manipulation"
+                class="w-full text-left p-2 rounded-lg bg-zinc-950/70 border border-zinc-800 hover:border-cyan-500/40 transition flex items-center justify-between text-xs font-mono min-h-[44px] touch-manipulation cursor-pointer"
                 [class.border-cyan-500]="selectedLocus()?.id === locus.id">
                 <div class="flex items-center gap-2">
                   <span class="w-2 h-2 rounded-full"
@@ -175,9 +210,31 @@ export interface IKneeAbnormalityLocus {
 export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
   readonly rendererContainer = viewChild<ElementRef<HTMLDivElement>>('rendererContainer');
 
+  // Input from parent lens or standalone HUD
+  readonly selectedTargetKey = input<string | null>(null);
+  readonly qAngle = input<number>(12.2);
+  readonly wormsGrade = input<number>(2);
+  readonly jointSpaceNarrowingMm = input<number>(1.8);
+
+  readonly showStressHeatmap = signal<boolean>(true);
   readonly activePlane = signal<'Sagittal' | 'Coronal' | 'Axial'>('Sagittal');
   readonly isAutoRotating = signal<boolean>(true);
   readonly flexionAngle = signal<number>(15);
+
+  readonly medialContactBias = computed(() => {
+    // Normal Q-angle is ~14-15 deg (equal 50/50 distribution)
+    // Decreased Q-angle (<13.5 deg = Genu Varum) shifts load to medial compartment (up to 85%)
+    const q = this.qAngle();
+    const bias = Math.min(88, Math.max(50, 50 + (14.5 - q) * 6.5));
+    return Math.round(bias);
+  });
+
+  readonly peakVonMisesMpa = computed(() => {
+    const base = 2.4;
+    const wormsImpact = this.wormsGrade() * 0.9;
+    const jsnImpact = this.jointSpaceNarrowingMm() * 0.8;
+    return Number((base + wormsImpact + jsnImpact).toFixed(1));
+  });
 
   readonly lociList: IKneeAbnormalityLocus[] = [
     {
@@ -231,6 +288,26 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
       clinicalNote: 'Focal 50% cartilage thinning with adjacent subchondral marrow edema.'
     },
     {
+      id: 'lateral_oa',
+      name: 'Lateral Compartment Cartilage Loss',
+      category: 'cartilage',
+      position: [0.4, 0.1, 0],
+      likelihood: 0.20,
+      severity: 'Mild',
+      plane: 'Coronal',
+      clinicalNote: 'Normal lateral joint space without full-thickness chondral erosion.'
+    },
+    {
+      id: 'pf_oa',
+      name: 'Patellofemoral Articular Cartilage',
+      category: 'cartilage',
+      position: [0, 0.45, 0.4],
+      likelihood: 0.76,
+      severity: 'Severe',
+      plane: 'Axial',
+      clinicalNote: 'High-grade trochlear cartilage thinning and lateral facet fissuring on Axial PD.'
+    },
+    {
       id: 'effusion',
       name: 'Suprapatellar Joint Effusion',
       category: 'fluid',
@@ -239,6 +316,16 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
       severity: 'Severe',
       plane: 'Sagittal',
       clinicalNote: 'Marked fluid distension of suprapatellar bursa (>15mm depth).'
+    },
+    {
+      id: 'synovitis',
+      name: 'Infrapatellar Synovitis',
+      category: 'fluid',
+      position: [0, 0.1, 0.35],
+      likelihood: 0.82,
+      severity: 'Severe',
+      plane: 'Sagittal',
+      clinicalNote: 'Extensive synovial frond proliferation and hyperemia in Hoffa fat pad.'
     },
     {
       id: 'bakers_cyst',
@@ -259,6 +346,16 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
       severity: 'Severe',
       plane: 'Sagittal',
       clinicalNote: 'Pivot-shift impaction edema pattern classic for acute ACL deceleration tear.'
+    },
+    {
+      id: 'fracture',
+      name: 'Tibial Plateau Cortical Margin',
+      category: 'bone',
+      position: [0.45, -0.3, 0],
+      likelihood: 0.12,
+      severity: 'Mild',
+      plane: 'Coronal',
+      clinicalNote: 'Intact subchondral bone plate without acute cortical break or depression.'
     }
   ];
 
@@ -272,6 +369,38 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
   private jointGroup!: THREE.Group;
   private tibiaGroup!: THREE.Group;
   private hotSpotMeshes: THREE.Mesh[] = [];
+
+  // Tri-plane slicer meshes & target focus reticle
+  private slicerGroup!: THREE.Group;
+  private sagittalPlane!: THREE.Mesh;
+  private coronalPlane!: THREE.Mesh;
+  private axialPlane!: THREE.Mesh;
+  private targetReticle!: THREE.Mesh;
+
+  // Stress heatmap geometries
+  private medCondyleGeo?: THREE.SphereGeometry;
+  private latCondyleGeo?: THREE.SphereGeometry;
+  private plateauGeo?: THREE.CylinderGeometry;
+
+  private targetCameraPos = new THREE.Vector3(0, 0.5, 3.5);
+  private targetControlsTarget = new THREE.Vector3(0, 0, 0);
+
+  constructor() {
+    effect(() => {
+      const key = this.selectedTargetKey();
+      if (key) {
+        this.focusOnTargetKey(key);
+      }
+    });
+
+    effect(() => {
+      this.qAngle();
+      this.wormsGrade();
+      this.jointSpaceNarrowingMm();
+      this.showStressHeatmap();
+      this.updateStressHeatmap();
+    });
+  }
 
   ngAfterViewInit(): void {
     this.initThree();
@@ -288,8 +417,17 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  toggleStressHeatmap(): void {
+    this.showStressHeatmap.update(v => !v);
+    this.updateStressHeatmap();
+  }
+
   setSlicePlane(plane: 'Sagittal' | 'Coronal' | 'Axial'): void {
     this.activePlane.set(plane);
+    this.updateSlicerVisibility();
+    const locus = this.selectedLocus();
+    this.orientCameraToPlane(plane, locus ? locus.position : undefined);
+    this.isAutoRotating.set(false);
   }
 
   toggleAutoRotate(): void {
@@ -305,9 +443,42 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  focusOnTargetKey(key: string): void {
+    const locus = this.lociList.find(l => l.id.toLowerCase() === key.toLowerCase());
+    if (locus) {
+      this.selectLocus(locus);
+    }
+  }
+
   selectLocus(locus: IKneeAbnormalityLocus): void {
     this.selectedLocus.set(locus);
     this.activePlane.set(locus.plane);
+    this.updatePlanePositions(locus.position);
+    this.updateSlicerVisibility();
+    if (this.targetReticle) {
+      this.targetReticle.position.set(...locus.position);
+      this.targetReticle.visible = true;
+    }
+    this.orientCameraToPlane(locus.plane, locus.position);
+    this.isAutoRotating.set(false);
+  }
+
+  orientCameraToPlane(plane: 'Sagittal' | 'Coronal' | 'Axial', pos?: [number, number, number]): void {
+    const targetX = pos ? pos[0] : 0;
+    const targetY = pos ? pos[1] : 0.1;
+    const targetZ = pos ? pos[2] : 0;
+    this.targetControlsTarget.set(targetX, targetY, targetZ);
+
+    if (plane === 'Sagittal') {
+      // Lateral profile view looking across sagittal slice
+      this.targetCameraPos.set(targetX + 2.8, targetY + 0.2, targetZ);
+    } else if (plane === 'Coronal') {
+      // Anterior/frontal view looking into coronal slice
+      this.targetCameraPos.set(targetX, targetY + 0.2, targetZ + 2.8);
+    } else if (plane === 'Axial') {
+      // Top-down / transverse view looking along axial slice
+      this.targetCameraPos.set(targetX, targetY + 2.8, targetZ + 0.6);
+    }
   }
 
   private initThree(): void {
@@ -317,41 +488,46 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
     const width = container.clientWidth || 600;
     const height = container.clientHeight || 420;
 
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x05080c);
+    try {
+      this.scene = new THREE.Scene();
+      this.scene.background = new THREE.Color(0x05080c);
 
-    this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    this.camera.position.set(0, 0.5, 3.5);
+      this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+      this.camera.position.set(0, 0.5, 3.5);
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(this.renderer.domElement);
+      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      this.renderer.setSize(width, height);
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(this.renderer.domElement);
 
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.05;
-    this.controls.maxDistance = 6.0;
-    this.controls.minDistance = 1.5;
+      this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+      this.controls.enableDamping = true;
+      this.controls.dampingFactor = 0.05;
+      this.controls.maxDistance = 6.0;
+      this.controls.minDistance = 1.5;
 
-    // Holographic Lighting Setup
-    const ambLight = new THREE.AmbientLight(0x0a2540, 2.0);
-    this.scene.add(ambLight);
+      // Holographic Lighting Setup
+      const ambLight = new THREE.AmbientLight(0x0a2540, 2.0);
+      this.scene.add(ambLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0x14b8a6, 2.5);
-    dirLight1.position.set(3, 5, 4);
-    this.scene.add(dirLight1);
+      const dirLight1 = new THREE.DirectionalLight(0x14b8a6, 2.5);
+      dirLight1.position.set(3, 5, 4);
+      this.scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x06b6d4, 1.8);
-    dirLight2.position.set(-3, -2, -3);
-    this.scene.add(dirLight2);
+      const dirLight2 = new THREE.DirectionalLight(0x06b6d4, 1.8);
+      dirLight2.position.set(-3, -2, -3);
+      this.scene.add(dirLight2);
 
-    const grid = new THREE.GridHelper(10, 20, 0x14b8a6, 0x0f3443);
-    grid.position.y = -1.5;
-    this.scene.add(grid);
+      const grid = new THREE.GridHelper(10, 20, 0x14b8a6, 0x0f3443);
+      grid.position.y = -1.5;
+      this.scene.add(grid);
+    } catch {
+      // Headless / non-WebGL fallback (e.g. unit tests or SSR)
+    }
   }
 
   private buildProceduralKnee(): void {
+    if (!this.scene) return;
     this.jointGroup = new THREE.Group();
 
     // 1. Distal Femur (Bone Material with subtle wireframe/PBR)
@@ -360,6 +536,13 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
       roughness: 0.4,
       metalness: 0.2,
       wireframe: false
+    });
+
+    const stressBoneMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.35,
+      metalness: 0.15,
+      vertexColors: true
     });
 
     const cartilageMaterial = new THREE.MeshStandardMaterial({
@@ -382,15 +565,17 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
     femurShaft.position.y = 0.9;
     this.jointGroup.add(femurShaft);
 
-    // Medial & Lateral Femoral Condyles
+    // Medial & Lateral Femoral Condyles with FEA vertex stress mapping
     const medCondyleGeo = new THREE.SphereGeometry(0.32, 16, 16);
-    const medCondyle = new THREE.Mesh(medCondyleGeo, boneMaterial);
+    this.medCondyleGeo = medCondyleGeo;
+    const medCondyle = new THREE.Mesh(medCondyleGeo, stressBoneMaterial);
     medCondyle.position.set(-0.35, 0.35, 0);
     medCondyle.scale.set(1, 1.2, 1.4);
     this.jointGroup.add(medCondyle);
 
     const latCondyleGeo = new THREE.SphereGeometry(0.32, 16, 16);
-    const latCondyle = new THREE.Mesh(latCondyleGeo, boneMaterial);
+    this.latCondyleGeo = latCondyleGeo;
+    const latCondyle = new THREE.Mesh(latCondyleGeo, stressBoneMaterial);
     latCondyle.position.set(0.35, 0.35, 0);
     latCondyle.scale.set(1, 1.2, 1.4);
     this.jointGroup.add(latCondyle);
@@ -406,9 +591,10 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
     this.tibiaGroup = new THREE.Group();
     this.tibiaGroup.position.set(0, 0.2, 0);
 
-    // Tibial Plateau
+    // Tibial Plateau with FEA vertex stress mapping
     const plateauGeo = new THREE.CylinderGeometry(0.55, 0.45, 0.25, 16);
-    const plateau = new THREE.Mesh(plateauGeo, boneMaterial);
+    this.plateauGeo = plateauGeo;
+    const plateau = new THREE.Mesh(plateauGeo, stressBoneMaterial);
     plateau.position.y = -0.3;
     this.tibiaGroup.add(plateau);
 
@@ -459,14 +645,215 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
       this.hotSpotMeshes.push(hotspot);
     }
 
+    // 4. Create Tri-Plane Slicers and Reticle
+    this.createSlicerPlanes();
+
     this.scene.add(this.jointGroup);
+  }
+
+  private createSlicerPlanes(): void {
+    this.slicerGroup = new THREE.Group();
+
+    // Sagittal Plane (YZ plane, normal = X)
+    const sagGeo = new THREE.PlaneGeometry(2.4, 2.4);
+    sagGeo.rotateY(Math.PI / 2);
+    const sagMat = new THREE.MeshBasicMaterial({
+      color: 0x06b6d4,
+      transparent: true,
+      opacity: 0.25,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    this.sagittalPlane = new THREE.Mesh(sagGeo, sagMat);
+    const sagEdges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(sagGeo),
+      new THREE.LineBasicMaterial({ color: 0x22d3ee })
+    );
+    this.sagittalPlane.add(sagEdges);
+    this.slicerGroup.add(this.sagittalPlane);
+
+    // Coronal Plane (XY plane, normal = Z)
+    const corGeo = new THREE.PlaneGeometry(2.4, 2.4);
+    const corMat = new THREE.MeshBasicMaterial({
+      color: 0x14b8a6,
+      transparent: true,
+      opacity: 0.25,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    this.coronalPlane = new THREE.Mesh(corGeo, corMat);
+    const corEdges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(corGeo),
+      new THREE.LineBasicMaterial({ color: 0x2dd4bf })
+    );
+    this.coronalPlane.add(corEdges);
+    this.slicerGroup.add(this.coronalPlane);
+
+    // Axial Plane (XZ plane, normal = Y)
+    const axGeo = new THREE.PlaneGeometry(2.4, 2.4);
+    axGeo.rotateX(Math.PI / 2);
+    const axMat = new THREE.MeshBasicMaterial({
+      color: 0xf59e0b,
+      transparent: true,
+      opacity: 0.25,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    this.axialPlane = new THREE.Mesh(axGeo, axMat);
+    const axEdges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(axGeo),
+      new THREE.LineBasicMaterial({ color: 0xfbbf24 })
+    );
+    this.axialPlane.add(axEdges);
+    this.slicerGroup.add(this.axialPlane);
+
+    // Target reticle indicator (Torus ring)
+    const reticleGeo = new THREE.TorusGeometry(0.12, 0.015, 12, 32);
+    const reticleMat = new THREE.MeshBasicMaterial({
+      color: 0x22d3ee,
+      wireframe: true
+    });
+    this.targetReticle = new THREE.Mesh(reticleGeo, reticleMat);
+    const locus = this.selectedLocus();
+    if (locus) {
+      this.targetReticle.position.set(...locus.position);
+      this.updatePlanePositions(locus.position);
+    }
+    this.jointGroup.add(this.targetReticle);
+
+    this.jointGroup.add(this.slicerGroup);
+    this.updateSlicerVisibility();
+  }
+
+  private updatePlanePositions(pos: [number, number, number]): void {
+    if (this.sagittalPlane) this.sagittalPlane.position.x = pos[0];
+    if (this.coronalPlane) this.coronalPlane.position.z = pos[2];
+    if (this.axialPlane) this.axialPlane.position.y = pos[1];
+  }
+
+  private updateSlicerVisibility(): void {
+    if (!this.sagittalPlane || !this.coronalPlane || !this.axialPlane) return;
+    const active = this.activePlane();
+
+    // Sagittal
+    const isSag = active === 'Sagittal';
+    (this.sagittalPlane.material as THREE.MeshBasicMaterial).opacity = isSag ? 0.35 : 0.08;
+    this.sagittalPlane.visible = true;
+
+    // Coronal
+    const isCor = active === 'Coronal';
+    (this.coronalPlane.material as THREE.MeshBasicMaterial).opacity = isCor ? 0.35 : 0.08;
+    this.coronalPlane.visible = true;
+
+    // Axial
+    const isAx = active === 'Axial';
+    (this.axialPlane.material as THREE.MeshBasicMaterial).opacity = isAx ? 0.35 : 0.08;
+    this.axialPlane.visible = true;
+  }
+
+  private updateStressHeatmap(): void {
+    const active = this.showStressHeatmap();
+    if (this.medCondyleGeo) this.applyCartilageStressVertexColors(this.medCondyleGeo, true, false, active);
+    if (this.latCondyleGeo) this.applyCartilageStressVertexColors(this.latCondyleGeo, false, false, active);
+    if (this.plateauGeo) this.applyCartilageStressVertexColors(this.plateauGeo, false, true, active);
+  }
+
+  private applyCartilageStressVertexColors(
+    geometry: THREE.BufferGeometry,
+    isMedial: boolean,
+    isTibialPlateau = false,
+    active = true
+  ): void {
+    const posAttr = geometry.getAttribute('position');
+    if (!posAttr) return;
+
+    const count = posAttr.count;
+    const colors = new Float32Array(count * 3);
+
+    // If disabled, render neutral ivory bone
+    if (!active) {
+      for (let i = 0; i < count; i++) {
+        colors[i * 3] = 0.88;     // R
+        colors[i * 3 + 1] = 0.91; // G
+        colors[i * 3 + 2] = 0.94; // B
+      }
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      if (geometry.attributes['color']) geometry.attributes['color'].needsUpdate = true;
+      return;
+    }
+
+    const bias = this.medialContactBias() / 100; // e.g. 0.78 for Genu Varum
+    const worms = this.wormsGrade();             // e.g. 2
+    const jsn = this.jointSpaceNarrowingMm();     // e.g. 1.8
+
+    for (let i = 0; i < count; i++) {
+      const vx = posAttr.getX(i);
+      const vy = posAttr.getY(i);
+      const vz = posAttr.getZ(i);
+
+      let stress = 0.15; // baseline physiological load (1.5 MPa)
+
+      if (isTibialPlateau) {
+        // On plateau, medial is vx < 0, lateral is vx > 0
+        const isVertexMedial = vx < 0;
+        const distFromCenter = Math.sqrt(vx * vx + vz * vz);
+        const contactZone = Math.max(0, 1.0 - distFromCenter / 0.55);
+        if (isVertexMedial) {
+          stress = (bias * 0.7 + (worms / 4) * 0.3 + (jsn / 3) * 0.2) * contactZone;
+        } else {
+          stress = ((1.0 - bias) * 0.5) * contactZone;
+        }
+      } else if (isMedial) {
+        // Medial femoral condyle: contact zone at distal inferior aspect (vy < 0)
+        const distalWeight = Math.max(0, -vy / 0.32);
+        stress = (bias * 0.75 + (worms / 4) * 0.35 + (jsn / 3) * 0.2) * distalWeight;
+      } else {
+        // Lateral femoral condyle
+        const distalWeight = Math.max(0, -vy / 0.32);
+        stress = ((1.0 - bias) * 0.45) * distalWeight;
+      }
+
+      stress = Math.min(1.0, Math.max(0.0, stress));
+
+      // Color ramp:
+      // stress < 0.35 -> Cyan (0.22, 0.74, 0.97)
+      // stress 0.35..0.65 -> Amber (0.96, 0.62, 0.04)
+      // stress >= 0.65 -> Crimson (0.95, 0.25, 0.37)
+      let r = 0.22, g = 0.74, b = 0.97;
+      if (stress > 0.65) {
+        const t = (stress - 0.65) / 0.35;
+        r = 0.96 + t * (0.95 - 0.96);
+        g = 0.62 + t * (0.25 - 0.62);
+        b = 0.04 + t * (0.37 - 0.04);
+      } else if (stress > 0.35) {
+        const t = (stress - 0.35) / 0.30;
+        r = 0.22 + t * (0.96 - 0.22);
+        g = 0.74 + t * (0.62 - 0.74);
+        b = 0.97 + t * (0.04 - 0.97);
+      }
+
+      colors[i * 3] = r;
+      colors[i * 3 + 1] = g;
+      colors[i * 3 + 2] = b;
+    }
+
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    if (geometry.attributes['color']) geometry.attributes['color'].needsUpdate = true;
   }
 
   private animate = (): void => {
     this.animFrameId = requestAnimationFrame(this.animate);
+    if (!this.scene) return;
 
     if (this.controls) {
+      if (this.targetControlsTarget) {
+        this.controls.target.lerp(this.targetControlsTarget, 0.06);
+      }
       this.controls.update();
+    }
+
+    if (this.camera && this.targetCameraPos) {
+      this.camera.position.lerp(this.targetCameraPos, 0.06);
     }
 
     if (this.isAutoRotating() && this.jointGroup) {
@@ -478,6 +865,12 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
     for (const mesh of this.hotSpotMeshes) {
       const scale = 1.0 + Math.sin(time * 2.0) * 0.25;
       mesh.scale.set(scale, scale, scale);
+    }
+
+    // Spin targeting reticle
+    if (this.targetReticle) {
+      this.targetReticle.rotation.z += 0.03;
+      this.targetReticle.rotation.x += 0.02;
     }
 
     if (this.renderer && this.scene && this.camera) {

@@ -1,0 +1,37 @@
+{
+  "name": "@pocketgull/uswds-react-cds",
+  "version": "1.0.0",
+  "description": "Accessible, Section 508-compliant USWDS 3.0 Clinical Decision Support (CDS) components for React, featuring dual-perspective VA Community Care Network and Federal Host workflows under 18 U.S.C. § 701 safe harbor.",
+  "author": "PocketGull Team & Community Partners",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0 || >=19.0.0",
+    "react-dom": ">=18.0.0 || >=19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "typescript": "^5.8.2"
+  },
+  "keywords": [
+    "uswds",
+    "uswds-3",
+    "react",
+    "clinical-decision-support",
+    "section-508",
+    "va-mission-act",
+    "pact-act",
+    "fhir-r4",
+    "accessible"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

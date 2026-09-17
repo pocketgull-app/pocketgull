@@ -11,21 +11,21 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^22.1.5",
-    "@angular/common": "^22.1.5",
-    "@angular/compiler": "^22.1.5",
-    "@angular/core": "^22.1.5",
-    "@angular/forms": "^22.1.5",
-    "@angular/platform-browser": "^22.1.5",
-    "@angular/platform-browser-dynamic": "^22.1.5",
-    "@angular/router": "^22.1.5",
+    "@angular/animations": "^22.1.7",
+    "@angular/common": "^22.1.7",
+    "@angular/compiler": "^22.1.7",
+    "@angular/core": "^22.1.7",
+    "@angular/forms": "^22.1.7",
+    "@angular/platform-browser": "^22.1.7",
+    "@angular/platform-browser-dynamic": "^22.1.7",
+    "@angular/router": "^22.1.7",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^22.1.7",
     "@angular/cli": "^22.1.7",
-    "@angular/compiler-cli": "^22.1.5",
+    "@angular/compiler-cli": "^22.1.7",
     "@types/jasmine": "~6.0.0",
     "autoprefixer": "^10.5.0",
     "jasmine-core": "~5.2.0",
@@ -90,8 +90,9 @@
     "postcss-selector-parser": ">=6.1.4",
     "ip-address": ">=10.4.0",
     "js-yaml": ">=4.3.1",
-    "hono": ">=4.13.1",
+    "hono": ">=4.13.8",
     "@hono/node-server": ">=2.1.0",
+    "@angular/common": "^22.1.7",
     "browserslist": ">=4.28.7"
   }
 }

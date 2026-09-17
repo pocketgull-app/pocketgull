@@ -34,9 +34,7 @@ const projectItems = [
   'docs',
   'scripts',
   'pocketgull_api',
-  'companion-apps',
-  'tests',
-  'e2e'
+  'companion-apps/avs-therapy'
 ].filter(item => fs.existsSync(path.resolve(rootDir, item)));
 
 console.log(`📦 Packaging clean project source files from ${rootDir}:`);
@@ -49,28 +47,49 @@ if (fs.existsSync(outputPath)) {
 
 const excludes = [
   'node_modules',
-  '*node_modules*',
+  '*/node_modules/*',
   '.venv',
-  '*venv*',
+  '*/.venv/*',
   'dist',
-  '*dist*',
+  '*/dist/*',
   '.angular',
-  '*.angular*',
+  '*/.angular/*',
   'tmp',
+  '*/tmp/*',
   '.temp',
+  '*/.temp/*',
   'test-results',
   'playwright-report',
   '__pycache__',
   '*.pyc',
   'contests',
-  '*contests*',
+  '*/contests/*',
   'scratch',
-  '*scratch*',
+  '*/scratch/*',
   '*.tar.gz',
   '*.tgz',
   '.git',
   '.dart_tool',
-  'build'
+  '*/.dart_tool/*',
+  'build',
+  '*/build/*',
+  '*.dill',
+  '*.apk',
+  '*.dex',
+  '*.so',
+  '.gradle',
+  '*/.gradle/*',
+  'companion-apps/patient_app',
+  'companion-apps/provider_app',
+  'companion-apps/neuro_reader_app',
+  'pocketgull_flutter',
+  'e2e',
+  'tests',
+  'public/fonts/google_fonts_submission',
+  'public/brand/fonts',
+  'public/images/screenshots',
+  'public/images/workflow',
+  'docs/images'
 ].map(e => `--exclude=${e}`).join(' ');
 
 const tarCmd = `tar -czf "${outputPath}" ${excludes} ${projectItems.join(' ')}`;

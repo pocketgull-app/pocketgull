@@ -41,8 +41,53 @@ describe('NanoProvider', () => {
   });
 
   it('4. Handles multimodal image analysis rejection with helpful Chrome Canary guidance when API is absent', async () => {
+    (globalThis as any).ai = undefined;
+    (globalThis as any).window = {};
     await expect(provider.analyzeImage('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='))
       .rejects
       .toThrow(/Chrome Canary 153\+|chrome:\/\/flags\/#prompt-api-multimodal-input/i);
+  });
+
+  it('5. Successfully analyzes multimodal image on-device when Chrome Multimodal API is available', async () => {
+    const mockSession = {
+      prompt: vi.fn().mockResolvedValue('Objective Observation: 1x1 pixel test swatch showing clear erythema-free boundary.'),
+      destroy: vi.fn(),
+    };
+    (globalThis as any).window = globalThis;
+    (globalThis as any).ai = {
+      languageModel: {
+        capabilities: vi.fn().mockResolvedValue({ available: 'readily' }),
+        create: vi.fn().mockResolvedValue(mockSession),
+      }
+    };
+
+    const result = await provider.analyzeImage(
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      'Dermatology inspection'
+    );
+
+    expect(result).toContain('Objective Observation');
+    expect(mockSession.prompt).toHaveBeenCalled();
+  });
+
+  it('6. Integrates with window.ai.proofreader when available to flag clinical phrasing adjustments', async () => {
+    (globalThis as any).window = globalThis;
+    (globalThis as any).ai = {
+      proofreader: {
+        capabilities: vi.fn().mockResolvedValue({ available: 'readily' }),
+        create: vi.fn().mockResolvedValue({
+          proofread: vi.fn().mockResolvedValue({
+            corrections: [
+              { original: '5.0 mg', suggested: '5 mg', explanation: 'Prohibit trailing zero per ISMP standards' }
+            ]
+          })
+        })
+      }
+    };
+
+    const verification = await provider.verifySection('Prescription Details', 'Take 5.0 mg daily', 'Source');
+    expect(verification.status).toContain('Verified by On-Device Built-in AI');
+    expect(verification.issues.length).toBe(1);
+    expect(verification.issues[0].suggestedFix).toBe('5 mg');
   });
 });

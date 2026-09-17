@@ -347,6 +347,7 @@ export async function selectPatientByName(page: Page, name: string) {
     'Devon Brooks': 'Homo Sapiens (Male, Gastrointestinal',
     'Maya Patel': 'Homo Sapiens (Female, Endocrine',
     'James Wilson': 'Homo Sapiens (Male, Renal',
+    'Phil Gear': 'Homo Sapiens (Male, Cardiovascular',
   };
   const targetName = archetypeAliasMap[name] || name;
 

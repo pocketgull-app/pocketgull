@@ -1,7 +1,7 @@
 # ==========================================
 # Stage 1: Build
 # ==========================================
-FROM node:24-alpine AS builder
+FROM node:24-alpine@sha256:50c8e8ca1d27439048670df5883f32d57cf81cff6233222c893fd0d9884cbd81 AS builder
 
 WORKDIR /app
 
@@ -18,7 +18,6 @@ ENV NODE_ENV=development
 COPY package*.json ./
 COPY packages/core-sdk/package*.json ./packages/core-sdk/
 COPY packages/pocketgull-github-app/package*.json ./packages/pocketgull-github-app/
-COPY docs/study/package*.json ./docs/study/
 COPY companion-apps/avs-therapy/package*.json ./companion-apps/avs-therapy/
 COPY pocketgull_api/package*.json ./pocketgull_api/
 RUN npm ci --legacy-peer-deps --include-workspace-root --workspaces --include=dev
@@ -34,7 +33,7 @@ RUN npm prune --omit=dev --legacy-peer-deps
 # ==========================================
 # Stage 2: Production
 # ==========================================
-FROM node:24-alpine
+FROM node:24-alpine@sha256:50c8e8ca1d27439048670df5883f32d57cf81cff6233222c893fd0d9884cbd81
 
 WORKDIR /app
 

@@ -18,6 +18,7 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
 import { PediatricClinicalTrajectoryHubComponent } from './research-frame/pediatric-clinical-trajectory-hub.component';
 import { GeriatricLongevityFrailtyHubComponent } from './research-frame/geriatric-longevity-frailty-hub.component';
 import { FoodAsMedicinePrescriptionHubComponent } from './research-frame/food-as-medicine-prescription-hub.component';
+import { MsPathwaysToCuresHubComponent } from './research-frame/ms-pathways-to-cures-hub.component';
 import { SpecialistCdsSuiteComponent } from './specialist-cds/specialist-cds-suite.component';
 import { ResearchDataDividendComponent } from './research-data-dividend.component';
 import { GullSquadronShowcaseComponent } from './gull-squadron-showcase.component';
@@ -58,6 +59,7 @@ export interface IPubMedSearchResult {
     NcaaSportsScienceHubComponent,
     InternationalUniversityHubComponent,
     WhoNihGoalSteeringHubComponent,
+    MsPathwaysToCuresHubComponent,
     GeofencedExposomicsRadarComponent,
     PediatricClinicalTrajectoryHubComponent,
     GeriatricLongevityFrailtyHubComponent,
@@ -223,6 +225,16 @@ export interface IPubMedSearchResult {
                     [class.text-gray-500]="searchEngine() !== 'who_nih'"
                     [class.dark:text-zinc-400]="searchEngine() !== 'who_nih'">
               🌐 WHO/NIH
+            </button>
+            <button (click)="setSearchEngine('ms_cures')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'ms_cures'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'ms_cures'"
+                    [class.text-teal-700]="searchEngine() === 'ms_cures'"
+                    [class.dark:text-teal-300]="searchEngine() === 'ms_cures'"
+                    [class.text-gray-500]="searchEngine() !== 'ms_cures'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'ms_cures'">
+              🧠 MS Pathways
             </button>
             <button (click)="setSearchEngine('exposome')"
                     class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
@@ -638,6 +650,10 @@ export interface IPubMedSearchResult {
           <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
             <app-who-nih-goal-steering-hub (selectQuery)="onSteeredQuery($event)"></app-who-nih-goal-steering-hub>
           </div>
+        } @else if (searchEngine() === 'ms_cures') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-ms-pathways-to-cures-hub (selectQuery)="onSteeredQuery($event)"></app-ms-pathways-to-cures-hub>
+          </div>
         } @else if (searchEngine() === 'exposome') {
           <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
             <app-geofenced-exposomics-radar (selectQuery)="onSteeredQuery($event)"></app-geofenced-exposomics-radar>
@@ -734,7 +750,7 @@ export class ResearchFrameComponent implements OnDestroy {
   readonly isFovealOpen = signal<boolean>(false);
 
   isMobile = signal(false);
-  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist'>('google');
+  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist'>('google');
   searchText = signal<string>('');
 
   readonly activeLensName = computed(() => this.moeRouter?.activeLens() || 'Summary Overview');
@@ -1087,7 +1103,7 @@ export class ResearchFrameComponent implements OnDestroy {
   }
 
   // --- Browser Actions ---
-  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist') {
+  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist') {
     this.searchEngine.set(engine);
     if (engine === 'gse') {
       this.gseResults.set(this.gseService.searchGse(this.searchText().trim()));
@@ -1098,6 +1114,7 @@ export class ResearchFrameComponent implements OnDestroy {
       engine !== 'dividend' && 
       engine !== 'squadron' && 
       engine !== 'who_nih' && 
+      engine !== 'ms_cures' && 
       engine !== 'exposome' && 
       engine !== 'pediatrics' && 
       engine !== 'geriatrics' && 

@@ -21,6 +21,11 @@ export class NavigationShellService {
   readonly showCmsSuperbillModal = signal<boolean>(false);
   readonly showTrajectoryReaderModal = signal<boolean>(false);
   readonly showAustereHudModal = signal<boolean>(false);
+  readonly showMdcpHubModal = signal<boolean>(false);
+  readonly showCommercialHubModal = signal<boolean>(false);
+  readonly showRoleDemoModal = signal<boolean>(false);
+  readonly showIntimacyVitalityModal = signal<boolean>(false);
+  readonly showFederalUswdsPortal = signal<boolean>(false);
 
   /**
    * Switches active main tab.
@@ -59,6 +64,21 @@ export class NavigationShellService {
   public openAustereHud(): void { this.showAustereHudModal.set(true); }
   public closeAustereHud(): void { this.showAustereHudModal.set(false); }
 
+  public openMdcpHub(): void { this.showMdcpHubModal.set(true); }
+  public closeMdcpHub(): void { this.showMdcpHubModal.set(false); }
+
+  public openCommercialHub(): void { this.showCommercialHubModal.set(true); }
+  public closeCommercialHub(): void { this.showCommercialHubModal.set(false); }
+
+  public openRoleDemo(): void { this.showRoleDemoModal.set(true); }
+  public closeRoleDemo(): void { this.showRoleDemoModal.set(false); }
+
+  public openIntimacyVitality(): void { this.showIntimacyVitalityModal.set(true); }
+  public closeIntimacyVitality(): void { this.showIntimacyVitalityModal.set(false); }
+
+  public openFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(true); }
+  public closeFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(false); }
+
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
    */
@@ -75,5 +95,10 @@ export class NavigationShellService {
     this.showCmsSuperbillModal.set(false);
     this.showTrajectoryReaderModal.set(false);
     this.showAustereHudModal.set(false);
+    this.showMdcpHubModal.set(false);
+    this.showCommercialHubModal.set(false);
+    this.showRoleDemoModal.set(false);
+    this.showIntimacyVitalityModal.set(false);
+    this.showFederalUswdsPortal.set(false);
   }
 }

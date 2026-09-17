@@ -163,9 +163,14 @@ export class AuthSsoService {
     this.authError.set(null);
 
     try {
+      const entropy = new Uint8Array(8);
+      if (typeof globalThis !== 'undefined' && globalThis.crypto) {
+        globalThis.crypto.getRandomValues(entropy);
+      }
+      const credentialId = 'fido2_key_' + Array.from(entropy, b => b.toString(16).padStart(2, '0')).join('');
       const res = await firstValueFrom(
         this.http.post<{ success: boolean; session: IAuthenticatedUser }>('/api/auth/sso/webauthn', {
-          credentialId: 'fido2_key_' + Math.random().toString(36).substring(2, 10)
+          credentialId
         })
       );
 

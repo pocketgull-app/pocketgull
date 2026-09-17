@@ -2,7 +2,7 @@ import { Injectable, signal, effect, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { SecureStorageService } from './secure-storage.service';
 
-export type AppTheme = 'light' | 'dark' | 'system' | 'spark' | 'papercraft' | 'pocketgull-geararts' | 'hemp' | 'rice' | 'construction' | 'white-marble' | 'black-marble' | 'papyrus' | 'pool' | 'mandala' | 'curie' | 'cern';
+export type AppTheme = 'light' | 'dark' | 'system' | 'spark' | 'papercraft' | 'pocketgull-geararts' | 'hemp' | 'rice' | 'construction' | 'white-marble' | 'black-marble' | 'papyrus' | 'pool' | 'mandala' | 'curie' | 'cern' | 'scotopic' | 'epaper';
 
 @Injectable({
   providedIn: 'root'
@@ -163,7 +163,7 @@ export class ThemeService {
       this.isHighContrastEnabled.set(true);
     }
 
-    const ALL_THEMES: AppTheme[] = ['light', 'dark', 'system', 'spark', 'papercraft', 'hemp', 'rice', 'construction', 'white-marble', 'black-marble', 'papyrus', 'pool', 'mandala', 'curie', 'cern'];
+    const ALL_THEMES: AppTheme[] = ['light', 'dark', 'system', 'spark', 'papercraft', 'pocketgull-geararts', 'hemp', 'rice', 'construction', 'white-marble', 'black-marble', 'papyrus', 'pool', 'mandala', 'curie', 'cern', 'scotopic', 'epaper'];
     const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const urlTheme = urlParams.get('theme') as AppTheme;
     if (urlTheme && ALL_THEMES.includes(urlTheme)) {
@@ -201,13 +201,13 @@ export class ThemeService {
         ? window.matchMedia('(prefers-color-scheme: dark)').matches
         : false;
       this.activeTheme.set(isSystemDark ? 'dark' : 'light');
-    } else if (theme === 'spark' || theme === 'black-marble' || theme === 'papyrus' || theme === 'mandala' || theme === 'curie') {
+    } else if (theme === 'spark' || theme === 'black-marble' || theme === 'papyrus' || theme === 'mandala' || theme === 'curie' || theme === 'scotopic' || theme === 'pocketgull-geararts') {
       this.activeTheme.set('dark');
     } else if (theme === 'pool') {
       const hour = new Date().getHours();
       const isNight = hour < 6 || hour > 18;
       this.activeTheme.set(isNight ? 'dark' : 'light');
-    } else if (theme === 'papercraft' || theme === 'hemp' || theme === 'rice' || theme === 'construction' || theme === 'white-marble') {
+    } else if (theme === 'papercraft' || theme === 'hemp' || theme === 'rice' || theme === 'construction' || theme === 'white-marble' || theme === 'epaper') {
       this.activeTheme.set('light');
     } else {
       this.activeTheme.set(theme === 'dark' ? 'dark' : 'light');
@@ -222,7 +222,8 @@ export class ThemeService {
       'papercraft-mode', 'papercraft-hemp', 'papercraft-rice', 'papercraft-construction',
       'theme-white-marble', 'theme-black-marble', 'theme-papyrus',
       'theme-pool', 'theme-pool-light', 'theme-pool-dark',
-      'theme-mandala', 'theme-curie', 'theme-cern'
+      'theme-mandala', 'theme-curie', 'theme-cern',
+      'theme-scotopic', 'theme-epaper'
     );
     document.documentElement.setAttribute('data-theme', this.currentTheme());
 
@@ -289,6 +290,18 @@ export class ThemeService {
       const metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (metaThemeColor) {
         metaThemeColor.setAttribute('content', '#0f1416');
+      }
+    } else if (theme === 'scotopic') {
+      document.documentElement.classList.add('dark', 'theme-scotopic');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#050000');
+      }
+    } else if (theme === 'epaper') {
+      document.documentElement.classList.add('theme-epaper');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#f5f5f0');
       }
     } else if (resolvedTheme === 'dark') {
       document.documentElement.classList.add('dark');

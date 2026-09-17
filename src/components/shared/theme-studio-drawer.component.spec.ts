@@ -35,7 +35,7 @@ describe('ThemeStudioDrawerComponent', () => {
   it('should initialize theme options and categories', () => {
     expect(component).toBeTruthy();
     expect(component.categories.length).toBe(4);
-    expect(component.themeOptions.length).toBe(14);
+    expect(component.themeOptions.length).toBe(16);
   });
 
   it('should filter themes by category cleanly', () => {

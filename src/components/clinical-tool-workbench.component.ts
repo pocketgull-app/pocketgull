@@ -23,6 +23,8 @@ import { AmbientClinicalScribeComponent } from './ambient-clinical-scribe.compon
 import { PresentationModalComponent } from './presentation-modal.component';
 import { RolePathwayDocumentationHubComponent } from './role-pathway-documentation-hub.component';
 import { HistoricalLuminariesGameComponent } from './historical-luminaries-game.component';
+import { ClinicalPosologyCalculatorComponent } from './clinical-posology-calculator.component';
+import { ActivePivotMonitorCardComponent } from './active-pivot-monitor-card.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -73,7 +75,9 @@ export interface IWorkbenchToolStatus {
     AmbientClinicalScribeComponent,
     PresentationModalComponent,
     RolePathwayDocumentationHubComponent,
-    HistoricalLuminariesGameComponent
+    HistoricalLuminariesGameComponent,
+    ClinicalPosologyCalculatorComponent,
+    ActivePivotMonitorCardComponent
   ],
 
   template: `
@@ -329,6 +333,10 @@ export interface IWorkbenchToolStatus {
         <app-clinical-mandarinate-exam-card />
       } @else if (activeWorkbenchTab() === 'rxguard') {
         <app-rx-guard-lens />
+      } @else if (activeWorkbenchTab() === 'pivot') {
+        <app-active-pivot-monitor-card />
+      } @else if (activeWorkbenchTab() === 'posology') {
+        <app-clinical-posology-calculator />
       } @else if (activeWorkbenchTab() === 'velocity') {
         <app-biomarker-velocity-card />
       } @else if (activeWorkbenchTab() === 'trials') {
@@ -381,10 +389,10 @@ export class ClinicalToolWorkbenchComponent {
   private readonly haptics = inject(BioHapticFeedbackService);
 
   readonly showRoleDemoModal = signal(false);
-  readonly activeWorkbenchTab = signal<'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('commercial');
+  readonly activeWorkbenchTab = signal<'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'pivot' | 'posology' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('commercial');
   readonly intakeDirectiveQuery = signal<string>('');
 
-  readonly workbenchTabs: { id: 'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
+  readonly workbenchTabs: { id: 'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'pivot' | 'posology' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
     { id: 'commercial', label: 'Commercial & Revenue Hub ($299/mo - $3,500)', icon: '💼', activeClass: 'bg-emerald-600 text-white shadow-xs' },
     { id: 'jurisdiction', label: 'Regional Compliance Matrix (US / UK / EU / CA / AU)', icon: '🌐', activeClass: 'bg-indigo-600 text-white shadow-xs' },
     { id: 'saif', label: 'Google SAIF (Secure AI Framework)', icon: '🛡️', activeClass: 'bg-emerald-600 text-white shadow-xs' },
@@ -405,6 +413,8 @@ export class ClinicalToolWorkbenchComponent {
     { id: 'mandiant', label: 'Zero-Trust Security & Compliance', icon: '🛡️', activeClass: 'bg-teal-600 text-white shadow-xs' },
     { id: 'mandarinate', label: 'Keju AI Exam Arena', icon: '📜', activeClass: 'bg-amber-600 text-zinc-950 shadow-xs' },
     { id: 'rxguard', label: 'RxGuard PGx & Botanicals', icon: '🛡️', activeClass: 'bg-purple-600 text-white shadow-xs' },
+    { id: 'pivot', label: 'Pivot & Pulse (Part 11)', icon: '⚡', activeClass: 'bg-teal-600 text-white shadow-xs' },
+    { id: 'posology', label: 'Age Posology & Precision Dosage', icon: '⚖️', activeClass: 'bg-teal-600 text-white shadow-xs' },
     { id: 'velocity', label: 'BioTrajectory Velocity', icon: '📈', activeClass: 'bg-emerald-600 text-white shadow-xs' },
     { id: 'trials', label: 'TrialFinder', icon: '🔬', activeClass: 'bg-blue-600 text-white shadow-xs' },
     { id: 'sms', label: 'SMS Compass Bridge', icon: '💬', activeClass: 'bg-teal-600 text-white shadow-xs' },

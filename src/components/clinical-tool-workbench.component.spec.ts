@@ -59,6 +59,9 @@ describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite',
 
     component.activeWorkbenchTab.set('mandarinate');
     expect(component.activeWorkbenchTab()).toBe('mandarinate');
+
+    component.activeWorkbenchTab.set('posology');
+    expect(component.activeWorkbenchTab()).toBe('posology');
   });
 
   it('should run self-diagnostic suite on all tools', async () => {

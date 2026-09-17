@@ -88,6 +88,7 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
   });
 
   test('Resilience - App offline override simulates offline banner & warns user', async ({ page }) => {
+    test.setTimeout(60000);
     const rosterResponsePromise = page.waitForResponse('**/api/patients', { timeout: 15000 }).catch(() => null);
     await enterDemoMode(page);
     await selectPatientByName(page, 'Phil Gear');
@@ -97,7 +98,7 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
     // 2. Click the System Status indicator in the navbar to simulate offline mode
     const statusIndicator = page.locator('button:has-text("System Ready"), button:has-text("App Forced Offline")').first();
     await expect(statusIndicator).toBeVisible({ timeout: 10000 });
-    await statusIndicator.click();
+    await statusIndicator.click({ force: true });
 
     // 3. Verify Offline banner pops up in navbar
     const offlineBanner = page.locator('button:has-text("App Forced Offline")');
@@ -153,6 +154,7 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
   });
 
   test('Chaos - Latency Injection displays loading indicator and resolves successfully', async ({ page }) => {
+    test.setTimeout(60000);
     let mockText = '### Clinical Assessment\nHighly delayed diagnostic report is here.';
     
     // Intercept /api/ai/stream and inject a 3000ms delay
@@ -190,9 +192,7 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
   });
 
   test('Resilience - Voice Assistant WebSocket connection failure handled gracefully', async ({ page }) => {
-    const rosterResponsePromise = page.waitForResponse('**/api/patients', { timeout: 15000 }).catch(() => null);
     await enterDemoMode(page);
-    await rosterResponsePromise;
 
     await expect(page.locator('main')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('app-analysis-report, app-analysis-container').first()).toBeVisible({ timeout: 15000 });

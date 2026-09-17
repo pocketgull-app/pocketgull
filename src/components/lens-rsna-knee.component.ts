@@ -2,7 +2,9 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientStateService } from '../services/patient-state.service';
+import { ClinicalKneeRecoveryLoopService } from '../services/clinical-knee-recovery-loop.service';
 import { KneeHologramHudComponent } from './knee-hologram-hud.component';
+import { KneeRecoveryRoadmapComponent } from './knee-recovery-roadmap.component';
 
 export interface IKneeAbnormalityTarget {
   key: string;
@@ -47,13 +49,18 @@ export interface IFhirR4DiagnosticReport {
 @Component({
   selector: 'app-lens-rsna-knee',
   standalone: true,
-  imports: [CommonModule, FormsModule, KneeHologramHudComponent],
+  imports: [CommonModule, FormsModule, KneeHologramHudComponent, KneeRecoveryRoadmapComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mb-8 p-6 sm:p-8 bg-zinc-950 text-zinc-100 rounded-3xl border border-zinc-800 shadow-2xl font-sans relative overflow-hidden">
       <!-- 3D Joint Hologram Tri-Plane Slicer HUD -->
       <div class="mb-6">
-        <app-knee-hologram-hud />
+        <app-knee-hologram-hud 
+          [selectedTargetKey]="activeFocusedTargetKey()"
+          [qAngle]="kinematics()?.qAngleDegrees ?? 12.2"
+          [wormsGrade]="kinematics()?.wormsCartilageGrade ?? 2"
+          [jointSpaceNarrowingMm]="kinematics()?.jointSpaceNarrowingMm ?? 1.8"
+        />
       </div>
       <!-- Header Banner -->
       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800 pb-6 mb-6">
@@ -230,16 +237,25 @@ export interface IFhirR4DiagnosticReport {
         @for (target of filteredTargets(); track target.key) {
           <div
             (click)="focusTargetIn3D(target)"
-            [class]="target.isPositive ? 'p-4 bg-zinc-900/90 rounded-2xl border border-red-500/50 shadow-md transition-all hover:border-red-400 hover:bg-zinc-900 cursor-pointer group' : 'p-4 bg-zinc-900/40 rounded-2xl border border-zinc-800/80 transition-all hover:border-zinc-700 hover:bg-zinc-900/70 cursor-pointer group'"
+            [class]="activeFocusedTargetKey() === target.key
+              ? (target.isPositive ? 'p-4 bg-zinc-900 rounded-2xl border-2 border-cyan-400 shadow-lg shadow-cyan-950/50 cursor-pointer group ring-1 ring-cyan-400/50' : 'p-4 bg-zinc-900/80 rounded-2xl border-2 border-cyan-400 shadow-lg shadow-cyan-950/50 cursor-pointer group ring-1 ring-cyan-400/50')
+              : (target.isPositive ? 'p-4 bg-zinc-900/90 rounded-2xl border border-red-500/50 shadow-md transition-all hover:border-red-400 hover:bg-zinc-900 cursor-pointer group' : 'p-4 bg-zinc-900/40 rounded-2xl border border-zinc-800/80 transition-all hover:border-zinc-700 hover:bg-zinc-900/70 cursor-pointer group')"
           >
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">
-                  {{ target.category }} • {{ target.primaryPlane }}
-                </span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">
+                    {{ target.category }} • {{ target.primaryPlane }}
+                  </span>
+                  @if (activeFocusedTargetKey() === target.key) {
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                      3D SLICER
+                    </span>
+                  }
+                </div>
                 <h3 class="text-base font-semibold text-zinc-100 mt-0.5 group-hover:text-cyan-300 transition-colors flex items-center gap-1.5">
                   <span>{{ target.name }}</span>
-                  <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">🎯</span>
+                  <span class="text-xs transition-opacity" [class.opacity-100]="activeFocusedTargetKey() === target.key" [class.opacity-0]="activeFocusedTargetKey() !== target.key">🎯</span>
                 </h3>
               </div>
               <span
@@ -335,13 +351,20 @@ export interface IFhirR4DiagnosticReport {
           </div>
         </div>
       }
+
+      <!-- Longitudinal Knee Biomechanical Rehabilitation HUD & 4-Phase Roadmap -->
+      <div class="mt-8 border-t border-zinc-800/80 pt-6">
+        <app-knee-recovery-roadmap></app-knee-recovery-roadmap>
+      </div>
     </div>
   `
 })
 export class LensRsnaKneeComponent implements OnInit {
   private patientStateService?: PatientStateService;
+  private loopService?: ClinicalKneeRecoveryLoopService;
 
   patientId = signal<string>('P001');
+  activeFocusedTargetKey = signal<string>('acl');
   selectedPlane = signal<string>('All');
   calibrationActive = signal<boolean>(true);
   fhirExported = signal<boolean>(false);
@@ -368,6 +391,11 @@ export class LensRsnaKneeComponent implements OnInit {
       this.patientStateService = inject(PatientStateService, { optional: true }) ?? undefined;
     } catch {
       this.patientStateService = undefined;
+    }
+    try {
+      this.loopService = inject(ClinicalKneeRecoveryLoopService, { optional: true }) ?? undefined;
+    } catch {
+      this.loopService = undefined;
     }
   }
 
@@ -509,6 +537,7 @@ export class LensRsnaKneeComponent implements OnInit {
   }
 
   focusTargetIn3D(target: IKneeAbnormalityTarget): void {
+    this.activeFocusedTargetKey.set(target.key);
     if (!this.patientStateService) return;
     const targetPartId = 'leg_left';
     this.patientStateService.selectPart(targetPartId);
@@ -581,29 +610,64 @@ export class LensRsnaKneeComponent implements OnInit {
     }
   }
 
-  exportFhirBundle(): void {
+  async exportFhirBundle(): Promise<void> {
     const pid = this.patientId() || 'P001';
-    const report: IFhirR4DiagnosticReport = {
-      resourceType: 'DiagnosticReport',
-      id: `rsna-knee-${pid}`,
-      status: 'final',
-      code: {
-        coding: [{
-          system: 'http://loinc.org',
-          code: '36635-1',
-          display: 'Knee MRI Study Diagnostic Report'
-        }]
-      },
-      subject: { reference: `Patient/${pid}` },
-      effectiveDateTime: new Date().toISOString(),
-      conclusion: `RSNA 2026 Multimodal AI: ${this.targets().filter(t => t.isPositive).map(t => t.name).join(', ') || 'No acute abnormalities'}. ${this.kinematics()?.biomechanicalSummary || ''}`,
-      result: this.targets().map(t => ({
-        reference: `Observation/rsna-knee-${t.key}`,
-        display: `${t.name}: ${t.isPositive ? 'POSITIVE' : 'NEGATIVE'} (Probability: ${(t.probability * 100).toFixed(1)}%)`
-      }))
-    };
+    let bundle: any;
+    if (this.loopService) {
+      bundle = this.loopService.generateFhirCarePlanBundle(pid);
+    } else {
+      bundle = {
+        resourceType: 'Bundle',
+        id: `bundle-rsna-knee-${pid}-${Date.now()}`,
+        type: 'collection',
+        timestamp: new Date().toISOString(),
+        meta: {
+          lastUpdated: new Date().toISOString(),
+          profile: ['http://hl7.org/fhir/StructureDefinition/Bundle']
+        },
+        entry: [
+          {
+            fullUrl: `urn:uuid:diagnosticreport-rsna-knee-${pid}`,
+            resource: {
+              resourceType: 'DiagnosticReport',
+              id: `rsna-knee-${pid}`,
+              status: 'final',
+              code: {
+                coding: [{
+                  system: 'http://loinc.org',
+                  code: '36635-1',
+                  display: 'Knee MRI Study Diagnostic Report'
+                }]
+              },
+              subject: { reference: `Patient/${pid}` },
+              effectiveDateTime: new Date().toISOString(),
+              conclusion: `RSNA 2026 Multimodal AI: ${this.targets().filter(t => t.isPositive).map(t => t.name).join(', ') || 'No acute abnormalities'}. ${this.kinematics()?.biomechanicalSummary || ''}`,
+              result: this.targets().map(t => ({
+                reference: `Observation/rsna-knee-${t.key}`,
+                display: `${t.name}: ${t.isPositive ? 'POSITIVE' : 'NEGATIVE'} (Probability: ${(t.probability * 100).toFixed(1)}%)`
+              }))
+            }
+          }
+        ]
+      };
+    }
 
-    console.log('FHIR R4 Bundle Exported:', JSON.stringify(report, null, 2));
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      try {
+        const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/fhir+json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fhir-r4-knee-${pid}-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch {
+        // Defensive headless fallback
+      }
+    }
+
     this.fhirExported.set(true);
   }
 

@@ -40,7 +40,7 @@ import { AlphaGenomeRegulatoryService, IRegulatoryVariant, IPolygenicTraitProfil
         </div>
       </div>
 
-      <!-- Regulatory Variant Master Selector -->
+      <!-- Regulatory Variant Primary Selector -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         @for (v of alphagenome.allVariants(); track v.id) {
           <div

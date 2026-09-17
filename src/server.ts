@@ -51,11 +51,13 @@ import { APP_VERSION } from './version';
 import AgonesSDK from '@google-cloud/agones-sdk';
 import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
 import { renderBusinessSiteHtml } from './server/business-site';
+import { renderArticlesHtml } from './server/articles-site';
 import { renderNantucketCaseStudyHtml } from './server/nantucket-case-study';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
 import { rsnaKneeRouter } from './server/routes/rsna-knee.routes';
+import { cdsHooksRouter } from './server/routes/cds-hooks.routes';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -74,6 +76,8 @@ const studyDocsRoot = resolve(browserDistFolder, 'docs', 'study');
 // No custom rate limiter — use express-rate-limit (recognised by CodeQL)
 
 const ALLOWED_GEMINI_MODELS = new Set([
+  'gemini-3.8-flash',
+  'gemini-3.8-pro',
   'gemini-3.7-flash',
   'gemini-3.6-flash',
   'gemini-3.5-flash',
@@ -268,8 +272,13 @@ app.use((req, res, next) => {
     /(^|\.)pocketgull\.com$/.test(rawHost);
 
   if (isBusinessSite) {
-    if (req.path === '/health' || req.path.startsWith('/api/') || req.path === '/articles' || req.path.startsWith('/articles/')) {
+    if (req.path === '/health' || req.path.startsWith('/api/')) {
       return next();
+    }
+    if (req.path === '/articles' || req.path.startsWith('/articles/')) {
+      const slug = req.path.replace(/^\/articles\/?/, '').split('?')[0];
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderArticlesHtml(slug));
     }
     if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -451,6 +460,13 @@ app.get('/.well-known/agent.json', manifestRateLimiter, (req: express.Request, r
 const discoveryRouter = createDiscoveryRouter();
 app.use(manifestRateLimiter, discoveryRouter);
 
+// Universal SSR Articles Hub & Breakthrough Inventions Handler
+app.get(['/articles', '/articles/:slug'], manifestRateLimiter, (req, res) => {
+  const slug = (req.params as Record<string, string>)['slug'] || '';
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderArticlesHtml(slug));
+});
+
 app.get('/api/config', manifestRateLimiter, (req, res) => {
   const isConfigured = !!(geminiApiKeyCached || process.env['GEMINI_API_KEY'] || process.env['GOOGLE_APPLICATION_CREDENTIALS'] || process.env['K_SERVICE']);
   res.json({
@@ -469,6 +485,7 @@ app.use('/api/support', supportRouter);
 app.use('/api/v1/agent-builder', manifestRateLimiter, vertexAgentRouter);
 app.use('/api/agent-builder', manifestRateLimiter, vertexAgentRouter);
 app.use('/api/ml/rsna-knee', manifestRateLimiter, rsnaKneeRouter);
+app.use('/cds-services', cdsHooksRouter);
 
 app.all('/api/python/*splat', manifestRateLimiter, (req, res) => {
   res.status(200).json({
@@ -942,6 +959,15 @@ app.use((req, res, next) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     return res.send(renderBusinessSiteHtml());
+  }
+
+  if (process.env['SKIP_SSR'] === 'true' || req.query['csr'] === '1') {
+    const indexPath = join(browserDistFolder, 'index.html');
+    if (fs.existsSync(indexPath) && ((req.headers.accept || '').includes('text/html') || !extname(req.path))) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+      return res.status(200).sendFile(indexPath);
+    }
   }
 
   const engine = getAngularApp();

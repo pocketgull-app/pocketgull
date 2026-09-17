@@ -65,14 +65,7 @@ test.describe('Automated Theme & Persona Visual Snapshot Suite', () => {
       
       // Set persona lens query param or local storage
       await page.goto(`/?lens=${lens}`);
-      const pinInput = page.locator('input[placeholder="1234"]');
-      if (await pinInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await pinInput.fill('1234');
-        const demoBtn = page.locator('button', { hasText: 'Demo Mode' });
-        if (await demoBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
-          await demoBtn.click();
-        }
-      }
+      await enterDemoMode(page);
       await page.waitForTimeout(300);
 
       // Verify container is visible

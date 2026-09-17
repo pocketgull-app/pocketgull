@@ -17,7 +17,8 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/PocketGull-Bold.woff2') format('woff2'),
+  src: url('/fonts/PocketGull-Bold-Core.woff2') format('woff2'),
+       url('/fonts/PocketGull-Bold.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Bold.woff2') format('woff2'),
        url('/fonts/PocketGull-Bold.ttf') format('truetype'),
        url('/assets/fonts/PocketGull-Bold.ttf') format('truetype');
@@ -29,7 +30,8 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
+  src: url('/fonts/PocketGull-Fineliner-Core.woff2') format('woff2'),
+       url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Fineliner.woff2') format('woff2'),
        url('/fonts/PocketGull-Fineliner.ttf') format('truetype'),
        url('/assets/fonts/PocketGull-Fineliner.ttf') format('truetype');
@@ -93,6 +95,48 @@
        url('/assets/fonts/PocketGull-VF.woff2') format('woff2'),
        url('/fonts/PocketGull-VF.ttf') format('truetype'),
        url('/assets/fonts/PocketGull-VF.ttf') format('truetype');
+}
+
+/* PocketGull Math (OpenType Math Architecture v3.100) */
+@font-face {
+  font-family: 'PocketGull Math';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Math.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Math.woff2') format('woff2'),
+       url('/brand/fonts/PocketGull-Math.woff2') format('woff2'),
+       url('/fonts/PocketGull-Math.ttf') format('truetype'),
+       url('/assets/fonts/PocketGull-Math.ttf') format('truetype'),
+       url('/brand/fonts/PocketGull-Math.ttf') format('truetype');
+}
+
+/* PocketGull Chem (Clinical Chemistry & Pharmacology) */
+@font-face {
+  font-family: 'PocketGull Chem';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Chem.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Chem.woff2') format('woff2'),
+       url('/brand/fonts/PocketGull-Chem.woff2') format('woff2'),
+       url('/fonts/PocketGull-Chem.ttf') format('truetype'),
+       url('/assets/fonts/PocketGull-Chem.ttf') format('truetype'),
+       url('/brand/fonts/PocketGull-Chem.ttf') format('truetype');
+}
+
+/* PocketGull Genome (Clinical Genomics & CRISPR Monospace) */
+@font-face {
+  font-family: 'PocketGull Genome';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/PocketGull-Genome.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Genome.woff2') format('woff2'),
+       url('/brand/fonts/PocketGull-Genome.woff2') format('woff2'),
+       url('/fonts/PocketGull-Genome.ttf') format('truetype'),
+       url('/assets/fonts/PocketGull-Genome.ttf') format('truetype'),
+       url('/brand/fonts/PocketGull-Genome.ttf') format('truetype');
 }
 
 /* ==========================================================================
@@ -198,6 +242,60 @@
   font-family: 'PocketGull Mono', 'JetBrains Mono', var(--font-pocketgull-sans) !important;
   font-feature-settings: "tnum" 1, "zero" 1;
   font-variant-numeric: tabular-nums;
+}
+
+/* 🧮 PocketGull Math — High-Precision Mathematical & Telemetric Typography Stack */
+.font-pocketgull-math {
+  font-family: 'PocketGull Math', 'PocketGull Mono', 'JetBrains Mono', 'Cambria Math', 'Latin Modern Math', 'STIX Two Math', monospace !important;
+  font-feature-settings: "cv05" 1, "cv08" 1, "ss01" 1, "ss02" 1, "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 🧪 PocketGull Chem — Clinical Chemistry & Pharmacological Stack */
+.font-pocketgull-chem {
+  font-family: 'PocketGull Chem', 'PocketGull', 'Atkinson Hyperlegible Next', sans-serif !important;
+  font-feature-settings: "cv05" 1, "cv08" 1, "tnum" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 🧬 PocketGull Genome — Genomic Sequences & Alignment Stack */
+.font-pocketgull-genome {
+  font-family: 'PocketGull Genome', 'PocketGull Mono', 'JetBrains Mono', monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 📐 Mathematical Display & Formula Containers */
+.clinical-formula,
+.math-display {
+  font-family: 'PocketGull Math', 'PocketGull Mono', 'Cambria Math', monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1, "cv08" 1;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.math-inline {
+  font-family: 'PocketGull Math', 'PocketGull Mono', monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+/* KaTeX Global Font Fallback Cascade */
+.katex,
+.katex-display,
+.katex-html {
+  font-family: 'PocketGull Math', 'KaTeX_Main', 'KaTeX_Math', 'Cambria Math', sans-serif !important;
 }
 
 /* 🖋️ Marker Heavy Bold Emphasis */
@@ -379,4 +477,867 @@
   font-weight: 400;
   color: #94a3b8 !important;
 }
+
+/* 7. Optotypic Clinical Telemetry & Conformal Disambiguation Guard (ISMP / FDA Standards) */
+.font-clinical-telemetry,
+.conformal-interval-badge {
+  font-family: 'PocketGull Math', 'PocketGull Mono', 'JetBrains Mono', monospace !important;
+  font-feature-settings: "cv08" 1, "cv05" 1, "ss02" 1, "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: -0.01em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.clinical-dosage-guard {
+  font-family: 'PocketGull Chem', 'PocketGull Math', monospace !important;
+  font-feature-settings: "cv08" 1, "cv05" 1, "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* ==========================================================================
+   🏛️ 8. Dedicated Paradigm OpenType Modes
+   - Allopathic: Slashed zero (zero, cv08), curved l (cv05), serifed I (ss02), slashed Z (cv11), tabular numbers (tnum), fractions (frac)
+   - Ayurvedic: Sanskrit IAST diacritic mark/mkmk anti-collision, expanded descender safety zone, shirorekha alignment
+   - Traditional Chinese Medicine (TCM): Pinyin tone clearance, bracketed meridian acupoint ligatures (dlig, calt)
+   - Osteopathic: Fryette's principles notation (Type I / Type II), vertebral segment levels (C1-C7, T1-T12, L1-L5, S1-S5)
+   - Homeopathic & Naturopathic: Mother tincture (Ø), decimal (X), centesimal (C), LM potencies, herbal extraction ratios
+   ========================================================================== */
+
+.font-paradigm-allopathic {
+  font-family: 'PocketGull', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-feature-settings: "zero" 1, "cv08" 1, "cv05" 1, "ss02" 1, "cv11" 1, "tnum" 1, "frac" 1 !important;
+  font-variant-numeric: tabular-nums slashed-zero diagonal-fractions !important;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+}
+
+.font-paradigm-ayurvedic {
+  font-family: 'PocketGull', 'Nirmala UI', 'Noto Sans Devanagari', sans-serif !important;
+  font-feature-settings: "mark" 1, "mkmk" 1, "dev2" 1, "blwf" 1, "abvf" 1 !important;
+  line-height: 1.7 !important;
+  letter-spacing: 0.02em;
+  padding-bottom: 0.12em;
+  text-rendering: optimizeLegibility;
+}
+
+.font-paradigm-tcm {
+  font-family: 'PocketGull', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans CJK SC', sans-serif !important;
+  font-feature-settings: "dlig" 1, "calt" 1, "palt" 0 !important;
+  line-height: 1.65 !important;
+  letter-spacing: 0.03em;
+  text-rendering: optimizeLegibility;
+}
+
+.font-paradigm-osteopathic {
+  font-family: 'PocketGull', 'PocketGull Mono', monospace, sans-serif !important;
+  font-feature-settings: "ss02" 1, "tnum" 1, "case" 1 !important;
+  letter-spacing: 0.02em;
+  line-height: 1.55;
+}
+
+.font-paradigm-homeopathic {
+  font-family: 'PocketGull', 'PocketGull Math', serif, sans-serif !important;
+  font-feature-settings: "sinf" 1, "subs" 1, "sups" 1, "onum" 0 !important;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* ==========================================================================
+   🤖 9. "Ollopathic" AI Clinical Stream Telemetry & Provenance (Ollama Gemma 4)
+   - Zero-jitter token streaming with inline-size baseline layout containment
+   - Epistemic confidence visual guidance (subtle amber underline on uncertain tokens)
+   - Model provenance trust chips and inline differential diagnosis likelihood bars
+   ========================================================================== */
+
+.ollopathic-stream {
+  contain: layout inline-size;
+  display: block;
+  font-family: 'PocketGull', 'Inter', sans-serif;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.ollopathic-token {
+  display: inline;
+  transition: opacity 0.15s ease-out;
+}
+
+.ollopathic-token.token-arriving {
+  opacity: 0.85;
+}
+
+.ollopathic-token.token-low-confidence,
+.ollopathic-token[data-confidence="low"] {
+  text-decoration: underline dotted #f59e0b;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+.ollopathic-token.token-critique-flag,
+.ollopathic-token[data-flag="review"] {
+  background: rgba(245, 158, 11, 0.12);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.ollopathic-badge,
+.ollopathic-provenance-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-family: 'PocketGull Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  background: rgba(14, 165, 233, 0.1);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  vertical-align: middle;
+}
+
+.ollopathic-badge.edge-verified {
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.ollopathic-badge.unverified-draft {
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+/* Inline Diagnostic Likelihood Probability Meter */
+.ollopathic-prob-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: 'PocketGull Mono', monospace;
+  font-size: 0.75rem;
+  font-feature-settings: "tnum" 1;
+}
+
+.ollopathic-prob-track {
+  display: inline-block;
+  width: 50px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.ollopathic-prob-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #06b6d4, #10b981);
+  border-radius: 3px;
+}
+
+/* ==========================================================================
+   ⚗️ 10. Auto-Subscripting Chemical Typography & Ionic Valences (PocketGull Chem)
+   - Publication-grade molecular stoichiometry without manual <sub> or <sup> tags
+   - OpenType scientific inferiors (sinf) and subscripts (subs)
+   - Native parsing of elemental stoichiometry (C21H20O6, Ca2+, SO4 2-)
+   ========================================================================== */
+
+.font-pocketgull-chem-formula,
+.chem-stoichiometry {
+  font-family: 'PocketGull Chem', 'PocketGull Math', 'PocketGull Mono', monospace !important;
+  font-feature-settings: "sinf" 1, "subs" 1, "calt" 1, "tnum" 1 !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  word-spacing: 0.05em;
+}
+
+.chem-ion-charge,
+.chem-stoichiometry sup {
+  font-feature-settings: "sups" 1;
+  font-size: 0.75em;
+  vertical-align: 0.35em;
+  line-height: 0;
+}
+
+.chem-subscript,
+.chem-stoichiometry sub {
+  font-feature-settings: "sinf" 1, "subs" 1;
+  font-size: 0.75em;
+  vertical-align: -0.25em;
+  line-height: 0;
+}
+
+/* ==========================================================================
+   ☯️ 11. Contextual Acupoint Encircled Badges ([LV-3], [ST-36], [SP-6])
+   - OpenType discretionary ligatures (dlig) and pill badge styling
+   - Preserves uniform line-height rhythm without vertical baseline jumping
+   ========================================================================== */
+
+.acupoint-badge,
+[class*="acupoint-"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1em 0.45em;
+  margin: 0 0.15em;
+  border-radius: 9999px;
+  font-family: 'PocketGull Bold', 'PocketGull Mono', sans-serif;
+  font-size: 0.82em;
+  font-weight: 700;
+  line-height: 1.1;
+  vertical-align: baseline;
+  background: rgba(20, 184, 166, 0.12);
+  color: #2dd4bf;
+  border: 1px solid rgba(20, 184, 166, 0.35);
+  box-shadow: 0 0 6px rgba(20, 184, 166, 0.15);
+  font-feature-settings: "tnum" 1, "zero" 1;
+  white-space: nowrap;
+}
+
+/* Meridian Specific Hue Accents */
+.acupoint-badge[data-meridian="LV"], .acupoint-badge[data-meridian="LR"], .acupoint-badge[data-meridian="GB"] {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.acupoint-badge[data-meridian="HT"], .acupoint-badge[data-meridian="SI"], .acupoint-badge[data-meridian="PC"], .acupoint-badge[data-meridian="TE"] {
+  background: rgba(244, 63, 94, 0.12);
+  color: #fb7185;
+  border-color: rgba(244, 63, 94, 0.35);
+}
+
+.acupoint-badge[data-meridian="SP"], .acupoint-badge[data-meridian="ST"] {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.acupoint-badge[data-meridian="LU"], .acupoint-badge[data-meridian="LI"] {
+  background: rgba(226, 232, 240, 0.12);
+  color: #f1f5f9;
+  border-color: rgba(226, 232, 240, 0.35);
+}
+
+.acupoint-badge[data-meridian="KI"], .acupoint-badge[data-meridian="BL"] {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.acupoint-badge[data-meridian="DU"], .acupoint-badge[data-meridian="GV"], .acupoint-badge[data-meridian="REN"], .acupoint-badge[data-meridian="CV"] {
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+/* ==========================================================================
+   🕉️ 12. Sanskrit IAST Diacritic Anti-Collision Geometry
+   - Mark-to-Base (mark) and Mark-to-Mark (mkmk) OpenType lookups
+   - Expanded descender clearance preventing stacked under-dot clipping (ṛ, ḷ, ṃ, ḥ, ṭ, ḍ, ṇ, ṣ)
+   ========================================================================== */
+
+.iast-diacritics,
+.ayurvedic-posology {
+  font-family: 'PocketGull', 'Nirmala UI', sans-serif;
+  font-feature-settings: "mark" 1, "mkmk" 1;
+  line-height: 1.75 !important;
+  letter-spacing: 0.02em;
+  padding-bottom: 0.15em;
+  overflow: visible !important;
+}
+
+/* ==========================================================================
+   🫁 13. Bio-Rhythmic Parasympathetic "Font Breathing" (0.1 Hz / 6 Breaths/Min)
+   - Calibrated to the Rachel Nabors Ethical Motion Standard
+   - 10-second continuous respiratory cycle: 4s gentle inhalation expansion, 6s vagal exhalation contraction
+   - Dynamic variable font axis modulation ('wght' and 'opsz')
+   - Full accessibility override via prefers-reduced-motion
+   ========================================================================== */
+
+.font-parasympathetic-breathing {
+  font-family: 'PocketGull VF', 'PocketGull', sans-serif !important;
+  animation: parasympatheticPacing 10s ease-in-out infinite;
+  will-change: font-variation-settings;
+}
+
+@keyframes parasympatheticPacing {
+  0%, 100% {
+    font-variation-settings: 'wght' 400, 'opsz' 14;
+    letter-spacing: -0.005em;
+  }
+  40% {
+    /* Gentle 4s diaphragmatic inhale expansion */
+    font-variation-settings: 'wght' 440, 'opsz' 15.5;
+    letter-spacing: 0.015em;
+  }
+}
+
+/* Accessibility Standard: Respect vestibular and motion sensitivities */
+@media (prefers-reduced-motion: reduce) {
+  .font-parasympathetic-breathing {
+    animation: none !important;
+    font-variation-settings: 'wght' 400, 'opsz' 14 !important;
+  }
+}
+
+/* ==========================================================================
+   👶 14. Age-Stratified Posology Tiers & Mathematical Equations
+   - Neonate / Infant: Fried's Rule, microdrip (60 gtt/mL), mandatory leading zero (0.05 mL)
+   - Pediatric / Child: Young's Rule, Clark's Rule, Mosteller BSA, oral syringe volumes
+   - Pediatric Fluid: Holliday-Segar 4-2-1 Maintenance Rule
+   - Adult: Standard therapeutic ranges
+   - Geriatric / Elder: Cockcroft-Gault CrCl, Beers Criteria alerts, Start Low Go Slow
+   ========================================================================== */
+
+/* Neonate / Infant Dosing (NICU & 0-12 months) */
+.posology-neonate,
+.posology-baby {
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-left: 4px solid #f43f5e;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-family: 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+.posology-neonate-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: #f43f5e;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Pediatric / Child Dosing (1-12 years) */
+.posology-pediatric,
+.posology-child {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-left: 4px solid #f59e0b;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-family: 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+.posology-pediatric-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: #f59e0b;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Adult Dosing Standard */
+.posology-adult {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-left: 4px solid #10b981;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-family: 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+.posology-adult-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Geriatric / Elder Dosing (65+ years) */
+.posology-geriatric,
+.posology-elder {
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-left: 4px solid #a855f7;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-family: 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+.posology-geriatric-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: #a855f7;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Beers Criteria High-Risk Medication Alert */
+.beers-criteria-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  font-family: 'PocketGull Bold', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Holliday-Segar 4-2-1 Maintenance Fluid Telemetry */
+.pediatric-fluid-421 {
+  display: inline-grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 0.5rem;
+  align-items: center;
+  font-family: 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1;
+  font-size: 0.8rem;
+  background: rgba(14, 165, 233, 0.08);
+  padding: 0.35rem 0.65rem;
+  border-radius: 4px;
+  border: 1px solid rgba(14, 165, 233, 0.25);
+}
+
+/* Clinical Posology Equations Display Box */
+.posology-formula {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  font-family: 'PocketGull Math', 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  font-size: 0.82rem;
+}
+
+/* ==========================================================================
+   🏥 15. Allopathic Acute-Care Telemetry & Lab Fishbones
+   - BMP (Chem-7) and CBC fishbone notation via precision monospace / box-drawing
+   - Coagulation panel fishbone (PT / INR / PTT)
+   - Arterial Blood Gas (ABG) and Blood Pressure with MAP
+   - ISMP "Do Not Use" Dangerous Abbreviation Visual Flags
+   ========================================================================== */
+
+.bmp-fishbone,
+.cbc-fishbone,
+.coag-fishbone {
+  font-family: 'PocketGull Mono', monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  line-height: 1.25;
+  letter-spacing: 0;
+  display: inline-block;
+  padding: 0.4rem 0.6rem;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  user-select: all;
+  white-space: pre;
+}
+
+/* Arterial Blood Gas (ABG) Telemetry */
+.abg-telemetry {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1;
+  font-size: 0.85rem;
+}
+
+.abg-telemetry .abg-sep {
+  opacity: 0.4;
+  margin: 0 0.1rem;
+}
+
+/* Blood Pressure with Mean Arterial Pressure (MAP) */
+.bp-telemetry {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  font-size: 0.9rem;
+}
+
+.bp-telemetry .bp-map {
+  font-size: 0.75em;
+  opacity: 0.75;
+  margin-left: 0.3rem;
+  color: #2dd4bf;
+}
+
+/* SpO2 Oxygen Flow Guide */
+.spo2-telemetry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1;
+  font-size: 0.85rem;
+}
+
+.spo2-telemetry .spo2-target {
+  color: #34d399;
+  font-weight: 700;
+}
+
+/* ISMP "Do Not Use" Dangerous Abbreviation Error Flags */
+.ismp-error-abbrev {
+  text-decoration: line-through wavy #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  padding: 0 0.25rem;
+  border-radius: 2px;
+  font-weight: 700;
+  position: relative;
+}
+
+.ismp-error-trailing-zero {
+  text-decoration: line-through solid #ef4444;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.12);
+  padding: 0 0.2em;
+}
+
+.ismp-error-naked-decimal {
+  border-bottom: 2px dashed #ef4444;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
+  padding: 0 0.2em;
+}
+
+.safe-decimal-guard {
+  font-family: 'PocketGull Mono', monospace;
+  font-feature-settings: "zero" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* ==========================================================================
+   ⚖️ 16. Metric, Volumetric & Multi-Paradigm Unit Standards
+   - Strict ISMP Metric (mcg, uppercase mL, no ambiguous abbreviations)
+   - Apothecaries' Measures (minims ♏, fluid drams fl ʒ, fluid ounces fl ℥, gtt drops)
+   - Ayurvedic Sharngadhara Units (Ratti, Masha, Tola, Pala, Bindu, Kudava)
+   - TCM Pharmacopoeia Units (Liang 两, Qian 钱, Fen 分, Sheng 升, Ge 合)
+   - Interactive Dosage Badges and Converter Modules
+   ========================================================================== */
+
+.unit-metric-safe {
+  font-family: 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+.unit-metric-safe .unit-token {
+  font-family: 'PocketGull Bold', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-left: 0.2ch;
+}
+
+/* Apothecary & Household Volumetric Units */
+.unit-volumetric-apothecary {
+  font-family: 'PocketGull Math', 'PocketGull Mono', monospace;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Ayurvedic Classical Measure Tokens */
+.unit-ayurvedic-posology {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  font-family: 'PocketGull Mono', monospace;
+  font-size: 0.78rem;
+}
+
+/* TCM Classical Measure Tokens */
+.unit-tcm-posology {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(20, 184, 166, 0.1);
+  color: #2dd4bf;
+  border: 1px solid rgba(20, 184, 166, 0.25);
+  font-family: 'PocketGull Mono', monospace;
+  font-size: 0.78rem;
+}
+
+/* Universal Dosage Badge Pill */
+.dosage-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  font-family: 'PocketGull Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* Side-by-Side Dosage & Volumetric Converter */
+.dosage-converter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: 'PocketGull Mono', monospace;
+  font-size: 0.82rem;
+}
+
+.dosage-converter .conv-arrow {
+  opacity: 0.5;
+  font-size: 0.8em;
+}
+
+.dosage-converter .conv-equiv {
+  color: #2dd4bf;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   🧬 17. Variable Font Health & Acuity Adaptations (PocketGull VF)
+   - Grade (GRAD) zero-reflow elder presbyopia and distant ICU contrast boost
+   - Subscript optical size stem-matching (opsz)
+   - Active IV infusion rhythm pulse
+   ========================================================================== */
+
+.view-elder-acuity {
+  font-variation-settings: 'GRAD' 80;
+}
+
+.infusion-active-telemetry {
+  animation: dripPulse 1s ease-in-out infinite;
+}
+
+@keyframes dripPulse {
+  0%, 100% { font-variation-settings: 'wght' 450; }
+  50%      { font-variation-settings: 'wght' 500; }
+}
+
+/* ==========================================================================
+   🚨 18. CLINICAL ALIGNMENT & IMPROPER DOSAGE "SPELLCHECK" ENGINE
+   - Visual spellchecking for improper dosages, overdoses, and misaligned metrics
+   - Wavy red/amber underlines (like word processor spellcheck)
+   - Hover and focus tooltips with explicit clinical correction guidance
+   - Attribute-driven auto-activation: [data-clinical-error], [data-dosage-status], [data-misaligned]
+   ========================================================================== */
+
+/* Universal Clinical Spellcheck Error Squiggle (Red Wavy) */
+.clinical-spellcheck-error,
+[data-clinical-error],
+.improper-dosage-error,
+[data-dosage-status="overdose"],
+[data-dosage-status="exceeds-max"],
+[data-dosage-status="fatal-risk"] {
+  text-decoration: underline wavy #ef4444 !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 4px !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #fca5a5 !important;
+  border-radius: 2px;
+  padding: 0 0.15em;
+  position: relative;
+  cursor: help;
+  display: inline-block;
+}
+
+/* Tooltip Spellcheck Correction Card on Hover/Focus */
+[data-clinical-error]::after,
+[data-dosage-status="overdose"]::after,
+[data-dosage-status="exceeds-max"]::after,
+.improper-dosage-error::after {
+  content: attr(data-error-hint);
+  position: absolute;
+  bottom: 135%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: #f87171;
+  border: 1px solid #ef4444;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(239, 68, 68, 0.3);
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-family: 'PocketGull', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+  z-index: 1000;
+}
+
+[data-clinical-error]::before,
+[data-dosage-status="overdose"]::before,
+[data-dosage-status="exceeds-max"]::before,
+.improper-dosage-error::before {
+  content: '';
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px 5px 0 5px;
+  border-style: solid;
+  border-color: #ef4444 transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease-out;
+  z-index: 1001;
+}
+
+[data-clinical-error]:hover::after,
+[data-clinical-error]:hover::before,
+[data-dosage-status="overdose"]:hover::after,
+[data-dosage-status="overdose"]:hover::before,
+[data-dosage-status="exceeds-max"]:hover::after,
+[data-dosage-status="exceeds-max"]:hover::before,
+.improper-dosage-error:hover::after,
+.improper-dosage-error:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* Amber Subtherapeutic or Caution Dosage Squiggle */
+.subtherapeutic-warning,
+[data-dosage-status="subtherapeutic"],
+[data-dosage-status="caution"],
+.posology-misaligned,
+[data-misaligned] {
+  text-decoration: underline wavy #f59e0b !important;
+  text-decoration-thickness: 1.8px !important;
+  text-underline-offset: 4px !important;
+  background: rgba(245, 158, 11, 0.09) !important;
+  color: #fcd34d !important;
+  position: relative;
+  cursor: help;
+  display: inline-block;
+  border-radius: 2px;
+  padding: 0 0.15em;
+}
+
+/* Pulsing Red Critical Error Flag for Imminent Overdose / Fatal Decimal */
+.improper-dosage-fatal,
+[data-dosage-status="fatal-risk"] {
+  animation: clinicalErrorPulse 1.5s ease-in-out infinite;
+  border: 1px solid rgba(239, 68, 68, 0.8) !important;
+}
+
+@keyframes clinicalErrorPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+  }
+}
+
+/* Specific Dosage Disambiguation & Decimal Alignment Spellcheckers */
+
+/* 1. Naked Decimal Error (.5 mg -> Must be 0.5 mg) */
+.naked-decimal-error,
+[data-error="naked-decimal"] {
+  text-decoration: underline wavy #ef4444 !important;
+  text-decoration-thickness: 2px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  font-family: 'PocketGull Mono', monospace;
+  position: relative;
+}
+
+/* 2. Trailing Zero Error (5.0 mg -> Must be 5 mg) */
+.trailing-zero-error,
+[data-error="trailing-zero"] {
+  text-decoration: line-through solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  font-family: 'PocketGull Mono', monospace;
+  position: relative;
+}
+
+/* 3. Prohibited Abbreviation Spellcheck (U -> units, QD -> daily) */
+.prohibited-abbrev-error,
+[data-error="prohibited-abbrev"] {
+  text-decoration: line-through wavy #ef4444 !important;
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  position: relative;
+}
+
+/* 4. Age-Dosage Posology Mismatch (Adult dose in Infant/Pediatric field) */
+.posology-age-mismatch,
+[data-error="age-mismatch"] {
+  border: 1px dashed #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* 5. Renal CrCl Adjustment Error Flag */
+.renal-adjustment-required,
+[data-error="renal-adjustment"] {
+  border: 1px dashed #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* 6. Fishbone Diagram Misalignment Error Flag */
+.fishbone-misaligned,
+[data-error="fishbone-misaligned"] {
+  border: 1px dashed #ef4444 !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+
 
