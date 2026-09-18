@@ -402,7 +402,7 @@ export interface IPosology3ActTrajectory {
                       class="px-2.5 py-1 bg-teal-800 hover:bg-teal-700 text-white rounded-lg text-[10px] font-mono font-bold transition cursor-pointer min-h-[32px] flex items-center gap-1">
                       <span>💵</span> View Superbill
                     </button>
-                    <button (click)="linkedRpmToast.set(null)" class="text-teal-400 hover:text-white text-xs px-1">✕</button>
+                    <button type="button" (click)="dismissRpmToast()" class="text-teal-400 hover:text-white text-xs px-1 cursor-pointer">✕</button>
                   </div>
                 </div>
               }
