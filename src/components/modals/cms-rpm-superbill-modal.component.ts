@@ -334,6 +334,12 @@ import { CmsRpmSuperbillService, ICmsRpmSuperbill } from '../../services/cms-rpm
           <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
             <button 
               type="button"
+              (click)="toggleAvsHandout()" 
+              class="px-3.5 py-2.5 rounded-xl bg-amber-950/80 hover:bg-amber-900/80 text-amber-200 text-xs font-bold transition flex items-center gap-2 cursor-pointer border border-amber-600/50 min-h-[44px]">
+              <span>🧊</span> Patient Refrigerator AVS
+            </button>
+            <button 
+              type="button"
               (click)="copyEhrNote()" 
               class="px-3.5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold transition flex items-center gap-2 cursor-pointer border border-zinc-700 min-h-[44px]">
               <span>📋</span> Copy EHR Note
@@ -353,6 +359,187 @@ import { CmsRpmSuperbillService, ICmsRpmSuperbill } from '../../services/cms-rpm
           </div>
         </div>
 
+        <!-- Patient Refrigerator AVS Modal Overlay -->
+        @if (showAvsHandout()) {
+          <div class="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto no-print" (click)="closeAvsHandout()">
+            <div class="relative max-w-3xl w-full bg-white text-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-300 animate-in fade-in zoom-in-95 duration-200" (click)="$event.stopPropagation()">
+              
+              <!-- Modal Top Bar -->
+              <div class="bg-slate-900 text-white px-4 py-3 sm:px-6 flex items-center justify-between gap-2 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">🧊</span>
+                  <div>
+                    <div class="font-bold text-sm text-white">Patient After-Visit Summary (AVS) Refrigerator Handout</div>
+                    <div class="text-[10px] text-slate-400 font-mono">16-Day Vital Transmission Tracker &bull; Active Tapers &bull; Refrigerator Guide</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button 
+                    type="button"
+                    (click)="printAvsHandout()" 
+                    class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs font-mono transition flex items-center gap-1.5 cursor-pointer shadow-md">
+                    <span>🖨️</span> Print Handout
+                  </button>
+                  <button 
+                    type="button"
+                    (click)="closeAvsHandout()" 
+                    class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold cursor-pointer transition"
+                    aria-label="Close AVS Preview">
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              <!-- Printable AVS Content -->
+              <div class="p-6 sm:p-8 overflow-y-auto max-h-[80vh] space-y-4 text-slate-900">
+                <!-- Header -->
+                <div class="border-b-2 border-slate-900 pb-3 mb-2 flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-teal-800 text-white flex items-center justify-center font-bold text-base shadow-sm">
+                      🪶
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-2xl font-extrabold tracking-tight text-teal-900 font-pocketgull-brand">PocketGull</span>
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-teal-800 bg-teal-100/90 px-2 py-0.5 rounded border border-teal-300">Health</span>
+                      </div>
+                      <div class="text-[10px] text-slate-500 font-mono">Medicare Remote Physiologic Monitoring (RPM) Care Plan</div>
+                    </div>
+                  </div>
+                  <div class="text-right text-xs font-mono text-slate-700 space-y-0.5">
+                    <div><strong>Patient:</strong> {{ superbill().patientName }}</div>
+                    <div><strong>Billing Period:</strong> {{ superbill().billingPeriodStart }} to {{ superbill().billingPeriodEnd }}</div>
+                    <div class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300">
+                      <span>✓</span> 42 CFR § 410.78 Statutory Attestation
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Refrigerator Notice -->
+                <div class="p-3 rounded-xl border border-teal-200 bg-teal-50/60 flex items-start gap-2.5">
+                  <span class="text-base">📌</span>
+                  <div class="text-xs">
+                    <div class="font-bold text-teal-950 font-mono text-[11px] uppercase tracking-wider">
+                      Refrigerator Companion Guide &bull; Hang with a Magnet
+                    </div>
+                    <p class="text-slate-800 mt-0.5 leading-relaxed font-sans">
+                      Take your blood pressure or vital signs each morning. Check off each box below as you transmit readings. Reaching <strong>16 days</strong> keeps your care team actively monitoring your trends all month!
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Active Polypharmacy Deprescribing Tapers -->
+                @if (superbill().deprescribingLogs && superbill().deprescribingLogs!.length > 0) {
+                  <div class="p-3 rounded-xl border-2 border-amber-400 bg-amber-50/80 space-y-2">
+                    <div class="flex items-center justify-between border-b border-amber-300 pb-1.5">
+                      <span class="font-mono font-bold text-xs uppercase tracking-wide text-amber-950 flex items-center gap-1.5">
+                        <span>💊</span> Active Safe Step-Down Taper Schedule (Doctor Guided)
+                      </span>
+                      <span class="text-[10px] font-mono font-bold text-amber-800 bg-amber-200/80 px-2 py-0.5 rounded">
+                        {{ superbill().deprescribingLogs!.length }} Active Protocol(s)
+                      </span>
+                    </div>
+                    <div class="space-y-1.5">
+                      @for (taper of superbill().deprescribingLogs; track taper.id) {
+                        <div class="p-2.5 rounded-lg bg-white border border-amber-300/80 shadow-xs space-y-1">
+                          <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs font-mono font-bold text-slate-900 gap-1">
+                            <span class="text-amber-950">{{ taper.medication }}</span>
+                            <span class="text-[10.5px] text-teal-800 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                              {{ taper.originalDose }} ➔ {{ taper.targetDose }}
+                            </span>
+                          </div>
+                          <p class="text-[11px] text-slate-700 font-sans leading-relaxed">
+                            <strong>Why We Are Tapering:</strong> {{ taper.clinicalRationale }}
+                          </p>
+                          @if (taper.monitoringParameters && taper.monitoringParameters.length > 0) {
+                            <div class="text-[10px] font-mono text-slate-600">
+                              <strong>What to Watch For:</strong> {{ taper.monitoringParameters.join(', ') }}
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                    <div class="text-[10px] text-amber-900/90 font-serif italic">
+                      🛡️ Never stop a prescription suddenly without your doctor. We are stepping down your dose gradually so your vitals stay safe.
+                    </div>
+                  </div>
+                }
+
+                <!-- 30-Day Transmission Checkoff Calendar -->
+                <div class="p-3.5 rounded-xl border-2 border-teal-800 bg-teal-50/40 space-y-2.5">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-teal-200 pb-2">
+                    <div>
+                      <span class="uppercase tracking-wide text-teal-950 font-mono font-bold text-xs flex items-center gap-1.5">
+                        <span>📶</span> 30-Day Vital Transmission Checkoff Calendar (CPT 99454)
+                      </span>
+                      <p class="text-[10.5px] text-slate-600 font-sans mt-0.5">
+                        Check off each box when you send a reading. Click any box on-screen to toggle.
+                      </p>
+                    </div>
+                    <div class="px-2.5 py-1 rounded-lg font-mono text-xs font-bold border"
+                      [class.bg-emerald-100]="superbill().isCompliant16DayRule"
+                      [class.text-emerald-900]="superbill().isCompliant16DayRule"
+                      [class.border-emerald-300]="superbill().isCompliant16DayRule"
+                      [class.bg-amber-100]="!superbill().isCompliant16DayRule"
+                      [class.text-amber-900]="!superbill().isCompliant16DayRule"
+                      [class.border-amber-300]="!superbill().isCompliant16DayRule">
+                      <span>{{ superbill().isCompliant16DayRule ? '⭐' : '🎯' }}</span>
+                      <span>{{ superbill().qualifyingDaysCount }} / 16 Days Met</span>
+                    </div>
+                  </div>
+
+                  <!-- 30-Day Checkoff Matrix -->
+                  <div class="grid grid-cols-5 sm:grid-cols-6 gap-1.5 font-mono text-[10px]">
+                    @for (day of superbill().complianceCalendar; track day.date; let i = $index) {
+                      <div 
+                        (click)="toggleDay(day.date)"
+                        class="p-1.5 rounded-lg border transition text-center select-none cursor-pointer flex flex-col justify-between min-h-[50px]"
+                        [class.bg-emerald-50]="day.hasReading"
+                        [class.border-emerald-400]="day.hasReading"
+                        [class.text-emerald-950]="day.hasReading"
+                        [class.bg-white]="!day.hasReading"
+                        [class.border-slate-300]="!day.hasReading"
+                        [class.text-slate-600]="!day.hasReading"
+                        title="Click to toggle reading transmission">
+                        <div class="flex items-center justify-between text-[9px]">
+                          <span class="font-bold">D{{ i + 1 }}</span>
+                          <span class="text-[8px] opacity-75">{{ day.date | slice:5:10 }}</span>
+                        </div>
+                        <div class="my-0.5 text-xs font-bold">
+                          @if (day.hasReading) {
+                            <span class="text-emerald-600">✓</span>
+                          } @else {
+                            <span class="text-slate-300">○</span>
+                          }
+                        </div>
+                        <div class="text-[8px] truncate leading-tight font-sans">
+                          @if (day.hasReading) {
+                            <span>{{ day.restingHeartRateBpm ? day.restingHeartRateBpm + ' bpm' : 'Sent' }}</span>
+                          } @else {
+                            <span class="text-slate-400">Record</span>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Emergency Contact Bar -->
+                <div class="pt-3 border-t-2 border-slate-900 flex flex-wrap items-center justify-between text-xs font-mono gap-2">
+                  <div>
+                    <strong>Clinic Daytime Line:</strong> (480) 555-0199 &bull; <strong>24/7 Nurse Triage / Crisis:</strong> 988 / (480) 555-0100
+                  </div>
+                  <div class="text-[10px] text-slate-500 font-pocketgull-brand">
+                    PocketGull Health &bull; HIPAA Safe Harbor &bull; Medicare RPM CPT 99453/99454/99457
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        }
+
       </div>
     </div>
   `
@@ -360,6 +547,7 @@ import { CmsRpmSuperbillService, ICmsRpmSuperbill } from '../../services/cms-rpm
 export class CmsRpmSuperbillModalComponent {
   readonly superbillService: CmsRpmSuperbillService;
   readonly copiedNotice = signal(false);
+  readonly showAvsHandout = signal(false);
 
   constructor(superbillService?: CmsRpmSuperbillService) {
     if (superbillService) {
@@ -393,6 +581,20 @@ export class CmsRpmSuperbillModalComponent {
     this.superbillService.removeDeprescribingLog(logId);
   }
 
+  toggleAvsHandout(): void {
+    this.showAvsHandout.update(v => !v);
+  }
+
+  closeAvsHandout(): void {
+    this.showAvsHandout.set(false);
+  }
+
+  printAvsHandout(): void {
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
+  }
+
   copyEhrNote(): void {
     const note = this.superbillService.generateEhrClinicalNote(this.superbill());
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -420,4 +622,5 @@ export class CmsRpmSuperbillModalComponent {
     downloadAnchor.remove();
   }
 }
+
 

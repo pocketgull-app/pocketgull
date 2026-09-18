@@ -84,5 +84,24 @@ describe('CmsRpmSuperbillModalComponent', () => {
     expect(component.superbill().deprescribingLogs?.length).toBe(0);
     expect(service.clinicalMinutesSpent()).toBe(0);
   });
+
+  it('should toggle and close Patient Refrigerator AVS modal overlay and trigger print', () => {
+    expect(component.showAvsHandout()).toBe(false);
+
+    component.toggleAvsHandout();
+    expect(component.showAvsHandout()).toBe(true);
+
+    const originalPrint = window.print;
+    let printed = false;
+    window.print = () => { printed = true; };
+
+    component.printAvsHandout();
+    expect(printed).toBe(true);
+
+    window.print = originalPrint;
+
+    component.closeAvsHandout();
+    expect(component.showAvsHandout()).toBe(false);
+  });
 });
 

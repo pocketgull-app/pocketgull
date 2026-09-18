@@ -1503,6 +1503,44 @@ export interface IPosology3ActTrajectory {
                   <p class="text-slate-900 leading-relaxed font-sans mb-3">
                     🥄 <strong>Teaspoon Guide:</strong> {{ traj.act2WhereYouStandToday.plainLanguageAdvice }}
                   </p>
+
+                  <!-- Active Polypharmacy Deprescribing Tapers (If Any) -->
+                  @if (activeDeprescribingTapers().length > 0) {
+                    <div class="mb-3 p-3 rounded-xl border border-amber-400 bg-amber-50/80 text-slate-900 space-y-2">
+                      <div class="flex items-center justify-between border-b border-amber-300 pb-1.5">
+                        <span class="font-mono font-bold text-[11px] uppercase tracking-wide text-amber-950 flex items-center gap-1.5">
+                          <span>💊</span> Safe Step-Down Taper Schedule (Doctor Supervised)
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded">
+                          {{ activeDeprescribingTapers().length }} Active {{ activeDeprescribingTapers().length === 1 ? 'Protocol' : 'Protocols' }}
+                        </span>
+                      </div>
+                      <div class="space-y-1.5">
+                        @for (taper of activeDeprescribingTapers(); track taper.id) {
+                          <div class="p-2 rounded-lg bg-white border border-amber-300/80 shadow-xs space-y-1">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs font-mono font-bold text-slate-900 gap-1">
+                              <span class="text-amber-950">{{ taper.medication }}</span>
+                              <span class="text-[10px] text-teal-800 bg-teal-50 px-2 py-0.5 rounded border border-teal-200 shrink-0">
+                                {{ taper.originalDose }} ➔ {{ taper.targetDose }}
+                              </span>
+                            </div>
+                            <p class="text-[11px] text-slate-700 font-sans leading-relaxed">
+                              <strong>Why We Are Tapering:</strong> {{ taper.clinicalRationale }}
+                            </p>
+                            @if (taper.monitoringParameters && taper.monitoringParameters.length > 0) {
+                              <div class="text-[10px] font-mono text-slate-600">
+                                <strong>What to Watch For:</strong> {{ taper.monitoringParameters.join(', ') }}
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                      <div class="text-[10px] text-amber-900/90 font-serif italic flex items-center gap-1">
+                        <span>🛡️</span> Never stop a medication suddenly on your own. We are stepping down your dose gradually so your body stays safe and balanced.
+                      </div>
+                    </div>
+                  }
+
                   <div class="p-2.5 rounded-lg bg-white border border-teal-200">
                     <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-800 block mb-1">Daily Routine Checklist (Check with pen):</span>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] font-mono text-slate-800">
@@ -1521,6 +1559,89 @@ export interface IPosology3ActTrajectory {
                     </div>
                   </div>
                 </div>
+
+                <!-- 30-Day Medicare RPM Vital Transmission Checkoff Calendar -->
+                <div class="p-3.5 rounded-xl border-2 border-teal-800 bg-teal-50/40 space-y-2.5">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-teal-200 pb-2">
+                    <div>
+                      <span class="uppercase tracking-wide text-teal-950 font-mono font-bold text-xs flex items-center gap-1.5">
+                        <span>📶</span> 30-Day Vital Transmission Checkoff Calendar (CPT 99454)
+                      </span>
+                      <p class="text-[10.5px] text-slate-600 font-sans mt-0.5">
+                        Take your blood pressure or vital signs every morning. Check off each box when you send a reading.
+                      </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="px-2.5 py-1 rounded-lg font-mono text-xs font-bold border"
+                        [class.bg-emerald-100]="isAvsCompliant()"
+                        [class.text-emerald-900]="isAvsCompliant()"
+                        [class.border-emerald-300]="isAvsCompliant()"
+                        [class.bg-amber-100]="!isAvsCompliant()"
+                        [class.text-amber-900]="!isAvsCompliant()"
+                        [class.border-amber-300]="!isAvsCompliant()">
+                        <span>{{ isAvsCompliant() ? '⭐' : '🎯' }}</span>
+                        <span>{{ avsQualifyingDays() }} / 16 Days Met</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Progress Bar toward 16-Day Milestone -->
+                  <div class="space-y-1">
+                    <div class="flex items-center justify-between text-[10px] font-mono text-slate-600">
+                      <span>16-Day Medicare Compliance Target (CPT 99454)</span>
+                      <span>{{ avsMilestonePct() }}% ({{ isAvsCompliant() ? 'Goal Met!' : avsDaysNeeded() + ' days needed' }})</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                      <div 
+                        class="h-full rounded-full transition-all duration-300"
+                        [class.bg-emerald-600]="isAvsCompliant()"
+                        [class.bg-teal-600]="!isAvsCompliant()"
+                        [style.width.%]="avsMilestonePct()">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 30-Day Checkoff Matrix -->
+                  <div class="grid grid-cols-5 sm:grid-cols-6 gap-1.5 font-mono text-[10px]">
+                    @for (day of avsComplianceCalendar(); track day.date; let i = $index) {
+                      <div 
+                        (click)="toggleAvsDay(day.date)"
+                        class="p-1.5 rounded-lg border transition text-center select-none cursor-pointer flex flex-col justify-between min-h-[50px]"
+                        [class.bg-emerald-50]="day.hasReading"
+                        [class.border-emerald-400]="day.hasReading"
+                        [class.text-emerald-950]="day.hasReading"
+                        [class.bg-white]="!day.hasReading"
+                        [class.border-slate-300]="!day.hasReading"
+                        [class.text-slate-600]="!day.hasReading"
+                        title="Click to toggle reading transmission">
+                        <div class="flex items-center justify-between text-[9px]">
+                          <span class="font-bold">D{{ i + 1 }}</span>
+                          <span class="text-[8px] opacity-75">{{ day.date | slice:5:10 }}</span>
+                        </div>
+                        <div class="my-0.5 text-xs font-bold">
+                          @if (day.hasReading) {
+                            <span class="text-emerald-600">✓</span>
+                          } @else {
+                            <span class="text-slate-300">○</span>
+                          }
+                        </div>
+                        <div class="text-[8px] truncate leading-tight font-sans">
+                          @if (day.hasReading) {
+                            <span>{{ day.restingHeartRateBpm ? day.restingHeartRateBpm + ' bpm' : 'Sent' }}</span>
+                          } @else {
+                            <span class="text-slate-400">Record</span>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="text-[10px] text-teal-950 bg-teal-100/70 p-2 rounded-lg font-sans flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <span>💡 <strong>Tip for Refrigerator:</strong> Hang this sheet with a magnet. Check off each box every morning as you measure your vitals!</span>
+                    <span class="font-mono font-bold text-[9px] text-teal-800 shrink-0">42 CFR § 410.78</span>
+                  </div>
+                </div>
+
 
                 <!-- 🕊️ Origami Folding Guideline 2 (Vertical / Booklet Fold) -->
                 <div class="my-2 relative flex items-center justify-center text-[10px] font-mono text-slate-400 select-none">
@@ -1841,6 +1962,35 @@ export class ClinicalPosologyCalculatorComponent {
 
   readonly lastLinkedMedication = signal<string | null>(null);
   readonly linkedRpmToast = signal<string | null>(null);
+
+  readonly activeDeprescribingTapers = computed(() => {
+    return this.superbillService?.deprescribingLogs() || [];
+  });
+
+  readonly avsComplianceCalendar = computed(() => {
+    return this.superbillService?.generateComplianceCalendar() || [];
+  });
+
+  readonly avsQualifyingDays = computed(() => {
+    return this.avsComplianceCalendar().filter(d => d.hasReading).length;
+  });
+
+  readonly avsMilestonePct = computed(() => {
+    return Math.min(100, Math.round((this.avsQualifyingDays() / 16) * 100));
+  });
+
+  readonly avsDaysNeeded = computed(() => {
+    return Math.max(0, 16 - this.avsQualifyingDays());
+  });
+
+  readonly isAvsCompliant = computed(() => {
+    return this.avsQualifyingDays() >= 16;
+  });
+
+  toggleAvsDay(dateStr: string): void {
+    this.superbillService?.toggleDayTransmission(dateStr);
+  }
+
 
   readonly prescribingCascades = [
     {

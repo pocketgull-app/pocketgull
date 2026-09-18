@@ -288,5 +288,32 @@ describe('ClinicalPosologyCalculatorComponent', () => {
     component.openRpmSuperbill();
     expect(navShell.showCmsSuperbillModal()).toBe(true);
   });
+
+  it('16. Computes AVS Refrigerator Handout data with active tapers and 30-day transmission grid', () => {
+    expect(component.avsComplianceCalendar().length).toBe(30);
+    const initialQualifying = component.avsQualifyingDays();
+    expect(component.avsMilestonePct()).toBeGreaterThanOrEqual(0);
+    expect(typeof component.isAvsCompliant()).toBe('boolean');
+
+    // Link a deprescribing taper and verify activeDeprescribingTapers updates reactively
+    expect(component.activeDeprescribingTapers().length).toBe(0);
+    superbillService.linkDeprescribingTaper({
+      medication: 'Alprazolam 0.5mg',
+      clinicalRationale: 'Beers criteria fall risk'
+    });
+    expect(component.activeDeprescribingTapers().length).toBe(1);
+    expect(component.activeDeprescribingTapers()[0].medication).toBe('Alprazolam 0.5mg');
+
+    // Toggle a day transmission on the AVS calendar
+    const firstDay = component.avsComplianceCalendar()[0];
+    const initialReading = firstDay.hasReading;
+
+    component.toggleAvsDay(firstDay.date);
+
+    const updatedCalendar = component.avsComplianceCalendar();
+    const updatedDay = updatedCalendar.find(d => d.date === firstDay.date);
+    expect(updatedDay?.hasReading).toBe(!initialReading);
+    expect(component.avsQualifyingDays()).toBe(initialReading ? initialQualifying - 1 : initialQualifying + 1);
+  });
 });
 
