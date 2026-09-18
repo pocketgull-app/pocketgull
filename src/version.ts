@@ -1,2 +1,2 @@
-export const APP_VERSION = '1.30.0';
-export const APP_RELEASE_NAME = 'v1.30.0-cms-rpm-smart-expansion';
+export const APP_VERSION = '1.37.0';
+export const APP_RELEASE_NAME = 'v1.37.0-data-dividend-poka-yoke-app-orchard';
