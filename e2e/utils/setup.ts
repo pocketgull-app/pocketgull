@@ -358,7 +358,7 @@ export async function selectPatientByName(page: Page, name: string) {
 
     const option = page.locator('app-patient-dropdown .group\\/list button', { hasText: targetName }).first();
     if (await option.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await option.click();
+      await option.click({ force: true });
       await page.waitForTimeout(500);
       return;
     }
@@ -370,7 +370,7 @@ export async function selectPatientByName(page: Page, name: string) {
       await page.waitForTimeout(300);
       const searchOption = page.locator('app-patient-dropdown .group\\/list button', { hasText: targetName }).first();
       if (await searchOption.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await searchOption.click();
+        await searchOption.click({ force: true });
         await page.waitForTimeout(500);
         return;
       }

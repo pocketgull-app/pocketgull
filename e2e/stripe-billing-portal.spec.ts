@@ -4,8 +4,8 @@ import { setupE2ePage, enterDemoMode } from './utils/setup';
 
 /** Helper to open Billing modal across desktop and mobile viewports */
 async function openBillingModal(page: import('@playwright/test').Page) {
-  const directBtn = page.locator('button', { hasText: /billing & plan|billing & subscription/i }).first();
-  if (await directBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+  const directBtn = page.locator('#btn-footer-subscriptions, button:has-text("Subscriptions & Billing"), button:has-text("Subscriptions"), button:has-text("Billing & Subscription"), button:has-text("Billing & Plan")').first();
+  if (await directBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
     await directBtn.click({ force: true });
     return;
   }
@@ -14,16 +14,18 @@ async function openBillingModal(page: import('@playwright/test').Page) {
   if (await appsHubBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
     await appsHubBtn.click();
     await page.waitForTimeout(300);
-    const billingOpt = page.locator('button', { hasText: /billing & pricing|billing & subscription/i }).first();
-    await billingOpt.click();
-    return;
+    const billingOpt = page.locator('button', { hasText: /billing & pricing|billing & subscription|subscriptions/i }).first();
+    if (await billingOpt.isVisible({ timeout: 1500 }).catch(() => false)) {
+      await billingOpt.click();
+      return;
+    }
   }
   // Open via Mobile Menu Drawer if visible
-  const mobileMenuBtn = page.locator('button[aria-label="Open Mobile Navigation Menu"]').first();
+  const mobileMenuBtn = page.locator('button[aria-label="Open Mobile Navigation Menu"], #btn-mobile-menu-toggle').first();
   if (await mobileMenuBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
     await mobileMenuBtn.click();
     await page.waitForTimeout(300);
-    const mobileBillingBtn = page.locator('button', { hasText: /billing & subscription/i }).first();
+    const mobileBillingBtn = page.locator('button', { hasText: /billing & subscription|subscriptions/i }).first();
     await mobileBillingBtn.click();
   }
 }
