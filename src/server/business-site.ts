@@ -106,6 +106,19 @@ export function renderBusinessSiteHtml(): string {
       --text: #f4f4f5;
       --text-muted: #a1a1aa;
     }
+    html.paper {
+      --bg: #f7f4ec;
+      --card: #ede7d8;
+      --card-hover: #e3dccb;
+      --border: #d4ccb8;
+      --teal: #0f766e;
+      --teal-light: #0d9488;
+      --teal-glow: rgba(13, 148, 136, 0.15);
+      --amber: #b45309;
+      --amber-light: #b45309;
+      --text: #292524;
+      --text-muted: #57534e;
+    }
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
@@ -147,6 +160,25 @@ export function renderBusinessSiteHtml(): string {
       text-decoration: none;
     }
     .doc-drill-badge:hover {
+      background: rgba(20, 184, 166, 0.25);
+      border-color: var(--teal-light);
+      transform: translateY(-1px);
+    }
+    .doc-drill-chip {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      background: rgba(20, 184, 166, 0.1);
+      border: 1px solid rgba(20, 184, 166, 0.3);
+      color: var(--teal-light);
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+      text-align: left;
+    }
+    .doc-drill-chip:hover {
       background: rgba(20, 184, 166, 0.25);
       border-color: var(--teal-light);
       transform: translateY(-1px);
@@ -430,6 +462,46 @@ export function renderBusinessSiteHtml(): string {
       line-height: 1.55;
       color: #e4e4e7;
     }
+    .act-card {
+      background: rgba(24, 24, 27, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 0.625rem;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .act-card:hover {
+      border-color: rgba(45, 212, 191, 0.4);
+      background: rgba(24, 24, 27, 0.85);
+      transform: translateY(-1px);
+    }
+    .act-header {
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: ui-monospace, monospace;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .act-body {
+      font-size: 0.8125rem;
+      color: #d4d4d8;
+      line-height: 1.6;
+    }
+    .dialogue-token {
+      transition: all 0.2s ease;
+      border-radius: 0.25rem;
+      padding: 0.05rem 0.15rem;
+    }
+    .dialogue-token.active {
+      background: rgba(45, 212, 191, 0.25);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(45, 212, 191, 0.45);
+      border-bottom: 1.5px solid var(--teal-light);
+    }
 
     /* Flip Card */
     .flip-card {
@@ -572,10 +644,15 @@ export function renderBusinessSiteHtml(): string {
         <a href="#pricing">Pricing</a>
       </nav>
 
-      <a href="https://pocketgull.app" class="btn-primary">
-        <span>Launch App</span>
-        <span>→</span>
-      </a>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <button type="button" onclick="togglePaperMode()" class="tab-btn" style="padding: 0.35rem 0.65rem; font-size: 0.75rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.3rem;" aria-label="Toggle Reading Tone">
+          <span id="themeToggleIcon">📜</span> <span id="themeToggleText">Monastic Paper</span>
+        </button>
+        <a href="https://pocketgull.app" class="btn-primary">
+          <span>Launch App</span>
+          <span>→</span>
+        </a>
+      </div>
     </div>
   </header>
 
@@ -616,52 +693,71 @@ export function renderBusinessSiteHtml(): string {
       </div>
     </section>
 
-    <!-- Interactive Ambient Scribe Simulator -->
+    <!-- Interactive Ambient Scribe & Trajectory Simulator -->
     <section id="demo" class="section">
       <div class="container">
         <div class="section-title">
-          <h2>Interactive Documentation Simulator</h2>
-          <p>Select any clinical scenario below to see how conversation transcribes into a clean, structured SOAP note.</p>
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(45, 212, 191, 0.1); border: 1px solid rgba(45, 212, 191, 0.3); color: var(--teal-light); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
+            <span>🧭 The Austrian Way &bull; Moving Beyond SOAP</span>
+          </div>
+          <h2>The 3-Act Living Trajectory &amp; Ambient Scribe</h2>
+          <p>Traditional 1968 SOAP checklists freeze patients into static billing codes. PocketGull models the patient as a purposeful actor with a past trail traversed, a present foothold, and a forward horizon of vitality.</p>
         </div>
 
         <div class="simulator-container">
-          <div class="scenario-tabs">
-            <button class="tab-btn active" onclick="loadScenario('ortho')">🦴 Knee Pain &amp; Orthopedics</button>
-            <button class="tab-btn" onclick="loadScenario('cardio')">🩺 Hypertension &amp; Cardiology</button>
-            <button class="tab-btn" onclick="loadScenario('integrative')">🌿 Metabolic &amp; Primary Care</button>
-            <button class="tab-btn" onclick="loadScenario('systems')">⟁ Multi-Loop Systems Thinking</button>
+          <!-- Top Row Controls: Scenario Tabs + Paradigm Mode Toggle -->
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.85rem;">
+            <div class="scenario-tabs" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
+              <button class="tab-btn scenario-tab-btn active" data-scenario="ortho" onclick="loadScenario('ortho', this)">🦴 Knee Pain &amp; Orthopedics</button>
+              <button class="tab-btn scenario-tab-btn" data-scenario="cardio" onclick="loadScenario('cardio', this)">🩺 Hypertension &amp; Cardiology</button>
+              <button class="tab-btn scenario-tab-btn" data-scenario="integrative" onclick="loadScenario('integrative', this)">🌿 Metabolic &amp; Primary Care</button>
+              <button class="tab-btn scenario-tab-btn" data-scenario="systems" onclick="loadScenario('systems', this)">⟁ Multi-Loop Systems Thinking</button>
+            </div>
+
+            <!-- Clinical Paradigm Selector -->
+            <div style="display: inline-flex; background: #121216; border: 1px solid var(--border); border-radius: 9999px; padding: 0.25rem; gap: 0.25rem;">
+              <button id="modeTrajectoryBtn" class="tab-btn active" style="border-radius: 9999px; padding: 0.35rem 0.85rem; font-size: 0.75rem;" onclick="setDocMode('trajectory')">
+                🧭 The 3-Act Trajectory (Austrian Standard)
+              </button>
+              <button id="modeSoapBtn" class="tab-btn" style="border-radius: 9999px; padding: 0.35rem 0.85rem; font-size: 0.75rem;" onclick="setDocMode('soap')">
+                📋 Legacy SOAP Note (1968 Billing)
+              </button>
+            </div>
           </div>
 
           <div class="demo-grid">
+            <!-- Left Pane: Spoken Dialogue -->
             <div class="demo-pane">
               <div>
                 <div class="pane-header">
                   <span style="color: var(--teal-light);">🎙️ Spoken Patient Dialogue</span>
-                  <span style="color: var(--text-muted); font-size: 0.6875rem; font-family: ui-monospace, monospace;">Transcribed Live</span>
+                  <span style="color: var(--text-muted); font-size: 0.6875rem; font-family: ui-monospace, monospace;">Transcribed Live &bull; Zero Cloud Egress</span>
                 </div>
                 <div id="dialogueBox" class="pane-body" style="font-style: italic;">
-                  "Doctor, my left knee has been aching on the inside when walking down stairs for the past two weeks. It gets swollen by the evening, and morning stiffness lasts about 20 minutes. Ibuprofen gives minor relief."
+                  <!-- Dynamically populated -->
                 </div>
               </div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; font-family: ui-monospace, monospace;">
-                ⚡ Ambient AI Scribing in real time (Zero Cloud PHI Transmission)
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; font-family: ui-monospace, monospace; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                <span>⚡ Sub-50ms Local Transcription</span>
+                <span style="color: var(--teal-light); font-size: 0.7rem;">Hover cards to see explainable provenance</span>
               </div>
             </div>
 
+            <!-- Right Pane: Clinical Documentation Output -->
             <div class="demo-pane" style="border-color: rgba(45, 212, 191, 0.4);">
               <div>
                 <div class="pane-header">
-                  <span style="color: var(--amber-light);">📋 Generated SOAP Note &amp; Plan</span>
-                  <button onclick="copySoapNote()" class="tab-btn" style="padding: 2px 8px; font-size: 0.6875rem;">📋 Copy to EHR</button>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <span id="outputHeaderTitle" style="color: var(--amber-light);">🧭 The 3-Act Living Trajectory</span>
+                    <span id="outputHeaderBadge" style="font-size: 0.625rem; color: var(--teal-light); font-family: ui-monospace, monospace; text-transform: uppercase; background: rgba(45, 212, 191, 0.1); padding: 0.1rem 0.4rem; border-radius: 4px; border: 1px solid rgba(45, 212, 191, 0.25);">Austrian Salutogenesis</span>
+                  </div>
+                  <button onclick="copyCurrentOutput()" class="tab-btn" style="padding: 2px 8px; font-size: 0.6875rem;">📋 Copy to EHR</button>
                 </div>
-                <div id="soapBox" class="pane-body" style="font-family: ui-monospace, monospace; font-size: 0.8125rem;">
-                  <div><strong style="color: var(--teal-light);">S:</strong> 2-week history of medial left knee pain &amp; swelling after walking. Morning stiffness &lt;30m. Partial relief with NSAIDs.</div>
-                  <div style="margin-top: 0.35rem;"><strong style="color: var(--teal-light);">O:</strong> Medial joint-line tenderness, mild effusion, active ROM 0-120°.</div>
-                  <div style="margin-top: 0.35rem;"><strong style="color: var(--teal-light);">A:</strong> Medial knee pain, likely early osteoarthritis vs. meniscus irritation (ICD-10 M17.12).</div>
-                  <div style="margin-top: 0.35rem;"><strong style="color: var(--teal-light);">P:</strong> Weight-bearing knee X-rays, low-impact exercise protocol, trial topical diclofenac.</div>
+                <div id="outputBox" class="pane-body" style="font-family: inherit; font-size: 0.8125rem;">
+                  <!-- Dynamically rendered (Trajectory or SOAP) -->
                 </div>
               </div>
-              <div id="copyNotice" style="font-size: 0.75rem; color: var(--teal-light); margin-top: 1rem; font-weight: bold; min-height: 1.2rem;"></div>
+              <div id="copyNotice" style="font-size: 0.75rem; color: var(--teal-light); margin-top: 0.75rem; font-weight: bold; min-height: 1.2rem;"></div>
             </div>
           </div>
         </div>
@@ -796,9 +892,9 @@ export function renderBusinessSiteHtml(): string {
             </div>
 
             <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
-              <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Diagnostic Trap</div>
-              <div style="font-size: 1.25rem; font-weight: 800; color: #f87171; margin-top: 0.25rem;">Missing Babesiosis</div>
-              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Doxycycline monotherapy fails to clear intraerythrocytic Babesia parasites.</p>
+              <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); text-transform: uppercase;">Differential Clarity</div>
+              <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber-light); margin-top: 0.25rem;">Uncovering Co-Infections</div>
+              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Distinguishing between Lyme spirochetes and intraerythrocytic Babesia parasites for complete, curative resolution.</p>
             </div>
 
             <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
@@ -809,7 +905,7 @@ export function renderBusinessSiteHtml(): string {
           </div>
 
           <div style="background: #09090b; border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: #d4d4d8; line-height: 1.7;">
-            <strong style="color: var(--teal-light);">Clinical Impact Summary:</strong> A 42-year-old landscaper presented with atypical rash, night sweats, and autonomic vagal collapse (HRV RMSSD 18ms <button type="button" class="doc-drill-badge" onclick="openDocDrill('Vagal Collapse / RMSSD')">🔬 Doc Drill</button>). PocketGull's offline Edge AI differential radar flagged concurrent <em>Babesia microti</em> hemolytic anemia on peripheral blood smear (Maltese cross tetrads <button type="button" class="doc-drill-badge" onclick="openDocDrill('Maltese cross tetrads')">🔬 Doc Drill</button>) alongside <em>Borrelia burgdorferi</em> C6 ELISA serology. The clinician immediately initiated dual-therapy (Doxycycline + Atovaquone/Azithromycin) with zero cloud network egress required in remote field conservation zones.
+            <strong style="color: var(--teal-light);">Clinical Impact Summary:</strong> A 42-year-old landscaper presented with atypical rash, night sweats, and autonomic vagal strain / low parasympathetic reserve (HRV RMSSD 18ms <button type="button" class="doc-drill-badge" onclick="openDocDrill('Vagal Collapse / RMSSD')">🔬 Doc Drill</button>). PocketGull's offline Edge AI differential radar flagged concurrent <em>Babesia microti</em> hemolytic anemia on peripheral blood smear (Maltese cross tetrads <button type="button" class="doc-drill-badge" onclick="openDocDrill('Maltese cross tetrads')">🔬 Doc Drill</button>) alongside <em>Borrelia burgdorferi</em> C6 ELISA serology. The clinician immediately initiated dual-therapy (Doxycycline + Atovaquone/Azithromycin) with zero cloud network egress required in remote field conservation zones.
           </div>
         </div>
       </div>
@@ -1217,6 +1313,25 @@ export function renderBusinessSiteHtml(): string {
             </button>
           </div>
 
+          <!-- Interactive Subscription Allocation Slider -->
+          <div style="background: #111115; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <label for="gaapSlider" style="font-size: 0.8125rem; font-weight: 700; color: #fff;">
+                🎛️ Simulate Your Practice's Monthly Contribution:
+              </label>
+              <div style="font-family: ui-monospace, monospace; font-size: 1rem; font-weight: 800; color: #34d399;" id="gaapSelectedAmount">
+                $49.00 / month (Clinic Pro)
+              </div>
+            </div>
+            <input type="range" id="gaapSlider" min="0" max="250" value="49" step="1" oninput="updateGaapCalculations(this.value)" style="width: 100%; accent-color: var(--teal-light); cursor: pointer;" />
+            <div style="display: flex; justify-content: space-between; font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); margin-top: 0.25rem;">
+              <span>$0 (Solo Free)</span>
+              <span>$49 (Clinic Pro)</span>
+              <span>$100 (Rural Clinic)</span>
+              <span>$250 (Group Center)</span>
+            </div>
+          </div>
+
           <div style="display: flex; flex-direction: column; gap: 1rem;">
             
             <!-- Item 1 -->
@@ -1226,7 +1341,7 @@ export function renderBusinessSiteHtml(): string {
                   <strong style="color: #fff; font-size: 0.875rem;">1. Tribal Health Sovereignty &amp; Indigenous Vector Defense</strong>
                   <span style="font-size: 0.6875rem; font-family: ui-monospace, monospace; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700;">PROGRAM SERVICES</span>
                 </div>
-                <span style="font-family: ui-monospace, monospace; font-weight: 800; color: #34d399; font-size: 0.9375rem;">35.0% ($0.35 / $1.00)</span>
+                <span id="gaapVal1" style="font-family: ui-monospace, monospace; font-weight: 800; color: #34d399; font-size: 0.9375rem;">35.0% ($17.15 / mo)</span>
               </div>
               <div style="width: 100%; background: #27272a; height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
                 <div style="width: 35%; height: 100%; background: #34d399; border-radius: 9999px;"></div>
@@ -1246,7 +1361,7 @@ export function renderBusinessSiteHtml(): string {
                   <strong style="color: #fff; font-size: 0.875rem;">2. Sovereign Patient Research Data Dividends</strong>
                   <span style="font-size: 0.6875rem; font-family: ui-monospace, monospace; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700;">PROGRAM SERVICES</span>
                 </div>
-                <span style="font-family: ui-monospace, monospace; font-weight: 800; color: #34d399; font-size: 0.9375rem;">30.0% ($0.30 / $1.00)</span>
+                <span id="gaapVal2" style="font-family: ui-monospace, monospace; font-weight: 800; color: #34d399; font-size: 0.9375rem;">30.0% ($14.70 / mo)</span>
               </div>
               <div style="width: 100%; background: #27272a; height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
                 <div style="width: 30%; height: 100%; background: #34d399; border-radius: 9999px;"></div>
@@ -1266,7 +1381,7 @@ export function renderBusinessSiteHtml(): string {
                   <strong style="color: #fff; font-size: 0.875rem;">3. Seven Generations Open-Source Seed &amp; Codex Preservation</strong>
                   <span style="font-size: 0.6875rem; font-family: ui-monospace, monospace; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700;">PROGRAM SERVICES</span>
                 </div>
-                <span style="font-family: ui-monospace, monospace; font-weight: 800; color: #34d399; font-size: 0.9375rem;">20.0% ($0.20 / $1.00)</span>
+                <span id="gaapVal3" style="font-family: ui-monospace, monospace; font-weight: 800; color: #34d399; font-size: 0.9375rem;">20.0% ($9.80 / mo)</span>
               </div>
               <div style="width: 100%; background: #27272a; height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
                 <div style="width: 20%; height: 100%; background: #34d399; border-radius: 9999px;"></div>
@@ -1286,7 +1401,7 @@ export function renderBusinessSiteHtml(): string {
                   <strong style="color: #fff; font-size: 0.875rem;">4. Systems Engineering &amp; Zero-Trust Cryptography</strong>
                   <span style="font-size: 0.6875rem; font-family: ui-monospace, monospace; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 700;">SYSTEMS INFRASTRUCTURE</span>
                 </div>
-                <span style="font-family: ui-monospace, monospace; font-weight: 800; color: #38bdf8; font-size: 0.9375rem;">10.0% ($0.10 / $1.00)</span>
+                <span id="gaapVal4" style="font-family: ui-monospace, monospace; font-weight: 800; color: #38bdf8; font-size: 0.9375rem;">10.0% ($4.90 / mo)</span>
               </div>
               <div style="width: 100%; background: #27272a; height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
                 <div style="width: 10%; height: 100%; background: #38bdf8; border-radius: 9999px;"></div>
@@ -1306,7 +1421,7 @@ export function renderBusinessSiteHtml(): string {
                   <strong style="color: #fff; font-size: 0.875rem;">5. Governance, Statutory Compliance &amp; CPA Audit</strong>
                   <span style="font-size: 0.6875rem; font-family: ui-monospace, monospace; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: var(--amber-light); font-weight: 700;">MANAGEMENT &amp; GENERAL</span>
                 </div>
-                <span style="font-family: ui-monospace, monospace; font-weight: 800; color: var(--amber-light); font-size: 0.9375rem;">5.0% ($0.05 / $1.00)</span>
+                <span id="gaapVal5" style="font-family: ui-monospace, monospace; font-weight: 800; color: var(--amber-light); font-size: 0.9375rem;">5.0% ($2.45 / mo)</span>
               </div>
               <div style="width: 100%; background: #27272a; height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
                 <div style="width: 5%; height: 100%; background: var(--amber-light); border-radius: 9999px;"></div>
@@ -1481,43 +1596,302 @@ export function renderBusinessSiteHtml(): string {
   </footer>
 
   <script>
-    // Scribe Simulator Scenarios
+    // Scribe Simulator & The Austrian Living Trajectory Engine
+    let currentScenarioKey = 'ortho';
+    let currentDocMode = 'trajectory';
+
     const scenarios = {
       ortho: {
-        dialogue: '"Doctor, my left knee has been aching on the inside when walking down stairs for the past two weeks. It gets swollen by the evening, and morning stiffness lasts about 20 minutes. Ibuprofen gives minor relief."',
-        soap: '<div><strong style="color: #2dd4bf;">S:</strong> 2-week history of medial left knee pain & swelling after walking. Morning stiffness <30m. Partial relief with NSAIDs.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">O:</strong> Medial joint-line tenderness, mild effusion, active ROM 0-120°.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">A:</strong> Medial knee pain, likely early osteoarthritis vs. meniscus irritation (ICD-10 M17.12).</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">P:</strong> Weight-bearing knee X-rays, low-impact exercise protocol, trial topical diclofenac.</div>'
+        dialogueHtml: '"Doctor, <span class="dialogue-token token-loc">my left knee has been aching on the inside</span> when <span class="dialogue-token token-stairs">walking down stairs</span> <span class="dialogue-token token-dur">for the past two weeks</span>. It gets <span class="dialogue-token token-swelling">swollen by the evening</span>, and <span class="dialogue-token token-stiff">morning stiffness lasts about 20 minutes</span>. <span class="dialogue-token token-nsaid">Ibuprofen gives minor relief</span>."',
+        trajectory: \`
+          <div class="act-card" onmouseenter="highlightDialogue('dur', 'loc', 'stairs', 'swelling')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: #34d399;">
+              <span>🌿 ACT I: WHERE YOU'VE BEEN</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Trail Traversed)</span>
+            </div>
+            <div class="act-body">
+              Traversed 2-week subacute medial joint strain following mechanical stairs descent. Preserved ligamentous and bone structural integrity. Your body is naturally mobilizing reparative circulation to support joint recovery (mild evening swelling). Zero structural defeat.
+            </div>
+          </div>
+          <div class="act-card" onmouseenter="highlightDialogue('stiff', 'loc')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: #38bdf8;">
+              <span>⚡ ACT II: WHERE YOU STAND TODAY</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Living Foothold)</span>
+            </div>
+            <div class="act-body">
+              Full active range of motion preserved (0–120°). Joint line tenderness localized to medial compartment; morning stiffness resolves in &lt;20 minutes, confirming resilient cartilage reserve rather than inflammatory systemic arthritis.
+            </div>
+          </div>
+          <div class="act-card" onmouseenter="highlightDialogue('stairs', 'nsaid')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: var(--amber-light);">
+              <span>🧭 ACT III: WHERE YOU'RE GOING</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Horizon of Action)</span>
+            </div>
+            <div class="act-body">
+              <div><strong>&bull; 30-Day Vitality Milestone:</strong> Comfortable, pain-free stair descent and evening joint ease.</div>
+              <div style="margin-top: 0.35rem;"><strong>&bull; Daily Restoration Rituals:</strong> Closed-chain quadriceps strengthening (straight leg raises, low-impact stationary cycling), weight-bearing alignment films, trial topical diclofenac to soothe local receptors while protecting digestive health.</div>
+            </div>
+          </div>
+        \`,
+        soap: \`
+          <div onmouseenter="highlightDialogue('dur', 'loc', 'stairs', 'nsaid')" onmouseleave="clearDialogueHighlight()"><strong style="color: #2dd4bf;">S:</strong> 2-week history of medial left knee pain &amp; swelling after walking stairs. Morning stiffness &lt;30m. Partial relief with NSAIDs.</div>
+          <div style="margin-top: 0.4rem;" onmouseenter="highlightDialogue('loc', 'swelling')" onmouseleave="clearDialogueHighlight()"><strong style="color: #2dd4bf;">O:</strong> Medial joint-line tenderness, mild effusion, active ROM 0-120°. Neurovascular intact.</div>
+          <div style="margin-top: 0.4rem;"><strong style="color: #2dd4bf;">A:</strong> Medial knee pain, early osteoarthritis vs. meniscus strain (ICD-10 M17.12).</div>
+          <div style="margin-top: 0.4rem;"><strong style="color: #2dd4bf;">P:</strong> Weight-bearing knee X-rays, low-impact physical therapy exercise protocol, trial topical diclofenac.</div>
+        \`
       },
       cardio: {
-        dialogue: '"My home blood pressure readings have been averaging 142 over 88 for the past month. I haven\\\'t had any chest pain or shortness of breath, but I\\\'ve been feeling more stressed at work."',
-        soap: '<div><strong style="color: #2dd4bf;">S:</strong> 1-month elevated home BP log (avg 142/88 mmHg). Denies angina, dyspnea, or palpitations. Notes increased workplace stress.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">O:</strong> In-office BP: 140/86 mmHg (repeat 136/84). Regular rate & rhythm, no peripheral edema.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">A:</strong> Essential hypertension, Stage 1 (ICD-10 I10), stress-augmented.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">P:</strong> DASH dietary protocol, 150m/wk moderate aerobic exercise, follow-up home BP log in 4 weeks.</div>'
+        dialogueHtml: '"<span class="dialogue-token token-bp">My home blood pressure readings have been averaging 142 over 88 for the past month</span>. I <span class="dialogue-token token-denies">haven\\\'t had any chest pain or shortness of breath</span>, but I\\\'ve been <span class="dialogue-token token-stress">feeling more stressed at work</span>."',
+        trajectory: \`
+          <div class="act-card" onmouseenter="highlightDialogue('stress', 'bp')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: #34d399;">
+              <span>🌿 ACT I: WHERE YOU'VE BEEN</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Trail Traversed)</span>
+            </div>
+            <div class="act-body">
+              Traversed 1 month of heightened workplace demands. Your cardiovascular vascular tree has been intelligently adapting, elevating perfusion pressure to meet cognitive focus demands. Zero angina, dyspnea, or palpitations—the heart muscle is strong and uncompromised.
+            </div>
+          </div>
+          <div class="act-card" onmouseenter="highlightDialogue('bp')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: #38bdf8;">
+              <span>⚡ ACT II: WHERE YOU STAND TODAY</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Living Foothold)</span>
+            </div>
+            <div class="act-body">
+              In-office BP: 140/86 mmHg (repeat 136/84). Regular sinus rhythm, clear lungs, zero peripheral edema. Elevated home numbers (142/88) reflect sympathetic vasomotor tone rather than fixed arterial stiffness.
+            </div>
+          </div>
+          <div class="act-card" onmouseenter="highlightDialogue('stress', 'bp')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: var(--amber-light);">
+              <span>🧭 ACT III: WHERE YOU'RE GOING</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Horizon of Action)</span>
+            </div>
+            <div class="act-body">
+              <div><strong>&bull; 30-Day Vitality Milestone:</strong> Daytime resting BP returning gently toward the healthy 120s/80s baseline.</div>
+              <div style="margin-top: 0.35rem;"><strong>&bull; Daily Restoration Rituals:</strong> 0.1 Hz vagal breath pacing (6 breaths/min for 5 minutes twice daily to restore baroreflex sensitivity), 150 min/wk restorative outdoor walking, potassium/magnesium-rich Mediterranean nutrition, repeat 4-week home log.</div>
+            </div>
+          </div>
+        \`,
+        soap: \`
+          <div onmouseenter="highlightDialogue('bp', 'denies', 'stress')" onmouseleave="clearDialogueHighlight()"><strong style="color: #2dd4bf;">S:</strong> 1-month elevated home BP log (avg 142/88 mmHg). Denies angina, dyspnea, or palpitations. Notes increased workplace stress.</div>
+          <div style="margin-top: 0.4rem;"><strong style="color: #2dd4bf;">O:</strong> In-office BP: 140/86 mmHg (repeat 136/84). Regular rate &amp; rhythm, no peripheral edema.</div>
+          <div style="margin-top: 0.4rem;"><strong style="color: #2dd4bf;">A:</strong> Essential hypertension, Stage 1 (ICD-10 I10), stress-augmented autonomic vasomotor state.</div>
+          <div style="margin-top: 0.4rem;"><strong style="color: #2dd4bf;">P:</strong> DASH dietary protocol, 150m/wk moderate aerobic exercise, 0.1Hz vagal breath pacing, follow-up home BP log in 4 weeks.</div>
+        \`
       },
       integrative: {
-        dialogue: '"I\\\'ve had persistent fatigue and brain fog since my viral illness three months ago. My routine labs were normal, but my afternoon energy crashes hard around 2 PM."',
-        soap: '<div><strong style="color: #2dd4bf;">S:</strong> 3-month post-viral fatigue with cognitive clouding. Afternoon energy slump at 14:00. Standard CMP/CBC unrevealing.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">O:</strong> Vitals stable. Thyroid non-tender, resting HR 68 bpm. Orthostatic vitals unremarkable.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">A:</strong> Post-viral fatigue syndrome with circadian rhythm disruption.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">P:</strong> Circadian light therapy (10k lux morning), CoQ10 200mg daily, pacing protocol, salivary cortisol panel.</div>'
+        dialogueHtml: '"I\\\'ve had <span class="dialogue-token token-fatigue">persistent fatigue and brain fog</span> <span class="dialogue-token token-viral">since my viral illness three months ago</span>. My <span class="dialogue-token token-labs">routine labs were normal</span>, but my <span class="dialogue-token token-crash">afternoon energy crashes hard around 2 PM</span>."',
+        trajectory: \`
+          <div class="act-card" onmouseenter="highlightDialogue('viral', 'labs')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: #34d399;">
+              <span>🌿 ACT I: WHERE YOU'VE BEEN</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Trail Traversed)</span>
+            </div>
+            <div class="act-body">
+              Successfully navigated and cleared an acute viral infection 3 months ago with robust immune defense. Standard blood panels (CBC, CMP, TSH) confirm healthy organ reserve. Cellular mitochondria mobilized enormous energy during host defense and are now in a recovery cycle.
+            </div>
+          </div>
+          <div class="act-card" onmouseenter="highlightDialogue('crash', 'fatigue')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: #38bdf8;">
+              <span>⚡ ACT II: WHERE YOU STAND TODAY</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Living Foothold)</span>
+            </div>
+            <div class="act-body">
+              Resting HR 68 bpm, normotensive. The 14:00 energy drop represents an exaggerated circadian cortisol nadir rather than permanent damage. Cellular energy recharge pathways are intact and ready for gentle entrainment.
+            </div>
+          </div>
+          <div class="act-card" onmouseenter="highlightDialogue('crash', 'viral')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: var(--amber-light);">
+              <span>🧭 ACT III: WHERE YOU'RE GOING</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Horizon of Action)</span>
+            </div>
+            <div class="act-body">
+              <div><strong>&bull; 30-Day Vitality Milestone:</strong> Smooth afternoon energy curve and waking feeling deeply restored.</div>
+              <div style="margin-top: 0.35rem;"><strong>&bull; Daily Restoration Rituals:</strong> 10,000-lux natural morning sunlight within 30m of waking, mitochondrial cofactor support (CoQ10 200mg + Alpha Lipoic Acid), proactive 15-minute restorative quiet pause at 13:45 prior to the dip, salivary diurnal cortisol profile.</div>
+            </div>
+          </div>
+        \`,
+        soap: \`
+          <div onmouseenter="highlightDialogue('fatigue', 'viral', 'crash')" onmouseleave="clearDialogueHighlight()"><strong style="color: #2dd4bf;">S:</strong> 3-month post-viral fatigue with cognitive clouding. Afternoon energy slump at 14:00. Standard CMP/CBC unrevealing.</div>
+          <div style="margin-top: 0.4rem;" onmouseenter="highlightDialogue('labs')" onmouseleave="clearDialogueHighlight()"><strong style="color: #2dd4bf;">O:</strong> Vitals stable. Thyroid non-tender, resting HR 68 bpm. Orthostatic vitals unremarkable.</div>
+          <div style="margin-top: 0.4rem;"><strong style="color: #2dd4bf;">A:</strong> Post-viral fatigue syndrome with circadian rhythm disruption (ICD-10 G93.3).</div>
+          <div style="margin-top: 0.4rem;"><strong style="color: #2dd4bf;">P:</strong> Circadian light therapy (10k lux morning), CoQ10 200mg daily, pacing protocol, salivary cortisol panel.</div>
+        \`
       },
       systems: {
-        dialogue: '"Doctor, I have bleeding gums when flossing, my resting heart rate has jumped up to 88, and my blood pressure has been creeping up despite eating clean."',
-        soap: '<div><strong style="color: #2dd4bf;">S:</strong> Bleeding gums, resting tachycardia (88 bpm), and subacute BP elevation.</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">O:</strong> BP 138/86, HR 88 bpm. SIBI periodontal inflammation index elevated. RMSSD depressed (24ms).</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">A:</strong> Oral-Endothelial Axis Stress (LPS translocation driving vascular endothelial stiffness & sympathetic tone).</div><div style="margin-top: 0.35rem;"><strong style="color: #2dd4bf;">P (Meadows Level 1):</strong> SIBI periodontal decontamination rinse, CoQ10 100mg, 0.1Hz vagal breath pacing (6 bpm), periodontal scaling referral.</div>'
+        dialogueHtml: '"Doctor, I have <span class="dialogue-token token-gums">bleeding gums when flossing</span>, my <span class="dialogue-token token-hr">resting heart rate has jumped up to 88</span>, and my <span class="dialogue-token token-bp">blood pressure has been creeping up despite eating clean</span>."',
+        trajectory: \`
+          <div class="act-card" onmouseenter="highlightDialogue('bp', 'gums')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: #34d399;">
+              <span>🌿 ACT I: WHERE YOU'VE BEEN</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Trail Traversed)</span>
+            </div>
+            <div class="act-body">
+              Maintained disciplined, clean nutritional foundation. Subgingival biofilm micro-ecology developed localized capillary sensitivity during flossing. Systemic circulation dispatched immune sentinels to protect tissues—a healthy, adaptive physiological response.
+            </div>
+          </div>
+          <div class="act-card" onmouseenter="highlightDialogue('hr', 'bp')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: #38bdf8;">
+              <span>⚡ ACT II: WHERE YOU STAND TODAY</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Living Foothold)</span>
+            </div>
+            <div class="act-body">
+              HR 88 bpm, BP 138/86 mmHg. Vagal tone (RMSSD 24ms) indicates transient sympathetic vigilance triggered by oral-endothelial signaling (LPS translocation). Vascular lining possesses exceptional regenerative capacity once local biofilm is balanced.
+            </div>
+          </div>
+          <div class="act-card" onmouseenter="highlightDialogue('gums', 'hr')" onmouseleave="clearDialogueHighlight()">
+            <div class="act-header" style="color: var(--amber-light);">
+              <span>🧭 ACT III: WHERE YOU'RE GOING</span>
+              <span style="color: var(--text-muted); font-size: 0.65rem; font-weight: normal;">(The Horizon of Action)</span>
+            </div>
+            <div class="act-body">
+              <div><strong>&bull; 30-Day Vitality Milestone:</strong> Healthy pink gingiva with zero flossing sensitivity; resting HR stabilizing into the 70s.</div>
+              <div style="margin-top: 0.35rem;"><strong>&bull; Systems Leverage Rituals (Meadows Level 1):</strong> Botanical sulcular decontamination rinse, periodontal ultrasonic cleaning referral, CoQ10 100mg to nourish gingival and vascular collagen, 0.1 Hz vagal breath pacing to ease autonomic vigilance.</div>
+            </div>
+          </div>
+        \`,
+        soap: \`
+          <div onmouseenter="highlightDialogue('gums', 'hr', 'bp')" onmouseleave="clearDialogueHighlight()"><strong style="color: #2dd4bf;">S:</strong> Bleeding gums, resting tachycardia (88 bpm), and subacute BP elevation despite clean nutrition.</div>
+          <div style="margin-top: 0.4rem;"><strong style="color: #2dd4bf;">O:</strong> BP 138/86, HR 88 bpm. SIBI periodontal inflammation index elevated. RMSSD depressed (24ms).</div>
+          <div style="margin-top: 0.4rem;"><strong style="color: #2dd4bf;">A:</strong> Oral-Endothelial Axis Stress (ICD-10 K05.10 / I10), sympathetic tone augmented by oral-vascular signaling.</div>
+          <div style="margin-top: 0.4rem;"><strong style="color: #2dd4bf;">P (Meadows Level 1):</strong> SIBI periodontal decontamination rinse, CoQ10 100mg, 0.1Hz vagal breath pacing (6 bpm), periodontal scaling referral.</div>
+        \`
       }
     };
 
-    function loadScenario(key) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      const data = scenarios[key];
+    function highlightDialogue(...tokens) {
+      clearDialogueHighlight();
+      tokens.forEach(t => {
+        document.querySelectorAll('.dialogue-token.token-' + t).forEach(el => el.classList.add('active'));
+      });
+    }
+
+    function clearDialogueHighlight() {
+      document.querySelectorAll('.dialogue-token').forEach(el => el.classList.remove('active'));
+    }
+
+    function setDocMode(mode) {
+      currentDocMode = mode;
+      const trajBtn = document.getElementById('modeTrajectoryBtn');
+      const soapBtn = document.getElementById('modeSoapBtn');
+      const title = document.getElementById('outputHeaderTitle');
+      const badge = document.getElementById('outputHeaderBadge');
+
+      if (mode === 'trajectory') {
+        if (trajBtn) trajBtn.classList.add('active');
+        if (soapBtn) soapBtn.classList.remove('active');
+        if (title) title.innerHTML = '🧭 The 3-Act Living Trajectory';
+        if (badge) {
+          badge.textContent = 'Austrian Salutogenesis';
+          badge.style.color = 'var(--teal-light)';
+        }
+      } else {
+        if (soapBtn) soapBtn.classList.add('active');
+        if (trajBtn) trajBtn.classList.remove('active');
+        if (title) title.innerHTML = '📋 Legacy SOAP Note';
+        if (badge) {
+          badge.textContent = '1968 Billing Archive';
+          badge.style.color = 'var(--amber-light)';
+        }
+      }
+      renderDocOutput();
+    }
+
+    function renderDocOutput() {
+      const data = scenarios[currentScenarioKey];
+      const dBox = document.getElementById('dialogueBox');
+      const oBox = document.getElementById('outputBox');
       if (data) {
-        document.getElementById('dialogueBox').textContent = data.dialogue;
-        document.getElementById('soapBox').innerHTML = data.soap;
+        if (dBox) dBox.innerHTML = data.dialogueHtml;
+        if (oBox) {
+          oBox.innerHTML = (currentDocMode === 'trajectory') ? data.trajectory : data.soap;
+        }
       }
     }
 
-    function copySoapNote() {
-      const text = document.getElementById('soapBox').innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        const notice = document.getElementById('copyNotice');
-        notice.textContent = '✓ Copied formatted SOAP note to clipboard!';
+    function loadScenario(key, btnEl) {
+      currentScenarioKey = key;
+      document.querySelectorAll('.scenario-tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = (btnEl && btnEl.classList) ? btnEl : document.querySelector('.scenario-tab-btn[data-scenario="' + key + '"]');
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+      }
+      renderDocOutput();
+    }
+
+    function copyCurrentOutput() {
+      const oBox = document.getElementById('outputBox');
+      const text = oBox ? oBox.innerText : '';
+      const notice = document.getElementById('copyNotice');
+      const label = currentDocMode === 'trajectory' ? '3-Act Living Trajectory' : 'SOAP note';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          if (notice) {
+            notice.textContent = '✓ Copied ' + label + ' to clipboard!';
+            setTimeout(() => { notice.textContent = ''; }, 3000);
+          }
+        }).catch(() => {
+          fallbackCopy(text, label);
+        });
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch {}
+      document.body.removeChild(ta);
+      const notice = document.getElementById('copyNotice');
+      if (notice) {
+        notice.textContent = '✓ Copied ' + label + ' to clipboard!';
         setTimeout(() => { notice.textContent = ''; }, 3000);
-      });
+      }
+    }
+
+    function updateGaapCalculations(amtStr) {
+      const amt = parseFloat(amtStr) || 0;
+      const sel = document.getElementById('gaapSelectedAmount');
+      if (sel) {
+        let tierName = 'Custom Plan';
+        if (amt === 0) tierName = 'Solo Free Tier';
+        else if (amt <= 49) tierName = 'Clinic Pro';
+        else if (amt <= 150) tierName = 'Rural Health Center';
+        else tierName = 'Group Practice / Health System';
+        sel.textContent = '$' + amt.toFixed(2) + ' / month (' + tierName + ')';
+      }
+      const v1 = document.getElementById('gaapVal1');
+      const v2 = document.getElementById('gaapVal2');
+      const v3 = document.getElementById('gaapVal3');
+      const v4 = document.getElementById('gaapVal4');
+      const v5 = document.getElementById('gaapVal5');
+      if (v1) v1.textContent = '35.0% ($' + (amt * 0.35).toFixed(2) + ' / mo)';
+      if (v2) v2.textContent = '30.0% ($' + (amt * 0.30).toFixed(2) + ' / mo)';
+      if (v3) v3.textContent = '20.0% ($' + (amt * 0.20).toFixed(2) + ' / mo)';
+      if (v4) v4.textContent = '10.0% ($' + (amt * 0.10).toFixed(2) + ' / mo)';
+      if (v5) v5.textContent = '5.0% ($' + (amt * 0.05).toFixed(2) + ' / mo)';
+    }
+
+    function togglePaperMode() {
+      const isPaper = document.documentElement.classList.toggle('paper');
+      const icon = document.getElementById('themeToggleIcon');
+      const text = document.getElementById('themeToggleText');
+      if (icon && text) {
+        icon.textContent = isPaper ? '🌙' : '📜';
+        text.textContent = isPaper ? 'Obsidian Dark' : 'Monastic Paper';
+      }
+    }
+
+    // Initialize Simulator on Load
+    document.addEventListener('DOMContentLoaded', function() {
+      renderDocOutput();
+    });
+    // Fallback immediate initialization
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      renderDocOutput();
     }
 
     function setPricingMode(mode) {
@@ -1680,33 +2054,91 @@ export function renderBusinessSiteHtml(): string {
     const DOC_DRILL_DB = {
       'Babesia microti': {
         category: 'VECTOR CO-INFECTION',
-        summary: 'Intraerythrocytic apicomplexan protozoan endemic to Nantucket and coastal New England, transmitted by Ixodes scapularis nymphs.',
+        summary: 'Intraerythrocytic apicomplexan protozoan endemic to coastal New England and island brush, transmitted by Ixodes scapularis nymphs.',
         clinicalTrap: 'Clinicians routinely mistake Babesiosis for refractory Lyme disease. Standard Lyme monotherapy (Doxycycline) does NOT clear Babesia. If hemolytic anemia, drenching sweats, or Maltese cross tetrads are present, dual therapy (Atovaquone + Azithromycin) is mandatory.',
+        protocol: 'Initiate Atovaquone (750 mg PO BID) plus Azithromycin (500 mg day 1, then 250 mg daily) for 7-10 days. Monitor CBC for thrombocytopenia and indirect bilirubin for hemolysis. Check G6PD before considering clindamycin/quinine alternative in severe ICU presentations.',
+        evidence: 'Level I evidence from IDSA/AAN/ACR Lyme & Tick Guidelines (Lantos et al. Clin Infect Dis 2021); Vannier EG et al. N Engl J Med 2012.',
         citations: 'Lantos PM et al. Clin Infect Dis. 2021; Vannier EG et al. N Engl J Med. 2012.'
       },
       'Meadows Leverage L1-9': {
         category: 'SYSTEMS BIOLOGY',
         summary: 'Donella Meadows\' 12 Leverage Points hierarchy applied to ecological vector transmission and immunological response.',
-        clinicalTrap: 'Treating individual tick bites with antibiotics is Leverage Point 12 (shallow parameters). Disrupting the reservoir host transmission cycle (Leverage Point 1: Paradigm Change via MIT Mice Against Ticks) solves the crisis at the ecological source.',
+        clinicalTrap: 'Treating individual tick bites with antibiotics is Leverage Point 12 (shallow parameter adjustments). Disrupting the reservoir host transmission cycle (Leverage Point 1: Paradigm Change via MIT Mice Against Ticks) solves the crisis at the ecological source.',
+        protocol: 'Step 1: Map host reservoirs (Peromyscus leucopus white-footed mice). Step 2: Implement microclimate brush clearing (VPD > 1.2 kPa). Step 3: Support systemic biological disruption rather than endless downstream chemical suppression.',
+        evidence: 'Esvelt KM et al. MIT Media Lab (2020); Meadows DH. Thinking in Systems: A Primer (2008).',
         citations: 'Meadows DH. Thinking in Systems: A Primer (2008); Esvelt KM et al. MIT Media Lab (2020).'
       },
       'Maltese cross tetrads': {
         category: 'HEMATOLOGY & MICROSCOPY',
-        summary: 'Pathognomonic arrangement of four budding merozoites joined by a central cytoplasmic stalk within a red blood cell.',
+        summary: 'Pathognomonic arrangement of four budding merozoites joined by a central cytoplasmic stalk within an erythrocyte.',
         clinicalTrap: 'Seen only in Babesia microti, distinguishing it from Plasmodium falciparum ring forms. Requires high-power oil immersion (1000x) Giemsa-stained thin blood smear.',
+        protocol: 'Order urgent STAT manual peripheral thin and thick Giemsa smears. Scan ≥300 high-power fields. Confirm parasitemia percentage (<1% mild, >10% severe requiring red cell exchange transfusion).',
+        evidence: 'CDC DPDx Diagnostic Identification; Krause PJ et al. N Engl J Med 2000.',
         citations: 'CDC DPDx Babesiosis Laboratory Identification; Krause PJ et al.'
       },
       'Vagal Collapse / RMSSD': {
         category: 'AUTONOMIC TONE',
-        summary: 'Root Mean Square of Successive Differences (RMSSD) reflecting parasympathetic vagal brake efficiency.',
+        summary: 'Root Mean Square of Successive Differences (RMSSD) reflecting parasympathetic vagal brake efficiency and Mayer wave power.',
         clinicalTrap: 'Acute neuroborreliosis or systemic cytokine cascades suppress cholinergic anti-inflammatory pathway signaling, dropping RMSSD below 20ms and triggering postural orthostatic tachycardia.',
+        protocol: 'Practice 0.1 Hz resonant bio-rhythmic breathing (4 seconds in, 6 seconds out) for 10 minutes BID. Supplement with CoQ10 (200 mg) and cold facial immersion (mammalian dive reflex) to stimulate vagal efferent outflow.',
+        evidence: 'Tracey KJ. The inflammatory reflex. Nature 2002; Thayer JF et al. Neurosci Biobehav Rev 2012.',
         citations: 'Tracey KJ. The inflammatory reflex. Nature. 2002; Thayer JF et al. Neurosci Biobehav Rev. 2012.'
       },
       'Louise Sloan 5:1 Optotype Invariant': {
         category: 'OPHTHALMIC TYPOGRAPHY',
         summary: 'Standardized 5x5 grid with 1-unit stroke thickness resolving 5 arcminutes at visual axis (Snellen 20/20 / LogMAR 0.0).',
         clinicalTrap: 'Consumer fonts with arbitrary thin strokes become illegible under low-contrast surgical lighting or bedside label thermal printers, risking dosage misreads.',
+        protocol: 'Enforce optotypic stroke proportions: letter height = 5x stroke width. Never use hairline fonts for medication labels or telemetry counters. Implement slashed-zero (cv08) and curved-l (cv05) glyph variants.',
+        evidence: 'Sloan LL. Am J Ophthalmol 1959; ISO 8596 Visual Acuity Testing Standard.',
         citations: 'Sloan LL. Am J Ophthalmol. 1959; ISO 8596 Visual Acuity Testing.'
+      },
+      'Multiple Sclerosis & Smoldering PIRA': {
+        category: 'NEUROLOGICAL CDS',
+        summary: 'Progression Independent of Relapse Activity (PIRA) driven by compartmentalized microglial activation and axonal bioenergetic exhaustion behind a closed blood-brain barrier.',
+        clinicalTrap: 'Relying solely on contrast MRI to declare disease stability. Subclinical axonal loss occurs continuously; monitor sNfL liquid biopsy and Uhthoff thermal reserves to catch subclinical stress early.',
+        protocol: 'Track serum sNfL every 3-6 months. Prescribe dual-task neuroplastic walking (walking + mental arithmetic) to force collateral neural sprouting. Maintain Vitamin D3 at 60-80 ng/mL and add CoQ10 200mg BID.',
+        evidence: 'Kappos L et al. JAMA Neurol 2020; Giovannoni G et al. Brain 2024; Lublin FD et al. Lancet Neurol 2022.',
+        citations: 'Kappos L et al. JAMA Neurol. 2020; Giovannoni G et al. Brain. 2024.'
+      },
+      'Uhthoff Conduction Reserve / ΔT': {
+        category: 'BIOPHYSICAL CONDUCTION',
+        summary: 'Critical thermal safety margin (ΔT ≤ 0.40°C) where demyelinated saltatory conduction blocks reversibly due to rapid sodium channel inactivation.',
+        clinicalTrap: 'Mistaking heat-induced Uhthoff pauses for a true clinical relapse and unnecessarily administering high-dose IV steroids. Cooling restores baseline conduction within hours.',
+        protocol: 'Pre-cooling ice-slurry drinks before outdoor walking. Wear 15°C phase-change cooling vests in ambient heat >75°F. Restrict aquatic therapy pools to <84°F.',
+        evidence: 'Uhthoff W. 1890; Rasminsky M. Arch Neurol 1973; Frohman TC et al. Nat Clin Pract Neurol 2008.',
+        citations: 'Uhthoff W. 1890; Frohman TC et al. Nat Clin Pract Neurol. 2008.'
+      },
+      'CMS Remote Patient Monitoring (RPM) Superbill': {
+        category: 'REVENUE CYCLE & TELEMETRY',
+        summary: 'CMS Remote Patient Monitoring reimbursement codes (CPT 99453 setup, 99454 16 days of cellular transmissions/30d, 99457 20 min clinical care coordination).',
+        clinicalTrap: 'Billing 99454 with only 15 transmission days results in 100% claim rejection by Medicare MACs. PocketGull tracks exact 16-day statutory milestones in real time.',
+        protocol: 'Step 1: Patient consent & device onboarding (CPT 99453, ~$19). Step 2: Cellular device transmission tracking to day 16 milestone (CPT 99454, ~$52). Step 3: Document 20 minutes of care coordination (CPT 99457, ~$50).',
+        evidence: 'CMS Physician Fee Schedule Final Rule (CY 2026); AMA CPT Regulatory Guidelines.',
+        citations: 'CMS Physician Fee Schedule Final Rule (CY 2026); AMA CPT Guidelines.'
+      },
+      'ISMP Medication Safety Standard': {
+        category: 'PATIENT SAFETY & POSOLOGY',
+        summary: 'Institute for Safe Medication Practices rules: strictly prohibits trailing zeroes (\'5.0 mg\') and mandates leading zeroes (\'0.5 mg\') with slashed-zero (cv08) and curved-l (cv05) typography.',
+        clinicalTrap: '\'5.0 mg\' misread as \'50 mg\' is the #1 typographical cause of 10-fold lethal medication overdose in emergency orders.',
+        protocol: 'Zero trailing decimals: Always write \'5 mg\', never \'5.0 mg\'. Always write \'0.5 mg\', never \'.5 mg\'. Spell out \'micrograms\' or enforce ISO-compliant \'mcg\' notation instead of Greek \'µg\'.',
+        evidence: 'ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2026); FDA CDER Drug Safety Guidance.',
+        citations: 'ISMP Medication Safety Guidelines (2026); FDA 21 CFR Part 201.'
+      },
+      'Polypharmacy Deprescribing (STOPP/START)': {
+        category: 'GERIATRIC POSOLOGY',
+        summary: 'Screening Tool of Older Persons\' Prescriptions (STOPP v3) and Prescribing Cascade Detection (Amlodipine → edema → Furosemide).',
+        clinicalTrap: 'Treating a drug side-effect as a new clinical disease and adding a second medication. Always audit the medication timeline before adding a new drug.',
+        protocol: 'Audit medication list against STOPP v3 criteria. Calculate anticholinergic cognitive burden score (ACB). Execute multi-week taper with weekly symptom check-ins.',
+        evidence: 'O\'Mahony D et al. STOPP/START criteria version 3. Eur Geriatr Med 2023.',
+        citations: 'O\'Mahony D et al. Eur Geriatr Med. 2023; AGS Beers Criteria 2023.'
+      },
+      'Chrome Built-in AI & Gemma 4': {
+        category: 'EDGE PRIVACY & LLM',
+        summary: 'Zero-egress on-device inference utilizing Chrome Prompt API and Gemma 4 weights with sub-second execution directly within client hardware.',
+        clinicalTrap: 'Routing sensitive clinical dialogue to public cloud LLM endpoints risks HIPAA ePHI disclosure and adds network latency during bedside consultations.',
+        protocol: 'Query window.ai.languageModel directly on localhost. Keep system prompts deterministic. Fall back to local TypeScript parsing if experimental flags are inactive.',
+        evidence: 'W3C Web Machine Learning Standards; Google Built-in AI Architecture.',
+        citations: 'W3C WebML Working Group; NIST SP 800-66r2 HIPAA Security.'
       }
     };
 
@@ -1716,77 +2148,151 @@ export function renderBusinessSiteHtml(): string {
         category: 'CLINICAL CDS CONCEPT',
         summary: 'Clinical and systems biology evidence grounding for ' + term + '.',
         clinicalTrap: 'PocketGull applies Popperian falsifiability and zero-error legibility standards to all clinical telemetry and diagnostic recommendations.',
+        protocol: 'Follow clinical standard of care and evidence-grounded guidelines.',
+        evidence: 'Peer-reviewed clinical evidence base.',
         citations: 'PocketGull Clinical Intelligence Codex v1.37; FDA CDS Guidance.'
       };
 
       const body = document.getElementById('docDrillBody');
       if (body) {
-        body.innerHTML = '<div style="background: #18181b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem;">' +
-          '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">Category: ' + data.category + '</div>' +
+        body.innerHTML = '';
+
+        // Card 1: Overview
+        const card1 = document.createElement('div');
+        card1.style.cssText = 'background: #18181b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem;';
+        card1.innerHTML = '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">Category: ' + data.category + '</div>' +
           '<h4 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0.35rem 0 0.75rem;">' + term + '</h4>' +
-          '<p style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;">' + data.summary + '</p>' +
-        '</div>' +
-        '<div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 0.75rem; padding: 1.25rem;">' +
-          '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber-light); font-weight: 700; text-transform: uppercase;">⚠️ Socratic Clinical Invariant &amp; Trap</div>' +
-          '<p style="font-size: 0.8125rem; color: #fef3c7; line-height: 1.6; margin-top: 0.35rem;">' + data.clinicalTrap + '</p>' +
-        '</div>' +
-        '<div style="background: #09090b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem;">' +
-          '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Primary Citations</div>' +
-          '<p style="font-size: 0.75rem; color: #a1a1aa; margin-top: 0.25rem; font-style: italic;">' + data.citations + '</p>' +
-        '</div>';
+          '<p style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;">' + data.summary + '</p>';
+        body.appendChild(card1);
+
+        // Card 2: Clinical Trap
+        const card2 = document.createElement('div');
+        card2.style.cssText = 'background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 0.75rem; padding: 1.25rem;';
+        card2.innerHTML = '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber-light); font-weight: 700; text-transform: uppercase;">⚠️ Socratic Clinical Invariant &amp; Trap</div>' +
+          '<p style="font-size: 0.8125rem; color: #fef3c7; line-height: 1.6; margin-top: 0.35rem;">' + data.clinicalTrap + '</p>';
+        body.appendChild(card2);
+
+        // Card 3: Quick Socratic Drill Chips
+        const chipsWrap = document.createElement('div');
+        chipsWrap.style.cssText = 'display: flex; flex-direction: column; gap: 0.5rem;';
+        const chipsHeader = document.createElement('div');
+        chipsHeader.style.cssText = 'font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase; font-weight: 600;';
+        chipsHeader.textContent = '⚡ Quick Socratic Queries:';
+        chipsWrap.appendChild(chipsHeader);
+
+        const chipsRow = document.createElement('div');
+        chipsRow.style.cssText = 'display: flex; flex-wrap: wrap; gap: 0.4rem;';
+
+        const questions = [
+          '🎯 What is the clinical trap?',
+          '💊 What is the action protocol?',
+          '📊 What is the trial evidence?'
+        ];
+        questions.forEach(qText => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'doc-drill-chip';
+          btn.textContent = qText;
+          btn.onclick = function() { submitDocDrillQuestion(null, qText); };
+          chipsRow.appendChild(btn);
+        });
+        chipsWrap.appendChild(chipsRow);
+        body.appendChild(chipsWrap);
       }
 
+      const input = document.getElementById('docDrillQueryInput');
+      if (input) {
+        input.placeholder = 'Ask Doc Drill about ' + term + '...';
+      }
+
+      document.body.style.overflow = 'hidden';
       document.getElementById('docDrillDrawer').classList.add('open');
       document.getElementById('docDrillBackdrop').classList.add('open');
+
+      setTimeout(() => {
+        if (input) input.focus();
+      }, 350);
     }
 
     function closeDocDrill() {
+      document.body.style.overflow = '';
       document.getElementById('docDrillDrawer').classList.remove('open');
       document.getElementById('docDrillBackdrop').classList.remove('open');
     }
 
-    function submitDocDrillQuestion() {
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeDocDrill();
+      }
+    });
+
+    function submitDocDrillQuestion(evt, customQ) {
+      if (evt && evt.preventDefault) evt.preventDefault();
       const input = document.getElementById('docDrillQueryInput');
-      const q = input.value.trim();
+      const q = (typeof customQ === 'string' ? customQ : (input ? input.value : '')).trim();
       if (!q) return;
 
       const body = document.getElementById('docDrillBody');
+      const data = DOC_DRILL_DB[currentDrillTerm] || {
+        category: 'CLINICAL CDS CONCEPT',
+        summary: 'Clinical and systems biology evidence grounding for ' + currentDrillTerm + '.',
+        clinicalTrap: 'PocketGull applies Popperian falsifiability and zero-error legibility standards to all clinical telemetry and diagnostic recommendations.',
+        protocol: 'Follow clinical standard of care and evidence-grounded guidelines.',
+        evidence: 'Peer-reviewed clinical evidence base.',
+        citations: 'PocketGull Clinical Intelligence Codex v1.37; FDA CDS Guidance.'
+      };
+
+      // User Query Bubble
       const qCard = document.createElement('div');
-      qCard.style.cssText = 'background: #1e1e24; border: 1px solid var(--teal); border-radius: 0.75rem; padding: 1rem;';
-
+      qCard.style.cssText = 'background: #18181b; border: 1px solid rgba(45, 212, 191, 0.4); border-radius: 0.75rem; padding: 0.85rem 1rem;';
       const tagDiv = document.createElement('div');
-      tagDiv.style.cssText = 'font-size: 0.7rem; color: var(--teal-light); font-family: ui-monospace, monospace; font-weight: bold;';
-      tagDiv.textContent = '💬 CLINICIAN QUERY';
-
+      tagDiv.style.cssText = 'font-size: 0.6875rem; color: var(--teal-light); font-family: ui-monospace, monospace; font-weight: bold; text-transform: uppercase;';
+      tagDiv.textContent = '💬 Clinician Query';
       const queryDiv = document.createElement('div');
-      queryDiv.style.cssText = 'font-size: 0.85rem; color: #fff; margin: 0.25rem 0 0.75rem;';
-      queryDiv.textContent = '"' + q + '"';
-
-      const analysisDiv = document.createElement('div');
-      analysisDiv.style.cssText = 'font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;';
-
-      const strongPrefix = document.createElement('strong');
-      strongPrefix.style.color = 'var(--teal-light)';
-      strongPrefix.textContent = 'Doc Drill Socratic Analysis: ';
-
-      const emQ = document.createElement('em');
-      emQ.textContent = q;
-
-      const strongTerm = document.createElement('strong');
-      strongTerm.textContent = currentDrillTerm;
-
-      analysisDiv.appendChild(strongPrefix);
-      analysisDiv.appendChild(document.createTextNode('Regarding '));
-      analysisDiv.appendChild(emQ);
-      analysisDiv.appendChild(document.createTextNode(' in relation to '));
-      analysisDiv.appendChild(strongTerm);
-      analysisDiv.appendChild(document.createTextNode(': PocketGull models the full multi-organ and vector ecology continuum. Always rule out intraerythrocytic Babesia co-infections when evaluating post-tick fatigue with thrombocytopenia or hemolytic signs, and check the 72-hour prophylactic window before administering single-dose doxycycline.'));
-
+      queryDiv.style.cssText = 'font-size: 0.875rem; color: #fff; margin-top: 0.25rem; font-weight: 500;';
+      queryDiv.textContent = q;
       qCard.appendChild(tagDiv);
       qCard.appendChild(queryDiv);
-      qCard.appendChild(analysisDiv);
       body.appendChild(qCard);
-      input.value = '';
+
+      // Socratic Response Engine
+      const aCard = document.createElement('div');
+      aCard.style.cssText = 'background: #121215; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem; border-left: 3px solid var(--teal);';
+      const headerDiv = document.createElement('div');
+      headerDiv.style.cssText = 'font-size: 0.6875rem; color: var(--teal-light); font-family: ui-monospace, monospace; font-weight: bold; text-transform: uppercase; margin-bottom: 0.5rem;';
+      headerDiv.textContent = '⚡ Doc Drill Socratic Analysis • ' + currentDrillTerm;
+      aCard.appendChild(headerDiv);
+
+      const contentDiv = document.createElement('div');
+      contentDiv.style.cssText = 'font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;';
+
+      const lowerQ = q.toLowerCase();
+      let answerText = '';
+
+      if (lowerQ.includes('trap') || lowerQ.includes('avoid') || lowerQ.includes('risk') || lowerQ.includes('error') || lowerQ.includes('mistake')) {
+        answerText = '⚠️ Key Clinical Invariant & Trap: ' + data.clinicalTrap;
+      } else if (lowerQ.includes('protocol') || lowerQ.includes('treat') || lowerQ.includes('prescribe') || lowerQ.includes('action') || lowerQ.includes('dosing') || lowerQ.includes('what to do')) {
+        answerText = '📋 Recommended Action Protocol: ' + (data.protocol || data.summary);
+      } else if (lowerQ.includes('evidence') || lowerQ.includes('study') || lowerQ.includes('trial') || lowerQ.includes('citation') || lowerQ.includes('paper')) {
+        answerText = '📊 Evidence Hierarchy & Citations: ' + (data.evidence || data.citations);
+      } else {
+        answerText = 'Socratic Synthesis for ' + currentDrillTerm + ': ' + data.summary + ' \n\nKey Takeaway: ' + data.clinicalTrap;
+      }
+
+      const p = document.createElement('p');
+      p.style.cssText = 'white-space: pre-line;';
+      p.textContent = answerText;
+      contentDiv.appendChild(p);
+
+      const citeP = document.createElement('p');
+      citeP.style.cssText = 'font-size: 0.72rem; color: #a1a1aa; margin-top: 0.6rem; font-style: italic; border-top: 1px solid #27272a; padding-top: 0.4rem;';
+      citeP.textContent = 'Primary Source: ' + data.citations;
+      contentDiv.appendChild(citeP);
+
+      aCard.appendChild(contentDiv);
+      body.appendChild(aCard);
+
+      if (input) input.value = '';
       body.scrollTop = body.scrollHeight;
     }
   </script>
@@ -1802,7 +2308,7 @@ export function renderBusinessSiteHtml(): string {
           <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Doc Drill &bull; Evidence Focus</h3>
         </div>
       </div>
-      <button onclick="closeDocDrill()" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 0.375rem;" aria-label="Close Drawer">&times;</button>
+      <button type="button" onclick="closeDocDrill()" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 0.375rem;" aria-label="Close Drawer">&times;</button>
     </div>
 
     <div id="docDrillBody" style="flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
@@ -1810,7 +2316,7 @@ export function renderBusinessSiteHtml(): string {
     </div>
 
     <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--border); background: #0c0c0e;">
-      <form onsubmit="event.preventDefault(); submitDocDrillQuestion();" style="display: flex; gap: 0.5rem;">
+      <form onsubmit="submitDocDrillQuestion(event); return false;" style="display: flex; gap: 0.5rem;">
         <input type="text" id="docDrillQueryInput" placeholder="Ask Doc Drill about this concept..." style="flex: 1; background: #18181b; border: 1px solid var(--border); color: #fff; padding: 0.55rem 0.75rem; border-radius: 0.375rem; font-size: 0.8125rem;" />
         <button type="submit" class="btn-primary" style="padding: 0.55rem 1rem; font-size: 0.8125rem;">Ask</button>
       </form>
