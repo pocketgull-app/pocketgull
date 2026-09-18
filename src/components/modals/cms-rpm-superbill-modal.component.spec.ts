@@ -68,4 +68,21 @@ describe('CmsRpmSuperbillModalComponent', () => {
 
     window.print = originalPrint;
   });
+
+  it('should delegate removeDeprescribing to superbillService', () => {
+    service.setClinicalMinutes(0);
+    const log = service.linkDeprescribingTaper({
+      medication: 'Clonazepam 0.5mg',
+      clinicalRationale: 'Cognitive impairment risk in elderly'
+    });
+
+    expect(component.superbill().deprescribingLogs?.length).toBe(1);
+    expect(service.clinicalMinutesSpent()).toBe(20);
+
+    component.removeDeprescribing(log.id);
+
+    expect(component.superbill().deprescribingLogs?.length).toBe(0);
+    expect(service.clinicalMinutesSpent()).toBe(0);
+  });
 });
+

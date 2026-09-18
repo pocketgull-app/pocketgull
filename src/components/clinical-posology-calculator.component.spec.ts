@@ -6,11 +6,16 @@ import { ClinicalPosologyService } from '../services/clinical-posology.service';
 import { EnvironmentalHeatPosologyService } from '../services/environmental-heat-posology.service';
 import { ComplexAdaptiveSystemsService } from '../services/complex-adaptive-systems.service';
 import { SoapNoteGeneratorService } from '../services/soap-note-generator.service';
+import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
+import { NavigationShellService } from '../services/navigation-shell.service';
+import { DeprescribingDepuratorService } from '../services/deprescribing-depurator.service';
 
 describe('ClinicalPosologyCalculatorComponent', () => {
   let component: ClinicalPosologyCalculatorComponent;
   let mockState: any;
   let mockSoapNoteService: any;
+  let superbillService: CmsRpmSuperbillService;
+  let navShell: NavigationShellService;
   let injector: EnvironmentInjector;
 
   beforeEach(() => {
@@ -34,9 +39,15 @@ describe('ClinicalPosologyCalculatorComponent', () => {
       subjective: signal('Baseline Subjective')
     };
 
+    superbillService = new CmsRpmSuperbillService();
+    navShell = new NavigationShellService();
+
     injector = createEnvironmentInjector([
       { provide: PatientStateService, useValue: mockState },
       { provide: SoapNoteGeneratorService, useValue: mockSoapNoteService },
+      { provide: CmsRpmSuperbillService, useValue: superbillService },
+      { provide: NavigationShellService, useValue: navShell },
+      DeprescribingDepuratorService,
       ClinicalPosologyService,
       EnvironmentalHeatPosologyService,
       ComplexAdaptiveSystemsService
@@ -247,4 +258,35 @@ describe('ClinicalPosologyCalculatorComponent', () => {
     component.selectAgeTier('pediatric_child');
     expect(mockState.focusAnatomicalOrgan).toHaveBeenCalledWith('head');
   });
+
+  it('14. Links Beers criteria taper to Medicare RPM care coordination and displays toast', () => {
+    superbillService.setClinicalMinutes(0);
+    expect(component.linkedRpmToast()).toBeNull();
+    const beersEntry = component.beersRegistry[0];
+
+    component.linkBeersTaperToRpm(beersEntry);
+
+    expect(component.linkedRpmToast()).toBe(beersEntry.medication);
+    expect(component.lastLinkedMedication()).toBe(beersEntry.medication);
+    expect(superbillService.deprescribingLogs().length).toBe(1);
+    expect(superbillService.clinicalMinutesSpent()).toBe(20);
+
+    component.dismissRpmToast();
+    expect(component.linkedRpmToast()).toBeNull();
+  });
+
+  it('15. Links Prescribing Cascade taper to Medicare RPM and triggers modal opening', () => {
+    expect(component.prescribingCascades.length).toBeGreaterThan(0);
+    const cascade = component.prescribingCascades[0];
+
+    component.linkCascadeTaperToRpm(cascade);
+
+    expect(component.linkedRpmToast()).toBe(cascade.secondaryPrescribedDrug);
+    expect(superbillService.deprescribingLogs().length).toBe(1);
+
+    expect(navShell.showCmsSuperbillModal()).toBe(false);
+    component.openRpmSuperbill();
+    expect(navShell.showCmsSuperbillModal()).toBe(true);
+  });
 });
+

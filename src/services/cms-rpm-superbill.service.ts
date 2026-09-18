@@ -28,6 +28,18 @@ export interface ITelemetryComplianceDay {
   sleepMinutes?: number;
 }
 
+export interface IDeprescribingAttestationLog {
+  id: string;
+  medication: string;
+  originalDose: string;
+  targetDose: string;
+  clinicalRationale: string;
+  monitoringParameters: string[];
+  minutesAttributed: number;
+  timestamp: string;
+  clinicianSignOff: string;
+}
+
 export interface ICmsRpmSuperbill {
   claimId: string;
   patientId: string;
@@ -43,6 +55,7 @@ export interface ICmsRpmSuperbill {
   integritySealSha256: string;
   clinicalMinutesSpent?: number;
   complianceCalendar?: ITelemetryComplianceDay[];
+  deprescribingLogs?: IDeprescribingAttestationLog[];
 }
 
 @Injectable({
@@ -66,6 +79,7 @@ export class CmsRpmSuperbillService {
   readonly clinicalMinutesSpent = signal<number>(25); // Default 25 min (qualifies for 99457)
   readonly isInitialSetupEpisode = signal<boolean>(true); // Qualifies for 99453
   readonly customDayOverrides = signal<Record<string, boolean>>({});
+  readonly deprescribingLogs = signal<IDeprescribingAttestationLog[]>([]);
 
   // ── Telemetry Compliance Engine ─────────────────────────────────────────────
   /**
@@ -122,6 +136,69 @@ export class CmsRpmSuperbillService {
    */
   public setClinicalMinutes(minutes: number): void {
     this.clinicalMinutesSpent.set(Math.max(0, Math.min(300, Math.round(minutes))));
+  }
+
+  /**
+   * Links an active polypharmacy deprescribing schedule directly into the
+   * Medicare RPM Care Coordination Time Log, automatically attributing clinical time
+   * (default 20 min toward CPT 99457/99458) and logging formal clinical attestation.
+   */
+  public linkDeprescribingTaper(plan: {
+    medication: string;
+    originalDose?: string;
+    targetDose?: string;
+    clinicalRationale: string;
+    monitoringParameters?: string[] | string;
+    minutesToAttribute?: number;
+    clinicianSignOff?: string;
+  }): IDeprescribingAttestationLog {
+    const minutes = plan.minutesToAttribute ?? 20;
+    const now = new Date();
+
+    // NIST SP 800-90A CSPRNG log identifier
+    const entropy = new Uint8Array(4);
+    globalThis.crypto.getRandomValues(entropy);
+    const hex = Array.from(entropy).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+    const id = `DPR-${hex}`;
+
+    let parsedMonitoring: string[];
+    if (Array.isArray(plan.monitoringParameters)) {
+      parsedMonitoring = plan.monitoringParameters.length > 0
+        ? plan.monitoringParameters
+        : ['Blood pressure and heart rate telemetry', 'Recurrence of primary symptoms', 'Withdrawal / rebound phenomenon'];
+    } else if (typeof plan.monitoringParameters === 'string' && plan.monitoringParameters.trim().length > 0) {
+      parsedMonitoring = [plan.monitoringParameters];
+    } else {
+      parsedMonitoring = ['Blood pressure and heart rate telemetry', 'Recurrence of primary symptoms', 'Withdrawal / rebound phenomenon'];
+    }
+
+    const logEntry: IDeprescribingAttestationLog = {
+      id,
+      medication: plan.medication,
+      originalDose: plan.originalDose || 'Current Prescribed Dose',
+      targetDose: plan.targetDose || 'Gradual Step-Down Taper to Discontinuation',
+      clinicalRationale: plan.clinicalRationale,
+      monitoringParameters: parsedMonitoring,
+      minutesAttributed: minutes,
+      timestamp: now.toISOString(),
+      clinicianSignOff: plan.clinicianSignOff || 'Affirmed via PocketGull Clinical Posology & Deprescribing Engine'
+    };
+
+    this.deprescribingLogs.update(prev => [logEntry, ...prev]);
+    this.setClinicalMinutes(this.clinicalMinutesSpent() + minutes);
+    return logEntry;
+  }
+
+
+  /**
+   * Removes a linked deprescribing log and reconciles care coordination minutes.
+   */
+  public removeDeprescribingLog(logId: string): void {
+    const target = this.deprescribingLogs().find(l => l.id === logId);
+    if (target) {
+      this.deprescribingLogs.update(prev => prev.filter(l => l.id !== logId));
+      this.setClinicalMinutes(Math.max(0, this.clinicalMinutesSpent() - target.minutesAttributed));
+    }
   }
 
   // ── ICD-10 Cross-Mapping Engine ─────────────────────────────────────────────
@@ -288,7 +365,8 @@ export class CmsRpmSuperbillService {
       clinicianAttestationTimestamp: now.toISOString(),
       integritySealSha256: integritySeal,
       clinicalMinutesSpent: minutes,
-      complianceCalendar: calendar
+      complianceCalendar: calendar,
+      deprescribingLogs: this.deprescribingLogs()
     };
   }
 
@@ -299,6 +377,7 @@ export class CmsRpmSuperbillService {
   public generateEhrClinicalNote(superbill: ICmsRpmSuperbill): string {
     const primaryDiag = superbill.icd10Diagnoses.find(d => d.isPrimary) || superbill.icd10Diagnoses[0];
     const secondaryDiags = superbill.icd10Diagnoses.filter(d => !d.isPrimary);
+    const logs = superbill.deprescribingLogs || this.deprescribingLogs();
     
     const lines = [
       `================================================================================`,
@@ -316,6 +395,12 @@ export class CmsRpmSuperbillService {
       `[2. CLINICAL CARE COORDINATION & TIME LOG (CPT 99457 / CPT 99458)]`,
       `• Cumulative interactive clinical staff / physician time: ${superbill.clinicalMinutesSpent ?? this.clinicalMinutesSpent()} minutes.`,
       `• Scope of Work: Biometric review, medication posology calibration, vital sign titration, and trajectory assessment.`,
+      ...(logs.length > 0 ? [
+        `• Documented Polypharmacy Deprescribing Interventions (${logs.length} active protocol${logs.length > 1 ? 's' : ''}):`,
+        ...logs.map(log => 
+          `  - [${log.id}] ${log.medication}: ${log.originalDose} → ${log.targetDose} (+${log.minutesAttributed}m credited)\n    Rationale: ${log.clinicalRationale}\n    Target Biometrics: ${log.monitoringParameters.join(', ')}\n    Attested: ${log.timestamp} UTC (${log.clinicianSignOff})`
+        )
+      ] : []),
       ``,
       `[3. BILLABLE RPM CPT CODES & REIMBURSEMENT SCHEDULE]`,
       ...superbill.claimCodes.map(c => 

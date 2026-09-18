@@ -179,4 +179,80 @@ describe('CmsRpmSuperbillService', () => {
     expect(Array.isArray(fhirClaim['diagnosis'])).toBe(true);
     expect(Array.isArray(fhirClaim['item'])).toBe(true);
   });
+
+  it('should link deprescribing taper and increment care coordination time by 20 minutes', () => {
+    service.setClinicalMinutes(0);
+    const log = service.linkDeprescribingTaper({
+      medication: 'Lorazepam 1mg',
+      originalDose: '1mg qHS',
+      targetDose: '0.5mg qHS',
+      clinicalRationale: 'Beers criteria - high fall risk',
+      monitoringParameters: 'Insomnia, anxiety rebound, tremor'
+    });
+
+    expect(log.id).toContain('DPR-');
+    expect(log.medication).toBe('Lorazepam 1mg');
+    expect(log.minutesAttributed).toBe(20);
+    expect(service.deprescribingLogs().length).toBe(1);
+    expect(service.clinicalMinutesSpent()).toBe(20);
+
+    const bill = service.generateSuperbill();
+    expect(bill.deprescribingLogs?.length).toBe(1);
+    expect(bill.claimCodes.some(c => c.cptCode === '99457')).toBe(true);
+  });
+
+  it('should scale CPT 99457 and CPT 99458 when multiple deprescribing tapers are linked', () => {
+    service.setClinicalMinutes(0);
+    service.linkDeprescribingTaper({
+      medication: 'Diazepam 5mg',
+      clinicalRationale: 'Prolonged half-life in elderly'
+    });
+    service.linkDeprescribingTaper({
+      medication: 'Diphenhydramine 25mg',
+      clinicalRationale: 'Anticholinergic burden'
+    });
+
+    expect(service.clinicalMinutesSpent()).toBe(40);
+    const bill = service.generateSuperbill();
+    const cpt99457 = bill.claimCodes.find(c => c.cptCode === '99457');
+    const cpt99458 = bill.claimCodes.find(c => c.cptCode === '99458');
+
+    expect(cpt99457?.units).toBe(1);
+    expect(cpt99457?.totalUsd).toBe(50.18);
+    expect(cpt99458?.units).toBe(1);
+    expect(cpt99458?.totalUsd).toBe(39.86);
+  });
+
+  it('should remove deprescribing log and reconcile clinical minutes', () => {
+    service.setClinicalMinutes(0);
+    const log = service.linkDeprescribingTaper({
+      medication: 'Zolpidem 10mg',
+      clinicalRationale: 'Complex sleep behaviors and ataxia'
+    });
+    expect(service.clinicalMinutesSpent()).toBe(20);
+
+    service.removeDeprescribingLog(log.id);
+    expect(service.deprescribingLogs().length).toBe(0);
+    expect(service.clinicalMinutesSpent()).toBe(0);
+  });
+
+  it('should format polypharmacy deprescribing interventions in EHR clinical note', () => {
+    service.setClinicalMinutes(0);
+    service.linkDeprescribingTaper({
+      medication: 'Amitriptyline 25mg',
+      originalDose: '25mg qHS',
+      targetDose: '10mg qHS',
+      clinicalRationale: 'High anticholinergic burden and orthostasis',
+      monitoringParameters: 'Postural blood pressure, dry mouth'
+    });
+
+    const bill = service.generateSuperbill();
+    const note = service.generateEhrClinicalNote(bill);
+
+    expect(note).toContain('Documented Polypharmacy Deprescribing Interventions');
+    expect(note).toContain('Amitriptyline 25mg');
+    expect(note).toContain('High anticholinergic burden and orthostasis');
+    expect(note).toContain('+20m credited');
+  });
 });
+

@@ -192,6 +192,39 @@ import { CmsRpmSuperbillService, ICmsRpmSuperbill } from '../../services/cms-rpm
                 60 min (+$129.90)
               </button>
             </div>
+
+            <!-- Documented Polypharmacy Deprescribing Interventions -->
+            @if (superbill().deprescribingLogs && superbill().deprescribingLogs!.length > 0) {
+              <div class="pt-3 border-t border-zinc-800/80 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-mono font-bold uppercase text-teal-300 flex items-center gap-1.5">
+                    <span>💊</span> Documented Deprescribing Interventions ({{ superbill().deprescribingLogs!.length }})
+                  </span>
+                  <span class="text-[10px] font-mono text-zinc-400">Qualifies for CPT 99457/99458</span>
+                </div>
+                <div class="space-y-1.5">
+                  @for (log of superbill().deprescribingLogs; track log.id) {
+                    <div class="p-2.5 rounded-lg bg-zinc-950/70 border border-teal-500/30 flex items-center justify-between gap-2 text-xs">
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                          <span class="font-bold text-teal-300 font-mono">{{ log.medication }}</span>
+                          <span class="text-[10px] font-mono text-zinc-400 truncate">({{ log.originalDose }} → {{ log.targetDose }})</span>
+                          <span class="px-1.5 py-0.5 rounded bg-teal-950 text-teal-400 text-[9px] font-mono border border-teal-500/30 font-bold shrink-0">+{{ log.minutesAttributed }}m</span>
+                        </div>
+                        <p class="text-[11px] text-zinc-400 mt-0.5 truncate">{{ log.clinicalRationale }}</p>
+                      </div>
+                      <button 
+                        type="button"
+                        (click)="removeDeprescribing(log.id)"
+                        class="p-1.5 rounded text-zinc-500 hover:text-rose-400 hover:bg-zinc-800/80 transition cursor-pointer shrink-0 min-w-[32px] min-h-[32px] flex items-center justify-center"
+                        aria-label="Remove deprescribing protocol">
+                        ✕
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
           </div>
 
           <!-- ICD-10 Diagnosis Cross-Mapping -->
@@ -354,6 +387,10 @@ export class CmsRpmSuperbillModalComponent {
   addMinutes(delta: number): void {
     const current = this.superbillService.clinicalMinutesSpent();
     this.superbillService.setClinicalMinutes(current + delta);
+  }
+
+  removeDeprescribing(logId: string): void {
+    this.superbillService.removeDeprescribingLog(logId);
   }
 
   copyEhrNote(): void {

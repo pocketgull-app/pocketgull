@@ -5,6 +5,9 @@ import { ClinicalPosologyService, PosologyAgeTier, IBeersCriteriaAlert } from '.
 import { PatientStateService } from '../services/patient-state.service';
 import { SoapNoteGeneratorService } from '../services/soap-note-generator.service';
 import { EnvironmentalHeatPosologyService, IHeatPosologyAssessment } from '../services/environmental-heat-posology.service';
+import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
+import { DeprescribingDepuratorService } from '../services/deprescribing-depurator.service';
+import { NavigationShellService } from '../services/navigation-shell.service';
 import {
   ComplexAdaptiveSystemsService,
   IWbeAllometricScalingResult,
@@ -385,6 +388,25 @@ export interface IPosology3ActTrajectory {
                 </div>
               </div>
 
+              <!-- Toast / Feedback Banner for RPM Linkage -->
+              @if (linkedRpmToast()) {
+                <div class="p-3 bg-teal-950/80 border border-teal-500/60 rounded-xl text-teal-200 text-xs flex items-center justify-between animate-in fade-in duration-200 shadow-lg">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm">✓</span>
+                    <span><strong>{{ linkedRpmToast() }}</strong> deprescribing taper linked to RPM Care Coordination Log (+20 min / CPT 99457).</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button 
+                      type="button" 
+                      (click)="openRpmSuperbill()" 
+                      class="px-2.5 py-1 bg-teal-800 hover:bg-teal-700 text-white rounded-lg text-[10px] font-mono font-bold transition cursor-pointer min-h-[32px] flex items-center gap-1">
+                      <span>💵</span> View Superbill
+                    </button>
+                    <button (click)="linkedRpmToast.set(null)" class="text-teal-400 hover:text-white text-xs px-1">✕</button>
+                  </div>
+                </div>
+              }
+
               <!-- 2023 AGS Beers Criteria High-Risk Medication Registry -->
               <div class="p-3.5 rounded-xl bg-white/70 dark:bg-zinc-900/70 border border-purple-200 dark:border-purple-900/40 space-y-2.5">
                 <div class="flex items-center justify-between">
@@ -395,16 +417,66 @@ export interface IPosology3ActTrajectory {
                 </div>
                 <div class="divide-y divide-slate-100 dark:divide-zinc-800 text-xs">
                   @for (med of beersRegistry.slice(0, 3); track med.medication) {
-                    <div class="py-2 first:pt-0 last:pb-0 flex flex-col md:flex-row md:items-center justify-between gap-2">
-                      <div>
-                        <span class="font-bold text-rose-600 dark:text-rose-400">{{ med.medication }}</span>
-                        <span class="text-[10px] text-slate-500 font-mono ml-2">({{ med.category }})</span>
-                        <p class="text-[11px] text-slate-600 dark:text-zinc-400 mt-0.5">{{ med.rationale }}</p>
+                    <div class="py-2.5 first:pt-0 last:pb-0 flex flex-col gap-2">
+                      <div class="flex flex-col md:flex-row md:items-start justify-between gap-2">
+                        <div>
+                          <span class="font-bold text-rose-600 dark:text-rose-400">{{ med.medication }}</span>
+                          <span class="text-[10px] text-slate-500 font-mono ml-2">({{ med.category }})</span>
+                          <p class="text-[11px] text-slate-600 dark:text-zinc-400 mt-0.5">{{ med.rationale }}</p>
+                        </div>
+                        <div class="text-[10px] font-mono text-left md:text-right shrink-0">
+                          <span class="text-emerald-600 dark:text-emerald-400 font-bold block">Safer Alternatives:</span>
+                          <span class="text-slate-500">{{ med.saferAlternatives.join(', ') }}</span>
+                        </div>
                       </div>
-                      <div class="text-[10px] font-mono text-right shrink-0">
-                        <span class="text-emerald-600 dark:text-emerald-400 font-bold block">Safer Alternatives:</span>
-                        <span class="text-slate-500">{{ med.saferAlternatives.join(', ') }}</span>
+
+                      <!-- 1-Click Deprescribing to RPM Action -->
+                      <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-zinc-800/60">
+                        <span class="text-[10px] font-mono text-slate-500">Care Coordination Attestation:</span>
+                        <div class="flex items-center gap-2">
+                          <button
+                            type="button"
+                            (click)="linkBeersTaperToRpm(med)"
+                            class="px-2.5 py-1 rounded-lg bg-teal-950 text-teal-300 hover:bg-teal-900 border border-teal-500/40 text-[10px] font-mono font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs min-h-[36px]">
+                            <span>⚡</span> Link Taper to RPM (+20m CPT 99457)
+                          </button>
+                          @if (lastLinkedMedication() === med.medication) {
+                            <span class="text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1 animate-in fade-in duration-200">
+                              ✓ Linked! (+$50.18)
+                            </span>
+                          }
+                        </div>
                       </div>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Prescribing Cascades & Polypharmacy Deprescribing Tapers -->
+              <div class="p-3.5 rounded-xl bg-white/70 dark:bg-zinc-900/70 border border-teal-200 dark:border-teal-900/40 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-1.5">
+                    <span>🔁</span> Prescribing Cascades &amp; Taper Opportunities
+                  </span>
+                  <span class="text-[10px] font-mono text-teal-600 dark:text-teal-400 font-bold">CPT 99457 / 99458 Eligible</span>
+                </div>
+                <div class="space-y-2 text-xs">
+                  @for (cascade of prescribingCascades.slice(0, 2); track cascade.id) {
+                    <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-950/60 border border-slate-200 dark:border-zinc-800/80 space-y-1.5">
+                      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                        <div class="font-bold text-slate-800 dark:text-zinc-200">
+                          <span class="text-rose-500">{{ cascade.primaryDrug }}</span> ➔ {{ cascade.adverseReaction }} ➔ <span class="text-amber-500">{{ cascade.secondaryPrescribedDrug }}</span>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="linkCascadeTaperToRpm(cascade)"
+                          class="px-2 py-1 rounded bg-teal-900/40 hover:bg-teal-900 text-teal-300 border border-teal-500/40 text-[10px] font-mono font-bold transition flex items-center gap-1 cursor-pointer self-start sm:self-auto min-h-[32px]">
+                          <span>⚡</span> Apply Taper &amp; Log RPM (+20m)
+                        </button>
+                      </div>
+                      <p class="text-[10.5px] text-slate-600 dark:text-zinc-400 font-mono leading-relaxed">
+                        {{ cascade.deprescribingGuidance }}
+                      </p>
                     </div>
                   }
                 </div>
@@ -1763,6 +1835,39 @@ export class ClinicalPosologyCalculatorComponent {
   private readonly soapNoteService = inject(SoapNoteGeneratorService, { optional: true });
   private readonly heatPosology = inject(EnvironmentalHeatPosologyService);
   private readonly complexSystems = inject(ComplexAdaptiveSystemsService);
+  readonly superbillService = inject(CmsRpmSuperbillService, { optional: true });
+  readonly deprescribing = inject(DeprescribingDepuratorService, { optional: true });
+  readonly navShell = inject(NavigationShellService, { optional: true });
+
+  readonly lastLinkedMedication = signal<string | null>(null);
+  readonly linkedRpmToast = signal<string | null>(null);
+
+  readonly prescribingCascades = [
+    {
+      id: 'cascade-ccb-edema-diuretic',
+      primaryDrug: 'Amlodipine',
+      adverseReaction: 'Peripheral Vasodilatory Ankle Edema',
+      secondaryPrescribedDrug: 'Furosemide',
+      cascadeMechanism: 'Pre-capillary arteriolar dilation leads to fluid extravasation, mistaken for hypervolemic congestive heart failure.',
+      deprescribingGuidance: 'Reduce Amlodipine dose to 2.5–5mg or substitute with an ACE inhibitor/ARB, then gradually withdraw Furosemide.'
+    },
+    {
+      id: 'cascade-nsaid-hypertension-acei',
+      primaryDrug: 'Ibuprofen',
+      adverseReaction: 'Renal Vasoconstriction & Salt Retention (Hypertension)',
+      secondaryPrescribedDrug: 'Lisinopril',
+      cascadeMechanism: 'Cyclooxygenase inhibition reduces renal prostaglandins, blunts natriuresis and elevates mean arterial pressure.',
+      deprescribingGuidance: 'Discontinue regular NSAID; substitute with topical NSAIDs, acetaminophen, or physical therapy. Re-evaluate BP after 14 days.'
+    },
+    {
+      id: 'cascade-cholinesterase-incontinence-anticholinergic',
+      primaryDrug: 'Donepezil',
+      adverseReaction: 'Detrusor Hyperreflexia (Urge Incontinence)',
+      secondaryPrescribedDrug: 'Oxybutynin',
+      cascadeMechanism: 'Cholinesterase inhibitors increase bladder ACh; adding an anticholinergic antagonizes central therapy, precipitating delirium.',
+      deprescribingGuidance: 'Taper and discontinue Oxybutynin; evaluate behavioral bladder training or Mirabegron.'
+    }
+  ];
 
   readonly activeAgeTier = signal<PosologyAgeTier>('adult');
   readonly infantAgeMonths = signal<number>(6);
@@ -2393,4 +2498,69 @@ if __name__ == "__main__":
     this.showCopiedAsuToast.set(true);
     setTimeout(() => this.showCopiedAsuToast.set(false), 3500);
   }
+
+  linkBeersTaperToRpm(alert: IBeersCriteriaAlert): void {
+    if (!this.superbillService) return;
+    const plan = this.deprescribing?.generateTaperingSchedule(alert.medication, 'Standard Clinical Maintenance Dose');
+    const monitoringParams = plan?.taperSteps.map(s => s.clinicalMonitoringParameter) || [
+      'Vital signs (blood pressure, resting heart rate)',
+      'Cognitive clarity and absence of falls',
+      'Rebound symptom recurrence'
+    ];
+
+    this.superbillService.linkDeprescribingTaper({
+      medication: alert.medication,
+      originalDose: 'Standard Clinical Dose',
+      targetDose: alert.recommendation,
+      clinicalRationale: `AGS Beers Criteria 2023 (${alert.category}): ${alert.rationale}`,
+      monitoringParameters: monitoringParams,
+      minutesToAttribute: 20,
+      clinicianSignOff: 'Affirmed via PocketGull Clinical Posology & Deprescribing Engine'
+    });
+
+    this.lastLinkedMedication.set(alert.medication);
+    this.linkedRpmToast.set(alert.medication);
+    setTimeout(() => {
+      if (this.linkedRpmToast() === alert.medication) {
+        this.linkedRpmToast.set(null);
+      }
+    }, 4500);
+  }
+
+  linkCascadeTaperToRpm(cascade: { primaryDrug: string; secondaryPrescribedDrug: string; adverseReaction: string; deprescribingGuidance: string }): void {
+    if (!this.superbillService) return;
+    const plan = this.deprescribing?.generateTaperingSchedule(cascade.secondaryPrescribedDrug, 'Maintenance Dose');
+    const monitoringParams = plan?.taperSteps.map(s => s.clinicalMonitoringParameter) || [
+      'Vital signs (blood pressure, heart rate)',
+      'Fluid status and edema resolution',
+      'Primary symptom recurrence'
+    ];
+
+    this.superbillService.linkDeprescribingTaper({
+      medication: `${cascade.secondaryPrescribedDrug} (Cascaded from ${cascade.primaryDrug})`,
+      originalDose: 'Current Prescribed Dose',
+      targetDose: cascade.deprescribingGuidance,
+      clinicalRationale: `Prescribing Cascade Resolution (${cascade.adverseReaction}): ${cascade.deprescribingGuidance}`,
+      monitoringParameters: monitoringParams,
+      minutesToAttribute: 20,
+      clinicianSignOff: 'Affirmed via PocketGull Deprescribing Depurator'
+    });
+
+    this.lastLinkedMedication.set(cascade.secondaryPrescribedDrug);
+    this.linkedRpmToast.set(cascade.secondaryPrescribedDrug);
+    setTimeout(() => {
+      if (this.linkedRpmToast() === cascade.secondaryPrescribedDrug) {
+        this.linkedRpmToast.set(null);
+      }
+    }, 4500);
+  }
+
+  openRpmSuperbill(): void {
+    this.navShell?.openCmsSuperbill();
+  }
+
+  dismissRpmToast(): void {
+    this.linkedRpmToast.set(null);
+  }
 }
+
