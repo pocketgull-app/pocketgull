@@ -14,6 +14,7 @@ import { ConsoleIntegrityBadgeComponent } from './console-integrity-badge.compon
 import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscape.service';
 import { NavigationShellService } from '../services/navigation-shell.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
+import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
 
 @Component({
   selector: 'app-main-header-nav',
@@ -102,6 +103,13 @@ import { BionicReadingService } from '../services/bionic-reading.service';
           class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
           <span class="text-xs">💵</span>
           <span>RPM Superbill</span>
+          @if (rpmService?.rpmSummary(); as rpm) {
+            <span 
+              [ngClass]="rpm.isCompliant ? 'bg-emerald-200/80 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-100 border-emerald-400/60' : 'bg-amber-200/80 dark:bg-amber-900/80 text-amber-900 dark:text-amber-100 border-amber-400/60'"
+              class="px-1.5 py-0.5 rounded text-[10px] font-mono border tabular-nums">
+              {{ rpm.qualifyingDays }}/16d
+            </span>
+          }
         </button>
 
         <!-- 📈 3-Act Trajectory Reader Trigger (Desktop) -->
@@ -607,8 +615,17 @@ import { BionicReadingService } from '../services/bionic-reading.service';
             </button>
 
             <!-- 💵 CMS Remote Patient Monitoring (RPM) Superbill -->
-            <button type="button" (click)="navShell?.openCmsSuperbill(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
-              <span class="text-base">💵</span> <span>CMS RPM Superbill (CPT 99453/4)</span>
+            <button type="button" (click)="navShell?.openCmsSuperbill(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center justify-between px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <div class="flex items-center gap-3">
+                <span class="text-base">💵</span> <span>CMS RPM Superbill (CPT 99453/4)</span>
+              </div>
+              @if (rpmService?.rpmSummary(); as rpm) {
+                <span 
+                  [ngClass]="rpm.isCompliant ? 'bg-emerald-200/80 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-100' : 'bg-amber-200/80 dark:bg-amber-900/80 text-amber-900 dark:text-amber-100'"
+                  class="px-2 py-0.5 rounded text-[10px] font-mono tabular-nums">
+                  {{ rpm.qualifyingDays }}/16d
+                </span>
+              }
             </button>
 
             <!-- 📈 3-Act Clinical Trajectory Reader -->
@@ -746,6 +763,7 @@ export class MainHeaderNavComponent {
   session = inject(SessionStateService);
   soundscapeService = inject(AmbientFlowSoundscapeService);
   navShell = inject(NavigationShellService, { optional: true });
+  rpmService = inject(CmsRpmSuperbillService, { optional: true });
 
   today = new Date();
   isMobileMenuOpen = signal<boolean>(false);
