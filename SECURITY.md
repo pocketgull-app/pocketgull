@@ -8,9 +8,9 @@ Only the latest `main` branch and currently deployed production versions receive
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.25.x  | :white_check_mark: |
-| 1.24.x  | :white_check_mark: |
-| < 1.24  | :x:                |
+| 1.36.x  | :white_check_mark: |
+| 1.35.x  | :white_check_mark: |
+| < 1.35  | :x:                |
 
 ## Reporting a Vulnerability
 
