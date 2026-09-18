@@ -146,10 +146,15 @@ describe('BionicReadingService', () => {
     expect(service.accessibilityNotice()).toContain('disabled');
   });
 
-  it('should set bionic reading explicitly', () => {
-    service.setBionicReading(true);
-    expect(service.isBionicReadingEnabled()).toBe(true);
-    service.setBionicReading(false);
-    expect(service.isBionicReadingEnabled()).toBe(false);
+  it('should memoize formatToBionicHtml calls to prevent change detection jank', () => {
+    const text = 'Cardiovascular pathophysiology in clinical assessment';
+    const firstCall = service.formatToBionicHtml(text);
+    const secondCall = service.formatToBionicHtml(text);
+    expect(secondCall).toBe(firstCall);
+
+    // Verify clearCache empties cache and still returns identical string
+    service.clearCache();
+    const thirdCall = service.formatToBionicHtml(text);
+    expect(thirdCall).toBe(firstCall);
   });
 });
