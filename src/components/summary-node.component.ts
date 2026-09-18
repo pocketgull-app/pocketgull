@@ -20,7 +20,6 @@ import { Medical3DViewerComponent } from './anatomy-3d/medical-3d-viewer.compone
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
-import { ClinicalIconComponent } from './shared/clinical-icon.component';
 import { BionicReadingService } from '../services/bionic-reading.service';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -93,7 +92,7 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
 @Component({
   selector: 'app-summary-node',
   standalone: true,
-  imports: [CommonModule, FormsModule, PocketGullBadgeComponent, PocketGullButtonComponent, PocketGullInputComponent, Medical3DViewerComponent, SafeHtmlPipe, NgOptimizedImage, ClinicalIconComponent],
+  imports: [CommonModule, FormsModule, PocketGullBadgeComponent, PocketGullButtonComponent, PocketGullInputComponent, Medical3DViewerComponent, SafeHtmlPipe, NgOptimizedImage],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   styles: [`
