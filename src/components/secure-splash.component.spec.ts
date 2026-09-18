@@ -116,7 +116,9 @@ describe('SecureSplashComponent Sensory Suite', () => {
         { provide: BionicReadingService, useValue: { isBionicReadingEnabled: signal(false), toggleBionicReading: vi.fn() } }
       ]
     });
-    return runInInjectionContext(injector, () => new SecureSplashComponent());
+    const comp = runInInjectionContext(injector, () => new SecureSplashComponent());
+    comp.session.lock();
+    return comp;
   };
 
   it('1. Initializes with available Hemispherical Sync Presets and Theme controls', () => {
