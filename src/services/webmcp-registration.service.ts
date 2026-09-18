@@ -41,6 +41,8 @@ import { OpticalInnovationsService } from './optical-innovations.service';
 import { PatientTrajectoryService } from './patient-trajectory.service';
 import { DataScienceCitationService } from './data-science-citation.service';
 import { ClinicalKneeRecoveryLoopService, PresetKneeScenario } from './clinical-knee-recovery-loop.service';
+import { FhirR7R4ConverterService } from './fhir/fhir-r7-r4-converter.service';
+import { FhirR7HorizonService } from './fhir/fhir-r7-horizon.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -50,6 +52,8 @@ export class WebMcpRegistrationService {
   private state = inject(PatientStateService);
   private clinicalIntelligence = inject(ClinicalIntelligenceService);
   private exportService = inject(ExportService);
+  private fhirConverter = inject(FhirR7R4ConverterService, { optional: true });
+  private fhirR7Service = inject(FhirR7HorizonService, { optional: true });
   private teledentistryService = inject(TeledentistryService);
   private gcpHealthcareService = inject(GcpHealthcareApiService);
   private skepticalService = inject(SkepticalEpistemologyService);
@@ -363,6 +367,121 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(hl7Tool, { signal: hl7Ctrl.signal });
     this.mcpControllers.push({ name: hl7Tool.name, controller: hl7Ctrl });
+
+    // 9a. convert_fhir_r7_to_r4
+    const r7ToR4Ctrl = new AbortController();
+    const r7ToR4Tool = {
+      name: 'convert_fhir_r7_to_r4',
+      description: 'Converts a FHIR R7 Horizon continuous biophysics & transgenerational stream bundle into a standard statutory FHIR R4.0.1 US Core collection bundle with lossless encapsulation.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          r7BundleJson: { type: 'string', description: 'Optional JSON string of an IFhir7Bundle. If omitted, uses current patient live R7 bundle.' }
+        }
+      },
+      execute: async (params: any) => {
+        try {
+          let bundleObj = null;
+          if (params?.r7BundleJson) {
+            bundleObj = JSON.parse(params.r7BundleJson);
+          } else if (this.fhirR7Service) {
+            bundleObj = this.fhirR7Service.generateFhir7Bundle();
+          }
+          if (!bundleObj) {
+            return { content: [{ type: 'text', text: 'Error: No FHIR R7 bundle provided or available.' }], isError: true };
+          }
+          const r4Bundle = this.fhirConverter?.convertR7ToR4Bundle(bundleObj) || {};
+          return { content: [{ type: 'text', text: JSON.stringify(r4Bundle, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to convert R7 to R4: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(r7ToR4Tool, { signal: r7ToR4Ctrl.signal });
+    this.mcpControllers.push({ name: r7ToR4Tool.name, controller: r7ToR4Ctrl });
+
+    // 9b. convert_fhir_r4_to_r7
+    const r4ToR7Ctrl = new AbortController();
+    const r4ToR7Tool = {
+      name: 'convert_fhir_r4_to_r7',
+      description: 'Up-converts or round-trip restores a standard FHIR R4 bundle back into a FHIR R7 Horizon continuous biophysics stream bundle.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          r4BundleJson: { type: 'string', description: 'JSON string of the FHIR R4 Bundle to convert.' }
+        },
+        required: ['r4BundleJson']
+      },
+      execute: async (params: any) => {
+        try {
+          if (!params?.r4BundleJson) {
+            return { content: [{ type: 'text', text: 'Error: r4BundleJson parameter is required.' }], isError: true };
+          }
+          const r4Obj = JSON.parse(params.r4BundleJson);
+          const r7Bundle = this.fhirConverter?.convertR4ToR7Bundle(r4Obj) || {};
+          return { content: [{ type: 'text', text: JSON.stringify(r7Bundle, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to convert R4 to R7: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(r4ToR7Tool, { signal: r4ToR7Ctrl.signal });
+    this.mcpControllers.push({ name: r4ToR7Tool.name, controller: r4ToR7Ctrl });
+
+    // 9c. convert_hl7_er7_to_fhir_r4
+    const er7ToR4Ctrl = new AbortController();
+    const er7ToR4Tool = {
+      name: 'convert_hl7_er7_to_fhir_r4',
+      description: 'Parses and converts a legacy hospital HL7 v2.5.1 ER7 pipe-delimited message (ORU^R01) into a modern FHIR R4.0.1 Bundle.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          er7Message: { type: 'string', description: 'Raw HL7 v2.5.1 ER7 pipe-delimited text.' }
+        },
+        required: ['er7Message']
+      },
+      execute: async (params: any) => {
+        try {
+          if (!params?.er7Message) {
+            return { content: [{ type: 'text', text: 'Error: er7Message parameter is required.' }], isError: true };
+          }
+          const r4Bundle = this.fhirConverter?.convertEr7ToR4Bundle(params.er7Message) || {};
+          return { content: [{ type: 'text', text: JSON.stringify(r4Bundle, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to convert HL7 ER7 to FHIR R4: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(er7ToR4Tool, { signal: er7ToR4Ctrl.signal });
+    this.mcpControllers.push({ name: er7ToR4Tool.name, controller: er7ToR4Ctrl });
+
+    // 9d. convert_fhir_r4_to_hl7_er7
+    const r4ToEr7Ctrl = new AbortController();
+    const r4ToEr7Tool = {
+      name: 'convert_fhir_r4_to_hl7_er7',
+      description: 'Converts a modern FHIR R4.0.1 Bundle into a legacy hospital HL7 v2.5.1 ER7 pipe-delimited message (ORU^R01).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          r4BundleJson: { type: 'string', description: 'JSON string of the FHIR R4 Bundle.' }
+        },
+        required: ['r4BundleJson']
+      },
+      execute: async (params: any) => {
+        try {
+          if (!params?.r4BundleJson) {
+            return { content: [{ type: 'text', text: 'Error: r4BundleJson parameter is required.' }], isError: true };
+          }
+          const r4Obj = JSON.parse(params.r4BundleJson);
+          const er7Text = this.fhirConverter?.convertR4ToEr7(r4Obj) || '';
+          return { content: [{ type: 'text', text: er7Text }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to convert FHIR R4 to HL7 ER7: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(r4ToEr7Tool, { signal: r4ToEr7Ctrl.signal });
+    this.mcpControllers.push({ name: r4ToEr7Tool.name, controller: r4ToEr7Ctrl });
 
     // 10. purge_transient_patient_state
     const purgeCtrl = new AbortController();

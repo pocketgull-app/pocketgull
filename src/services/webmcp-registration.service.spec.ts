@@ -14,6 +14,8 @@ import { IpPatentRegistryService } from './ip-patent-registry.service';
 import { OpticalInnovationsService } from './optical-innovations.service';
 import { PatientTrajectoryService } from './patient-trajectory.service';
 import { ClinicalKneeRecoveryLoopService } from './clinical-knee-recovery-loop.service';
+import { FhirR7HorizonService } from './fhir/fhir-r7-horizon.service';
+import { FhirR7R4ConverterService } from './fhir/fhir-r7-r4-converter.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -207,6 +209,30 @@ describe('WebMcpRegistrationService', () => {
         { provide: OpticalInnovationsService, useValue: new OpticalInnovationsService() },
         { provide: PatientTrajectoryService, useValue: mockTrajectory },
         { provide: ClinicalKneeRecoveryLoopService, useValue: new ClinicalKneeRecoveryLoopService() },
+        {
+          provide: FhirR7HorizonService,
+          useValue: {
+            generateFhir7Bundle: vi.fn().mockReturnValue({
+              resourceType: 'Bundle',
+              id: 'bundle-test-r7',
+              meta: { fhirVersion: '7.0.0-horizon', postQuantumEncryption: 'NIST ML-KEM-1024' },
+              entry: [
+                {
+                  resource: {
+                    resourceType: 'BiophysicsStreamObservation',
+                    id: 'obs-test-01',
+                    negentropicFrictionScore: 0.72,
+                    samplingRateHz: 100,
+                    vagalLfoHz: 0.1,
+                    solfeggioCarrierHz: 528,
+                    tubulinGammaPulseHz: 40
+                  }
+                }
+              ]
+            })
+          }
+        },
+        { provide: FhirR7R4ConverterService, useClass: FhirR7R4ConverterService },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -214,10 +240,14 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 67 WebMCP agentic tools on modelContext', () => {
+  it('should register all 71 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(67);
+    expect(registeredTools.size).toBe(71);
+    expect(registeredTools.has('convert_fhir_r7_to_r4')).toBe(true);
+    expect(registeredTools.has('convert_fhir_r4_to_r7')).toBe(true);
+    expect(registeredTools.has('convert_hl7_er7_to_fhir_r4')).toBe(true);
+    expect(registeredTools.has('convert_fhir_r4_to_hl7_er7')).toBe(true);
     expect(registeredTools.has('inspect_knee_mri_findings')).toBe(true);
     expect(registeredTools.has('set_knee_3d_slicing_plane')).toBe(true);
     expect(registeredTools.has('get_clinical_evidence_citations')).toBe(true);
@@ -332,6 +362,59 @@ describe('WebMcpRegistrationService', () => {
     const result = await tool.execute({ downloadFile: true });
     expect(result.content[0].text).toBe('MSH|^~\\&|POCKETGULL|');
     expect(mockExportService.exportHl7v2Report).toHaveBeenCalled();
+  });
+
+  it('should execute convert_fhir_r7_to_r4 tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('convert_fhir_r7_to_r4');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({});
+    expect(result.content[0].text).toContain('"resourceType": "Bundle"');
+    expect(result.content[0].text).toContain('"fhirVersion": "4.0.1"');
+  });
+
+  it('should execute convert_fhir_r4_to_r7 tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('convert_fhir_r4_to_r7');
+    expect(tool).toBeDefined();
+
+    const sampleR4 = JSON.stringify({
+      resourceType: 'Bundle',
+      entry: [{ resource: { resourceType: 'Observation', code: { coding: [{ code: '8867-4' }] }, valueQuantity: { value: 80 } } }]
+    });
+
+    const result = await tool.execute({ r4BundleJson: sampleR4 });
+    expect(result.content[0].text).toContain('"fhirVersion": "7.0.0-horizon"');
+    expect(result.content[0].text).toContain('BiophysicsStreamObservation');
+  });
+
+  it('should execute convert_hl7_er7_to_fhir_r4 tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('convert_hl7_er7_to_fhir_r4');
+    expect(tool).toBeDefined();
+
+    const er7 = 'MSH|^~\\&|PG||||\rPID|||P123\rOBX|1|NM|8867-4^HR^LN||75|/min';
+    const result = await tool.execute({ er7Message: er7 });
+    expect(result.content[0].text).toContain('"resourceType": "Bundle"');
+    expect(result.content[0].text).toContain('"value": 75');
+  });
+
+  it('should execute convert_fhir_r4_to_hl7_er7 tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('convert_fhir_r4_to_hl7_er7');
+    expect(tool).toBeDefined();
+
+    const sampleR4 = JSON.stringify({
+      resourceType: 'Bundle',
+      entry: [
+        { resource: { resourceType: 'Patient', id: 'P789' } },
+        { resource: { resourceType: 'Observation', code: { coding: [{ code: '8867-4' }] }, valueQuantity: { value: 70 } } }
+      ]
+    });
+
+    const result = await tool.execute({ r4BundleJson: sampleR4 });
+    expect(result.content[0].text).toContain('MSH|^~\\&|POCKETGULL');
   });
 
   it('should execute export_patient_care_plan_fhir_r4 tool', async () => {
@@ -647,10 +730,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 67 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 71 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(67);
+    expect(registeredTools.size).toBe(71);
     expect(registeredTools.has('get_clinical_evidence_citations')).toBe(true);
     expect(registeredTools.has('get_patient_3act_trajectory')).toBe(true);
     expect(registeredTools.has('configure_optical_therapy')).toBe(true);
@@ -856,7 +939,7 @@ describe('WebMcpRegistrationService', () => {
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(67);
+    expect((service as any).mcpControllers.length).toBe(71);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
