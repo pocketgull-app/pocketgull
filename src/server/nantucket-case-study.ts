@@ -989,7 +989,7 @@ export function renderNantucketCaseStudyHtml(): string {
         category: 'CLINICAL CDS CONCEPT',
         summary: 'Clinical and systems biology evidence grounding for ' + term + '.',
         clinicalTrap: 'PocketGull applies Popperian falsifiability and zero-error legibility standards to all clinical telemetry and diagnostic recommendations.',
-        citations: 'PocketGull Clinical Intelligence Codex v1.31; FDA CDS Guidance.'
+        citations: 'PocketGull Clinical Intelligence Codex v1.37; FDA CDS Guidance.'
       };
 
       const body = document.getElementById('docDrillBody');

@@ -141,7 +141,7 @@ export async function initOpenTelemetry(): Promise<boolean> {
     const sdk = new NodeSDK({
       resource: resourceFromAttributes({
         'service.name': serviceName,
-        'service.version': '1.31.0',
+        'service.version': '1.37.0',
         'deployment.environment': process.env['NODE_ENV'] || 'production'
       }),
       traceExporter,
@@ -172,7 +172,7 @@ export async function initOpenTelemetry(): Promise<boolean> {
  * Returns the default application tracer.
  */
 export function getTracer(name: string = 'pocketgull-clinical-tracer'): Tracer {
-  return trace.getTracer(name, '1.31.0');
+  return trace.getTracer(name, '1.37.0');
 }
 
 /**

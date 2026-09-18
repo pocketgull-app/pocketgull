@@ -50,7 +50,7 @@ export function renderBusinessSiteHtml(): string {
         "name": "PocketGull",
         "operatingSystem": "Web, iOS, Android, macOS, Linux, Windows",
         "applicationCategory": "HealthApplication",
-        "softwareVersion": "1.34.0",
+        "softwareVersion": "1.37.0",
         "description": "On-device ambient AI clinical assistant with JAX/Flax neural scoring, ISMP medication safety validation, and HL7 FHIR R4 export.",
         "offers": {
           "@type": "Offer",
@@ -1716,7 +1716,7 @@ export function renderBusinessSiteHtml(): string {
         category: 'CLINICAL CDS CONCEPT',
         summary: 'Clinical and systems biology evidence grounding for ' + term + '.',
         clinicalTrap: 'PocketGull applies Popperian falsifiability and zero-error legibility standards to all clinical telemetry and diagnostic recommendations.',
-        citations: 'PocketGull Clinical Intelligence Codex v1.34; FDA CDS Guidance.'
+        citations: 'PocketGull Clinical Intelligence Codex v1.37; FDA CDS Guidance.'
       };
 
       const body = document.getElementById('docDrillBody');
