@@ -174,6 +174,34 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* 🧮 PocketGull Math & Scientific Notation Stack (OpenType Math v3.100) */
+.font-pocketgull-math {
+  font-family: 'PocketGull Math', 'STIX Two Math', 'Cambria Math', 'Latin Modern Math', ui-monospace, monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1, "ssty" 1;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 🧪 PocketGull Clinical Chemistry & Pharmacology Stack */
+.font-pocketgull-chem {
+  font-family: 'PocketGull Chem', 'PocketGull Math', 'PocketGull Mono', monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1, "subs" 1, "sups" 1;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 🧬 PocketGull Clinical Genomics & CRISPR Stack */
+.font-pocketgull-genome {
+  font-family: 'PocketGull Genome', 'PocketGull Mono', ui-monospace, monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* 🖋️ PocketGull Chisel / Black Display Variant (900 Weight) */
 .font-pocketgull-chiseltip,
 .font-pocketgull-chisel {

@@ -159,6 +159,32 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
     });
   });
 
+  // Intercept Lemonade local inference daemon (port 13305) to avoid ERR_CONNECTION_REFUSED in headless test runs
+  await page.route(/http:\/\/(localhost|127\.0\.0\.1):13305\/.*/, async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        object: 'list',
+        data: [
+          { id: 'gemma-4-local', object: 'model', created: 1710000000, owned_by: 'pocketgull' }
+        ]
+      })
+    });
+  });
+
+  // Intercept Google Identity Toolkit project config to prevent invalid test API key 400 warnings
+  await page.route(/https:\/\/www\.googleapis\.com\/identitytoolkit\/.*/, async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        projectId: 'gen-lang-client-0540208645',
+        authorizedDomains: ['localhost', '127.0.0.1']
+      })
+    });
+  });
+
   // Intercept AI Stream endpoint to return standard test keywords for all lens verification
   await page.route('**/api/ai/stream', async route => {
     console.log('E2E MOCK: Intercepted POST /api/ai/stream');
@@ -235,14 +261,24 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
 
     // Disable service worker during tests so Playwright can intercept API requests reliably
     try {
+      const mockRegistration = {
+        active: null,
+        installing: null,
+        waiting: null,
+        scope: '/',
+        update: () => Promise.resolve(),
+        unregister: () => Promise.resolve(true),
+        addEventListener: () => {},
+        removeEventListener: () => {}
+      };
       const mockSW = {
-        register: () => Promise.reject(new Error('Service worker disabled for testing')),
+        register: () => Promise.resolve(mockRegistration as any),
         addEventListener: () => {},
         removeEventListener: () => {},
-        getRegistration: () => Promise.resolve(undefined),
-        getRegistrations: () => Promise.resolve([]),
+        getRegistration: () => Promise.resolve(mockRegistration as any),
+        getRegistrations: () => Promise.resolve([mockRegistration as any]),
         controller: null,
-        ready: Promise.resolve({ active: null } as any)
+        ready: Promise.resolve(mockRegistration as any)
       };
       Object.defineProperty(navigator, 'serviceWorker', {
         get() { return mockSW; },

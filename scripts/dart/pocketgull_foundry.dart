@@ -18,7 +18,10 @@ const fontStems = [
   'PocketGull-Chiseltip',
   'PocketGull-Antigravity',
   'PocketGull-Numerics',
+  'PocketGull-Math',
   'PocketGullMono-Regular',
+  'PocketGullMono-Bold',
+  'PocketGullMono-Italic',
   'PocketGull-VF',
 ];
 

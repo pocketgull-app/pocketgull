@@ -22,9 +22,10 @@ export interface ISsoUserSession {
 export function createAuthRouter(): Router {
   const router = Router();
 
+  const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test');
   const authLimiter = rateLimit({
     windowMs: 60_000,
-    max: 60,
+    max: isTestingEnv || process.env['NODE_ENV'] !== 'production' ? 10_000 : 60,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: 'Too many authentication attempts. Please wait 1 minute.' }
