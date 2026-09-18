@@ -7,19 +7,22 @@ describe('ResearchConsentService Suite', () => {
     service = new ResearchConsentService();
   });
 
-  it('1. Initializes with active certified disease cohorts and ethical models', () => {
+  it('1. Initializes with active certified disease cohorts and ethical open science models', () => {
     const cohorts = service.availableCohorts();
     expect(cohorts.length).toBeGreaterThanOrEqual(5);
 
     const diabetesCohort = cohorts.find(c => c.id === 'cohort_diabetes_cgm');
     expect(diabetesCohort).toBeDefined();
     expect(diabetesCohort?.ethicalFramework).toBe('nih_all_of_us');
-    expect(diabetesCohort?.compensationPerQueryUsd).toBe(25.00);
+    expect(diabetesCohort?.studyFundingModel).toBe('open_science_commons');
+    expect(diabetesCohort?.grantEscrowStatus).toBe('pure_open_science');
+    expect(diabetesCohort?.compensationPerQueryUsd).toBe(0.00);
 
     const oncologyCohort = cohorts.find(c => c.id === 'cohort_oncology_biomarkers');
     expect(oncologyCohort).toBeDefined();
     expect(oncologyCohort?.ethicalFramework).toBe('luna_dna_public_benefit');
-    expect(oncologyCohort?.compensationPerQueryUsd).toBe(50.00);
+    expect(oncologyCohort?.studyFundingModel).toBe('open_science_commons');
+    expect(oncologyCohort?.compensationPerQueryUsd).toBe(0.00);
   });
 
   it('2. Signs HIPAA § 164.508 Digital Research Authorization', () => {
@@ -45,27 +48,38 @@ describe('ResearchConsentService Suite', () => {
     expect(service.isCohortEnrolled(cohortId)).toBe(initialEnrolled);
   });
 
-  it('4. Simulates accredited study query and accrues data dividend revenue share', () => {
-    const initialEarnings = service.lifetimeEarnings();
-    const initialBalance = service.availableBalance();
+  it('4. Simulates accredited study query and records open science contribution without fabricating cash', () => {
+    const initialContributions = service.totalContributionsCount();
+    const initialFindings = service.scientificFindings().length;
 
     const entry = service.simulateDividendAccrual('cohort_diabetes_cgm', 'Mayo Clinic');
     expect(entry).not.toBeNull();
-    expect(entry?.amountUsd).toBe(25.00);
-    expect(entry?.patientRevenueSharePercent).toBe(85);
+    expect(entry?.amountUsd).toBe(0.00);
+    expect(entry?.status).toBe('open_science_contributed');
+    expect(entry?.openScienceImpactScore).toBeGreaterThanOrEqual(90);
 
-    expect(service.lifetimeEarnings()).toBe(initialEarnings + 25.00);
-    expect(service.availableBalance()).toBe(initialBalance + 25.00);
+    expect(service.totalContributionsCount()).toBe(initialContributions + 1);
+    expect(service.scientificFindings().length).toBe(initialFindings + 1);
+    expect(service.grantEscrowBalance()).toBe(0.00);
   });
 
-  it('5. Requests cash out via Stripe Connect and zeroes available balance', () => {
-    expect(service.availableBalance()).toBeGreaterThan(0);
+  it('5. Blocks unfunded cash out per Belmont Report & authorizes only verified grant escrow', () => {
+    expect(service.grantEscrowBalance()).toBe(0.00);
 
-    const payout = service.requestCashOut();
-    expect(payout.success).toBe(true);
-    expect(payout.amountPaid).toBeGreaterThan(0);
-    expect(payout.txId).toContain('strp_po_');
-    expect(service.availableBalance()).toBe(0);
+    // Attempting cash out with zero escrow must fail per Belmont Report anti-inducement policy
+    const unfundedPayout = service.requestCashOut();
+    expect(unfundedPayout.success).toBe(false);
+    expect(unfundedPayout.error).toContain('Belmont Report Compliance');
+
+    // Deposit verified institutional grant escrow
+    service.enrollment.update(curr => ({ ...curr, grantEscrowBalanceUsd: 100.00 }));
+    expect(service.grantEscrowBalance()).toBe(100.00);
+
+    const fundedPayout = service.requestCashOut();
+    expect(fundedPayout.success).toBe(true);
+    expect(fundedPayout.amountPaid).toBe(100.00);
+    expect(fundedPayout.txId).toContain('strp_po_');
+    expect(service.grantEscrowBalance()).toBe(0);
 
     // Further payout request with zero balance should fail
     const secondPayout = service.requestCashOut();
@@ -99,20 +113,19 @@ describe('ResearchConsentService Suite', () => {
     const safeCohort = service.availableCohorts()[0]; // k = 12
     const safeEval = service.evaluateLinkageAttackRisk(safeCohort);
     expect(safeEval.isQuarantined).toBe(false);
-    expect(safeEval.allowedForEgress).toBe(true);
     expect(safeEval.riskTier).toBe('LOW');
+    expect(safeEval.allowedForEgress).toBe(true);
 
-    // Vulnerable cohort with small k-anonymity (e.g. k = 3)
+    // Test artificial vulnerable cohort (k = 3)
     const vulnerableCohort = {
       ...safeCohort,
       id: 'cohort_vulnerable_rare',
-      kAnonymityScore: 3,
-      sampleFields: ['rareSnpVariant', 'zip3', 'ageExact', 'diagnosis']
+      kAnonymityScore: 3
     };
-    const vulnEval = service.evaluateLinkageAttackRisk(vulnerableCohort);
-    expect(vulnEval.isQuarantined).toBe(true);
-    expect(vulnEval.allowedForEgress).toBe(false);
-    expect(vulnEval.riskTier).toBe('CRITICAL_QUARANTINE');
-    expect(vulnEval.quarantineReason).toContain('k-Anonymity score (3) is below statutory minimum');
+    const quarantinedEval = service.evaluateLinkageAttackRisk(vulnerableCohort);
+    expect(quarantinedEval.isQuarantined).toBe(true);
+    expect(quarantinedEval.riskTier).toBe('CRITICAL_QUARANTINE');
+    expect(quarantinedEval.allowedForEgress).toBe(false);
+    expect(quarantinedEval.quarantineReason).toContain('k >= 5');
   });
 });

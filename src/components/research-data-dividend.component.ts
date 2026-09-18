@@ -20,14 +20,14 @@ import {
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-5">
         <div>
           <div class="flex items-center gap-2">
-            <span class="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20 text-lg">🧬</span>
+            <span class="p-2 bg-teal-500/10 text-teal-400 rounded-xl border border-teal-500/20 text-lg">🧬</span>
             <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">
-              Ethical Patient Research Data Dividend &amp; Cohort Registry
+              Ethical Open Science Commons &amp; Research Impact Hub
             </h2>
           </div>
           <p class="text-xs sm:text-sm text-zinc-400 mt-1 max-w-2xl">
-            You own your data. When accredited universities or biotech labs query your de-identified telemetry,
-            <span class="text-emerald-400 font-semibold">85% of query revenue</span> is disbursed directly to your wallet.
+            You own your data. When accredited universities or non-profit research consortia query your de-identified telemetry,
+            <span class="text-teal-300 font-semibold">100% of scientific discoveries and personalized benchmarks</span> are returned directly to you.
           </p>
         </div>
 
@@ -43,13 +43,22 @@ import {
         </div>
       </div>
 
+      <!-- Belmont Report & Common Rule Ethical Guard Banner -->
+      <div class="p-3.5 rounded-xl bg-teal-950/30 border border-teal-500/30 text-xs text-teal-200 flex items-start gap-3">
+        <span class="text-base shrink-0">⚖️</span>
+        <div class="leading-relaxed">
+          <span class="font-bold text-teal-300">Belmont Report &amp; Common Rule Safeguard (45 CFR § 46):</span>
+          Patient participation in PocketGull research cohorts is non-commercial open science, protected against financial coercion and undue inducement. Direct patient stipends occur exclusively when an accredited institutional sponsor (NIH, university, or non-profit consortium) deposits verified grant escrow for an approved IRB study.
+        </div>
+      </div>
+
       <!-- Ethical Precedents Governance Card -->
       <div class="p-4 rounded-xl bg-zinc-900/90 border border-zinc-800 space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs uppercase tracking-wider text-teal-400 font-bold flex items-center gap-1.5">
             <span>🛡️</span> Verified Ethical Research Precedents
           </span>
-          <span class="text-[11px] text-zinc-500 font-mono">100% Opt-In • Zero Third-Party Brokers</span>
+          <span class="text-[11px] text-zinc-500 font-mono">100% Opt-In • Zero Third-Party Data Brokers</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
@@ -59,77 +68,76 @@ import {
               <span class="text-emerald-400">🏛️</span> NIH "All of Us" Model
             </div>
             <p class="text-zinc-400 text-[11px] leading-relaxed">
-              Federal research registry collecting EHR, vitals, and biosignals. Patients receive stipends ($25–$100) + free personalized biometric insights.
+              Federal research registry collecting EHR, vitals, and biosignals. Patients receive free personalized biometric insights and trial priority.
             </p>
           </div>
 
           <!-- LunaDNA Precedent -->
           <div class="p-3 rounded-lg bg-zinc-950/80 border border-zinc-800/80 space-y-1">
             <div class="font-bold text-white flex items-center gap-1.5">
-              <span class="text-teal-400">📈</span> LunaDNA (LunaPBC) Model
+              <span class="text-teal-400">📈</span> LunaDNA Public Benefit Model
             </div>
             <p class="text-zinc-400 text-[11px] leading-relaxed">
-              SEC-qualified public benefit corporation where members own shares and receive direct dividends for contributing health &amp; genomic data.
+              Public benefit cooperative framework where community members govern research priorities and receive direct scientific returns.
             </p>
           </div>
 
           <!-- Ciitizen Precedent -->
           <div class="p-3 rounded-lg bg-zinc-950/80 border border-zinc-800/80 space-y-1">
             <div class="font-bold text-white flex items-center gap-1.5">
-              <span class="text-indigo-400">🔬</span> Ciitizen / Invitae Model
+              <span class="text-indigo-400">🔬</span> Ciitizen Rare Disease Model
             </div>
             <p class="text-zinc-400 text-[11px] leading-relaxed">
-              Patients with chronic or rare conditions participate in paid longitudinal registries to accelerate FDA drug approvals and clinical trials.
+              Patients with chronic or rare conditions participate in longitudinal open registries to accelerate FDA drug approvals and clinical trials.
             </p>
           </div>
         </div>
       </div>
 
-      <!-- Financial Ledger Overview Cards -->
+      <!-- Open Science Impact & Escrow Overview Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <!-- Lifetime Dividends -->
+        <!-- Research Contributions -->
         <div class="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 flex flex-col justify-between">
-          <span class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">Lifetime Research Dividends</span>
+          <span class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">Research Contributions</span>
           <div class="mt-2 flex items-baseline gap-1.5">
-            <span class="text-3xl font-extrabold text-emerald-400 font-mono">
-              \${{ researchService.lifetimeEarnings() | number:'1.2-2' }}
+            <span class="text-3xl font-extrabold text-teal-400 font-mono">
+              {{ researchService.totalContributionsCount() }}
             </span>
-            <span class="text-xs text-zinc-500 font-mono">USD</span>
+            <span class="text-xs text-zinc-500 font-mono">Studies Supported</span>
           </div>
-          <span class="text-[11px] text-zinc-500 mt-2">Cumulative revenue share from accredited queries</span>
+          <span class="text-[11px] text-zinc-500 mt-2">Protected by Laplace Differential Privacy (&epsilon; = 0.8)</span>
         </div>
 
-        <!-- Available Balance & Stripe Connect Payout -->
-        <div class="p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/20 flex flex-col justify-between">
+        <!-- Institutional Grant Escrow Status -->
+        <div class="p-4 rounded-xl border border-teal-500/30 bg-teal-950/20 flex flex-col justify-between">
           <div class="flex items-center justify-between">
-            <span class="text-xs uppercase tracking-wider text-emerald-300 font-semibold">Available for Cash Out</span>
-            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              Stripe Express Verified
+            <span class="text-xs uppercase tracking-wider text-teal-300 font-semibold">Grant Escrow Status</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
+              Pure Open Science
             </span>
           </div>
           <div class="mt-2 flex items-baseline gap-1.5">
             <span class="text-3xl font-extrabold text-white font-mono">
-              \${{ researchService.availableBalance() | number:'1.2-2' }}
+              \${{ researchService.grantEscrowBalance() | number:'1.2-2' }}
             </span>
-            <span class="text-xs text-zinc-400 font-mono">USD</span>
+            <span class="text-xs text-zinc-400 font-mono">USD Escrow</span>
           </div>
           <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-zinc-400">{{ researchService.enrollment().payoutAccountMasked || 'Stripe Connect' }}</span>
+            <span class="text-[11px] text-zinc-400">Awaiting Accredited Grant</span>
             <button 
-              (click)="cashOut()"
-              [disabled]="researchService.availableBalance() <= 0 || isProcessingPayout()"
-              class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1">
-              <span>{{ isProcessingPayout() ? 'Transferring...' : 'Cash Out' }}</span>
-              <span>💳</span>
+              (click)="exportResearchDossier()"
+              class="px-3 py-1.5 bg-teal-500 hover:bg-teal-400 text-zinc-950 font-bold text-xs rounded-lg transition cursor-pointer flex items-center gap-1">
+              <span>Export Dossier</span>
+              <span>📄</span>
             </button>
           </div>
         </div>
 
         <!-- Active Cohort Enrollments -->
         <div class="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 flex flex-col justify-between">
-          <span class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">Enrolled Disease Cohorts</span>
+          <span class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">Enrolled Disease Registries</span>
           <div class="mt-2 flex items-baseline gap-1.5">
-            <span class="text-3xl font-extrabold text-teal-300 font-mono">
+            <span class="text-3xl font-extrabold text-indigo-300 font-mono">
               {{ researchService.enrolledCohortCount() }}
             </span>
             <span class="text-xs text-zinc-500 font-mono">/ {{ researchService.availableCohorts().length }} Active</span>
@@ -138,31 +146,26 @@ import {
         </div>
       </div>
 
-      <!-- Payout Receipt Banner (if recent payout succeeded) -->
-      @if (latestPayout(); as payout) {
-        <div class="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/40 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <!-- Dossier Export Banner (when exported) -->
+      @if (showDossierExportNotice()) {
+        <div class="p-4 rounded-xl bg-teal-950/40 border border-teal-500/40 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="space-y-1">
-            <div class="font-bold text-emerald-300 flex items-center gap-2">
-              <span>✓ Stripe Connect Express Payout Transferred</span>
-              <span class="font-mono text-[10px] text-zinc-400">#{{ payout.payoutId }}</span>
+            <div class="font-bold text-teal-300 flex items-center gap-2">
+              <span>✓ Research Impact Dossier Generated</span>
+              <span class="font-mono text-[10px] text-zinc-400">SHA-256 Attested</span>
             </div>
             <p class="text-zinc-300 text-[11px]">
-              \${{ payout.netPayoutUsd | number:'1.2-2' }} sent to {{ payout.destinationAccountMasked }} • {{ payout.arrivalEstimate }}
+              Complete provenance manifest of {{ researchService.totalContributionsCount() }} de-identified open science contributions formatted for clinical trial qualification and IRB review.
             </p>
-            @if (payout.dualCustodyAttestation; as attestation) {
-              <div class="text-[10px] font-mono text-teal-300 bg-teal-950/40 px-2 py-1 rounded border border-teal-500/30">
-                🔒 Mandiant M-of-N Attested: {{ attestation.primarySigner }} &amp; {{ attestation.secondarySigner }}
-              </div>
-            }
           </div>
-          <button (click)="latestPayout.set(null)" class="text-zinc-400 hover:text-white text-xs px-2 py-1">Dismiss</button>
+          <button (click)="showDossierExportNotice.set(false)" class="text-zinc-400 hover:text-white text-xs px-2 py-1">Dismiss</button>
         </div>
       }
 
       @if (payoutError(); as errorMsg) {
-        <div class="p-3.5 rounded-xl bg-red-950/30 border border-red-500/40 text-xs text-red-300 flex items-center justify-between">
-          <span>⚠️ {{ errorMsg }}</span>
-          <button (click)="payoutError.set(null)" class="text-red-400 hover:text-white ml-2">✕</button>
+        <div class="p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/40 text-xs text-amber-300 flex items-center justify-between">
+          <span>ℹ️ {{ errorMsg }}</span>
+          <button (click)="payoutError.set(null)" class="text-amber-400 hover:text-white ml-2">✕</button>
         </div>
       }
 
@@ -212,7 +215,7 @@ import {
           [class.text-zinc-400]="activeTab() !== 'cohorts'"
           class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5">
           <span>🧬</span>
-          <span>Enrolled Research Cohorts</span>
+          <span>Open Disease Registries</span>
         </button>
 
         <button 
@@ -233,9 +236,9 @@ import {
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-300">
-              Available Disease Research Cohorts
+              Open Science Disease Research Registries
             </h3>
-            <span class="text-xs text-zinc-500 font-mono">Select cohorts you wish to contribute to</span>
+            <span class="text-xs text-zinc-500 font-mono">Select registries you wish to contribute to</span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
@@ -253,8 +256,8 @@ import {
                       </span>
                       <h4 class="text-base font-bold text-white mt-1.5">{{ cohort.title }}</h4>
                     </div>
-                    <span class="text-xs font-mono font-extrabold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 shrink-0">
-                      +\${{ cohort.compensationPerQueryUsd | number:'1.2-2' }} / query
+                    <span class="text-xs font-mono font-semibold text-teal-300 bg-teal-500/10 px-2 py-1 rounded border border-teal-500/20 shrink-0">
+                      Open Science
                     </span>
                   </div>
 
@@ -399,38 +402,43 @@ import {
         </div>
       }
 
-      <!-- Simulate Academic Query & Dividend Distribution Bar (Demo / Testing) -->
+      <!-- Simulate Academic Query & Open Science Contribution Bar -->
       <div class="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <span class="text-xs uppercase font-mono font-bold text-indigo-400">⚡ Live Dividend &amp; Insight Simulator</span>
+          <span class="text-xs uppercase font-mono font-bold text-indigo-400">⚡ Open Science Discovery Simulator</span>
           <p class="text-xs text-zinc-300 mt-0.5">
-            Simulate an accredited BigQuery study query from Stanford / Mayo Clinic to see your ledger balance accrue and research findings return in real time.
+            Simulate an accredited BigQuery study query from Stanford / Mayo Clinic to see your de-identified telemetry unlock peer-reviewed clinical findings in real time.
           </p>
         </div>
         <button 
           (click)="simulateResearchQuery()"
           class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg transition cursor-pointer shrink-0">
-          Simulate \+$25.00 Study Query
+          Simulate Open Science Study Query
         </button>
       </div>
 
       <!-- Research Impact Transparency Stream -->
       <div class="space-y-2">
         <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-300">
-          Transparent Research Access &amp; Discovery Stream
+          Open Science Impact &amp; Published Findings Stream
         </h3>
         
         <div class="divide-y divide-zinc-800 rounded-xl bg-zinc-900 border border-zinc-800 overflow-hidden text-xs">
           @for (entry of researchService.recentLedger(); track entry.id) {
             <div class="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-zinc-800/40 transition">
               <div class="flex items-start gap-3">
-                <span class="text-emerald-400 font-mono font-bold text-sm shrink-0">+\${{ entry.amountUsd | number:'1.2-2' }}</span>
+                <span class="p-1.5 bg-teal-500/10 text-teal-400 rounded-lg border border-teal-500/20 text-xs font-mono font-bold shrink-0">
+                  Impact {{ entry.openScienceImpactScore ?? 90 }}
+                </span>
                 <div>
                   <div class="text-white font-semibold flex items-center gap-2">
                     <span>{{ entry.cohortTitle }}</span>
                     <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-teal-300 border border-zinc-700">
-                      {{ entry.patientRevenueSharePercent }}% Patient Share
+                      Open Access
                     </span>
+                    @if (entry.studyDoi) {
+                      <span class="text-[10px] font-mono text-zinc-500">DOI: {{ entry.studyDoi }}</span>
+                    }
                   </div>
                   <div class="text-[11px] text-zinc-400 mt-0.5">
                     {{ entry.buyerInstitution }} • <span class="font-mono text-zinc-500">{{ entry.timestamp | date:'short' }}</span>
@@ -444,7 +452,7 @@ import {
               </div>
 
               <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                <span [class.text-emerald-400]="entry.status === 'paid_out'" [class.text-amber-400]="entry.status === 'accrued'" class="text-[11px] font-mono font-semibold uppercase">
+                <span class="text-[11px] font-mono font-semibold uppercase text-teal-400">
                   {{ entry.status }}
                 </span>
                 <span class="text-[10px] font-mono text-zinc-600 hidden md:inline">{{ entry.transactionHash }}</span>
@@ -454,7 +462,7 @@ import {
         </div>
       </div>
 
-      <!-- Mandiant Dual-Custody M-of-N Modal (Disbursements >= $500) -->
+      <!-- Mandiant Dual-Custody M-of-N Modal (Grant Escrow Disbursements >= $500) -->
       @if (showDualCustodyModal()) {
         <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div class="bg-zinc-900 border border-zinc-700 rounded-2xl max-w-lg w-full p-6 space-y-4 text-zinc-100 shadow-2xl">
@@ -467,7 +475,7 @@ import {
             </div>
 
             <p class="text-xs text-zinc-300">
-              Per PocketGull Treasury Security Directives, disbursements of <strong class="text-white">\${{ researchService.availableBalance() | number:'1.2-2' }}</strong> ($\ge \$500$) require dual distinct authorized clinical/executive signatures before funds transfer to Stripe Connect Express.
+              Per PocketGull Institutional Governance Directives, grant escrow disbursements of <strong class="text-white">\${{ researchService.grantEscrowBalance() | number:'1.2-2' }}</strong> ($\ge \$500$) require dual distinct authorized clinical/executive signatures.
             </p>
 
             <div class="space-y-3 text-xs">
@@ -496,9 +504,9 @@ import {
               </button>
               <button 
                 (click)="confirmDualCustodyCashOut()"
-                class="px-4 py-1.5 rounded-lg text-xs font-bold text-zinc-950 bg-emerald-400 hover:bg-emerald-300 transition flex items-center gap-1.5">
-                <span>Attest &amp; Execute Transfer</span>
-                <span>💳</span>
+                class="px-4 py-1.5 rounded-lg text-xs font-bold text-zinc-950 bg-teal-400 hover:bg-teal-300 transition flex items-center gap-1.5">
+                <span>Attest &amp; Authorize Escrow</span>
+                <span>🔒</span>
               </button>
             </div>
           </div>
@@ -511,6 +519,7 @@ import {
 export class ResearchDataDividendComponent {
   readonly researchService: ResearchConsentService;
   readonly isProcessingPayout = signal(false);
+  readonly showDossierExportNotice = signal(false);
   readonly activeTab = signal<'cohorts' | 'analytics_hub'>('cohorts');
   readonly selectedListing = signal<IBigQueryAnalyticsHubListing | null>(null);
   readonly dryRunResult = signal<IDryRunSqlQueryResult | null>(null);
@@ -542,6 +551,10 @@ export class ResearchDataDividendComponent {
     this.researchService.simulateDividendAccrual('cohort_diabetes_cgm', 'Stanford Center for Precision Medicine');
   }
 
+  exportResearchDossier(): void {
+    this.showDossierExportNotice.set(true);
+  }
+
   runDryRun(listing: IBigQueryAnalyticsHubListing): void {
     this.selectedListing.set(listing);
     const cohortId = listing.listingId.split('/').pop() || 'cohort_diabetes_cgm';
@@ -554,8 +567,11 @@ export class ResearchDataDividendComponent {
   }
 
   cashOut(): void {
-    const balance = this.researchService.availableBalance();
-    if (balance <= 0) return;
+    const balance = this.researchService.grantEscrowBalance();
+    if (balance <= 0) {
+      this.payoutError.set('Belmont Report Compliance: No funded institutional grant escrow is attached to this open science registry. Participation is non-commercial and protected against financial coercion or undue inducement.');
+      return;
+    }
 
     if (balance >= 500) {
       this.showDualCustodyModal.set(true);

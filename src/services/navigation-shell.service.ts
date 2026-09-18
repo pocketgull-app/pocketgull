@@ -20,6 +20,7 @@ export class NavigationShellService {
   readonly showComplianceCertificateModal = signal<boolean>(false);
   readonly showCmsSuperbillModal = signal<boolean>(false);
   readonly showTrajectoryReaderModal = signal<boolean>(false);
+  readonly showPosologyModal = signal<boolean>(false);
   readonly showAustereHudModal = signal<boolean>(false);
   readonly showMdcpHubModal = signal<boolean>(false);
   readonly showCommercialHubModal = signal<boolean>(false);
@@ -89,6 +90,9 @@ export class NavigationShellService {
 
   public openTrajectoryReader(): void { this.showTrajectoryReaderModal.set(true); }
   public closeTrajectoryReader(): void { this.showTrajectoryReaderModal.set(false); }
+
+  public openPosology(): void { this.showPosologyModal.set(true); }
+  public closePosology(): void { this.showPosologyModal.set(false); }
 
   public openAustereHud(): void { this.showAustereHudModal.set(true); }
   public closeAustereHud(): void { this.showAustereHudModal.set(false); }

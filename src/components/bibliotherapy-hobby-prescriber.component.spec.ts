@@ -24,11 +24,12 @@ describe('BibliotherapyHobbyPrescriberComponent', () => {
     expect(comp.selectedHobby().snomedCode).toBe('SCTID 281084008');
   });
 
-  it('should switch selected hobby and update Amazon affiliate URL with tag=pgdpo-20', () => {
+  it('should switch selected hobby and update supply search URL without affiliate tracking', () => {
     const comp = createComponent();
     const gardeningHobby = comp.hobbies[1];
     comp.selectHobby(gardeningHobby);
     expect(comp.selectedHobby().snomedCode).toBe('SCTID 226065003');
-    expect(comp.amazonStoreUrl()).toContain('tag=pgdpo-20');
+    expect(comp.amazonStoreUrl()).toContain('gardening');
+    expect(comp.amazonStoreUrl()).not.toContain('tag=pgdpo-20');
   });
 });

@@ -10,18 +10,22 @@ describe('ResearchDataDividendComponent Suite', () => {
     component = new ResearchDataDividendComponent(service);
   });
 
-  it('1. Initializes cleanly with ethical research governance state', () => {
+  it('1. Initializes cleanly with ethical research governance state and zero cash liability', () => {
     expect(component).toBeTruthy();
     expect(component.researchService.isHipaaAuthorized()).toBe(true);
     expect(component.researchService.availableCohorts().length).toBeGreaterThanOrEqual(5);
+    expect(component.researchService.grantEscrowBalance()).toBe(0.00);
+    expect(component.researchService.isPureOpenScience()).toBe(true);
     expect(component.activeTab()).toBe('cohorts');
   });
 
-  it('2. Exposes all available disease cohorts with compensation rates and ethical models', () => {
+  it('2. Exposes all available disease cohorts with open science models and Belmont safeguards', () => {
     const cohorts = component.researchService.availableCohorts();
     const diabetes = cohorts.find(c => c.id === 'cohort_diabetes_cgm');
     expect(diabetes).toBeDefined();
-    expect(diabetes?.compensationPerQueryUsd).toBe(25.00);
+    expect(diabetes?.compensationPerQueryUsd).toBe(0.00);
+    expect(diabetes?.studyFundingModel).toBe('open_science_commons');
+    expect(diabetes?.grantEscrowStatus).toBe('pure_open_science');
     expect(diabetes?.ethicalFramework).toBe('nih_all_of_us');
   });
 
@@ -33,11 +37,15 @@ describe('ResearchDataDividendComponent Suite', () => {
     expect(service.isCohortEnrolled(cohortId)).toBe(!wasEnrolled);
   });
 
-  it('4. Simulates research query and updates ledger', () => {
-    const initialLifetime = service.lifetimeEarnings();
+  it('4. Simulates open science query and unlocks scientific findings without cash fabrication', () => {
+    const initialContributions = service.totalContributionsCount();
+    const initialFindings = service.scientificFindings().length;
+
     component.simulateResearchQuery();
 
-    expect(service.lifetimeEarnings()).toBeGreaterThan(initialLifetime);
+    expect(service.totalContributionsCount()).toBeGreaterThan(initialContributions);
+    expect(service.scientificFindings().length).toBeGreaterThan(initialFindings);
+    expect(service.grantEscrowBalance()).toBe(0.00);
   });
 
   it('5. Handles revocation and re-authorization cleanly', () => {
@@ -79,28 +87,21 @@ describe('ResearchDataDividendComponent Suite', () => {
     metricEntries.forEach(m => expect(typeof m.val).toBe('number'));
   });
 
-  it('8. Executes automated Stripe Connect Express payout under standard threshold', async () => {
-    vi.useFakeTimers();
-    expect(component.researchService.availableBalance()).toBe(50.00);
+  it('8. Blocks cash out when escrow is zero per Belmont Report & allows research dossier export', () => {
+    expect(component.researchService.grantEscrowBalance()).toBe(0.00);
 
     component.cashOut();
-    expect(component.isProcessingPayout()).toBe(true);
+    expect(component.payoutError()).toContain('Belmont Report Compliance');
 
-    vi.advanceTimersByTime(650);
-
-    expect(component.isProcessingPayout()).toBe(false);
-    expect(component.researchService.availableBalance()).toBe(0);
-    expect(component.latestPayout()).not.toBeNull();
-    expect(component.latestPayout()?.destinationAccountMasked).toContain('acct_');
-    expect(component.latestPayout()?.arrivalEstimate).toContain('Instant Transfer');
-    vi.useRealTimers();
+    component.exportResearchDossier();
+    expect(component.showDossierExportNotice()).toBe(true);
   });
 
-  it('9. Enforces Mandiant dual-custody verification modal when cashing out >= $500', async () => {
+  it('9. Enforces Mandiant dual-custody verification modal when grant escrow >= $500', async () => {
     vi.useFakeTimers();
-    // Simulate high balance
-    service.enrollment.update(curr => ({ ...curr, availableBalanceUsd: 1250.00 }));
-    expect(component.researchService.availableBalance()).toBe(1250.00);
+    // Simulate accredited institutional grant deposit into escrow
+    service.enrollment.update(curr => ({ ...curr, grantEscrowBalanceUsd: 1250.00 }));
+    expect(component.researchService.grantEscrowBalance()).toBe(1250.00);
 
     // Initial click should open dual custody modal instead of immediately transferring
     component.cashOut();
@@ -117,7 +118,7 @@ describe('ResearchDataDividendComponent Suite', () => {
     vi.advanceTimersByTime(650);
 
     expect(component.isProcessingPayout()).toBe(false);
-    expect(component.researchService.availableBalance()).toBe(0);
+    expect(component.researchService.grantEscrowBalance()).toBe(0);
     expect(component.latestPayout()?.dualCustodyAttestation?.isAttested).toBe(true);
     expect(component.latestPayout()?.dualCustodyAttestation?.primarySigner).toBe('Dr. Beverly Crusher, CMO');
     expect(component.latestPayout()?.dualCustodyAttestation?.secondarySigner).toBe('Commander Riker, VP Compliance');

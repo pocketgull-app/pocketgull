@@ -82,6 +82,39 @@ import { BionicReadingService } from '../services/bionic-reading.service';
           <span>Active Room</span>
         </button>
 
+        <!-- ⚖️ Clinical Posology & Deprescribing Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-posology-trigger"
+          (click)="navShell?.openPosology()"
+          aria-label="Open Clinical Posology & Deprescribing Engine"
+          class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">⚖️</span>
+          <span>Posology</span>
+        </button>
+
+        <!-- 💵 CMS RPM Superbill Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-cms-superbill-trigger"
+          (click)="navShell?.openCmsSuperbill()"
+          aria-label="Generate CMS Remote Patient Monitoring Superbill"
+          class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">💵</span>
+          <span>RPM Superbill</span>
+        </button>
+
+        <!-- 📈 3-Act Trajectory Reader Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-trajectory-reader-trigger"
+          (click)="navShell?.openTrajectoryReader()"
+          aria-label="Open 3-Act Clinical Trajectory Reader"
+          class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-200 border border-indigo-300 dark:border-indigo-700/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">📈</span>
+          <span>3-Act Trajectory</span>
+        </button>
+
         <app-console-integrity-badge class="hidden lg:inline-flex" />
 
         @if (navShell?.developerMode()) {
@@ -265,8 +298,8 @@ import { BionicReadingService } from '../services/bionic-reading.service';
                   <button type="button" (click)="openResearchDividend.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🧬</span>
                     <div>
-                      <div>Data Dividend</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">NIH / LunaDNA Registry</div>
+                      <div>Open Science Commons</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">NIH All of Us • Research Commons</div>
                     </div>
                   </button>
                 </div>
@@ -568,6 +601,21 @@ import { BionicReadingService } from '../services/bionic-reading.service';
               <span class="text-base">📋</span> <span>{{ state.showActiveRoom() ? 'Hide Active Room' : 'Open Active Room' }}</span>
             </button>
 
+            <!-- ⚖️ Clinical Posology & Deprescribing Engine -->
+            <button type="button" (click)="navShell?.openPosology(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">⚖️</span> <span>Posology &amp; Deprescribing</span>
+            </button>
+
+            <!-- 💵 CMS Remote Patient Monitoring (RPM) Superbill -->
+            <button type="button" (click)="navShell?.openCmsSuperbill(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">💵</span> <span>CMS RPM Superbill (CPT 99453/4)</span>
+            </button>
+
+            <!-- 📈 3-Act Clinical Trajectory Reader -->
+            <button type="button" (click)="navShell?.openTrajectoryReader(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-200 border border-indigo-300 dark:border-indigo-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">📈</span> <span>3-Act Clinical Trajectory</span>
+            </button>
+
             <!-- MDCP Governance Hub -->
             <button type="button" (click)="openMdcpHub(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">📋</span> <span>MDCP Governance Hub</span>
@@ -595,7 +643,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
             </button>
 
             <button type="button" (click)="openResearchDividend.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
-              <span class="text-base">🧬</span> <span>Ethical Research Dividend</span>
+              <span class="text-base">🧬</span> <span>Ethical Open Science Commons</span>
             </button>
 
             <button type="button" (click)="openSocraticIntake.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">

@@ -85,6 +85,7 @@ import { PasskeyStepUpModalComponent } from './components/modals/passkey-step-up
 import { InstitutionalComplianceModalComponent } from './components/modals/institutional-compliance-modal.component';
 import { CmsRpmSuperbillModalComponent } from './components/modals/cms-rpm-superbill-modal.component';
 import { ClinicalTrajectoryReaderModalComponent } from './components/modals/clinical-trajectory-reader-modal.component';
+import { ClinicalPosologyCalculatorComponent } from './components/clinical-posology-calculator.component';
 import { AustereResearchHudComponent } from './components/austere-research-hud/austere-research-hud.component';
 import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.component';
@@ -159,6 +160,7 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
     GreenRoomLoungeComponent,
     CmsRpmSuperbillModalComponent,
     ClinicalTrajectoryReaderModalComponent,
+    ClinicalPosologyCalculatorComponent,
     AustereResearchHudComponent,
     DocDrillDrawerComponent,
     CollaborationDockComponent,
@@ -307,6 +309,22 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
         <app-clinical-trajectory-reader-modal
           (close)="navShell.closeTrajectoryReader()">
         </app-clinical-trajectory-reader-modal>
+      }
+
+      <!-- Clinical Posology & Polypharmacy Deprescribing Engine Modal -->
+      @if (navShell.showPosologyModal()) {
+        <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Clinical Posology and Deprescribing Calculator">
+          <div class="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl p-6">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-zinc-800">
+              <div class="flex items-center gap-2 text-teal-400 font-bold">
+                <span>⚖️</span>
+                <span>Clinical Posology &amp; Deprescribing Calculator</span>
+              </div>
+              <button (click)="navShell.closePosology()" class="text-zinc-400 hover:text-white text-xs px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 transition cursor-pointer">✕ Close</button>
+            </div>
+            <app-clinical-posology-calculator></app-clinical-posology-calculator>
+          </div>
+        </div>
       }
 
       <!-- MDCP Strategic Clinical & Standards Governance Hub Modal -->

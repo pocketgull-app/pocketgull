@@ -28,17 +28,29 @@ export type EthicalPrecedentFramework =
   | 'luna_dna_public_benefit' 
   | 'ciitizen_rare_disease';
 
+export type StudyFundingModel = 
+  | 'open_science_commons' 
+  | 'institutional_grant_escrow' 
+  | 'academic_nonprofit_consortium';
+
+export type GrantEscrowStatus = 
+  | 'pure_open_science' 
+  | 'grant_escrow_funded' 
+  | 'grant_escrow_pending';
+
 export interface IResearchCohortListing {
   id: string;
   category: DiseaseCategory;
   title: string;
   sponsorOrInstitution: string;
   ethicalFramework: EthicalPrecedentFramework;
+  studyFundingModel: StudyFundingModel;
+  grantEscrowStatus: GrantEscrowStatus;
   description: string;
   clinicalObjective: string;
   participantCount: number;
   dataPointsCount: number;
-  compensationPerQueryUsd: number;
+  compensationPerQueryUsd: number; // Institutional grant allocation per query (held in escrow)
   participantBenefitDescription: string; // e.g. Free genomic / biomarker insight report returned to patient
   sampleFields: string[];
   kAnonymityScore: number;
@@ -77,10 +89,12 @@ export interface IResearchDividendLedgerEntry {
   buyerInstitution: string;
   ethicalFramework: EthicalPrecedentFramework;
   amountUsd: number;
-  patientRevenueSharePercent: number; // e.g. 85% goes directly to the contributing patient
-  status: 'accrued' | 'paid_out';
+  patientRevenueSharePercent: number; // e.g. 85% goes directly to the contributing patient if escrowed
+  status: 'accrued' | 'paid_out' | 'open_science_contributed';
   transactionHash: string;
   researchFindingSummary?: string; // Summary of medical research discovery made with this query
+  studyDoi?: string;
+  openScienceImpactScore?: number;
 }
 
 export interface IPatientResearchEnrollment {
@@ -90,10 +104,15 @@ export interface IPatientResearchEnrollment {
   authorizationSignatureHash: string | null;
   ethicalCharterAccepted: boolean;
   returnOfInsightsEnabled: boolean; // Opt-in to receive scientific discoveries & biomarker benchmarks
-  payoutMethod: 'stripe_connect' | 'direct_deposit' | 'unconfigured';
+  payoutMethod: 'stripe_connect' | 'direct_deposit' | 'unconfigured' | 'pure_open_science';
   payoutAccountMasked: string | null;
   lifetimeEarningsUsd: number;
   availableBalanceUsd: number;
+  grantEscrowBalanceUsd: number;
+  researchContributionsCount: number;
+  studiesSupportedCount: number;
+  scientificFindingsUnlocked: string[];
+  belmontReportAttestation: boolean;
   ledger: IResearchDividendLedgerEntry[];
 }
 

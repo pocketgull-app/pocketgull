@@ -2035,16 +2035,6 @@ export class AnalysisReportComponent implements OnDestroy {
     this.avsService.setBitrateTier(tier);
   }
 
-  getAmazonAffiliateUrl(itemName: string): string {
-    const clean = String(itemName || '').replace(/[^\w\s-]/g, '').trim();
-    return `https://www.amazon.com/s?k=${encodeURIComponent(clean)}&tag=pgdpo-20`;
-  }
-
-  getAmazonPharmacyUrl(medName: string): string {
-    const clean = String(medName || '').replace(/[^\w\s-]/g, '').trim();
-    return `https://pharmacy.amazon.com/search?q=${encodeURIComponent(clean)}&tag=pgdpo-20`;
-  }
-
   flowToastMessage = signal<string | null>(null);
   showHandoffModal = signal<boolean>(false);
   showSec1557Modal = signal<boolean>(false);

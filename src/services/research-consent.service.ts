@@ -20,11 +20,13 @@ const INITIAL_COHORTS: IResearchCohortListing[] = [
     title: 'Type 2 Diabetes & Glycemic Trajectory Registry',
     sponsorOrInstitution: 'Stanford Center for Precision Medicine',
     ethicalFramework: 'nih_all_of_us',
+    studyFundingModel: 'open_science_commons',
+    grantEscrowStatus: 'pure_open_science',
     description: 'Longitudinal continuous glucose monitoring (CGM), HbA1c response, and metabolic dynamics telemetry.',
     clinicalObjective: 'Train predictive insulin sensitivity algorithms and assess individual glycemic variability patterns.',
     participantCount: 1420,
     dataPointsCount: 890000,
-    compensationPerQueryUsd: 25.00,
+    compensationPerQueryUsd: 0.00,
     participantBenefitDescription: 'Receives monthly individualized Glycemic Variability & Time-in-Range trend analysis report.',
     sampleFields: ['timeInRangePercent', 'glucoseMeanMgDl', 'glycemicVariabilityCv', 'hba1cBaseline'],
     kAnonymityScore: 12,
@@ -40,12 +42,14 @@ const INITIAL_COHORTS: IResearchCohortListing[] = [
     title: 'Oncology Epigenetic & Longevity Biomarkers',
     sponsorOrInstitution: 'Mayo Clinic Comprehensive Cancer Center',
     ethicalFramework: 'luna_dna_public_benefit',
+    studyFundingModel: 'open_science_commons',
+    grantEscrowStatus: 'pure_open_science',
     description: 'De-identified genomic variant crosswalks, tumor somatic markers, and cellular longevity trajectories.',
     clinicalObjective: 'Accelerate personalized targeted immunotherapy response models.',
     participantCount: 680,
     dataPointsCount: 420000,
-    compensationPerQueryUsd: 50.00,
-    participantBenefitDescription: 'Shares directly in corporate licensing dividends + receiving comparative epigenetic longevity benchmarks.',
+    compensationPerQueryUsd: 0.00,
+    participantBenefitDescription: 'Shares in open science discoveries + receiving comparative epigenetic longevity benchmarks.',
     sampleFields: ['epigeneticAgeDelta', 'crpMgL', 'telomereLengthIndex', 'immunotherapyToleranceScore'],
     kAnonymityScore: 8,
     fhirResourceType: 'DiagnosticReport',
@@ -57,11 +61,13 @@ const INITIAL_COHORTS: IResearchCohortListing[] = [
     title: 'Long-COVID & Autonomic HRV Telemetry Registry',
     sponsorOrInstitution: 'Oxford Health & Post-Viral Consortium',
     ethicalFramework: 'ciitizen_rare_disease',
+    studyFundingModel: 'open_science_commons',
+    grantEscrowStatus: 'pure_open_science',
     description: 'Post-viral dysautonomia, orthostatic heart rate variability (HRV), and respiratory acoustic waveforms.',
     clinicalObjective: 'Identify early autonomic biomarker markers for post-viral fatigue syndromes (PASC/ME).',
     participantCount: 950,
     dataPointsCount: 610000,
-    compensationPerQueryUsd: 30.00,
+    compensationPerQueryUsd: 0.00,
     participantBenefitDescription: 'Accelerates FDA trial matching for novel neuro-immune modulation therapies.',
     sampleFields: ['rmssdMs', 'respiratoryRateBreathMin', 'orthostaticBpDelta', 'vagalToneIndex'],
     kAnonymityScore: 15,
@@ -74,11 +80,13 @@ const INITIAL_COHORTS: IResearchCohortListing[] = [
     title: 'Cardiopulmonary Acoustic Waveform Registry',
     sponsorOrInstitution: 'Johns Hopkins Acoustic Medicine Lab',
     ethicalFramework: 'nih_all_of_us',
+    studyFundingModel: 'open_science_commons',
+    grantEscrowStatus: 'pure_open_science',
     description: 'Digital stethoscopic acoustic audio frequency spectrograms for adventitious breath and heart sounds.',
     clinicalObjective: 'Train edge AI models to detect sub-clinical valvular and bronchial murmurs.',
     participantCount: 520,
     dataPointsCount: 310000,
-    compensationPerQueryUsd: 20.00,
+    compensationPerQueryUsd: 0.00,
     participantBenefitDescription: 'Provides automated cardiopulmonary sound spectral quality audit.',
     sampleFields: ['audioSpectrogramBandHz', 'systolicMurmurProbability', 'wheezeCrackleIndex'],
     kAnonymityScore: 9,
@@ -91,11 +99,13 @@ const INITIAL_COHORTS: IResearchCohortListing[] = [
     title: 'Neurodiversity & Cognitive Executive State Registry',
     sponsorOrInstitution: 'UCLA Semel Institute for Neuroscience',
     ethicalFramework: 'luna_dna_public_benefit',
+    studyFundingModel: 'open_science_commons',
+    grantEscrowStatus: 'pure_open_science',
     description: 'Longitudinal focus metrics, circadian sleep architecture, and Socratic cognitive load indexes.',
     clinicalObjective: 'Develop non-pharmacological neuroplasticity and behavioral adjunct interventions.',
     participantCount: 840,
     dataPointsCount: 530000,
-    compensationPerQueryUsd: 35.00,
+    compensationPerQueryUsd: 0.00,
     participantBenefitDescription: 'Includes circadian phase optimization recommendations.',
     sampleFields: ['executiveFunctionScore', 'circadianPhaseShiftHrs', 'sleepEfficiencyPercent'],
     kAnonymityScore: 10,
@@ -189,18 +199,18 @@ export class ResearchConsentService {
   // BigQuery Analytics Hub listings catalog (GCP: gen-lang-client-0540208645)
   readonly analyticsHubListings = signal<IBigQueryAnalyticsHubListing[]>(INITIAL_ANALYTICS_HUB_LISTINGS);
 
-  // Automated Stripe Connect Express account state
+  // Automated Stripe Connect Express account state (Grant Escrow Gateway)
   readonly stripeAccountStatus = signal<IStripeConnectAccountStatus>({
-    accountId: 'acct_1PgGullExpress8492',
-    payoutsEnabled: true,
+    accountId: 'acct_open_science_escrow',
+    payoutsEnabled: false, // Disabled: Direct payouts require accredited institutional grant escrow
     detailsSubmitted: true,
     currency: 'USD',
     country: 'US',
     dashboardUrl: 'https://pocketgull.app/resources/stripe/express-dashboard',
-    lastPayoutAt: new Date(Date.now() - 86400000 * 5).toISOString()
+    lastPayoutAt: undefined
   });
 
-  // Patient's research enrollment & ledger state
+  // Patient's research enrollment & open science impact ledger state
   readonly enrollment = signal<IPatientResearchEnrollment>({
     enrolledCohortIds: ['cohort_diabetes_cgm'],
     isHipaaAuthorized: true,
@@ -208,10 +218,20 @@ export class ResearchConsentService {
     authorizationSignatureHash: 'sha256_e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
     ethicalCharterAccepted: true,
     returnOfInsightsEnabled: true,
-    payoutMethod: 'stripe_connect',
-    payoutAccountMasked: 'acct_••••8492 (Stripe Express)',
-    lifetimeEarningsUsd: 125.00,
-    availableBalanceUsd: 50.00,
+    payoutMethod: 'pure_open_science',
+    payoutAccountMasked: 'Open Science Commons (Non-Commercial)',
+    lifetimeEarningsUsd: 0.00,
+    availableBalanceUsd: 0.00,
+    grantEscrowBalanceUsd: 0.00,
+    researchContributionsCount: 4,
+    studiesSupportedCount: 4,
+    belmontReportAttestation: true,
+    scientificFindingsUnlocked: [
+      'Identified 14% reduction in nocturnal hypoglycemia using predictive adaptive bolus guidance.',
+      'Demonstrated circadian rhythm entrainment correlates with improved post-prandial insulin sensitivity.',
+      'Correlated autonomic tone fluctuations with glycemic recovery time.',
+      'Published open-access benchmark for continuous metabolic tracking models.'
+    ],
     ledger: [
       {
         id: 'div_001',
@@ -220,10 +240,12 @@ export class ResearchConsentService {
         cohortTitle: 'Type 2 Diabetes & Glycemic Trajectory Registry',
         buyerInstitution: 'Stanford Center for Precision Medicine',
         ethicalFramework: 'nih_all_of_us',
-        amountUsd: 25.00,
-        patientRevenueSharePercent: 85,
-        status: 'paid_out',
+        amountUsd: 0.00,
+        patientRevenueSharePercent: 100,
+        status: 'open_science_contributed',
         transactionHash: '0x8f2d9c1e4a7b3c2d1e0f',
+        openScienceImpactScore: 95,
+        studyDoi: '10.1038/s41746-026-00912-1',
         researchFindingSummary: 'Identified 14% reduction in nocturnal hypoglycemia using predictive adaptive bolus guidance.'
       },
       {
@@ -233,10 +255,12 @@ export class ResearchConsentService {
         cohortTitle: 'Type 2 Diabetes & Glycemic Trajectory Registry',
         buyerInstitution: 'Novartis Institute for Biomedical Research',
         ethicalFramework: 'luna_dna_public_benefit',
-        amountUsd: 25.00,
-        patientRevenueSharePercent: 85,
-        status: 'paid_out',
+        amountUsd: 0.00,
+        patientRevenueSharePercent: 100,
+        status: 'open_science_contributed',
         transactionHash: '0x3a4b5c6d7e8f9a0b1c2d',
+        openScienceImpactScore: 92,
+        studyDoi: '10.1016/j.cmet.2026.04.018',
         researchFindingSummary: 'Demonstrated circadian rhythm entrainment correlates with improved post-prandial insulin sensitivity.'
       },
       {
@@ -246,10 +270,12 @@ export class ResearchConsentService {
         cohortTitle: 'Type 2 Diabetes & Glycemic Trajectory Registry',
         buyerInstitution: 'Oxford Health & Post-Viral Consortium',
         ethicalFramework: 'ciitizen_rare_disease',
-        amountUsd: 25.00,
-        patientRevenueSharePercent: 85,
-        status: 'accrued',
+        amountUsd: 0.00,
+        patientRevenueSharePercent: 100,
+        status: 'open_science_contributed',
         transactionHash: '0x7e8f9a0b1c2d3e4f5a6b',
+        openScienceImpactScore: 89,
+        studyDoi: '10.1093/brain/awad120',
         researchFindingSummary: 'Correlated autonomic tone fluctuations with glycemic recovery time.'
       },
       {
@@ -259,10 +285,12 @@ export class ResearchConsentService {
         cohortTitle: 'Type 2 Diabetes & Glycemic Trajectory Registry',
         buyerInstitution: 'Broad Institute of MIT and Harvard',
         ethicalFramework: 'nih_all_of_us',
-        amountUsd: 25.00,
-        patientRevenueSharePercent: 85,
-        status: 'accrued',
+        amountUsd: 0.00,
+        patientRevenueSharePercent: 100,
+        status: 'open_science_contributed',
         transactionHash: '0x1b2c3d4e5f6a7b8c9d0e',
+        openScienceImpactScore: 98,
+        studyDoi: '10.1126/science.ade4501',
         researchFindingSummary: 'Published open-access benchmark for continuous metabolic tracking models.'
       }
     ]
@@ -271,6 +299,11 @@ export class ResearchConsentService {
   readonly isHipaaAuthorized = computed(() => this.enrollment().isHipaaAuthorized);
   readonly availableBalance = computed(() => this.enrollment().availableBalanceUsd);
   readonly lifetimeEarnings = computed(() => this.enrollment().lifetimeEarningsUsd);
+  readonly grantEscrowBalance = computed(() => this.enrollment().grantEscrowBalanceUsd);
+  readonly totalContributionsCount = computed(() => this.enrollment().researchContributionsCount);
+  readonly studiesSupportedCount = computed(() => this.enrollment().studiesSupportedCount);
+  readonly scientificFindings = computed(() => this.enrollment().scientificFindingsUnlocked);
+  readonly isPureOpenScience = computed(() => this.enrollment().grantEscrowBalanceUsd === 0);
   readonly enrolledCohortCount = computed(() => this.enrollment().enrolledCohortIds.length);
   readonly recentLedger = computed(() => this.enrollment().ledger.slice(0, 10));
 
@@ -325,14 +358,14 @@ export class ResearchConsentService {
     }));
   }
 
-  /** Simulates a research institution query dividend distribution */
+  /** Simulates a research institution query contributing to open science discovery */
   simulateDividendAccrual(cohortId: string, institutionName: string): IResearchDividendLedgerEntry | null {
     const cohort = this.availableCohorts().find(c => c.id === cohortId);
     if (!cohort || !this.isCohortEnrolled(cohortId) || !this.isHipaaAuthorized()) {
       return null;
     }
 
-    const dividendAmount = cohort.compensationPerQueryUsd;
+    const findingSummary = `Accredited open science query by ${institutionName} to accelerate evidence-based treatment discovery (Laplace ε=0.8).`;
     const newEntry: IResearchDividendLedgerEntry = {
       id: `div_${Date.now()}`,
       timestamp: new Date().toISOString(),
@@ -340,17 +373,18 @@ export class ResearchConsentService {
       cohortTitle: cohort.title,
       buyerInstitution: institutionName,
       ethicalFramework: cohort.ethicalFramework,
-      amountUsd: dividendAmount,
-      patientRevenueSharePercent: 85,
-      status: 'accrued',
+      amountUsd: 0.00,
+      patientRevenueSharePercent: 100,
+      status: 'open_science_contributed',
       transactionHash: `0x${getSecureRandomId()}`,
-      researchFindingSummary: `Accredited study query by ${institutionName} to accelerate evidence-based treatment discovery.`
+      openScienceImpactScore: 94,
+      researchFindingSummary: findingSummary
     };
 
     this.enrollment.update(current => ({
       ...current,
-      lifetimeEarningsUsd: Number((current.lifetimeEarningsUsd + dividendAmount).toFixed(2)),
-      availableBalanceUsd: Number((current.availableBalanceUsd + dividendAmount).toFixed(2)),
+      researchContributionsCount: current.researchContributionsCount + 1,
+      scientificFindingsUnlocked: [findingSummary, ...current.scientificFindingsUnlocked],
       ledger: [newEntry, ...current.ledger]
     }));
 
@@ -419,8 +453,9 @@ export class ResearchConsentService {
   }
 
   /**
-   * Requests cash out of available data dividend balance via automated Stripe Connect Express.
-   * Enforces Mandiant dual-custody (M-of-N) authorization for disbursements >= $500.
+   * Evaluates eligibility for research grant stipend cash out.
+   * Under Belmont Report (45 CFR § 46) & Common Rule, cash disbursements are strictly prohibited
+   * without an accredited institutional grant held in verified third-party escrow.
    */
   requestCashOut(dualCustodySignatures?: { primarySigner: string; secondarySigner: string }): {
     success: boolean;
@@ -429,9 +464,15 @@ export class ResearchConsentService {
     payout: IStripeConnectExpressPayout | null;
     error?: string;
   } {
-    const currentBalance = this.enrollment().availableBalanceUsd;
+    const currentBalance = this.enrollment().grantEscrowBalanceUsd;
     if (currentBalance <= 0) {
-      return { success: false, amountPaid: 0, txId: '', payout: null, error: 'No accrued balance available for withdrawal.' };
+      return {
+        success: false,
+        amountPaid: 0,
+        txId: '',
+        payout: null,
+        error: 'Belmont Report Compliance (45 CFR § 46): No accredited institutional grant escrow is attached to this open science registry. Participation is non-commercial and protected against financial coercion or undue inducement.'
+      };
     }
 
     // High-impact disbursement guard: disbursements >= $500 require dual distinct authenticated roles
@@ -442,7 +483,7 @@ export class ResearchConsentService {
           amountPaid: 0,
           txId: '',
           payout: null,
-          error: 'Dual-custody (M-of-N) authorization required for disbursements >= $500. Primary and secondary clinical/executive signatures must be provided.'
+          error: 'Dual-custody (M-of-N) authorization required for grant escrow disbursements >= $500. Primary and secondary clinical/executive signatures must be provided.'
         };
       }
     }
@@ -454,10 +495,10 @@ export class ResearchConsentService {
       payoutId: txId,
       timestamp,
       amountUsd: currentBalance,
-      feeUsd: 0.00, // Zero fee subsidized for patient data dividends
+      feeUsd: 0.00,
       netPayoutUsd: currentBalance,
-      arrivalEstimate: 'Instant Transfer (Debit Card via Stripe Connect Express)',
-      destinationAccountMasked: this.enrollment().payoutAccountMasked || 'acct_••••8492 (Stripe Express)',
+      arrivalEstimate: 'Institutional Grant Escrow Transfer (Direct Depository via Stripe)',
+      destinationAccountMasked: this.enrollment().payoutAccountMasked || 'Verified Institutional Escrow',
       status: 'paid',
       dualCustodyAttestation: currentBalance >= 500 && dualCustodySignatures ? {
         isAttested: true,
@@ -470,6 +511,7 @@ export class ResearchConsentService {
 
     this.enrollment.update(current => ({
       ...current,
+      grantEscrowBalanceUsd: 0,
       availableBalanceUsd: 0,
       ledger: current.ledger.map(entry => 
         entry.status === 'accrued' ? { ...entry, status: 'paid_out' as const } : entry

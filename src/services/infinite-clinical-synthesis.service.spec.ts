@@ -24,7 +24,7 @@ describe('InfiniteClinicalSynthesisService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should procedurally generate tri-paradigm clinical strategy with Amazon affiliate URLs', async () => {
+  it('should procedurally generate tri-paradigm clinical strategy with clean supply URLs without affiliate tracking', async () => {
     const result = await service.synthesizeInfiniteStrategy({
       symptomQuery: 'Ashwagandha for Sleep & Cortisol',
       paradigmFocus: 'ayurvedic'
@@ -32,7 +32,8 @@ describe('InfiniteClinicalSynthesisService', () => {
 
     expect(result).toBeTruthy();
     expect(result.title).toContain('Ashwagandha for Sleep & Cortisol');
-    expect(result.amazonStoreUrl).toContain('tag=pgdpo-20');
+    expect(result.amazonStoreUrl).toContain('Ashwagandha');
+    expect(result.amazonStoreUrl).not.toContain('tag=pgdpo-20');
     expect(result.moeFlopSavingsPercent).toBeGreaterThanOrEqual(0);
     expect(result.nodes.length).toBeGreaterThan(0);
     expect(result.nodes[0]?.items?.length).toBe(3);

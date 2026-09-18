@@ -48,11 +48,11 @@ export class InfiniteClinicalSynthesisService {
       // 1. Resolve theme icon spec
       const iconSpec = this.iconGenerator.getIconSpec(query, paradigm === 'tcm' ? 'tcm' : paradigm === 'ayurvedic' ? 'ayurvedic' : 'western');
 
-      // 2. Format Amazon affiliate links conditionally for purchasable supply recommendations
+      // 2. Format clinical supply reference query without commercial affiliate tracking
       const cleanQuery = query.replace(/[^\w\s-]/g, '').trim();
       const lowerQ = cleanQuery.toLowerCase();
       const isPurchasable = ['supplement', 'herb', 'botanical', 'kit', 'band', 'cushion', 'oils', 'tea', 'rasayana', 'triphala', 'ashwagandha', 'shilajit'].some(k => lowerQ.includes(k));
-      const amazonStoreUrl = isPurchasable ? `https://www.amazon.com/s?k=${encodeURIComponent(cleanQuery)}&tag=pgdpo-20` : undefined;
+      const amazonStoreUrl = isPurchasable ? `https://www.amazon.com/s?k=${encodeURIComponent(cleanQuery)}` : undefined;
 
       // 3. Construct procedural clinical nodes
       const westernNodeItem: ISummaryNodeItem = {
