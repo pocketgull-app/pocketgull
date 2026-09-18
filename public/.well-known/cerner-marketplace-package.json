@@ -1,0 +1,38 @@
+{
+  "app_id": "pocketgull-cerner-powerchart-app",
+  "app_name": "PocketGull Clinical Intelligence Engine",
+  "vendor": "PocketGull LLC",
+  "product_compatibility": [
+    "Oracle Health Millennium EHR",
+    "Cerner PowerChart",
+    "Cerner HealtheLife Patient Portal"
+  ],
+  "smart_launch_uri": "https://pocketgull.app/api/smart/launch",
+  "redirect_uris": [
+    "https://pocketgull.app/smart-callback",
+    "https://pocketgull.app/fhir-callback"
+  ],
+  "scopes_requested": [
+    "launch",
+    "openid",
+    "fhirUser",
+    "patient/Patient.read",
+    "patient/Observation.read",
+    "patient/Condition.read",
+    "patient/MedicationRequest.read",
+    "online_access"
+  ],
+  "cerner_code_status": "validated_partner",
+  "fhir_version": "R4",
+  "uscdi_classes_mapped": [
+    "Demographics",
+    "Vitals",
+    "Medications",
+    "Observations",
+    "Conditions"
+  ],
+  "launch_types": [
+    "ehr_launch",
+    "standalone_launch"
+  ]
+}

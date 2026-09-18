@@ -104,3 +104,74 @@ export interface IResearchAccessQueryRequest {
   queryFilters?: Record<string, unknown>;
   licenseTier: 'academic_single_query' | 'biotech_annual_license';
 }
+
+/**
+ * BigQuery Analytics Hub Cohort Listing Descriptor
+ * Conforms to Google Cloud Analytics Hub Exchange & Listing specification.
+ * GCP Project: gen-lang-client-0540208645
+ * Data Exchange: pocketgull_data_exchange
+ */
+export interface IBigQueryAnalyticsHubListing {
+  listingId: string;
+  dataExchangeId: string;
+  displayName: string;
+  description: string;
+  primaryContact: string;
+  documentationUrl?: string;
+  project: string;
+  datasetReference: string;
+  category: DiseaseCategory;
+  differentialPrivacyBudget: {
+    epsilon: number;
+    delta: number;
+  };
+  kAnonymityScore: number;
+  subscriberCount: number;
+  dryRunSqlTemplate: string;
+  sampleColumns: Array<{
+    name: string;
+    type: string;
+    description: string;
+    isDeIdentified: boolean;
+  }>;
+}
+
+export interface IDryRunSqlQueryResult {
+  cohortId: string;
+  sql: string;
+  estimatedBytesBilled: number;
+  estimatedParticipantsMatched: number;
+  differentialPrivacyEpsilonConsumed: number;
+  perturbedAggregateSample: Record<string, number>;
+  isValid: boolean;
+  executionNotice: string;
+}
+
+export interface IStripeConnectExpressPayout {
+  payoutId: string;
+  timestamp: string;
+  amountUsd: number;
+  feeUsd: number;
+  netPayoutUsd: number;
+  arrivalEstimate: string;
+  destinationAccountMasked: string;
+  status: 'pending' | 'in_transit' | 'paid' | 'requires_dual_custody';
+  dualCustodyAttestation?: {
+    isAttested: boolean;
+    primarySigner: string;
+    secondarySigner: string;
+    signatureHash: string;
+    timestamp: string;
+  };
+}
+
+export interface IStripeConnectAccountStatus {
+  accountId: string;
+  payoutsEnabled: boolean;
+  detailsSubmitted: boolean;
+  currency: string;
+  country: string;
+  dashboardUrl: string;
+  lastPayoutAt?: string;
+}
+

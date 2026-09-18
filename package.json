@@ -117,6 +117,7 @@
     "models:hub-export": "node --no-deprecation ./scripts/huggingface_model_hub_export.mjs",
     "contracts:generate": "node --no-deprecation ./scripts/generate-api-contracts.mjs",
     "lint": "node --no-deprecation node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
+    "lint:pokayoke": "node --no-deprecation scripts/poka_yoke_type_guard.mjs",
     "preview": "node --no-deprecation scripts/build-if-missing.cjs && node --no-deprecation dist/server/server.mjs",
     "serve:local": "node --no-deprecation scripts/serve-local.mjs",
     "test:e2e": "node --no-deprecation ./run-playwright.cjs test",

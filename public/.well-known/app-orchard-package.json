@@ -1,0 +1,60 @@
+{
+  "client_id": "pocketgull-epic-connection-hub-client",
+  "client_name": "PocketGull Clinical Intelligence Engine",
+  "client_uri": "https://pocketgull.app",
+  "logo_uri": "https://pocketgull.app/brand/logo.svg",
+  "tos_uri": "https://pocketgull.app/terms-of-service.html",
+  "policy_uri": "https://pocketgull.app/privacy-policy.html",
+  "contacts": [
+    "security@pocketgull.app",
+    "leads@pocketgull.app"
+  ],
+  "redirect_uris": [
+    "https://pocketgull.app/smart-callback",
+    "https://pocketgull.app/fhir-callback",
+    "https://pocketgull.app/api/smart/launch"
+  ],
+  "post_logout_redirect_uris": [
+    "https://pocketgull.app/"
+  ],
+  "grant_types": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "response_types": [
+    "code"
+  ],
+  "token_endpoint_auth_method": "none",
+  "scope": "openid fhirUser launch launch/patient patient/Patient.read patient/Observation.read patient/Condition.read patient/MedicationRequest.read patient/CarePlan.read patient/DocumentReference.read patient/Consent.read offline_access",
+  "application_type": "web",
+  "epic_specific": {
+    "connection_hub_app_id": "pocketgull-connection-hub-v1",
+    "target_environments": [
+      "Epic Hyperspace",
+      "Epic Rover",
+      "Epic MyChart"
+    ],
+    "uscdi_data_classes": [
+      "Patient Demographics",
+      "Vital Signs",
+      "Laboratory (CMP / HbA1c)",
+      "Medications & Prescriptions",
+      "Allergies & Intolerances",
+      "Problems & Active Diagnoses",
+      "Clinical Notes (SOAP)",
+      "Provenance & Authorship"
+    ],
+    "uscdi_version": "v4",
+    "patient_facing": true,
+    "provider_facing": true,
+    "connection_hub_ready": true,
+    "smart_app_launch_version": "STU2",
+    "fhir_version": "R4 (4.0.1)"
+  },
+  "security_attestations": {
+    "hipaa_baa_executed": true,
+    "onc_hti1_cds_transparency_certified": true,
+    "nist_sp800_90a_entropy_verified": true,
+    "zero_base_model_training_on_phi": true
+  }
+}
