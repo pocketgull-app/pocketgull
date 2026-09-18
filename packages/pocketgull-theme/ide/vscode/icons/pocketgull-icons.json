@@ -1,0 +1,86 @@
+{
+  "iconDefinitions": {
+    "_file": {
+      "iconPath": "./svg/file.svg"
+    },
+    "_folder": {
+      "iconPath": "./svg/folder.svg"
+    },
+    "_folder_open": {
+      "iconPath": "./svg/folder_open.svg"
+    },
+    "_ts": {
+      "iconPath": "./svg/ts.svg"
+    },
+    "_js": {
+      "iconPath": "./svg/js.svg"
+    },
+    "_py": {
+      "iconPath": "./svg/py.svg"
+    },
+    "_dart": {
+      "iconPath": "./svg/dart.svg"
+    },
+    "_json": {
+      "iconPath": "./svg/json.svg"
+    },
+    "_md": {
+      "iconPath": "./svg/md.svg"
+    },
+    "_fhir": {
+      "iconPath": "./svg/fhir.svg"
+    },
+    "_dcm": {
+      "iconPath": "./svg/dcm.svg"
+    },
+    "_html": {
+      "iconPath": "./svg/html.svg"
+    },
+    "_css": {
+      "iconPath": "./svg/css.svg"
+    },
+    "_image": {
+      "iconPath": "./svg/image.svg"
+    },
+    "_parquet": {
+      "iconPath": "./svg/parquet.svg"
+    }
+  },
+  "file": "_file",
+  "folder": "_folder",
+  "folderExpanded": "_folder_open",
+  "fileExtensions": {
+    "ts": "_ts",
+    "tsx": "_ts",
+    "js": "_js",
+    "jsx": "_js",
+    "mjs": "_js",
+    "cjs": "_js",
+    "py": "_py",
+    "dart": "_dart",
+    "json": "_json",
+    "md": "_md",
+    "markdown": "_md",
+    "fhir": "_fhir",
+    "hl7": "_fhir",
+    "dcm": "_dcm",
+    "dicom": "_dcm",
+    "html": "_html",
+    "css": "_css",
+    "scss": "_css",
+    "png": "_image",
+    "jpg": "_image",
+    "jpeg": "_image",
+    "svg": "_image",
+    "webp": "_image",
+    "parquet": "_parquet"
+  },
+  "fileNames": {
+    "package.json": "_json",
+    "tsconfig.json": "_json",
+    "README.md": "_md",
+    "CHANGELOG.md": "_md",
+    "LICENSE": "_file",
+    ".gitignore": "_file"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "$schema": "vscode://schemas/color-theme",
-  "name": "PocketGull Triage E-Paper",
+  "name": "PocketGull Triage Electrophoretic",
   "type": "light",
   "colors": {
     "activityBar.activeBorder": "#111111",
@@ -107,7 +107,10 @@
   "tokenColors": [
     {
       "name": "Comments",
-      "scope": ["comment", "punctuation.definition.comment"],
+      "scope": [
+        "comment",
+        "punctuation.definition.comment"
+      ],
       "settings": {
         "foreground": "#71716e",
         "fontStyle": "italic"
@@ -115,7 +118,12 @@
     },
     {
       "name": "Keywords & Control",
-      "scope": ["keyword", "keyword.control", "storage.type", "storage.modifier"],
+      "scope": [
+        "keyword",
+        "keyword.control",
+        "storage.type",
+        "storage.modifier"
+      ],
       "settings": {
         "foreground": "#111111",
         "fontStyle": "bold"
@@ -123,7 +131,11 @@
     },
     {
       "name": "Functions & Methods",
-      "scope": ["entity.name.function", "meta.function-call", "support.function"],
+      "scope": [
+        "entity.name.function",
+        "meta.function-call",
+        "support.function"
+      ],
       "settings": {
         "foreground": "#222222",
         "fontStyle": "bold underline"
@@ -131,14 +143,22 @@
     },
     {
       "name": "Strings",
-      "scope": ["string", "string.quoted", "string.template"],
+      "scope": [
+        "string",
+        "string.quoted",
+        "string.template"
+      ],
       "settings": {
         "foreground": "#333333"
       }
     },
     {
       "name": "Numbers & Constants",
-      "scope": ["constant.numeric", "constant.language", "support.constant"],
+      "scope": [
+        "constant.numeric",
+        "constant.language",
+        "support.constant"
+      ],
       "settings": {
         "foreground": "#111111",
         "fontStyle": "bold"
@@ -146,7 +166,12 @@
     },
     {
       "name": "Types & Classes",
-      "scope": ["entity.name.type", "entity.name.class", "support.class", "support.type"],
+      "scope": [
+        "entity.name.type",
+        "entity.name.class",
+        "support.class",
+        "support.type"
+      ],
       "settings": {
         "foreground": "#111111",
         "fontStyle": "bold"
@@ -154,21 +179,32 @@
     },
     {
       "name": "Variables & Parameters",
-      "scope": ["variable", "variable.parameter", "variable.other"],
+      "scope": [
+        "variable",
+        "variable.parameter",
+        "variable.other"
+      ],
       "settings": {
         "foreground": "#222222"
       }
     },
     {
       "name": "Properties & Object Keys",
-      "scope": ["variable.other.property", "meta.object-literal.key", "support.type.property-name"],
+      "scope": [
+        "variable.other.property",
+        "meta.object-literal.key",
+        "support.type.property-name"
+      ],
       "settings": {
         "foreground": "#222222"
       }
     },
     {
       "name": "HTML & XML Tags",
-      "scope": ["entity.name.tag", "meta.tag"],
+      "scope": [
+        "entity.name.tag",
+        "meta.tag"
+      ],
       "settings": {
         "foreground": "#111111",
         "fontStyle": "bold"
@@ -176,14 +212,19 @@
     },
     {
       "name": "HTML & CSS Attributes",
-      "scope": ["entity.other.attribute-name"],
+      "scope": [
+        "entity.other.attribute-name"
+      ],
       "settings": {
         "foreground": "#333333"
       }
     },
     {
       "name": "Markdown Headings",
-      "scope": ["markup.heading", "punctuation.definition.heading"],
+      "scope": [
+        "markup.heading",
+        "punctuation.definition.heading"
+      ],
       "settings": {
         "foreground": "#111111",
         "fontStyle": "bold"
@@ -191,7 +232,10 @@
     },
     {
       "name": "Markdown Links",
-      "scope": ["markup.underline.link", "string.other.link"],
+      "scope": [
+        "markup.underline.link",
+        "string.other.link"
+      ],
       "settings": {
         "foreground": "#222222",
         "fontStyle": "underline"

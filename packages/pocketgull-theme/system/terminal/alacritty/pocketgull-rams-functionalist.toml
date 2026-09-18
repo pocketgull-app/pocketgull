@@ -1,0 +1,32 @@
+# PocketGull Rams Functionalist Alacritty Theme
+[colors.primary]
+background = "#e8e6e1"
+foreground = "#1c1b1a"
+
+[colors.cursor]
+text = "#e8e6e1"
+cursor = "#d99b00"
+
+[colors.selection]
+text = "#1c1b1a"
+background = "#d5d1c8"
+
+[colors.normal]
+black = "#2b2927"
+red = "#c84b31"
+green = "#2f6f44"
+yellow = "#d99b00"
+blue = "#3e5c76"
+magenta = "#6c5b7b"
+cyan = "#4d7c8a"
+white = "#f5f3ef"
+
+[colors.bright]
+black = "#6b6560"
+red = "#d95e46"
+green = "#418f58"
+yellow = "#edb21d"
+blue = "#557c93"
+magenta = "#89719d"
+cyan = "#6e98a4"
+white = "#ffffff"

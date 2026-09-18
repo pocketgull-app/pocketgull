@@ -1,0 +1,32 @@
+# PocketGull Curie Luminescence Alacritty Theme
+[colors.primary]
+background = "#050b08"
+foreground = "#d1fae5"
+
+[colors.cursor]
+text = "#050b08"
+cursor = "#10b981"
+
+[colors.selection]
+text = "#d1fae5"
+background = "#132d20"
+
+[colors.normal]
+black = "#0b1610"
+red = "#f87171"
+green = "#10b981"
+yellow = "#fcd34d"
+blue = "#2dd4bf"
+magenta = "#a7f3d0"
+cyan = "#34d399"
+white = "#ecfdf5"
+
+[colors.bright]
+black = "#1e3a2b"
+red = "#fca5a5"
+green = "#34d399"
+yellow = "#fde68a"
+blue = "#5eead4"
+magenta = "#d1fae5"
+cyan = "#6ee7b7"
+white = "#ffffff"
