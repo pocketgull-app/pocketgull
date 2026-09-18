@@ -208,5 +208,43 @@ describe('SkepticalEpistemologyService', () => {
     expect(prompt).toContain('STATISTICAL H0 TESTING');
     expect(prompt).toContain('COCHRANE RISK OF BIAS');
   });
+
+  it('18. Evaluates Epistemic Humility: flags automation bias when certainty >80% without objective confirmation', () => {
+    const audit = service.evaluateEpistemicHumility(
+      'Acute Myocardial Infarction',
+      92,
+      false, // no objective confirmatory tests
+      { gender: 'male', age: 55 }
+    );
+
+    expect(audit.isAutomationBiasRisk).toBe(true);
+    expect(audit.epistemicHumilityBadge).toBe('OVERCONFIDENCE_WARNING');
+    expect(audit.recommendedActionPlan).toContain('DO NOT commit diagnosis autonomously');
+    expect(audit.devilsAdvocateCounterPrompt).toContain("[DEVIL'S ADVOCATE COUNTER-CHALLENGE]");
+  });
+
+  it('19. Detects atypical presentation vulnerabilities (Female ACS, Geriatric Sepsis, euDKA)', () => {
+    // 1. Female ACS atypical check
+    const femaleAcsAudit = service.evaluateEpistemicHumility(
+      'Suspected Angina / Coronary Ischemia',
+      70,
+      false,
+      { gender: 'female', age: 62, symptoms: ['epigastric nausea', 'jaw discomfort', 'fatigue'] }
+    );
+    expect(femaleAcsAudit.atypicalPresentationRisk).toBe(true);
+    expect(femaleAcsAudit.epistemicHumilityBadge).toBe('HIGH_AMBIGUITY_ATYPICAL_ALERT');
+    expect(femaleAcsAudit.atypicalPresentationFlags[0].id).toBe('atypical-acs-female');
+    expect(femaleAcsAudit.falsificationManeuver).toContain('Troponin');
+
+    // 2. euDKA atypical check with SGLT2 inhibitor
+    const eudkaAudit = service.evaluateEpistemicHumility(
+      'Diabetic Ketoacidosis',
+      65,
+      false,
+      { medications: ['Empagliflozin 25mg'], symptoms: ['nausea', 'tachypnea'] }
+    );
+    expect(eudkaAudit.atypicalPresentationRisk).toBe(true);
+    expect(eudkaAudit.atypicalPresentationFlags.some(f => f.id === 'atypical-euglycemic-dka')).toBe(true);
+  });
 });
 

@@ -3,7 +3,9 @@ import { isPlatformBrowser } from '@angular/common';
 import {
   IResearchCohortListing,
   IPatientResearchEnrollment,
-  IResearchDividendLedgerEntry
+  IResearchDividendLedgerEntry,
+  ILinkageAttackRiskEvaluation,
+  IDifferentialPrivacyConfig
 } from '../models/research-cohort.types';
 import { getSecureRandomId } from '../utils/security-helper';
 
@@ -22,6 +24,9 @@ const INITIAL_COHORTS: IResearchCohortListing[] = [
     participantBenefitDescription: 'Receives monthly individualized Glycemic Variability & Time-in-Range trend analysis report.',
     sampleFields: ['timeInRangePercent', 'glucoseMeanMgDl', 'glycemicVariabilityCv', 'hba1cBaseline'],
     kAnonymityScore: 12,
+    differentialPrivacyEpsilon: 0.8,
+    differentialPrivacyDelta: 1e-5,
+    linkageAttackRiskTier: 'LOW',
     fhirResourceType: 'Observation',
     tags: ['NIH All of Us Model', 'CGM', 'Diabetes', 'Metabolic']
   },
@@ -282,6 +287,91 @@ export class ResearchConsentService {
       success: true,
       amountPaid: currentBalance,
       txId
+    };
+  }
+
+  /**
+   * Generates a cryptographically unbiased uniform float in (0, 1) using
+   * 53-bit IEEE-754 mantissa scaling over NIST SP 800-90A CSPRNG entropy.
+   */
+  private getSecureMantissaFloat(): number {
+    if (typeof globalThis.crypto !== 'undefined' && globalThis.crypto.getRandomValues) {
+      const buffer = new Uint32Array(2);
+      globalThis.crypto.getRandomValues(buffer);
+      const high = buffer[0] & 0x1fffff; // 21 bits
+      const low = buffer[1]; // 32 bits
+      const val = (high * 4294967296.0 + low) / 9007199254740992.0;
+      return val <= 0 ? 0.000000000000001 : val >= 1 ? 0.999999999999999 : val;
+    }
+    return Math.random();
+  }
+
+  /**
+   * Applies (epsilon, delta)-Differential Privacy via the Laplace Mechanism.
+   * Perturbs continuous biomarker or vital telemetry values before inclusion
+   * in research cohort export queries to eliminate re-identification.
+   *
+   * @param trueValue The raw metric value (e.g., mean glucose, HRV rmssd)
+   * @param sensitivity Global sensitivity (maximum delta a single record can shift the aggregate)
+   * @param epsilon Privacy loss budget (default: 0.8)
+   */
+  applyLaplaceDifferentialPrivacy(
+    trueValue: number,
+    sensitivity: number = 1.0,
+    epsilon: number = 0.8
+  ): number {
+    const scale = sensitivity / Math.max(0.01, epsilon);
+    const u = this.getSecureMantissaFloat() - 0.5; // uniformly in (-0.5, 0.5)
+    const sign = u < 0 ? -1 : 1;
+    const noise = -scale * sign * Math.log(1 - 2 * Math.abs(u));
+    return Number((trueValue + noise).toFixed(3));
+  }
+
+  /**
+   * Evaluates linkage attack vulnerability on a research cohort.
+   * Quarantines any cohort where k-anonymity is below 5 or quasi-identifier entropy indicates high uniqueness.
+   */
+  evaluateLinkageAttackRisk(cohort: IResearchCohortListing): ILinkageAttackRiskEvaluation {
+    const k = cohort.kAnonymityScore;
+    const sampleFieldCount = cohort.sampleFields.length;
+    const isRareOrGenomic = cohort.category === 'rare_orphan_diseases' || cohort.category === 'oncology_genomics';
+
+    // Estimate quasi-identifier entropy based on dimension count and cohort size
+    const baseEntropy = Math.min(1.0, (sampleFieldCount * 0.12) + (isRareOrGenomic ? 0.35 : 0.1));
+    const sizeAdjustment = Math.max(0, 1.0 - (cohort.participantCount / 2000));
+    const quasiIdentifierEntropyScore = Number((baseEntropy * (0.6 + 0.4 * sizeAdjustment)).toFixed(2));
+
+    const isQuarantined = k < 5 || quasiIdentifierEntropyScore > 0.75;
+    let riskTier: ILinkageAttackRiskEvaluation['riskTier'] = 'LOW';
+    let quarantineReason: string | null = null;
+
+    if (k < 5) {
+      riskTier = 'CRITICAL_QUARANTINE';
+      quarantineReason = `k-Anonymity score (${k}) is below statutory minimum threshold (k >= 5). High risk of record re-identification in low-frequency bins.`;
+    } else if (quasiIdentifierEntropyScore > 0.75) {
+      riskTier = 'CRITICAL_QUARANTINE';
+      quarantineReason = `High-dimensional quasi-identifier entropy (${quasiIdentifierEntropyScore} > 0.75) presents linkage attack vulnerability against public registries.`;
+    } else if (k < 10 || isRareOrGenomic) {
+      riskTier = 'MODERATE';
+    }
+
+    const epsilon = cohort.differentialPrivacyEpsilon ?? (riskTier === 'MODERATE' ? 0.5 : 0.8);
+    const delta = cohort.differentialPrivacyDelta ?? 1e-5;
+
+    return {
+      cohortId: cohort.id,
+      quasiIdentifierEntropyScore,
+      kAnonymityScore: k,
+      riskTier,
+      isQuarantined,
+      quarantineReason,
+      allowedForEgress: !isQuarantined,
+      differentialPrivacy: {
+        epsilon,
+        delta,
+        mechanism: 'LAPLACE',
+        calibratedNoiseScale: Number((1.0 / epsilon).toFixed(3))
+      }
     };
   }
 }

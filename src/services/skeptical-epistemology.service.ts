@@ -122,6 +122,77 @@ export interface ICannabinoidMicrotubuleFalsification {
   clinicalGuidance: string;
 }
 
+export interface IAtypicalPresentationRule {
+  id: string;
+  syndrome: string;
+  demographicOrPhenotype: string;
+  classicSymptom: string;
+  atypicalPresentation: string;
+  clinicalPitfall: string;
+  investigationManeuver: string;
+}
+
+export interface IEpistemicHumilityAudit {
+  hypothesis: string;
+  rawCertaintyPercent: number;
+  epistemicHumilityScore: number; // 0-100%
+  isAutomationBiasRisk: boolean;
+  atypicalPresentationRisk: boolean;
+  atypicalPresentationFlags: IAtypicalPresentationRule[];
+  devilsAdvocateCounterPrompt: string;
+  epistemicHumilityBadge: 'SETTLED_WITH_CONFIRMATORY_TESTS' | 'PROVISIONAL_WORKING_HYPOTHESIS' | 'HIGH_AMBIGUITY_ATYPICAL_ALERT' | 'OVERCONFIDENCE_WARNING';
+  falsificationManeuver: string;
+  recommendedActionPlan: string;
+}
+
+export const ATYPICAL_PRESENTATION_BANK: IAtypicalPresentationRule[] = [
+  {
+    id: 'atypical-acs-female',
+    syndrome: 'Acute Coronary Syndrome / Ischemia',
+    demographicOrPhenotype: 'Female, Diabetic, or Elderly (>60)',
+    classicSymptom: 'Crushing substernal chest pressure radiating to left arm with diaphoresis',
+    atypicalPresentation: 'Epigastric nausea, profound unexplained fatigue, jaw discomfort, isolated dyspnea',
+    clinicalPitfall: 'Dismissing cardiac ischemia as gastroesophageal reflux or panic attack',
+    investigationManeuver: 'Stat high-sensitivity Troponin T/I series + 12-lead ECG with posterior leads (V7-V9)'
+  },
+  {
+    id: 'atypical-geriatric-delirium-uti',
+    syndrome: 'Occult Sepsis / Urosepsis / Pneumonia',
+    demographicOrPhenotype: 'Geriatric (>65) or Neurodegenerative',
+    classicSymptom: 'High spiking pyrexia (>38.5°C), dysuria, productive cough, leukocytosis',
+    atypicalPresentation: 'Acute confusion, delirium, hypoactive lethargy, falls, hypothermia (<36.0°C)',
+    clinicalPitfall: 'Attributing delirium solely to underlying dementia without infectious workup',
+    investigationManeuver: 'Urinalysis with micro/culture, chest imaging, lactate, orthostatic vitals'
+  },
+  {
+    id: 'atypical-euglycemic-dka',
+    syndrome: 'Euglycemic Diabetic Ketoacidosis (euDKA)',
+    demographicOrPhenotype: 'Patients on SGLT2 inhibitors (Empagliflozin, Dapagliflozin)',
+    classicSymptom: 'Marked hyperglycemia (>300 mg/dL) with Kussmaul respirations and polyuria',
+    atypicalPresentation: 'Normal or mild glucose (130-180 mg/dL), mild nausea, tachypnea, high anion-gap metabolic acidosis',
+    clinicalPitfall: 'Excluding DKA because fingerstick glucose is not severely elevated',
+    investigationManeuver: 'Serum beta-hydroxybutyrate, arterial/venous blood gas (ABG/VBG), anion gap calculation'
+  },
+  {
+    id: 'atypical-pediatric-appendicitis',
+    syndrome: 'Acute Appendicitis',
+    demographicOrPhenotype: 'Pediatric (<18) or Retrocecal anatomy',
+    classicSymptom: 'Periumbilical pain migrating cleanly to RLQ McBurney point with rebound tenderness',
+    atypicalPresentation: 'Diffuse vague cramp, diarrhea, irritable lethargy, pelvic or flank discomfort, walking with limp',
+    clinicalPitfall: 'Misdiagnosing as gastroenteritis or constipation until perforation occurs',
+    investigationManeuver: 'Point-of-care abdominal ultrasound, serial abdominal exams, pediatric appendicitis score (PAS)'
+  },
+  {
+    id: 'atypical-neutropenic-fever',
+    syndrome: 'Neutropenic Sepsis / Severe Immunodeficiency',
+    demographicOrPhenotype: 'Post-chemotherapy, immunosuppressed, or severe neutropenia (ANC < 500)',
+    classicSymptom: 'Purulent sputum, erythema/pus at infection site, standard inflammatory surge',
+    atypicalPresentation: 'Isolated temperature of 38.0°C (100.4°F) without localizing physical exam signs',
+    clinicalPitfall: 'Waiting for physical signs of inflammation that require neutrophils to manifest',
+    investigationManeuver: 'Immediate broad-spectrum empiric IV pseudomonal coverage within 60 minutes'
+  }
+];
+
 export interface IBiophysicalFalsificationCatalog {
   protacPolypharmacy: IProtacEpistemicFalsification;
   llpsPhaseBoundary: ILlpsEpistemicFalsification;
@@ -1372,6 +1443,94 @@ EPISTEMIC INVARIANTS:
 
 OUTPUT FORMAT:
 Output MUST be valid JSON adhering strictly to the IGroundedClinicalAssertion schema.`;
+  }
+
+  /**
+   * Evaluates a clinical hypothesis for epistemic humility, automation bias risk,
+   * and atypical presentation vulnerability (e.g., female ACS, geriatric delirium UTI, euDKA).
+   */
+  evaluateEpistemicHumility(
+    hypothesis: string,
+    rawCertaintyPercent: number,
+    hasObjectiveConfirmatoryTests: boolean = false,
+    patientContext?: { gender?: string; age?: number; medications?: string[]; symptoms?: string[] }
+  ): IEpistemicHumilityAudit {
+    const lowerHypothesis = hypothesis.toLowerCase();
+    const flags: IAtypicalPresentationRule[] = [];
+
+    // Check atypical rules against hypothesis, demographics, and symptoms
+    for (const rule of ATYPICAL_PRESENTATION_BANK) {
+      const matchSyndrome = lowerHypothesis.includes(rule.syndrome.toLowerCase()) ||
+        (rule.id === 'atypical-acs-female' && (lowerHypothesis.includes('cardiac') || lowerHypothesis.includes('coronary') || lowerHypothesis.includes('angina') || lowerHypothesis.includes('chest pain') || lowerHypothesis.includes('infarction'))) ||
+        (rule.id === 'atypical-geriatric-delirium-uti' && (lowerHypothesis.includes('uti') || lowerHypothesis.includes('sepsis') || lowerHypothesis.includes('infection') || lowerHypothesis.includes('delirium') || lowerHypothesis.includes('pneumonia'))) ||
+        (rule.id === 'atypical-euglycemic-dka' && (lowerHypothesis.includes('dka') || lowerHypothesis.includes('diabetes') || lowerHypothesis.includes('acidosis') || lowerHypothesis.includes('ketoacidosis'))) ||
+        (rule.id === 'atypical-pediatric-appendicitis' && (lowerHypothesis.includes('appendic') || lowerHypothesis.includes('abdominal pain') || lowerHypothesis.includes('gastroenteritis'))) ||
+        (rule.id === 'atypical-neutropenic-fever' && (lowerHypothesis.includes('neutropen') || lowerHypothesis.includes('chemotherapy') || lowerHypothesis.includes('immunodeficiency')));
+
+      if (matchSyndrome) {
+        let demographicMatch = false;
+        if (rule.id === 'atypical-acs-female') {
+          demographicMatch = !patientContext || (patientContext.gender?.toLowerCase() === 'female' || (patientContext.age ?? 0) >= 60);
+        } else if (rule.id === 'atypical-geriatric-delirium-uti') {
+          demographicMatch = !patientContext || (patientContext.age ?? 0) >= 65;
+        } else if (rule.id === 'atypical-euglycemic-dka') {
+          demographicMatch = !patientContext || (patientContext.medications?.some(m => m.toLowerCase().includes('gliflozin') || m.toLowerCase().includes('sglt2')) ?? false);
+        } else if (rule.id === 'atypical-pediatric-appendicitis') {
+          demographicMatch = !patientContext || (patientContext.age ?? 25) < 18;
+        } else {
+          demographicMatch = true;
+        }
+
+        if (demographicMatch) {
+          flags.push(rule);
+        }
+      }
+    }
+
+    const hasAtypicalRisk = flags.length > 0;
+    const isOverconfident = rawCertaintyPercent > 80 && !hasObjectiveConfirmatoryTests;
+
+    let badge: IEpistemicHumilityAudit['epistemicHumilityBadge'] = 'PROVISIONAL_WORKING_HYPOTHESIS';
+    if (isOverconfident) {
+      badge = 'OVERCONFIDENCE_WARNING';
+    } else if (hasAtypicalRisk) {
+      badge = 'HIGH_AMBIGUITY_ATYPICAL_ALERT';
+    } else if (hasObjectiveConfirmatoryTests && rawCertaintyPercent >= 75) {
+      badge = 'SETTLED_WITH_CONFIRMATORY_TESTS';
+    }
+
+    // Epistemic humility score balances confidence against confirmation rigor
+    let humilityScore = 100 - Math.abs(rawCertaintyPercent - (hasObjectiveConfirmatoryTests ? 85 : 55));
+    if (isOverconfident) humilityScore = Math.max(10, humilityScore - 30);
+    if (hasAtypicalRisk) humilityScore = Math.max(15, humilityScore - 15);
+
+    const devilsAdvocateCounterPrompt = `[DEVIL'S ADVOCATE COUNTER-CHALLENGE]
+Primary Hypothesis: "${hypothesis}" (Stated Certainty: ${rawCertaintyPercent}%).
+Active Epistemic Challenge: What objective findings or negative test results would definitively FALSIFY this working diagnosis?
+${flags.map(f => `• ATYPICAL CHECK (${f.demographicOrPhenotype}): Could this present atypically as ${f.atypicalPresentation}? Pitfall: ${f.clinicalPitfall}`).join('\n')}`;
+
+    const falsificationManeuver = flags.length > 0
+      ? flags[0].investigationManeuver
+      : 'Obtain objective laboratory, hemodynamic, or diagnostic imaging confirmation before ordering irreversible invasive interventions.';
+
+    const recommendedActionPlan = isOverconfident
+      ? 'DO NOT commit diagnosis autonomously. Epistemic overconfidence detected: require objective confirmatory labs or imaging to reject competing differentials.'
+      : hasAtypicalRisk
+        ? `Perform targeted investigation: ${falsificationManeuver}. Verify atypical presentation criteria.`
+        : 'Maintain provisional working hypothesis status with continuous bedside clinical re-evaluation.';
+
+    return {
+      hypothesis,
+      rawCertaintyPercent,
+      epistemicHumilityScore: Math.round(humilityScore),
+      isAutomationBiasRisk: isOverconfident,
+      atypicalPresentationRisk: hasAtypicalRisk,
+      atypicalPresentationFlags: flags,
+      devilsAdvocateCounterPrompt,
+      epistemicHumilityBadge: badge,
+      falsificationManeuver,
+      recommendedActionPlan
+    };
   }
 
 }

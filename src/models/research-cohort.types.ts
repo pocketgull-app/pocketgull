@@ -42,8 +42,31 @@ export interface IResearchCohortListing {
   participantBenefitDescription: string; // e.g. Free genomic / biomarker insight report returned to patient
   sampleFields: string[];
   kAnonymityScore: number;
+  differentialPrivacyEpsilon?: number;
+  differentialPrivacyDelta?: number;
+  linkageAttackRiskTier?: LinkageRiskTier;
   fhirResourceType: 'ResearchStudy' | 'Observation' | 'Condition' | 'DiagnosticReport';
   tags: string[];
+}
+
+export type LinkageRiskTier = 'LOW' | 'MODERATE' | 'CRITICAL_QUARANTINE';
+
+export interface IDifferentialPrivacyConfig {
+  epsilon: number;
+  delta: number;
+  mechanism: 'LAPLACE' | 'GAUSSIAN';
+  calibratedNoiseScale: number;
+}
+
+export interface ILinkageAttackRiskEvaluation {
+  cohortId: string;
+  quasiIdentifierEntropyScore: number;
+  kAnonymityScore: number;
+  riskTier: LinkageRiskTier;
+  isQuarantined: boolean;
+  quarantineReason: string | null;
+  allowedForEgress: boolean;
+  differentialPrivacy: IDifferentialPrivacyConfig;
 }
 
 export interface IResearchDividendLedgerEntry {

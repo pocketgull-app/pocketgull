@@ -81,4 +81,38 @@ describe('ResearchConsentService Suite', () => {
     const entry = service.simulateDividendAccrual('cohort_diabetes_cgm', 'Stanford Medicine');
     expect(entry).toBeNull();
   });
+
+  it('7. Applies Laplace Differential Privacy to continuous biomarker telemetry', () => {
+    const rawGlucose = 112.5;
+    const perturbedValue1 = service.applyLaplaceDifferentialPrivacy(rawGlucose, 1.0, 0.8);
+    const perturbedValue2 = service.applyLaplaceDifferentialPrivacy(rawGlucose, 1.0, 0.8);
+
+    // Perturbation should return a valid finite number
+    expect(typeof perturbedValue1).toBe('number');
+    expect(Number.isFinite(perturbedValue1)).toBe(true);
+
+    // Bounded divergence under Laplace mechanism (scale = 1/0.8 = 1.25, values rarely deviate > 20)
+    expect(Math.abs(perturbedValue1 - rawGlucose)).toBeLessThan(30);
+  });
+
+  it('8. Evaluates linkage attack vulnerability and enforces quarantine on high-risk cohorts (k < 5)', () => {
+    const safeCohort = service.availableCohorts()[0]; // k = 12
+    const safeEval = service.evaluateLinkageAttackRisk(safeCohort);
+    expect(safeEval.isQuarantined).toBe(false);
+    expect(safeEval.allowedForEgress).toBe(true);
+    expect(safeEval.riskTier).toBe('LOW');
+
+    // Vulnerable cohort with small k-anonymity (e.g. k = 3)
+    const vulnerableCohort = {
+      ...safeCohort,
+      id: 'cohort_vulnerable_rare',
+      kAnonymityScore: 3,
+      sampleFields: ['rareSnpVariant', 'zip3', 'ageExact', 'diagnosis']
+    };
+    const vulnEval = service.evaluateLinkageAttackRisk(vulnerableCohort);
+    expect(vulnEval.isQuarantined).toBe(true);
+    expect(vulnEval.allowedForEgress).toBe(false);
+    expect(vulnEval.riskTier).toBe('CRITICAL_QUARANTINE');
+    expect(vulnEval.quarantineReason).toContain('k-Anonymity score (3) is below statutory minimum');
+  });
 });
