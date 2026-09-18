@@ -52,6 +52,7 @@ import { CompanionSyncModalComponent } from './components/modals/companion-sync-
 import { GlossaryModalComponent } from './components/modals/glossary-modal.component';
 import { PocketgullTypefaceSiteComponent } from './components/shared/pocketgull-typeface-site.component';
 import { DocsStudyComponent } from './components/docs-study.component';
+import { ZamecznikCanvasComponent } from './components/shared/zamecznik-canvas.component';
 import { NavigationShellService } from './services/navigation-shell.service';
 import { BillingDashboardComponent } from './components/billing-dashboard.component';
 import { ApiPricingComponent } from './components/api-pricing.component';
@@ -125,6 +126,7 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
     FhirCallbackComponent,
     PocketGullInputComponent,
     ConsentModalComponent,
+    ZamecznikCanvasComponent,
     CompanionSyncModalComponent,
     GlossaryModalComponent,
     ClinicalCdsDisclaimerBannerComponent,
@@ -591,14 +593,13 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
                           [class.text-gray-700]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'analysis'">
                     📊 Analysis
                   </button>
-                  @if (state.selectedPartId() || isViewingVisitDetails()) {
-                    <button (click)="mobileActiveTab.set('tasks')"
-                            class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
-                            [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
-                            [class.text-gray-700]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'tasks'">
-                      📋 {{ isViewingVisitDetails() ? 'Review' : 'Tasks' }}
-                    </button>
-                  }
+                  <button (click)="mobileActiveTab.set('tasks'); state.toggleActiveRoom(true)"
+                          data-testid="mobile-tab-room"
+                          class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
+                          [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
+                          [class.text-gray-700]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'tasks'">
+                    📋 {{ isViewingVisitDetails() ? 'Review' : 'Room' }}
+                  </button>
                 </div>
               </div>
             }
@@ -609,7 +610,7 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
                [class.md:flex-1]="isAnalysisCollapsed() || inputPanelWidth() === undefined || state.isSparkModeActive()"
                [class.transition-all]="!isDragging()"
                [class.duration-500]="!isDragging()"
-               [class.ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]]="!isDragging()"
+               [class.ease-[cubic-bezier(0.16,1,0.3,1)]]="!isDragging()"
                [style.--panel-width.px]="isChartCollapsed() ? 0 : (isAnalysisCollapsed() ? null : inputPanelWidth())"
                [class.md:w-[var(--panel-width)]]="!isAnalysisCollapsed() && inputPanelWidth() !== undefined && !state.isSparkModeActive()"
                [class.hidden]="isChartCollapsed()"
@@ -669,19 +670,21 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
             </div>
 
             <!-- Column 2 (Middle): Task Flow & Intake Bracket -->
-            @if (state.selectedPartId() && !state.isLiveAgentActive() && !state.isSparkModeActive()) {
+            @if ((state.selectedPartId() || state.showActiveRoom() || mobileActiveTab() === 'tasks') && !state.isLiveAgentActive() && !state.isSparkModeActive()) {
                <div class="shrink-0 w-full md:w-[400px] flex flex-col gap-3 md:gap-6 h-full z-20 transition-all duration-300"
                     [class.max-md:hidden]="mobileActiveTab() !== 'tasks'"
                     [class.tab-fade-enter]="mobileActiveTab() === 'tasks'">
-                  <div id="tour-intake-form" class="flex-1 min-h-0 overflow-hidden rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-                    @defer {
-                      <app-intake-form appReveal></app-intake-form>
-                    } @placeholder {
-                      <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Intake...</div>
-                    }
-                  </div>
+                  @if (state.selectedPartId()) {
+                    <div id="tour-intake-form" class="flex-1 min-h-0 overflow-hidden rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+                      @defer {
+                        <app-intake-form appReveal></app-intake-form>
+                      } @placeholder {
+                        <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Intake...</div>
+                      }
+                    </div>
+                  }
                   <div class="flex-1 min-h-0 overflow-hidden rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-                    @defer {
+                    @defer (on immediate) {
                       <app-task-flow appReveal [revealDelay]="100"></app-task-flow>
                     } @placeholder {
                       <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Tasks...</div>
@@ -847,8 +850,8 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
             <button type="button" (click)="showModelGardenModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>🌿 Vertex Model Garden</span>
             </button>
-            <button type="button" (click)="showBillingDashboard.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
-              <span>💳 Subscriptions</span>
+            <button id="btn-footer-subscriptions" type="button" (click)="showBillingDashboard.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>💳 Subscriptions &amp; Billing</span>
             </button>
             <button type="button" (click)="showApiPricing.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>⚡ API Pricing</span>
@@ -1434,6 +1437,7 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
     }
 
     <app-clinical-cds-disclaimer-banner></app-clinical-cds-disclaimer-banner>
+    <app-zamecznik-canvas></app-zamecznik-canvas>
   `,
   styles: [`
     :host { display: block; min-height: 100%; }
@@ -1472,7 +1476,10 @@ export class AppComponent implements OnDestroy {
     this.showDocsStudy.set(false);
   }
 
+  readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);
+
   triggerSomaticGrounding(): void {
+    this.zamecznikCanvas()?.open();
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('somatic-grounding-activate'));
     }
@@ -2233,6 +2240,9 @@ export class AppComponent implements OnDestroy {
 
   constructor() {
     if (typeof window !== 'undefined') {
+      (window as any).__openZamecznikCanvas = () => {
+        this.triggerSomaticGrounding();
+      };
       const params = new URLSearchParams(window.location.search);
       if (params.get('docs') === 'true' || window.location.hash === '#docs') {
         this.showDocsStudy.set(true);

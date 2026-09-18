@@ -57,10 +57,15 @@ export class PatientStateService {
   readonly isPlainLanguageMode = computed(() => this.themeService.isPlainLanguageMode());
   readonly toolStates = signal<Record<string, 'unassigned' | 'prescribed' | 'hidden'>>({});
   readonly showContactlessScanner = signal<boolean>(false);
+  readonly showActiveRoom = signal<boolean>(false);
   readonly guardianAttestation = computed<IGuardianAttestation>(() => this.coppaShield?.guardianAttestation() || { isAttested: false, relationship: null, timestamp: null });
 
   toggleContactlessScanner(open?: boolean): void {
     this.showContactlessScanner.update(current => open !== undefined ? open : !current);
+  }
+
+  toggleActiveRoom(open?: boolean): void {
+    this.showActiveRoom.update(current => open !== undefined ? open : !current);
   }
 
   // --- Patient 3D Spatial Anatomic Profile & LiDAR Custom Mesh ---

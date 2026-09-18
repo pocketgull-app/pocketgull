@@ -15,8 +15,16 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     // Select Alexander Vance using shared utility (avoids flaky raw locator)
     await selectPatientByName(page, 'Alexander Vance');
 
+    // Switch to Analysis panel if on mobile/tablet viewports
+    const reportTab = page.locator('button', { hasText: 'Analysis' }).first();
+    if (await reportTab.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await reportTab.click({ force: true });
+      await page.waitForTimeout(500);
+    }
+
     // Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.getByTestId('tab-assessments');
+    await assessmentsBtn.scrollIntoViewIfNeeded();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
     await assessmentsBtn.click({ force: true });
 
@@ -59,23 +67,23 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     const totalScoreText = page.locator('app-ybocs-screener .text-3xl.font-black.font-mono').first();
     await expect(totalScoreText).toHaveText('5/40');
     
-    // Verify clinical category updates to Mild OCD (since 5 is <= 7 but we have non-zero? Wait, getSeverityCategory(5) returns Subclinical, since 5 <= 7)
-    // Let's verify Subclinical badge is visible
-    const subclinicalBadge = page.locator('text=Subclinical').first();
-    await expect(subclinicalBadge).toBeVisible({ timeout: 10000 });
+    // Verify clinical category updates to Subclinical
+    const severityBadge = page.locator('app-ybocs-screener .rounded-full.text-xs.font-bold').first();
+    await expect(severityBadge).toContainText('Subclinical');
 
     // Set more questions to get a higher score (e.g. Moderate OCD)
     // Question 3 Option 4 (Extreme) -> +4 -> total 9
     const q3Option4 = page.locator('[data-question-id="3"] button', { hasText: 'Extreme' }).first();
+    await q3Option4.scrollIntoViewIfNeeded();
     await expect(q3Option4).toBeVisible({ timeout: 5000 });
     await q3Option4.click();
 
     // Verify clinical category updates to Mild OCD (9 <= 15)
-    const mildOcdBadge = page.locator('text=Mild OCD').first();
-    await expect(mildOcdBadge).toBeVisible({ timeout: 10000 });
+    await expect(severityBadge).toContainText('Mild OCD');
 
     // 6. Test Reset Form button
     const resetBtn = page.locator('button', { hasText: 'Reset Form' });
+    await resetBtn.scrollIntoViewIfNeeded();
     await expect(resetBtn).toBeVisible({ timeout: 5000 });
     await resetBtn.click();
 

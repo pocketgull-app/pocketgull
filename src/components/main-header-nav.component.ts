@@ -13,6 +13,7 @@ import { AmbientFlowPlayerComponent } from './shared/ambient-flow-player.compone
 import { ConsoleIntegrityBadgeComponent } from './console-integrity-badge.component';
 import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscape.service';
 import { NavigationShellService } from '../services/navigation-shell.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
 
 @Component({
   selector: 'app-main-header-nav',
@@ -36,12 +37,8 @@ import { NavigationShellService } from '../services/navigation-shell.service';
         <button type="button" class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all cursor-pointer group relative no-print shrink-0" 
              (click)="network.toggleForceOffline()"
              [title]="network.isOnline() ? 'Click to simulate offline' : 'Click to disable offline override'">
-          <div class="relative flex h-2 w-2">
-            <span class="absolute inline-flex h-full w-full rounded-full status-dot opacity-75" 
-                  [style.background-color]="network.isOnline() ? 'var(--spectral-stable)' : 'var(--spectral-critical)'"
-                  [class.animate-ping]="network.isOnline()"
-                  style="will-change: transform, opacity;"></span>
-            <span class="relative inline-flex rounded-full status-dot h-2 w-2"
+          <div class="relative flex h-2 w-2 items-center justify-center">
+            <span class="relative inline-flex rounded-full status-dot h-2 w-2 transition-colors duration-300"
                   [style.background-color]="network.isOnline() ? 'var(--spectral-stable)' : 'var(--spectral-critical)'"></span>
           </div>
           <span class="text-[11px] sm:text-xs font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">{{ network.isOnline() ? 'System Ready' : (network.forceOffline() ? 'App Forced Offline' : 'System Offline') }}</span>
@@ -67,6 +64,24 @@ import { NavigationShellService } from '../services/navigation-shell.service';
 
       <!-- Right Nav Action Suite -->
       <div class="flex items-center gap-2 shrink-0">
+        <!-- 📋 Active Room Toggle Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-active-room-trigger"
+          (click)="state.toggleActiveRoom()"
+          aria-label="Toggle Active Room & Clinical Assessments"
+          [class.bg-teal-600]="state.showActiveRoom()"
+          [class.text-white]="state.showActiveRoom()"
+          [class.border-teal-700]="state.showActiveRoom()"
+          [class.bg-zinc-100]="!state.showActiveRoom()"
+          [class.dark:bg-zinc-900]="!state.showActiveRoom()"
+          [class.text-zinc-800]="!state.showActiveRoom()"
+          [class.dark:text-zinc-200]="!state.showActiveRoom()"
+          class="hidden md:flex items-center gap-1.5 px-3 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:border-teal-500/50 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">📋</span>
+          <span>Active Room</span>
+        </button>
+
         <app-console-integrity-badge class="hidden lg:inline-flex" />
 
         @if (navShell?.developerMode()) {
@@ -471,6 +486,38 @@ import { NavigationShellService } from '../services/navigation-shell.service';
             </span>
           </button>
 
+          <!-- Bionic Reading Mode Toggle -->
+          <button (click)="bionicReading.toggleBionicReading()"
+                  id="btn-bionic-toggle"
+                  aria-label="Toggle Bionic Reading Mode"
+                  [attr.aria-pressed]="bionicReading.isBionicReadingEnabled()"
+                  [title]="bionicReading.isBionicReadingEnabled() ? 'Bionic Reading Active (Alt+B)' : 'Enable Bionic Reading Mode (Alt+B)'"
+                  [class.border-amber-500]="bionicReading.isBionicReadingEnabled()"
+                  [class.bg-amber-50]="bionicReading.isBionicReadingEnabled()"
+                  [class.dark:bg-amber-950/40]="bionicReading.isBionicReadingEnabled()"
+                  [class.text-amber-600]="bionicReading.isBionicReadingEnabled()"
+                  [class.dark:text-amber-300]="bionicReading.isBionicReadingEnabled()"
+                  class="group shrink-0 px-2.5 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:bg-amber-50/50 dark:hover:bg-amber-950/20 rounded-xs transition-colors text-zinc-600 dark:text-zinc-300 cursor-pointer flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900 shadow-xs">
+            <span class="text-xs">📖</span>
+            <span class="hidden xl:inline text-[11px] font-bold tracking-tight">Bionic</span>
+          </button>
+
+          <!-- Philocardia Heart-Centered Sensory Mode Toggle -->
+          <button (click)="theme.togglePhilocardia()"
+                  id="btn-philocardia-toggle"
+                  aria-label="Toggle Philocardia Heart-Centered Sensory Mode"
+                  [attr.aria-pressed]="theme.isPhilocardiaEnabled()"
+                  [title]="theme.isPhilocardiaEnabled() ? 'Philocardia Active (0.1Hz Vagal Mayer Pacing)' : 'Enable Philocardia (0.1Hz Heart-Centered Sensory Mode)'"
+                  [class.border-rose-500]="theme.isPhilocardiaEnabled()"
+                  [class.bg-rose-50]="theme.isPhilocardiaEnabled()"
+                  [class.dark:bg-rose-950/40]="theme.isPhilocardiaEnabled()"
+                  [class.text-rose-600]="theme.isPhilocardiaEnabled()"
+                  [class.dark:text-rose-300]="theme.isPhilocardiaEnabled()"
+                  class="group shrink-0 px-2.5 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:bg-rose-50/50 dark:hover:bg-rose-950/20 rounded-xs transition-colors text-zinc-600 dark:text-zinc-300 cursor-pointer flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900 shadow-xs">
+            <span class="text-xs" [class.animate-pulse]="theme.isPhilocardiaEnabled()">{{ theme.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
+            <span class="hidden xl:inline text-[11px] font-bold tracking-tight">Philocardia</span>
+          </button>
+
           <!-- Desktop Lock Session / Secure Splash Trigger -->
           <button (click)="session.lock()"
                   aria-label="Lock Session & Open Secure Splash Screen"
@@ -516,6 +563,11 @@ import { NavigationShellService } from '../services/navigation-shell.service';
 
           <!-- Clinical Navigation Links (Fitts's Law 48px+ touch targets) -->
           <div class="space-y-2.5">
+            <!-- Active Room & Assessments Toggle -->
+            <button type="button" (click)="state.toggleActiveRoom(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">📋</span> <span>{{ state.showActiveRoom() ? 'Hide Active Room' : 'Open Active Room' }}</span>
+            </button>
+
             <!-- MDCP Governance Hub -->
             <button type="button" (click)="openMdcpHub(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">📋</span> <span>MDCP Governance Hub</span>
@@ -590,12 +642,19 @@ import { NavigationShellService } from '../services/navigation-shell.service';
           <!-- Quick Theme & Display Toggles -->
           <div class="pt-3 border-t border-zinc-200 dark:border-zinc-800 space-y-2">
             <div class="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Display &amp; Accessibility</div>
-            <div class="grid grid-cols-2 gap-2">
-              <button type="button" (click)="theme.cycleTheme()" class="min-h-[44px] py-2.5 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition cursor-pointer">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button type="button" (click)="theme.cycleTheme()" class="min-h-[44px] py-2.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition cursor-pointer">
                 <span>🎨 {{ theme.currentTheme() }}</span>
               </button>
-              <button type="button" (click)="theme.cycleTextSizeScale()" class="min-h-[44px] py-2.5 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition cursor-pointer">
+              <button type="button" (click)="theme.cycleTextSizeScale()" class="min-h-[44px] py-2.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition cursor-pointer">
                 <span>🔤 {{ theme.textSizeScale() }}</span>
+              </button>
+              <button type="button" id="btn-bionic-mobile-toggle" (click)="bionicReading.toggleBionicReading()" [class.border-amber-500]="bionicReading.isBionicReadingEnabled()" [class.bg-amber-50]="bionicReading.isBionicReadingEnabled()" [class.dark:bg-amber-950/40]="bionicReading.isBionicReadingEnabled()" [class.text-amber-600]="bionicReading.isBionicReadingEnabled()" [class.dark:text-amber-300]="bionicReading.isBionicReadingEnabled()" class="min-h-[44px] py-2.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition cursor-pointer">
+                <span>📖 Bionic</span>
+              </button>
+              <button type="button" id="btn-philocardia-mobile-toggle" (click)="theme.togglePhilocardia()" [class.border-rose-500]="theme.isPhilocardiaEnabled()" [class.bg-rose-50]="theme.isPhilocardiaEnabled()" [class.dark:bg-rose-950/40]="theme.isPhilocardiaEnabled()" [class.text-rose-600]="theme.isPhilocardiaEnabled()" [class.dark:text-rose-300]="theme.isPhilocardiaEnabled()" class="min-h-[44px] py-2.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition cursor-pointer">
+                <span [class.animate-pulse]="theme.isPhilocardiaEnabled()">{{ theme.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
+                <span>Philo</span>
               </button>
             </div>
           </div>
@@ -632,6 +691,7 @@ export class MainHeaderNavComponent {
   network = inject(NetworkStateService);
   state = inject(PatientStateService);
   theme = inject(ThemeService);
+  bionicReading = inject(BionicReadingService);
   hardware = inject(HardwareTelemetryService);
   game = inject(GamificationService);
   tour = inject(WalkthroughTourService);

@@ -10,6 +10,7 @@ import { WalkthroughTourService } from '../services/walkthrough-tour.service';
 
 import { SessionStateService } from '../services/session-state.service';
 import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscape.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
 
 describe('MainHeaderNavComponent', () => {
   let component: MainHeaderNavComponent;
@@ -24,7 +25,13 @@ describe('MainHeaderNavComponent', () => {
 
   beforeEach(() => {
     mockNetwork = { isOnline: signal(true), toggleForceOffline: vi.fn() };
-    mockPatientState = { isEmergencyMode: signal(false), isLiveAgentActive: signal(false), toggleLiveAgent: vi.fn() };
+    mockPatientState = { 
+      isEmergencyMode: signal(false), 
+      isLiveAgentActive: signal(false), 
+      toggleLiveAgent: vi.fn(),
+      showActiveRoom: signal(false),
+      toggleActiveRoom: vi.fn()
+    };
     mockTheme = {
       currentTheme: signal('light'),
       textSizeScale: signal('standard'),
@@ -56,7 +63,8 @@ describe('MainHeaderNavComponent', () => {
         { provide: GamificationService, useValue: mockGame },
         { provide: WalkthroughTourService, useValue: mockTour },
         { provide: SessionStateService, useValue: mockSession },
-        { provide: AmbientFlowSoundscapeService, useValue: mockSoundscape }
+        { provide: AmbientFlowSoundscapeService, useValue: mockSoundscape },
+        { provide: BionicReadingService, useValue: { isBionicReadingEnabled: signal(false), toggleBionicReading: vi.fn() } }
       ]
     });
 
@@ -84,6 +92,12 @@ describe('MainHeaderNavComponent', () => {
     expect(component.isMobileMenuOpen()).toBe(true);
     component.isMobileMenuOpen.set(false);
     expect(component.isMobileMenuOpen()).toBe(false);
+  });
+
+  it('should support toggling Active Room via state service', () => {
+    expect(component.state.showActiveRoom()).toBe(false);
+    component.state.toggleActiveRoom();
+    expect(mockPatientState.toggleActiveRoom).toHaveBeenCalled();
   });
 });
 
