@@ -53,6 +53,8 @@ chrome-debug-profile/
 *.ntvs*
 *.njsproj
 *.sln
+.cursor/
+.windsurf/
 
 # ------------------------------------------------------------------------------
 # 3. Secrets, Private Keys & Cloud Credentials (ZERO-TOLERANCE)
@@ -188,6 +190,7 @@ coverage/
 .nyc_output/
 playwright-report/
 test-results/
+.vitest/
 .playwright_temp/
 blob-report/
 lh-*.json
@@ -234,6 +237,10 @@ scratch/
 *.sqlite
 *.sqlite3
 *.db
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
 *.hive
 *.hivec
 *patient*.json
@@ -336,27 +343,19 @@ dbt/.user.yml
 **/dbt_packages/
 
 # ------------------------------------------------------------------------------
-# 15. Local Reports, Training Weights & Build Caches
+# 15. Local Research Experiments & Fine-Tuning Weights
 # ------------------------------------------------------------------------------
-.tsbuildinfo
-*.tsbuildinfo
-report.html
-report.json
-cocomo2_report.*
 rsna-knee-2026-training-v7/
 lora_clinical_cot/
 lora_prior_auth/
 lora_rxguard_pgx/
 lora_test_run/
-playwright-report/
-test-results/
 
 # ------------------------------------------------------------------------------
-# 16. Internal Business, Grants, Legal, Draft Manuscripts & Hidden Stubs
+# 16. Internal Business, Grants, Draft Manuscripts & Hidden Stubs
 # ------------------------------------------------------------------------------
 docs/business/
 docs/grants/
-docs/legal/
 docs/prototypes/
 docs/internal/
 manuscripts/
@@ -365,7 +364,6 @@ src/partners/hidden/
 # ------------------------------------------------------------------------------
 # 17. Temporary & Test Runner Artifacts
 # ------------------------------------------------------------------------------
-tmp/
 .foundry/
 scripts/.taskbar_state.json
 
