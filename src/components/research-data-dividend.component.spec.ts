@@ -87,41 +87,25 @@ describe('ResearchDataDividendComponent Suite', () => {
     metricEntries.forEach(m => expect(typeof m.val).toBe('number'));
   });
 
-  it('8. Blocks cash out when escrow is zero per Belmont Report & allows research dossier export', () => {
+  it('8. Enforces Belmont Report (45 CFR § 46) zero cash liability and exports research dossier', () => {
     expect(component.researchService.grantEscrowBalance()).toBe(0.00);
+    expect(component.researchService.isPureOpenScience()).toBe(true);
 
-    component.cashOut();
-    expect(component.payoutError()).toContain('Belmont Report Compliance');
+    const attestation = component.researchService.getBelmontCharterAttestation();
+    expect(attestation.isNonCommercial).toBe(true);
+    expect(attestation.grantEscrowBalanceUsd).toBe(0.00);
+    expect(attestation.framework).toContain('Belmont Report');
 
     component.exportResearchDossier();
     expect(component.showDossierExportNotice()).toBe(true);
   });
 
-  it('9. Enforces Mandiant dual-custody verification modal when grant escrow >= $500', async () => {
-    vi.useFakeTimers();
-    // Simulate accredited institutional grant deposit into escrow
-    service.enrollment.update(curr => ({ ...curr, grantEscrowBalanceUsd: 1250.00 }));
-    expect(component.researchService.grantEscrowBalance()).toBe(1250.00);
-
-    // Initial click should open dual custody modal instead of immediately transferring
-    component.cashOut();
-    expect(component.showDualCustodyModal()).toBe(true);
-
-    // Confirm dual custody
-    component.dualCustodyPrimary = 'Dr. Beverly Crusher, CMO';
-    component.dualCustodySecondary = 'Commander Riker, VP Compliance';
-    component.confirmDualCustodyCashOut();
-
-    expect(component.showDualCustodyModal()).toBe(false);
-    expect(component.isProcessingPayout()).toBe(true);
-
-    vi.advanceTimersByTime(650);
-
-    expect(component.isProcessingPayout()).toBe(false);
-    expect(component.researchService.grantEscrowBalance()).toBe(0);
-    expect(component.latestPayout()?.dualCustodyAttestation?.isAttested).toBe(true);
-    expect(component.latestPayout()?.dualCustodyAttestation?.primarySigner).toBe('Dr. Beverly Crusher, CMO');
-    expect(component.latestPayout()?.dualCustodyAttestation?.secondarySigner).toBe('Commander Riker, VP Compliance');
-    vi.useRealTimers();
+  it('9. Returns 100% scientific discoveries and biomarker insights to participating patient', () => {
+    const findings = component.researchService.scientificFindings();
+    expect(findings.length).toBeGreaterThanOrEqual(4);
+    expect(findings[0]).toContain('reduction in nocturnal hypoglycemia');
+    expect(component.researchService.lifetimeEarnings()).toBe(0.00);
+    expect(component.researchService.availableBalance()).toBe(0.00);
   });
 });
+

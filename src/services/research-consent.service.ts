@@ -7,9 +7,7 @@ import {
   ILinkageAttackRiskEvaluation,
   IDifferentialPrivacyConfig,
   IBigQueryAnalyticsHubListing,
-  IDryRunSqlQueryResult,
-  IStripeConnectExpressPayout,
-  IStripeConnectAccountStatus
+  IDryRunSqlQueryResult
 } from '../models/research-cohort.types';
 import { getSecureRandomId } from '../utils/security-helper';
 
@@ -199,16 +197,6 @@ export class ResearchConsentService {
   // BigQuery Analytics Hub listings catalog (GCP: gen-lang-client-0540208645)
   readonly analyticsHubListings = signal<IBigQueryAnalyticsHubListing[]>(INITIAL_ANALYTICS_HUB_LISTINGS);
 
-  // Automated Stripe Connect Express account state (Grant Escrow Gateway)
-  readonly stripeAccountStatus = signal<IStripeConnectAccountStatus>({
-    accountId: 'acct_open_science_escrow',
-    payoutsEnabled: false, // Disabled: Direct payouts require accredited institutional grant escrow
-    detailsSubmitted: true,
-    currency: 'USD',
-    country: 'US',
-    dashboardUrl: 'https://pocketgull.app/resources/stripe/express-dashboard',
-    lastPayoutAt: undefined
-  });
 
   // Patient's research enrollment & open science impact ledger state
   readonly enrollment = signal<IPatientResearchEnrollment>({
@@ -443,86 +431,22 @@ export class ResearchConsentService {
     };
   }
 
-  /** Initiates simulated automated Stripe Connect Express onboarding flow */
-  initiateStripeConnectOnboarding(): { onboardingUrl: string; accountId: string } {
-    const accountId = `acct_express_${getSecureRandomId()}`;
-    return {
-      onboardingUrl: `https://pocketgull.app/resources/stripe/onboarding?account=${accountId}`,
-      accountId
-    };
-  }
-
   /**
-   * Evaluates eligibility for research grant stipend cash out.
-   * Under Belmont Report (45 CFR § 46) & Common Rule, cash disbursements are strictly prohibited
-   * without an accredited institutional grant held in verified third-party escrow.
+   * Evaluates and returns the non-commercial Belmont Report & Common Rule (45 CFR § 46) attestation.
+   * Under PocketGull Open Science Commons governance, health telemetry is strictly contributed
+   * without financial coercion, cash data buying, or false payout promises.
    */
-  requestCashOut(dualCustodySignatures?: { primarySigner: string; secondarySigner: string }): {
-    success: boolean;
-    amountPaid: number;
-    txId: string;
-    payout: IStripeConnectExpressPayout | null;
-    error?: string;
+  getBelmontCharterAttestation(): {
+    isNonCommercial: boolean;
+    grantEscrowBalanceUsd: number;
+    framework: string;
+    notice: string;
   } {
-    const currentBalance = this.enrollment().grantEscrowBalanceUsd;
-    if (currentBalance <= 0) {
-      return {
-        success: false,
-        amountPaid: 0,
-        txId: '',
-        payout: null,
-        error: 'Belmont Report Compliance (45 CFR § 46): No accredited institutional grant escrow is attached to this open science registry. Participation is non-commercial and protected against financial coercion or undue inducement.'
-      };
-    }
-
-    // High-impact disbursement guard: disbursements >= $500 require dual distinct authenticated roles
-    if (currentBalance >= 500) {
-      if (!dualCustodySignatures || !dualCustodySignatures.primarySigner || !dualCustodySignatures.secondarySigner) {
-        return {
-          success: false,
-          amountPaid: 0,
-          txId: '',
-          payout: null,
-          error: 'Dual-custody (M-of-N) authorization required for grant escrow disbursements >= $500. Primary and secondary clinical/executive signatures must be provided.'
-        };
-      }
-    }
-
-    const txId = `strp_po_${Date.now()}_${getSecureRandomId()}`;
-    const timestamp = new Date().toISOString();
-
-    const payout: IStripeConnectExpressPayout = {
-      payoutId: txId,
-      timestamp,
-      amountUsd: currentBalance,
-      feeUsd: 0.00,
-      netPayoutUsd: currentBalance,
-      arrivalEstimate: 'Institutional Grant Escrow Transfer (Direct Depository via Stripe)',
-      destinationAccountMasked: this.enrollment().payoutAccountMasked || 'Verified Institutional Escrow',
-      status: 'paid',
-      dualCustodyAttestation: currentBalance >= 500 && dualCustodySignatures ? {
-        isAttested: true,
-        primarySigner: dualCustodySignatures.primarySigner,
-        secondarySigner: dualCustodySignatures.secondarySigner,
-        signatureHash: `sha256_${getSecureRandomId()}`,
-        timestamp
-      } : undefined
-    };
-
-    this.enrollment.update(current => ({
-      ...current,
-      grantEscrowBalanceUsd: 0,
-      availableBalanceUsd: 0,
-      ledger: current.ledger.map(entry => 
-        entry.status === 'accrued' ? { ...entry, status: 'paid_out' as const } : entry
-      )
-    }));
-
     return {
-      success: true,
-      amountPaid: currentBalance,
-      txId,
-      payout
+      isNonCommercial: true,
+      grantEscrowBalanceUsd: this.grantEscrowBalance(),
+      framework: 'Belmont Report (45 CFR § 46) / Common Rule Safeguard',
+      notice: 'PocketGull research participation is purely non-commercial open science. Telemetry is protected by Laplace differential privacy and zero financial coercion.'
     };
   }
 

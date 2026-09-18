@@ -5,8 +5,7 @@ import { ResearchConsentService } from '../services/research-consent.service';
 import {
   IResearchCohortListing,
   IBigQueryAnalyticsHubListing,
-  IDryRunSqlQueryResult,
-  IStripeConnectExpressPayout
+  IDryRunSqlQueryResult
 } from '../models/research-cohort.types';
 
 @Component({
@@ -159,13 +158,6 @@ import {
             </p>
           </div>
           <button (click)="showDossierExportNotice.set(false)" class="text-zinc-400 hover:text-white text-xs px-2 py-1">Dismiss</button>
-        </div>
-      }
-
-      @if (payoutError(); as errorMsg) {
-        <div class="p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/40 text-xs text-amber-300 flex items-center justify-between">
-          <span>ℹ️ {{ errorMsg }}</span>
-          <button (click)="payoutError.set(null)" class="text-amber-400 hover:text-white ml-2">✕</button>
         </div>
       }
 
@@ -462,74 +454,16 @@ import {
         </div>
       </div>
 
-      <!-- Mandiant Dual-Custody M-of-N Modal (Grant Escrow Disbursements >= $500) -->
-      @if (showDualCustodyModal()) {
-        <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div class="bg-zinc-900 border border-zinc-700 rounded-2xl max-w-lg w-full p-6 space-y-4 text-zinc-100 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
-                <span>🛡️</span>
-                <span>Mandiant Dual-Custody (M-of-N) Authorization</span>
-              </div>
-              <button (click)="showDualCustodyModal.set(false)" class="text-zinc-400 hover:text-white text-xs">✕</button>
-            </div>
-
-            <p class="text-xs text-zinc-300">
-              Per PocketGull Institutional Governance Directives, grant escrow disbursements of <strong class="text-white">\${{ researchService.grantEscrowBalance() | number:'1.2-2' }}</strong> ($\ge \$500$) require dual distinct authorized clinical/executive signatures.
-            </p>
-
-            <div class="space-y-3 text-xs">
-              <div>
-                <label class="block text-zinc-400 font-medium mb-1">Primary Authorizer (Clinical Lead):</label>
-                <input 
-                  type="text" 
-                  [(ngModel)]="dualCustodyPrimary"
-                  class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-teal-400" />
-              </div>
-
-              <div>
-                <label class="block text-zinc-400 font-medium mb-1">Secondary Authorizer (Executive / Compliance):</label>
-                <input 
-                  type="text" 
-                  [(ngModel)]="dualCustodySecondary"
-                  class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-teal-400" />
-              </div>
-            </div>
-
-            <div class="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
-              <button 
-                (click)="showDualCustodyModal.set(false)"
-                class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-zinc-400 hover:text-white bg-zinc-800 transition">
-                Cancel
-              </button>
-              <button 
-                (click)="confirmDualCustodyCashOut()"
-                class="px-4 py-1.5 rounded-lg text-xs font-bold text-zinc-950 bg-teal-400 hover:bg-teal-300 transition flex items-center gap-1.5">
-                <span>Attest &amp; Authorize Escrow</span>
-                <span>🔒</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      }
-
     </div>
   `
 })
 export class ResearchDataDividendComponent {
   readonly researchService: ResearchConsentService;
-  readonly isProcessingPayout = signal(false);
   readonly showDossierExportNotice = signal(false);
   readonly activeTab = signal<'cohorts' | 'analytics_hub'>('cohorts');
   readonly selectedListing = signal<IBigQueryAnalyticsHubListing | null>(null);
   readonly dryRunResult = signal<IDryRunSqlQueryResult | null>(null);
-  readonly latestPayout = signal<IStripeConnectExpressPayout | null>(null);
-  readonly payoutError = signal<string | null>(null);
 
-  // Dual-custody state for disbursements >= $500
-  readonly showDualCustodyModal = signal(false);
-  dualCustodyPrimary = 'Dr. Jean-Luc Picard, Chief Medical Officer';
-  dualCustodySecondary = 'Elena Rostova, VP Clinical Compliance';
 
   constructor(researchService?: ResearchConsentService) {
     this.researchService = researchService || inject(ResearchConsentService, { optional: true }) || new ResearchConsentService();
@@ -565,43 +499,5 @@ export class ResearchDataDividendComponent {
   getMetricEntries(sample: Record<string, number>): Array<{ key: string; val: number }> {
     return Object.entries(sample).map(([key, val]) => ({ key, val }));
   }
-
-  cashOut(): void {
-    const balance = this.researchService.grantEscrowBalance();
-    if (balance <= 0) {
-      this.payoutError.set('Belmont Report Compliance: No funded institutional grant escrow is attached to this open science registry. Participation is non-commercial and protected against financial coercion or undue inducement.');
-      return;
-    }
-
-    if (balance >= 500) {
-      this.showDualCustodyModal.set(true);
-      return;
-    }
-
-    this.executeCashOut();
-  }
-
-  confirmDualCustodyCashOut(): void {
-    this.showDualCustodyModal.set(false);
-    this.executeCashOut({
-      primarySigner: this.dualCustodyPrimary,
-      secondarySigner: this.dualCustodySecondary
-    });
-  }
-
-  private executeCashOut(dualSigners?: { primarySigner: string; secondarySigner: string }): void {
-    this.isProcessingPayout.set(true);
-    this.payoutError.set(null);
-
-    setTimeout(() => {
-      const result = this.researchService.requestCashOut(dualSigners);
-      this.isProcessingPayout.set(false);
-
-      if (result.success && result.payout) {
-        this.latestPayout.set(result.payout);
-      } else if (result.error) {
-        this.payoutError.set(result.error);
-      }
-    }, 600);
-  }
 }
+

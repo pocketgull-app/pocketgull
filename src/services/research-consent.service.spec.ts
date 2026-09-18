@@ -63,27 +63,22 @@ describe('ResearchConsentService Suite', () => {
     expect(service.grantEscrowBalance()).toBe(0.00);
   });
 
-  it('5. Blocks unfunded cash out per Belmont Report & authorizes only verified grant escrow', () => {
+  it('5. Enforces Belmont Report (45 CFR § 46) non-commercial governance and zero financial coercion', () => {
     expect(service.grantEscrowBalance()).toBe(0.00);
+    expect(service.isPureOpenScience()).toBe(true);
 
-    // Attempting cash out with zero escrow must fail per Belmont Report anti-inducement policy
-    const unfundedPayout = service.requestCashOut();
-    expect(unfundedPayout.success).toBe(false);
-    expect(unfundedPayout.error).toContain('Belmont Report Compliance');
+    const charter = service.getBelmontCharterAttestation();
+    expect(charter.isNonCommercial).toBe(true);
+    expect(charter.grantEscrowBalanceUsd).toBe(0.00);
+    expect(charter.framework).toContain('Belmont Report');
+    expect(charter.notice).toContain('non-commercial open science');
 
-    // Deposit verified institutional grant escrow
-    service.enrollment.update(curr => ({ ...curr, grantEscrowBalanceUsd: 100.00 }));
-    expect(service.grantEscrowBalance()).toBe(100.00);
-
-    const fundedPayout = service.requestCashOut();
-    expect(fundedPayout.success).toBe(true);
-    expect(fundedPayout.amountPaid).toBe(100.00);
-    expect(fundedPayout.txId).toContain('strp_po_');
-    expect(service.grantEscrowBalance()).toBe(0);
-
-    // Further payout request with zero balance should fail
-    const secondPayout = service.requestCashOut();
-    expect(secondPayout.success).toBe(false);
+    // Patient enrollment invariants: pure open science with zero cash liability
+    const enrollment = service.enrollment();
+    expect(enrollment.payoutMethod).toBe('pure_open_science');
+    expect(enrollment.availableBalanceUsd).toBe(0.00);
+    expect(enrollment.lifetimeEarningsUsd).toBe(0.00);
+    expect(enrollment.belmontReportAttestation).toBe(true);
   });
 
   it('6. Revokes authorization, wipes active enrollments, and disables sharing', () => {

@@ -104,7 +104,7 @@ export interface IPatientResearchEnrollment {
   authorizationSignatureHash: string | null;
   ethicalCharterAccepted: boolean;
   returnOfInsightsEnabled: boolean; // Opt-in to receive scientific discoveries & biomarker benchmarks
-  payoutMethod: 'stripe_connect' | 'direct_deposit' | 'unconfigured' | 'pure_open_science';
+  payoutMethod: 'pure_open_science' | 'unconfigured';
   payoutAccountMasked: string | null;
   lifetimeEarningsUsd: number;
   availableBalanceUsd: number;
@@ -164,33 +164,5 @@ export interface IDryRunSqlQueryResult {
   perturbedAggregateSample: Record<string, number>;
   isValid: boolean;
   executionNotice: string;
-}
-
-export interface IStripeConnectExpressPayout {
-  payoutId: string;
-  timestamp: string;
-  amountUsd: number;
-  feeUsd: number;
-  netPayoutUsd: number;
-  arrivalEstimate: string;
-  destinationAccountMasked: string;
-  status: 'pending' | 'in_transit' | 'paid' | 'requires_dual_custody';
-  dualCustodyAttestation?: {
-    isAttested: boolean;
-    primarySigner: string;
-    secondarySigner: string;
-    signatureHash: string;
-    timestamp: string;
-  };
-}
-
-export interface IStripeConnectAccountStatus {
-  accountId: string;
-  payoutsEnabled: boolean;
-  detailsSubmitted: boolean;
-  currency: string;
-  country: string;
-  dashboardUrl: string;
-  lastPayoutAt?: string;
 }
 
