@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
 import { ClinicalBiologicalAgeTwinService } from './clinical-biological-age-twin.service';
+import { IPatientVitals } from './patient.types';
 
 export type TrajectoryPersona = 'clinician' | 'patient';
 
@@ -57,12 +58,12 @@ export class ClinicalTrajectoryReaderService {
    */
   getTrajectoryProfile(personaOverride?: TrajectoryPersona): ITrajectoryProfile {
     const activePersona = personaOverride || this.persona();
-    const rawVitals = this.patientState?.vitals?.() as any;
+    const rawVitals: IPatientVitals | undefined = this.patientState?.vitals?.();
     const vitals = {
-      heartRate: rawVitals?.hr || 72,
+      heartRate: rawVitals?.hr || '72',
       bloodPressure: rawVitals?.bp || '120/80',
-      spo2: rawVitals?.spO2 || 98,
-      hrv: rawVitals?.hrv || 55
+      spo2: rawVitals?.spO2 || '98',
+      hrv: rawVitals?.hrvRmssd || '55'
     };
     const symptoms: string[] = [];
 
@@ -147,7 +148,7 @@ export class ClinicalTrajectoryReaderService {
       wbc: 5.8,
       unitSystem: 'US',
       systolicBp: parseInt((vitals.bloodPressure || '120/80').split('/')[0], 10) || 120,
-      restingHr: vitals.heartRate
+      restingHr: parseInt(String(vitals.heartRate), 10) || 72
     }) || {
       chronologicalAge: 34,
       biologicalPhenoAge: 31.8,

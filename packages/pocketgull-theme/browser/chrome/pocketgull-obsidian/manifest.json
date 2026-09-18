@@ -1,0 +1,60 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Obsidian Theme",
+  "description": "High-contrast clinical dark theme engineered for optical legibility and serene focus with heuristic usability standards.",
+  "theme": {
+    "colors": {
+      "frame": [
+        18,
+        18,
+        22
+      ],
+      "frame_inactive": [
+        9,
+        9,
+        11
+      ],
+      "toolbar": [
+        24,
+        24,
+        27
+      ],
+      "tab_text": [
+        244,
+        244,
+        245
+      ],
+      "tab_background_text": [
+        161,
+        161,
+        170
+      ],
+      "bookmark_text": [
+        244,
+        244,
+        245
+      ],
+      "toolbar_button_icon": [
+        20,
+        184,
+        166
+      ],
+      "toolbar_text": [
+        244,
+        244,
+        245
+      ],
+      "ntp_background": [
+        9,
+        9,
+        11
+      ],
+      "ntp_text": [
+        244,
+        244,
+        245
+      ]
+    }
+  }
+}

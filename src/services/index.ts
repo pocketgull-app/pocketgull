@@ -31,6 +31,7 @@ export * from './fhir/fhir-bundle-factory.service';
 export * from './fhir/gcp-healthcare-api.service';
 export * from './fhir/fhir-r5-telemetry.service';
 export * from './fhir/fhir-r7-horizon.service';
+export * from './fhir/fhir-r7-r4-converter.service';
 export * from './fhir/smart-on-fhir-launcher.service';
 export * from './fhir/laaf-fhir-haptic-schedule.service';
 

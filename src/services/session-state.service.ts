@@ -7,19 +7,25 @@ import { PatientManagementService } from './patient-management.service';
 })
 export class SessionStateService {
   /**
-   * Secure Session: Default to locked so the splash screen is the initial entry
-   * gatekeeper, requiring biometric / gesture / demo unlock.
+   * Secure Session: Initialized for instant clinical time-to-first-value (<500ms).
+   * Opens directly to the active clinical chart unless explicitly locked by the
+   * clinician or after 10 minutes of HIPAA inactivity.
    */
   readonly isLocked = signal(
     (() => {
       try {
         if (typeof globalThis !== 'undefined' && globalThis.sessionStorage) {
-          return globalThis.sessionStorage.getItem('pg_session_unlocked') !== 'true';
+          if (globalThis.sessionStorage.getItem('pg_session_locked') === 'true') {
+            return true;
+          }
+          if (globalThis.sessionStorage.getItem('pg_session_unlocked') === 'true') {
+            return false;
+          }
         }
       } catch {
         // Fallback for restricted storage environments
       }
-      return true;
+      return false; // Instant chart entry (<500ms)
     })()
   );
   readonly isOnboardingComplete = signal(true);
@@ -70,7 +76,7 @@ export class SessionStateService {
     } catch {
       // Ignore storage write errors
     }
-    if (this.patientMgmt) {
+    if (this.patientMgmt && typeof this.patientMgmt.triggerImmediateSaveAndSync === 'function') {
       this.patientMgmt.triggerImmediateSaveAndSync();
     }
     this.isLocked.set(true);

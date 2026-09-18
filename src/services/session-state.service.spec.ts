@@ -41,8 +41,8 @@ describe('SessionStateService Streamlining & Invariant Suite', () => {
     service = runInInjectionContext(injector, () => new SessionStateService());
   });
 
-  it('1. Defaults to locked state for HIPAA-compliant biometric splash gatekeeper entry', () => {
-    expect(service.isLocked()).toBe(true);
+  it('1. Defaults to instant-access unlocked state for rapid clinical chart entry (<500ms time-to-first-value)', () => {
+    expect(service.isLocked()).toBe(false);
   });
 
   it('2. Defaults to onboarding complete, preserving clinical onboarding state across locks', () => {
@@ -50,12 +50,16 @@ describe('SessionStateService Streamlining & Invariant Suite', () => {
   });
 
   it('3. Supports explicit biometric unlock and lock state transitions with sessionStorage persistence', async () => {
+    // Explicitly lock workstation (e.g. clinician stepped away or clicked Lock)
+    service.lock();
     expect(service.isLocked()).toBe(true);
+    expect(window.sessionStorage?.getItem('pg_session_locked')).toBe('true');
 
     const unlocked = await service.unlock();
     expect(unlocked).toBe(true);
     expect(service.isLocked()).toBe(false);
     expect(window.sessionStorage?.getItem('pg_session_unlocked')).toBe('true');
+    expect(window.sessionStorage?.getItem('pg_session_locked')).toBeNull();
 
     service.lock();
     expect(service.isLocked()).toBe(true);

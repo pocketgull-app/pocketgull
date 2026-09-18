@@ -1,0 +1,60 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Curie Luminescence Theme",
+  "description": "Phosphorescent green and radium-alpha emission laboratory hues honoring pioneer Marie Curie notebooks.",
+  "theme": {
+    "colors": {
+      "frame": [
+        10,
+        22,
+        16
+      ],
+      "frame_inactive": [
+        5,
+        11,
+        8
+      ],
+      "toolbar": [
+        15,
+        34,
+        25
+      ],
+      "tab_text": [
+        209,
+        250,
+        229
+      ],
+      "tab_background_text": [
+        52,
+        211,
+        153
+      ],
+      "bookmark_text": [
+        209,
+        250,
+        229
+      ],
+      "toolbar_button_icon": [
+        16,
+        185,
+        129
+      ],
+      "toolbar_text": [
+        209,
+        250,
+        229
+      ],
+      "ntp_background": [
+        5,
+        11,
+        8
+      ],
+      "ntp_text": [
+        209,
+        250,
+        229
+      ]
+    }
+  }
+}

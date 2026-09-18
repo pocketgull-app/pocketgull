@@ -20,12 +20,42 @@ export class NavigationShellService {
   readonly showComplianceCertificateModal = signal<boolean>(false);
   readonly showCmsSuperbillModal = signal<boolean>(false);
   readonly showTrajectoryReaderModal = signal<boolean>(false);
+  readonly showPosologyModal = signal<boolean>(false);
   readonly showAustereHudModal = signal<boolean>(false);
   readonly showMdcpHubModal = signal<boolean>(false);
   readonly showCommercialHubModal = signal<boolean>(false);
   readonly showRoleDemoModal = signal<boolean>(false);
   readonly showIntimacyVitalityModal = signal<boolean>(false);
   readonly showFederalUswdsPortal = signal<boolean>(false);
+
+  /** Developer Mode: Gates investor pitch portals, experimental showcases, and auxiliary demos. Defaults to false. */
+  readonly developerMode = signal<boolean>(
+    (() => {
+      try {
+        if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+          return globalThis.localStorage.getItem('pg_developer_mode') === 'true';
+        }
+      } catch {
+        // Fallback for sandboxed environments
+      }
+      return false;
+    })()
+  );
+
+  /**
+   * Toggles developer mode and persists to localStorage.
+   */
+  public toggleDeveloperMode(): void {
+    const next = !this.developerMode();
+    this.developerMode.set(next);
+    try {
+      if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+        globalThis.localStorage.setItem('pg_developer_mode', next ? 'true' : 'false');
+      }
+    } catch {
+      // Fallback
+    }
+  }
 
   /**
    * Switches active main tab.
@@ -60,6 +90,9 @@ export class NavigationShellService {
 
   public openTrajectoryReader(): void { this.showTrajectoryReaderModal.set(true); }
   public closeTrajectoryReader(): void { this.showTrajectoryReaderModal.set(false); }
+
+  public openPosology(): void { this.showPosologyModal.set(true); }
+  public closePosology(): void { this.showPosologyModal.set(false); }
 
   public openAustereHud(): void { this.showAustereHudModal.set(true); }
   public closeAustereHud(): void { this.showAustereHudModal.set(false); }

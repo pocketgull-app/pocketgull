@@ -59,4 +59,24 @@ describe('RxGuardService - Precision PGx & Herb-Drug Matrix Suite', () => {
     expect(fhir['status']).toBe('success');
     expect((fhir['result'] as any).riskTier).toBe('CONTRAINDICATED');
   });
+
+  it('5. Computes financial toxicity audits and identifies generic savings opportunities', () => {
+    const patientWithCostlyInhaler: IPatient = {
+      ...mockPatient,
+      medications: [{ id: 'm4', name: 'Advair Diskus 250/50', value: '1 puff BID' }],
+      dietarySupplements: [{ id: 's3', name: 'Magnesium L-Threonate', value: '2000mg' }]
+    };
+
+    const assessment = service.evaluatePatient(patientWithCostlyInhaler);
+    expect(assessment.financialToxicityAudits).toBeDefined();
+    expect(assessment.financialToxicityAudits?.length).toBeGreaterThanOrEqual(2);
+
+    const advairAudit = assessment.financialToxicityAudits?.find(a => a.itemName.includes('Advair'));
+    expect(advairAudit).toBeDefined();
+    expect(advairAudit?.toxicityBurden).toBe('HIGH_FINANCIAL_TOXICITY');
+    expect(advairAudit?.genericAlternative?.genericChemicalName).toContain('Fluticasone / Salmeterol');
+
+    expect(assessment.cumulativeMonthlyCostEstimateUsd).toBeGreaterThan(0);
+    expect(assessment.totalGenericSavingsOpportunityUsd).toBeGreaterThan(50);
+  });
 });

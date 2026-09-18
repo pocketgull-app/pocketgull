@@ -1,0 +1,75 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "version": 2,
+  "final_space": true,
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "text",
+          "style": "diamond",
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4",
+          "foreground": "#faf8f2",
+          "background": "#0f766e",
+          "template": " ⚕ POCKETGULL "
+        },
+        {
+          "type": "path",
+          "style": "diamond",
+          "leading_diamond": " \ue0b6",
+          "trailing_diamond": "\ue0b4",
+          "foreground": "#18181b",
+          "background": "#e5dfd3",
+          "options": {
+            "style": "full",
+            "folder_icon": "📁 "
+          },
+          "template": " {{ .Path }} "
+        },
+        {
+          "type": "git",
+          "style": "diamond",
+          "leading_diamond": " \ue0b6",
+          "trailing_diamond": "\ue0b4",
+          "foreground": "#ffffff",
+          "background": "#047857",
+          "background_templates": [
+            "{{ if or (.Working.Changed) (.Staging.Changed) }}#b45309{{ end }}",
+            "#047857"
+          ],
+          "template": "  {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }} ◈{{ end }}{{ if gt .Ahead 0 }} ▲{{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ▼{{ .Behind }}{{ end }} "
+        },
+        {
+          "type": "executiontime",
+          "style": "diamond",
+          "leading_diamond": " \ue0b6",
+          "trailing_diamond": "\ue0b4",
+          "foreground": "#78350f",
+          "background": "#f0ebe1",
+          "options": {
+            "threshold": 50
+          },
+          "template": " ⏱ {{ .FormattedMs }} "
+        }
+      ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "right",
+      "segments": [
+        {
+          "type": "text",
+          "style": "diamond",
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4",
+          "foreground": "#0f766e",
+          "background": "#e5dfd3",
+          "template": " ⠠⠏⠕⠉⠅⠑⠞⠠⠛⠥⠇⠇ ⠠⠍⠕⠝⠕ "
+        }
+      ]
+    }
+  ]
+}

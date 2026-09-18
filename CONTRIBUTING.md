@@ -45,5 +45,37 @@ node scripts/sentinel_security_guard.mjs
 
 ---
 
-## 📜 Code of Conduct
-Please review our [Code of Conduct](CODE_OF_CONDUCT.md) before participating in community discussions and reviews.
+## ✍️ Developer Certificate of Origin (DCO)
+
+To ensure clear legal provenance and satisfy OpenSSF best practices, all contributions must include a **DCO sign-off** line in the git commit message footer:
+
+```
+Signed-off-by: Full Name <contributor@example.com>
+```
+
+You can automatically add this line to your commits using `git commit -s`. By signing your commit, you certify that you have the right to submit the work under the project's open-source license ([Developer Certificate of Origin 1.1](https://developercertificate.org/)).
+
+---
+
+## 🔍 Two-Person Code Review Standard
+
+In compliance with OpenSSF Gold standards and clinical safety protocols:
+1. **Pull Requests Required**: Direct pushes to `main` are disabled. All changes must arrive via a Pull Request.
+2. **Independent Approval**: Every PR must receive at least **one independent approving review** from a core maintainer or Clinical Review Board member before merge.
+3. **CI Status Checks**: All status checks (`Typecheck`, `Vitest Suite`, `CodeQL SAST`, `Sentinel Guard`) must pass green prior to merge.
+
+---
+
+## 📄 License & SPDX Headers
+
+New source files must include the appropriate SPDX license identifier comment:
+```typescript
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 PocketGull LLC & Phillip Gear
+```
+
+---
+
+## 📜 Code of Conduct & Maintainers
+* Please review our [Code of Conduct](CODE_OF_CONDUCT.md) before participating in community discussions and reviews.
+* For maintainer contacts and governance questions, see [MAINTAINERS.md](MAINTAINERS.md) and [GOVERNANCE.md](GOVERNANCE.md).

@@ -1334,6 +1334,105 @@ export function createDiscoveryRouter(): Router {
     });
   });
 
+  // ── GET /api/fhir/metadata (HL7 FHIR R4 CapabilityStatement) ─────────────
+  router.get('/api/fhir/metadata', (req: Request, res: Response) => {
+    const host = req.get('host') || 'pocketgull.app';
+    const protocol = req.protocol || 'https';
+    const baseUrl = `${protocol}://${host}`;
+
+    res.setHeader('Content-Type', 'application/fhir+json; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    res.json({
+      resourceType: 'CapabilityStatement',
+      id: 'pocketgull-fhir-r4-capabilities',
+      url: `${baseUrl}/api/fhir/metadata`,
+      version: APP_VERSION,
+      name: 'PocketGullFhirCapabilityStatement',
+      title: 'PocketGull FHIR R4 Clinical Decision Support Capability Statement',
+      status: 'active',
+      date: new Date().toISOString(),
+      publisher: 'PocketGull LLC',
+      description: 'Declares HL7 FHIR R4 conformance, SMART on FHIR STU2 OAuth endpoints, and supported US Core resources.',
+      kind: 'capability',
+      software: {
+        name: 'PocketGull Clinical CDS',
+        version: APP_VERSION
+      },
+      fhirVersion: '4.0.1',
+      format: ['application/fhir+json', 'application/json'],
+      rest: [
+        {
+          mode: 'server',
+          documentation: 'SMART on FHIR R4 server with OAuth 2.0 PKCE and US Core 3.1.1/6.1.0 profiles.',
+          security: {
+            cors: true,
+            service: [
+              {
+                coding: [
+                  {
+                    system: 'http://hl7.org/fhir/restful-security-service',
+                    code: 'SMART-on-FHIR',
+                    display: 'SMART on FHIR'
+                  }
+                ],
+                text: 'OAuth2 with SMART-on-FHIR extensions'
+              }
+            ],
+            extension: [
+              {
+                url: 'http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris',
+                extension: [
+                  { url: 'authorize', valueUri: `${baseUrl}/api/fitbit/auth` },
+                  { url: 'token', valueUri: `${baseUrl}/api/fitbit/callback` },
+                  { url: 'register', valueUri: `${baseUrl}/api/smart/register` },
+                  { url: 'manage', valueUri: `${baseUrl}/api/smart/manage` }
+                ]
+              }
+            ]
+          },
+          resource: [
+            {
+              type: 'Patient',
+              profile: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient',
+              interaction: [{ code: 'read' }, { code: 'search-type' }]
+            },
+            {
+              type: 'Observation',
+              profile: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-vital-signs',
+              interaction: [{ code: 'read' }, { code: 'search-type' }]
+            },
+            {
+              type: 'Condition',
+              profile: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns',
+              interaction: [{ code: 'read' }, { code: 'search-type' }]
+            },
+            {
+              type: 'MedicationRequest',
+              profile: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest',
+              interaction: [{ code: 'read' }, { code: 'search-type' }]
+            },
+            {
+              type: 'CarePlan',
+              profile: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-careplan',
+              interaction: [{ code: 'read' }, { code: 'search-type' }]
+            },
+            {
+              type: 'DocumentReference',
+              profile: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference',
+              interaction: [{ code: 'read' }, { code: 'search-type' }]
+            },
+            {
+              type: 'Consent',
+              interaction: [{ code: 'read' }, { code: 'search-type' }]
+            }
+          ]
+        }
+      ]
+    });
+  });
+
   // ── GET /api/smart/launch (EHR Launch Handshake) ─────────────────────────
   router.get('/api/smart/launch', (req: Request, res: Response) => {
     const launch = req.query['launch'] as string | undefined;

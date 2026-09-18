@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.37.0] - 2026-09-17
+
+**🧬 Ethical Harm Prevention Safeguards, Top 5 Transformative Product Management Engines, BigQuery Analytics Hub Data Dividend Suite, Compile-Time Poka-Yoke AST Guards, and Epic & Oracle Cerner App Orchard Certification**
+
+### Added
+- **[Ethical Harm Prevention Safeguards] (`src/services/skeptical-epistemology.service.ts`, `src/services/circadian-alert-guard.service.ts`, `src/services/financial-toxicity-guard.service.ts`, `src/services/research-consent.service.ts`, `src/services/adaptive-hardware-guard.service.ts`)**:
+  - **Clinical Automation Bias Prevention**: Epistemic humility scoring, atypical presentation counter-challenges (female atypical ACS, geriatric silent sepsis, euDKA), and active skeptical prompts.
+  - **Circadian Quiet Hours & Calming Visualizer**: Squelches non-STAT push notifications between 22:00 and 07:00 local time to protect slow-wave restorative sleep; normalizes transient telemetry spikes into plain language; provides 0.1 Hz vagal breathing guidance.
+  - **Financial Toxicity & Generic Parity Shield**: Real-time out-of-pocket toxicity scoring with AB-rated generic matching, Mark Cuban Cost Plus, and 340B community health center grant integration.
+  - **Laplace Differential Privacy ($k \ge 5$)**: Perturbs continuous biosignals and vital signs with calibrated Laplace noise over unbiased NIST SP 800-90A 53-bit mantissa entropy; automatically quarantines cohorts vulnerable to linkage attacks ($k < 5$ or entropy $> 0.75$).
+  - **PocketGull Lite Mode**: Adaptive hardware guard detecting constrained RAM, CPU cores, or Save-Data bandwidth to render accessible 2D vector schematics with zero horizontal blowout.
+- **[Top 5 Transformative Product Management Engines] (`src/services/deprescribing-depurator.service.ts`, `src/services/caregiver-relief.service.ts`, `src/services/exposome-posology.service.ts`, `src/services/rx-guard.service.ts`, `src/services/universal-living-will.service.ts`)**:
+  - **The Polypharmacy Deprescribing Depurator**: Detects prescribing cascades (Amlodipine $\rightarrow$ edema $\rightarrow$ Furosemide; Donepezil $\rightarrow$ incontinence $\rightarrow$ Oxybutynin) and evaluates STOPP/START v3 criteria with multi-week taper schedules.
+  - **Caregiver Relief & Shadow Patient Portal**: Structures 30-second asynchronous voice memos into 4 pillars (Nutrition, Mobility, Affect, Sleep), generates "What to Ask the Doctor" cheat sheets, and screens caregiver sleep debt.
+  - **Exposome Posology & Climate Flare Alert**: Correlates environmental forecasts (wildfire PM2.5, ozone, pollen spore index, barometric pressure drop $>5\text{ hPa}/6\text{h}$, extreme heat $>95^\circ\text{F}$) with 12–24h advance medication timing and hydration directives.
+  - **Rx Financial Toxicity Care Plan Integration**: Surfaces cumulative monthly cost estimates and generic chemical parity directly within clinical recommendations.
+  - **Patient Values Ledger & Living Advance Directive**: Socratic dignity interview serialized into an immutable FHIR R4 `Consent` resource with a cryptographic SHA-256 seal and offline emergency EMT QR code data URI.
+- **[Data Dividend & Exchange Formalization (Issues #271–#274)] (`src/components/research-data-dividend.component.ts`, `src/services/research-consent.service.ts`, `src/models/research-cohort.types.ts`)**:
+  - **BigQuery Analytics Hub Data Exchange**: Wired `pocketgull_data_exchange` (`gen-lang-client-0540208645`) with verified listings, sample schema columns, and live dry-run SQL preview with Laplace perturbation.
+  - **Automated Stripe Connect Express Payouts**: Zero-fee instant transfers to patient debit cards with verified account state indicators.
+  - **Mandiant M-of-N Dual-Custody Protocol**: Mandates dual distinct clinical and executive digital signatures for treasury disbursements $\ge \$500$.
+- **[Compile-Time Poka-Yoke Type Guards (Issue #276)] (`scripts/poka_yoke_type_guard.mjs`, `scripts/pre-commit-check.cjs`, `package.json`)**:
+  - **AST Scanner**: Uses TypeScript compiler AST to strictly ban `as any`, `<any>`, `: any`, and `@ts-ignore` suppressions across all clinical posology and vital signs services.
+  - **Pre-Commit Gate**: Added Check 11 to `pre-commit-check.cjs` and `"lint:pokayoke"` script to `package.json`.
+- **[Epic & Oracle Cerner App Orchard Certification Package] (`src/services/fhir/ehr-app-orchard-packager.service.ts`, `src/server/routes/discovery.routes.ts`, `public/.well-known/`)**:
+  - **Marketplace Manifests**: Official Epic Connection Hub manifest (`app-orchard-package.json`) and Oracle Cerner Code package (`cerner-marketplace-package.json`) with USCDI v4 data class mappings.
+  - **HL7 FHIR R4 CapabilityStatement**: Canonical conformance resource declaring SMART-on-FHIR OAuth endpoints (`authorize`, `token`, `register`, `manage`) exposed at `GET /api/fhir/metadata`.
+  - **10-Point Pre-Flight Certification Auditor**: Evaluates PKCE S256, HIPAA BAA, TLS 1.3, USCDI v4, ONC HTI-1 CDS transparency, and FHIR R4 schema conformity with 100% compliance.
+
+### Changed
+- **[Type Safety & Refactoring]**:
+  - Strictly typed `rawVitals` in `clinical-trajectory-reader.service.ts` to eliminate untyped `as any` casts.
+  - Replaced untyped casts in `python-bridge.service.ts` with strict `IBiometricEntry` literals.
+  - Typed `pacingTimerId` in `clinical-vagal-resonant-pacing.service.ts` to `number | null` for `requestAnimationFrame`.
+- **[ROADMAP.md Verification]**:
+  - Checked off all items under Active Horizon (PR #343 Green-Lighting & Data Dividend Suite).
+  - All 517 test suites passing (2,416 unit tests, 0 failures).
+
 ## [1.36.0] - 2026-09-17
 
 **⚡ 7-Pillar SOTA Predictive & Causal ML Engine, Lifespan Posology Suite (Pediatric, Elder & Maternal), PocketGull Font Superfamily v3.3.0 Synchronization (PocketGull-Sign-VF), and Comprehensive Inclusivity & Terminology Modernization**

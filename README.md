@@ -12,10 +12,10 @@
 <p align="center">
   <a href="https://pocketgull.app"><img src="https://img.shields.io/badge/Live_App-pocketgull.app-0ea5e9?style=flat-square&logo=google-cloud&logoColor=white" alt="Live App"></a>
   <a href="https://huggingface.co/philgear"><img src="https://img.shields.io/badge/Hugging_Face-Models_%26_Spaces-ffd21e?style=flat-square&logo=huggingface&logoColor=black" alt="Hugging Face"></a>
-  <a href="https://www.bestpractices.dev/projects/pocketgull-app-pocketgull"><img src="https://www.bestpractices.dev/projects/pocketgull-app-pocketgull/badge" alt="OpenSSF Best Practices"></a>
+  <a href="https://www.bestpractices.dev/projects/13644"><img src="https://www.bestpractices.dev/projects/13644/badge" alt="OpenSSF Best Practices"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square" alt="License: Apache 2.0"></a>
   <a href="https://doi.org/10.5281/zenodo.20647514"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20647514.svg" alt="DOI"></a>
-  <img src="https://img.shields.io/badge/Tests-2%2C354_Passed-success?style=flat-square&logo=vitest&logoColor=white" alt="Tests: 2,354 Passed">
+  <img src="https://img.shields.io/badge/Tests-2%2C376_Passed-success?style=flat-square&logo=vitest&logoColor=white" alt="Tests: 2,376 Passed">
   <img src="https://img.shields.io/badge/COCOMO_II-$17.2M_Audited-blue?style=flat-square" alt="COCOMO II: $17.2M Audited Valuation">
   <img src="https://img.shields.io/badge/FinOps-Scale--to--Zero_%240.20%2Fmo-teal?style=flat-square" alt="Scale-to-Zero FinOps">
 </p>

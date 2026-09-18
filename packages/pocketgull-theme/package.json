@@ -1,0 +1,179 @@
+{
+  "name": "pocketgull-theme",
+  "displayName": "PocketGull Themes",
+  "description": "PocketGull multi-environment theme suite (IDE, Browser, System) engineered for optical legibility, WCAG AAA contrast, and cognitive ergonomic principles.",
+  "version": "1.2.0",
+  "publisher": "PocketGull",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "license": "Apache-2.0",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pocketgull-app/pocketgull.git",
+    "directory": "packages/pocketgull-theme"
+  },
+  "bugs": {
+    "url": "https://github.com/pocketgull-app/pocketgull/issues"
+  },
+  "keywords": [
+    "pocketgull",
+    "clinical",
+    "cognitive-ergonomics",
+    "heuristic-usability",
+    "theme",
+    "color-theme",
+    "dark",
+    "light",
+    "paper",
+    "accessibility",
+    "wcag-aaa",
+    "browser-theme",
+    "windows-terminal"
+  ],
+  "categories": [
+    "Themes"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "PocketGull Washi Rice Paper",
+        "uiTheme": "vs",
+        "path": "./ide/vscode/themes/PocketGull-Washi-Rice-Paper-color-theme.json"
+      },
+      {
+        "label": "PocketGull Obsidian",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Obsidian-color-theme.json"
+      },
+      {
+        "label": "PocketGull Midnight Broadside",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Midnight-Broadside-color-theme.json"
+      },
+      {
+        "label": "PocketGull Spot-Color Press",
+        "uiTheme": "vs",
+        "path": "./ide/vscode/themes/PocketGull-Spot-Color-Press-color-theme.json"
+      },
+      {
+        "label": "PocketGull Radiograph Luminescence",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Radiograph-Luminescence-color-theme.json"
+      },
+      {
+        "label": "PocketGull Rams Functionalist",
+        "uiTheme": "vs",
+        "path": "./ide/vscode/themes/PocketGull-Rams-Functionalist-color-theme.json"
+      },
+      {
+        "label": "PocketGull Curie Luminescence",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Curie-Luminescence-color-theme.json"
+      },
+      {
+        "label": "PocketGull Scotopic 650nm Red",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Scotopic-650nm-color-theme.json"
+      },
+      {
+        "label": "PocketGull Cardstock Kraft",
+        "uiTheme": "vs",
+        "path": "./ide/vscode/themes/PocketGull-Cardstock-Kraft-color-theme.json"
+      },
+      {
+        "label": "PocketGull Hemp Fiber",
+        "uiTheme": "vs",
+        "path": "./ide/vscode/themes/PocketGull-Hemp-Fiber-color-theme.json"
+      },
+      {
+        "label": "PocketGull Construction High-Vis",
+        "uiTheme": "vs",
+        "path": "./ide/vscode/themes/PocketGull-Construction-HighVis-color-theme.json"
+      },
+      {
+        "label": "PocketGull Triage Electrophoretic",
+        "uiTheme": "vs",
+        "path": "./ide/vscode/themes/PocketGull-Triage-Electrophoretic-color-theme.json"
+      },
+      {
+        "label": "PocketGull Carrara Marble",
+        "uiTheme": "vs",
+        "path": "./ide/vscode/themes/PocketGull-Carrara-Marble-color-theme.json"
+      },
+      {
+        "label": "PocketGull Nero Marquina",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Nero-Marquina-color-theme.json"
+      },
+      {
+        "label": "PocketGull Ancient Papyrus",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Ancient-Papyrus-color-theme.json"
+      },
+      {
+        "label": "PocketGull Aquatic Pool",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Aquatic-Pool-color-theme.json"
+      },
+      {
+        "label": "PocketGull Sacred Mandala",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Sacred-Mandala-color-theme.json"
+      },
+      {
+        "label": "PocketGull Acuity Emergency",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Acuity-Emergency-color-theme.json"
+      },
+      {
+        "label": "PocketGull GearArts",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-GearArts-color-theme.json"
+      },
+      {
+        "label": "PocketGull Hypertext 1991",
+        "uiTheme": "vs",
+        "path": "./ide/vscode/themes/PocketGull-Hypertext-1991-color-theme.json"
+      },
+      {
+        "label": "PocketGull Confocal Fluorophore",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Confocal-Fluorophore-color-theme.json"
+      },
+      {
+        "label": "PocketGull Darkfield Electron",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Darkfield-Electron-color-theme.json"
+      },
+      {
+        "label": "PocketGull Spectrophotometer 280nm",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Spectrophotometer-280nm-color-theme.json"
+      },
+      {
+        "label": "PocketGull Okabe-Ito Divergent",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Okabe-Ito-Divergent-color-theme.json"
+      },
+      {
+        "label": "PocketGull Viridis Perceptual",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Viridis-Perceptual-color-theme.json"
+      },
+      {
+        "label": "PocketGull Achromatopsia High-Luminance",
+        "uiTheme": "vs-dark",
+        "path": "./ide/vscode/themes/PocketGull-Achromatopsia-High-Luminance-color-theme.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "pocketgull-icons",
+        "label": "PocketGull Clinical & Tactile Icons",
+        "path": "./ide/vscode/icons/pocketgull-icons.json"
+      }
+    ]
+  }
+}

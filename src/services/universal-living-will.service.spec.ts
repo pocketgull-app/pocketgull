@@ -25,4 +25,27 @@ describe('UniversalLivingWillService Unit Suite', () => {
     expect(consent.category[0].coding[0].code).toBe('42348-3');
     expect(consent.patient.display).toBe('Homo Sapiens Test Patient');
   });
+
+  it('3. Saves Patient Values Profile with cryptographic SHA-256 seal and HPOA attestation', () => {
+    const seal = service.savePatientValuesProfile({
+      cardiopulmonaryResuscitation: 'DNR_DO_NOT_RESUSCITATE',
+      mechanicalVentilation: 'INTUBATION_PROHIBITED',
+      artificialNutritionHydration: 'COMFORT_HYDRATION_ONLY',
+      palliativeSedationForIntractablePain: true,
+      organDonationPreference: 'RESEARCH_ONLY',
+      sacredEnvironmentWishes: 'Peaceful natural morning sunlight and family bedside presence',
+      designatedHealthcareProxy: {
+        name: 'Sarah Connor',
+        relationship: 'Daughter / Designated HPOA',
+        phoneMasked: '(555) •••-4921'
+      }
+    }, 'Jane Connor (Female, 76y)');
+
+    expect(seal.consentId).toContain('consent_adv_dir_');
+    expect(seal.sha256Digest).toContain('sha256:adr:');
+    expect(seal.proxyAttestationSeal).toContain('hpoa_sig_');
+    expect(seal.fhirConsentResource.policyRule.text).toContain('DNR_DO_NOT_RESUSCITATE');
+    expect(seal.offlineEmergencyQrDataUri).toContain('data:text/plain;charset=utf-8,');
+    expect(service.activeDirectiveSeal()).toEqual(seal);
+  });
 });

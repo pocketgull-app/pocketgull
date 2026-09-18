@@ -1,0 +1,21 @@
+# PocketGull Curie Luminescence Ghostty Theme
+background = #050b08
+foreground = #d1fae5
+cursor-color = #10b981
+selection-background = #132d20
+palette = 0=#0b1610
+palette = 1=#f87171
+palette = 2=#10b981
+palette = 3=#fcd34d
+palette = 4=#2dd4bf
+palette = 5=#a7f3d0
+palette = 6=#34d399
+palette = 7=#ecfdf5
+palette = 8=#1e3a2b
+palette = 9=#fca5a5
+palette = 10=#34d399
+palette = 11=#fde68a
+palette = 12=#5eead4
+palette = 13=#d1fae5
+palette = 14=#6ee7b7
+palette = 15=#ffffff

@@ -177,9 +177,9 @@ export interface IWorkbenchToolStatus {
         </div>
       </div>
 
-      <!-- Navigation Tabs (DRY Loop) -->
+      <!-- Navigation Tabs (Core Curated + Optional Labs) -->
       <div class="flex flex-wrap items-center gap-2 p-1.5 bg-zinc-900 rounded-xl border border-zinc-800 text-xs font-bold font-mono">
-        @for (tab of workbenchTabs; track tab.id) {
+        @for (tab of visibleTabs(); track tab.id) {
           <button (click)="activeWorkbenchTab.set(tab.id)"
                   [ngClass]="activeWorkbenchTab() === tab.id ? tab.activeClass : 'text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/60'"
                   class="px-3.5 py-2 rounded-lg transition cursor-pointer flex items-center gap-1.5">
@@ -191,6 +191,13 @@ export interface IWorkbenchToolStatus {
             }
           </button>
         }
+
+        <button type="button"
+                (click)="showExtendedLabs.set(!showExtendedLabs())"
+                class="ml-auto px-3 py-1.5 rounded-lg border border-zinc-700/80 bg-zinc-800/90 hover:bg-zinc-700 text-zinc-300 hover:text-white transition flex items-center gap-1.5 text-xs font-mono cursor-pointer shadow-xs"
+                [attr.aria-label]="showExtendedLabs() ? 'Collapse to core clinical tools' : 'Expand all experimental lab tools'">
+          <span>{{ showExtendedLabs() ? '🧪 Show Core Only' : '🧪 More Labs (' + (workbenchTabs.length - coreTabIds.size) + ')' }}</span>
+        </button>
       </div>
       @if (activeWorkbenchTab() === 'tools') {
         <!-- Diagnostics Grid -->
@@ -422,6 +429,29 @@ export class ClinicalToolWorkbenchComponent {
     { id: 'nof1', label: 'N-of-1 Trial Designer', icon: '🧪', activeClass: 'bg-indigo-600 text-white shadow-xs' },
     { id: 'scribe', label: 'Ambient Clinical Scribe', icon: '🎙️', activeClass: 'bg-teal-600 text-white shadow-xs' },
   ];
+
+  /** Core Clinical Triad & Bedside Safety Tabs (Prioritized by default) */
+  readonly coreTabIds = new Set<string>([
+    'posology',
+    'rxguard',
+    'velocity',
+    'scribe',
+    'commercial',
+    'tools',
+    'dxradar'
+  ]);
+
+  readonly showExtendedLabs = signal(false);
+
+  readonly visibleTabs = computed(() => {
+    if (this.showExtendedLabs()) {
+      return this.workbenchTabs;
+    }
+    const currentTab = this.activeWorkbenchTab();
+    return this.workbenchTabs.filter(
+      tab => this.coreTabIds.has(tab.id) || tab.id === currentTab
+    );
+  });
 
   readonly tools = signal<IWorkbenchToolStatus[]>([
     {

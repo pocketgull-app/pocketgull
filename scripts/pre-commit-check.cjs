@@ -443,6 +443,13 @@ try {
   }
 }
 
+// Check 11: Compile-Time Poka-Yoke Guards (Issue #276)
+const pokaYokeScript = path.resolve(workspaceRoot, 'scripts/poka_yoke_type_guard.mjs');
+const pokaYokePassed = runNodeScript(pokaYokeScript, [], 'Compile-Time Poka-Yoke Guards for Clinical Posology & Vitals');
+if (!pokaYokePassed) {
+  process.exit(1);
+}
+
 console.log('🎉 All pre-commit validation checks passed successfully. Safe to commit!\n');
 process.exit(0);
 

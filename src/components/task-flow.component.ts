@@ -4,12 +4,13 @@ import { PatientStateService } from '../services/patient-state.service';
 import { DictationService } from '../services/dictation.service';
 import { RevealDirective } from '../directives/reveal.directive';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
+import { ClinicalAssessmentsSuiteComponent } from './clinical-assessments-suite.component';
 import * as DOMPurify from 'dompurify';
 
 @Component({
   selector: 'app-task-flow',
   standalone: true,
-  imports: [CommonModule, RevealDirective, SafeHtmlPipe],
+  imports: [CommonModule, RevealDirective, SafeHtmlPipe, ClinicalAssessmentsSuiteComponent],
   providers: [DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -21,10 +22,14 @@ import * as DOMPurify from 'dompurify';
             <span class="text-xs font-bold uppercase tracking-widest text-[#416B1F] dark:text-[#689f38] block mb-1">
               Active Room
             </span>
-            <div class="flex items-center gap-3">
-              <button (click)="activeView.set('tasks')" [class.text-gray-400]="activeView() !== 'tasks'" [class.dark:text-zinc-500]="activeView() !== 'tasks'" class="text-xl font-medium text-[#1C1C1C] dark:text-zinc-100 transition-colors hover:text-[#1C1C1C] dark:hover:text-zinc-100">Tasks & Notes</button>
-              <span class="text-gray-300 dark:text-zinc-700 text-xl font-light">|</span>
-              <button (click)="activeView.set('collab')" [class.text-gray-400]="activeView() !== 'collab'" [class.dark:text-zinc-500]="activeView() !== 'collab'" class="text-xl font-medium text-[#1C1C1C] dark:text-zinc-100 transition-colors hover:text-[#1C1C1C] dark:hover:text-zinc-100 flex items-center gap-2">
+            <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+              <button (click)="activeView.set('tasks')" [class.text-gray-400]="activeView() !== 'tasks'" [class.dark:text-zinc-500]="activeView() !== 'tasks'" class="text-base sm:text-xl font-medium text-[#1C1C1C] dark:text-zinc-100 transition-colors hover:text-[#1C1C1C] dark:hover:text-zinc-100 cursor-pointer">Tasks & Notes</button>
+              <span class="text-gray-300 dark:text-zinc-700 text-lg sm:text-xl font-light">|</span>
+              <button (click)="activeView.set('assessments')" [class.text-gray-400]="activeView() !== 'assessments'" [class.dark:text-zinc-500]="activeView() !== 'assessments'" data-testid="active-room-tab-assessments" class="text-base sm:text-xl font-medium text-[#1C1C1C] dark:text-zinc-100 transition-colors hover:text-[#1C1C1C] dark:hover:text-zinc-100 flex items-center gap-1.5 cursor-pointer">
+                Assessments
+              </button>
+              <span class="text-gray-300 dark:text-zinc-700 text-lg sm:text-xl font-light">|</span>
+              <button (click)="activeView.set('collab')" [class.text-gray-400]="activeView() !== 'collab'" [class.dark:text-zinc-500]="activeView() !== 'collab'" class="text-base sm:text-xl font-medium text-[#1C1C1C] dark:text-zinc-100 transition-colors hover:text-[#1C1C1C] dark:hover:text-zinc-100 flex items-center gap-2 cursor-pointer">
                 Colleague Chat
                 <span class="flex -space-x-2">
                   <div class="w-6 h-6 rounded-md bg-blue-100 border-2 border-white dark:border-[#09090b] flex items-center justify-center text-[12px] font-bold text-blue-700 z-20 shadow-sm">SC</div>
@@ -189,6 +194,12 @@ import * as DOMPurify from 'dompurify';
           </div>
         }
         }
+        @if (activeView() === 'assessments') {
+          <!-- Direct In-Room Clinical Assessments Panel -->
+          <div class="h-full flex flex-col min-h-0 -m-6 p-4">
+            <app-clinical-assessments-suite class="flex-1 flex flex-col min-h-0"></app-clinical-assessments-suite>
+          </div>
+        }
         @if (activeView() === 'collab') {
            <!-- Collaboration UI -->
            <div class="flex flex-col gap-4 h-full">
@@ -217,7 +228,8 @@ import * as DOMPurify from 'dompurify';
       </div>
 
       <!-- Add Item Input -->
-      <div class="p-4 bg-white dark:bg-[#09090b] border-t border-gray-100 dark:border-zinc-800 shrink-0 flex flex-col gap-3">
+      @if (activeView() !== 'assessments') {
+        <div class="p-4 bg-white dark:bg-[#09090b] border-t border-gray-100 dark:border-zinc-800 shrink-0 flex flex-col gap-3">
         <label for="taskInputText" class="sr-only">New task or note</label>
         <textarea 
             id="taskInputText"
@@ -272,6 +284,7 @@ import * as DOMPurify from 'dompurify';
           </div>
         }
       </div>
+      }
     </div>
   `
 })
@@ -285,7 +298,7 @@ export class TaskFlowComponent {
 
   taskSortOrder = signal<'default' | 'pain' | 'status'>('default');
   
-  activeView = signal<'tasks' | 'collab'>('tasks');
+  activeView = signal<'tasks' | 'collab' | 'assessments'>('tasks');
   
   collabMessages = signal<{id: string, sender: string, text: string, isSelf: boolean, time: string}[]>([
     { id: '1', sender: 'Dr. Sarah Chen', text: 'Hey, I am taking a look at this patient. The Magnesium deficiency looks chronic. Have you considered IV therapy?', isSelf: false, time: '10:42 AM' },
@@ -310,6 +323,7 @@ export class TaskFlowComponent {
         if (task.text.includes('[Orthopedics]')) colorClass = 'border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-950/20';
         else if (task.text.includes('[Cardiology]')) colorClass = 'border-rose-500 dark:border-rose-400 bg-rose-50 dark:bg-rose-950/20';
         else if (task.text.includes('[Neurology]')) colorClass = 'border-indigo-500 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-950/20';
+        else if (task.text.includes('[Assessment]')) colorClass = 'border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-950/20';
       }
 
       let formattedText = task.text.replace(/\[(.*?)\]/g, (_match, inner) => {

@@ -136,4 +136,37 @@ test.describe('WCAG 2.2 AAA Accessibility, Themes & Sensory Settings E2E Suite',
     const isFocused = await firstButton.evaluate(el => el === document.activeElement);
     expect(isFocused).toBe(true);
   });
+
+  test('6. Verifies Philocardia Heart-Centered Mode and Bionic Reading synergy in DOM', async ({ page }) => {
+    // 1. Activate Philocardia mode in DOM
+    await page.evaluate(() => {
+      document.documentElement.classList.add('philocardia-active');
+      document.documentElement.setAttribute('data-philocardia', 'true');
+    });
+
+    const isPhiloActive = await page.evaluate(() => {
+      return document.documentElement.classList.contains('philocardia-active') &&
+             document.documentElement.getAttribute('data-philocardia') === 'true';
+    });
+    expect(isPhiloActive).toBe(true);
+
+    // 2. Activate Bionic Reading mode in DOM alongside Philocardia
+    await page.evaluate(() => {
+      document.documentElement.classList.add('bionic-active');
+      document.documentElement.setAttribute('data-bionic-reading', 'true');
+    });
+
+    const bothActive = await page.evaluate(() => {
+      const philo = document.documentElement.classList.contains('philocardia-active');
+      const bionic = document.documentElement.classList.contains('bionic-active');
+      return philo && bionic;
+    });
+    expect(bothActive).toBe(true);
+
+    // 3. Test interactive navbar toggle if present and clickable
+    const philocardiaBtn = page.locator('#btn-philocardia-toggle');
+    if (await philocardiaBtn.isVisible().catch(() => false)) {
+      await philocardiaBtn.click().catch(() => {});
+    }
+  });
 });

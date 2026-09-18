@@ -42,9 +42,12 @@ describe('ComponentDrilldownUnitComponent', () => {
     expect(component.targetComponent()).toBeNull();
   });
 
-  it('3. Supports opening new Kaggle and Network targets', () => {
-    component.open('kaggle');
-    expect(component.title()).toContain('Kaggle');
+  it('3. Supports opening Y-BOCS, Occupational, and Network diagnostic targets', () => {
+    component.open('ybocs');
+    expect(component.title()).toContain('Y-BOCS');
+
+    component.open('occupational');
+    expect(component.title()).toContain('Occupational Hazard');
 
     component.open('network');
     expect(component.title()).toContain('Clinician Peer');

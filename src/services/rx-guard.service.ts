@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
 import { IPatient } from './patient.types';
 import { IsmpSafetyGuardService } from './ismp-safety-guard.service';
+import { FinancialToxicityGuardService, IFinancialToxicityAudit } from './financial-toxicity-guard.service';
 
 export type PGxPhenotype = 'Ultrarapid Metabolizer' | 'Normal Metabolizer' | 'Intermediate Metabolizer' | 'Poor Metabolizer' | 'Indeterminate';
 export type RiskSeverity = 'SAFE' | 'ADVISORY' | 'MODERATE_RISK' | 'CONTRAINDICATED';
@@ -34,6 +35,9 @@ export interface IRxGuardAssessment {
   overallRiskTier: RiskSeverity;
   clearanceAdjustments: { medication: string; adjustedClearancePct: number; recommendation: string }[];
   fhirGuidanceResponse: Record<string, unknown>;
+  financialToxicityAudits?: IFinancialToxicityAudit[];
+  cumulativeMonthlyCostEstimateUsd?: number;
+  totalGenericSavingsOpportunityUsd?: number;
 }
 
 @Injectable({
@@ -42,6 +46,7 @@ export interface IRxGuardAssessment {
 export class RxGuardService {
   private patientState: PatientStateService | null = null;
   public readonly ismpGuard: IsmpSafetyGuardService;
+  public readonly financialGuard: FinancialToxicityGuardService;
 
   constructor() {
     try {
@@ -53,6 +58,11 @@ export class RxGuardService {
       this.ismpGuard = inject(IsmpSafetyGuardService, { optional: true }) || new IsmpSafetyGuardService();
     } catch {
       this.ismpGuard = new IsmpSafetyGuardService();
+    }
+    try {
+      this.financialGuard = inject(FinancialToxicityGuardService, { optional: true }) || new FinancialToxicityGuardService();
+    } catch {
+      this.financialGuard = new FinancialToxicityGuardService();
     }
   }
 
@@ -272,6 +282,31 @@ export class RxGuardService {
       }
     };
 
+    // Calculate Financial Toxicity & Generic Savings Opportunities
+    const allTherapeutics = [...safeMeds, ...safeHerbs];
+    const financialToxicityAudits = allTherapeutics.map(item => {
+      // Estimate baseline monthly cost based on medication profile
+      let estCost = 25.00;
+      const lower = item.toLowerCase();
+      if (lower.includes('advair') || lower.includes('inhaler') || lower.includes('flovent')) estCost = 180.00;
+      else if (lower.includes('magnesium') || lower.includes('threonate') || lower.includes('ubiquinol')) estCost = 48.00;
+      else if (lower.includes('atorvastatin') || lower.includes('lisinopril') || lower.includes('metformin')) estCost = 12.00;
+
+      return this.financialGuard.evaluateFinancialToxicity({
+        name: item,
+        monthlyCostUsd: estCost,
+        isBrandedOrAffiliate: estCost > 30
+      });
+    });
+
+    const cumulativeMonthlyCostEstimateUsd = financialToxicityAudits.reduce((acc, a) => acc + a.originalCostMonthlyUsd, 0);
+    const totalGenericSavingsOpportunityUsd = financialToxicityAudits.reduce((acc, a) => {
+      if (a.hasGenericEquivalent && a.genericAlternative) {
+        return acc + Math.max(0, a.originalCostMonthlyUsd - a.genericAlternative.estimatedMonthlyCostUsd);
+      }
+      return acc;
+    }, 0);
+
     return {
       patientId: patient.id || 'p001',
       timestamp: new Date().toISOString(),
@@ -279,7 +314,10 @@ export class RxGuardService {
       interactions,
       overallRiskTier,
       clearanceAdjustments,
-      fhirGuidanceResponse
+      fhirGuidanceResponse,
+      financialToxicityAudits,
+      cumulativeMonthlyCostEstimateUsd,
+      totalGenericSavingsOpportunityUsd
     };
   }
 }

@@ -12,7 +12,7 @@ export type InterventionSubTab = 'allopathic' | 'tcm' | 'ayurvedic' | 'lifestyle
   template: `
     <div class="w-full space-y-6">
       <!-- Sub-Lens Tab Ribbon -->
-      <div class="flex gap-2 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 max-w-4xl overflow-x-auto">
+      <div class="flex gap-2 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 max-w-3xl overflow-x-auto">
         <button (click)="subTab.set('allopathic')"
           [class.bg-white]="subTab() === 'allopathic'"
           [class.dark:bg-zinc-800]="subTab() === 'allopathic'"

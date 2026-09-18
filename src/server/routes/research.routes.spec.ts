@@ -32,10 +32,9 @@ describe('Research Routes (/api/research)', () => {
   // Extract handlers from router stack
   const getCohortsHandler = (router.stack.find((layer: any) => layer.route?.path === '/cohorts')?.route?.stack.slice(-1)[0] as any)?.handle;
   const enrollHandler = (router.stack.find((layer: any) => layer.route?.path === '/enroll')?.route?.stack.slice(-1)[0] as any)?.handle;
-  const stripeLinkHandler = (router.stack.find((layer: any) => layer.route?.path === '/payout/stripe-connect-link')?.route?.stack.slice(-1)[0] as any)?.handle;
-  const payoutHandler = (router.stack.find((layer: any) => layer.route?.path === '/payout/request')?.route?.stack.slice(-1)[0] as any)?.handle;
+  const policyHandler = (router.stack.find((layer: any) => layer.route?.path === '/policy')?.route?.stack.slice(-1)[0] as any)?.handle;
 
-  it('GET /api/research/cohorts should return accredited disease cohorts with k-anonymity scores', () => {
+  it('GET /api/research/cohorts should return accredited disease cohorts with k-anonymity scores and zero compensation', () => {
     const { req, res } = createMockReqRes();
     getCohortsHandler(req, res);
 
@@ -45,6 +44,9 @@ describe('Research Routes (/api/research)', () => {
     const cohorts = data['cohorts'] as Array<Record<string, unknown>>;
     expect(cohorts.length).toBeGreaterThanOrEqual(5);
     expect(Number(cohorts[0]['kAnonymityScore'])).toBeGreaterThanOrEqual(8);
+    expect(cohorts[0]['studyFundingModel']).toBe('open_science_commons');
+    expect(cohorts[0]['grantEscrowStatus']).toBe('pure_open_science');
+    expect(cohorts[0]['compensationPerQueryUsd']).toBe(0.00);
   });
 
   it('POST /api/research/enroll should validate digital signature and return authorization hash', () => {
@@ -61,31 +63,15 @@ describe('Research Routes (/api/research)', () => {
     expect(String(data['authorizationSignatureHash'])).toMatch(/^sha256_/);
   });
 
-  it('POST /api/research/payout/stripe-connect-link should generate Stripe Express onboarding URL', () => {
-    const { req, res } = createMockReqRes({ patientId: 'patient_alpha' });
-    stripeLinkHandler(req, res);
+  it('GET /api/research/policy should enforce Belmont Report open science framework', () => {
+    const { req, res } = createMockReqRes();
+    policyHandler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(200);
     const data = res.getJson();
     expect(data['success']).toBe(true);
-    expect(String(data['onboardingUrl'])).toContain('connect.stripe.com/express');
-  });
-
-  it('POST /api/research/payout/request should enforce dual-custody for disbursements >= $500', () => {
-    const normalReqRes = createMockReqRes({ amountUsd: 75.0, accountId: 'acct_test' });
-    payoutHandler(normalReqRes.req, normalReqRes.res);
-
-    expect(normalReqRes.res.status).toHaveBeenCalledWith(200);
-    const normalData = normalReqRes.res.getJson();
-    expect(normalData['status']).toBe('disbursed');
-    expect(normalData['requiresDualCustody']).toBe(false);
-
-    const highReqRes = createMockReqRes({ amountUsd: 650.0, accountId: 'acct_test' });
-    payoutHandler(highReqRes.req, highReqRes.res);
-
-    expect(highReqRes.res.status).toHaveBeenCalledWith(200);
-    const highData = highReqRes.res.getJson();
-    expect(highData['status']).toBe('pending_dual_custody');
-    expect(highData['requiresDualCustody']).toBe(true);
+    expect(data['model']).toBe('open_science_commons');
+    expect(data['escrowEnforced']).toBe(true);
+    expect(String(data['payoutPolicy'])).toContain('Pure Open Science');
   });
 });

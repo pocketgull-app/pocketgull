@@ -1,0 +1,21 @@
+# PocketGull Scotopic 650nm Red Ghostty Theme
+background = #0a0202
+foreground = #dc2626
+cursor-color = #ef4444
+selection-background = #3b0808
+palette = 0=#1a0505
+palette = 1=#ef4444
+palette = 2=#d97706
+palette = 3=#f59e0b
+palette = 4=#b91c1c
+palette = 5=#991b1b
+palette = 6=#ea580c
+palette = 7=#fca5a5
+palette = 8=#450a0a
+palette = 9=#f87171
+palette = 10=#f59e0b
+palette = 11=#fcd34d
+palette = 12=#dc2626
+palette = 13=#b91c1c
+palette = 14=#f97316
+palette = 15=#fee2e2

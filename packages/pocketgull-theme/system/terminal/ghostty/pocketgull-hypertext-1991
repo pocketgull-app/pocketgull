@@ -1,0 +1,21 @@
+# PocketGull Hypertext 1991 Ghostty Theme
+background = #ffffff
+foreground = #000000
+cursor-color = #000000
+selection-background = #b5d5ff
+palette = 0=#000000
+palette = 1=#cc0000
+palette = 2=#008800
+palette = 3=#996600
+palette = 4=#0000ee
+palette = 5=#551a8b
+palette = 6=#006699
+palette = 7=#eeeeee
+palette = 8=#555555
+palette = 9=#ee0000
+palette = 10=#00aa00
+palette = 11=#cc8800
+palette = 12=#0000ff
+palette = 13=#772299
+palette = 14=#0099cc
+palette = 15=#ffffff

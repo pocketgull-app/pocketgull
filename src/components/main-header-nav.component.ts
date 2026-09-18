@@ -13,6 +13,8 @@ import { AmbientFlowPlayerComponent } from './shared/ambient-flow-player.compone
 import { ConsoleIntegrityBadgeComponent } from './console-integrity-badge.component';
 import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscape.service';
 import { NavigationShellService } from '../services/navigation-shell.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
+import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
 
 @Component({
   selector: 'app-main-header-nav',
@@ -36,12 +38,8 @@ import { NavigationShellService } from '../services/navigation-shell.service';
         <button type="button" class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all cursor-pointer group relative no-print shrink-0" 
              (click)="network.toggleForceOffline()"
              [title]="network.isOnline() ? 'Click to simulate offline' : 'Click to disable offline override'">
-          <div class="relative flex h-2 w-2">
-            <span class="absolute inline-flex h-full w-full rounded-full status-dot opacity-75" 
-                  [style.background-color]="network.isOnline() ? 'var(--spectral-stable)' : 'var(--spectral-critical)'"
-                  [class.animate-ping]="network.isOnline()"
-                  style="will-change: transform, opacity;"></span>
-            <span class="relative inline-flex rounded-full status-dot h-2 w-2"
+          <div class="relative flex h-2 w-2 items-center justify-center">
+            <span class="relative inline-flex rounded-full status-dot h-2 w-2 transition-colors duration-300"
                   [style.background-color]="network.isOnline() ? 'var(--spectral-stable)' : 'var(--spectral-critical)'"></span>
           </div>
           <span class="text-[11px] sm:text-xs font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">{{ network.isOnline() ? 'System Ready' : (network.forceOffline() ? 'App Forced Offline' : 'System Offline') }}</span>
@@ -67,29 +65,89 @@ import { NavigationShellService } from '../services/navigation-shell.service';
 
       <!-- Right Nav Action Suite -->
       <div class="flex items-center gap-2 shrink-0">
+        <!-- 📋 Active Room Toggle Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-active-room-trigger"
+          (click)="state.toggleActiveRoom()"
+          aria-label="Toggle Active Room & Clinical Assessments"
+          [class.bg-teal-600]="state.showActiveRoom()"
+          [class.text-white]="state.showActiveRoom()"
+          [class.border-teal-700]="state.showActiveRoom()"
+          [class.bg-zinc-100]="!state.showActiveRoom()"
+          [class.dark:bg-zinc-900]="!state.showActiveRoom()"
+          [class.text-zinc-800]="!state.showActiveRoom()"
+          [class.dark:text-zinc-200]="!state.showActiveRoom()"
+          class="hidden md:flex items-center gap-1.5 px-3 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:border-teal-500/50 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">📋</span>
+          <span>Active Room</span>
+        </button>
+
+        <!-- ⚖️ Clinical Posology & Deprescribing Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-posology-trigger"
+          (click)="navShell?.openPosology()"
+          aria-label="Open Clinical Posology & Deprescribing Engine"
+          class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">⚖️</span>
+          <span>Posology</span>
+        </button>
+
+        <!-- 💵 CMS RPM Superbill Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-cms-superbill-trigger"
+          (click)="navShell?.openCmsSuperbill()"
+          aria-label="Generate CMS Remote Patient Monitoring Superbill"
+          class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">💵</span>
+          <span>RPM Superbill</span>
+          @if (rpmService?.rpmSummary(); as rpm) {
+            <span 
+              [ngClass]="rpm.isCompliant ? 'bg-emerald-200/80 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-100 border-emerald-400/60' : 'bg-amber-200/80 dark:bg-amber-900/80 text-amber-900 dark:text-amber-100 border-amber-400/60'"
+              class="px-1.5 py-0.5 rounded text-[10px] font-mono border tabular-nums">
+              {{ rpm.qualifyingDays }}/16d
+            </span>
+          }
+        </button>
+
+        <!-- 📈 3-Act Trajectory Reader Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-trajectory-reader-trigger"
+          (click)="navShell?.openTrajectoryReader()"
+          aria-label="Open 3-Act Clinical Trajectory Reader"
+          class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-200 border border-indigo-300 dark:border-indigo-700/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">📈</span>
+          <span>3-Act Trajectory</span>
+        </button>
+
         <app-console-integrity-badge class="hidden lg:inline-flex" />
 
-        <!-- 🌟 Experience by Role Demo Trigger (Desktop) -->
-        <button 
-          type="button" 
-          id="btn-role-demo-trigger"
-          (click)="navShell?.openRoleDemo()"
-          aria-label="Experience PocketGull by Clinical Role"
-          class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-          <span class="text-xs">✨</span>
-          <span>Role Demo</span>
-        </button>
+        @if (navShell?.developerMode()) {
+          <!-- 🌟 Experience by Role Demo Trigger (Desktop) -->
+          <button 
+            type="button" 
+            id="btn-role-demo-trigger"
+            (click)="navShell?.openRoleDemo()"
+            aria-label="Experience PocketGull by Clinical Role"
+            class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+            <span class="text-xs">✨</span>
+            <span>Role Demo</span>
+          </button>
 
-        <!-- 💼 Commercialization & Practice Growth Hub Trigger (Desktop) -->
-        <button 
-          type="button" 
-          id="btn-commercial-hub-trigger"
-          (click)="navShell?.openCommercialHub()"
-          aria-label="Open Commercialization & Monetization Hub"
-          class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-          <span class="text-xs">💼</span>
-          <span>Commercial Hub</span>
-        </button>
+          <!-- 💼 Commercialization & Practice Growth Hub Trigger (Desktop) -->
+          <button 
+            type="button" 
+            id="btn-commercial-hub-trigger"
+            (click)="navShell?.openCommercialHub()"
+            aria-label="Open Commercialization & Monetization Hub"
+            class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+            <span class="text-xs">💼</span>
+            <span>Commercial Hub</span>
+          </button>
+        }
 
         <!-- 🏛️ USWDS Federal Health Workstation Trigger (Desktop) -->
         <button 
@@ -248,8 +306,8 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                   <button type="button" (click)="openResearchDividend.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🧬</span>
                     <div>
-                      <div>Data Dividend</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">NIH / LunaDNA Registry</div>
+                      <div>Open Science Commons</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">NIH All of Us • Research Commons</div>
                     </div>
                   </button>
                 </div>
@@ -271,27 +329,22 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                       <div class="text-[10px] text-zinc-400 font-normal">Box Breathing Pacer</div>
                     </div>
                   </button>
-                  <button type="button" (click)="openAmbientLivingSpace.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">🏡</span>
-                    <div>
-                      <div>Living Room Ambient</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Dieter Rams Display Mode</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openHumanDignityPact.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">🕊️</span>
-                    <div>
-                      <div>Dignity Charter</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Human Rights & Autonomy</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openTypefaceSite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">🔤</span>
-                    <div>
-                      <div>Typeface Suite</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">William Caslon Fonts</div>
-                    </div>
-                  </button>
+                  @if (navShell?.developerMode()) {
+                    <button type="button" (click)="openAmbientLivingSpace.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">🏡</span>
+                      <div>
+                        <div>Living Room Ambient</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">Dieter Rams Display Mode</div>
+                      </div>
+                    </button>
+                    <button type="button" (click)="openTypefaceSite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">🔤</span>
+                      <div>
+                        <div>Typeface Suite</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">William Caslon Fonts</div>
+                      </div>
+                    </button>
+                  }
                 </div>
 
                 <!-- Section: Enterprise & Operations -->
@@ -325,55 +378,36 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                       <div class="text-[10px] text-zinc-400 font-normal">Autonomous Ticketing</div>
                     </div>
                   </button>
-                  <button type="button" (click)="openTalentHrPortal.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">💼</span>
-                    <div>
-                      <div>Executive Demo</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Health System ROI</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openBillingDashboard.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">💳</span>
-                    <div>
-                      <div>Billing &amp; Pricing</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Usage &amp; Plans</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openDoctorShiftDemo.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">🏥</span>
-                    <div>
-                      <div>Hospital Shift Demo</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Physician Pilot & HHS § 1557</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="navShell?.openCmsSuperbill(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">📋</span>
-                    <div>
-                      <div>CMS RPM Superbill Claim</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">CPT 99453/99454 16-Day Telemetry</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="navShell?.openTrajectoryReader(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">⚡</span>
-                    <div>
-                      <div>Rapid Trajectory & Speed Reader</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Past / Present / Future Arc (650 WPM)</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openGreenRoom.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">🌿</span>
-                    <div>
-                      <div>Green Room Lounge</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">Clinician Debrief & Reflection</div>
-                    </div>
-                  </button>
-                  <button type="button" (click)="openPatentClaims.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
-                    <span class="text-sm">⚖️</span>
-                    <div>
-                      <div>Patent &amp; IP Registry</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">200 Claims &amp; Clauses</div>
-                    </div>
-                  </button>
+                  @if (navShell?.developerMode()) {
+                    <button type="button" (click)="openTalentHrPortal.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">💼</span>
+                      <div>
+                        <div>Executive Demo</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">Health System ROI</div>
+                      </div>
+                    </button>
+                    <button type="button" (click)="openDoctorShiftDemo.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">🏥</span>
+                      <div>
+                        <div>Hospital Shift Demo</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">Physician Pilot & HHS § 1557</div>
+                      </div>
+                    </button>
+                    <button type="button" (click)="openGreenRoom.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">🌿</span>
+                      <div>
+                        <div>Green Room Lounge</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">Clinician Debrief & Reflection</div>
+                      </div>
+                    </button>
+                    <button type="button" (click)="openPatentClaims.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">⚖️</span>
+                      <div>
+                        <div>Patent &amp; IP Registry</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">200 Claims &amp; Clauses</div>
+                      </div>
+                    </button>
+                  }
                   <button type="button" (click)="openAustereHud.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🛡️</span>
                     <div>
@@ -396,6 +430,24 @@ import { NavigationShellService } from '../services/navigation-shell.service';
                     </div>
                   </button>
                 </div>
+              </div>
+
+              <!-- Developer & Auxiliary Demos Gatekeeper Toggle -->
+              <div class="pt-2.5 mt-2.5 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-1">
+                <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">Developer Demos:</span>
+                <button type="button" (click)="navShell?.toggleDeveloperMode()" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded border transition cursor-pointer"
+                        [class.bg-emerald-100]="navShell?.developerMode()"
+                        [class.dark:bg-emerald-950]="navShell?.developerMode()"
+                        [class.text-emerald-800]="navShell?.developerMode()"
+                        [class.dark:text-emerald-300]="navShell?.developerMode()"
+                        [class.border-emerald-400]="navShell?.developerMode()"
+                        [class.bg-zinc-100]="!navShell?.developerMode()"
+                        [class.dark:bg-zinc-800]="!navShell?.developerMode()"
+                        [class.text-zinc-500]="!navShell?.developerMode()"
+                        [class.border-zinc-300]="!navShell?.developerMode()"
+                        [class.dark:border-zinc-700]="!navShell?.developerMode()">
+                  {{ navShell?.developerMode() ? '🛠️ DEV MODE: ON' : '🔒 DEV MODE: OFF' }}
+                </button>
               </div>
             </div>
           }
@@ -475,6 +527,38 @@ import { NavigationShellService } from '../services/navigation-shell.service';
             </span>
           </button>
 
+          <!-- Bionic Reading Mode Toggle -->
+          <button (click)="bionicReading.toggleBionicReading()"
+                  id="btn-bionic-toggle"
+                  aria-label="Toggle Bionic Reading Mode"
+                  [attr.aria-pressed]="bionicReading.isBionicReadingEnabled()"
+                  [title]="bionicReading.isBionicReadingEnabled() ? 'Bionic Reading Active (Alt+B)' : 'Enable Bionic Reading Mode (Alt+B)'"
+                  [class.border-amber-500]="bionicReading.isBionicReadingEnabled()"
+                  [class.bg-amber-50]="bionicReading.isBionicReadingEnabled()"
+                  [class.dark:bg-amber-950/40]="bionicReading.isBionicReadingEnabled()"
+                  [class.text-amber-600]="bionicReading.isBionicReadingEnabled()"
+                  [class.dark:text-amber-300]="bionicReading.isBionicReadingEnabled()"
+                  class="group shrink-0 px-2.5 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:bg-amber-50/50 dark:hover:bg-amber-950/20 rounded-xs transition-colors text-zinc-600 dark:text-zinc-300 cursor-pointer flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900 shadow-xs">
+            <span class="text-xs">📖</span>
+            <span class="hidden xl:inline text-[11px] font-bold tracking-tight">Bionic</span>
+          </button>
+
+          <!-- Philocardia Heart-Centered Sensory Mode Toggle -->
+          <button (click)="theme.togglePhilocardia()"
+                  id="btn-philocardia-toggle"
+                  aria-label="Toggle Philocardia Heart-Centered Sensory Mode"
+                  [attr.aria-pressed]="theme.isPhilocardiaEnabled()"
+                  [title]="theme.isPhilocardiaEnabled() ? 'Philocardia Active (0.1Hz Vagal Mayer Pacing)' : 'Enable Philocardia (0.1Hz Heart-Centered Sensory Mode)'"
+                  [class.border-rose-500]="theme.isPhilocardiaEnabled()"
+                  [class.bg-rose-50]="theme.isPhilocardiaEnabled()"
+                  [class.dark:bg-rose-950/40]="theme.isPhilocardiaEnabled()"
+                  [class.text-rose-600]="theme.isPhilocardiaEnabled()"
+                  [class.dark:text-rose-300]="theme.isPhilocardiaEnabled()"
+                  class="group shrink-0 px-2.5 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:bg-rose-50/50 dark:hover:bg-rose-950/20 rounded-xs transition-colors text-zinc-600 dark:text-zinc-300 cursor-pointer flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900 shadow-xs">
+            <span class="text-xs" [class.animate-pulse]="theme.isPhilocardiaEnabled()">{{ theme.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
+            <span class="hidden xl:inline text-[11px] font-bold tracking-tight">Philocardia</span>
+          </button>
+
           <!-- Desktop Lock Session / Secure Splash Trigger -->
           <button (click)="session.lock()"
                   aria-label="Lock Session & Open Secure Splash Screen"
@@ -520,6 +604,35 @@ import { NavigationShellService } from '../services/navigation-shell.service';
 
           <!-- Clinical Navigation Links (Fitts's Law 48px+ touch targets) -->
           <div class="space-y-2.5">
+            <!-- Active Room & Assessments Toggle -->
+            <button type="button" (click)="state.toggleActiveRoom(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">📋</span> <span>{{ state.showActiveRoom() ? 'Hide Active Room' : 'Open Active Room' }}</span>
+            </button>
+
+            <!-- ⚖️ Clinical Posology & Deprescribing Engine -->
+            <button type="button" (click)="navShell?.openPosology(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">⚖️</span> <span>Posology &amp; Deprescribing</span>
+            </button>
+
+            <!-- 💵 CMS Remote Patient Monitoring (RPM) Superbill -->
+            <button type="button" (click)="navShell?.openCmsSuperbill(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center justify-between px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <div class="flex items-center gap-3">
+                <span class="text-base">💵</span> <span>CMS RPM Superbill (CPT 99453/4)</span>
+              </div>
+              @if (rpmService?.rpmSummary(); as rpm) {
+                <span 
+                  [ngClass]="rpm.isCompliant ? 'bg-emerald-200/80 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-100' : 'bg-amber-200/80 dark:bg-amber-900/80 text-amber-900 dark:text-amber-100'"
+                  class="px-2 py-0.5 rounded text-[10px] font-mono tabular-nums">
+                  {{ rpm.qualifyingDays }}/16d
+                </span>
+              }
+            </button>
+
+            <!-- 📈 3-Act Clinical Trajectory Reader -->
+            <button type="button" (click)="navShell?.openTrajectoryReader(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-200 border border-indigo-300 dark:border-indigo-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">📈</span> <span>3-Act Clinical Trajectory</span>
+            </button>
+
             <!-- MDCP Governance Hub -->
             <button type="button" (click)="openMdcpHub(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">📋</span> <span>MDCP Governance Hub</span>
@@ -547,7 +660,7 @@ import { NavigationShellService } from '../services/navigation-shell.service';
             </button>
 
             <button type="button" (click)="openResearchDividend.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
-              <span class="text-base">🧬</span> <span>Ethical Research Dividend</span>
+              <span class="text-base">🧬</span> <span>Ethical Open Science Commons</span>
             </button>
 
             <button type="button" (click)="openSocraticIntake.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
@@ -594,12 +707,19 @@ import { NavigationShellService } from '../services/navigation-shell.service';
           <!-- Quick Theme & Display Toggles -->
           <div class="pt-3 border-t border-zinc-200 dark:border-zinc-800 space-y-2">
             <div class="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Display &amp; Accessibility</div>
-            <div class="grid grid-cols-2 gap-2">
-              <button type="button" (click)="theme.cycleTheme()" class="min-h-[44px] py-2.5 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition cursor-pointer">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button type="button" (click)="theme.cycleTheme()" class="min-h-[44px] py-2.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition cursor-pointer">
                 <span>🎨 {{ theme.currentTheme() }}</span>
               </button>
-              <button type="button" (click)="theme.cycleTextSizeScale()" class="min-h-[44px] py-2.5 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition cursor-pointer">
+              <button type="button" (click)="theme.cycleTextSizeScale()" class="min-h-[44px] py-2.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition cursor-pointer">
                 <span>🔤 {{ theme.textSizeScale() }}</span>
+              </button>
+              <button type="button" id="btn-bionic-mobile-toggle" (click)="bionicReading.toggleBionicReading()" [class.border-amber-500]="bionicReading.isBionicReadingEnabled()" [class.bg-amber-50]="bionicReading.isBionicReadingEnabled()" [class.dark:bg-amber-950/40]="bionicReading.isBionicReadingEnabled()" [class.text-amber-600]="bionicReading.isBionicReadingEnabled()" [class.dark:text-amber-300]="bionicReading.isBionicReadingEnabled()" class="min-h-[44px] py-2.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition cursor-pointer">
+                <span>📖 Bionic</span>
+              </button>
+              <button type="button" id="btn-philocardia-mobile-toggle" (click)="theme.togglePhilocardia()" [class.border-rose-500]="theme.isPhilocardiaEnabled()" [class.bg-rose-50]="theme.isPhilocardiaEnabled()" [class.dark:bg-rose-950/40]="theme.isPhilocardiaEnabled()" [class.text-rose-600]="theme.isPhilocardiaEnabled()" [class.dark:text-rose-300]="theme.isPhilocardiaEnabled()" class="min-h-[44px] py-2.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition cursor-pointer">
+                <span [class.animate-pulse]="theme.isPhilocardiaEnabled()">{{ theme.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
+                <span>Philo</span>
               </button>
             </div>
           </div>
@@ -636,12 +756,14 @@ export class MainHeaderNavComponent {
   network = inject(NetworkStateService);
   state = inject(PatientStateService);
   theme = inject(ThemeService);
+  bionicReading = inject(BionicReadingService);
   hardware = inject(HardwareTelemetryService);
   game = inject(GamificationService);
   tour = inject(WalkthroughTourService);
   session = inject(SessionStateService);
   soundscapeService = inject(AmbientFlowSoundscapeService);
   navShell = inject(NavigationShellService, { optional: true });
+  rpmService = inject(CmsRpmSuperbillService, { optional: true });
 
   today = new Date();
   isMobileMenuOpen = signal<boolean>(false);

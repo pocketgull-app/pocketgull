@@ -263,4 +263,13 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
     viewer.toggleHandedness();
     expect(viewer.handednessMode()).toBe('right');
   });
+
+  it('should compute selectedPartName reactively from patientState.selectedPartId', () => {
+    expect(viewer.selectedPartName()).toBe('');
+    mockPatientState.selectedPartId.set('heart');
+    expect(viewer.selectedPartName()).toBe('Heart & Cardiovascular System');
+
+    mockPatientState.selectedPartId.set('kidneys');
+    expect(viewer.selectedPartName()).toBe('Kidneys & Renal System');
+  });
 });

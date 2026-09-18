@@ -4,6 +4,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { AcronymExpanderPipe } from '../pipes/acronym-expander.pipe';
 import { MedicalDecoderPipe } from '../pipes/medical-decoder.pipe';
+import { BionicFormatPipe } from '../pipes/bionic-format.pipe';
 import { fromEvent, Subscription } from 'rxjs';
 import { PatientManagementService } from '../services/patient-management.service';
 import { PatientStateService } from '../services/patient-state.service';
@@ -28,6 +29,7 @@ import { GseExplorerService, IGseDataset } from '../services/gse-explorer.servic
 import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 import { PhysicalGenomicsService } from '../services/physical-genomics.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
+import { ThemeService } from '../services/theme.service';
 import { FovealReticleRsvpComponent } from './shared/foveal-reticle-rsvp.component';
 import * as DOMPurify from 'dompurify';
 
@@ -68,36 +70,48 @@ export interface IPubMedSearchResult {
     ResearchDataDividendComponent,
     GullSquadronShowcaseComponent,
     GullNarrativeDispatchComponent,
-    FovealReticleRsvpComponent
+    FovealReticleRsvpComponent,
+    BionicFormatPipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div id="tour-research-frame-window" class="flex flex-col bg-white dark:bg-[#09090b] shadow-2xl border border-gray-300 dark:border-zinc-800 rounded-none md:rounded-lg overflow-hidden z-40 transition-all"
-         [class.fixed]="isMobile()"
-         [class.inset-0]="isMobile()"
-         [class.absolute]="!isMobile()"
-         [style.left.px]="isMobile() ? null : position().x"
-         [style.top.px]="isMobile() ? null : position().y"
-         [style.width.px]="isMobile() ? null : size().width"
-         [style.height.px]="isMobile() ? null : size().height"
-         [style.max-height]="isMobile() ? '100dvh' : 'none'">
+    <!-- Backdrop Overlay -->
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 transition-opacity animate-in fade-in duration-200"
+         (click)="close()"></div>
+
+    <!-- Evidence & Citation Slide-Over Drawer -->
+    <div id="tour-research-frame-window" 
+         role="dialog"
+         aria-modal="true"
+         aria-label="Clinical Evidence and Literature Drawer"
+         class="fixed inset-y-0 right-0 z-50 w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl bg-white dark:bg-[#09090b] shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
       
-      <!-- Header / Drag Handle with Official Brand Lettering -->
-      <div (mousedown)="isMobile() ? null : startDrag($event)" 
-           [class.cursor-move]="!isMobile()"
-           class="h-11 px-4 flex items-center justify-between bg-zinc-900 border-b border-zinc-800 shrink-0 select-none font-pocketgull-inter">
-        <div class="flex items-center gap-2.5">
-          <span class="text-sm">🔬</span>
-          <span class="font-bold text-teal-400 font-pocketgull-inter text-xs tracking-wide">
-            PocketGull
-          </span>
-          <span class="text-xs text-zinc-600">/</span>
-          <h3 class="text-xs font-bold font-pocketgull-inter uppercase tracking-wider text-zinc-300">
-            Literature &amp; Telemetric Research Frame
-          </h3>
+      <!-- Drawer Header Bar -->
+      <div class="h-14 px-5 flex items-center justify-between bg-zinc-900 border-b border-zinc-800 shrink-0 select-none font-pocketgull-inter">
+        <div class="flex items-center gap-3">
+          <span class="text-base p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/30">🔬</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-teal-400 font-pocketgull-inter text-xs tracking-wide">
+                PocketGull
+              </span>
+              <span class="text-xs text-zinc-600">/</span>
+              <h3 class="text-xs font-bold font-pocketgull-inter uppercase tracking-wider text-zinc-200">
+                Evidence &amp; Citation Drawer
+              </h3>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">
+                Level A Cochrane
+              </span>
+            </div>
+            <p class="text-[11px] text-zinc-400 font-sans">Peer-reviewed literature, RoB 2 risk-of-bias, and PubMed evidence grounding</p>
+          </div>
         </div>
-        <pocket-gull-button variant="ghost" size="sm" (click)="close()" icon="M12 10.586 16.95 5.636a1 1 0 1 1 1.414 1.414L13.414 12l4.95 4.95a1 1 0 0 1-1.414 1.414L12 13.414l-4.95 4.95a1 1 0 0 1-1.414-1.414L10.586 12 5.636 7.05a1 1 0 0 1 1.414-1.414L12 10.586z" title="Close Research Window" ariaLabel="Close Research Window">
-        </pocket-gull-button>
+        <button type="button" 
+                (click)="close()" 
+                aria-label="Close Evidence Drawer"
+                class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer border border-zinc-700 active:scale-95">
+          <span>✕</span> Close
+        </button>
       </div>
 
       <!-- 📡 Telemetric Navigation & Evidence Ground Truth Radar (Clean Clinical Typography) -->
@@ -313,6 +327,32 @@ export interface IPubMedSearchResult {
           </pocket-gull-button>
           <pocket-gull-button variant="ghost" size="sm" (click)="showCitationForm.set(!showCitationForm())" [class.text-gray-800]="showCitationForm()" [class.dark:text-white]="showCitationForm()" icon="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" title="Citation Metadata" ariaLabel="Citation Metadata">
           </pocket-gull-button>
+
+          <!-- Morpheme-Aware Bionic Reading Mode Toggle -->
+          <button (click)="bionic.toggleBionicReading()"
+                  id="btn-bionic-research-toolbar"
+                  [class.bg-amber-500]="bionic.isBionicReadingEnabled()"
+                  [class.text-zinc-950]="bionic.isBionicReadingEnabled()"
+                  [class.border-amber-400]="bionic.isBionicReadingEnabled()"
+                  [class.text-amber-400]="!bionic.isBionicReadingEnabled()"
+                  class="px-2 py-1 text-[11px] font-bold rounded-md bg-zinc-900 border border-amber-500/40 hover:border-amber-400 transition-all shrink-0 flex items-center gap-1 cursor-pointer shadow-sm"
+                  title="Toggle Morpheme-Aware Bionic Reading Fixation (Alt+B)">
+            <span>⚡</span>
+            <span>Bionic Mode</span>
+          </button>
+
+          <!-- Philocardia Heart-Centered Mode Toggle -->
+          <button (click)="theme.togglePhilocardia()"
+                  id="btn-philocardia-research-toolbar"
+                  [class.bg-rose-600]="theme.isPhilocardiaEnabled()"
+                  [class.text-white]="theme.isPhilocardiaEnabled()"
+                  [class.border-rose-400]="theme.isPhilocardiaEnabled()"
+                  [class.text-rose-400]="!theme.isPhilocardiaEnabled()"
+                  class="px-2 py-1 text-[11px] font-bold rounded-md bg-zinc-900 border border-rose-500/40 hover:border-rose-400 transition-all shrink-0 flex items-center gap-1 cursor-pointer shadow-sm"
+                  title="Toggle Philocardia Heart-Centered Mode (0.1Hz Vagal Mayer Pacing)">
+            <span [class.animate-pulse]="theme.isPhilocardiaEnabled()">{{ theme.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
+            <span>Philocardia</span>
+          </button>
         </div>
 
         <!-- Smart Patient Context Chips (Zero-Typing Query Builder) -->
@@ -444,6 +484,19 @@ export interface IPubMedSearchResult {
                 <span>⚡</span>
                 <span>Bionic Mode</span>
               </button>
+
+              <!-- Philocardia Heart-Centered Mode Toggle -->
+              <button (click)="theme.togglePhilocardia()"
+                      id="btn-philocardia-research"
+                      [class.bg-rose-600]="theme.isPhilocardiaEnabled()"
+                      [class.text-white]="theme.isPhilocardiaEnabled()"
+                      [class.border-rose-400]="theme.isPhilocardiaEnabled()"
+                      [class.text-rose-400]="!theme.isPhilocardiaEnabled()"
+                      class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-zinc-900 border border-rose-500/40 hover:border-rose-400 transition-all shrink-0 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      title="Toggle Philocardia Heart-Centered Mode (0.1Hz Vagal Mayer Pacing)">
+                <span [class.animate-pulse]="theme.isPhilocardiaEnabled()">{{ theme.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
+                <span>Philocardia</span>
+              </button>
             </div>
 
             @if (isLoadingPubmed()) {
@@ -480,12 +533,12 @@ export interface IPubMedSearchResult {
                     </span>
                   </div>
 
-                  <h4 class="font-bold text-gray-800 dark:text-zinc-100 text-sm leading-snug mb-1" [innerHTML]="formatBionicTitle(res.title) | safeHtml"></h4>
+                  <h4 class="font-bold text-gray-800 dark:text-zinc-100 text-sm leading-snug mb-1" [innerHTML]="(res.title | bionicFormat) | safeHtml"></h4>
                   <p class="text-xs text-gray-600 dark:text-zinc-400 mb-1 font-medium">{{ res.authors }}</p>
 
                   <!-- 1-Sentence Point-of-Care Takeaway -->
                   <div class="my-2.5 p-2 bg-teal-50/60 dark:bg-teal-950/20 border-l-2 border-teal-500 rounded-r text-[11.5px] text-teal-900 dark:text-teal-200 font-sans leading-relaxed">
-                    <span class="font-bold">💡 Point-of-Care Takeaway:</span> <span [innerHTML]="(formatBionicTakeaway(res.bottomLineTakeaway) | acronymExpander | medicalDecoder) | safeHtml"></span>
+                    <span class="font-bold">💡 Point-of-Care Takeaway:</span> <span [innerHTML]="(((res.bottomLineTakeaway || 'Demonstrates significant therapeutic benefit with low risk of adverse cross-reactivity.') | bionicFormat) | acronymExpander | medicalDecoder) | safeHtml"></span>
                   </div>
 
                   <div class="text-[12px] text-gray-500 dark:text-zinc-400 flex items-center gap-2 mb-3">
@@ -690,14 +743,6 @@ export interface IPubMedSearchResult {
         }
       </div>
 
-      <!-- Resize Handle -->
-      @if (!isMobile()) {
-        <div (mousedown)="startResize($event)" class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize text-gray-300 hover:text-gray-600 transition-colors flex items-end justify-end p-0.5">
-            <svg width="100%" height="100%" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10 0 L10 10 L0 10" stroke="currentColor" stroke-width="2"/>
-            </svg>
-        </div>
-      }
     </div>
 
     <!-- FOVEA™ Clinical Speed Reader (600–900 WPM RSVP Reticle) -->
@@ -709,6 +754,11 @@ export interface IPubMedSearchResult {
 })
 export class ResearchFrameComponent implements OnDestroy {
   @ViewChild('iframeEl') iframeEl?: ElementRef<HTMLIFrameElement>;
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    this.close();
+  }
 
   @HostListener('window:message', ['$event'])
   onMessage(event: MessageEvent) {
@@ -739,6 +789,7 @@ export class ResearchFrameComponent implements OnDestroy {
   private platformId = inject(PLATFORM_ID);
   patientManager = inject(PatientManagementService);
   patientState = inject(PatientStateService);
+  theme = inject(ThemeService);
   embedder = inject(OnDeviceEmbedderService);
   readonly gseService = inject(GseExplorerService);
   private readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
@@ -938,20 +989,6 @@ export class ResearchFrameComponent implements OnDestroy {
   isPeerReviewed = signal(false);
   autoCite = signal(true);
 
-  // --- Window State ---
-  position = signal({ x: 150, y: 100 });
-  size = signal({ width: 800, height: 600 });
-
-  private dragging = false;
-  private resizing = false;
-  private initialMousePos = { x: 0, y: 0 };
-  private initialPosition = { x: 0, y: 0 };
-  private initialSize = { width: 0, height: 0 };
-
-  private boundDoDrag = this.doDrag.bind(this);
-  private boundStopDrag = this.stopDrag.bind(this);
-  private boundDoResize = this.doResize.bind(this);
-  private boundStopResize = this.stopResize.bind(this);
   private checkMobileListener = () => this.isMobile.set(window.innerWidth < 768);
 
   selectedPatient = computed(() => {
@@ -963,12 +1000,7 @@ export class ResearchFrameComponent implements OnDestroy {
   bookmarks = computed(() => this.selectedPatient()?.bookmarks || []);
 
   constructor() {
-    // Update size based on window
     if (isPlatformBrowser(this.platformId)) {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      this.position.set({ x: w * 0.45, y: 100 });
-      
       this.checkMobileListener();
       window.addEventListener('resize', this.checkMobileListener);
     }
@@ -1054,53 +1086,7 @@ export class ResearchFrameComponent implements OnDestroy {
     this.patientState.toggleResearchFrame(false);
   }
 
-  startDrag(event: MouseEvent) {
-    event.preventDefault();
-    this.dragging = true;
-    this.initialMousePos = { x: event.clientX, y: event.clientY };
-    this.initialPosition = this.position();
-    document.addEventListener('mousemove', this.boundDoDrag);
-    document.addEventListener('mouseup', this.boundStopDrag, { once: true });
-  }
 
-  private doDrag(event: MouseEvent) {
-    if (!this.dragging) return;
-    const deltaX = event.clientX - this.initialMousePos.x;
-    const deltaY = event.clientY - this.initialMousePos.y;
-    this.position.set({
-      x: this.initialPosition.x + deltaX,
-      y: this.initialPosition.y + deltaY,
-    });
-  }
-
-  private stopDrag() {
-    this.dragging = false;
-    document.removeEventListener('mousemove', this.boundDoDrag);
-  }
-
-  startResize(event: MouseEvent) {
-    event.preventDefault();
-    this.resizing = true;
-    this.initialMousePos = { x: event.clientX, y: event.clientY };
-    this.initialSize = this.size();
-    document.addEventListener('mousemove', this.boundDoResize);
-    document.addEventListener('mouseup', this.boundStopResize, { once: true });
-  }
-
-  private doResize(event: MouseEvent) {
-    if (!this.resizing) return;
-    const deltaX = event.clientX - this.initialMousePos.x;
-    const deltaY = event.clientY - this.initialMousePos.y;
-    this.size.set({
-      width: Math.max(400, this.initialSize.width + deltaX),
-      height: Math.max(300, this.initialSize.height + deltaY),
-    });
-  }
-
-  private stopResize() {
-    this.resizing = false;
-    document.removeEventListener('mousemove', this.boundDoResize);
-  }
 
   // --- Browser Actions ---
   setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist') {
@@ -1426,9 +1412,5 @@ export class ResearchFrameComponent implements OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       window.removeEventListener('resize', this.checkMobileListener);
     }
-    document.removeEventListener('mousemove', this.boundDoDrag);
-    document.removeEventListener('mouseup', this.boundStopDrag);
-    document.removeEventListener('mousemove', this.boundDoResize);
-    document.removeEventListener('mouseup', this.boundStopResize);
   }
 }

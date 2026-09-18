@@ -567,6 +567,26 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
             <button (click)="state.anatomyViewMode.set('typographic')" [class.bg-cyan-800]="state.anatomyViewMode() === 'typographic'" [class.text-white]="state.anatomyViewMode() === 'typographic'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'typographic'" [class.text-zinc-300]="state.anatomyViewMode() !== 'typographic'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🔤 Typo</button>
           </div>
         </div>
+
+        <!-- Biometric Organ Spotlight Banner -->
+        @if (state.selectedPartId()) {
+          <div class="flex items-center gap-2 pl-3 border-l border-zinc-700 font-mono text-xs">
+            <span class="text-[10px] text-zinc-400">Target:</span>
+            <span class="text-teal-300 font-bold">{{ selectedPartName() }}</span>
+            @if (state.recommendedDrilldownForSelectedPart(); as recDrill) {
+              <button
+                (click)="state.openDrilldownForCurrentOrgan()"
+                class="px-2 py-1 rounded bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-[10px] uppercase tracking-wider transition flex items-center gap-1 cursor-pointer shadow-md active:scale-95">
+                <span>🔬</span> {{ recDrill }} Deep-Dive
+              </button>
+            }
+            <button
+              (click)="openInstantCarePlan()"
+              class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 font-bold text-[10px] uppercase tracking-wider transition flex items-center gap-1 cursor-pointer shadow-md active:scale-95">
+              <span>📋</span> 3-Act Care Sheet
+            </button>
+          </div>
+        }
       </div>
 
       <!-- ⚡ Instant 4-Lens Care Plan Bottom Sheet -->
@@ -613,6 +633,13 @@ export class BodyViewerComponent implements OnDestroy {
   toggleHandedness(): void {
     this.handednessMode.update(h => h === 'right' ? 'left' : 'right');
   }
+
+  selectedPartName = computed(() => {
+    const id = this.state.selectedPartId();
+    if (!id) return '';
+    const part = this.allParts.find(p => p.id === id);
+    return part ? part.name : id;
+  });
 
   openInstantCarePlan(bodyPartName?: string) {
     const selectedId = this.state.selectedPartId();

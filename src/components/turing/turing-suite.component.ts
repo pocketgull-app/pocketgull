@@ -6,7 +6,6 @@ import { NavierStokesViewerComponent } from './navier-stokes-viewer.component';
 import { LensBiomolecularPhysicsComponent } from './lens-biomolecular-physics.component';
 import { CernLhc3dVisualizerComponent } from '../anatomy-3d/cern-lhc-3d-visualizer.component';
 import { SocraticRoundsHudComponent } from '../socratic-rounds-hud.component';
-import { InfoCern1991ThemeShowcaseComponent } from '../info-cern-1991-theme-showcase.component';
 import { NanobotSwarm3dComponent } from './nanobot-swarm-3d.component';
 import { WhispySwarmBioreactor3dComponent } from './whispy-swarm-bioreactor-3d.component';
 import { InsightGridComponent } from '../synthesis/insight-grid.component';
@@ -25,7 +24,6 @@ import { PatientStateService } from '../../services/patient-state.service';
     WhispySwarmBioreactor3dComponent,
     CernLhc3dVisualizerComponent,
     SocraticRoundsHudComponent,
-    InfoCern1991ThemeShowcaseComponent,
     InsightGridComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -134,11 +132,6 @@ import { PatientStateService } from '../../services/patient-state.service';
       <!-- Autonomous Socratic Clinical Rounds HUD -->
       <div class="pt-4 border-t border-purple-900/40">
         <app-socratic-rounds-hud />
-      </div>
-
-      <!-- NeXTSTEP WorldWideWeb v0.9 (CERN 1991) Theme Showcase -->
-      <div class="pt-4 border-t border-purple-900/40">
-        <app-info-cern-1991-theme-showcase />
       </div>
 
       <!-- Synthesized Cross-Paradigm Intelligence Grid -->

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ClinicalAssessmentsService } from '../services/clinical-assessments/clinical-assessments.service';
 import { AssessmentType, IQuestionItem, ISeverityTier, IAssessmentDefinition } from '../services/clinical-assessments/types';
 import { getAssessment } from '../services/clinical-assessments/assessment-registry';
+import { PatientStateService } from '../services/patient-state.service';
 
 @Component({
   selector: 'app-clinical-assessments-suite',
@@ -258,9 +259,15 @@ import { getAssessment } from '../services/clinical-assessments/assessment-regis
           <span>💾 Commit {{ svc.activeTab().toUpperCase() }} to FHIR Timeline</span>
         </button>
 
+        <button (click)="sendToActiveRoom()"
+          class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold uppercase tracking-wider text-xs transition shadow hover:shadow-md active:scale-95 cursor-pointer"
+          title="Send current assessment findings & protocol recommendation directly to the Active Room notes & checklist">
+          <span>📋 Send to Active Room</span>
+        </button>
+
         @if (svc.activeTab() === 'gad7' && svc.gad7Score() >= 5) {
           <button (click)="triggerVagalBiofeedback()"
-            class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase tracking-wider text-xs transition shadow hover:shadow-md active:scale-95 cursor-pointer animate-bounce">
+            class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase tracking-wider text-xs transition shadow hover:shadow-md active:scale-95 cursor-pointer">
             <span>🫁 Trigger 0.1Hz Vagal HRV Pacer</span>
           </button>
         }
@@ -396,6 +403,7 @@ import { getAssessment } from '../services/clinical-assessments/assessment-regis
 })
 export class ClinicalAssessmentsSuiteComponent {
   svc = inject(ClinicalAssessmentsService);
+  patientState = inject(PatientStateService);
 
   readonly isHeaderFlipped = signal<boolean>(false);
   private lastHeaderFlipTime = 0;
@@ -428,9 +436,47 @@ export class ClinicalAssessmentsSuiteComponent {
   commitAssessment() {
     const payload = this.svc.commitToTimeline(this.svc.activeTab());
     if (payload) {
-      this.toastMessage.set(`${payload.title} (Score: ${payload.totalScore}/${payload.maxScore} — ${payload.severityLabel}) committed to FHIR Patient Timeline.`);
+      // Synchronize findings into Active Room notes & care checklist
+      this.patientState.addClinicalNote({
+        id: `note_${payload.id}`,
+        text: `[${payload.title}]: Total score ${payload.totalScore}/${payload.maxScore} (${payload.severityLabel}). Recommendation: ${payload.recommendation}`,
+        sourceLens: 'Clinical Assessments Suite',
+        date: new Date().toISOString()
+      });
+
+      this.patientState.addChecklistItem({
+        id: `task_${payload.id}`,
+        text: `${payload.title}: ${payload.recommendation}`,
+        completed: false
+      });
+
+      this.toastMessage.set(`${payload.title} (Score: ${payload.totalScore}/${payload.maxScore} — ${payload.severityLabel}) committed to FHIR Patient Timeline & Active Room.`);
       setTimeout(() => this.toastMessage.set(null), 6000);
     }
+  }
+
+  sendToActiveRoom() {
+    const def = this.currentAssessment();
+    const score = this.currentScore();
+    const maxScore = this.currentMaxScore();
+    const tier = this.currentTier();
+    const id = `assess_${this.svc.activeTab()}_${Date.now()}`;
+
+    this.patientState.addClinicalNote({
+      id: `note_${id}`,
+      text: `[${def.title}]: Score ${score}/${maxScore} (${tier.label}). Protocol: ${tier.recommendation}`,
+      sourceLens: 'Clinical Assessments Suite',
+      date: new Date().toISOString()
+    });
+
+    this.patientState.addChecklistItem({
+      id: `task_${id}`,
+      text: `${def.shortName}: ${tier.recommendation}`,
+      completed: false
+    });
+
+    this.toastMessage.set(`Sent ${def.shortName} (${score}/${maxScore} — ${tier.label}) findings & care task to Active Room.`);
+    setTimeout(() => this.toastMessage.set(null), 5000);
   }
 
   triggerVagalBiofeedback() {

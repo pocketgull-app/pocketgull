@@ -34,10 +34,10 @@ Pocket Gull is committed to continuous refinement (**Kaizen**) in integrative cl
 ---
 
 ## 🎯 Active Horizon: PR #343 Green-Lighting & Data Dividend Suite (v1.36.1 - v1.37.0)
-- [ ] **PR #343 E2E Test Suite Stabilization**: Resolve 3 remaining Playwright locators (`accessibility.spec.ts`, `institutional-thin-clients.spec.ts`, `physical-genomics-suite.spec.ts`) to merge dependency security (`hono` 4.13.8, `adm-zip` 0.6.1) and SSR articles hub.
-- [ ] **Data Dividend & Exchange Formalization (Issues #271–#274)**: Wire automated Stripe Connect Express payouts and BigQuery Analytics Hub cohort listing to `ResearchDataDividendComponent`.
-- [ ] **Compile-Time Poka-Yoke Guards (Issue #276)**: Add strict TypeScript eslint rule banning untyped `any` casts in clinical posology and vital sign services.
-- [ ] **Epic & Oracle Cerner App Orchard Certification**: Complete formal FHIR R4 packaging for EHR app marketplace deployment.
+- [x] **PR #343 E2E Test Suite Stabilization**: Resolved 3 remaining Playwright locators (`accessibility.spec.ts`, `institutional-thin-clients.spec.ts`, `physical-genomics-suite.spec.ts`) across all 6 responsive device viewports; merged dependency security (`hono` 4.13.8, `adm-zip` 0.6.1) and SSR articles hub.
+- [x] **Ethical Open Science Commons & Research Impact Hub (Issues #271–#274)**: Replaced speculative cash dividends and Stripe Connect payouts with non-commercial Open Science Commons governance (Belmont Report 45 CFR § 46, Laplace DP $\epsilon=0.8$, BigQuery Analytics Hub, and participant insight returns without financial coercion).
+- [x] **Compile-Time Poka-Yoke Guards (Issue #276)**: Add strict TypeScript eslint rule banning untyped `any` casts in clinical posology and vital sign services.
+- [x] **Epic & Oracle Cerner App Orchard Certification**: Complete formal FHIR R4 packaging for EHR app marketplace deployment.
 
 ## 🔮 H1 2027: Enterprise EHR & SMART-on-FHIR App Store Launch
 - [x] **FHIR R5 Resource Store Synchronization**: Bi-directional synchronization with Google Cloud Healthcare API (Zero-Cost Local Dry-Run for AWS HealthLake).

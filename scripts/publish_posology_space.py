@@ -15,11 +15,11 @@ SPACE_README = """---
 title: PocketGull Lifespan Posology & Beers / LactMed Lab
 emoji: ⚖️
 colorFrom: indigo
-colorTo: emerald
+colorTo: green
 sdk: static
 pinned: true
 license: apache-2.0
-short_description: Lifespan Posology, AGS Beers 2023, LactMed RID (<10%), and ISMP Decimal Safety
+short_description: Lifespan Posology, Beers 2023, LactMed & ISMP Lab
 ---
 """
 

@@ -146,11 +146,133 @@ import { GlyphForgeStudioComponent } from './glyph-forge-studio.component';
           >
             <span>🩺</span> Clinical Iconography ({{ icons.length }})
           </button>
+
+          <button
+            (click)="activeTab.set('terminal')"
+            [class.bg-teal-500]="activeTab() === 'terminal'"
+            [class.text-zinc-950]="activeTab() === 'terminal'"
+            [class.shadow-md]="activeTab() === 'terminal'"
+            [class.bg-zinc-100]="activeTab() !== 'terminal'"
+            [class.dark:bg-zinc-800]="activeTab() !== 'terminal'"
+            [class.text-zinc-600]="activeTab() !== 'terminal'"
+            [class.dark:text-zinc-300]="activeTab() !== 'terminal'"
+            class="px-4 py-2 rounded-xl text-xs font-bold font-mono transition flex items-center gap-2 cursor-pointer shrink-0"
+          >
+            <span>📟</span> Circadian Terminal (Oh My Posh)
+          </button>
         </div>
       </section>
 
       <!-- Tab Content Area -->
       <section class="max-w-7xl mx-auto px-6 pb-16">
+        @if (activeTab() === 'terminal') {
+          <div class="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300 font-sans">
+            <div class="border-b border-zinc-200 dark:border-zinc-800 pb-4 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 class="text-2xl font-bold uppercase tracking-tight text-zinc-900 dark:text-zinc-100 font-pocketgull">
+                  Circadian Terminal Engine &amp; Shell Suite
+                </h2>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                  Precision Oh My Posh themes with Dieter Rams minimalism, bio-rhythmic circadian pacing, and 100% Zero-Tofu support in Pocket Gull Mono.
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <a href="/brand/terminal/pocketgull-washi.omp.json" download class="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-xs font-mono font-bold hover:bg-amber-500/20 transition">
+                  ⬇️ Washi Theme (.json)
+                </a>
+                <a href="/brand/terminal/pocketgull-ophthalmic.omp.json" download class="px-3 py-1.5 rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-500/30 text-xs font-mono font-bold hover:bg-teal-500/20 transition">
+                  ⬇️ Ophthalmic Theme (.json)
+                </a>
+              </div>
+            </div>
+
+            <!-- Live Interactive Visual Previews -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Washi Daytime Card -->
+              <div class="p-6 rounded-3xl bg-[#faf8f2] text-zinc-900 border border-[#e5dfd3] shadow-md space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">☀️</span>
+                    <span class="font-bold text-sm tracking-wide uppercase font-pocketgull text-zinc-900">PocketGull Washi (Daytime)</span>
+                  </div>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-900 border border-amber-500/40 font-bold">07:00 – 18:00</span>
+                </div>
+                <p class="text-xs text-zinc-600 leading-relaxed">
+                  Tactile unbleached washi paper tones for natural daylight ergonomics. Prevents pupil constriction and screen fatigue.
+                </p>
+                
+                <!-- Terminal Mockup -->
+                <div class="p-4 rounded-2xl bg-[#f0ebe1] border border-[#e2d9c8] font-mono text-xs overflow-x-auto shadow-inner">
+                  <div class="flex items-center gap-1.5 pb-2 text-zinc-400 border-b border-[#e2d9c8] mb-3 text-[10px]">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-400 inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
+                    <span class="ml-2 font-bold text-zinc-500">pwsh — PocketGull Washi</span>
+                  </div>
+                  <div class="py-2 flex items-center flex-wrap gap-1">
+                    <span class="text-[#0f766e]"></span><span class="bg-[#0f766e] text-white px-2 py-0.5 font-bold">⚕ POCKETGULL</span><span class="text-[#0f766e] mr-1"></span>
+                    <span class="text-[#e5dfd3]"></span><span class="bg-[#e5dfd3] text-zinc-900 px-2 py-0.5 font-bold">📁 ~/Pocketgull</span><span class="text-[#e5dfd3] mr-1"></span>
+                    <span class="text-[#047857]"></span><span class="bg-[#047857] text-white px-2 py-0.5 font-bold"> main</span><span class="text-[#047857] mr-1"></span>
+                    <span class="text-[#f0ebe1]"></span><span class="bg-[#f0ebe1] text-[#78350f] px-2 py-0.5 font-bold">⏱ 12ms</span><span class="text-[#f0ebe1]"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ophthalmic Night Card -->
+              <div class="p-6 rounded-3xl bg-zinc-900 text-zinc-100 border border-zinc-800 shadow-md space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">🌙</span>
+                    <span class="font-bold text-sm tracking-wide uppercase font-pocketgull text-zinc-100">PocketGull Ophthalmic (Night)</span>
+                  </div>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-400 border border-teal-500/40 font-bold">18:00 – 07:00</span>
+                </div>
+                <p class="text-xs text-zinc-400 leading-relaxed">
+                  Surgical obsidian backdrop with high-contrast emerald &amp; teal status telemetry. Conforms to WCAG 2.1 AAA contrast rules.
+                </p>
+                
+                <!-- Terminal Mockup -->
+                <div class="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 font-mono text-xs overflow-x-auto shadow-inner">
+                  <div class="flex items-center gap-1.5 pb-2 text-zinc-600 border-b border-zinc-800/80 mb-3 text-[10px]">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                    <span class="ml-2 font-bold text-zinc-400">pwsh — PocketGull Ophthalmic</span>
+                  </div>
+                  <div class="py-2 flex items-center flex-wrap gap-1">
+                    <span class="text-[#0f766e]"></span><span class="bg-[#0f766e] text-white px-2 py-0.5 font-bold">⚕ POCKETGULL</span><span class="text-[#0f766e] mr-1"></span>
+                    <span class="text-[#18181b]"></span><span class="bg-[#18181b] text-zinc-100 px-2 py-0.5 font-bold">📁 ~/Pocketgull</span><span class="text-[#18181b] mr-1"></span>
+                    <span class="text-[#059669]"></span><span class="bg-[#059669] text-white px-2 py-0.5 font-bold"> main</span><span class="text-[#059669] mr-1"></span>
+                    <span class="text-[#1c1917]"></span><span class="bg-[#1c1917] text-[#fbbf24] px-2 py-0.5 font-bold">⏱ 8ms</span><span class="text-[#1c1917]"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Installation Box -->
+            <div class="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold uppercase tracking-wider font-mono text-zinc-800 dark:text-zinc-200">
+                  ⚡ 1-Minute PowerShell &amp; Windows Terminal Integration
+                </h3>
+                <span class="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">✓ Zero-Tofu Guaranteed</span>
+              </div>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                Compatible with both Windows PowerShell 5.1 and PowerShell 7 (pwsh). Uses your local PocketGull installation assets.
+              </p>
+              <pre class="p-4 rounded-xl bg-zinc-950 text-zinc-200 text-xs font-mono overflow-x-auto border border-zinc-800"><code># Add to $PROFILE
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) &#123;
+    $shellType = if ($PSVersionTable.PSVersion.Major -ge 6) &#123; 'pwsh' &#125; else &#123; 'powershell' &#125;
+    $h = (Get-Date).Hour
+    $washiTheme = "$HOME&#92;Pocketgull&#92;pocketgull&#92;public&#92;brand&#92;terminal&#92;pocketgull-washi.omp.json"
+    $ophthalmicTheme = "$HOME&#92;Pocketgull&#92;pocketgull&#92;public&#92;brand&#92;terminal&#92;pocketgull-ophthalmic.omp.json"
+    $cfg = if ($h -ge 7 -and $h -lt 18 -and (Test-Path $washiTheme)) &#123; $washiTheme &#125; elseif (Test-Path $ophthalmicTheme) &#123; $ophthalmicTheme &#125; else &#123; $null &#125;
+    if ($cfg) &#123; oh-my-posh init $shellType --config $cfg | Invoke-Expression &#125; else &#123; oh-my-posh init $shellType | Invoke-Expression &#125;
+&#125;</code></pre>
+            </div>
+          </div>
+        }
+
         @if (activeTab() === 'studio') {
           <div class="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <app-glyph-forge-studio />
@@ -213,7 +335,7 @@ import { GlyphForgeStudioComponent } from './glyph-forge-studio.component';
   `
 })
 export class PocketgullTypefaceSiteComponent {
-  activeTab = signal<'studio' | 'sans' | '3d-body' | 'multilingual' | 'marker' | 'iconography'>('studio');
+  activeTab = signal<'studio' | 'sans' | '3d-body' | 'multilingual' | 'marker' | 'iconography' | 'terminal'>('studio');
   icons: Array<{ name: any; label: string }> = [
     { name: 'seagull', label: 'Mascot' },
     { name: 'heart', label: 'Cardiology' },

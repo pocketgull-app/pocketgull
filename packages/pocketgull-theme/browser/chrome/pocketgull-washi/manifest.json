@@ -1,0 +1,60 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Washi Rice Paper Theme",
+  "description": "Japanese handmade Kozo rice paper texture with sumi ink syntax and subtle cinnabar stamp accents.",
+  "theme": {
+    "colors": {
+      "frame": [
+        237,
+        234,
+        224
+      ],
+      "frame_inactive": [
+        246,
+        244,
+        238
+      ],
+      "toolbar": [
+        253,
+        252,
+        249
+      ],
+      "tab_text": [
+        31,
+        35,
+        40
+      ],
+      "tab_background_text": [
+        87,
+        96,
+        106
+      ],
+      "bookmark_text": [
+        31,
+        35,
+        40
+      ],
+      "toolbar_button_icon": [
+        207,
+        34,
+        46
+      ],
+      "toolbar_text": [
+        31,
+        35,
+        40
+      ],
+      "ntp_background": [
+        246,
+        244,
+        238
+      ],
+      "ntp_text": [
+        31,
+        35,
+        40
+      ]
+    }
+  }
+}

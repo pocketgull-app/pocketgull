@@ -88,7 +88,6 @@ export interface ITherapeuticHobby {
           <a [href]="amazonStoreUrl()" target="_blank" rel="noopener noreferrer"
              class="min-h-[44px] min-w-[44px] px-4 py-2 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-black text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-2 shadow-md">
             <span>🛒 Recommended Supplies</span>
-            <span class="text-[10px] font-mono opacity-80">(tag=pgdpo-20)</span>
           </a>
         </div>
 
@@ -115,15 +114,15 @@ export interface ITherapeuticHobby {
           </div>
         </div>
 
-        <!-- Amazon Creators API Product Recommendations Grid -->
+        <!-- Amazon Product Recommendations Grid -->
         @if (recommendedProducts().length > 0) {
           <div class="space-y-2.5 pt-3 border-t border-slate-200 dark:border-zinc-800">
             <div class="flex items-center justify-between">
               <h5 class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                <span>📦 Amazon Associates Practice Equipment</span>
+                <span>📦 Practice Equipment &amp; Supplies</span>
               </h5>
               <span class="text-[10px] font-mono text-slate-400 dark:text-zinc-500">
-                Creators API (tag: pgdpo-20)
+                Curated Supplies Catalog
               </span>
             </div>
 
@@ -210,7 +209,7 @@ export class BibliotherapyHobbyPrescriberComponent {
 
   readonly amazonStoreUrl = computed(() => {
     const q = this.selectedHobby().amazonQuery;
-    return `https://www.amazon.com/s?k=${encodeURIComponent(q)}&tag=pgdpo-20`;
+    return `https://www.amazon.com/s?k=${encodeURIComponent(q)}`;
   });
 
   readonly recommendedProducts = computed<IAmazonProductItem[]>(() => {

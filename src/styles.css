@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Atkinson+Hyperlegible+Next:ital,wght@0,400..800;1,400..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600;700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap');
 @import './styles/pocketgull-marker-font.css';
 @import './styles/pocketgull-icon-font.css';
+@import './styles/pocketgull-tokens.css';
 
 @tailwind base;
 @tailwind components;
@@ -24,26 +24,26 @@
   --md-sys-color-outline: #272732;
   --md-sys-color-outline-variant: #3f3f4e;
 
-  /* Material Design 3 Typography Roles Mapped to PocketGull */
-  --md-sys-typescale-display-large-font: 'PocketGull Bold', var(--font-sans);
-  --md-sys-typescale-headline-medium-font: 'PocketGull Bold', var(--font-sans);
-  --md-sys-typescale-title-medium-font: 'PocketGull Bold', var(--font-sans);
-  --md-sys-typescale-body-large-font: 'PocketGull Fineliner', var(--font-sans);
-  --md-sys-typescale-label-large-font: 'PocketGull Mono', var(--font-mono);
+  /* Material Design 3 Typography Roles Mapped to Sovereign PocketGull */
+  --md-sys-typescale-display-large-font: 'PocketGull Bold', 'PocketGull', sans-serif;
+  --md-sys-typescale-headline-medium-font: 'PocketGull Bold', 'PocketGull', sans-serif;
+  --md-sys-typescale-title-medium-font: 'PocketGull Bold', 'PocketGull', sans-serif;
+  --md-sys-typescale-body-large-font: 'PocketGull Fineliner', 'PocketGull', sans-serif;
+  --md-sys-typescale-label-large-font: 'PocketGull Mono', monospace;
 
-  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif;
-  --font-serif: 'Cinzel', 'Libre Caslon Text', 'Georgia', serif;
-  --font-caslon: 'Libre Caslon Text', 'Georgia', serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-rounded: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  font-family: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'PocketGull Bold', 'PocketGull', sans-serif;
+  --font-serif: 'PocketGull', serif;
+  --font-caslon: 'PocketGull', serif;
+  --font-mono: 'PocketGull Mono', monospace;
+  --font-rounded: 'PocketGull', 'PocketGull Bold', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body, html {
-  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.65;
   letter-spacing: -0.012em;
 }
@@ -95,6 +95,32 @@ body, html {
     color: #000000 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  body.printing-avs-handout * {
+    visibility: hidden !important;
+  }
+  body.printing-avs-handout #posology-avs-print-area,
+  body.printing-avs-handout #posology-avs-print-area *,
+  body.printing-avs-handout #organ-avs-print-area,
+  body.printing-avs-handout #organ-avs-print-area * {
+    visibility: visible !important;
+  }
+  body.printing-avs-handout #posology-avs-print-area,
+  body.printing-avs-handout #organ-avs-print-area {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 8.5in !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0.4in 0.5in !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
   }
 }
 
@@ -1478,6 +1504,8 @@ body.avs-active .rounded-xl.shadow-md {
         0 4px 24px rgba(var(--avs-color-primary), 0.06),
         0 1px 3px rgba(0, 0, 0, 0.05) !important;
     animation: avs-panel-breathe var(--avs-breath-duration) ease-in-out infinite;
+    will-change: box-shadow;
+    contain: paint;
 }
 
 @keyframes avs-panel-breathe {
@@ -2122,6 +2150,47 @@ html.papercraft-rice body::before {
 
 html.papercraft-construction body::before {
   background-image: url('/images/construction_paper_texture.png');
+}
+
+/* 🏛️ Mineral, Papyrus, Pool & Mandala Texture Overlays (10% Opacity) */
+html.theme-white-marble body::before,
+html.theme-black-marble body::before,
+html.theme-papyrus body::before,
+html.theme-pool body::before,
+html.theme-mandala body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.10 !important;
+  background-repeat: repeat;
+}
+
+html.theme-white-marble body::before {
+  background-image: url('/images/white_marble_texture.png');
+}
+
+html.theme-black-marble body::before {
+  background-image: url('/images/black_marble_texture.png');
+  opacity: 0.12 !important;
+}
+
+html.theme-papyrus body::before {
+  background-image: url('/images/papyrus_texture.png');
+  opacity: 0.12 !important;
+}
+
+html.theme-pool body::before {
+  background-image: url('/images/pool_water_dark.png');
+  opacity: 0.08 !important;
+}
+
+html.theme-mandala body::before {
+  background-image: url('/images/mandala_bg.png');
+  opacity: 0.08 !important;
+  background-size: cover;
+  background-position: center;
 }
 
 /* Tactile Translucent Light Paper Cards & Containers (10% Texture Opacity) */
@@ -4002,6 +4071,88 @@ textarea:focus-visible {
   outline-offset: 2px !important;
 }
 
+/* 5. Philocardia Mode: Heart-Centered Parasympathetic Resonance & 0.1 Hz Vagal Pacing */
+:root {
+  --philocardia-rose: #f43f5e;
+  --philocardia-copper: #c2410c;
+  --philocardia-glow: rgba(244, 63, 94, 0.16);
+  --philocardia-cycle: 10s; /* 0.1 Hz Mayer Wave Respiratory Sinus Arrhythmia */
+}
+
+@keyframes philocardia-vagal-oscillation {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+    border-color: rgba(244, 63, 94, 0.16);
+  }
+  40% {
+    /* 4s Expansion / Diastolic filling */
+    box-shadow: 0 0 16px 2px rgba(244, 63, 94, 0.14);
+    border-color: rgba(244, 63, 94, 0.42);
+  }
+  60% {
+    /* 6s Contraction / Systolic return */
+    box-shadow: 0 0 8px 1px rgba(244, 63, 94, 0.08);
+    border-color: rgba(244, 63, 94, 0.26);
+  }
+}
+
+@keyframes philocardia-cardiac-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  14% {
+    transform: scale(1.14);
+    opacity: 1;
+  }
+  28% {
+    transform: scale(1.04);
+    opacity: 0.92;
+  }
+  42% {
+    transform: scale(1.16);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+}
+
+/* App-wide Philocardia Activation */
+html.philocardia-active {
+  accent-color: #f43f5e;
+}
+
+html.philocardia-active ::selection {
+  background-color: rgba(244, 63, 94, 0.28) !important;
+  color: #881337 !important;
+}
+
+html.philocardia-active.dark ::selection {
+  background-color: rgba(244, 63, 94, 0.38) !important;
+  color: #ffe4e6 !important;
+}
+
+/* Subtle parasympathetic bio-rhythmic border wave on clinical panels with paint containment */
+html.philocardia-active:not(.reduce-motion) [data-vagal-pacer="true"],
+html.philocardia-active:not(.reduce-motion) .philocardia-pacer,
+html.philocardia-active:not(.reduce-motion) .metric-card {
+  animation: philocardia-vagal-oscillation var(--philocardia-cycle) ease-in-out infinite;
+  will-change: box-shadow;
+  contain: paint;
+}
+
+.philocardia-pulse {
+  display: inline-block;
+  animation: philocardia-cardiac-pulse 1.0s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+html.reduce-motion .philocardia-pulse,
+html.reduce-motion [data-vagal-pacer="true"] {
+  animation: none !important;
+}
+
 /* ==========================================================================
    📱 MOBILE JANK ERADICATION & 120 FPS COMPOSITING ACCELERATION
    ========================================================================== */
@@ -4078,6 +4229,13 @@ textarea:focus-visible {
   .space-y-8 > :not([hidden]) ~ :not([hidden]) {
     margin-top: 0.75rem !important;
   }
+
+  /* 10. Pause heavy continuous box-shadow animations on mobile to conserve GPU fill rate and battery */
+  body.avs-active .rounded-xl.shadow-sm,
+  body.avs-active .rounded-xl.shadow-md,
+  html.philocardia-active [data-vagal-pacer="true"] {
+    animation: none !important;
+  }
 }
 
 /* ==========================================================================
@@ -4095,6 +4253,23 @@ textarea:focus-visible {
 .dark .bionic-rendered-text strong,
 .dark .bionic-rendered-text b {
   color: #fbbf24 !important; /* amber-400 */
+}
+
+/* Philocardia + Bionic Synergy: Heart-resonant rose-copper saccadic fixation */
+html.philocardia-active .bionic-fixation,
+html.philocardia-active .bionic-rendered-text strong,
+html.philocardia-active .bionic-rendered-text b,
+html.philocardia-active .bionic-fixation-anchor {
+  color: #f43f5e !important; /* rose-500 */
+  text-shadow: 0 0 10px rgba(244, 63, 94, 0.28);
+}
+
+html.philocardia-active.dark .bionic-fixation,
+html.philocardia-active.dark .bionic-rendered-text strong,
+html.philocardia-active.dark .bionic-rendered-text b,
+html.philocardia-active.dark .bionic-fixation-anchor {
+  color: #fb7185 !important; /* rose-400 */
+  text-shadow: 0 0 12px rgba(251, 113, 133, 0.35);
 }
 
 /* ==========================================================================

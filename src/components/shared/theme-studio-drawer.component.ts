@@ -106,10 +106,18 @@ export interface IThemeOption {
               title="Toggle Bionic Reading Saccadic Fixation (Alt+B)">
               📖 Bionic Mode: {{ bionicReading.isBionicReadingEnabled() ? 'ACTIVE (40%)' : 'OFF' }}
             </button>
+            <button 
+              id="btn-philocardia-theme-drawer"
+              (click)="themeService.togglePhilocardia()"
+              [class]="themeService.isPhilocardiaEnabled() ? 'min-h-[44px] px-3 py-2 rounded-md bg-rose-600 text-white font-bold border border-rose-500 shadow-sm' : 'min-h-[44px] px-3 py-2 rounded-md bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold border border-zinc-300 dark:border-zinc-700'"
+              title="Toggle Philocardia Heart-Centered Mode (0.1 Hz Mayer Wave Vagal Pacing)">
+              <span [class.animate-pulse]="themeService.isPhilocardiaEnabled()">{{ themeService.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
+              Philocardia: {{ themeService.isPhilocardiaEnabled() ? 'ACTIVE (0.1Hz)' : 'OFF' }}
+            </button>
           </div>
 
           <div class="text-[11px] text-zinc-500 font-sans">
-            <span>Alt+B toggles Bionic Mode • Single click to select theme</span>
+            <span>Alt+B toggles Bionic Mode • Philocardia applies 0.1Hz vagal Mayer pacing • Single click to select theme</span>
           </div>
         </div>
       </div>

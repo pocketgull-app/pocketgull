@@ -6,7 +6,6 @@ import { PantryLazySusanComponent } from '../pantry-lazy-susan.component';
 import { HealthyHobbiesLifestyleComponent } from '../healthy-hobbies-lifestyle.component';
 import { FamilyHealthQuestComponent } from '../family/family-health-quest.component';
 import { PermaFlourishingSuiteComponent } from '../perma-flourishing-suite.component';
-import { OrigamiPapercraftDecorationsComponent } from '../origami-papercraft-decorations.component';
 import { PatientUnderTreeComponent } from '../patient-under-tree.component';
 
 @Component({
@@ -19,7 +18,6 @@ import { PatientUnderTreeComponent } from '../patient-under-tree.component';
     HealthyHobbiesLifestyleComponent,
     FamilyHealthQuestComponent,
     PermaFlourishingSuiteComponent,
-    OrigamiPapercraftDecorationsComponent,
     PatientUnderTreeComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,11 +62,6 @@ import { PatientUnderTreeComponent } from '../patient-under-tree.component';
         <!-- PERMA-V Human Flourishing & Micro-Joys Suite -->
         <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
           <app-perma-flourishing-suite />
-        </div>
-
-        <!-- Origami Papercraft Decorations -->
-        <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
-          <app-origami-decorations />
         </div>
 
         <!-- Seated Under the Apple Tree & Horizon Family Tree -->
