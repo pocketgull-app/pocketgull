@@ -34,6 +34,9 @@ import { BionicReadingService } from '../services/bionic-reading.service';
 @Component({
   selector: 'app-secure-splash',
   standalone: true,
+  host: {
+    'class': 'block'
+  },
   imports: [CommonModule, FormsModule, PocketgullBrandMarkComponent, SafeHtmlPipe, PapercraftBackdropComponent, AvsCymaticsVisualizerComponent, SplashBedsidePhysicsBadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
