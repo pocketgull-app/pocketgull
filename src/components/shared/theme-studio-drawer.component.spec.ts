@@ -16,6 +16,8 @@ describe('ThemeStudioDrawerComponent', () => {
       bionicReadingMode: signal(false),
       activeMarkerTheme: signal(false),
       reduceMotion: signal(false),
+      isPhilocardiaEnabled: signal(false),
+      togglePhilocardia: vi.fn(),
       setTheme: (t: string) => mockThemeService.currentTheme.set(t)
     };
 

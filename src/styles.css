@@ -1504,6 +1504,8 @@ body.avs-active .rounded-xl.shadow-md {
         0 4px 24px rgba(var(--avs-color-primary), 0.06),
         0 1px 3px rgba(0, 0, 0, 0.05) !important;
     animation: avs-panel-breathe var(--avs-breath-duration) ease-in-out infinite;
+    will-change: box-shadow;
+    contain: paint;
 }
 
 @keyframes avs-panel-breathe {
@@ -4028,6 +4030,88 @@ textarea:focus-visible {
   outline-offset: 2px !important;
 }
 
+/* 5. Philocardia Mode: Heart-Centered Parasympathetic Resonance & 0.1 Hz Vagal Pacing */
+:root {
+  --philocardia-rose: #f43f5e;
+  --philocardia-copper: #c2410c;
+  --philocardia-glow: rgba(244, 63, 94, 0.16);
+  --philocardia-cycle: 10s; /* 0.1 Hz Mayer Wave Respiratory Sinus Arrhythmia */
+}
+
+@keyframes philocardia-vagal-oscillation {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+    border-color: rgba(244, 63, 94, 0.16);
+  }
+  40% {
+    /* 4s Expansion / Diastolic filling */
+    box-shadow: 0 0 16px 2px rgba(244, 63, 94, 0.14);
+    border-color: rgba(244, 63, 94, 0.42);
+  }
+  60% {
+    /* 6s Contraction / Systolic return */
+    box-shadow: 0 0 8px 1px rgba(244, 63, 94, 0.08);
+    border-color: rgba(244, 63, 94, 0.26);
+  }
+}
+
+@keyframes philocardia-cardiac-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  14% {
+    transform: scale(1.14);
+    opacity: 1;
+  }
+  28% {
+    transform: scale(1.04);
+    opacity: 0.92;
+  }
+  42% {
+    transform: scale(1.16);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+}
+
+/* App-wide Philocardia Activation */
+html.philocardia-active {
+  accent-color: #f43f5e;
+}
+
+html.philocardia-active ::selection {
+  background-color: rgba(244, 63, 94, 0.28) !important;
+  color: #881337 !important;
+}
+
+html.philocardia-active.dark ::selection {
+  background-color: rgba(244, 63, 94, 0.38) !important;
+  color: #ffe4e6 !important;
+}
+
+/* Subtle parasympathetic bio-rhythmic border wave on clinical panels with paint containment */
+html.philocardia-active:not(.reduce-motion) [data-vagal-pacer="true"],
+html.philocardia-active:not(.reduce-motion) .philocardia-pacer,
+html.philocardia-active:not(.reduce-motion) .metric-card {
+  animation: philocardia-vagal-oscillation var(--philocardia-cycle) ease-in-out infinite;
+  will-change: box-shadow;
+  contain: paint;
+}
+
+.philocardia-pulse {
+  display: inline-block;
+  animation: philocardia-cardiac-pulse 1.0s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+html.reduce-motion .philocardia-pulse,
+html.reduce-motion [data-vagal-pacer="true"] {
+  animation: none !important;
+}
+
 /* ==========================================================================
    📱 MOBILE JANK ERADICATION & 120 FPS COMPOSITING ACCELERATION
    ========================================================================== */
@@ -4104,6 +4188,13 @@ textarea:focus-visible {
   .space-y-8 > :not([hidden]) ~ :not([hidden]) {
     margin-top: 0.75rem !important;
   }
+
+  /* 10. Pause heavy continuous box-shadow animations on mobile to conserve GPU fill rate and battery */
+  body.avs-active .rounded-xl.shadow-sm,
+  body.avs-active .rounded-xl.shadow-md,
+  html.philocardia-active [data-vagal-pacer="true"] {
+    animation: none !important;
+  }
 }
 
 /* ==========================================================================
@@ -4121,6 +4212,23 @@ textarea:focus-visible {
 .dark .bionic-rendered-text strong,
 .dark .bionic-rendered-text b {
   color: #fbbf24 !important; /* amber-400 */
+}
+
+/* Philocardia + Bionic Synergy: Heart-resonant rose-copper saccadic fixation */
+html.philocardia-active .bionic-fixation,
+html.philocardia-active .bionic-rendered-text strong,
+html.philocardia-active .bionic-rendered-text b,
+html.philocardia-active .bionic-fixation-anchor {
+  color: #f43f5e !important; /* rose-500 */
+  text-shadow: 0 0 10px rgba(244, 63, 94, 0.28);
+}
+
+html.philocardia-active.dark .bionic-fixation,
+html.philocardia-active.dark .bionic-rendered-text strong,
+html.philocardia-active.dark .bionic-rendered-text b,
+html.philocardia-active.dark .bionic-fixation-anchor {
+  color: #fb7185 !important; /* rose-400 */
+  text-shadow: 0 0 12px rgba(251, 113, 133, 0.35);
 }
 
 /* ==========================================================================

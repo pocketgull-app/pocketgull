@@ -18,6 +18,7 @@ export class ThemeService {
   public textSizeScale = signal<'standard' | 'large' | 'extra-large'>('standard');
   public isDyslexiaFontEnabled = signal<boolean>(false);
   public isHighContrastEnabled = signal<boolean>(false);
+  public isPhilocardiaEnabled = signal<boolean>(false);
   private platformId = (() => {
     try { return inject(PLATFORM_ID); } catch (e) { return 'server'; }
   })();
@@ -117,6 +118,15 @@ export class ThemeService {
         }
       });
 
+      effect(() => {
+        const philocardia = this.isPhilocardiaEnabled();
+        this.storage.setItem('pocket_gull_philocardia', philocardia ? 'true' : 'false');
+        if (typeof document !== 'undefined') {
+          document.documentElement.classList.toggle('philocardia-active', philocardia);
+          document.documentElement.setAttribute('data-philocardia', philocardia ? 'true' : 'false');
+        }
+      });
+
       const savedReduceMotion = this.storage.getItem('pocket_gull_reduce_motion');
       if (savedReduceMotion === 'true') {
         this.reduceMotion.set(true);
@@ -161,6 +171,11 @@ export class ThemeService {
     const savedHighContrast = this.storage.getItem('pocket_gull_high_contrast');
     if (savedHighContrast === 'true') {
       this.isHighContrastEnabled.set(true);
+    }
+
+    const savedPhilocardia = this.storage.getItem('pocket_gull_philocardia');
+    if (savedPhilocardia === 'true') {
+      this.isPhilocardiaEnabled.set(true);
     }
 
     const ALL_THEMES: AppTheme[] = ['light', 'dark', 'system', 'spark', 'papercraft', 'pocketgull-geararts', 'hemp', 'rice', 'construction', 'white-marble', 'black-marble', 'papyrus', 'pool', 'mandala', 'curie', 'cern', 'scotopic', 'epaper'];
@@ -527,6 +542,25 @@ export class ThemeService {
     this.isPlainLanguageMode.update(curr => !curr);
     this.playThemeUiAudioFx('toggle');
     this.triggerHapticFeedback('medium');
+  }
+
+  /**
+   * Toggles Philocardia mode: Heart-centered parasympathetic resonance,
+   * 0.1 Hz Mayer-wave vagal respiratory pacing, and soothing cardiovascular attunement.
+   */
+  public togglePhilocardia(enable?: boolean): void {
+    const next = enable !== undefined ? enable : !this.isPhilocardiaEnabled();
+    this.isPhilocardiaEnabled.set(next);
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.toggle('philocardia-active', next);
+      document.documentElement.setAttribute('data-philocardia', next ? 'true' : 'false');
+    }
+    this.playThemeUiAudioFx('toggle');
+    this.triggerHapticFeedback('double');
+  }
+
+  public setPhilocardia(enable: boolean): void {
+    this.togglePhilocardia(enable);
   }
 }
 

@@ -4,6 +4,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { AcronymExpanderPipe } from '../pipes/acronym-expander.pipe';
 import { MedicalDecoderPipe } from '../pipes/medical-decoder.pipe';
+import { BionicFormatPipe } from '../pipes/bionic-format.pipe';
 import { fromEvent, Subscription } from 'rxjs';
 import { PatientManagementService } from '../services/patient-management.service';
 import { PatientStateService } from '../services/patient-state.service';
@@ -28,6 +29,7 @@ import { GseExplorerService, IGseDataset } from '../services/gse-explorer.servic
 import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 import { PhysicalGenomicsService } from '../services/physical-genomics.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
+import { ThemeService } from '../services/theme.service';
 import { FovealReticleRsvpComponent } from './shared/foveal-reticle-rsvp.component';
 import * as DOMPurify from 'dompurify';
 
@@ -68,7 +70,8 @@ export interface IPubMedSearchResult {
     ResearchDataDividendComponent,
     GullSquadronShowcaseComponent,
     GullNarrativeDispatchComponent,
-    FovealReticleRsvpComponent
+    FovealReticleRsvpComponent,
+    BionicFormatPipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -324,6 +327,32 @@ export interface IPubMedSearchResult {
           </pocket-gull-button>
           <pocket-gull-button variant="ghost" size="sm" (click)="showCitationForm.set(!showCitationForm())" [class.text-gray-800]="showCitationForm()" [class.dark:text-white]="showCitationForm()" icon="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" title="Citation Metadata" ariaLabel="Citation Metadata">
           </pocket-gull-button>
+
+          <!-- Morpheme-Aware Bionic Reading Mode Toggle -->
+          <button (click)="bionic.toggleBionicReading()"
+                  id="btn-bionic-research-toolbar"
+                  [class.bg-amber-500]="bionic.isBionicReadingEnabled()"
+                  [class.text-zinc-950]="bionic.isBionicReadingEnabled()"
+                  [class.border-amber-400]="bionic.isBionicReadingEnabled()"
+                  [class.text-amber-400]="!bionic.isBionicReadingEnabled()"
+                  class="px-2 py-1 text-[11px] font-bold rounded-md bg-zinc-900 border border-amber-500/40 hover:border-amber-400 transition-all shrink-0 flex items-center gap-1 cursor-pointer shadow-sm"
+                  title="Toggle Morpheme-Aware Bionic Reading Fixation (Alt+B)">
+            <span>⚡</span>
+            <span>Bionic Mode</span>
+          </button>
+
+          <!-- Philocardia Heart-Centered Mode Toggle -->
+          <button (click)="theme.togglePhilocardia()"
+                  id="btn-philocardia-research-toolbar"
+                  [class.bg-rose-600]="theme.isPhilocardiaEnabled()"
+                  [class.text-white]="theme.isPhilocardiaEnabled()"
+                  [class.border-rose-400]="theme.isPhilocardiaEnabled()"
+                  [class.text-rose-400]="!theme.isPhilocardiaEnabled()"
+                  class="px-2 py-1 text-[11px] font-bold rounded-md bg-zinc-900 border border-rose-500/40 hover:border-rose-400 transition-all shrink-0 flex items-center gap-1 cursor-pointer shadow-sm"
+                  title="Toggle Philocardia Heart-Centered Mode (0.1Hz Vagal Mayer Pacing)">
+            <span [class.animate-pulse]="theme.isPhilocardiaEnabled()">{{ theme.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
+            <span>Philocardia</span>
+          </button>
         </div>
 
         <!-- Smart Patient Context Chips (Zero-Typing Query Builder) -->
@@ -455,6 +484,19 @@ export interface IPubMedSearchResult {
                 <span>⚡</span>
                 <span>Bionic Mode</span>
               </button>
+
+              <!-- Philocardia Heart-Centered Mode Toggle -->
+              <button (click)="theme.togglePhilocardia()"
+                      id="btn-philocardia-research"
+                      [class.bg-rose-600]="theme.isPhilocardiaEnabled()"
+                      [class.text-white]="theme.isPhilocardiaEnabled()"
+                      [class.border-rose-400]="theme.isPhilocardiaEnabled()"
+                      [class.text-rose-400]="!theme.isPhilocardiaEnabled()"
+                      class="px-2.5 py-1 text-[11px] font-bold rounded-md bg-zinc-900 border border-rose-500/40 hover:border-rose-400 transition-all shrink-0 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      title="Toggle Philocardia Heart-Centered Mode (0.1Hz Vagal Mayer Pacing)">
+                <span [class.animate-pulse]="theme.isPhilocardiaEnabled()">{{ theme.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
+                <span>Philocardia</span>
+              </button>
             </div>
 
             @if (isLoadingPubmed()) {
@@ -491,12 +533,12 @@ export interface IPubMedSearchResult {
                     </span>
                   </div>
 
-                  <h4 class="font-bold text-gray-800 dark:text-zinc-100 text-sm leading-snug mb-1" [innerHTML]="formatBionicTitle(res.title) | safeHtml"></h4>
+                  <h4 class="font-bold text-gray-800 dark:text-zinc-100 text-sm leading-snug mb-1" [innerHTML]="(res.title | bionicFormat) | safeHtml"></h4>
                   <p class="text-xs text-gray-600 dark:text-zinc-400 mb-1 font-medium">{{ res.authors }}</p>
 
                   <!-- 1-Sentence Point-of-Care Takeaway -->
                   <div class="my-2.5 p-2 bg-teal-50/60 dark:bg-teal-950/20 border-l-2 border-teal-500 rounded-r text-[11.5px] text-teal-900 dark:text-teal-200 font-sans leading-relaxed">
-                    <span class="font-bold">💡 Point-of-Care Takeaway:</span> <span [innerHTML]="(formatBionicTakeaway(res.bottomLineTakeaway) | acronymExpander | medicalDecoder) | safeHtml"></span>
+                    <span class="font-bold">💡 Point-of-Care Takeaway:</span> <span [innerHTML]="(((res.bottomLineTakeaway || 'Demonstrates significant therapeutic benefit with low risk of adverse cross-reactivity.') | bionicFormat) | acronymExpander | medicalDecoder) | safeHtml"></span>
                   </div>
 
                   <div class="text-[12px] text-gray-500 dark:text-zinc-400 flex items-center gap-2 mb-3">
@@ -747,6 +789,7 @@ export class ResearchFrameComponent implements OnDestroy {
   private platformId = inject(PLATFORM_ID);
   patientManager = inject(PatientManagementService);
   patientState = inject(PatientStateService);
+  theme = inject(ThemeService);
   embedder = inject(OnDeviceEmbedderService);
   readonly gseService = inject(GseExplorerService);
   private readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });

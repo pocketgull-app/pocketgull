@@ -1,53 +1,3 @@
-
-/* ==========================================================================
-   PocketGull Sovereign Superfamily Edge Fonts (Offline-First)
-   ========================================================================== */
-
-@font-face {
-  font-family: 'PocketGull';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/PocketGull-Bold.woff2') format('woff2'),
-       url('/fonts/PocketGull-Bold.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'PocketGull';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
-       url('/fonts/PocketGull-Fineliner.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'PocketGull';
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url('/fonts/PocketGull-Chiseltip.woff2') format('woff2'),
-       url('/fonts/PocketGull-Chiseltip.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'PocketGull Mono';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/PocketGullMono-Regular.woff2') format('woff2'),
-       url('/fonts/PocketGullMono-Regular.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'PocketGull VF';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url('/fonts/PocketGull-VF.woff2') format('woff2'),
-       url('/fonts/PocketGull-VF.ttf') format('truetype');
-}
-
 /**
  * PocketGull Font Superfamily
  * Official Webfont Stylesheet (Apache License 2.0)
@@ -65,6 +15,10 @@
   font-stretch: 75% 100%;
   font-style: oblique -10.5deg 0deg;
   font-display: swap;
+  size-adjust: 108%;
+  ascent-override: 96%;
+  descent-override: 22%;
+  line-gap-override: 0%;
 }
 
 /* 1. Universal Proportional Superfamily */
@@ -77,6 +31,10 @@
   font-weight: 700 800;
   font-style: normal;
   font-display: swap;
+  size-adjust: 108%;
+  ascent-override: 96%;
+  descent-override: 22%;
+  line-gap-override: 0%;
 }
 
 @font-face {
@@ -88,6 +46,10 @@
   font-weight: 400 500;
   font-style: normal;
   font-display: swap;
+  size-adjust: 108%;
+  ascent-override: 96%;
+  descent-override: 22%;
+  line-gap-override: 0%;
 }
 
 @font-face {
@@ -99,6 +61,10 @@
   font-weight: 900;
   font-style: normal;
   font-display: swap;
+  size-adjust: 108%;
+  ascent-override: 96%;
+  descent-override: 22%;
+  line-gap-override: 0%;
 }
 
 /* Italic Superfamily Additions */
@@ -501,6 +467,10 @@
   font-weight: 400 500;
   font-style: normal;
   font-display: swap;
+  size-adjust: 108%;
+  ascent-override: 96%;
+  descent-override: 22%;
+  line-gap-override: 0%;
 }
 
 @font-face {
@@ -512,6 +482,10 @@
   font-weight: 700 800;
   font-style: normal;
   font-display: swap;
+  size-adjust: 108%;
+  ascent-override: 96%;
+  descent-override: 22%;
+  line-gap-override: 0%;
 }
 
 @font-face {
@@ -523,6 +497,10 @@
   font-weight: 400 500;
   font-style: italic;
   font-display: swap;
+  size-adjust: 108%;
+  ascent-override: 96%;
+  descent-override: 22%;
+  line-gap-override: 0%;
 }
 
 /* 2.5 Google Fonts Official Family Aliases ('Pocket Gull' & 'Pocket Gull Mono') */
@@ -870,6 +848,272 @@
   font-style: normal;
   font-display: swap;
   unicode-range: U+0E00-0E7F, U+0E80-0EFF, U+0F00-0FFF, U+1000-109F, U+1780-17FF;
+}
+
+/* Expert M: Traditional Mongolian & Manchu Script — Zero-CLS 1.18x Optical Scaling
+   =========================================================================
+   Traditional Mongolian (Hudum Mongol bichig, U+1800–U+18AF, U+11660–U+1167F)
+   and Manchu are vertical-lr scripts with continuous cursive backbones (nuruu)
+   and compact phonemic teeth/loops. In compliance with the Living Typographic
+   Charter and Responsible Typography, this expert applies the 1.18x Optical Scale
+   Invariant (size-adjust: 118%) so vertical cursive units match Latin x-height,
+   routing directly to native Mongolian engines (Noto Sans Mongolian, Mongolian Baiti,
+   Menk Qagan Tig, Oyun Qagan Tig) with zero Cumulative Layout Shift (CLS = 0.000).
+   ========================================================================= */
+@font-face {
+  font-family: 'PocketGull Mongolian';
+  src: local('Noto Sans Mongolian'), local('Mongolian Baiti'),
+       local('Menk Qagan Tig'), local('Oyun Qagan Tig'),
+       local('Mongolian Universal White'), local('sans-serif');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1800-18AF, U+11660-1167F;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 118%;
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  src: local('Noto Sans Mongolian'), local('Mongolian Baiti'),
+       local('Menk Qagan Tig'), local('Oyun Qagan Tig'),
+       local('Mongolian Universal White'), local('sans-serif');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1800-18AF, U+11660-1167F;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 118%;
+}
+
+/* Expert N: N'Ko Alphabet — West African Manding Sovereign Script
+   =========================================================================
+   N'Ko (U+07C0–U+07FF) is an authentic right-to-left cursive alphabet
+   invented by Solomana Kante in 1949 to transcribe Manding languages.
+   Routes to Noto Sans NKo / Ebrima with zero Cumulative Layout Shift.
+   ========================================================================= */
+@font-face {
+  font-family: 'PocketGull NKo';
+  src: local('Noto Sans NKo'), local('Ebrima'), local('sans-serif');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+07C0-07FF;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 104%;
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  src: local('Noto Sans NKo'), local('Ebrima'), local('sans-serif');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+07C0-07FF;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 104%;
+}
+
+/* Expert O: Osage Sovereign Alphabet — Siouan Revitalization
+   =========================================================================
+   Osage (U+104B0–U+104FB) standardized in Unicode 9.0 by Osage Nation elders.
+   Ensures zero-tofu rendering across Osage Nation health and cultural portals.
+   ========================================================================= */
+@font-face {
+  font-family: 'PocketGull Osage';
+  src: local('Noto Sans Osage'), local('sans-serif');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+104B0-104FB;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  src: local('Noto Sans Osage'), local('sans-serif');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+104B0-104FB;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+/* Expert P: Ogham — Ancient Celtic Vertical Tree Alphabet
+   =========================================================================
+   Ogham (U+1680–U+169F) 4th-century monumental script written vertically
+   or horizontally along the stem line (flesc). Preserves archaeological fidelity.
+   ========================================================================= */
+@font-face {
+  font-family: 'PocketGull Ogham';
+  src: local('Noto Sans Ogham'), local('BabelStone Ogham'), local('Segoe UI Historic'), local('sans-serif');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1680-169F;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 106%;
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  src: local('Noto Sans Ogham'), local('BabelStone Ogham'), local('Segoe UI Historic'), local('sans-serif');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1680-169F;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 106%;
+}
+
+/* Expert Q: Old Turkic / Orkhon Runes — Central Asian Steppe
+   =========================================================================
+   Old Turkic (U+10C00–U+10C4F) 8th-century Orkhon Valley inscriptions.
+   Historical peer to Sogdian and Old Uyghur.
+   ========================================================================= */
+@font-face {
+  font-family: 'PocketGull Old Turkic';
+  src: local('Noto Sans Old Turkic'), local('Segoe UI Historic'), local('sans-serif');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+10C00-10C4F;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  src: local('Noto Sans Old Turkic'), local('Segoe UI Historic'), local('sans-serif');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+10C00-10C4F;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+/* Expert R: Sutton SignWriting — Visual-Spatial Deaf Communication
+   =========================================================================
+   SignWriting (U+1D800–U+1DAAF) 2D spatial arrangement symbols for ASL, BSL,
+   and international sign languages. Modular edge delivery for deaf literacy.
+   ========================================================================= */
+@font-face {
+  font-family: 'PocketGull SignWriting';
+  src: local('Noto Sans SignWriting'), local('SignWriting 2010'),
+       url('https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-signwriting@latest/signwriting-400-normal.woff2') format('woff2'),
+       local('sans-serif');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1D800-1DAAF;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  src: local('Noto Sans SignWriting'), local('SignWriting 2010'),
+       url('https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-signwriting@latest/signwriting-400-normal.woff2') format('woff2'),
+       local('sans-serif');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1D800-1DAAF;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+/* Expert S: Sub-Cell ICU ECG & Arrhythmia Telemetry (Cardiology PUA)
+   =========================================================================
+   Sub-cell cardiac vectors (U+E000–U+E0FF): P-wave, QRS complex, T-wave,
+   ST-elevation/depression vectors, and pulsatile SpO2 waveforms.
+   ========================================================================= */
+@font-face {
+  font-family: 'PocketGull Telemetry ECG';
+  src: url('fonts/woff2/PocketGull-Lab.woff2?v=3.3.0') format('woff2'),
+       url('fonts/woff2/PocketGullMono-Regular.woff2?v=3.3.0') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E000-E0FF;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  src: url('fonts/woff2/PocketGull-Lab.woff2?v=3.3.0') format('woff2'),
+       url('fonts/woff2/PocketGullMono-Regular.woff2?v=3.3.0') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E000-E0FF;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+/* Expert T: Blissymbolics AAC & Clinical Communication (Assistive PUA)
+   =========================================================================
+   Semantographic AAC glyphs (U+E100–U+E17F) for non-verbal stroke rehabilitation,
+   cerebral palsy, and cognitive trauma bedside communication.
+   ========================================================================= */
+@font-face {
+  font-family: 'PocketGull Bliss AAC';
+  src: url('fonts/woff2/PocketGull-Learn.woff2?v=3.3.0') format('woff2'),
+       url('fonts/woff2/PocketGull-Sign.woff2?v=3.3.0') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E100-E17F;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  src: url('fonts/woff2/PocketGull-Learn.woff2?v=3.3.0') format('woff2'),
+       url('fonts/woff2/PocketGull-Sign.woff2?v=3.3.0') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E100-E17F;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
 }
 
 /* ==========================================================================

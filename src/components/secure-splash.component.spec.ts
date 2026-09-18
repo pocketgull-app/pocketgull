@@ -22,6 +22,7 @@ import { LifeJourneyNavigatorService } from '../services/life-journey-navigator.
 import { AvsEngineService } from '../services/avs-engine.service';
 import { BleWearablesService } from '../services/hardware/ble-wearables.service';
 import { VibroacousticHapticService } from '../services/hardware/vibroacoustic-haptic.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
 
 describe('SecureSplashComponent Sensory Suite', () => {
   const createComponent = () => {
@@ -111,7 +112,8 @@ describe('SecureSplashComponent Sensory Suite', () => {
             toggleHaptics: () => true
           }
         },
-        { provide: PLATFORM_ID, useValue: 'browser' }
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: BionicReadingService, useValue: { isBionicReadingEnabled: signal(false), toggleBionicReading: vi.fn() } }
       ]
     });
     return runInInjectionContext(injector, () => new SecureSplashComponent());
