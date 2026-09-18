@@ -16,6 +16,8 @@ import { PatientTrajectoryService } from './patient-trajectory.service';
 import { ClinicalKneeRecoveryLoopService } from './clinical-knee-recovery-loop.service';
 import { FhirR7HorizonService } from './fhir/fhir-r7-horizon.service';
 import { FhirR7R4ConverterService } from './fhir/fhir-r7-r4-converter.service';
+import { EhrAppOrchardPackagerService } from './fhir/ehr-app-orchard-packager.service';
+import { SmartOnFhirLauncherService } from './fhir/smart-on-fhir-launcher.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -233,6 +235,8 @@ describe('WebMcpRegistrationService', () => {
           }
         },
         { provide: FhirR7R4ConverterService, useClass: FhirR7R4ConverterService },
+        { provide: EhrAppOrchardPackagerService, useClass: EhrAppOrchardPackagerService },
+        { provide: SmartOnFhirLauncherService, useClass: SmartOnFhirLauncherService },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -240,10 +244,13 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 71 WebMCP agentic tools on modelContext', () => {
+  it('should register all 74 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(71);
+    expect(registeredTools.size).toBe(74);
+    expect(registeredTools.has('get_epic_cerner_marketplace_manifest')).toBe(true);
+    expect(registeredTools.has('get_carin_alliance_attestation')).toBe(true);
+    expect(registeredTools.has('validate_smart_on_fhir_launch_conformance')).toBe(true);
     expect(registeredTools.has('convert_fhir_r7_to_r4')).toBe(true);
     expect(registeredTools.has('convert_fhir_r4_to_r7')).toBe(true);
     expect(registeredTools.has('convert_hl7_er7_to_fhir_r4')).toBe(true);
@@ -730,10 +737,10 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 71 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 74 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(71);
+    expect(registeredTools.size).toBe(74);
     expect(registeredTools.has('get_clinical_evidence_citations')).toBe(true);
     expect(registeredTools.has('get_patient_3act_trajectory')).toBe(true);
     expect(registeredTools.has('configure_optical_therapy')).toBe(true);
@@ -939,7 +946,7 @@ describe('WebMcpRegistrationService', () => {
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(71);
+    expect((service as any).mcpControllers.length).toBe(74);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
@@ -1089,6 +1096,48 @@ describe('WebMcpRegistrationService', () => {
       expect(calledFlexion).toBe(30);
       expect(res.content[0].text).toContain('Coronal');
       expect(res.content[0].text).toContain('mcl');
+    });
+
+    it('should execute get_epic_cerner_marketplace_manifest tool for epic, cerner, and bundle', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('get_epic_cerner_marketplace_manifest');
+      expect(tool).toBeDefined();
+
+      const epicRes = await tool.execute({ vendor: 'epic' });
+      expect(epicRes.content[0].text).toContain('pocketgull-epic-connection-hub-client');
+
+      const cernerRes = await tool.execute({ vendor: 'cerner' });
+      expect(cernerRes.content[0].text).toContain('pocketgull-cerner-powerchart-app');
+
+      const allRes = await tool.execute({ vendor: 'all' });
+      expect(allRes.content[0].text).toContain('overallReadinessScorePct');
+      expect(allRes.content[0].text).toContain('100');
+    });
+
+    it('should execute get_carin_alliance_attestation tool and return CARIN v2.0 trust seal', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('get_carin_alliance_attestation');
+      expect(tool).toBeDefined();
+
+      const res = await tool.execute({});
+      expect(res.content[0].text).toContain('myhealthapplication.com');
+      expect(res.content[0].text).toContain('CARIN_CODE_OF_CONDUCT_COMPLIANT');
+      expect(res.content[0].text).toContain('no_commercial_sale_of_ehi');
+    });
+
+    it('should execute validate_smart_on_fhir_launch_conformance tool and return 100% valid result', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('validate_smart_on_fhir_launch_conformance');
+      expect(tool).toBeDefined();
+
+      const res = await tool.execute({
+        vendorId: 'epic',
+        launchType: 'ehr_launch',
+        launchContextToken: 'ctx-test-123'
+      });
+      expect(res.content[0].text).toContain('"isValid": true');
+      expect(res.content[0].text).toContain('"scorePct": 100');
+      expect(res.content[0].text).toContain('PKCE_S256_MANDATE');
     });
   });
 });

@@ -43,6 +43,8 @@ import { DataScienceCitationService } from './data-science-citation.service';
 import { ClinicalKneeRecoveryLoopService, PresetKneeScenario } from './clinical-knee-recovery-loop.service';
 import { FhirR7R4ConverterService } from './fhir/fhir-r7-r4-converter.service';
 import { FhirR7HorizonService } from './fhir/fhir-r7-horizon.service';
+import { EhrAppOrchardPackagerService } from './fhir/ehr-app-orchard-packager.service';
+import { SmartOnFhirLauncherService } from './fhir/smart-on-fhir-launcher.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -92,6 +94,8 @@ export class WebMcpRegistrationService {
   private patientTrajectoryService = inject(PatientTrajectoryService, { optional: true });
   private citationService = inject(DataScienceCitationService, { optional: true });
   private kneeLoopService = inject(ClinicalKneeRecoveryLoopService, { optional: true });
+  private ehrPackagerService = inject(EhrAppOrchardPackagerService, { optional: true });
+  private smartLauncherService = inject(SmartOnFhirLauncherService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2689,6 +2693,127 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(sliceTool, { signal: sliceCtrl.signal });
     this.mcpControllers.push({ name: sliceTool.name, controller: sliceCtrl });
+
+    // 49. get_epic_cerner_marketplace_manifest
+    const mktCtrl = new AbortController();
+    const mktTool = {
+      name: 'get_epic_cerner_marketplace_manifest',
+      description: 'Retrieves formal EHR marketplace submission manifests for Epic Showroom (Connection Hub) and Oracle Cerner Code Console, including client IDs, USCDI v4 mappings, and OAuth2 PKCE endpoints.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          vendor: {
+            type: 'string',
+            enum: ['all', 'epic', 'cerner'],
+            description: 'EHR vendor manifest to retrieve ("epic", "cerner", or "all").'
+          }
+        }
+      },
+      execute: async (params?: any) => {
+        try {
+          const packager = this.ehrPackagerService || new EhrAppOrchardPackagerService();
+          const vendor = params?.vendor || 'all';
+
+          let result: any;
+          if (vendor === 'epic') {
+            result = packager.generateEpicAppOrchardPackage();
+          } else if (vendor === 'cerner') {
+            result = packager.generateCernerMarketplacePackage();
+          } else {
+            result = packager.generateMarketplaceSubmissionBundle();
+          }
+
+          return {
+            content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to retrieve marketplace manifest: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(mktTool, { signal: mktCtrl.signal });
+    this.mcpControllers.push({ name: mktTool.name, controller: mktCtrl });
+
+    // 50. get_carin_alliance_attestation
+    const carinCtrl = new AbortController();
+    const carinTool = {
+      name: 'get_carin_alliance_attestation',
+      description: 'Retrieves the CARIN Alliance Code of Conduct Attestation Package for myhealthapplication.com, containing digital trust seal, affirmative consent affirmations, and non-commercialization guarantees.',
+      inputSchema: {
+        type: 'object',
+        properties: {}
+      },
+      execute: async () => {
+        try {
+          const packager = this.ehrPackagerService || new EhrAppOrchardPackagerService();
+          const attestation = packager.generateCarinAllianceAttestation();
+          return {
+            content: [{ type: 'text', text: JSON.stringify(attestation, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to retrieve CARIN Alliance attestation: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(carinTool, { signal: carinCtrl.signal });
+    this.mcpControllers.push({ name: carinTool.name, controller: carinCtrl });
+
+    // 51. validate_smart_on_fhir_launch_conformance
+    const confCtrl = new AbortController();
+    const confTool = {
+      name: 'validate_smart_on_fhir_launch_conformance',
+      description: 'Performs automated SMART on FHIR v2 launch conformance validation for a given EHR vendor (Epic, Cerner, AthenaHealth, VA Lighthouse), testing S256 PKCE challenge generation, launch context tokens, and USCDI v4 clinical scopes.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          vendorId: {
+            type: 'string',
+            enum: ['epic', 'cerner', 'athena', 'va_health'],
+            description: 'Target EHR vendor to validate.'
+          },
+          launchType: {
+            type: 'string',
+            enum: ['ehr_launch', 'standalone_launch'],
+            description: 'Launch context architecture.'
+          },
+          launchContextToken: {
+            type: 'string',
+            description: 'Optional EHR launch context token.'
+          }
+        },
+        required: ['vendorId']
+      },
+      execute: async (params: any) => {
+        try {
+          const launcher = this.smartLauncherService || new SmartOnFhirLauncherService();
+          const vendorId = params?.vendorId || 'epic';
+          const launchType = params?.launchType || 'ehr_launch';
+          const launchContextToken = params?.launchContextToken;
+
+          const validation = launcher.validateSmartLaunchConformance(vendorId, {
+            launchType,
+            launchContextToken
+          });
+
+          return {
+            content: [{ type: 'text', text: JSON.stringify(validation, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to validate SMART on FHIR launch: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(confTool, { signal: confCtrl.signal });
+    this.mcpControllers.push({ name: confTool.name, controller: confCtrl });
   }
 
 

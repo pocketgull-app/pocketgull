@@ -66,6 +66,7 @@ import { OccupationalHazardCardComponent } from './occupational-hazard-card.comp
 import { VagalBiofeedbackDockComponent } from './vagal-biofeedback-dock.component';
 import { Sec1557AuditModalComponent } from './modals/sec1557-audit-modal.component';
 import { FhirPassportModalComponent } from './modals/fhir-passport-modal.component';
+import { SmartFhirLauncherComponent } from './smart-fhir-launcher.component';
 import { getPersonaPropBadge } from '../services/agent-personas';
 import { ThemeService, AppTheme } from '../services/theme.service';
 import { RpmDashboardComponent } from './rpm-dashboard.component';
@@ -162,7 +163,8 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
     ClinicalTrajectoryBiographyComponent,
     DualPaneConsultationComponent,
     SocraticChallengeCardComponent,
-    RpmDashboardComponent
+    RpmDashboardComponent,
+    SmartFhirLauncherComponent
   ],
 
 
@@ -1762,8 +1764,17 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4 text-xs font-sans">
-            <button (click)="exportFhirPassport(); showClinicalToolsModal.set(false)"
+            <button (click)="showSmartEhrModal.set(true); showClinicalToolsModal.set(false)"
               class="p-3 rounded-2xl bg-sky-950/40 hover:bg-sky-900/60 border border-sky-500/40 text-sky-200 flex items-center gap-2.5 transition text-left cursor-pointer">
+              <span class="text-xl">🏥</span>
+              <div>
+                <strong class="block font-bold text-white uppercase text-[11px] font-mono">SMART EHR & Marketplaces</strong>
+                <span class="text-[10.5px] text-zinc-400">Epic, Cerner & CARIN Hub</span>
+              </div>
+            </button>
+
+            <button (click)="exportFhirPassport(); showClinicalToolsModal.set(false)"
+              class="p-3 rounded-2xl bg-teal-950/40 hover:bg-teal-900/60 border border-teal-500/40 text-teal-200 flex items-center gap-2.5 transition text-left cursor-pointer">
               <span class="text-xl">📄</span>
               <div>
                 <strong class="block font-bold text-white uppercase text-[11px] font-mono">FHIR R4 Passport</strong>
@@ -1862,6 +1873,25 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
     <!-- FHIR R4 Patient Health Passport Modal -->
     @if (showFhirPassportModal()) {
       <app-fhir-passport-modal (closeModal)="showFhirPassportModal.set(false)"></app-fhir-passport-modal>
+    }
+
+    <!-- SMART on FHIR v2 / EHR Marketplace & CARIN Attestation Hub Modal -->
+    @if (showSmartEhrModal()) {
+      <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in no-print">
+        <div class="w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl bg-zinc-950 border border-sky-500/40 shadow-2xl relative">
+          <div class="sticky top-0 z-10 flex justify-between items-center p-3 bg-zinc-950/90 backdrop-blur border-b border-zinc-800">
+            <div class="flex items-center gap-2 text-xs font-bold text-zinc-300 font-mono">
+              <span class="text-sky-400">●</span>
+              <span>SMART ON FHIR v2 & EHR MARKETPLACE CONFORMANCE</span>
+            </div>
+            <button (click)="showSmartEhrModal.set(false)" class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5">
+              <span>✕</span>
+              <span>Close EHR Hub</span>
+            </button>
+          </div>
+          <app-smart-fhir-launcher></app-smart-fhir-launcher>
+        </div>
+      </div>
     }
 
     <!-- FDA 21 CFR Section 520(o) CDS Transparency & Epistemic Uncertainty Modal -->
@@ -2401,6 +2431,7 @@ export class AnalysisReportComponent implements OnDestroy {
   protected readonly ClinicalIcons = ClinicalIcons;
 
   showClinicalToolsModal = signal<boolean>(false);
+  showSmartEhrModal = signal<boolean>(false);
   showAllLensesMenu = signal<boolean>(false);
   showFhirPassportModal = signal<boolean>(false);
   readonly systemsNavMode = signal<SystemsNavMode>('overview');

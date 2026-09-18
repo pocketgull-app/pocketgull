@@ -86,13 +86,13 @@ describe('EhrAppOrchardPackagerService Suite', () => {
     expect(config.capabilities).toContain('client-public');
   });
 
-  it('6. Passes 10-point EHR Marketplace & App Orchard certification audit with 100% compliance', () => {
+  it('6. Passes 12-point EHR Marketplace, App Orchard & CARIN certification audit with 100% compliance', () => {
     const report = service.validateEhrCertificationSuite();
     expect(report.status).toBe('CERTIFIED_READY_FOR_MARKETPLACE');
-    expect(report.totalChecks).toBe(10);
-    expect(report.passedChecks).toBe(10);
+    expect(report.totalChecks).toBe(12);
+    expect(report.passedChecks).toBe(12);
     expect(report.complianceScorePct).toBe(100);
-    expect(report.overallScore).toBe('10/10');
+    expect(report.overallScore).toBe('12/12');
 
     // Verify key statutory checks
     const checkIds = report.checks.map(c => c.id);
@@ -102,5 +102,38 @@ describe('EhrAppOrchardPackagerService Suite', () => {
     expect(checkIds).toContain('ONC_HTI1_CDS_TRANSPARENCY');
     expect(checkIds).toContain('FHIR_R4_SCHEMA_VALIDITY');
     expect(checkIds).toContain('WCAG_AAA_ACCESSIBILITY');
+    expect(checkIds).toContain('CARIN_CODE_OF_CONDUCT');
+    expect(checkIds).toContain('CARIN_IAS_DATA_SOVEREIGNTY');
+  });
+
+  it('7. Generates formal CARIN Alliance Code of Conduct Attestation Package', () => {
+    const carin = service.generateCarinAllianceAttestation();
+    expect(carin).toBeDefined();
+    expect(carin.application_name).toContain('PocketGull');
+    expect(carin.attestation_version).toBe('2.0');
+    expect(carin.digital_trust_seal.trust_registry).toBe('myhealthapplication.com');
+    expect(carin.digital_trust_seal.status).toBe('CARIN_CODE_OF_CONDUCT_COMPLIANT');
+    expect(carin.digital_trust_seal.sha256_attestation_digest).toContain('sha256:carin_');
+
+    // Pillars
+    expect(carin.carin_trust_framework_pillars.individual_consent_and_transparency.affirmative_consent_required).toBe(true);
+    expect(carin.carin_trust_framework_pillars.data_use_and_sharing.no_commercial_sale_of_ehi).toBe(true);
+    expect(carin.carin_trust_framework_pillars.data_use_and_sharing.no_targeted_advertising).toBe(true);
+    expect(carin.carin_trust_framework_pillars.data_use_and_sharing.no_data_broker_egress).toBe(true);
+    expect(carin.carin_trust_framework_pillars.technical_security.in_transit_encryption).toBe('TLS 1.3 Strict');
+    expect(carin.carin_trust_framework_pillars.technical_security.oauth2_pkce_enforced).toBe(true);
+    expect(carin.carin_trust_framework_pillars.user_control_and_sovereignty.unilateral_patient_data_export).toBe(true);
+    expect(carin.carin_trust_framework_pillars.user_control_and_sovereignty.purge_transient_state_supported).toBe(true);
+  });
+
+  it('8. Generates unified Marketplace Submission Bundle with 100% readiness score', () => {
+    const bundle = service.generateMarketplaceSubmissionBundle();
+    expect(bundle.epic).toBeDefined();
+    expect(bundle.cerner).toBeDefined();
+    expect(bundle.carin).toBeDefined();
+    expect(bundle.overallReadinessScorePct).toBe(100);
+    expect(bundle.epic.client_id).toBe('pocketgull-epic-connection-hub-client');
+    expect(bundle.cerner.app_id).toBe('pocketgull-cerner-powerchart-app');
+    expect(bundle.carin.digital_trust_seal.seal_id).toBe('CARIN-SEAL-PG-2026-V2');
   });
 });
