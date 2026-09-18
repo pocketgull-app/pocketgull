@@ -1,0 +1,117 @@
+{
+  "name": "pocketgull-theme",
+  "displayName": "PocketGull Themes",
+  "description": "Complete 20-Theme Clinical, Tactile Paper & Sensory Studio Suite for PocketGull",
+  "version": "1.2.0",
+  "publisher": "PocketGull",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "PocketGull Washi Rice Paper",
+        "uiTheme": "vs",
+        "path": "./themes/PocketGull-Washi-Rice-Paper-color-theme.json"
+      },
+      {
+        "label": "PocketGull Obsidian",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-Obsidian-color-theme.json"
+      },
+      {
+        "label": "PocketGull Midnight Broadside",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-Midnight-Broadside-color-theme.json"
+      },
+      {
+        "label": "PocketGull Risograph Studio",
+        "uiTheme": "vs",
+        "path": "./themes/PocketGull-Risograph-Studio-color-theme.json"
+      },
+      {
+        "label": "PocketGull Radiograph Luminescence",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-Radiograph-Luminescence-color-theme.json"
+      },
+      {
+        "label": "PocketGull Braun ET66",
+        "uiTheme": "vs",
+        "path": "./themes/PocketGull-Braun-ET66-color-theme.json"
+      },
+      {
+        "label": "PocketGull Curie Atomic Radium",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-Curie-Atomic-Radium-color-theme.json"
+      },
+      {
+        "label": "PocketGull Scotopic 650nm Red",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-Scotopic-650nm-color-theme.json"
+      },
+      {
+        "label": "PocketGull Cardstock Kraft",
+        "uiTheme": "vs",
+        "path": "./themes/PocketGull-Cardstock-Kraft-color-theme.json"
+      },
+      {
+        "label": "PocketGull Hemp Fiber",
+        "uiTheme": "vs",
+        "path": "./themes/PocketGull-Hemp-Fiber-color-theme.json"
+      },
+      {
+        "label": "PocketGull Construction High-Vis",
+        "uiTheme": "vs",
+        "path": "./themes/PocketGull-Construction-HighVis-color-theme.json"
+      },
+      {
+        "label": "PocketGull Triage E-Paper",
+        "uiTheme": "vs",
+        "path": "./themes/PocketGull-Triage-EPaper-color-theme.json"
+      },
+      {
+        "label": "PocketGull Carrara Marble",
+        "uiTheme": "vs",
+        "path": "./themes/PocketGull-Carrara-Marble-color-theme.json"
+      },
+      {
+        "label": "PocketGull Nero Marquina",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-Nero-Marquina-color-theme.json"
+      },
+      {
+        "label": "PocketGull Ancient Papyrus",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-Ancient-Papyrus-color-theme.json"
+      },
+      {
+        "label": "PocketGull Aquatic Pool",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-Aquatic-Pool-color-theme.json"
+      },
+      {
+        "label": "PocketGull Sacred Mandala",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-Sacred-Mandala-color-theme.json"
+      },
+      {
+        "label": "PocketGull Spark Emergency",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-Spark-Emergency-color-theme.json"
+      },
+      {
+        "label": "PocketGull GearArts",
+        "uiTheme": "vs-dark",
+        "path": "./themes/PocketGull-GearArts-color-theme.json"
+      },
+      {
+        "label": "PocketGull CERN 1991",
+        "uiTheme": "vs",
+        "path": "./themes/PocketGull-CERN-1991-color-theme.json"
+      }
+    ]
+  }
+}

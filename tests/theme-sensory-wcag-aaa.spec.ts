@@ -259,4 +259,29 @@ describe('WCAG 2.2 AAA Accessibility & Sensory Settings Certification Suite', ()
       }
     });
   });
+
+  describe('7. All 20 VS Code & Antigravity Editor Themes WCAG 2.2 AAA Certification', () => {
+    it('All 20 editor themes achieve strict WCAG 2.2 Level AAA (>= 7:1) contrast ratio', async () => {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const themesDir = path.resolve(__dirname, '../packages/pocketgull-theme/themes');
+      const themeFiles = fs.readdirSync(themesDir).filter(f => f.endsWith('.json'));
+
+      expect(themeFiles.length).toBe(20);
+
+      for (const file of themeFiles) {
+        const fullPath = path.join(themesDir, file);
+        const themeData = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+        const bg = themeData.colors['editor.background'];
+        const fg = themeData.colors['editor.foreground'];
+
+        expect(bg).toBeDefined();
+        expect(fg).toBeDefined();
+
+        const cr = getContrastRatio(fg, bg);
+        // Strict WCAG Level AAA requires >= 7.0:1 for normal text
+        expect(cr).toBeGreaterThanOrEqual(7.0);
+      }
+    });
+  });
 });

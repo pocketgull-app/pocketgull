@@ -2152,6 +2152,47 @@ html.papercraft-construction body::before {
   background-image: url('/images/construction_paper_texture.png');
 }
 
+/* 🏛️ Mineral, Papyrus, Pool & Mandala Texture Overlays (10% Opacity) */
+html.theme-white-marble body::before,
+html.theme-black-marble body::before,
+html.theme-papyrus body::before,
+html.theme-pool body::before,
+html.theme-mandala body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.10 !important;
+  background-repeat: repeat;
+}
+
+html.theme-white-marble body::before {
+  background-image: url('/images/white_marble_texture.png');
+}
+
+html.theme-black-marble body::before {
+  background-image: url('/images/black_marble_texture.png');
+  opacity: 0.12 !important;
+}
+
+html.theme-papyrus body::before {
+  background-image: url('/images/papyrus_texture.png');
+  opacity: 0.12 !important;
+}
+
+html.theme-pool body::before {
+  background-image: url('/images/pool_water_dark.png');
+  opacity: 0.08 !important;
+}
+
+html.theme-mandala body::before {
+  background-image: url('/images/mandala_bg.png');
+  opacity: 0.08 !important;
+  background-size: cover;
+  background-position: center;
+}
+
 /* Tactile Translucent Light Paper Cards & Containers (10% Texture Opacity) */
 html.papercraft-mode .bg-white:not(.overflow-y-auto):not(.overflow-auto),
 html.papercraft-mode .pocket-gull-card,

@@ -221,3 +221,16 @@ Every new feature, component, API endpoint, or clinical model shipped in Pocket-
   ```
 - **Interactive Testing Areas**: All `contenteditable` inputs and interactive typography sandboxes MUST include `overflow-x: hidden;` and explicit container width caps to ensure multiline line wrapping onto subsequent lines during live typing or multi-script pasting.
 
+## OpenSSF Baseline 3 & Gold Security Governance Standard
+- **Developer Certificate of Origin (DCO) Mandate (`OSPS-LE-01.01`)**: All commits created by agents or contributors MUST assert legal provenance using standard DCO sign-offs (`Signed-off-by: Full Name <email>` or `git commit -s`).
+- **Two-Person Review Standard (`OSPS-QA-07.01`, `two_person_review`)**: Direct pushes to `main` are disabled. All features and refactors MUST be submitted via scoped topic branches and Pull Requests with mandatory CI pre-flight checks and non-author human review before merging.
+- **SPDX License Headers (`OSPS-LE-03.02`, `license_per_file`)**: All newly created source code files (`.ts`, `.py`, `.dart`, `.go`) MUST include standard SPDX machine-readable license headers:
+  ```typescript
+  // SPDX-License-Identifier: Apache-2.0
+  // Copyright (c) 2026 PocketGull LLC & Phillip Gear
+  ```
+- **Deterministic Clinical Precedence Over Stochastic LLMs (`OSPS-SA-01.01`)**: Emergency physiological red flags (BE-FAST acute stroke, ACS chest pain, SpO2 < 90%, C-SSRS suicidal crisis) MUST deterministically intercept execution ahead of any stochastic Gemini API call.
+- **Zero PHI Egress & Edge Hybridization (`OSPS-BR-07.01`)**: Clinical scribing and triage acuity inference leverage on-device models (Chrome Built-in AI / Gemma 4 Dev Trial) with mathematical zero network egress to protect HIPAA §164.514 Safe Harbor guarantees. Upstream Gemini API payloads are ephemeral, non-PHI, and strictly enterprise opt-out.
+- **SLSA Provenance & Immutable Digest Deployment (`OSPS-BR-06.01`)**: Production container deployments to Google Cloud Run in `gen-lang-client-0540208645` MUST deploy by immutable SHA-256 digest (`gcr.io/...@sha256:...`) with CycloneDX 1.6 SBOM verification (`npm run sbom`).
+- **FinOps Scale-to-Zero & Lifecycle Pruning**: Cloud Run services MUST configure `minScale: 0`. Storage lifecycle policies enforce 7-day auto-deletion (`olderThan: "604800s"`, `keepCount: 3`) on Artifact Registry Docker repositories and GCS source buckets (`npm run gcp:prune-storage`).
+
