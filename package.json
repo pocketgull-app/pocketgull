@@ -73,6 +73,7 @@
     "@google-cloud/storage": false
   },
   "scripts": {
+    "setup:desktop": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/install_pocketgull_desktop.ps1",
     "postinstall": "npx --no-install patch-package || true",
     "dev": "node --no-deprecation --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",
     "dev:all": "node --no-deprecation --max-old-space-size=8192 node_modules/@angular/cli/bin/ng.js serve",

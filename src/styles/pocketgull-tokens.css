@@ -82,6 +82,17 @@
   --font-pocketgull-clinical: 'PocketGull', 'PocketGull Bold', sans-serif;
   --font-pocketgull-mono: 'PocketGull Mono', monospace;
   --font-pocketgull-serif: 'PocketGull', serif;
+
+  /* 🧬 9. Live Bio-Rhythmic Variable Font Kinetics (0.1 Hz Rachel Nabors Pacing) */
+  --pg-live-wght: 400;
+  --pg-live-opsz: 14;
+  --pg-live-breathe-scale: 1.0;
+  --pg-live-vagal-tone: 1.0;
+
+  /* 👁️ 10. Scotopic Subpixel Anti-Aliasing (Zero-ClearType Color Fringing on Obsidian) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* ☀️ Light Parchment Theme (High-Illumination / Paper Exam Room) */
@@ -232,4 +243,51 @@
 .pg-button-secondary:hover {
   background-color: var(--pg-surface-3);
   border-color: var(--pg-border-strong);
+}
+
+/* ==========================================================================
+   🧬 Bio-Rhythmic Kinetic Typography & Scotopic Optical Trapping
+   ========================================================================== */
+
+/* Living Variable Font Pulse (Rachel Nabors 0.1 Hz Parasympathetic Cycle) */
+.font-biorhythmic-pulse {
+  font-variation-settings: 'wght' var(--pg-live-wght, 400), 'opsz' var(--pg-live-opsz, 14);
+  transition: font-variation-settings 100ms linear;
+  will-change: font-variation-settings;
+}
+
+/* Bio-Rhythmic Scale Breathing for Cards and Badges */
+.biorhythmic-breathe {
+  transform: scale(var(--pg-live-breathe-scale, 1.0));
+  transition: transform 100ms linear;
+  will-change: transform;
+}
+
+/* Scotopic Anti-Fringing & Optical Trapping (Eliminates ClearType Color Fringing) */
+.scotopic-anti-fringing,
+.font-pocketgull-mono,
+.font-pocketgull-tabular,
+.tabular-nums {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+  font-feature-settings: 'cv08' 1, 'cv05' 1, 'ss02' 1, 'tnum' 1;
+}
+
+/* Decimal Point Optical Trapping (ISMP High-Risk Medication Safety Rule) */
+.decimal-trapping {
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums lining-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .font-biorhythmic-pulse {
+    font-variation-settings: 'wght' 400, 'opsz' 14 !important;
+    transition: none !important;
+  }
+  .biorhythmic-breathe {
+    transform: none !important;
+    transition: none !important;
+  }
 }

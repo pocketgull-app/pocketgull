@@ -349,6 +349,39 @@ function renderDetail() {
 function runDirectCli(argv) {
   const cmd = argv[0];
   switch (cmd) {
+    case 'ai':
+    case 'models': {
+      const script = new URL('lemonade_engine.mjs', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+      execFile('node', [script, ...argv.slice(1)], (err, stdout, stderr) => {
+        if (stdout) process.stdout.write(stdout);
+        if (stderr) process.stderr.write(stderr);
+      });
+      break;
+    }
+    case 'shortcut':
+    case 'pin': {
+      const script = new URL('create_taskbar_shortcut.ps1', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+      execFile('pwsh', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, ...argv.slice(1)], (err, stdout, stderr) => {
+        if (stdout) process.stdout.write(stdout);
+        if (stderr) process.stderr.write(stderr);
+      });
+      break;
+    }
+    case 'tray':
+    case 'theme':
+    case 'cursor':
+    case 'philocardia':
+    case 'bionic':
+    case 'a11y':
+    case 'control':
+    case 'status': {
+      const script = new URL('pocketgull_controller.mjs', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+      execFile('node', [script, ...argv], (err, stdout, stderr) => {
+        if (stdout) process.stdout.write(stdout);
+        if (stderr) process.stderr.write(stderr);
+      });
+      break;
+    }
     case 'list':
       listPatientsDirect();
       break;
@@ -392,7 +425,16 @@ function showDirectHelp() {
 Usage:
   node scripts/gull.js [command] [args]
 
-Commands:
+System & Ergonomics Commands:
+  \x1b[36mtheme <name>\x1b[0m            Switch system/IDE theme (washi, hemp, obsidian, 670, rams)
+  \x1b[36mcursor [scheme]\x1b[0m         Switch 64px cursor scheme (ophthalmic, scotopic, default)
+  \x1b[36mphilocardia [on|off|pace]\x1b[0m Toggle 0.1 Hz vagal respiratory resonance pacer
+  \x1b[36mbionic [on|off|<text>]\x1b[0m   Toggle or test bionic reading saccadic guidance
+  \x1b[36mtray\x1b[0m                    Launch notification area tray daemon on-demand
+  \x1b[36mshortcut [uninstall]\x1b[0m    Create or remove TaskBar, Desktop, and Start Menu shortcuts
+  \x1b[36mstatus\x1b[0m                  Inspect active ergonomics, theme, cursor, and font state
+
+Clinical Diagnostic Commands:
   \x1b[36mlist\x1b[0m                    List all patients in the directory
   \x1b[36mshow <id>\x1b[0m               Show clinical details & vitals (e.g. p001)
   \x1b[36mnudge <id>\x1b[0m              Send biometrics sync trigger to patient device

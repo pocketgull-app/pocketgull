@@ -687,6 +687,32 @@ export function renderNeuroSanctuaryCaseStudyHtml(): string {
               </div>
             </div>
           </div>
+
+          <!-- Card 7: Santa Fe Institute Complex Adaptive Systems -->
+          <div class="card-3d" onclick="this.classList.toggle('flipped')">
+            <div class="card-3d-inner">
+              <div class="card-face card-front">
+                <div>
+                  <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">🔬 Santa Fe Institute CAS</div>
+                  <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; margin: 0.35rem 0 0.5rem;">Critical Slowing Down &amp; Attractor Bifurcation</h3>
+                  <p style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.55;">
+                    Approaching a state transition, dynamic systems exhibit Critical Slowing Down: lag-1 autocorrelation (&rho;<sub>1</sub> &rarr; 1.0) and variance inflation (&sigma;<sup>2</sup> &rarr; &infin;) warning 48&ndash;72 hours prior to acute clinical flare.
+                  </p>
+                </div>
+                <div style="font-size: 0.6875rem; color: #71717a; font-family: ui-monospace, monospace;">💡 Tap to flip to Quiet Sanctuary</div>
+              </div>
+              <div class="card-face card-back">
+                <div>
+                  <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--amber-light); font-weight: 700; text-transform: uppercase;">🌸 The Quiet Sanctuary</div>
+                  <h3 style="font-size: 1.15rem; font-weight: 800; color: #fef3c7; margin: 0.35rem 0 0.5rem;">The Resilient Mountain Pine</h3>
+                  <p style="font-size: 0.8125rem; color: #fef3c7; line-height: 1.55;">
+                    A sturdy mountain pine sways in gusty alpine winds and bounces right back. If it takes an extra second to right itself, it isn't broken—it is simply reminding you to pause, sip some warm broth, and let the wind pass.
+                  </p>
+                </div>
+                <div style="font-size: 0.6875rem; color: var(--teal-light); font-family: ui-monospace, monospace;">↺ Tap to flip back</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -717,6 +743,73 @@ export function renderNeuroSanctuaryCaseStudyHtml(): string {
           <!-- Dynamic Readout -->
           <div id="pathwayCard" style="background: #09090b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem;">
             <!-- Populated via script -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3.5 Santa Fe Institute (SFI) Complex Adaptive Systems & Critical Slowing Down HUD -->
+    <section id="sfi-complexity" class="case-section" style="background: radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.08) 0%, transparent 70%);">
+      <div class="container" style="max-width: 960px;">
+        <div class="section-head">
+          <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase; margin-bottom: 0.35rem;">
+            Santa Fe Institute (SFI) Applied Complexity &bull; Non-Ergodic Trajectory Mapping
+          </div>
+          <h2>Critical Slowing Down &amp; Attractor Phase-Space</h2>
+          <p>
+            The human organism is not a linear assembly of modular parts; it is a <strong>multi-scale Complex Adaptive System (CAS)</strong>. Rather than waiting for clinical flares, PocketGull continuously monitors <em>Critical Slowing Down (CSD)</em> precursors: lag-1 autocorrelation inflation (&rho;<sub>1</sub> &rarr; 1.0) and variance spikes 48&ndash;72 hours before acute autonomic or neuro-inflammatory transitions.
+          </p>
+        </div>
+
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 1.25rem; padding: 2rem;">
+          <!-- Telemetry Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+            <!-- Autocorrelation Metric -->
+            <div style="background: #09090b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem;">
+              <div style="font-size: 0.75rem; color: #a1a1aa; font-family: ui-monospace, monospace; text-transform: uppercase;">Lag-1 Autocorrelation (&rho;<sub>1</sub>)</div>
+              <div style="font-size: 1.875rem; font-weight: 800; color: #34d399; margin: 0.5rem 0 0.25rem; font-family: ui-monospace, monospace;" id="sfiRhoValue">0.2410</div>
+              <div style="font-size: 0.75rem; color: #71717a;">Normal range: &lt; 0.45 &bull; Early Warning: &ge; 0.60</div>
+            </div>
+
+            <!-- Recovery Rate Metric -->
+            <div style="background: #09090b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem;">
+              <div style="font-size: 0.75rem; color: #a1a1aa; font-family: ui-monospace, monospace; text-transform: uppercase;">Recovery Rate (&lambda;)</div>
+              <div style="font-size: 1.875rem; font-weight: 800; color: #38bdf8; margin: 0.5rem 0 0.25rem; font-family: ui-monospace, monospace;" id="sfiLambdaValue">0.7590</div>
+              <div style="font-size: 0.75rem; color: #71717a;">High elasticity &bull; Fast perturbation dissipation</div>
+            </div>
+
+            <!-- Attractor Basin Classification -->
+            <div style="background: #09090b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem;">
+              <div style="font-size: 0.75rem; color: #a1a1aa; font-family: ui-monospace, monospace; text-transform: uppercase;">Current Attractor Basin</div>
+              <div style="font-size: 1.05rem; font-weight: 800; color: #fbbf24; margin: 0.75rem 0 0.25rem;" id="sfiAttractorBasin">HOMEOSTATIC BASIN</div>
+              <div style="font-size: 0.75rem; color: #71717a;" id="sfiTippingProb">Tipping Probability: 6.2%</div>
+            </div>
+
+            <!-- WBE Fractal Allometry -->
+            <div style="background: #09090b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem;">
+              <div style="font-size: 0.75rem; color: #a1a1aa; font-family: ui-monospace, monospace; text-transform: uppercase;">WBE M<sup>0.75</sup> Fractal Allometry</div>
+              <div style="font-size: 1.875rem; font-weight: 800; color: #e879f9; margin: 0.5rem 0 0.25rem; font-family: ui-monospace, monospace;">1.000&times;</div>
+              <div style="font-size: 0.75rem; color: #71717a;">Kleiber-West-Brown-Enquist metabolic scaling</div>
+            </div>
+          </div>
+
+          <!-- Interactive Stressor Perturbation Simulator -->
+          <div style="background: #09090b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <div style="font-weight: 700; font-size: 0.875rem; color: #f4f4f5;">Simulate Systemic Stressor Perturbation</div>
+              <button type="button" class="tab-btn" onclick="resetSfiSimulation()" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">↺ Reset Homeostasis</button>
+            </div>
+            <p style="font-size: 0.8125rem; color: #a1a1aa; line-height: 1.5; margin-bottom: 1rem;">
+              Test how the Santa Fe Institute dynamical phase-space model reacts to cumulative metabolic, viral, or thermal loading. Watch the recovery rate decay and autocorrelation inflate as the system approaches a tipping point.
+            </p>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button type="button" class="tab-btn" onclick="applySfiStressor(0.15)">+ Heat Stress (+15%)</button>
+              <button type="button" class="tab-btn" onclick="applySfiStressor(0.30)">+ Sleep Deprivation (+30%)</button>
+              <button type="button" class="tab-btn" onclick="applySfiStressor(0.50)">+ Viral Challenge (+50%)</button>
+            </div>
+            <div id="sfiDirectiveBanner" style="margin-top: 1rem; font-size: 0.8125rem; color: #34d399; font-family: ui-monospace, monospace; padding: 0.75rem; background: rgba(52, 211, 153, 0.08); border-radius: 0.5rem; border: 1px solid rgba(52, 211, 153, 0.2);">
+              [SFI CAS DIRECTIVE] Robust homeostatic basin. Fast dissipation of transient biophysical perturbations.
+            </div>
           </div>
         </div>
       </div>
@@ -1135,6 +1228,71 @@ export function renderNeuroSanctuaryCaseStudyHtml(): string {
         icon.textContent = isPaper ? '🌙' : '📜';
         text.textContent = isPaper ? 'Obsidian Dark' : 'Monastic Paper';
       }
+    }
+
+    // Santa Fe Institute Complex Adaptive Systems Simulator
+    let sfiBaseRho = 0.241;
+    function updateSfiDisplay() {
+      const rho = Math.min(0.95, Math.max(0.05, sfiBaseRho));
+      const lambda = 1.0 - rho;
+      const tippingProb = (1.0 / (1.0 + Math.exp(-8.0 * (rho - 0.60)))) * 100;
+
+      const elRho = document.getElementById('sfiRhoValue');
+      const elLambda = document.getElementById('sfiLambdaValue');
+      const elBasin = document.getElementById('sfiAttractorBasin');
+      const elTip = document.getElementById('sfiTippingProb');
+      const elDirective = document.getElementById('sfiDirectiveBanner');
+
+      if (elRho) {
+        elRho.textContent = rho.toFixed(4);
+        elRho.style.color = rho >= 0.7 ? '#f43f5e' : (rho >= 0.5 ? '#fbbf24' : '#34d399');
+      }
+      if (elLambda) {
+        elLambda.textContent = lambda.toFixed(4);
+      }
+      if (elTip) {
+        elTip.textContent = 'Tipping Probability: ' + tippingProb.toFixed(1) + '%';
+      }
+      if (elBasin) {
+        if (rho >= 0.7) {
+          elBasin.textContent = 'ALLOSTATIC INFLAMMATORY SINK';
+          elBasin.style.color = '#f43f5e';
+          if (elDirective) {
+            elDirective.textContent = '[SFI CAS DIRECTIVE] Critical Slowing Down detected! System trapped in high-entropy attractor basin. Immediate rest and autonomic cooling required.';
+            elDirective.style.color = '#f87171';
+            elDirective.style.background = 'rgba(244, 63, 94, 0.1)';
+            elDirective.style.borderColor = 'rgba(244, 63, 94, 0.3)';
+          }
+        } else if (rho >= 0.5) {
+          elBasin.textContent = 'CRITICAL TRANSITION ZONE';
+          elBasin.style.color = '#fbbf24';
+          if (elDirective) {
+            elDirective.textContent = '[SFI CAS DIRECTIVE] Shallow saddle potential. Recovery rate decaying. Implement parasympathetic pacing before tipping point.';
+            elDirective.style.color = '#fbbf24';
+            elDirective.style.background = 'rgba(251, 191, 36, 0.1)';
+            elDirective.style.borderColor = 'rgba(251, 191, 36, 0.3)';
+          }
+        } else {
+          elBasin.textContent = 'HOMEOSTATIC BASIN';
+          elBasin.style.color = '#34d399';
+          if (elDirective) {
+            elDirective.textContent = '[SFI CAS DIRECTIVE] Robust homeostatic basin. Fast dissipation of transient biophysical perturbations.';
+            elDirective.style.color = '#34d399';
+            elDirective.style.background = 'rgba(52, 211, 153, 0.08)';
+            elDirective.style.borderColor = 'rgba(52, 211, 153, 0.2)';
+          }
+        }
+      }
+    }
+
+    function applySfiStressor(delta) {
+      sfiBaseRho = Math.min(0.92, sfiBaseRho + delta);
+      updateSfiDisplay();
+    }
+
+    function resetSfiSimulation() {
+      sfiBaseRho = 0.241;
+      updateSfiDisplay();
     }
 
     // Initialize Default Pathway

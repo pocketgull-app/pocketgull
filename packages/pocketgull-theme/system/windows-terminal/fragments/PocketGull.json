@@ -145,7 +145,7 @@
       "source": "PocketGull.Theme",
       "colorScheme": "PocketGull Obsidian",
       "font": {
-        "face": "PocketGull Mono",
+        "face": "Pocket Gull Mono",
         "size": 11
       },
       "cursorShape": "vintage",
@@ -156,11 +156,22 @@
       "source": "PocketGull.Theme",
       "colorScheme": "PocketGull Washi Rice Paper",
       "font": {
-        "face": "PocketGull Mono",
+        "face": "Pocket Gull Mono",
         "size": 11
       },
       "cursorShape": "vintage",
       "opacity": 100
+    },
+    {
+      "name": "PocketGull Scotopic 650nm (PowerShell)",
+      "source": "PocketGull.Theme",
+      "colorScheme": "PocketGull Scotopic 650nm Red",
+      "font": {
+        "face": "Pocket Gull Mono",
+        "size": 11
+      },
+      "cursorShape": "vintage",
+      "opacity": 95
     }
   ]
 }

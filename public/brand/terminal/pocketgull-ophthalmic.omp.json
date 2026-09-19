@@ -10,8 +10,8 @@
         {
           "type": "text",
           "style": "diamond",
-          "leading_diamond": "\ue0b6",
-          "trailing_diamond": "\ue0b4",
+          "leading_diamond": "",
+          "trailing_diamond": "",
           "foreground": "#ffffff",
           "background": "#0f766e",
           "template": " ⚕ POCKETGULL "
@@ -19,8 +19,8 @@
         {
           "type": "path",
           "style": "diamond",
-          "leading_diamond": " \ue0b6",
-          "trailing_diamond": "\ue0b4",
+          "leading_diamond": " ",
+          "trailing_diamond": "",
           "foreground": "#faf8f2",
           "background": "#18181b",
           "options": {
@@ -32,21 +32,24 @@
         {
           "type": "git",
           "style": "diamond",
-          "leading_diamond": " \ue0b6",
-          "trailing_diamond": "\ue0b4",
+          "leading_diamond": " ",
+          "trailing_diamond": "",
           "foreground": "#ffffff",
           "background": "#059669",
           "background_templates": [
             "{{ if or (.Working.Changed) (.Staging.Changed) }}#b45309{{ end }}",
             "#059669"
           ],
-          "template": "  {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }} ◈{{ end }}{{ if gt .Ahead 0 }} ▲{{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ▼{{ .Behind }}{{ end }} "
+          "template": " {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }} ◈{{ end }}{{ if gt .Ahead 0 }} ▲{{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ▼{{ .Behind }}{{ end }} ",
+          "options": {
+            "branch_icon": " "
+          }
         },
         {
           "type": "executiontime",
           "style": "diamond",
-          "leading_diamond": " \ue0b6",
-          "trailing_diamond": "\ue0b4",
+          "leading_diamond": " ",
+          "trailing_diamond": "",
           "foreground": "#fbbf24",
           "background": "#1c1917",
           "options": {
@@ -63,8 +66,8 @@
         {
           "type": "text",
           "style": "diamond",
-          "leading_diamond": "\ue0b6",
-          "trailing_diamond": "\ue0b4",
+          "leading_diamond": "",
+          "trailing_diamond": "",
           "foreground": "#2dd4bf",
           "background": "#18181b",
           "template": " ⠠⠏⠕⠉⠅⠑⠞⠠⠛⠥⠇⠇ ⠠⠍⠕⠝⠕ "

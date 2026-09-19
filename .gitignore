@@ -366,5 +366,7 @@ src/partners/hidden/
 # ------------------------------------------------------------------------------
 .foundry/
 scripts/.taskbar_state.json
+.pocketgull_a11y.json
+scripts/test_cur_*.ps1
 
 
