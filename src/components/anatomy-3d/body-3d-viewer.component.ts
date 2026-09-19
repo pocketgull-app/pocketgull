@@ -12,7 +12,7 @@ import { PatientManagementService } from '../../services/patient-management.serv
 import { ThemeService } from '../../services/theme.service';
 import { EnvironmentalTelemetryService } from '../../services/environmental-telemetry.service';
 import { AdobeFireflyTextureService } from '../../services/adobe-firefly-texture.service';
-import { BodyMeshFactoryService } from '../../services/body-mesh-factory.service';
+import { BodyMeshFactoryService, AnatomicalArchetype } from '../../services/body-mesh-factory.service';
 import { RaycastSelectionService } from '../../services/raycast-selection.service';
 import { SeverityParticleService } from '../../services/severity-particle.service';
 import { SocraticComorbidityRadarService } from '../../services/socratic-comorbidity-radar.service';
@@ -130,6 +130,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             <option value="homo_sapiens_male">👨 Homo Sapiens (Male)</option>
             <option value="homo_sapiens_senior">👵 Homo Sapiens (Senior)</option>
             <option value="homo_sapiens_pediatric">👶 Homo Sapiens (Paediatric)</option>
+            <option value="ecorche">🏛️ Vesalian Écorché (1543 Cast)</option>
             <option value="pongo_pygmaeus">🦧 Pongo Pygmaeus (Orangutan)</option>
           </select>
         </div>
@@ -1060,13 +1061,31 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     readonly webglError = signal<string>('');
     readonly showDermatomeLayer = signal<boolean>(false);
     readonly activeCameraPreset = signal<'front' | 'back' | 'left' | 'right' | 'cranial' | 'spinal' | 'visceral' | 'peripheral' | 'systemic'>('front');
-    readonly activeArchetype = signal<'homo_sapiens_female' | 'homo_sapiens_male' | 'homo_sapiens_senior' | 'homo_sapiens_pediatric' | 'pongo_pygmaeus'>('homo_sapiens_male');
+    readonly activeArchetype = signal<AnatomicalArchetype>('homo_sapiens_male');
 
     onArchetypeChange(event: Event): void {
-      const val = (event.target as HTMLSelectElement).value as any;
+      const val = (event.target as HTMLSelectElement).value as AnatomicalArchetype;
       this.activeArchetype.set(val);
+      this.rebuildMannequinForArchetype(val);
       if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
         window.navigator.vibrate([20, 30, 20]);
+      }
+    }
+
+    public rebuildMannequinForArchetype(archetype: AnatomicalArchetype): void {
+      if (!this.scene) return;
+      if (this.mannequinGroup) {
+        this.scene.remove(this.mannequinGroup);
+        this.disposeHierarchy(this.mannequinGroup);
+      }
+      const mannequinData = this.meshFactory.createMannequinGroup('III', archetype);
+      this.mannequinGroup = mannequinData.group;
+      this.parts = mannequinData.parts;
+      this.scene.add(this.mannequinGroup);
+      this.updateTransparency(this.effectiveAnatomyViewMode());
+      this.updatePartColors();
+      if (this.slicePlaneMode() !== 'none') {
+        this.updateClippingPlane();
       }
     }
     readonly activeCameraPresetLabel = computed(() => {
@@ -2005,7 +2024,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
         try {
             this.initScene();
-            const mannequinData = this.meshFactory.createMannequinGroup();
+            const mannequinData = this.meshFactory.createMannequinGroup('III', this.activeArchetype());
             this.mannequinGroup = mannequinData.group;
             this.parts = mannequinData.parts;
             this.scene.add(this.mannequinGroup);

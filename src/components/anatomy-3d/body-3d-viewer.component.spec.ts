@@ -289,4 +289,17 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     expect((viewer as any).state.anatomyViewMode()).toBe('skeleton');
     expect(viewer.effectiveAnatomyViewMode()).toBe('skeleton');
   });
+
+  it('switches archetypes to ecorche and female via onArchetypeChange', () => {
+    const viewer = createViewer();
+    expect(viewer.activeArchetype()).toBe('homo_sapiens_male');
+
+    const ecorcheEvent = { target: { value: 'ecorche' } } as unknown as Event;
+    viewer.onArchetypeChange(ecorcheEvent);
+    expect(viewer.activeArchetype()).toBe('ecorche');
+
+    const femaleEvent = { target: { value: 'homo_sapiens_female' } } as unknown as Event;
+    viewer.onArchetypeChange(femaleEvent);
+    expect(viewer.activeArchetype()).toBe('homo_sapiens_female');
+  });
 });
