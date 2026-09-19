@@ -460,6 +460,144 @@
     </div>
   </div>
 
+  <!-- Master Frame 2: Vesalian Biomechanical Kinematics & Stanford Gait Suite -->
+  <div class="master-frame" style="border-color: rgba(245, 158, 11, 0.4);">
+    <div class="header-row">
+      <div class="title-group">
+        <h1>
+          <span>🏃</span>
+          <span>Vesalian Biomechanical Kinematics & Neuro-Rehab Specimen</span>
+        </h1>
+        <p>Stanford OpenSim Locomotion Dynamics • Andreas Vesalius 1543 Chiaroscuro • UTAS Wicking Cognitive Design</p>
+      </div>
+
+      <div class="badge-bar">
+        <span class="badge badge-amber">📐 Stanford OpenSim Gait</span>
+        <span class="badge badge-teal">🔬 Histological Cross-Hatching</span>
+        <span class="badge badge-blue">🧠 UTAS Cognitive Ergonomics</span>
+        <span class="badge badge-green">⚡ Zero-Bitmap Pure Vector</span>
+      </div>
+    </div>
+
+    <!-- Main Interactive Grid -->
+    <div class="demo-grid" style="margin-top: 20px;">
+      
+      <!-- Interactive SVG Vector Canvas -->
+      <div class="viewport-card" style="min-height: 400px; padding: 20px; align-items: center; justify-content: center; position: relative;">
+        <div class="viewport-overlay">
+          <div style="color: #fbbf24; font-weight: 700;">🏃 Parametric Gait Cycle</div>
+          <div id="gaitPhaseLabel" style="color: #2dd4bf; font-weight: bold;">Loading Response (15%)</div>
+        </div>
+
+        <!-- Ground Contact Plane -->
+        <div style="position: absolute; bottom: 70px; left: 30px; right: 30px; height: 1px; background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.5), transparent);"></div>
+
+        <!-- SVG Vector Canvas -->
+        <svg id="vesalianSvgCanvas" viewBox="50 50 300 300" style="width: 100%; max-height: 300px; overflow: visible;">
+          <g id="vesalianFigureGroup"></g>
+        </svg>
+
+        <!-- Timeline Scrubbing Bar -->
+        <div style="width: 100%; margin-top: 10px; z-index: 10;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: #a1a1aa; font-family: 'PocketGull Mono'; margin-bottom: 4px;">
+            <span>Gait Stride Timeline (Stanford Sagittal Model)</span>
+            <span id="gaitPercentText" style="color: #fbbf24; font-weight: bold;">15%</span>
+          </div>
+          <input 
+            type="range" 
+            id="gaitScrubber" 
+            min="0" 
+            max="1" 
+            step="0.01" 
+            value="0.15" 
+            style="width: 100%; height: 6px; accent-color: #f59e0b; cursor: pointer;" />
+        </div>
+
+        <div class="viewport-controls">
+          <div style="display: flex; gap: 8px;">
+            <button id="btnToggleWalk" style="background: #f59e0b; color: #09090b; border: none; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-family: 'PocketGull Mono'; cursor: pointer;">
+              ⏸ Pause
+            </button>
+            <button id="btnToggleHistology" style="background: rgba(20, 184, 166, 0.2); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.5); padding: 4px 12px; border-radius: 8px; font-weight: bold; font-family: 'PocketGull Mono'; cursor: pointer;">
+              🔬 Histology: ON
+            </button>
+          </div>
+          <span style="color: #a1a1aa; font-family: 'PocketGull Mono'; font-size: 11px;">Scrub slider to freeze & inspect vector joints</span>
+        </div>
+      </div>
+
+      <!-- Right Column: Telemetry & Presets -->
+      <div class="control-column">
+        
+        <!-- Sagittal Joint Telemetry Panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <span>📐 Stanford OpenSim Kinematic Telemetry</span>
+            <span style="color: #fbbf24;">Sagittal Plane</span>
+          </div>
+
+          <div class="comparison-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="comp-cell">
+              <div class="comp-label" style="color: #a1a1aa;">Hip Angle</div>
+              <div id="telemetryHip" class="comp-val" style="color: #fbbf24; font-size: 22px;">20°</div>
+              <div style="font-size: 10px; color: #71717a;">Flexion / Extension</div>
+            </div>
+
+            <div class="comp-cell">
+              <div class="comp-label" style="color: #a1a1aa;">Knee Angle</div>
+              <div id="telemetryKnee" class="comp-val" style="color: #2dd4bf; font-size: 22px;">18°</div>
+              <div style="font-size: 10px; color: #71717a;">Shock Absorption</div>
+            </div>
+
+            <div class="comp-cell">
+              <div class="comp-label" style="color: #a1a1aa;">Ankle Pitch</div>
+              <div id="telemetryAnkle" class="comp-val" style="color: #38bdf8; font-size: 22px;">-5°</div>
+              <div style="font-size: 10px; color: #71717a;">Dorsi / Plantar</div>
+            </div>
+
+            <div class="comp-cell">
+              <div class="comp-label" style="color: #a1a1aa;">Ground Reaction</div>
+              <div id="telemetryGrf" class="comp-val" style="color: #f87171; font-size: 22px;">1.22x</div>
+              <div style="font-size: 10px; color: #71717a;">Bodyweight Force</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Histological Infill Legend Panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <span>🔬 Andreas Vesalius & Cellular Infill</span>
+            <span style="color: #34d399;">100% Vector</span>
+          </div>
+          <p style="font-size: 12px; color: #a1a1aa; line-height: 1.5; font-family: 'PocketGull', sans-serif;">
+            Muscle bellies are cross-hatched with <strong style="color: #fbbf24;">actin-myosin myofibril striations</strong>, while cortical bones are traced with <strong style="color: #2dd4bf;">concentric Haversian osteon lamellae</strong>. In dark mode, chiaroscuro copperplate lines glow like luminous gold on obsidian velvet with zero pixelation.
+          </p>
+        </div>
+
+        <!-- Neuro-Rehab Assessment Presets -->
+        <div class="panel">
+          <div class="panel-header">
+            <span>🧠 Clinical Movement Presets</span>
+            <span style="color: #38bdf8;">UTAS Rehab Guide</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button id="presetNormal" style="flex: 1; padding: 6px 8px; font-size: 10px; font-weight: bold; background: #f59e0b; color: #09090b; border: none; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;">
+              Normal Gait
+            </button>
+            <button id="presetRomberg" style="flex: 1; padding: 6px 8px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;">
+              Romberg Test
+            </button>
+            <button id="presetTandem" style="flex: 1; padding: 6px 8px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;">
+              Tandem Walk
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
   <!-- Three.js Bundle via CDN for Interactive Proof -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -705,6 +843,213 @@
       renderer.render(scene, camera);
     }
     requestAnimationFrame(animate);
+
+    // ==========================================================================
+    // 5. Stanford OpenSim Kinematic Solver & Vesalian SVG Renderer
+    // ==========================================================================
+    const vesalianFigureGroup = document.getElementById('vesalianFigureGroup');
+    const gaitScrubber = document.getElementById('gaitScrubber');
+    const gaitPercentText = document.getElementById('gaitPercentText');
+    const gaitPhaseLabel = document.getElementById('gaitPhaseLabel');
+    const telemetryHip = document.getElementById('telemetryHip');
+    const telemetryKnee = document.getElementById('telemetryKnee');
+    const telemetryAnkle = document.getElementById('telemetryAnkle');
+    const telemetryGrf = document.getElementById('telemetryGrf');
+    const btnToggleWalk = document.getElementById('btnToggleWalk');
+    const btnToggleHistology = document.getElementById('btnToggleHistology');
+    const presetNormal = document.getElementById('presetNormal');
+    const presetRomberg = document.getElementById('presetRomberg');
+    const presetTandem = document.getElementById('presetTandem');
+
+    let isWalkingActive = true;
+    let isHistologyOn = true;
+    let currentGaitT = 0.15;
+    let lastGaitTime = performance.now();
+
+    function solveKinematics(t) {
+      const pi = Math.PI;
+      const originX = 180, originY = 280;
+      const torsoLen = 65, femurLen = 60, tibiaLen = 60, footLen = 22, humerusLen = 38, forearmLen = 36;
+
+      const pelvicBounce = Math.sin(4 * pi * t) * 5;
+      const pelvis = { x: originX, y: originY - 130 + pelvicBounce };
+      const torso = { x: pelvis.x + Math.sin(2 * pi * t) * 2.5, y: pelvis.y - torsoLen };
+      const neck = { x: torso.x, y: torso.y - 10 };
+      const head = { x: neck.x, y: neck.y - 20 };
+
+      // Right Leg
+      const rHipAngle = (24 * Math.sin(2 * pi * t + 0.4) + 4) * (pi / 180);
+      let rKneeAngle = (t < 0.6) ? (18 * Math.sin(pi * (t / 0.6))) * (pi / 180) : (60 * Math.sin(pi * ((t - 0.6) / 0.4))) * (pi / 180);
+      const rAnkleAngle = (14 * Math.sin(2 * pi * t - 0.7)) * (pi / 180);
+
+      const rightHip = { x: pelvis.x + 5, y: pelvis.y };
+      const rightKnee = { x: rightHip.x + femurLen * Math.sin(rHipAngle), y: rightHip.y + femurLen * Math.cos(rHipAngle) };
+      const rLowerAngle = rHipAngle - rKneeAngle;
+      const rightAnkle = { x: rightKnee.x + tibiaLen * Math.sin(rLowerAngle), y: rightKnee.y + tibiaLen * Math.cos(rLowerAngle) };
+      const rightToe = { x: rightAnkle.x + footLen * Math.cos(rAnkleAngle), y: rightAnkle.y + footLen * Math.sin(rAnkleAngle) };
+
+      // Left Leg (Contra-phase)
+      const tC = (t + 0.5) % 1.0;
+      const lHipAngle = (24 * Math.sin(2 * pi * tC + 0.4) + 4) * (pi / 180);
+      let lKneeAngle = (tC < 0.6) ? (18 * Math.sin(pi * (tC / 0.6))) * (pi / 180) : (60 * Math.sin(pi * ((tC - 0.6) / 0.4))) * (pi / 180);
+      const lAnkleAngle = (14 * Math.sin(2 * pi * tC - 0.7)) * (pi / 180);
+
+      const leftHip = { x: pelvis.x - 5, y: pelvis.y };
+      const leftKnee = { x: leftHip.x + femurLen * Math.sin(lHipAngle), y: leftHip.y + femurLen * Math.cos(lHipAngle) };
+      const lLowerAngle = lHipAngle - lKneeAngle;
+      const leftAnkle = { x: leftKnee.x + tibiaLen * Math.sin(lLowerAngle), y: leftKnee.y + tibiaLen * Math.cos(lLowerAngle) };
+      const leftToe = { x: leftAnkle.x + footLen * Math.cos(lAnkleAngle), y: leftAnkle.y + footLen * Math.sin(lAnkleAngle) };
+
+      // Arms (Counter-swing)
+      const rShoulderAngle = -rHipAngle * 0.75;
+      const lShoulderAngle = -lHipAngle * 0.75;
+      const rightShoulder = { x: torso.x + 6, y: torso.y + 8 };
+      const rightElbow = { x: rightShoulder.x + humerusLen * Math.sin(rShoulderAngle), y: rightShoulder.y + humerusLen * Math.cos(rShoulderAngle) };
+      const rightWrist = { x: rightElbow.x + forearmLen * Math.sin(rShoulderAngle + 0.25), y: rightElbow.y + forearmLen * Math.cos(rShoulderAngle + 0.25) };
+
+      const leftShoulder = { x: torso.x - 6, y: torso.y + 8 };
+      const leftElbow = { x: leftShoulder.x + humerusLen * Math.sin(lShoulderAngle), y: leftShoulder.y + humerusLen * Math.cos(lShoulderAngle) };
+      const leftWrist = { x: leftElbow.x + forearmLen * Math.sin(lShoulderAngle + 0.25), y: leftElbow.y + forearmLen * Math.cos(lShoulderAngle + 0.25) };
+
+      // GRF
+      let grf = (t < 0.6) ? (1.0 + 0.22 * Math.sin(2 * pi * (t / 0.6)) - 0.2 * Math.sin(pi * (t / 0.6))) : 0.0;
+
+      let phase = 'Midstance';
+      if (t < 0.12) phase = 'Heel Strike (Initial Contact)';
+      else if (t < 0.30) phase = 'Loading Response';
+      else if (t < 0.50) phase = 'Midstance (Single Support)';
+      else if (t < 0.62) phase = 'Terminal Stance (Push-Off)';
+      else if (t < 0.78) phase = 'Initial Swing';
+      else phase = 'Terminal Swing (Deceleration)';
+
+      return {
+        t, phase, head, neck, torso, pelvis,
+        rightHip, rightKnee, rightAnkle, rightToe,
+        leftHip, leftKnee, leftAnkle, leftToe,
+        rightShoulder, rightElbow, rightWrist,
+        leftShoulder, leftElbow, leftWrist,
+        grf: grf.toFixed(2),
+        hipDeg: Math.round(rHipAngle * (180 / pi)),
+        kneeDeg: Math.round(rKneeAngle * (180 / pi)),
+        ankleDeg: Math.round(rAnkleAngle * (180 / pi))
+      };
+    }
+
+    function renderHatch(start, end, count, color) {
+      const dx = end.x - start.x, dy = end.y - start.y;
+      const len = Math.hypot(dx, dy);
+      if (len < 1) return '';
+      const px = -dy / len, py = dx / len;
+      let d = '';
+      for (let i = 1; i <= count; i++) {
+        const a = i / (count + 1);
+        const mx = start.x + dx * a, my = start.y + dy * a;
+        const w = Math.sin(a * Math.PI) * 10;
+        d += `M ${(mx - px * w).toFixed(1)} ${(my - py * w).toFixed(1)} L ${(mx + px * w).toFixed(1)} ${(my + py * w).toFixed(1)} `;
+      }
+      return `<path d="${d}" stroke="${color}" stroke-width="1.2" stroke-linecap="round" fill="none" />`;
+    }
+
+    function renderVesalianFigure(k) {
+      const strokeColor = '#f59e0b';
+      const hatchColor = 'rgba(245, 158, 11, 0.45)';
+      const contraHatch = 'rgba(45, 212, 191, 0.35)';
+
+      let svg = '';
+      if (isHistologyOn) {
+        svg += renderHatch(k.rightHip, k.rightKnee, 6, hatchColor);
+        svg += renderHatch(k.rightKnee, k.rightAnkle, 5, hatchColor);
+        svg += renderHatch(k.leftHip, k.leftKnee, 4, contraHatch);
+        svg += renderHatch(k.leftKnee, k.leftAnkle, 4, contraHatch);
+      }
+
+      // Skeletal Copperplate Lines
+      const bones = [
+        `M ${k.neck.x.toFixed(1)} ${k.neck.y.toFixed(1)} L ${k.pelvis.x.toFixed(1)} ${k.pelvis.y.toFixed(1)}`,
+        `M ${k.rightHip.x.toFixed(1)} ${k.rightHip.y.toFixed(1)} L ${k.rightKnee.x.toFixed(1)} ${k.rightKnee.y.toFixed(1)} L ${k.rightAnkle.x.toFixed(1)} ${k.rightAnkle.y.toFixed(1)} L ${k.rightToe.x.toFixed(1)} ${k.rightToe.y.toFixed(1)}`,
+        `M ${k.leftHip.x.toFixed(1)} ${k.leftHip.y.toFixed(1)} L ${k.leftKnee.x.toFixed(1)} ${k.leftKnee.y.toFixed(1)} L ${k.leftAnkle.x.toFixed(1)} ${k.leftAnkle.y.toFixed(1)} L ${k.leftToe.x.toFixed(1)} ${k.leftToe.y.toFixed(1)}`,
+        `M ${k.rightShoulder.x.toFixed(1)} ${k.rightShoulder.y.toFixed(1)} L ${k.rightElbow.x.toFixed(1)} ${k.rightElbow.y.toFixed(1)} L ${k.rightWrist.x.toFixed(1)} ${k.rightWrist.y.toFixed(1)}`,
+        `M ${k.leftShoulder.x.toFixed(1)} ${k.leftShoulder.y.toFixed(1)} L ${k.leftElbow.x.toFixed(1)} ${k.leftElbow.y.toFixed(1)} L ${k.leftWrist.x.toFixed(1)} ${k.leftWrist.y.toFixed(1)}`
+      ];
+
+      svg += `<path d="${bones.join(' ')}" stroke="${strokeColor}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />`;
+      svg += `<circle cx="${k.head.x.toFixed(1)}" cy="${k.head.y.toFixed(1)}" r="11" stroke="${strokeColor}" stroke-width="2.2" fill="#09090b" />`;
+
+      vesalianFigureGroup.innerHTML = svg;
+
+      // Update Telemetry
+      gaitPhaseLabel.textContent = `${k.phase} (${Math.round(k.t * 100)}%)`;
+      gaitPercentText.textContent = `${Math.round(k.t * 100)}%`;
+      telemetryHip.textContent = `${k.hipDeg}°`;
+      telemetryKnee.textContent = `${k.kneeDeg}°`;
+      telemetryAnkle.textContent = `${k.ankleDeg}°`;
+      telemetryGrf.textContent = `${k.grf}x`;
+    }
+
+    function animateKinesiology(time) {
+      requestAnimationFrame(animateKinesiology);
+      const dt = (time - lastGaitTime) / 1000;
+      lastGaitTime = time;
+
+      if (isWalkingActive) {
+        currentGaitT = (currentGaitT + dt * 0.9) % 1.0;
+        gaitScrubber.value = currentGaitT.toFixed(2);
+      } else {
+        currentGaitT = parseFloat(gaitScrubber.value);
+      }
+
+      const k = solveKinematics(currentGaitT);
+      renderVesalianFigure(k);
+    }
+    requestAnimationFrame(animateKinesiology);
+
+    // Event Listeners
+    gaitScrubber.addEventListener('input', () => {
+      isWalkingActive = false;
+      btnToggleWalk.textContent = '▶ Walk';
+      btnToggleWalk.style.background = '#14b8a6';
+    });
+
+    btnToggleWalk.addEventListener('click', () => {
+      isWalkingActive = !isWalkingActive;
+      btnToggleWalk.textContent = isWalkingActive ? '⏸ Pause' : '▶ Walk';
+      btnToggleWalk.style.background = isWalkingActive ? '#f59e0b' : '#14b8a6';
+    });
+
+    btnToggleHistology.addEventListener('click', () => {
+      isHistologyOn = !isHistologyOn;
+      btnToggleHistology.textContent = isHistologyOn ? '🔬 Histology: ON' : '🔬 Histology: OFF';
+      btnToggleHistology.style.color = isHistologyOn ? '#2dd4bf' : '#71717a';
+    });
+
+    presetNormal.addEventListener('click', () => {
+      isWalkingActive = true;
+      btnToggleWalk.textContent = '⏸ Pause';
+      btnToggleWalk.style.background = '#f59e0b';
+      presetNormal.style.background = '#f59e0b'; presetNormal.style.color = '#09090b';
+      presetRomberg.style.background = '#181820'; presetRomberg.style.color = '#fbbf24';
+      presetTandem.style.background = '#181820'; presetTandem.style.color = '#fbbf24';
+    });
+
+    presetRomberg.addEventListener('click', () => {
+      isWalkingActive = false;
+      btnToggleWalk.textContent = '▶ Walk';
+      btnToggleWalk.style.background = '#14b8a6';
+      gaitScrubber.value = 0.40;
+      presetRomberg.style.background = '#f59e0b'; presetRomberg.style.color = '#09090b';
+      presetNormal.style.background = '#181820'; presetNormal.style.color = '#fbbf24';
+      presetTandem.style.background = '#181820'; presetTandem.style.color = '#fbbf24';
+    });
+
+    presetTandem.addEventListener('click', () => {
+      isWalkingActive = false;
+      btnToggleWalk.textContent = '▶ Walk';
+      btnToggleWalk.style.background = '#14b8a6';
+      gaitScrubber.value = 0.05;
+      presetTandem.style.background = '#f59e0b'; presetTandem.style.color = '#09090b';
+      presetNormal.style.background = '#181820'; presetNormal.style.color = '#fbbf24';
+      presetRomberg.style.background = '#181820'; presetRomberg.style.color = '#fbbf24';
+    });
   </script>
 </body>
 </html>

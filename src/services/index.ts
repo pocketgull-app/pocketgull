@@ -59,3 +59,4 @@ export * from './optical-chrono-trajectory.service';
 export * from './patient-trajectory.service';
 export * from './clinical-vagal-resonant-pacing.service';
 export * from './bio-rhythmic-typography.service';
+export * from './kinesiology-biomechanics.service';
