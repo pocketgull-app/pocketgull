@@ -24,6 +24,8 @@ import { SpatialLesionMarkupService } from '../../services/spatial-lesion-markup
 import { AvsEngineService } from '../../services/avs-engine.service';
 import { VeoService } from '../../services/veo.service';
 import { ClinicalSpecialtyRiskSuiteService } from '../../services/clinical-specialty-risk-suite.service';
+import { KinesiologyBiomechanicsService, IPrescriptiveRehabPlan } from '../../services/kinesiology-biomechanics.service';
+import { createVesalianWoodcutMaterial, createGhostFresnelMaterial } from '../../shaders';
 import { IBodyPartIssue } from '../../services/patient.types';
 
 const PART_NAMES: Record<string, string> = {
@@ -78,7 +80,7 @@ const PART_NAMES: Record<string, string> = {
     'chakra_muladhara': 'Muladhara (Root Earth Base Support Chakra)'
 };
 
-export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain';
+export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost';
 
 @Component({
     selector: 'app-body-3d-viewer',
@@ -547,6 +549,101 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             </div>
           }
         }
+
+        <!-- 📜 Vesalian Kinematic Mentor & Ghost Lantern HUD -->
+        @if (anatomyViewMode() === 'ghost' || anatomyViewMode() === 'vesalian_woodcut') {
+          <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-2xl bg-zinc-950/95 border border-amber-500/40 rounded-2xl p-3.5 shadow-2xl backdrop-blur-xl font-mono text-xs select-none">
+            <!-- Header -->
+            <div class="flex items-center justify-between gap-2 pb-2 border-b border-zinc-800 text-[11px]">
+              <div class="flex items-center gap-1.5">
+                <span class="text-amber-400 font-bold">📜 VESALIAN 1543 MENTOR</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                  {{ anatomyViewMode() === 'ghost' ? 'GHOST FRESNEL & LANTERN' : 'CHIAROSCURO COPPER ENGRAVING' }}
+                </span>
+              </div>
+              <span class="text-[10px] text-zinc-400 font-mono">
+                Decompression: <span class="text-emerald-400 font-bold">+{{ activeRehabPlan()?.decompressionPercent || 30 }}%</span> | 
+                Torque: <span class="text-cyan-400 font-bold">-{{ activeRehabPlan()?.torqueReductionNm || 35 }} N·m</span>
+              </span>
+            </div>
+
+            <!-- Big Three Condition Selector Buttons -->
+            <div class="flex items-center gap-1.5 my-2 flex-wrap">
+              <button (click)="onRehabConditionSelect('lumbar_pelvic_alignment')"
+                      [class.bg-amber-600]="state.activeRehabCondition() === 'lumbar_pelvic_alignment'"
+                      [class.text-white]="state.activeRehabCondition() === 'lumbar_pelvic_alignment'"
+                      [class.bg-zinc-900]="state.activeRehabCondition() !== 'lumbar_pelvic_alignment'"
+                      [class.text-zinc-400]="state.activeRehabCondition() !== 'lumbar_pelvic_alignment'"
+                      class="px-2.5 py-1 rounded-md text-[10px] font-bold border border-zinc-800 transition hover:border-amber-500/50 cursor-pointer">
+                🦴 Lumbar L4–L5 / Pelvis
+              </button>
+              <button (click)="onRehabConditionSelect('patellofemoral_tracking')"
+                      [class.bg-amber-600]="state.activeRehabCondition() === 'patellofemoral_tracking'"
+                      [class.text-white]="state.activeRehabCondition() === 'patellofemoral_tracking'"
+                      [class.bg-zinc-900]="state.activeRehabCondition() !== 'patellofemoral_tracking'"
+                      [class.text-zinc-400]="state.activeRehabCondition() !== 'patellofemoral_tracking'"
+                      class="px-2.5 py-1 rounded-md text-[10px] font-bold border border-zinc-800 transition hover:border-amber-500/50 cursor-pointer">
+                🦵 Patellofemoral Knee
+              </button>
+              <button (click)="onRehabConditionSelect('cervical_spine_posture')"
+                      [class.bg-amber-600]="state.activeRehabCondition() === 'cervical_spine_posture'"
+                      [class.text-white]="state.activeRehabCondition() === 'cervical_spine_posture'"
+                      [class.bg-zinc-900]="state.activeRehabCondition() !== 'cervical_spine_posture'"
+                      [class.text-zinc-400]="state.activeRehabCondition() !== 'cervical_spine_posture'"
+                      class="px-2.5 py-1 rounded-md text-[10px] font-bold border border-zinc-800 transition hover:border-amber-500/50 cursor-pointer">
+                🧠 Cervical Spine (Tech Neck)
+              </button>
+            </div>
+
+            <!-- Single Scrubber -->
+            <div class="space-y-1 my-2">
+              <div class="flex justify-between text-[10px] font-semibold">
+                <span class="text-rose-400">Habitual Distortion (0%)</span>
+                <span class="text-amber-300 font-bold font-mono">{{ (state.activeRehabProgress() * 100).toFixed(0) }}% Restorative</span>
+                <span class="text-emerald-400">Therapeutic Goal (100%)</span>
+              </div>
+              <input type="range" min="0" max="1" step="0.01"
+                     [value]="state.activeRehabProgress()"
+                     (input)="onRehabProgressChange($event)"
+                     aria-label="Therapeutic Posture Restoration Scrubber"
+                     class="w-full accent-amber-500 bg-zinc-800 h-1.5 rounded-lg cursor-pointer" />
+            </div>
+
+            <!-- Bio-Tensor Muscle Action Cues & Directive -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-zinc-800/80 text-[10px]">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-zinc-500 font-bold">Bio-Tensors:</span>
+                @for (cue of activeRehabPlan()?.bioTensorCues || []; track cue.name) {
+                  <span class="px-2 py-0.5 rounded text-[9.5px] font-bold"
+                        [style.backgroundColor]="cue.colorHex + '22'"
+                        [style.borderColor]="cue.colorHex + '66'"
+                        [style.color]="cue.colorHex"
+                        style="border-width: 1px;">
+                    {{ cue.action === 'contract' ? '⚡ Contract' : '🍃 Relax' }}: {{ cue.name }}
+                  </span>
+                }
+              </div>
+              @if (anatomyViewMode() === 'ghost') {
+                <div class="flex items-center gap-1.5 text-zinc-400">
+                  <span>Lantern:</span>
+                  <input type="range" min="1.0" max="5.0" step="0.2"
+                         [value]="state.activeRehabCutawayRadius()"
+                         (input)="onCutawayRadiusChange($event)"
+                         aria-label="Cutaway Lantern Radius"
+                         class="w-20 accent-cyan-400 bg-zinc-800 h-1 rounded cursor-pointer" />
+                  <span class="font-mono text-[9px] text-cyan-300">{{ state.activeRehabCutawayRadius().toFixed(1) }}m</span>
+                </div>
+              }
+            </div>
+
+            <!-- Plain-English Directive -->
+            @if (activeRehabPlan()?.plainEnglishDirective; as directive) {
+              <div class="mt-2 px-2 py-1 rounded bg-amber-950/40 border border-amber-700/30 text-amber-200 text-[10px] leading-relaxed font-sans">
+                💡 <span class="font-semibold">{{ directive }}</span>
+              </div>
+            }
+          </div>
+        }
       </div>
 
       <!-- 🧬 24-Hour Predictive Biophysical Twin Timeline Scrubber Ribbon -->
@@ -589,6 +686,40 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     protected readonly radarService = inject(SocraticComorbidityRadarService, { optional: true });
     protected readonly veoService = inject(VeoService, { optional: true });
     protected readonly riskSuite = inject(ClinicalSpecialtyRiskSuiteService, { optional: true });
+    protected readonly kinesiologyService = inject(KinesiologyBiomechanicsService, { optional: true });
+
+    // 📜 Vesalian Woodcut & Fresnel Ghost Shader Materials
+    protected vesalianWoodcutMaterial: THREE.ShaderMaterial | null = null;
+    protected ghostFresnelMaterial: THREE.ShaderMaterial | null = null;
+
+    readonly activeRehabPlan = computed<IPrescriptiveRehabPlan | null>(() => {
+      if (!this.kinesiologyService) return null;
+      return this.kinesiologyService.getPrescriptivePlan(this.state.activeRehabCondition());
+    });
+
+    onRehabConditionSelect(conditionKey: string): void {
+      this.state.activeRehabCondition.set(conditionKey);
+      if (conditionKey === 'cervical_spine_posture') {
+        this.setCameraPreset('cranial');
+      } else if (conditionKey === 'patellofemoral_tracking') {
+        this.setCameraPreset('peripheral');
+      } else {
+        this.setCameraPreset('spinal');
+      }
+      if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(20);
+      }
+    }
+
+    onRehabProgressChange(event: Event): void {
+      const val = parseFloat((event.target as HTMLInputElement).value);
+      this.state.activeRehabProgress.set(val);
+    }
+
+    onCutawayRadiusChange(event: Event): void {
+      const val = parseFloat((event.target as HTMLInputElement).value);
+      this.state.activeRehabCutawayRadius.set(val);
+    }
 
     // 🧠 Multiple Sclerosis & Uhthoff Thermal Overlays
     readonly showMsLesions = signal<boolean>(true);
@@ -1929,6 +2060,26 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             color: 0xd97706, roughness: 0.2, metalness: 0.4, emissive: 0xd97706, emissiveIntensity: 0.4, transparent: true, opacity: 0.0, depthWrite: false
         });
 
+        // Andreas Vesalius 1543 Chiaroscuro Copperplate Shader Material
+        this.vesalianWoodcutMaterial = createVesalianWoodcutMaterial({
+            pennationAngleDeg: 20.0,
+            muscleTension: 0.0,
+            hatchScale: 28.0,
+            inkColor: 0xf59e0b,
+            paperColor: 0x1c1917,
+            scotopicMode: true
+        });
+
+        // Translucent Fresnel Ghost Envelope with Rehabilitation Cutaway Lantern
+        this.ghostFresnelMaterial = createGhostFresnelMaterial({
+            innerAlpha: 0.08,
+            rimAlpha: 0.88,
+            rimPower: 2.8,
+            cutawayCenter: new THREE.Vector3(0, 0, 0),
+            cutawayRadius: 2.5,
+            cutawayActive: true
+        });
+
         // Enhanced Procedural GLSL Shader Material with Myocardial Ischemia & Cerebral Perfusion Lenses
         const molecularMaterial = new THREE.ShaderMaterial({
             uniforms: {
@@ -3016,8 +3167,71 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             const isSelected = this.state.selectedPartId() === group.userData['id'];
             group.children.forEach(child => {
                 if (!(child instanceof THREE.Mesh)) return;
-                const material = child.material as THREE.MeshStandardMaterial;
+                if (!child.userData['baseMaterial']) {
+                    child.userData['baseMaterial'] = child.material;
+                }
+                const baseMaterial = child.userData['baseMaterial'] as THREE.Material;
                 const layer = child.userData['layer'];
+
+                if (mode === 'vesalian_woodcut') {
+                    if (layer === 'muscle') {
+                        child.material = this.vesalianWoodcutMaterial || baseMaterial;
+                        (child.material as any).opacity = 1.0;
+                        (child.material as any).depthWrite = true;
+                    } else if (layer === 'bone') {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0.95;
+                            baseMaterial.depthWrite = true;
+                        }
+                    } else if (layer === 'skin') {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0.15;
+                            baseMaterial.depthWrite = false;
+                        }
+                    } else {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0;
+                            baseMaterial.depthWrite = false;
+                        }
+                    }
+                    return;
+                }
+
+                if (mode === 'ghost') {
+                    if (layer === 'skin') {
+                        child.material = this.ghostFresnelMaterial || baseMaterial;
+                        (child.material as any).opacity = 0.88;
+                        (child.material as any).depthWrite = false;
+                    } else if (layer === 'bone') {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0.95;
+                            baseMaterial.depthWrite = true;
+                        }
+                    } else if (layer === 'muscle') {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0.70;
+                            baseMaterial.depthWrite = true;
+                        }
+                    } else {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0;
+                            baseMaterial.depthWrite = false;
+                        }
+                    }
+                    return;
+                }
+
+                // Restore base material if returning from custom shader mode
+                if (child.material !== baseMaterial) {
+                    child.material = baseMaterial;
+                }
+                const material = child.material as THREE.MeshStandardMaterial;
 
                 if (mode === 'skin') {
                     if (layer === 'skin') { material.opacity = isSelected ? 0.98 : 0.92; material.depthWrite = true; }
@@ -3236,6 +3450,53 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                         }
                     });
                 });
+
+                // 4b. Andreas Vesalius & Fresnel Ghost Shader Uniforms & Kinematic Posture
+                if (this.ghostFresnelMaterial && this.ghostFresnelMaterial.uniforms) {
+                    this.ghostFresnelMaterial.uniforms['uTime'].value = time;
+                    this.ghostFresnelMaterial.uniforms['uCutawayRadius'].value = this.state.activeRehabCutawayRadius();
+                    const cond = this.state.activeRehabCondition();
+                    let focalKey = 'pelvis';
+                    if (cond === 'patellofemoral_tracking') focalKey = 'r_shin';
+                    else if (cond === 'cervical_spine_posture') focalKey = 'head';
+                    const focalPart = this.parts.get(focalKey);
+                    if (focalPart) {
+                        const wPos = new THREE.Vector3();
+                        focalPart.getWorldPosition(wPos);
+                        this.ghostFresnelMaterial.uniforms['uCutawayCenter'].value.copy(wPos);
+                    }
+                }
+                if (this.vesalianWoodcutMaterial && this.vesalianWoodcutMaterial.uniforms) {
+                    if (this.vesalianWoodcutMaterial.uniforms['uMuscleTension']) {
+                        this.vesalianWoodcutMaterial.uniforms['uMuscleTension'].value = this.state.activeRehabProgress();
+                    }
+                }
+
+                // Real-Time Therapeutic Posture Interpolation
+                const isRehabMode = this.anatomyViewMode() === 'ghost' || this.anatomyViewMode() === 'vesalian_woodcut';
+                if (isRehabMode) {
+                    const progress = this.state.activeRehabProgress();
+                    const cond = this.state.activeRehabCondition();
+                    if (cond === 'lumbar_pelvic_alignment') {
+                        const pelvisPart = this.parts.get('pelvis');
+                        const lumbarPart = this.parts.get('spine_lumbar');
+                        if (pelvisPart) pelvisPart.rotation.x = (1.0 - progress) * 0.16;
+                        if (lumbarPart) lumbarPart.rotation.x = -(1.0 - progress) * 0.12;
+                    } else if (cond === 'cervical_spine_posture') {
+                        const headPart = this.parts.get('head');
+                        const neckPart = this.parts.get('neck');
+                        if (headPart) {
+                            headPart.position.z = (1.0 - progress) * 0.08;
+                            headPart.rotation.x = (1.0 - progress) * 0.14;
+                        }
+                        if (neckPart) neckPart.rotation.x = (1.0 - progress) * 0.10;
+                    } else if (cond === 'patellofemoral_tracking') {
+                        const rThigh = this.parts.get('r_thigh');
+                        const rShin = this.parts.get('r_shin');
+                        if (rThigh) rThigh.rotation.z = -(1.0 - progress) * 0.08;
+                        if (rShin) rShin.rotation.z = (1.0 - progress) * 0.05;
+                    }
+                }
                 
                 // 5. Mind Core & Neural Pathway Entrainment
                 this.mannequinGroup.children.forEach(child => {

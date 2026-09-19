@@ -384,7 +384,13 @@ export class PatientStateService {
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
   readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular'>('3d');
-  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain'>('skin');
+  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost'>('skin');
+  /** Active rehabilitation condition target for 3D kinematics and ghost mentoring */
+  readonly activeRehabCondition = signal<string>('lumbar_pelvic_alignment');
+  /** Dynamic rehabilitation correction progress: 0.0 = habitual posture, 1.0 = therapeutic restorative goal */
+  readonly activeRehabProgress = signal<number>(0);
+  /** Localized cutaway aperture radius in 3D world units for ghost Fresnel windowing */
+  readonly activeRehabCutawayRadius = signal<number>(2.5);
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
   readonly draftSummaryItems = signal<IDraftSummaryItem[]>([]);
@@ -1302,6 +1308,9 @@ export class PatientStateService {
     this.isResearchFrameVisible.set(false);
     this.aiAnomalyHighlights.set({});
     this.showGhostOverlay.set(false);
+    this.activeRehabCondition.set('lumbar_pelvic_alignment');
+    this.activeRehabProgress.set(0);
+    this.activeRehabCutawayRadius.set(2.5);
     this.issues.set({});
     this.patientGoals.set('');
     this.dietaryProtocol.set('');

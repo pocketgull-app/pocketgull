@@ -12,6 +12,7 @@ import { RaycastSelectionService } from '../../services/raycast-selection.servic
 import { SeverityParticleService } from '../../services/severity-particle.service';
 import { SpatialLesionMarkupService } from '../../services/spatial-lesion-markup.service';
 import { ClinicalSpecialtyRiskSuiteService } from '../../services/clinical-specialty-risk-suite.service';
+import { KinesiologyBiomechanicsService } from '../../services/kinesiology-biomechanics.service';
 
 // Mock Angular effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
 vi.mock('@angular/core', async (importOriginal) => {
@@ -34,15 +35,21 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
       issues: signal({}),
       conditions: signal(['Multiple Sclerosis']),
       occupation: signal(occupation),
-      occupationalProfile: signal(actuarialService.getOccupationalProfile(occupation))
+      occupationalProfile: signal(actuarialService.getOccupationalProfile(occupation)),
+      activeRehabCondition: signal('lumbar_pelvic_alignment'),
+      activeRehabProgress: signal(0),
+      activeRehabCutawayRadius: signal(2.5),
+      selectedPartId: signal(null),
+      selectedPartName: signal(null)
     };
 
     const injector = Injector.create({
       providers: [
         { provide: PLATFORM_ID, useValue: 'browser' },
         { provide: PatientStateService, useValue: mockPatientState },
-        { provide: PatientManagementService, useValue: { selectedPatientId: signal('p_mara_santos') } },
+        { provide: PatientManagementService, useValue: { selectedPatientId: signal('p_mara_santos'), selectedPatient: signal({ preexistingConditions: ['Multiple Sclerosis'] }) } },
         { provide: ClinicalSpecialtyRiskSuiteService, useValue: { computeUhthoffThermalReserve: () => 0.45 } },
+        { provide: KinesiologyBiomechanicsService, useClass: KinesiologyBiomechanicsService },
         { provide: ThemeService, useValue: { isDarkMode: signal(true) } },
         { provide: EnvironmentalTelemetryService, useValue: {} },
         { provide: BodyMeshFactoryService, useValue: {} },
@@ -185,5 +192,31 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     viewer.updateUhthoffThermalColor(0.25); // Critical reserve -> Crimson alert
     viewer.updateUhthoffThermalColor(0.45); // Moderate reserve -> Amber
     viewer.updateUhthoffThermalColor(0.70); // Optimal reserve -> Cyan
+  });
+
+  it('controls Vesalian kinematic mentor condition, progress scrubber, and cutaway lantern radius', () => {
+    const viewer = createViewer();
+    expect(viewer.activeRehabPlan()?.conditionKey).toBe('lumbar_pelvic_alignment');
+    expect(viewer.activeRehabPlan()?.decompressionPercent).toBeGreaterThan(0);
+
+    // Switch condition to cervical spine posture
+    viewer.onRehabConditionSelect('cervical_spine_posture');
+    expect(viewer.activeRehabPlan()?.conditionKey).toBe('cervical_spine_posture');
+    expect(viewer.activeCameraPreset()).toBe('cranial');
+
+    // Switch condition to patellofemoral tracking
+    viewer.onRehabConditionSelect('patellofemoral_tracking');
+    expect(viewer.activeRehabPlan()?.conditionKey).toBe('patellofemoral_tracking');
+    expect(viewer.activeCameraPreset()).toBe('peripheral');
+
+    // Scrub therapeutic posture progress
+    const event = { target: { value: '0.85' } } as unknown as Event;
+    viewer.onRehabProgressChange(event);
+    expect((viewer as any).state.activeRehabProgress()).toBe(0.85);
+
+    // Adjust cutaway aperture radius
+    const radiusEvent = { target: { value: '3.4' } } as unknown as Event;
+    viewer.onCutawayRadiusChange(radiusEvent);
+    expect((viewer as any).state.activeRehabCutawayRadius()).toBe(3.4);
   });
 });
