@@ -434,37 +434,9 @@ export function initVesalian3DViewer(
   const stageGroup = new THREE.Group();
   scene.add(stageGroup);
 
-  // A. Architectural Backdrop (Visible in 3D Mode)
+  // A. Architectural Backdrop (Stage Removed: Clean Floating Anatomical Studio)
   const backdropGroup = new THREE.Group();
   stageGroup.add(backdropGroup);
-
-  const darkWalnutMat = new THREE.MeshStandardMaterial({ color: 0x1f150e, roughness: 0.88, metalness: 0.05 });
-  const carvedTeakMat = new THREE.MeshStandardMaterial({ color: 0x784a25, roughness: 0.72, metalness: 0.12 });
-  const brassTrimMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.45, metalness: 0.85 });
-
-  const backboard = new THREE.Mesh(new THREE.BoxGeometry(2.0, 2.40, 0.04), darkWalnutMat);
-  backboard.position.set(0, 1.10, -0.75);
-  backdropGroup.add(backboard);
-
-  for (let s = 0; s < 15; s++) {
-    const slatY = 0.05 + s * 0.16;
-    const slat = new THREE.Mesh(new THREE.BoxGeometry(1.95, 0.014, 0.014), carvedTeakMat);
-    slat.position.set(0, slatY, -0.728);
-    backdropGroup.add(slat);
-  }
-
-  const pillarGeo = new THREE.CylinderGeometry(0.045, 0.05, 2.35, 16);
-  const leftPillar = new THREE.Mesh(pillarGeo, carvedTeakMat);
-  leftPillar.position.set(-0.95, 1.10, -0.73);
-  backdropGroup.add(leftPillar);
-
-  const rightPillar = new THREE.Mesh(pillarGeo, carvedTeakMat);
-  rightPillar.position.set(0.95, 1.10, -0.73);
-  backdropGroup.add(rightPillar);
-
-  const upperPlinth = new THREE.Mesh(new THREE.BoxGeometry(1.60, 0.09, 1.10), carvedTeakMat);
-  upperPlinth.position.set(0, -0.05, -0.20);
-  backdropGroup.add(upperPlinth);
 
   // B. 2.5D Folio Plate Display (Visible in Folio Mode)
   const folioGroup = new THREE.Group();

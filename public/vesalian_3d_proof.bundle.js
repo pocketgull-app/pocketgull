@@ -1,4 +1,4 @@
-var PocketGull3D = (() => {
+var Vesalian3DViewerProof = (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -35424,28 +35424,6 @@ void main() {
     scene.add(stageGroup);
     const backdropGroup = new Group();
     stageGroup.add(backdropGroup);
-    const darkWalnutMat = new MeshStandardMaterial({ color: 2037006, roughness: 0.88, metalness: 0.05 });
-    const carvedTeakMat = new MeshStandardMaterial({ color: 7883301, roughness: 0.72, metalness: 0.12 });
-    const brassTrimMat = new MeshStandardMaterial({ color: 13938487, roughness: 0.45, metalness: 0.85 });
-    const backboard = new Mesh(new BoxGeometry(2, 2.4, 0.04), darkWalnutMat);
-    backboard.position.set(0, 1.1, -0.75);
-    backdropGroup.add(backboard);
-    for (let s = 0; s < 15; s++) {
-      const slatY = 0.05 + s * 0.16;
-      const slat = new Mesh(new BoxGeometry(1.95, 0.014, 0.014), carvedTeakMat);
-      slat.position.set(0, slatY, -0.728);
-      backdropGroup.add(slat);
-    }
-    const pillarGeo = new CylinderGeometry(0.045, 0.05, 2.35, 16);
-    const leftPillar = new Mesh(pillarGeo, carvedTeakMat);
-    leftPillar.position.set(-0.95, 1.1, -0.73);
-    backdropGroup.add(leftPillar);
-    const rightPillar = new Mesh(pillarGeo, carvedTeakMat);
-    rightPillar.position.set(0.95, 1.1, -0.73);
-    backdropGroup.add(rightPillar);
-    const upperPlinth = new Mesh(new BoxGeometry(1.6, 0.09, 1.1), carvedTeakMat);
-    upperPlinth.position.set(0, -0.05, -0.2);
-    backdropGroup.add(upperPlinth);
     const folioGroup = new Group();
     stageGroup.add(folioGroup);
     const folioTextureLoader = new TextureLoader();

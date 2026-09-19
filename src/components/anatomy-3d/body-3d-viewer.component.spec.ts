@@ -40,6 +40,9 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
       activeRehabProgress: signal(0),
       activeRehabCutawayRadius: signal(2.5),
       activeWoodCutType: signal('camaieu_auto'),
+      activeSurfaceStyle: signal('ecorche_cast'),
+      activeShadingProfile: signal('atelier'),
+      anatomyViewMode: signal('skin'),
       selectedPartId: signal(null),
       selectedPartName: signal(null)
     };
@@ -242,5 +245,48 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
 
     viewer.onWoodCutTypeSelect('camaieu_auto');
     expect((viewer as any).state.activeWoodCutType()).toBe('camaieu_auto');
+  });
+
+  it('toggles between smooth écorché cast (restful, zero moiré) and 1543 woodblock', () => {
+    const viewer = createViewer();
+    expect((viewer as any).state.activeSurfaceStyle()).toBe('ecorche_cast');
+
+    viewer.onSurfaceStyleSelect('woodcut');
+    expect((viewer as any).state.activeSurfaceStyle()).toBe('woodcut');
+
+    viewer.onSurfaceStyleSelect('ecorche_cast');
+    expect((viewer as any).state.activeSurfaceStyle()).toBe('ecorche_cast');
+  });
+
+  it('configures chiaroscuro shading profiles for eye comfort and clinical clarity', () => {
+    const viewer = createViewer();
+    expect((viewer as any).state.activeShadingProfile()).toBe('atelier');
+
+    viewer.onShadingProfileSelect('clinical');
+    expect((viewer as any).state.activeShadingProfile()).toBe('clinical');
+
+    viewer.onShadingProfileSelect('theatre');
+    expect((viewer as any).state.activeShadingProfile()).toBe('theatre');
+
+    viewer.onShadingProfileSelect('scotopic');
+    expect((viewer as any).state.activeShadingProfile()).toBe('scotopic');
+
+    viewer.onShadingProfileSelect('atelier');
+    expect((viewer as any).state.activeShadingProfile()).toBe('atelier');
+  });
+
+  it('switches anatomical paradigms reactively via onParadigmChange', () => {
+    const viewer = createViewer();
+    expect(viewer.effectiveAnatomyViewMode()).toBe('skin');
+
+    const event = { target: { value: 'vesalian_woodcut' } } as unknown as Event;
+    viewer.onParadigmChange(event);
+    expect((viewer as any).state.anatomyViewMode()).toBe('vesalian_woodcut');
+    expect(viewer.effectiveAnatomyViewMode()).toBe('vesalian_woodcut');
+
+    const skeletonEvent = { target: { value: 'skeleton' } } as unknown as Event;
+    viewer.onParadigmChange(skeletonEvent);
+    expect((viewer as any).state.anatomyViewMode()).toBe('skeleton');
+    expect(viewer.effectiveAnatomyViewMode()).toBe('skeleton');
   });
 });

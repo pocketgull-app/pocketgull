@@ -16,9 +16,10 @@ import {
   IPatientAnatomicProfile
 } from './patient.types';
 import { getSecureRandomId } from '../utils/security-helper';
-import { WoodCutType } from '../shaders/vesalian-woodcut.shader';
+import { WoodCutType, SurfaceStyle } from '../shaders/vesalian-woodcut.shader';
 
-export type { IPatientState, WoodCutType };
+export type ShadingProfile = 'atelier' | 'clinical' | 'theatre' | 'scotopic';
+export type { IPatientState, WoodCutType, SurfaceStyle };
 export { BODY_PART_NAMES };
 
 export interface IAdaptiveVitalThresholds {
@@ -394,6 +395,10 @@ export class PatientStateService {
   readonly activeRehabCutawayRadius = signal<number>(2.5);
   /** Active woodcut relief style derived from Atelier Xylem / The Carpenter's Metronome */
   readonly activeWoodCutType = signal<WoodCutType>('camaieu_auto');
+  /** Active 3D surface style: smooth matte écorché cast (zero moiré) vs 1543 woodblock */
+  readonly activeSurfaceStyle = signal<SurfaceStyle>('ecorche_cast');
+  /** Active chiaroscuro shading profile: atelier (3200K), clinical (4500K), theatre (5600K), scotopic (650nm) */
+  readonly activeShadingProfile = signal<ShadingProfile>('atelier');
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
   readonly draftSummaryItems = signal<IDraftSummaryItem[]>([]);
@@ -1315,6 +1320,8 @@ export class PatientStateService {
     this.activeRehabProgress.set(0);
     this.activeRehabCutawayRadius.set(2.5);
     this.activeWoodCutType.set('camaieu_auto');
+    this.activeSurfaceStyle.set('ecorche_cast');
+    this.activeShadingProfile.set('atelier');
     this.issues.set({});
     this.patientGoals.set('');
     this.dietaryProtocol.set('');
@@ -1361,6 +1368,16 @@ export class PatientStateService {
   /** Remove all AI anomaly overlay markers from the 3D viewer. */
   clearAiAnomalyHighlights() {
     this.aiAnomalyHighlights.set({});
+  }
+
+  /** Set active 3D surface style: 'ecorche_cast' (smooth matte) or 'woodcut' (1543 relief) */
+  setSurfaceStyle(style: SurfaceStyle): void {
+    this.activeSurfaceStyle.set(style);
+  }
+
+  /** Set active chiaroscuro lighting and contrast profile */
+  setShadingProfile(profile: ShadingProfile): void {
+    this.activeShadingProfile.set(profile);
   }
 
   /** Clears only patient data, leaving UI state intact, for review mode */
