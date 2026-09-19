@@ -109,7 +109,7 @@ import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversio
             Care Plan Handoff
           </div>
           <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-snug mt-1">
-            Commit counterfactual targets directly to the active patient profile state.
+            Apply counterfactual targets directly to the active patient profile state.
           </p>
           <button
             type="button"

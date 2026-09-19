@@ -391,6 +391,11 @@ const CLINICAL_ARCHETYPES = [
                   title="Non-Pharmacological First: Evidence-based lifestyle modalities for human happiness without unnecessary pharmaceutical dependency">
                   Preset: Non-Pharm First (Happiness Without Drugs)
                 </button>
+                <button (click)="setProofreaderPreset('stewardship')"
+                  class="px-2.5 py-1 rounded-lg bg-sky-950/40 hover:bg-sky-900/50 border border-sky-500/30 text-sky-200 text-[10px] font-bold cursor-pointer transition"
+                  title="Dismantling bureaucratic steering committees and gavels in favor of diverse, gender-neutral collaborative care stewardship">
+                  Preset: Good Steward (No Gavels)
+                </button>
                 <button (click)="setProofreaderPreset('non_compliant')"
                   class="px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/50 border border-rose-500/30 text-rose-200 text-[10px] font-bold cursor-pointer transition">
                   Preset: "Non-Compliant Addict"
@@ -719,6 +724,8 @@ export class LocalGemmaStudioComponent {
       this.proofreaderInputText = 'Cardiology consult: Patient is a substance abuser who has been non-compliant with daily Metoprolol.';
     } else if (type === 'non_pharmacological') {
       this.proofreaderInputText = 'Clinical intake: Patient presents with burnout and mild depression. Provider noted chemical imbalance in the brain; needs medication to be happy and start an antidepressant immediately. Prior notes indicate patient failed medication in 2023.';
+    } else if (type === 'stewardship') {
+      this.proofreaderInputText = 'Hospital administration announced that the steering committee mandated a pill for every ill rather than supporting community care circles.';
     }
     this.runProofreaderCheck();
   }

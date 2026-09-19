@@ -8,7 +8,8 @@ export type DsmCategory =
   | 'TOXICOLOGY'
   | 'EMERGENCY_TRIAGE'
   | 'NON_PHARMACOLOGICAL_FIRST'
-  | 'DEPRESCRIBING';
+  | 'DEPRESCRIBING'
+  | 'CLINICAL_GOVERNANCE';
 
 export type DsmSeverity = 'RECOMMENDED_SHIFT' | 'STIGMA_ALERT' | 'HIGH_PRIORITY';
 
@@ -213,6 +214,34 @@ export class DsmLanguageCorrectionService {
         sampleBefore: 'Patient failed all SSRIs and remains clinically depressed.',
         sampleAfter: 'Medication did not provide adequate therapeutic benefit; explore non-pharmacological root causes and structured deprescribing.',
         severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'governance-steering-committee-stewardship',
+        version: '1.0.0',
+        deprecatedPattern: /\b(steering committee(?:'s)?|steering committees|formulary steering committee|advisory steering committee)\b/gi,
+        preferredTerm: 'collaborative stewardship circle (or interdisciplinary care guidance council)',
+        category: 'CLINICAL_GOVERNANCE',
+        standardSource: 'INSTITUTIONAL',
+        citation: 'Diverse Care Stewardship Standard; Indigenous Consensus Circles; Berwick (Promising Care)',
+        educationalRationale: 'Top-down "steering committees" historically reflect patriarchal, hierarchical bureaucracy that disempowers patients and frontline caregivers. In modern, diverse, and trauma-informed healthcare, clinical guidance is led by collaborative stewardship circles or care councils that welcome diverse perspectives, lived experience, and patient autonomy without authoritarian gavels.',
+        sampleBefore: 'The hospital steering committee mandated immediate implementation of the protocol.',
+        sampleAfter: 'The collaborative stewardship circle recommended patient-centered adaptation of the protocol.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'rational-therapeutics-good-steward-standard',
+        version: '1.0.0',
+        deprecatedPattern: /\b(pill for every ill|prescribe first|medicate the symptoms immediately|pharmacology first for low mood|chemical cure for sadness)\b/gi,
+        preferredTerm: 'rational therapeutics: prioritize non-pharmacological root causes, restorative lifestyle, and natural healing before drugs (The Good Steward Standard)',
+        category: 'NON_PHARMACOLOGICAL_FIRST',
+        standardSource: 'LIFESTYLE_MEDICINE',
+        citation: 'Goodman & Gilman (Rational Therapeutics); Dr. Rebecca Crumpler (A Book of Medical Discourses); Dr. Louisa Burns (Whole-Person Osteopathy)',
+        educationalRationale: 'The Good Steward standard—championed by diverse medical pioneers including Dr. Rebecca Crumpler, Dr. Susan La Flesche Picotte, Dr. Louisa Burns, and rational pharmacologists—holds that the highest clinical art is achieving healing with the fewest drugs possible, and whenever possible, none at all. Happiness and vitality cannot be reduced to synthetic chemicals; care begins with restorative rest, movement, nutrition, somatic regulation, and human connection.',
+        sampleBefore: 'Clinic philosophy adopted a pill for every ill to rapidly control symptoms.',
+        sampleAfter: 'Clinic philosophy adopted rational therapeutics: prioritize non-pharmacological root causes, restorative lifestyle, and natural healing before drugs (The Good Steward Standard).',
+        severity: 'HIGH_PRIORITY',
         active: true
       },
       {

@@ -25,6 +25,16 @@ export interface IAgentPersona {
     svgAnimation: string;
     /** Maps to ADK / system orchestrator */
     adkMapping: string;
+    /** Specific seagull variety name (Laridae family) */
+    gullVariety?: string;
+    /** Scientific Latin binomial */
+    scientificName?: string;
+    /** Adult wingspan in centimeters */
+    wingspanCm?: number;
+    /** Natural coastal / marine habitat */
+    coastalHabitat?: string;
+    /** Natural gull behavioral trait mapped to patient care */
+    gullCareSpecialty?: string;
 }
 
 /**
@@ -43,6 +53,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Brass Telescope', 'Weathered Captain’s Logbook', 'Compass Rose'],
         svgAnimation: 'telescope-scan',
         adkMapping: 'overview_agent',
+        gullVariety: 'Glaucous-winged Gull',
+        scientificName: 'Larus glaucescens',
+        wingspanCm: 137,
+        coastalHabitat: 'Pacific Northwest Rocky Coasts & Puget Sound',
+        gullCareSpecialty: 'Panoramic Shoreline Scouting: Glides above coastal updrafts to synthesize the full longitudinal clinical picture.',
     },
     swoop: {
         name: 'Swoop',
@@ -55,6 +70,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Leather Satchel', 'Stethoscope', 'Aviator Goggles'],
         svgAnimation: 'satchel-bounce',
         adkMapping: 'interventions_agent',
+        gullVariety: 'Franklin\'s Gull',
+        scientificName: 'Leucophaeus pipixcan',
+        wingspanCm: 90,
+        coastalHabitat: 'Inland Prairie Marshes & Pacific Coastal Flyways',
+        gullCareSpecialty: 'Agile Care Precision: Highly nimble flyer that swoops in with targeted non-pharmacological care steps before problems escalate.',
     },
     sentinel: {
         name: 'Sentinel',
@@ -67,6 +87,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Lighthouse Cap', 'Binoculars', 'Signal Lantern'],
         svgAnimation: 'lantern-beam-rotate',
         adkMapping: 'monitoring_agent',
+        gullVariety: 'Black-legged Kittiwake',
+        scientificName: 'Rissa tridactyla',
+        wingspanCm: 91,
+        coastalHabitat: 'Sheer Arctic Sea Cliffs & Open Ocean Waters',
+        gullCareSpecialty: 'Pelagic Vigilance: True oceanic cliff gull that rides storm winds without landing, monitoring recovery trends and vital signals.',
     },
     scribes: {
         name: 'Scribes',
@@ -79,6 +104,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Reading Spectacles', 'Open Storybook', 'Ink Quill'],
         svgAnimation: 'quill-write',
         adkMapping: 'education_agent',
+        gullVariety: 'Heermann\'s Gull',
+        scientificName: 'Larus heermanni',
+        wingspanCm: 118,
+        coastalHabitat: 'Baja California Islets & Pacific Sandy Beaches',
+        gullCareSpecialty: 'Empowering Translation: Highly communicative Pacific gull that translates complex medical Latin into warm, dyslexia-friendly patient stories.',
     },
     skimmer: {
         name: 'Skimmer',
@@ -91,6 +121,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Racing Goggles', 'Speed Lines', 'Mandible Probe'],
         svgAnimation: 'speed-dash',
         adkMapping: 'gemini-3.8-flash',
+        gullVariety: 'Sabine\'s Gull',
+        scientificName: 'Xema sabini',
+        wingspanCm: 89,
+        coastalHabitat: 'High Arctic Wet Tundra & Pelagic Ocean Currents',
+        gullCareSpecialty: 'High-Speed Edge Inference: Fork-tailed, ultra-fast pelagic gull that skims on-device Chrome Prompt API / Gemma 4 with zero network drag.',
     },
     samaritan: {
         name: 'Samaritan',
@@ -103,6 +138,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Red Cross Armband', 'Defibrillator Paddle', 'CPR Metronome'],
         svgAnimation: 'cpr-pulse-metronome',
         adkMapping: 'offline_emergency_bypass',
+        gullVariety: 'Great Black-backed Gull',
+        scientificName: 'Larus marinus',
+        wingspanCm: 165,
+        coastalHabitat: 'North Atlantic Rocky Coasts & Windswept Ocean Islands',
+        gullCareSpecialty: 'Good Samaritan Rescuer: The largest and most powerful gull in the world; delivers heavy-lift emergency triage and protective life support.',
     },
     coach: {
         name: 'Head Coach Red',
@@ -115,6 +155,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Whistle & Lanyard', 'Chalkboard Playbook', '1996 Gold Championship Ring'],
         svgAnimation: 'playbook-whistle',
         adkMapping: 'head_coach_96_agent',
+        gullVariety: 'Western Gull',
+        scientificName: 'Larus occidentalis',
+        wingspanCm: 135,
+        coastalHabitat: 'Pacific Coast Bluffs, Harbors & Offshore Islands',
+        gullCareSpecialty: 'Steadfast Team Fundamentals: Formidable, unflappable anchor of the Pacific coast who keeps the multidisciplinary care team focused and confident.',
     },
     monk: {
         name: 'Brother Gulliver',
@@ -127,6 +172,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Linen Habit', 'Contemplative Hourglass', 'Olive Oil & Herbs'],
         svgAnimation: 'candle-pulse',
         adkMapping: 'lenten_monk_agent',
+        gullVariety: 'Ross\'s Gull',
+        scientificName: 'Rhodostethia rosea',
+        wingspanCm: 84,
+        coastalHabitat: 'High Arctic Sea Ice, Pack Floes & Siberian Tundra',
+        gullCareSpecialty: 'Circadian Renewal & Peace: Delicate pink-washed Arctic gull that brings quiet contemplation, parasympathetic vagal rhythm, and restorative rest.',
     },
     curie: {
         name: 'Madame Marie Curie',
@@ -139,6 +189,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Electrometer', 'Radium Test Tube', '1903 Nobel Medal'],
         svgAnimation: 'radium-glow',
         adkMapping: 'madame_curie_agent',
+        gullVariety: 'Ivory Gull',
+        scientificName: 'Pagophila eburnea',
+        wingspanCm: 108,
+        coastalHabitat: 'Arctic Drift Ice & High Latitude Nunataks',
+        gullCareSpecialty: 'Alabaster Empirical Rigor: Pure white high-arctic gull that thrives at the ice edge, cutting through diagnostic fog with dispassionate physical truth.',
     },
     debugger: {
         name: 'Zero',
@@ -151,6 +206,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Digital Broom', 'Magnifying Glass', 'Source Map Scroll'],
         svgAnimation: 'error-sweep',
         adkMapping: 'debug_integrity_agent',
+        gullVariety: 'Laughing Gull',
+        scientificName: 'Leucophaeus atricilla',
+        wingspanCm: 100,
+        coastalHabitat: 'Atlantic & Gulf Coastal Salt Marshes & Sandy Beaches',
+        gullCareSpecialty: 'Beachcomber Polish: Methodical coastal cleaner that searches every tidepool and line of code to keep clinical workflows smooth and sparkling.',
     },
     beacon: {
         name: 'Beacon',
@@ -163,6 +223,11 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         props: ['Golden Lighthouse Trophy', 'Stopwatch', 'Prism Lens'],
         svgAnimation: 'beam-sweep-100',
         adkMapping: 'performance_optimization_agent',
+        gullVariety: 'Silver Gull',
+        scientificName: 'Chroicocephalus novaehollandiae',
+        wingspanCm: 93,
+        coastalHabitat: 'Southern Coastal Waters, Bays & Lighthouse Headlands',
+        gullCareSpecialty: 'Lighthouse Beacon: Radiant silver-and-white coastal gull that shines a luminous beam to keep web interactions lightning fast.',
     },
     osteopath: {
         name: 'Dr. Elena Gullwing, DO',
@@ -172,9 +237,14 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         accentColor: '#D97706',
         accentTailwind: 'amber-600',
         avatarPath: 'assets/images/agents/osteopath.png',
-        props: ['Spine Biomechanical Model', 'Steering Committee Gavel', 'OMT Palpation Gauge'],
+        props: ['Spine Biomechanical Model', 'Compassionate Somatic Tuning Fork', 'OMT Palpation Gauge'],
         svgAnimation: 'somatic-resonance',
         adkMapping: 'osteopathic_rounds_director',
+        gullVariety: 'Herring Gull',
+        scientificName: 'Larus argentatus',
+        wingspanCm: 145,
+        coastalHabitat: 'North Atlantic Rocky Shores, Estuaries & Ocean Headlands',
+        gullCareSpecialty: 'Somatic Vagal Resonance: Master of effortless whole-body thermal soaring; aligns physical biomechanics and vagal resonance with zero gavels.',
     },
 };
 

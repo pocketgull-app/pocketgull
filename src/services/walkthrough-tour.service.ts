@@ -237,7 +237,7 @@ export class WalkthroughTourService {
           },
           {
             targetId: 'tour-epistemic-falsification',
-            title: 'Challenge Before You Commit',
+            title: 'Challenge Before You Conclude',
             body: 'Combat confirmation bias: Popperian disconfirmation presents 3 orthogonal counter-hypotheses and bedside physical exam checklists to verify before sealing diagnostic assertions.',
             position: 'left',
             badge: 'Epistemic CDS'

@@ -203,4 +203,26 @@ describe('DsmLanguageCorrectionService', () => {
     expect(flag).toBeDefined();
     expect(flag!.preferredTerm).toContain('involuntary psychiatric hospitalization');
   });
+
+  it('16. Flags "steering committee" in favor of collaborative stewardship circle', () => {
+    const text = 'The hospital steering committee mandated clinical guideline compliance.';
+    const result = service.auditText(text);
+
+    expect(result.hasSuggestions).toBe(true);
+    const flag = result.suggestions.find(s => s.ruleId === 'governance-steering-committee-stewardship');
+    expect(flag).toBeDefined();
+    expect(flag!.category).toBe('CLINICAL_GOVERNANCE');
+    expect(flag!.preferredTerm).toContain('collaborative stewardship circle');
+  });
+
+  it('17. Flags "pill for every ill" in favor of rational therapeutics (The Good Steward Standard)', () => {
+    const text = 'Clinic policy rejects a pill for every ill in functional care.';
+    const result = service.auditText(text);
+
+    expect(result.hasSuggestions).toBe(true);
+    const flag = result.suggestions.find(s => s.ruleId === 'rational-therapeutics-good-steward-standard');
+    expect(flag).toBeDefined();
+    expect(flag!.preferredTerm).toContain('The Good Steward Standard');
+  });
 });
+

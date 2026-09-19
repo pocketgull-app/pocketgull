@@ -1111,7 +1111,7 @@ export interface IPosology3ActTrajectory {
             <div class="flex items-center gap-2 text-xs font-mono">
               @if (showAppliedToast()) {
                 <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 animate-in fade-in duration-200">
-                  ✓ Committed to Care Plan, SOAP Note &amp; Audit Log
+                  ✓ Recorded to Care Plan, SOAP Note &amp; Audit Log
                 </span>
               }
               @if (showPrintedToast()) {

@@ -254,7 +254,7 @@ import { PatientStateService } from '../services/patient-state.service';
 
       <!-- Action Control Row -->
       <div class="flex flex-wrap gap-3">
-        <button (click)="commitAssessment()"
+        <button (click)="recordAssessment()"
           class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold uppercase tracking-wider text-xs transition shadow hover:shadow-md active:scale-95 cursor-pointer">
           <span>💾 Record {{ svc.activeTab().toUpperCase() }} in FHIR Timeline</span>
         </button>
@@ -433,8 +433,8 @@ export class ClinicalAssessmentsSuiteComponent {
     return this.svc.answersMap()[this.svc.activeTab()]?.[questionId];
   }
 
-  commitAssessment() {
-    const payload = this.svc.commitToTimeline(this.svc.activeTab());
+  recordAssessment() {
+    const payload = this.svc.recordToTimeline(this.svc.activeTab());
     if (payload) {
       // Synchronize findings into Active Room notes & care checklist
       this.patientState.addClinicalNote({
@@ -453,6 +453,11 @@ export class ClinicalAssessmentsSuiteComponent {
       this.toastMessage.set(`${payload.title} (Score: ${payload.totalScore}/${payload.maxScore} — ${payload.severityLabel}) recorded in FHIR Patient Timeline & Active Room.`);
       setTimeout(() => this.toastMessage.set(null), 6000);
     }
+  }
+
+  /** Backwards-compatible alias for recordAssessment */
+  commitAssessment() {
+    this.recordAssessment();
   }
 
   sendToActiveRoom() {

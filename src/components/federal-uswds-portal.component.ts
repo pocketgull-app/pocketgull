@@ -677,7 +677,7 @@ export interface IFhirResourceEntry {
                       [disabled]="!isAttested()"
                       class="px-5 py-2 text-xs font-bold rounded-xs bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
                     >
-                      ✓ Commit Clinical Attestation
+                      ✓ Confirm Clinical Attestation
                     </button>
                   }
                 </div>
@@ -1057,7 +1057,7 @@ export class FederalUswdsPortalComponent {
   }
 
   public submitIntake(): void {
-    this.simulateScreenReaderAnnouncement('Clinical intake and PACT Act screening successfully committed with cryptographic seal.');
+    this.simulateScreenReaderAnnouncement('Clinical intake and PACT Act screening successfully attested with cryptographic seal.');
     this.currentTab.set('care-plan');
   }
 
