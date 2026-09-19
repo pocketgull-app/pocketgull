@@ -6,6 +6,7 @@ import { NanoProvider } from '../services/ai/nano.provider';
 import { OnDeviceEmbedderService } from '../services/ai/on-device-embedder.service';
 import { HardwareTelemetryService } from '../services/hardware/hardware-telemetry.service';
 import { PatientStateService } from '../services/patient-state.service';
+import { DsmLanguageCorrectionService } from '../services/dsm-language-correction.service';
 
 describe('LocalGemmaStudioComponent', () => {
   const createComponent = () => {
@@ -71,7 +72,8 @@ describe('LocalGemmaStudioComponent', () => {
         { provide: NanoProvider, useValue: mockNano },
         { provide: OnDeviceEmbedderService, useValue: mockEmbedder },
         { provide: HardwareTelemetryService, useValue: mockHardware },
-        { provide: PatientStateService, useValue: mockState }
+        { provide: PatientStateService, useValue: mockState },
+        { provide: DsmLanguageCorrectionService, useClass: DsmLanguageCorrectionService }
       ]
     });
 
@@ -133,4 +135,30 @@ describe('LocalGemmaStudioComponent', () => {
     expect(comp.messages().length).toBe(2);
     expect(comp.messages()[1].text).toContain('Remote Maritime Protocol');
   });
+
+  it('7. Audits note for DSM-5-TR / ASAM language shifts and allows 1-click harmonization', async () => {
+    const { comp } = createComponent();
+    comp.setProofreaderPreset('detox');
+    await comp.runProofreaderCheck();
+
+    expect(comp.dsmAuditResult()).toBeTruthy();
+    expect(comp.dsmAuditResult()!.hasSuggestions).toBe(true);
+    expect(comp.dsmAuditResult()!.suggestions[0].preferredTerm).toBe('medically-managed withdrawal');
+
+    // 1-Click Harmonize All
+    comp.harmonizeAllDsm();
+    expect(comp.proofreaderInputText).toContain('medically-managed withdrawal');
+    expect(comp.proofreaderInputText).not.toContain('detox');
+  });
+
+  it('8. Audits note for toxicology and adherence presets', async () => {
+    const { comp } = createComponent();
+    comp.setProofreaderPreset('toxicology');
+    await comp.runProofreaderCheck();
+
+    expect(comp.dsmAuditResult()?.hasSuggestions).toBe(true);
+    const hasToxSuggestion = comp.dsmAuditResult()?.suggestions.some(s => s.category === 'TOXICOLOGY');
+    expect(hasToxSuggestion).toBe(true);
+  });
 });
+
