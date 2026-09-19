@@ -207,7 +207,7 @@ export interface IFhirResourceEntry {
             <div class="space-y-6 max-w-5xl mx-auto animate-in fade-in duration-150">
               
               <!-- Veteran Demographics & Identity Strip (Dual Mode) -->
-              <div class="p-4 bg-white dark:bg-zinc-900 border-l-4 border-[#005ea2] border-y border-r border-zinc-200 dark:border-zinc-800 rounded-xs shadow-xs flex flex-wrap items-center justify-between gap-4">
+              <div class="p-4 bg-white dark:bg-zinc-900 border-l-4 border-l-[#005ea2] border-y border-r border-zinc-200 dark:border-zinc-800 rounded-xs shadow-xs flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                   <div class="w-12 h-12 rounded-xs bg-[#005ea2]/10 dark:bg-blue-950/60 border border-[#005ea2]/40 flex items-center justify-center text-2xl shrink-0 select-none">
                     {{ entityMode() === 'official-gov' ? '🎖️' : '🏥' }}
@@ -245,7 +245,7 @@ export interface IFhirResourceEntry {
               </div>
 
               <!-- USWDS Alert Box: Clinical Safety & ISMP Disambiguation -->
-              <div class="usa-alert p-4 bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 border-y border-r border-amber-200 dark:border-amber-900/60 rounded-xs flex gap-3 text-xs text-amber-950 dark:text-amber-100">
+              <div class="usa-alert p-4 bg-amber-50 dark:bg-amber-950/30 border-l-4 border-l-amber-500 border-y border-r border-amber-200 dark:border-amber-900/60 rounded-xs flex gap-3 text-xs text-amber-950 dark:text-amber-100">
                 <span class="text-lg shrink-0" aria-hidden="true">⚠️</span>
                 <div class="space-y-1">
                   <p class="font-bold text-sm m-0">ISMP Clinical Prescribing Guard &amp; Drug-Disease Interaction</p>

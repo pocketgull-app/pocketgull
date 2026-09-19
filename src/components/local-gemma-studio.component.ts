@@ -707,7 +707,7 @@ export class LocalGemmaStudioComponent {
     );
   }
 
-  setProofreaderPreset(type: 'trailing_zero' | 'naked_decimal' | 'typos' | 'detox' | 'toxicology' | 'suicide' | 'non_compliant' | 'non_pharmacological'): void {
+  setProofreaderPreset(type: 'trailing_zero' | 'naked_decimal' | 'typos' | 'detox' | 'toxicology' | 'suicide' | 'non_compliant' | 'non_pharmacological' | 'stewardship'): void {
     if (type === 'trailing_zero') {
       this.proofreaderInputText = 'Administer Morphine 5.0 mg IV push for acute post-operative pain.';
     } else if (type === 'naked_decimal') {
