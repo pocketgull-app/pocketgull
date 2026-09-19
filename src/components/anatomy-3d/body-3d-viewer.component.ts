@@ -2144,26 +2144,26 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             color: 0xd97706, roughness: 0.2, metalness: 0.4, emissive: 0xd97706, emissiveIntensity: 0.4, transparent: true, opacity: 0.0, depthWrite: false
         });
 
-        // Andreas Vesalius 1543 Chiaroscuro Copperplate Shader Material
+        // Andreas Vesalius 1543 Chiaroscuro Copperplate Shader Material (Warm Honey Teakwood)
         this.vesalianWoodcutMaterial = createVesalianWoodcutMaterial({
             pennationAngleDeg: 20.0,
             muscleTension: 0.0,
             hatchScale: 28.0,
-            inkColor: 0xf59e0b,
-            paperColor: 0x1c1917,
+            inkColor: 0xcd8d58, // Warm Honey Teak / Pearwood (matches reference plate, gentle on eyes)
+            paperColor: 0x22150e, // Deep Walnut Carved Hollow
             scotopicMode: true,
             woodCutType: this.state.activeWoodCutType(),
             grainStrength: 0.85,
             reliefDepth: 1.8
         });
 
-        // Andreas Vesalius 1543 Skeletal Architectural Woodcut Material
+        // Andreas Vesalius 1543 Skeletal Architectural Woodcut Material (Antique Boxwood Ivory)
         this.vesalianBoneWoodcutMaterial = createVesalianWoodcutMaterial({
             pennationAngleDeg: 0.0,
             muscleTension: 0.0,
             hatchScale: 32.0,
-            inkColor: 0xfde68a,
-            paperColor: 0x18181b,
+            inkColor: 0xdfcca6, // Antique Boxwood / Bone Ivory
+            paperColor: 0x1c130b, // Deep Sepia Cutaway
             scotopicMode: true,
             woodCutType: this.state.activeWoodCutType() === 'camaieu_auto' ? 'slatted' : this.state.activeWoodCutType(),
             grainStrength: 0.90,

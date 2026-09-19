@@ -306,6 +306,21 @@
       border-color: rgba(20, 184, 166, 0.5);
     }
 
+    /* Rachel Nabors 0.1 Hz Bio-Rhythmic Eye-Pacing Glow (10s Parasympathetic Cycle) */
+    @keyframes bioPacingGlow {
+      0%, 100% {
+        box-shadow: inset 0 0 50px rgba(0,0,0,0.6), 0 0 10px rgba(45, 212, 191, 0.08);
+        border-color: #3d2a1d;
+      }
+      40% {
+        box-shadow: inset 0 0 50px rgba(0,0,0,0.6), 0 0 32px rgba(45, 212, 191, 0.45);
+        border-color: #2dd4bf;
+      }
+    }
+    .bio-pacing-active {
+      animation: bioPacingGlow 10s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+    }
+
     .comp-val {
       font-family: 'PocketGull Mono', monospace;
       font-size: 28px;
@@ -603,238 +618,512 @@
   <!-- MASTER FRAME 3: Vesalian Woodcut, Diatomaceous Lattice & 3D Ghost Mentor  -->
   <!-- ========================================================================= -->
   <div class="master-frame" style="margin-top: 16px;">
-    <!-- Header -->
-    <div class="header-row">
+    <!-- Quiet Workshop Header -->
+    <div class="header-row" style="align-items: center; justify-content: space-between;">
       <div class="title-group">
-        <h2>Master Frame 3: Vesalian Woodcut, Diatomaceous Lattice &amp; 3D Ghost Mentor</h2>
-        <div class="subtitle">
-          Jan van Calcar &amp; Andreas Vesalius (Basel, 1543) • Ernst Haeckel Biosilica • LiDAR Topography • Single-Scrubber Recovery Guidance
+        <h2 style="font-family: 'PocketGull', serif; font-size: 23px; color: #faf8f0; letter-spacing: -0.01em; margin: 0;">
+          Spinal &amp; Joint Realignment Guide
+        </h2>
+        <div class="subtitle" style="font-size: 13px; color: #a1a1aa; margin-top: 4px;">
+          Quiet, guided movement to decompress pinched nerves and restore natural balance.
         </div>
       </div>
-      <div class="badges-row">
-        <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">
-          🏛️ Calcar 1543 Woodcut
-        </span>
-        <span class="badge" style="background: rgba(20, 184, 166, 0.15); color: #2dd4bf; border-color: rgba(20, 184, 166, 0.4);">
-          🧫 Diatom Biosilica
-        </span>
-        <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">
-          👻 Fresnel Cutaway Lens
-        </span>
-        <span class="badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.4);">
-          🎯 Big Three Triad
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <span style="font-family: 'PocketGull Mono'; font-size: 11px; padding: 4px 10px; border-radius: 6px; background: rgba(45, 212, 191, 0.12); color: #2dd4bf; border: 1px solid rgba(45, 212, 191, 0.3);">
+          ✓ Quiet Clinical View
         </span>
       </div>
     </div>
 
-    <!-- Main Content Grid -->
-    <div class="content-grid" style="margin-top: 24px;">
+    <!-- Main Content Container: Clean, Focused Clinical Layout -->
+    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 14px;">
       
-      <!-- Left Column: Vesalian Ghost Viewport & Single-Scrubber Guidance -->
-      <div class="canvas-column">
-        <div class="canvas-header">
-          <div class="canvas-title">
-            <span>🏛️ Vesalian Calcar Contraction &amp; Fresnel Ghost Lantern</span>
-            <span id="rehabConditionBadge" style="font-size: 11px; color: #fbbf24; font-family: 'PocketGull Mono';">
-              L4-L5 Lumbar Alignment
+      <!-- Body Region Navigation Bar (Front & Center) -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: rgba(24, 24, 32, 0.85); padding: 10px 16px; border-radius: 12px; border: 1px solid #272732;">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <span style="font-family: 'PocketGull Mono'; font-size: 11px; color: #71717a; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px;">Focal Region:</span>
+          <button id="btnTriadLumbar" style="background: #2dd4bf; color: #09090b; border: none; padding: 6px 16px; border-radius: 8px; font-size: 12px; font-family: 'PocketGull Mono'; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 10px rgba(45,212,191,0.25);">
+            🦴 Lower Back (L4–L5)
+          </button>
+          <button id="btnTriadKnee" style="background: rgba(18,18,24,0.7); color: #a1a1aa; border: 1px solid #272732; padding: 6px 16px; border-radius: 8px; font-size: 12px; font-family: 'PocketGull Mono'; cursor: pointer; transition: all 0.2s;">
+            🦵 Knee (Patella)
+          </button>
+          <button id="btnTriadCervical" style="background: rgba(18,18,24,0.7); color: #a1a1aa; border: 1px solid #272732; padding: 6px 16px; border-radius: 8px; font-size: 12px; font-family: 'PocketGull Mono'; cursor: pointer; transition: all 0.2s;">
+            📱 Neck (Cervical)
+          </button>
+        </div>
+
+        <!-- Subtle Camera Actions -->
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <button id="btn3dResetCam" title="Center view on active region" style="background: rgba(18, 18, 24, 0.9); color: #2dd4bf; border: 1px solid #272732; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer;">
+            🎯 Center View
+          </button>
+          <button id="btn3dAutoSpin" title="Toggle gentle rotation" style="background: rgba(18, 18, 24, 0.9); color: #a1a1aa; border: 1px solid #272732; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer;">
+            🔄 Slow Orbit
+          </button>
+        </div>
+      </div>
+
+      <!-- Shading & Retinal Ergonomics Bar (Chiaroscuro & Scotopic Night Vision) -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; background: rgba(18, 18, 24, 0.7); padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+          <span style="font-family: 'PocketGull Mono'; font-size: 10.5px; color: #71717a; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 2px;">Surface Cast:</span>
+          <button id="btnCastEcorche" title="Smooth Terracotta & Alabaster Anatomical Cast (Zero Moiré, Zero Eye Strain)" style="background: #2dd4bf; color: #09090b; border: none; padding: 4px 11px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; font-weight: bold; cursor: pointer; transition: all 0.15s;">
+            🏛️ Smooth Écorché
+          </button>
+          <button id="btnCastWoodcut" title="1543 Vesalian Woodblock Hatching (Historical Art Mode)" style="background: rgba(24, 24, 32, 0.8); color: #a1a1aa; border: 1px solid #272732; padding: 4px 11px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer; transition: all 0.15s;">
+            🪵 1543 Woodblock
+          </button>
+
+          <span style="font-family: 'PocketGull Mono'; font-size: 10.5px; color: #3f3f46; margin: 0 4px;">|</span>
+
+          <span style="font-family: 'PocketGull Mono'; font-size: 10.5px; color: #71717a; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 2px;">Shading:</span>
+          <button id="btnShadeAtelier" style="background: #f59e0b; color: #09090b; border: none; padding: 4px 11px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; font-weight: bold; cursor: pointer; transition: all 0.15s;">
+            ☀️ Atelier Sunbeam
+          </button>
+          <button id="btnShadeClinical" style="background: rgba(24, 24, 32, 0.8); color: #a1a1aa; border: 1px solid #272732; padding: 4px 11px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer; transition: all 0.15s;">
+            🏥 Clinical Diffused
+          </button>
+          <button id="btnShadeTheatre" style="background: rgba(24, 24, 32, 0.8); color: #a1a1aa; border: 1px solid #272732; padding: 4px 11px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer; transition: all 0.15s;">
+            🕯️ 1822 Theatre
+          </button>
+          <button id="btnShadeScotopic" style="background: rgba(24, 24, 32, 0.8); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 4px 11px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer; transition: all 0.15s;" title="650nm Rod-Sparing Dark Adaptation (Zero Blue-Light Asthenopia)">
+            🔴 Scotopic 650nm
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button id="btnToggleBioPacing" title="10-Second 0.1 Hz Parasympathetic Breath Cycle to Prevent Screen Apnea" style="background: rgba(20, 184, 166, 0.12); color: #2dd4bf; border: 1px solid rgba(45, 212, 191, 0.35); padding: 4px 12px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer; transition: all 0.2s;">
+            🌬️ 0.1 Hz Bio-Pacing: OFF
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive 3D WebGL Viewport (Clean & Quiet: No Floating Toolbars) -->
+      <div id="vesalian3dViewportWrapper" style="position: relative; width: 100%; height: 500px; background: radial-gradient(circle at 50% 35%, #221a16 0%, #15100d 65%, #0b0908 100%); border-radius: 16px; border: 1px solid #3d2a1d; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,0,0,0.6); transition: border-color 0.4s ease;">
+        <div id="vesalian3dContainer" style="width: 100%; height: 100%; cursor: grab;"></div>
+
+        <!-- Subtle Non-Intrusive Bottom Overlay -->
+        <div style="position: absolute; bottom: 12px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; z-index: 10;">
+          <div style="background: rgba(9, 9, 11, 0.82); border: 1px solid rgba(255,255,255,0.08); padding: 5px 12px; border-radius: 6px; font-size: 10.5px; font-family: 'PocketGull Mono'; color: #71717a; backdrop-filter: blur(8px);">
+            🖱️ Drag to gently rotate • Scroll to zoom
+          </div>
+          <div id="rehabConditionBadge" style="background: rgba(45, 212, 191, 0.12); border: 1px solid rgba(45, 212, 191, 0.35); padding: 5px 14px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; font-weight: bold; color: #2dd4bf; backdrop-filter: blur(8px);">
+            L4–L5 Lumbar Alignment
+          </div>
+        </div>
+
+        <!-- Hidden SVG for vector pattern defs -->
+        <svg id="vesalianGhostSvg" width="0" height="0" style="position: absolute; display: none;">
+          <defs id="vesalianSvgDefs"></defs>
+          <g id="vesalianSvgContent"></g>
+        </svg>
+      </div>
+
+      <!-- The Patient "One-Scrubber" Recovery Control (Primary Anchor) -->
+      <div style="width: 100%; background: #181820; padding: 18px 22px; border-radius: 14px; border: 1px solid #272732; box-shadow: 0 4px 24px rgba(0,0,0,0.35);">
+        
+        <!-- Scrubber Header -->
+        <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; font-family: 'PocketGull Mono'; margin-bottom: 10px;">
+          <span style="color: #ef4444; font-weight: bold;">Compensatory Habit (0%)</span>
+          <div style="display: flex; align-items: baseline; gap: 4px;">
+            <span style="color: #71717a; font-size: 11px;">Realignment:</span>
+            <span id="rehabProgressText" style="color: #2dd4bf; font-weight: 900; font-size: 22px;">0%</span>
+          </div>
+          <span style="color: #2dd4bf; font-weight: bold;">Target Alignment (100%)</span>
+        </div>
+
+        <!-- The Scrubber Slider -->
+        <input 
+          type="range" 
+          id="rehabScrubber" 
+          min="0" 
+          max="1" 
+          step="0.01" 
+          value="0" 
+          style="width: 100%; height: 10px; accent-color: #14b8a6; cursor: pointer;" />
+
+        <!-- Plain-English Directive Box -->
+        <div style="margin-top: 14px; padding: 14px 18px; background: rgba(20, 184, 166, 0.08); border-left: 4px solid #14b8a6; border-radius: 8px;">
+          <div style="font-size: 10.5px; text-transform: uppercase; font-weight: bold; color: #2dd4bf; font-family: 'PocketGull Mono'; letter-spacing: 0.06em; margin-bottom: 4px;">
+            Clinical Directive (Plain English)
+          </div>
+          <div id="rehabDirectiveText" style="font-size: 14px; color: #faf8f0; line-height: 1.5; font-family: 'PocketGull', sans-serif;">
+            Your lower back is arched forward into excessive anterior pelvic tilt, narrowing the L4–L5 neural foramen and pinching the spinal nerve root.
+          </div>
+        </div>
+
+        <!-- Muscle Actions & Telemetry Row -->
+        <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
+          <!-- Bio-Tensor Contraction Badges -->
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="font-size: 10px; font-family: 'PocketGull Mono'; color: #71717a; text-transform: uppercase;">Bio-Tensor Muscle Cues:</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;" id="bioTensorContainer">
+              <!-- Populated dynamically via script -->
+            </div>
+          </div>
+
+          <!-- Clinical Telemetry Proof Badges -->
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <div style="background: rgba(9, 9, 11, 0.7); padding: 8px 14px; border-radius: 8px; border: 1px solid #272732; text-align: center;">
+              <div style="font-size: 9.5px; font-family: 'PocketGull Mono'; color: #71717a; text-transform: uppercase;">Torque Reduction</div>
+              <div id="telemetryTorque" style="font-family: 'PocketGull Mono'; font-size: 18px; font-weight: bold; color: #2dd4bf;">0.0 Nm</div>
+            </div>
+            <div style="background: rgba(9, 9, 11, 0.7); padding: 8px 14px; border-radius: 8px; border: 1px solid #272732; text-align: center;">
+              <div style="font-size: 9.5px; font-family: 'PocketGull Mono'; color: #71717a; text-transform: uppercase;">Foraminal Relief</div>
+              <div id="telemetryDecomp" style="font-family: 'PocketGull Mono'; font-size: 18px; font-weight: bold; color: #fbbf24;">0%</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Longitudinal Ergonomics & Ophthalmological Fatigue Explorer ("Looking at it over time") -->
+      <div style="width: 100%; background: #14110f; border: 1px solid #3d2a1d; padding: 18px 22px; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        
+        <!-- Header & 20-20-20 Ophthalmology Badge -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 16px;">👁️</span>
+              <strong style="color: #f5eedb; font-family: 'PocketGull', sans-serif; font-size: 14.5px;">Sustained Gaze &amp; Ergonomic Fatigue Over Time</strong>
+            </div>
+            <div style="font-size: 11.5px; color: #a88d77; font-family: 'PocketGull', sans-serif; margin-top: 2px;">
+              Simulating how gravity loading, screen apnea, and fixed focal accommodation compound across a 120-minute working session.
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span id="badgeFatigueRule" style="background: rgba(45, 212, 191, 0.12); color: #2dd4bf; border: 1px solid rgba(45, 212, 191, 0.3); padding: 3px 10px; border-radius: 6px; font-size: 10.5px; font-family: 'PocketGull Mono'; font-weight: bold;">
+              ✓ 20-20-20 Ophthalmology Compliant
             </span>
           </div>
-          <div style="font-size: 11px; color: #a1a1aa; font-family: 'PocketGull Mono';">
-            Single-Mesh GPU Morphing • 60 FPS
-          </div>
         </div>
 
-        <!-- Interactive 3D WebGL Anatomical Model Viewport -->
-        <div style="position: relative; width: 100%; height: 480px; background: radial-gradient(circle at center, #121218 0%, #09090b 100%); border-radius: 16px; border: 1px solid #272732; overflow: hidden;">
-          <div id="vesalian3dContainer" style="width: 100%; height: 100%; cursor: grab;"></div>
-
-          <!-- Top Overlay HUD: 3D Camera & View Controls -->
-          <div style="position: absolute; top: 12px; left: 14px; display: flex; gap: 8px; z-index: 10;">
-            <button id="btn3dAutoSpin" style="background: rgba(24, 24, 32, 0.85); color: #fbbf24; border: 1px solid #3f3f46; padding: 4px 10px; border-radius: 8px; font-size: 10.5px; font-family: 'PocketGull Mono'; cursor: pointer; backdrop-filter: blur(8px);">
-              🔄 360° Auto-Spin: OFF
-            </button>
-            <button id="btn3dResetCam" style="background: rgba(24, 24, 32, 0.85); color: #2dd4bf; border: 1px solid #3f3f46; padding: 4px 10px; border-radius: 8px; font-size: 10.5px; font-family: 'PocketGull Mono'; cursor: pointer; backdrop-filter: blur(8px);">
-              🎯 Reset View
-            </button>
-          </div>
-
-          <!-- Cutaway Lantern Focus Target Label -->
-          <div style="position: absolute; top: 12px; right: 14px; background: rgba(9, 9, 11, 0.85); border: 1px solid #f59e0b; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-family: 'PocketGull Mono'; color: #fbbf24; backdrop-filter: blur(8px); z-index: 10;">
-            <span id="lanternLocusLabel">🎯 Focal Cutaway: L4-L5 Disc Impingement</span>
-          </div>
-
-          <!-- Bottom Floating Telemetry Bar -->
-          <div style="position: absolute; bottom: 12px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: center; background: rgba(9, 9, 11, 0.85); border: 1px solid #272732; padding: 6px 14px; border-radius: 8px; font-size: 10.5px; font-family: 'PocketGull Mono'; color: #a1a1aa; backdrop-filter: blur(8px); z-index: 10;">
-            <span>🖱️ Drag to Orbit 360° • Scroll to Zoom</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span>Relief Normal Depth:</span>
-              <input type="range" id="sliderReliefDepth" min="0" max="3.5" step="0.1" value="1.8" style="width: 80px; accent-color: #f59e0b; cursor: pointer;" />
-              <span id="labelReliefDepth" style="color: #fbbf24; font-weight: bold;">1.8x</span>
+        <!-- Session Time Scrubber Row -->
+        <div style="background: rgba(9, 9, 11, 0.5); padding: 14px 18px; border-radius: 10px; border: 1px solid #272732; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-family: 'PocketGull Mono'; margin-bottom: 8px;">
+            <span style="color: #2dd4bf; font-weight: bold;">0 min (Fresh &amp; Upright)</span>
+            <div style="display: flex; align-items: baseline; gap: 4px;">
+              <span style="color: #a1a1aa; font-size: 11px;">Session Elapsed:</span>
+              <span id="labelFatigueMins" style="color: #fbbf24; font-size: 18px; font-weight: 900;">0 min</span>
             </div>
+            <span style="color: #ef4444; font-weight: bold;">120 min (Fatigued &amp; Slumped)</span>
           </div>
 
-          <!-- Hidden SVG for vector drop-cap pattern defs -->
-          <svg id="vesalianGhostSvg" width="0" height="0" style="position: absolute; display: none;">
-            <defs id="vesalianSvgDefs"></defs>
-            <g id="vesalianSvgContent"></g>
-          </svg>
-        </div>
-
-        <!-- The Patient "One-Scrubber" Recovery Control -->
-        <div style="width: 100%; margin-top: 14px; background: #181820; padding: 14px 18px; border-radius: 12px; border: 1px solid #272732;">
-          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #f4f4f5; font-family: 'PocketGull Mono'; margin-bottom: 8px;">
-            <span><strong style="color: #a1a1aa;">Patient Progress:</strong> Habit (0%)</span>
-            <span id="rehabProgressText" style="color: #2dd4bf; font-weight: bold;">0%</span>
-            <span>Target Goal (100%)</span>
-          </div>
           <input 
             type="range" 
-            id="rehabScrubber" 
+            id="sliderSessionFatigue" 
             min="0" 
-            max="1" 
-            step="0.01" 
+            max="120" 
+            step="5" 
             value="0" 
-            style="width: 100%; height: 8px; accent-color: #14b8a6; cursor: pointer;" />
+            style="width: 100%; height: 8px; accent-color: #f59e0b; cursor: pointer;" />
 
-          <!-- Plain-English Directive Box -->
-          <div style="margin-top: 10px; padding: 10px 14px; background: rgba(20, 184, 166, 0.1); border-left: 3px solid #14b8a6; border-radius: 6px;">
-            <div style="font-size: 10px; text-transform: uppercase; font-weight: bold; color: #2dd4bf; font-family: 'PocketGull Mono'; letter-spacing: 0.05em; margin-bottom: 2px;">
-              Clinical Directive (Plain English)
-            </div>
-            <div id="rehabDirectiveText" style="font-size: 13px; color: #faf8f0; line-height: 1.4; font-family: 'PocketGull', sans-serif;">
-              Gently tuck your tailbone as if flattening your lower back against a supportive wall.
-            </div>
-          </div>
-
-          <!-- Bio-Tensor Contraction Highlights -->
-          <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;" id="bioTensorContainer">
-            <!-- Populated via script -->
+          <!-- Timeline Milestone Indicators -->
+          <div style="display: flex; justify-content: space-between; font-size: 10px; font-family: 'PocketGull Mono'; color: #71717a; margin-top: 6px;">
+            <span>0m (Baseline)</span>
+            <span style="color: #2dd4bf;">20m (20-20-20 Rest)</span>
+            <span style="color: #fbbf24;">45m (Postural Drift)</span>
+            <span style="color: #f97316;">90m (Screen Apnea)</span>
+            <span style="color: #ef4444;">120m (Full Fatigue)</span>
           </div>
         </div>
+
+        <!-- 4-Pillar Physiological Telemetry Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 14px;">
+          
+          <!-- Pillar 1: Blink Rate & Tear Film -->
+          <div style="background: rgba(24, 24, 32, 0.7); padding: 10px 14px; border-radius: 8px; border: 1px solid #272732;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-family: 'PocketGull Mono'; color: #a1a1aa; margin-bottom: 4px;">
+              <span>BLINK RATE / TEAR FILM</span>
+              <span id="badgeBlinkStatus" style="color: #2dd4bf;">NORMAL</span>
+            </div>
+            <div id="valBlinkRate" style="font-family: 'PocketGull Mono'; font-size: 16px; font-weight: bold; color: #faf8f0;">
+              18 blinks/min
+            </div>
+            <div id="descTearFilm" style="font-size: 10px; color: #71717a; font-family: 'PocketGull', sans-serif; margin-top: 2px;">
+              Stable tear film lipid layer; normal corneal moisture.
+            </div>
+          </div>
+
+          <!-- Pillar 2: Ciliary Muscle Strain -->
+          <div style="background: rgba(24, 24, 32, 0.7); padding: 10px 14px; border-radius: 8px; border: 1px solid #272732;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-family: 'PocketGull Mono'; color: #a1a1aa; margin-bottom: 4px;">
+              <span>CILIARY ACCOMMODATION</span>
+              <span id="badgeCiliaryStatus" style="color: #2dd4bf;">RELAXED</span>
+            </div>
+            <div id="valCiliaryStrain" style="font-family: 'PocketGull Mono'; font-size: 16px; font-weight: bold; color: #2dd4bf;">
+              0% Strain
+            </div>
+            <div id="descCiliaryStrain" style="font-size: 10px; color: #71717a; font-family: 'PocketGull', sans-serif; margin-top: 2px;">
+              No tonic spasm; lens zonules in neutral tension.
+            </div>
+          </div>
+
+          <!-- Pillar 3: Spinal Disc Gravity Creep -->
+          <div style="background: rgba(24, 24, 32, 0.7); padding: 10px 14px; border-radius: 8px; border: 1px solid #272732;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-family: 'PocketGull Mono'; color: #a1a1aa; margin-bottom: 4px;">
+              <span>DISC HEIGHT / HEAD DRIFT</span>
+              <span id="badgeSpineCreepStatus" style="color: #2dd4bf;">STABLE</span>
+            </div>
+            <div id="valSpineCreep" style="font-family: 'PocketGull Mono'; font-size: 16px; font-weight: bold; color: #faf8f0;">
+              0.0 mm / 0 mm jut
+            </div>
+            <div id="descSpineCreep" style="font-size: 10px; color: #71717a; font-family: 'PocketGull', sans-serif; margin-top: 2px;">
+              Lumbar lordosis preserved; head centered on plumb line.
+            </div>
+          </div>
+
+          <!-- Pillar 4: Circadian Sun Shading Shift -->
+          <div style="background: rgba(24, 24, 32, 0.7); padding: 10px 14px; border-radius: 8px; border: 1px solid #272732;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-family: 'PocketGull Mono'; color: #a1a1aa; margin-bottom: 4px;">
+              <span>CIRCADIAN SUN / SHADING</span>
+              <span id="badgeCircadianHour" style="color: #fbbf24;">14:00 ATELIER</span>
+            </div>
+            <div id="valCircadianKelvin" style="font-family: 'PocketGull Mono'; font-size: 16px; font-weight: bold; color: #fbbf24;">
+              5500K Sunbeam
+            </div>
+            <div id="descCircadian" style="font-size: 10px; color: #71717a; font-family: 'PocketGull', sans-serif; margin-top: 2px;">
+              Warm side-window raking light; high relief contrast.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Action Protocol Footer -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-size: 11.5px; color: #a1a1aa; font-family: 'PocketGull', sans-serif; max-width: 580px;">
+            💡 <em>Ophthalmological &amp; Posture Advisory:</em> When fatigue increases over time, the spine slumps and blink rates drop by 60%. Pulling the Realignment Scrubber directly neutralizes this fatigue.
+          </div>
+          <button id="btnResetFatigueAndRealine" style="background: linear-gradient(135deg, #14b8a6, #0d9488); color: #09090b; border: none; padding: 7px 18px; border-radius: 8px; font-size: 11.5px; font-family: 'PocketGull Mono'; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 12px rgba(20,184,166,0.3);">
+            ✨ Restore Alignment &amp; Eye Rest
+          </button>
+        </div>
+
       </div>
 
-      <!-- Right Column: Diatomaceous Typography & Micro-Scan Studio -->
-      <div class="control-column">
+      <!-- Collapsible Reference Drawer: Preserving Advanced Anatomical Tools & Folio Exploration -->
+      <details class="quiet-workshop-drawer" style="margin-top: 10px; background: rgba(18, 18, 24, 0.6); border: 1px solid #272732; border-radius: 12px; overflow: hidden;">
+        <summary style="padding: 12px 18px; font-family: 'PocketGull Mono'; font-size: 12px; color: #a1a1aa; cursor: pointer; user-select: none; transition: background 0.2s;">
+          ⚙️ Open Anatomical Reference Folio &amp; Advanced 3D Tools (For Clinicians &amp; Researchers)
+        </summary>
         
-        <!-- Historiated Drop-Capital & Diatomaceous Typographic Studio -->
-        <div class="panel">
-          <div class="panel-header">
-            <span>🔤 Johannes Oporinus (1543) Historiated Drop-Cap</span>
-            <span style="color: #fbbf24;">Vector SVG</span>
-          </div>
+        <div style="padding: 18px; border-top: 1px solid #272732; display: flex; flex-direction: column; gap: 16px;">
+          
+          <!-- View Mode & Archetype Switcher -->
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <span style="font-size: 11px; font-family: 'PocketGull Mono'; color: #a88d77;">Stage Mode:</span>
+              <button id="btnViewModeFolio" style="background: transparent; color: #d4a373; border: 1px solid #d63031; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer;">
+                📖 2.5D Folio Plate
+              </button>
+              <button id="btnViewMode3D" style="background: #d63031; color: #ffffff; border: 1px solid #d63031; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; font-weight: bold; cursor: pointer;">
+                🌐 3D Volumetric
+              </button>
+            </div>
 
-          <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 12px;">
-            <div id="historiatedDropCapSlot" style="flex-shrink: 0;"></div>
-            <div style="font-size: 12px; color: #a1a1aa; line-height: 1.5; font-family: 'PocketGull', sans-serif;">
-              Letterforms are sculpted with <strong style="color: #fbbf24;">Calcar muscular contours</strong> and <strong style="color: #2dd4bf;">diatomaceous micro-pores</strong>. As bone density changes, the internal lattice adapts deterministically.
+            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+              <span style="font-size: 11px; font-family: 'PocketGull Mono'; color: #a88d77;">Archetype:</span>
+              <button id="btnArchFemale" style="background: #cd8d58; color: #181109; border: none; padding: 4px 9px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; font-weight: bold; cursor: pointer;">
+                👩 Woman
+              </button>
+              <button id="btnArchMale" style="background: transparent; color: #d4a373; border: 1px solid #5a3e2b; padding: 4px 9px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer;">
+                👨 Man
+              </button>
+              <button id="btnArchEcorche" style="background: transparent; color: #d4a373; border: 1px solid #5a3e2b; padding: 4px 9px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer;">
+                🏛️ Ecorché
+              </button>
+              <button id="btnUploadScan" style="background: rgba(45, 212, 191, 0.15); color: #2dd4bf; border: 1px dashed #2dd4bf; padding: 4px 9px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; cursor: pointer;">
+                📥 Ingest Scan
+              </button>
+              <input type="file" id="scanFileInput" accept=".glb,.gltf,.obj" style="display: none;" />
+              <span id="scanStatusBadge" style="font-size: 10px; font-family: 'PocketGull Mono'; color: #71717a;"></span>
             </div>
           </div>
 
-          <!-- Variable Typography Axes (PORE, DENS, HATC) -->
-          <div style="display: flex; flex-direction: column; gap: 10px; font-family: 'PocketGull Mono'; font-size: 11px;">
-            
-            <div>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
-                <span>PORE (Diatom Micro-Porosity):</span>
-                <span id="labelPoreVal" style="color: #2dd4bf;">35%</span>
+          <!-- Universal Theme Tokens & Stratum Peeling -->
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: rgba(9, 9, 11, 0.6); padding: 10px 14px; border-radius: 8px; border: 1px solid #272732;">
+            <!-- Theme Tokens -->
+            <div style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap;">
+              <span style="font-size: 10px; color: #a88d77; font-family: 'PocketGull Mono'; text-transform: uppercase;">Theme Palette:</span>
+              <button id="btnThemeLizars" class="theme-pill-btn" style="background: #f5eedb; color: #1c140e; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-family: 'PocketGull Mono'; font-weight: bold; cursor: pointer;">
+                📜 Edinburgh 1822
+              </button>
+              <button id="btnThemeObsidian" class="theme-pill-btn" style="background: transparent; color: #a1a1aa; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-family: 'PocketGull Mono'; cursor: pointer;">
+                🖤 Obsidian
+              </button>
+              <button id="btnThemeWashi" class="theme-pill-btn" style="background: transparent; color: #a1a1aa; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-family: 'PocketGull Mono'; cursor: pointer;">
+                🎋 Washi
+              </button>
+              <button id="btnThemeScotopic" class="theme-pill-btn" style="background: transparent; color: #a1a1aa; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-family: 'PocketGull Mono'; cursor: pointer;">
+                🔴 Scotopic 650nm
+              </button>
+              <button id="btnThemeVesalian" class="theme-pill-btn" style="background: transparent; color: #a1a1aa; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-family: 'PocketGull Mono'; cursor: pointer;">
+                🪵 Vesalian 1543
+              </button>
+            </div>
+
+            <!-- Stratum Peeling & Relief -->
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 10px; font-family: 'PocketGull Mono';">
+                <span style="color: #ffd166;">Stratum Peeling:</span>
+                <input type="range" id="sliderDissectionDepth" min="0" max="1" step="0.01" value="0.25" style="width: 90px; accent-color: #d63031; cursor: pointer;" />
+                <span id="labelDissectionDepth" style="color: #f5eedb; width: 80px;">Myologia (25%)</span>
               </div>
-              <input type="range" id="sliderPore" min="0" max="1" step="0.05" value="0.35" style="width: 100%; accent-color: #14b8a6;" />
-            </div>
-
-            <div>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
-                <span>DENS (Bone/Scan Mineral Density):</span>
-                <span id="labelDensVal" style="color: #fbbf24;">0.82 (T-Score -0.4)</span>
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 10px; font-family: 'PocketGull Mono';">
+                <span style="color: #a1a1aa;">Relief:</span>
+                <input type="range" id="sliderReliefDepth" min="0" max="3.5" step="0.1" value="1.8" style="width: 60px; accent-color: #cd8d58; cursor: pointer;" />
+                <span id="labelReliefDepth" style="color: #f5eedb;">1.8x</span>
               </div>
-              <input type="range" id="sliderDens" min="0.1" max="1" step="0.05" value="0.82" style="width: 100%; accent-color: #f59e0b;" />
             </div>
+          </div>
 
-            <div>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
-                <span>HATC (Vesalian Pennation Angle):</span>
-                <span id="labelHatcVal" style="color: #38bdf8;">45° (Bipennate)</span>
+          <!-- Locus Label -->
+          <div id="lanternLocusLabel" style="background: rgba(28, 18, 14, 0.90); border: 1px solid #d63031; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-family: 'PocketGull Mono'; color: #f5eedb;">
+            🎯 William Home Lizars (1788–1859) • Comparative Dissection Engine
+          </div>
+
+          <!-- Historiated Drop-Cap & Woodcut Chisel Tools (Secondary Reference) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <!-- Historiated Drop-Cap -->
+            <div style="background: rgba(9, 9, 11, 0.6); padding: 12px; border-radius: 8px; border: 1px solid #272732;">
+              <div style="font-size: 11px; font-family: 'PocketGull Mono'; color: #fbbf24; margin-bottom: 8px;">🔤 Oporinus (1543) Historiated Drop-Cap Studio</div>
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div id="historiatedDropCapSlot"></div>
+                <div style="display: flex; flex-direction: column; gap: 6px; font-family: 'PocketGull Mono'; font-size: 10px; flex: 1;">
+                  <div>
+                    PORE: <span id="labelPoreVal" style="color: #2dd4bf;">35%</span>
+                    <input type="range" id="sliderPore" min="0" max="1" step="0.05" value="0.35" style="width: 100%; accent-color: #14b8a6;" />
+                  </div>
+                  <div>
+                    DENS: <span id="labelDensVal" style="color: #fbbf24;">0.82</span>
+                    <input type="range" id="sliderDens" min="0.1" max="1" step="0.05" value="0.82" style="width: 100%; accent-color: #f59e0b;" />
+                  </div>
+                  <div>
+                    HATC: <span id="labelHatcVal" style="color: #38bdf8;">45°</span>
+                    <input type="range" id="sliderHatc" min="0" max="180" step="5" value="45" style="width: 100%; accent-color: #38bdf8;" />
+                  </div>
+                </div>
               </div>
-              <input type="range" id="sliderHatc" min="0" max="180" step="5" value="45" style="width: 100%; accent-color: #38bdf8;" />
             </div>
 
-          </div>
-        </div>
-
-        <!-- Big Three Clinical Archetype Selector -->
-        <div class="panel">
-          <div class="panel-header">
-            <span>🎯 Big Three Rehabilitation Triad</span>
-            <span style="color: #a855f7;">ICD-10 Mapping</span>
-          </div>
-
-          <div style="display: flex; gap: 6px;">
-            <button id="btnTriadLumbar" style="flex: 1; padding: 6px 8px; font-size: 10px; font-weight: bold; background: #f59e0b; color: #09090b; border: none; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;">
-              🦴 Lumbar L4-L5
-            </button>
-            <button id="btnTriadKnee" style="flex: 1; padding: 6px 8px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;">
-              🦵 Patella Knee
-            </button>
-            <button id="btnTriadCervical" style="flex: 1; padding: 6px 8px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;">
-              🧠 Tech Neck
-            </button>
-          </div>
-        </div>
-
-        <!-- 🪵 5 Woodcut Relief Styles (Atelier Xylem / Vesalius 1543) -->
-        <div class="panel">
-          <div class="panel-header">
-            <span>🪵 Atelier Xylem Woodcut Relief Profiles</span>
-            <span style="color: #fbbf24;" id="activeWoodCutLabel">✨ Camaïeu Auto</span>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 4px;">
-            <button id="btnWoodVRibbed" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="V-Parting Tool: Crisp triangular knife incisions on tendons & bone ridges">
-              🪵 V-Ribbed
-            </button>
-            <button id="btnWoodFluted" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="U-Gouge: Concave troughs capturing velvety chiaroscuro in contractile muscle meat">
-              🌊 Fluted
-            </button>
-            <button id="btnWoodReeded" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="Reeding Plane: Proud convex rounded ridges tracing pennate muscle fiber trajectories">
-              🪓 Reeded
-            </button>
-            <button id="btnWoodSlatted" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="Architectural Louvers: Parallel stepped cuts for ribs, vertebrae, and skeletal scaffolding">
-              🏛️ Slatted
-            </button>
-            <button id="btnWoodBurl" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="End-Grain Burl: Concentric growth knot whorls and wild organic pearwood grain">
-              🌀 Burl
-            </button>
-            <button id="btnWoodCamaieu" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #f59e0b; color: #09090b; border: none; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="Camaïeu Multi-Block: Tissue-adaptive 1543 Renaissance master plate">
-              ✨ Camaïeu
-            </button>
-          </div>
-          <div id="woodCutDescription" style="margin-top: 8px; font-size: 11px; color: #a1a1aa; font-family: 'PocketGull', sans-serif; line-height: 1.4;">
-            Multi-block Renaissance master plate: tissue-adaptive routing blending V-Ribbed, Fluted, and Burl.
-          </div>
-        </div>
-
-        <!-- Clinical Telemetry Proof Card -->
-        <div class="panel">
-          <div class="panel-header">
-            <span>📊 Decompression &amp; Torque Telemetry</span>
-            <span style="color: #34d399;">Active Physics</span>
-          </div>
-          <div class="comparison-grid" style="grid-template-columns: 1fr 1fr; gap: 8px;">
-            <div class="comp-cell">
-              <div class="comp-label">Torque Reduction</div>
-              <div id="telemetryTorque" class="comp-val" style="color: #2dd4bf; font-size: 20px;">0.0 Nm</div>
-              <div style="font-size: 9.5px; color: #71717a;">Rotational Shear</div>
-            </div>
-            <div class="comp-cell">
-              <div class="comp-label">Decompression</div>
-              <div id="telemetryDecomp" class="comp-val" style="color: #fbbf24; font-size: 20px;">0%</div>
-              <div style="font-size: 9.5px; color: #71717a;">Neural Foramen Relief</div>
+            <!-- Woodcut Chisel Profiles -->
+            <div style="background: rgba(9, 9, 11, 0.6); padding: 12px; border-radius: 8px; border: 1px solid #272732;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; font-family: 'PocketGull Mono'; margin-bottom: 8px;">
+                <span style="color: #fbbf24;">🪵 Atelier Xylem Woodcut Relief</span>
+                <span id="activeWoodCutLabel" style="color: #fbbf24;">✨ Camaïeu Auto</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+                <button id="btnWoodVRibbed" style="padding: 4px; font-size: 9.5px; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 6px; font-family: 'PocketGull Mono'; cursor: pointer;">🪵 V-Ribbed</button>
+                <button id="btnWoodFluted" style="padding: 4px; font-size: 9.5px; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 6px; font-family: 'PocketGull Mono'; cursor: pointer;">🌊 Fluted</button>
+                <button id="btnWoodReeded" style="padding: 4px; font-size: 9.5px; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 6px; font-family: 'PocketGull Mono'; cursor: pointer;">🪓 Reeded</button>
+                <button id="btnWoodSlatted" style="padding: 4px; font-size: 9.5px; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 6px; font-family: 'PocketGull Mono'; cursor: pointer;">🏛️ Slatted</button>
+                <button id="btnWoodBurl" style="padding: 4px; font-size: 9.5px; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 6px; font-family: 'PocketGull Mono'; cursor: pointer;">🌀 Burl</button>
+                <button id="btnWoodCamaieu" style="padding: 4px; font-size: 9.5px; background: #f59e0b; color: #09090b; border: none; border-radius: 6px; font-family: 'PocketGull Mono'; font-weight: bold; cursor: pointer;">✨ Camaïeu</button>
+              </div>
+              <div id="woodCutDescription" style="margin-top: 6px; font-size: 10px; color: #a1a1aa; font-family: 'PocketGull', sans-serif; line-height: 1.3;">
+                Multi-block Renaissance master plate: tissue-adaptive routing blending V-Ribbed, Fluted, and Burl.
+              </div>
             </div>
           </div>
-        </div>
 
-      </div>
+        </div>
+      </details>
 
     </div>
+
+    <!-- Master Woodcut Relief Taxonomy Specimen Plate (Atelier Xylem / Vishwakarma Studio Edition) -->
+    <div class="panel" style="margin-top: 18px; background: #14110f; border: 1px solid #3d2a1d; padding: 18px; border-radius: 14px;">
+      <div class="panel-header" style="margin-bottom: 12px; border-bottom: 1px solid #332318; padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 15px;">🪵</span>
+          <div>
+            <strong style="color: #f5eedb; font-family: 'PocketGull', sans-serif; font-size: 14px;">Master Woodcut Relief Taxonomy Plate (Atelier Xylem / Vishwakarma Studio Edition)</strong>
+            <div style="font-size: 11px; color: #a88d77; font-family: 'PocketGull Mono';">5 Anatomical Relief Geometries Carved in Oiled Sandalwood &amp; Honey Teak • Sunlit Workshop Background</div>
+          </div>
+        </div>
+        <span style="background: rgba(205, 141, 88, 0.15); color: #e6cba8; border: 1px solid #6b4728; padding: 3px 10px; border-radius: 6px; font-size: 10px; font-family: 'PocketGull Mono'; font-weight: bold;">
+          Reference Grounded • Zero Glare
+        </span>
+      </div>
+
+      <!-- Specimen Image Display -->
+      <div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid #4a3424; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <img src="/vishwakarma_masterpiece_specimen.jpg" alt="Master Woodcut Relief Taxonomy Plate with Sunlit Workshop Background" style="width: 100%; height: auto; display: block;" />
+      </div>
+
+      <!-- 5-Box Taxonomy Legend -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 14px; font-family: 'PocketGull Mono'; font-size: 11px;">
+        <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 8px 10px;">
+          <div style="color: #e6cba8; font-weight: bold;">1. V-Ribbed (कण्ट-रेखा)</div>
+          <div style="color: #8c7361; font-size: 10px; margin-top: 2px;">Hand &amp; Extensor Tendons • 60° triangular parting chisel</div>
+        </div>
+        <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 8px 10px;">
+          <div style="color: #e6cba8; font-weight: bold;">2. Fluted (नालि-पत्र)</div>
+          <div style="color: #8c7361; font-size: 10px; margin-top: 2px;">Shoulder &amp; Pectoralis • Concave U-gouge chiaroscuro</div>
+        </div>
+        <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 8px 10px;">
+          <div style="color: #e6cba8; font-weight: bold;">3. Reeded (माला-दण्ड)</div>
+          <div style="color: #8c7361; font-size: 10px; margin-top: 2px;">Forearm Pennate Fibers • Proud rounded convex ribs</div>
+        </div>
+        <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 8px 10px;">
+          <div style="color: #e6cba8; font-weight: bold;">4. Slatted (जालि)</div>
+          <div style="color: #8c7361; font-size: 10px; margin-top: 2px;">Ribs &amp; Sternum • Architectural parallel stepped louvers</div>
+        </div>
+        <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 8px 10px;">
+          <div style="color: #e6cba8; font-weight: bold;">5. Burl (सुवर्ण-चक्र)</div>
+          <div style="color: #8c7361; font-size: 10px; margin-top: 2px;">Patella &amp; Knee Joint • Concentric tree-ring growth whorls</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Master Woodcut Relief: Natural Woman & Man Diptych Specimen Plate (Atelier Xylem / Vishwakarma Studio) -->
+    <div class="panel" style="margin-top: 18px; background: #14110f; border: 1px solid #3d2a1d; padding: 18px; border-radius: 14px;">
+      <div class="panel-header" style="margin-bottom: 12px; border-bottom: 1px solid #332318; padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 15px;">🏛️</span>
+          <div>
+            <strong style="color: #f5eedb; font-family: 'PocketGull', sans-serif; font-size: 14px;">Natural Woman &amp; Man Anatomical Diptych Plate (Vishwakarma Atelier Edition)</strong>
+            <div style="font-size: 11px; color: #a88d77; font-family: 'PocketGull Mono';">Full-Length Carved Relief Diptych • Gynoid Contrapposto vs. Android Biacromial V-Taper • Hand-Forged Tools &amp; Canon Scrolls</div>
+          </div>
+        </div>
+        <span style="background: rgba(205, 141, 88, 0.15); color: #e6cba8; border: 1px solid #6b4728; padding: 3px 10px; border-radius: 6px; font-size: 10px; font-family: 'PocketGull Mono'; font-weight: bold;">
+          Diptych Folding Shrine • Museum Grade
+        </span>
+      </div>
+
+      <!-- Specimen Image Display -->
+      <div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid #4a3424; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <img src="/natural_male_female_woodcut_plate.jpg" alt="Natural Woman and Man Anatomical Woodcut Relief Diptych on Artisan Workbench" style="width: 100%; height: auto; display: block;" />
+      </div>
+
+      <!-- Comparative Anatomical Canon Breakdown -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 14px; font-family: 'PocketGull Mono'; font-size: 11px;">
+        <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 10px 12px;">
+          <div style="color: #e6cba8; font-weight: bold; font-size: 12px; display: flex; align-items: center; gap: 6px;">
+            <span>👩</span> Natural Woman (स्त्री-रूप / Gynoid Canon)
+          </div>
+          <ul style="margin: 6px 0 0 16px; padding: 0; color: #b89f8b; font-size: 10.5px; line-height: 1.5;">
+            <li><strong>Pelvic Architecture:</strong> Flared bicristal iliac crests (waist-to-hip ratio ~0.70) with smooth subcutaneous contouring.</li>
+            <li><strong>Biomechanical Q-Angle:</strong> 15° inward femoral inclination, directing kinetic loads to balanced medial patellas.</li>
+            <li><strong>Costal &amp; Pectoral Morphology:</strong> Narrower subcostal angle (&lt;90°) with natural teardrop pectoral transitions.</li>
+            <li><strong>Classical Contrapposto:</strong> Dynamic <em>linea serpentinata</em> with weight grounded on left limb, pelvis tilted 4°.</li>
+          </ul>
+        </div>
+        <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 10px 12px;">
+          <div style="color: #e6cba8; font-weight: bold; font-size: 12px; display: flex; align-items: center; gap: 6px;">
+            <span>👨</span> Natural Man (पुरुष-रूप / Android Canon)
+          </div>
+          <ul style="margin: 6px 0 0 16px; padding: 0; color: #b89f8b; font-size: 10.5px; line-height: 1.5;">
+            <li><strong>Shoulder Stance:</strong> Broad 1.4:1 biacromial-to-bicristal V-taper with latissimus dorsi rib flare.</li>
+            <li><strong>Thoracic &amp; Abdominal Mass:</strong> Broad pectoralis major plates, sternal cleft, and 3-tier segmented rectus abdominis.</li>
+            <li><strong>Femoral Column:</strong> Straight-column athletic loading with narrow 11° Q-angle and robust quadriceps vasti.</li>
+            <li><strong>Grounded Axial Stance:</strong> High spinal sternal lift with bilateral muscular tension and grounded kinetic base.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- ========================================================================= -->
@@ -1431,10 +1720,14 @@
     const TRIAD_DATA = {
       lumbar_pelvic_alignment: {
         conditionKey: 'lumbar_pelvic_alignment',
+        regionKey: 'lumbar',
         badge: 'L4-L5 Lumbar Alignment',
         lanternLabel: '🎯 Focal Cutaway: L4-L5 Disc Impingement',
         focalY: 220,
         focalX: 300,
+        directiveHabit: 'Your lower back is arched forward into excessive anterior pelvic tilt, narrowing the L4–L5 neural foramen and pinching the spinal nerve root.',
+        directiveActive: 'Gently draw your belly button inward toward your spine and tuck your tailbone as if flattening your back against a wall.',
+        directiveTarget: 'Target alignment reached. Foraminal space is decompressed by +2.4 mm, relieving nerve root impingement and restoring lumbar lordosis.',
         directive: 'Gently tuck your tailbone as if flattening your lower back against a supportive wall.',
         maxTorque: 36.2,
         maxDecomp: 48,
@@ -1449,10 +1742,14 @@
       },
       patellofemoral_tracking: {
         conditionKey: 'patellofemoral_tracking',
+        regionKey: 'knee',
         badge: 'Patellofemoral Knee Alignment',
         lanternLabel: '🎯 Focal Cutaway: Patellar Trochlear Tracking',
         focalY: 310,
         focalX: 285,
+        directiveHabit: 'Your knee is collapsing inward into dynamic valgus, causing uneven lateral patellar friction and anterior joint pain.',
+        directiveActive: 'Press firmly through your heel and engage your outer hip to guide your kneecap directly over your second toe.',
+        directiveTarget: 'Target tracking achieved. Patella glides centered in the femoral groove with balanced medial-lateral pressure.',
         directive: 'Press outward through your heel to align your kneecap directly over your second toe.',
         maxTorque: 28.4,
         maxDecomp: 34,
@@ -1466,10 +1763,14 @@
       },
       cervical_spine_posture: {
         conditionKey: 'cervical_spine_posture',
+        regionKey: 'cervical',
         badge: 'Cervical Axial Retraction',
         lanternLabel: '🎯 Focal Cutaway: C5-C6 Cervical Spondylosis',
         focalY: 130,
         focalX: 300,
+        directiveHabit: 'Your head is projecting forward (+32 mm anterior carriage), multiplying cervical spine shear load and pinching C5–C6 roots.',
+        directiveActive: 'Draw your chin straight backward like sliding a drawer shut, lengthening the back of your neck toward the ceiling.',
+        directiveTarget: 'Target axial alignment reached. Head balanced directly over the cervical spine, eliminating occipital shear stress.',
         directive: 'Draw your chin straight backward like sliding a drawer shut to decompress the base of your skull.',
         maxTorque: 19.8,
         maxDecomp: 42,
@@ -1482,6 +1783,14 @@
         targetTilt: 12.0
       }
     };
+
+    function getDirectiveForProgress(key, prog) {
+      const d = TRIAD_DATA[key];
+      if (!d) return '';
+      if (prog < 0.30) return d.directiveHabit || d.directive;
+      if (prog < 0.75) return d.directiveActive || d.directive;
+      return d.directiveTarget || d.directive;
+    }
 
     let activeTriadKey = 'lumbar_pelvic_alignment';
     let rehabProgress = 0.0;
@@ -1698,7 +2007,7 @@
       const data = TRIAD_DATA[activeTriadKey];
       rehabConditionBadge.textContent = data.badge;
       lanternLocusLabel.textContent = data.lanternLabel;
-      rehabDirectiveText.textContent = data.directive;
+      rehabDirectiveText.textContent = getDirectiveForProgress(activeTriadKey, rehabProgress);
 
       // Populate Bio-Tensor Badges
       bioTensorContainer.innerHTML = data.bioTensors.map(t => {
@@ -1713,15 +2022,38 @@
         `;
       }).join('');
 
-      // Update button active styles
-      btnTriadLumbar.style.background = activeTriadKey === 'lumbar_pelvic_alignment' ? '#f59e0b' : '#181820';
-      btnTriadLumbar.style.color = activeTriadKey === 'lumbar_pelvic_alignment' ? '#09090b' : '#fbbf24';
+      // Update button active styles (Quiet Clinical Theme)
+      const isLumbar = activeTriadKey === 'lumbar_pelvic_alignment';
+      const isKnee = activeTriadKey === 'patellofemoral_tracking';
+      const isCervical = activeTriadKey === 'cervical_spine_posture';
 
-      btnTriadKnee.style.background = activeTriadKey === 'patellofemoral_tracking' ? '#f59e0b' : '#181820';
-      btnTriadKnee.style.color = activeTriadKey === 'patellofemoral_tracking' ? '#09090b' : '#fbbf24';
+      if (btnTriadLumbar) {
+        btnTriadLumbar.style.background = isLumbar ? '#2dd4bf' : 'rgba(18,18,24,0.7)';
+        btnTriadLumbar.style.color = isLumbar ? '#09090b' : '#a1a1aa';
+        btnTriadLumbar.style.fontWeight = isLumbar ? 'bold' : 'normal';
+        btnTriadLumbar.style.border = isLumbar ? 'none' : '1px solid #272732';
+        btnTriadLumbar.style.boxShadow = isLumbar ? '0 2px 10px rgba(45,212,191,0.25)' : 'none';
+      }
 
-      btnTriadCervical.style.background = activeTriadKey === 'cervical_spine_posture' ? '#f59e0b' : '#181820';
-      btnTriadCervical.style.color = activeTriadKey === 'cervical_spine_posture' ? '#09090b' : '#fbbf24';
+      if (btnTriadKnee) {
+        btnTriadKnee.style.background = isKnee ? '#2dd4bf' : 'rgba(18,18,24,0.7)';
+        btnTriadKnee.style.color = isKnee ? '#09090b' : '#a1a1aa';
+        btnTriadKnee.style.fontWeight = isKnee ? 'bold' : 'normal';
+        btnTriadKnee.style.border = isKnee ? 'none' : '1px solid #272732';
+        btnTriadKnee.style.boxShadow = isKnee ? '0 2px 10px rgba(45,212,191,0.25)' : 'none';
+      }
+
+      if (btnTriadCervical) {
+        btnTriadCervical.style.background = isCervical ? '#2dd4bf' : 'rgba(18,18,24,0.7)';
+        btnTriadCervical.style.color = isCervical ? '#09090b' : '#a1a1aa';
+        btnTriadCervical.style.fontWeight = isCervical ? 'bold' : 'normal';
+        btnTriadCervical.style.border = isCervical ? 'none' : '1px solid #272732';
+        btnTriadCervical.style.boxShadow = isCervical ? '0 2px 10px rgba(45,212,191,0.25)' : 'none';
+      }
+
+      if (vesalian3dViewer && data.regionKey) {
+        vesalian3dViewer.focusRegion(data.regionKey);
+      }
 
       renderVesalianGhost();
     }
@@ -1730,6 +2062,7 @@
     rehabScrubber.addEventListener('input', () => {
       rehabProgress = parseFloat(rehabScrubber.value);
       rehabProgressText.textContent = `${Math.round(rehabProgress * 100)}%`;
+      rehabDirectiveText.textContent = getDirectiveForProgress(activeTriadKey, rehabProgress);
       renderVesalianGhost();
       if (vesalian3dViewer) {
         vesalian3dViewer.setMuscleTension(rehabProgress);
@@ -1817,9 +2150,13 @@
       try {
         vesalian3dViewer = window.initVesalian3DViewer('vesalian3dContainer', {
           woodCutType: activeWoodCutKey,
+          surfaceStyle: 'ecorche',
           muscleTension: 0.0,
           reliefDepth: 1.8
         });
+        if (vesalian3dViewer) {
+          vesalian3dViewer.focusRegion('lumbar');
+        }
       } catch (err) {
         console.error('Failed to init 3D viewer:', err);
       }
@@ -1833,13 +2170,16 @@
     btn3dAutoSpin?.addEventListener('click', () => {
       if (!vesalian3dViewer) return;
       const spinning = vesalian3dViewer.toggleAutoRotate();
-      btn3dAutoSpin.textContent = spinning ? '🔄 360° Auto-Spin: ON' : '🔄 360° Auto-Spin: OFF';
-      btn3dAutoSpin.style.background = spinning ? '#f59e0b' : 'rgba(24, 24, 32, 0.85)';
-      btn3dAutoSpin.style.color = spinning ? '#09090b' : '#fbbf24';
+      btn3dAutoSpin.textContent = spinning ? '🔄 Orbit: ON' : '🔄 Slow Orbit';
+      btn3dAutoSpin.style.background = spinning ? '#2dd4bf' : 'rgba(18, 18, 24, 0.9)';
+      btn3dAutoSpin.style.color = spinning ? '#09090b' : '#a1a1aa';
     });
 
     btn3dResetCam?.addEventListener('click', () => {
-      if (vesalian3dViewer) vesalian3dViewer.resetCamera();
+      if (vesalian3dViewer) {
+        const rKey = TRIAD_DATA[activeTriadKey]?.regionKey || 'lumbar';
+        vesalian3dViewer.focusRegion(rKey);
+      }
     });
 
     sliderReliefDepth?.addEventListener('input', () => {
@@ -1847,6 +2187,385 @@
       labelReliefDepth.textContent = val.toFixed(1) + 'x';
       if (vesalian3dViewer) vesalian3dViewer.setReliefDepth(val);
     });
+
+    // =========================================================================
+    // Surface Cast Selector (Smooth Écorché vs 1543 Woodcut)
+    // =========================================================================
+    const btnCastEcorche = document.getElementById('btnCastEcorche');
+    const btnCastWoodcut = document.getElementById('btnCastWoodcut');
+    let activeSurfaceStyleKey = 'ecorche';
+
+    function setSurfaceStyleUI(style) {
+      activeSurfaceStyleKey = style;
+      const isEcorche = style === 'ecorche';
+      if (btnCastEcorche) {
+        btnCastEcorche.style.background = isEcorche ? '#2dd4bf' : 'rgba(24, 24, 32, 0.8)';
+        btnCastEcorche.style.color = isEcorche ? '#09090b' : '#a1a1aa';
+        btnCastEcorche.style.fontWeight = isEcorche ? 'bold' : 'normal';
+        btnCastEcorche.style.border = isEcorche ? 'none' : '1px solid #272732';
+      }
+      if (btnCastWoodcut) {
+        btnCastWoodcut.style.background = !isEcorche ? '#f59e0b' : 'rgba(24, 24, 32, 0.8)';
+        btnCastWoodcut.style.color = !isEcorche ? '#09090b' : '#a1a1aa';
+        btnCastWoodcut.style.fontWeight = !isEcorche ? 'bold' : 'normal';
+        btnCastWoodcut.style.border = !isEcorche ? 'none' : '1px solid #272732';
+      }
+      if (vesalian3dViewer) {
+        vesalian3dViewer.setSurfaceStyle(style);
+      }
+    }
+
+    btnCastEcorche?.addEventListener('click', () => setSurfaceStyleUI('ecorche'));
+    btnCastWoodcut?.addEventListener('click', () => setSurfaceStyleUI('woodcut'));
+
+    // =========================================================================
+    // Shading Profiles, 0.1 Hz Bio-Pacing & Longitudinal Fatigue Engine
+    // =========================================================================
+    const btnShadeAtelier = document.getElementById('btnShadeAtelier');
+    const btnShadeClinical = document.getElementById('btnShadeClinical');
+    const btnShadeTheatre = document.getElementById('btnShadeTheatre');
+    const btnShadeScotopic = document.getElementById('btnShadeScotopic');
+    const btnToggleBioPacing = document.getElementById('btnToggleBioPacing');
+    const vesalian3dViewportWrapper = document.getElementById('vesalian3dViewportWrapper');
+
+    const sliderSessionFatigue = document.getElementById('sliderSessionFatigue');
+    const labelFatigueMins = document.getElementById('labelFatigueMins');
+    const badgeFatigueRule = document.getElementById('badgeFatigueRule');
+    const valBlinkRate = document.getElementById('valBlinkRate');
+    const descTearFilm = document.getElementById('descTearFilm');
+    const badgeBlinkStatus = document.getElementById('badgeBlinkStatus');
+    const valCiliaryStrain = document.getElementById('valCiliaryStrain');
+    const descCiliaryStrain = document.getElementById('descCiliaryStrain');
+    const badgeCiliaryStatus = document.getElementById('badgeCiliaryStatus');
+    const valSpineCreep = document.getElementById('valSpineCreep');
+    const descSpineCreep = document.getElementById('descSpineCreep');
+    const badgeSpineCreepStatus = document.getElementById('badgeSpineCreepStatus');
+    const valCircadianKelvin = document.getElementById('valCircadianKelvin');
+    const descCircadian = document.getElementById('descCircadian');
+    const badgeCircadianHour = document.getElementById('badgeCircadianHour');
+    const btnResetFatigueAndRealine = document.getElementById('btnResetFatigueAndRealine');
+
+    let activeShadeProfileKey = 'atelier';
+    let isPacingActive = false;
+
+    function setShadingProfileUI(key) {
+      activeShadeProfileKey = key;
+      const shadeBtns = [
+        { el: btnShadeAtelier, k: 'atelier', color: '#f59e0b' },
+        { el: btnShadeClinical, k: 'clinical', color: '#38bdf8' },
+        { el: btnShadeTheatre, k: 'theatre', color: '#f97316' },
+        { el: btnShadeScotopic, k: 'scotopic', color: '#ef4444' }
+      ];
+      shadeBtns.forEach(({ el, k, color }) => {
+        if (!el) return;
+        const active = k === key;
+        el.style.background = active ? color : 'rgba(24, 24, 32, 0.8)';
+        el.style.color = active ? '#09090b' : (k === 'scotopic' ? '#ef4444' : '#a1a1aa');
+        el.style.fontWeight = active ? 'bold' : 'normal';
+        el.style.border = active ? 'none' : (k === 'scotopic' ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid #272732');
+      });
+      if (vesalian3dViewer) {
+        vesalian3dViewer.setShadingProfile(key);
+      }
+    }
+
+    btnShadeAtelier?.addEventListener('click', () => setShadingProfileUI('atelier'));
+    btnShadeClinical?.addEventListener('click', () => setShadingProfileUI('clinical'));
+    btnShadeTheatre?.addEventListener('click', () => setShadingProfileUI('theatre'));
+    btnShadeScotopic?.addEventListener('click', () => setShadingProfileUI('scotopic'));
+
+    btnToggleBioPacing?.addEventListener('click', () => {
+      if (!vesalian3dViewer) return;
+      isPacingActive = vesalian3dViewer.toggleBioPacing();
+      btnToggleBioPacing.textContent = isPacingActive ? '🌬️ 0.1 Hz Bio-Pacing: ON' : '🌬️ 0.1 Hz Bio-Pacing: OFF';
+      btnToggleBioPacing.style.background = isPacingActive ? '#2dd4bf' : 'rgba(20, 184, 166, 0.12)';
+      btnToggleBioPacing.style.color = isPacingActive ? '#09090b' : '#2dd4bf';
+      btnToggleBioPacing.style.fontWeight = isPacingActive ? 'bold' : 'normal';
+      if (vesalian3dViewportWrapper) {
+        vesalian3dViewportWrapper.classList.toggle('bio-pacing-active', isPacingActive);
+      }
+    });
+
+    function updateSessionFatigueHUD(mins) {
+      if (!labelFatigueMins) return;
+      labelFatigueMins.textContent = `${mins} min`;
+      const ratio = mins / 120.0;
+
+      // 1. Blink Rate & Tear Film
+      if (mins < 20) {
+        const blinks = Math.round(18 - ratio * 4);
+        valBlinkRate.textContent = `${blinks} blinks/min`;
+        valBlinkRate.style.color = '#faf8f0';
+        badgeBlinkStatus.textContent = 'NORMAL';
+        badgeBlinkStatus.style.color = '#2dd4bf';
+        descTearFilm.textContent = 'Stable tear film lipid layer; normal corneal moisture.';
+      } else if (mins < 60) {
+        const blinks = Math.round(14 - (mins - 20) * 0.15);
+        valBlinkRate.textContent = `${blinks} blinks/min`;
+        valBlinkRate.style.color = '#fbbf24';
+        badgeBlinkStatus.textContent = 'DECREASED';
+        badgeBlinkStatus.style.color = '#fbbf24';
+        descTearFilm.textContent = 'Screen focus reducing natural blinks; minor tear breakup.';
+      } else {
+        const blinks = Math.max(5, Math.round(8 - (mins - 60) * 0.05));
+        valBlinkRate.textContent = `${blinks} blinks/min`;
+        valBlinkRate.style.color = '#ef4444';
+        badgeBlinkStatus.textContent = 'SCREEN APNEA';
+        badgeBlinkStatus.style.color = '#ef4444';
+        descTearFilm.textContent = 'Severe blink suppression; evaporative dry eye alert.';
+      }
+
+      // 2. Ciliary Accommodation Strain
+      const ciliaryStrain = Math.round(ratio * 85);
+      valCiliaryStrain.textContent = `${ciliaryStrain}% Strain`;
+      if (mins < 20) {
+        valCiliaryStrain.style.color = '#2dd4bf';
+        badgeCiliaryStatus.textContent = 'RELAXED';
+        badgeCiliaryStatus.style.color = '#2dd4bf';
+        descCiliaryStrain.textContent = 'No tonic spasm; lens zonules in neutral tension.';
+      } else if (mins < 60) {
+        valCiliaryStrain.style.color = '#fbbf24';
+        badgeCiliaryStatus.textContent = 'ELEVATED';
+        badgeCiliaryStatus.style.color = '#fbbf24';
+        descCiliaryStrain.textContent = 'Fixed focal accommodation; 20-20-20 distance rest advised.';
+      } else {
+        valCiliaryStrain.style.color = '#ef4444';
+        badgeCiliaryStatus.textContent = 'SPASM RISK';
+        badgeCiliaryStatus.style.color = '#ef4444';
+        descCiliaryStrain.textContent = 'Ciliary micro-spasms; ocular fatigue & headache vector.';
+      }
+
+      // 3. Spinal Disc Gravity Creep & Head Jut
+      const discLoss = (ratio * 2.5).toFixed(1);
+      const headJut = Math.round(ratio * 32);
+      valSpineCreep.textContent = `-${discLoss} mm / +${headJut} mm jut`;
+      if (mins < 30) {
+        badgeSpineCreepStatus.textContent = 'STABLE';
+        badgeSpineCreepStatus.style.color = '#2dd4bf';
+        descSpineCreep.textContent = 'Lumbar lordosis preserved; head centered on plumb line.';
+      } else if (mins < 75) {
+        badgeSpineCreepStatus.textContent = 'SLUMP DRIFT';
+        badgeSpineCreepStatus.style.color = '#fbbf24';
+        descSpineCreep.textContent = 'Core stabilizing endurance dropping; anterior pelvic sag.';
+      } else {
+        badgeSpineCreepStatus.textContent = 'IMPINGED';
+        badgeSpineCreepStatus.style.color = '#ef4444';
+        descSpineCreep.textContent = 'Gravity disc flattening with L4–L5 and C5–C6 root crowding.';
+      }
+
+      // 4. Circadian Shading Equivalent (Hour 14 afternoon to Hour 23 scotopic night)
+      const simulatedHour = 14 + (mins / 120.0) * 9;
+      const hInt = Math.floor(simulatedHour);
+      const mInt = Math.round((simulatedHour - hInt) * 60);
+      const timeStr = `${hInt.toString().padStart(2, '0')}:${mInt.toString().padStart(2, '0')}`;
+      badgeCircadianHour.textContent = `${timeStr} CIRCADIAN`;
+      
+      if (simulatedHour < 17) {
+        valCircadianKelvin.textContent = '5500K Sunbeam';
+        valCircadianKelvin.style.color = '#fbbf24';
+        badgeCircadianHour.style.color = '#fbbf24';
+        descCircadian.textContent = 'Warm side-window raking light; high relief contrast.';
+      } else if (simulatedHour < 21) {
+        valCircadianKelvin.textContent = '2800K Golden Amber';
+        valCircadianKelvin.style.color = '#f97316';
+        badgeCircadianHour.style.color = '#f97316';
+        descCircadian.textContent = 'Dusk transition; softening contrast to ease retinal fatigue.';
+      } else {
+        valCircadianKelvin.textContent = '650nm Scotopic';
+        valCircadianKelvin.style.color = '#ef4444';
+        badgeCircadianHour.style.color = '#ef4444';
+        descCircadian.textContent = 'Zero blue photons; rod-sparing night vision protecting melatonin.';
+      }
+
+      // 20-20-20 Milestone badge
+      if (mins >= 20 && mins < 25) {
+        badgeFatigueRule.textContent = '🔔 20-20-20 Rule: Look 20ft away for 20s!';
+        badgeFatigueRule.style.background = 'rgba(245, 158, 11, 0.2)';
+        badgeFatigueRule.style.color = '#fbbf24';
+        badgeFatigueRule.style.borderColor = '#f59e0b';
+      } else {
+        badgeFatigueRule.textContent = '✓ 20-20-20 Ophthalmology Compliant';
+        badgeFatigueRule.style.background = 'rgba(45, 212, 191, 0.12)';
+        badgeFatigueRule.style.color = '#2dd4bf';
+        badgeFatigueRule.style.borderColor = 'rgba(45, 212, 191, 0.3)';
+      }
+
+      if (vesalian3dViewer) {
+        vesalian3dViewer.setSessionFatigue(mins);
+        vesalian3dViewer.setCircadianHour(simulatedHour);
+      }
+    }
+
+    sliderSessionFatigue?.addEventListener('input', () => {
+      const mins = parseInt(sliderSessionFatigue.value, 10);
+      updateSessionFatigueHUD(mins);
+    });
+
+    btnResetFatigueAndRealine?.addEventListener('click', () => {
+      if (sliderSessionFatigue) {
+        sliderSessionFatigue.value = '0';
+        updateSessionFatigueHUD(0);
+      }
+      if (rehabScrubber) {
+        rehabScrubber.value = '1.0';
+        rehabScrubber.dispatchEvent(new Event('input'));
+      }
+      if (!isPacingActive && btnToggleBioPacing) {
+        btnToggleBioPacing.click();
+      }
+    });
+
+    // View Mode Toggle (Option A Folio vs Option B 3D)
+    const btnViewModeFolio = document.getElementById('btnViewModeFolio');
+    const btnViewMode3D = document.getElementById('btnViewMode3D');
+
+    function setActiveViewModeUI(mode) {
+      if (btnViewModeFolio) {
+        btnViewModeFolio.style.background = mode === 'folio' ? '#d63031' : 'transparent';
+        btnViewModeFolio.style.color = mode === 'folio' ? '#ffffff' : '#d4a373';
+        btnViewModeFolio.style.fontWeight = mode === 'folio' ? 'bold' : 'normal';
+      }
+      if (btnViewMode3D) {
+        btnViewMode3D.style.background = mode === 'sculpture_3d' ? '#d63031' : 'transparent';
+        btnViewMode3D.style.color = mode === 'sculpture_3d' ? '#ffffff' : '#d4a373';
+        btnViewMode3D.style.fontWeight = mode === 'sculpture_3d' ? 'bold' : 'normal';
+      }
+      if (lanternLocusLabel) {
+        lanternLocusLabel.textContent = mode === 'folio'
+          ? '🎯 Mode A: 2.5D Folio Deep-Inspection (Edinburgh 1822 Engraving • Click Pins for Telemetry)'
+          : '🎯 Mode B: 3D Volumetric Stage (Exploded Multi-Stratum Orbit • 360° Inspection)';
+      }
+      if (vesalian3dViewer) {
+        vesalian3dViewer.setViewMode(mode);
+      }
+    }
+
+    btnViewModeFolio?.addEventListener('click', () => setActiveViewModeUI('folio'));
+    btnViewMode3D?.addEventListener('click', () => setActiveViewModeUI('sculpture_3d'));
+
+    // Anatomical Archetype Controls (Woman, Man, Ecorché, Scan)
+    const btnArchFemale = document.getElementById('btnArchFemale');
+    const btnArchMale = document.getElementById('btnArchMale');
+    const btnArchEcorche = document.getElementById('btnArchEcorche');
+    const btnUploadScan = document.getElementById('btnUploadScan');
+    const scanFileInput = document.getElementById('scanFileInput');
+    const scanStatusBadge = document.getElementById('scanStatusBadge');
+
+    function setActiveArchetypeUI(type) {
+      const btns = [
+        { el: btnArchFemale, key: 'female' },
+        { el: btnArchMale, key: 'male' },
+        { el: btnArchEcorche, key: 'ecorche' }
+      ];
+      btns.forEach(({ el, key }) => {
+        if (!el) return;
+        const active = key === type;
+        el.style.background = active ? '#cd8d58' : 'transparent';
+        el.style.color = active ? '#181109' : '#d4a373';
+        el.style.fontWeight = active ? 'bold' : 'normal';
+      });
+
+      if (lanternLocusLabel) {
+        if (type === 'female') {
+          lanternLocusLabel.textContent = '🎯 Natural Gynoid Model: 15° Q-Angle • Pelvic Flare • Wasp Waist';
+        } else if (type === 'male') {
+          lanternLocusLabel.textContent = '🎯 Natural Android Model: Biacromial V-Taper • Pectoralis • Rectus Abdominis';
+        } else if (type === 'ecorche') {
+          lanternLocusLabel.textContent = '🎯 1543 Dissection: 12 Rib Pairs • Vertebral Column • Sternal Cleft';
+        } else {
+          lanternLocusLabel.textContent = '🎯 Live 3D Scan Model Loaded • Automated Anatomical Normalization';
+        }
+      }
+
+      if (vesalian3dViewer) {
+        vesalian3dViewer.setArchetype(type);
+      }
+    }
+
+    btnArchFemale?.addEventListener('click', () => setActiveArchetypeUI('female'));
+    btnArchMale?.addEventListener('click', () => setActiveArchetypeUI('male'));
+    btnArchEcorche?.addEventListener('click', () => setActiveArchetypeUI('ecorche'));
+
+    // Ingest Custom 3D Scan (.glb, .gltf, .obj)
+    btnUploadScan?.addEventListener('click', () => {
+      scanFileInput?.click();
+    });
+
+    scanFileInput?.addEventListener('change', async () => {
+      if (scanFileInput.files && scanFileInput.files.length > 0) {
+        const file = scanFileInput.files[0];
+        if (scanStatusBadge) scanStatusBadge.textContent = `Loading ${file.name}...`;
+        const success = await vesalian3dViewer?.loadExternalModel(file);
+        if (scanStatusBadge) {
+          scanStatusBadge.textContent = success ? `✓ Active Scan: ${file.name}` : '✗ Load Failed';
+          scanStatusBadge.style.color = success ? '#2dd4bf' : '#f43f5e';
+        }
+        if (success) {
+          setActiveViewModeUI('sculpture_3d');
+        }
+      }
+    });
+
+    // Universal Theme Selector Pills
+    const themeBtns = [
+      { id: 'btnThemeLizars', key: 'edinburgh_1822', bg: '#f5eedb', fg: '#1c140e' },
+      { id: 'btnThemeObsidian', key: 'obsidian', bg: '#09090b', fg: '#2dd4bf' },
+      { id: 'btnThemeWashi', key: 'washi', bg: '#f8f4ec', fg: '#1f1e1d' },
+      { id: 'btnThemeScotopic', key: 'scotopic_650nm', bg: '#0c0505', fg: '#ff3333' },
+      { id: 'btnThemeVesalian', key: 'vesalian_1543', bg: '#22150e', fg: '#cd8d58' }
+    ];
+
+    themeBtns.forEach(({ id, key, bg, fg }) => {
+      const btn = document.getElementById(id);
+      btn?.addEventListener('click', () => {
+        themeBtns.forEach(t => {
+          const b = document.getElementById(t.id);
+          if (b) {
+            b.style.background = 'transparent';
+            b.style.color = '#a1a1aa';
+            b.style.fontWeight = 'normal';
+          }
+        });
+        if (btn) {
+          btn.style.background = bg;
+          btn.style.color = fg;
+          btn.style.fontWeight = 'bold';
+        }
+        if (vesalian3dViewer) {
+          vesalian3dViewer.setTheme(key);
+        }
+      });
+    });
+
+    // Stratigraphic Dissection Peeling Scrubber
+    const sliderDissectionDepth = document.getElementById('sliderDissectionDepth');
+    const labelDissectionDepth = document.getElementById('labelDissectionDepth');
+
+    sliderDissectionDepth?.addEventListener('input', () => {
+      const val = parseFloat(sliderDissectionDepth.value);
+      if (vesalian3dViewer) vesalian3dViewer.setDissectionDepth(val);
+
+      if (labelDissectionDepth) {
+        if (val < 0.20) {
+          labelDissectionDepth.textContent = `Habitus (${Math.round(val * 100)}%)`;
+        } else if (val < 0.50) {
+          labelDissectionDepth.textContent = `Myologia (${Math.round(val * 100)}%)`;
+        } else if (val < 0.75) {
+          labelDissectionDepth.textContent = `Neurovasc (${Math.round(val * 100)}%)`;
+        } else {
+          labelDissectionDepth.textContent = `Osteologia (${Math.round(val * 100)}%)`;
+        }
+      }
+    });
+
+    // Pin Selection Listener
+    if (vesalian3dViewer) {
+      vesalian3dViewer.onPinSelect((pin) => {
+        if (lanternLocusLabel) {
+          lanternLocusLabel.innerHTML = `🎯 Pin #${pin.number}: <strong style="color: ${pin.color}">${pin.latinName}</strong> (${pin.englishName})`;
+        }
+      });
+    }
 
     // Initial Master Frame 3 Render
     updateHistoriatedDropCap();

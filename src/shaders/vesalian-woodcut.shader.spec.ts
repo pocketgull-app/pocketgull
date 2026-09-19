@@ -43,4 +43,14 @@ describe('VesalianWoodcutShader', () => {
     expect(mat.uniforms['uInkColor'].value.getHex()).toBe(0x1c1917);
     expect(mat.uniforms['uPaperColor'].value.getHex()).toBe(0xfaf8f0);
   });
+
+  it('should support smooth ecorche_cast and woodcut surfaceStyle toggling', () => {
+    const defaultMat = createVesalianWoodcutMaterial();
+    expect(defaultMat.uniforms['uSurfaceStyle'].value).toBe(0.0); // Default to smooth ecorche cast
+
+    const woodcutMat = createVesalianWoodcutMaterial({
+      surfaceStyle: 'woodcut'
+    });
+    expect(woodcutMat.uniforms['uSurfaceStyle'].value).toBe(1.0);
+  });
 });

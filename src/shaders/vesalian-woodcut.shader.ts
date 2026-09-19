@@ -15,6 +15,7 @@
 import * as THREE from 'three';
 
 export type WoodCutType = 'v_ribbed' | 'fluted' | 'reeded' | 'slatted' | 'burl' | 'camaieu_auto';
+export type SurfaceStyle = 'ecorche_cast' | 'woodcut';
 
 export interface IVesalianWoodcutOptions {
   hatchScale?: number;        // Frequency of hatching lines (e.g. 26.0)
@@ -24,6 +25,7 @@ export interface IVesalianWoodcutOptions {
   muscleTension?: number;     // 0.0 (relaxed) to 1.0 (fully contracted)
   scotopicMode?: boolean;     // Dark obsidian background mode
   woodCutType?: WoodCutType;  // Carving profile from Lots-of-Wood-Studies
+  surfaceStyle?: SurfaceStyle;// 'ecorche_cast' (smooth velvet matte) or 'woodcut' (1543 hatching)
   grainStrength?: number;     // Pearwood cellulose grain perturbation (0.0 to 1.0)
   reliefDepth?: number;       // Physical surface normal bump depth (0.0 to 4.0, default 1.8)
 }
@@ -42,6 +44,7 @@ struct WoodcutUniforms {
     woodCutType: f32,
     grainStrength: f32,
     reliefDepth: f32,
+    surfaceStyle: f32,
     inkColor: vec4<f32>,
     paperColor: vec4<f32>,
     activeLusterColor: vec4<f32>,
@@ -157,19 +160,22 @@ export function createVesalianWoodcutMaterial(options: IVesalianWoodcutOptions =
   const woodCutType = options.woodCutType ?? 'camaieu_auto';
   const grainStrength = options.grainStrength ?? 0.85;
   const reliefDepth = options.reliefDepth ?? 1.8;
+  const surfaceStyle = options.surfaceStyle ?? 'ecorche_cast';
+  const surfaceStyleCode = surfaceStyle === 'woodcut' ? 1.0 : 0.0;
 
   const inkColorHex = options.inkColor ?? (isScotopic ? 0xf59e0b : 0x1c1917);
   const paperColorHex = options.paperColor ?? (isScotopic ? 0x09090b : 0xfaf8f0);
   const lusterColorHex = isScotopic ? 0x14b8a6 : 0xd97706;
 
   const uniforms = {
-    uLightDir: { value: new THREE.Vector3(1.2, 1.8, 2.2).normalize() },
+    uLightDir: { value: new THREE.Vector3(2.4, 3.2, 0.9).normalize() }, // Oblique raking clerestory light (casts deep relief shadows)
     uHatchScale: { value: hatchScale },
     uPennationAngleRad: { value: pennationRad },
     uMuscleTension: { value: muscleTension },
     uWoodCutType: { value: getWoodCutTypeCode(woodCutType) },
     uGrainStrength: { value: grainStrength },
     uReliefDepth: { value: reliefDepth },
+    uSurfaceStyle: { value: surfaceStyleCode },
     uInkColor: { value: new THREE.Color(inkColorHex) },
     uPaperColor: { value: new THREE.Color(paperColorHex) },
     uLusterColor: { value: new THREE.Color(lusterColorHex) },
@@ -206,6 +212,7 @@ export function createVesalianWoodcutMaterial(options: IVesalianWoodcutOptions =
     uniform float uWoodCutType;
     uniform float uGrainStrength;
     uniform float uReliefDepth;
+    uniform float uSurfaceStyle;
     uniform vec3 uInkColor;
     uniform vec3 uPaperColor;
     uniform vec3 uLusterColor;
@@ -215,6 +222,37 @@ export function createVesalianWoodcutMaterial(options: IVesalianWoodcutOptions =
       vec3 N = normalize(vNormal);
       vec3 V = normalize(-vPosition);
       vec3 L = normalize(uLightDir);
+
+      // =========================================================================
+      // 🏛️ Smooth Écorché Cast Mode (Royal Academy / Houdon Ergonomic Standard)
+      // Zero Moiré, Zero Spatial Vibration, Velvety Lambertian Wrap & Curvature AO
+      // =========================================================================
+      if (uSurfaceStyle < 0.5) {
+        float directLight = max(dot(N, L), 0.0);
+        vec3 fillDir = normalize(vec3(-L.x * 0.7, 0.45, -L.z * 0.7));
+        float fillLight = max(dot(N, fillDir), 0.0) * 0.38 + 0.22;
+
+        // Curvature Ambient Occlusion: soft contact shadows in crevices and undercuts
+        float curvatureAO = clamp(pow(abs(N.z) * 0.55 + 0.45, 1.25) * (0.84 + 0.16 * N.y), 0.28, 1.0);
+
+        // Subtle Fresnel Rim: soft silhouetting to separate from backdrop without glare
+        float rimLight = pow(1.0 - max(dot(N, V), 0.0), 3.0) * 0.24;
+
+        float totalIllumination = (directLight * 0.78 + fillLight) * curvatureAO;
+
+        // Velvety Terracotta / Alabaster Diffuse Tone
+        vec3 shadowTone = mix(uPaperColor, uInkColor * 0.38, 0.70);
+        vec3 litTone = uInkColor * 1.12;
+
+        vec3 ecorcheBase = mix(shadowTone, litTone, smoothstep(0.06, 0.76, directLight));
+        ecorcheBase = ecorcheBase * totalIllumination + uPaperColor * rimLight * 0.35;
+
+        // Biomechanical Muscle Contraction Luster: warm energetic flush when tension rises
+        vec3 finalEcorche = mix(ecorcheBase, uLusterColor, uMuscleTension * 0.55 * (0.35 + 0.65 * directLight));
+
+        gl_FragColor = vec4(finalEcorche, 1.0);
+        return;
+      }
 
       float c = cos(uPennationAngleRad);
       float s = sin(uPennationAngleRad);
@@ -307,17 +345,26 @@ export function createVesalianWoodcutMaterial(options: IVesalianWoodcutOptions =
       vec3 H = normalize(L + V);
       float spec = pow(max(dot(bumpNormal, H), 0.0), 28.0) * pattern * 0.42;
 
-      // Final Tonal Synthesis
+      // 🎨 Physical 3-Layer Stratigraphy (Gesso Ground & Luminous Pigment Glaze)
+      // Layer 1: Dark Raw Carved Timber Core (deep gouge troughs & knife shadows)
+      vec3 timberCore = uPaperColor * (0.65 + 0.35 * ambientLight);
+
+      // Layer 2: White Gesso Imprimatura Primer (highly reflective calcium chalk ground)
+      vec3 gessoGround = vec3(0.97, 0.95, 0.91);
+
+      // Layer 3: Translucent Pigment Glaze over Gesso Ground
+      // The white ground bounces internal radiance through the translucent pigment layer, preventing muddying
+      vec3 luminousPigment = mix(uInkColor, uInkColor * gessoGround * 1.15, 0.45);
+      vec3 glazedSurface = luminousPigment * (0.55 + 0.45 * totalLight) + mix(gessoGround, uLusterColor, 0.35) * spec;
+
+      // Final Tonal Synthesis: Proud ridges showcase glazed pigment over white gesso; troughs cut into timber core
       vec3 finalBase;
       if (uScotopicMode > 0.5) {
-        // Obsidian mode: Inked ridges catch warm light; troughs sink into velvety dark
-        vec3 litInk = uInkColor * (0.65 + 0.35 * totalLight) + uLusterColor * spec;
-        vec3 darkTrough = uPaperColor * (0.85 + 0.15 * ambientLight);
-        finalBase = mix(litInk, darkTrough, pattern);
+        finalBase = mix(glazedSurface, timberCore, pattern);
       } else {
-        // Renaissance Rag Paper mode: Crisp lampblack ink with paper fiber sheen
+        // Renaissance Rag Paper mode
         vec3 darkInk = uInkColor * (0.35 + 0.65 * (1.0 - directLight));
-        vec3 creamPaper = uPaperColor * (0.75 + 0.25 * directLight) + vec3(1.0, 0.95, 0.85) * spec;
+        vec3 creamPaper = uPaperColor * (0.75 + 0.25 * directLight) + gessoGround * spec;
         finalBase = mix(creamPaper, darkInk, 1.0 - pattern);
       }
 
