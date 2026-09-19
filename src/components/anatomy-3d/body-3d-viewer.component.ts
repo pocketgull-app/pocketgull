@@ -25,7 +25,7 @@ import { AvsEngineService } from '../../services/avs-engine.service';
 import { VeoService } from '../../services/veo.service';
 import { ClinicalSpecialtyRiskSuiteService } from '../../services/clinical-specialty-risk-suite.service';
 import { KinesiologyBiomechanicsService, IPrescriptiveRehabPlan } from '../../services/kinesiology-biomechanics.service';
-import { createVesalianWoodcutMaterial, createGhostFresnelMaterial } from '../../shaders';
+import { createVesalianWoodcutMaterial, createGhostFresnelMaterial, WoodCutType, getWoodCutTypeCode } from '../../shaders';
 import { IBodyPartIssue } from '../../services/patient.types';
 
 const PART_NAMES: Record<string, string> = {
@@ -595,6 +595,65 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
               </button>
             </div>
 
+            <!-- 🪵 Woodcut Relief Profiles (Atelier Xylem 1543 Taxonomy) -->
+            <div class="flex items-center gap-1.5 my-1.5 flex-wrap">
+              <span class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider">Relief Cut:</span>
+              <button (click)="onWoodCutTypeSelect('v_ribbed')"
+                      [class.bg-amber-600]="state.activeWoodCutType() === 'v_ribbed'"
+                      [class.text-white]="state.activeWoodCutType() === 'v_ribbed'"
+                      [class.bg-zinc-900]="state.activeWoodCutType() !== 'v_ribbed'"
+                      [class.text-zinc-400]="state.activeWoodCutType() !== 'v_ribbed'"
+                      class="px-2 py-0.5 rounded text-[9.5px] font-bold border border-zinc-800 transition hover:border-amber-500/50 cursor-pointer"
+                      title="V-Parting Tool: Sharp knife-bevel incisions on tendons & bone ridges">
+                🪵 V-Ribbed
+              </button>
+              <button (click)="onWoodCutTypeSelect('fluted')"
+                      [class.bg-amber-600]="state.activeWoodCutType() === 'fluted'"
+                      [class.text-white]="state.activeWoodCutType() === 'fluted'"
+                      [class.bg-zinc-900]="state.activeWoodCutType() !== 'fluted'"
+                      [class.text-zinc-400]="state.activeWoodCutType() !== 'fluted'"
+                      class="px-2 py-0.5 rounded text-[9.5px] font-bold border border-zinc-800 transition hover:border-amber-500/50 cursor-pointer"
+                      title="U-Gouge: Concave troughs capturing velvety chiaroscuro in contractile muscle bellies">
+                🌊 Fluted
+              </button>
+              <button (click)="onWoodCutTypeSelect('reeded')"
+                      [class.bg-amber-600]="state.activeWoodCutType() === 'reeded'"
+                      [class.text-white]="state.activeWoodCutType() === 'reeded'"
+                      [class.bg-zinc-900]="state.activeWoodCutType() !== 'reeded'"
+                      [class.text-zinc-400]="state.activeWoodCutType() !== 'reeded'"
+                      class="px-2 py-0.5 rounded text-[9.5px] font-bold border border-zinc-800 transition hover:border-amber-500/50 cursor-pointer"
+                      title="Reeding Plane: Proud convex rounded ridges tracing pennate muscle fiber trajectories">
+                🪓 Reeded
+              </button>
+              <button (click)="onWoodCutTypeSelect('slatted')"
+                      [class.bg-amber-600]="state.activeWoodCutType() === 'slatted'"
+                      [class.text-white]="state.activeWoodCutType() === 'slatted'"
+                      [class.bg-zinc-900]="state.activeWoodCutType() !== 'slatted'"
+                      [class.text-zinc-400]="state.activeWoodCutType() !== 'slatted'"
+                      class="px-2 py-0.5 rounded text-[9.5px] font-bold border border-zinc-800 transition hover:border-amber-500/50 cursor-pointer"
+                      title="Architectural Louvers: Parallel stepped cuts for ribs, vertebrae, and skeletal scaffolding">
+                🏛️ Slatted
+              </button>
+              <button (click)="onWoodCutTypeSelect('burl')"
+                      [class.bg-amber-600]="state.activeWoodCutType() === 'burl'"
+                      [class.text-white]="state.activeWoodCutType() === 'burl'"
+                      [class.bg-zinc-900]="state.activeWoodCutType() !== 'burl'"
+                      [class.text-zinc-400]="state.activeWoodCutType() !== 'burl'"
+                      class="px-2 py-0.5 rounded text-[9.5px] font-bold border border-zinc-800 transition hover:border-amber-500/50 cursor-pointer"
+                      title="End-Grain Burl: Concentric growth knot whorls and wild organic pearwood grain for joints">
+                🌀 Burl
+              </button>
+              <button (click)="onWoodCutTypeSelect('camaieu_auto')"
+                      [class.bg-amber-600]="state.activeWoodCutType() === 'camaieu_auto'"
+                      [class.text-white]="state.activeWoodCutType() === 'camaieu_auto'"
+                      [class.bg-zinc-900]="state.activeWoodCutType() !== 'camaieu_auto'"
+                      [class.text-zinc-400]="state.activeWoodCutType() !== 'camaieu_auto'"
+                      class="px-2 py-0.5 rounded text-[9.5px] font-bold border border-zinc-800 transition hover:border-amber-500/50 cursor-pointer"
+                      title="Camaïeu Multi-Block: Tissue-adaptive 1543 Renaissance master plate">
+                ✨ Camaïeu Auto
+              </button>
+            </div>
+
             <!-- Single Scrubber -->
             <div class="space-y-1 my-2">
               <div class="flex justify-between text-[10px] font-semibold">
@@ -719,6 +778,16 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     onCutawayRadiusChange(event: Event): void {
       const val = parseFloat((event.target as HTMLInputElement).value);
       this.state.activeRehabCutawayRadius.set(val);
+    }
+
+    onWoodCutTypeSelect(type: WoodCutType): void {
+      this.state.activeWoodCutType.set(type);
+      if (this.vesalianWoodcutMaterial && this.vesalianWoodcutMaterial.uniforms && this.vesalianWoodcutMaterial.uniforms['uWoodCutType']) {
+        this.vesalianWoodcutMaterial.uniforms['uWoodCutType'].value = getWoodCutTypeCode(type);
+      }
+      if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(15);
+      }
     }
 
     // 🧠 Multiple Sclerosis & Uhthoff Thermal Overlays
@@ -2067,7 +2136,9 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             hatchScale: 28.0,
             inkColor: 0xf59e0b,
             paperColor: 0x1c1917,
-            scotopicMode: true
+            scotopicMode: true,
+            woodCutType: this.state.activeWoodCutType(),
+            grainStrength: 0.85
         });
 
         // Translucent Fresnel Ghost Envelope with Rehabilitation Cutaway Lantern
@@ -3469,6 +3540,9 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 if (this.vesalianWoodcutMaterial && this.vesalianWoodcutMaterial.uniforms) {
                     if (this.vesalianWoodcutMaterial.uniforms['uMuscleTension']) {
                         this.vesalianWoodcutMaterial.uniforms['uMuscleTension'].value = this.state.activeRehabProgress();
+                    }
+                    if (this.vesalianWoodcutMaterial.uniforms['uWoodCutType']) {
+                        this.vesalianWoodcutMaterial.uniforms['uWoodCutType'].value = getWoodCutTypeCode(this.state.activeWoodCutType());
                     }
                 }
 

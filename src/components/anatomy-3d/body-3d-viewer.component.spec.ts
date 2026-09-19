@@ -39,6 +39,7 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
       activeRehabCondition: signal('lumbar_pelvic_alignment'),
       activeRehabProgress: signal(0),
       activeRehabCutawayRadius: signal(2.5),
+      activeWoodCutType: signal('camaieu_auto'),
       selectedPartId: signal(null),
       selectedPartName: signal(null)
     };
@@ -218,5 +219,28 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     const radiusEvent = { target: { value: '3.4' } } as unknown as Event;
     viewer.onCutawayRadiusChange(radiusEvent);
     expect((viewer as any).state.activeRehabCutawayRadius()).toBe(3.4);
+  });
+
+  it('controls 5 classical woodcut relief types and Camaïeu auto in Vesalian HUD', () => {
+    const viewer = createViewer();
+    expect((viewer as any).state.activeWoodCutType()).toBe('camaieu_auto');
+
+    viewer.onWoodCutTypeSelect('v_ribbed');
+    expect((viewer as any).state.activeWoodCutType()).toBe('v_ribbed');
+
+    viewer.onWoodCutTypeSelect('fluted');
+    expect((viewer as any).state.activeWoodCutType()).toBe('fluted');
+
+    viewer.onWoodCutTypeSelect('reeded');
+    expect((viewer as any).state.activeWoodCutType()).toBe('reeded');
+
+    viewer.onWoodCutTypeSelect('slatted');
+    expect((viewer as any).state.activeWoodCutType()).toBe('slatted');
+
+    viewer.onWoodCutTypeSelect('burl');
+    expect((viewer as any).state.activeWoodCutType()).toBe('burl');
+
+    viewer.onWoodCutTypeSelect('camaieu_auto');
+    expect((viewer as any).state.activeWoodCutType()).toBe('camaieu_auto');
   });
 });

@@ -21,6 +21,18 @@ export interface ILidarIsolineOptions {
   contourColorHex?: string;   // e.g. '#38bdf8' (Cyan) or '#14b8a6' (Teal)
 }
 
+import { WoodCutType } from '../shaders/vesalian-woodcut.shader';
+
+export interface IWoodCutProfile {
+  id: WoodCutType;
+  label: string;
+  icon: string;
+  tool: string;
+  profile: string;
+  anatomicalTarget: string;
+  aesthetic: string;
+}
+
 export interface IHistoriatedDropCap {
   letter: string;
   svgMarkup: string;
@@ -165,4 +177,68 @@ export class DiatomVesalianTypographyService {
       hasSubstitutions: hasZero || hasAmbiguousL
     };
   }
+
+  /**
+   * Returns the 5 classical carpentry/printmaking wood cut profiles plus Camaïeu Auto,
+   * synthesized from Atelier Xylem (Lots of Wood Studies) & Andreas Vesalius 1543.
+   */
+  getWoodCutProfiles(): IWoodCutProfile[] {
+    return [
+      {
+        id: 'v_ribbed',
+        label: 'V-Ribbed Chisel',
+        icon: '🪵',
+        tool: 'V-Parting Tool (Burin)',
+        profile: 'Triangular knife-bevel incisions',
+        anatomicalTarget: 'Skeletal ridges, clavicle, patellar tendon',
+        aesthetic: 'High-contrast knife sharpness with dynamic depth'
+      },
+      {
+        id: 'fluted',
+        label: 'Fluted Trough',
+        icon: '🌊',
+        tool: 'U-Gouge Curved Chisel',
+        profile: 'Concave semicircular hollows',
+        anatomicalTarget: 'Pectoral, deltoid, rectus femoris muscle bellies',
+        aesthetic: 'Velvety chiaroscuro cradling ambient light'
+      },
+      {
+        id: 'reeded',
+        label: 'Reeded Grain',
+        icon: '🪓',
+        tool: 'Double-Bevel Reeding Plane',
+        profile: 'Convex rounded proud ridges',
+        anatomicalTarget: 'Unipennate & bipennate muscle fibers',
+        aesthetic: 'Highlight catches on crests along force lines'
+      },
+      {
+        id: 'slatted',
+        label: 'Slatted Louver',
+        icon: '🏛️',
+        tool: 'Dado / Ripping Saw Blade',
+        profile: 'Stepped architectural rhythmic louvers',
+        anatomicalTarget: 'Thoracic ribs, lumbar vertebrae spacing, pelvic planes',
+        aesthetic: 'Structured mechanical negative space'
+      },
+      {
+        id: 'burl',
+        label: 'Burl Knot',
+        icon: '🌀',
+        tool: 'Sculpted End-Grain Burin',
+        profile: 'Concentric growth-knot whorls',
+        anatomicalTarget: 'Joint capsules, menisci, fascial spiral knots',
+        aesthetic: 'Organic fibrous tension with wild pearwood grain'
+      },
+      {
+        id: 'camaieu_auto',
+        label: 'Camaïeu Auto',
+        icon: '✨',
+        tool: 'Multi-Block Master Plate',
+        profile: 'Tissue-adaptive relief routing',
+        anatomicalTarget: 'Whole-body integrated biomechanical diptych',
+        aesthetic: 'Authentic 1543 Renaissance van Calcar masterwork'
+      }
+    ];
+  }
 }
+

@@ -60,4 +60,14 @@ describe('DiatomVesalianTypographyService', () => {
     const check2 = service.enforceOpticalDisambiguation('Safe');
     expect(check2.hasSubstitutions).toBe(false);
   });
+
+  it('should return the 5 carpentry woodcut profiles plus Camaïeu Auto', () => {
+    const profiles = service.getWoodCutProfiles();
+    expect(profiles.length).toBe(6);
+    expect(profiles.map(p => p.id)).toEqual(['v_ribbed', 'fluted', 'reeded', 'slatted', 'burl', 'camaieu_auto']);
+    const vRibbed = profiles.find(p => p.id === 'v_ribbed');
+    expect(vRibbed?.tool).toContain('Burin');
+    const burl = profiles.find(p => p.id === 'burl');
+    expect(burl?.anatomicalTarget).toContain('Joint capsules');
+  });
 });

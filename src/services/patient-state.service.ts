@@ -16,8 +16,9 @@ import {
   IPatientAnatomicProfile
 } from './patient.types';
 import { getSecureRandomId } from '../utils/security-helper';
+import { WoodCutType } from '../shaders/vesalian-woodcut.shader';
 
-export type { IPatientState };
+export type { IPatientState, WoodCutType };
 export { BODY_PART_NAMES };
 
 export interface IAdaptiveVitalThresholds {
@@ -391,6 +392,8 @@ export class PatientStateService {
   readonly activeRehabProgress = signal<number>(0);
   /** Localized cutaway aperture radius in 3D world units for ghost Fresnel windowing */
   readonly activeRehabCutawayRadius = signal<number>(2.5);
+  /** Active woodcut relief style derived from Atelier Xylem / The Carpenter's Metronome */
+  readonly activeWoodCutType = signal<WoodCutType>('camaieu_auto');
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
   readonly draftSummaryItems = signal<IDraftSummaryItem[]>([]);
@@ -1311,6 +1314,7 @@ export class PatientStateService {
     this.activeRehabCondition.set('lumbar_pelvic_alignment');
     this.activeRehabProgress.set(0);
     this.activeRehabCutawayRadius.set(2.5);
+    this.activeWoodCutType.set('camaieu_auto');
     this.issues.set({});
     this.patientGoals.set('');
     this.dietaryProtocol.set('');

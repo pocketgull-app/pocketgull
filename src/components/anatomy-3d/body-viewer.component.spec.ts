@@ -31,6 +31,7 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
       activeRehabCondition: signal('lumbar_pelvic_alignment'),
       activeRehabProgress: signal(0),
       activeRehabCutawayRadius: signal(2.5),
+      activeWoodCutType: signal('camaieu_auto'),
       selectedPartId: signal<string | null>(null),
       activePhilosophy: signal<'western' | 'eastern' | 'ayurvedic' | 'osteopathic'>('western'),
       issues: signal({}),

@@ -756,6 +756,38 @@
           </div>
         </div>
 
+        <!-- 🪵 5 Woodcut Relief Styles (Atelier Xylem / Vesalius 1543) -->
+        <div class="panel">
+          <div class="panel-header">
+            <span>🪵 Atelier Xylem Woodcut Relief Profiles</span>
+            <span style="color: #fbbf24;" id="activeWoodCutLabel">✨ Camaïeu Auto</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 4px;">
+            <button id="btnWoodVRibbed" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="V-Parting Tool: Crisp triangular knife incisions on tendons & bone ridges">
+              🪵 V-Ribbed
+            </button>
+            <button id="btnWoodFluted" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="U-Gouge: Concave troughs capturing velvety chiaroscuro in contractile muscle meat">
+              🌊 Fluted
+            </button>
+            <button id="btnWoodReeded" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="Reeding Plane: Proud convex rounded ridges tracing pennate muscle fiber trajectories">
+              🪓 Reeded
+            </button>
+            <button id="btnWoodSlatted" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="Architectural Louvers: Parallel stepped cuts for ribs, vertebrae, and skeletal scaffolding">
+              🏛️ Slatted
+            </button>
+            <button id="btnWoodBurl" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #181820; color: #fbbf24; border: 1px solid #272732; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="End-Grain Burl: Concentric growth knot whorls and wild organic pearwood grain">
+              🌀 Burl
+            </button>
+            <button id="btnWoodCamaieu" style="padding: 6px 4px; font-size: 10px; font-weight: bold; background: #f59e0b; color: #09090b; border: none; border-radius: 8px; font-family: 'PocketGull Mono'; cursor: pointer;" title="Camaïeu Multi-Block: Tissue-adaptive 1543 Renaissance master plate">
+              ✨ Camaïeu
+            </button>
+          </div>
+          <div id="woodCutDescription" style="margin-top: 8px; font-size: 11px; color: #a1a1aa; font-family: 'PocketGull', sans-serif; line-height: 1.4;">
+            Multi-block Renaissance master plate: tissue-adaptive routing blending V-Ribbed, Fluted, and Burl.
+          </div>
+        </div>
+
         <!-- Clinical Telemetry Proof Card -->
         <div class="panel">
           <div class="panel-header">
@@ -1454,12 +1486,91 @@
     const btnTriadKnee = document.getElementById('btnTriadKnee');
     const btnTriadCervical = document.getElementById('btnTriadCervical');
 
+    // 🪵 Woodcut Relief Controls
+    const btnWoodVRibbed = document.getElementById('btnWoodVRibbed');
+    const btnWoodFluted = document.getElementById('btnWoodFluted');
+    const btnWoodReeded = document.getElementById('btnWoodReeded');
+    const btnWoodSlatted = document.getElementById('btnWoodSlatted');
+    const btnWoodBurl = document.getElementById('btnWoodBurl');
+    const btnWoodCamaieu = document.getElementById('btnWoodCamaieu');
+    const activeWoodCutLabel = document.getElementById('activeWoodCutLabel');
+    const woodCutDescription = document.getElementById('woodCutDescription');
+    let activeWoodCutKey = 'camaieu_auto';
+
+    const WOODCUT_INFO = {
+      v_ribbed: {
+        label: '🪵 V-Ribbed Chisel',
+        desc: 'V-Parting Tool: Sharp knife-bevel incisions with dynamic cutting depth on bone ridges and tendon sheaths.',
+        pattern: (h) => `
+          <pattern id="vesalianHatchLive" width="16" height="16" patternTransform="rotate(${h} 0 0)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="16" y2="16" stroke="#f59e0b" stroke-width="2.2" />
+            <line x1="8" y1="0" x2="24" y2="16" stroke="#f59e0b" stroke-width="1.8" />
+            <line x1="0" y1="16" x2="16" y2="0" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="4,2" />
+          </pattern>`
+      },
+      fluted: {
+        label: '🌊 Fluted Trough',
+        desc: 'U-Gouge Curved Chisel: Concave hollows capturing velvety chiaroscuro in contractile muscle bellies.',
+        pattern: (h) => `
+          <pattern id="vesalianHatchLive" width="18" height="18" patternTransform="rotate(${h} 0 0)" patternUnits="userSpaceOnUse">
+            <path d="M 0 6 Q 4.5 1, 9 6 T 18 6" fill="none" stroke="#f59e0b" stroke-width="2.4" />
+            <path d="M 0 15 Q 4.5 10, 9 15 T 18 15" fill="none" stroke="#f59e0b" stroke-width="2.4" />
+            <line x1="0" y1="9" x2="18" y2="9" stroke="rgba(245, 158, 11, 0.4)" stroke-width="1" />
+          </pattern>`
+      },
+      reeded: {
+        label: '🪓 Reeded Grain',
+        desc: 'Double-Bevel Reeding Plane: Proud rounded ridges catching specular highlights along pennate fiber paths.',
+        pattern: (h) => `
+          <pattern id="vesalianHatchLive" width="14" height="14" patternTransform="rotate(${h} 0 0)" patternUnits="userSpaceOnUse">
+            <line x1="3.5" y1="0" x2="3.5" y2="14" stroke="#f59e0b" stroke-width="2.8" stroke-linecap="round" />
+            <line x1="10.5" y1="0" x2="10.5" y2="14" stroke="#f59e0b" stroke-width="2.8" stroke-linecap="round" />
+            <line x1="3.5" y1="0" x2="3.5" y2="14" stroke="#fef08a" stroke-width="0.8" />
+            <line x1="10.5" y1="0" x2="10.5" y2="14" stroke="#fef08a" stroke-width="0.8" />
+          </pattern>`
+      },
+      slatted: {
+        label: '🏛️ Slatted Louver',
+        desc: 'Dado / Ripping Saw: Stepped architectural parallel louvers for thoracic ribs, vertebrae, and skeletal scaffolding.',
+        pattern: (h) => `
+          <pattern id="vesalianHatchLive" width="16" height="16" patternTransform="rotate(${h} 0 0)" patternUnits="userSpaceOnUse">
+            <rect x="0" y="2" width="16" height="4.5" fill="#f59e0b" />
+            <rect x="0" y="10" width="16" height="4.5" fill="#f59e0b" />
+            <line x1="0" y1="8" x2="16" y2="8" stroke="#181820" stroke-width="1" />
+          </pattern>`
+      },
+      burl: {
+        label: '🌀 Burl Knot',
+        desc: 'Sculpted End-Grain Burin: Concentric growth knot whorls and wild organic pearwood grain for joint capsules.',
+        pattern: (h) => `
+          <pattern id="vesalianHatchLive" width="20" height="20" patternTransform="rotate(${h} 0 0)" patternUnits="userSpaceOnUse">
+            <circle cx="10" cy="10" r="3" fill="none" stroke="#f59e0b" stroke-width="1.4" />
+            <circle cx="10" cy="10" r="6.5" fill="none" stroke="#f59e0b" stroke-width="1.6" stroke-dasharray="10,2" />
+            <circle cx="10" cy="10" r="9.5" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="16,3" />
+          </pattern>`
+      },
+      camaieu_auto: {
+        label: '✨ Camaïeu Auto',
+        desc: 'Multi-Block Master Plate: Tissue-adaptive Renaissance master plate blending V-Ribbed, Fluted, Reeded, and Burl.',
+        pattern: (h) => `
+          <pattern id="vesalianHatchLive" width="16" height="16" patternTransform="rotate(${h} 0 0)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="16" stroke="#f59e0b" stroke-width="1.6" />
+            <line x1="4" y1="0" x2="4" y2="16" stroke="#f59e0b" stroke-width="1.6" />
+            <line x1="8" y1="0" x2="8" y2="16" stroke="#f59e0b" stroke-width="1.6" />
+            <line x1="12" y1="0" x2="12" y2="16" stroke="#f59e0b" stroke-width="1.6" />
+            <line x1="0" y1="8" x2="16" y2="8" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,2" />
+            <path d="M 0 0 Q 8 4, 16 0" fill="none" stroke="rgba(254, 240, 138, 0.4)" stroke-width="0.8" />
+          </pattern>`
+      }
+    };
+
     const vesalianSvgDefs = document.getElementById('vesalianSvgDefs');
     const vesalianSvgContent = document.getElementById('vesalianSvgContent');
 
     function updateHistoriatedDropCap() {
       const patternSize = 24;
       const cellRadius = Math.max(0.5, 3.2 * poreVal * (1.2 - 0.4 * densVal)).toFixed(1);
+      const woodPattern = (WOODCUT_INFO[activeWoodCutKey] || WOODCUT_INFO.camaieu_auto).pattern(hatcVal);
       
       vesalianSvgDefs.innerHTML = `
         <pattern id="diatomPatternLive" width="${patternSize}" height="${patternSize}" patternUnits="userSpaceOnUse">
@@ -1468,13 +1579,7 @@
           <circle cx="18" cy="6" r="${cellRadius}" fill="#09090b" opacity="${(0.7 + 0.3 * densVal).toFixed(2)}" />
           <circle cx="12" cy="18" r="${cellRadius}" fill="#09090b" opacity="${(0.7 + 0.3 * densVal).toFixed(2)}" />
         </pattern>
-        <pattern id="vesalianHatchLive" width="16" height="16" patternTransform="rotate(${hatcVal} 0 0)" patternUnits="userSpaceOnUse">
-          <line x1="0" y1="0" x2="0" y2="16" stroke="#f59e0b" stroke-width="1.5" />
-          <line x1="4" y1="0" x2="4" y2="16" stroke="#f59e0b" stroke-width="1.5" />
-          <line x1="8" y1="0" x2="8" y2="16" stroke="#f59e0b" stroke-width="1.5" />
-          <line x1="12" y1="0" x2="12" y2="16" stroke="#f59e0b" stroke-width="1.5" />
-          <line x1="0" y1="8" x2="16" y2="8" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,2" />
-        </pattern>
+        ${woodPattern}
       `;
 
       dropCapSlot.innerHTML = `
@@ -1640,6 +1745,41 @@
       activeTriadKey = 'cervical_spine_posture';
       updateTriadUI();
     });
+
+    // 🪵 Woodcut Relief Profile Handlers
+    function setWoodCutType(key) {
+      activeWoodCutKey = key;
+      const info = WOODCUT_INFO[key] || WOODCUT_INFO.camaieu_auto;
+      activeWoodCutLabel.textContent = info.label;
+      woodCutDescription.textContent = info.desc;
+
+      const buttons = [
+        { btn: btnWoodVRibbed, k: 'v_ribbed' },
+        { btn: btnWoodFluted, k: 'fluted' },
+        { btn: btnWoodReeded, k: 'reeded' },
+        { btn: btnWoodSlatted, k: 'slatted' },
+        { btn: btnWoodBurl, k: 'burl' },
+        { btn: btnWoodCamaieu, k: 'camaieu_auto' }
+      ];
+
+      buttons.forEach(({ btn, k }) => {
+        if (!btn) return;
+        const active = k === activeWoodCutKey;
+        btn.style.background = active ? '#f59e0b' : '#181820';
+        btn.style.color = active ? '#09090b' : '#fbbf24';
+        btn.style.border = active ? 'none' : '1px solid #272732';
+      });
+
+      updateHistoriatedDropCap();
+      renderVesalianGhost();
+    }
+
+    btnWoodVRibbed?.addEventListener('click', () => setWoodCutType('v_ribbed'));
+    btnWoodFluted?.addEventListener('click', () => setWoodCutType('fluted'));
+    btnWoodReeded?.addEventListener('click', () => setWoodCutType('reeded'));
+    btnWoodSlatted?.addEventListener('click', () => setWoodCutType('slatted'));
+    btnWoodBurl?.addEventListener('click', () => setWoodCutType('burl'));
+    btnWoodCamaieu?.addEventListener('click', () => setWoodCutType('camaieu_auto'));
 
     // Initial Master Frame 3 Render
     updateHistoriatedDropCap();
