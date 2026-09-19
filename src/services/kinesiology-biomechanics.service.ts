@@ -22,6 +22,26 @@ export interface IJointPoint {
   y: number;
 }
 
+export interface IBioTensorMuscleCue {
+  name: string;
+  action: 'contract' | 'relax';
+  colorHex: string; // Amber (#f59e0b) for contract, Slate (#64748b) for relax
+  targetCue: string;
+}
+
+export interface IPrescriptiveRehabPlan {
+  conditionKey: string;
+  conditionName: string;
+  focalPartId: string;
+  baselineAngles: Record<string, number>;
+  targetAngles: Record<string, number>;
+  angleDeltas: Record<string, number>;
+  bioTensorCues: IBioTensorMuscleCue[];
+  plainEnglishDirective: string;
+  torqueReductionNm: number;
+  decompressionPercent: number;
+}
+
 export interface IGaitPosture {
   progress: number; // 0.0 to 1.0
   phaseName: string;
@@ -307,5 +327,99 @@ export class KinesiologyBiomechanicsService {
 
   public toggleLocomotion(active?: boolean): void {
     this.isWalking.update(v => (active !== undefined ? active : !v));
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 3. Clinical Prescriptive Action & Rehabilitation Triad Engine
+  // ──────────────────────────────────────────────────────────────────────────
+
+  /** Patient-facing recovery progress (0.0 = current dysfunctional habit, 1.0 = target alignment) */
+  readonly activeRehabProgress = signal<number>(0.0);
+
+  /** Active clinical condition key from the Big Three canonical triad */
+  readonly activeRehabCondition = signal<string>('lumbar_pelvic_alignment');
+
+  /**
+   * Evaluates the Big Three clinical rehabilitation triad canonical plans:
+   * 1. Lumbar-Pelvic Alignment (L4-L5 Radiculopathy, Sciatica, Desk Posture)
+   * 2. Patellofemoral Tracking (Runner's Knee, Valgus Collapse)
+   * 3. Cervical Spine "Tech Neck" (Forward Head Posture, Cervical Radiculopathy)
+   */
+  public getPrescriptivePlan(conditionKey: string): IPrescriptiveRehabPlan {
+    switch (conditionKey) {
+      case 'patellofemoral_tracking':
+        return {
+          conditionKey: 'patellofemoral_tracking',
+          conditionName: 'Patellofemoral Tracking & Knee Valgus Alignment',
+          focalPartId: 'r_shin',
+          baselineAngles: { kneeValgusDeg: 14.5, qAngleDeg: 19.2, tibialInternalRotDeg: 8.0 },
+          targetAngles: { kneeValgusDeg: 4.0, qAngleDeg: 13.5, tibialInternalRotDeg: 1.5 },
+          angleDeltas: { kneeValgusDeg: -10.5, qAngleDeg: -5.7, tibialInternalRotDeg: -6.5 },
+          bioTensorCues: [
+            { name: 'Vastus Medialis Oblique (VMO)', action: 'contract', colorHex: '#f59e0b', targetCue: 'Gently squeeze inner quad at full extension' },
+            { name: 'Gluteus Medius', action: 'contract', colorHex: '#f59e0b', targetCue: 'Drive knee outward over second toe' },
+            { name: 'Tensor Fasciae Latae (TFL)', action: 'relax', colorHex: '#64748b', targetCue: 'Release lateral hip tension' }
+          ],
+          plainEnglishDirective: 'Press outward through your heel to align your kneecap directly over your second toe.',
+          torqueReductionNm: 28.4,
+          decompressionPercent: 34
+        };
+
+      case 'cervical_spine_posture':
+        return {
+          conditionKey: 'cervical_spine_posture',
+          conditionName: 'Cervical Axial Retraction & Forward-Head Reset',
+          focalPartId: 'spine_cervical',
+          baselineAngles: { craniovertebralAngleDeg: 42.0, forwardHeadDisplacementMm: 38.0, thoracicKyphosisDeg: 52.0 },
+          targetAngles: { craniovertebralAngleDeg: 54.0, forwardHeadDisplacementMm: 12.0, thoracicKyphosisDeg: 40.0 },
+          angleDeltas: { craniovertebralAngleDeg: +12.0, forwardHeadDisplacementMm: -26.0, thoracicKyphosisDeg: -12.0 },
+          bioTensorCues: [
+            { name: 'Longus Colli & Capitis', action: 'contract', colorHex: '#f59e0b', targetCue: 'Perform gentle chin-nod as if making a double chin' },
+            { name: 'Lower Trapezius', action: 'contract', colorHex: '#f59e0b', targetCue: 'Slide shoulder blades gently down your back' },
+            { name: 'Upper Trapezius / Sternocleidomastoid', action: 'relax', colorHex: '#64748b', targetCue: 'Drop your shoulders away from your ears' }
+          ],
+          plainEnglishDirective: 'Draw your chin straight backward like sliding a drawer shut to decompress the base of your skull.',
+          torqueReductionNm: 19.8,
+          decompressionPercent: 42
+        };
+
+      case 'lumbar_pelvic_alignment':
+      default:
+        return {
+          conditionKey: 'lumbar_pelvic_alignment',
+          conditionName: 'Lumbar-Pelvic Alignment & L4-L5 Disc Decompression',
+          focalPartId: 'spine_lumbar',
+          baselineAngles: { anteriorPelvicTiltDeg: 16.5, lumbarLordosisDeg: 58.0, sacralSlopeDeg: 44.0 },
+          targetAngles: { anteriorPelvicTiltDeg: 6.0, lumbarLordosisDeg: 42.0, sacralSlopeDeg: 32.0 },
+          angleDeltas: { anteriorPelvicTiltDeg: -10.5, lumbarLordosisDeg: -16.0, sacralSlopeDeg: -12.0 },
+          bioTensorCues: [
+            { name: 'Transverse Abdominis (Core)', action: 'contract', colorHex: '#f59e0b', targetCue: 'Gently draw navel inward to create a protective belt' },
+            { name: 'Gluteus Maximus', action: 'contract', colorHex: '#f59e0b', targetCue: 'Squeeze glutes to level your pelvic bowl' },
+            { name: 'Iliopsoas (Hip Flexors)', action: 'relax', colorHex: '#64748b', targetCue: 'Allow front of hips to open and lengthen' },
+            { name: 'Lumbar Erector Spinae', action: 'relax', colorHex: '#64748b', targetCue: 'Release lower back grip' }
+          ],
+          plainEnglishDirective: 'Gently tuck your tailbone as if flattening your lower back against a supportive wall.',
+          torqueReductionNm: 36.2,
+          decompressionPercent: 48
+        };
+    }
+  }
+
+  /**
+   * Computes isochoric (constant volume) muscle belly deformation:
+   * When muscle contracts and shortens (lengthRatio < 1.0), the radius expands
+   * according to r_new = r_0 / sqrt(lengthRatio).
+   */
+  public computeIsochoricMuscleDeformation(initialRadiusMm: number, lengthRatio: number): number {
+    const safeRatio = Math.max(0.4, Math.min(1.5, lengthRatio));
+    return initialRadiusMm / Math.sqrt(safeRatio);
+  }
+
+  public setRehabProgress(val: number): void {
+    this.activeRehabProgress.set(Math.max(0, Math.min(1, val)));
+  }
+
+  public setRehabCondition(key: string): void {
+    this.activeRehabCondition.set(key);
   }
 }

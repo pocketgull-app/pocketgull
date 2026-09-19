@@ -86,4 +86,47 @@ describe('KinesiologyBiomechanicsService', () => {
     service.advanceGait(0.1, 1.0); // 0.1s at 1.0 Hz -> +0.1 progress
     expect(service.activeGaitProgress()).toBeCloseTo(0.2, 5);
   });
+
+  it('should return canonical Big Three prescriptive plans with bio-tensor cues', () => {
+    const lumbar = service.getPrescriptivePlan('lumbar_pelvic_alignment');
+    expect(lumbar.conditionKey).toBe('lumbar_pelvic_alignment');
+    expect(lumbar.focalPartId).toBe('spine_lumbar');
+    expect(lumbar.angleDeltas['anteriorPelvicTiltDeg']).toBe(-10.5);
+    expect(lumbar.bioTensorCues.length).toBeGreaterThanOrEqual(3);
+    expect(lumbar.plainEnglishDirective).toContain('tuck your tailbone');
+
+    const knee = service.getPrescriptivePlan('patellofemoral_tracking');
+    expect(knee.conditionKey).toBe('patellofemoral_tracking');
+    expect(knee.focalPartId).toBe('r_shin');
+    expect(knee.angleDeltas['kneeValgusDeg']).toBe(-10.5);
+    expect(knee.bioTensorCues.some(c => c.action === 'contract')).toBe(true);
+
+    const cervical = service.getPrescriptivePlan('cervical_spine_posture');
+    expect(cervical.conditionKey).toBe('cervical_spine_posture');
+    expect(cervical.focalPartId).toBe('spine_cervical');
+    expect(cervical.plainEnglishDirective).toContain('chin straight backward');
+  });
+
+  it('should compute isochoric muscle belly expansion under contraction', () => {
+    const r0 = 20.0; // 20mm baseline muscle radius
+    // When muscle shortens to 80% length (contraction), radius must expand to conserve volume
+    const contractedRadius = service.computeIsochoricMuscleDeformation(r0, 0.80);
+    expect(contractedRadius).toBeGreaterThan(r0);
+    expect(contractedRadius).toBeCloseTo(22.36, 1);
+
+    // When muscle lengthens to 120% length, radius must thin
+    const stretchedRadius = service.computeIsochoricMuscleDeformation(r0, 1.20);
+    expect(stretchedRadius).toBeLessThan(r0);
+  });
+
+  it('should update rehab recovery progress signal within 0 to 1', () => {
+    service.setRehabProgress(0.65);
+    expect(service.activeRehabProgress()).toBe(0.65);
+
+    service.setRehabProgress(1.5);
+    expect(service.activeRehabProgress()).toBe(1.0);
+
+    service.setRehabProgress(-0.5);
+    expect(service.activeRehabProgress()).toBe(0.0);
+  });
 });

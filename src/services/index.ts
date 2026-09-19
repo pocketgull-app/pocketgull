@@ -60,3 +60,4 @@ export * from './patient-trajectory.service';
 export * from './clinical-vagal-resonant-pacing.service';
 export * from './bio-rhythmic-typography.service';
 export * from './kinesiology-biomechanics.service';
+export * from './diatom-vesalian-typography.service';
