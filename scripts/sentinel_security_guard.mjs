@@ -33,6 +33,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'api.github.com',
   'clamav.net',
   'www.clamav.net',
+  'jcgt.org',
+  'www.jcgt.org',
   'cerner.com',
   'authorization.cerner.com',
   'fhir-myrecord.cerner.com',

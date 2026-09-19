@@ -6,6 +6,7 @@
   <title>PocketGull GPU-Native Clinical Typography & Bio-Rhythmic Specimen</title>
   <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/fonts/pocketgull.css">
+  <script src="/vesalian_3d_proof.bundle.js"></script>
   <style>
     /* PocketGull Core Font Declarations */
     @font-face {
@@ -643,17 +644,40 @@
           </div>
         </div>
 
-        <!-- Canvas Container -->
-        <div style="position: relative; width: 100%; height: 420px; background: radial-gradient(circle at center, #121218 0%, #09090b 100%); border-radius: 16px; border: 1px solid #272732; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-          <svg id="vesalianGhostSvg" width="100%" height="100%" viewBox="0 0 600 420" preserveAspectRatio="xMidYMid meet">
+        <!-- Interactive 3D WebGL Anatomical Model Viewport -->
+        <div style="position: relative; width: 100%; height: 480px; background: radial-gradient(circle at center, #121218 0%, #09090b 100%); border-radius: 16px; border: 1px solid #272732; overflow: hidden;">
+          <div id="vesalian3dContainer" style="width: 100%; height: 100%; cursor: grab;"></div>
+
+          <!-- Top Overlay HUD: 3D Camera & View Controls -->
+          <div style="position: absolute; top: 12px; left: 14px; display: flex; gap: 8px; z-index: 10;">
+            <button id="btn3dAutoSpin" style="background: rgba(24, 24, 32, 0.85); color: #fbbf24; border: 1px solid #3f3f46; padding: 4px 10px; border-radius: 8px; font-size: 10.5px; font-family: 'PocketGull Mono'; cursor: pointer; backdrop-filter: blur(8px);">
+              🔄 360° Auto-Spin: OFF
+            </button>
+            <button id="btn3dResetCam" style="background: rgba(24, 24, 32, 0.85); color: #2dd4bf; border: 1px solid #3f3f46; padding: 4px 10px; border-radius: 8px; font-size: 10.5px; font-family: 'PocketGull Mono'; cursor: pointer; backdrop-filter: blur(8px);">
+              🎯 Reset View
+            </button>
+          </div>
+
+          <!-- Cutaway Lantern Focus Target Label -->
+          <div style="position: absolute; top: 12px; right: 14px; background: rgba(9, 9, 11, 0.85); border: 1px solid #f59e0b; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-family: 'PocketGull Mono'; color: #fbbf24; backdrop-filter: blur(8px); z-index: 10;">
+            <span id="lanternLocusLabel">🎯 Focal Cutaway: L4-L5 Disc Impingement</span>
+          </div>
+
+          <!-- Bottom Floating Telemetry Bar -->
+          <div style="position: absolute; bottom: 12px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: center; background: rgba(9, 9, 11, 0.85); border: 1px solid #272732; padding: 6px 14px; border-radius: 8px; font-size: 10.5px; font-family: 'PocketGull Mono'; color: #a1a1aa; backdrop-filter: blur(8px); z-index: 10;">
+            <span>🖱️ Drag to Orbit 360° • Scroll to Zoom</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>Relief Normal Depth:</span>
+              <input type="range" id="sliderReliefDepth" min="0" max="3.5" step="0.1" value="1.8" style="width: 80px; accent-color: #f59e0b; cursor: pointer;" />
+              <span id="labelReliefDepth" style="color: #fbbf24; font-weight: bold;">1.8x</span>
+            </div>
+          </div>
+
+          <!-- Hidden SVG for vector drop-cap pattern defs -->
+          <svg id="vesalianGhostSvg" width="0" height="0" style="position: absolute; display: none;">
             <defs id="vesalianSvgDefs"></defs>
             <g id="vesalianSvgContent"></g>
           </svg>
-
-          <!-- Cutaway Lantern Focus Target Label -->
-          <div style="position: absolute; top: 16px; right: 16px; background: rgba(9, 9, 11, 0.85); border: 1px solid #f59e0b; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-family: 'PocketGull Mono'; color: #fbbf24; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
-            <span id="lanternLocusLabel">🎯 Focal Cutaway: L4-L5 Disc Impingement</span>
-          </div>
         </div>
 
         <!-- The Patient "One-Scrubber" Recovery Control -->
@@ -1707,6 +1731,9 @@
       rehabProgress = parseFloat(rehabScrubber.value);
       rehabProgressText.textContent = `${Math.round(rehabProgress * 100)}%`;
       renderVesalianGhost();
+      if (vesalian3dViewer) {
+        vesalian3dViewer.setMuscleTension(rehabProgress);
+      }
     });
 
     // Typography Axis Sliders
@@ -1772,6 +1799,9 @@
 
       updateHistoriatedDropCap();
       renderVesalianGhost();
+      if (vesalian3dViewer) {
+        vesalian3dViewer.setWoodCutType(key);
+      }
     }
 
     btnWoodVRibbed?.addEventListener('click', () => setWoodCutType('v_ribbed'));
@@ -1780,6 +1810,43 @@
     btnWoodSlatted?.addEventListener('click', () => setWoodCutType('slatted'));
     btnWoodBurl?.addEventListener('click', () => setWoodCutType('burl'));
     btnWoodCamaieu?.addEventListener('click', () => setWoodCutType('camaieu_auto'));
+
+    // 3D Vesalian Model Engine
+    let vesalian3dViewer = null;
+    if (typeof window.initVesalian3DViewer === 'function') {
+      try {
+        vesalian3dViewer = window.initVesalian3DViewer('vesalian3dContainer', {
+          woodCutType: activeWoodCutKey,
+          muscleTension: 0.0,
+          reliefDepth: 1.8
+        });
+      } catch (err) {
+        console.error('Failed to init 3D viewer:', err);
+      }
+    }
+
+    const btn3dAutoSpin = document.getElementById('btn3dAutoSpin');
+    const btn3dResetCam = document.getElementById('btn3dResetCam');
+    const sliderReliefDepth = document.getElementById('sliderReliefDepth');
+    const labelReliefDepth = document.getElementById('labelReliefDepth');
+
+    btn3dAutoSpin?.addEventListener('click', () => {
+      if (!vesalian3dViewer) return;
+      const spinning = vesalian3dViewer.toggleAutoRotate();
+      btn3dAutoSpin.textContent = spinning ? '🔄 360° Auto-Spin: ON' : '🔄 360° Auto-Spin: OFF';
+      btn3dAutoSpin.style.background = spinning ? '#f59e0b' : 'rgba(24, 24, 32, 0.85)';
+      btn3dAutoSpin.style.color = spinning ? '#09090b' : '#fbbf24';
+    });
+
+    btn3dResetCam?.addEventListener('click', () => {
+      if (vesalian3dViewer) vesalian3dViewer.resetCamera();
+    });
+
+    sliderReliefDepth?.addEventListener('input', () => {
+      const val = parseFloat(sliderReliefDepth.value);
+      labelReliefDepth.textContent = val.toFixed(1) + 'x';
+      if (vesalian3dViewer) vesalian3dViewer.setReliefDepth(val);
+    });
 
     // Initial Master Frame 3 Render
     updateHistoriatedDropCap();

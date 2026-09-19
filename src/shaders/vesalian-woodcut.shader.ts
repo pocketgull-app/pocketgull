@@ -25,6 +25,7 @@ export interface IVesalianWoodcutOptions {
   scotopicMode?: boolean;     // Dark obsidian background mode
   woodCutType?: WoodCutType;  // Carving profile from Lots-of-Wood-Studies
   grainStrength?: number;     // Pearwood cellulose grain perturbation (0.0 to 1.0)
+  reliefDepth?: number;       // Physical surface normal bump depth (0.0 to 4.0, default 1.8)
 }
 
 /**
@@ -40,6 +41,7 @@ struct WoodcutUniforms {
     muscleTension: f32,
     woodCutType: f32,
     grainStrength: f32,
+    reliefDepth: f32,
     inkColor: vec4<f32>,
     paperColor: vec4<f32>,
     activeLusterColor: vec4<f32>,
@@ -57,7 +59,8 @@ struct VertexOutput {
     @builtin(position) clipPosition: vec4<f32>,
     @location(0) normal: vec3<f32>,
     @location(1) uv: vec2<f32>,
-    @location(2) lightIntensity: f32,
+    @location(2) worldPos: vec3<f32>,
+    @location(3) lightIntensity: f32,
 };
 
 @vertex
@@ -66,6 +69,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     out.clipPosition = u.modelViewProjectionMatrix * vec4<f32>(in.position, 1.0);
     out.normal = in.normal;
     out.uv = in.uv;
+    out.worldPos = in.position;
     out.lightIntensity = max(dot(normalize(in.normal), normalize(u.lightDirection)), 0.0);
     return out;
 }
@@ -141,7 +145,8 @@ export function getWoodCutTypeCode(type: WoodCutType): number {
 }
 
 /**
- * Three.js GLSL Material Generator for Vesalian Woodcut Hatching with 5 Relief Profiles.
+ * Three.js GLSL Material Generator for Vesalian Woodcut Hatching with 5 Relief Profiles
+ * and Physically-Based Surface Normal Perturbation.
  */
 export function createVesalianWoodcutMaterial(options: IVesalianWoodcutOptions = {}): THREE.ShaderMaterial {
   const hatchScale = options.hatchScale ?? 26.0;
@@ -151,18 +156,20 @@ export function createVesalianWoodcutMaterial(options: IVesalianWoodcutOptions =
   const isScotopic = options.scotopicMode ?? true;
   const woodCutType = options.woodCutType ?? 'camaieu_auto';
   const grainStrength = options.grainStrength ?? 0.85;
+  const reliefDepth = options.reliefDepth ?? 1.8;
 
   const inkColorHex = options.inkColor ?? (isScotopic ? 0xf59e0b : 0x1c1917);
   const paperColorHex = options.paperColor ?? (isScotopic ? 0x09090b : 0xfaf8f0);
   const lusterColorHex = isScotopic ? 0x14b8a6 : 0xd97706;
 
   const uniforms = {
-    uLightDir: { value: new THREE.Vector3(1.0, 1.6, 2.0).normalize() },
+    uLightDir: { value: new THREE.Vector3(1.2, 1.8, 2.2).normalize() },
     uHatchScale: { value: hatchScale },
     uPennationAngleRad: { value: pennationRad },
     uMuscleTension: { value: muscleTension },
     uWoodCutType: { value: getWoodCutTypeCode(woodCutType) },
     uGrainStrength: { value: grainStrength },
+    uReliefDepth: { value: reliefDepth },
     uInkColor: { value: new THREE.Color(inkColorHex) },
     uPaperColor: { value: new THREE.Color(paperColorHex) },
     uLusterColor: { value: new THREE.Color(lusterColorHex) },
@@ -172,38 +179,43 @@ export function createVesalianWoodcutMaterial(options: IVesalianWoodcutOptions =
   const vertexShader = /* glsl */ `
     varying vec3 vNormal;
     varying vec2 vUv;
+    varying vec3 vPosition;
     varying vec3 vWorldPosition;
-    varying float vLightIntensity;
-    uniform vec3 uLightDir;
 
     void main() {
       vUv = uv;
       vNormal = normalize(normalMatrix * normal);
+      vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+      vPosition = mvPos.xyz;
       vec4 worldPos = modelMatrix * vec4(position, 1.0);
       vWorldPosition = worldPos.xyz;
-      
-      vLightIntensity = max(dot(vNormal, normalize(uLightDir)), 0.0);
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      gl_Position = projectionMatrix * mvPos;
     }
   `;
 
   const fragmentShader = /* glsl */ `
     varying vec3 vNormal;
     varying vec2 vUv;
+    varying vec3 vPosition;
     varying vec3 vWorldPosition;
-    varying float vLightIntensity;
 
+    uniform vec3 uLightDir;
     uniform float uHatchScale;
     uniform float uPennationAngleRad;
     uniform float uMuscleTension;
     uniform float uWoodCutType;
     uniform float uGrainStrength;
+    uniform float uReliefDepth;
     uniform vec3 uInkColor;
     uniform vec3 uPaperColor;
     uniform vec3 uLusterColor;
     uniform float uScotopicMode;
 
     void main() {
+      vec3 N = normalize(vNormal);
+      vec3 V = normalize(-vPosition);
+      vec3 L = normalize(uLightDir);
+
       float c = cos(uPennationAngleRad);
       float s = sin(uPennationAngleRad);
       vec2 rawRotUv = vec2(
@@ -215,8 +227,11 @@ export function createVesalianWoodcutMaterial(options: IVesalianWoodcutOptions =
       float fiberWaver = sin(rawRotUv.x * 0.22 + sin(rawRotUv.y * 1.4) * 2.2) * 0.038 * uGrainStrength;
       vec2 timberUv = rawRotUv + vec2(fiberWaver, -fiberWaver * 0.5);
 
+      // Base unperturbed grazing light
+      float rawLight = max(dot(N, L), 0.0);
+
       // 🗡️ Variable-depth knife cut: strokes swell in deep chiaroscuro and active muscle contraction
-      float strokeW = mix(0.12, 0.82, (1.0 - vLightIntensity) * (1.0 + uMuscleTension * 0.35));
+      float strokeW = mix(0.10, 0.82, (1.0 - rawLight) * (1.0 + uMuscleTension * 0.35));
       // 📜 Washi / Rag Paper capillary ink bleed
       float bleed = 0.035 + (sin(rawRotUv.y * 30.0) * 0.008);
 
@@ -226,22 +241,22 @@ export function createVesalianWoodcutMaterial(options: IVesalianWoodcutOptions =
       float vHatch1 = smoothstep(0.5 - strokeW * 0.5 - bleed, 0.5 - strokeW * 0.5 + bleed, fract(timberUv.x + timberUv.y));
       float vHatch2 = smoothstep(0.5 - strokeW * 0.4 - bleed, 0.5 - strokeW * 0.4 + bleed, fract(timberUv.x - timberUv.y));
       float vPattern = 1.0;
-      if (vLightIntensity < 0.82) { vPattern *= vHatch1; }
-      if (vLightIntensity < 0.45) { vPattern *= vHatch2; }
+      if (rawLight < 0.82) { vPattern *= vHatch1; }
+      if (rawLight < 0.45) { vPattern *= vHatch2; }
 
       // Type 1: Fluted (Concave U-Gouge hollows capturing velvety chiaroscuro in muscle meat)
       float fluteWave = sin((timberUv.x - timberUv.y) * 3.14159);
-      float fluteShade = smoothstep(-0.6, 0.85, fluteWave * (1.0 - vLightIntensity));
+      float fluteShade = smoothstep(-0.6, 0.85, fluteWave * (1.0 - rawLight));
       float fluteHatch = smoothstep(0.4 - strokeW * 0.3, 0.6 + strokeW * 0.3, fract(timberUv.x * 0.85));
       float fPattern = mix(fluteShade, fluteHatch, 0.5);
 
       // Type 2: Reeded (Proud convex rounded ridges catching specular highlights on muscle fibers)
       float reedRidge = abs(fract(timberUv.x * 1.35) - 0.5) * 2.0;
-      float rPattern = smoothstep(0.32, 0.72, reedRidge + (1.0 - vLightIntensity) * 0.55);
+      float rPattern = smoothstep(0.32, 0.72, reedRidge + (1.0 - rawLight) * 0.55);
 
       // Type 3: Slatted (Stepped architectural parallel louvers for skeletal vertebrae and ribs)
       float slatBar = step(0.32, fract(timberUv.y * 1.65));
-      float sPattern = mix(slatBar, 1.0, vLightIntensity * 0.72);
+      float sPattern = mix(slatBar, 1.0, rawLight * 0.72);
 
       // Type 4: Burl (Wild organic growth knot whorls for joint capsules and cartilage)
       float knotDist = length(fract(timberUv * 0.35) - vec2(0.5, 0.5));
@@ -261,33 +276,53 @@ export function createVesalianWoodcutMaterial(options: IVesalianWoodcutOptions =
         pattern = bPattern;
       } else {
         // Type 5: Camaïeu Auto (Tissue-adaptive Renaissance master plate)
-        // Highly curved crests & tendons -> V-Ribbed
-        // Rounded volumes -> Fluted & Reeded
-        // Horizontal skeletal planes -> Slatted
-        // Joint articulation nodes -> Burl
-        float normalCurvature = abs(vNormal.z);
-        float verticalAlign = abs(vNormal.y);
+        float normalCurvature = abs(N.z);
+        float verticalAlign = abs(N.y);
         if (verticalAlign > 0.65) {
           pattern = sPattern;
         } else if (normalCurvature > 0.60) {
           pattern = mix(fPattern, rPattern, uMuscleTension);
-        } else if (vLightIntensity < 0.35) {
+        } else if (rawLight < 0.35) {
           pattern = mix(vPattern, bPattern, 0.5);
         } else {
           pattern = vPattern;
         }
       }
 
-      // In scotopic mode: ink lines glow against obsidian dark background
+      // 🗿 Physical Relief Bump: Surface normal perturbation derived from knife cut pattern
+      vec3 dPosDx = dFdx(vPosition);
+      vec3 dPosDy = dFdy(vPosition);
+      float dPdx = dFdx(pattern);
+      float dPdy = dFdy(pattern);
+      vec3 surfGrad = cross(dPosDx, dPosDy);
+      vec3 gradN = cross(dPosDy, N) * dPdx + cross(N, dPosDx) * dPdy;
+      vec3 bumpNormal = normalize(N - (gradN / (length(surfGrad) + 0.0001)) * (uReliefDepth * 0.05));
+
+      // Physically-Grounded Lighting
+      float directLight = max(dot(bumpNormal, L), 0.0);
+      float ambientLight = max(dot(N, vec3(-L.x, 0.6, -L.z)), 0.0) * 0.25 + 0.12;
+      float totalLight = directLight + ambientLight;
+
+      // Specular Glint on Proud Chisel Ridges (Wood oil sheen)
+      vec3 H = normalize(L + V);
+      float spec = pow(max(dot(bumpNormal, H), 0.0), 28.0) * pattern * 0.42;
+
+      // Final Tonal Synthesis
       vec3 finalBase;
       if (uScotopicMode > 0.5) {
-        finalBase = mix(uInkColor, uPaperColor, pattern);
+        // Obsidian mode: Inked ridges catch warm light; troughs sink into velvety dark
+        vec3 litInk = uInkColor * (0.65 + 0.35 * totalLight) + uLusterColor * spec;
+        vec3 darkTrough = uPaperColor * (0.85 + 0.15 * ambientLight);
+        finalBase = mix(litInk, darkTrough, pattern);
       } else {
-        finalBase = mix(uPaperColor, uInkColor, 1.0 - pattern);
+        // Renaissance Rag Paper mode: Crisp lampblack ink with paper fiber sheen
+        vec3 darkInk = uInkColor * (0.35 + 0.65 * (1.0 - directLight));
+        vec3 creamPaper = uPaperColor * (0.75 + 0.25 * directLight) + vec3(1.0, 0.95, 0.85) * spec;
+        finalBase = mix(creamPaper, darkInk, 1.0 - pattern);
       }
 
-      // Muscle contraction luster (active motor units glow with warm copper/amber)
-      vec3 outputColor = mix(finalBase, uLusterColor, uMuscleTension * 0.78);
+      // Biomechanical Muscle Contraction Luster
+      vec3 outputColor = mix(finalBase, uLusterColor, uMuscleTension * 0.76 * (1.0 - directLight * 0.45));
 
       gl_FragColor = vec4(outputColor, 1.0);
     }

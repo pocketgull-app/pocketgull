@@ -749,6 +749,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
     // 📜 Vesalian Woodcut & Fresnel Ghost Shader Materials
     protected vesalianWoodcutMaterial: THREE.ShaderMaterial | null = null;
+    protected vesalianBoneWoodcutMaterial: THREE.ShaderMaterial | null = null;
     protected ghostFresnelMaterial: THREE.ShaderMaterial | null = null;
 
     readonly activeRehabPlan = computed<IPrescriptiveRehabPlan | null>(() => {
@@ -771,19 +772,33 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     }
 
     onRehabProgressChange(event: Event): void {
-      const val = parseFloat((event.target as HTMLInputElement).value);
-      this.state.activeRehabProgress.set(val);
+      const input = event.target as HTMLInputElement;
+      const val = parseFloat(input.value);
+      this.state.activeRehabProgress.set(val > 1.0 ? val / 100.0 : val);
+    }
+
+    onRehabTimelineChange(event: Event): void {
+      this.onRehabProgressChange(event);
     }
 
     onCutawayRadiusChange(event: Event): void {
-      const val = parseFloat((event.target as HTMLInputElement).value);
+      const input = event.target as HTMLInputElement;
+      const val = parseFloat(input.value);
       this.state.activeRehabCutawayRadius.set(val);
+    }
+
+    onRehabCutawayRadiusChange(event: Event): void {
+      this.onCutawayRadiusChange(event);
     }
 
     onWoodCutTypeSelect(type: WoodCutType): void {
       this.state.activeWoodCutType.set(type);
+      const code = getWoodCutTypeCode(type);
       if (this.vesalianWoodcutMaterial && this.vesalianWoodcutMaterial.uniforms && this.vesalianWoodcutMaterial.uniforms['uWoodCutType']) {
-        this.vesalianWoodcutMaterial.uniforms['uWoodCutType'].value = getWoodCutTypeCode(type);
+        this.vesalianWoodcutMaterial.uniforms['uWoodCutType'].value = code;
+      }
+      if (this.vesalianBoneWoodcutMaterial && this.vesalianBoneWoodcutMaterial.uniforms && this.vesalianBoneWoodcutMaterial.uniforms['uWoodCutType']) {
+        this.vesalianBoneWoodcutMaterial.uniforms['uWoodCutType'].value = type === 'camaieu_auto' ? getWoodCutTypeCode('slatted') : code;
       }
       if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
         window.navigator.vibrate(15);
@@ -2138,7 +2153,21 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             paperColor: 0x1c1917,
             scotopicMode: true,
             woodCutType: this.state.activeWoodCutType(),
-            grainStrength: 0.85
+            grainStrength: 0.85,
+            reliefDepth: 1.8
+        });
+
+        // Andreas Vesalius 1543 Skeletal Architectural Woodcut Material
+        this.vesalianBoneWoodcutMaterial = createVesalianWoodcutMaterial({
+            pennationAngleDeg: 0.0,
+            muscleTension: 0.0,
+            hatchScale: 32.0,
+            inkColor: 0xfde68a,
+            paperColor: 0x18181b,
+            scotopicMode: true,
+            woodCutType: this.state.activeWoodCutType() === 'camaieu_auto' ? 'slatted' : this.state.activeWoodCutType(),
+            grainStrength: 0.90,
+            reliefDepth: 2.2
         });
 
         // Translucent Fresnel Ghost Envelope with Rehabilitation Cutaway Lantern
@@ -3250,15 +3279,13 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                         (child.material as any).opacity = 1.0;
                         (child.material as any).depthWrite = true;
                     } else if (layer === 'bone') {
-                        child.material = baseMaterial;
-                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
-                            baseMaterial.opacity = 0.95;
-                            baseMaterial.depthWrite = true;
-                        }
+                        child.material = this.vesalianBoneWoodcutMaterial || this.vesalianWoodcutMaterial || baseMaterial;
+                        (child.material as any).opacity = 1.0;
+                        (child.material as any).depthWrite = true;
                     } else if (layer === 'skin') {
                         child.material = baseMaterial;
                         if (baseMaterial instanceof THREE.MeshStandardMaterial) {
-                            baseMaterial.opacity = 0.15;
+                            baseMaterial.opacity = 0.12;
                             baseMaterial.depthWrite = false;
                         }
                     } else {
@@ -3543,6 +3570,12 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                     }
                     if (this.vesalianWoodcutMaterial.uniforms['uWoodCutType']) {
                         this.vesalianWoodcutMaterial.uniforms['uWoodCutType'].value = getWoodCutTypeCode(this.state.activeWoodCutType());
+                    }
+                }
+                if (this.vesalianBoneWoodcutMaterial && this.vesalianBoneWoodcutMaterial.uniforms) {
+                    if (this.vesalianBoneWoodcutMaterial.uniforms['uWoodCutType']) {
+                        const activeType = this.state.activeWoodCutType();
+                        this.vesalianBoneWoodcutMaterial.uniforms['uWoodCutType'].value = activeType === 'camaieu_auto' ? getWoodCutTypeCode('slatted') : getWoodCutTypeCode(activeType);
                     }
                 }
 

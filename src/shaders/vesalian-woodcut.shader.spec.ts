@@ -26,9 +26,12 @@ describe('VesalianWoodcutShader', () => {
     expect(mat.uniforms['uHatchScale'].value).toBe(32.0);
     expect(mat.uniforms['uMuscleTension'].value).toBe(0.75);
     expect(mat.uniforms['uScotopicMode'].value).toBe(1.0);
-    expect(mat.vertexShader).toContain('vLightIntensity');
+    expect(mat.uniforms['uReliefDepth'].value).toBe(1.8);
+    expect(mat.vertexShader).toContain('vNormal');
+    expect(mat.vertexShader).toContain('vPosition');
     expect(mat.fragmentShader).toContain('uPennationAngleRad');
     expect(mat.fragmentShader).toContain('uLusterColor');
+    expect(mat.fragmentShader).toContain('bumpNormal');
   });
 
   it('should correctly support light Washi paper mode when scotopicMode is false', () => {
