@@ -859,53 +859,101 @@ export function renderBusinessSiteHtml(): string {
       <div class="container">
         <div class="section-title">
           <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--amber-light); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
-            <span>🌲 Real-World Community Case Study</span>
+            <span>🌲 Real-World Clinical Frontiers</span>
           </div>
-          <h2>What PocketGull Does for Island &amp; Rural Communities</h2>
-          <p>Explore how our offline Edge AI and Systems Thinking engine solves complex vector outbreaks in high-incidence coastal zones.</p>
+          <h2>What PocketGull Does for Complex Pathologies &amp; Island Frontiers</h2>
+          <p>Explore how our offline Edge AI, Systems Biology, and Salutogenic Trajectories solve high-dimensional health challenges—from island tick vectors to neuro-axonal sanctuaries.</p>
         </div>
 
-        <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1.25rem; padding: 2rem; max-width: 960px; margin: 0 auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
-          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
-            <div>
-              <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">Location: Nantucket Island &bull; Polpis &amp; Madaket</span>
-              <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin-top: 0.25rem;">Nantucket Island Tick-Borne Disease &amp; Co-Infection Crisis</h3>
+        <div style="display: flex; flex-direction: column; gap: 2.5rem; max-width: 960px; margin: 0 auto;">
+          <!-- Case 01: Nantucket Island -->
+          <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1.25rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
+              <div>
+                <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">Case Study #01 &bull; Nantucket Island &bull; Polpis &amp; Madaket</span>
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin-top: 0.25rem;">Nantucket Island Tick-Borne Disease &amp; Co-Infection Crisis</h3>
+              </div>
+              <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+                <a href="https://pocketgull.app/?case=nantucket&autostart=true" class="btn-primary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
+                  <span>🚀 Launch Case in Cockpit</span>
+                </a>
+                <a href="/case-studies/nantucket-tick-radar" class="btn-secondary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
+                  <span>🌲 View Full Radar (URL) ↗</span>
+                </a>
+                <a href="https://github.com/pocketgull-app/nantucket-tick-radar" target="_blank" rel="noopener" class="btn-secondary" style="padding: 0.5rem 0.85rem; font-size: 0.8125rem; color: var(--text-muted);">
+                  <span>📦 Repo ↗</span>
+                </a>
+              </div>
             </div>
-            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
-              <a href="https://pocketgull.app/?case=nantucket&autostart=true" class="btn-primary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
-                <span>🚀 Launch Case in Cockpit</span>
-              </a>
-              <a href="/case-studies/nantucket-tick-radar" class="btn-secondary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
-                <span>🌲 View Full Radar (URL) ↗</span>
-              </a>
-              <a href="https://github.com/pocketgull-app/nantucket-tick-radar" target="_blank" rel="noopener" class="btn-secondary" style="padding: 0.5rem 0.85rem; font-size: 0.8125rem; color: var(--text-muted);">
-                <span>📦 Repo ↗</span>
-              </a>
+
+            <div class="grid-3" style="margin-bottom: 1.5rem;">
+              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Vector Pressure</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber-light); margin-top: 0.25rem;">&gt;40% Nymph Infection</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">High rates of <em>Borrelia</em>, <em>Babesia microti</em> <button type="button" class="doc-drill-badge" onclick="openDocDrill('Babesia microti')">🔬 Doc Drill</button>, and <em>Anaplasma</em> in island brush.</p>
+              </div>
+
+              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); text-transform: uppercase;">Differential Clarity</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber-light); margin-top: 0.25rem;">Uncovering Co-Infections</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Distinguishing between Lyme spirochetes and intraerythrocytic Babesia parasites for complete, curative resolution.</p>
+              </div>
+
+              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Systems Solution</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--teal-light); margin-top: 0.25rem;">Meadows Leverage L1-9</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Dual antimicrobial protocol + MIT Mice Against Ticks <button type="button" class="doc-drill-badge" onclick="openDocDrill('Meadows Leverage L1-9')">🔬 Doc Drill</button> ecological defense.</p>
+              </div>
+            </div>
+
+            <div style="background: #09090b; border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: #d4d4d8; line-height: 1.7;">
+              <strong style="color: var(--teal-light);">Clinical Impact Summary:</strong> A 42-year-old landscaper presented with atypical rash, night sweats, and autonomic vagal strain / low parasympathetic reserve (HRV RMSSD 18ms <button type="button" class="doc-drill-badge" onclick="openDocDrill('Vagal Collapse / RMSSD')">🔬 Doc Drill</button>). PocketGull's offline Edge AI differential radar flagged concurrent <em>Babesia microti</em> hemolytic anemia on peripheral blood smear (Maltese cross tetrads <button type="button" class="doc-drill-badge" onclick="openDocDrill('Maltese cross tetrads')">🔬 Doc Drill</button>) alongside <em>Borrelia burgdorferi</em> C6 ELISA serology. The clinician immediately initiated dual-therapy (Doxycycline + Atovaquone/Azithromycin) with zero cloud network egress required in remote field conservation zones.
             </div>
           </div>
 
-          <div class="grid-3" style="margin-bottom: 1.5rem;">
-            <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
-              <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Vector Pressure</div>
-              <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber-light); margin-top: 0.25rem;">&gt;40% Nymph Infection</div>
-              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">High rates of <em>Borrelia</em>, <em>Babesia microti</em> <button type="button" class="doc-drill-badge" onclick="openDocDrill('Babesia microti')">🔬 Doc Drill</button>, and <em>Anaplasma</em> in island brush.</p>
+          <!-- Case 02: Multiple Sclerosis Neuro-Axonal Sanctuary -->
+          <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1.25rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
+              <div>
+                <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: #38bdf8; font-weight: 700; text-transform: uppercase;">Case Study #02 &bull; Neuro-Axonal Sanctuary &bull; Biophysical Conduction</span>
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin-top: 0.25rem;">MS Neuro-Axonal Sanctuary: Salutogenic Trajectory &amp; Cooling Physics</h3>
+              </div>
+              <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+                <a href="/case-studies/neuro-sanctuary" class="btn-primary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                  <span>🧠 Launch Interactive Case</span>
+                </a>
+                <a href="/case-studies/neuro-sanctuary#radar" class="btn-secondary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
+                  <span>❄️ Uhthoff Radar (URL) ↗</span>
+                </a>
+                <a href="/case-studies/neuro-sanctuary#fhir" class="btn-secondary" style="padding: 0.5rem 0.85rem; font-size: 0.8125rem; color: var(--teal-light);">
+                  <span>📋 FHIR R4 Bundle</span>
+                </a>
+              </div>
             </div>
 
-            <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
-              <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); text-transform: uppercase;">Differential Clarity</div>
-              <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber-light); margin-top: 0.25rem;">Uncovering Co-Infections</div>
-              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Distinguishing between Lyme spirochetes and intraerythrocytic Babesia parasites for complete, curative resolution.</p>
+            <div class="grid-3" style="margin-bottom: 1.5rem;">
+              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: #38bdf8; text-transform: uppercase;">Conduction Reserve</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: #38bdf8; margin-top: 0.25rem;">&Delta;T &le; 0.40&deg;C Physics</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Modeling the <button type="button" class="doc-drill-badge" onclick="openDocDrill('Uhthoff Phenomenon')">🔬 Uhthoff Phenomenon</button> to preserve action potential safety factor across demyelinated axons.</p>
+              </div>
+
+              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber-light); text-transform: uppercase;">Clinical Epistemology</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber-light); margin-top: 0.25rem;">Salutogenic 3-Act Arc</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Transforming static SOAP checklists into <button type="button" class="doc-drill-badge" onclick="openDocDrill('Salutogenic 3-Act Trajectory')">🔬 3-Act Trajectories</button> (Past Trail &rarr; Living Foothold &rarr; Action Horizon).</p>
+              </div>
+
+              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: #34d399; text-transform: uppercase;">Autonomic Rhythm</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: #34d399; margin-top: 0.25rem;">0.10 Hz Resonant Pacing</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Real-time <button type="button" class="doc-drill-badge" onclick="openDocDrill('0.1 Hz Resonant Pacing')">🔬 0.1 Hz Resonant Pacing</button> activating the vagal cholinergic anti-inflammatory reflex.</p>
+              </div>
             </div>
 
-            <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
-              <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Systems Solution</div>
-              <div style="font-size: 1.25rem; font-weight: 800; color: var(--teal-light); margin-top: 0.25rem;">Meadows Leverage L1-9</div>
-              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Dual antimicrobial protocol + MIT Mice Against Ticks <button type="button" class="doc-drill-badge" onclick="openDocDrill('Meadows Leverage L1-9')">🔬 Doc Drill</button> ecological defense.</p>
+            <div style="background: #09090b; border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: #d4d4d8; line-height: 1.7;">
+              <strong style="color: #38bdf8;">Clinical Impact Summary:</strong> A 38-year-old architect with relapsing-remitting multiple sclerosis presented with heat-triggered leg heaviness (pseudo-relapse) and acute despair after warm summer walking. PocketGull's on-device Uhthoff thermal model isolated a +0.45&deg;C core rise blocking demyelinated sodium channels rather than new disease activity. By deploying pre-cooling ice slurries, a 15&deg;C phase-change vest protocol, and an Austrian 3-Act trajectory, the patient regained full walking stamina and self-advocacy without immunosuppressive panic.
             </div>
-          </div>
-
-          <div style="background: #09090b; border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: #d4d4d8; line-height: 1.7;">
-            <strong style="color: var(--teal-light);">Clinical Impact Summary:</strong> A 42-year-old landscaper presented with atypical rash, night sweats, and autonomic vagal strain / low parasympathetic reserve (HRV RMSSD 18ms <button type="button" class="doc-drill-badge" onclick="openDocDrill('Vagal Collapse / RMSSD')">🔬 Doc Drill</button>). PocketGull's offline Edge AI differential radar flagged concurrent <em>Babesia microti</em> hemolytic anemia on peripheral blood smear (Maltese cross tetrads <button type="button" class="doc-drill-badge" onclick="openDocDrill('Maltese cross tetrads')">🔬 Doc Drill</button>) alongside <em>Borrelia burgdorferi</em> C6 ELISA serology. The clinician immediately initiated dual-therapy (Doxycycline + Atovaquone/Azithromycin) with zero cloud network egress required in remote field conservation zones.
           </div>
         </div>
       </div>
@@ -1588,6 +1636,8 @@ export function renderBusinessSiteHtml(): string {
       <div class="footer-links">
         <a href="https://pocketgull.app">Launch App</a>
         <a href="/articles">Clinical Articles</a>
+        <a href="/case-studies/nantucket-tick-radar">Nantucket Radar</a>
+        <a href="/case-studies/neuro-sanctuary">MS Neuro-Sanctuary</a>
         <a href="/privacy-policy.html">Privacy Policy</a>
         <a href="/terms-of-service.html">Terms of Service</a>
         <a href="/robots.txt">robots.txt</a>
@@ -2107,6 +2157,30 @@ export function renderBusinessSiteHtml(): string {
         protocol: 'Pre-cooling ice-slurry drinks before outdoor walking. Wear 15°C phase-change cooling vests in ambient heat >75°F. Restrict aquatic therapy pools to <84°F.',
         evidence: 'Uhthoff W. 1890; Rasminsky M. Arch Neurol 1973; Frohman TC et al. Nat Clin Pract Neurol 2008.',
         citations: 'Uhthoff W. 1890; Frohman TC et al. Nat Clin Pract Neurol. 2008.'
+      },
+      'Uhthoff Phenomenon': {
+        category: 'NEURO-BIOPHYSICS',
+        summary: 'Transient, completely reversible conduction block in demyelinated nerve fibers caused by minor elevations in core temperature (ΔT ≥ 0.2–0.4°C).',
+        clinicalTrap: 'Mistaking a temporary biophysical Uhthoff conduction pause for an acute inflammatory relapse (pseudo-relapse). This often triggers unnecessary high-dose systemic corticosteroids or premature switching of disease-modifying therapies.',
+        protocol: 'Deploy the 3-step rapid cooling protocol: 500 mL ice slurry ingestion, 15°C phase-change vest application, and rest in air-conditioned recovery room (<68°F). Observe rapid restoration of visual acuity and motor conduction within 30–60 minutes.',
+        evidence: 'Uhthoff W. Arch Psychiatr Nervenkr 1890; Smith KJ & McDonald WI. Brain 1999; White AT et al. Mult Scler 2011.',
+        citations: 'Uhthoff W. 1890; Smith KJ, McDonald WI. Brain. 1999; White AT et al. 2011.'
+      },
+      'Salutogenic 3-Act Trajectory': {
+        category: 'CLINICAL EPISTEMOLOGY',
+        summary: 'An Austrian phenomenological framework dividing clinical care encounters into Where You\'ve Been (Trail Traversed), Where You Stand Today (Living Foothold), and Where You\'re Going (Action Horizon).',
+        clinicalTrap: 'The 1968 Weed SOAP checklist treats patient encounters as isolated, transactional billing events with static deficit labels that foster clinical fatalism and learned helplessness.',
+        protocol: 'Act I: Validate traversed challenges with zero shame or fatalism. Act II: Ground current biometrics in physiological adaptation. Act III: Co-create concrete 30-day vitality milestones and daily restoration rituals.',
+        evidence: 'Antonovsky A. Health, Stress, and Coping (1979); Frankl VE. Man\'s Search for Meaning (1946); ACM SIGCHI Clinical Ergonomics.',
+        citations: 'Antonovsky A. Health, Stress, and Coping (1979); Frankl VE. (1946).'
+      },
+      '0.1 Hz Resonant Pacing': {
+        category: 'AUTONOMIC NEURO-PACING',
+        summary: 'Resonant frequency breath pacing at approximately 6 breaths per minute (~0.1 Hz) matching the intrinsic Mayer wave resonance of the human baroreflex.',
+        clinicalTrap: 'Chronic neurological stress induces sympathetic hyperarousal, downregulating the vagal cholinergic anti-inflammatory reflex and exacerbating central microglial neuro-inflammation.',
+        protocol: 'Inhale gently through nose for 4 seconds, exhale through pursed lips for 6 seconds (10-second respiratory cycle = 0.1 Hz). Practice for 5–10 minutes twice daily. Enhances high-frequency HRV RMSSD and dampens peripheral inflammatory cytokine release.',
+        evidence: 'Lehrer P et al. Appl Psychophysiol Biofeedback 2000; Tracey KJ. The inflammatory reflex. Nature 2002.',
+        citations: 'Tracey KJ. The inflammatory reflex. Nature. 2002; Lehrer P et al. 2000.'
       },
       'CMS Remote Patient Monitoring (RPM) Superbill': {
         category: 'REVENUE CYCLE & TELEMETRY',

@@ -53,6 +53,7 @@ import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils
 import { renderBusinessSiteHtml } from './server/business-site';
 import { renderArticlesHtml } from './server/articles-site';
 import { renderNantucketCaseStudyHtml } from './server/nantucket-case-study';
+import { renderNeuroSanctuaryCaseStudyHtml } from './server/neuro-sanctuary-case-study';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
@@ -247,6 +248,11 @@ app.get(['/case-studies/nantucket-tick-radar', '/case-studies/nantucket', '/nant
   return res.send(renderNantucketCaseStudyHtml());
 });
 
+app.get(['/case-studies/neuro-sanctuary', '/case-studies/ms-radar', '/neuro-sanctuary'], (_req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderNeuroSanctuaryCaseStudyHtml());
+});
+
 // Primary Business Site Handler for pocketgull.com & www.pocketgull.com
 app.use((req, res, next) => {
   const xfh = String(req.headers['x-forwarded-host'] || '').toLowerCase();
@@ -283,6 +289,10 @@ app.use((req, res, next) => {
     if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.send(renderNantucketCaseStudyHtml());
+    }
+    if (req.path === '/case-studies/neuro-sanctuary' || req.path === '/case-studies/ms-radar' || req.path === '/neuro-sanctuary') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderNeuroSanctuaryCaseStudyHtml());
     }
     const cleanPath = req.path.split('?')[0];
     const ext = extname(cleanPath).toLowerCase();
@@ -955,6 +965,12 @@ app.use((req, res, next) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     return res.send(renderNantucketCaseStudyHtml());
+  }
+
+  if (req.path === '/case-studies/neuro-sanctuary' || req.path === '/case-studies/ms-radar' || req.path === '/neuro-sanctuary') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderNeuroSanctuaryCaseStudyHtml());
   }
 
   if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {
