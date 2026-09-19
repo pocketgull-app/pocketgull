@@ -6,7 +6,9 @@ export type DsmCategory =
   | 'PSYCHIATRY' 
   | 'ADHERENCE' 
   | 'TOXICOLOGY'
-  | 'EMERGENCY_TRIAGE';
+  | 'EMERGENCY_TRIAGE'
+  | 'NON_PHARMACOLOGICAL_FIRST'
+  | 'DEPRESCRIBING';
 
 export type DsmSeverity = 'RECOMMENDED_SHIFT' | 'STIGMA_ALERT' | 'HIGH_PRIORITY';
 
@@ -16,7 +18,7 @@ export interface IDsmLanguageRule {
   deprecatedPattern: RegExp;
   preferredTerm: string;
   category: DsmCategory;
-  standardSource: 'DSM-5-TR' | 'ASAM_4TH_ED' | 'NIDA_WORDS_MATTER' | 'NIMH_CDC' | 'INSTITUTIONAL';
+  standardSource: 'DSM-5-TR' | 'ASAM_4TH_ED' | 'NIDA_WORDS_MATTER' | 'NIMH_CDC' | 'LIFESTYLE_MEDICINE' | 'INSTITUTIONAL';
   citation: string;
   educationalRationale: string;
   sampleBefore: string;
@@ -55,7 +57,7 @@ export interface ISerializedDsmRule {
   patternFlags: string;
   preferredTerm: string;
   category: DsmCategory;
-  standardSource: 'DSM-5-TR' | 'ASAM_4TH_ED' | 'NIDA_WORDS_MATTER' | 'NIMH_CDC' | 'INSTITUTIONAL';
+  standardSource: 'DSM-5-TR' | 'ASAM_4TH_ED' | 'NIDA_WORDS_MATTER' | 'NIMH_CDC' | 'LIFESTYLE_MEDICINE' | 'INSTITUTIONAL';
   citation: string;
   educationalRationale: string;
   sampleBefore: string;
@@ -132,15 +134,85 @@ export class DsmLanguageCorrectionService {
       {
         id: 'suicidology-died-by-suicide',
         version: '1.0.0',
-        deprecatedPattern: /\b(committed suicide|commit suicide|commits suicide)\b/gi,
+        deprecatedPattern: /\b(committed suicide|commit suicide|commits suicide|committing suicide|successful suicide|completed suicide|unsuccessful suicide)\b/gi,
         preferredTerm: 'died by suicide',
         category: 'SUICIDOLOGY',
         standardSource: 'NIMH_CDC',
-        citation: 'NIMH Suicidology Guidelines; AFSP Ethical Reporting Standards',
+        citation: 'NIMH Suicidology Guidelines; AFSP Ethical Reporting Standards; WHO Suicide Prevention',
         educationalRationale: 'The verb "commit" historically associates suicidal death with crimes ("committed a felony") or moral sins dating to English common law. Suicidology recognizes suicidal crises as acute, lethal manifestations of severe psychiatric distress and neurobiological vulnerability, not criminal conduct.',
         sampleBefore: 'Family member committed suicide two years ago.',
         sampleAfter: 'Family member died by suicide two years ago.',
         severity: 'HIGH_PRIORITY',
+        active: true
+      },
+      {
+        id: 'suicidology-self-directed-harm',
+        version: '1.0.0',
+        deprecatedPattern: /\b(committed self-harm|commit self-harm|committed self harm|commit self harm)\b/gi,
+        preferredTerm: 'engaged in self-directed harm / non-suicidal self-injury (NSSI)',
+        category: 'SUICIDOLOGY',
+        standardSource: 'NIMH_CDC',
+        citation: 'NIMH Self-Harm Guidelines; Linehan DBT Terminology Standards',
+        educationalRationale: 'Associating self-injury with the verb "commit" penalizes emotional suffering with carceral connotations. Person-centered clinical language specifies non-suicidal self-injury (NSSI) or self-directed harm without criminal phrasing.',
+        sampleBefore: 'Adolescent committed self-harm during stressful period.',
+        sampleAfter: 'Adolescent engaged in non-suicidal self-injury (NSSI) during stressful period.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'psychiatry-involuntary-admission',
+        version: '1.0.0',
+        deprecatedPattern: /\b(committed to (?:a |the )?(?:psych(?:iatric)?|mental|asylum|ward|facility|hospital)|involuntarily committed|commitment proceedings|involuntary commitment)\b/gi,
+        preferredTerm: 'involuntary psychiatric hospitalization / emergency evaluation hold / acute inpatient stabilization',
+        category: 'PSYCHIATRY',
+        standardSource: 'INSTITUTIONAL',
+        citation: 'APA Resource Document on Involuntary Commitment; WPA Madrid Declaration on Human Rights in Psychiatry',
+        educationalRationale: 'The word "commitment" originates from carceral and penal codes that treated psychiatric patients as criminals to be locked away. Trauma-informed, collaborative care utilizes objective clinical terminology such as "involuntary psychiatric stabilization" or "emergency protective evaluation hold", reinforcing dignity, partnership, and patient autonomy.',
+        sampleBefore: 'Patient was involuntarily committed to the psych hospital.',
+        sampleAfter: 'Patient was placed on an emergency psychiatric evaluation hold for inpatient stabilization.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'lifestyle-non-pharm-first-happiness',
+        version: '1.0.0',
+        deprecatedPattern: /\b(chemical imbalance in the brain|chemical imbalance|serotonin deficiency|chemical deficiency in the brain)\b/gi,
+        preferredTerm: 'complex biopsychosocial distress with non-pharmacological, emotional, and lifestyle contributors',
+        category: 'NON_PHARMACOLOGICAL_FIRST',
+        standardSource: 'LIFESTYLE_MEDICINE',
+        citation: 'Moncrieff et al. (2022) Molecular Psychiatry; American College of Lifestyle Medicine; Frances (Saving Normal)',
+        educationalRationale: 'The simplistic "chemical imbalance" theory has been clinically debunked. Human happiness and mental flourishing cannot be reduced to a pharmaceutical deficiency. Genuine vitality is rooted in restorative sleep, physical movement (elevating endogenous BDNF and endocannabinoids), somatic parasympathetic regulation (0.1 Hz vagal breathing), whole-food nutrition, and purposeful human connection before considering medication.',
+        sampleBefore: 'Patient was told their low mood is caused by a chemical imbalance in the brain.',
+        sampleAfter: 'Patient was guided that low mood reflects complex biopsychosocial distress with non-pharmacological, emotional, and lifestyle contributors.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'lifestyle-avoid-premature-prescribing',
+        version: '1.0.0',
+        deprecatedPattern: /\b(needs medication to be happy|pill for every symptom|immediate pharmacotherapy indicated|prescribe medication for happiness|start an antidepressant immediately)\b/gi,
+        preferredTerm: 'prioritize foundational non-pharmacological modalities (movement, sleep, social prescribing, purpose) before pharmacotherapy',
+        category: 'NON_PHARMACOLOGICAL_FIRST',
+        standardSource: 'LIFESTYLE_MEDICINE',
+        citation: 'NICE Clinical Guideline NG222 (Depression in Adults: Treatment & Management); WHO Mental Health Action Plan',
+        educationalRationale: 'The ultimate clinical goal is helping people discover sustainable joy, resilience, and vitality without lifelong drug dependency wherever safe and possible. NICE NG222 mandates non-pharmacological modalities (zone-2 exercise, CBT, nature immersion, community connection) as first-line for mild-to-moderate distress, reserving pharmacotherapy for severe illness or when non-drug foundations have been thoroughly supported.',
+        sampleBefore: 'Physician noted patient needs medication to be happy and start an antidepressant immediately.',
+        sampleAfter: 'Physician noted we prioritize foundational non-pharmacological modalities (movement, sleep, social prescribing, purpose) before pharmacotherapy.',
+        severity: 'HIGH_PRIORITY',
+        active: true
+      },
+      {
+        id: 'deprescribing-root-cause-depuration',
+        version: '1.0.0',
+        deprecatedPattern: /\b(patient failed (?:the |all )?(?:medication|antidepressant|drugs|SSRIs|meds)|failed medication|medication failure)\b/gi,
+        preferredTerm: 'medication did not provide adequate therapeutic benefit; explore non-pharmacological root causes and structured deprescribing',
+        category: 'DEPRESCRIBING',
+        standardSource: 'INSTITUTIONAL',
+        citation: 'American Geriatrics Society Beers Criteria; Canadian Deprescribing Network; Frank et al. (Psychiatric Services)',
+        educationalRationale: 'Patients do not "fail" medications; medications fail to provide therapeutic benefit when underlying life circumstances, chronic sleep deprivation, isolation, trauma, or lack of purpose are the true etiology. Rather than reflexively escalating drug doses or prescribing additional agents to treat side effects (the "prescribing cascade"), clinicians should explore structured deprescribing and re-center on what brings the individual genuine happiness and peace.',
+        sampleBefore: 'Patient failed all SSRIs and remains clinically depressed.',
+        sampleAfter: 'Medication did not provide adequate therapeutic benefit; explore non-pharmacological root causes and structured deprescribing.',
+        severity: 'RECOMMENDED_SHIFT',
         active: true
       },
       {

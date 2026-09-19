@@ -1391,7 +1391,7 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
               <button 
                 (click)="confirmFinalize()" 
                 class="px-8 py-3 bg-[#1C1C1C] dark:bg-white text-white dark:text-[#111111] text-[12px] font-bold uppercase tracking-[0.3em] font-mono hover:bg-black dark:hover:bg-gray-200 transition-all flex items-center gap-2 rounded-[2px] shadow-md active:translate-y-[1px]">
-                Commit to Chart
+                Record to Chart
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
               </button>
             </div>

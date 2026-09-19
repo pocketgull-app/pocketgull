@@ -256,7 +256,7 @@ import { PatientStateService } from '../services/patient-state.service';
       <div class="flex flex-wrap gap-3">
         <button (click)="commitAssessment()"
           class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold uppercase tracking-wider text-xs transition shadow hover:shadow-md active:scale-95 cursor-pointer">
-          <span>💾 Commit {{ svc.activeTab().toUpperCase() }} to FHIR Timeline</span>
+          <span>💾 Record {{ svc.activeTab().toUpperCase() }} in FHIR Timeline</span>
         </button>
 
         <button (click)="sendToActiveRoom()"
@@ -450,7 +450,7 @@ export class ClinicalAssessmentsSuiteComponent {
         completed: false
       });
 
-      this.toastMessage.set(`${payload.title} (Score: ${payload.totalScore}/${payload.maxScore} — ${payload.severityLabel}) committed to FHIR Patient Timeline & Active Room.`);
+      this.toastMessage.set(`${payload.title} (Score: ${payload.totalScore}/${payload.maxScore} — ${payload.severityLabel}) recorded in FHIR Patient Timeline & Active Room.`);
       setTimeout(() => this.toastMessage.set(null), 6000);
     }
   }

@@ -151,4 +151,56 @@ describe('DsmLanguageCorrectionService', () => {
     expect(audit.hasSuggestions).toBe(true);
     expect(audit.suggestions[0].preferredTerm).toBe('major neurocognitive disorder');
   });
+
+  it('11. Flags "chemical imbalance in the brain" and advocates biopsychosocial lifestyle foundation', () => {
+    const text = 'Provider explained that depression is simply a chemical imbalance in the brain.';
+    const result = service.auditText(text);
+
+    expect(result.hasSuggestions).toBe(true);
+    const flag = result.suggestions.find(s => s.category === 'NON_PHARMACOLOGICAL_FIRST');
+    expect(flag).toBeDefined();
+    expect(flag!.preferredTerm).toContain('complex biopsychosocial distress');
+    expect(flag!.citation).toContain('Moncrieff');
+  });
+
+  it('12. Flags premature pharmaceutical reflex ("needs medication to be happy") in favor of non-pharmacological modalities first', () => {
+    const text = 'Intake notes: Patient needs medication to be happy and start an antidepressant immediately.';
+    const result = service.auditText(text);
+
+    expect(result.hasSuggestions).toBe(true);
+    const flag = result.suggestions.find(s => s.ruleId === 'lifestyle-avoid-premature-prescribing');
+    expect(flag).toBeDefined();
+    expect(flag!.preferredTerm).toContain('prioritize foundational non-pharmacological modalities');
+    expect(flag!.citation).toContain('NICE Clinical Guideline NG222');
+  });
+
+  it('13. Flags "patient failed medication" in favor of deprescribing and non-drug root causes', () => {
+    const text = 'Patient failed all SSRIs over past year with no remission.';
+    const result = service.auditText(text);
+
+    expect(result.hasSuggestions).toBe(true);
+    const flag = result.suggestions.find(s => s.category === 'DEPRESCRIBING');
+    expect(flag).toBeDefined();
+    expect(flag!.preferredTerm).toContain('deprescribing');
+  });
+
+  it('14. Flags "committed self-harm" in favor of non-suicidal self-injury', () => {
+    const text = 'Patient committed self-harm during periods of severe isolation.';
+    const result = service.auditText(text);
+
+    expect(result.hasSuggestions).toBe(true);
+    const flag = result.suggestions.find(s => s.ruleId === 'suicidology-self-directed-harm');
+    expect(flag).toBeDefined();
+    expect(flag!.preferredTerm).toContain('non-suicidal self-injury');
+  });
+
+  it('15. Flags "involuntarily committed" in favor of trauma-informed psychiatric evaluation hold', () => {
+    const text = 'Patient was involuntarily committed to the mental hospital following crisis.';
+    const result = service.auditText(text);
+
+    expect(result.hasSuggestions).toBe(true);
+    const flag = result.suggestions.find(s => s.ruleId === 'psychiatry-involuntary-admission');
+    expect(flag).toBeDefined();
+    expect(flag!.preferredTerm).toContain('involuntary psychiatric hospitalization');
+  });
 });

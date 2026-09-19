@@ -138,6 +138,13 @@
       letter-spacing: 0.04em;
     }
 
+    /* Indic / Sanskrit Devanagari Shirorekha & Complex Text Shaper Styling */
+    .indic-text,
+    .clinical-sanskrit {
+      font-family: 'PocketGull Indic', 'Noto Sans Devanagari', 'Nirmala UI', system-ui, sans-serif;
+      letter-spacing: 0.02em;
+    }
+
     .badge-teal { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; border-color: rgba(20, 184, 166, 0.4); }
     .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); }
     .badge-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); }
@@ -1055,23 +1062,23 @@
       <!-- 5-Box Taxonomy Legend -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 14px; font-family: 'PocketGull Mono'; font-size: 11px;">
         <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 8px 10px;">
-          <div style="color: #e6cba8; font-weight: bold;">1. V-Ribbed (कण्ट-रेखा)</div>
+          <div style="color: #e6cba8; font-weight: bold;">1. V-Ribbed (<span class="indic-text">कण्ट-रेखा</span>)</div>
           <div style="color: #8c7361; font-size: 10px; margin-top: 2px;">Hand &amp; Extensor Tendons • 60° triangular parting chisel</div>
         </div>
         <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 8px 10px;">
-          <div style="color: #e6cba8; font-weight: bold;">2. Fluted (नालि-पत्र)</div>
+          <div style="color: #e6cba8; font-weight: bold;">2. Fluted (<span class="indic-text">नालि-पत्र</span>)</div>
           <div style="color: #8c7361; font-size: 10px; margin-top: 2px;">Shoulder &amp; Pectoralis • Concave U-gouge chiaroscuro</div>
         </div>
         <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 8px 10px;">
-          <div style="color: #e6cba8; font-weight: bold;">3. Reeded (माला-दण्ड)</div>
+          <div style="color: #e6cba8; font-weight: bold;">3. Reeded (<span class="indic-text">माला-दण्ड</span>)</div>
           <div style="color: #8c7361; font-size: 10px; margin-top: 2px;">Forearm Pennate Fibers • Proud rounded convex ribs</div>
         </div>
         <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 8px 10px;">
-          <div style="color: #e6cba8; font-weight: bold;">4. Slatted (जालि)</div>
+          <div style="color: #e6cba8; font-weight: bold;">4. Slatted (<span class="indic-text">जालि</span>)</div>
           <div style="color: #8c7361; font-size: 10px; margin-top: 2px;">Ribs &amp; Sternum • Architectural parallel stepped louvers</div>
         </div>
         <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 8px 10px;">
-          <div style="color: #e6cba8; font-weight: bold;">5. Burl (सुवर्ण-चक्र)</div>
+          <div style="color: #e6cba8; font-weight: bold;">5. Burl (<span class="indic-text">सुवर्ण-चक्र</span>)</div>
           <div style="color: #8c7361; font-size: 10px; margin-top: 2px;">Patella &amp; Knee Joint • Concentric tree-ring growth whorls</div>
         </div>
       </div>
@@ -1101,7 +1108,7 @@
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 14px; font-family: 'PocketGull Mono'; font-size: 11px;">
         <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 10px 12px;">
           <div style="color: #e6cba8; font-weight: bold; font-size: 12px; display: flex; align-items: center; gap: 6px;">
-            <span>👩</span> Natural Woman (स्त्री-रूप / Gynoid Canon)
+            <span>👩</span> Natural Woman (<span class="indic-text">स्त्री-रूप</span> / Gynoid Canon)
           </div>
           <ul style="margin: 6px 0 0 16px; padding: 0; color: #b89f8b; font-size: 10.5px; line-height: 1.5;">
             <li><strong>Pelvic Architecture:</strong> Flared bicristal iliac crests (waist-to-hip ratio ~0.70) with smooth subcutaneous contouring.</li>
@@ -1112,7 +1119,7 @@
         </div>
         <div style="background: rgba(30, 22, 17, 0.75); border: 1px solid #4a3424; border-radius: 8px; padding: 10px 12px;">
           <div style="color: #e6cba8; font-weight: bold; font-size: 12px; display: flex; align-items: center; gap: 6px;">
-            <span>👨</span> Natural Man (पुरुष-रूप / Android Canon)
+            <span>👨</span> Natural Man (<span class="indic-text">पुरुष-रूप</span> / Android Canon)
           </div>
           <ul style="margin: 6px 0 0 16px; padding: 0; color: #b89f8b; font-size: 10.5px; line-height: 1.5;">
             <li><strong>Shoulder Stance:</strong> Broad 1.4:1 biacromial-to-bicristal V-taper with latissimus dorsi rib flare.</li>

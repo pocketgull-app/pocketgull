@@ -384,7 +384,12 @@ const CLINICAL_ARCHETYPES = [
                 </button>
                 <button (click)="setProofreaderPreset('suicide')"
                   class="px-2.5 py-1 rounded-lg bg-purple-950/40 hover:bg-purple-900/50 border border-purple-500/30 text-purple-200 text-[10px] font-bold cursor-pointer transition">
-                  Preset: "Committed Suicide"
+                  Preset: Suicidology ("Died by Suicide")
+                </button>
+                <button (click)="setProofreaderPreset('non_pharmacological')"
+                  class="px-2.5 py-1 rounded-lg bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 text-emerald-200 text-[10px] font-bold cursor-pointer transition"
+                  title="Non-Pharmacological First: Evidence-based lifestyle modalities for human happiness without unnecessary pharmaceutical dependency">
+                  Preset: Non-Pharm First (Happiness Without Drugs)
                 </button>
                 <button (click)="setProofreaderPreset('non_compliant')"
                   class="px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/50 border border-rose-500/30 text-rose-200 text-[10px] font-bold cursor-pointer transition">
@@ -697,7 +702,7 @@ export class LocalGemmaStudioComponent {
     );
   }
 
-  setProofreaderPreset(type: 'trailing_zero' | 'naked_decimal' | 'typos' | 'detox' | 'toxicology' | 'suicide' | 'non_compliant'): void {
+  setProofreaderPreset(type: 'trailing_zero' | 'naked_decimal' | 'typos' | 'detox' | 'toxicology' | 'suicide' | 'non_compliant' | 'non_pharmacological'): void {
     if (type === 'trailing_zero') {
       this.proofreaderInputText = 'Administer Morphine 5.0 mg IV push for acute post-operative pain.';
     } else if (type === 'naked_decimal') {
@@ -712,6 +717,8 @@ export class LocalGemmaStudioComponent {
       this.proofreaderInputText = 'Psychiatric history: Patient reports brother committed suicide 3 years ago following major depressive episode.';
     } else if (type === 'non_compliant') {
       this.proofreaderInputText = 'Cardiology consult: Patient is a substance abuser who has been non-compliant with daily Metoprolol.';
+    } else if (type === 'non_pharmacological') {
+      this.proofreaderInputText = 'Clinical intake: Patient presents with burnout and mild depression. Provider noted chemical imbalance in the brain; needs medication to be happy and start an antidepressant immediately. Prior notes indicate patient failed medication in 2023.';
     }
     this.runProofreaderCheck();
   }
