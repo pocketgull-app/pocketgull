@@ -83,6 +83,17 @@ import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
           <span>Active Room</span>
         </button>
 
+        <!-- 🎮 Arcade & Quests Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-arcade-hub-trigger"
+          (click)="navShell?.openArcadeHub()"
+          aria-label="Open PocketGull Arcade & Clinical Quests Hub"
+          class="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">🎮</span>
+          <span>Arcade Hub</span>
+        </button>
+
         <!-- ⚖️ Clinical Posology & Deprescribing Trigger (Desktop) -->
         <button 
           type="button" 
@@ -192,7 +203,16 @@ import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
               <div class="grid grid-cols-2 gap-3 pt-2.5">
                 <!-- Section: Clinical Intelligence & AI -->
                 <div class="space-y-1">
-                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🧠 Clinical AI</span>
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-500 block px-1">🎮 Arcade &amp; Games</span>
+                  <button type="button" (click)="navShell?.openArcadeHub(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-amber-700 dark:text-amber-300 cursor-pointer border border-amber-500/30 bg-amber-50/50 dark:bg-amber-950/30">
+                    <span class="text-sm">🎮</span>
+                    <div>
+                      <div>Arcade &amp; Clinical Quests Hub</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Luminaries • Oregon Trail • Shift Duty • OSCE</div>
+                    </div>
+                  </button>
+
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1 pt-1">🧠 Clinical AI</span>
                   <button type="button" (click)="navShell?.openRoleDemo(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-teal-700 dark:text-teal-300 cursor-pointer border border-teal-500/20 bg-teal-50/40 dark:bg-teal-950/20">
                     <span class="text-sm">✨</span>
                     <div>
@@ -604,6 +624,11 @@ import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
 
           <!-- Clinical Navigation Links (Fitts's Law 48px+ touch targets) -->
           <div class="space-y-2.5">
+            <!-- 🎮 Arcade & Quests Hub -->
+            <button type="button" (click)="navShell?.openArcadeHub(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🎮</span> <span>Arcade &amp; Clinical Quests Hub</span>
+            </button>
+
             <!-- Active Room & Assessments Toggle -->
             <button type="button" (click)="state.toggleActiveRoom(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">📋</span> <span>{{ state.showActiveRoom() ? 'Hide Active Room' : 'Open Active Room' }}</span>

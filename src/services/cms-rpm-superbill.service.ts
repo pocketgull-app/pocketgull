@@ -203,8 +203,12 @@ export class CmsRpmSuperbillService {
 
   // ── ICD-10 Cross-Mapping Engine ─────────────────────────────────────────────
   public mapIcd10Diagnoses(patient?: IPatient): IIcd10Mapping[] {
-    const conditions = (patient?.preexistingConditions || []).map(c => c.toLowerCase());
-    const symptoms = (patient?.symptoms || []).map(s => s.toLowerCase());
+    const conditions = (patient?.preexistingConditions || []).map(c => typeof c === 'string' ? c.toLowerCase() : String(c).toLowerCase());
+    const symptoms = (patient?.symptoms || []).map(s => {
+      if (typeof s === 'string') return s.toLowerCase();
+      if (s && typeof s === 'object') return (s.name || s.description || JSON.stringify(s)).toLowerCase();
+      return String(s).toLowerCase();
+    });
     const mappings: IIcd10Mapping[] = [];
 
     // Rule 1: Hypertension

@@ -54,7 +54,7 @@ foreach ($font in $fontFiles) {
         Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts' -Name $reg -Value $dst -Force
     }
 
-    $res = [WinFontHelper]::AddFontResource($dst)
+    [void][WinFontHelper]::AddFontResource($dst)
     $installedCount++
 }
 

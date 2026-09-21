@@ -74,7 +74,9 @@ Write-Host "  [5/5] Configuring Persistent Windows Notification Area Tray..." -F
 $startupDir = [Environment]::GetFolderPath('Startup')
 $startupShortcut = Join-Path $startupDir "PocketGull Assistive Tray.lnk"
 $trayScript = Join-Path $scriptDir "pocketgull_tray.ps1"
-$iconPath = Join-Path $repoDir "pocketgull_flutter\windows\runner\resources\app_icon.ico"
+$brandIconCandidate = Join-Path $repoDir "public\icons\pocketgull.ico"
+$flutterIconCandidate = Join-Path $repoDir "pocketgull_flutter\windows\runner\resources\app_icon.ico"
+$iconPath = if (Test-Path $brandIconCandidate) { $brandIconCandidate } else { $flutterIconCandidate }
 
 $wsh = New-Object -ComObject WScript.Shell
 $sc = $wsh.CreateShortcut($startupShortcut)

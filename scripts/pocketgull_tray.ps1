@@ -22,16 +22,17 @@ if (-not ([System.Management.Automation.PSTypeName]'WinCursorUtil').Type) {
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoDir = Split-Path -Parent $scriptDir
-$iconPath = Join-Path $repoDir "pocketgull_flutter\windows\runner\resources\app_icon.ico"
+$brandIconCandidate = Join-Path $repoDir "public\icons\pocketgull.ico"
+$flutterIconCandidate = Join-Path $repoDir "pocketgull_flutter\windows\runner\resources\app_icon.ico"
+$iconPath = if (Test-Path $brandIconCandidate) { $brandIconCandidate } else { $flutterIconCandidate }
 $controllerScript = Join-Path $scriptDir "pocketgull_controller.mjs"
 $fontScript = Join-Path $scriptDir "install_brand_fonts.ps1"
-$cursorScript = Join-Path $scriptDir "generate_pocketgull_cursors.ps1"
 $stateFile = Join-Path $repoDir ".pocketgull_a11y.json"
 $startupDir = [Environment]::GetFolderPath('Startup')
 $startupShortcut = Join-Path $startupDir "PocketGull Assistive Tray.lnk"
 $cursorDir = Join-Path $env:LOCALAPPDATA "PocketGull\Cursors"
 
-function Play-Earcon {
+function Invoke-Earcon {
     try {
         [System.Media.SystemSounds]::Asterisk.Play()
     } catch {}
@@ -64,16 +65,16 @@ function Set-StartupState {
         $sc.Description = "PocketGull Assistive Technology & Cognitive Ergonomics Tray"
         $sc.WorkingDirectory = $repoDir
         $sc.Save()
-        Play-Earcon
+        Invoke-Earcon
     } else {
         if (Test-Path $startupShortcut) {
             Remove-Item $startupShortcut -Force
-            Play-Earcon
+            Invoke-Earcon
         }
     }
 }
 
-function Apply-CursorScheme {
+function Set-CursorScheme {
     param([string]$schemeName)
     $cursorsKey = "HKCU:\Control Panel\Cursors"
     
@@ -128,7 +129,7 @@ function Apply-CursorScheme {
     }
 
     [WinCursorUtil]::Refresh()
-    Play-Earcon
+    Invoke-Earcon
 }
 
 $notifyIcon = New-Object System.Windows.Forms.NotifyIcon
@@ -158,28 +159,28 @@ $themesMenu = New-Object System.Windows.Forms.ToolStripMenuItem("🎨 System & I
 $washiItem = $themesMenu.DropDownItems.Add("☀️ Washi Rice Paper (Daylight Focus)")
 $washiItem.Add_Click({
     node $controllerScript theme washi
-    Play-Earcon
+    Invoke-Earcon
     $notifyIcon.ShowBalloonTip(2000, "PocketGull Theme", "Switched to Washi Rice Paper (Daylight Focus)", [System.Windows.Forms.ToolTipIcon]::Info)
 })
 
 $hempItem = $themesMenu.DropDownItems.Add("🌿 Hemp Fiber (Warm Sepia Calm)")
 $hempItem.Add_Click({
     node $controllerScript theme hemp
-    Play-Earcon
+    Invoke-Earcon
     $notifyIcon.ShowBalloonTip(2000, "PocketGull Theme", "Switched to Hemp Fiber (Warm Sepia)", [System.Windows.Forms.ToolTipIcon]::Info)
 })
 
 $obsidianItem = $themesMenu.DropDownItems.Add("🌑 Obsidian Ophthalmic (Dark WCAG AAA)")
 $obsidianItem.Add_Click({
     node $controllerScript theme obsidian
-    Play-Earcon
+    Invoke-Earcon
     $notifyIcon.ShowBalloonTip(2000, "PocketGull Theme", "Switched to Obsidian Dark Mode", [System.Windows.Forms.ToolTipIcon]::Info)
 })
 
 $scotopicItem = $themesMenu.DropDownItems.Add("🔴 Scotopic 650nm Red (Melatonin Safe)")
 $scotopicItem.Add_Click({
     node $controllerScript theme 670
-    Play-Earcon
+    Invoke-Earcon
     $notifyIcon.ShowBalloonTip(2000, "PocketGull Theme", "Switched to Scotopic 650nm Red (Rhodopsin Safe)", [System.Windows.Forms.ToolTipIcon]::Info)
 })
 
@@ -190,30 +191,65 @@ $cursorMenu = New-Object System.Windows.Forms.ToolStripMenuItem("🖱️ Clinica
 
 $curOphItem = $cursorMenu.DropDownItems.Add("👁️ Ophthalmic High-Contrast (Obsidian & Cyan)")
 $curOphItem.Add_Click({
-    Apply-CursorScheme "ophthalmic"
+    Set-CursorScheme "ophthalmic"
     $notifyIcon.ShowBalloonTip(2500, "Cursor Scheme", "Active: PocketGull Ophthalmic High-Contrast (Obsidian Core + 505nm Cyan Halo)", [System.Windows.Forms.ToolTipIcon]::Info)
 })
 
 $curScotItem = $cursorMenu.DropDownItems.Add("🔴 Scotopic 650nm Red (Rhodopsin Preserving)")
 $curScotItem.Add_Click({
-    Apply-CursorScheme "scotopic"
+    Set-CursorScheme "scotopic"
     $notifyIcon.ShowBalloonTip(2500, "Cursor Scheme", "Active: PocketGull Scotopic 650nm Red (Melatonin Safe)", [System.Windows.Forms.ToolTipIcon]::Info)
 })
 
 $curDefItem = $cursorMenu.DropDownItems.Add("🖥️ Windows System Default Cursors")
 $curDefItem.Add_Click({
-    Apply-CursorScheme "default"
+    Set-CursorScheme "default"
     $notifyIcon.ShowBalloonTip(2000, "Cursor Scheme", "Restored Windows System Default Cursors", [System.Windows.Forms.ToolTipIcon]::Info)
 })
 
 $contextMenu.Items.Add($cursorMenu) | Out-Null
+
+# ── 3B. GAMES & INTERACTIVE QUESTS ──
+$gamesMenu = New-Object System.Windows.Forms.ToolStripMenuItem("🎮 Games & Interactive Quests")
+
+$gTrailItem = $gamesMenu.DropDownItems.Add("🏕️ The Oregon Recovery Trail (3-Act Expedition)")
+$gTrailItem.Add_Click({
+    Start-Process "pwsh.exe" -ArgumentList "-NoExit", "-Command", "node `"$repoDir\scripts\gull.js`" trail"
+    Invoke-Earcon
+})
+
+$gLumItem = $gamesMenu.DropDownItems.Add("🏛️ Historical Luminaries Clinical Mystery Arena")
+$gLumItem.Add_Click({
+    node "$repoDir\scripts\gull.js" play luminaries
+    Invoke-Earcon
+})
+
+$gQuestItem = $gamesMenu.DropDownItems.Add("🏃 Movement & Healing Quest")
+$gQuestItem.Add_Click({
+    node "$repoDir\scripts\gull.js" play quest
+    Invoke-Earcon
+})
+
+$gShiftItem = $gamesMenu.DropDownItems.Add("🩺 Doctor Shift & Call Duty Simulator")
+$gShiftItem.Add_Click({
+    node "$repoDir\scripts\gull.js" play shift
+    Invoke-Earcon
+})
+
+$gOsceItem = $gamesMenu.DropDownItems.Add("📋 OSCE Medical Case Challenge Simulator")
+$gOsceItem.Add_Click({
+    node "$repoDir\scripts\gull.js" play osce
+    Invoke-Earcon
+})
+
+$contextMenu.Items.Add($gamesMenu) | Out-Null
 
 # ── 4. COGNITIVE ERGONOMIC MODES ──
 $philoItem = $contextMenu.Items.Add("🫀 Philocardia (0.1 Hz Vagal Pacing)")
 $philoItem.CheckOnClick = $true
 $philoItem.Add_Click({
     node $controllerScript philocardia
-    Play-Earcon
+    Invoke-Earcon
     $st = Get-PocketGullState
     $philoItem.Checked = [bool]$st.philocardia
     $notifyIcon.ShowBalloonTip(2000, "Philocardia", "Toggled 0.1 Hz Vagal Respiratory Wave Resonance", [System.Windows.Forms.ToolTipIcon]::Info)
@@ -223,7 +259,7 @@ $bionicItem = $contextMenu.Items.Add("👁️ Bionic Reading Guidance")
 $bionicItem.CheckOnClick = $true
 $bionicItem.Add_Click({
     node $controllerScript bionic
-    Play-Earcon
+    Invoke-Earcon
     $st = Get-PocketGullState
     $bionicItem.Checked = [bool]$st.bionic
     $notifyIcon.ShowBalloonTip(2000, "Bionic Reading", "Toggled Saccadic Fixation Anchors", [System.Windows.Forms.ToolTipIcon]::Info)
@@ -246,7 +282,7 @@ $startupItem.Add_Click({
 $fontItem = $contextMenu.Items.Add("🔤 Refresh 38 Superfamily Fonts")
 $fontItem.Add_Click({
     pwsh -NoProfile -ExecutionPolicy Bypass -File $fontScript
-    Play-Earcon
+    Invoke-Earcon
     $notifyIcon.ShowBalloonTip(2500, "PocketGull Typefoundry", "All 38 TrueType superfamily cuts re-registered in Windows.", [System.Windows.Forms.ToolTipIcon]::Info)
 })
 
@@ -299,7 +335,7 @@ $notifyIcon.Add_DoubleClick({
         default    { "obsidian" }
     }
     node $controllerScript theme $nextTheme
-    Play-Earcon
+    Invoke-Earcon
     $notifyIcon.ShowBalloonTip(2500, "PocketGull Quick Preset", "Cycled theme to: $nextTheme", [System.Windows.Forms.ToolTipIcon]::Info)
 })
 

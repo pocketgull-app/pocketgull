@@ -97,6 +97,7 @@ import { ClinicalCommercialHubComponent } from './components/shared/clinical-com
 import { RoleDemoModalComponent } from './components/role-demo-modal.component';
 import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
 import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.component';
+import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component';
 
 @Component({
   selector: 'app-root',
@@ -107,6 +108,7 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
   imports: [
     CommonModule,
     FormsModule,
+    ArcadeHubModalComponent,
     PocketgullTypefaceSiteComponent,
     BarrowsClinicalInquiryHubComponent,
     PasskeyStepUpModalComponent,
@@ -890,6 +892,11 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
             }
         }
 
+
+    <!-- Pocket-Gull Arcade & Clinical Quests Hub Modal -->
+    @if (navShell.showArcadeHubModal()) {
+      <app-arcade-hub-modal></app-arcade-hub-modal>
+    }
 
     <!-- SMART Health Card & Cryptographic Pass Modal -->
     @if (showSmartHealthPassModal()) {
@@ -2538,6 +2545,16 @@ export class AppComponent implements OnDestroy {
         this.isDemoMode.set(true);
         this.hasApiKey.set(true);
         this.navShell.openCommercialHub();
+      }
+
+      // Handle Arcade Hub & Games deep link (?game=luminaries | movement | shift | osce | flourish | trail)
+      const gameParam = (params.get('game') || params.get('arcade') || '').toLowerCase();
+      if (gameParam) {
+        this.session.isLocked.set(false);
+        this.state.isDemoMode.set(true);
+        this.isDemoMode.set(true);
+        this.hasApiKey.set(true);
+        this.navShell.openArcadeHub(gameParam);
       }
     } catch (err) {
       console.warn('[AppComponent] URL case study deep link inspection failed:', err);

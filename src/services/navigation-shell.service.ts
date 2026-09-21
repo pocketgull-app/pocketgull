@@ -27,6 +27,8 @@ export class NavigationShellService {
   readonly showRoleDemoModal = signal<boolean>(false);
   readonly showIntimacyVitalityModal = signal<boolean>(false);
   readonly showFederalUswdsPortal = signal<boolean>(false);
+  readonly showArcadeHubModal = signal<boolean>(false);
+  readonly activeGameId = signal<string>('luminaries');
 
   /** Developer Mode: Gates investor pitch portals, experimental showcases, and auxiliary demos. Defaults to false. */
   readonly developerMode = signal<boolean>(
@@ -112,6 +114,14 @@ export class NavigationShellService {
   public openFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(true); }
   public closeFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(false); }
 
+  public openArcadeHub(gameId?: string): void {
+    if (gameId) {
+      this.activeGameId.set(gameId);
+    }
+    this.showArcadeHubModal.set(true);
+  }
+  public closeArcadeHub(): void { this.showArcadeHubModal.set(false); }
+
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
    */
@@ -133,5 +143,6 @@ export class NavigationShellService {
     this.showRoleDemoModal.set(false);
     this.showIntimacyVitalityModal.set(false);
     this.showFederalUswdsPortal.set(false);
+    this.showArcadeHubModal.set(false);
   }
 }
