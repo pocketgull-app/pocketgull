@@ -182,6 +182,7 @@ pocketgull_api/*.pt
 **/ephemeral/
 .gradle/
 **/gradle/wrapper/gradle-wrapper.jar
+typefaces_vault
 
 # ------------------------------------------------------------------------------
 # 8. Testing, Coverage, Benchmarks & Lighthouse Reports
