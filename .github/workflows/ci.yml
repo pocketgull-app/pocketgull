@@ -183,7 +183,7 @@ jobs:
           PLAYWRIGHT_WORKERS: '4'
           PLAYWRIGHT_TESTING: 'true'
           GEMINI_API_KEY: 'placeholder-key-for-build'
-          SKIP_HECARE_PROVISION: 'true'
+          SKIP_HEALTHCARE_PROVISION: 'true'
 
       - name: Stop Preview Server
         if: always()
