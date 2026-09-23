@@ -335,6 +335,7 @@ class _LeanVitalsTabState extends ConsumerState<LeanVitalsTab> {
               Text(
                 value,
                 style: const TextStyle(
+                  fontFamily: 'PocketGullMono',
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF111827),

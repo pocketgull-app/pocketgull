@@ -161,11 +161,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  'POCKET-GULL',
+                  'PocketGull',
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2.0,
+                    fontFamily: 'PocketGullBrand',
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                     color: Color(0xFF111827),
                   ),
                 ),

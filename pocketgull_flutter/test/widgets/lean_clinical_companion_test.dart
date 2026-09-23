@@ -27,7 +27,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify Brand Header
-      expect(find.text('POCKET-GULL'), findsOneWidget);
+      expect(find.text('PocketGull'), findsOneWidget);
       expect(find.text('CLINICAL COMPANION'), findsOneWidget);
 
       // Verify Bottom Navigation Items

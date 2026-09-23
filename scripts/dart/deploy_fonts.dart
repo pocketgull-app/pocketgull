@@ -43,6 +43,7 @@ void main() {
   final targetDirs = [
     Directory('$root${sep}public${sep}assets${sep}fonts'),
     Directory('$root${sep}public${sep}fonts'),
+    Directory('$root${sep}pocketgull_flutter${sep}assets${sep}fonts'),
   ];
 
   if (!sourceDir.existsSync()) {
