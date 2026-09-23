@@ -371,7 +371,7 @@ export interface IPubMedSearchResult {
         <!-- Citation Metadata Form -->
         @if (showCitationForm()) {
           <div class="mt-3 p-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-md shadow-inner space-y-2 animate-in fade-in slide-in-from-top-1 w-full order-last">
-            <h4 class="text-[12px] font-bold text-gray-800 dark:text-zinc-100 uppercase tracking-tighter mb-1">Citation Metadata (UKRIO Style)</h4>
+            <h4 class="text-[12px] font-bold text-gray-800 dark:text-zinc-100 uppercase tracking-tighter mb-1">Citation Metadata (NLM / AMA Style)</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
               <pocket-gull-input [value]="authors()" (valueChange)="authors.set($event)" placeholder="Authors (e.g. Smith et al.)" size="sm"></pocket-gull-input>
               <pocket-gull-input [value]="doi()" (valueChange)="doi.set($event)" placeholder="DOI (e.g. 10.1038/s41586-021-03503-x)" size="sm"></pocket-gull-input>

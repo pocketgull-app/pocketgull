@@ -2,7 +2,7 @@ import { IPatient } from '../services/patient.types';
 
 export const p006: IPatient = {
   id: "p006",
-  name: "Homo Sapiens (Male, Paediatric Archetype, 4y)",
+  name: "Homo Sapiens (Male, Pediatric Archetype, 4y)",
   age: 4,
   gender: "Male",
   lastVisit: "2026.03.12",
@@ -11,7 +11,7 @@ export const p006: IPatient = {
     "Mild-Intermittent Asthma",
     "Recent Rotavirus Enteritis (Resolving)"
   ],
-  patientGoals: "Rehydrate after diarrhoeal episode, reduce airway hyperreactivity, and support pediatric immune health.",
+  patientGoals: "Rehydrate after diarrheal episode, reduce airway hyperreactivity, and support pediatric immune health.",
   vitals: {
     bp: "95/60",
     hr: "112",

@@ -129,7 +129,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             <option value="homo_sapiens_female">👩 Homo Sapiens (Female)</option>
             <option value="homo_sapiens_male">👨 Homo Sapiens (Male)</option>
             <option value="homo_sapiens_senior">👵 Homo Sapiens (Senior)</option>
-            <option value="homo_sapiens_pediatric">👶 Homo Sapiens (Paediatric)</option>
+            <option value="homo_sapiens_pediatric">👶 Homo Sapiens (Pediatric)</option>
             <option value="ecorche">🏛️ Vesalian Écorché (1543 Cast)</option>
             <option value="pongo_pygmaeus">🦧 Pongo Pygmaeus (Orangutan)</option>
           </select>
@@ -674,8 +674,8 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                         [class.bg-zinc-900]="state.activeShadingProfile() !== 'theatre'"
                         [class.text-zinc-400]="state.activeShadingProfile() !== 'theatre'"
                         class="px-2 py-0.5 rounded text-[9.5px] font-bold border border-zinc-800 transition hover:border-sky-500/50 cursor-pointer"
-                        title="Theatre: High-lumen surgical cool 5600K with crisp directional edge rims">
-                  💡 Theatre (5600K)
+                        title="Operating Room (OR): High-lumen surgical cool 5600K with crisp directional edge rims">
+                  💡 Operating Room / OR (5600K)
                 </button>
                 <button (click)="onShadingProfileSelect('scotopic')"
                         [class.bg-rose-700]="state.activeShadingProfile() === 'scotopic'"

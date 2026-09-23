@@ -478,6 +478,27 @@ function auditFile(filePath) {
     }
   }
 
+  // 8. American Medical English Guard: Prohibit Britishisms in user-facing clinical templates & prompts
+  if (
+    !relativePath.includes('sentinel_security_guard') &&
+    !relativePath.includes('node_modules') &&
+    !relativePath.includes('.md') &&
+    (relativePath.startsWith('src/') || relativePath.startsWith('public/')) &&
+    !relativePath.includes('global-jurisdiction-matrix') && // UK jurisdiction profile legitimately references UK statutes
+    !relativePath.includes('clinical-specialty-risk-suite') // Contains WHO guideline citation titles
+  ) {
+    const prohibitedBritishismRegex = /\b(paediatric|diarrhoeal|haemoglobin|anaemia|oedema|dyspnoea)\b/i;
+    const bMatch = prohibitedBritishismRegex.exec(content);
+    if (bMatch) {
+      issues.push({
+        type: 'BRITISHISM_DETECTED',
+        severity: 'MEDIUM',
+        message: `American Medical English violation: Found British spelling "${bMatch[0]}". Use American standard (e.g. pediatric, diarrheal, hemoglobin, anemia, edema, dyspnea).`,
+        line: content.substring(0, bMatch.index).split('\n').length,
+      });
+    }
+  }
+
   return issues;
 }
 

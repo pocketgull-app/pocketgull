@@ -139,7 +139,7 @@ export class InternationalUniversityGeofenceService {
       country: 'Japan',
       region: 'Asia-Pacific',
       jurisdiction: 'APAC_CROSS_BORDER',
-      flagshipLab: 'Department of Orthopaedic Surgery & Sports Science Institute',
+      flagshipLab: 'Department of Orthopedic Surgery & Sports Science Institute',
       regulatoryFramework: 'APPI Japan / PMDA Class IIa SaMD',
       antiDopingAuthority: 'JADA',
       geofencedCloudRegion: 'asia-northeast1 (Tokyo Sovereign Node)',
