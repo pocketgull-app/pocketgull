@@ -1,17 +1,64 @@
 # PocketGull AI Agent & Crawler Governance Specification
 # Conforming to EU Artificial Intelligence Act (2024/1689) Art. 53 and W3C TDM Reservation Protocol
 
+# Search Discovery Crawlers (Permitted for Search Discovery Only)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /contracts/
+
+# AI Model Training, Distillation & OS Ingestion Crawlers (Strictly Prohibited)
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
 User-agent: Copilot
 Disallow: /
 
-User-agent: Bingbot
-Disallow: /api/
-Disallow: /contracts/
-Disallow: /src/
+User-agent: WindowsRecallBot
+Disallow: /
 
 User-agent: GPTBot
 Disallow: /
 
+User-agent: ChatGPT-User
+Disallow: /api/
+Disallow: /contracts/
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: Meta-ExternalFetcher
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /api/
+Disallow: /contracts/
+
+# Aggressive Bulk Scrapers, Social Crawlers & Open Dataset Harvesters
 User-agent: CCBot
 Disallow: /
 
@@ -22,6 +69,15 @@ User-agent: Diffbot
 Disallow: /
 
 User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: RedditBot
+Disallow: /
+
+User-agent: redditbot
 Disallow: /
 
 User-agent: *
