@@ -12,8 +12,6 @@ updates:
     commit-message:
       prefix: "chore(deps)"
       prefix-development: "chore(dev-deps)"
-    reviewers:
-      - "philgear"
     groups:
       # Group all Angular packages into a single PR
       angular:
@@ -51,8 +49,6 @@ updates:
     open-pull-requests-limit: 2
     commit-message:
       prefix: "ci(deps)"
-    reviewers:
-      - "philgear"
     groups:
       actions:
         patterns:
@@ -67,8 +63,6 @@ updates:
     open-pull-requests-limit: 2
     commit-message:
       prefix: "chore(docker)"
-    reviewers:
-      - "philgear"
 
   # Pip — Python FastAPI sidecar
   - package-ecosystem: "pip"
@@ -79,8 +73,6 @@ updates:
     open-pull-requests-limit: 2
     commit-message:
       prefix: "chore(py-deps)"
-    reviewers:
-      - "philgear"
     groups:
       python-packages:
         patterns:
@@ -95,10 +87,7 @@ updates:
     open-pull-requests-limit: 2
     commit-message:
       prefix: "chore(go-deps)"
-    reviewers:
-      - "philgear"
     groups:
       go-packages:
         patterns:
           - "*"
-
