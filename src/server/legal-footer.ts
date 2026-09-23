@@ -45,6 +45,7 @@ export function renderLegalFooterHtml(options: ILegalFooterOptions = {}): string
           <a href="/privacy-policy.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--teal-light)'" onmouseout="this.style.color='var(--text-muted)'">Privacy Policy</a>
           <a href="/terms-of-service.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--teal-light)'" onmouseout="this.style.color='var(--text-muted)'">Terms of Service</a>
           <a href="/robots.txt" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--teal-light)'" onmouseout="this.style.color='var(--text-muted)'">robots.txt</a>
+          <a href="/ai.txt" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--teal-light)'" onmouseout="this.style.color='var(--text-muted)'">ai.txt</a>
         </nav>
       </div>` : ''}
 

@@ -47,6 +47,7 @@ describe('Universal Legal Footer (renderLegalFooterHtml)', () => {
     expect(htmlWithNav).toContain('footer-nav-links');
     expect(htmlWithNav).toContain('Clinical Articles');
     expect(htmlWithNav).toContain('Case Studies Commons');
+    expect(htmlWithNav).toContain('href="/ai.txt"');
 
     const htmlWithoutNav = renderLegalFooterHtml({ includeNavigationLinks: false });
     expect(htmlWithoutNav).not.toContain('footer-nav-links');
