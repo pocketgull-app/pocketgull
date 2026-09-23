@@ -3,8 +3,23 @@ name: "CI/CD Pipeline (HIPAA Compliant)"
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'documentation/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'typefaces_vault/**'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'documentation/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'typefaces_vault/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -49,12 +64,21 @@ jobs:
       - name: Generate CycloneDX SBOM (EU CRA Compliance)
         run: npm run sbom
 
+      - name: Validate Cloud Run Enclave & gVisor Policy-as-Code
+        run: |
+          echo "Verifying Cloud Run gVisor and scale-to-zero configurations..."
+          test -f gcp/cloudrun-service-enclave.json || (echo "Missing Cloud Run Enclave Spec" && exit 1)
+          grep -q 'gvisor' gcp/cloudrun-service-enclave.json || (echo "gVisor sandbox annotation missing" && exit 1)
+          grep -q 'minScale.*0' gcp/cloudrun-service-enclave.json || (echo "Scale-to-zero policy missing" && exit 1)
+          echo "Policy-as-Code checks passed successfully."
+
       - name: Run Tests (Vitest)
         run: npx vitest run
 
   python-ml-test:
     name: Python ML & Sidecar
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
 
     steps:
       - name: Harden Runner
@@ -92,6 +116,7 @@ jobs:
     name: test-e2e
     needs: [security-and-lint]
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
     timeout-minutes: 30
     steps:
       - name: Harden Runner

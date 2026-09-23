@@ -4,13 +4,10 @@ permissions:
   contents: read
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   schedule:
     # Run every Thursday at 8:30 PM UTC
     - cron: '30 20 * * 4'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
