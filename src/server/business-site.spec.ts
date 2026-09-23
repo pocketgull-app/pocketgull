@@ -142,4 +142,11 @@ describe('Business Site Server-Side Rendering (pocketgull.com)', () => {
     expect(svg).toContain('viewBox="0 0 263 80"');
     expect(svg).toContain('PocketGull Wordmark');
   });
+
+  it('aligns typeface specimen link with canonical font.pocketgull.app domain', () => {
+    const html = renderBusinessSiteHtml();
+    expect(html).toContain('href="https://font.pocketgull.app"');
+    expect(html).toContain('font.pocketgull.app');
+    expect(html).not.toContain('typeface.pocketgull.app');
+  });
 });

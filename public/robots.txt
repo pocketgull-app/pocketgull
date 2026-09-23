@@ -66,6 +66,12 @@ Disallow: /
 User-agent: cohere-ai
 Disallow: /
 
+User-agent: HuggingFaceBot
+Disallow: /
+
+User-agent: BigCodeBot
+Disallow: /
+
 User-agent: PerplexityBot
 Disallow: /api/
 Disallow: /contracts/

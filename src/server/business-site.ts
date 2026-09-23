@@ -1671,8 +1671,8 @@ export function renderBusinessSiteHtml(): string {
         </div>
 
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; align-items: center;">
-          <a href="https://typeface.pocketgull.app" target="_blank" rel="noopener" class="btn-primary" style="font-size: 0.875rem;">
-            <span>🌐 Explore Live Typeface Specimen &bull; typeface.pocketgull.app ↗</span>
+          <a href="https://font.pocketgull.app" target="_blank" rel="noopener" class="btn-primary" style="font-size: 0.875rem;">
+            <span>🌐 Explore Live Typeface Specimen &bull; font.pocketgull.app ↗</span>
           </a>
           <button type="button" class="btn-secondary" onclick="openDocDrill('Louise Sloan 5:1 Optotype Invariant')">
             <span>🔬 Open Sloan Invariant Doc Drill</span>
