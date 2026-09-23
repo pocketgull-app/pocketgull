@@ -688,7 +688,7 @@ export function renderBusinessSiteHtml(): string {
         <a href="#ecosystem">Hyperscalers</a>
         <a href="#case-studies">Case Studies</a>
         <a href="#condition-thrift">Condition Explorer</a>
-        <a href="#clinical-typography">Typography</a>
+        <a href="#clinical-typography">Font Safeguards</a>
         <a href="javascript:void(0)" onclick="openDocDrill('Babesia microti')" style="color: var(--teal-light);">🔬 Doc Drill</a>
         <a href="#open-source">Open Source</a>
         <a href="#testimonials">Quotes</a>
@@ -1618,10 +1618,10 @@ export function renderBusinessSiteHtml(): string {
       <div class="container">
         <div class="section-title">
           <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: var(--teal-glow); border: 1px solid var(--border); color: var(--teal); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
-            <span>🔤 Open-Source Clinical Superfamily</span>
+            <span>🛡️ Clinical Font Safeguards</span>
           </div>
-          <h2>Louise Sloan 5:1 Optotypic Legibility &amp; ISMP Drug Safety</h2>
-          <p>Generic web fonts create fatal dosage errors on ICU displays and thermal prescription labels. PocketGull's SIL OFL 1.1 typeface family enforces zero-error medical legibility.</p>
+          <h2>Louise Sloan 5:1 Optotypic Legibility &amp; ISMP Drug Safeguards</h2>
+          <p>Generic web fonts create fatal dosage errors on ICU displays and thermal prescription labels. PocketGull's font safeguards enforce zero-error medical legibility under ISMP and FDA standards.</p>
         </div>
 
         <div class="grid-3" style="margin-bottom: 2rem;">
@@ -1672,7 +1672,7 @@ export function renderBusinessSiteHtml(): string {
 
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; align-items: center;">
           <a href="https://font.pocketgull.app" target="_blank" rel="noopener" class="btn-primary" style="font-size: 0.875rem;">
-            <span>🌐 Explore Live Typeface Specimen &bull; font.pocketgull.app ↗</span>
+            <span>🛡️ Explore Clinical Font Safeguards &bull; font.pocketgull.app ↗</span>
           </a>
           <button type="button" class="btn-secondary" onclick="openDocDrill('Louise Sloan 5:1 Optotype Invariant')">
             <span>🔬 Open Sloan Invariant Doc Drill</span>
