@@ -52,6 +52,7 @@ import AgonesSDK from '@google-cloud/agones-sdk';
 import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
 import { renderBusinessSiteHtml } from './server/business-site';
 import { renderArticlesHtml } from './server/articles-site';
+import { FALLBACK_SEED_ARTICLES } from './services/wordpress-articles.service';
 import { renderNantucketCaseStudyHtml } from './server/nantucket-case-study';
 import { renderNeuroSanctuaryCaseStudyHtml } from './server/neuro-sanctuary-case-study';
 import { renderCaseStudiesHubHtml } from './server/case-studies-hub';
@@ -505,6 +506,20 @@ app.get(['/articles', '/articles/:slug'], manifestRateLimiter, (req, res) => {
   const slug = (req.params as Record<string, string>)['slug'] || '';
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   return res.send(renderArticlesHtml(slug));
+});
+
+// REST JSON API for Clinical Breakthrough Articles (WordPress-decoupled)
+app.get('/api/articles', manifestRateLimiter, (_req, res) => {
+  res.json(FALLBACK_SEED_ARTICLES);
+});
+
+app.get('/api/articles/:slug', manifestRateLimiter, (req, res) => {
+  const slug = (req.params as Record<string, string>)['slug'] || '';
+  const post = FALLBACK_SEED_ARTICLES.find(p => p.slug === slug);
+  if (!post) {
+    return res.status(404).json({ error: 'Article not found', slug });
+  }
+  return res.json(post);
 });
 
 app.get('/api/config', manifestRateLimiter, (req, res) => {
