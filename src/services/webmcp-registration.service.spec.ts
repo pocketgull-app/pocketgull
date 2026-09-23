@@ -244,10 +244,11 @@ describe('WebMcpRegistrationService', () => {
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 74 WebMCP agentic tools on modelContext', () => {
+  it('should register all 75 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(74);
+    expect(registeredTools.size).toBe(75);
+    expect(registeredTools.has('getInternalState')).toBe(true);
     expect(registeredTools.has('get_epic_cerner_marketplace_manifest')).toBe(true);
     expect(registeredTools.has('get_carin_alliance_attestation')).toBe(true);
     expect(registeredTools.has('validate_smart_on_fhir_launch_conformance')).toBe(true);
@@ -737,10 +738,11 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 74 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 75 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(74);
+    expect(registeredTools.size).toBe(75);
+    expect(registeredTools.has('getInternalState')).toBe(true);
     expect(registeredTools.has('get_clinical_evidence_citations')).toBe(true);
     expect(registeredTools.has('get_patient_3act_trajectory')).toBe(true);
     expect(registeredTools.has('configure_optical_therapy')).toBe(true);
@@ -946,7 +948,7 @@ describe('WebMcpRegistrationService', () => {
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(74);
+    expect((service as any).mcpControllers.length).toBe(75);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
@@ -1138,6 +1140,32 @@ describe('WebMcpRegistrationService', () => {
       expect(res.content[0].text).toContain('"isValid": true');
       expect(res.content[0].text).toContain('"scorePct": 100');
       expect(res.content[0].text).toContain('PKCE_S256_MANDATE');
+    });
+
+    it('should register getInternalState tool with debugging: true per Chrome 156 PR #253', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('getInternalState');
+      expect(tool).toBeDefined();
+      expect(tool.annotations?.debugging).toBe(true);
+      expect(tool.annotations?.readOnlyHint).toBe(true);
+
+      const res = await tool.execute({ componentId: 'all' });
+      expect(res.isError).toBeFalsy();
+      const parsed = JSON.parse(res.content[0].text);
+      expect(parsed.framework).toBe('PocketGull Ambient Clinical Copilot');
+      expect(parsed.version).toBe('1.37.0');
+      expect(parsed.patientState).toBeDefined();
+      expect(parsed.security).toBeDefined();
+      expect(parsed.security.mode).toBe('AUTONOMOUS_BACKGROUND');
+      expect(parsed.webmcp.pr253DebuggingSupported).toBe(true);
+    });
+
+    it('should annotate mandiant defense tool with debugging: true for background autonomy', () => {
+      service.registerTools({});
+      const tool = registeredTools.get('query_mandiant_threat_intelligence_and_defense');
+      expect(tool).toBeDefined();
+      expect(tool.annotations?.debugging).toBe(true);
+      expect(tool.annotations?.readOnlyHint).toBe(true);
     });
   });
 });
