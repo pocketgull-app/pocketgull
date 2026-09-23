@@ -25,7 +25,7 @@ fhir.resources==8.3.0
 
 # HDF5 biosignal archive reader (P2)
 h5py==3.8.0
-scipy==1.18.0
+scipy==1.18.1
 
 # ML risk scoring (P3 — only needed when a trained model is present)
 joblib==1.5.3
