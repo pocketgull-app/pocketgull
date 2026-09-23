@@ -41,8 +41,8 @@ describe('SessionStateService Streamlining & Invariant Suite', () => {
     service = runInInjectionContext(injector, () => new SessionStateService());
   });
 
-  it('1. Defaults to instant-access unlocked state for rapid clinical chart entry (<500ms time-to-first-value)', () => {
-    expect(service.isLocked()).toBe(false);
+  it('1. Defaults to locked state for HIPAA-compliant biometric splash gatekeeper entry', () => {
+    expect(service.isLocked()).toBe(true);
   });
 
   it('2. Defaults to onboarding complete, preserving clinical onboarding state across locks', () => {

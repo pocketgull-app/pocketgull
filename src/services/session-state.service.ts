@@ -7,25 +7,19 @@ import { PatientManagementService } from './patient-management.service';
 })
 export class SessionStateService {
   /**
-   * Secure Session: Initialized for instant clinical time-to-first-value (<500ms).
-   * Opens directly to the active clinical chart unless explicitly locked by the
-   * clinician or after 10 minutes of HIPAA inactivity.
+   * Secure Session: Default to locked so the splash screen is the initial entry
+   * gatekeeper, requiring biometric / gesture / demo unlock.
    */
   readonly isLocked = signal(
     (() => {
       try {
         if (typeof globalThis !== 'undefined' && globalThis.sessionStorage) {
-          if (globalThis.sessionStorage.getItem('pg_session_locked') === 'true') {
-            return true;
-          }
-          if (globalThis.sessionStorage.getItem('pg_session_unlocked') === 'true') {
-            return false;
-          }
+          return globalThis.sessionStorage.getItem('pg_session_unlocked') !== 'true';
         }
       } catch {
         // Fallback for restricted storage environments
       }
-      return false; // Instant chart entry (<500ms)
+      return true;
     })()
   );
   readonly isOnboardingComplete = signal(true);
