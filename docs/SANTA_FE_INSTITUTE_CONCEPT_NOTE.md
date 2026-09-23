@@ -139,7 +139,36 @@ The human organism is not a linear assembly of modular parts; it is a **multi-sc
 
 ---
 
-## 5. Formal Outreach Inquiries
+## 5. Institutional Risk Mitigation, Regulatory Non-Involvement & Financial Market Safe Harbors
+
+To ensure Pocket-Gull’s translation of Santa Fe Institute dynamical systems principles maintains unimpeachable standing across academic, regulatory, financial, and clinical spheres, the platform adheres to five formal risk-mitigation invariants:
+
+### 1. Biophysical Ring-Fencing (Zero Financial / Macroeconomic Re-Use)
+* **Distinction**: Non-equilibrium statistical mechanics, Critical Slowing Down (Marten Scheffer), and bifurcation theory share mathematical lineages with econophysics models used in financial crash forecasting (e.g., Didier Sornette’s Financial Crisis Observatory and W. Brian Arthur’s SFI artificial stock market).
+* **Demarcation Invariant**: Pocket-Gull’s implementation in `ComplexAdaptiveSystemsService` is strictly and immutably ring-fenced to **human autonomic and biophysical telemetry** (heart rate variability $RR$-intervals, pulse transit time, continuous core temperature, and wet-bulb globe temperature $\text{WBGT}$).
+* **Empirical Grounding**: The codebase cites and interfaces exclusively with peer-reviewed biomedical literature and physiological reference databases (Harvard Medical School / PhysioNet Goldberger benchmarks; Scheffer et al., *Nature* 2009). The software contains zero financial ticker adapters, macroeconomic ingestion pipelines, or capital market trading hooks.
+
+### 2. SEC & Financial Regulatory Safe Harbors (Private R&D Accounting)
+* **Intangible IP Valuation Boundary**: All references to asset floors ($28.0\text{M}–\$33.5\text{M}$) and capitalization benchmarks in project documentation represent **Internal Intangible Asset Accounting & Replacement-Cost Audits** conducted for strategic cross-licensing prudence and institutional governance.
+* **Securities Exemption**: Nothing in Pocket-Gull documentation or software manifests constitutes an offer to sell, a solicitation of an offer to buy, or a recommendation of any security under the Securities Act of 1933 or the Securities Exchange Act of 1934. Safe harbors under SEC Rule 10b-5 and Section 4(a)(2) are strictly maintained.
+
+### 3. Pharma & Standard-of-Care Complementarity ("Stage Two" Safety Envelope)
+* **Constructive Integration with Clinical Trials**: Pocket-Gull does not reject or invalidate randomized controlled trials (RCTs). Rather, RCTs are classified as **Stage One (Clean-Cohort Population Efficacy)**.
+* **Real-World Polypharmacy Safety**: Real patients live in non-ergodic environments—taking multiple concurrent medications while exposed to acute heat and dehydration. Pocket-Gull’s simplicial hypergraph cascade model functions as a **Stage Two (Post-Market Real-World Safety Envelope)** that protects both patients and pharmaceutical sponsors by detecting autonomic stress *before* it triggers catastrophic adverse events, avoidable hospitalizations, or black-box regulatory scrutiny.
+
+### 4. FDA Clinical Decision Support (CDS) & 21st Century Cures Act Compliance
+* **Non-Device SaMD Status**: Under Section 520(o)(1)(E) of the Federal Food, Drug, and Cosmetic Act (as amended by the 21st Century Cures Act), the CAS engine qualifies as exempt Clinical Decision Support:
+  1. It displays transparent, deterministic mathematical summaries ($\rho_1$, $\sigma^2$, $D_2$) grounded in published biophysics rather than uninterpretable proprietary black boxes.
+  2. It generates advisory telemetry indicators rather than autonomous diagnostic determinations or automated drug deliveries.
+  3. It enforces an affirmative **Human-in-the-Loop Clinician Attestation** before any care plan recommendation or posology modification is committed to the medical record.
+
+### 5. Big Tech Neutrality & Standard Statutory Copyright Reservation
+* **Statutory AI Boundary**: Machine-readable crawler restrictions (`robots.txt`, `/ai.txt`, BigCode/HuggingFace opt-outs) are anchored strictly in **EU AI Act Article 53(1)(c)** and **17 U.S.C. § 106** text-and-data-mining reservations. This is the uniform standard practiced by peer-reviewed academic publishers (IEEE, Springer Nature, Oxford University Press) and news organizations.
+* **Inference Partnership vs. Weight Training**: Pocket-Gull actively utilizes and partners with Google Gemini (`@google/genai`, Chrome Built-in AI / Gemma 4) for high-performance on-device and cloud runtime inference. The reservation applies exclusively to the non-consensual extraction of proprietary clinical datasets and font typography matrices to train foundational base model weights without attribution or licensure.
+
+---
+
+## 6. Formal Outreach Inquiries
 
 ### Template A: Applied Complexity Network (ACtioN) Inquiry
 ```text
