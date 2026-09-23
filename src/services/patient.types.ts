@@ -1,4 +1,5 @@
 import { AnalysisLens } from './clinical-intelligence.service';
+import { IClinicalFallacyAuditResult } from '../models/clinical-fallacies.model';
 
 export interface IPatientAnatomicProfile {
   amputations: Array<'r_arm' | 'l_arm' | 'r_hand' | 'l_hand' | 'r_thigh' | 'r_shin' | 'r_foot' | 'l_thigh' | 'l_shin' | 'l_foot'>;
@@ -198,6 +199,10 @@ export interface IChecklistItem {
     id: string;
     text: string;
     completed: boolean;
+    /** Epistemic & fallacy verification audit */
+    fallacyAudit?: IClinicalFallacyAuditResult;
+    /** Statistical conformal uncertainty interval */
+    conformalInterval?: [number, number];
 }
 
 export interface IDraftSummaryItem {
@@ -211,6 +216,15 @@ export interface IShoppingListItem {
     completed: boolean;
     category?: string;
     referenceNotion?: string;
+    asin?: string;
+    /** Standard Retail Benchmark (dignified consumer price reference) */
+    standardRetailBenchmark?: string;
+    /** Estimated Out-of-Pocket Total (patient personal commitment) */
+    estimatedOutOfPocketTotal?: string;
+    /** Epistemic & fallacy verification audit */
+    fallacyAudit?: IClinicalFallacyAuditResult;
+    /** Statistical conformal uncertainty interval */
+    conformalInterval?: [number, number];
 }
 
 export interface IAyurvedicStatus {

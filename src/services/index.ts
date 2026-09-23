@@ -24,6 +24,7 @@ export * from './protac-context-scrubber.service';
 export * from './quantum-speculative-sampler.service';
 export * from './umls-edge-resolver.service';
 export * from './snomed-icd-crosswalk.service';
+export * from './who-essential-medicines.service';
 
 // FHIR Domain Services Barrel Export
 export * from './fhir/fhir-integration.service';

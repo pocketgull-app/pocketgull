@@ -240,3 +240,20 @@ Every new feature, component, API endpoint, or clinical model shipped in Pocket-
 - **SLSA Provenance & Immutable Digest Deployment (`OSPS-BR-06.01`)**: Production container deployments to Google Cloud Run in `gen-lang-client-0540208645` MUST deploy by immutable SHA-256 digest (`gcr.io/...@sha256:...`) with CycloneDX 1.6 SBOM verification (`npm run sbom`).
 - **FinOps Scale-to-Zero & Lifecycle Pruning**: Cloud Run services MUST configure `minScale: 0`. Storage lifecycle policies enforce 7-day auto-deletion (`olderThan: "604800s"`, `keepCount: 3`) on Artifact Registry Docker repositories and GCS source buckets (`npm run gcp:prune-storage`).
 
+## Clinical Epistemic Fallacies & Worker-Amplifying Standard
+- **12 Canonical Clinical Fallacies (`SkepticalEpistemologyService`)**: All agents, diagnostics, and CDS components MUST guard against the 12 canonical clinical fallacies:
+  1. `BASE_RATE_FALLACY`: Conflating conditional test accuracy with posterior disease probability. Mandate Gerd Gigerenzer natural frequencies (out of 10,000 screened individuals).
+  2. `POST_HOC_ERGO_PROPTER_HOC`: Conflating succession with causation; compare against spontaneous natural history and regression to the mean.
+  3. `AFFIRMING_THE_CONSEQUENT`: Conflating sensitivity with specificity on non-specific biomarker elevations.
+  4. `TEXAS_SHARPSHOOTER`: Multiplicity corrections (Bonferroni/FDR) for retrospective biomarker dredging.
+  5. `SURVIVORSHIP_BIAS`: Enforcing Intention-to-Treat (ITT) accounting for dropouts.
+  6. `APPEAL_TO_NATURE`: Pharmacokinetic and toxicological rigor for botanicals.
+  7. `APPEAL_TO_AUTHORITY`: Empirical double-blind replication over prestige.
+  8. `SURROGATE_ENDPOINT_EQUIVOCATION`: Distinguishing intermediate markers from patient-centered hard endpoints.
+  9. `BERKSONS_BIAS`: Correcting for collider stratification in hospitalized datasets.
+  10. `SIMPSONS_PARADOX`: Stratifying by disease severity to avoid aggregate trend reversal.
+  11. `FALSE_DILEMMA`: Exploring stepped-care conservative therapies before invasive interventions.
+  12. `AUTOMATION_BIAS`: Guarding against uncritical algorithmic deference with mandatory physical exam corroboration.
+- **Respectful Cost Transparency Terminology**: Enforce **"Standard Retail Benchmark"** and **"Estimated Out-of-Pocket Total"** across all cost and pricing views. Strictly prohibit adversarial labels. Position AI as a supportive assistant that amplifies clinician autonomy and frontline Community Health Workers (CHWs).
+
+

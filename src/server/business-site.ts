@@ -4,6 +4,8 @@
  * Health Informatics Lead: Phillip Gear (CMS NPI: 1487569752)
  */
 
+import { renderLegalFooterHtml } from './legal-footer';
+
 export function getPocketgullWordmarkSvg(className: string = 'h-8 w-auto text-stone-950 inline-block'): string {
   return `<svg class="${className}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 263 80" fill="currentColor" role="img" aria-label="PocketGull Wordmark" width="263" height="80">
     <!-- P -->
@@ -31,7 +33,7 @@ export function getPocketgullWordmarkSvg(className: string = 'h-8 w-auto text-st
 
 export function renderBusinessSiteHtml(): string {
   return `<!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="paper">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,6 +43,20 @@ export function renderBusinessSiteHtml(): string {
   <meta property="og:description" content="Spend less time charting. More time with patients. Secure on-device medical documentation assistant." />
   <meta property="og:url" content="https://pocketgull.com" />
   <meta property="og:type" content="website" />
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('pocketgull_theme');
+        if (t === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('paper');
+        } else {
+          document.documentElement.classList.add('paper');
+          document.documentElement.classList.remove('dark');
+        }
+      } catch(e) {}
+    })();
+  </script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -94,22 +110,31 @@ export function renderBusinessSiteHtml(): string {
       letter-spacing: -0.01em;
     }
     :root {
-      --bg: #09090b;
-      --card: #18181b;
-      --card-hover: #202024;
-      --border: #27272a;
-      --teal: #14b8a6;
-      --teal-light: #2dd4bf;
-      --teal-glow: rgba(45, 212, 191, 0.15);
-      --amber: #f59e0b;
-      --amber-light: #fbbf24;
-      --text: #f4f4f5;
-      --text-muted: #a1a1aa;
+      /* Washi Paper (Warm Natural Fiber Light Theme - Default) */
+      --bg: #fdfbf7;
+      --card: #f5efe4;
+      --card-hover: #ede5d5;
+      --card-subtle: #f0e9dc;
+      --border: #e2d7c5;
+      --teal: #0f766e;
+      --teal-light: #0d9488;
+      --teal-glow: rgba(15, 118, 110, 0.12);
+      --amber: #b45309;
+      --amber-light: #92400e;
+      --text: #292524;
+      --text-muted: #57534e;
+      --input-bg: #ffffff;
+      --header-bg: rgba(253, 251, 247, 0.94);
+      --act-bg: rgba(237, 229, 213, 0.7);
+      --status-bar-bg: #eadecd;
+      --status-bar-text: #44403c;
     }
     html.paper {
+      /* Preserved for spec compatibility */
       --bg: #f7f4ec;
       --card: #ede7d8;
       --card-hover: #e3dccb;
+      --card-subtle: #e8e1cf;
       --border: #d4ccb8;
       --teal: #0f766e;
       --teal-light: #0d9488;
@@ -118,6 +143,30 @@ export function renderBusinessSiteHtml(): string {
       --amber-light: #b45309;
       --text: #292524;
       --text-muted: #57534e;
+      --input-bg: #fdfbf7;
+      --header-bg: rgba(247, 244, 236, 0.94);
+      --act-bg: rgba(232, 225, 207, 0.7);
+      --status-bar-bg: #e4dcce;
+      --status-bar-text: #44403c;
+    }
+    html.dark {
+      --bg: #09090b;
+      --card: #18181b;
+      --card-hover: #202024;
+      --card-subtle: #121215;
+      --border: #27272a;
+      --teal: #14b8a6;
+      --teal-light: #2dd4bf;
+      --teal-glow: rgba(45, 212, 191, 0.15);
+      --amber: #f59e0b;
+      --amber-light: #fbbf24;
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --input-bg: #09090b;
+      --header-bg: rgba(9, 9, 11, 0.92);
+      --act-bg: rgba(24, 24, 27, 0.5);
+      --status-bar-bg: #111827;
+      --status-bar-text: #cbd5e1;
     }
     *, *::before, *::after {
       box-sizing: border-box;
@@ -190,9 +239,9 @@ export function renderBusinessSiteHtml(): string {
       width: 100%;
       max-width: 440px;
       height: 100vh;
-      background: #111114;
+      background: var(--card);
       border-left: 1px solid var(--border);
-      box-shadow: -10px 0 30px rgba(0,0,0,0.85);
+      box-shadow: -10px 0 30px rgba(0,0,0,0.35);
       z-index: 1000;
       transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
@@ -204,7 +253,7 @@ export function renderBusinessSiteHtml(): string {
     .doc-drill-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.65);
+      background: rgba(0,0,0,0.55);
       backdrop-filter: blur(4px);
       z-index: 999;
       display: none;
@@ -216,7 +265,7 @@ export function renderBusinessSiteHtml(): string {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(9, 9, 11, 0.92);
+      background: var(--header-bg);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
@@ -231,7 +280,7 @@ export function renderBusinessSiteHtml(): string {
       align-items: center;
       gap: 0.625rem;
       text-decoration: none;
-      color: #ffffff;
+      color: var(--text);
     }
     .nav-links {
       display: flex;
@@ -278,8 +327,9 @@ export function renderBusinessSiteHtml(): string {
       transition: all 0.2s ease;
     }
     .btn-secondary:hover {
-      background: #27272a;
-      border-color: #3f3f46;
+      background: var(--card-hover);
+      border-color: var(--teal);
+      color: var(--teal);
     }
     .hero {
       padding: 5rem 0 3.5rem;
@@ -328,7 +378,7 @@ export function renderBusinessSiteHtml(): string {
       gap: 2.25rem;
       flex-wrap: wrap;
       font-size: 0.8125rem;
-      color: #d4d4d8;
+      color: var(--text-muted);
       font-family: ui-monospace, monospace;
     }
     .trust-bar span {
@@ -404,7 +454,7 @@ export function renderBusinessSiteHtml(): string {
       padding-bottom: 0.75rem;
     }
     .tab-btn {
-      background: #09090b;
+      background: var(--card);
       color: var(--text-muted);
       border: 1px solid var(--border);
       padding: 0.4rem 0.85rem;
@@ -415,9 +465,9 @@ export function renderBusinessSiteHtml(): string {
       transition: all 0.15s ease;
     }
     .tab-btn.active {
-      background: rgba(45, 212, 191, 0.15);
-      border-color: var(--teal-light);
-      color: var(--teal-light);
+      background: var(--teal-glow);
+      border-color: var(--teal);
+      color: var(--teal);
     }
     .demo-grid {
       display: grid;
@@ -439,7 +489,7 @@ export function renderBusinessSiteHtml(): string {
       }
     }
     .demo-pane {
-      background: #09090b;
+      background: var(--card);
       border: 1px solid var(--border);
       border-radius: 0.75rem;
       padding: 1.25rem;
@@ -460,10 +510,10 @@ export function renderBusinessSiteHtml(): string {
     .pane-body {
       font-size: 0.875rem;
       line-height: 1.55;
-      color: #e4e4e7;
+      color: var(--text);
     }
     .act-card {
-      background: rgba(24, 24, 27, 0.5);
+      background: var(--act-bg);
       border: 1px solid var(--border);
       border-radius: 0.625rem;
       padding: 0.85rem 1rem;
@@ -471,8 +521,8 @@ export function renderBusinessSiteHtml(): string {
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .act-card:hover {
-      border-color: rgba(45, 212, 191, 0.4);
-      background: rgba(24, 24, 27, 0.85);
+      border-color: var(--teal);
+      background: var(--card-hover);
       transform: translateY(-1px);
     }
     .act-header {
@@ -488,7 +538,7 @@ export function renderBusinessSiteHtml(): string {
     }
     .act-body {
       font-size: 0.8125rem;
-      color: #d4d4d8;
+      color: var(--text);
       line-height: 1.6;
     }
     .dialogue-token {
@@ -537,7 +587,7 @@ export function renderBusinessSiteHtml(): string {
       border: 1px solid var(--border);
     }
     .flip-card-back {
-      background: #1c1917;
+      background: var(--card-subtle);
       border: 1.5px solid var(--amber-light);
       transform: rotateY(180deg);
     }
@@ -611,16 +661,16 @@ export function renderBusinessSiteHtml(): string {
 <body>
 
   <!-- Top Status Bar -->
-  <div style="background: #111827; border-bottom: 1px solid #1f2937; padding: 0.5rem 1rem; text-align: center; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #cbd5e1; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.75rem;">
-    <span style="color: #2dd4bf; font-weight: bold;">🏥 POCKETGULL CLINICAL</span>
+  <div style="background: var(--status-bar-bg); border-bottom: 1px solid var(--border); padding: 0.5rem 1rem; text-align: center; font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--status-bar-text); display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.75rem;">
+    <span style="color: var(--teal); font-weight: bold;">🏥 POCKETGULL CLINICAL</span>
     <span style="opacity: 0.4;">|</span>
     <span>Oregon Entity: <strong style="color: #ffffff;">258869891</strong></span>
     <span style="opacity: 0.4;">|</span>
     <span>EIN: <strong style="color: #ffffff;">42-3162850</strong></span>
     <span style="opacity: 0.4;">|</span>
-    <span>CMS NPI: <strong style="color: #2dd4bf;">1487569752</strong></span>
+    <span>CMS NPI: <strong style="color: var(--teal);">1487569752</strong></span>
     <span style="opacity: 0.4;">|</span>
-    <span style="color: #2dd4bf; font-weight: bold;">On-Device Scribing • HIPAA Compliant Architecture</span>
+    <span style="color: var(--teal); font-weight: bold;">On-Device Scribing • HIPAA Compliant Architecture</span>
   </div>
 
   <!-- Header -->
@@ -634,19 +684,22 @@ export function renderBusinessSiteHtml(): string {
       <nav class="nav-links">
         <a href="#demo">Live Demo</a>
         <a href="#features">Features</a>
+        <a href="#comparison">Asymmetric Advantage</a>
+        <a href="#ecosystem">Hyperscalers</a>
         <a href="#case-studies">Case Studies</a>
+        <a href="#condition-thrift">Condition Explorer</a>
         <a href="#clinical-typography">Typography</a>
         <a href="javascript:void(0)" onclick="openDocDrill('Babesia microti')" style="color: var(--teal-light);">🔬 Doc Drill</a>
         <a href="#open-source">Open Source</a>
         <a href="#testimonials">Quotes</a>
         <a href="#stewardship">Stewardship</a>
-        <a href="/articles">Articles</a>
+        <a href="/articles">Articles &amp; Field Guides</a>
         <a href="#pricing">Pricing</a>
       </nav>
 
       <div style="display: flex; align-items: center; gap: 0.5rem;">
         <button type="button" onclick="togglePaperMode()" class="tab-btn" style="padding: 0.35rem 0.65rem; font-size: 0.75rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.3rem;" aria-label="Toggle Reading Tone">
-          <span id="themeToggleIcon">📜</span> <span id="themeToggleText">Monastic Paper</span>
+          <span id="themeToggleIcon">🌙</span> <span id="themeToggleText">Obsidian Dark</span>
         </button>
         <a href="https://pocketgull.app" class="btn-primary">
           <span>Launch App</span>
@@ -661,13 +714,13 @@ export function renderBusinessSiteHtml(): string {
     <section class="hero">
       <div class="container">
         <div class="badge">
-          <span>🩺</span> Ambient Clinical AI &amp; Documentation Assistant
+          <span>🧭</span> Living Clinical Trajectories &bull; Zero-Egress Ambient Strategy Engine
         </div>
 
-        <h1>Spend less time charting.<br /><span>More time with patients.</span></h1>
+        <h1>Beyond the 1968 SOAP Note.<br /><span>Living Biophysical Care Strategies.</span></h1>
 
         <p class="hero-sub">
-          PocketGull is an ambient documentation assistant for healthcare providers. It transcribes conversations during patient visits, drafts structured SOAP notes in real time, and runs securely on your local device.
+          PocketGull replaces static deficit checklists with real-time biophysical trajectories, interactive simulations, and salutogenic care plans. Ambient zero-egress voice documentation that breaks diagnostic cascades and shields patients from financial toxicity—running 100% on your local device.
         </p>
 
         <div class="hero-actions">
@@ -675,19 +728,19 @@ export function renderBusinessSiteHtml(): string {
             <span>Launch Free in Browser</span>
             <span>→</span>
           </a>
-          <a href="https://pocketgull.app/?role-demo=true" class="btn-secondary" style="padding: 0.875rem 1.75rem; font-size: 1rem; border-color: rgba(45, 212, 191, 0.4); color: #fff;">
-            <span>✨ Experience by Clinical Role</span>
+          <a href="/case-studies" class="btn-secondary" style="padding: 0.875rem 1.75rem; font-size: 1rem; border-color: rgba(45, 212, 191, 0.4);">
+            <span>📁 Explore Case Studies &amp; FHIR</span>
           </a>
-          <a href="#demo" class="btn-secondary" style="padding: 0.875rem 1.75rem; font-size: 1rem;">
-            <span>🎙️ Ambient Scribe Demo</span>
+          <a href="#comparison" class="btn-secondary" style="padding: 0.875rem 1.75rem; font-size: 1rem;">
+            <span>⚖️ The Asymmetric Advantage</span>
           </a>
         </div>
 
         <div class="trust-bar">
-          <div><span>✓</span> 2,074 Verified Automated Tests</div>
-          <div><span>✓</span> $17.2M Audited Valuation (COCOMO II)</div>
-          <div><span>✓</span> Scale-to-Zero ($0.20/mo Idle FinOps)</div>
-          <div><span>✓</span> Zero Cloud PHI Egress (NIST ML-KEM-768)</div>
+          <div><span>✓</span> 100% On-Device Edge AI (0ms / Zero Cloud Tolls)</div>
+          <div><span>✓</span> WHO Essential Medicines Price Shield</div>
+          <div><span>✓</span> 100% HIPAA Safe Harbor De-Identified</div>
+          <div><span>✓</span> Scale-to-Zero ($0.20/mo FinOps)</div>
           <div><span>✓</span> 42% Charting Time Saved</div>
         </div>
       </div>
@@ -697,11 +750,11 @@ export function renderBusinessSiteHtml(): string {
     <section id="demo" class="section">
       <div class="container">
         <div class="section-title">
-          <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(45, 212, 191, 0.1); border: 1px solid rgba(45, 212, 191, 0.3); color: var(--teal-light); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
-            <span>🧭 The Austrian Way &bull; Moving Beyond SOAP</span>
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: var(--teal-glow); border: 1px solid var(--border); color: var(--teal); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
+            <span>🧭 The American Pragmatist Standard &bull; Moving Beyond SOAP (The Austrian Way &bull; Salutogenesis)</span>
           </div>
           <h2>The 3-Act Living Trajectory &amp; Ambient Scribe</h2>
-          <p>Traditional 1968 SOAP checklists freeze patients into static billing codes. PocketGull models the patient as a purposeful actor with a past trail traversed, a present foothold, and a forward horizon of vitality.</p>
+          <p>Traditional 1968 SOAP checklists freeze patients into static billing codes. PocketGull applies American Pragmatism (William James, Benjamin Franklin) to model the patient as a purposeful actor with a past trail traversed, a present foothold, and a forward horizon of vitality.</p>
         </div>
 
         <div class="simulator-container">
@@ -715,9 +768,9 @@ export function renderBusinessSiteHtml(): string {
             </div>
 
             <!-- Clinical Paradigm Selector -->
-            <div style="display: inline-flex; background: #121216; border: 1px solid var(--border); border-radius: 9999px; padding: 0.25rem; gap: 0.25rem;">
+            <div style="display: inline-flex; background: var(--card-subtle); border: 1px solid var(--border); border-radius: 9999px; padding: 0.25rem; gap: 0.25rem;">
               <button id="modeTrajectoryBtn" class="tab-btn active" style="border-radius: 9999px; padding: 0.35rem 0.85rem; font-size: 0.75rem;" onclick="setDocMode('trajectory')">
-                🧭 The 3-Act Trajectory (Austrian Standard)
+                🧭 The 3-Act Trajectory (American Pragmatist Standard)
               </button>
               <button id="modeSoapBtn" class="tab-btn" style="border-radius: 9999px; padding: 0.35rem 0.85rem; font-size: 0.75rem;" onclick="setDocMode('soap')">
                 📋 Legacy SOAP Note (1968 Billing)
@@ -730,7 +783,7 @@ export function renderBusinessSiteHtml(): string {
             <div class="demo-pane">
               <div>
                 <div class="pane-header">
-                  <span style="color: var(--teal-light);">🎙️ Spoken Patient Dialogue</span>
+                  <span style="color: var(--teal);">🎙️ Spoken Patient Dialogue</span>
                   <span style="color: var(--text-muted); font-size: 0.6875rem; font-family: ui-monospace, monospace;">Transcribed Live &bull; Zero Cloud Egress</span>
                 </div>
                 <div id="dialogueBox" class="pane-body" style="font-style: italic;">
@@ -739,17 +792,17 @@ export function renderBusinessSiteHtml(): string {
               </div>
               <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; font-family: ui-monospace, monospace; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
                 <span>⚡ Sub-50ms Local Transcription</span>
-                <span style="color: var(--teal-light); font-size: 0.7rem;">Hover cards to see explainable provenance</span>
+                <span style="color: var(--teal); font-size: 0.7rem;">Hover cards to see explainable provenance</span>
               </div>
             </div>
 
             <!-- Right Pane: Clinical Documentation Output -->
-            <div class="demo-pane" style="border-color: rgba(45, 212, 191, 0.4);">
+            <div class="demo-pane" style="border-color: var(--border);">
               <div>
                 <div class="pane-header">
                   <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <span id="outputHeaderTitle" style="color: var(--amber-light);">🧭 The 3-Act Living Trajectory</span>
-                    <span id="outputHeaderBadge" style="font-size: 0.625rem; color: var(--teal-light); font-family: ui-monospace, monospace; text-transform: uppercase; background: rgba(45, 212, 191, 0.1); padding: 0.1rem 0.4rem; border-radius: 4px; border: 1px solid rgba(45, 212, 191, 0.25);">Austrian Salutogenesis</span>
+                    <span id="outputHeaderTitle" style="color: var(--amber);">🧭 The 3-Act Living Trajectory</span>
+                    <span id="outputHeaderBadge" style="font-size: 0.625rem; color: var(--teal); font-family: ui-monospace, monospace; text-transform: uppercase; background: var(--teal-glow); padding: 0.1rem 0.4rem; border-radius: 4px; border: 1px solid var(--border);">Austrian Salutogenesis &amp; American Pragmatism</span>
                   </div>
                   <button onclick="copyCurrentOutput()" class="tab-btn" style="padding: 2px 8px; font-size: 0.6875rem;">📋 Copy to EHR</button>
                 </div>
@@ -757,7 +810,7 @@ export function renderBusinessSiteHtml(): string {
                   <!-- Dynamically rendered (Trajectory or SOAP) -->
                 </div>
               </div>
-              <div id="copyNotice" style="font-size: 0.75rem; color: var(--teal-light); margin-top: 0.75rem; font-weight: bold; min-height: 1.2rem;"></div>
+              <div id="copyNotice" style="font-size: 0.75rem; color: var(--teal); margin-top: 0.75rem; font-weight: bold; min-height: 1.2rem;"></div>
             </div>
           </div>
         </div>
@@ -852,10 +905,360 @@ export function renderBusinessSiteHtml(): string {
           </div>
         </div>
       </div>
+    <!-- Architectural Asymmetry & Five Forces Comparison Section -->
+    <section id="comparison" class="section" style="background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+      <div class="container">
+        <div class="section-title">
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: #818cf8; font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
+            <span>⚖️ Architectural Asymmetry • Porter's Five Forces</span>
+          </div>
+          <h2>Why PocketGull? The Asymmetric Advantage</h2>
+          <p>PocketGull is not a passive ambient scribe transcribing past conversations into billing codes. It is an active biophysical strategy engine designed to break diagnostic cascades and eliminate financial toxicity.</p>
+        </div>
+
+        <div style="overflow-x: auto; margin-top: 2rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--card);">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border); background: var(--card-subtle);">
+                <th style="padding: 1.15rem 1.25rem; font-weight: 700; color: var(--text-muted); width: 22%;">Strategic Dimension</th>
+                <th style="padding: 1.15rem 1.25rem; font-weight: 700; color: var(--text-muted); width: 26%;">Legacy Hospital EHRs (Epic / Cerner)</th>
+                <th style="padding: 1.15rem 1.25rem; font-weight: 700; color: var(--text-muted); width: 26%;">Cloud Ambient Scribes (DAX / Abridge)</th>
+                <th style="padding: 1.15rem 1.25rem; font-weight: 800; color: var(--teal-light); background: rgba(20, 184, 166, 0.08); border-left: 2px solid var(--teal); border-right: 2px solid var(--teal); width: 26%;">PocketGull Salutogenic Engine</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 1rem 1.25rem; font-weight: 700; color: var(--text);">Primary Purpose</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text-muted);">Transactional billing extraction &amp; defensive malpractice documentation.</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text-muted);">Passive speech-to-text recording of whatever was uttered in the room.</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text); background: rgba(20, 184, 166, 0.04); border-left: 2px solid var(--teal); border-right: 2px solid var(--teal); font-weight: 600;">
+                  <strong style="color: var(--teal-light);">Active Clinical Strategy:</strong> Models forward-looking trajectories, counterfactual simulations, and biophysical reserve.
+                </td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 1rem 1.25rem; font-weight: 700; color: var(--text);">Clinical Epistemology</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text-muted);">1968 Weed Deficit Checklists (SOAP) freezing patients in static pathology codes.</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text-muted);">Reproduces the 1968 SOAP note automatically with LLM summarization.</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text); background: rgba(20, 184, 166, 0.04); border-left: 2px solid var(--teal); border-right: 2px solid var(--teal); font-weight: 600;">
+                  <strong style="color: var(--teal-light);">American Pragmatist 3-Act Trajectory:</strong> Past Trail &rarr; Living Foothold &rarr; Salutogenic Horizon.
+                </td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 1rem 1.25rem; font-weight: 700; color: var(--text);">Biophysical Simulation</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text-muted);"><span style="color: #f43f5e;">❌ None.</span> Scanned PDF reports and static laboratory tables.</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text-muted);"><span style="color: #f43f5e;">❌ None.</span> Plain conversational prose output only.</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text); background: rgba(20, 184, 166, 0.04); border-left: 2px solid var(--teal); border-right: 2px solid var(--teal); font-weight: 600;">
+                  <span style="color: #34d399;">✅ Interactive Radars:</span> Real-time Uhthoff thermal reserve (&Delta;T &le; 0.40&deg;C), glucose velocity, and baroreflex tone.
+                </td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 1rem 1.25rem; font-weight: 700; color: var(--text);">Financial Toxicity Defense</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text-muted);"><span style="color: #f43f5e;">❌ Adverse.</span> Structurally incentivized by high-margin tests &amp; procedural volume.</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text-muted);"><span style="color: #f43f5e;">❌ Passive.</span> Transcribes unindicated $2,800 MRI cascades without evaluation.</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text); background: rgba(20, 184, 166, 0.04); border-left: 2px solid var(--teal); border-right: 2px solid var(--teal); font-weight: 600;">
+                  <span style="color: #34d399;">✅ Patient Shield:</span> Compares Retail Benchmarks to WHO Essential Medicines ($4/mo generics), saving $2,100–$4,800/yr.
+                </td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 1rem 1.25rem; font-weight: 700; color: var(--text);">Compute &amp; PHI Privacy</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text-muted);"><span style="color: #fbbf24;">⚠️ Centralized Cloud.</span> Hospital servers with extensive network attack surfaces.</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text-muted);"><span style="color: #f43f5e;">❌ Third-Party Cloud Egress.</span> Patient audio streams to corporate vendor GPUs.</td>
+                <td style="padding: 1rem 1.25rem; color: var(--text); background: rgba(20, 184, 166, 0.04); border-left: 2px solid var(--teal); border-right: 2px solid var(--teal); font-weight: 600;">
+                  <span style="color: #34d399;">✅ 100% On-Device Edge AI:</span> Zero cloud network egress, sub-50ms latency, and post-quantum lattice security.
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 1.15rem 1.25rem; font-weight: 700; color: var(--text);">Annual Cost per Clinician</td>
+                <td style="padding: 1.15rem 1.25rem; color: var(--text-muted);">$15,000+ per user in enterprise licensing &amp; IT overhead.</td>
+                <td style="padding: 1.15rem 1.25rem; color: var(--text-muted); font-weight: 600; color: #f43f5e;">$6,000 &ndash; $10,000 / year recurring per doctor.</td>
+                <td style="padding: 1.15rem 1.25rem; color: var(--text); background: rgba(20, 184, 166, 0.08); border-left: 2px solid var(--teal); border-right: 2px solid var(--teal); border-bottom: 2px solid var(--teal); font-weight: 800; color: var(--teal-light);">
+                  $0 forever (Solo Free) &bull; $299 Lifetime &bull; $490/yr (Clinic Pro)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- The Engineering Rationale Banner -->
+        <div style="background: rgba(20, 184, 166, 0.06); border: 1px solid var(--teal); border-radius: 0.75rem; padding: 1.25rem 1.5rem; margin-top: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;">
+          <div style="max-width: 800px;">
+            <strong style="color: var(--teal-light); font-size: 0.9375rem;">Why We Charge $299 Once Instead of $8,000 Every Year:</strong>
+            <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.35rem; line-height: 1.6;">
+              Cloud ambient scribes must charge $6,000–$10,000 annually because they stream every doctor-patient word to multi-million dollar cloud GPU server farms. 
+              PocketGull runs directly on your local workstation via Chrome Built-in AI, WebLLM WASM, and optimized local engines. We eliminate cloud rent-seeking, pass the savings to you, and scale to zero when idle.
+            </p>
+          </div>
+          <a href="#pricing" class="btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.8125rem; white-space: nowrap;">View Transparent Pricing &rarr;</a>
+        </div>
+
+        <!-- The Tri-Lens Strategic Architecture: Taxpayer, Political Adversary, and Humanity -->
+        <div style="margin-top: 3.5rem;">
+          <div style="text-align: center; max-width: 840px; margin: 0 auto 2.5rem auto;">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(20, 184, 166, 0.3); color: var(--teal-light); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
+              <span>🌐 Beyond Porter's Five Forces • The Tri-Lens Doctrine</span>
+            </div>
+            <h3 style="font-size: 1.85rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em;">Architecture Is Destiny: Three Lenses on Clinical AI</h3>
+            <p style="font-size: 0.9375rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.6;">
+              When technology enters healthcare, it is never neutral. It either consolidates bureaucratic cartels and inflates public debt, or it restores human agency and fiscal sanity. Here is how PocketGull stands under scrutiny.
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 1.5rem;">
+            <!-- Lens 1: Taxpayer Lens -->
+            <div style="background: var(--card); border: 1.5px solid var(--border); border-top: 4px solid var(--teal); border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1);">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                  <span style="font-size: 1.75rem;">🏛️</span>
+                  <span style="font-size: 0.7rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 9999px; background: rgba(20, 184, 166, 0.15); color: var(--teal-light); border: 1px solid rgba(20, 184, 166, 0.3);">Fiscal &amp; CBO Reality</span>
+                </div>
+                <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem; line-height: 1.3;">The Taxpayer Lens:<br /><span style="color: var(--teal-light);">Halting the $1.2T Diagnostic Cascade</span></h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1rem;">
+                  The Congressional Budget Office and health economists estimate that over <strong>$1.2 Trillion annually</strong> is consumed by defensive, low-value diagnostic cascades. Cloud scribes aggravate this by passively transcribing panic referrals into billable encounters.
+                </p>
+                <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.85rem; font-size: 0.8125rem; line-height: 1.6; color: var(--text); margin-bottom: 1rem;">
+                  <strong style="color: #34d399; display: block; margin-bottom: 0.35rem;">Public Fiscal Protections:</strong>
+                  <ul style="margin: 0; padding-left: 1.15rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">Avoiding Panic Scans:</strong> Real-time biophysical simulations (e.g. Uhthoff thermal conduction in MS) explain symptoms mechanistically, safely averting $2,800 repeat MRIs and $15,000 pan-scans.</li>
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">WHO Essential Generics:</strong> 4-tier stepped care prioritizes $4/month generic first-line therapies over $1,050/month brand drugs, protecting Medicare Part D &amp; Medicaid trust funds.</li>
+                    <li><strong style="color: var(--text);">Zero Cloud Tolls:</strong> On-device Edge AI operates at $0.00 marginal compute cost, ending the practice of passing $10,000/doctor cloud GPU server bills into public facility fees.</li>
+                  </ul>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light);">
+                &bull; Statutory Invariant: Five Eyes &bull; US Core &bull; CMS RPM Clean
+              </div>
+            </div>
+
+            <!-- Lens 2: Open Standards & Market Independence Lens -->
+            <div style="background: var(--card); border: 1.5px solid var(--border); border-top: 4px solid #818cf8; border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1);">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                  <span style="font-size: 1.75rem;">⚔️</span>
+                  <span style="font-size: 0.7rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 9999px; background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3);">Open Architecture &amp; Cures Act</span>
+                </div>
+                <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem; line-height: 1.3;">The Political &amp; Open Standards Lens:<br /><span style="color: #818cf8;">Overcoming Data Silos &amp; Cartel Lock-In</span></h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1rem;">
+                  Healthcare is transforming under federal mandate: moving from closed proprietary data moats, opaque PBM rebate games, and cloud vendor lock-in to open, democratic health data mobility.
+                </p>
+                <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.85rem; font-size: 0.8125rem; line-height: 1.6; color: var(--text); margin-bottom: 1rem;">
+                  <strong style="color: #818cf8; display: block; margin-bottom: 0.35rem;">Structural Anti-Lock-In Defenses:</strong>
+                  <ul style="margin: 0; padding-left: 1.15rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">21st Century Cures Act Interoperability:</strong> Operates in strict alignment with 45 CFR Part 171 ONC Information Blocking rules, replacing vendor data moats with zero-toll <strong>HL7® FHIR® R4 Bundles</strong>.</li>
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">Countering PBM Arbitrage:</strong> Side-by-side display of Standard Retail Benchmarks vs Estimated Out-of-Pocket costs exposes spread pricing and supports clinical deprescribing of redundant polypharmacy.</li>
+                    <li><strong style="color: var(--text);">Sovereign Edge Computing:</strong> Complete immunity to cloud API price hikes, service deplatforming, and corporate terms changes. Your clinical intelligence runs local and offline forever.</li>
+                  </ul>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #818cf8;">
+                &bull; Anti-Lock-in: 45 CFR Part 171 Clean &bull; True Local Autonomy
+              </div>
+            </div>
+
+            <!-- Lens 3: Humanity Lens -->
+            <div style="background: var(--card); border: 1.5px solid var(--border); border-top: 4px solid var(--amber-light); border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1);">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                  <span style="font-size: 1.75rem;">🕊️</span>
+                  <span style="font-size: 0.7rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 9999px; background: rgba(245, 158, 11, 0.15); color: var(--amber-light); border: 1px solid rgba(245, 158, 11, 0.3);">Salutogenic Dignity</span>
+                </div>
+                <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem; line-height: 1.3;">The Humanity Lens:<br /><span style="color: var(--amber-light);">Epistemic Respect &amp; Clinician Restoration</span></h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1rem;">
+                  For 58 years, the 1968 Weed SOAP note has reduced sick humans to broken parts and billing deficit codes, inflicting moral injury on healers and leaving millions of complex chronic patients dismissed or psychologized.
+                </p>
+                <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.85rem; font-size: 0.8125rem; line-height: 1.6; color: var(--text); margin-bottom: 1rem;">
+                  <strong style="color: var(--amber-light); display: block; margin-bottom: 0.35rem;">Restorative Humanism:</strong>
+                  <ul style="margin: 0; padding-left: 1.15rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">The 3-Act Trajectory:</strong> Replaces fatalistic disease labeling with Antonovsky's salutogenesis (*Where You've Been*, *Where You Stand Today*, *Where You're Going*), honoring human agency and biophysical reserve.</li>
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">Validating Invisible Suffering:</strong> Grounds dysautonomia, Long COVID, and vagal strain in quantitative biophysics—honoring historic precedents like Charles Darwin's 40-year struggle.</li>
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">Ending Moral Injury:</strong> Doctors reclaim unhurried eye contact and authentic human connection with patients, freed from clerical computer servitude.</li>
+                    <li><strong style="color: var(--text);">Universal Equity:</strong> Lightweight on-device architecture functions identically on island clinics and $150 Chromebooks as in world-renowned hospital centers.</li>
+                  </ul>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--amber-light);">
+                &bull; Quiet Workshop Ethos &bull; Zero Fatalism &bull; 100% Dignity
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hyperscaler & Big Tech Ecosystem Alignment Section -->
+        <div id="ecosystem" style="margin-top: 4rem; border-top: 1px dashed var(--border); padding-top: 3.5rem;">
+          <div style="text-align: center; max-width: 860px; margin: 0 auto 2.5rem auto;">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
+              <span>🤝 Fast-Loop Edge • Slow-Loop Cloud Symbiosis</span>
+            </div>
+            <h3 style="font-size: 1.85rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em;">Collaborative Symbiosis: Aligning with Google, Microsoft &amp; Amazon</h3>
+            <p style="font-size: 0.9375rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.6;">
+              PocketGull is not anti-cloud. We are the missing on-device edge companion that brings out the best in hyperscaler enterprise clouds—turning the exam room into a fast-loop private sanctuary while feeding standardized, pristine HL7® FHIR® data to enterprise cloud platforms.
+            </p>
+          </div>
+
+          <!-- The Architectural Fast-Loop / Slow-Loop Diagram Card -->
+          <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1.25rem; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: center;">
+              
+              <!-- Fast-Loop Box -->
+              <div style="background: rgba(20, 184, 166, 0.05); border: 1px solid var(--teal); border-radius: 0.75rem; padding: 1.25rem;">
+                <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; color: var(--teal-light); text-transform: uppercase; margin-bottom: 0.35rem;">⚡ Fast Loop • In The Exam Room</div>
+                <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">On-Device Sovereign Edge</h4>
+                <ul style="margin: 0; padding-left: 1.1rem; font-size: 0.8125rem; color: var(--text-muted); line-height: 1.6;">
+                  <li><strong>0ms Latency:</strong> Real-time biophysical simulations (Uhthoff, soleus glucose velocity).</li>
+                  <li><strong>Zero Egress:</strong> Audio transcribed locally via Chrome Built-in AI &amp; WebGPU.</li>
+                  <li><strong>Complete Privacy:</strong> HIPAA § 164.514 Safe Harbor de-identification at source.</li>
+                </ul>
+              </div>
+
+              <!-- Bridge Arrow Box -->
+              <div style="text-align: center; padding: 0.5rem;">
+                <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: #a855f7; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Universal Bridge</div>
+                <div style="display: inline-block; padding: 0.4rem 0.85rem; border-radius: 0.5rem; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); font-size: 0.8rem; font-weight: 700; color: #c084fc;">
+                  HL7® FHIR® R4 Bundle<br /><span style="font-size: 0.7rem; font-weight: 400; color: var(--text-muted);">DOMPurified &bull; C2PA Attested</span>
+                </div>
+                <div style="font-size: 1.25rem; margin-top: 0.35rem; color: var(--text-muted);">&lrarr;</div>
+              </div>
+
+              <!-- Slow-Loop Box -->
+              <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid #3b82f6; border-radius: 0.75rem; padding: 1.25rem;">
+                <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; color: #60a5fa; text-transform: uppercase; margin-bottom: 0.35rem;">☁️ Slow Loop • Enterprise Horizon</div>
+                <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">Hyperscaler Cloud Power</h4>
+                <ul style="margin: 0; padding-left: 1.1rem; font-size: 0.8125rem; color: var(--text-muted); line-height: 1.6;">
+                  <li><strong>Population Health:</strong> Google Cloud Healthcare API &amp; BigQuery data lakes.</li>
+                  <li><strong>Enterprise EHR Linkage:</strong> Microsoft Azure Health Data Services (FHIR).</li>
+                  <li><strong>Affordable Fulfillment:</strong> Amazon Pharmacy RxPass generic integration.</li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 3 Hyperscaler Alignment Cards -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 1.5rem;">
+
+            <!-- Google Alignment -->
+            <div style="background: var(--card); border: 1.5px solid var(--border); border-top: 4px solid #4285F4; border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">🌐</span>
+                    <strong style="color: var(--text); font-size: 1.1rem;">Google</strong>
+                  </div>
+                  <span style="font-size: 0.7rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 9999px; background: rgba(66, 133, 244, 0.15); color: #93bbf8; border: 1px solid rgba(66, 133, 244, 0.3);">Built-in AI &amp; Web</span>
+                </div>
+                <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem; line-height: 1.3;">
+                  The Chrome Built-in AI &amp; Green FinOps Flagship
+                </h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
+                  Google's mission is to organize world information and promote a vibrant open web. PocketGull serves as an industry flagship for Google's latest edge technologies:
+                </p>
+                <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.85rem; font-size: 0.8125rem; line-height: 1.6; color: var(--text); margin-bottom: 1rem;">
+                  <ul style="margin: 0; padding-left: 1.15rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">Chrome Built-in AI (Prompt API):</strong> Proves how <code>window.ai</code> and on-device models (Gemma 4 / Gemini Nano) provide sub-50ms clinical intelligence directly in the browser with zero cloud tolls.</li>
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">24/7 Carbon-Free FinOps:</strong> Offloads 90% of routine inferencing from power-hungry cloud GPU data centers to client silicon, advancing Google Cloud's net-zero sustainability pledges.</li>
+                    <li><strong style="color: var(--text);">Google Cloud Healthcare API:</strong> Emits clean, standardized FHIR R4 resources that ingest directly into Google Cloud BigQuery healthcare data lakes for longitudinal research.</li>
+                  </ul>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #93bbf8;">
+                &bull; Standards: Chrome Prompt API &bull; Angular 22 &bull; Cloud Run 0-Scale
+              </div>
+            </div>
+
+            <!-- Microsoft Alignment -->
+            <div style="background: var(--card); border: 1.5px solid var(--border); border-top: 4px solid #00A4EF; border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">💻</span>
+                    <strong style="color: var(--text); font-size: 1.1rem;">Microsoft</strong>
+                  </div>
+                  <span style="font-size: 0.7rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 9999px; background: rgba(0, 164, 239, 0.15); color: #70cbf7; border: 1px solid rgba(0, 164, 239, 0.3);">Copilot+ &amp; Azure</span>
+                </div>
+                <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem; line-height: 1.3;">
+                  Windows Copilot+ NPU &amp; Azure Health Services
+                </h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
+                  Microsoft is betting its hardware future on Copilot+ PCs and its cloud future on Azure Health Data Services. PocketGull accelerates both:
+                </p>
+                <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.85rem; font-size: 0.8125rem; line-height: 1.6; color: var(--text); margin-bottom: 1rem;">
+                  <ul style="margin: 0; padding-left: 1.15rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">Copilot+ NPU Acceleration:</strong> Leverages ONNX Runtime Web and DirectML to fully engage 40+ TOPS Neural Processing Units on Windows Surface Pro and PC hardware for instant local biophysics.</li>
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">Azure Health Data Services:</strong> Unlocks patient data from legacy silos into open SMART-on-FHIR schemas, driving high-value enterprise migration to Azure.</li>
+                    <li><strong style="color: var(--text);">Microsoft AI Governance (Section 14):</strong> Fully implements Microsoft's AI code of ethics—zero emotion/biometric inferencing, affirmative clinician-in-the-loop signoff, and C2PA Content Credentials.</li>
+                  </ul>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #70cbf7;">
+                &bull; Standards: ONNX Runtime &bull; DirectML NPU &bull; MSA Sec 14 Ethics
+              </div>
+            </div>
+
+            <!-- Amazon Alignment -->
+            <div style="background: var(--card); border: 1.5px solid var(--border); border-top: 4px solid #FF9900; border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">📦</span>
+                    <strong style="color: var(--text); font-size: 1.1rem;">Amazon</strong>
+                  </div>
+                  <span style="font-size: 0.7rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 9999px; background: rgba(255, 153, 0, 0.15); color: #ffbe66; border: 1px solid rgba(255, 153, 0, 0.3);">Pharmacy &amp; HealthLake</span>
+                </div>
+                <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem; line-height: 1.3;">
+                  Amazon Pharmacy RxPass &amp; One Medical Ethos
+                </h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
+                  Amazon's healthcare mission centers on consumer-friendly generic medicine fulfillment, transparent pricing, and empathetic primary care:
+                </p>
+                <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.85rem; font-size: 0.8125rem; line-height: 1.6; color: var(--text); margin-bottom: 1rem;">
+                  <ul style="margin: 0; padding-left: 1.15rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">Amazon Pharmacy &amp; RxPass ($5/mo):</strong> PocketGull's stepped-care tiering champions WHO Essential generic medicines, steering patients to transparent affordable fulfillment channels like Amazon Pharmacy RxPass.</li>
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">One Medical Alignment:</strong> Replaces administrative clerical burden with the salutogenic 3-Act Trajectory, reinforcing One Medical's commitment to unhurried, human-centered primary care.</li>
+                    <li><strong style="color: var(--text);">AWS HealthLake Integration:</strong> Serializes comprehensive biophysical plans into FHIR R4 schemas ready for AWS HealthLake analytics and Amazon Bedrock clinical pipelines.</li>
+                  </ul>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #ffbe66;">
+                &bull; Standards: Amazon RxPass &bull; AWS HealthLake &bull; FTC Compliant
+              </div>
+            </div>
+
+            <!-- Enterprise EHR Alignment (Epic Hyperspace & Oracle Cerner) -->
+            <div style="background: var(--card); border: 1.5px solid var(--border); border-top: 4px solid #10B981; border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">🏥</span>
+                    <strong style="color: var(--text); font-size: 1.1rem;">Epic &amp; Enterprise EHRs</strong>
+                  </div>
+                  <span style="font-size: 0.7rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3);">SMART on FHIR &bull; Sidecar</span>
+                </div>
+                <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem; line-height: 1.3;">
+                  The Ergonomic On-Device Sidecar &amp; Note Bloat Antidote
+                </h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
+                  PocketGull does not seek to replace certified enterprise EHRs. We operate as an ergonomic cognitive sidecar that cures note bloat and relieves pajama time:
+                </p>
+                <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.85rem; font-size: 0.8125rem; line-height: 1.6; color: var(--text); margin-bottom: 1rem;">
+                  <ul style="margin: 0; padding-left: 1.15rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">Curing AI Note Bloat:</strong> Emits discrete LOINC, SNOMED-CT, and RxNorm resources directly into EHR flowsheets rather than dumping unsearchable 8-page narrative text blobs into charts.</li>
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">Relieving In-Basket Burnout:</strong> Pre-triages noisy continuous biometrics at the edge, ending hours of evening "pajama time" spent managing uncalibrated alerts.</li>
+                    <li style="margin-bottom: 0.35rem;"><strong style="color: var(--text);">CMS RPM Reimbursement:</strong> Verifies statutory 16-day transmission thresholds for CPT 99453/99454/99457, feeding clean superbills straight to hospital billing.</li>
+                    <li><strong style="color: var(--text);">$0 Server Compute Burden:</strong> Executes 100% on clinician hardware silicon, adding zero GPU computing cost to hospital EHR cloud infrastructure.</li>
+                  </ul>
+                </div>
+              </div>
+              <div style="border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #6ee7b7;">
+                &bull; Standards: SMART on FHIR &bull; HL7 CDS Hooks &bull; US Core R4
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Community Case Studies Section -->
-    <section id="case-studies" class="section" style="background: #0d0d10; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <section id="case-studies" class="section" style="background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
       <div class="container">
         <div class="section-title">
           <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--amber-light); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
@@ -867,11 +1270,11 @@ export function renderBusinessSiteHtml(): string {
 
         <div style="display: flex; flex-direction: column; gap: 2.5rem; max-width: 960px; margin: 0 auto;">
           <!-- Case 01: Nantucket Island -->
-          <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1.25rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+          <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1.25rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);">
             <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
               <div>
-                <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">Case Study #01 &bull; Nantucket Island &bull; Polpis &amp; Madaket</span>
-                <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin-top: 0.25rem;">Nantucket Island Tick-Borne Disease &amp; Co-Infection Crisis</h3>
+                <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal); font-weight: 700; text-transform: uppercase;">Case Study #01 &bull; Nantucket Island &bull; Polpis &amp; Madaket</span>
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">Nantucket Island Tick-Borne Disease &amp; Co-Infection Crisis</h3>
               </div>
               <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
                 <a href="https://pocketgull.app/?case=nantucket&autostart=true" class="btn-primary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
@@ -887,36 +1290,36 @@ export function renderBusinessSiteHtml(): string {
             </div>
 
             <div class="grid-3" style="margin-bottom: 1.5rem;">
-              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
                 <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Vector Pressure</div>
-                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber-light); margin-top: 0.25rem;">&gt;40% Nymph Infection</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber); margin-top: 0.25rem;">&gt;40% Nymph Infection</div>
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">High rates of <em>Borrelia</em>, <em>Babesia microti</em> <button type="button" class="doc-drill-badge" onclick="openDocDrill('Babesia microti')">🔬 Doc Drill</button>, and <em>Anaplasma</em> in island brush.</p>
               </div>
 
-              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
-                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); text-transform: uppercase;">Differential Clarity</div>
-                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber-light); margin-top: 0.25rem;">Uncovering Co-Infections</div>
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal); text-transform: uppercase;">Differential Clarity</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber); margin-top: 0.25rem;">Uncovering Co-Infections</div>
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Distinguishing between Lyme spirochetes and intraerythrocytic Babesia parasites for complete, curative resolution.</p>
               </div>
 
-              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
                 <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Systems Solution</div>
-                <div style="font-size: 1.25rem; font-weight: 800; color: var(--teal-light); margin-top: 0.25rem;">Meadows Leverage L1-9</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--teal); margin-top: 0.25rem;">Meadows Leverage L1-9</div>
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Dual antimicrobial protocol + MIT Mice Against Ticks <button type="button" class="doc-drill-badge" onclick="openDocDrill('Meadows Leverage L1-9')">🔬 Doc Drill</button> ecological defense.</p>
               </div>
             </div>
 
-            <div style="background: #09090b; border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: #d4d4d8; line-height: 1.7;">
-              <strong style="color: var(--teal-light);">Clinical Impact Summary:</strong> A 42-year-old landscaper presented with atypical rash, night sweats, and autonomic vagal strain / low parasympathetic reserve (HRV RMSSD 18ms <button type="button" class="doc-drill-badge" onclick="openDocDrill('Vagal Collapse / RMSSD')">🔬 Doc Drill</button>). PocketGull's offline Edge AI differential radar flagged concurrent <em>Babesia microti</em> hemolytic anemia on peripheral blood smear (Maltese cross tetrads <button type="button" class="doc-drill-badge" onclick="openDocDrill('Maltese cross tetrads')">🔬 Doc Drill</button>) alongside <em>Borrelia burgdorferi</em> C6 ELISA serology. The clinician immediately initiated dual-therapy (Doxycycline + Atovaquone/Azithromycin) with zero cloud network egress required in remote field conservation zones.
+            <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: var(--text); line-height: 1.7;">
+              <strong style="color: var(--teal);">Clinical Impact Summary:</strong> A 42-year-old landscaper presented with atypical rash, night sweats, and autonomic vagal strain / low parasympathetic reserve (HRV RMSSD 18ms <button type="button" class="doc-drill-badge" onclick="openDocDrill('Vagal Collapse / RMSSD')">🔬 Doc Drill</button>). PocketGull's offline Edge AI differential radar flagged concurrent <em>Babesia microti</em> hemolytic anemia on peripheral blood smear (Maltese cross tetrads <button type="button" class="doc-drill-badge" onclick="openDocDrill('Maltese cross tetrads')">🔬 Doc Drill</button>) alongside <em>Borrelia burgdorferi</em> C6 ELISA serology. The clinician immediately initiated dual-therapy (Doxycycline + Atovaquone/Azithromycin) with zero cloud network egress required in remote field conservation zones.
             </div>
           </div>
 
           <!-- Case 02: Multiple Sclerosis Neuro-Axonal Sanctuary -->
-          <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1.25rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+          <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1.25rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);">
             <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
               <div>
-                <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: #38bdf8; font-weight: 700; text-transform: uppercase;">Case Study #02 &bull; Neuro-Axonal Sanctuary &bull; Biophysical Conduction</span>
-                <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin-top: 0.25rem;">MS Neuro-Axonal Sanctuary: Salutogenic Trajectory &amp; Cooling Physics</h3>
+                <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: #0284c7; font-weight: 700; text-transform: uppercase;">Case Study #02 &bull; Neuro-Axonal Sanctuary &bull; Biophysical Conduction</span>
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">MS Neuro-Axonal Sanctuary: Salutogenic Trajectory &amp; Cooling Physics</h3>
               </div>
               <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
                 <a href="/case-studies/neuro-sanctuary" class="btn-primary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
@@ -925,34 +1328,285 @@ export function renderBusinessSiteHtml(): string {
                 <a href="/case-studies/neuro-sanctuary#radar" class="btn-secondary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
                   <span>❄️ Uhthoff Radar (URL) ↗</span>
                 </a>
-                <a href="/case-studies/neuro-sanctuary#fhir" class="btn-secondary" style="padding: 0.5rem 0.85rem; font-size: 0.8125rem; color: var(--teal-light);">
+                <a href="/case-studies/neuro-sanctuary#fhir" class="btn-secondary" style="padding: 0.5rem 0.85rem; font-size: 0.8125rem; color: var(--teal);">
                   <span>📋 FHIR R4 Bundle</span>
                 </a>
               </div>
             </div>
 
             <div class="grid-3" style="margin-bottom: 1.5rem;">
-              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
-                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: #38bdf8; text-transform: uppercase;">Conduction Reserve</div>
-                <div style="font-size: 1.25rem; font-weight: 800; color: #38bdf8; margin-top: 0.25rem;">&Delta;T &le; 0.40&deg;C Physics</div>
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: #0284c7; text-transform: uppercase;">Conduction Reserve</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: #0284c7; margin-top: 0.25rem;">&Delta;T &le; 0.40&deg;C Physics</div>
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Modeling the <button type="button" class="doc-drill-badge" onclick="openDocDrill('Uhthoff Phenomenon')">🔬 Uhthoff Phenomenon</button> to preserve action potential safety factor across demyelinated axons.</p>
               </div>
 
-              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
-                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber-light); text-transform: uppercase;">Clinical Epistemology</div>
-                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber-light); margin-top: 0.25rem;">Salutogenic 3-Act Arc</div>
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber); text-transform: uppercase;">Clinical Epistemology</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber); margin-top: 0.25rem;">Salutogenic 3-Act Arc</div>
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Transforming static SOAP checklists into <button type="button" class="doc-drill-badge" onclick="openDocDrill('Salutogenic 3-Act Trajectory')">🔬 3-Act Trajectories</button> (Past Trail &rarr; Living Foothold &rarr; Action Horizon).</p>
               </div>
 
-              <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
-                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: #34d399; text-transform: uppercase;">Autonomic Rhythm</div>
-                <div style="font-size: 1.25rem; font-weight: 800; color: #34d399; margin-top: 0.25rem;">0.10 Hz Resonant Pacing</div>
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: #10b981; text-transform: uppercase;">Autonomic Rhythm</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: #10b981; margin-top: 0.25rem;">0.10 Hz Resonant Pacing</div>
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Real-time <button type="button" class="doc-drill-badge" onclick="openDocDrill('0.1 Hz Resonant Pacing')">🔬 0.1 Hz Resonant Pacing</button> activating the vagal cholinergic anti-inflammatory reflex.</p>
               </div>
             </div>
 
-            <div style="background: #09090b; border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: #d4d4d8; line-height: 1.7;">
-              <strong style="color: #38bdf8;">Clinical Impact Summary:</strong> A 38-year-old architect with relapsing-remitting multiple sclerosis presented with heat-triggered leg heaviness (pseudo-relapse) and acute despair after warm summer walking. PocketGull's on-device Uhthoff thermal model isolated a +0.45&deg;C core rise blocking demyelinated sodium channels rather than new disease activity. By deploying pre-cooling ice slurries, a 15&deg;C phase-change vest protocol, and an Austrian 3-Act trajectory, the patient regained full walking stamina and self-advocacy without immunosuppressive panic.
+            <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: var(--text); line-height: 1.7;">
+              <strong style="color: #0284c7;">Clinical Impact Summary:</strong> A 38-year-old architect with relapsing-remitting multiple sclerosis presented with heat-triggered leg heaviness (pseudo-relapse) and acute despair after warm summer walking. PocketGull's on-device Uhthoff thermal model isolated a +0.45&deg;C core rise blocking demyelinated sodium channels rather than new disease activity. By deploying pre-cooling ice slurries, a 15&deg;C phase-change vest protocol, and an Austrian 3-Act trajectory, the patient regained full walking stamina and self-advocacy without immunosuppressive panic.
+            </div>
+          </div>
+
+          <!-- Case 03: Cardiometabolic & Glycemic Radar -->
+          <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1.25rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
+              <div>
+                <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: #10b981; font-weight: 700; text-transform: uppercase;">Case Study #03 &bull; Cardiometabolic &bull; Glycemic Excursion Radar</span>
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">Cardiometabolic Glucotoxicity Reversal: Postprandial Soleus Pacing</h3>
+              </div>
+              <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+                <a href="/case-studies/cardiometabolic-radar" class="btn-primary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                  <span>📊 Launch Glycemic Radar</span>
+                </a>
+                <a href="/case-studies/cardiometabolic-radar#innovation-3b" class="btn-secondary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
+                  <span>🧬 3B Innovation</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="grid-3" style="margin-bottom: 1.5rem;">
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: #10b981; text-transform: uppercase;">GLUT4 Translocation</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: #10b981; margin-top: 0.25rem;">&minus;48 mg/dL Excursion</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">10-minute post-meal soleus contraction activating insulin-independent muscle glycogen disposal.</p>
+              </div>
+
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber); text-transform: uppercase;">Chronobiology</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber); margin-top: 0.25rem;">Liver BMAL1 Window</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Aligning eating to 10:00 AM &ndash; 6:00 PM peak hepatic insulin sensitivity to eliminate dawn phenomena.</p>
+              </div>
+
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal); text-transform: uppercase;">WHO Generics</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--teal); margin-top: 0.25rem;">$4.00/mo Benchmark</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Generic Metformin ER + botanical Berberine AMPK phosphorylation preventing financial toxicity.</p>
+              </div>
+            </div>
+
+            <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: var(--text); line-height: 1.7;">
+              <strong style="color: #10b981;">Clinical Impact Summary:</strong> Subject SUBJ-7A2F presented with early Type 2 Diabetes (HbA1c 6.8%) and post-lunch cognitive fatigue. Rather than initiating escalating injectables, PocketGull deployed postprandial soleus pacing, BMAL1 circadian windows, and $4/mo generic Metformin, achieving sub-140 mg/dL postprandial recovery within 75 minutes.
+            </div>
+          </div>
+
+          <!-- Case 04: Charles Darwin Vagal Enigma -->
+          <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1.25rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
+              <div>
+                <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: #818cf8; font-weight: 700; text-transform: uppercase;">Case Study #05 &bull; Historical Luminary &bull; Autonomic Medicine</span>
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">Charles Darwin &amp; The Post-Beagle Vagal Enigma</h3>
+              </div>
+              <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+                <a href="/case-studies/darwin-vagal-radar" class="btn-primary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                  <span>🪶 Launch Vagal Radar</span>
+                </a>
+                <a href="/case-studies/darwin-vagal-radar#innovation-3b" class="btn-secondary" style="padding: 0.5rem 1.15rem; font-size: 0.8125rem;">
+                  <span>🧬 3B Innovation</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="grid-3" style="margin-bottom: 1.5rem;">
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: #818cf8; text-transform: uppercase;">Diagnostic Demarcation</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: #818cf8; margin-top: 0.25rem;">150-Year Stigma Broken</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Replaces dismissive "hypochondria" labels with post-infectious autonomic neuropathy &amp; POTS.</p>
+              </div>
+
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber); text-transform: uppercase;">Vagal Dive Reflex</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--amber); margin-top: 0.25rem;">Trigeminal Bradycardia</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Cold-water facial immersion stimulating cholinergic anti-inflammatory pathway and gastrointestinal transit.</p>
+              </div>
+
+              <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal); text-transform: uppercase;">Down House Pacing</div>
+                <div style="font-size: 1.25rem; font-weight: 800; color: var(--teal); margin-top: 0.25rem;">The Sandwalk Loops</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Three rhythmic 20-minute daily gravel walks for gentle venous return and cognitive preservation.</p>
+              </div>
+            </div>
+
+            <div style="background: var(--card-subtle); border: 1px solid var(--border); padding: 1.25rem; border-radius: 0.75rem; font-size: 0.8125rem; color: var(--text); line-height: 1.7;">
+              <strong style="color: #818cf8;">Clinical Impact Summary:</strong> Subject SUBJ-DARWIN-1882 suffered 40 years of violent vomiting, palpitations, and prostration following HMS Beagle. By modeling baroreflex failure and validating Malvern cold-water hydropathy through modern neuro-immunology, PocketGull reconstructs how salutogenic Sandwalk pacing enabled the completion of <em>On the Origin of Species</em>.
+            </div>
+          </div>
+
+          <!-- Master Cohort Hub Banner -->
+          <div style="background: linear-gradient(135deg, rgba(20, 184, 166, 0.12) 0%, rgba(99, 102, 241, 0.08) 100%); border: 1.5px solid var(--teal); border-radius: 1.25rem; padding: 1.75rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;">
+            <div>
+              <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">Community Research Commons</div>
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">Explore All 7 Clinical Case Studies &amp; Master FHIR R4 Research Cohort</h3>
+              <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem; max-width: 650px;">
+                Filter de-identified clinical archetypes across neurology, cardiometabolic disease, autonomic medicine, and historical luminaries. All 18 Safe Harbor identifiers stripped.
+              </p>
+            </div>
+            <a href="/case-studies" class="btn-primary" style="padding: 0.65rem 1.4rem; font-size: 0.875rem; font-weight: 700; white-space: nowrap;">
+              <span>📁 Open Case Studies Directory &rarr;</span>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Clinical Condition & Dual-Thrift Explorer Section -->
+    <section id="condition-thrift" class="section" style="background: var(--card-subtle); border-bottom: 1px solid var(--border);">
+      <div class="container">
+        <div class="section-title">
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: var(--teal-glow); border: 1px solid var(--border); color: var(--teal); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
+            <span>🏥 Common Clinical Conditions &amp; Dual-Thrift Architecture</span>
+          </div>
+          <h2>Biophysical Care Suggestions &amp; Dual-Sided Cost Containment</h2>
+          <p>Explore how PocketGull surfaces actionable biophysical care suggestions for everyday clinical conditions, while eliminating financial toxicity for patients and maintaining an ultra-lean $0.00 cloud inference bill for this project.</p>
+        </div>
+
+        <!-- Dual-Sided FinOps Architecture Cards -->
+        <div class="grid-2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+          <!-- Card 1: Patient Financial Shield -->
+          <div class="feature-card" style="border-left: 4px solid var(--teal); background: var(--card);">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.5rem;">🛡️</span>
+              <div>
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal); font-weight: 700; text-transform: uppercase;">Patient &amp; Practice Financial Shield</div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0;">WHO Essential Medicines &amp; Anti-Toxicity</h3>
+              </div>
+            </div>
+            <ul style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.65; padding-left: 1.25rem; margin: 0 0 1rem 0;">
+              <li><strong style="color: var(--text);">WHO Model List Generics:</strong> Compares standard retail benchmark pricing ($40–$285/mo) with open generic equivalents ($0.50–$4.50/mo), unlocking 94%–98% out-of-pocket savings.</li>
+              <li><strong style="color: var(--text);">Halting Diagnostic Cascades:</strong> Continuous biophysical telemetry (thermal reserve, Mayer-wave pacing) prevents unindicated $2,800 emergency MRIs and $4,500 acute crash visits.</li>
+              <li><strong style="color: var(--text);">STOPP/START Deprescribing:</strong> Identifies drug side effects mistaken for new diseases (e.g. Amlodipine &rarr; edema &rarr; Furosemide), safely tapering unneeded medications.</li>
+              <li><strong style="color: var(--text);">85% Patient Research Dividend:</strong> Patients opting into de-identified research cohorts receive 85% revenue-share via cryptographic attestation.</li>
+            </ul>
+            <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.6rem 0.85rem; font-size: 0.75rem; color: var(--teal); font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+              <span>Average Household Thrift:</span>
+              <span style="font-family: ui-monospace, monospace; font-size: 0.875rem;">$2,100 &ndash; $4,800 / year</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Developer & Project FinOps -->
+          <div class="feature-card" style="border-left: 4px solid var(--amber); background: var(--card);">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.5rem;">⚡</span>
+              <div>
+                <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber); font-weight: 700; text-transform: uppercase;">Developer &amp; Project FinOps</div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0;">Zero-Egress &amp; Scale-to-Zero Architecture</h3>
+              </div>
+            </div>
+            <ul style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.65; padding-left: 1.25rem; margin: 0 0 1rem 0;">
+              <li><strong style="color: var(--text);">$0.00 Edge AI Inference:</strong> Powered by Chrome Built-in AI (Prompt API / Gemma 4) and deterministic TypeScript. Zero external cloud LLM tokens billed.</li>
+              <li><strong style="color: var(--text);">Scale-to-Zero Cloud Run:</strong> Container instances scale to <code>minScale: 0</code> during idle hours, eliminating baseline $50–$150/mo VM charges.</li>
+              <li><strong style="color: var(--text);">7-Day Storage Pruning:</strong> Automated GCS bucket lifecycle (7-day age) and Artifact Registry auto-deletion policies prevent Docker layer buildup, capping storage at ~$0.20/mo.</li>
+              <li><strong style="color: var(--text);">Zero Managed SaaS Overhead:</strong> No managed vector databases, proprietary charting licenses, or third-party middleware lock-in.</li>
+            </ul>
+            <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.6rem 0.85rem; font-size: 0.75rem; color: var(--amber); font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+              <span>Project Baseline Cloud Cost:</span>
+              <span style="font-family: ui-monospace, monospace; font-size: 0.875rem;">~$0.20 / month idle</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Condition Explorer Tabs -->
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; justify-content: center;">
+          <button type="button" id="condTab_metabolic" class="tab-btn active" onclick="selectConditionTab('metabolic')" style="padding: 0.55rem 1rem; font-size: 0.8125rem; border-radius: 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <span>🩺</span> <span>Metabolic &amp; Hypertension</span>
+          </button>
+          <button type="button" id="condTab_dysautonomia" class="tab-btn" onclick="selectConditionTab('dysautonomia')" style="padding: 0.55rem 1rem; font-size: 0.8125rem; border-radius: 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <span>⚡</span> <span>Orthostatic Dysautonomia (POTS)</span>
+          </button>
+          <button type="button" id="condTab_neuro" class="tab-btn" onclick="selectConditionTab('neuro')" style="padding: 0.55rem 1rem; font-size: 0.8125rem; border-radius: 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <span>🧠</span> <span>Multiple Sclerosis (Neuro-Sanctuary)</span>
+          </button>
+          <button type="button" id="condTab_vector" class="tab-btn" onclick="selectConditionTab('vector')" style="padding: 0.55rem 1rem; font-size: 0.8125rem; border-radius: 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <span>🌲</span> <span>Tick-Borne Co-Infections (Babesiosis)</span>
+          </button>
+          <button type="button" id="condTab_polytrauma" class="tab-btn" onclick="selectConditionTab('polytrauma')" style="padding: 0.55rem 1rem; font-size: 0.8125rem; border-radius: 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <span>🩹</span> <span>Chronic Pain &amp; Polytrauma</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Condition Detail Card Container -->
+        <div id="conditionDetailCard" class="feature-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: all 0.3s ease;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem;">
+            <div>
+              <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal); font-weight: 700; text-transform: uppercase;">CASE STUDY P001 &bull; CARDIOMETABOLIC HEALTH</div>
+              <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin: 0.25rem 0 0.4rem;">Metabolic Syndrome, Insulin Resistance &amp; Essential Hypertension</h3>
+              <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">Stage 1 HTN (138/88 mmHg), elevated fasting glucose (118 mg/dL), visceral adiposity, and endothelial fatigue.</p>
+            </div>
+            <button type="button" class="doc-drill-badge" onclick="openDocDrill('Metabolic Syndrome &amp; Stepped Care')" style="font-size: 0.75rem; padding: 0.4rem 0.75rem;">🔬 Socratic Evidence Focus</button>
+          </div>
+
+          <div class="grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <!-- Col 1: Austrian 3-Act Trajectory -->
+            <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+              <div style="font-size: 0.72rem; font-family: ui-monospace, monospace; color: var(--teal); font-weight: 700; text-transform: uppercase;">Austrian Salutogenic Arc</div>
+              <div class="act-card" style="margin: 0; padding: 0.65rem 0.85rem; border-left: 3px solid #64748b;">
+                <div class="act-header" style="color: #64748b;">Act I &bull; Where You've Been</div>
+                <div class="act-body" style="font-size: 0.78rem;">Gradual metabolic strain and insulin resistance developed over 5 years of sedentary desk work and fragmented sleep. Acknowledged with zero moral stigma or fatalism.</div>
+              </div>
+              <div class="act-card" style="margin: 0; padding: 0.65rem 0.85rem; border-left: 3px solid var(--teal);">
+                <div class="act-header" style="color: var(--teal);">Act II &bull; Where You Stand Today</div>
+                <div class="act-body" style="font-size: 0.78rem;">Endothelial microcirculation remains fully responsive. Fasting insulin sensitivity and vascular compliance can be restored through circadian meal timing and nitric oxide donors.</div>
+              </div>
+              <div class="act-card" style="margin: 0; padding: 0.65rem 0.85rem; border-left: 3px solid var(--amber);">
+                <div class="act-header" style="color: var(--amber);">Act III &bull; Where You're Going</div>
+                <div class="act-body" style="font-size: 0.78rem;">Target resting blood pressure &lt;120/80 mmHg, HbA1c &lt;5.7%, and 45 minutes of sustained aerobic vitality achieved within 90 days.</div>
+              </div>
+            </div>
+
+            <!-- Col 2: PocketGull Care Suggestions -->
+            <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.72rem; font-family: ui-monospace, monospace; color: var(--amber); font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">Actionable Clinical Suggestions</div>
+                <ul style="font-size: 0.8125rem; color: var(--text); line-height: 1.6; padding-left: 1.15rem; margin: 0; display: flex; flex-direction: column; gap: 0.6rem;">
+                  <li><strong>WHO HEARTS Stepped Care:</strong> First-line open generic ACE-i (Lisinopril 10 mg) or CCB (Amlodipine 5 mg) before considering costly brand combinations.</li>
+                  <li><strong>Post-Prandial Muscle Contraction:</strong> 10-minute moderate walking within 30 minutes post-meal stimulates GLUT4 glucose uptake independent of insulin.</li>
+                  <li><strong>DASH Potassium Optimization:</strong> Target &ge;3:1 potassium-to-sodium ratio (spinach, avocado, lentils) to induce endothelial vascular smooth muscle hyperpolarization.</li>
+                  <li><strong>AMPK Metabolic Activation:</strong> Berberine HCl (500 mg BID with meals) or open generic Metformin HCl (500 mg) to restore cellular energy charge.</li>
+                </ul>
+              </div>
+              <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.72rem; color: var(--text-muted); font-style: italic;">
+                &bull; Guided by Learned Intermediary: Requires clinician attestation before order entry.
+              </div>
+            </div>
+
+            <!-- Col 3: Dual-Sided Thrift Breakdown -->
+            <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.72rem; font-family: ui-monospace, monospace; color: #10b981; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">Dual-Sided Thrift &amp; FinOps</div>
+                <div style="background: var(--card); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 0.6rem;">
+                  <div style="font-size: 0.6875rem; color: var(--text-muted); text-transform: uppercase;">Standard Retail Benchmark:</div>
+                  <div style="font-size: 1.15rem; font-weight: 800; color: #ef4444; font-family: ui-monospace, monospace; text-decoration: line-through;">$185.00 / month</div>
+                  <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem;">Brand-name ARB combo + SGLT2-i / statin retail cash benchmark</div>
+                </div>
+                <div style="background: var(--card); border: 1px solid var(--teal); border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 0.6rem;">
+                  <div style="font-size: 0.6875rem; color: var(--teal); text-transform: uppercase; font-weight: 700;">Estimated Out-of-Pocket Total:</div>
+                  <div style="font-size: 1.35rem; font-weight: 800; color: var(--teal); font-family: ui-monospace, monospace;">$7.50 / month</div>
+                  <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem;">WHO EML generic Lisinopril + Metformin HCl open generic formulary</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.2rem; font-size: 0.75rem;">
+                  <span style="color: var(--text-muted);">Net Household Savings:</span>
+                  <span style="color: #10b981; font-weight: 800; font-family: ui-monospace, monospace;">$2,130.00 / year (95.9% Savings)</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.2rem; font-size: 0.75rem; border-top: 1px dashed var(--border); margin-top: 0.4rem;">
+                  <span style="color: var(--text-muted);">Project Inference Cost:</span>
+                  <span style="color: var(--teal); font-weight: 700; font-family: ui-monospace, monospace;">$0.00 (On-Device Gemma 4 / Local Edge)</span>
+                </div>
+              </div>
+              <div style="margin-top: 0.75rem; background: var(--teal-glow); border: 1px solid var(--border); border-radius: 0.375rem; padding: 0.5rem 0.65rem; font-size: 0.72rem; color: var(--teal);">
+                <strong>Cascade Halter:</strong> Eliminates premature multi-drug escalation and emergency hypertensive urgency visits.
+              </div>
             </div>
           </div>
         </div>
@@ -960,10 +1614,10 @@ export function renderBusinessSiteHtml(): string {
     </section>
 
     <!-- Clinical Typography & Optotypic Safety Section (Influenced by Typeface Specimen) -->
-    <section id="clinical-typography" class="section" style="background: #09090b; border-bottom: 1px solid var(--border);">
+    <section id="clinical-typography" class="section" style="background: var(--bg); border-bottom: 1px solid var(--border);">
       <div class="container">
         <div class="section-title">
-          <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: var(--teal-glow); border: 1px solid rgba(45, 212, 191, 0.3); color: var(--teal-light); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: var(--teal-glow); border: 1px solid var(--border); color: var(--teal); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
             <span>🔤 Open-Source Clinical Superfamily</span>
           </div>
           <h2>Louise Sloan 5:1 Optotypic Legibility &amp; ISMP Drug Safety</h2>
@@ -971,27 +1625,27 @@ export function renderBusinessSiteHtml(): string {
         </div>
 
         <div class="grid-3" style="margin-bottom: 2rem;">
-          <div class="feature-card" style="border-color: rgba(20, 184, 166, 0.3);">
-            <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">ISMP Disambiguation</div>
-            <div style="display: flex; justify-content: space-around; align-items: center; margin: 1rem 0; padding: 1rem; background: #000; border-radius: 0.5rem; border: 1px solid var(--border);">
+          <div class="feature-card" style="border-color: var(--border);">
+            <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal); font-weight: 700; text-transform: uppercase;">ISMP Disambiguation</div>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin: 1rem 0; padding: 1rem; background: var(--card-subtle); border-radius: 0.5rem; border: 1px solid var(--border);">
               <div style="text-align: center;">
-                <div style="font-size: 2.25rem; font-family: 'PocketGull', monospace; font-weight: 700; color: #fff;">0</div>
-                <div style="font-size: 0.7rem; color: var(--teal-light); font-mono;">Slashed Zero</div>
+                <div style="font-size: 2.25rem; font-family: 'PocketGull', monospace; font-weight: 700; color: var(--text);">0</div>
+                <div style="font-size: 0.7rem; color: var(--teal); font-mono;">Slashed Zero</div>
               </div>
               <div style="font-size: 1.25rem; color: var(--text-muted);">&ne;</div>
               <div style="text-align: center;">
-                <div style="font-size: 2.25rem; font-family: 'PocketGull', sans-serif; font-weight: 700; color: var(--amber-light);">O</div>
-                <div style="font-size: 0.7rem; color: var(--amber-light); font-mono;">Capital Letter O</div>
+                <div style="font-size: 2.25rem; font-family: 'PocketGull', sans-serif; font-weight: 700; color: var(--amber);">O</div>
+                <div style="font-size: 0.7rem; color: var(--amber); font-mono;">Capital Letter O</div>
               </div>
             </div>
             <p style="font-size: 0.8125rem; color: var(--text-muted);">Eliminates catastrophic confusion between numeric dosages (e.g. 50 mg) and oxygen indicators.</p>
           </div>
 
-          <div class="feature-card" style="border-color: rgba(20, 184, 166, 0.3);">
-            <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">1 vs l vs I Optical Triad</div>
-            <div style="display: flex; justify-content: space-around; align-items: center; margin: 1rem 0; padding: 1rem; background: #000; border-radius: 0.5rem; border: 1px solid var(--border);">
+          <div class="feature-card" style="border-color: var(--border);">
+            <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal); font-weight: 700; text-transform: uppercase;">1 vs l vs I Optical Triad</div>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin: 1rem 0; padding: 1rem; background: var(--card-subtle); border-radius: 0.5rem; border: 1px solid var(--border);">
               <div style="text-align: center;">
-                <div style="font-size: 2rem; font-family: 'PocketGull', monospace; font-weight: 700; color: #fff;">1</div>
+                <div style="font-size: 2rem; font-family: 'PocketGull', monospace; font-weight: 700; color: var(--text);">1</div>
                 <div style="font-size: 0.7rem; color: var(--text-muted); font-mono;">Numeral</div>
               </div>
               <div style="text-align: center;">
@@ -1008,7 +1662,7 @@ export function renderBusinessSiteHtml(): string {
 
           <div class="feature-card" style="border-color: rgba(20, 184, 166, 0.3);">
             <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">ISMP Dosage Decimal Guard</div>
-            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0; padding: 0.85rem; background: #000; border-radius: 0.5rem; border: 1px solid var(--border); font-family: ui-monospace, monospace; font-size: 0.8125rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0; padding: 0.85rem; background: var(--card-subtle); border-radius: 0.5rem; border: 1px solid var(--border); font-family: ui-monospace, monospace; font-size: 0.8125rem;">
               <div style="color: #f87171; text-decoration: line-through;">❌ 5.0 mg &bull; .5 mg (Dangerous)</div>
               <div style="color: var(--teal-light); font-weight: bold;">✅ 5 mg &bull; 0.5 mg (Safe Standard)</div>
             </div>
@@ -1028,7 +1682,7 @@ export function renderBusinessSiteHtml(): string {
     </section>
 
     <!-- Interactive Plain English Flip Cards -->
-    <section class="section" style="background: #0c0c0e;">
+    <section class="section" style="background: var(--bg);">
       <div class="container">
         <div class="section-title">
           <h2>Clear Patient Communication</h2>
@@ -1040,17 +1694,17 @@ export function renderBusinessSiteHtml(): string {
             <div class="flip-card-inner">
               <div class="flip-card-front">
                 <div>
-                  <div style="font-size: 0.75rem; color: #38bdf8; font-weight: bold; margin-bottom: 0.25rem;">🧪 LAB RESULT NOTE</div>
-                  <div style="font-size: 0.8125rem; color: #d4d4d8;">
+                  <div style="font-size: 0.75rem; color: #0284c7; font-weight: bold; margin-bottom: 0.25rem;">🧪 LAB RESULT NOTE</div>
+                  <div style="font-size: 0.8125rem; color: var(--text);">
                     Fasting plasma glucose 132 mg/dL with elevated HbA1c 6.8% and peripheral insulin resistance.
                   </div>
                 </div>
-                <div style="font-size: 0.6875rem; color: #71717a; font-family: ui-monospace, monospace;">💡 Tap to view Patient Plain English</div>
+                <div style="font-size: 0.6875rem; color: var(--text-muted); font-family: ui-monospace, monospace;">💡 Tap to view Patient Plain English</div>
               </div>
               <div class="flip-card-back">
                 <div>
                   <div style="font-size: 0.75rem; color: var(--amber-light); font-weight: bold; margin-bottom: 0.25rem;">✨ PATIENT EXPLANATION</div>
-                  <div style="font-size: 0.8125rem; color: #fef3c7;">
+                  <div style="font-size: 0.8125rem; color: var(--text);">
                     Your average blood sugar over the last 3 months is slightly high. Making simple adjustments to daily walks and nutrition will help bring it back into a healthy range.
                   </div>
                 </div>
@@ -1063,17 +1717,17 @@ export function renderBusinessSiteHtml(): string {
             <div class="flip-card-inner">
               <div class="flip-card-front">
                 <div>
-                  <div style="font-size: 0.75rem; color: #34d399; font-weight: bold; margin-bottom: 0.25rem;">🌿 STRESS &amp; SLEEP NOTE</div>
-                  <div style="font-size: 0.8125rem; color: #d4d4d8;">
+                  <div style="font-size: 0.75rem; color: #059669; font-weight: bold; margin-bottom: 0.25rem;">🌿 STRESS &amp; SLEEP NOTE</div>
+                  <div style="font-size: 0.8125rem; color: var(--text);">
                     Flattened diurnal cortisol curve with sympathetic vagal dysregulation and unrefreshing sleep.
                   </div>
                 </div>
-                <div style="font-size: 0.6875rem; color: #71717a; font-family: ui-monospace, monospace;">💡 Tap to view Patient Plain English</div>
+                <div style="font-size: 0.6875rem; color: var(--text-muted); font-family: ui-monospace, monospace;">💡 Tap to view Patient Plain English</div>
               </div>
               <div class="flip-card-back">
                 <div>
                   <div style="font-size: 0.75rem; color: var(--amber-light); font-weight: bold; margin-bottom: 0.25rem;">✨ PATIENT EXPLANATION</div>
-                  <div style="font-size: 0.8125rem; color: #fef3c7;">
+                  <div style="font-size: 0.8125rem; color: var(--text);">
                     Your daily energy cycles are off-balance, causing afternoon fatigue. Slow breathing exercises and a consistent evening routine will help restore restful sleep.
                   </div>
                 </div>
@@ -1086,17 +1740,17 @@ export function renderBusinessSiteHtml(): string {
             <div class="flip-card-inner">
               <div class="flip-card-front">
                 <div>
-                  <div style="font-size: 0.75rem; color: #fb7185; font-weight: bold; margin-bottom: 0.25rem;">🩺 BLOOD PRESSURE NOTE</div>
-                  <div style="font-size: 0.8125rem; color: #d4d4d8;">
+                  <div style="font-size: 0.75rem; color: #e11d48; font-weight: bold; margin-bottom: 0.25rem;">🩺 BLOOD PRESSURE NOTE</div>
+                  <div style="font-size: 0.8125rem; color: var(--text);">
                     Resting BP 142/88 mmHg. Mean Arterial Pressure (MAP) 106 mmHg with elevated systemic vascular resistance.
                   </div>
                 </div>
-                <div style="font-size: 0.6875rem; color: #71717a; font-family: ui-monospace, monospace;">💡 Tap to view Patient Plain English</div>
+                <div style="font-size: 0.6875rem; color: var(--text-muted); font-family: ui-monospace, monospace;">💡 Tap to view Patient Plain English</div>
               </div>
               <div class="flip-card-back">
                 <div>
                   <div style="font-size: 0.75rem; color: var(--amber-light); font-weight: bold; margin-bottom: 0.25rem;">✨ PATIENT EXPLANATION</div>
-                  <div style="font-size: 0.8125rem; color: #fef3c7;">
+                  <div style="font-size: 0.8125rem; color: var(--text);">
                     Your heart is working slightly harder than usual to circulate blood. Reducing salt intake and taking regular 20-minute daily walks will help relax your blood vessels.
                   </div>
                 </div>
@@ -1179,7 +1833,7 @@ export function renderBusinessSiteHtml(): string {
     </section>
 
     <!-- Open Source Public Health Contributions Section -->
-    <section id="open-source" class="section" style="background: #09090b; border-top: 1px solid var(--border);">
+    <section id="open-source" class="section" style="background: var(--bg); border-top: 1px solid var(--border);">
       <div class="container">
         <div class="section-title">
           <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(20, 184, 166, 0.3); color: var(--teal-light); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
@@ -1221,7 +1875,7 @@ export function renderBusinessSiteHtml(): string {
     </section>
 
     <!-- Community Testimonials & Practitioner Quotes Section -->
-    <section id="testimonials" class="section" style="background: #0d0d10; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <section id="testimonials" class="section" style="background: var(--card-subtle); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
       <div class="container">
         <div class="section-title">
           <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--amber-light); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
@@ -1232,16 +1886,16 @@ export function renderBusinessSiteHtml(): string {
         </div>
 
         <div class="grid-3" id="testimonialsContainer" style="margin-bottom: 2rem;">
-          <div class="feature-card" style="background: #141417; display: flex; flex-col; justify-content: space-between;">
+          <div class="feature-card" style="background: var(--card); display: flex; flex-direction: column; justify-content: space-between;">
             <div>
               <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
                 <span style="font-size: 1.5rem;">🩺</span>
                 <div>
-                  <h4 style="font-size: 0.9375rem; color: #fff; font-weight: 700;">Dr. Rebecca Vance, MD</h4>
+                  <h4 style="font-size: 0.9375rem; color: var(--text); font-weight: 700;">Dr. Rebecca Vance, MD</h4>
                   <p style="font-size: 0.75rem; color: var(--text-muted);">Family &amp; Community Medicine &bull; Nantucket, MA</p>
                 </div>
               </div>
-              <blockquote style="font-size: 0.8125rem; color: #d4d4d8; font-style: italic; line-height: 1.6; border-left: 2px solid var(--teal-light); padding-left: 0.75rem;">
+              <blockquote style="font-size: 0.8125rem; color: var(--text); font-style: italic; line-height: 1.6; border-left: 2px solid var(--teal-light); padding-left: 0.75rem;">
                 "In high-incidence vector zones like Nantucket, co-infections are the rule rather than the exception. PocketGull’s offline radar flagged hemolytic markers for <em>Babesia</em> in the field where we have zero cell reception. It saved our acute triage speed."
               </blockquote>
             </div>
@@ -1250,16 +1904,16 @@ export function renderBusinessSiteHtml(): string {
             </div>
           </div>
 
-          <div class="feature-card" style="background: #141417; display: flex; flex-col; justify-content: space-between;">
+          <div class="feature-card" style="background: var(--card); display: flex; flex-direction: column; justify-content: space-between;">
             <div>
               <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
                 <span style="font-size: 1.5rem;">🌿</span>
                 <div>
-                  <h4 style="font-size: 0.9375rem; color: #fff; font-weight: 700;">Dr. Marcus Thorne, DO</h4>
+                  <h4 style="font-size: 0.9375rem; color: var(--text); font-weight: 700;">Dr. Marcus Thorne, DO</h4>
                   <p style="font-size: 0.75rem; color: var(--text-muted);">Direct Primary Care &bull; Bend, OR</p>
                 </div>
               </div>
-              <blockquote style="font-size: 0.8125rem; color: #d4d4d8; font-style: italic; line-height: 1.6; border-left: 2px solid var(--amber-light); padding-left: 0.75rem;">
+              <blockquote style="font-size: 0.8125rem; color: var(--text); font-style: italic; line-height: 1.6; border-left: 2px solid var(--amber-light); padding-left: 0.75rem;">
                 "The Systems Thinking HUD connects oral microbiome inflammation, vagal tone, and blood pressure in real time. I went from spending 2 hours every night in EHR pajama time to finishing my charts during the patient encounter."
               </blockquote>
             </div>
@@ -1268,16 +1922,16 @@ export function renderBusinessSiteHtml(): string {
             </div>
           </div>
 
-          <div class="feature-card" style="background: #141417; display: flex; flex-col; justify-content: space-between;">
+          <div class="feature-card" style="background: var(--card); display: flex; flex-direction: column; justify-content: space-between;">
             <div>
               <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
                 <span style="font-size: 1.5rem;">🔒</span>
                 <div>
-                  <h4 style="font-size: 0.9375rem; color: #fff; font-weight: 700;">Elena Rostova, MS, CISSP</h4>
+                  <h4 style="font-size: 0.9375rem; color: var(--text); font-weight: 700;">Elena Rostova, MS, CISSP</h4>
                   <p style="font-size: 0.75rem; color: var(--text-muted);">Clinical Informaticist &bull; Cambridge, MA</p>
                 </div>
               </div>
-              <blockquote style="font-size: 0.8125rem; color: #d4d4d8; font-style: italic; line-height: 1.6; border-left: 2px solid #38bdf8; padding-left: 0.75rem;">
+              <blockquote style="font-size: 0.8125rem; color: var(--text); font-style: italic; line-height: 1.6; border-left: 2px solid #38bdf8; padding-left: 0.75rem;">
                 "Finding software that provides advanced clinical AI while running 100% on-device with zero cloud PHI transmission is virtually non-existent. PocketGull’s Chrome Built-in AI architecture sets a benchmark for medical data sovereignty."
               </blockquote>
             </div>
@@ -1289,7 +1943,7 @@ export function renderBusinessSiteHtml(): string {
 
         <!-- Write in a Quote / Testimonial Box -->
         <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1rem; padding: 1.75rem; max-width: 780px; margin: 0 auto;">
-          <h3 style="font-size: 1.125rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
             <span>✍️ Write a Testimonial or Share a Clinical Quote</span>
           </h3>
           <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 1.25rem;">
@@ -1297,11 +1951,11 @@ export function renderBusinessSiteHtml(): string {
           </p>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem;">
-            <input type="text" id="siteTestimonialAuthor" placeholder="Your Name & Credentials (e.g. Dr. Jane Doe, MD)" style="background: #09090b; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.5rem 0.75rem; color: #fff; font-size: 0.8125rem; width: 100%; outline: none;" />
-            <input type="text" id="siteTestimonialRole" placeholder="Role & Clinic (e.g. Rural Primary Care, Orcas Island)" style="background: #09090b; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.5rem 0.75rem; color: #fff; font-size: 0.8125rem; width: 100%; outline: none;" />
+            <input type="text" id="siteTestimonialAuthor" placeholder="Your Name &amp; Credentials (e.g. Dr. Jane Doe, MD)" style="background: var(--input-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.5rem 0.75rem; color: var(--text); font-size: 0.8125rem; width: 100%; outline: none;" />
+            <input type="text" id="siteTestimonialRole" placeholder="Role &amp; Clinic (e.g. Rural Primary Care, Orcas Island)" style="background: var(--input-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.5rem 0.75rem; color: var(--text); font-size: 0.8125rem; width: 100%; outline: none;" />
           </div>
 
-          <textarea id="siteTestimonialQuote" rows="3" placeholder="Share your experience or clinical workflow quote here..." style="background: #09090b; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.5rem 0.75rem; color: #fff; font-size: 0.8125rem; width: 100%; outline: none; margin-bottom: 0.75rem; font-family: inherit; resize: vertical;"></textarea>
+          <textarea id="siteTestimonialQuote" rows="3" placeholder="Share your experience or clinical workflow quote here..." style="background: var(--input-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.5rem 0.75rem; color: var(--text); font-size: 0.8125rem; width: 100%; outline: none; margin-bottom: 0.75rem; font-family: inherit; resize: vertical;"></textarea>
 
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span id="siteTestimonialNotice" style="font-size: 0.75rem; font-weight: bold; color: var(--teal-light); min-height: 1.2rem;"></span>
@@ -1315,7 +1969,7 @@ export function renderBusinessSiteHtml(): string {
     </section>
 
     <!-- US GAAP FASB ASC 958 & Tribal Health Stewardship Section -->
-    <section id="stewardship" class="section" style="background: #09090c; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <section id="stewardship" class="section" style="background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
       <div class="container">
         <div class="section-title">
           <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--amber-light); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
@@ -1327,24 +1981,24 @@ export function renderBusinessSiteHtml(): string {
 
         <!-- Spotlight 3-Card Summary -->
         <div class="grid-3" style="margin-bottom: 2rem;">
-          <div class="feature-card" style="border-color: rgba(16, 185, 129, 0.4); background: #101014;">
+          <div class="feature-card" style="border-color: rgba(16, 185, 129, 0.4); background: var(--card);">
             <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Direct Public Benefit</div>
             <div style="font-size: 2rem; font-weight: 900; color: #34d399; margin: 0.25rem 0;">85.0%</div>
-            <h4 style="font-size: 0.9375rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Programmatic Services &amp; Tribal Dividends</h4>
+            <h4 style="font-size: 0.9375rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem;">Programmatic Services &amp; Tribal Dividends</h4>
             <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.5;">Direct funding for sovereign tribal vector surveillance, indigenous seed banks, and patient research data dividends.</p>
           </div>
 
-          <div class="feature-card" style="border-color: rgba(56, 189, 248, 0.4); background: #101014;">
+          <div class="feature-card" style="border-color: rgba(56, 189, 248, 0.4); background: var(--card);">
             <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">System Integrity</div>
             <div style="font-size: 2rem; font-weight: 900; color: #38bdf8; margin: 0.25rem 0;">10.0%</div>
-            <h4 style="font-size: 0.9375rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">On-Device AI &amp; Zero-Trust Security</h4>
+            <h4 style="font-size: 0.9375rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem;">On-Device AI &amp; Zero-Trust Security</h4>
             <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.5;">Local on-device Gemma 4 edge optimization, zero-trust WASM compilers, and NIST post-quantum cryptographic lattices.</p>
           </div>
 
-          <div class="feature-card" style="border-color: rgba(245, 158, 11, 0.4); background: #101014;">
+          <div class="feature-card" style="border-color: rgba(245, 158, 11, 0.4); background: var(--card);">
             <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); text-transform: uppercase;">Statutory Compliance</div>
             <div style="font-size: 2rem; font-weight: 900; color: var(--amber-light); margin: 0.25rem 0;">5.0%</div>
-            <h4 style="font-size: 0.9375rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Governance &amp; Independent CPA Audit</h4>
+            <h4 style="font-size: 0.9375rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem;">Governance &amp; Independent CPA Audit</h4>
             <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.5;">Oregon LLC regulatory maintenance, dual-custody multi-signature audits, and HIPAA Safe Harbor certifications.</p>
           </div>
         </div>
@@ -1353,7 +2007,7 @@ export function renderBusinessSiteHtml(): string {
         <div style="background: var(--card); border: 1.5px solid var(--border); border-radius: 1rem; padding: 1.75rem; margin-bottom: 2rem;">
           <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.25rem;">
             <div>
-              <h3 style="font-size: 1.125rem; font-weight: 800; color: #fff;">Statement of Functional Expenses (US GAAP ASC 958-205)</h3>
+              <h3 style="font-size: 1.125rem; font-weight: 800; color: var(--text);">Statement of Functional Expenses (US GAAP ASC 958-205)</h3>
               <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Projected allocations per $1.00 USD of software licensing &amp; consult revenue</p>
             </div>
             <button onclick="downloadBusinessGaapCsv()" class="btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.75rem; font-family: ui-monospace, monospace; cursor: pointer;">
@@ -1362,9 +2016,9 @@ export function renderBusinessSiteHtml(): string {
           </div>
 
           <!-- Interactive Subscription Allocation Slider -->
-          <div style="background: #111115; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1.5rem;">
+          <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1.5rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
-              <label for="gaapSlider" style="font-size: 0.8125rem; font-weight: 700; color: #fff;">
+              <label for="gaapSlider" style="font-size: 0.8125rem; font-weight: 700; color: var(--text);">
                 🎛️ Simulate Your Practice's Monthly Contribution:
               </label>
               <div style="font-family: ui-monospace, monospace; font-size: 1rem; font-weight: 800; color: #34d399;" id="gaapSelectedAmount">
@@ -1383,18 +2037,18 @@ export function renderBusinessSiteHtml(): string {
           <div style="display: flex; flex-direction: column; gap: 1rem;">
             
             <!-- Item 1 -->
-            <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+            <div style="background: var(--card); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <strong style="color: #fff; font-size: 0.875rem;">1. Tribal Health Sovereignty &amp; Indigenous Vector Defense</strong>
+                  <strong style="color: var(--text); font-size: 0.875rem;">1. Tribal Health Sovereignty &amp; Indigenous Vector Defense</strong>
                   <span style="font-size: 0.6875rem; font-family: ui-monospace, monospace; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700;">PROGRAM SERVICES</span>
                 </div>
                 <span id="gaapVal1" style="font-family: ui-monospace, monospace; font-weight: 800; color: #34d399; font-size: 0.9375rem;">35.0% ($17.15 / mo)</span>
               </div>
-              <div style="width: 100%; background: #27272a; height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
+              <div style="width: 100%; background: var(--border); height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
                 <div style="width: 35%; height: 100%; background: #34d399; border-radius: 9999px;"></div>
               </div>
-              <p style="font-size: 0.75rem; color: #d4d4d8; line-height: 1.5;">
+              <p style="font-size: 0.75rem; color: var(--text); line-height: 1.5;">
                 Direct technology grants, offline Edge AI triage hardware, and tick-borne pathogen testing kits for sovereign coastal and island tribal communities (e.g. Wampanoag Tribe of Gay Head / Aquinnah and Mashpee Wampanoag health clinics).
               </p>
               <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); margin-top: 0.35rem;">
@@ -1403,18 +2057,18 @@ export function renderBusinessSiteHtml(): string {
             </div>
 
             <!-- Item 2 -->
-            <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+            <div style="background: var(--card); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <strong style="color: #fff; font-size: 0.875rem;">2. Sovereign Patient Research Data Dividends</strong>
+                  <strong style="color: var(--text); font-size: 0.875rem;">2. Sovereign Patient Research Data Dividends</strong>
                   <span style="font-size: 0.6875rem; font-family: ui-monospace, monospace; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700;">PROGRAM SERVICES</span>
                 </div>
                 <span id="gaapVal2" style="font-family: ui-monospace, monospace; font-weight: 800; color: #34d399; font-size: 0.9375rem;">30.0% ($14.70 / mo)</span>
               </div>
-              <div style="width: 100%; background: #27272a; height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
+              <div style="width: 100%; background: var(--border); height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
                 <div style="width: 30%; height: 100%; background: #34d399; border-radius: 9999px;"></div>
               </div>
-              <p style="font-size: 0.75rem; color: #d4d4d8; line-height: 1.5;">
+              <p style="font-size: 0.75rem; color: var(--text); line-height: 1.5;">
                 Direct 85% revenue-share micro-disbursements deposited to participating patients via Stripe Express / Health Savings Accounts (HSA) with Laplace differential privacy (&epsilon;=0.5) and zero passive telemetry.
               </p>
               <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); margin-top: 0.35rem;">
@@ -1423,18 +2077,18 @@ export function renderBusinessSiteHtml(): string {
             </div>
 
             <!-- Item 3 -->
-            <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+            <div style="background: var(--card); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <strong style="color: #fff; font-size: 0.875rem;">3. Seven Generations Open-Source Seed &amp; Codex Preservation</strong>
+                  <strong style="color: var(--text); font-size: 0.875rem;">3. Seven Generations Open-Source Seed &amp; Codex Preservation</strong>
                   <span style="font-size: 0.6875rem; font-family: ui-monospace, monospace; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700;">PROGRAM SERVICES</span>
                 </div>
                 <span id="gaapVal3" style="font-family: ui-monospace, monospace; font-weight: 800; color: #34d399; font-size: 0.9375rem;">20.0% ($9.80 / mo)</span>
               </div>
-              <div style="width: 100%; background: #27272a; height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
+              <div style="width: 100%; background: var(--border); height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
                 <div style="width: 20%; height: 100%; background: #34d399; border-radius: 9999px;"></div>
               </div>
-              <p style="font-size: 0.75rem; color: #d4d4d8; line-height: 1.5;">
+              <p style="font-size: 0.75rem; color: var(--text); line-height: 1.5;">
                 Open source maintenance of @pocketgull clinical tools and conservation of indigenous heirloom botanical seed banks (<em>Hierochloe odorata</em>, <em>Oplopanax horridus</em>, <em>Cryptolepis</em>) for 7 generations forward.
               </p>
               <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); margin-top: 0.35rem;">
@@ -1443,18 +2097,18 @@ export function renderBusinessSiteHtml(): string {
             </div>
 
             <!-- Item 4 -->
-            <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+            <div style="background: var(--card); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <strong style="color: #fff; font-size: 0.875rem;">4. Systems Engineering &amp; Zero-Trust Cryptography</strong>
+                  <strong style="color: var(--text); font-size: 0.875rem;">4. Systems Engineering &amp; Zero-Trust Cryptography</strong>
                   <span style="font-size: 0.6875rem; font-family: ui-monospace, monospace; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 700;">SYSTEMS INFRASTRUCTURE</span>
                 </div>
                 <span id="gaapVal4" style="font-family: ui-monospace, monospace; font-weight: 800; color: #38bdf8; font-size: 0.9375rem;">10.0% ($4.90 / mo)</span>
               </div>
-              <div style="width: 100%; background: #27272a; height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
+              <div style="width: 100%; background: var(--border); height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
                 <div style="width: 10%; height: 100%; background: #38bdf8; border-radius: 9999px;"></div>
               </div>
-              <p style="font-size: 0.75rem; color: #d4d4d8; line-height: 1.5;">
+              <p style="font-size: 0.75rem; color: var(--text); line-height: 1.5;">
                 Local on-device Gemma 4 edge optimization, WASM/WebGPU spatial compilers, and hermetic CI/CD verification preventing cloud telemetry egress.
               </p>
               <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); margin-top: 0.35rem;">
@@ -1463,18 +2117,18 @@ export function renderBusinessSiteHtml(): string {
             </div>
 
             <!-- Item 5 -->
-            <div style="background: #09090b; border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
+            <div style="background: var(--card); border: 1px solid var(--border); padding: 1rem; border-radius: 0.75rem;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <strong style="color: #fff; font-size: 0.875rem;">5. Governance, Statutory Compliance &amp; CPA Audit</strong>
+                  <strong style="color: var(--text); font-size: 0.875rem;">5. Governance, Statutory Compliance &amp; CPA Audit</strong>
                   <span style="font-size: 0.6875rem; font-family: ui-monospace, monospace; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: var(--amber-light); font-weight: 700;">MANAGEMENT &amp; GENERAL</span>
                 </div>
                 <span id="gaapVal5" style="font-family: ui-monospace, monospace; font-weight: 800; color: var(--amber-light); font-size: 0.9375rem;">5.0% ($2.45 / mo)</span>
               </div>
-              <div style="width: 100%; background: #27272a; height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
+              <div style="width: 100%; background: var(--border); height: 6px; border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem;">
                 <div style="width: 5%; height: 100%; background: var(--amber-light); border-radius: 9999px;"></div>
               </div>
-              <p style="font-size: 0.75rem; color: #d4d4d8; line-height: 1.5;">
+              <p style="font-size: 0.75rem; color: var(--text); line-height: 1.5;">
                 Oregon LLC statutory compliance, dual-custody multi-signature audits (M-of-N), independent CPA reviews, and HIPAA Safe Harbor compliance attestations.
               </p>
               <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); margin-top: 0.35rem;">
@@ -1486,9 +2140,9 @@ export function renderBusinessSiteHtml(): string {
         </div>
 
         <!-- CPA Audit Attestation Footer -->
-        <div style="background: #121216; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; font-size: 0.75rem;">
+        <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; font-size: 0.75rem;">
           <div>
-            <div style="font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+            <div style="font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 0.5rem;">
               <span>🛡️ Independent CPA &amp; Tribal Data Audit Attestation:</span>
               <span style="color: #34d399; font-family: ui-monospace, monospace;">Unmodified Clean Opinion</span>
             </div>
@@ -1512,7 +2166,7 @@ export function renderBusinessSiteHtml(): string {
           <p>Choose flexible monthly billing or save with upfront annual and lifetime founder passes.</p>
           
           <!-- Pricing Toggle -->
-          <div style="display: inline-flex; background: #18181b; border: 1px solid var(--border); border-radius: 9999px; padding: 0.25rem; margin-top: 1.5rem; gap: 0.25rem;">
+          <div style="display: inline-flex; background: var(--card); border: 1px solid var(--border); border-radius: 9999px; padding: 0.25rem; margin-top: 1.5rem; gap: 0.25rem;">
             <button id="toggleMonthlyBtn" onclick="setPricingMode('monthly')" class="tab-btn" style="border-radius: 9999px; padding: 0.5rem 1.25rem; font-size: 0.875rem;">
               Monthly Billing
             </button>
@@ -1625,25 +2279,7 @@ export function renderBusinessSiteHtml(): string {
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container footer-inner">
-      <div>
-        <div style="font-weight: 700; color: var(--text); margin-bottom: 0.25rem;">PocketGull LLC</div>
-        <div>Portland, Oregon &bull; Privacy &amp; DPO: <a href="mailto:dpo@pocketgull.app" style="color: var(--teal-light); text-decoration: none;">dpo@pocketgull.app</a> &bull; Support: <a href="mailto:support@pocketgull.com" style="color: var(--teal-light); text-decoration: none;">support@pocketgull.com</a></div>
-      </div>
-
-      <div class="footer-links">
-        <a href="https://pocketgull.app">Launch App</a>
-        <a href="/articles">Clinical Articles</a>
-        <a href="/case-studies/nantucket-tick-radar">Nantucket Radar</a>
-        <a href="/case-studies/neuro-sanctuary">MS Neuro-Sanctuary</a>
-        <a href="/privacy-policy.html">Privacy Policy</a>
-        <a href="/terms-of-service.html">Terms of Service</a>
-        <a href="/robots.txt">robots.txt</a>
-      </div>
-    </div>
-  </footer>
+${renderLegalFooterHtml()}
 
   <script>
     // Scribe Simulator & The Austrian Living Trajectory Engine
@@ -1926,21 +2562,47 @@ export function renderBusinessSiteHtml(): string {
     }
 
     function togglePaperMode() {
-      const isPaper = document.documentElement.classList.toggle('paper');
+      const isCurrentlyDark = document.documentElement.classList.contains('dark');
       const icon = document.getElementById('themeToggleIcon');
       const text = document.getElementById('themeToggleText');
-      if (icon && text) {
-        icon.textContent = isPaper ? '🌙' : '📜';
-        text.textContent = isPaper ? 'Obsidian Dark' : 'Monastic Paper';
+      
+      if (isCurrentlyDark) {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('paper');
+        try { localStorage.setItem('pocketgull_theme', 'paper'); } catch(e) {}
+        if (icon && text) {
+          icon.textContent = '🌙';
+          text.textContent = 'Obsidian Dark';
+        }
+      } else {
+        document.documentElement.classList.remove('paper');
+        document.documentElement.classList.add('dark');
+        try { localStorage.setItem('pocketgull_theme', 'dark'); } catch(e) {}
+        if (icon && text) {
+          icon.textContent = '📜';
+          text.textContent = 'Monastic Paper';
+        }
       }
     }
 
-    // Initialize Simulator on Load
+    function syncThemeButton() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const icon = document.getElementById('themeToggleIcon');
+      const text = document.getElementById('themeToggleText');
+      if (icon && text) {
+        icon.textContent = isDark ? '📜' : '🌙';
+        text.textContent = isDark ? 'Monastic Paper' : 'Obsidian Dark';
+      }
+    }
+
+    // Initialize Simulator & Theme on Load
     document.addEventListener('DOMContentLoaded', function() {
+      syncThemeButton();
       renderDocOutput();
     });
     // Fallback immediate initialization
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      syncThemeButton();
       renderDocOutput();
     }
 
@@ -2032,7 +2694,7 @@ export function renderBusinessSiteHtml(): string {
       const container = document.getElementById('testimonialsContainer');
       const newCard = document.createElement('div');
       newCard.className = 'feature-card';
-      newCard.style.background = '#141417';
+      newCard.style.background = 'var(--card)';
       newCard.style.display = 'flex';
       newCard.style.flexDirection = 'column';
       newCard.style.justifyContent = 'space-between';
@@ -2046,10 +2708,10 @@ export function renderBusinessSiteHtml(): string {
       starSpan.textContent = '✨';
       const authorWrap = document.createElement('div');
       const authorHeading = document.createElement('h4');
-      authorHeading.style.cssText = 'font-size: 0.9375rem; color: #fff; font-weight: 700;';
+      authorHeading.style.cssText = 'font-size: 0.9375rem; color: var(--text); font-weight: 700;';
       authorHeading.textContent = author;
       const roleP = document.createElement('p');
-      roleP.style.cssText = 'font-size: 0.75rem; color: #a1a1aa;';
+      roleP.style.cssText = 'font-size: 0.75rem; color: var(--text-muted);';
       roleP.textContent = role;
       authorWrap.appendChild(authorHeading);
       authorWrap.appendChild(roleP);
@@ -2057,14 +2719,14 @@ export function renderBusinessSiteHtml(): string {
       headerRow.appendChild(authorWrap);
 
       const blockquote = document.createElement('blockquote');
-      blockquote.style.cssText = 'font-size: 0.8125rem; color: #d4d4d8; font-style: italic; line-height: 1.6; border-left: 2px solid #2dd4bf; padding-left: 0.75rem;';
+      blockquote.style.cssText = 'font-size: 0.8125rem; color: var(--text); font-style: italic; line-height: 1.6; border-left: 2px solid #2dd4bf; padding-left: 0.75rem;';
       blockquote.textContent = '"' + quote + '"';
 
       topSection.appendChild(headerRow);
       topSection.appendChild(blockquote);
 
       const footerDiv = document.createElement('div');
-      footerDiv.style.cssText = 'margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #27272a; font-size: 0.75rem; font-family: ui-monospace, monospace; color: #2dd4bf; font-weight: bold;';
+      footerDiv.style.cssText = 'margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.75rem; font-family: ui-monospace, monospace; color: #2dd4bf; font-weight: bold;';
       footerDiv.textContent = '⚡ Community Submission Verified';
 
       newCard.appendChild(topSection);
@@ -2098,6 +2760,233 @@ export function renderBusinessSiteHtml(): string {
     }
 
     setEyeDirection();
+
+    /* ─── Condition & Clinical Thrift Explorer Engine ─── */
+    const CONDITION_THRIFT_DATA = {
+      metabolic: {
+        badge: 'CASE STUDY P001 &bull; CARDIOMETABOLIC HEALTH',
+        badgeColor: 'var(--teal)',
+        title: 'Metabolic Syndrome, Insulin Resistance &amp; Essential Hypertension',
+        subtitle: 'Stage 1 HTN (138/88 mmHg), elevated fasting glucose (118 mg/dL), visceral adiposity, and endothelial fatigue.',
+        act1: 'Gradual metabolic strain and insulin resistance developed over 5 years of sedentary desk work and fragmented sleep. Acknowledged with zero moral stigma or fatalism.',
+        act2: 'Endothelial microcirculation remains fully responsive. Fasting insulin sensitivity and vascular compliance can be restored through circadian meal timing and nitric oxide donors.',
+        act3: 'Target resting blood pressure &lt;120/80 mmHg, HbA1c &lt;5.7%, and 45 minutes of sustained aerobic vitality achieved within 90 days.',
+        suggestions: [
+          '<strong>WHO HEARTS Stepped Care:</strong> First-line open generic ACE-i (Lisinopril 10 mg) or CCB (Amlodipine 5 mg) before considering costly brand combinations.',
+          '<strong>Post-Prandial Muscle Contraction:</strong> 10-minute moderate walking within 30 minutes post-meal stimulates GLUT4 glucose uptake independent of insulin.',
+          '<strong>DASH Potassium Optimization:</strong> Target &ge;3:1 potassium-to-sodium ratio (spinach, avocado, lentils) to induce endothelial vascular smooth muscle hyperpolarization.',
+          '<strong>AMPK Metabolic Activation:</strong> Berberine HCl (500 mg BID with meals) or open generic Metformin HCl (500 mg) to restore cellular energy charge.'
+        ],
+        retailBenchmark: '$185.00 / month',
+        retailDetail: 'Brand-name ARB combo + SGLT2-i / statin retail cash benchmark',
+        essentialCost: '$7.50 / month',
+        essentialDetail: 'WHO EML generic Lisinopril + Metformin HCl open generic formulary',
+        savingsAmount: '$2,130.00 / year',
+        savingsPercent: '95.9% Savings',
+        preventedCascade: 'Eliminates premature multi-drug escalation and emergency hypertensive urgency visits.',
+        projectCost: '$0.00 (On-Device Gemma 4 / Local Edge)',
+        docDrillTerm: 'Metabolic Syndrome & Stepped Care'
+      },
+      dysautonomia: {
+        badge: 'PATIENT ARCHETYPE: CHARLES DARWIN &bull; AUTONOMIC CDS',
+        badgeColor: '#10b981',
+        title: 'Orthostatic Dysautonomia, POTS &amp; Post-Exertional Malaise (PEM)',
+        subtitle: 'Postural tachycardia (&Delta;HR +38 bpm on standing), autonomic vagal strain (RMSSD 18ms), and mitochondrial energy depletion.',
+        act1: 'Severe historical episodes of unremitting dizziness, gastrointestinal spasms, and prolonged post-exertional fatigue, historically misdiagnosed as purely psychosomatic.',
+        act2: 'Sympathetic hyperarousal persists secondary to baroreflex deconditioning and splanchnic venous pooling; vagal cholinergic brake has low resting reserve.',
+        act3: 'Establish standing hemodynamic stability without tachycardia spikes, protect cellular ATP pools with strict pacing thresholds, and eradicate crash cycles.',
+        suggestions: [
+          '<strong>0.10 Hz Mayer Wave Pacing:</strong> 4 seconds nasal inhale, 6 seconds pursed-lip exhale (6 breaths/min) for 10 minutes BID to stimulate the vagal cholinergic brake.',
+          '<strong>Anaerobic Heart Rate Ceiling (105 bpm):</strong> Real-time audio-haptic pacing alert to avoid crossing the ventilatory anaerobic threshold and depleting mitochondrial ATP.',
+          '<strong>WHO Reduced Osmolarity ORS:</strong> WHO standard oral rehydration salts (245 mOsm/L) dissolved in 1L clean water to expand plasma volume without renal diuresis.',
+          '<strong>Pacing Shield Rest Days:</strong> Scheduled non-negotiable horizontal rest days following cognitive or physical exertion to maintain energy envelope equilibrium.'
+        ],
+        retailBenchmark: '$340.00 / month',
+        retailDetail: 'Commercial branded electrolyte drinks, midodrine/fludrocortisone markups, and recurrent ER crash admissions',
+        essentialCost: '$4.80 / month',
+        essentialDetail: 'WHO Standard Reduced Osmolarity ORS sachets + open generic salt tableting',
+        savingsAmount: '$4,800.00+ / year',
+        savingsPercent: '98.5% Savings',
+        preventedCascade: 'Averts recurring $4,500 acute emergency room admissions and redundant $3,500 tilt-table re-evaluations.',
+        projectCost: '$0.00 (Client-side sensor heuristics & Web Audio)',
+        docDrillTerm: '0.1 Hz Resonant Pacing'
+      },
+      neuro: {
+        badge: 'CASE STUDY P002: MARA SANTOS &bull; NEURO-SANCTUARY',
+        badgeColor: '#0284c7',
+        title: 'Multiple Sclerosis, Uhthoff Conduction Reserve &amp; Smoldering PIRA',
+        subtitle: 'Relapsing-remitting MS, Uhthoff heat sensitivity (&Delta;T &le; 0.40&deg;C), walking fatigue, and anxiety over pseudo-relapse.',
+        act1: 'Diagnosis traversed with calm neurological grit; acute historical focal flares successfully brought under remission with disease-modifying therapy.',
+        act2: 'Demyelinated central axons operate with reduced safety factor; subclinical core temperature elevations (&Delta;T &ge; 0.40&deg;C) cause transient sodium channel inactivation.',
+        act3: 'Sustain active professional career and outdoor mobility across all seasons by mastering biophysical pre-cooling and monitoring biomarker stability.',
+        suggestions: [
+          '<strong>Uhthoff Conduction Reserve Tracking:</strong> Continuous biophysical core temperature margin modeling (&Delta;T &le; 0.40&deg;C) to alert before heat blocks occur.',
+          '<strong>Phase-Change Pre-Cooling Protocol:</strong> Ingest 500 mL ice-slurry beverage and wear 15&deg;C phase-change cooling vest before warm outdoor walking.',
+          '<strong>Quarterly Serum Neurofilament Light (sNfL):</strong> Liquid biopsy tracking to objectively confirm axonal stability and rule out smoldering progression.',
+          '<strong>Mitochondrial Resynthesis Support:</strong> High-dose Vitamin D3 (targeting 60&ndash;80 ng/mL) plus CoQ10 200 mg BID to support axonal ATP synthesis.'
+        ],
+        retailBenchmark: '$2,800.00 / scan',
+        retailDetail: 'Unnecessary emergency brain/spine contrast MRI scans triggered by heat-induced pseudo-relapses',
+        essentialCost: '$18.00 / month',
+        essentialDetail: 'Generic Vitamin D3, CoQ10, and reusable physical phase-change thermal packs',
+        savingsAmount: '$5,600.00+ / year',
+        savingsPercent: '99.3% Savings',
+        preventedCascade: 'Prevents panicky emergency department visits, unindicated high-dose IV steroid boluses, and premature DMT switching.',
+        projectCost: '$0.00 (Embedded WebAssembly thermal model)',
+        docDrillTerm: 'Uhthoff Phenomenon'
+      },
+      vector: {
+        badge: 'NANTUCKET CASE STUDY #01 &bull; VECTOR-BORNE RADAR',
+        badgeColor: '#d97706',
+        title: 'Complex Vector-Borne Pathologies &amp; Babesia Co-Infection',
+        subtitle: 'Refractory Lyme symptoms, drenching night sweats, profound air hunger, hemolytic anemia, and Maltese cross tetrads.',
+        act1: 'Bitten by nymphal tick in coastal New England brush; treated with standard 14-day oral Doxycycline with persistent unremitting systemic decline.',
+        act2: 'Polymicrobial transmission unmasked: intraerythrocytic Babesia microti protozoa actively lysing red blood cells alongside Borrelia spirochetes.',
+        act3: 'Eradicate protozoan parasitemia, normalize reticulocyte counts and splenic clearance, and regain vigorous athletic stamina within 30 days.',
+        suggestions: [
+          '<strong>Dual-Pathogen Bayesian Radar:</strong> Automatically triggers diagnostic alerts when drenching sweats or air hunger accompany tick bites.',
+          '<strong>STAT Manual Peripheral Thin Smear:</strong> Urgent Giemsa-stained thin blood smear scan to identify pathognomonic Maltese cross tetrads.',
+          '<strong>Two-Tier Targeted Combination:</strong> Immediate Atovaquone (750 mg PO BID) + Azithromycin (500 mg daily) rather than ineffective monotherapy.',
+          '<strong>Ecological Vector Interruption:</strong> Support systemic reservoir intervention (MIT Mice Against Ticks) and microclimate brush control.'
+        ],
+        retailBenchmark: '$6,200.00+ / episode',
+        retailDetail: 'Prolonged diagnostic odysseys, unindicated specialist consultations, and futile long-term IV antibiotics',
+        essentialCost: '$42.00 / course',
+        essentialDetail: 'WHO Model List open generic Atovaquone + Azithromycin 10-day curative therapy',
+        savingsAmount: '$6,150.00+ saved',
+        savingsPercent: '99.3% Savings',
+        preventedCascade: 'Prevents chronic debilitating multi-organ sequelae, unnecessary PICC-line placements, and septic thrombophlebitis.',
+        projectCost: '$0.00 (Zero-egress edge Bayesian inference)',
+        docDrillTerm: 'Babesia microti'
+      },
+      polytrauma: {
+        badge: 'PATIENT ARCHETYPE: FRIDA KAHLO &bull; ORTHOPEDIC REHAB',
+        badgeColor: '#ec4899',
+        title: 'Chronic Neuropathic Pain, Polytrauma &amp; Spinal Rehabilitation',
+        subtitle: 'Multilevel spinal trauma, severe burning neuropathic dysesthesia, central sensitization, and opioid-sparing pain relief.',
+        act1: 'Endured severe vehicular polytrauma and dozens of orthopedic reconstructive surgeries; lived with relentless post-surgical pelvic and spinal agony.',
+        act2: 'Dorsal horn central sensitization amplified by gravitational axial loading; nervous system locked in constant nociceptive distress signals.',
+        act3: 'Achieve joyful physical movement, restful restorative sleep, and vibrant artistic expression through non-opioid multimodal biophysical support.',
+        suggestions: [
+          '<strong>Aquatic Axial Unloading:</strong> Buoyant warm water (88&deg;F&ndash;92&deg;F) hydrotherapy reducing gravitational axial spinal compression by 90%.',
+          '<strong>Solfeggio 174 Hz Acoustic Modulation:</strong> Low-frequency vibroacoustic sound waves calming thalamocortical sensory pain loops.',
+          '<strong>PEA Mast Cell Stabilization:</strong> Micronized Palmitoylethanolamide (600 mg BID) to dampen microglial neuro-inflammation without sedation.',
+          '<strong>Topical TRPV1 Desensitization:</strong> Compounded topical Capsaicin (0.025%) and Menthol to exhaust substance P stores in peripheral nociceptors.'
+        ],
+        retailBenchmark: '$420.00 / month',
+        retailDetail: 'Brand-name gabapentinoids, extended-release synthetic opioids, and invasive epidural steroid injections',
+        essentialCost: '$16.50 / month',
+        essentialDetail: 'Open generic gabapentin, PEA nutritional support, and local compounding monographs',
+        savingsAmount: '$4,840.00 / year',
+        savingsPercent: '96.0% Savings',
+        preventedCascade: 'Eliminates opioid tolerance escalation, narcotic-induced hyperalgesia, and $25,000+ spinal cord stimulator revisions.',
+        projectCost: '$0.00 (Local Web Audio synthesizer & client CDS)',
+        docDrillTerm: 'Polypharmacy Deprescribing (STOPP/START)'
+      }
+    };
+
+    function renderConditionCard(data) {
+      return '<div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem;">' +
+        '<div>' +
+          '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: ' + data.badgeColor + '; font-weight: 700; text-transform: uppercase;">' + data.badge + '</div>' +
+          '<h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin: 0.25rem 0 0.4rem;">' + data.title + '</h3>' +
+          '<p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">' + data.subtitle + '</p>' +
+        '</div>' +
+        '<button type="button" class="doc-drill-badge" onclick="openDocDrill(\\'' + data.docDrillTerm + '\\')" style="font-size: 0.75rem; padding: 0.4rem 0.75rem;">🔬 Socratic Evidence Focus</button>' +
+      '</div>' +
+
+      '<div class="grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">' +
+        '<!-- Col 1: Austrian 3-Act Trajectory -->' +
+        '<div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">' +
+          '<div style="font-size: 0.72rem; font-family: ui-monospace, monospace; color: var(--teal); font-weight: 700; text-transform: uppercase;">Austrian Salutogenic Arc</div>' +
+          '<div class="act-card" style="margin: 0; padding: 0.65rem 0.85rem; border-left: 3px solid #64748b;">' +
+            '<div class="act-header" style="color: #64748b;">Act I &bull; Where You\\'ve Been</div>' +
+            '<div class="act-body" style="font-size: 0.78rem;">' + data.act1 + '</div>' +
+          '</div>' +
+          '<div class="act-card" style="margin: 0; padding: 0.65rem 0.85rem; border-left: 3px solid var(--teal);">' +
+            '<div class="act-header" style="color: var(--teal);">Act II &bull; Where You Stand Today</div>' +
+            '<div class="act-body" style="font-size: 0.78rem;">' + data.act2 + '</div>' +
+          '</div>' +
+          '<div class="act-card" style="margin: 0; padding: 0.65rem 0.85rem; border-left: 3px solid var(--amber);">' +
+            '<div class="act-header" style="color: var(--amber);">Act III &bull; Where You\\'re Going</div>' +
+            '<div class="act-body" style="font-size: 0.78rem;">' + data.act3 + '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<!-- Col 2: PocketGull Care Suggestions -->' +
+        '<div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">' +
+          '<div>' +
+            '<div style="font-size: 0.72rem; font-family: ui-monospace, monospace; color: var(--amber); font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">Actionable Clinical Suggestions</div>' +
+            '<ul style="font-size: 0.8125rem; color: var(--text); line-height: 1.6; padding-left: 1.15rem; margin: 0; display: flex; flex-direction: column; gap: 0.6rem;">' +
+              data.suggestions.map(s => '<li>' + s + '</li>').join('') +
+            '</ul>' +
+          '</div>' +
+          '<div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.72rem; color: var(--text-muted); font-style: italic;">' +
+            '&bull; Guided by Learned Intermediary: Requires clinician attestation before order entry.' +
+          '</div>' +
+        '</div>' +
+
+        '<!-- Col 3: Dual-Sided Thrift Breakdown -->' +
+        '<div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">' +
+          '<div>' +
+            '<div style="font-size: 0.72rem; font-family: ui-monospace, monospace; color: #10b981; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">Dual-Sided Thrift &amp; FinOps</div>' +
+            '<div style="background: var(--card); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 0.6rem;">' +
+              '<div style="font-size: 0.6875rem; color: var(--text-muted); text-transform: uppercase;">Standard Retail Benchmark:</div>' +
+              '<div style="font-size: 1.15rem; font-weight: 800; color: #ef4444; font-family: ui-monospace, monospace; text-decoration: line-through;">' + data.retailBenchmark + '</div>' +
+              '<div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem;">' + data.retailDetail + '</div>' +
+            '</div>' +
+            '<div style="background: var(--card); border: 1px solid var(--teal); border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 0.6rem;">' +
+              '<div style="font-size: 0.6875rem; color: var(--teal); text-transform: uppercase; font-weight: 700;">Estimated Out-of-Pocket Total:</div>' +
+              '<div style="font-size: 1.35rem; font-weight: 800; color: var(--teal); font-family: ui-monospace, monospace;">' + data.essentialCost + '</div>' +
+              '<div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem;">' + data.essentialDetail + '</div>' +
+            '</div>' +
+            '<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.2rem; font-size: 0.75rem;">' +
+              '<span style="color: var(--text-muted);">Net Household Savings:</span>' +
+              '<span style="color: #10b981; font-weight: 800; font-family: ui-monospace, monospace;">' + data.savingsAmount + ' (' + data.savingsPercent + ')</span>' +
+            '</div>' +
+            '<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.2rem; font-size: 0.75rem; border-top: 1px dashed var(--border); margin-top: 0.4rem;">' +
+              '<span style="color: var(--text-muted);">Project Inference Cost:</span>' +
+              '<span style="color: var(--teal); font-weight: 700; font-family: ui-monospace, monospace;">' + data.projectCost + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div style="margin-top: 0.75rem; background: var(--teal-glow); border: 1px solid var(--border); border-radius: 0.375rem; padding: 0.5rem 0.65rem; font-size: 0.72rem; color: var(--teal);">' +
+            '<strong>Cascade Halter:</strong> ' + data.preventedCascade +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function selectConditionTab(key) {
+      const data = CONDITION_THRIFT_DATA[key];
+      if (!data) return;
+
+      const tabs = ['metabolic', 'dysautonomia', 'neuro', 'vector', 'polytrauma'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('condTab_' + t);
+        if (btn) {
+          if (t === key) {
+            btn.classList.add('active');
+            btn.style.borderColor = 'var(--teal)';
+            btn.style.background = 'var(--card-hover)';
+          } else {
+            btn.classList.remove('active');
+            btn.style.borderColor = 'var(--border)';
+            btn.style.background = 'transparent';
+          }
+        }
+      });
+
+      const container = document.getElementById('conditionDetailCard');
+      if (container) {
+        container.style.opacity = '0.4';
+        container.style.transform = 'translateY(4px)';
+        setTimeout(() => {
+          container.innerHTML = renderConditionCard(data);
+          container.style.opacity = '1';
+          container.style.transform = 'translateY(0)';
+        }, 150);
+      }
+    }
 
     /* ─── Universal Doc Drill Socratic Engine ─── */
     let currentDrillTerm = 'Babesia microti';
@@ -2213,6 +3102,46 @@ export function renderBusinessSiteHtml(): string {
         protocol: 'Query window.ai.languageModel directly on localhost. Keep system prompts deterministic. Fall back to local TypeScript parsing if experimental flags are inactive.',
         evidence: 'W3C Web Machine Learning Standards; Google Built-in AI Architecture.',
         citations: 'W3C WebML Working Group; NIST SP 800-66r2 HIPAA Security.'
+      },
+      'WHO Essential Medicines & Financial Toxicity': {
+        category: 'HEALTH ECONOMICS & ESSENTIAL FORMULARY',
+        summary: 'World Health Organization Model List of Essential Medicines (EML) demonstrating that frontline treatments for hypertension, diabetes, and infections cost pennies per dose when open generic procurement is unlocked.',
+        clinicalTrap: 'Prescribing expensive monopoly brand-name reformulations when bioequivalent open generics exist. This imposes severe financial toxicity, causing 1 in 4 patients to ration or skip life-sustaining doses.',
+        protocol: 'Query WHO EML for core first-line molecules (e.g. Lisinopril, Metformin, Amlodipine). Substitute $180+/mo retail brand items with $4–$8/mo open generics. Document estimated annual out-of-pocket savings on the patient care plan.',
+        evidence: 'WHO Model List of Essential Medicines (23rd List, 2023); Kesselheim AS et al. JAMA 2016; Woolhandler S & Himmelstein DU. Ann Intern Med 2017.',
+        citations: 'WHO Model List of Essential Medicines (2023); Kesselheim AS et al. JAMA. 2016.'
+      },
+      'Project FinOps & Scale-to-Zero Architecture': {
+        category: 'SOFTWARE ENGINEERING & SUSTAINABILITY',
+        summary: 'Cloud financial engineering maximizing accessibility through zero-egress edge inference (Chrome Built-in AI / Gemma 4), Cloud Run scale-to-zero (minScale: 0), and automated 7-day storage lifecycle cleanup.',
+        clinicalTrap: 'Architectures dependent on continuous cloud LLM token queries or always-on GPU instances incur crushing monthly bills ($500–$5,000/mo), forcing developers to monetize user data or erect paywalls that exclude under-resourced clinics.',
+        protocol: 'Enforce local-first execution: Run symptom parsing and biophysical models on client CPU/GPU. Set Cloud Run minReplicas: 0. Configure 7-day GCS bucket deletion and Artifact Registry prune policies to maintain a ~$0.20/month baseline.',
+        evidence: 'Google Cloud FinOps Architecture Framework; CNCF Environmental Sustainability TAG; W3C Web Machine Learning Working Group.',
+        citations: 'Google Cloud Architecture Center (FinOps); CNCF Sustainability TAG.'
+      },
+      'Diagnostic Cascade Prevention': {
+        category: 'CLINICAL CDS & HEALTH SERVICES RESEARCH',
+        summary: 'Preventing the chain of unindicated diagnostic testing, ambiguous incidental findings, and invasive follow-ups triggered by an initial non-evidence-based test.',
+        clinicalTrap: 'Ordering repeat emergency contrast MRIs for benign heat-induced MS Uhthoff conduction pauses, or ordering multi-thousand dollar autonomic panels for dehydration-induced orthostatic tachycardia. These cascades increase anxiety, radiation, and medical debt.',
+        protocol: 'Evaluate biophysical state first: Check core temperature reserve (ΔT) and hydration before escalating to imaging. Implement 48-hour cooling or fluid challenge windows for transient physiological fluctuations.',
+        evidence: 'Ganguli I et al. Cascades of Care After Incidental Findings. JAMA 2019; Deyo RA et al. N Engl J Med 2021.',
+        citations: 'Ganguli I et al. JAMA. 2019; Deyo RA et al. N Engl J Med. 2021.'
+      },
+      'Metabolic Syndrome & Stepped Care': {
+        category: 'CARDIOMETABOLIC CDS',
+        summary: 'WHO HEARTS stepped-care framework targeting the triad of insulin resistance, essential hypertension, and atherogenic dyslipidemia through staged lifestyle and open generic therapy.',
+        clinicalTrap: 'Immediate polypharmacy escalation without addressing post-prandial glucose disposal or dietary sodium-to-potassium ratios. Treating mild Stage 1 hypertension with 3 brand-name drugs often induces severe orthostasis and medication non-adherence.',
+        protocol: 'Step 1: 10-minute post-prandial walks for non-insulin GLUT4 translocation + DASH potassium optimization (≥3:1 ratio). Step 2: First-line open generic ACE-i or CCB (Lisinopril 10mg or Amlodipine 5mg). Step 3: Add Metformin HCl 500mg if fasting glucose remains >100 mg/dL.',
+        evidence: 'WHO HEARTS Technical Package (2020); American Heart Association Hypertension Guidelines; Knowler WC et al. Diabetes Prevention Program (DPP) N Engl J Med 2002.',
+        citations: 'WHO HEARTS Technical Package (2020); DPP Research Group. N Engl J Med. 2002.'
+      },
+      'Darwinian Medicine & 3B Innovation': {
+        category: 'EVOLUTIONARY MEDICINE & EPISTEMOLOGY',
+        summary: 'Application of evolutionary biology and the 3B cognitive framework (Bending, Breaking, Blending) to chronic multi-system autonomic illness, distinguishing evolved defenses (fever, vomiting) from physiological defects.',
+        clinicalTrap: 'Aggressively suppressing evolved compensatory defenses (e.g. forcing down postural tachycardia with high-dose beta-blockers without correcting underlying splanchnic hypovolemia or mitochondrial ATP depletion).',
+        protocol: 'Deploy the 3B Triad: Bending (altering pacing thresholds to fit mitochondrial limits), Breaking (deconstructing complex multi-system illness into discrete biophysical drivers), and Blending (fusing evolutionary biology, vagal neuroscience, and on-device edge telemetry).',
+        evidence: 'Nesse RM & Williams GC. Why We Get Sick: The New Science of Darwinian Medicine (1994); Eagleman D & Brandt A. The Runaway Species: How Human Creativity Remakes the World (2017); Tracey KJ. Nature 2002.',
+        citations: 'Nesse RM, Williams GC. Why We Get Sick (1994); Eagleman D, Brandt A. The Runaway Species (2017).'
       }
     };
 
@@ -2233,17 +3162,17 @@ export function renderBusinessSiteHtml(): string {
 
         // Card 1: Overview
         const card1 = document.createElement('div');
-        card1.style.cssText = 'background: #18181b; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem;';
+        card1.style.cssText = 'background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem;';
         card1.innerHTML = '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">Category: ' + data.category + '</div>' +
-          '<h4 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0.35rem 0 0.75rem;">' + term + '</h4>' +
-          '<p style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;">' + data.summary + '</p>';
+          '<h4 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin: 0.35rem 0 0.75rem;">' + term + '</h4>' +
+          '<p style="font-size: 0.8125rem; color: var(--text); line-height: 1.6;">' + data.summary + '</p>';
         body.appendChild(card1);
 
         // Card 2: Clinical Trap
         const card2 = document.createElement('div');
         card2.style.cssText = 'background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 0.75rem; padding: 1.25rem;';
         card2.innerHTML = '<div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber-light); font-weight: 700; text-transform: uppercase;">⚠️ Socratic Clinical Invariant &amp; Trap</div>' +
-          '<p style="font-size: 0.8125rem; color: #fef3c7; line-height: 1.6; margin-top: 0.35rem;">' + data.clinicalTrap + '</p>';
+          '<p style="font-size: 0.8125rem; color: var(--text); line-height: 1.6; margin-top: 0.35rem;">' + data.clinicalTrap + '</p>';
         body.appendChild(card2);
 
         // Card 3: Quick Socratic Drill Chips
@@ -2318,12 +3247,12 @@ export function renderBusinessSiteHtml(): string {
 
       // User Query Bubble
       const qCard = document.createElement('div');
-      qCard.style.cssText = 'background: #18181b; border: 1px solid rgba(45, 212, 191, 0.4); border-radius: 0.75rem; padding: 0.85rem 1rem;';
+      qCard.style.cssText = 'background: var(--card); border: 1px solid rgba(45, 212, 191, 0.4); border-radius: 0.75rem; padding: 0.85rem 1rem;';
       const tagDiv = document.createElement('div');
       tagDiv.style.cssText = 'font-size: 0.6875rem; color: var(--teal-light); font-family: ui-monospace, monospace; font-weight: bold; text-transform: uppercase;';
       tagDiv.textContent = '💬 Clinician Query';
       const queryDiv = document.createElement('div');
-      queryDiv.style.cssText = 'font-size: 0.875rem; color: #fff; margin-top: 0.25rem; font-weight: 500;';
+      queryDiv.style.cssText = 'font-size: 0.875rem; color: var(--text); margin-top: 0.25rem; font-weight: 500;';
       queryDiv.textContent = q;
       qCard.appendChild(tagDiv);
       qCard.appendChild(queryDiv);
@@ -2331,14 +3260,14 @@ export function renderBusinessSiteHtml(): string {
 
       // Socratic Response Engine
       const aCard = document.createElement('div');
-      aCard.style.cssText = 'background: #121215; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem; border-left: 3px solid var(--teal);';
+      aCard.style.cssText = 'background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem; border-left: 3px solid var(--teal);';
       const headerDiv = document.createElement('div');
       headerDiv.style.cssText = 'font-size: 0.6875rem; color: var(--teal-light); font-family: ui-monospace, monospace; font-weight: bold; text-transform: uppercase; margin-bottom: 0.5rem;';
       headerDiv.textContent = '⚡ Doc Drill Socratic Analysis • ' + currentDrillTerm;
       aCard.appendChild(headerDiv);
 
       const contentDiv = document.createElement('div');
-      contentDiv.style.cssText = 'font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6;';
+      contentDiv.style.cssText = 'font-size: 0.8125rem; color: var(--text); line-height: 1.6;';
 
       const lowerQ = q.toLowerCase();
       let answerText = '';
@@ -2359,7 +3288,7 @@ export function renderBusinessSiteHtml(): string {
       contentDiv.appendChild(p);
 
       const citeP = document.createElement('p');
-      citeP.style.cssText = 'font-size: 0.72rem; color: #a1a1aa; margin-top: 0.6rem; font-style: italic; border-top: 1px solid #27272a; padding-top: 0.4rem;';
+      citeP.style.cssText = 'font-size: 0.72rem; color: var(--text-muted); margin-top: 0.6rem; font-style: italic; border-top: 1px solid var(--border); padding-top: 0.4rem;';
       citeP.textContent = 'Primary Source: ' + data.citations;
       contentDiv.appendChild(citeP);
 
@@ -2374,12 +3303,12 @@ export function renderBusinessSiteHtml(): string {
   <!-- Universal Doc Drill Socratic Research Drawer -->
   <div id="docDrillBackdrop" class="doc-drill-backdrop" onclick="closeDocDrill()"></div>
   <aside id="docDrillDrawer" class="doc-drill-drawer" aria-label="Doc Drill Evidence Focus Drawer">
-    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(9, 9, 11, 0.95);">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--header-bg);">
       <div style="display: flex; align-items: center; gap: 0.6rem;">
         <span style="font-size: 1.35rem;">🔬</span>
         <div>
           <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">PocketGull Socratic Educator</div>
-          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Doc Drill &bull; Evidence Focus</h3>
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0;">Doc Drill &bull; Evidence Focus</h3>
         </div>
       </div>
       <button type="button" onclick="closeDocDrill()" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 0.375rem;" aria-label="Close Drawer">&times;</button>
@@ -2389,9 +3318,9 @@ export function renderBusinessSiteHtml(): string {
       <!-- Pre-populated dynamically -->
     </div>
 
-    <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--border); background: #0c0c0e;">
+    <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--border); background: var(--card-subtle);">
       <form onsubmit="submitDocDrillQuestion(event); return false;" style="display: flex; gap: 0.5rem;">
-        <input type="text" id="docDrillQueryInput" placeholder="Ask Doc Drill about this concept..." style="flex: 1; background: #18181b; border: 1px solid var(--border); color: #fff; padding: 0.55rem 0.75rem; border-radius: 0.375rem; font-size: 0.8125rem;" />
+        <input type="text" id="docDrillQueryInput" placeholder="Ask Doc Drill about this concept..." style="flex: 1; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); padding: 0.55rem 0.75rem; border-radius: 0.375rem; font-size: 0.8125rem;" />
         <button type="submit" class="btn-primary" style="padding: 0.55rem 1rem; font-size: 0.8125rem;">Ask</button>
       </form>
     </div>

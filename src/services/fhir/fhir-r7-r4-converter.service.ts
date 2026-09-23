@@ -659,7 +659,7 @@ export class FhirR7R4ConverterService {
     }
 
     // Fallback format
-    const nowStr = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14);
+    const nowStr = new Date().toISOString().replace(/\D/g, '').slice(0, 14);
     const lines = [
       `MSH|^~\\&|POCKETGULL|CLINICAL_AI|EHR_RECEIVER|CLINIC|${nowStr}||ORU^R01^ORU_R01|MSG${Date.now()}|P|2.5.1`,
       `PID|1||${patientId}^^^POCKETGULL^MR||${patientName}||${nowStr.slice(0, 8)}|${gender}`,

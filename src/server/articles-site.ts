@@ -4,6 +4,7 @@
  */
 
 import { FALLBACK_SEED_ARTICLES, IWordPressPost } from '../services/wordpress-articles.service';
+import { renderLegalFooterHtml } from './legal-footer';
 
 function escapeHtml(str: string): string {
   return str
@@ -508,12 +509,7 @@ ${jsonLd}
 
   ${post ? renderSingleArticle(post) : renderArticlesCatalog()}
 
-  <footer>
-    <div class="container">
-      <p style="margin-bottom: 0.5rem;">&copy; ${new Date().getFullYear()} <strong class="font-brand">PocketGull</strong>. All rights reserved.</p>
-      <p style="font-size: 0.8rem; color: #71717a;">Clinical Decision Support &amp; Health Literacy System. Grounded in Level I–III Empirical Evidence.</p>
-    </div>
-  </footer>
+${renderLegalFooterHtml()}
 
   <script>
     function setReadingLevel(level) {

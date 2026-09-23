@@ -105,4 +105,23 @@ describe('AustereResearchService', () => {
     const parsed = JSON.parse(jsonStr);
     expect(parsed.resourceType).toBe('Bundle');
   });
+
+  it('generates and parses compact offline P2P QR handoff payload', () => {
+    const payloadStr = service.generateCompactOfflineQrPayload();
+    expect(payloadStr).toContain('POCKETGULL_AUSTERE_P2P_V1');
+    const parsed = JSON.parse(payloadStr);
+    expect(parsed.vitals.length).toBe(4);
+    expect(parsed.seal).toBeDefined();
+
+    // Test peer hydration
+    service.purgeTransientPatientState();
+    expect(service.isPurged()).toBe(true);
+
+    const success = service.parseOfflineQrPayload(payloadStr);
+    expect(success).toBe(true);
+    expect(service.isPurged()).toBe(false);
+    expect(service.vitals().length).toBe(4);
+    expect(service.vitals()[0].label).toBe('Heart Rate');
+  });
 });
+

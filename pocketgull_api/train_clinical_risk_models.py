@@ -11,6 +11,7 @@ os.environ['LOKY_MAX_CPU_COUNT'] = '4'
 import sys
 sys.modules['numexpr'] = None
 import json
+import gc
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import HistGradientBoostingClassifier
@@ -121,6 +122,7 @@ def train_and_save_platinum_model(
     with open(meta_path, 'w') as f:
         json.dump(meta, f, indent=2)
     
+    gc.collect()
     return final_model
 
 def train_icu_mortality_model():

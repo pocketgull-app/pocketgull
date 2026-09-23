@@ -14,6 +14,23 @@ export interface IWaveformMorphologySummary {
   signalQualityIndex: number; // 0.0 to 1.0
 }
 
+export interface ITraditionalPulseClassification {
+  ayurvedicDoshaPulse: {
+    primaryDosha: 'Vata (Sarpa / Rapid-Light)' | 'Pitta (Manduka / Bounding-Surging)' | 'Kapha (Hamsa / Deep-Slow)';
+    doshaConfidence: number; // 0.0 to 1.0
+    somaticArchetype: string;
+    physiologicalCorrelates: string;
+  };
+  tcmPulseMorphology: {
+    pattern: 'Floating (Fu Mai)' | 'Surging (Hong Mai)' | 'Slippery (Hua Mai)' | 'Wiry (Xian Mai)' | 'Thready (Xi Mai)' | 'Normal (Ping Mai)';
+    patternConfidence: number; // 0.0 to 1.0
+    meridianAffinity: string;
+    depthLevel: 'Superficial' | 'Middle' | 'Deep';
+    clinicalInterpretation: string;
+  };
+  consilienceIndex: number; // 0.0 to 1.0
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -229,4 +246,98 @@ export class WaveformDspEngineService {
       signalQualityIndex
     };
   }
+
+  /**
+   * Classifies arterial pulse wave morphology into traditional Ayurvedic Tridosha (Nadi Pariksha)
+   * and TCM Pulse Patterns (Mai Xue) using objective hemodynamic DSP metrics.
+   *
+   * @param morphology Computed hemodynamic waveform features (PWV, AIx, HR, Amplitudes)
+   * @param rmssdMs Optional heart rate variability parasympathetic vagal index (default 38ms)
+   */
+  classifyTraditionalPulseWaveform(
+    morphology: IWaveformMorphologySummary,
+    rmssdMs: number = 38
+  ): ITraditionalPulseClassification {
+    const hr = morphology.meanHeartRateBpm;
+    const pwv = morphology.estimatedPwvMPerS;
+    const aix = morphology.augmentationIndexPct;
+    const amp = morphology.meanSystolicAmplitude;
+
+    // 1. Ayurvedic Dosha Pulse Classification (Nadi Pariksha)
+    let primaryDosha: ITraditionalPulseClassification['ayurvedicDoshaPulse']['primaryDosha'] = 'Pitta (Manduka / Bounding-Surging)';
+    let doshaConfidence = 0.85;
+    let somaticArchetype = 'Moderate arterial contractility with active metabolic transformation';
+    let physiologicalCorrelates = 'Balanced sympathetic-parasympathetic tone with normal reflection timing';
+
+    if (hr > 80 || (pwv > 9.0 && rmssdMs < 25)) {
+      primaryDosha = 'Vata (Sarpa / Rapid-Light)';
+      doshaConfidence = Math.min(0.96, 0.70 + (hr > 85 ? 0.15 : 0.05) + (rmssdMs < 25 ? 0.10 : 0.0));
+      somaticArchetype = 'Rapid, undulating, light serpent-like pulse with elevated arterial velocity and autonomic lability';
+      physiologicalCorrelates = `High PWV (${pwv} m/s) with dampened vagal RMSSD (${rmssdMs} ms), indicating neuro-vascular hyper-reactivity`;
+    } else if (hr < 65 && pwv <= 7.8) {
+      primaryDosha = 'Kapha (Hamsa / Deep-Slow)';
+      doshaConfidence = Math.min(0.95, 0.75 + (hr < 60 ? 0.15 : 0.05) + (pwv < 7.0 ? 0.10 : 0.0));
+      somaticArchetype = 'Slow, steady, undulating swan-like pulse with delayed systolic transit and high vascular compliance';
+      physiologicalCorrelates = `Low PWV (${pwv} m/s) and preserved arterial compliance (${aix}% AIx), indicating stable parasympathetic dominance`;
+    } else {
+      primaryDosha = 'Pitta (Manduka / Bounding-Surging)';
+      doshaConfidence = Math.min(0.94, 0.75 + (amp > 0.6 ? 0.10 : 0.05) + (hr >= 68 && hr <= 80 ? 0.10 : 0.0));
+      somaticArchetype = 'Bounding, forceful, jumping frog-like pulse with sharp systolic ejection and distinct dicrotic reflection';
+      physiologicalCorrelates = `High systolic ejection amplitude (${amp}) with active pulse pressure transit (${pwv} m/s)`;
+    }
+
+    // 2. TCM Pulse Pattern Classification (Mai Xue)
+    let pattern: ITraditionalPulseClassification['tcmPulseMorphology']['pattern'] = 'Normal (Ping Mai)';
+    let patternConfidence = 0.88;
+    let meridianAffinity = 'Harmonious Spleen/Stomach Root with Heart blood perfusion';
+    let depthLevel: ITraditionalPulseClassification['tcmPulseMorphology']['depthLevel'] = 'Middle';
+    let clinicalInterpretation = 'Harmonious Qi and Blood with supple vessel wall elasticity.';
+
+    if (pwv > 8.5 || aix > 55) {
+      pattern = 'Wiry (Xian Mai)';
+      patternConfidence = 0.94;
+      meridianAffinity = 'Liver / Gallbladder Meridian (Jueyin)';
+      depthLevel = 'Middle';
+      clinicalInterpretation = 'Tense, taut vessel wall resembling a musical string. Correlates with Liver Qi Stagnation, peripheral vascular resistance, or essential hypertension.';
+    } else if (amp > 0.75 && hr > 78) {
+      pattern = 'Surging (Hong Mai)';
+      patternConfidence = 0.91;
+      meridianAffinity = 'Heart / Small Intestine Meridian (Shaoyin)';
+      depthLevel = 'Superficial';
+      clinicalInterpretation = 'Arrives with powerful force and departs rapidly. Correlates with Interior Heat excess, hyperdynamic circulation, or acute inflammatory response.';
+    } else if (morphology.meanDicroticNotchAmplitude > 0.45 && aix < 45) {
+      pattern = 'Slippery (Hua Mai)';
+      patternConfidence = 0.89;
+      meridianAffinity = 'Spleen / Stomach Meridian (Taiyin)';
+      depthLevel = 'Middle';
+      clinicalInterpretation = 'Smooth and rounded like pearls rolling on a plate. Indicates abundant metabolic fluid, dampness accumulation, or high stroke volume.';
+    } else if (amp < 0.35) {
+      pattern = 'Thready (Xi Mai)';
+      patternConfidence = 0.87;
+      meridianAffinity = 'Kidney / Spleen Deficiency Axis';
+      depthLevel = 'Deep';
+      clinicalInterpretation = 'Fine, thin pulse like a silk thread, perceptible with gentle continuous pressure. Indicates Qi and Blood deficiency or chronic exhaustion.';
+    }
+
+    // Consilience index: concordance between Western arterial compliance and traditional classifications
+    const consilienceIndex = +( (doshaConfidence + patternConfidence) / 2 ).toFixed(2);
+
+    return {
+      ayurvedicDoshaPulse: {
+        primaryDosha,
+        doshaConfidence: +doshaConfidence.toFixed(2),
+        somaticArchetype,
+        physiologicalCorrelates
+      },
+      tcmPulseMorphology: {
+        pattern,
+        patternConfidence: +patternConfidence.toFixed(2),
+        meridianAffinity,
+        depthLevel,
+        clinicalInterpretation
+      },
+      consilienceIndex
+    };
+  }
 }
+

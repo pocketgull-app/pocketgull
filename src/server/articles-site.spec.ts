@@ -24,6 +24,14 @@ describe('Articles Site Server-Side Rendering', () => {
     expect(html).toContain('https://pocketgull.com/articles/the-100000-dollar-oil-change');
   });
 
+  it('renders the Masters of Science Fiction clinical AI article with breakthrough framework', () => {
+    const html = renderArticlesHtml('masters-of-science-fiction-clinical-ai');
+    expect(html).toContain('Masters of Science Fiction');
+    expect(html).toContain('Walter Mosley');
+    expect(html).toContain('Stephen Hawking');
+    expect(html).toContain('https://pocketgull.com/articles/masters-of-science-fiction-clinical-ai');
+  });
+
   it('safely handles empty or undefined slugs', () => {
     expect(renderArticlesHtml('')).toContain('Clinical Breakthroughs');
     expect(renderArticlesHtml('   ')).toContain('Clinical Breakthroughs');

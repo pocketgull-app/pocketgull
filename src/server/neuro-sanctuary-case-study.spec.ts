@@ -100,4 +100,17 @@ describe('Multiple Sclerosis Neuro-Axonal Sanctuary Case Study (#02)', () => {
     expect(html).toContain('Neuroplastic Detours');
     expect(html).toContain('Zero Fatalism');
   });
+
+  it('renders the 3B Innovation Architecture (Breaking, Bending, and Blending)', () => {
+    const html = renderNeuroSanctuaryCaseStudyHtml();
+    expect(html).toContain('id="innovation-3b"');
+    expect(html).toContain('The 3B Innovation Architecture: Breaking, Bending &amp; Blending');
+    expect(html).toContain('BREAKING');
+    expect(html).toContain('BENDING');
+    expect(html).toContain('BLENDING');
+    expect(html).toContain('Breaks the $2,800 MRI Cascade');
+    expect(html).toContain('Bends Thermal Reserve (&Delta;T &le; 0.40&deg;C)');
+    expect(html).toContain('Thermodynamics + Neuro-Immunology');
+    expect(html).toContain('href="#innovation-3b"');
+  });
 });

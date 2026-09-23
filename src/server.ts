@@ -54,6 +54,9 @@ import { renderBusinessSiteHtml } from './server/business-site';
 import { renderArticlesHtml } from './server/articles-site';
 import { renderNantucketCaseStudyHtml } from './server/nantucket-case-study';
 import { renderNeuroSanctuaryCaseStudyHtml } from './server/neuro-sanctuary-case-study';
+import { renderCaseStudiesHubHtml } from './server/case-studies-hub';
+import { renderCardiometabolicCaseStudyHtml } from './server/cardiometabolic-case-study';
+import { renderDarwinCaseStudyHtml } from './server/darwin-case-study';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
@@ -253,6 +256,21 @@ app.get(['/case-studies/neuro-sanctuary', '/case-studies/ms-radar', '/neuro-sanc
   return res.send(renderNeuroSanctuaryCaseStudyHtml());
 });
 
+app.get(['/case-studies', '/case-studies/'], (_req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderCaseStudiesHubHtml());
+});
+
+app.get(['/case-studies/cardiometabolic-radar', '/case-studies/cardiometabolic', '/cardiometabolic'], (_req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderCardiometabolicCaseStudyHtml());
+});
+
+app.get(['/case-studies/darwin-vagal-radar', '/case-studies/darwin', '/darwin'], (_req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderDarwinCaseStudyHtml());
+});
+
 // Primary Business Site Handler for pocketgull.com & www.pocketgull.com
 app.use((req, res, next) => {
   const xfh = String(req.headers['x-forwarded-host'] || '').toLowerCase();
@@ -286,6 +304,10 @@ app.use((req, res, next) => {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.send(renderArticlesHtml(slug));
     }
+    if (req.path === '/case-studies' || req.path === '/case-studies/') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderCaseStudiesHubHtml());
+    }
     if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.send(renderNantucketCaseStudyHtml());
@@ -293,6 +315,14 @@ app.use((req, res, next) => {
     if (req.path === '/case-studies/neuro-sanctuary' || req.path === '/case-studies/ms-radar' || req.path === '/neuro-sanctuary') {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.send(renderNeuroSanctuaryCaseStudyHtml());
+    }
+    if (req.path === '/case-studies/cardiometabolic-radar' || req.path === '/case-studies/cardiometabolic' || req.path === '/cardiometabolic') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderCardiometabolicCaseStudyHtml());
+    }
+    if (req.path === '/case-studies/darwin-vagal-radar' || req.path === '/case-studies/darwin' || req.path === '/darwin') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderDarwinCaseStudyHtml());
     }
     const cleanPath = req.path.split('?')[0];
     const ext = extname(cleanPath).toLowerCase();
@@ -961,6 +991,12 @@ app.use((req, res, next) => {
   const isBusinessDomain = (cleanHost === 'pocketgull.com' || cleanHost === 'www.pocketgull.com');
   const isBusinessPath = req.path === '/business' || req.path === '/enterprise' || req.path === '/app-builder' || req.path === '/portal';
 
+  if (req.path === '/case-studies' || req.path === '/case-studies/') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderCaseStudiesHubHtml());
+  }
+
   if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
@@ -971,6 +1007,18 @@ app.use((req, res, next) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     return res.send(renderNeuroSanctuaryCaseStudyHtml());
+  }
+
+  if (req.path === '/case-studies/cardiometabolic-radar' || req.path === '/case-studies/cardiometabolic' || req.path === '/cardiometabolic') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderCardiometabolicCaseStudyHtml());
+  }
+
+  if (req.path === '/case-studies/darwin-vagal-radar' || req.path === '/case-studies/darwin' || req.path === '/darwin') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderDarwinCaseStudyHtml());
   }
 
   if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {

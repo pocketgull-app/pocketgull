@@ -289,4 +289,74 @@ export class AustereResearchService {
       trajectory: this.trajectory()
     };
   }
+
+  /**
+   * Generates a compact offline P2P QR handoff payload for zero-network field transfers.
+   */
+  generateCompactOfflineQrPayload(): string {
+    const payload = {
+      protocol: 'POCKETGULL_AUSTERE_P2P_V1',
+      timestamp: new Date().toISOString(),
+      seal: this.integritySeal(),
+      archetype: this.activeArchetype(),
+      cohort: this.cohortName(),
+      vitals: this.vitals().map(v => ({
+        label: v.label,
+        value: v.value,
+        unit: v.unit,
+        pValue: v.pValue
+      })),
+      trajectory: {
+        act1: this.trajectory().act1WhereYouveBeen,
+        act2: this.trajectory().act2WhereYouStandToday,
+        act3: this.trajectory().act3WhereYoureGoing
+      },
+      jurisdiction: this.dataSovereignty().jurisdiction
+    };
+    return JSON.stringify(payload);
+  }
+
+  /**
+   * Parses and loads an incoming offline P2P QR handoff payload from a peer field device.
+   * Returns true on successful hydration, false if invalid.
+   */
+  parseOfflineQrPayload(rawPayload: string): boolean {
+    try {
+      const parsed = JSON.parse(rawPayload);
+      if (!parsed || parsed.protocol !== 'POCKETGULL_AUSTERE_P2P_V1') {
+        return false;
+      }
+
+      if (parsed.archetype) {
+        this.activeArchetype.set(parsed.archetype);
+      }
+      if (parsed.cohort) {
+        this.cohortName.set(parsed.cohort);
+      }
+      if (parsed.seal) {
+        this.integritySeal.set(parsed.seal);
+      }
+      if (Array.isArray(parsed.vitals)) {
+        this.vitals.set(parsed.vitals.map((v: any) => ({
+          label: String(v.label || 'Vital'),
+          value: v.value ?? '--',
+          unit: String(v.unit || ''),
+          pValue: typeof v.pValue === 'number' ? v.pValue : 0.01,
+          isStatisticallySignificant: typeof v.pValue === 'number' ? v.pValue < 0.05 : true
+        })));
+      }
+      if (parsed.trajectory) {
+        this.trajectory.set({
+          act1WhereYouveBeen: parsed.trajectory.act1 || '',
+          act2WhereYouStandToday: parsed.trajectory.act2 || '',
+          act3WhereYoureGoing: parsed.trajectory.act3 || ''
+        });
+      }
+      this.isPurged.set(false);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
+

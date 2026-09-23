@@ -7,6 +7,8 @@
  * Hosted at pocketgull.com/case-studies/neuro-sanctuary
  */
 
+import { renderLegalFooterHtml } from './legal-footer';
+
 export function renderNeuroSanctuaryCaseStudyHtml(): string {
   return `<!DOCTYPE html>
 <html lang="en" class="dark">
@@ -390,6 +392,7 @@ export function renderNeuroSanctuaryCaseStudyHtml(): string {
         <a href="#flip-cards">Dual Perspectives</a>
         <a href="#neuro-axis">360° Neuro-Axis</a>
         <a href="#trajectory">3-Act Trajectory</a>
+        <a href="#innovation-3b">3B Innovation</a>
         <a href="#triage">"Am I Safe?" Flow</a>
         <a href="#fridge-card">Printable Care Card</a>
         <a href="#fhir-export">FHIR R4 Export</a>
@@ -875,6 +878,95 @@ export function renderNeuroSanctuaryCaseStudyHtml(): string {
       </div>
     </section>
 
+    <!-- 4.5 The 3B Innovation Architecture: Breaking, Bending, and Blending -->
+    <section id="innovation-3b" class="case-section" style="background: linear-gradient(180deg, #09090b 0%, #121216 100%); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+      <div class="container" style="max-width: 1040px;">
+        <div class="section-head" style="text-align: center;">
+          <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase; margin-bottom: 0.35rem;">
+            Cognitive Framework &bull; Brandt &amp; Eagleman 3B Engine
+          </div>
+          <h2>The 3B Innovation Architecture: Breaking, Bending &amp; Blending</h2>
+          <p style="margin: 0 auto;">
+            How deconstructing rigid medical orthodoxies, modulating biophysical variables, and fusing orthogonal scientific fields transformed Mara's care plan from fear-driven surveillance to self-directed vitality.
+          </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+          <!-- Card 1: BREAKING -->
+          <div style="background: var(--card); border: 1px solid var(--border); border-top: 4px solid var(--rose); border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <span style="font-size: 1.5rem;">🔨</span>
+                <div>
+                  <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--rose-light); font-weight: 700; text-transform: uppercase;">Operation 01</div>
+                  <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">BREAKING</h3>
+                </div>
+              </div>
+              <p style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6; margin-bottom: 1rem;">
+                <strong>Dismantling Monolithic Orthodoxy:</strong> Shattered the panic-inducing assumption that any new motor heaviness equals an acute clinical relapse requiring high-dose IV methylprednisolone.
+              </p>
+              <ul style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.6; padding-left: 1.15rem; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li><strong style="color: #fff;">Breaks the $2,800 MRI Cascade:</strong> Prevented unindicated emergency department imaging and incidentaloma anxiety loops.</li>
+                <li><strong style="color: #fff;">Breaks the 1968 SOAP Note:</strong> Replaced static, deficit-focused billing checkboxes with living salutogenic trajectories.</li>
+                <li><strong style="color: #fff;">Breaks Passive Resignation:</strong> Demarcated reversible biophysical conduction pauses from irreversible structural lesions.</li>
+              </ul>
+            </div>
+            <div style="margin-top: 1.25rem; background: #09090b; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; font-size: 0.75rem; color: var(--rose-light); font-family: ui-monospace, monospace;">
+              Result: Zero unnecessary steroid toxicity &bull; $5,600+ averted cascade costs
+            </div>
+          </div>
+
+          <!-- Card 2: BENDING -->
+          <div style="background: var(--card); border: 1px solid var(--border); border-top: 4px solid var(--teal); border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <span style="font-size: 1.5rem;">🔄</span>
+                <div>
+                  <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">Operation 02</div>
+                  <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">BENDING</h3>
+                </div>
+              </div>
+              <p style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6; margin-bottom: 1rem;">
+                <strong>Modulating Physiological Variables:</strong> Instead of telling the patient to abandon outdoor summer walking, PocketGull modulated the underlying biophysical boundary.
+              </p>
+              <ul style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.6; padding-left: 1.15rem; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li><strong style="color: #fff;">Bends Thermal Reserve (&Delta;T &le; 0.40&deg;C):</strong> Ingesting 500 mL ice slurries and wearing a 15&deg;C phase-change vest preserves axonal safety factor &gt;1.8.</li>
+                <li><strong style="color: #fff;">Bends Exercise Timing:</strong> Shifting brisk walks to early morning (low ambient radiant heat) keeps core temperature well below the conduction block threshold.</li>
+                <li><strong style="color: #fff;">Bends the Pacing Envelope:</strong> Structured 45-minute architectural design sprints with horizontal recovery breaks match mitochondrial ATP resynthesis.</li>
+              </ul>
+            </div>
+            <div style="margin-top: 1.25rem; background: #09090b; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; font-size: 0.75rem; color: var(--teal-light); font-family: ui-monospace, monospace;">
+              Result: 100% outdoor stamina restored &bull; Safe summer architectural site visits
+            </div>
+          </div>
+
+          <!-- Card 3: BLENDING -->
+          <div style="background: var(--card); border: 1px solid var(--border); border-top: 4px solid var(--amber); border-radius: 1rem; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <span style="font-size: 1.5rem;">🧬</span>
+                <div>
+                  <div style="font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--amber-light); font-weight: 700; text-transform: uppercase;">Operation 03</div>
+                  <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">BLENDING</h3>
+                </div>
+              </div>
+              <p style="font-size: 0.8125rem; color: #d4d4d8; line-height: 1.6; margin-bottom: 1rem;">
+                <strong>Fusing Orthogonal Disciplines:</strong> United fields that hospital medicine isolates in separate silos into a cohesive healing sanctuary.
+              </p>
+              <ul style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.6; padding-left: 1.15rem; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li><strong style="color: #fff;">Thermodynamics + Neuro-Immunology:</strong> Fused condensed matter phase-change physics (15&deg;C latent heat) with demyelinated sodium channel kinetics (Na<sub>V</sub>1.6).</li>
+                <li><strong style="color: #fff;">Austrian Salutogenesis + Edge AI:</strong> Fused Frankl/Antonovsky existential empowerment with Google Chrome Built-in AI running privately on client silicon at $0.00 cloud cost.</li>
+                <li><strong style="color: #fff;">Liquid Biopsy + Autonomic Telemetry:</strong> Combined quarterly serum sNfL Simoa tracking with real-time 0.10 Hz Mayer-wave respiratory biofeedback.</li>
+              </ul>
+            </div>
+            <div style="margin-top: 1.25rem; background: #09090b; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; font-size: 0.75rem; color: var(--amber-light); font-family: ui-monospace, monospace;">
+              Result: Unified biophysical &amp; psychological agency &bull; Zero ePHI data leakage
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 5. "Am I Safe?" 3-Step Triage Flowchart -->
     <section id="triage" class="case-section">
       <div class="container">
@@ -1032,21 +1124,7 @@ export function renderNeuroSanctuaryCaseStudyHtml(): string {
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer style="border-top: 1px solid var(--border); padding: 3rem 0; font-size: 0.8125rem; color: var(--text-muted);">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
-      <div>
-        <div style="font-weight: 700; color: #fff;">PocketGull LLC &bull; Portland, Oregon</div>
-        <div>Clinical Case Study #02 &bull; Neuro-Axonal Sanctuary &bull; <a href="https://pocketgull.com" style="color: var(--teal-light); text-decoration: none;">pocketgull.com</a></div>
-      </div>
-      <div style="display: flex; gap: 1rem;">
-        <a href="/" style="color: var(--text-muted); text-decoration: none;">Home</a>
-        <a href="/case-studies/nantucket-tick-radar" style="color: var(--text-muted); text-decoration: none;">Nantucket Tick Radar</a>
-        <a href="/articles" style="color: var(--text-muted); text-decoration: none;">Articles</a>
-        <a href="https://pocketgull.app" style="color: var(--teal-light); text-decoration: none;">Launch Cockpit &rarr;</a>
-      </div>
-    </div>
-  </footer>
+${renderLegalFooterHtml()}
 
   <script>
     // 1. Uhthoff Conduction Reserve Radar Logic

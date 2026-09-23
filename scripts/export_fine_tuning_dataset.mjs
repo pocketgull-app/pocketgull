@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { generateMultiParadigmVignettes } from './pioneer_vignettes_generator.mjs';
 
 export const PARADIGMS = [
   // Core Clinical & Epistemic
@@ -17,11 +18,13 @@ export const PARADIGMS = [
   'zero_knowledge_vault_privacy',
   'skeptical_epistemology_falsification',
   'toxicology_antidote_decontamination',
-  'environmental_exposomics_pfas_detox'
+  'environmental_exposomics_pfas_detox',
+  'clinical_fallacy_refutation',
+  'pioneer_consilience_synthesis'
 ];
 
 export function generateAllParadigmsDataset() {
-  return [
+  const baseParadigms = [
     // 1. DPO Epistemic Grounding & Hallucination Suppression
     {
       paradigm: 'dpo_epistemic_grounding',
@@ -826,8 +829,176 @@ export function generateAllParadigmsDataset() {
       }, null, 2),
       chosen: 'Applies 2019 EULAR/ACR SLE criteria, orders gold-standard Hydroxychloroquine at safe 5 mg/kg actual weight dosing with baseline retinal OCT, and triggers STAT renal biopsy for active nephritis.',
       rejected: 'Diagnoses simple osteoarthritis, prescribes NSAIDs only, and fails to screen for lupus nephritis or initiate hydroxychloroquine.'
+    },
+
+    // 16. Clinical Fallacy & Cognitive Bias Refutation (Debiasing Engine)
+    {
+      paradigm: 'clinical_fallacy_refutation',
+      instruction: 'Audit clinical presentation for diagnostic biases and logical fallacies. Patient is a 28yo female with generalized anxiety disorder presenting with acute dyspnea, pleuritic chest pain, HR 112 bpm, and SpO2 94% on room air. Triage note: "Recurrent panic attack, administer lorazepam." Refute fallacies and determine safe clinical action.',
+      input: JSON.stringify({
+        patient: { age: 28, sex: 'female', pastMedicalHistory: ['Generalized Anxiety Disorder'] },
+        triageImpression: 'Panic attack / hyperventilation syndrome',
+        vitals: { hr: 112, bp: '124/78', spo2: '94% room air', rr: 22 },
+        riskFactors: ['Oral contraceptive pills (OCP) x 2 years', '6-hour transatlantic flight 3 days ago'],
+        symptoms: 'Acute right-sided sharp pleuritic chest pain on inspiration, sudden dyspnea'
+      }, null, 2),
+      output: JSON.stringify({
+        fallacyAudit: {
+          detectedBiases: [
+            {
+              fallacyId: 'anchoring-bias',
+              name: 'Anchoring Bias & Premature Diagnostic Closure',
+              critique: 'Triage impression anchored prematurely on psychiatric label (anxiety) despite objective physiological abnormalities (hypoxemia SpO2 94%, tachycardia HR 112).'
+            },
+            {
+              fallacyId: 'base-rate-neglect',
+              name: 'Base Rate Neglect & Representativeness Heuristic',
+              critique: 'Neglecting elevated pre-test probability of venous thromboembolism (VTE) due to combined risk of exogenous estrogen and prolonged immobilization.'
+            }
+          ],
+          clinicalDecisionRule: 'Wells Score for PE: 4.5 (HR > 100 [1.5], PE equally or more likely than alternative [3.0]) -> Intermediate/High Risk. PERC Rule NOT negative (SpO2 < 95%, HR > 100, exogenous estrogen).',
+          mandatedAction: [
+            'HOLD sedatives/anxiolytics; do not discharge.',
+            'STAT Computed Tomography Pulmonary Angiography (CTPA) or high-sensitivity D-dimer.',
+            'Continuous pulse oximetry, supplemental O2 to maintain SpO2 >= 95%.',
+            '12-lead ECG (evaluate for right heart strain, S1Q3T3, sinus tachycardia) and cardiac troponin.'
+          ]
+        }
+      }, null, 2),
+      chosen: 'Explicitly refutes Anchoring Bias and Premature Closure on the triage anxiety label. Highlights objective hypoxemia (SpO2 94%) and tachycardia with OCP and travel risks. Calculates Wells Score (4.5), confirms failure of PERC rule, halts inappropriate sedation, and mandates emergent pulmonary embolism workup.',
+      rejected: 'Accepts the triage diagnosis of panic attack, affirms patient anxiety history, recommends 1 mg lorazepam PO, and suggests discharge home without vitals reassessment or Wells rule evaluation.'
+    },
+    {
+      paradigm: 'clinical_fallacy_refutation',
+      instruction: 'Evaluate therapeutic dispute between senior consultant and evidence base regarding continuing an ineffective nephrotoxic drug. Identify logical fallacies and determine guideline-concordant plan.',
+      input: JSON.stringify({
+        patient: { age: 72, serumCreatinine: '2.8 mg/dL (baseline 1.1)', eGfr: '22 mL/min' },
+        currentRegimen: 'Aminoglycoside (Gentamicin) for persistent cellulitis day 6, cultures show Gentamicin-resistant Streptococcus pyogenes sensitive to Cefazolin.',
+        attendingOrder: '"Dr. Senior insists on completing a full 14-day Gentamicin course because that is how he has treated these cases for 30 years and we have already invested 6 days."',
+        clinicalStatus: 'Progressive acute kidney injury (KDIGO Stage 3), worsening oliguria.'
+      }, null, 2),
+      output: JSON.stringify({
+        fallacyAudit: {
+          detectedBiases: [
+            {
+              fallacyId: 'appeal-to-authority',
+              name: 'Appeal to Authority (Argumentum ad Verecundiam)',
+              critique: 'Senior attending seniority/tenure invoked to overrule objective in vitro microbiological susceptibilities and KDIGO guidelines.'
+            },
+            {
+              fallacyId: 'sunk-cost-fallacy',
+              name: 'Sunk Cost Fallacy (Concorde Fallacy)',
+              critique: 'Justifying continuation of toxic therapy because 6 days have already been completed, despite clear toxicity and lack of bacterial coverage.'
+            }
+          ],
+          mandatedIntervention: [
+            'Immediately discontinue Gentamicin (prevent irreversible ototoxicity and permanent hemodialysis-dependent tubular necrosis).',
+            'Switch targeted therapy to IV Cefazolin 1g q12h adjusted for eGFR 22 mL/min per microbiology sensitivities.',
+            'STAT Nephrology consultation and daily renal panel monitoring.'
+          ]
+        }
+      }, null, 2),
+      chosen: 'Identifies and refutes Appeal to Authority and Sunk Cost Fallacy. Discontinues nephrotoxic Gentamicin immediately due to KDIGO stage 3 AKI and documented resistance, switching to culture-directed Cefazolin with renal dose adjustment.',
+      rejected: 'Defers unconditionally to the senior attending physician experience, continuing 14 days of Gentamicin despite acute kidney injury and microbiological resistance.'
+    },
+
+    // 16. Pioneering Healers & Multi-Paradigm Consilience Synthesis
+    {
+      paradigm: 'pioneer_consilience_synthesis',
+      instruction: 'Synthesize a multi-dimensional clinical care strategy for an exhausted post-viral patient with dysautonomia and family caregiver distress, harmonizing Western evidence, Ayurvedic Agni/Vata, TCM Liver Qi, and the pioneering clinical models of Dr. Crumpler, Dr. La Flesche, Dr. Burns, Dr. Tu Youyou, Mary Seacole, and Indigenous Grandmothers.',
+      input: JSON.stringify({
+        patientProfile: 'Homo Sapiens (Female, 42y, Post-Viral POTS & Epigastric Distress)',
+        symptoms: ['Orthostatic tachycardia (+38 bpm)', 'Postprandial bloating', 'Severe fatigue', 'Family caregiver sleep debt'],
+        vitals: { bp: '106/72 mmHg', hrSupine: 68, hrStanding: 106, pwv: 7.2 },
+        currentMeds: ['Propranolol 10mg PRN'],
+        dietaryBotanicals: ['Curcumin extract 500mg']
+      }, null, 2),
+      output: JSON.stringify({
+        clinicalConsiliencePlan: {
+          westernAndHemodynamics: {
+            assessment: 'Post-viral dysautonomia with impaired peripheral vasoconstriction and compensatory sinus tachycardia.',
+            hemodynamicPacing: 'Target vagal tone with 0.1 Hz resonant pacing; maintain high hydration (>2.5L/day) with 4-5g dietary sodium.'
+          },
+          traditionalMedicineDualCoding: {
+            ayurveda: {
+              pattern: 'Prana/Vyana Vata Aggravation with Manda Agni (sluggish digestion)',
+              whoIcd11Tm1Code: 'SF80 (Vata Aggravation Pattern)'
+            },
+            tcm: {
+              pattern: 'Liver Qi Stagnation overacting on Spleen Earth',
+              whoIcd11Tm1Code: 'SF51 (Liver Qi Stagnation Pattern)'
+            },
+            pulseClassification: 'Vata/Wiry transitional pulse (HR 106 standing, low supine PWV 7.2 m/s with autonomic lability)'
+          },
+          botanicalSynergyAndChouTalalay: {
+            pair: 'Curcumin (500mg) + Piperine (20mg)',
+            roles: 'Curcumin as Jun (Emperor), Piperine as Shi (Envoy)',
+            combinationIndex: 0.42,
+            synergyVerdict: 'SYNERGISTIC (2,000% bioavailability multiplier via glucuronidation inhibition, PMID: 9619120)'
+          },
+          pioneeringHealersLineage: {
+            drLouisaBurnsSomaticReflexes: 'Gentle suboccipital and thoracic T5-T9 fascial release to downregulate somatovisceral sympathetic overdrive to the celiac plexus.',
+            drSusanLaFlescheHouseholdEcology: 'Evaluate bedroom winter drafts, woodsmoke ventilation, and clean water access; support whole-household recovery.',
+            drRebeccaCrumplerMaternalDignity: 'Eliminate clinical guilt; provide practical 4th-grade reading level cheat sheets for home meals and restorative rest.',
+            marySeacoleSteppedHydration: 'Stepped oral rehydration with warm ginger-cinnamon infusions and electrolytes, avoiding aggressive polypharmacy.',
+            drTuYouyouEmpiricalBotanicals: 'Preserve thermolabile withanolides and curcuminoids through low-temperature warm infusion rather than harsh boiling.',
+            indigenousGrandmothersSevenGenerations: 'Practice unhurried circle listening; evaluate recovery not across 14 days but by restoring mother and family vitality for generations hence.'
+          }
+        }
+      }, null, 2),
+      chosen: 'Synthesizes Western hemodynamics, Ayurvedic Vata/Agni, TCM Liver Qi, and Chou-Talalay synergy (CI = 0.42), while integrating the somatic reflexes of Dr. Burns, the household ecology of Dr. La Flesche, the maternal dignity of Dr. Crumpler, Mary Seacole stepped hydration, and Seven Generations listening.',
+      rejected: 'Prescribes high-dose synthetic stimulants and dismisses fatigue as psychosomatic anxiety, ignoring caregiver distress, domestic environment, and botanical pharmacology.'
     }
   ];
+
+  const pioneerVignettes = generateMultiParadigmVignettes();
+  return [...baseParadigms, ...pioneerVignettes];
+}
+
+export function exportGeminiTuningDataset(outputPath) {
+  const dataset = generateAllParadigmsDataset();
+  const targetDir = path.join(process.cwd(), 'scripts');
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
+  }
+
+  const file = outputPath || path.join(targetDir, 'gemini_tuning_dataset.jsonl');
+  const content = dataset.map(rec => JSON.stringify({
+    contents: [
+      {
+        role: 'user',
+        parts: [{ text: `[PARADIGM: ${rec.paradigm.toUpperCase()}]\n${rec.instruction}\n\nINPUT:\n${rec.input}` }]
+      },
+      {
+        role: 'model',
+        parts: [{ text: rec.output }]
+      }
+    ]
+  })).join('\n');
+
+  fs.writeFileSync(file, content, 'utf-8');
+  console.log(`✅ Exported ${dataset.length} Gemini Vertex AI SFT tuning records to: ${file}`);
+  return file;
+}
+
+export function exportDpoPreferenceDataset(outputPath) {
+  const dataset = generateAllParadigmsDataset();
+  const targetDir = path.join(process.cwd(), 'scripts');
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
+  }
+
+  const dpoRecords = dataset.filter(rec => rec.chosen && rec.rejected);
+  const file = outputPath || path.join(targetDir, 'dpo_preference_dataset.jsonl');
+  const content = dpoRecords.map(rec => JSON.stringify({
+    prompt: `[PARADIGM: ${rec.paradigm.toUpperCase()}]\n${rec.instruction}\n\nINPUT:\n${rec.input}`,
+    chosen: rec.chosen,
+    rejected: rec.rejected
+  })).join('\n');
+
+  fs.writeFileSync(file, content, 'utf-8');
+  console.log(`✅ Exported ${dpoRecords.length} DPO preference records to: ${file}`);
+  return file;
 }
 
 export function exportDatasetToJsonl(outputPath) {
@@ -841,7 +1012,11 @@ export function exportDatasetToJsonl(outputPath) {
   const content = dataset.map(rec => JSON.stringify(rec)).join('\n');
   fs.writeFileSync(file, content, 'utf-8');
 
-  console.log(`✅ Successfully exported ${dataset.length} fine-tuning records across all 15 paradigms to: ${file}`);
+  // Also export Vertex Gemini SFT and Hugging Face/Ollama DPO datasets
+  exportGeminiTuningDataset();
+  exportDpoPreferenceDataset();
+
+  console.log(`✅ Successfully exported ${dataset.length} fine-tuning records across all ${PARADIGMS.length} paradigms to: ${file}`);
   return file;
 }
 

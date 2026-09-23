@@ -73,6 +73,59 @@ It is a **living clinical intelligence platform** that synthesizes multimodal in
 
 ---
 
+## 🔬 Clinical Case Studies & Research Commons: The 3B Innovation Architecture
+
+Pocket Gull hosts an open, peer-reviewable repository of de-identified clinical trajectories at [`https://pocketgull.com/case-studies`](https://pocketgull.com/case-studies). Rather than treating patient records as static retrospective charts, each study leverages cognitive neuroscientist David Eagleman and composer Anthony Brandt's **3B Innovation Architecture** (*Breaking, Bending, Blending*) paired with interactive Canvas biophysical radars and 1-click **HL7® FHIR® R4 Master Research Bundle** downloads:
+
+* **🔨 Breaking**: Deconstructs monolithic chronic syndromes into their underlying cellular, inflammatory, and microvascular root causes.
+* **🌀 Bending**: Alters physiological timelines, autonomic stress dynamics, and therapeutic titration curves along non-linear recovery vectors.
+* **🧬 Blending**: Consiliently synthesizes Western Allopathic pharmacology, Eastern Zang-Fu organ meridians, and Ayurvedic chronobiology.
+
+### Featured Interactive Trajectories
+
+| Case ID & Paradigm | Clinical Domain & Archetype | 3B Cognitive Operation | Interactive Telemetry & Standards |
+| :--- | :--- | :--- | :--- |
+| [**Case #01: Nantucket Long COVID**](https://pocketgull.com/case-studies/nantucket-long-covid) | Microvascular Endothelitis & Dysautonomia | **Breaking** chronic fatigue into amyloid microclots; **Bending** recovery from 14 days to a 90-day arc; **Blending** anticoagulation with *Nattokinase*. | Real-time biophysical radar, LOINC microclot grading, FHIR R4 care plan. |
+| [**Case #02: MS Neuro-Sanctuary**](https://pocketgull.com/case-studies/neuro-sanctuary) | Multiple Sclerosis & Neuro-Axonal Remodeling | **Breaking** demyelination into mitochondrial bioenergetics; **Bending** Uhthoff thermal thresholds; **Blending** S1P modulators with 0.1 Hz vagal pacing. | Glial-axonal survival curve, thermal tolerance sliders, S1P receptor safety. |
+| [**Case #03: Cardiometabolic Radar**](https://pocketgull.com/case-studies/cardiometabolic-radar) | Resistant Hypertension & Glycemic Dynamics | **Breaking** metabolic syndrome into glycemic phase space; **Bending** HbA1c to continuous postprandial AUC; **Blending** SGLT2i with *Berberine*. | Non-linear phase portrait attractor, nocturnal dip index, AB generic parity. |
+| [**Case #05: Charles Darwin & Vagal Enigma**](https://pocketgull.com/case-studies/darwin-vagal-enigma) | Longitudinal Consilience & Historical Diagnostics | **Breaking** 40-year illness into Chagas vs. Dysautonomia; **Bending** 5-decade journal records; **Blending** Victorian water cures with modern HRV telemetry. | Baroreflex sensitivity simulation, blind diagnostic scoring, FHIR export. |
+
+> **1-Click FHIR R4 Master Bundle**: Researchers can download the entire multi-case cohort as a standardized, HIPAA § 164.514 Safe Harbor de-identified HL7 FHIR R4 JSON bundle directly from the [Case Studies Commons Hub](https://pocketgull.com/case-studies).
+
+---
+
+## 🏥 Enterprise EHR Sidecar & Hyperscaler Symbiosis
+
+### The Fast-Loop Edge to Slow-Loop Cloud Paradigm
+Pocket Gull is engineered around an asymmetric **Fast-Loop (On-Device Edge) / Slow-Loop (Cloud Hyperscaler)** symbiotic architecture:
+1. **The Fast Loop (Local Workstation / Mobile NPU)**: Sub-45ms real-time telemetry, 0.1 Hz vagal breathing visualizers, 3D WebGL biophysics, and voice interaction execute 100% on the clinician's workstation or patient's phone with zero cloud network egress.
+2. **The Slow Loop (Enterprise Cloud / Hyperscaler)**: Longitudinal population epidemiology, complex genomic variant re-annotation, and federated model retraining scale cleanly into cloud infrastructures.
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                   FAST-LOOP / SLOW-LOOP COLLABORATION                  │
+├────────────────────────────────────────────────────────────────────────┤
+│  ⚡ FAST-LOOP EDGE (0–45ms, $0 Egress, HIPAA Sovereign)                 │
+│     • Chrome Built-in AI (Prompt API / Gemma 4)                        │
+│     • Windows Copilot+ DirectML / ONNX Runtime Web                     │
+│     • Three.js Procedural Anatomy & Canvas Biophysical Radars          │
+├────────────────────────────────────────────────────────────────────────┤
+│  ☁️ SLOW-LOOP ENTERPRISE CLOUD (Longitudinal, Deep Analytics)          │
+│     • Google Cloud Healthcare API & BigQuery Data Exchange             │
+│     • Microsoft Azure Health Data Services & Direct FHIR Store         │
+│     • Amazon HealthLake & Amazon Pharmacy RxPass $5/mo Stepping        │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### The Enterprise EHR Sidecar (Epic, Oracle Cerner, MEDITECH)
+Instead of attempting to replace established EHR platforms, Pocket Gull acts as an **ergonomic, zero-server-overhead sidecar**:
+* **Cures Generative Note Bloat**: Replaces 1,500-word conversational text walls with clean, discrete **LOINC** and **SNOMED CT** coded observations that slip seamlessly into existing progress note templates.
+* **Relieves In-Basket "Pajama Time"**: Automatically triages incoming patient messages into STAT emergency red flags vs. routine medication actions, slashing after-hours administrative burden.
+* **Automates CPT 99453 / 99454 RPM Superbills**: Tallying 16+ transmission days cryptographically for Remote Patient Monitoring chronic care reimbursement.
+* **Zero Hospital Server Burden**: 100% client-side WebGPU and NPU execution leaves hospital IT budgets with **$0.00** in GPU hosting overhead.
+
+---
+
 ## Core Capabilities
 
 ### 🧠 AI & Multi-Agent Orchestration
@@ -480,8 +533,11 @@ npm run deploy
 
 | Document | Description |
 | :--- | :--- |
+| [Clinical Case Studies Commons](docs/CLINICAL_CASE_STUDIES_COMMONS.md) | 3B cognitive framework, biophysical radars & FHIR R4 cohorts |
+| [Enterprise EHR Sidecar](docs/ENTERPRISE_EHR_SIDECAR.md) | Epic, Cerner & MEDITECH sidecar, 45 CFR Part 171 Safe Harbor & RPM billing |
+| [Porter's Five Forces](docs/PORTERS_FIVE_FORCES.md) | Industry structural analysis, defensible moat & competitive dynamics |
 | [Architecture](docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md) | System design, data flow & reactive state |
-| [Changelog](CHANGELOG.md) | Complete release history through v1.36.0 |
+| [Changelog](CHANGELOG.md) | Complete release history through v1.38.0 |
 | [Clinical Paradigms](docs/TRI_PARADIGM_SYNTHESIS_INTEGRATION.md) | Western, TCM, Ayurvedic & Orthomolecular frameworks |
 | [Federal USWDS Demarcation](docs/FEDERAL_DESIGN_SYSTEM_DEMARCATION.md) | USWDS 3.0, VA Community Care & 18 U.S.C. § 701 Safe Harbor |
 | [Gemma 4 Edge Architecture](docs/GEMMA4_EDGE_ARCHITECTURE.md) | Chrome built-in AI, Prompt API & on-device zero-egress models |
@@ -531,11 +587,28 @@ If you reference Pocket Gull in research, please cite:
   month     = sep,
   year      = 2026,
   publisher = {Zenodo},
-  version   = {v1.36.0},
+  version   = {v1.38.0},
   doi       = {10.5281/zenodo.20647514},
   url       = {https://doi.org/10.5281/zenodo.20647514}
 }
 ```
+
+### Methodological & Scientific Lineage
+Pocket Gull stands on the shoulders of foundational researchers whose peer-reviewed discoveries power our algorithms:
+* **The 3B Innovation Architecture**: Brandt & Eagleman (*The Runaway Species*, 2017)
+* **The Inflammatory Reflex & Vagal Anti-Inflammatory Pathway**: Tracey (*Nature*, 2002)
+* **Real-Time QRS DSP**: Pan & Tompkins (*IEEE Trans. Biomed. Eng.*, 1985)
+* **Deterministic Renal Clearance ($CrCl$)**: Cockcroft & Gault (*Nephron*, 1976)
+* **Metric Body Surface Area ($BSA$)**: Mosteller (*N. Engl. J. Med.*, 1987)
+* **The Salutogenic Model & Sense of Coherence**: Antonovsky (*Health, Stress, and Coping*, 1979)
+* **Laplace Differential Privacy**: Dwork, McSherry, Nissim, & Smith (*TCC*, 2006)
+* **Bayesian Natural Frequency Communication**: Gigerenzer & Hoffrage (*Psychol. Rev.*, 1995)
+* **Microvascular Amyloid Fibril Pathology**: Pretorius et al. (*Cardiovasc. Diabetol.*, 2021)
+* **Uhthoff's Phenomenon & Conduction Safety**: Uhthoff (*Arch. Psychiatr. Nervenkr.*, 1890)
+* **Numerical Trajectory Simulation**: Runge (1895) & Kutta (1901) 4th-Order Integration
+* **Structural Industry Analysis**: Porter (*Harvard Business Review*, 2008)
+
+*For complete bibliographic records and operationalization mapping, see [Foundational Citations](docs/CLINICAL_CASE_STUDIES_COMMONS.md#7-foundational-mathematical-biophysical--methodological-citations).*
 
 ---
 
@@ -553,6 +626,29 @@ If you reference Pocket Gull in research, please cite:
 [![GitHub](https://img.shields.io/badge/GitHub-philgear-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/philgear)
 [![Google Dev](https://img.shields.io/badge/Google_Dev-philgear-4285F4?style=flat-square&logo=google&logoColor=white)](https://developers.google.com/profile/philgear)
 [![Contact](https://img.shields.io/badge/Contact-dpo%40pocketgull.app-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:dpo@pocketgull.app)
+
+---
+
+## ⚖️ Statutory Safe Harbor & Nominative Trademark Fair Use
+
+### 21st Century Cures Act Safe Harbor (45 CFR Part 171)
+Pocket Gull’s healthcare interoperability interfaces conform strictly to the **21st Century Cures Act Interoperability and Information Blocking Rule (45 CFR Part 171)**. Certified Health IT developers and health systems are statutorily prohibited from impeding the access, exchange, or use of electronic health information (EHI) by authorized third-party applications connecting via standardized HL7® FHIR® APIs.
+
+### FDA Non-Device Demarcation (FD&C Act § 520(o))
+Pocket Gull functions exclusively as clinical decision support (CDS) and educational software under Section 520(o)(1)(E) of the Federal Food, Drug, and Cosmetic Act. All clinical recommendations are transparently grounded in primary medical literature (PubMed / Cochrane) and require affirmative clinician review before order commitment. Pocket Gull is not an autonomous diagnostic medical device.
+
+### Nominative Trademark Fair Use Notice
+*Epic® and Epic Hyperspace® are registered trademarks of Epic Systems Corporation.*  
+*Oracle® and Cerner® are registered trademarks of Oracle Corporation and/or its affiliates.*  
+*MEDITECH® is a registered trademark of Medical Information Technology, Inc.*  
+*Microsoft®, Azure®, Copilot®, and Windows® are registered trademarks of Microsoft Corporation.*  
+*Google®, Chrome®, and Android™ are trademarks of Google LLC.*  
+*Amazon®, AWS®, and HealthLake® are registered trademarks of Amazon.com, Inc. or its affiliates.*  
+*HL7® and FHIR® are registered trademarks of Health Level Seven International.*  
+*SNOMED CT® is a registered trademark of SNOMED International.*  
+*LOINC® is a registered trademark of Regenstrief Institute, Inc.*  
+
+Pocket Gull is an independent clinical software application that connects to certified health information technologies via open, public, consensus-based standards. Reference to these trademarks does not imply sponsorship, affiliation, endorsement, or certification by any of the respective trademark holders.
 
 ---
 

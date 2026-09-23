@@ -86,5 +86,50 @@ describe('SkepticalEpistemologyHudComponent', () => {
     component.activeBiophysTab.set('pore');
     expect(component.activeBiophysTab()).toBe('pore');
   });
+
+  it('9. Initializes Fallacy Auditor with default assertion and evaluates base-rate findings', () => {
+    expect(component.isFallacyAuditorOpen()).toBe(true);
+    expect(component.allFallacies().length).toBe(12);
+
+    const audit = component.fallacyAuditResult();
+    expect(audit).not.toBeNull();
+    expect(audit?.hasDetectedFallacy).toBe(true);
+    expect(audit?.findings.some(f => f.fallacyId === 'BASE_RATE_FALLACY')).toBe(true);
+    expect(audit?.bayesianInsight).toBeDefined();
+    expect(audit?.bayesianInsight?.actualPpvPercentage).toBeLessThan(5);
+  });
+
+  it('10. Switches fallacy presets and dynamically updates audit results', () => {
+    // Select Sound Claim preset
+    const soundPreset = component.fallacyPresets.find(p => p.label.includes('Sound RCT Claim'));
+    expect(soundPreset).toBeDefined();
+
+    component.setFallacyPreset(soundPreset!.text);
+    expect(component.fallacyInput()).toBe(soundPreset!.text);
+
+    const soundAudit = component.fallacyAuditResult();
+    expect(soundAudit?.hasDetectedFallacy).toBe(false);
+    expect(soundAudit?.findings.length).toBe(0);
+
+    // Select Supplement Sequence (Post Hoc)
+    const postHocPreset = component.fallacyPresets.find(p => p.label.includes('Supplement Sequence'));
+    component.setFallacyPreset(postHocPreset!.text);
+    const postHocAudit = component.fallacyAuditResult();
+    expect(postHocAudit?.hasDetectedFallacy).toBe(true);
+    expect(postHocAudit?.findings.some(f => f.fallacyId === 'POST_HOC_ERGO_PROPTER_HOC')).toBe(true);
+  });
+
+  it('11. Toggles Fallacy Catalog browser and exposes all 12 canonical definitions', () => {
+    expect(component.isFallacyCatalogOpen()).toBe(false);
+    component.toggleFallacyCatalog();
+    expect(component.isFallacyCatalogOpen()).toBe(true);
+
+    const fallacies = component.allFallacies();
+    expect(fallacies.length).toBe(12);
+    expect(fallacies.map(f => f.id)).toContain('BASE_RATE_FALLACY');
+    expect(fallacies.map(f => f.id)).toContain('AUTOMATION_BIAS');
+    expect(fallacies.map(f => f.id)).toContain('APPEAL_TO_NATURE');
+  });
 });
+
 

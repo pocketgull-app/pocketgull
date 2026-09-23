@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-export type ClinicalRolePathway = 'clinician' | 'resident' | 'researcher' | 'executive' | 'patient';
+export type ClinicalRolePathway = 'clinician' | 'resident' | 'researcher' | 'executive' | 'patient' | 'chw';
 
 export type ClinicalWorkflowStageId = 'intake' | 'consult' | 'careplan' | 'soundscape' | 'outcomes';
 
@@ -566,6 +566,109 @@ export class RolePathwayDocsService {
       },
       regulatoryAndStandards: ['Plain Writing Act of 2010', 'National CLAS Standards', 'WCAG AAA 7:1 Contrast', '100% Confidential'],
       takeHomeSummary: 'You are the captain of your health journey. Pocket-Gull translates complicated medical charts into clear, empowering action steps.'
+    },
+
+    chw: {
+      pathwayId: 'chw',
+      roleTitle: 'Community Health Worker & Frontline Volunteer',
+      targetAudience: 'Community health workers, promotores de salud, disaster first responders, rural mobile clinic volunteers.',
+      icon: '🎒',
+      tagline: 'Empowering frontline health advocates with ultra-reliable, offline-first triage, MUAC nutrition screening, and zero-barrier peer handoffs.',
+      toneAndDensity: 'Clear, protocol-driven, visual decision trees (Fitts’s Law ≥44px hitboxes, color-coded red/yellow/green danger signs, offline QR handoffs).',
+      primaryClinicalObjectives: [
+        'Rapid childhood malnutrition screening via Middle Upper Arm Circumference (MUAC) and Ready-to-Use Therapeutic Food (RUTF) dosing.',
+        'Tap-tempo tachypnea counter for pediatric pneumonia / ARI triage.',
+        'Oral Rehydration Solution (ORS) protocol titration for acute dehydrating diarrhea.',
+        'Immediate red-flag danger sign recognition and offline peer-to-peer handoff to district hospital clinicians via lean QR codes.'
+      ],
+      workflowStages: [
+        {
+          stageNumber: 1,
+          stageId: 'intake',
+          title: 'Field Triage & 7 Danger Signs',
+          subtitle: 'Immediate Red-Flag Recognition',
+          icon: '🚨',
+          targetTabId: 'chw',
+          clinicalObjective: 'Scan for immediate pediatric & maternal emergency danger signs (lethargy, convulsions, chest indrawing, stridor) before detailed assessment.',
+          keyOutputs: ['WHO IMCI Danger Signs Check', 'Acuity Level (Red/Yellow/Green)', 'Emergency Evacuation Flag'],
+          evidenceOrStandard: 'WHO IMCI Guidelines (Integrated Management of Childhood Illness)',
+          statusBadge: 'Stage 1: Field Triage'
+        },
+        {
+          stageNumber: 2,
+          stageId: 'consult',
+          title: 'Nutritional & Respiratory Exam',
+          subtitle: 'MUAC Band & Tap-Tempo Counter',
+          icon: '📏',
+          targetTabId: 'chw',
+          clinicalObjective: 'Conduct physical nutrition measurements and count respiratory rate using tap-tempo calibration against age-adjusted WHO thresholds.',
+          keyOutputs: ['MUAC Classification (Red SAM / Yellow MAM / Green Normal)', 'Tachypnea Breath Count (bpm)', 'RUTF Sachet Daily Dosage'],
+          evidenceOrStandard: 'WHO SAM / MAM Guidelines & UNICEF RUTF Specifications',
+          statusBadge: 'Stage 2: Frontline Exam'
+        },
+        {
+          stageNumber: 3,
+          stageId: 'careplan',
+          title: 'Community Care & Rehydration',
+          subtitle: 'ORS & Open Formulary Guidance',
+          icon: '💧',
+          targetTabId: 'chw',
+          clinicalObjective: 'Guide caregivers on home rehydration, clean water preparation, Zinc supplementation, and WHO Essential Medicines access.',
+          keyOutputs: ['Low-Osmolarity ORS Preparation Instructions', 'Zinc 20mg 10-14 Day Course', 'Caregiver Home Counseling Guide'],
+          evidenceOrStandard: 'WHO/UNICEF Diarrhea Management Protocol',
+          statusBadge: 'Stage 3: Community Plan'
+        },
+        {
+          stageNumber: 4,
+          stageId: 'soundscape',
+          title: 'Caregiver Comfort & Bio-Pacing',
+          subtitle: '0.10 Hz Calming & Anxiety Relief',
+          icon: '🌿',
+          targetTabId: 'soundscape',
+          clinicalObjective: 'Alleviate caregiver panic and maternal stress through soothing acoustic bio-rhythmic pacing during frontline encounters.',
+          keyOutputs: ['Parasympathetic Heart Rate Calming', 'Caregiver Reassurance Rhythm', 'Zero-Anxiety Field Guidance'],
+          evidenceOrStandard: 'Rachel Nabors Ethical Motion & Autonomic Vagal Regulation',
+          statusBadge: 'Stage 4: Caregiver Comfort'
+        },
+        {
+          stageNumber: 5,
+          stageId: 'outcomes',
+          title: 'Offline Peer-to-Peer Handoff',
+          subtitle: 'Compact QR District Referral',
+          icon: '📱',
+          targetTabId: 'austere',
+          clinicalObjective: 'Export the complete triage encounter as a high-density, zero-egress offline QR code for instant district nurse/physician handoff.',
+          keyOutputs: ['Lean QR Code Bundle', 'Clinical Escalation Summary', 'District Referral Receipt'],
+          evidenceOrStandard: 'Austere Mesh & P2P Zero-Egress Field Standard',
+          statusBadge: 'Stage 5: District Referral'
+        }
+      ],
+      recommendedTools: [
+        { name: 'Frontline CHW Suite', icon: '🎒', tabId: 'chw', purpose: 'MUAC nutrition slider, tap-tempo tachypnea counter, and ORS titration.' },
+        { name: 'WHO Essential Medicines', icon: '🌍', tabId: 'who', purpose: 'Universal open formulary and transparent pricing comparison.' },
+        { name: 'Austere Field Mode', icon: '📡', tabId: 'austere', purpose: 'Zero-bandwidth peer-to-peer QR code transfers to district clinicians.' },
+        { name: 'SMS Compass Bridge', icon: '💬', tabId: 'sms', purpose: 'Asynchronous SMS outreach without smartphone app dependencies.' }
+      ],
+      quickActions: [
+        { title: 'Open Frontline CHW Suite', description: 'Screen child malnutrition with MUAC band and count respiratory rates.', icon: '🎒', targetTabId: 'chw', badge: 'Frontline Tool' },
+        { title: 'Check WHO Open Formulary', description: 'Review transparent global prices and compounding monographs for essential medicines.', icon: '🌍', targetTabId: 'who', badge: 'Open Formulary' },
+        { title: 'Generate Offline QR Handoff', description: 'Transmit patient field triage summary to a referral clinic with zero cellular signal.', icon: '📱', targetTabId: 'austere', badge: 'Zero Signal' }
+      ],
+      keyDocumentationHighlights: [
+        { heading: 'Fitts’s Law & Large Hitboxes (≥44px)', detail: 'All field buttons and sliders are calibrated for one-handed operation on low-cost Android phones in bumpy rural transport.' },
+        { heading: 'Traffic Light Visual Clarity', detail: 'Red / Amber / Green color-coded thresholds eliminate clinical hesitation during high-stress triage situations.' }
+      ],
+      flourishingAndHopeFramework: {
+        permaDimension: 'Meaning (M) + Relationships (R) + Frontline Hope Agency',
+        hopePathways: [
+          'Pathway 1: Frontline health workers build community trust by providing immediate, tangible nutritional and rehydration relief.',
+          'Pathway 2: Transparent open medicine formulas demystify care, empowering families to protect their children.',
+          'Pathway 3: Seamless offline handoffs ensure no rural or vulnerable patient slips through the cracks when higher-level escalation is needed.'
+        ],
+        learnedOptimismReframe: 'No community is too remote to receive world-class, life-saving clinical intelligence.'
+      },
+      regulatoryAndStandards: ['WHO IMCI Guidelines', 'UNICEF SAM Protocol', 'Sphere Humanitarian Standards', '100% Offline Capable'],
+      takeHomeSummary: 'Frontline community health workers are the true backbone of global healthcare equity. Pocket-Gull gives them clinical superpowers in the palm of their hand.'
     }
   };
 

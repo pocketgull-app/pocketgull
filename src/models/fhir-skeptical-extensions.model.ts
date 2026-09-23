@@ -159,6 +159,21 @@ export interface IFhirBiophysicalFalsificationExtension {
   )[];
 }
 
+/**
+ * FHIR R4 Extension: Clinical Fallacy & Cognitive Bias Audit
+ */
+export interface IFhirClinicalFallacyAuditExtension {
+  url: 'http://pocketgull.app/fhir/StructureDefinition/clinical-fallacy-audit';
+  extension: [
+    { url: 'has-detected-fallacy'; valueBoolean: boolean },
+    { url: 'detected-fallacies-count'; valueInteger: number },
+    { url: 'primary-fallacy-id'; valueString: string },
+    { url: 'positive-predictive-value-percent'; valueDecimal: number },
+    { url: 'overall-verdict'; valueString: string }
+  ];
+}
+
+
 export interface IFhirProvenancePart11 {
   resourceType: 'Provenance';
   id: string;
@@ -206,3 +221,106 @@ export interface IFhirProvenancePart11 {
     }>;
   }>;
 }
+
+/**
+ * WHO ICD-11 Chapter 26 (Traditional Medicine Conditions - Module 1 / TM1)
+ * Standardized dual-coding ontology for Ayurvedic and TCM clinical patterns.
+ */
+export interface ITraditionalMedicineCoding {
+  system: 'http://id.who.int/icd/release/11/mms/tm1';
+  code: string; // e.g. 'SF50' (Liver Yang Rising), 'SF81' (Pitta Aggravation)
+  display: string;
+  traditionalParadigm: 'TCM' | 'Ayurveda';
+  constitutionalPattern: string; // Zheng (TCM) or Vikriti (Ayurveda)
+  correspondingWesternIcd10: {
+    code: string;
+    display: string;
+  };
+}
+
+export interface IFhirTraditionalMedicineDualCodingExtension {
+  url: 'http://pocketgull.app/fhir/StructureDefinition/traditional-medicine-tm1';
+  extension: [
+    { url: 'who-icd11-tm1-code'; valueString: string },
+    { url: 'who-icd11-tm1-display'; valueString: string },
+    { url: 'traditional-paradigm'; valueString: string },
+    { url: 'constitutional-pattern'; valueString: string },
+    { url: 'corresponding-western-icd10'; valueString: string },
+    { url: 'consilience-concordance-score'; valueDecimal: number }
+  ];
+}
+
+/**
+ * Canonical dictionary of WHO ICD-11 Chapter 26 (TM1) dual-codings
+ */
+export const WHO_ICD11_TM1_CATALOG: Record<string, ITraditionalMedicineCoding> = {
+  LIVER_YANG_RISING: {
+    system: 'http://id.who.int/icd/release/11/mms/tm1',
+    code: 'SF50',
+    display: 'Liver Yang Rising Pattern',
+    traditionalParadigm: 'TCM',
+    constitutionalPattern: 'Liver/Gallbladder Hyperactivity Zheng',
+    correspondingWesternIcd10: { code: 'I10', display: 'Essential (primary) hypertension' }
+  },
+  LIVER_QI_STAGNATION: {
+    system: 'http://id.who.int/icd/release/11/mms/tm1',
+    code: 'SF51',
+    display: 'Liver Qi Stagnation Pattern',
+    traditionalParadigm: 'TCM',
+    constitutionalPattern: 'Qi Stagnation with Epigastric/Hypochondriac Tension',
+    correspondingWesternIcd10: { code: 'F41.1', display: 'Generalized anxiety disorder' }
+  },
+  KIDNEY_YIN_DEFICIENCY: {
+    system: 'http://id.who.int/icd/release/11/mms/tm1',
+    code: 'SF52',
+    display: 'Kidney Yin Deficiency Pattern',
+    traditionalParadigm: 'TCM',
+    constitutionalPattern: 'Essence (Jing) Depletion & Internal Deficiency Heat',
+    correspondingWesternIcd10: { code: 'E11.9', display: 'Type 2 diabetes mellitus without complications' }
+  },
+  VATA_AGGRAVATION: {
+    system: 'http://id.who.int/icd/release/11/mms/tm1',
+    code: 'SF80',
+    display: 'Vata Aggravation Pattern',
+    traditionalParadigm: 'Ayurveda',
+    constitutionalPattern: 'Prana/Vyana Vata Neuro-Axonal Hyperreactivity',
+    correspondingWesternIcd10: { code: 'G90.9', display: 'Disorder of autonomic nervous system, unspecified' }
+  },
+  PITTA_AGGRAVATION: {
+    system: 'http://id.who.int/icd/release/11/mms/tm1',
+    code: 'SF81',
+    display: 'Pitta Aggravation Pattern',
+    traditionalParadigm: 'Ayurveda',
+    constitutionalPattern: 'Pachaka/Ranjaka Pitta Inflammatory Heat & Acidosis',
+    correspondingWesternIcd10: { code: 'K21.9', display: 'Gastro-esophageal reflux disease without esophagitis' }
+  },
+  KAPHA_ACCUMULATION: {
+    system: 'http://id.who.int/icd/release/11/mms/tm1',
+    code: 'SF82',
+    display: 'Kapha Accumulation Pattern',
+    traditionalParadigm: 'Ayurveda',
+    constitutionalPattern: 'Kledaka Kapha Sluggishness & Meda Dhatu Stasis',
+    correspondingWesternIcd10: { code: 'E88.81', display: 'Metabolic syndrome' }
+  }
+};
+
+/**
+ * Builds a standardized FHIR R4 extension for WHO ICD-11 Chapter 26 (TM1) dual coding.
+ */
+export function buildFhirTm1DualCodingExtension(
+  coding: ITraditionalMedicineCoding,
+  concordanceScore: number = 0.92
+): IFhirTraditionalMedicineDualCodingExtension {
+  return {
+    url: 'http://pocketgull.app/fhir/StructureDefinition/traditional-medicine-tm1',
+    extension: [
+      { url: 'who-icd11-tm1-code', valueString: coding.code },
+      { url: 'who-icd11-tm1-display', valueString: coding.display },
+      { url: 'traditional-paradigm', valueString: coding.traditionalParadigm },
+      { url: 'constitutional-pattern', valueString: coding.constitutionalPattern },
+      { url: 'corresponding-western-icd10', valueString: `${coding.correspondingWesternIcd10.code} - ${coding.correspondingWesternIcd10.display}` },
+      { url: 'consilience-concordance-score', valueDecimal: concordanceScore }
+    ]
+  };
+}
+

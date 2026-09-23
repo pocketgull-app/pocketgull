@@ -1,5 +1,6 @@
 import { Component, signal, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
   SkepticalEpistemologyService,
   ICdsComplianceReport,
@@ -7,7 +8,9 @@ import {
   CochraneRiskOfBiasLevel,
   IBiohackEpistemicAssessment,
   BiohackCategory,
-  IBiophysicalFalsificationCatalog
+  IBiophysicalFalsificationCatalog,
+  IClinicalFallacyDefinition,
+  IClinicalFallacyAuditResult
 } from '../services/skeptical-epistemology.service';
 import {
   IGroundedClinicalAssertion,
@@ -18,7 +21,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
 @Component({
   selector: 'app-skeptical-epistemology-hud',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md p-6 shadow-xl transition-all duration-300 hover:shadow-2xl">
       <!-- Header HUD Bar -->
@@ -648,6 +651,234 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
         </div>
       }
 
+      <!-- Clinical Logical Fallacy & Cognitive Bias Auditor (Wikipedia & EBM Guard) -->
+      <div class="mt-6 border-t border-zinc-100 dark:border-zinc-800/80 pt-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="p-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 text-sm font-bold">⚖️</span>
+            <div>
+              <h4 class="text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-2">
+                Clinical Logical Fallacy &amp; Cognitive Bias Auditor
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                  12 Canonical Fallacies Encoded
+                </span>
+              </h4>
+              <p class="text-[11px] text-zinc-500 dark:text-zinc-400">
+                Grounded in Wikipedia Formal/Informal Fallacies taxonomy &amp; Gerd Gigerenzer Bayesian Natural Frequency standards.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              (click)="toggleFallacyCatalog()"
+              class="px-2.5 py-1 text-xs font-mono font-medium rounded-lg border border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-300 bg-purple-50/50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/60 transition cursor-pointer"
+            >
+              {{ isFallacyCatalogOpen() ? 'Hide Catalog' : '📚 Browse 12 Fallacies Catalog' }}
+            </button>
+            <button
+              type="button"
+              (click)="isFallacyAuditorOpen.set(!isFallacyAuditorOpen())"
+              class="p-1 text-zinc-400 hover:text-zinc-200 text-xs font-mono cursor-pointer"
+            >
+              {{ isFallacyAuditorOpen() ? '▼ Collapse' : '▲ Expand' }}
+            </button>
+          </div>
+        </div>
+
+        @if (isFallacyAuditorOpen()) {
+          <div class="rounded-xl bg-zinc-50 dark:bg-zinc-950/60 p-4 border border-zinc-200/80 dark:border-zinc-800/80 space-y-4">
+            <!-- Preset Assertion Chips -->
+            <div>
+              <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 block mb-2">
+                Quick Test Presets (Real-World Clinical Scenarios):
+              </span>
+              <div class="flex flex-wrap gap-1.5">
+                @for (preset of fallacyPresets; track preset.label) {
+                  <button
+                    type="button"
+                    (click)="setFallacyPreset(preset.text)"
+                    class="px-2.5 py-1 text-[11px] rounded-lg border transition font-medium cursor-pointer"
+                    [ngClass]="fallacyInput() === preset.text ? 'bg-purple-600 text-white border-purple-600 shadow-sm' : 'bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800 hover:border-purple-400'"
+                  >
+                    {{ preset.label }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Assertion Input & Audit Trigger -->
+            <div>
+              <label for="clinical-assertion-input" class="text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 block mb-1">
+                Clinical Assertion / Diagnostic Rationale:
+              </label>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <textarea
+                  id="clinical-assertion-input"
+                  [value]="fallacyInput()"
+                  (input)="fallacyInput.set($any($event.target).value)"
+                  rows="2"
+                  class="flex-1 p-2.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-500 font-sans"
+                  placeholder="Paste or write a clinical claim or reasoning statement to audit..."
+                ></textarea>
+                <button
+                  type="button"
+                  (click)="runFallacyAudit()"
+                  class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 flex-shrink-0 cursor-pointer"
+                >
+                  <span>⚖️ Audit Claim</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Audit Findings Result -->
+            @if (fallacyAuditResult(); as res) {
+              <div class="rounded-xl border p-4 transition-all"
+                   [ngClass]="res.hasDetectedFallacy ? 'bg-amber-50/40 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800/60' : 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/60'">
+                <!-- Summary Banner -->
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3"
+                     [ngClass]="res.hasDetectedFallacy ? 'border-amber-200 dark:border-amber-800/40' : 'border-emerald-200 dark:border-emerald-800/40'">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">{{ res.hasDetectedFallacy ? '⚠️' : '✓' }}</span>
+                    <div>
+                      <span class="text-xs font-bold"
+                            [ngClass]="res.hasDetectedFallacy ? 'text-amber-800 dark:text-amber-200' : 'text-emerald-800 dark:text-emerald-200'">
+                        {{ res.hasDetectedFallacy ? 'Epistemic Risk Detected: ' + res.findings.length + ' Fallacy Clue(s) Identified' : 'Sound Clinical Epistemic Formulation' }}
+                      </span>
+                      <p class="text-[11px] text-zinc-600 dark:text-zinc-400">
+                        {{ res.overallVerdict }}
+                      </p>
+                    </div>
+                  </div>
+                  <span class="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full border"
+                        [ngClass]="res.hasDetectedFallacy ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border-amber-300' : 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300'">
+                    Fallacy Count: {{ res.findings.length }}
+                  </span>
+                </div>
+
+                <!-- Detected Findings List -->
+                @if (res.findings.length > 0) {
+                  <div class="mt-3 space-y-3">
+                    @for (finding of res.findings; track finding.fallacyId) {
+                      <div class="p-3 rounded-lg bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                          <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100">{{ finding.fallacyName }}</span>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded border"
+                                  [ngClass]="finding.severity === 'HIGH' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30' : finding.severity === 'MEDIUM' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30'">
+                              {{ finding.severity }} RISK
+                            </span>
+                          </div>
+                          @if (finding.definition.wikipediaUrl) {
+                            <a [href]="finding.definition.wikipediaUrl" target="_blank" rel="noopener noreferrer"
+                               class="text-[10.5px] text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 font-mono">
+                              <span>Wikipedia Reference ↗</span>
+                            </a>
+                          }
+                        </div>
+
+                        <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                          <strong class="text-zinc-800 dark:text-zinc-200">Clinical Impact:</strong> {{ finding.clinicalRisk }}
+                        </p>
+
+                        <div class="p-2.5 rounded bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/60 dark:border-zinc-800/60 text-xs text-emerald-800 dark:text-emerald-300 leading-relaxed">
+                          <strong class="font-semibold block mb-0.5 text-emerald-700 dark:text-emerald-400">Compassionate Counter-Hypothesis:</strong>
+                          {{ finding.counterHypothesis }}
+                        </div>
+
+                        <div class="p-2.5 rounded bg-purple-50/60 dark:bg-purple-950/30 border border-purple-200/60 dark:border-purple-800/60 text-xs text-purple-900 dark:text-purple-200">
+                          <strong class="font-semibold flex items-center gap-1 mb-0.5 text-purple-700 dark:text-purple-300">
+                            <span>💬</span> Socratic Reflective Inquiry:
+                          </strong>
+                          {{ finding.socraticQuestion }}
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <!-- Gerd Gigerenzer Bayesian Natural Frequency Insight Card -->
+                @if (res.bayesianInsight; as bayes) {
+                  <div class="mt-4 p-3.5 rounded-lg bg-indigo-950/40 border border-indigo-500/40 text-xs font-mono space-y-2.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-500/20 pb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm">📊</span>
+                        <span class="font-bold text-indigo-300 font-sans">
+                          Gerd Gigerenzer Natural Frequency Matrix (De-Biased Bayes)
+                        </span>
+                      </div>
+                      <span class="px-2 py-0.5 rounded text-[10px] bg-indigo-500/20 text-indigo-200 border border-indigo-500/40">
+                        Population: {{ bayes.totalPopulation.toLocaleString() }} Screened
+                      </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                      <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block text-[9.5px]">True Positives:</span>
+                        <span class="text-emerald-400 font-bold">{{ bayes.truePositives }}</span>
+                        <span class="text-[9px] text-zinc-500 block">Has condition + test +</span>
+                      </div>
+                      <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block text-[9.5px]">False Positives:</span>
+                        <span class="text-rose-400 font-bold">{{ bayes.falsePositives }}</span>
+                        <span class="text-[9px] text-zinc-500 block">Healthy + test +</span>
+                      </div>
+                      <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block text-[9.5px]">Total Positive Tests:</span>
+                        <span class="text-amber-300 font-bold">{{ bayes.totalPositives }}</span>
+                        <span class="text-[9px] text-zinc-500 block">All positive tests</span>
+                      </div>
+                      <div class="p-2 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block text-[9.5px]">Actual PPV:</span>
+                        <span class="text-cyan-300 font-bold">{{ bayes.actualPpvPercentage }}%</span>
+                        <span class="text-[9px] text-zinc-500 block">P(Disease | Positive)</span>
+                      </div>
+                    </div>
+
+                    <div class="p-2.5 rounded bg-black/50 border border-indigo-500/20 text-zinc-300 font-sans text-xs leading-relaxed">
+                      <strong class="text-indigo-300 font-mono">Statistical Reality:</strong> {{ bayes.plainEnglishExplanation }}
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Collapsible Catalog Browser -->
+            @if (isFallacyCatalogOpen()) {
+              <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+                <div class="flex items-center justify-between">
+                  <h5 class="text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400">
+                    Canonical 12 Clinical Fallacies Catalog
+                  </h5>
+                  <span class="text-[11px] text-zinc-500 font-mono">12 Total Registered</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                  @for (f of allFallacies(); track f.id) {
+                    <div class="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1.5 text-xs">
+                      <div class="flex items-center justify-between">
+                        <span class="font-bold text-zinc-900 dark:text-zinc-100">{{ f.name }}</span>
+                        <span class="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                          {{ f.category }}
+                        </span>
+                      </div>
+                      <p class="text-[11.5px] text-zinc-600 dark:text-zinc-400">{{ f.description }}</p>
+                      <div class="text-[11px] text-zinc-500 italic">
+                        <strong>Clinical Example:</strong> "{{ f.clinicalExample }}"
+                      </div>
+                      <div class="text-[11px] text-emerald-700 dark:text-emerald-400">
+                        <strong>Correction:</strong> {{ f.epistemicCorrection }}
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
       <!-- Peer-Reviewed DOI Citation & OpenAlex Epistemic Grounding -->
       <div class="mt-4 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/80 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2.5 text-xs">
         <div class="flex items-center gap-2">
@@ -793,6 +1024,69 @@ export class SkepticalEpistemologyHudComponent {
   readonly isAttested = signal<boolean>(true);
   readonly part11Digest = signal<string>('sha256-4b89f6d729a1c3e580e219ba48d0ec3951f2bc8a76302e1858a74e9087c2b489');
 
+  // Clinical Fallacy Auditor State
+  readonly isFallacyAuditorOpen = signal<boolean>(true);
+  readonly isFallacyCatalogOpen = signal<boolean>(false);
+  readonly fallacyInput = signal<string>(
+    'The patient tested positive on a 99% accurate screening test for a rare 1 in 10,000 disease, so there is a 99% probability they have the disease.'
+  );
+
+  readonly allFallacies = computed<IClinicalFallacyDefinition[]>(() => {
+    return this.skepticalService.getAllFallacyDefinitions();
+  });
+
+  readonly fallacyAuditResult = signal<IClinicalFallacyAuditResult | null>(
+    this.skepticalService.auditClinicalAssertionForFallacies(
+      'The patient tested positive on a 99% accurate screening test for a rare 1 in 10,000 disease, so there is a 99% probability they have the disease.'
+    )
+  );
+
+  readonly fallacyPresets = [
+    {
+      label: 'Positive Screening (Base Rate)',
+      text: 'The patient tested positive on a 99% accurate screening test for a rare 1 in 10,000 disease, so there is a 99% probability they have the disease.'
+    },
+    {
+      label: 'Supplement Sequence (Post Hoc)',
+      text: 'The patient took colloidal silver and their acute viral fever broke two days later, proving the silver cured the viral infection.'
+    },
+    {
+      label: 'Troponin Elevation (Affirming Consequent)',
+      text: 'Acute myocardial infarction causes elevated cardiac troponin; the troponin is elevated, so the patient definitely suffered an acute MI.'
+    },
+    {
+      label: '100 Biomarkers (Texas Sharpshooter)',
+      text: 'We measured 100 inflammatory cytokine biomarkers and found IL-37 had p=0.038, demonstrating an undiscovered therapeutic target.'
+    },
+    {
+      label: 'Natural Botanical (Appeal to Nature)',
+      text: 'This herbal decoction is 100% all-natural organic plant medicine, so it is inherently safe and free of toxic side effects or renal toxicity.'
+    },
+    {
+      label: 'AI Automation Deference (Automation Bias)',
+      text: 'The AI algorithm predicted an 88% sepsis probability, so we must start broad-spectrum intravenous carbapenems immediately without clinical exam.'
+    },
+    {
+      label: 'Sound RCT Claim (Zero Fallacies)',
+      text: 'In a double-blind randomized controlled trial of 1,200 hypertensive patients, lisinopril reduced systolic blood pressure by 12 mmHg (p=0.002) compared to placebo.'
+    }
+  ];
+
+  runFallacyAudit(): void {
+    const input = this.fallacyInput();
+    const result = this.skepticalService.auditClinicalAssertionForFallacies(input);
+    this.fallacyAuditResult.set(result);
+  }
+
+  setFallacyPreset(text: string): void {
+    this.fallacyInput.set(text);
+    this.runFallacyAudit();
+  }
+
+  toggleFallacyCatalog(): void {
+    this.isFallacyCatalogOpen.update(v => !v);
+  }
+
   signDualCustodySeal(): void {
     const entropy = new Uint8Array(16);
     if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
@@ -803,3 +1097,4 @@ export class SkepticalEpistemologyHudComponent {
     this.isAttested.set(true);
   }
 }
+

@@ -98,6 +98,9 @@ import { RoleDemoModalComponent } from './components/role-demo-modal.component';
 import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
 import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.component';
 import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component';
+import { PocketgullArchitectureAtlasComponent } from './components/shared/pocketgull-architecture-atlas.component';
+import { CommunityHealthWorkerSuiteComponent } from './components/shared/community-health-worker-suite.component';
+import { SpecialistReferralHubComponent } from './components/specialist-referral-hub.component';
 
 @Component({
   selector: 'app-root',
@@ -109,6 +112,9 @@ import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component
     CommonModule,
     FormsModule,
     ArcadeHubModalComponent,
+    PocketgullArchitectureAtlasComponent,
+    CommunityHealthWorkerSuiteComponent,
+    SpecialistReferralHubComponent,
     PocketgullTypefaceSiteComponent,
     BarrowsClinicalInquiryHubComponent,
     PasskeyStepUpModalComponent,
@@ -271,6 +277,11 @@ import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component
       <!-- USWDS Federal Health & Clinical Decision Support Workstation Modal -->
       @if (navShell.showFederalUswdsPortal()) {
         <app-federal-uswds-portal (closeModal)="navShell.closeFederalUswdsPortal()"></app-federal-uswds-portal>
+      }
+
+      <!-- Specialist Referral & Co-Management Dossier Hub Modal -->
+      @if (navShell.showSpecialistReferralModal()) {
+        <app-specialist-referral-hub (closeModal)="navShell.closeSpecialistReferralHub()"></app-specialist-referral-hub>
       }
 
       <!-- Dr. Howard Barrows Clinical Inquiry & Problem-Based Reasoning Workbench Modal -->
@@ -882,6 +893,9 @@ import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component
             <button type="button" (click)="showDocsStudy.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>📚 Docs</span>
             </button>
+            <button type="button" (click)="navShell.openAtlas()" class="hover:text-teal-600 dark:hover:text-teal-400 text-teal-400 transition cursor-pointer flex items-center gap-1 font-bold">
+              <span>🏛️ Atlas</span>
+            </button>
           </div>
         </footer>
       }
@@ -892,6 +906,10 @@ import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component
             }
         }
 
+    <!-- Pocket-Gull Architecture Atlas & Visual Topology Modal -->
+    @if (navShell.showAtlasModal()) {
+      <app-pocketgull-architecture-atlas></app-pocketgull-architecture-atlas>
+    }
 
     <!-- Pocket-Gull Arcade & Clinical Quests Hub Modal -->
     @if (navShell.showArcadeHubModal()) {
@@ -1423,6 +1441,14 @@ import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component
         <app-austere-research-hud (close)="showAustereHudModal.set(false); navShell.closeAustereHud()"></app-austere-research-hud>
       </div>
     }
+
+    <!-- Frontline Community Health Worker (CHW) Task-Shifting Suite Modal -->
+    @if (navShell.showChwSuiteModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Frontline Community Health Worker Suite">
+        <app-community-health-worker-suite (close)="navShell.closeChwSuite()"></app-community-health-worker-suite>
+      </div>
+    }
+
 
     <!-- 3D Joint Hologram & Tri-Plane Slicer Modal -->
     @if (showKneeHologramModal()) {

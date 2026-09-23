@@ -1,6 +1,7 @@
 import { Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GlobalHealthInitiativesService, IWhoCvdRiskResult, IWhoIcd11TmMapping, INihHealthspanAssessment, IArpahTriageResult, IWhoIcopeAssessment, INihRecoverAssessment } from '../../services/global-health-initiatives.service';
+import { WhoEssentialMedicinesService, IWhoFormularyAuditResult } from '../../services/who-essential-medicines.service';
 import { PatientStateService } from '../../services/patient-state.service';
 import { IPatient, IPatientVitals } from '../../services/patient.types';
 
@@ -70,7 +71,17 @@ import { IPatient, IPatientVitals } from '../../services/patient.types';
                     class="px-3.5 py-1.5 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
               <span>🛡️</span> ARPA-H Resilient Triage
             </button>
+
+            <button type="button" (click)="activeAgencyTab.set('formulary')"
+                    [class.bg-emerald-600]="activeAgencyTab() === 'formulary'"
+                    [class.text-white]="activeAgencyTab() === 'formulary'"
+                    [class.text-zinc-600]="activeAgencyTab() !== 'formulary'"
+                    [class.dark:text-zinc-400]="activeAgencyTab() !== 'formulary'"
+                    class="px-3.5 py-1.5 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
+              <span>💊</span> WHO Essential Formulary
+            </button>
           </div>
+
 
           <!-- Tab Content Scrollable Container -->
           <div class="flex-1 overflow-y-auto p-6 space-y-6">
@@ -392,6 +403,83 @@ import { IPatient, IPatientVitals } from '../../services/patient.types';
               </div>
             }
 
+            <!-- TAB 4: WHO Essential Medicines Open Formulary -->
+            @if (activeAgencyTab() === 'formulary') {
+              <div class="space-y-6">
+                <!-- Summary Card -->
+                <div class="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-4">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="text-[10.5px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-mono">
+                        Universal Free Healthcare Engine • WHO Model List 23rd Ed.
+                      </span>
+                      <h4 class="text-sm font-bold text-zinc-900 dark:text-zinc-50 mt-0.5">
+                        Patient Open Generic Parity &amp; Compounding Audit
+                      </h4>
+                    </div>
+                    <span class="px-2.5 py-1 text-xs font-bold font-mono rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                      {{ whoFormularyAudit().universalAccessTier }}
+                    </span>
+                  </div>
+
+                  <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                    {{ whoFormularyAudit().clinicalSummary }}
+                  </p>
+
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                    <div class="p-3 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                      <span class="text-[10px] font-mono uppercase text-zinc-500 block">Standard Retail Benchmark:</span>
+                      <span class="text-base font-bold text-rose-500 font-mono line-through">&#36;{{ whoFormularyAudit().estimatedRetailOutOfPocketTotalUsd.toFixed(2) }}</span>
+                      <span class="text-[9px] text-zinc-400 block font-mono">Estimated Out-of-Pocket Total</span>
+                    </div>
+                    <div class="p-3 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                      <span class="text-[10px] font-mono uppercase text-zinc-500 block">WHO Open Cost:</span>
+                      <span class="text-base font-bold text-emerald-500 font-mono">&#36;{{ whoFormularyAudit().totalMonthlyEssentialCostUsd.toFixed(2) }}/mo</span>
+                    </div>
+                    <div class="p-3 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                      <span class="text-[10px] font-mono uppercase text-zinc-500 block">Monthly Savings:</span>
+                      <span class="text-base font-bold text-emerald-600 dark:text-emerald-400 font-mono">&#36;{{ whoFormularyAudit().netMonthlySavingsUsd.toFixed(2) }}</span>
+                    </div>
+                    <div class="p-3 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                      <span class="text-[10px] font-mono uppercase text-zinc-500 block">Annual Relief:</span>
+                      <span class="text-base font-bold text-teal-600 dark:text-teal-400 font-mono">&#36;{{ whoFormularyAudit().netAnnualSavingsUsd.toFixed(2) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Mapped Therapies List -->
+                <div class="space-y-3">
+                  <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-mono">
+                    Essential Generic Equivalents &amp; Monograph Specifications
+                  </h4>
+
+                  @for (sub of whoFormularyAudit().substitutions; track sub.matchedMedicine.id) {
+                    <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                          <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100 font-mono">{{ sub.matchedMedicine.name }}</span>
+                          <span class="text-[10px] text-zinc-500 font-serif italic">({{ sub.matchedMedicine.genericInn }})</span>
+                          <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300">
+                            {{ sub.matchedMedicine.atcCode }}
+                          </span>
+                        </div>
+                        <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                          -{{ sub.matchedMedicine.savingsPercent }}% Cost
+                        </span>
+                      </div>
+                      <p class="text-[11.5px] text-zinc-600 dark:text-zinc-300 leading-snug">
+                        {{ sub.patientImpactNote }}
+                      </p>
+                      <div class="text-[10.5px] font-mono text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-950 p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800/80">
+                        <strong class="text-zinc-700 dark:text-zinc-300">Compounding Monograph: </strong>
+                        {{ sub.matchedMedicine.openCompoundingMonograph }}
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
           </div>
 
           <!-- Modal Footer -->
@@ -410,11 +498,13 @@ import { IPatient, IPatientVitals } from '../../services/patient.types';
 })
 export class GlobalHealthInitiativesModalComponent {
   private service = inject(GlobalHealthInitiativesService);
+  private emlService = inject(WhoEssentialMedicinesService);
   private patientState = inject(PatientStateService);
 
   isOpen = signal<boolean>(false);
-  activeAgencyTab = signal<'who' | 'nih' | 'arpah'>('who');
+  activeAgencyTab = signal<'who' | 'nih' | 'arpah' | 'formulary'>('who');
   copied = signal<boolean>(false);
+
 
   readonly currentPatient = computed<IPatient>(() => {
     const history = this.patientState.patientHistory ? this.patientState.patientHistory() : [];
@@ -471,6 +561,14 @@ export class GlobalHealthInitiativesModalComponent {
 
   readonly arpahTriage = computed<IArpahTriageResult>(() => {
     return this.service.assessArpahEmergencyTriage(this.currentPatient());
+  });
+
+  readonly whoFormularyAudit = computed<IWhoFormularyAuditResult>(() => {
+    const history = this.patientState.patientHistory ? this.patientState.patientHistory().map(h => h.summary || '') : [];
+    const issues = this.patientState.issues ? this.patientState.issues() : {};
+    const issueNames = Object.values(issues).flat().map(i => i.description || '');
+    const candidateMeds = [...history, ...issueNames, 'Metformin', 'Amlodipine', 'Lisinopril', 'Salbutamol'];
+    return this.emlService.auditPrescriptionRegimen(candidateMeds);
   });
 
   open(): void {

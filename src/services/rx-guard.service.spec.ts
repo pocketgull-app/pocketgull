@@ -79,4 +79,20 @@ describe('RxGuardService - Precision PGx & Herb-Drug Matrix Suite', () => {
     expect(assessment.cumulativeMonthlyCostEstimateUsd).toBeGreaterThan(0);
     expect(assessment.totalGenericSavingsOpportunityUsd).toBeGreaterThan(50);
   });
+
+  it('6. Computes Chou-Talalay Combination Index for classical botanical pairs (Curcumin + Piperine)', () => {
+    const synergy = service.computeChouTalalaySynergy('Curcumin', 500, 'Piperine', 20);
+    expect(synergy.combinationIndex).toBe(0.42);
+    expect(synergy.synergyType).toBe('SYNERGISTIC');
+    expect(synergy.formulationRole).toBe('Jun (Emperor)');
+    expect(synergy.bioavailabilityAmplificationMultiplier).toBe(20.0);
+    expect(synergy.evidencePmid).toBe('9619120');
+  });
+
+  it('7. Dynamically evaluates uncataloged botanical pairs with median-effect equation', () => {
+    const synergy = service.computeChouTalalaySynergy('Custom Botanical A', 100, 'Custom Botanical B', 50);
+    expect(synergy.combinationIndex).toBeGreaterThan(0);
+    expect(synergy.combinationIndex).toBeLessThanOrEqual(2.0);
+    expect(['SYNERGISTIC', 'ADDITIVE', 'ANTAGONISTIC']).toContain(synergy.synergyType);
+  });
 });

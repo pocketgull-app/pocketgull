@@ -62,4 +62,29 @@ describe('AustereResearchHudComponent', () => {
     fixture.detectChanges();
     expect(component.showFhirPreview()).toBe(false);
   });
+
+  it('should toggle P2P QR handoff drawer and hydrate incoming peer payload', () => {
+    expect(component.showP2pQr()).toBe(false);
+    component.toggleP2pQr();
+    fixture.detectChanges();
+
+    expect(component.showP2pQr()).toBe(true);
+
+    const validPayload = service.generateCompactOfflineQrPayload();
+    component.incomingPeerPayload.set(validPayload);
+    component.hydratePeerPayload();
+    fixture.detectChanges();
+
+    expect(component.hydrateSuccess()).toBe(true);
+    expect(component.hydrateStatus()).toContain('Hydrated successfully');
+
+    // Test invalid payload
+    component.incomingPeerPayload.set('{"invalid": true}');
+    component.hydratePeerPayload();
+    fixture.detectChanges();
+
+    expect(component.hydrateSuccess()).toBe(false);
+    expect(component.hydrateStatus()).toContain('Invalid');
+  });
 });
+

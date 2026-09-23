@@ -36,8 +36,8 @@ import { RolePathwayDocsService, ClinicalRolePathway, IPathwayDocumentation, ICl
         </div>
       </div>
 
-      <!-- 5 Role Pathway Selection Buttons -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+      <!-- 6 Role Pathway Selection Buttons -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-2.5">
         @for (pathway of allPathways(); track pathway.pathwayId) {
           <button (click)="selectPathway(pathway.pathwayId)"
                   [class.border-indigo-500]="activePathwayId() === pathway.pathwayId"

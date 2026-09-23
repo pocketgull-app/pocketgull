@@ -69,6 +69,73 @@ describe('Business Site Server-Side Rendering (pocketgull.com)', () => {
     expect(html).toContain('themeToggleText');
   });
 
+  it('renders the Common Clinical Condition & Dual-Thrift Explorer with patient tabs and FinOps controls', () => {
+    const html = renderBusinessSiteHtml();
+    expect(html).toContain('id="condition-thrift"');
+    expect(html).toContain('id="condTab_metabolic"');
+    expect(html).toContain('id="condTab_dysautonomia"');
+    expect(html).toContain('id="condTab_neuro"');
+    expect(html).toContain('id="condTab_vector"');
+    expect(html).toContain('id="condTab_polytrauma"');
+    expect(html).toContain('id="conditionDetailCard"');
+    expect(html).toContain('selectConditionTab');
+    expect(html).toContain('CONDITION_THRIFT_DATA');
+
+    // Verify respectful pricing terminology
+    expect(html).toContain('Standard Retail Benchmark:');
+    expect(html).toContain('Estimated Out-of-Pocket Total:');
+    expect(html).toContain('Net Household Savings:');
+    expect(html).toContain('Project Inference Cost:');
+
+    // Verify dual-sided FinOps architecture
+    expect(html).toContain('Patient &amp; Practice Financial Shield');
+    expect(html).toContain('Developer &amp; Project FinOps');
+    expect(html).toContain('$0.00 Edge AI Inference');
+    expect(html).toContain('Scale-to-Zero Cloud Run');
+    expect(html).toContain('WHO Model List Generics');
+
+    // Verify Doc Drill integration for thrift and stepped care
+    expect(html).toContain("openDocDrill('Metabolic Syndrome &amp; Stepped Care')");
+    expect(html).toContain('WHO Essential Medicines & Financial Toxicity');
+    expect(html).toContain('Project FinOps & Scale-to-Zero Architecture');
+  });
+
+  it('renders the Asymmetric Advantage comparison table and Tri-Lens Strategic Architecture', () => {
+    const html = renderBusinessSiteHtml();
+    expect(html).toContain('id="comparison"');
+    expect(html).toContain("Porter's Five Forces");
+    expect(html).toContain('Why PocketGull? The Asymmetric Advantage');
+    expect(html).toContain('Why We Charge $299 Once Instead of $8,000 Every Year');
+
+    // Verify the Tri-Lens Architecture
+    expect(html).toContain('Architecture Is Destiny: Three Lenses on Clinical AI');
+    expect(html).toContain('The Taxpayer Lens');
+    expect(html).toContain('Halting the $1.2T Diagnostic Cascade');
+    expect(html).toContain('The Political &amp; Open Standards Lens');
+    expect(html).toContain('Overcoming Data Silos &amp; Cartel Lock-In');
+    expect(html).toContain('The Humanity Lens');
+
+    // Verify Hyperscaler & Enterprise EHR Ecosystem Alignment
+    expect(html).toContain('id="ecosystem"');
+    expect(html).toContain('Collaborative Symbiosis: Aligning with Google, Microsoft &amp; Amazon');
+    expect(html).toContain('Fast Loop • In The Exam Room');
+    expect(html).toContain('Slow Loop • Enterprise Horizon');
+    expect(html).toContain('The Chrome Built-in AI &amp; Green FinOps Flagship');
+    expect(html).toContain('Windows Copilot+ NPU &amp; Azure Health Services');
+    expect(html).toContain('Amazon Pharmacy RxPass &amp; One Medical Ethos');
+    expect(html).toContain('Epic &amp; Enterprise EHRs');
+    expect(html).toContain('The Ergonomic On-Device Sidecar &amp; Note Bloat Antidote');
+    expect(html).toContain('href="#ecosystem"');
+
+    // Verify Legal & Regulatory Safe Harbor Declarations
+    expect(html).toContain('Statutory Interoperability Safe Harbor');
+    expect(html).toContain('21st Century Cures Act');
+    expect(html).toContain('45 CFR Part 171');
+    expect(html).toContain('Nominative Fair Use &amp; Third-Party Trademark Disclaimers');
+    expect(html).toContain('Epic Systems Corporation');
+    expect(html).toContain('Health Level Seven International');
+  });
+
   it('renders wordmark SVG cleanly', () => {
     const svg = getPocketgullWordmarkSvg();
     expect(svg).toContain('<svg');

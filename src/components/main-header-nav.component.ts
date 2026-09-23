@@ -105,6 +105,17 @@ import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
           <span>Posology</span>
         </button>
 
+        <!-- 🏥 Specialist Referral Dossier Trigger (Desktop) -->
+        <button 
+          type="button" 
+          id="btn-specialist-referral-trigger"
+          (click)="navShell?.openSpecialistReferralHub()"
+          aria-label="Open Specialist Referral & Co-Management Dossier Hub"
+          class="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">🏥</span>
+          <span>Specialist Dossier</span>
+        </button>
+
         <!-- 💵 CMS RPM Superbill Trigger (Desktop) -->
         <button 
           type="button" 
@@ -435,6 +446,13 @@ import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
                       <div class="text-[10px] text-zinc-400 font-normal">Zero-Egress HIPAA Safe Harbor HUD</div>
                     </div>
                   </button>
+                  <button type="button" (click)="openChwSuite(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🌿</span>
+                    <div>
+                      <div>Frontline CHW Suite</div>
+                      <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal">WHO IMCI • MUAC Malnutrition • ORS &amp; Formularies</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openMdcpHub(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">📋</span>
                     <div>
@@ -724,6 +742,11 @@ import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
               <span class="text-base">🛡️</span> <span>Austere Research Profile HUD</span>
             </button>
 
+            <button type="button" (click)="openChwSuite(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🌿</span> <span>Frontline CHW Suite (WHO/MSF)</span>
+            </button>
+
+
             <button type="button" (click)="triggerSomaticGrounding.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🧘</span> <span>Somatic Grounding</span>
             </button>
@@ -829,7 +852,12 @@ export class MainHeaderNavComponent {
   openMdcpHub(): void {
     this.navShell?.openMdcpHub();
   }
+
+  openChwSuite(): void {
+    this.navShell?.openChwSuite();
+  }
 }
+
 
 
 
