@@ -44,6 +44,7 @@ const APPROVED_EGRESS_DOMAINS = [
   'sandbox-api.va.gov',
   'pocketgull.app',
   'www.pocketgull.app',
+  'font.pocketgull.app',
   'pocketgull.com',
   'www.pocketgull.com',
   'ssa.gov',

@@ -184,6 +184,8 @@ pocketgull_api/*.pt
 **/gradle/wrapper/gradle-wrapper.jar
 typefaces_vault/
 .typefaces_vault/
+public/fonts/google_fonts_submission/
+public/*.bundle.js.map
 
 # ------------------------------------------------------------------------------
 # 8. Testing, Coverage, Benchmarks & Lighthouse Reports
