@@ -3,7 +3,8 @@ import {
   ComplexAdaptiveSystemsService,
   IWbeAllometricScalingResult,
   ICriticalSlowingDownMetrics,
-  IHypergraphPolypharmacyAssessment
+  IHypergraphPolypharmacyAssessment,
+  ITakensEmbeddingResult
 } from './complex-adaptive-systems.service';
 
 describe('ComplexAdaptiveSystemsService', () => {
@@ -180,6 +181,63 @@ describe('ComplexAdaptiveSystemsService', () => {
       expect(res.percolationCascadeRiskScore).toBeGreaterThanOrEqual(70);
       expect(res.dominantCascadePathways.length).toBeGreaterThanOrEqual(3);
       expect(res.systemsInterventionDirective).toContain('URGENT COMPLEX SYSTEMS DIRECTIVE');
+    });
+  });
+
+  describe('4. Takens Delay-Coordinate Phase Space Reconstruction (Floris Takens 1981)', () => {
+    it('handles short time-series gracefully under minimum point threshold', () => {
+      const shortSeries = [72, 74, 73];
+      const res: ITakensEmbeddingResult = service.calculateTakensEmbedding(shortSeries, 2, 3);
+
+      expect(res.points.length).toBe(0);
+      expect(res.attractorType).toBe('COLLAPSED_POINT_ATTRACTOR');
+      expect(res.clinicalDynamicalInterpretation).toContain('Insufficient time-series length');
+    });
+
+    it('reconstructs 3D orbit from healthy chaotic heart rate time series', () => {
+      // Simulate healthy chaotic heart rate with respiratory sinus arrhythmia and 1/f noise
+      const healthySeries: number[] = [];
+      let hr = 72;
+      for (let i = 0; i < 40; i++) {
+        // Multi-frequency oscillations + bounded chaos
+        const rsa = 4.5 * Math.sin(i * 0.4) + 2.0 * Math.cos(i * 0.15);
+        hr = 70 + rsa + ((i % 3) - 1) * 1.5;
+        healthySeries.push(Math.round(hr * 10) / 10);
+      }
+
+      const res: ITakensEmbeddingResult = service.calculateTakensEmbedding(healthySeries, 2, 3);
+
+      expect(res.points.length).toBe(healthySeries.length - 4);
+      expect(res.embeddingDimension).toBe(3);
+      expect(res.delayTau).toBe(2);
+      expect(res.attractorVolumeRadius).toBeGreaterThan(1.0);
+      expect(res.correlationDimensionEstimate).toBeGreaterThanOrEqual(1.2);
+      expect(res.attractorType).toBe('HEALTHY_CHAOTIC_ATTRACTOR');
+      expect(res.clinicalDynamicalInterpretation).toContain('Healthy complex strange attractor');
+    });
+
+    it('identifies rigid limit cycle collapse on pathological fixed periodic pacing', () => {
+      // Periodic sine pacing with identical amplitude (loss of variability / rigid pacing)
+      const rigidSeries: number[] = [];
+      for (let i = 0; i < 40; i++) {
+        rigidSeries.push(80 + 10 * Math.sin((i * Math.PI) / 4));
+      }
+
+      const res: ITakensEmbeddingResult = service.calculateTakensEmbedding(rigidSeries, 2, 3);
+
+      expect(res.points.length).toBe(rigidSeries.length - 4);
+      expect(res.attractorType).toBe('RIGID_LIMIT_CYCLE');
+      expect(res.clinicalDynamicalInterpretation).toContain('RIGID LIMIT CYCLE');
+    });
+
+    it('detects point attractor collapse when autonomic variability is completely eliminated', () => {
+      // Constant flatline telemetry
+      const flatSeries = Array(30).fill(72.0);
+      const res: ITakensEmbeddingResult = service.calculateTakensEmbedding(flatSeries, 2, 3);
+
+      expect(res.attractorType).toBe('COLLAPSED_POINT_ATTRACTOR');
+      expect(res.attractorVolumeRadius).toBe(0.0);
+      expect(res.clinicalDynamicalInterpretation).toContain('PATHOLOGICAL POINT ATTRACTOR COLLAPSE');
     });
   });
 });

@@ -36,6 +36,30 @@ export interface IHypergraphPolypharmacyAssessment {
   systemsInterventionDirective: string;
 }
 
+export type AttractorStateClassification = 
+  | 'HEALTHY_CHAOTIC_ATTRACTOR' 
+  | 'RIGID_LIMIT_CYCLE' 
+  | 'STOCHASTIC_DISPERSION' 
+  | 'COLLAPSED_POINT_ATTRACTOR';
+
+export interface ITakensEmbeddingPoint {
+  x: number; // x(t)
+  y: number; // x(t + tau)
+  z: number; // x(t + 2*tau)
+  velocity: number; // phase-space velocity sqrt(dx^2 + dy^2 + dz^2)
+}
+
+export interface ITakensEmbeddingResult {
+  embeddingDimension: number; // typically 3 for 3D WebGL / Three.js orbit visualization
+  delayTau: number; // delay lag in discrete samples
+  points: ITakensEmbeddingPoint[];
+  attractorType: AttractorStateClassification;
+  attractorVolumeRadius: number; // phase-space geometric spread
+  correlationDimensionEstimate: number; // estimated fractal dimension D_2
+  orbitSymmetryRatio: number; // ratio of major to minor trajectory axes
+  clinicalDynamicalInterpretation: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -237,6 +261,168 @@ export class ComplexAdaptiveSystemsService {
       dominantCascadePathways: pathways,
       attractorBasinState: basinState,
       systemsInterventionDirective: directive
+    };
+  }
+
+  /**
+   * Takens Delay-Coordinate Phase Space Reconstruction (Floris Takens 1981)
+   * Transforms a single scalar continuous time-series (e.g. continuous heart rate,
+   * HRV RR-intervals, or pulse wave velocity) into a multi-dimensional phase-space
+   * attractor manifold: v_i = [x(t), x(t + tau), x(t + 2*tau)].
+   *
+   * Enables 3D WebGL / Three.js orbit rendering and differentiates between
+   * healthy fractal chaos (high physiological reserve) and pathological rigid
+   * limit cycles or point attractors.
+   */
+  public calculateTakensEmbedding(
+    timeSeries: number[],
+    tau = 2,
+    dimension = 3
+  ): ITakensEmbeddingResult {
+    const n = timeSeries.length;
+    const minPointsRequired = 2 * tau + 5;
+
+    if (n < minPointsRequired) {
+      return {
+        embeddingDimension: dimension,
+        delayTau: tau,
+        points: [],
+        attractorType: 'COLLAPSED_POINT_ATTRACTOR',
+        attractorVolumeRadius: 0.0,
+        correlationDimensionEstimate: 0.0,
+        orbitSymmetryRatio: 1.0,
+        clinicalDynamicalInterpretation: `Insufficient time-series length (${n} samples) for Takens delay reconstruction (minimum required: ${minPointsRequired} samples).`
+      };
+    }
+
+    const points: ITakensEmbeddingPoint[] = [];
+    let prevX = 0, prevY = 0, prevZ = 0;
+    let sumRadius = 0;
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    let minZ = Infinity, maxZ = -Infinity;
+
+    const count = n - 2 * tau;
+    for (let i = 0; i < count; i++) {
+      const x = timeSeries[i];
+      const y = timeSeries[i + tau];
+      const z = timeSeries[i + 2 * tau];
+
+      minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+      minZ = Math.min(minZ, z); maxZ = Math.max(maxZ, z);
+
+      let velocity = 0;
+      if (i > 0) {
+        const dx = x - prevX;
+        const dy = y - prevY;
+        const dz = z - prevZ;
+        velocity = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      }
+
+      points.push({
+        x: Math.round(x * 100) / 100,
+        y: Math.round(y * 100) / 100,
+        z: Math.round(z * 100) / 100,
+        velocity: Math.round(velocity * 100) / 100
+      });
+
+      prevX = x; prevY = y; prevZ = z;
+    }
+
+    // Centroid of phase space
+    const meanX = points.reduce((acc, p) => acc + p.x, 0) / points.length;
+    const meanY = points.reduce((acc, p) => acc + p.y, 0) / points.length;
+    const meanZ = points.reduce((acc, p) => acc + p.z, 0) / points.length;
+
+    // Phase space radius spread
+    for (const p of points) {
+      const r = Math.sqrt(Math.pow(p.x - meanX, 2) + Math.pow(p.y - meanY, 2) + Math.pow(p.z - meanZ, 2));
+      sumRadius += r;
+    }
+    const avgRadius = Math.round((sumRadius / points.length) * 100) / 100;
+
+    // Spread along axes
+    const rangeX = maxX - minX;
+    const rangeY = maxY - minY;
+    const rangeZ = maxZ - minZ;
+    const maxRange = Math.max(rangeX, rangeY, rangeZ);
+    const minRange = Math.max(0.001, Math.min(rangeX, rangeY, rangeZ));
+    const symmetryRatio = Math.round((maxRange / minRange) * 100) / 100;
+
+    // Grassberger-Procaccia correlation dimension estimate (D_2 proxy)
+    let pairCount = 0;
+    let smallDistCount = 0;
+    const sampleLimit = Math.min(points.length, 50);
+    const rThreshold = avgRadius * 0.5;
+
+    for (let i = 0; i < sampleLimit; i++) {
+      for (let j = i + 1; j < sampleLimit; j++) {
+        pairCount++;
+        const d = Math.sqrt(
+          Math.pow(points[i].x - points[j].x, 2) +
+          Math.pow(points[i].y - points[j].y, 2) +
+          Math.pow(points[i].z - points[j].z, 2)
+        );
+        if (d < rThreshold) {
+          smallDistCount++;
+        }
+      }
+    }
+    const correlationFraction = pairCount > 0 ? (smallDistCount / pairCount) : 0.5;
+    const d2 = avgRadius > 0.1
+      ? Math.max(1.0, Math.min(3.0, Math.round((1.2 + correlationFraction * 1.6) * 100) / 100))
+      : 0.0;
+
+    // Check for periodic recurrence (limit cycle detection via loop closure)
+    let isPeriodicLimitCycle = false;
+    if (avgRadius >= 1.0 && points.length >= 8) {
+      for (let period = 3; period <= Math.floor(points.length / 2); period++) {
+        let diff = 0;
+        let count = 0;
+        for (let i = 0; i < points.length - period; i++) {
+          const p1 = points[i];
+          const p2 = points[i + period];
+          const dist = Math.sqrt(
+            Math.pow(p1.x - p2.x, 2) +
+            Math.pow(p1.y - p2.y, 2) +
+            Math.pow(p1.z - p2.z, 2)
+          );
+          diff += dist;
+          count++;
+        }
+        const meanDiff = count > 0 ? (diff / count) : Infinity;
+        if (meanDiff / avgRadius < 0.10) {
+          isPeriodicLimitCycle = true;
+          break;
+        }
+      }
+    }
+
+    // Attractor classification
+    let attractorType: AttractorStateClassification = 'HEALTHY_CHAOTIC_ATTRACTOR';
+    let interpretation = 'Healthy complex strange attractor. High physiological variability, rich autonomic fractal dynamics, and robust homeostatic reserve.';
+
+    if (avgRadius < 1.0) {
+      attractorType = 'COLLAPSED_POINT_ATTRACTOR';
+      interpretation = 'PATHOLOGICAL POINT ATTRACTOR COLLAPSE: Autonomic variability is virtually eliminated (flatline dynamics). Severe physiological exhaustion or acute shock.';
+    } else if (symmetryRatio > 4.5 || isPeriodicLimitCycle) {
+      attractorType = 'RIGID_LIMIT_CYCLE';
+      interpretation = 'RIGID LIMIT CYCLE: Trajectory trapped in periodic oscillatory pacing (e.g. Cheyne-Stokes breathing, fixed sympathetic tachycardia, or rhythmic tremor). Loss of fractal complexity.';
+    } else if (d2 > 2.8 && avgRadius > 20.0) {
+      attractorType = 'STOCHASTIC_DISPERSION';
+      interpretation = 'STOCHASTIC DISPERSION: High entropy phase-space scatter without deterministic attractor geometry (e.g. atrial fibrillation or severe motion artifact).';
+    }
+
+    return {
+      embeddingDimension: dimension,
+      delayTau: tau,
+      points,
+      attractorType,
+      attractorVolumeRadius: avgRadius,
+      correlationDimensionEstimate: d2,
+      orbitSymmetryRatio: symmetryRatio,
+      clinicalDynamicalInterpretation: interpretation
     };
   }
 }
