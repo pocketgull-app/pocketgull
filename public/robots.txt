@@ -19,6 +19,15 @@ Allow: /
 
 User-agent: Bingbot
 Allow: /
+Disallow: /api/
+Disallow: /contracts/
+
+# Foundation AI Training Crawlers & OS Harvesters (Prohibited)
+User-agent: Copilot
+Disallow: /
+
+User-agent: WindowsRecallBot
+Disallow: /
 
 User-agent: GPTBot
 Allow: /
@@ -56,3 +65,8 @@ Disallow: /
 
 Sitemap: https://pocketgull.com/sitemap.xml
 Sitemap: https://pocketgull.app/sitemap.xml
+
+# Machine-Readable Text and Data Mining (TDM) Reservation (EU Directive 2019/790 Art. 4(3))
+# W3C TDM Reservation Protocol & EU AI Act (2024/1689) Art. 53
+# AI Training, Model Distillation & OS Ingestion Strictly Prohibited
+# Policy: https://pocketgull.com/.well-known/tdmrep.json

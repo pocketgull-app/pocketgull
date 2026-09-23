@@ -1,0 +1,38 @@
+# PocketGull AI Agent & Crawler Governance Specification
+# Conforming to EU Artificial Intelligence Act (2024/1689) Art. 53 and W3C TDM Reservation Protocol
+
+User-agent: Copilot
+Disallow: /
+
+User-agent: Bingbot
+Disallow: /api/
+Disallow: /contracts/
+Disallow: /src/
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: *
+Disallow: /api/
+Disallow: /contracts/
+
+# Text and Data Mining (TDM) Reservation
+tdm-reservation: 1
+tdm-policy: https://pocketgull.com/.well-known/tdmrep.json
+ai-training: prohibited
+model-distillation: prohibited
+os-ingestion: prohibited
+commercial-license-required: true
+contact: dpo@pocketgull.app

@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "tdm-reservation": 1,
+  "tdm-policy": "https://pocketgull.com/legal/tdm-reservation-policy",
+  "ai-training": "prohibited",
+  "operating-system-ingestion": "prohibited",
+  "commercial-license-required": true,
+  "jurisdiction": ["US", "EU", "FVEY"],
+  "statutory-frameworks": [
+    "Directive (EU) 2019/790 Article 4(3)",
+    "EU Artificial Intelligence Act (2024/1689) Article 53",
+    "17 U.S.C. § 106",
+    "Microsoft Services Agreement Section 14.s.iv Reciprocal Enforcement"
+  ],
+  "contact": "dpo@pocketgull.app",
+  "timestamp": "2026-09-23T23:25:00Z"
+}
