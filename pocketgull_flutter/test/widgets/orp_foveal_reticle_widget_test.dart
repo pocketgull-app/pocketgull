@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pocketgull_flutter/widgets/orp_foveal_reticle_widget.dart';
+import 'package:pocketgull_flutter/widgets/experimental/orp_foveal_reticle_widget.dart';
 import 'package:pocketgull_flutter/providers/bionic_reading_provider.dart';
 
 void main() {

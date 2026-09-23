@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pocketgull_flutter/models/nanobot_swarm_model.dart';
 import 'package:pocketgull_flutter/providers/nanobot_swarm_provider.dart';
-import 'package:pocketgull_flutter/widgets/nanobot_swarm_hud_card.dart';
+import 'package:pocketgull_flutter/widgets/experimental/nanobot_swarm_hud_card.dart';
 
 void main() {
   group('Nanobot Swarm Space-Telescope Physics Suite (Unit Tests)', () {

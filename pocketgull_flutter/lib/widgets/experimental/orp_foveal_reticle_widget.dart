@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/bionic_reading_provider.dart';
+import '../../providers/bionic_reading_provider.dart';
 
 /// Clinical Optimal Recognition Point (ORP) Foveal Reticle RSVP Stream Widget.
 ///

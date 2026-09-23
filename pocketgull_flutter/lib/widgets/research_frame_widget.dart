@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'draggable_window.dart';
-import 'orp_foveal_reticle_widget.dart';
+import 'experimental/orp_foveal_reticle_widget.dart';
 import '../providers/bionic_reading_provider.dart';
 
 class ResearchFrameWidget extends ConsumerStatefulWidget {

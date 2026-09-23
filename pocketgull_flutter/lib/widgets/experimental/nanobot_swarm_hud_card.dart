@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/nanobot_swarm_model.dart';
-import '../providers/nanobot_swarm_provider.dart';
+import '../../models/nanobot_swarm_model.dart';
+import '../../providers/nanobot_swarm_provider.dart';
 
 class NanobotSwarmHudCard extends ConsumerWidget {
   const NanobotSwarmHudCard({super.key});

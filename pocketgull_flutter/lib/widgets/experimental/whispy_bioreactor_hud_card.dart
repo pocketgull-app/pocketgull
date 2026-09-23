@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/whispy_bioreactor_provider.dart';
+import '../../providers/whispy_bioreactor_provider.dart';
 
 class WhispyBioreactorHudCard extends ConsumerWidget {
   const WhispyBioreactorHudCard({super.key});

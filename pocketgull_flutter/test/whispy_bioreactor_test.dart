@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pocketgull_flutter/models/whispy_bioreactor_model.dart';
 import 'package:pocketgull_flutter/providers/whispy_bioreactor_provider.dart';
-import 'package:pocketgull_flutter/widgets/whispy_bioreactor_hud_card.dart';
+import 'package:pocketgull_flutter/widgets/experimental/whispy_bioreactor_hud_card.dart';
 
 void main() {
   group('Whispy Healing Swarm Bioreactor Suite (Unit Tests)', () {
