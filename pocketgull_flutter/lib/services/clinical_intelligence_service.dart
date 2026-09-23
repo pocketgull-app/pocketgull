@@ -253,6 +253,21 @@ Strategy synthesized for $patientName based on active clinical parameters.''';
     return response.text ?? 'No response generated.';
   }
 
+  Future<String> queryClinicalAssistant({
+    required String prompt,
+    dynamic patientState,
+  }) async {
+    if (_isMockMode) {
+      await Future.delayed(const Duration(milliseconds: 350));
+      return 'Clinical Insight: Based on current physiological metrics and active trajectory, your vitals remain within target parameters. Continue with scheduled hydration, morning box breathing, and regular post-prandial movement. Consult your physician for any acute concerns.';
+    }
+    if (_chatSession == null) {
+      final contextStr = patientState != null ? 'Patient: ${patientState.name}, Goals: ${patientState.patientGoals}' : 'General patient context';
+      await startChatSession(contextStr);
+    }
+    return sendChatMessage(prompt);
+  }
+
   Future<String> getInitialGreeting() async {
     if (_isMockMode) {
       return 'Hello Doctor, I have reviewed the patient file and am ready to assist with care plan strategies.';

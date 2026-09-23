@@ -9,6 +9,9 @@ class PatientManagementService {
   static const String _storageKey = 'pocket_gull_patients';
 
   Future<List<Patient>> loadPatients() async {
+    if (!Hive.isBoxOpen('pocket_gull_db')) {
+      return _getDefaultPatients();
+    }
     final box = Hive.box('pocket_gull_db');
     
     // Check if Hive has patients

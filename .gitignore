@@ -374,3 +374,6 @@ scripts/.taskbar_state.json
 scripts/test_cur_*.ps1
 
 
+
+# Sandboxing descriptor (local host tooling)
+.sandbox.json
