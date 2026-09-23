@@ -2838,6 +2838,7 @@ export class WebMcpRegistrationService {
         },
         required: ['componentId']
       },
+      debugging: true, // WebMCP PR #253 (Chrome 156.0.8067.0) inspection tool flag
       execute: async ({ componentId }: { componentId: string }) => {
         try {
           const stateData = this.getInternalState(componentId);

@@ -1146,6 +1146,7 @@ describe('WebMcpRegistrationService', () => {
       service.registerTools({});
       const tool = registeredTools.get('getInternalState');
       expect(tool).toBeDefined();
+      expect(tool.debugging).toBe(true);
       expect(tool.annotations?.debugging).toBe(true);
       expect(tool.annotations?.readOnlyHint).toBe(true);
 
