@@ -1,52 +1,36 @@
 version: 2
 updates:
-  # NPM — Root Angular/Express app
+  # NPM — Root Angular/Express app (Monthly security & patch aggregation, zero breaking major upgrades)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 3
-    allow:
-      - dependency-type: "all"
+      interval: "monthly"
+    open-pull-requests-limit: 1
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "chore(deps)"
       prefix-development: "chore(dev-deps)"
     groups:
-      # Group all Angular packages into a single PR
-      angular:
+      production-patches:
+        dependency-type: "production"
         patterns:
-          - "@angular/*"
-      # Group all OpenTelemetry packages together
-      opentelemetry:
-        patterns:
-          - "@opentelemetry/*"
-      # Group AWS SDK packages together
-      aws-sdk:
-        patterns:
-          - "@aws-sdk/*"
-          - "@aws-crypto/*"
-      # Group Google/Gemini packages together
-      google-ai:
-        patterns:
-          - "@google/*"
-          - "@genkit-ai/*"
-          - "genkit"
-          - "google-auth-library"
-          - "firebase"
-          - "@angular/fire"
-      # Group all other general npm packages together into a single PR
-      general-npm:
+          - "*"
+      dev-patches:
+        dependency-type: "development"
         patterns:
           - "*"
 
-  # GitHub Actions — Catch compromised or outdated actions
+  # GitHub Actions — Security SHA pinning updates
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 2
+      interval: "monthly"
+    open-pull-requests-limit: 1
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "ci(deps)"
     groups:
@@ -54,13 +38,17 @@ updates:
         patterns:
           - "*"
 
-  # Docker — Base image security updates
+  # Docker — Base image security updates (Node 24 LTS pinned, ignore non-LTS Node 25)
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 2
+      interval: "monthly"
+    open-pull-requests-limit: 1
+    ignore:
+      - dependency-name: "node"
+        versions: ["25*"]
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "chore(docker)"
 
@@ -68,9 +56,11 @@ updates:
   - package-ecosystem: "pip"
     directory: "/pocketgull_api"
     schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 2
+      interval: "monthly"
+    open-pull-requests-limit: 1
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "chore(py-deps)"
     groups:
@@ -82,9 +72,11 @@ updates:
   - package-ecosystem: "gomod"
     directory: "/packages/pocketgull-go"
     schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 2
+      interval: "monthly"
+    open-pull-requests-limit: 1
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "chore(go-deps)"
     groups:
