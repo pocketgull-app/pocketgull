@@ -39,7 +39,7 @@ export const ai = genkit({
       apiKey: process.env['GEMINI_API_KEY'] || process.env['GOOGLE_GENAI_API_KEY']
     })
   ],
-  model: 'googleai/gemini-3.7-flash',
+  model: 'googleai/gemini-2.5-flash',
 });
 
 // 1. Generate Metrics Flow
@@ -70,6 +70,7 @@ export const generateMetricsFlow = ai.defineFlow(
       prompt,
       config: {
         temperature: 0,
+        maxOutputTokens: 128,
         responseMimeType: 'application/json',
         // Clinical CDS Safety Policy: See SECURITY.md §2
         safetySettings: [
@@ -110,6 +111,7 @@ export const detectClinicalChangesFlow = ai.defineFlow(
       prompt,
       config: {
         temperature: 0,
+        maxOutputTokens: 20,
         // Clinical CDS Safety Policy: See SECURITY.md §2
         safetySettings: [
           { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
@@ -206,6 +208,7 @@ CRITICAL RULES:
         system: systemInstruction,
         config: {
           temperature: 0.2,
+          maxOutputTokens: 2048,
           // Clinical CDS Safety Policy: See SECURITY.md §2
           safetySettings: [
             { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },

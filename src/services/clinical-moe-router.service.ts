@@ -41,12 +41,12 @@ export class ClinicalMoERouterService {
 
     if (custom !== null) {
       let tier: 'Fast (Low Latency)' | 'Standard (Balanced)' | 'Deep Clinical Synthesis (High Acuity)' = 'Standard (Balanced)';
-      if (custom <= 1024) tier = 'Fast (Low Latency)';
-      else if (custom >= 8192) tier = 'Deep Clinical Synthesis (High Acuity)';
+      if (custom <= 512) tier = 'Fast (Low Latency)';
+      else if (custom >= 2048) tier = 'Deep Clinical Synthesis (High Acuity)';
 
       return {
         thinkingBudget: custom,
-        includeThoughts: true,
+        includeThoughts: custom > 0,
         reasoningTier: tier
       };
     }
@@ -56,8 +56,8 @@ export class ClinicalMoERouterService {
       case 'Patient Education':
       case 'Console Debugging & Integrity':
         return {
-          thinkingBudget: 1024,
-          includeThoughts: true,
+          thinkingBudget: 0,
+          includeThoughts: false,
           reasoningTier: 'Fast (Low Latency)'
         };
 
@@ -70,7 +70,7 @@ export class ClinicalMoERouterService {
       case 'Environmental Exposomics & Toxicology':
       case 'Skeptical Epistemology & Socratic Audit':
         return {
-          thinkingBudget: 8192,
+          thinkingBudget: 2048,
           includeThoughts: true,
           reasoningTier: 'Deep Clinical Synthesis (High Acuity)'
         };
@@ -87,7 +87,7 @@ export class ClinicalMoERouterService {
       case 'Performance Optimization & Web Vitals':
       default:
         return {
-          thinkingBudget: 4096,
+          thinkingBudget: 1024,
           includeThoughts: true,
           reasoningTier: 'Standard (Balanced)'
         };
