@@ -4,9 +4,6 @@ permissions:
   contents: read
 
 on:
-  schedule:
-    # Run every Thursday at 8:30 PM UTC
-    - cron: '30 20 * * 4'
   workflow_dispatch:
 
 concurrency:

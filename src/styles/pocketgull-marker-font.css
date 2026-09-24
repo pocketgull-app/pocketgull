@@ -133,11 +133,9 @@
   src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Math.woff2?v=3.3.0') format('woff2'),
        url('/fonts/PocketGull-Math.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Math.woff2') format('woff2'),
-       url('/brand/fonts/PocketGull-Math.woff2') format('woff2'),
        url('https://font.pocketgull.app/fonts/ttf/PocketGull-Math.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Math.ttf') format('truetype'),
-       url('/assets/fonts/PocketGull-Math.ttf') format('truetype'),
-       url('/brand/fonts/PocketGull-Math.ttf') format('truetype');
+       url('/assets/fonts/PocketGull-Math.ttf') format('truetype');
 }
 
 /* PocketGull Chem (Clinical Chemistry & Pharmacology) */
@@ -149,11 +147,9 @@
   src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Chem.woff2?v=3.3.0') format('woff2'),
        url('/fonts/PocketGull-Chem.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Chem.woff2') format('woff2'),
-       url('/brand/fonts/PocketGull-Chem.woff2') format('woff2'),
        url('https://font.pocketgull.app/fonts/ttf/PocketGull-Chem.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Chem.ttf') format('truetype'),
-       url('/assets/fonts/PocketGull-Chem.ttf') format('truetype'),
-       url('/brand/fonts/PocketGull-Chem.ttf') format('truetype');
+       url('/assets/fonts/PocketGull-Chem.ttf') format('truetype');
 }
 
 /* PocketGull Genome (Clinical Genomics & CRISPR Monospace) */
@@ -165,11 +161,9 @@
   src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Genome.woff2?v=3.3.0') format('woff2'),
        url('/fonts/PocketGull-Genome.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Genome.woff2') format('woff2'),
-       url('/brand/fonts/PocketGull-Genome.woff2') format('woff2'),
        url('https://font.pocketgull.app/fonts/ttf/PocketGull-Genome.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Genome.ttf') format('truetype'),
-       url('/assets/fonts/PocketGull-Genome.ttf') format('truetype'),
-       url('/brand/fonts/PocketGull-Genome.ttf') format('truetype');
+       url('/assets/fonts/PocketGull-Genome.ttf') format('truetype');
 }
 
 /* ==========================================================================

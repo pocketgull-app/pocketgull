@@ -10,6 +10,12 @@ on:
       - '.gitignore'
       - 'LICENSE'
       - 'typefaces_vault/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'dist/**'
+      - 'brand/**'
+      - 'tools/**'
+      - 'data/**'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
@@ -19,6 +25,12 @@ on:
       - '.gitignore'
       - 'LICENSE'
       - 'typefaces_vault/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'dist/**'
+      - 'brand/**'
+      - 'tools/**'
+      - 'data/**'
   workflow_dispatch:
 
 permissions:
