@@ -198,7 +198,7 @@
     "helmet": "^8.1.0",
     "http-proxy-middleware": "4.2.0",
     "jspdf": "^4.2.0",
-    "lean-qr": "^2.7.1",
+    "lean-qr": "^2.7.4",
     "marked": "^18.0.5",
     "patch-package": "^8.0.1",
     "pocketgull-api": "workspace:*",
