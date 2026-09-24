@@ -3,33 +3,33 @@
 
 # Core — required
 fastapi==0.141.1
-uvicorn==0.52.4
-pydantic==2.13.4
-numpy==2.5.2
+uvicorn==0.53.0
+pydantic==2.13.5
+numpy==2.5.3
 
 # JAX & Deep Learning Stack
-jax==0.5.3
-jaxlib==0.5.3
-flax==0.10.2
-optax==0.2.4
-orbax-checkpoint==0.11.13
+jax==0.11.2
+jaxlib==0.11.2
+flax==0.12.9
+optax==0.2.8
+orbax-checkpoint==0.12.4
 
 # Export & Math Utilities
-onnx>=1.16.0
+onnx>=1.23.0
 
 # DataFrame ingestion (P1)
-pandas==3.0.5
+pandas==3.0.6
 
 # FHIR Bundle validation gateway (P1)
 fhir.resources==8.3.0
 
 # HDF5 biosignal archive reader (P2)
-h5py==3.8.0
-scipy==1.18.0
+h5py==3.16.0
+scipy==1.18.1
 
 # ML risk scoring (P3 — only needed when a trained model is present)
-joblib==1.5.3
-scikit-learn==1.9.0
+joblib==1.6.0
+scikit-learn==1.9.1
 
 # File uploads (multipart/form-data support)
 python-multipart==0.0.32
