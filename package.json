@@ -230,7 +230,7 @@
     "lighthouse": "^13.0.3",
     "lint-staged": "^17.0.5",
     "postcss": "^8.5.28",
-    "puppeteer": "^25.0.0",
+    "puppeteer": "^25.11.0",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.5.4",
     "vite": "^7.3.5 || ^8.0.0",
