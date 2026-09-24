@@ -61,15 +61,15 @@ describe('ClinicalMoERouterService', () => {
 
   it('should assign Fast (Low Latency) thinking budget for Summary Overview by default', () => {
     const config = service.currentThinkingConfig();
-    expect(config.thinkingBudget).toBe(1024);
+    expect(config.thinkingBudget).toBe(0);
     expect(config.reasoningTier).toBe('Fast (Low Latency)');
-    expect(config.includeThoughts).toBe(true);
+    expect(config.includeThoughts).toBe(false);
   });
 
   it('should assign Deep Clinical Synthesis (High Acuity) thinking budget for high-complexity lenses', () => {
     service.setActiveLens('RSNA Knee Abnormality');
     const config = service.currentThinkingConfig();
-    expect(config.thinkingBudget).toBe(8192);
+    expect(config.thinkingBudget).toBe(2048);
     expect(config.reasoningTier).toBe('Deep Clinical Synthesis (High Acuity)');
   });
 
@@ -83,7 +83,7 @@ describe('ClinicalMoERouterService', () => {
     expect(service.currentThinkingConfig().reasoningTier).toBe('Fast (Low Latency)');
 
     service.setCustomThinkingBudget(null);
-    expect(service.currentThinkingConfig().thinkingBudget).toBe(1024);
+    expect(service.currentThinkingConfig().thinkingBudget).toBe(0);
   });
 });
 

@@ -563,7 +563,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         // FinOps Optimization: Clamp thinking budget to prevent open-ended CoT loops
         if (body.thinkingBudget && body.thinkingBudget > 0) {
           configOptions['thinkingConfig'] = {
-            thinkingBudget: Math.min(4096, Math.max(0, body.thinkingBudget))
+            thinkingBudget: Math.min(2048, Math.max(0, body.thinkingBudget))
           };
         }
 
