@@ -23,8 +23,8 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/build": "^22.1.7",
-    "@angular/cli": "^22.1.7",
+    "@angular/build": "^22.1.8",
+    "@angular/cli": "^22.1.8",
     "@angular/compiler-cli": "^22.1.7",
     "@types/jasmine": "~6.0.0",
     "autoprefixer": "^10.5.0",
