@@ -12,6 +12,7 @@ import { RaycastSelectionService } from '../../services/raycast-selection.servic
 import { SeverityParticleService } from '../../services/severity-particle.service';
 import { SpatialLesionMarkupService } from '../../services/spatial-lesion-markup.service';
 import { ClinicalSpecialtyRiskSuiteService } from '../../services/clinical-specialty-risk-suite.service';
+import { KinesiologyBiomechanicsService } from '../../services/kinesiology-biomechanics.service';
 
 // Mock Angular effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
 vi.mock('@angular/core', async (importOriginal) => {
@@ -34,15 +35,25 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
       issues: signal({}),
       conditions: signal(['Multiple Sclerosis']),
       occupation: signal(occupation),
-      occupationalProfile: signal(actuarialService.getOccupationalProfile(occupation))
+      occupationalProfile: signal(actuarialService.getOccupationalProfile(occupation)),
+      activeRehabCondition: signal('lumbar_pelvic_alignment'),
+      activeRehabProgress: signal(0),
+      activeRehabCutawayRadius: signal(2.5),
+      activeWoodCutType: signal('camaieu_auto'),
+      activeSurfaceStyle: signal('ecorche_cast'),
+      activeShadingProfile: signal('atelier'),
+      anatomyViewMode: signal('skin'),
+      selectedPartId: signal(null),
+      selectedPartName: signal(null)
     };
 
     const injector = Injector.create({
       providers: [
         { provide: PLATFORM_ID, useValue: 'browser' },
         { provide: PatientStateService, useValue: mockPatientState },
-        { provide: PatientManagementService, useValue: { selectedPatientId: signal('p_mara_santos') } },
+        { provide: PatientManagementService, useValue: { selectedPatientId: signal('p_mara_santos'), selectedPatient: signal({ preexistingConditions: ['Multiple Sclerosis'] }) } },
         { provide: ClinicalSpecialtyRiskSuiteService, useValue: { computeUhthoffThermalReserve: () => 0.45 } },
+        { provide: KinesiologyBiomechanicsService, useClass: KinesiologyBiomechanicsService },
         { provide: ThemeService, useValue: { isDarkMode: signal(true) } },
         { provide: EnvironmentalTelemetryService, useValue: {} },
         { provide: BodyMeshFactoryService, useValue: {} },
@@ -185,5 +196,110 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     viewer.updateUhthoffThermalColor(0.25); // Critical reserve -> Crimson alert
     viewer.updateUhthoffThermalColor(0.45); // Moderate reserve -> Amber
     viewer.updateUhthoffThermalColor(0.70); // Optimal reserve -> Cyan
+  });
+
+  it('controls Vesalian kinematic mentor condition, progress scrubber, and cutaway lantern radius', () => {
+    const viewer = createViewer();
+    expect(viewer.activeRehabPlan()?.conditionKey).toBe('lumbar_pelvic_alignment');
+    expect(viewer.activeRehabPlan()?.decompressionPercent).toBeGreaterThan(0);
+
+    // Switch condition to cervical spine posture
+    viewer.onRehabConditionSelect('cervical_spine_posture');
+    expect(viewer.activeRehabPlan()?.conditionKey).toBe('cervical_spine_posture');
+    expect(viewer.activeCameraPreset()).toBe('cranial');
+
+    // Switch condition to patellofemoral tracking
+    viewer.onRehabConditionSelect('patellofemoral_tracking');
+    expect(viewer.activeRehabPlan()?.conditionKey).toBe('patellofemoral_tracking');
+    expect(viewer.activeCameraPreset()).toBe('peripheral');
+
+    // Scrub therapeutic posture progress
+    const event = { target: { value: '0.85' } } as unknown as Event;
+    viewer.onRehabProgressChange(event);
+    expect((viewer as any).state.activeRehabProgress()).toBe(0.85);
+
+    // Adjust cutaway aperture radius
+    const radiusEvent = { target: { value: '3.4' } } as unknown as Event;
+    viewer.onCutawayRadiusChange(radiusEvent);
+    expect((viewer as any).state.activeRehabCutawayRadius()).toBe(3.4);
+  });
+
+  it('controls 5 classical woodcut relief types and Camaïeu auto in Vesalian HUD', () => {
+    const viewer = createViewer();
+    expect((viewer as any).state.activeWoodCutType()).toBe('camaieu_auto');
+
+    viewer.onWoodCutTypeSelect('v_ribbed');
+    expect((viewer as any).state.activeWoodCutType()).toBe('v_ribbed');
+
+    viewer.onWoodCutTypeSelect('fluted');
+    expect((viewer as any).state.activeWoodCutType()).toBe('fluted');
+
+    viewer.onWoodCutTypeSelect('reeded');
+    expect((viewer as any).state.activeWoodCutType()).toBe('reeded');
+
+    viewer.onWoodCutTypeSelect('slatted');
+    expect((viewer as any).state.activeWoodCutType()).toBe('slatted');
+
+    viewer.onWoodCutTypeSelect('burl');
+    expect((viewer as any).state.activeWoodCutType()).toBe('burl');
+
+    viewer.onWoodCutTypeSelect('camaieu_auto');
+    expect((viewer as any).state.activeWoodCutType()).toBe('camaieu_auto');
+  });
+
+  it('toggles between smooth écorché cast (restful, zero moiré) and 1543 woodblock', () => {
+    const viewer = createViewer();
+    expect((viewer as any).state.activeSurfaceStyle()).toBe('ecorche_cast');
+
+    viewer.onSurfaceStyleSelect('woodcut');
+    expect((viewer as any).state.activeSurfaceStyle()).toBe('woodcut');
+
+    viewer.onSurfaceStyleSelect('ecorche_cast');
+    expect((viewer as any).state.activeSurfaceStyle()).toBe('ecorche_cast');
+  });
+
+  it('configures chiaroscuro shading profiles for eye comfort and clinical clarity', () => {
+    const viewer = createViewer();
+    expect((viewer as any).state.activeShadingProfile()).toBe('atelier');
+
+    viewer.onShadingProfileSelect('clinical');
+    expect((viewer as any).state.activeShadingProfile()).toBe('clinical');
+
+    viewer.onShadingProfileSelect('theatre');
+    expect((viewer as any).state.activeShadingProfile()).toBe('theatre');
+
+    viewer.onShadingProfileSelect('scotopic');
+    expect((viewer as any).state.activeShadingProfile()).toBe('scotopic');
+
+    viewer.onShadingProfileSelect('atelier');
+    expect((viewer as any).state.activeShadingProfile()).toBe('atelier');
+  });
+
+  it('switches anatomical paradigms reactively via onParadigmChange', () => {
+    const viewer = createViewer();
+    expect(viewer.effectiveAnatomyViewMode()).toBe('skin');
+
+    const event = { target: { value: 'vesalian_woodcut' } } as unknown as Event;
+    viewer.onParadigmChange(event);
+    expect((viewer as any).state.anatomyViewMode()).toBe('vesalian_woodcut');
+    expect(viewer.effectiveAnatomyViewMode()).toBe('vesalian_woodcut');
+
+    const skeletonEvent = { target: { value: 'skeleton' } } as unknown as Event;
+    viewer.onParadigmChange(skeletonEvent);
+    expect((viewer as any).state.anatomyViewMode()).toBe('skeleton');
+    expect(viewer.effectiveAnatomyViewMode()).toBe('skeleton');
+  });
+
+  it('switches archetypes to ecorche and female via onArchetypeChange', () => {
+    const viewer = createViewer();
+    expect(viewer.activeArchetype()).toBe('homo_sapiens_male');
+
+    const ecorcheEvent = { target: { value: 'ecorche' } } as unknown as Event;
+    viewer.onArchetypeChange(ecorcheEvent);
+    expect(viewer.activeArchetype()).toBe('ecorche');
+
+    const femaleEvent = { target: { value: 'homo_sapiens_female' } } as unknown as Event;
+    viewer.onArchetypeChange(femaleEvent);
+    expect(viewer.activeArchetype()).toBe('homo_sapiens_female');
   });
 });

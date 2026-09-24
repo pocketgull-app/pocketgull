@@ -59,4 +59,40 @@ describe('RxGuardService - Precision PGx & Herb-Drug Matrix Suite', () => {
     expect(fhir['status']).toBe('success');
     expect((fhir['result'] as any).riskTier).toBe('CONTRAINDICATED');
   });
+
+  it('5. Computes financial toxicity audits and identifies generic savings opportunities', () => {
+    const patientWithCostlyInhaler: IPatient = {
+      ...mockPatient,
+      medications: [{ id: 'm4', name: 'Advair Diskus 250/50', value: '1 puff BID' }],
+      dietarySupplements: [{ id: 's3', name: 'Magnesium L-Threonate', value: '2000mg' }]
+    };
+
+    const assessment = service.evaluatePatient(patientWithCostlyInhaler);
+    expect(assessment.financialToxicityAudits).toBeDefined();
+    expect(assessment.financialToxicityAudits?.length).toBeGreaterThanOrEqual(2);
+
+    const advairAudit = assessment.financialToxicityAudits?.find(a => a.itemName.includes('Advair'));
+    expect(advairAudit).toBeDefined();
+    expect(advairAudit?.toxicityBurden).toBe('HIGH_FINANCIAL_TOXICITY');
+    expect(advairAudit?.genericAlternative?.genericChemicalName).toContain('Fluticasone / Salmeterol');
+
+    expect(assessment.cumulativeMonthlyCostEstimateUsd).toBeGreaterThan(0);
+    expect(assessment.totalGenericSavingsOpportunityUsd).toBeGreaterThan(50);
+  });
+
+  it('6. Computes Chou-Talalay Combination Index for classical botanical pairs (Curcumin + Piperine)', () => {
+    const synergy = service.computeChouTalalaySynergy('Curcumin', 500, 'Piperine', 20);
+    expect(synergy.combinationIndex).toBe(0.42);
+    expect(synergy.synergyType).toBe('SYNERGISTIC');
+    expect(synergy.formulationRole).toBe('Jun (Emperor)');
+    expect(synergy.bioavailabilityAmplificationMultiplier).toBe(20.0);
+    expect(synergy.evidencePmid).toBe('9619120');
+  });
+
+  it('7. Dynamically evaluates uncataloged botanical pairs with median-effect equation', () => {
+    const synergy = service.computeChouTalalaySynergy('Custom Botanical A', 100, 'Custom Botanical B', 50);
+    expect(synergy.combinationIndex).toBeGreaterThan(0);
+    expect(synergy.combinationIndex).toBeLessThanOrEqual(2.0);
+    expect(['SYNERGISTIC', 'ADDITIVE', 'ANTAGONISTIC']).toContain(synergy.synergyType);
+  });
 });

@@ -27,7 +27,11 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
   beforeEach(() => {
     mockPatientState = {
       bodyViewerMode: signal<'3d' | '2d' | 'quad' | 'cellular'>('3d'),
-      anatomyViewMode: signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain'>('skin'),
+      anatomyViewMode: signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost'>('skin'),
+      activeRehabCondition: signal('lumbar_pelvic_alignment'),
+      activeRehabProgress: signal(0),
+      activeRehabCutawayRadius: signal(2.5),
+      activeWoodCutType: signal('camaieu_auto'),
       selectedPartId: signal<string | null>(null),
       activePhilosophy: signal<'western' | 'eastern' | 'ayurvedic' | 'osteopathic'>('western'),
       issues: signal({}),
@@ -262,5 +266,14 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
     expect(viewer.handednessMode()).toBe('left');
     viewer.toggleHandedness();
     expect(viewer.handednessMode()).toBe('right');
+  });
+
+  it('should compute selectedPartName reactively from patientState.selectedPartId', () => {
+    expect(viewer.selectedPartName()).toBe('');
+    mockPatientState.selectedPartId.set('heart');
+    expect(viewer.selectedPartName()).toBe('Heart & Cardiovascular System');
+
+    mockPatientState.selectedPartId.set('kidneys');
+    expect(viewer.selectedPartName()).toBe('Kidneys & Renal System');
   });
 });

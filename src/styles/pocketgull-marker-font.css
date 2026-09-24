@@ -11,28 +11,33 @@
 
 /* 🖋️ 1. Core TrueType & WOFF2 Font Face Declarations */
 
-/* PocketGull Bold (700 Display & Wordmark) */
+/* PocketGull Bold (700 Display & Wordmark - Autonomous Zero-Fallback) */
 @font-face {
   font-family: 'PocketGull';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/PocketGull-Bold-Core.woff2') format('woff2'),
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Bold.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Bold-Core.woff2') format('woff2'),
        url('/fonts/PocketGull-Bold.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Bold.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGull-Bold.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Bold.ttf') format('truetype'),
        url('/assets/fonts/PocketGull-Bold.ttf') format('truetype');
 }
 
-/* PocketGull Regular / Fineliner (400) */
+/* PocketGull Regular / Fineliner (400 - Autonomous Zero-Fallback) */
 @font-face {
   font-family: 'PocketGull';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/PocketGull-Fineliner-Core.woff2') format('woff2'),
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Fineliner.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Regular-Core.woff2') format('woff2'),
+       url('/fonts/PocketGull-Fineliner-Core.woff2') format('woff2'),
        url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Fineliner.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGull-Fineliner.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Fineliner.ttf') format('truetype'),
        url('/assets/fonts/PocketGull-Fineliner.ttf') format('truetype');
 }
@@ -43,8 +48,10 @@
   font-style: normal;
   font-weight: 900;
   font-display: swap;
-  src: url('/fonts/PocketGull-Chiseltip.woff2') format('woff2'),
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Chiseltip.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Chiseltip.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Chiseltip.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGull-Chiseltip.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Chiseltip.ttf') format('truetype'),
        url('/assets/fonts/PocketGull-Chiseltip.ttf') format('truetype');
 }
@@ -55,8 +62,10 @@
   font-style: normal;
   font-weight: 900;
   font-display: swap;
-  src: url('/fonts/PocketGull-Chiseltip.woff2') format('woff2'),
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Chiseltip.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Chiseltip.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Chiseltip.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGull-Chiseltip.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Chiseltip.ttf') format('truetype'),
        url('/assets/fonts/PocketGull-Chiseltip.ttf') format('truetype');
 }
@@ -67,8 +76,10 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Fineliner.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Fineliner.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGull-Fineliner.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Fineliner.ttf') format('truetype'),
        url('/assets/fonts/PocketGull-Fineliner.ttf') format('truetype');
 }
@@ -79,10 +90,24 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/PocketGullMono-Regular.woff2') format('woff2'),
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGullMono-Regular.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGullMono-Regular.woff2') format('woff2'),
        url('/assets/fonts/PocketGullMono-Regular.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGullMono-Regular.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGullMono-Regular.ttf') format('truetype'),
        url('/assets/fonts/PocketGullMono-Regular.ttf') format('truetype');
+}
+
+/* PocketGull Numerics (Optimized Tabular Vitals & Timers) */
+@font-face {
+  font-family: 'PocketGull Numerics';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Numerics.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Numerics.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGull-Numerics.ttf?v=3.3.0') format('truetype'),
+       url('/fonts/PocketGull-Numerics.ttf') format('truetype');
 }
 
 /* PocketGull Variable Font (VF) */
@@ -91,8 +116,10 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('/fonts/PocketGull-VF.woff2') format('woff2'),
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-VF.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-VF.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-VF.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGull-VF.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-VF.ttf') format('truetype'),
        url('/assets/fonts/PocketGull-VF.ttf') format('truetype');
 }
@@ -103,12 +130,12 @@
   font-style: normal;
   font-weight: 400 700;
   font-display: swap;
-  src: url('/fonts/PocketGull-Math.woff2') format('woff2'),
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Math.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Math.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Math.woff2') format('woff2'),
-       url('/brand/fonts/PocketGull-Math.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGull-Math.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Math.ttf') format('truetype'),
-       url('/assets/fonts/PocketGull-Math.ttf') format('truetype'),
-       url('/brand/fonts/PocketGull-Math.ttf') format('truetype');
+       url('/assets/fonts/PocketGull-Math.ttf') format('truetype');
 }
 
 /* PocketGull Chem (Clinical Chemistry & Pharmacology) */
@@ -117,12 +144,12 @@
   font-style: normal;
   font-weight: 400 700;
   font-display: swap;
-  src: url('/fonts/PocketGull-Chem.woff2') format('woff2'),
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Chem.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Chem.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Chem.woff2') format('woff2'),
-       url('/brand/fonts/PocketGull-Chem.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGull-Chem.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Chem.ttf') format('truetype'),
-       url('/assets/fonts/PocketGull-Chem.ttf') format('truetype'),
-       url('/brand/fonts/PocketGull-Chem.ttf') format('truetype');
+       url('/assets/fonts/PocketGull-Chem.ttf') format('truetype');
 }
 
 /* PocketGull Genome (Clinical Genomics & CRISPR Monospace) */
@@ -131,12 +158,12 @@
   font-style: normal;
   font-weight: 400 700;
   font-display: swap;
-  src: url('/fonts/PocketGull-Genome.woff2') format('woff2'),
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Genome.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Genome.woff2') format('woff2'),
        url('/assets/fonts/PocketGull-Genome.woff2') format('woff2'),
-       url('/brand/fonts/PocketGull-Genome.woff2') format('woff2'),
+       url('https://font.pocketgull.app/fonts/ttf/PocketGull-Genome.ttf?v=3.3.0') format('truetype'),
        url('/fonts/PocketGull-Genome.ttf') format('truetype'),
-       url('/assets/fonts/PocketGull-Genome.ttf') format('truetype'),
-       url('/brand/fonts/PocketGull-Genome.ttf') format('truetype');
+       url('/assets/fonts/PocketGull-Genome.ttf') format('truetype');
 }
 
 /* ==========================================================================
@@ -176,6 +203,34 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* 🧮 PocketGull Math & Scientific Notation Stack (OpenType Math v3.100) */
+.font-pocketgull-math {
+  font-family: 'PocketGull Math', 'STIX Two Math', 'Cambria Math', 'Latin Modern Math', ui-monospace, monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1, "ssty" 1;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 🧪 PocketGull Clinical Chemistry & Pharmacology Stack */
+.font-pocketgull-chem {
+  font-family: 'PocketGull Chem', 'PocketGull Math', 'PocketGull Mono', monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1, "subs" 1, "sups" 1;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 🧬 PocketGull Clinical Genomics & CRISPR Stack */
+.font-pocketgull-genome {
+  font-family: 'PocketGull Genome', 'PocketGull Mono', ui-monospace, monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* 🖋️ PocketGull Chisel / Black Display Variant (900 Weight) */
 .font-pocketgull-chiseltip,
 .font-pocketgull-chisel {
@@ -199,7 +254,7 @@
 
 /* 🏥 PocketGull Clinical High-Legibility Typeface */
 .font-pocketgull-inter {
-  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-family: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   font-weight: 500;
   letter-spacing: -0.005em;
   line-height: 1.55;

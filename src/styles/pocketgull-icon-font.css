@@ -49,3 +49,64 @@
 .pg-icon-tooth::before { content: '🦷'; }
 .pg-icon-cgm::before { content: '\E1A8'; }
 .pg-icon-seagull::before { content: '🐦'; }
+
+/* Origami & Papercraft Progressive Reveal Shortcuts */
+.pg-icon-step-1::before { content: '\2460'; }        /* ① Step 1 Inward Fold */
+.pg-icon-step-2::before { content: '\2461'; }        /* ② Step 2 Booklet Fold */
+.pg-icon-step-3::before { content: '\2462'; }        /* ③ Step 3 Unfurl Story */
+.pg-icon-step-4::before { content: '\2463'; }        /* ④ Step 4 Horizon */
+.pg-icon-step-5::before { content: '\2464'; }        /* ⑤ Step 5 Attestation */
+.pg-icon-fold-left::before { content: '\21B6'; }     /* ↶ Fold Inward Left */
+.pg-icon-fold-right::before { content: '\21B7'; }    /* ↷ Fold Inward Right */
+.pg-icon-scissors::before { content: '\2702'; }      /* ✂ Detachable Token Cut Line */
+.pg-icon-dove::before { content: '🕊'; }             /* 🕊 Sanctuary Dove */
+.pg-icon-feather::before { content: '🪶'; }          /* 🪶 Attestation Feather Seal */
+.pg-icon-token::before { content: '🤝'; }            /* 🤝 Caregiver Pocket Token */
+.pg-icon-gift::before { content: '🎁'; }             /* 🎁 Progressive Reveal Gift */
+.pg-icon-seedling::before { content: '🌱'; }         /* 🌱 Vitality Horizon */
+
+/* Native Clinical Organs, Pharmacology & Diagnostics */
+.pg-icon-organ-heart::before { content: '🫀'; }       /* 🫀 Anatomical Heart */
+.pg-icon-blood-drop::before { content: '🩸'; }        /* 🩸 Blood Drop */
+.pg-icon-syringe::before { content: '💉'; }           /* 💉 Syringe / Infusion */
+.pg-icon-capsule::before { content: '💊'; }           /* 💊 Pill / Posology */
+.pg-icon-stethoscope::before { content: '🩺'; }       /* 🩺 Stethoscope */
+.pg-icon-ambulance::before { content: '🚑'; }         /* 🚑 Ambulance / Dispatch */
+.pg-icon-microscope::before { content: '🔬'; }        /* 🔬 Pathology Microscope */
+.pg-icon-test-tube::before { content: '🧪'; }         /* 🧪 Biomarker Test Tube */
+.pg-icon-dna::before { content: '🧬'; }               /* 🧬 Genomic DNA Strand */
+.pg-icon-shield-defense::before { content: '🛡️'; }    /* 🛡️ Clinical Defense Shield */
+.pg-icon-beacon::before { content: '🚨'; }            /* 🚨 STAT Emergency Beacon */
+.pg-icon-clinician::before { content: '🧑‍⚕️'; }        /* 🧑‍⚕️ Healthcare Professional */
+
+/* UI Action & Handout Shortcuts */
+.pg-icon-love-letter::before { content: '💌'; }       /* 💌 Care Plan Love Note */
+.pg-icon-spoon::before { content: '🥄'; }             /* 🥄 Teaspoon Explanation */
+.pg-icon-printer::before { content: '🖨'; }            /* 🖨 Bedside Handout Print */
+.pg-icon-refresh::before { content: '🔄'; }           /* 🔄 Cycle / Reload */
+.pg-icon-clipboard::before { content: '📋'; }         /* 📋 Clinical Triage Form */
+.pg-icon-search::before { content: '🔍'; }            /* 🔍 Diagnostic Search */
+.pg-icon-gear::before { content: '⚙️'; }              /* ⚙️ System Settings */
+
+/* Symptoms & Environmental Triggers */
+.pg-icon-explosion::before { content: '💥'; }         /* 💥 Acute Onset / Flare */
+.pg-icon-lightning::before { content: '⚡'; }         /* ⚡ Neuropathic Shock */
+.pg-icon-cloud::before { content: '☁'; }              /* ☁ Brain Fog */
+.pg-icon-flame::before { content: '🔥'; }             /* 🔥 Systemic Inflammation */
+.pg-icon-wave::before { content: '🌊'; }              /* 🌊 Tidal Waveform */
+.pg-icon-snowflake::before { content: '❄'; }          /* ❄ Cold Sensitivity */
+.pg-icon-sun::before { content: '☀️'; }               /* ☀️ Heat / Light Exposure */
+.pg-icon-stopwatch::before { content: '⏱'; }          /* ⏱ Pacing / Bio-Rhythm */
+.pg-icon-clock-1::before { content: '🕐'; }           /* 🕐 1h Interval */
+.pg-icon-clock-3::before { content: '🕒'; }           /* 🕒 3h Interval */
+
+/* Math, Geometry & Verification */
+.pg-icon-check-circle::before { content: '✅'; }      /* ✅ Verified Safe */
+.pg-icon-cross::before { content: '❌'; }             /* ❌ Contraindicated */
+.pg-icon-infinity::before { content: '♾️'; }          /* ♾️ Continuous Telemetry */
+.pg-icon-approx::before { content: '≈'; }             /* ≈ Approximation */
+.pg-icon-notequal::before { content: '≠'; }           /* ≠ Inequality */
+.pg-icon-star::before { content: '★'; }               /* ★ Luminary Gold Star */
+.pg-icon-degree::before { content: '°'; }             /* ° Thermal Celsius/Fahrenheit */
+.pg-icon-micro::before { content: 'µ'; }              /* µ Microgram Concentration */
+

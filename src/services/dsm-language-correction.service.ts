@@ -1,0 +1,520 @@
+import { Injectable, signal } from '@angular/core';
+
+export type DsmCategory = 
+  | 'ADDICTION_MEDICINE' 
+  | 'SUICIDOLOGY' 
+  | 'PSYCHIATRY' 
+  | 'ADHERENCE' 
+  | 'TOXICOLOGY'
+  | 'EMERGENCY_TRIAGE'
+  | 'NON_PHARMACOLOGICAL_FIRST'
+  | 'DEPRESCRIBING'
+  | 'CLINICAL_GOVERNANCE';
+
+export type DsmSeverity = 'RECOMMENDED_SHIFT' | 'STIGMA_ALERT' | 'HIGH_PRIORITY';
+
+export interface IDsmLanguageRule {
+  id: string;
+  version: string;
+  deprecatedPattern: RegExp;
+  preferredTerm: string;
+  category: DsmCategory;
+  standardSource: 'DSM-5-TR' | 'ASAM_4TH_ED' | 'NIDA_WORDS_MATTER' | 'NIMH_CDC' | 'LIFESTYLE_MEDICINE' | 'INSTITUTIONAL';
+  citation: string;
+  educationalRationale: string;
+  sampleBefore: string;
+  sampleAfter: string;
+  severity: DsmSeverity;
+  active: boolean;
+}
+
+export interface ILanguageSuggestion {
+  ruleId: string;
+  matchedText: string;
+  preferredTerm: string;
+  index: number;
+  length: number;
+  category: DsmCategory;
+  standardSource: string;
+  citation: string;
+  educationalRationale: string;
+  severity: DsmSeverity;
+  sampleBefore: string;
+  sampleAfter: string;
+}
+
+export interface ILanguageAuditResult {
+  hasSuggestions: boolean;
+  totalFlags: number;
+  suggestions: ILanguageSuggestion[];
+  harmonizedText: string;
+  protectedQuoteCount: number;
+}
+
+export interface ISerializedDsmRule {
+  id: string;
+  version: string;
+  patternString: string;
+  patternFlags: string;
+  preferredTerm: string;
+  category: DsmCategory;
+  standardSource: 'DSM-5-TR' | 'ASAM_4TH_ED' | 'NIDA_WORDS_MATTER' | 'NIMH_CDC' | 'LIFESTYLE_MEDICINE' | 'INSTITUTIONAL';
+  citation: string;
+  educationalRationale: string;
+  sampleBefore: string;
+  sampleAfter: string;
+  severity: DsmSeverity;
+  active: boolean;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DsmLanguageCorrectionService {
+  /**
+   * Active registered rules count signal for reactive subscribers
+   */
+  readonly rulesCount = signal<number>(0);
+
+  /**
+   * Internal rule registry keyed by rule ID
+   */
+  private readonly rules = new Map<string, IDsmLanguageRule>();
+
+  constructor() {
+    this.registerCoreRules();
+  }
+
+  /**
+   * Pre-populates the core DSM-5-TR, ASAM Criteria (4th Edition), and NIDA Words Matter rules.
+   */
+  private registerCoreRules(): void {
+    const coreRules: IDsmLanguageRule[] = [
+      {
+        id: 'asam-medically-managed-withdrawal',
+        version: '1.0.0',
+        deprecatedPattern: /\b(detox center|detox unit|detoxification|detox)\b/gi,
+        preferredTerm: 'medically-managed withdrawal',
+        category: 'ADDICTION_MEDICINE',
+        standardSource: 'ASAM_4TH_ED',
+        citation: 'ASAM Criteria 4th Edition (2024), Dimension 1; DSM-5-TR p. 543',
+        educationalRationale: '"Detox" implies an archaic commercial cleanse or a passive "flushing of toxins", and falsely suggests that acute stabilization completes treatment. Medically-Managed Withdrawal accurately denotes acute neurobiological stabilization of severe physiological withdrawal within a continuous chronic disease care plan.',
+        sampleBefore: 'Patient was admitted to detox for 5 days.',
+        sampleAfter: 'Patient was admitted for medically-managed withdrawal for 5 days.',
+        severity: 'HIGH_PRIORITY',
+        active: true
+      },
+      {
+        id: 'nida-toxicology-screen-results',
+        version: '1.0.0',
+        deprecatedPattern: /\b(dirty\s+(?:urine|tox|screen|sample|uds)|clean\s+(?:urine|tox|screen|sample|uds))\b/gi,
+        preferredTerm: 'toxicology screen (positive / negative for non-prescribed substances)',
+        category: 'TOXICOLOGY',
+        standardSource: 'NIDA_WORDS_MATTER',
+        citation: 'NIDA "Words Matter" Terms to Use and Avoid (2021); ASAM Drug Testing Guidelines',
+        educationalRationale: 'Labeling bodily fluids as "clean" or "dirty" conveys moral judgment, positioning the patient as contaminated or untrustworthy. Objective laboratory nomenclature requires reporting results as "positive/negative for non-prescribed substances" or "expected/unexpected results".',
+        sampleBefore: 'Urine tox was dirty for cannabinoids.',
+        sampleAfter: 'Toxicology screen was positive for non-prescribed cannabinoids.',
+        severity: 'STIGMA_ALERT',
+        active: true
+      },
+      {
+        id: 'dsm-person-first-sud',
+        version: '1.0.0',
+        deprecatedPattern: /\b(substance abuser|drug abuser|alcoholic|addict)\b/gi,
+        preferredTerm: 'person with a substance use disorder',
+        category: 'ADDICTION_MEDICINE',
+        standardSource: 'DSM-5-TR',
+        citation: 'DSM-5-TR § Substance-Related Disorders; Kelly & Westerhoff (2010)',
+        educationalRationale: 'Person-first language separates the individual human from their medical condition. Landmark research by Kelly & Westerhoff (2010) demonstrated that clinicians exposed to "abuser" vs "person with a substance use disorder" exhibit significant negative diagnostic bias and are 3x more likely to recommend punitive measures over medical treatment.',
+        sampleBefore: 'Patient is a known alcoholic and heroin addict.',
+        sampleAfter: 'Patient is diagnosed with severe alcohol use disorder and opioid use disorder.',
+        severity: 'STIGMA_ALERT',
+        active: true
+      },
+      {
+        id: 'suicidology-died-by-suicide',
+        version: '1.0.0',
+        deprecatedPattern: /\b(committed suicide|commit suicide|commits suicide|committing suicide|successful suicide|completed suicide|unsuccessful suicide)\b/gi,
+        preferredTerm: 'died by suicide',
+        category: 'SUICIDOLOGY',
+        standardSource: 'NIMH_CDC',
+        citation: 'NIMH Suicidology Guidelines; AFSP Ethical Reporting Standards; WHO Suicide Prevention',
+        educationalRationale: 'The verb "commit" historically associates suicidal death with crimes ("committed a felony") or moral sins dating to English common law. Suicidology recognizes suicidal crises as acute, lethal manifestations of severe psychiatric distress and neurobiological vulnerability, not criminal conduct.',
+        sampleBefore: 'Family member committed suicide two years ago.',
+        sampleAfter: 'Family member died by suicide two years ago.',
+        severity: 'HIGH_PRIORITY',
+        active: true
+      },
+      {
+        id: 'suicidology-self-directed-harm',
+        version: '1.0.0',
+        deprecatedPattern: /\b(committed self-harm|commit self-harm|committed self harm|commit self harm)\b/gi,
+        preferredTerm: 'engaged in self-directed harm / non-suicidal self-injury (NSSI)',
+        category: 'SUICIDOLOGY',
+        standardSource: 'NIMH_CDC',
+        citation: 'NIMH Self-Harm Guidelines; Linehan DBT Terminology Standards',
+        educationalRationale: 'Associating self-injury with the verb "commit" penalizes emotional suffering with carceral connotations. Person-centered clinical language specifies non-suicidal self-injury (NSSI) or self-directed harm without criminal phrasing.',
+        sampleBefore: 'Adolescent committed self-harm during stressful period.',
+        sampleAfter: 'Adolescent engaged in non-suicidal self-injury (NSSI) during stressful period.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'psychiatry-involuntary-admission',
+        version: '1.0.0',
+        deprecatedPattern: /\b(committed to (?:a |the )?(?:psych(?:iatric)?|mental|asylum|ward|facility|hospital)|involuntarily committed|commitment proceedings|involuntary commitment)\b/gi,
+        preferredTerm: 'involuntary psychiatric hospitalization / emergency evaluation hold / acute inpatient stabilization',
+        category: 'PSYCHIATRY',
+        standardSource: 'INSTITUTIONAL',
+        citation: 'APA Resource Document on Involuntary Commitment; WPA Madrid Declaration on Human Rights in Psychiatry',
+        educationalRationale: 'The word "commitment" originates from carceral and penal codes that treated psychiatric patients as criminals to be locked away. Trauma-informed, collaborative care utilizes objective clinical terminology such as "involuntary psychiatric stabilization" or "emergency protective evaluation hold", reinforcing dignity, partnership, and patient autonomy.',
+        sampleBefore: 'Patient was involuntarily committed to the psych hospital.',
+        sampleAfter: 'Patient was placed on an emergency psychiatric evaluation hold for inpatient stabilization.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'lifestyle-non-pharm-first-happiness',
+        version: '1.0.0',
+        deprecatedPattern: /\b(chemical imbalance in the brain|chemical imbalance|serotonin deficiency|chemical deficiency in the brain)\b/gi,
+        preferredTerm: 'complex biopsychosocial distress with non-pharmacological, emotional, and lifestyle contributors',
+        category: 'NON_PHARMACOLOGICAL_FIRST',
+        standardSource: 'LIFESTYLE_MEDICINE',
+        citation: 'Moncrieff et al. (2022) Molecular Psychiatry; American College of Lifestyle Medicine; Frances (Saving Normal)',
+        educationalRationale: 'The simplistic "chemical imbalance" theory has been clinically debunked. Human happiness and mental flourishing cannot be reduced to a pharmaceutical deficiency. Genuine vitality is rooted in restorative sleep, physical movement (elevating endogenous BDNF and endocannabinoids), somatic parasympathetic regulation (0.1 Hz vagal breathing), whole-food nutrition, and purposeful human connection before considering medication.',
+        sampleBefore: 'Patient was told their low mood is caused by a chemical imbalance in the brain.',
+        sampleAfter: 'Patient was guided that low mood reflects complex biopsychosocial distress with non-pharmacological, emotional, and lifestyle contributors.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'lifestyle-avoid-premature-prescribing',
+        version: '1.0.0',
+        deprecatedPattern: /\b(needs medication to be happy|pill for every symptom|immediate pharmacotherapy indicated|prescribe medication for happiness|start an antidepressant immediately)\b/gi,
+        preferredTerm: 'prioritize foundational non-pharmacological modalities (movement, sleep, social prescribing, purpose) before pharmacotherapy',
+        category: 'NON_PHARMACOLOGICAL_FIRST',
+        standardSource: 'LIFESTYLE_MEDICINE',
+        citation: 'NICE Clinical Guideline NG222 (Depression in Adults: Treatment & Management); WHO Mental Health Action Plan',
+        educationalRationale: 'The ultimate clinical goal is helping people discover sustainable joy, resilience, and vitality without lifelong drug dependency wherever safe and possible. NICE NG222 mandates non-pharmacological modalities (zone-2 exercise, CBT, nature immersion, community connection) as first-line for mild-to-moderate distress, reserving pharmacotherapy for severe illness or when non-drug foundations have been thoroughly supported.',
+        sampleBefore: 'Physician noted patient needs medication to be happy and start an antidepressant immediately.',
+        sampleAfter: 'Physician noted we prioritize foundational non-pharmacological modalities (movement, sleep, social prescribing, purpose) before pharmacotherapy.',
+        severity: 'HIGH_PRIORITY',
+        active: true
+      },
+      {
+        id: 'deprescribing-root-cause-depuration',
+        version: '1.0.0',
+        deprecatedPattern: /\b(patient failed (?:the |all )?(?:medication|antidepressant|drugs|SSRIs|meds)|failed medication|medication failure)\b/gi,
+        preferredTerm: 'medication did not provide adequate therapeutic benefit; explore non-pharmacological root causes and structured deprescribing',
+        category: 'DEPRESCRIBING',
+        standardSource: 'INSTITUTIONAL',
+        citation: 'American Geriatrics Society Beers Criteria; Canadian Deprescribing Network; Frank et al. (Psychiatric Services)',
+        educationalRationale: 'Patients do not "fail" medications; medications fail to provide therapeutic benefit when underlying life circumstances, chronic sleep deprivation, isolation, trauma, or lack of purpose are the true etiology. Rather than reflexively escalating drug doses or prescribing additional agents to treat side effects (the "prescribing cascade"), clinicians should explore structured deprescribing and re-center on what brings the individual genuine happiness and peace.',
+        sampleBefore: 'Patient failed all SSRIs and remains clinically depressed.',
+        sampleAfter: 'Medication did not provide adequate therapeutic benefit; explore non-pharmacological root causes and structured deprescribing.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'governance-steering-committee-stewardship',
+        version: '1.0.0',
+        deprecatedPattern: /\b(steering committee(?:'s)?|steering committees|formulary steering committee|advisory steering committee)\b/gi,
+        preferredTerm: 'collaborative stewardship circle (or interdisciplinary care guidance council)',
+        category: 'CLINICAL_GOVERNANCE',
+        standardSource: 'INSTITUTIONAL',
+        citation: 'Diverse Care Stewardship Standard; Indigenous Consensus Circles; Berwick (Promising Care)',
+        educationalRationale: 'Top-down "steering committees" historically reflect patriarchal, hierarchical bureaucracy that disempowers patients and frontline caregivers. In modern, diverse, and trauma-informed healthcare, clinical guidance is led by collaborative stewardship circles or care councils that welcome diverse perspectives, lived experience, and patient autonomy without authoritarian gavels.',
+        sampleBefore: 'The hospital steering committee mandated immediate implementation of the protocol.',
+        sampleAfter: 'The collaborative stewardship circle recommended patient-centered adaptation of the protocol.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'rational-therapeutics-good-steward-standard',
+        version: '1.0.0',
+        deprecatedPattern: /\b(pill for every ill|prescribe first|medicate the symptoms immediately|pharmacology first for low mood|chemical cure for sadness)\b/gi,
+        preferredTerm: 'rational therapeutics: prioritize non-pharmacological root causes, restorative lifestyle, and natural healing before drugs (The Good Steward Standard)',
+        category: 'NON_PHARMACOLOGICAL_FIRST',
+        standardSource: 'LIFESTYLE_MEDICINE',
+        citation: 'Goodman & Gilman (Rational Therapeutics); Dr. Rebecca Crumpler (A Book of Medical Discourses); Dr. Louisa Burns (Whole-Person Osteopathy)',
+        educationalRationale: 'The Good Steward standard—championed by diverse medical pioneers including Dr. Rebecca Crumpler, Dr. Susan La Flesche Picotte, Dr. Louisa Burns, and rational pharmacologists—holds that the highest clinical art is achieving healing with the fewest drugs possible, and whenever possible, none at all. Happiness and vitality cannot be reduced to synthetic chemicals; care begins with restorative rest, movement, nutrition, somatic regulation, and human connection.',
+        sampleBefore: 'Clinic philosophy adopted a pill for every ill to rapidly control symptoms.',
+        sampleAfter: 'Clinic philosophy adopted rational therapeutics: prioritize non-pharmacological root causes, restorative lifestyle, and natural healing before drugs (The Good Steward Standard).',
+        severity: 'HIGH_PRIORITY',
+        active: true
+      },
+      {
+        id: 'ama-barriers-to-adherence',
+        version: '1.0.0',
+        deprecatedPattern: /\b(non-compliant|noncompliant|refused to comply|failed to comply)\b/gi,
+        preferredTerm: 'experiencing barriers to treatment plan',
+        category: 'ADHERENCE',
+        standardSource: 'INSTITUTIONAL',
+        citation: 'AMA Patient-Centered Care Ethics; AAFP Collaborative Communication Standard',
+        educationalRationale: '"Non-compliance" positions the clinician as an authoritarian commander and the patient as a disobedient subordinate. Framing challenges as "barriers to treatment" fosters inquiry into financial toxicity, transportation deficits, pharmacy deserts, or medication adverse effects.',
+        sampleBefore: 'Patient is non-compliant with hypertensive medications.',
+        sampleAfter: 'Patient is navigating barriers to taking hypertensive medications.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'asam-symptom-recurrence',
+        version: '1.0.0',
+        deprecatedPattern: /\b(relapsed|fell off the wagon)\b/gi,
+        preferredTerm: 'recurrence of symptoms / return to use',
+        category: 'ADDICTION_MEDICINE',
+        standardSource: 'ASAM_4TH_ED',
+        citation: 'ASAM Criteria 4th Edition (2024); NIDA Principles of Drug Addiction Treatment',
+        educationalRationale: '"Relapse" carries fatalistic moral judgment implying complete personal failure. Framing as "recurrence of symptoms" or "return to use" aligns substance use disorder with other chronic relapsing-remitting diseases like asthma, hypertension, or type 1 diabetes.',
+        sampleBefore: 'Patient relapsed after three months of sobriety.',
+        sampleAfter: 'Patient experienced a return to use after three months in recovery.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'asam-moud-pharmacotherapy',
+        version: '1.0.0',
+        deprecatedPattern: /\b(medication-assisted treatment|medication assisted treatment|\bMAT\b)\b/gi,
+        preferredTerm: 'MOUD (Medications for Opioid Use Disorder) / Pharmacotherapy',
+        category: 'ADDICTION_MEDICINE',
+        standardSource: 'ASAM_4TH_ED',
+        citation: 'SAMHSA Terminology Advisory (2021); ASAM Clinical Guidelines on MOUD',
+        educationalRationale: 'The term "Medication-Assisted Treatment" implies that evidence-based pharmacotherapy (buprenorphine, methadone, naltrexone) is merely an auxiliary crutch rather than the primary life-saving medical treatment. We do not say "Medication-Assisted Diabetes Therapy" for insulin.',
+        sampleBefore: 'Patient was started on MAT with Suboxone.',
+        sampleAfter: 'Patient initiated MOUD pharmacotherapy with buprenorphine-naloxone.',
+        severity: 'RECOMMENDED_SHIFT',
+        active: true
+      },
+      {
+        id: 'acep-emergency-utilization',
+        version: '1.0.0',
+        deprecatedPattern: /\b(frequent flyer|drug seeker|drug seeking)\b/gi,
+        preferredTerm: 'patient with high acute healthcare utilization / seeking acute analgesia',
+        category: 'EMERGENCY_TRIAGE',
+        standardSource: 'INSTITUTIONAL',
+        citation: 'ACEP Code of Ethics; Joint Commission Patient Safety Alert #54',
+        educationalRationale: 'Pejorative colloquial labels cause "diagnostic overshadowing", predisposing clinicians to dismiss emergent organic pathologies (e.g. spinal epidural abscess, necrotizing fasciitis, aortic dissection) as manipulative behavior.',
+        sampleBefore: 'Patient is a frequent flyer drug seeker presenting for back pain.',
+        sampleAfter: 'Patient with high acute healthcare utilization presenting seeking acute analgesia for severe back pain.',
+        severity: 'HIGH_PRIORITY',
+        active: true
+      }
+    ];
+
+    for (const rule of coreRules) {
+      this.rules.set(rule.id, rule);
+    }
+    this.rulesCount.set(this.rules.size);
+  }
+
+  /**
+   * Retrieves an array of all registered rules.
+   */
+  getAllRules(): IDsmLanguageRule[] {
+    return Array.from(this.rules.values());
+  }
+
+  /**
+   * Registers or updates a clinical language rule in the registry.
+   */
+  registerRule(rule: IDsmLanguageRule): void {
+    this.rules.set(rule.id, rule);
+    this.rulesCount.set(this.rules.size);
+  }
+
+  /**
+   * Audits clinical text for obsolete or stigmatizing terminology while strictly
+   * protecting direct patient quotes in quotation marks.
+   */
+  auditText(text: string): ILanguageAuditResult {
+    if (!text || !text.trim()) {
+      return {
+        hasSuggestions: false,
+        totalFlags: 0,
+        suggestions: [],
+        harmonizedText: text || '',
+        protectedQuoteCount: 0
+      };
+    }
+
+    // Step 1: Detect quoted segments to protect patient verbatim speech
+    // Supports standard straight quotes ("..."), smart double quotes (“...”), and single quotes
+    const quoteRegex = /(["“'][^"”']*["”'])/g;
+    const protectedRanges: Array<{ start: number; end: number }> = [];
+    let quoteMatch: RegExpExecArray | null;
+
+    while ((quoteMatch = quoteRegex.exec(text)) !== null) {
+      protectedRanges.push({
+        start: quoteMatch.index,
+        end: quoteMatch.index + quoteMatch[0].length
+      });
+    }
+
+    const suggestions: ILanguageSuggestion[] = [];
+
+    // Step 2: Evaluate active rules against unquoted text
+    for (const rule of this.rules.values()) {
+      if (!rule.active) continue;
+
+      // Create a fresh regex instance with global flag to avoid state mutation
+      const regex = new RegExp(rule.deprecatedPattern.source, rule.deprecatedPattern.flags);
+      let match: RegExpExecArray | null;
+
+      while ((match = regex.exec(text)) !== null) {
+        const matchStart = match.index;
+        const matchEnd = match.index + match[0].length;
+
+        // Verify if match falls inside any protected patient quotation
+        const isInsideQuote = protectedRanges.some(
+          range => matchStart >= range.start && matchEnd <= range.end
+        );
+
+        if (!isInsideQuote) {
+          suggestions.push({
+            ruleId: rule.id,
+            matchedText: match[0],
+            preferredTerm: rule.preferredTerm,
+            index: matchStart,
+            length: match[0].length,
+            category: rule.category,
+            standardSource: rule.standardSource,
+            citation: rule.citation,
+            educationalRationale: rule.educationalRationale,
+            severity: rule.severity,
+            sampleBefore: rule.sampleBefore,
+            sampleAfter: rule.sampleAfter
+          });
+        }
+      }
+    }
+
+    // Sort suggestions by index ascending
+    suggestions.sort((a, b) => a.index - b.index);
+
+    // Step 3: Compute harmonized text
+    const harmonizedText = this.harmonizeText(text);
+
+    return {
+      hasSuggestions: suggestions.length > 0,
+      totalFlags: suggestions.length,
+      suggestions,
+      harmonizedText,
+      protectedQuoteCount: protectedRanges.length
+    };
+  }
+
+  /**
+   * Harmonizes unquoted obsolete terminology into preferred DSM-5-TR / ASAM language.
+   */
+  harmonizeText(text: string): string {
+    if (!text || !text.trim()) return text;
+
+    // Segment text into quoted and non-quoted chunks to prevent modifying patient quotes
+    const quoteRegex = /(["“'][^"”']*["”'])/g;
+    const parts: string[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = quoteRegex.exec(text)) !== null) {
+      // Chunk before the quote
+      if (match.index > lastIndex) {
+        const unquotedChunk = text.substring(lastIndex, match.index);
+        parts.push(this.replaceUnquotedChunk(unquotedChunk));
+      }
+      // The quote itself (preserved exactly as-is)
+      parts.push(match[0]);
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Remaining tail after last quote
+    if (lastIndex < text.length) {
+      parts.push(this.replaceUnquotedChunk(text.substring(lastIndex)));
+    }
+
+    return parts.join('');
+  }
+
+  private replaceUnquotedChunk(chunk: string): string {
+    let result = chunk;
+    for (const rule of this.rules.values()) {
+      if (!rule.active) continue;
+      const regex = new RegExp(rule.deprecatedPattern.source, rule.deprecatedPattern.flags);
+      result = result.replace(regex, (match) => {
+        // Match casing of original first letter where appropriate
+        if (match[0] === match[0].toUpperCase() && rule.preferredTerm.length > 0) {
+          return rule.preferredTerm.charAt(0).toUpperCase() + rule.preferredTerm.slice(1);
+        }
+        return rule.preferredTerm;
+      });
+    }
+    return result;
+  }
+
+  /**
+   * Serializes current rule registry to portable JSON for institutional distribution.
+   */
+  exportRulesManifest(): string {
+    const serialized: ISerializedDsmRule[] = Array.from(this.rules.values()).map(r => ({
+      id: r.id,
+      version: r.version,
+      patternString: r.deprecatedPattern.source,
+      patternFlags: r.deprecatedPattern.flags,
+      preferredTerm: r.preferredTerm,
+      category: r.category,
+      standardSource: r.standardSource,
+      citation: r.citation,
+      educationalRationale: r.educationalRationale,
+      sampleBefore: r.sampleBefore,
+      sampleAfter: r.sampleAfter,
+      severity: r.severity,
+      active: r.active
+    }));
+
+    return JSON.stringify({
+      schemaVersion: '1.0.0',
+      exportedAt: new Date().toISOString(),
+      ruleCount: serialized.length,
+      rules: serialized
+    }, null, 2);
+  }
+
+  /**
+   * Ingests a JSON manifest of custom/institutional rules.
+   */
+  loadRulesFromJson(jsonString: string): number {
+    try {
+      const parsed = JSON.parse(jsonString);
+      const rulesArray: ISerializedDsmRule[] = Array.isArray(parsed) ? parsed : (parsed.rules || []);
+      let loaded = 0;
+
+      for (const item of rulesArray) {
+        if (!item.id || !item.patternString || !item.preferredTerm) continue;
+
+        const rule: IDsmLanguageRule = {
+          id: item.id,
+          version: item.version || '1.0.0',
+          deprecatedPattern: new RegExp(item.patternString, item.patternFlags || 'gi'),
+          preferredTerm: item.preferredTerm,
+          category: item.category || 'ADDICTION_MEDICINE',
+          standardSource: item.standardSource || 'INSTITUTIONAL',
+          citation: item.citation || 'Institutional Clinical Standard',
+          educationalRationale: item.educationalRationale || 'Updated clinical terminology.',
+          sampleBefore: item.sampleBefore || '',
+          sampleAfter: item.sampleAfter || '',
+          severity: item.severity || 'RECOMMENDED_SHIFT',
+          active: item.active !== false
+        };
+
+        this.rules.set(rule.id, rule);
+        loaded++;
+      }
+
+      this.rulesCount.set(this.rules.size);
+      return loaded;
+    } catch (e) {
+      console.error('[DsmLanguageCorrectionService] Failed to load JSON manifest:', e);
+      return 0;
+    }
+  }
+}

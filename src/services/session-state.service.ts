@@ -70,7 +70,7 @@ export class SessionStateService {
     } catch {
       // Ignore storage write errors
     }
-    if (this.patientMgmt) {
+    if (this.patientMgmt && typeof this.patientMgmt.triggerImmediateSaveAndSync === 'function') {
       this.patientMgmt.triggerImmediateSaveAndSync();
     }
     this.isLocked.set(true);

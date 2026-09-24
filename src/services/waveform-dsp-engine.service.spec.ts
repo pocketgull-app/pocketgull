@@ -33,4 +33,28 @@ describe('WaveformDspEngineService', () => {
     expect(summary.signalQualityIndex).toBeGreaterThan(0.7);
     expect(['OPTIMAL', 'MODERATE_STIFFNESS', 'ELEVATED_VASCULAR_RESISTANCE']).toContain(summary.arterialComplianceTier);
   });
+
+  it('should objectively classify traditional Ayurvedic Dosha and TCM pulse patterns from morphology', () => {
+    const raw = service.generateSyntheticPpgWaveform(10, 72, 0.4);
+    const summary = service.analyzeWaveform(raw, 100);
+    const classification = service.classifyTraditionalPulseWaveform(summary, 45);
+
+    expect(classification.ayurvedicDoshaPulse).toBeDefined();
+    expect(['Vata (Sarpa / Rapid-Light)', 'Pitta (Manduka / Bounding-Surging)', 'Kapha (Hamsa / Deep-Slow)']).toContain(classification.ayurvedicDoshaPulse.primaryDosha);
+    expect(classification.ayurvedicDoshaPulse.doshaConfidence).toBeGreaterThan(0.5);
+
+    expect(classification.tcmPulseMorphology).toBeDefined();
+    expect(classification.tcmPulseMorphology.patternConfidence).toBeGreaterThan(0.5);
+    expect(classification.tcmPulseMorphology.clinicalInterpretation.length).toBeGreaterThan(10);
+    expect(classification.consilienceIndex).toBeGreaterThanOrEqual(0.7);
+  });
+
+  it('should classify high-stiffness high-HR signal as Vata / Wiry pulse', () => {
+    const rawStiff = service.generateSyntheticPpgWaveform(10, 88, 0.85);
+    const summary = service.analyzeWaveform(rawStiff, 100);
+    const classification = service.classifyTraditionalPulseWaveform(summary, 18);
+
+    expect(classification.ayurvedicDoshaPulse.primaryDosha).toBe('Vata (Sarpa / Rapid-Light)');
+    expect(['Wiry (Xian Mai)', 'Surging (Hong Mai)']).toContain(classification.tcmPulseMorphology.pattern);
+  });
 });

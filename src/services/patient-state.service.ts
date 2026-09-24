@@ -16,8 +16,10 @@ import {
   IPatientAnatomicProfile
 } from './patient.types';
 import { getSecureRandomId } from '../utils/security-helper';
+import { WoodCutType, SurfaceStyle } from '../shaders/vesalian-woodcut.shader';
 
-export type { IPatientState };
+export type ShadingProfile = 'atelier' | 'clinical' | 'theatre' | 'scotopic';
+export type { IPatientState, WoodCutType, SurfaceStyle };
 export { BODY_PART_NAMES };
 
 export interface IAdaptiveVitalThresholds {
@@ -29,6 +31,9 @@ export interface IAdaptiveVitalThresholds {
   isAthleticConditioning: boolean;
   notes: string[];
 }
+
+export type TAnatomicalSystemTarget = 'renal' | 'cardiovascular' | 'neurological' | 'metabolic' | 'thermal_environmental' | 'musculoskeletal' | 'autonomic_vagal';
+
 import { StorageService } from './storage.service';
 import { GamificationService } from './gamification.service';
 import { ThemeService } from './theme.service';
@@ -54,10 +59,15 @@ export class PatientStateService {
   readonly isPlainLanguageMode = computed(() => this.themeService.isPlainLanguageMode());
   readonly toolStates = signal<Record<string, 'unassigned' | 'prescribed' | 'hidden'>>({});
   readonly showContactlessScanner = signal<boolean>(false);
+  readonly showActiveRoom = signal<boolean>(false);
   readonly guardianAttestation = computed<IGuardianAttestation>(() => this.coppaShield?.guardianAttestation() || { isAttested: false, relationship: null, timestamp: null });
 
   toggleContactlessScanner(open?: boolean): void {
     this.showContactlessScanner.update(current => open !== undefined ? open : !current);
+  }
+
+  toggleActiveRoom(open?: boolean): void {
+    this.showActiveRoom.update(current => open !== undefined ? open : !current);
   }
 
   // --- Patient 3D Spatial Anatomic Profile & LiDAR Custom Mesh ---
@@ -376,7 +386,19 @@ export class PatientStateService {
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
   readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular'>('3d');
-  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain'>('skin');
+  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost'>('skin');
+  /** Active rehabilitation condition target for 3D kinematics and ghost mentoring */
+  readonly activeRehabCondition = signal<string>('lumbar_pelvic_alignment');
+  /** Dynamic rehabilitation correction progress: 0.0 = habitual posture, 1.0 = therapeutic restorative goal */
+  readonly activeRehabProgress = signal<number>(0);
+  /** Localized cutaway aperture radius in 3D world units for ghost Fresnel windowing */
+  readonly activeRehabCutawayRadius = signal<number>(2.5);
+  /** Active woodcut relief style derived from Atelier Xylem / The Carpenter's Metronome */
+  readonly activeWoodCutType = signal<WoodCutType>('camaieu_auto');
+  /** Active 3D surface style: smooth matte écorché cast (zero moiré) vs 1543 woodblock */
+  readonly activeSurfaceStyle = signal<SurfaceStyle>('ecorche_cast');
+  /** Active chiaroscuro shading profile: atelier (3200K), clinical (4500K), theatre (5600K), scotopic (650nm) */
+  readonly activeShadingProfile = signal<ShadingProfile>('atelier');
   readonly customModelUrl = signal<string | null>(null);
   readonly activePatientSummary = signal<string | null>(null);
   readonly draftSummaryItems = signal<IDraftSummaryItem[]>([]);
@@ -561,7 +583,62 @@ export class PatientStateService {
 
   // --- Clinician Manual Override & Smart Data Presence Computed Signals ---
   readonly showAllInstrumentsOverride = signal<boolean>(false);
-  readonly activeDrilldownComponent = signal<'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'foraging' | 'vagal' | null>(null);
+  readonly activeDrilldownComponent = signal<'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'vagal' | null>(null);
+
+  /**
+   * Resolves the active anatomical organ selection into a unified physiological system target.
+   */
+  readonly selectedAnatomicalSystem = computed<TAnatomicalSystemTarget | null>(() => {
+    const partId = (this.selectedPartId() || '').toLowerCase();
+    if (!partId) return null;
+    if (partId.includes('kidney') || partId.includes('renal') || partId.includes('bl23') || partId.includes('basti')) {
+      return 'renal';
+    }
+    if (partId.includes('heart') || partId.includes('cardio') || partId.includes('cv17') || partId.includes('hridaya') || partId.includes('anahata')) {
+      return 'cardiovascular';
+    }
+    if (partId.includes('respiratory') || partId.includes('pc6') || partId.includes('vagus') || partId.includes('lung')) {
+      return 'autonomic_vagal';
+    }
+    if (partId.includes('brain') || partId.includes('head') || partId.includes('gv20') || partId.includes('adhipati') || partId.includes('sthapani') || partId.includes('cranial')) {
+      return 'neurological';
+    }
+    if (partId.includes('liver') || partId.includes('stomach') || partId.includes('abdomen') || partId.includes('gut') || partId.includes('cv12') || partId.includes('nabhi')) {
+      return 'metabolic';
+    }
+    if (partId.includes('skin') || partId.includes('thermal') || partId.includes('chest') || partId.includes('diaphragm')) {
+      return 'thermal_environmental';
+    }
+    if (partId.includes('spine') || partId.includes('pelvis') || partId.includes('shoulder') || partId.includes('arm') || partId.includes('leg') || partId.includes('foot') || partId.includes('dermatome') || partId.includes('joint')) {
+      return 'musculoskeletal';
+    }
+    return null;
+  });
+
+  /**
+   * Automatically spotlights the clinical diagnostic deep-dive corresponding to the focused 3D organ.
+   */
+  readonly recommendedDrilldownForSelectedPart = computed<'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'vagal' | null>(() => {
+    const sys = this.selectedAnatomicalSystem();
+    if (!sys) return null;
+    switch (sys) {
+      case 'renal':
+        return 'biomarkers';
+      case 'cardiovascular':
+      case 'autonomic_vagal':
+        return 'vagal';
+      case 'neurological':
+        return 'ybocs';
+      case 'metabolic':
+        return 'food_safety';
+      case 'thermal_environmental':
+        return 'occupational';
+      case 'musculoskeletal':
+        return 'biomarkers';
+      default:
+        return 'biomarkers';
+    }
+  });
 
   readonly hasOccupationalData = computed(() => {
     const occ = this.occupation();
@@ -887,6 +964,23 @@ export class PatientStateService {
       this.lazyLoadPartIssues(partId);
       this.game.completeQuest('click_anatomy');
     }
+  }
+
+  /**
+   * Opens the diagnostic deep-dive modal tailored to the currently selected 3D anatomical organ.
+   */
+  openDrilldownForCurrentOrgan(): void {
+    const target = this.recommendedDrilldownForSelectedPart();
+    if (target) {
+      this.activeDrilldownComponent.set(target);
+    }
+  }
+
+  /**
+   * Programmatically selects and highlights an anatomical organ from external tools (e.g., posology presets).
+   */
+  focusAnatomicalOrgan(partId: string): void {
+    this.selectPart(partId);
   }
 
   selectNote(noteId: string | null) {
@@ -1222,6 +1316,12 @@ export class PatientStateService {
     this.isResearchFrameVisible.set(false);
     this.aiAnomalyHighlights.set({});
     this.showGhostOverlay.set(false);
+    this.activeRehabCondition.set('lumbar_pelvic_alignment');
+    this.activeRehabProgress.set(0);
+    this.activeRehabCutawayRadius.set(2.5);
+    this.activeWoodCutType.set('camaieu_auto');
+    this.activeSurfaceStyle.set('ecorche_cast');
+    this.activeShadingProfile.set('atelier');
     this.issues.set({});
     this.patientGoals.set('');
     this.dietaryProtocol.set('');
@@ -1268,6 +1368,16 @@ export class PatientStateService {
   /** Remove all AI anomaly overlay markers from the 3D viewer. */
   clearAiAnomalyHighlights() {
     this.aiAnomalyHighlights.set({});
+  }
+
+  /** Set active 3D surface style: 'ecorche_cast' (smooth matte) or 'woodcut' (1543 relief) */
+  setSurfaceStyle(style: SurfaceStyle): void {
+    this.activeSurfaceStyle.set(style);
+  }
+
+  /** Set active chiaroscuro lighting and contrast profile */
+  setShadingProfile(profile: ShadingProfile): void {
+    this.activeShadingProfile.set(profile);
   }
 
   /** Clears only patient data, leaving UI state intact, for review mode */

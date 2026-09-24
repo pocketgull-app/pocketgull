@@ -7,7 +7,7 @@ import 'medical_summary_widget.dart';
 import 'patient_history_timeline_widget.dart';
 import 'patient_scans_widget.dart';
 import 'cgm_time_in_range_widget.dart';
-import 'orp_foveal_reticle_widget.dart';
+import 'experimental/orp_foveal_reticle_widget.dart';
 import 'anti_confirmation_bias_widget.dart';
 
 class MedicalChartWidget extends ConsumerStatefulWidget {

@@ -92,6 +92,12 @@ export class MetricCardComponent {
 - **Exclusive Brand & Copyright Boundary**: The custom handwritten/display Marker Font (`font-pocketgull-handwritten`, `.marker-bold-emphasis`, `.bionic-pocketgull-marker`, marker SVG strokes) MUST **ONLY** be utilized when displaying the official **Brand Lettering ("PocketGull")** and **Copyright / Legal Footer imprint** lines.
 - **Universal Clinical Legibility**: All clinical UI, research frame literature, telemetric navigation, data HUDs, vitals tables, and reading frames MUST strictly utilize the clean, high-legibility clinical typography stacks (`font-pocketgull-sans-clinical`, `font-pocketgull-inter`, `font-pocketgull-mono`, `font-pocketgull-notofu`) to guarantee zero dosage misinterpretation and optimal optical legibility.
 
+## Trademark & Intellectual Property Governance Standard (VS Code Themes & Marketplace Assets)
+- **Zero Third-Party Corporate / Model Marks**: Never use protected third-party brand names or product designations (such as `Braun`, `ET66`, `Risograph`, `RISO`, `E Ink`) in theme labels, identifiers, or manifest declarations. Always substitute generic aesthetic or descriptive terms (`Rams Functionalist`, `Spot-Color Press`, `Electrophoretic`, `Reflective Slate`).
+- **Zero Intergovernmental Protected Acronyms (Paris Convention Art. 6ter)**: Strictly avoid using protected intergovernmental emblems or acronyms (such as `CERN`, `WHO`, `NASA`) in distributed software packaging. Use public-domain historical descriptors (`Hypertext 1991`, `WorldWideWeb`).
+- **Public Domain & Biographical Homage**: Commemorations of historical figures or design philosophies in the public domain (`Dieter Rams`, `Marie Curie`, `Tim Berners-Lee`) must focus on the philosophy, person, or public discovery without invoking corporate trademarked product lines.
+- **Manifest Validation & HTTPS Hygiene**: All VS Code and Open VSX theme extensions MUST maintain clean HTTPS repository URLs in `package.json`, valid SPDX license files (`LICENSE`), and zero relative image URL warnings.
+
 ## Amazon Associates & Affiliate Egress Governance Standard
 - **Strict SMS & Email Affiliate Link Prohibition**: NEVER transmit raw Amazon affiliate links (`amazon.com/dp/*`, `tag=pgdpo-20`) inside outbound SMS text messages, push notifications, or emails. All communications MUST direct patients back to their secure Pocket-Gull Care Plan web portal.
 - **Mandatory FTC & Clinical Disclaimer**: Every product recommendation card MUST display the clear FTC affiliate disclosure (`As an Amazon Associate, PocketGull earns from qualifying purchases`) and state that recommendations are supportive evidence-grounded tools, not direct prescriptions.
@@ -220,4 +226,34 @@ Every new feature, component, API endpoint, or clinical model shipped in Pocket-
   text-wrap: pretty;
   ```
 - **Interactive Testing Areas**: All `contenteditable` inputs and interactive typography sandboxes MUST include `overflow-x: hidden;` and explicit container width caps to ensure multiline line wrapping onto subsequent lines during live typing or multi-script pasting.
+
+## OpenSSF Baseline 3 & Gold Security Governance Standard
+- **Developer Certificate of Origin (DCO) Mandate (`OSPS-LE-01.01`)**: All commits created by agents or contributors MUST assert legal provenance using standard DCO sign-offs (`Signed-off-by: Full Name <email>` or `git commit -s`).
+- **Two-Person Review Standard (`OSPS-QA-07.01`, `two_person_review`)**: Direct pushes to `main` are disabled. All features and refactors MUST be submitted via scoped topic branches and Pull Requests with mandatory CI pre-flight checks and non-author human review before merging.
+- **SPDX License Headers (`OSPS-LE-03.02`, `license_per_file`)**: All newly created source code files (`.ts`, `.py`, `.dart`, `.go`) MUST include standard SPDX machine-readable license headers:
+  ```typescript
+  // SPDX-License-Identifier: Apache-2.0
+  // Copyright (c) 2026 PocketGull LLC & Phillip Gear
+  ```
+- **Deterministic Clinical Precedence Over Stochastic LLMs (`OSPS-SA-01.01`)**: Emergency physiological red flags (BE-FAST acute stroke, ACS chest pain, SpO2 < 90%, C-SSRS suicidal crisis) MUST deterministically intercept execution ahead of any stochastic Gemini API call.
+- **Zero PHI Egress & Edge Hybridization (`OSPS-BR-07.01`)**: Clinical scribing and triage acuity inference leverage on-device models (Chrome Built-in AI / Gemma 4 Dev Trial) with mathematical zero network egress to protect HIPAA §164.514 Safe Harbor guarantees. Upstream Gemini API payloads are ephemeral, non-PHI, and strictly enterprise opt-out.
+- **SLSA Provenance & Immutable Digest Deployment (`OSPS-BR-06.01`)**: Production container deployments to Google Cloud Run in `gen-lang-client-0540208645` MUST deploy by immutable SHA-256 digest (`gcr.io/...@sha256:...`) with CycloneDX 1.6 SBOM verification (`npm run sbom`).
+- **FinOps Scale-to-Zero & Lifecycle Pruning**: Cloud Run services MUST configure `minScale: 0`. Storage lifecycle policies enforce 7-day auto-deletion (`olderThan: "604800s"`, `keepCount: 3`) on Artifact Registry Docker repositories and GCS source buckets (`npm run gcp:prune-storage`).
+
+## Clinical Epistemic Fallacies & Worker-Amplifying Standard
+- **12 Canonical Clinical Fallacies (`SkepticalEpistemologyService`)**: All agents, diagnostics, and CDS components MUST guard against the 12 canonical clinical fallacies:
+  1. `BASE_RATE_FALLACY`: Conflating conditional test accuracy with posterior disease probability. Mandate Gerd Gigerenzer natural frequencies (out of 10,000 screened individuals).
+  2. `POST_HOC_ERGO_PROPTER_HOC`: Conflating succession with causation; compare against spontaneous natural history and regression to the mean.
+  3. `AFFIRMING_THE_CONSEQUENT`: Conflating sensitivity with specificity on non-specific biomarker elevations.
+  4. `TEXAS_SHARPSHOOTER`: Multiplicity corrections (Bonferroni/FDR) for retrospective biomarker dredging.
+  5. `SURVIVORSHIP_BIAS`: Enforcing Intention-to-Treat (ITT) accounting for dropouts.
+  6. `APPEAL_TO_NATURE`: Pharmacokinetic and toxicological rigor for botanicals.
+  7. `APPEAL_TO_AUTHORITY`: Empirical double-blind replication over prestige.
+  8. `SURROGATE_ENDPOINT_EQUIVOCATION`: Distinguishing intermediate markers from patient-centered hard endpoints.
+  9. `BERKSONS_BIAS`: Correcting for collider stratification in hospitalized datasets.
+  10. `SIMPSONS_PARADOX`: Stratifying by disease severity to avoid aggregate trend reversal.
+  11. `FALSE_DILEMMA`: Exploring stepped-care conservative therapies before invasive interventions.
+  12. `AUTOMATION_BIAS`: Guarding against uncritical algorithmic deference with mandatory physical exam corroboration.
+- **Respectful Cost Transparency Terminology**: Enforce **"Standard Retail Benchmark"** and **"Estimated Out-of-Pocket Total"** across all cost and pricing views. Strictly prohibit adversarial labels. Position AI as a supportive assistant that amplifies clinician autonomy and frontline Community Health Workers (CHWs).
+
 

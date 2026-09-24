@@ -24,6 +24,7 @@ export * from './protac-context-scrubber.service';
 export * from './quantum-speculative-sampler.service';
 export * from './umls-edge-resolver.service';
 export * from './snomed-icd-crosswalk.service';
+export * from './who-essential-medicines.service';
 
 // FHIR Domain Services Barrel Export
 export * from './fhir/fhir-integration.service';
@@ -31,6 +32,7 @@ export * from './fhir/fhir-bundle-factory.service';
 export * from './fhir/gcp-healthcare-api.service';
 export * from './fhir/fhir-r5-telemetry.service';
 export * from './fhir/fhir-r7-horizon.service';
+export * from './fhir/fhir-r7-r4-converter.service';
 export * from './fhir/smart-on-fhir-launcher.service';
 export * from './fhir/laaf-fhir-haptic-schedule.service';
 
@@ -56,3 +58,7 @@ export * from './scaffold-exporter.service';
 export * from './optical-innovations.service';
 export * from './optical-chrono-trajectory.service';
 export * from './patient-trajectory.service';
+export * from './clinical-vagal-resonant-pacing.service';
+export * from './bio-rhythmic-typography.service';
+export * from './kinesiology-biomechanics.service';
+export * from './diatom-vesalian-typography.service';

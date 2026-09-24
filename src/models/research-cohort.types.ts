@@ -28,22 +28,57 @@ export type EthicalPrecedentFramework =
   | 'luna_dna_public_benefit' 
   | 'ciitizen_rare_disease';
 
+export type StudyFundingModel = 
+  | 'open_science_commons' 
+  | 'institutional_grant_escrow' 
+  | 'academic_nonprofit_consortium';
+
+export type GrantEscrowStatus = 
+  | 'pure_open_science' 
+  | 'grant_escrow_funded' 
+  | 'grant_escrow_pending';
+
 export interface IResearchCohortListing {
   id: string;
   category: DiseaseCategory;
   title: string;
   sponsorOrInstitution: string;
   ethicalFramework: EthicalPrecedentFramework;
+  studyFundingModel: StudyFundingModel;
+  grantEscrowStatus: GrantEscrowStatus;
   description: string;
   clinicalObjective: string;
   participantCount: number;
   dataPointsCount: number;
-  compensationPerQueryUsd: number;
+  compensationPerQueryUsd: number; // Institutional grant allocation per query (held in escrow)
   participantBenefitDescription: string; // e.g. Free genomic / biomarker insight report returned to patient
   sampleFields: string[];
   kAnonymityScore: number;
+  differentialPrivacyEpsilon?: number;
+  differentialPrivacyDelta?: number;
+  linkageAttackRiskTier?: LinkageRiskTier;
   fhirResourceType: 'ResearchStudy' | 'Observation' | 'Condition' | 'DiagnosticReport';
   tags: string[];
+}
+
+export type LinkageRiskTier = 'LOW' | 'MODERATE' | 'CRITICAL_QUARANTINE';
+
+export interface IDifferentialPrivacyConfig {
+  epsilon: number;
+  delta: number;
+  mechanism: 'LAPLACE' | 'GAUSSIAN';
+  calibratedNoiseScale: number;
+}
+
+export interface ILinkageAttackRiskEvaluation {
+  cohortId: string;
+  quasiIdentifierEntropyScore: number;
+  kAnonymityScore: number;
+  riskTier: LinkageRiskTier;
+  isQuarantined: boolean;
+  quarantineReason: string | null;
+  allowedForEgress: boolean;
+  differentialPrivacy: IDifferentialPrivacyConfig;
 }
 
 export interface IResearchDividendLedgerEntry {
@@ -54,10 +89,12 @@ export interface IResearchDividendLedgerEntry {
   buyerInstitution: string;
   ethicalFramework: EthicalPrecedentFramework;
   amountUsd: number;
-  patientRevenueSharePercent: number; // e.g. 85% goes directly to the contributing patient
-  status: 'accrued' | 'paid_out';
+  patientRevenueSharePercent: number; // e.g. 85% goes directly to the contributing patient if escrowed
+  status: 'accrued' | 'paid_out' | 'open_science_contributed';
   transactionHash: string;
   researchFindingSummary?: string; // Summary of medical research discovery made with this query
+  studyDoi?: string;
+  openScienceImpactScore?: number;
 }
 
 export interface IPatientResearchEnrollment {
@@ -67,10 +104,15 @@ export interface IPatientResearchEnrollment {
   authorizationSignatureHash: string | null;
   ethicalCharterAccepted: boolean;
   returnOfInsightsEnabled: boolean; // Opt-in to receive scientific discoveries & biomarker benchmarks
-  payoutMethod: 'stripe_connect' | 'direct_deposit' | 'unconfigured';
+  payoutMethod: 'pure_open_science' | 'unconfigured';
   payoutAccountMasked: string | null;
   lifetimeEarningsUsd: number;
   availableBalanceUsd: number;
+  grantEscrowBalanceUsd: number;
+  researchContributionsCount: number;
+  studiesSupportedCount: number;
+  scientificFindingsUnlocked: string[];
+  belmontReportAttestation: boolean;
   ledger: IResearchDividendLedgerEntry[];
 }
 
@@ -81,3 +123,46 @@ export interface IResearchAccessQueryRequest {
   queryFilters?: Record<string, unknown>;
   licenseTier: 'academic_single_query' | 'biotech_annual_license';
 }
+
+/**
+ * BigQuery Analytics Hub Cohort Listing Descriptor
+ * Conforms to Google Cloud Analytics Hub Exchange & Listing specification.
+ * GCP Project: gen-lang-client-0540208645
+ * Data Exchange: pocketgull_data_exchange
+ */
+export interface IBigQueryAnalyticsHubListing {
+  listingId: string;
+  dataExchangeId: string;
+  displayName: string;
+  description: string;
+  primaryContact: string;
+  documentationUrl?: string;
+  project: string;
+  datasetReference: string;
+  category: DiseaseCategory;
+  differentialPrivacyBudget: {
+    epsilon: number;
+    delta: number;
+  };
+  kAnonymityScore: number;
+  subscriberCount: number;
+  dryRunSqlTemplate: string;
+  sampleColumns: Array<{
+    name: string;
+    type: string;
+    description: string;
+    isDeIdentified: boolean;
+  }>;
+}
+
+export interface IDryRunSqlQueryResult {
+  cohortId: string;
+  sql: string;
+  estimatedBytesBilled: number;
+  estimatedParticipantsMatched: number;
+  differentialPrivacyEpsilonConsumed: number;
+  perturbedAggregateSample: Record<string, number>;
+  isValid: boolean;
+  executionNotice: string;
+}
+

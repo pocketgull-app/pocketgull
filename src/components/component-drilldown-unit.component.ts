@@ -6,12 +6,10 @@ import { OccupationalHazardCardComponent } from './occupational-hazard-card.comp
 import { FoodSafetyGuardrailCardComponent } from './food-safety-guardrail-card.component';
 import { YbocsScreenerComponent } from './ybocs-screener.component';
 import { ActuarialQalyCalculatorComponent } from './actuarial-qaly-calculator.component';
-import { AndroscogginForagingPhytoncideComponent } from './androscoggin-foraging-phytoncide.component';
 import { VagalBiofeedbackDockComponent } from './vagal-biofeedback-dock.component';
-import { KaggleChallengeCardComponent } from './kaggle-challenge-card.component';
 import { ProviderTreatmentNetworkComponent } from './provider-treatment-network.component';
 
-export type DrilldownTarget = 'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'foraging' | 'vagal' | 'kaggle' | 'network' | null;
+export type DrilldownTarget = 'biomarkers' | 'occupational' | 'food_safety' | 'ybocs' | 'qaly' | 'vagal' | 'network' | null;
 export type DrilldownLens = 'evidence' | 'biophysics' | 'epigenetic';
 
 @Component({
@@ -24,9 +22,7 @@ export type DrilldownLens = 'evidence' | 'biophysics' | 'epigenetic';
     FoodSafetyGuardrailCardComponent,
     YbocsScreenerComponent,
     ActuarialQalyCalculatorComponent,
-    AndroscogginForagingPhytoncideComponent,
     VagalBiofeedbackDockComponent,
-    KaggleChallengeCardComponent,
     ProviderTreatmentNetworkComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -137,14 +133,8 @@ export type DrilldownLens = 'evidence' | 'biophysics' | 'epigenetic';
               @case ('qaly') {
                 <app-actuarial-qaly-calculator></app-actuarial-qaly-calculator>
               }
-              @case ('foraging') {
-                <app-androscoggin-foraging-phytoncide></app-androscoggin-foraging-phytoncide>
-              }
               @case ('vagal') {
                 <app-vagal-biofeedback-dock></app-vagal-biofeedback-dock>
-              }
-              @case ('kaggle') {
-                <app-kaggle-challenge-card></app-kaggle-challenge-card>
               }
               @case ('network') {
                 <app-provider-treatment-network></app-provider-treatment-network>
@@ -171,9 +161,7 @@ export class ComponentDrilldownUnitComponent {
       case 'food_safety': return 'Food Safety & Additive Toxicology Guardrails';
       case 'ybocs': return 'Y-BOCS Obsessive-Compulsive Triage Screener';
       case 'qaly': return 'Actuarial QALY & Healthspan Longevity Calculator';
-      case 'foraging': return 'Androscoggin Phytochemical Foraging Matrix';
       case 'vagal': return 'Vagal RSA Biofeedback & Entrainment Dock';
-      case 'kaggle': return 'Kaggle & PhysioNet 2026 Submission Suite';
       case 'network': return 'Clinician Peer Matchmaker & Treatment Locator';
       default: return 'Component Drill-Down';
     }

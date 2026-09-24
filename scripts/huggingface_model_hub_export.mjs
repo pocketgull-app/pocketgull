@@ -95,8 +95,8 @@ const CLINICAL_ADAPTERS = [
     id: 'gemma-3-osteopathic-rounds-director',
     name: 'PocketGull Gemma 3 Dr. Elena Gullwing, DO Osteopathic Rounds Director',
     base_model: 'google/gemma-3-12b-it',
-    discipline: 'Osteopathic Medicine, Somatic Dysfunction & Steering Committee Consensus',
-    description: 'Synthesizes multi-paradigm clinical rounds, somatic biomechanics, and holistic interdisciplinary steering committee consensus.'
+    discipline: 'Osteopathic Medicine, Somatic Dysfunction & Collaborative Stewardship Consensus',
+    description: 'Synthesizes multi-paradigm clinical rounds, somatic biomechanics, and holistic interdisciplinary collaborative stewardship consensus.'
   }
 ];
 

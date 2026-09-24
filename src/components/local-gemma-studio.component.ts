@@ -7,6 +7,7 @@ import { OnDeviceEmbedderService } from '../services/ai/on-device-embedder.servi
 import { HardwareTelemetryService } from '../services/hardware/hardware-telemetry.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { IVerificationIssue } from './analysis-report.types';
+import { DsmLanguageCorrectionService, ILanguageAuditResult, ILanguageSuggestion } from '../services/dsm-language-correction.service';
 
 export interface IChatMessage {
   id: string;
@@ -350,53 +351,148 @@ const CLINICAL_ARCHETYPES = [
         </div>
       }
 
-      <!-- TAB 3: PROOFREADER & ISMP GUARD -->
+      <!-- TAB 3: PROOFREADER & ISMP GUARD & DSM-5-TR LANGUAGE ENGINE -->
       @if (activeTab() === 'proofreader') {
         <div class="space-y-5">
           <div class="p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800 space-y-3">
             <div class="flex items-center justify-between flex-wrap gap-2">
-              <div class="flex items-center gap-2">
-                <span class="text-sm font-bold text-purple-300">On-Device Clinical Proofreader &amp; ISMP Safety Guard</span>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-sm font-bold text-purple-300">On-Device Clinical Proofreader, ISMP Safety &amp; DSM Language Engine</span>
                 <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase"
                   [ngClass]="isProofreaderSupported() ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'">
-                  {{ isProofreaderSupported() ? 'Native Chrome Proofreader' : 'ISMP Rule Engine Fallback' }}
+                  {{ isProofreaderSupported() ? 'Native Chrome Proofreader' : 'ISMP & DSM Engine Active' }}
+                </span>
+                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                  DSM-5-TR &amp; ASAM 4th Ed Destigmatizer
                 </span>
               </div>
             </div>
 
             <textarea [(ngModel)]="proofreaderInputText" rows="3"
-              placeholder="Paste draft clinical note or medication order (e.g. Levothyroxine 50.0 mcg PO daily for hashimoto thyroiditis)..."
+              placeholder="Paste draft clinical note (e.g. Patient was admitted to detox for alcohol withdrawal, urine was dirty for THC, history of non-compliant addict)..."
               class="w-full px-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-purple-500 font-mono"></textarea>
 
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div class="flex flex-wrap gap-1.5">
+                <button (click)="setProofreaderPreset('detox')"
+                  class="px-2.5 py-1 rounded-lg bg-amber-950/40 hover:bg-amber-900/50 border border-amber-500/30 text-amber-200 text-[10px] font-bold cursor-pointer transition">
+                  Preset: "Detox" (ASAM Shift)
+                </button>
+                <button (click)="setProofreaderPreset('toxicology')"
+                  class="px-2.5 py-1 rounded-lg bg-teal-950/40 hover:bg-teal-900/50 border border-teal-500/30 text-teal-200 text-[10px] font-bold cursor-pointer transition">
+                  Preset: "Dirty Urine" (NIDA Screen)
+                </button>
+                <button (click)="setProofreaderPreset('suicide')"
+                  class="px-2.5 py-1 rounded-lg bg-purple-950/40 hover:bg-purple-900/50 border border-purple-500/30 text-purple-200 text-[10px] font-bold cursor-pointer transition">
+                  Preset: Suicidology ("Died by Suicide")
+                </button>
+                <button (click)="setProofreaderPreset('non_pharmacological')"
+                  class="px-2.5 py-1 rounded-lg bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 text-emerald-200 text-[10px] font-bold cursor-pointer transition"
+                  title="Non-Pharmacological First: Evidence-based lifestyle modalities for human happiness without unnecessary pharmaceutical dependency">
+                  Preset: Non-Pharm First (Happiness Without Drugs)
+                </button>
+                <button (click)="setProofreaderPreset('stewardship')"
+                  class="px-2.5 py-1 rounded-lg bg-sky-950/40 hover:bg-sky-900/50 border border-sky-500/30 text-sky-200 text-[10px] font-bold cursor-pointer transition"
+                  title="Dismantling bureaucratic steering committees and gavels in favor of diverse, gender-neutral collaborative care stewardship">
+                  Preset: Good Steward (No Gavels)
+                </button>
+                <button (click)="setProofreaderPreset('non_compliant')"
+                  class="px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/50 border border-rose-500/30 text-rose-200 text-[10px] font-bold cursor-pointer transition">
+                  Preset: "Non-Compliant Addict"
+                </button>
                 <button (click)="setProofreaderPreset('trailing_zero')"
                   class="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] cursor-pointer">
-                  Preset: Trailing Zero (5.0 mg)
+                  Preset: ISMP (5.0 mg)
                 </button>
                 <button (click)="setProofreaderPreset('naked_decimal')"
                   class="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] cursor-pointer">
-                  Preset: Naked Decimal (.5 mg)
-                </button>
-                <button (click)="setProofreaderPreset('typos')"
-                  class="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] cursor-pointer">
-                  Preset: Medical Typos
+                  Preset: ISMP (.5 mg)
                 </button>
               </div>
 
               <button (click)="runProofreaderCheck()" [disabled]="isProofreading()"
                 class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer disabled:opacity-50 min-h-[44px]">
-                {{ isProofreading() ? 'Auditing...' : 'Audit Note Safety' }}
+                {{ isProofreading() ? 'Auditing...' : 'Audit Note Safety & Language' }}
               </button>
             </div>
           </div>
 
-          <!-- Proofreader Audit Output -->
+          <!-- Socratic DSM-5-TR & ASAM Educational Feedback Panel -->
+          @if (dsmAuditResult() && dsmAuditResult()!.hasSuggestions) {
+            <div class="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/40 space-y-3">
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-base">🏛️</span>
+                  <div>
+                    <h4 class="text-xs font-black uppercase tracking-wider text-amber-300">
+                      DSM-5-TR &amp; ASAM Destigmatizing Language Guidance (Socratic Clinical Education)
+                    </h4>
+                    <p class="text-[10px] text-zinc-400 font-sans">
+                      Identified {{ dsmAuditResult()!.totalFlags }} obsolete or stigmatizing term(s). Socratic feedback grounds care in modern clinical evidence.
+                    </p>
+                  </div>
+                </div>
+
+                <button (click)="harmonizeAllDsm()"
+                  class="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-200 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+                  <span>✨</span> Harmonize All ({{ dsmAuditResult()!.totalFlags }}) to Modern Standards
+                </button>
+              </div>
+
+              <!-- Socratic Cards List -->
+              <div class="space-y-2.5 pt-1">
+                @for (suggestion of dsmAuditResult()!.suggestions; track suggestion.index) {
+                  <div class="p-3.5 rounded-xl bg-zinc-950/90 border border-zinc-800 space-y-2.5">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                      <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                          {{ suggestion.category }}
+                        </span>
+                        <span class="text-[10px] text-zinc-500 font-mono">
+                          {{ suggestion.citation }}
+                        </span>
+                      </div>
+
+                      <button (click)="applyDsmSuggestion(suggestion)"
+                        class="px-3 py-1 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/40 text-purple-200 text-[10px] font-bold transition cursor-pointer">
+                        ✨ Apply: "{{ suggestion.preferredTerm }}"
+                      </button>
+                    </div>
+
+                    <!-- Comparison Callout -->
+                    <div class="flex items-center gap-3 p-2.5 rounded-lg bg-zinc-900/80 border border-zinc-800 text-xs">
+                      <div class="flex items-center gap-1.5 text-rose-400 font-mono">
+                        <span class="text-xs">✕</span>
+                        <span class="line-through">{{ suggestion.matchedText }}</span>
+                      </div>
+                      <span class="text-zinc-600">→</span>
+                      <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono">
+                        <span class="text-xs">✓</span>
+                        <span>{{ suggestion.preferredTerm }}</span>
+                      </div>
+                    </div>
+
+                    <!-- Socratic Clinical Rationale -->
+                    <div class="p-2.5 rounded-lg bg-zinc-900/40 border border-zinc-800/80 space-y-1">
+                      <div class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1">
+                        <span>💡</span> Clinical &amp; Neurobiological Rationale:
+                      </div>
+                      <p class="text-[11px] text-zinc-300 font-sans leading-relaxed">
+                        {{ suggestion.educationalRationale }}
+                      </p>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Proofreader ISMP / General Audit Output -->
           @if (proofreadResults()) {
             <div class="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-3">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold uppercase tracking-wider">Audit Result:</span>
+                  <span class="text-xs font-bold uppercase tracking-wider">Prescription Safety Audit:</span>
                   <span class="px-2 py-0.5 rounded text-[10px] font-bold"
                     [ngClass]="proofreadResults()!.passed ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'">
                     {{ proofreadResults()!.passed ? '✅ Passed All Safety Checks' : '⚠️ Safety & Syntax Issues Found' }}
@@ -536,6 +632,7 @@ export class LocalGemmaStudioComponent {
   readonly embedder = inject(OnDeviceEmbedderService);
   readonly hardware = inject(HardwareTelemetryService);
   readonly state = inject(PatientStateService);
+  readonly dsmLanguageService = inject(DsmLanguageCorrectionService);
 
   readonly isAiSupported = this.nanoProvider.isAiSupported;
   readonly isProofreaderSupported = this.nanoProvider.isProofreaderSupported;
@@ -555,9 +652,10 @@ export class LocalGemmaStudioComponent {
   readonly archetypeMatches = signal<IArchetypeMatch[]>([]);
 
   // Proofreader Tab State
-  proofreaderInputText = 'Patient prescribed Levothyroxine 50.0 mcg PO daily for hashimoto thyroiditis.';
+  proofreaderInputText = 'Patient was admitted to detox for severe alcohol withdrawal on Tuesday. Plan: complete 5-day detox unit protocol.';
   readonly isProofreading = signal<boolean>(false);
   readonly proofreadResults = signal<{ passed: boolean; issues: IVerificationIssue[] } | null>(null);
+  readonly dsmAuditResult = signal<ILanguageAuditResult | null>(null);
 
   // Classifier Tab State
   classifierInputText = 'Sudden crushing substernal chest pain radiating to left jaw, diaphoresis, BP 85/50.';
@@ -609,15 +707,41 @@ export class LocalGemmaStudioComponent {
     );
   }
 
-  setProofreaderPreset(type: 'trailing_zero' | 'naked_decimal' | 'typos'): void {
+  setProofreaderPreset(type: 'trailing_zero' | 'naked_decimal' | 'typos' | 'detox' | 'toxicology' | 'suicide' | 'non_compliant' | 'non_pharmacological' | 'stewardship'): void {
     if (type === 'trailing_zero') {
       this.proofreaderInputText = 'Administer Morphine 5.0 mg IV push for acute post-operative pain.';
     } else if (type === 'naked_decimal') {
       this.proofreaderInputText = 'Order Haloperidol .5 mg IM STAT for delirium.';
     } else if (type === 'typos') {
       this.proofreaderInputText = 'Patient shows signs of ayurvadic medha sakti deficit and ophthalmological strain.';
+    } else if (type === 'detox') {
+      this.proofreaderInputText = 'Patient was admitted to detox for severe alcohol withdrawal on Tuesday. Plan: complete 5-day detox unit protocol.';
+    } else if (type === 'toxicology') {
+      this.proofreaderInputText = 'Admission lab panel: Urine drug screen was dirty urine for cannabis and clean urine for opioids.';
+    } else if (type === 'suicide') {
+      this.proofreaderInputText = 'Psychiatric history: Patient reports brother committed suicide 3 years ago following major depressive episode.';
+    } else if (type === 'non_compliant') {
+      this.proofreaderInputText = 'Cardiology consult: Patient is a substance abuser who has been non-compliant with daily Metoprolol.';
+    } else if (type === 'non_pharmacological') {
+      this.proofreaderInputText = 'Clinical intake: Patient presents with burnout and mild depression. Provider noted chemical imbalance in the brain; needs medication to be happy and start an antidepressant immediately. Prior notes indicate patient failed medication in 2023.';
+    } else if (type === 'stewardship') {
+      this.proofreaderInputText = 'Hospital administration announced that the steering committee mandated a pill for every ill rather than supporting community care circles.';
     }
     this.runProofreaderCheck();
+  }
+
+  applyDsmSuggestion(suggestion: ILanguageSuggestion): void {
+    const regex = new RegExp(`\\b${suggestion.matchedText}\\b`, 'i');
+    this.proofreaderInputText = this.proofreaderInputText.replace(regex, suggestion.preferredTerm);
+    this.runProofreaderCheck();
+  }
+
+  harmonizeAllDsm(): void {
+    const audit = this.dsmAuditResult();
+    if (audit && audit.harmonizedText) {
+      this.proofreaderInputText = audit.harmonizedText;
+      this.runProofreaderCheck();
+    }
   }
 
   async runProofreaderCheck(): Promise<void> {
@@ -653,8 +777,12 @@ export class LocalGemmaStudioComponent {
         }
       }
 
+      // Run DSM-5-TR / ASAM Clinical Language Audit
+      const dsmAudit = this.dsmLanguageService.auditText(this.proofreaderInputText);
+      this.dsmAuditResult.set(dsmAudit);
+
       this.proofreadResults.set({
-        passed: issues.length === 0,
+        passed: issues.length === 0 && !dsmAudit.hasSuggestions,
         issues
       });
     } catch {

@@ -1,0 +1,35 @@
+; PocketGull Scotopic 650nm Red Windows Theme
+; Engineered for night-vision rhodopsin preservation and zero melatonin suppression (650-670nm).
+[Theme]
+DisplayName=PocketGull Scotopic 650nm Red
+ThemeId={C93E0F44-9B56-6E4F-A6F4-B23F30E0D5A3}
+
+[Control Panel\Desktop]
+Wallpaper=
+Pattern=
+PicturePosition=4
+TileWallpaper=0
+
+[VisualStyles]
+Path=%SystemRoot%\resources\Themes\Aero\Aero.msstyles
+ColorStyle=NormalColor
+Size=NormalSize
+AutoColorization=0
+ColorizationColor=0XC4DC2626
+SystemMode=Dark
+AppMode=Dark
+VisualStyleVersion=10
+
+[Control Panel\Colors]
+ActiveTitle=220 38 38
+InactiveTitle=69 10 10
+Background=10 2 2
+Window=10 2 2
+WindowText=248 113 113
+Hilight=69 10 10
+HilightText=254 226 226
+HotTrackingColor=239 68 68
+Menu=26 5 5
+MenuBar=26 5 5
+MenuText=248 113 113
+Scrollbar=69 10 10

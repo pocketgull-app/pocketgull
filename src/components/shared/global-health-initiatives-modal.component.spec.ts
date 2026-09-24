@@ -2,6 +2,7 @@ import '@angular/compiler';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
 import { GlobalHealthInitiativesModalComponent } from './global-health-initiatives-modal.component';
 import { GlobalHealthInitiativesService } from '../../services/global-health-initiatives.service';
+import { WhoEssentialMedicinesService } from '../../services/who-essential-medicines.service';
 import { PatientStateService } from '../../services/patient-state.service';
 
 describe('GlobalHealthInitiativesModalComponent', () => {
@@ -19,6 +20,7 @@ describe('GlobalHealthInitiativesModalComponent', () => {
     const injector = Injector.create({
       providers: [
         { provide: GlobalHealthInitiativesService, useClass: GlobalHealthInitiativesService },
+        { provide: WhoEssentialMedicinesService, useClass: WhoEssentialMedicinesService },
         { provide: PatientStateService, useValue: mockPatientState }
       ]
     });
@@ -57,13 +59,20 @@ describe('GlobalHealthInitiativesModalComponent', () => {
     expect(arpah.meshHandoffQrCodePayload).toContain('Active Patient');
   });
 
-  it('4. Switches active agency tabs (who, nih, arpah)', () => {
+  it('4. Switches active agency tabs (who, nih, arpah, formulary) and computes open formulary audit', () => {
     const modal = createComponent();
     expect(modal.activeAgencyTab()).toBe('who');
     modal.activeAgencyTab.set('nih');
     expect(modal.activeAgencyTab()).toBe('nih');
     modal.activeAgencyTab.set('arpah');
     expect(modal.activeAgencyTab()).toBe('arpah');
+    modal.activeAgencyTab.set('formulary');
+    expect(modal.activeAgencyTab()).toBe('formulary');
+
+    const audit = modal.whoFormularyAudit();
+    expect(audit.auditedCount).toBeGreaterThan(0);
+    expect(audit.netMonthlySavingsUsd).toBeGreaterThan(0);
+    expect(audit.universalAccessTier).toBeDefined();
   });
 
   it('5. Computes reactive WHO ICOPE intrinsic capacity score and domains', () => {

@@ -13,29 +13,70 @@ Disallow: /contracts/clinical-vault-canary.json
 Disallow: /api/v1/internal-research-telemetry
 Disallow: /api/internal/patient-cohort-backup.json
 
-# Verified Search Engine & AI Assistant Bots
+# Verified Search Engine Crawlers (Permitted for Search Discovery Only)
 User-agent: Googlebot
+Allow: /
+
+User-agent: Applebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
+Disallow: /api/
+Disallow: /contracts/
+
+# AI Model Training, Distillation & OS Ingestion Crawlers (Strictly Prohibited)
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Copilot
+Disallow: /
+
+User-agent: WindowsRecallBot
+Disallow: /
 
 User-agent: GPTBot
-Allow: /
+Disallow: /
+
+User-agent: ChatGPT-User
 Disallow: /api/
 Disallow: /contracts/
 
 User-agent: ClaudeBot
-Allow: /
-Disallow: /api/
-Disallow: /contracts/
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: Meta-ExternalFetcher
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: HuggingFaceBot
+Disallow: /
+
+User-agent: BigCodeBot
+Disallow: /
 
 User-agent: PerplexityBot
-Allow: /
 Disallow: /api/
 Disallow: /contracts/
 
-# Aggressive Bulk Scrapers, Social Crawlers & Model Harvesters
+# Aggressive Bulk Scrapers, Social Crawlers & Open Dataset Harvesters
 User-agent: CCBot
 Disallow: /
 
@@ -48,6 +89,9 @@ Disallow: /
 User-agent: ImagesiftBot
 Disallow: /
 
+User-agent: Omgilibot
+Disallow: /
+
 User-agent: RedditBot
 Disallow: /
 
@@ -56,3 +100,8 @@ Disallow: /
 
 Sitemap: https://pocketgull.com/sitemap.xml
 Sitemap: https://pocketgull.app/sitemap.xml
+
+# Machine-Readable Text and Data Mining (TDM) Reservation (EU Directive 2019/790 Art. 4(3))
+# W3C TDM Reservation Protocol & EU AI Act (2024/1689) Art. 53
+# AI Training, Model Distillation & OS Ingestion Strictly Prohibited
+# Policy: https://pocketgull.com/.well-known/tdmrep.json

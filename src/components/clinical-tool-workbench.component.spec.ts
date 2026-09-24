@@ -64,6 +64,28 @@ describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite',
     expect(component.activeWorkbenchTab()).toBe('posology');
   });
 
+  it('should curate core clinical tabs by default and expand on showExtendedLabs toggle', () => {
+    // Default: only core tabs (7)
+    expect(component.showExtendedLabs()).toBe(false);
+    expect(component.visibleTabs().length).toBe(7);
+    expect(component.visibleTabs().map(t => t.id)).toEqual(
+      expect.arrayContaining(['commercial', 'tools', 'rxguard', 'posology', 'velocity', 'dxradar', 'scribe'])
+    );
+
+    // Toggle on: all 28 tabs visible
+    component.showExtendedLabs.set(true);
+    expect(component.visibleTabs().length).toBe(28);
+
+    // Toggle off: collapses back to 7
+    component.showExtendedLabs.set(false);
+    expect(component.visibleTabs().length).toBe(7);
+
+    // If an extended tab is selected, it is preserved in visibleTabs
+    component.activeWorkbenchTab.set('mandarinate');
+    expect(component.visibleTabs().length).toBe(8);
+    expect(component.visibleTabs().some(t => t.id === 'mandarinate')).toBe(true);
+  });
+
   it('should run self-diagnostic suite on all tools', async () => {
     component.runAllDiagnostics();
     expect(component.tools().every(t => t.status === 'TESTING')).toBe(true);

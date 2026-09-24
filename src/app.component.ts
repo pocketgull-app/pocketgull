@@ -48,11 +48,11 @@ import { FitbitService } from './services/hardware/fitbit.service';
 import { ConsentService } from './services/consent.service';
 import { ConsentModalComponent } from './components/modals/consent-modal.component';
 import { ResearchTabComponent } from './components/research-tab.component';
-import { ZamecznikCanvasComponent } from './components/shared/zamecznik-canvas.component';
 import { CompanionSyncModalComponent } from './components/modals/companion-sync-modal.component';
 import { GlossaryModalComponent } from './components/modals/glossary-modal.component';
 import { PocketgullTypefaceSiteComponent } from './components/shared/pocketgull-typeface-site.component';
 import { DocsStudyComponent } from './components/docs-study.component';
+import { ZamecznikCanvasComponent } from './components/shared/zamecznik-canvas.component';
 import { NavigationShellService } from './services/navigation-shell.service';
 import { BillingDashboardComponent } from './components/billing-dashboard.component';
 import { ApiPricingComponent } from './components/api-pricing.component';
@@ -85,6 +85,7 @@ import { PasskeyStepUpModalComponent } from './components/modals/passkey-step-up
 import { InstitutionalComplianceModalComponent } from './components/modals/institutional-compliance-modal.component';
 import { CmsRpmSuperbillModalComponent } from './components/modals/cms-rpm-superbill-modal.component';
 import { ClinicalTrajectoryReaderModalComponent } from './components/modals/clinical-trajectory-reader-modal.component';
+import { ClinicalPosologyCalculatorComponent } from './components/clinical-posology-calculator.component';
 import { AustereResearchHudComponent } from './components/austere-research-hud/austere-research-hud.component';
 import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.component';
@@ -96,6 +97,10 @@ import { ClinicalCommercialHubComponent } from './components/shared/clinical-com
 import { RoleDemoModalComponent } from './components/role-demo-modal.component';
 import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
 import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.component';
+import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component';
+import { PocketgullArchitectureAtlasComponent } from './components/shared/pocketgull-architecture-atlas.component';
+import { CommunityHealthWorkerSuiteComponent } from './components/shared/community-health-worker-suite.component';
+import { SpecialistReferralHubComponent } from './components/specialist-referral-hub.component';
 
 @Component({
   selector: 'app-root',
@@ -106,6 +111,10 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
   imports: [
     CommonModule,
     FormsModule,
+    ArcadeHubModalComponent,
+    PocketgullArchitectureAtlasComponent,
+    CommunityHealthWorkerSuiteComponent,
+    SpecialistReferralHubComponent,
     PocketgullTypefaceSiteComponent,
     BarrowsClinicalInquiryHubComponent,
     PasskeyStepUpModalComponent,
@@ -159,6 +168,7 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
     GreenRoomLoungeComponent,
     CmsRpmSuperbillModalComponent,
     ClinicalTrajectoryReaderModalComponent,
+    ClinicalPosologyCalculatorComponent,
     AustereResearchHudComponent,
     DocDrillDrawerComponent,
     CollaborationDockComponent,
@@ -269,6 +279,11 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
         <app-federal-uswds-portal (closeModal)="navShell.closeFederalUswdsPortal()"></app-federal-uswds-portal>
       }
 
+      <!-- Specialist Referral & Co-Management Dossier Hub Modal -->
+      @if (navShell.showSpecialistReferralModal()) {
+        <app-specialist-referral-hub (closeModal)="navShell.closeSpecialistReferralHub()"></app-specialist-referral-hub>
+      }
+
       <!-- Dr. Howard Barrows Clinical Inquiry & Problem-Based Reasoning Workbench Modal -->
       @if (navShell.showBarrowsWorkbenchModal()) {
         <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Clinical Reasoning Workbench">
@@ -307,6 +322,22 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
         <app-clinical-trajectory-reader-modal
           (close)="navShell.closeTrajectoryReader()">
         </app-clinical-trajectory-reader-modal>
+      }
+
+      <!-- Clinical Posology & Polypharmacy Deprescribing Engine Modal -->
+      @if (navShell.showPosologyModal()) {
+        <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Clinical Posology and Deprescribing Calculator">
+          <div class="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl p-6">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-zinc-800">
+              <div class="flex items-center gap-2 text-teal-400 font-bold">
+                <span>⚖️</span>
+                <span>Clinical Posology &amp; Deprescribing Calculator</span>
+              </div>
+              <button (click)="navShell.closePosology()" class="text-zinc-400 hover:text-white text-xs px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 transition cursor-pointer">✕ Close</button>
+            </div>
+            <app-clinical-posology-calculator></app-clinical-posology-calculator>
+          </div>
+        </div>
       }
 
       <!-- MDCP Strategic Clinical & Standards Governance Hub Modal -->
@@ -593,14 +624,13 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
                           [class.text-gray-700]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'analysis'">
                     📊 Analysis
                   </button>
-                  @if (state.selectedPartId() || isViewingVisitDetails()) {
-                    <button (click)="mobileActiveTab.set('tasks')"
-                            class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
-                            [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
-                            [class.text-gray-700]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'tasks'">
-                      📋 {{ isViewingVisitDetails() ? 'Review' : 'Tasks' }}
-                    </button>
-                  }
+                  <button (click)="mobileActiveTab.set('tasks'); state.toggleActiveRoom(true)"
+                          data-testid="mobile-tab-room"
+                          class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
+                          [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
+                          [class.text-gray-700]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'tasks'">
+                    📋 {{ isViewingVisitDetails() ? 'Review' : 'Room' }}
+                  </button>
                 </div>
               </div>
             }
@@ -611,7 +641,7 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
                [class.md:flex-1]="isAnalysisCollapsed() || inputPanelWidth() === undefined || state.isSparkModeActive()"
                [class.transition-all]="!isDragging()"
                [class.duration-500]="!isDragging()"
-               [class.ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]]="!isDragging()"
+               [class.ease-[cubic-bezier(0.16,1,0.3,1)]]="!isDragging()"
                [style.--panel-width.px]="isChartCollapsed() ? 0 : (isAnalysisCollapsed() ? null : inputPanelWidth())"
                [class.md:w-[var(--panel-width)]]="!isAnalysisCollapsed() && inputPanelWidth() !== undefined && !state.isSparkModeActive()"
                [class.hidden]="isChartCollapsed()"
@@ -671,19 +701,21 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
             </div>
 
             <!-- Column 2 (Middle): Task Flow & Intake Bracket -->
-            @if (state.selectedPartId() && !state.isLiveAgentActive() && !state.isSparkModeActive()) {
+            @if ((state.selectedPartId() || state.showActiveRoom() || mobileActiveTab() === 'tasks') && !state.isLiveAgentActive() && !state.isSparkModeActive()) {
                <div class="shrink-0 w-full md:w-[400px] flex flex-col gap-3 md:gap-6 h-full z-20 transition-all duration-300"
                     [class.max-md:hidden]="mobileActiveTab() !== 'tasks'"
                     [class.tab-fade-enter]="mobileActiveTab() === 'tasks'">
-                  <div id="tour-intake-form" class="flex-1 min-h-0 overflow-hidden rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-                    @defer {
-                      <app-intake-form appReveal></app-intake-form>
-                    } @placeholder {
-                      <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Intake...</div>
-                    }
-                  </div>
+                  @if (state.selectedPartId()) {
+                    <div id="tour-intake-form" class="flex-1 min-h-0 overflow-hidden rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+                      @defer {
+                        <app-intake-form appReveal></app-intake-form>
+                      } @placeholder {
+                        <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Intake...</div>
+                      }
+                    </div>
+                  }
                   <div class="flex-1 min-h-0 overflow-hidden rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-                    @defer {
+                    @defer (on immediate) {
                       <app-task-flow appReveal [revealDelay]="100"></app-task-flow>
                     } @placeholder {
                       <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Tasks...</div>
@@ -849,8 +881,8 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
             <button type="button" (click)="showModelGardenModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>🌿 Vertex Model Garden</span>
             </button>
-            <button type="button" (click)="showBillingDashboard.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
-              <span>💳 Subscriptions</span>
+            <button id="btn-footer-subscriptions" type="button" (click)="showBillingDashboard.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>💳 Subscriptions &amp; Billing</span>
             </button>
             <button type="button" (click)="showApiPricing.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>⚡ API Pricing</span>
@@ -860,6 +892,9 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
             </button>
             <button type="button" (click)="showDocsStudy.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>📚 Docs</span>
+            </button>
+            <button type="button" (click)="navShell.openAtlas()" class="hover:text-teal-600 dark:hover:text-teal-400 text-teal-400 transition cursor-pointer flex items-center gap-1 font-bold">
+              <span>🏛️ Atlas</span>
             </button>
           </div>
         </footer>
@@ -871,14 +906,23 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
             }
         }
 
+    <!-- Pocket-Gull Architecture Atlas & Visual Topology Modal -->
+    @if (navShell.showAtlasModal()) {
+      <app-pocketgull-architecture-atlas></app-pocketgull-architecture-atlas>
+    }
+
+    <!-- Pocket-Gull Arcade & Clinical Quests Hub Modal -->
+    @if (navShell.showArcadeHubModal()) {
+      <app-arcade-hub-modal></app-arcade-hub-modal>
+    }
 
     <!-- SMART Health Card & Cryptographic Pass Modal -->
     @if (showSmartHealthPassModal()) {
       <app-smart-health-pass-modal (closeModal)="showSmartHealthPassModal.set(false)"></app-smart-health-pass-modal>
     }
 
-    <!-- Living Room Ambient Health Studio Modal -->
-    @if (showAmbientLivingSpaceModal()) {
+    <!-- Living Room Ambient Health Studio Modal (Developer Showcase) -->
+    @if (navShell.developerMode() && showAmbientLivingSpaceModal()) {
       <app-ambient-living-space-dashboard></app-ambient-living-space-dashboard>
     }
 
@@ -887,13 +931,13 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
       <app-human-dignity-pact (closeModal)="showHumanDignityPactModal.set(false)"></app-human-dignity-pact>
     }
 
-    <!-- Patent & IP Claims Registry Modal -->
-    @if (showPatentClaimsModal()) {
+    <!-- Patent & IP Claims Registry Modal (Developer & IP Showcase) -->
+    @if (navShell.developerMode() && showPatentClaimsModal()) {
       <app-patent-claims-hud-modal (close)="showPatentClaimsModal.set(false)"></app-patent-claims-hud-modal>
     }
 
-    <!-- Usage & Licensing Paywall Modal -->
-    @if (showLicensingModal()) {
+    <!-- Usage & Licensing Paywall Modal (Developer / Admin Settings) -->
+    @if (navShell.developerMode() && showLicensingModal()) {
       <app-usage-licensing-paywall-modal 
         (close)="showLicensingModal.set(false)"
         (openCaseStudy)="showLicensingModal.set(false); showNantucketCaseStudy.set(true)">
@@ -939,8 +983,8 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
       </div>
     }
 
-    <!-- PocketGull Typeface Specimen Suite Modal Site -->
-    @if (showTypefaceSite()) {
+    <!-- PocketGull Typeface Specimen Suite Modal Site (Developer & Typography Showcase) -->
+    @if (navShell.developerMode() && showTypefaceSite()) {
       <div class="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-300">
         <div class="relative w-full max-w-7xl max-h-[90vh] bg-white dark:bg-zinc-950 rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-y-auto">
           <button (click)="showTypefaceSite.set(false)" class="absolute top-6 right-6 z-[10000] px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-amber-500 hover:text-zinc-950 rounded-full transition-colors font-bold text-xs">
@@ -985,8 +1029,8 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
       </div>
     }
 
-    <!-- Human Resources & Domain Specialist Agent-Wrangling Portal Modal Site -->
-    @if (showTalentHrPortalModal()) {
+    <!-- Human Resources & Domain Specialist Agent-Wrangling Portal Modal Site (Developer & HR Showcase) -->
+    @if (navShell.developerMode() && showTalentHrPortalModal()) {
       <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-300 no-print" role="dialog" aria-modal="true" aria-labelledby="talent-portal-title">
         <div class="relative w-full max-w-7xl max-h-[92vh] bg-zinc-950 rounded-3xl shadow-2xl border border-teal-900/50 overflow-y-auto flex flex-col">
           <div class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800">
@@ -1372,7 +1416,7 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
               <button 
                 (click)="confirmFinalize()" 
                 class="px-8 py-3 bg-[#1C1C1C] dark:bg-white text-white dark:text-[#111111] text-[12px] font-bold uppercase tracking-[0.3em] font-mono hover:bg-black dark:hover:bg-gray-200 transition-all flex items-center gap-2 rounded-[2px] shadow-md active:translate-y-[1px]">
-                Commit to Chart
+                Record to Chart
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
               </button>
             </div>
@@ -1397,6 +1441,14 @@ import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.c
         <app-austere-research-hud (close)="showAustereHudModal.set(false); navShell.closeAustereHud()"></app-austere-research-hud>
       </div>
     }
+
+    <!-- Frontline Community Health Worker (CHW) Task-Shifting Suite Modal -->
+    @if (navShell.showChwSuiteModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Frontline Community Health Worker Suite">
+        <app-community-health-worker-suite (close)="navShell.closeChwSuite()"></app-community-health-worker-suite>
+      </div>
+    }
+
 
     <!-- 3D Joint Hologram & Tri-Plane Slicer Modal -->
     @if (showKneeHologramModal()) {
@@ -1467,7 +1519,6 @@ export class AppComponent implements OnDestroy {
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
-  readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);
   readonly fhirModalRef = viewChild(SmartFhirSyncModalComponent);
   readonly vaultModalRef = viewChild(EncryptedVaultModalComponent);
 
@@ -1475,6 +1526,8 @@ export class AppComponent implements OnDestroy {
   onCloseDocsStudy() {
     this.showDocsStudy.set(false);
   }
+
+  readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);
 
   triggerSomaticGrounding(): void {
     this.zamecznikCanvas()?.open();
@@ -2518,6 +2571,16 @@ export class AppComponent implements OnDestroy {
         this.isDemoMode.set(true);
         this.hasApiKey.set(true);
         this.navShell.openCommercialHub();
+      }
+
+      // Handle Arcade Hub & Games deep link (?game=luminaries | movement | shift | osce | flourish | trail)
+      const gameParam = (params.get('game') || params.get('arcade') || '').toLowerCase();
+      if (gameParam) {
+        this.session.isLocked.set(false);
+        this.state.isDemoMode.set(true);
+        this.isDemoMode.set(true);
+        this.hasApiKey.set(true);
+        this.navShell.openArcadeHub(gameParam);
       }
     } catch (err) {
       console.warn('[AppComponent] URL case study deep link inspection failed:', err);

@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Scotopic 650nm Red Theme",
+  "description": "Dark-adapted vision theme with purified 650nm red-amber spectrum to preserve melatonin rhythm and eliminate circadian disruption.",
+  "theme": {
+    "colors": {
+      "frame": "#140404",
+      "frame_inactive": "#0a0202",
+      "tab_selected": "#1c0707",
+      "tab_background_text": "#991b1b",
+      "tab_text": "#fca5a5",
+      "tab_line": "#ef4444",
+      "toolbar": "#1c0707",
+      "toolbar_text": "#fca5a5",
+      "toolbar_field": "#0a0202",
+      "toolbar_field_text": "#fca5a5",
+      "toolbar_top_separator": "#140404",
+      "toolbar_bottom_separator": "#140404",
+      "icons": "#ef4444",
+      "ntp_background": "#0a0202",
+      "ntp_text": "#dc2626"
+    }
+  }
+}

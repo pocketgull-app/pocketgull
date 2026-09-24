@@ -85,6 +85,8 @@ const excludes = [
   'pocketgull_flutter',
   'e2e',
   'tests',
+  'typefaces_vault',
+  '.typefaces_vault',
   'public/fonts/google_fonts_submission',
   'public/brand/fonts',
   'public/images/screenshots',

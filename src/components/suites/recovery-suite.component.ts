@@ -6,7 +6,6 @@ import { ChronoClockDecisionRailComponent } from '../chrono-clock-decision-rail.
 import { HolisticSleepToolkitComponent } from '../holistic-sleep-toolkit.component';
 import { PhantomLimbMirrorTherapyComponent } from '../phantom-limb-mirror-therapy.component';
 import { BioSymphonyVisualizerComponent } from '../bio-symphony-visualizer.component';
-import { AvianSeaShantyDeckComponent } from '../avian-sea-shanty-deck.component';
 import { DocConsciousnessComponent } from '../doc-consciousness.component';
 
 @Component({
@@ -19,7 +18,6 @@ import { DocConsciousnessComponent } from '../doc-consciousness.component';
     HolisticSleepToolkitComponent,
     PhantomLimbMirrorTherapyComponent,
     BioSymphonyVisualizerComponent,
-    AvianSeaShantyDeckComponent,
     DocConsciousnessComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,11 +65,6 @@ import { DocConsciousnessComponent } from '../doc-consciousness.component';
         <!-- Bio-Symphony Generative Vital Signs & Binaural Entrainment Suite -->
         <div class="space-y-4 col-span-1 lg:col-span-2">
           <app-bio-symphony-visualizer />
-        </div>
-
-        <!-- Avian Sea Shanty Vagal Co-Singing Deck -->
-        <div class="space-y-4 col-span-1 lg:col-span-2">
-          <app-avian-sea-shanty-deck />
         </div>
 
         <!-- Disorders of Consciousness (DOC) Sensory Stimulation Protocol -->

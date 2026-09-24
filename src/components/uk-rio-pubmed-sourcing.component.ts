@@ -26,20 +26,20 @@ export interface IPubMedEvidenceCitation {
   template: `
     <div class="mb-8 p-6 sm:p-8 bg-zinc-950 text-zinc-100 rounded-3xl border border-zinc-800 shadow-2xl font-sans relative overflow-hidden">
       
-      <!-- UK RIO Compliance Header Banner -->
+      <!-- ICMJE / NLM Research Integrity Header Banner -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-5 mb-6 font-mono">
         <div>
           <div class="flex items-center gap-3">
-            <span class="text-xl">🇬🇧</span>
+            <span class="text-xl">🔬</span>
             <h2 class="text-lg font-bold uppercase tracking-tight text-zinc-100">
-              PubMed Literature Sourcing & UK RIO Research Integrity
+              PubMed Literature Sourcing & ICMJE Research Integrity
             </h2>
             <span class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30 uppercase">
-              UK RIO Compliant Display
+              ICMJE / AMA Compliant Display
             </span>
           </div>
           <p class="text-xs text-zinc-400 mt-1.5 font-sans">
-            Rigorous biomedical evidence tiering, open-access PMC sourcing, and UK Research Integrity Office (UK RIO) audit compliance for <strong>{{ activePatientName() }}</strong>.
+            Rigorous biomedical evidence tiering, open-access PMC sourcing, and ICMJE / AMA Manual of Style research integrity standards for <strong>{{ activePatientName() }}</strong>.
           </p>
         </div>
 
@@ -47,7 +47,7 @@ export interface IPubMedEvidenceCitation {
           <button (click)="isAuditModalOpen.set(true)"
             class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-mono text-[10px] font-bold uppercase tracking-wider transition shadow-md cursor-pointer active:scale-95 flex items-center gap-1.5">
             <span>🛡️</span>
-            <span>UK RIO Audit Trail</span>
+            <span>ICMJE / AMA Audit Trail</span>
           </button>
         </div>
       </div>
@@ -101,7 +101,7 @@ export interface IPubMedEvidenceCitation {
 
                 <span class="text-zinc-400 flex items-center gap-1">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  UK RIO Verified
+                  ICMJE Verified
                 </span>
               </div>
 
@@ -150,8 +150,8 @@ export interface IPubMedEvidenceCitation {
           <div class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-lg w-full p-6 text-zinc-100 shadow-2xl font-mono">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
               <div class="flex items-center gap-2">
-                <span class="text-lg">🇬🇧</span>
-                <h3 class="text-sm font-bold uppercase text-blue-400">UK RIO Research Integrity Audit Log</h3>
+                <span class="text-lg">🏛️</span>
+                <h3 class="text-sm font-bold uppercase text-blue-400">ICMJE / AMA Research Integrity Audit Log</h3>
               </div>
               <button (click)="isAuditModalOpen.set(false)" class="text-xs text-zinc-400 hover:text-zinc-200">✕ Close</button>
             </div>
@@ -175,7 +175,7 @@ export interface IPubMedEvidenceCitation {
 
             <button (click)="isAuditModalOpen.set(false)"
               class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase text-xs rounded-xl transition">
-              Acknowledge UK RIO Compliance
+              Acknowledge ICMJE / AMA Compliance
             </button>
           </div>
         </div>

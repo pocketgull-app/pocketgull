@@ -117,6 +117,7 @@ export class ZamecznikCanvasComponent implements OnDestroy {
   // --- Interaction particles ---
   private mousePoints: { x: number; y: number; vy: number; age: number }[] = [];
   private currentMouse = { x: -1, y: -1, active: false };
+  private cleanupListeners: (() => void) | null = null;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -222,16 +223,35 @@ export class ZamecznikCanvasComponent implements OnDestroy {
 
     // Event listeners
     const handleMove = (e: MouseEvent | TouchEvent) => {
-      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+      let clientX = 0;
+      let clientY = 0;
+      if ('touches' in e && e.touches.length > 0) {
+        if (e.cancelable) {
+          e.preventDefault();
+        }
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else if ('clientX' in e) {
+        clientX = (e as MouseEvent).clientX;
+        clientY = (e as MouseEvent).clientY;
+      } else {
+        return;
+      }
       this.currentMouse = { x: clientX, y: clientY, active: true };
       this.mousePoints.push({ x: clientX, y: clientY, vy: 0, age: 0 });
       if (this.mousePoints.length > 100) this.mousePoints.shift();
     };
 
-    canvas.addEventListener('mousemove', handleMove);
-    canvas.addEventListener('touchmove', handleMove);
-    canvas.addEventListener('touchstart', handleMove);
+    canvas.addEventListener('mousemove', handleMove, { passive: true });
+    canvas.addEventListener('touchmove', handleMove, { passive: false });
+    canvas.addEventListener('touchstart', handleMove, { passive: true });
+
+    this.cleanupListeners = () => {
+      window.removeEventListener('resize', resizeCanvas);
+      canvas.removeEventListener('mousemove', handleMove);
+      canvas.removeEventListener('touchmove', handleMove);
+      canvas.removeEventListener('touchstart', handleMove);
+    };
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -335,6 +355,10 @@ export class ZamecznikCanvasComponent implements OnDestroy {
   }
 
   private stopDrawingLoop() {
+    if (this.cleanupListeners) {
+      this.cleanupListeners();
+      this.cleanupListeners = null;
+    }
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;

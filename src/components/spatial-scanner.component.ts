@@ -138,9 +138,9 @@ import { PatientStateService } from '../services/patient-state.service';
                   <span>{{ isAcquiringPulse() ? '⏸ Pause rPPG Pulse Sampling' : '💓 Start rPPG Camera Pulse Capture' }}</span>
                 </button>
 
-                <button (click)="commitPulseToVitals()" [disabled]="acquiredHeartRate() <= 0"
+                <button (click)="recordPulseToVitals()" [disabled]="acquiredHeartRate() <= 0"
                   class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer active:scale-95 shadow-md flex items-center justify-center gap-2">
-                  <span>✅ Commit {{ acquiredHeartRate() }} BPM to Patient Vitals</span>
+                  <span>✅ Record {{ acquiredHeartRate() }} BPM to Patient Vitals</span>
                 </button>
               </div>
             </div>
@@ -262,12 +262,17 @@ export class SpatialScannerComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  commitPulseToVitals() {
+  recordPulseToVitals() {
     const hrVal = this.acquiredHeartRate();
     if (hrVal > 0) {
       this.patientState.updateVital('hr', hrVal.toString());
       alert(`✅ Camera Acquired Pulse (${hrVal} BPM) successfully saved to Patient Vitals!`);
     }
+  }
+
+  /** Backwards-compatible alias for recordPulseToVitals */
+  commitPulseToVitals() {
+    this.recordPulseToVitals();
   }
 
   private initPointCloudCanvas() {

@@ -208,5 +208,121 @@ describe('SkepticalEpistemologyService', () => {
     expect(prompt).toContain('STATISTICAL H0 TESTING');
     expect(prompt).toContain('COCHRANE RISK OF BIAS');
   });
+
+  it('18. Evaluates Epistemic Humility: flags automation bias when certainty >80% without objective confirmation', () => {
+    const audit = service.evaluateEpistemicHumility(
+      'Acute Myocardial Infarction',
+      92,
+      false, // no objective confirmatory tests
+      { gender: 'male', age: 55 }
+    );
+
+    expect(audit.isAutomationBiasRisk).toBe(true);
+    expect(audit.epistemicHumilityBadge).toBe('OVERCONFIDENCE_WARNING');
+    expect(audit.recommendedActionPlan).toContain('DO NOT commit diagnosis autonomously');
+    expect(audit.devilsAdvocateCounterPrompt).toContain("[DEVIL'S ADVOCATE COUNTER-CHALLENGE]");
+  });
+
+  it('19. Detects atypical presentation vulnerabilities (Female ACS, Geriatric Sepsis, euDKA)', () => {
+    // 1. Female ACS atypical check
+    const femaleAcsAudit = service.evaluateEpistemicHumility(
+      'Suspected Angina / Coronary Ischemia',
+      70,
+      false,
+      { gender: 'female', age: 62, symptoms: ['epigastric nausea', 'jaw discomfort', 'fatigue'] }
+    );
+    expect(femaleAcsAudit.atypicalPresentationRisk).toBe(true);
+    expect(femaleAcsAudit.epistemicHumilityBadge).toBe('HIGH_AMBIGUITY_ATYPICAL_ALERT');
+    expect(femaleAcsAudit.atypicalPresentationFlags[0].id).toBe('atypical-acs-female');
+    expect(femaleAcsAudit.falsificationManeuver).toContain('Troponin');
+
+    // 2. euDKA atypical check with SGLT2 inhibitor
+    const eudkaAudit = service.evaluateEpistemicHumility(
+      'Diabetic Ketoacidosis',
+      65,
+      false,
+      { medications: ['Empagliflozin 25mg'], symptoms: ['nausea', 'tachypnea'] }
+    );
+    expect(eudkaAudit.atypicalPresentationRisk).toBe(true);
+    expect(eudkaAudit.atypicalPresentationFlags.some(f => f.id === 'atypical-euglycemic-dka')).toBe(true);
+  });
+
+  it('20. Retrieves complete 12 Canonical Clinical Fallacies Catalog with valid metadata', () => {
+    const fallacies = service.getAllFallacyDefinitions();
+    expect(fallacies.length).toBe(12);
+
+    const baseRate = service.getFallacyDefinition('BASE_RATE_FALLACY');
+    expect(baseRate).toBeDefined();
+    expect(baseRate?.name).toBe('Base-Rate Fallacy (Base-Rate Neglect)');
+    expect(baseRate?.wikipediaUrl).toContain('wikipedia.org');
+    expect(baseRate?.detectionRegexes.length).toBeGreaterThan(0);
+
+    const postHoc = service.getFallacyDefinition('POST_HOC_ERGO_PROPTER_HOC');
+    expect(postHoc).toBeDefined();
+    expect(postHoc?.category).toBe('INFORMAL_CAUSAL');
+
+    const affirming = service.getFallacyDefinition('AFFIRMING_THE_CONSEQUENT');
+    expect(affirming).toBeDefined();
+    expect(affirming?.category).toBe('FORMAL_LOGICAL');
+  });
+
+  it('21. Computes Gerd Gigerenzer Bayesian Natural Frequency Matrix for screening tests', () => {
+    // 1 in 10,000 prevalence, 99% sensitivity, 99% specificity, 10,000 population
+    const bayes = service.calculateBayesianNaturalFrequency(0.0001, 0.99, 0.99, 10000);
+
+    expect(bayes.totalPopulation).toBe(10000);
+    expect(bayes.diseasedInPopulation).toBe(1);
+    expect(bayes.healthyInPopulation).toBe(9999);
+    expect(bayes.truePositives).toBe(1);
+    expect(bayes.falsePositives).toBe(100);
+    expect(bayes.totalPositives).toBe(101);
+    // PPV should be ~ 1 / 101 = ~0.99% (less than 1 percent!)
+    expect(bayes.actualPpvPercentage).toBe(0.99);
+    expect(bayes.plainEnglishExplanation.toLowerCase()).toContain('out of 10,000 individuals');
+    expect(bayes.plainEnglishExplanation.toLowerCase()).toContain('actually');
+  });
+
+  it('22. Audits clinical assertions and flags cognitive/logical fallacies with Socratic inquiry', () => {
+    // 1. Base-Rate Fallacy detection
+    const baseRateAudit = service.auditClinicalAssertionForFallacies(
+      'The patient tested positive on a 99% accurate screening test for a rare 1 in 10,000 disease, so there is a 99% probability they have the disease.'
+    );
+    expect(baseRateAudit.hasDetectedFallacy).toBe(true);
+    expect(baseRateAudit.findings.some(f => f.fallacyId === 'BASE_RATE_FALLACY')).toBe(true);
+    expect(baseRateAudit.bayesianInsight).toBeDefined();
+    expect(baseRateAudit.findings[0].socraticQuestion).toBeTruthy();
+    expect(baseRateAudit.findings[0].counterHypothesis).toBeTruthy();
+
+    // 2. Post Hoc Ergo Propter Hoc detection
+    const postHocAudit = service.auditClinicalAssertionForFallacies(
+      'The patient took colloidal silver and their acute viral fever broke two days later, proving the silver cured the viral infection.'
+    );
+    expect(postHocAudit.hasDetectedFallacy).toBe(true);
+    expect(postHocAudit.findings.some(f => f.fallacyId === 'POST_HOC_ERGO_PROPTER_HOC')).toBe(true);
+
+    // 3. Appeal to Nature detection
+    const naturalAudit = service.auditClinicalAssertionForFallacies(
+      'This herbal decoction is 100% all-natural organic plant medicine, so it is inherently safe and free of toxic side effects.'
+    );
+    expect(naturalAudit.hasDetectedFallacy).toBe(true);
+    expect(naturalAudit.findings.some(f => f.fallacyId === 'APPEAL_TO_NATURE')).toBe(true);
+
+    // 4. Automation Bias detection
+    const autoAudit = service.auditClinicalAssertionForFallacies(
+      'The AI algorithm predicted an 88% sepsis probability, so we must start broad-spectrum intravenous carbapenems immediately without clinical exam.'
+    );
+    expect(autoAudit.hasDetectedFallacy).toBe(true);
+    expect(autoAudit.findings.some(f => f.fallacyId === 'AUTOMATION_BIAS')).toBe(true);
+  });
+
+  it('23. Confirms sound clinical claims pass audit with zero detected fallacies', () => {
+    const soundAudit = service.auditClinicalAssertionForFallacies(
+      'In a double-blind randomized controlled trial of 1,200 hypertensive patients, lisinopril reduced systolic blood pressure by 12 mmHg (p=0.002) compared to placebo.'
+    );
+    expect(soundAudit.hasDetectedFallacy).toBe(false);
+    expect(soundAudit.findings.length).toBe(0);
+    expect(soundAudit.overallVerdict).toContain('No overt cognitive or logical fallacies detected');
+  });
 });
+
 

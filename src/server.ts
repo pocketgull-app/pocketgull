@@ -50,9 +50,24 @@ import { APP_VERSION } from './version';
 // @ts-ignore
 import AgonesSDK from '@google-cloud/agones-sdk';
 import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
-import { renderBusinessSiteHtml } from './server/business-site';
+import {
+  renderBusinessSiteHtml,
+  renderOfacRestrictedHtml,
+  OFAC_SANCTIONED_COUNTRIES,
+  resolveVisitorJurisdiction
+} from './server/business-site';
+import {
+  renderCheckoutPortalHtml,
+  generateLicenseReceipt,
+  BILLING_TIERS
+} from './server/billing-portal';
 import { renderArticlesHtml } from './server/articles-site';
+import { FALLBACK_SEED_ARTICLES } from './services/wordpress-articles.service';
 import { renderNantucketCaseStudyHtml } from './server/nantucket-case-study';
+import { renderNeuroSanctuaryCaseStudyHtml } from './server/neuro-sanctuary-case-study';
+import { renderCaseStudiesHubHtml } from './server/case-studies-hub';
+import { renderCardiometabolicCaseStudyHtml } from './server/cardiometabolic-case-study';
+import { renderDarwinCaseStudyHtml } from './server/darwin-case-study';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
@@ -236,15 +251,94 @@ app.use((req, res, next) => {
 // Trust single reverse proxy hop on Google Cloud Run to prevent IP spoofing while enabling secure rate-limiting
 app.set('trust proxy', 1);
 
-// Explicit preview endpoints for business site & case studies
-app.get(['/business', '/preview'], (_req, res) => {
+function extractClientCountry(req: express.Request): string {
+  const headerCountry = req.headers['cf-ipcountry'] || 
+                        req.headers['x-client-geo-country'] || 
+                        req.headers['x-appengine-country'] ||
+                        req.headers['x-country-code'];
+  if (typeof headerCountry === 'string' && headerCountry.length === 2) {
+    return headerCountry.toUpperCase();
+  }
+  return 'US';
+}
+
+// Google Cloud Billing & Monetization Endpoints
+app.get('/api/billing/tiers', (_req, res) => {
+  res.json({ success: true, tiers: BILLING_TIERS });
+});
+
+app.get('/api/billing/checkout', (req, res) => {
+  const tierId = String(req.query['tier'] || 'founder_lifetime');
+  const country = extractClientCountry(req);
+  if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
+    res.status(451).setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(renderOfacRestrictedHtml());
+  }
+
+  // If a dedicated Stripe payment link is configured for this tier, redirect directly
+  const stripeLinkVar = `STRIPE_PAYMENT_LINK_${tierId.toUpperCase()}`;
+  if (process.env[stripeLinkVar]) {
+    return res.redirect(303, process.env[stripeLinkVar] as string);
+  }
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  return res.send(renderBusinessSiteHtml());
+  return res.send(renderCheckoutPortalHtml(tierId, { countryCode: country }));
+});
+
+app.post('/api/billing/checkout', express.json(), (req, res) => {
+  const { tierId, email, name, organization } = req.body || {};
+  if (!email || !name) {
+    return res.status(400).json({ error: 'Missing required purchaser email or name' });
+  }
+
+  const receipt = generateLicenseReceipt(
+    tierId || 'founder_lifetime',
+    String(email).trim(),
+    String(name).trim(),
+    organization ? String(organization).trim() : undefined
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: 'Payment authorized and perpetual license provisioned',
+    receipt
+  });
+});
+
+// Explicit preview endpoints for business site & case studies
+app.get(['/business', '/preview'], (req, res) => {
+  const country = extractClientCountry(req);
+  if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
+    res.status(451).setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(renderOfacRestrictedHtml());
+  }
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderBusinessSiteHtml({ countryCode: country }));
 });
 
 app.get(['/case-studies/nantucket-tick-radar', '/case-studies/nantucket', '/nantucket'], (_req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   return res.send(renderNantucketCaseStudyHtml());
+});
+
+app.get(['/case-studies/neuro-sanctuary', '/case-studies/ms-radar', '/neuro-sanctuary'], (_req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderNeuroSanctuaryCaseStudyHtml());
+});
+
+app.get(['/case-studies', '/case-studies/'], (_req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderCaseStudiesHubHtml());
+});
+
+app.get(['/case-studies/cardiometabolic-radar', '/case-studies/cardiometabolic', '/cardiometabolic'], (_req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderCardiometabolicCaseStudyHtml());
+});
+
+app.get(['/case-studies/darwin-vagal-radar', '/case-studies/darwin', '/darwin'], (_req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderDarwinCaseStudyHtml());
 });
 
 // Primary Business Site Handler for pocketgull.com & www.pocketgull.com
@@ -280,9 +374,25 @@ app.use((req, res, next) => {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.send(renderArticlesHtml(slug));
     }
+    if (req.path === '/case-studies' || req.path === '/case-studies/') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderCaseStudiesHubHtml());
+    }
     if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.send(renderNantucketCaseStudyHtml());
+    }
+    if (req.path === '/case-studies/neuro-sanctuary' || req.path === '/case-studies/ms-radar' || req.path === '/neuro-sanctuary') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderNeuroSanctuaryCaseStudyHtml());
+    }
+    if (req.path === '/case-studies/cardiometabolic-radar' || req.path === '/case-studies/cardiometabolic' || req.path === '/cardiometabolic') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderCardiometabolicCaseStudyHtml());
+    }
+    if (req.path === '/case-studies/darwin-vagal-radar' || req.path === '/case-studies/darwin' || req.path === '/darwin') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderDarwinCaseStudyHtml());
     }
     const cleanPath = req.path.split('?')[0];
     const ext = extname(cleanPath).toLowerCase();
@@ -290,8 +400,13 @@ app.use((req, res, next) => {
     if (staticExts.has(ext)) {
       return next();
     }
+    const country = extractClientCountry(req);
+    if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
+      res.status(451).setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderOfacRestrictedHtml());
+    }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.send(renderBusinessSiteHtml());
+    return res.send(renderBusinessSiteHtml({ countryCode: country }));
   }
 
   // Redirect legacy alias domains to primary app domain pocketgull.app
@@ -465,6 +580,20 @@ app.get(['/articles', '/articles/:slug'], manifestRateLimiter, (req, res) => {
   const slug = (req.params as Record<string, string>)['slug'] || '';
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   return res.send(renderArticlesHtml(slug));
+});
+
+// REST JSON API for Clinical Breakthrough Articles (WordPress-decoupled)
+app.get('/api/articles', manifestRateLimiter, (_req, res) => {
+  res.json(FALLBACK_SEED_ARTICLES);
+});
+
+app.get('/api/articles/:slug', manifestRateLimiter, (req, res) => {
+  const slug = (req.params as Record<string, string>)['slug'] || '';
+  const post = FALLBACK_SEED_ARTICLES.find(p => p.slug === slug);
+  if (!post) {
+    return res.status(404).json({ error: 'Article not found', slug });
+  }
+  return res.json(post);
 });
 
 app.get('/api/config', manifestRateLimiter, (req, res) => {
@@ -703,16 +832,16 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
 
-  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cdn.tailwindcss.com https://cloud.google.com`;
+  const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cloud.google.com`;
 
   const scriptSrcAttr = `'self' 'unsafe-inline' 'unsafe-hashes'`;
-  const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com data:`;
-  const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com data:`;
+  const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com https://font.pocketgull.app data:`;
+  const styleSrcElem = `'self' 'unsafe-inline' https://fonts.googleapis.com https://font.pocketgull.app data:`;
   const styleSrcAttr = `'self' 'unsafe-inline'`;
 
-  const connectSrc = `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com`;
+  const connectSrc = `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`;
 
-  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; script-src-attr ${scriptSrcAttr}; style-src ${styleSrc}; style-src-elem ${styleSrcElem}; style-src-attr ${styleSrcAttr}; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org; connect-src ${connectSrc}; frame-src 'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
+  let csp = `default-src 'self'; worker-src 'self' blob:; script-src ${scriptSrc}; script-src-elem ${scriptSrc}; script-src-attr ${scriptSrcAttr}; style-src ${styleSrc}; style-src-elem ${styleSrcElem}; style-src-attr ${styleSrcAttr}; font-src 'self' data: https://fonts.gstatic.com https://font.pocketgull.app; img-src 'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org; connect-src ${connectSrc}; frame-src 'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app; media-src 'self' blob: data: mediastream: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';`;
 
   res.setHeader('Content-Security-Policy', csp);
   next();
@@ -789,6 +918,7 @@ app.use('/api/python', createProxyMiddleware({
 
 // ── Mount Extracted Routers ────────────────────────────────────────────────
 import { createResearchRouter } from './server/routes/research.routes';
+import { createContractsRouter } from './server/routes/contracts.routes';
 
 const routeDeps = { getApiKey, getGcpAccessToken, normalizeAndValidateModel };
 
@@ -796,6 +926,7 @@ app.use('/api/auth', createAuthRouter());
 app.use('/api/ai', createAiRouter(routeDeps));
 app.use('/api/patients', createPatientsRouter());
 app.use('/api/research', createResearchRouter());
+app.use('/api/contracts', createContractsRouter());
 app.use('/api/keys', createApiKeysRouter());
 app.use('/api/billing', createBillingRouter());
 
@@ -949,16 +1080,45 @@ app.use((req, res, next) => {
   const isBusinessDomain = (cleanHost === 'pocketgull.com' || cleanHost === 'www.pocketgull.com');
   const isBusinessPath = req.path === '/business' || req.path === '/enterprise' || req.path === '/app-builder' || req.path === '/portal';
 
+  if (req.path === '/case-studies' || req.path === '/case-studies/') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderCaseStudiesHubHtml());
+  }
+
   if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     return res.send(renderNantucketCaseStudyHtml());
   }
 
-  if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {
+  if (req.path === '/case-studies/neuro-sanctuary' || req.path === '/case-studies/ms-radar' || req.path === '/neuro-sanctuary') {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.send(renderBusinessSiteHtml());
+    return res.send(renderNeuroSanctuaryCaseStudyHtml());
+  }
+
+  if (req.path === '/case-studies/cardiometabolic-radar' || req.path === '/case-studies/cardiometabolic' || req.path === '/cardiometabolic') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderCardiometabolicCaseStudyHtml());
+  }
+
+  if (req.path === '/case-studies/darwin-vagal-radar' || req.path === '/case-studies/darwin' || req.path === '/darwin') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderDarwinCaseStudyHtml());
+  }
+
+  if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {
+    const country = extractClientCountry(req);
+    if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
+      res.status(451).setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderOfacRestrictedHtml());
+    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderBusinessSiteHtml({ countryCode: country }));
   }
 
   if (process.env['SKIP_SSR'] === 'true' || req.query['csr'] === '1') {

@@ -9,22 +9,29 @@ test.describe('Clinical Bionic Reading & ORP Foveal Reticle E2E Suite', () => {
   });
 
   test('1. Should display Bionic Mode toggle in Research Frame and format clinical tokens', async ({ page }) => {
-    // Open Research Frame
-    const researchBtn = page.locator('button:has-text("Research"), button[title*="Research"]').first();
-    if (await researchBtn.isVisible()) {
-      await researchBtn.click();
+    // Open Research Frame across desktop and mobile viewports
+    const researchTrigger = page.locator('#tour-research-frame-trigger');
+    if (await researchTrigger.isVisible().catch(() => false)) {
+      await researchTrigger.click();
+    } else {
+      // In constrained mobile viewports where desktop header is hidden, trigger programmatic click
+      await page.evaluate(() => {
+        const trigger = document.getElementById('tour-research-frame-trigger');
+        if (trigger) {
+          trigger.click();
+        }
+      });
     }
 
     const researchWindow = page.locator('#tour-research-frame-window');
-    await expect(researchWindow).toBeVisible({ timeout: 10000 });
+    await expect(researchWindow).toBeVisible({ timeout: 15000 });
 
-    // Look for Morpheme-Aware Bionic Mode button
-    const bionicBtn = researchWindow.locator('button:has-text("Bionic Mode")');
-    if (await bionicBtn.isVisible()) {
-      await bionicBtn.click();
-      // Verify button toggles to active amber state
-      await expect(bionicBtn).toHaveClass(/bg-amber-500/);
-    }
+    // Look for Morpheme-Aware Bionic Mode button in primary toolbar
+    const bionicBtn = researchWindow.locator('#btn-bionic-research-toolbar, button:has-text("Bionic Mode")').first();
+    await expect(bionicBtn).toBeVisible({ timeout: 15000 });
+    await bionicBtn.click();
+    // Verify button toggles to active amber state
+    await expect(bionicBtn).toHaveClass(/bg-amber-500/);
   });
 
   test('2. Should open Clinical Trajectory Modal and verify zero-saccadic ORP reticle', async ({ page }) => {

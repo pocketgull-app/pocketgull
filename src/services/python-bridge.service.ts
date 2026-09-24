@@ -274,9 +274,9 @@ export class PythonBridgeService {
     // Append to biometric history for real-time charting
     const now = new Date().toISOString();
     const newEntries: IBiometricEntry[] = [
-      { timestamp: now, type: 'hrv' as any, value: data.hrv_rmssd_ms, unit: 'ms', source: 'Python DSP' },
-      { timestamp: now, type: 'coherence' as any, value: data.hrv_coherence, unit: 'ratio', source: 'Python DSP' },
-      { timestamp: now, type: 'breathing' as any, value: data.breathing_bpm, unit: 'bpm', source: 'Python DSP' }
+      { timestamp: now, type: 'hrv', value: data.hrv_rmssd_ms, unit: 'ms', source: 'Python DSP' },
+      { timestamp: now, type: 'coherence', value: data.hrv_coherence, unit: 'ratio', source: 'Python DSP' },
+      { timestamp: now, type: 'breathing', value: data.breathing_bpm, unit: 'bpm', source: 'Python DSP' }
     ];
     this.state.addBiometricEntries(newEntries);
   }

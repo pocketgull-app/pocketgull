@@ -306,6 +306,17 @@ export class BionicReadingService {
     return words.map(w => this.parseClinicalToken(w));
   }
 
+  /** High-performance in-memory memoization cache for bionic formatted strings */
+  private readonly bionicHtmlCache = new Map<string, string>();
+  private static readonly MAX_CACHE_SIZE = 500;
+
+  /**
+   * Clears the in-memory bionic HTML cache.
+   */
+  clearCache(): void {
+    this.bionicHtmlCache.clear();
+  }
+
   /**
    * Converts plain text string or HTML content into Morpheme-Aware Bionic Reading HTML.
    * Accurately extracts leading/trailing non-word punctuation while anchoring on:
@@ -313,14 +324,24 @@ export class BionicReadingService {
    * 2. Medical prefixes (e.g. brady-cardia, tachy-pnea, chole-cystitis)
    * 3. Standard 40-45% character fixation
    *
+   * Utilizes a high-performance in-memory cache to eliminate repetitive regex execution
+   * during Angular change detection passes.
+   *
    * @param text Plain text or HTML string to format
    * @param highlightClass Optional custom Tailwind CSS class for bolded prefix letters
    */
   formatToBionicHtml(text: string, highlightClass?: string): string {
     if (!text) return '';
 
+    // Fast-path memoization cache lookup
+    const cacheKey = `${highlightClass || 'def'}::${text}`;
+    const cached = this.bionicHtmlCache.get(cacheKey);
+    if (cached !== undefined) {
+      return cached;
+    }
+
     // Match HTML tags (to preserve markup), HTML entities, or whitespace-delimited tokens
-    return text.replace(/<[^>]+>|&[a-zA-Z0-9#]+;|([^\s<>]+)/g, (match) => {
+    const result = text.replace(/<[^>]+>|&[a-zA-Z0-9#]+;|([^\s<>]+)/g, (match) => {
       // Preserve HTML tags and HTML entities untouched
       if ((match.startsWith('<') && match.endsWith('>')) || (match.startsWith('&') && match.endsWith(';'))) {
         return match;
@@ -365,5 +386,16 @@ export class BionicReadingService {
           : `<b>${boldPart}</b>${restPart}`;
       });
     });
+
+    // Bound cache size to prevent memory leaks
+    if (this.bionicHtmlCache.size >= BionicReadingService.MAX_CACHE_SIZE) {
+      const keysToDelete = Array.from(this.bionicHtmlCache.keys()).slice(0, 100);
+      for (const k of keysToDelete) {
+        this.bionicHtmlCache.delete(k);
+      }
+    }
+    this.bionicHtmlCache.set(cacheKey, result);
+
+    return result;
   }
 }

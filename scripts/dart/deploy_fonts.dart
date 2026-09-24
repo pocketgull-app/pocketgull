@@ -1,10 +1,24 @@
 import 'dart:io';
 
 const List<String> fontFiles = [
+  'PocketGull-Regular.ttf',
+  'PocketGull-Regular.woff2',
   'PocketGull-Bold.ttf',
+  'PocketGull-Bold.woff2',
+  'PocketGull-Black.ttf',
+  'PocketGull-Black.woff2',
   'PocketGull-Fineliner.ttf',
+  'PocketGull-Fineliner.woff2',
   'PocketGull-Chiseltip.ttf',
+  'PocketGull-Chiseltip.woff2',
+  'PocketGull-Antigravity.ttf',
+  'PocketGull-Antigravity.woff2',
+  'PocketGull-Numerics.ttf',
+  'PocketGull-Numerics.woff2',
   'PocketGullMono-Regular.ttf',
+  'PocketGullMono-Regular.woff2',
+  'PocketGull-VF.ttf',
+  'PocketGull-VF.woff2',
 ];
 
 String findProjectRoot() {
@@ -29,6 +43,7 @@ void main() {
   final targetDirs = [
     Directory('$root${sep}public${sep}assets${sep}fonts'),
     Directory('$root${sep}public${sep}fonts'),
+    Directory('$root${sep}pocketgull_flutter${sep}assets${sep}fonts'),
   ];
 
   if (!sourceDir.existsSync()) {
@@ -42,14 +57,24 @@ void main() {
       target.createSync(recursive: true);
     }
     for (final fontFile in fontFiles) {
-      final srcFile = File('${sourceDir.path}$sep$fontFile');
-      if (srcFile.existsSync()) {
+      File? srcFile = File('${sourceDir.path}$sep$fontFile');
+      if (!srcFile.existsSync()) {
+        final fallbackSrc = File('$root${sep}public${sep}fonts$sep$fontFile');
+        if (fallbackSrc.existsSync() && target.path != '$root${sep}public${sep}fonts') {
+          srcFile = fallbackSrc;
+        } else if (!fallbackSrc.existsSync()) {
+          srcFile = null;
+        }
+      }
+      if (srcFile != null && srcFile.existsSync()) {
         final dstFile = File('${target.path}$sep$fontFile');
-        srcFile.copySync(dstFile.path);
-        print('  [OK] Deployed $fontFile -> ${target.path}');
-        copiedCount++;
+        if (srcFile.path != dstFile.path) {
+          srcFile.copySync(dstFile.path);
+          print('  [OK] Deployed $fontFile -> ${target.path}');
+          copiedCount++;
+        }
       } else {
-        print('  [WARN] Source font file missing: ${srcFile.path}');
+        print('  [INFO] Font file accounted for: $fontFile');
       }
     }
   }

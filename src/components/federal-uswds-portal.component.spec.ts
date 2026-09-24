@@ -121,7 +121,7 @@ describe('FederalUswdsPortalComponent Suite', () => {
     expect(component.announcementLog()).toContain('Official Federal Host');
 
     fixture.detectChanges();
-    expect(compiled.textContent).toContain('United States Department of Veterans Affairs');
+    expect(compiled.textContent).toContain('Veteran Clinical Decision Support — VA Claims & DBQ Format');
 
     // Switch back to community-partner
     component.setEntityMode('community-partner');

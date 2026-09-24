@@ -259,5 +259,13 @@ describe('ClinicalIntelligenceService - Philosophy Modes', () => {
       expect(result.isValid).toBe(true);
       expect(result.issues.filter(i => i.severity === 'high').length).toBe(0);
     });
+
+    it('should flag clinical fallacies and cognitive biases in AI recommendation', () => {
+      const result = service.auditClinicalRecommendationWithCarsRules(
+        'Because the senior attending with 30 years of experience recommends continuing Gentamicin despite acute kidney injury, we must adhere to authority.'
+      );
+      expect(result.issues.some(i => i.message.includes('Fallacy Audit Alert'))).toBe(true);
+      expect(result.suggestedCorrections.some(s => s.toLowerCase().includes('authority') || s.toLowerCase().includes('fallacy'))).toBe(true);
+    });
   });
 });

@@ -134,29 +134,21 @@ export interface IFhirResourceEntry {
         <!-- Official US Government / Community Partner Banner -->
         <app-usa-banner [mode]="entityMode()" />
 
-        <!-- Entity Perspective Switcher (Community Practice VA CCN vs Official Federal Agency) -->
+        <!-- Operational Focus Switcher: Veteran Support & Community Care -->
         <div class="no-print px-4 py-2 bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div class="flex flex-wrap items-center gap-2.5">
-            <span class="font-bold text-zinc-900 dark:text-zinc-100">Deployment Perspective:</span>
-            <span class="text-zinc-500 hidden sm:inline">Select your operational entity role</span>
+            <span class="font-bold text-zinc-900 dark:text-zinc-100">Veteran Support Mission:</span>
+            <span class="text-zinc-500 hidden sm:inline">Independent Clinical Decision Support for Veterans &amp; Community Clinicians</span>
             <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 rounded-xs text-[10px] font-mono font-semibold">
               <span>🔒</span>
               <span>US Domestic Geofence (CONUS)</span>
             </span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800 rounded-xs text-[10px] font-mono font-semibold">
+              <span>🎖️</span>
+              <span>PACT Act &amp; VA MISSION Act Support</span>
+            </span>
           </div>
           <div class="inline-flex rounded-xs shadow-xs p-0.5 bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700">
-            <button
-              type="button"
-              id="btn-mode-official-gov"
-              (click)="setEntityMode('official-gov')"
-              [class.bg-[#005ea2]]="entityMode() === 'official-gov'"
-              [class.text-white]="entityMode() === 'official-gov'"
-              [class.font-bold]="entityMode() === 'official-gov'"
-              [class.shadow-xs]="entityMode() === 'official-gov'"
-              class="px-3 py-1 text-xs rounded-xs transition-colors cursor-pointer text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white"
-            >
-              🏛️ Official Federal Host (VA / CMS / DoD)
-            </button>
             <button
               type="button"
               id="btn-mode-community-partner"
@@ -167,7 +159,19 @@ export interface IFhirResourceEntry {
               [class.shadow-xs]="entityMode() === 'community-partner'"
               class="px-3 py-1 text-xs rounded-xs transition-colors cursor-pointer text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white"
             >
-              🏥 Private Practice &amp; VA Community Care (CCN)
+              🏥 VA Community Care Network (CCN) &amp; Private Practice
+            </button>
+            <button
+              type="button"
+              id="btn-mode-official-gov"
+              (click)="setEntityMode('official-gov')"
+              [class.bg-[#005ea2]]="entityMode() === 'official-gov'"
+              [class.text-white]="entityMode() === 'official-gov'"
+              [class.font-bold]="entityMode() === 'official-gov'"
+              [class.shadow-xs]="entityMode() === 'official-gov'"
+              class="px-3 py-1 text-xs rounded-xs transition-colors cursor-pointer text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white"
+            >
+              📋 VA Form 21-0960 DBQ &amp; Nexus Adjudication Format
             </button>
           </div>
         </div>
@@ -187,13 +191,13 @@ export interface IFhirResourceEntry {
           <div id="print-clinical-letterhead" class="hidden print:flex items-center justify-between border-b-2 border-[#005ea2] pb-3 mb-6 font-sans">
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-xl" aria-hidden="true">{{ entityMode() === 'official-gov' ? '🦅' : '🏥' }}</span>
+                <span class="text-xl" aria-hidden="true">🎖️</span>
                 <h1 class="text-base font-bold text-[#005ea2] m-0 uppercase tracking-wide">
-                  {{ entityMode() === 'official-gov' ? 'United States Department of Veterans Affairs' : 'VA Community Care Network (CCN) — Private Clinical Provider' }}
+                  {{ entityMode() === 'official-gov' ? 'Veteran Clinical Decision Support — VA Claims & DBQ Format' : 'VA Community Care Network (CCN) — Private Clinical Provider' }}
                 </h1>
               </div>
               <p class="text-xs text-zinc-800 font-semibold m-0 mt-0.5">
-                {{ entityMode() === 'official-gov' ? 'Clinical Decision Support (CDS) Multi-Paradigm Care Plan Brief' : 'Private Practice Care Plan & Medical Nexus Statement (VA MISSION Act P.L. 115-182)' }}
+                {{ entityMode() === 'official-gov' ? 'Clinical Medical Nexus Statement & Exposure Adjudication (38 CFR § 4.87)' : 'Private Practice Care Plan & Medical Nexus Statement (VA MISSION Act P.L. 115-182)' }}
               </p>
             </div>
             <div class="text-right text-xs font-mono">
@@ -207,7 +211,7 @@ export interface IFhirResourceEntry {
             <div class="space-y-6 max-w-5xl mx-auto animate-in fade-in duration-150">
               
               <!-- Veteran Demographics & Identity Strip (Dual Mode) -->
-              <div class="p-4 bg-white dark:bg-zinc-900 border-l-4 border-[#005ea2] border-y border-r border-zinc-200 dark:border-zinc-800 rounded-xs shadow-xs flex flex-wrap items-center justify-between gap-4">
+              <div class="p-4 bg-white dark:bg-zinc-900 border-l-4 border-l-[#005ea2] border-y border-r border-zinc-200 dark:border-zinc-800 rounded-xs shadow-xs flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                   <div class="w-12 h-12 rounded-xs bg-[#005ea2]/10 dark:bg-blue-950/60 border border-[#005ea2]/40 flex items-center justify-center text-2xl shrink-0 select-none">
                     {{ entityMode() === 'official-gov' ? '🎖️' : '🏥' }}
@@ -245,7 +249,7 @@ export interface IFhirResourceEntry {
               </div>
 
               <!-- USWDS Alert Box: Clinical Safety & ISMP Disambiguation -->
-              <div class="usa-alert p-4 bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 border-y border-r border-amber-200 dark:border-amber-900/60 rounded-xs flex gap-3 text-xs text-amber-950 dark:text-amber-100">
+              <div class="usa-alert p-4 bg-amber-50 dark:bg-amber-950/30 border-l-4 border-l-amber-500 border-y border-r border-amber-200 dark:border-amber-900/60 rounded-xs flex gap-3 text-xs text-amber-950 dark:text-amber-100">
                 <span class="text-lg shrink-0" aria-hidden="true">⚠️</span>
                 <div class="space-y-1">
                   <p class="font-bold text-sm m-0">ISMP Clinical Prescribing Guard &amp; Drug-Disease Interaction</p>
@@ -677,7 +681,7 @@ export interface IFhirResourceEntry {
                       [disabled]="!isAttested()"
                       class="px-5 py-2 text-xs font-bold rounded-xs bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400"
                     >
-                      ✓ Commit Clinical Attestation
+                      ✓ Confirm Clinical Attestation
                     </button>
                   }
                 </div>
@@ -1057,7 +1061,7 @@ export class FederalUswdsPortalComponent {
   }
 
   public submitIntake(): void {
-    this.simulateScreenReaderAnnouncement('Clinical intake and PACT Act screening successfully committed with cryptographic seal.');
+    this.simulateScreenReaderAnnouncement('Clinical intake and PACT Act screening successfully attested with cryptographic seal.');
     this.currentTab.set('care-plan');
   }
 

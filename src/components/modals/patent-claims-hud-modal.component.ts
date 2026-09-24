@@ -262,7 +262,7 @@ export type PatentHudTab = 'inventions' | 'clauses' | 'math' | 'charter';
                   <p class="text-[11px] text-zinc-500 mt-0.5">200 Patent Claims across 10 Inventions • 7 Statutory Articles</p>
                 </div>
                 <span class="px-2 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-bold uppercase">
-                  ✓ VERIFIED &amp; COMMITTED
+                  ✓ VERIFIED &amp; SEALED
                 </span>
               </div>
 

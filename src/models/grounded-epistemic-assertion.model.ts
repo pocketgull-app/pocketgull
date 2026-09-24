@@ -11,6 +11,8 @@
  * 5. Statutory medical citations (PubMed PMCID, MeSH, FDA Application IDs).
  */
 
+import type { IClinicalFallacyAuditResult } from './clinical-fallacies.model';
+
 export type EpistemicEvidenceTier =
   | 'Level A (Replicated RCTs)'
   | 'Level B (Cohort / Preliminary RCT)'
@@ -73,6 +75,9 @@ export interface IGroundedClinicalAssertion {
 
   /** SHA-256 integrity seal under FDA 21 CFR Part 11 */
   integrityDigest?: string;
+
+  /** Optional clinical logical fallacy and cognitive bias audit result */
+  fallacyAudit?: IClinicalFallacyAuditResult;
 }
 
 export interface IGroundedAssertionValidationResult {

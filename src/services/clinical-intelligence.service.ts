@@ -1291,6 +1291,22 @@ Feel free to reference their research areas and publications if it supports the 
             suggestions.push('Recommendation was formulated under older vitals and is now clinically invalid.');
         }
 
+        // 5. Epistemic Fallacies & Cognitive Biases Audit (12 Canonical Fallacies)
+        if (this.skepticalService) {
+            const fallacyResult = this.skepticalService.auditClinicalAssertionForFallacies(recommendationText);
+            if (fallacyResult.hasDetectedFallacy) {
+                for (const finding of fallacyResult.findings) {
+                    issues.push({
+                        severity: finding.severity === 'HIGH' ? 'high' : 'medium',
+                        message: `Fallacy Audit Alert [${finding.fallacyName}]: ${finding.clinicalRisk}`,
+                        suggestedFix: finding.definition?.epistemicCorrection || finding.counterHypothesis,
+                        claim: finding.matchedClue
+                    });
+                    suggestions.push(`[${finding.fallacyName}]: ${finding.definition?.epistemicCorrection || finding.socraticQuestion}`);
+                }
+            }
+        }
+
         return {
             isValid: issues.filter(i => i.severity === 'high').length === 0,
             issues,

@@ -39,7 +39,7 @@ import { AppLicensingGuardService, TARGET_CUSTOMER_PERSONAS } from '../../servic
             @if (licensing.isLicenseActive()) {
               Your device is registered for unrestricted offline AI scribing, systems thinking modeling, and EHR exports.
             } @else {
-              No more free rides. Choose the plan tailored for your practice, or enter your clinic license key below.
+              Choose the pass tailored for your clinical practice or research department, or enter your institutional license key below.
             }
           </p>
 

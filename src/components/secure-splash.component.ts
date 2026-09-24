@@ -29,10 +29,14 @@ import { BioAdaptiveTypographyService } from '../services/bio-adaptive-typograph
 import { DocDrillService } from '../services/doc-drill.service';
 import { ClinicalDefenseGuardService } from '../services/clinical-defense-guard.service';
 import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-physics-badge.component';
+import { BionicReadingService } from '../services/bionic-reading.service';
 
 @Component({
   selector: 'app-secure-splash',
   standalone: true,
+  host: {
+    'class': 'block'
+  },
   imports: [CommonModule, FormsModule, PocketgullBrandMarkComponent, SafeHtmlPipe, PapercraftBackdropComponent, AvsCymaticsVisualizerComponent, SplashBedsidePhysicsBadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -941,6 +945,126 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
                             ⚡ Motion
                           </span>
                         </label>
+
+                        <!-- Bionic Reading Mode Toggle -->
+                        <label for="bionic-toggle-lock" class="min-h-[40px] px-3 py-1.5 rounded-xl bg-white/90 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 flex items-center gap-1.5 cursor-pointer group" title="Bionic Reading: Morpheme-aware saccadic fixation anchors (Alt+B)">
+                          <input type="checkbox"
+                                 id="bionic-toggle-lock"
+                                 name="bionic-toggle-lock"
+                                 aria-label="Bionic Reading Mode"
+                                 [checked]="bionicReading.isBionicReadingEnabled()"
+                                 (change)="bionicReading.toggleBionicReading()"
+                                 class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700/50 text-amber-500 cursor-pointer">
+                          <span class="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wider flex items-center gap-1">
+                            <span>📖</span>
+                            <span [class.text-amber-500]="bionicReading.isBionicReadingEnabled()">Bionic</span>
+                          </span>
+                        </label>
+
+                        <!-- Philocardia Mode Toggle -->
+                        <label for="philocardia-toggle-lock" class="min-h-[40px] px-3 py-1.5 rounded-xl bg-white/90 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 flex items-center gap-1.5 cursor-pointer group" title="Philocardia: Heart-centered parasympathetic resonance & 0.1 Hz cardiorespiratory pacing">
+                          <input type="checkbox"
+                                 id="philocardia-toggle-lock"
+                                 name="philocardia-toggle-lock"
+                                 aria-label="Philocardia Heart-Centered Mode"
+                                 [checked]="theme.isPhilocardiaEnabled()"
+                                 (change)="theme.togglePhilocardia()"
+                                 class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700/50 text-rose-500 cursor-pointer">
+                          <span class="text-xs font-bold text-zinc-900 dark:text-zinc-300 uppercase tracking-wider flex items-center gap-1">
+                            <span>❤️</span>
+                            <span [class.text-rose-500]="theme.isPhilocardiaEnabled()">Philocardia</span>
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- 5. ❤️ Philocardia: Heart-Centered Parasympathetic Coherence Card -->
+                    <div class="p-3.5 bg-white/75 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-rose-500/30 dark:border-rose-500/20 shadow-xs flex flex-col space-y-3 text-left">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-[0.15em] text-rose-700 dark:text-rose-400 flex items-center gap-1.5">
+                          ❤️ Philocardia &bull; Parasympathetic Vagal Pacing
+                        </span>
+                        <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full"
+                              [class.bg-rose-500]="theme.isPhilocardiaEnabled()"
+                              [class.text-white]="theme.isPhilocardiaEnabled()"
+                              [class.bg-zinc-100]="!theme.isPhilocardiaEnabled()"
+                              [class.text-zinc-500]="!theme.isPhilocardiaEnabled()"
+                              [class.dark:bg-zinc-800]="!theme.isPhilocardiaEnabled()">
+                          {{ theme.isPhilocardiaEnabled() ? 'ACTIVE (0.1 Hz MAYER)' : 'STANDBY' }}
+                        </span>
+                      </div>
+
+                      <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                        Philocardia (love of the heart) applies an app-wide 0.1 Hz cardiorespiratory bio-rhythm (4-second expansion / 6-second contraction) to counteract screen apnea, optimize heart-rate variability (HRV), and soothe sympathetic burnout.
+                      </p>
+
+                      <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40">
+                        <div class="flex items-center gap-2">
+                          <span class="text-lg philocardia-pulse">💓</span>
+                          <div>
+                            <div class="text-xs font-bold text-rose-900 dark:text-rose-200">App-Wide Vagal Oscillations</div>
+                            <div class="text-[10px] text-zinc-500 dark:text-zinc-400">10s Respiratory Sinus Arrhythmia &bull; 60 bpm Rest</div>
+                          </div>
+                        </div>
+
+                        <button type="button"
+                                id="btn-toggle-philocardia-card"
+                                (click)="theme.togglePhilocardia()"
+                                [class.bg-rose-600]="theme.isPhilocardiaEnabled()"
+                                [class.text-white]="theme.isPhilocardiaEnabled()"
+                                [class.hover:bg-rose-500]="theme.isPhilocardiaEnabled()"
+                                [class.bg-white]="!theme.isPhilocardiaEnabled()"
+                                [class.dark:bg-zinc-800]="!theme.isPhilocardiaEnabled()"
+                                [class.text-zinc-700]="!theme.isPhilocardiaEnabled()"
+                                [class.dark:text-zinc-300]="!theme.isPhilocardiaEnabled()"
+                                class="px-3 py-1.5 rounded-xl border border-rose-300 dark:border-rose-800 font-bold text-xs transition cursor-pointer shadow-xs">
+                          {{ theme.isPhilocardiaEnabled() ? '✓ Enabled' : 'Enable Philocardia' }}
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- 6. 📖 Bionic Reading: Saccadic Fixation & Rapid Clinical Comprehension Card -->
+                    <div class="p-3.5 bg-white/75 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-amber-500/30 dark:border-amber-500/20 shadow-xs flex flex-col space-y-3 text-left">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-[0.15em] text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                          📖 Bionic Reading &bull; Saccadic Fixation
+                        </span>
+                        <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full"
+                              [class.bg-amber-500]="bionicReading.isBionicReadingEnabled()"
+                              [class.text-white]="bionicReading.isBionicReadingEnabled()"
+                              [class.bg-zinc-100]="!bionicReading.isBionicReadingEnabled()"
+                              [class.text-zinc-500]="!bionicReading.isBionicReadingEnabled()"
+                              [class.dark:bg-zinc-800]="!bionicReading.isBionicReadingEnabled()">
+                          {{ bionicReading.isBionicReadingEnabled() ? 'ACTIVE (ALT+B)' : 'STANDBY' }}
+                        </span>
+                      </div>
+
+                      <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                        Bionic mode anchors saccadic eye movements by bolding initial word morphemes, allowing the brain to autocomplete medical terms and drastically reducing reading fatigue. When paired with Philocardia, fixations harmonize into a heart-resonant cardiovascular palette.
+                      </p>
+
+                      <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40">
+                        <div class="flex items-center gap-2">
+                          <span class="text-lg">⚡</span>
+                          <div>
+                            <div class="text-xs font-bold text-amber-900 dark:text-amber-200">Morpheme-Aware Saccadic Anchoring</div>
+                            <div class="text-[10px] text-zinc-500 dark:text-zinc-400">ISMP Tall Man LASA &bull; 600 WPM RSVP</div>
+                          </div>
+                        </div>
+
+                        <button type="button"
+                                id="btn-toggle-bionic-card"
+                                (click)="bionicReading.toggleBionicReading()"
+                                [class.bg-amber-600]="bionicReading.isBionicReadingEnabled()"
+                                [class.text-white]="bionicReading.isBionicReadingEnabled()"
+                                [class.hover:bg-amber-500]="bionicReading.isBionicReadingEnabled()"
+                                [class.bg-white]="!bionicReading.isBionicReadingEnabled()"
+                                [class.dark:bg-zinc-800]="!bionicReading.isBionicReadingEnabled()"
+                                [class.text-zinc-700]="!bionicReading.isBionicReadingEnabled()"
+                                [class.dark:text-zinc-300]="!bionicReading.isBionicReadingEnabled()"
+                                class="px-3 py-1.5 rounded-xl border border-amber-300 dark:border-amber-800 font-bold text-xs transition cursor-pointer shadow-xs">
+                          {{ bionicReading.isBionicReadingEnabled() ? '✓ Enabled' : 'Enable Bionic' }}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -1119,8 +1243,8 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
                 </div>
               }
 
-              <!-- Reduced Motion Toggle -->
-              <div class="mb-4 flex justify-center">
+              <!-- Reduced Motion, Bionic Mode & Philocardia Toggles -->
+              <div class="mb-4 flex flex-wrap items-center justify-center gap-3">
                 <label class="flex items-center gap-2 cursor-pointer group">
                   <input type="checkbox"
                          id="reduce-motion-auth"
@@ -1131,6 +1255,32 @@ import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-phys
                          class="w-3 h-3 rounded border-zinc-300 dark:border-zinc-700/50 bg-zinc-50 dark:bg-black/40 text-[#3ebc9e] focus:ring-[#3ebc9e]/30 focus:ring-offset-0 cursor-pointer transition-colors">
                   <span class="text-[12px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-300 transition-colors uppercase tracking-widest">
                     Reduce Motion
+                  </span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer group" title="Bionic Reading: Morpheme-aware saccadic fixation anchors (Alt+B)">
+                  <input type="checkbox"
+                         id="bionic-auth"
+                         name="bionic-auth"
+                         aria-label="Bionic Reading Mode"
+                         [checked]="bionicReading.isBionicReadingEnabled()"
+                         (change)="bionicReading.toggleBionicReading()"
+                         class="w-3 h-3 rounded border-zinc-300 dark:border-zinc-700/50 bg-zinc-50 dark:bg-black/40 text-amber-500 focus:ring-amber-500/30 focus:ring-offset-0 cursor-pointer transition-colors">
+                  <span class="text-[12px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-300 transition-colors uppercase tracking-widest flex items-center gap-1">
+                    <span>📖</span>
+                    <span [class.text-amber-500]="bionicReading.isBionicReadingEnabled()">Bionic</span>
+                  </span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer group" title="Philocardia: Heart-centered parasympathetic resonance & 0.1 Hz cardiorespiratory pacing">
+                  <input type="checkbox"
+                         id="philocardia-auth"
+                         name="philocardia-auth"
+                         aria-label="Philocardia Heart-Centered Mode"
+                         [checked]="theme.isPhilocardiaEnabled()"
+                         (change)="theme.togglePhilocardia()"
+                         class="w-3 h-3 rounded border-zinc-300 dark:border-zinc-700/50 bg-zinc-50 dark:bg-black/40 text-rose-500 focus:ring-rose-500/30 focus:ring-offset-0 cursor-pointer transition-colors">
+                  <span class="text-[12px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-300 transition-colors uppercase tracking-widest flex items-center gap-1">
+                    <span>❤️</span>
+                    <span [class.text-rose-500]="theme.isPhilocardiaEnabled()">Philocardia</span>
                   </span>
                 </label>
               </div>
@@ -1876,6 +2026,7 @@ export class SecureSplashComponent implements OnInit {
   syncService = inject(FirestoreSyncService);
   game = inject(GamificationService);
   theme = inject(ThemeService);
+  bionicReading = inject(BionicReadingService);
   state = inject(PatientStateService);
   public readonly petAuditory = inject(PetAuditoryService);
   public readonly bioTypography = inject(BioAdaptiveTypographyService, { optional: true });

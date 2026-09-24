@@ -77,7 +77,7 @@ export class ClinicalVagalResonantPacingService {
   });
 
   readonly isPacingActive = signal<boolean>(false);
-  private pacingTimerId: any = null;
+  private pacingTimerId: number | null = null;
   private cycleStartTime: number = 0;
 
   /**

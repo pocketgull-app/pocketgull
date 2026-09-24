@@ -20,13 +20,12 @@ pipeline_tag: text-generation
 **Organization**: [PocketGull LLC](https://pocketgull.com) (Oregon Registry: 258869891)  
 **Informatics Lead**: Phillip Gear (CMS NPI: 1487569752 | ORCID: [0009-0008-1372-5381](https://orcid.org/0009-0008-1372-5381))  
 **Base Foundation Model**: \`google/gemma-3-12b-it\`  
-**Discipline**: Osteopathic Medicine, Somatic Dysfunction & Steering Committee Consensus  
-**Open Science Provenance**: [Zenodo DOI 10.5281/zenodo.20647514](https://doi.org/10.5281/zenodo.20647514)  
+**Discipline**: Osteopathic Medicine, Somatic Dysfunction & Collaborative Stewardship Consensus  
+**Architecture**: SFI Complex Adaptive Systems / Whole-Person Biomechanical Grounding  
+**Author**: PocketGull Biomedical Intelligence Consortium  
 
----
-
-## 📌 Overview
-Synthesizes multi-paradigm clinical rounds, somatic biomechanics, and holistic interdisciplinary steering committee consensus.
+## Clinical Overview
+Synthesizes multi-paradigm clinical rounds, somatic biomechanics, and holistic interdisciplinary collaborative stewardship consensus.
 
 This LoRA adapter was fine-tuned using Direct Preference Optimization (DPO) on domain-specific clinical datasets conforming strictly to **HIPAA §164.514 Safe Harbor** de-identification standards.
 

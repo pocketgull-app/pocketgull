@@ -4,6 +4,23 @@ import {
   validateGroundedClinicalAssertion,
   createDefaultGroundedClinicalAssertion
 } from '../models/grounded-epistemic-assertion.model';
+import {
+  ClinicalFallacyCategory,
+  FallacySeverity,
+  IBayesianNaturalFrequencyInsight,
+  IClinicalFallacyDefinition,
+  IFallacyAuditFinding,
+  IClinicalFallacyAuditResult
+} from '../models/clinical-fallacies.model';
+
+export type {
+  ClinicalFallacyCategory,
+  FallacySeverity,
+  IBayesianNaturalFrequencyInsight,
+  IClinicalFallacyDefinition,
+  IFallacyAuditFinding,
+  IClinicalFallacyAuditResult
+};
 
 export type CochraneRiskOfBiasLevel = 'Low Risk of Bias' | 'Some Concerns' | 'High Risk of Bias';
 
@@ -121,6 +138,77 @@ export interface ICannabinoidMicrotubuleFalsification {
   cochraneBias: ICochraneBiasReport;
   clinicalGuidance: string;
 }
+
+export interface IAtypicalPresentationRule {
+  id: string;
+  syndrome: string;
+  demographicOrPhenotype: string;
+  classicSymptom: string;
+  atypicalPresentation: string;
+  clinicalPitfall: string;
+  investigationManeuver: string;
+}
+
+export interface IEpistemicHumilityAudit {
+  hypothesis: string;
+  rawCertaintyPercent: number;
+  epistemicHumilityScore: number; // 0-100%
+  isAutomationBiasRisk: boolean;
+  atypicalPresentationRisk: boolean;
+  atypicalPresentationFlags: IAtypicalPresentationRule[];
+  devilsAdvocateCounterPrompt: string;
+  epistemicHumilityBadge: 'SETTLED_WITH_CONFIRMATORY_TESTS' | 'PROVISIONAL_WORKING_HYPOTHESIS' | 'HIGH_AMBIGUITY_ATYPICAL_ALERT' | 'OVERCONFIDENCE_WARNING';
+  falsificationManeuver: string;
+  recommendedActionPlan: string;
+}
+
+export const ATYPICAL_PRESENTATION_BANK: IAtypicalPresentationRule[] = [
+  {
+    id: 'atypical-acs-female',
+    syndrome: 'Acute Coronary Syndrome / Ischemia',
+    demographicOrPhenotype: 'Female, Diabetic, or Elderly (>60)',
+    classicSymptom: 'Crushing substernal chest pressure radiating to left arm with diaphoresis',
+    atypicalPresentation: 'Epigastric nausea, profound unexplained fatigue, jaw discomfort, isolated dyspnea',
+    clinicalPitfall: 'Dismissing cardiac ischemia as gastroesophageal reflux or panic attack',
+    investigationManeuver: 'Stat high-sensitivity Troponin T/I series + 12-lead ECG with posterior leads (V7-V9)'
+  },
+  {
+    id: 'atypical-geriatric-delirium-uti',
+    syndrome: 'Occult Sepsis / Urosepsis / Pneumonia',
+    demographicOrPhenotype: 'Geriatric (>65) or Neurodegenerative',
+    classicSymptom: 'High spiking pyrexia (>38.5°C), dysuria, productive cough, leukocytosis',
+    atypicalPresentation: 'Acute confusion, delirium, hypoactive lethargy, falls, hypothermia (<36.0°C)',
+    clinicalPitfall: 'Attributing delirium solely to underlying dementia without infectious workup',
+    investigationManeuver: 'Urinalysis with micro/culture, chest imaging, lactate, orthostatic vitals'
+  },
+  {
+    id: 'atypical-euglycemic-dka',
+    syndrome: 'Euglycemic Diabetic Ketoacidosis (euDKA)',
+    demographicOrPhenotype: 'Patients on SGLT2 inhibitors (Empagliflozin, Dapagliflozin)',
+    classicSymptom: 'Marked hyperglycemia (>300 mg/dL) with Kussmaul respirations and polyuria',
+    atypicalPresentation: 'Normal or mild glucose (130-180 mg/dL), mild nausea, tachypnea, high anion-gap metabolic acidosis',
+    clinicalPitfall: 'Excluding DKA because fingerstick glucose is not severely elevated',
+    investigationManeuver: 'Serum beta-hydroxybutyrate, arterial/venous blood gas (ABG/VBG), anion gap calculation'
+  },
+  {
+    id: 'atypical-pediatric-appendicitis',
+    syndrome: 'Acute Appendicitis',
+    demographicOrPhenotype: 'Pediatric (<18) or Retrocecal anatomy',
+    classicSymptom: 'Periumbilical pain migrating cleanly to RLQ McBurney point with rebound tenderness',
+    atypicalPresentation: 'Diffuse vague cramp, diarrhea, irritable lethargy, pelvic or flank discomfort, walking with limp',
+    clinicalPitfall: 'Misdiagnosing as gastroenteritis or constipation until perforation occurs',
+    investigationManeuver: 'Point-of-care abdominal ultrasound, serial abdominal exams, pediatric appendicitis score (PAS)'
+  },
+  {
+    id: 'atypical-neutropenic-fever',
+    syndrome: 'Neutropenic Sepsis / Severe Immunodeficiency',
+    demographicOrPhenotype: 'Post-chemotherapy, immunosuppressed, or severe neutropenia (ANC < 500)',
+    classicSymptom: 'Purulent sputum, erythema/pus at infection site, standard inflammatory surge',
+    atypicalPresentation: 'Isolated temperature of 38.0°C (100.4°F) without localizing physical exam signs',
+    clinicalPitfall: 'Waiting for physical signs of inflammation that require neutrophils to manifest',
+    investigationManeuver: 'Immediate broad-spectrum empiric IV pseudomonal coverage within 60 minutes'
+  }
+];
 
 export interface IBiophysicalFalsificationCatalog {
   protacPolypharmacy: IProtacEpistemicFalsification;
@@ -766,6 +854,201 @@ const SOCRATIC_QUESTION_BANK: ISocraticTemplate[] = [
   }
 ];
 
+export const CLINICAL_FALLACIES_CATALOG: IClinicalFallacyDefinition[] = [
+  {
+    id: 'BASE_RATE_FALLACY',
+    name: 'Base-Rate Fallacy (Base-Rate Neglect)',
+    category: 'INFORMAL_PROBABILISTIC',
+    formalLogicNotation: 'P(Disease | Positive) ≠ Sensitivity',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Base_rate_fallacy',
+    description: 'Evaluating the probability of an outcome based solely on conditional test accuracy while ignoring the prior prevalence in the population.',
+    clinicalExample: 'Assuming a patient with a positive screening test in a low-prevalence setting (e.g. Lyme disease without tick bite in non-endemic zone, or rare cancer in young asymptomatic patient) is almost certainly sick, when in reality most positives are false positives.',
+    epistemicCorrection: 'Apply Bayes Theorem with natural frequency framing: calculate True Positives vs False Positives out of 10,000 screened individuals.',
+    detectionKeywords: ['positive test', 'tested positive', '100% accurate', '99% accurate', 'screening test', 'screening', 'lyme test', 'biomarker positive', 'rare condition', 'have the disease', 'rare 1 in'],
+    detectionRegexes: [/\bpositive\s+test\b/i, /\btested\s+positive\b/i, /\bscreening\s+test\b/i, /\b99%\s+accurate\b/i, /\brare\s+1\s+in\b/i],
+    severity: 'HIGH',
+    clinicalRisk: 'Over-diagnosis, unnecessary invasive biopsies, catastrophic patient anxiety from false-positive screening tests.',
+    counterHypothesis: 'In a low-prevalence condition, false positives vastly outnumber true positives due to Bayes rule.',
+    socraticQuestion: 'What is the baseline prevalence of this condition, and what is the actual positive predictive value (PPV)?'
+  },
+  {
+    id: 'POST_HOC_ERGO_PROPTER_HOC',
+    name: 'Post Hoc Ergo Propter Hoc (False Cause)',
+    category: 'INFORMAL_CAUSAL',
+    formalLogicNotation: 'A preceded B ⊬ A caused B',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Post_hoc_ergo_propter_hoc',
+    description: 'Asserting that because event B occurred after event A, event A must be the cause of event B.',
+    clinicalExample: 'Attributing recovery from an acute viral infection or pain flare to an antibiotic, supplement, or holistic intervention administered 48 hours prior, when the timeline mirrors standard natural history and regression to the mean.',
+    epistemicCorrection: 'Compare against prospective sham/placebo-controlled natural history timelines with blinded observation.',
+    detectionKeywords: ['after taking', 'cured in', 'immediately after', 'started taking and', 'went away after', 'resolved after', 'worked because', 'fever broke', 'proving the', 'cured the', 'colloidal silver'],
+    detectionRegexes: [/\bafter\s+taking\b/i, /\bcured\s+in\b/i, /\bwent\s+away\s+after\b/i, /\bproving\s+the\b/i, /\bcured\s+the\b/i, /\bfever\s+broke\b/i],
+    severity: 'MEDIUM',
+    clinicalRisk: 'Prescribing unproven therapies, reinforcing superstitious health behaviors, delaying evidence-based care.',
+    counterHypothesis: 'Spontaneous symptom resolution may simply reflect viral natural history or regression to the mean.',
+    socraticQuestion: 'What is the expected natural history of this symptom without any medical or supplemental intervention?'
+  },
+  {
+    id: 'AFFIRMING_THE_CONSEQUENT',
+    name: 'Affirming the Consequent (Biomarker Inversion)',
+    category: 'FORMAL_LOGICAL',
+    formalLogicNotation: 'A → B; B ∴ A',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Affirming_the_consequent',
+    description: 'An invalid deductive inference claiming that because the consequent is true, the antecedent must also be true.',
+    clinicalExample: 'Pulmonary embolism causes elevated D-dimer. Patient has elevated D-dimer. Therefore, patient has pulmonary embolism. (Overlooking sepsis, recent trauma, pregnancy, or malignancy).',
+    epistemicCorrection: 'Anchor biomarker interpretation in validated pre-test probability clinical scoring models (e.g. Wells, Geneva, HEART score).',
+    detectionKeywords: ['d-dimer proves', 'troponin proves', 'crp proves', 'elevated therefore has', 'positive means', 'confirms diagnosis', 'troponin is elevated', 'causes elevated', 'definitely suffered', 'causes elevated cardiac troponin', 'acute myocardial infarction causes'],
+    detectionRegexes: [/\bcauses\s+elevated\b/i, /\belevated\s+therefore\b/i, /\bproves\s+the\s+diagnosis\b/i, /\bdefinitely\s+suffered\b/i, /\btroponin\s+is\s+elevated\b/i],
+    severity: 'HIGH',
+    clinicalRisk: 'Misdiagnosis through conflating high diagnostic sensitivity with specificity, missing non-cardiac or systemic causes.',
+    counterHypothesis: 'Biomarkers reflect non-specific tissue stress or inflammation across multiple distinct etiologies.',
+    socraticQuestion: 'What other non-thrombotic or non-ischemic etiologies can cause this identical lab elevation?'
+  },
+  {
+    id: 'TEXAS_SHARPSHOOTER',
+    name: 'Texas Sharpshooter Fallacy (Data Dredging / HARKing)',
+    category: 'INFORMAL_PROBABILISTIC',
+    formalLogicNotation: 'Cluster observed post-hoc ⊬ Pre-specified hypothesis',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Texas_sharpshooter_fallacy',
+    description: 'Identifying clusters of data or statistical significance post-hoc and retroactively formulating a causal hypothesis to fit the noise.',
+    clinicalExample: 'Screening 5,000 retrospective electronic health record associations, discovering a p < 0.05 correlation between green tea and a rare autoimmune remission, and publishing as a breakthrough.',
+    epistemicCorrection: 'Mandate pre-registered trial protocols with strict Bonferroni/FDR corrections and independent prospective replication cohorts.',
+    detectionKeywords: ['retrospective correlation', 'data mining revealed', 'statistically significant subgroup', 'unexpected correlation', 'found a link', '100 biomarkers', 'cytokine biomarkers', 'measured 100', '100 inflammatory'],
+    detectionRegexes: [/\bdata\s+mining\b/i, /\bmeasured\s+100\b/i, /\b100\s+biomarkers\b/i, /\bpost-hoc\b/i, /\bmeasured\s+100\s+inflammatory\b/i],
+    severity: 'HIGH',
+    clinicalRisk: 'Spurious biomarker claims and false-positive therapeutic discoveries due to multiplicity and p-hacking.',
+    counterHypothesis: 'When testing 100 independent targets at alpha=0.05, on average 5 will appear statistically significant by pure chance.',
+    socraticQuestion: 'Was this hypothesis pre-registered, and was a multiplicity correction (e.g. Bonferroni, FDR) applied?'
+  },
+  {
+    id: 'SURVIVORSHIP_BIAS',
+    name: 'Survivorship Bias (Selective Cohort Dropout)',
+    category: 'INFORMAL_PROBABILISTIC',
+    formalLogicNotation: 'Sample = Survivors ⊬ Entire Population',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Survivorship_bias',
+    description: 'Focusing on the characteristics of individuals or patients that passed a selection process while overlooking those who did not survive or dropped out.',
+    clinicalExample: 'Interviewing surviving ICU or oncology patients who took an unapproved protocol and concluding it is safe, without auditing the mortality or dropouts of non-survivors.',
+    epistemicCorrection: 'Enforce strict Intention-to-Treat (ITT) analysis and full accounting of dropouts, withdrawals, and loss-to-follow-up.',
+    detectionKeywords: ['patients who completed', 'surviving patients', 'success stories', 'cases that recovered', 'anecdotal remission'],
+    detectionRegexes: [/\bsurviving\s+patients\b/i, /\bpatients\s+who\s+completed\b/i, /\bsuccess\s+stories\b/i],
+    severity: 'HIGH',
+    clinicalRisk: 'Fatal underestimation of toxicity, adverse events, or early trial mortality.',
+    counterHypothesis: 'Patients who deteriorated or suffered fatal complications dropped out early and were excluded from reporting.',
+    socraticQuestion: 'What were the dropout rates and mortality outcomes among patients who initiated but did not finish this protocol?'
+  },
+  {
+    id: 'APPEAL_TO_NATURE',
+    name: 'Appeal to Nature (Argumentum Ad Naturam)',
+    category: 'RHETORICAL_RELEVANCE',
+    formalLogicNotation: 'Natural ⊬ Safe or Effective',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Appeal_to_nature',
+    description: 'Arguing that a substance or behavior is good, safe, or superior simply because it is natural, or harmful because it is synthetic.',
+    clinicalExample: 'Believing that unregulated herbal botanical tinctures (e.g. St. John\'s Wort, Ephedra, Aristolochia) are inherently safer than pharmaceutical medicines, ignoring toxic nephropathy and CYP3A4 herb-drug interactions.',
+    epistemicCorrection: 'Apply identical pharmacodynamic, pharmacokinetic, and toxicological safety standards regardless of synthetic or botanical origin.',
+    detectionKeywords: ['all natural', '100% natural', '100% all-natural', 'chemical-free', 'natural remedy', 'organic so it cannot harm', 'plant-based so safe', 'plant medicine', 'inherently safe'],
+    detectionRegexes: [/\ball[- ]natural\b/i, /\b100%\s+natural\b/i, /\bplant[- ]based\s+so\s+safe\b/i, /\binherently\s+safe\b/i, /\b100%\s+all-natural\b/i],
+    severity: 'MEDIUM',
+    clinicalRisk: 'Unrecognized drug-herb interactions, heavy metal contamination, hepatotoxicity, and delay of validated therapies.',
+    counterHypothesis: 'Many natural plant compounds (digitalis, ricin, aristolochic acid) are potent cellular toxins with narrow therapeutic windows.',
+    socraticQuestion: 'What are the known pharmacokinetic breakdown pathways, renal/hepatic clearance rates, and interaction profiles of this botanical?'
+  },
+  {
+    id: 'APPEAL_TO_AUTHORITY',
+    name: 'Appeal to Authority (Argumentum Ad Verecundiam)',
+    category: 'RHETORICAL_RELEVANCE',
+    formalLogicNotation: 'Expert asserted X ⊬ X is empirically verified',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Argument_from_authority',
+    description: 'Asserting that a claim must be true because an authority, celebrity, or prestigious figure endorses it, in the absence of corroborating evidence.',
+    clinicalExample: 'Adopting a controversial treatment protocol because a famous TV doctor, Nobel laureate, or hospital department chair personally advocates it without reproducible RCTs.',
+    epistemicCorrection: 'Follow the Royal Society motto: Nullius in verba (Take nobody\'s word for it). Base decisions on replicated clinical evidence matrices.',
+    detectionKeywords: ['dr oz recommended', 'nobel laureate says', 'world-renowned expert says', 'famous doctor', 'endorsed by', 'celebrity doctor', 'key opinion leader said', 'senior attending', 'department chair', 'adhere to authority', 'authority recommends'],
+    detectionRegexes: [/\bnobel\s+laureate\b/i, /\bfamous\s+doctor\b/i, /\bworld[- ]renowned\s+expert\b/i, /\bsenior\s+attending\b/i, /\badhere\s+to\s+authority\b/i],
+    severity: 'LOW',
+    clinicalRisk: 'Eminence-based rather than evidence-based medicine, entrenching dogma and unproven commercial protocols.',
+    counterHypothesis: 'Individual credentials do not immunize hypotheses against empirical falsification and trial replication failures.',
+    socraticQuestion: 'What replicated, peer-reviewed clinical trial data supports this claim independently of who stated it?'
+  },
+  {
+    id: 'SURROGATE_ENDPOINT_EQUIVOCATION',
+    name: 'Surrogate Endpoint Equivocation',
+    category: 'INFORMAL_CAUSAL',
+    formalLogicNotation: 'Improved Biomarker ≠ Improved Clinical Outcome',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Surrogate_endpoint',
+    description: 'Equating improvements in an intermediate biological marker with demonstrated benefit in patient-centered hard outcomes (survival, morbidity, QoL).',
+    clinicalExample: 'Claiming a cardiovascular drug saves lives because it lowers LDL cholesterol or blood pressure, when clinical trials show zero reduction in all-cause mortality (e.g. CAST trial encainide, torcetrapib).',
+    epistemicCorrection: 'Distinguish Grade 1 Patient-Centered Outcomes (mortality, stroke, hospitalization) from Grade 3 Surrogate Markers in clinical guideline reviews.',
+    detectionKeywords: ['lowered biomarker', 'improved numbers', 'surrogate endpoint', 'marker reduced therefore cured', 'lab values improved', 'improves the marker'],
+    detectionRegexes: [/\bsurrogate\s+endpoint\b/i, /\blowered\s+biomarker\b/i, /\bmarker\s+reduced\s+therefore\b/i],
+    severity: 'MEDIUM',
+    clinicalRisk: 'Treating laboratory numbers while patient-centered morbidity or all-cause mortality remains unaffected or worsens.',
+    counterHypothesis: 'Biomarker alteration does not guarantee clinically meaningful improvement in morbidity, mortality, or functional capacity.',
+    socraticQuestion: 'Does this therapy show verified improvements in patient-centered hard endpoints (survival, hospitalizations), or only in surrogate lab markers?'
+  },
+  {
+    id: 'BERKSONS_BIAS',
+    name: 'Berkson\'s Bias (Collider Stratification)',
+    category: 'INFORMAL_PROBABILISTIC',
+    formalLogicNotation: 'P(A | B, Hospitalized) ≠ P(A | B, Population)',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Berkson%27s_paradox',
+    description: 'Spurious negative or positive associations that arise when sample selection is conditioned on a common collider effect (such as hospital admission).',
+    clinicalExample: 'Analyzing inpatient hospital databases and concluding that smoking protects against severe disease or dementia, because patients without the exposure were admitted only if they had far more severe baseline pathology.',
+    epistemicCorrection: 'Validate clinical associations in unselected community-based prospective cohort studies rather than hospitalized registries.',
+    detectionKeywords: ['inpatient database showed', 'hospitalized cohort revealed', 'hospital records indicate', 'in-hospital correlation', 'hospitalized patients showed'],
+    detectionRegexes: [/\binpatient\s+database\b/i, /\bhospitalized\s+cohort\b/i, /\bin-hospital\s+correlation\b/i],
+    severity: 'HIGH',
+    clinicalRisk: 'Recommending spurious protective factors based on hospitalized cohort selection artifacts.',
+    counterHypothesis: 'Conditioning on hospital admission acts as a collider that introduces false negative or positive correlations.',
+    socraticQuestion: 'Does this correlation replicate in unselected ambulatory or community cohorts without hospital admission filters?'
+  },
+  {
+    id: 'SIMPSONS_PARADOX',
+    name: 'Simpson\'s Paradox (Stratified Inversion)',
+    category: 'INFORMAL_PROBABILISTIC',
+    formalLogicNotation: 'Aggregate trend ≠ Subgroup trends',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Simpson%27s_paradox',
+    description: 'A statistical phenomenon where a trend appears in aggregate data but vanishes or reverses when the data is partitioned into sub-populations.',
+    clinicalExample: 'Treatment A appears to have a higher overall recovery rate than Treatment B in total numbers, but Treatment B is strictly superior in both mild and severe disease subsets because Treatment A was disproportionately given to mild patients.',
+    epistemicCorrection: 'Mandate multivariate regression and stratified sub-cohort analyses with propensity score matching.',
+    detectionKeywords: ['overall success rate', 'aggregate data showed', 'total recovery rate', 'unadjusted success', 'pooled success'],
+    detectionRegexes: [/\baggregate\s+data\s+showed\b/i, /\btotal\s+recovery\s+rate\b/i, /\bunadjusted\s+success\b/i],
+    severity: 'HIGH',
+    clinicalRisk: 'Selecting an inferior therapy due to confounding by indication and failure to stratify by disease severity.',
+    counterHypothesis: 'Subgroup stratification by severity may reverse the apparent aggregate advantage.',
+    socraticQuestion: 'What does the stratified hazard ratio or odds ratio look like across mild, moderate, and severe patient subgroups?'
+  },
+  {
+    id: 'FALSE_DILEMMA',
+    name: 'False Dilemma (Bifurcation)',
+    category: 'FORMAL_LOGICAL',
+    formalLogicNotation: 'A ∨ B ⊬ ¬(A ∨ B ∨ C ∨ D)',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/False_dilemma',
+    description: 'Artificially limiting available options to two mutually exclusive extremes when intermediate or alternative possibilities exist.',
+    clinicalExample: 'Telling a patient with chronic lower back pain that they must either undergo immediate spinal fusion surgery or suffer permanent disability, ignoring physical therapy, weight modulation, and pain psychology.',
+    epistemicCorrection: 'Adopt multi-disciplinary stepped-care algorithms that systematically explore lifestyle, medical, and conservative interventions before irreversible procedures.',
+    detectionKeywords: ['either this or', 'only two choices', 'must choose between', 'no other option', 'surgery or disability', 'either surgery or'],
+    detectionRegexes: [/\beither\s+.*\s+or\b/i, /\bonly\s+two\s+choices\b/i, /\bno\s+other\s+option\b/i],
+    severity: 'MEDIUM',
+    clinicalRisk: 'Coercive premature closure on radical or irreversible interventions.',
+    counterHypothesis: 'Stepped-care conservative therapies may yield substantial functional improvement without invasive risks.',
+    socraticQuestion: 'What conservative or multimodal stepped-care alternatives exist between these two extremes?'
+  },
+  {
+    id: 'AUTOMATION_BIAS',
+    name: 'Automation Bias (Algorithmic Deference)',
+    category: 'INFORMAL_COGNITIVE',
+    formalLogicNotation: 'AI Output ≠ Clinical Ground Truth',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Automation_bias',
+    description: 'The tendency for human decision-makers to uncritically trust automated decision systems, disregarding contrary clinical evidence or bedside observations.',
+    clinicalExample: 'A clinician accepting an AI triage score or automated ECG interpretation stating "Normal Sinus" without examining the patient\'s active diaphoresis, chest pressure, and clinical distress.',
+    epistemicCorrection: 'Enforce FDA Section 520(o) Non-Device CDS transparency: mandate affirmative human clinician attestation and independent clinical corroboration.',
+    detectionKeywords: ['algorithm diagnosed', 'the ai said', 'ai model confirmed', 'automated score states', 'the computer showed', 'ai algorithm predicted', 'sepsis probability', 'no need to verify', 'start broad-spectrum'],
+    detectionRegexes: [/\bai\s+algorithm\s+predicted\b/i, /\bthe\s+ai\s+said\b/i, /\bautomated\s+score\b/i, /\bno\s+need\s+to\s+verify\b/i],
+    severity: 'HIGH',
+    clinicalRisk: 'Uncritical acceptance of automated misclassifications leading to inappropriate therapy or delayed intervention.',
+    counterHypothesis: 'Algorithm outputs must be treated as provisional non-device clinical decision support, subject to direct bedside verification.',
+    socraticQuestion: 'What direct clinical history and physical examination findings corroborate or challenge this automated score?'
+  }
+];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -1374,6 +1657,292 @@ OUTPUT FORMAT:
 Output MUST be valid JSON adhering strictly to the IGroundedClinicalAssertion schema.`;
   }
 
+  /**
+   * Evaluates a clinical hypothesis for epistemic humility, automation bias risk,
+   * and atypical presentation vulnerability (e.g., female ACS, geriatric delirium UTI, euDKA).
+   */
+  evaluateEpistemicHumility(
+    hypothesis: string,
+    rawCertaintyPercent: number,
+    hasObjectiveConfirmatoryTests: boolean = false,
+    patientContext?: { gender?: string; age?: number; medications?: string[]; symptoms?: string[] }
+  ): IEpistemicHumilityAudit {
+    const lowerHypothesis = hypothesis.toLowerCase();
+    const flags: IAtypicalPresentationRule[] = [];
+
+    // Check atypical rules against hypothesis, demographics, and symptoms
+    for (const rule of ATYPICAL_PRESENTATION_BANK) {
+      const matchSyndrome = lowerHypothesis.includes(rule.syndrome.toLowerCase()) ||
+        (rule.id === 'atypical-acs-female' && (lowerHypothesis.includes('cardiac') || lowerHypothesis.includes('coronary') || lowerHypothesis.includes('angina') || lowerHypothesis.includes('chest pain') || lowerHypothesis.includes('infarction'))) ||
+        (rule.id === 'atypical-geriatric-delirium-uti' && (lowerHypothesis.includes('uti') || lowerHypothesis.includes('sepsis') || lowerHypothesis.includes('infection') || lowerHypothesis.includes('delirium') || lowerHypothesis.includes('pneumonia'))) ||
+        (rule.id === 'atypical-euglycemic-dka' && (lowerHypothesis.includes('dka') || lowerHypothesis.includes('diabetes') || lowerHypothesis.includes('acidosis') || lowerHypothesis.includes('ketoacidosis'))) ||
+        (rule.id === 'atypical-pediatric-appendicitis' && (lowerHypothesis.includes('appendic') || lowerHypothesis.includes('abdominal pain') || lowerHypothesis.includes('gastroenteritis'))) ||
+        (rule.id === 'atypical-neutropenic-fever' && (lowerHypothesis.includes('neutropen') || lowerHypothesis.includes('chemotherapy') || lowerHypothesis.includes('immunodeficiency')));
+
+      if (matchSyndrome) {
+        let demographicMatch = false;
+        if (rule.id === 'atypical-acs-female') {
+          demographicMatch = !patientContext || (patientContext.gender?.toLowerCase() === 'female' || (patientContext.age ?? 0) >= 60);
+        } else if (rule.id === 'atypical-geriatric-delirium-uti') {
+          demographicMatch = !patientContext || (patientContext.age ?? 0) >= 65;
+        } else if (rule.id === 'atypical-euglycemic-dka') {
+          demographicMatch = !patientContext || (patientContext.medications?.some(m => m.toLowerCase().includes('gliflozin') || m.toLowerCase().includes('sglt2')) ?? false);
+        } else if (rule.id === 'atypical-pediatric-appendicitis') {
+          demographicMatch = !patientContext || (patientContext.age ?? 25) < 18;
+        } else {
+          demographicMatch = true;
+        }
+
+        if (demographicMatch) {
+          flags.push(rule);
+        }
+      }
+    }
+
+    const hasAtypicalRisk = flags.length > 0;
+    const isOverconfident = rawCertaintyPercent > 80 && !hasObjectiveConfirmatoryTests;
+
+    let badge: IEpistemicHumilityAudit['epistemicHumilityBadge'] = 'PROVISIONAL_WORKING_HYPOTHESIS';
+    if (isOverconfident) {
+      badge = 'OVERCONFIDENCE_WARNING';
+    } else if (hasAtypicalRisk) {
+      badge = 'HIGH_AMBIGUITY_ATYPICAL_ALERT';
+    } else if (hasObjectiveConfirmatoryTests && rawCertaintyPercent >= 75) {
+      badge = 'SETTLED_WITH_CONFIRMATORY_TESTS';
+    }
+
+    // Epistemic humility score balances confidence against confirmation rigor
+    let humilityScore = 100 - Math.abs(rawCertaintyPercent - (hasObjectiveConfirmatoryTests ? 85 : 55));
+    if (isOverconfident) humilityScore = Math.max(10, humilityScore - 30);
+    if (hasAtypicalRisk) humilityScore = Math.max(15, humilityScore - 15);
+
+    const devilsAdvocateCounterPrompt = `[DEVIL'S ADVOCATE COUNTER-CHALLENGE]
+Primary Hypothesis: "${hypothesis}" (Stated Certainty: ${rawCertaintyPercent}%).
+Active Epistemic Challenge: What objective findings or negative test results would definitively FALSIFY this working diagnosis?
+${flags.map(f => `• ATYPICAL CHECK (${f.demographicOrPhenotype}): Could this present atypically as ${f.atypicalPresentation}? Pitfall: ${f.clinicalPitfall}`).join('\n')}`;
+
+    const falsificationManeuver = flags.length > 0
+      ? flags[0].investigationManeuver
+      : 'Obtain objective laboratory, hemodynamic, or diagnostic imaging confirmation before ordering irreversible invasive interventions.';
+
+    const recommendedActionPlan = isOverconfident
+      ? 'DO NOT commit diagnosis autonomously. Epistemic overconfidence detected: require objective confirmatory labs or imaging to reject competing differentials.'
+      : hasAtypicalRisk
+        ? `Perform targeted investigation: ${falsificationManeuver}. Verify atypical presentation criteria.`
+        : 'Maintain provisional working hypothesis status with continuous bedside clinical re-evaluation.';
+
+    return {
+      hypothesis,
+      rawCertaintyPercent,
+      epistemicHumilityScore: Math.round(humilityScore),
+      isAutomationBiasRisk: isOverconfident,
+      atypicalPresentationRisk: hasAtypicalRisk,
+      atypicalPresentationFlags: flags,
+      devilsAdvocateCounterPrompt,
+      epistemicHumilityBadge: badge,
+      falsificationManeuver,
+      recommendedActionPlan
+    };
+  }
+
+  // =========================================================================
+  // Clinical Logical Fallacies & Epistemic Biases Audit Engine
+  // =========================================================================
+
+  /**
+   * Returns all 12 canonical clinical fallacy definitions.
+   */
+  public getAllFallacyDefinitions(): IClinicalFallacyDefinition[] {
+    return CLINICAL_FALLACIES_CATALOG;
+  }
+
+  /**
+   * Retrieves a specific fallacy definition by ID.
+   */
+  public getFallacyDefinition(id: string): IClinicalFallacyDefinition | undefined {
+    return CLINICAL_FALLACIES_CATALOG.find(f => f.id === id);
+  }
+
+  /**
+   * Computes visual Bayesian Natural Frequencies to eliminate Base Rate Neglect.
+   * Based on Gerd Gigerenzer natural frequency framework.
+   * Supports both positional parameters (prevalence, sensitivity, specificity, totalPop)
+   * and parameter object.
+   */
+  public calculateBayesianNaturalFrequency(
+    prevalenceOrParams: number | {
+      populationBaseSize?: number;
+      diseasePrevalencePercent?: number;
+      prevalenceRate?: number;
+      testSensitivityPercent?: number;
+      sensitivity?: number;
+      testSpecificityPercent?: number;
+      specificity?: number;
+      totalPopulation?: number;
+    },
+    sensitivityArg?: number,
+    specificityArg?: number,
+    totalPopulationArg?: number
+  ): IBayesianNaturalFrequencyInsight {
+    let N = 10000;
+    let prev = 0.0001;
+    let sens = 0.99;
+    let spec = 0.99;
+
+    if (typeof prevalenceOrParams === 'number') {
+      prev = prevalenceOrParams;
+      sens = sensitivityArg ?? 0.99;
+      spec = specificityArg ?? 0.99;
+      N = totalPopulationArg ?? 10000;
+    } else if (typeof prevalenceOrParams === 'object' && prevalenceOrParams !== null) {
+      N = prevalenceOrParams.totalPopulation ?? prevalenceOrParams.populationBaseSize ?? 10000;
+      if (prevalenceOrParams.prevalenceRate !== undefined) {
+        prev = prevalenceOrParams.prevalenceRate;
+      } else if (prevalenceOrParams.diseasePrevalencePercent !== undefined) {
+        prev = prevalenceOrParams.diseasePrevalencePercent / 100;
+      }
+      if (prevalenceOrParams.sensitivity !== undefined) {
+        sens = prevalenceOrParams.sensitivity;
+      } else if (prevalenceOrParams.testSensitivityPercent !== undefined) {
+        sens = prevalenceOrParams.testSensitivityPercent / 100;
+      }
+      if (prevalenceOrParams.specificity !== undefined) {
+        spec = prevalenceOrParams.specificity;
+      } else if (prevalenceOrParams.testSpecificityPercent !== undefined) {
+        spec = prevalenceOrParams.testSpecificityPercent / 100;
+      }
+    }
+
+    const diseasedCount = Math.max(1, Math.round(N * prev));
+    const healthyCount = N - diseasedCount;
+
+    const truePositives = Math.round(diseasedCount * sens);
+    const falsePositives = Math.round(healthyCount * (1 - spec));
+    const trueNegatives = Math.round(healthyCount * spec);
+    const falseNegatives = diseasedCount - truePositives;
+    const totalPositives = truePositives + falsePositives;
+
+    const ppvPercent = totalPositives > 0
+      ? Math.round((truePositives / totalPositives) * 10000) / 100
+      : 0;
+
+    const plainEnglishExplanation = `Out of ${N.toLocaleString()} individuals screened: exactly ${diseasedCount} actually have the disease. The test correctly identifies ${truePositives} true cases, but also generates ${falsePositives} false alarms in healthy people. Therefore, when a test comes back positive, there is only a ${ppvPercent}% chance the patient actually has the condition (${falsePositives} out of ${totalPositives} positives are false alarms).`;
+
+    return {
+      totalPopulation: N,
+      prevalenceRate: prev,
+      diseasedInPopulation: diseasedCount,
+      healthyInPopulation: healthyCount,
+      sensitivity: sens,
+      specificity: spec,
+      truePositives,
+      falsePositives,
+      trueNegatives,
+      falseNegatives,
+      totalPositives,
+      actualPpvPercentage: ppvPercent,
+      plainEnglishExplanation
+    };
+  }
+
+  /**
+   * Audits any clinical thesis, patient assertion, or diagnostic claim against
+   * the 12 core clinical and empirical logical fallacies.
+   */
+  public auditClinicalAssertionForFallacies(
+    assertionText: string,
+    context?: {
+      prevalenceRate?: number;
+      sensitivity?: number;
+      specificity?: number;
+      totalPopulation?: number;
+    }
+  ): IClinicalFallacyAuditResult {
+    if (!assertionText || assertionText.trim().length === 0) {
+      return {
+        assertionText: '',
+        hasDetectedFallacy: false,
+        overallVerdict: 'Empty assertion provided for logical audit.',
+        findings: [],
+        bayesianInsight: null,
+        timestamp: new Date().toISOString()
+      };
+    }
+
+    const lower = assertionText.toLowerCase();
+    const detected: IFallacyAuditFinding[] = [];
+
+    for (const fallacy of CLINICAL_FALLACIES_CATALOG) {
+      let matchedClue = '';
+
+      // Check regex matches first
+      if (fallacy.detectionRegexes && fallacy.detectionRegexes.length > 0) {
+        for (const rx of fallacy.detectionRegexes) {
+          const match = assertionText.match(rx);
+          if (match) {
+            matchedClue = match[0];
+            break;
+          }
+        }
+      }
+
+      // Fall back to keyword inclusion
+      if (!matchedClue) {
+        for (const kw of fallacy.detectionKeywords) {
+          if (lower.includes(kw.toLowerCase())) {
+            matchedClue = kw;
+            break;
+          }
+        }
+      }
+
+      if (matchedClue) {
+        detected.push({
+          fallacyId: fallacy.id,
+          fallacyName: fallacy.name,
+          category: fallacy.category,
+          severity: fallacy.severity,
+          matchedClue,
+          clinicalRisk: fallacy.clinicalRisk,
+          counterHypothesis: fallacy.counterHypothesis,
+          socraticQuestion: fallacy.socraticQuestion,
+          definition: fallacy
+        });
+      }
+    }
+
+    // Bayesian insight for base rate or screening statements
+    let bayesianInsight: IBayesianNaturalFrequencyInsight | null = null;
+    const hasBaseRate = detected.some(d => d.fallacyId === 'BASE_RATE_FALLACY') ||
+      lower.includes('screening') || lower.includes('positive test') || lower.includes('rare 1 in');
+
+    if (hasBaseRate || context?.prevalenceRate !== undefined) {
+      bayesianInsight = this.calculateBayesianNaturalFrequency(
+        context?.prevalenceRate ?? 0.0001,
+        context?.sensitivity ?? 0.99,
+        context?.specificity ?? 0.99,
+        context?.totalPopulation ?? 10000
+      );
+    }
+
+    let verdict = '';
+    if (detected.length === 0) {
+      verdict = 'Logical audit completed: No overt cognitive or logical fallacies detected. The assertion maintains empirical humility and appropriate diagnostic calibration.';
+    } else {
+      const highCount = detected.filter(d => d.severity === 'HIGH').length;
+      verdict = `Epistemic audit flagged ${detected.length} potential inferential fallac${detected.length === 1 ? 'y' : 'ies'} (${highCount} high-risk). Exercise caution and evaluate counter-hypotheses before clinical commitment.`;
+    }
+
+    return {
+      assertionText,
+      hasDetectedFallacy: detected.length > 0,
+      overallVerdict: verdict,
+      findings: detected,
+      bayesianInsight,
+      timestamp: new Date().toISOString()
+    };
+  }
 }
+
 
 

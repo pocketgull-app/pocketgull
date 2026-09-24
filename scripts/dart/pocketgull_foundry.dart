@@ -18,7 +18,10 @@ const fontStems = [
   'PocketGull-Chiseltip',
   'PocketGull-Antigravity',
   'PocketGull-Numerics',
+  'PocketGull-Math',
   'PocketGullMono-Regular',
+  'PocketGullMono-Bold',
+  'PocketGullMono-Italic',
   'PocketGull-VF',
 ];
 
@@ -133,27 +136,32 @@ void runCompile() {
   print('  [OK] Successfully wrote: ${outFile.path} (${binary.length} bytes)');
 
   // 2. Transform & Realign Full Production Superfamily
-  if (typefaceRoot.existsSync()) {
-    print('\n  [5/5] Realigning and sanitizing complete production superfamily in Dart...');
-    final weightMap = {
-      'PocketGull-Regular.ttf': 400,
-      'PocketGull-Bold.ttf': 700,
-      'PocketGull-Black.ttf': 900,
-      'PocketGull-Fineliner.ttf': 400,
-      'PocketGull-Chiseltip.ttf': 900,
-      'PocketGull-Antigravity.ttf': 400,
-      'PocketGull-Numerics.ttf': 600,
-      'PocketGullMono-Regular.ttf': 500,
-      'PocketGull-VF.ttf': 400,
-    };
+  print('\n  [5/5] Realigning and sanitizing complete production superfamily in Dart...');
+  final weightMap = {
+    'PocketGull-Regular.ttf': 400,
+    'PocketGull-Bold.ttf': 700,
+    'PocketGull-Black.ttf': 900,
+    'PocketGull-Fineliner.ttf': 400,
+    'PocketGull-Chiseltip.ttf': 900,
+    'PocketGull-Antigravity.ttf': 400,
+    'PocketGull-Numerics.ttf': 600,
+    'PocketGullMono-Regular.ttf': 500,
+    'PocketGull-VF.ttf': 400,
+  };
 
+  final appFontsDir = Directory('$root${Platform.pathSeparator}public${Platform.pathSeparator}fonts');
+  final targetDirs = [appFontsDir];
+  if (typefaceRoot.existsSync()) {
+    targetDirs.add(Directory('${typefaceRoot.path}${Platform.pathSeparator}fonts${Platform.pathSeparator}ttf'));
+    targetDirs.add(typefaceRoot);
+  }
+
+  for (final dir in targetDirs) {
+    if (!dir.existsSync()) continue;
     for (final entry in weightMap.entries) {
-      var ttfFile = File('${typefaceRoot.path}${Platform.pathSeparator}fonts${Platform.pathSeparator}ttf${Platform.pathSeparator}${entry.key}');
-      if (!ttfFile.existsSync()) {
-        ttfFile = File('${typefaceRoot.path}${Platform.pathSeparator}${entry.key}');
-      }
+      final ttfFile = File('${dir.path}${Platform.pathSeparator}${entry.key}');
       if (ttfFile.existsSync()) {
-        stdout.write('    • Transforming ${entry.key} (wght: ${entry.value}) ... ');
+        stdout.write('    • Transforming ${entry.key} in ${dir.path} (wght: ${entry.value}) ... ');
         try {
           SfntTransformer.transformFont(
             inputFile: ttfFile,
@@ -167,6 +175,7 @@ void runCompile() {
       }
     }
   }
+
 
   // 3. Run immediate Thomas Phinney forensic audit
   stdout.write('\n  [VERIFY] Forensic verification of compiled binary ... ');

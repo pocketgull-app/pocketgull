@@ -8,9 +8,9 @@ describe('RolePathwayDocsService - Dynamic Role-Based Pathways & Documentation',
     service = new RolePathwayDocsService();
   });
 
-  it('1. Provides 5 distinct clinical role pathways', () => {
+  it('1. Provides 6 distinct clinical role pathways', () => {
     const pathways = service.getAllPathways();
-    expect(pathways.length).toBe(5);
+    expect(pathways.length).toBe(6);
 
     const ids = pathways.map(p => p.pathwayId);
     expect(ids).toContain('clinician');
@@ -18,6 +18,7 @@ describe('RolePathwayDocsService - Dynamic Role-Based Pathways & Documentation',
     expect(ids).toContain('researcher');
     expect(ids).toContain('executive');
     expect(ids).toContain('patient');
+    expect(ids).toContain('chw');
   });
 
   it('2. Customizes tone, objectives, and recommended tools per pathway', () => {
@@ -31,16 +32,22 @@ describe('RolePathwayDocsService - Dynamic Role-Based Pathways & Documentation',
 
     const patientDoc = service.getPathway('patient');
     expect(patientDoc.toneAndDensity).toContain('8th-grade');
+
+    const chwDoc = service.getPathway('chw');
+    expect(chwDoc.recommendedTools.some(t => t.tabId === 'chw')).toBe(true);
+    expect(chwDoc.regulatoryAndStandards).toContain('WHO IMCI Guidelines');
   });
 
   it('3. Updates active pathway signal dynamically', () => {
     expect(service.activePathway()).toBe('clinician');
     service.setPathway('researcher');
     expect(service.activePathway()).toBe('researcher');
+    service.setPathway('chw');
+    expect(service.activePathway()).toBe('chw');
   });
 
-  it('4. Provides continuous 5-stage sequential workflow for all 5 roles', () => {
-    const roles: ClinicalRolePathway[] = ['clinician', 'resident', 'researcher', 'executive', 'patient'];
+  it('4. Provides continuous 5-stage sequential workflow for all 6 roles', () => {
+    const roles: ClinicalRolePathway[] = ['clinician', 'resident', 'researcher', 'executive', 'patient', 'chw'];
 
     for (const role of roles) {
       const stages = service.getWorkflowStages(role);

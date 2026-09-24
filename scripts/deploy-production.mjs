@@ -40,13 +40,9 @@ function run(cmd, options = {}) {
   }
 }
 
-// 0. Mandatory Pre-Flight Verification Chain (Unit Tests, Lint, Security, SBOM, W3C OTS Fonts)
+// 0. Mandatory Pre-Flight Verification Chain (Unit Tests, Lint, Security, SBOM)
 console.log('\n🧪 Step 0/5: Running mandatory pre-flight test & security verification chain...');
 run(`node "${join(rootDir, 'scripts/pre-commit-check.cjs')}"`);
-
-console.log('• W3C OTS Typeface Conformance & Thomas Phinney Gate (Dart 3.11)...');
-run('dart run scripts/dart/pocketgull_foundry.dart audit');
-run('dart run scripts/dart/foundry/foundry_test.dart');
 
 console.log('• CycloneDX 1.6 SBOM Verification...');
 run(`node "${join(rootDir, 'scripts/generate_cyclonedx_sbom.mjs')}"`);

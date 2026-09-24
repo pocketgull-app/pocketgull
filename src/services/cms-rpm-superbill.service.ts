@@ -28,6 +28,18 @@ export interface ITelemetryComplianceDay {
   sleepMinutes?: number;
 }
 
+export interface IDeprescribingAttestationLog {
+  id: string;
+  medication: string;
+  originalDose: string;
+  targetDose: string;
+  clinicalRationale: string;
+  monitoringParameters: string[];
+  minutesAttributed: number;
+  timestamp: string;
+  clinicianSignOff: string;
+}
+
 export interface ICmsRpmSuperbill {
   claimId: string;
   patientId: string;
@@ -41,6 +53,9 @@ export interface ICmsRpmSuperbill {
   totalEstimatedReimbursementUsd: number;
   clinicianAttestationTimestamp: string;
   integritySealSha256: string;
+  clinicalMinutesSpent?: number;
+  complianceCalendar?: ITelemetryComplianceDay[];
+  deprescribingLogs?: IDeprescribingAttestationLog[];
 }
 
 @Injectable({
@@ -63,6 +78,8 @@ export class CmsRpmSuperbillService {
 
   readonly clinicalMinutesSpent = signal<number>(25); // Default 25 min (qualifies for 99457)
   readonly isInitialSetupEpisode = signal<boolean>(true); // Qualifies for 99453
+  readonly customDayOverrides = signal<Record<string, boolean>>({});
+  readonly deprescribingLogs = signal<IDeprescribingAttestationLog[]>([]);
 
   // ── Telemetry Compliance Engine ─────────────────────────────────────────────
   /**
@@ -72,6 +89,7 @@ export class CmsRpmSuperbillService {
   public generateComplianceCalendar(biometrics: IBiometricEntry[] = []): ITelemetryComplianceDay[] {
     const calendar: ITelemetryComplianceDay[] = [];
     const now = new Date();
+    const overrides = this.customDayOverrides();
 
     for (let i = 29; i >= 0; i--) {
       const d = new Date(now);
@@ -84,7 +102,8 @@ export class CmsRpmSuperbillService {
       // Standard active device stream simulation (typically 22-26 days compliant)
       const daySeed = (d.getDate() * 7 + d.getMonth() * 13) % 100;
       const hasSimulatedReading = daySeed > 22; // ~78% transmission rate (23+ days)
-      const hasReading = !!matched || hasSimulatedReading;
+      const defaultReading = !!matched || hasSimulatedReading;
+      const hasReading = overrides[dateStr] !== undefined ? overrides[dateStr] : defaultReading;
 
       calendar.push({
         date: dateStr,
@@ -99,10 +118,97 @@ export class CmsRpmSuperbillService {
     return calendar;
   }
 
+  /**
+   * Toggles transmission state for a specific date in the 30-day billing cycle.
+   */
+  public toggleDayTransmission(dateStr: string): void {
+    const calendar = this.generateComplianceCalendar(this.patientMgmt?.selectedPatient()?.biometrics || []);
+    const currentDay = calendar.find(c => c.date === dateStr);
+    const currentReading = currentDay ? currentDay.hasReading : false;
+    this.customDayOverrides.update(prev => ({
+      ...prev,
+      [dateStr]: !currentReading
+    }));
+  }
+
+  /**
+   * Sets interactive care coordination minutes (CPT 99457 & 99458).
+   */
+  public setClinicalMinutes(minutes: number): void {
+    this.clinicalMinutesSpent.set(Math.max(0, Math.min(300, Math.round(minutes))));
+  }
+
+  /**
+   * Links an active polypharmacy deprescribing schedule directly into the
+   * Medicare RPM Care Coordination Time Log, automatically attributing clinical time
+   * (default 20 min toward CPT 99457/99458) and logging formal clinical attestation.
+   */
+  public linkDeprescribingTaper(plan: {
+    medication: string;
+    originalDose?: string;
+    targetDose?: string;
+    clinicalRationale: string;
+    monitoringParameters?: string[] | string;
+    minutesToAttribute?: number;
+    clinicianSignOff?: string;
+  }): IDeprescribingAttestationLog {
+    const minutes = plan.minutesToAttribute ?? 20;
+    const now = new Date();
+
+    // NIST SP 800-90A CSPRNG log identifier
+    const entropy = new Uint8Array(4);
+    globalThis.crypto.getRandomValues(entropy);
+    const hex = Array.from(entropy).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+    const id = `DPR-${hex}`;
+
+    let parsedMonitoring: string[];
+    if (Array.isArray(plan.monitoringParameters)) {
+      parsedMonitoring = plan.monitoringParameters.length > 0
+        ? plan.monitoringParameters
+        : ['Blood pressure and heart rate telemetry', 'Recurrence of primary symptoms', 'Withdrawal / rebound phenomenon'];
+    } else if (typeof plan.monitoringParameters === 'string' && plan.monitoringParameters.trim().length > 0) {
+      parsedMonitoring = [plan.monitoringParameters];
+    } else {
+      parsedMonitoring = ['Blood pressure and heart rate telemetry', 'Recurrence of primary symptoms', 'Withdrawal / rebound phenomenon'];
+    }
+
+    const logEntry: IDeprescribingAttestationLog = {
+      id,
+      medication: plan.medication,
+      originalDose: plan.originalDose || 'Current Prescribed Dose',
+      targetDose: plan.targetDose || 'Gradual Step-Down Taper to Discontinuation',
+      clinicalRationale: plan.clinicalRationale,
+      monitoringParameters: parsedMonitoring,
+      minutesAttributed: minutes,
+      timestamp: now.toISOString(),
+      clinicianSignOff: plan.clinicianSignOff || 'Affirmed via PocketGull Clinical Posology & Deprescribing Engine'
+    };
+
+    this.deprescribingLogs.update(prev => [logEntry, ...prev]);
+    this.setClinicalMinutes(this.clinicalMinutesSpent() + minutes);
+    return logEntry;
+  }
+
+
+  /**
+   * Removes a linked deprescribing log and reconciles care coordination minutes.
+   */
+  public removeDeprescribingLog(logId: string): void {
+    const target = this.deprescribingLogs().find(l => l.id === logId);
+    if (target) {
+      this.deprescribingLogs.update(prev => prev.filter(l => l.id !== logId));
+      this.setClinicalMinutes(Math.max(0, this.clinicalMinutesSpent() - target.minutesAttributed));
+    }
+  }
+
   // ── ICD-10 Cross-Mapping Engine ─────────────────────────────────────────────
   public mapIcd10Diagnoses(patient?: IPatient): IIcd10Mapping[] {
-    const conditions = (patient?.preexistingConditions || []).map(c => c.toLowerCase());
-    const symptoms = (patient?.symptoms || []).map(s => s.toLowerCase());
+    const conditions = (patient?.preexistingConditions || []).map(c => typeof c === 'string' ? c.toLowerCase() : String(c).toLowerCase());
+    const symptoms = (patient?.symptoms || []).map(s => {
+      if (typeof s === 'string') return s.toLowerCase();
+      if (s && typeof s === 'object') return (s.name || s.description || JSON.stringify(s)).toLowerCase();
+      return String(s).toLowerCase();
+    });
     const mappings: IIcd10Mapping[] = [];
 
     // Rule 1: Hypertension
@@ -261,9 +367,83 @@ export class CmsRpmSuperbillService {
       claimCodes,
       totalEstimatedReimbursementUsd: Math.round(totalReimbursement * 100) / 100,
       clinicianAttestationTimestamp: now.toISOString(),
-      integritySealSha256: integritySeal
+      integritySealSha256: integritySeal,
+      clinicalMinutesSpent: minutes,
+      complianceCalendar: calendar,
+      deprescribingLogs: this.deprescribingLogs()
     };
   }
+
+  /**
+   * Generates a standardized clinical SOAP/RPM note formatted for direct paste
+   * into electronic health record systems (Epic, Cerner, AthenaHealth).
+   */
+  public generateEhrClinicalNote(superbill: ICmsRpmSuperbill): string {
+    const primaryDiag = superbill.icd10Diagnoses.find(d => d.isPrimary) || superbill.icd10Diagnoses[0];
+    const secondaryDiags = superbill.icd10Diagnoses.filter(d => !d.isPrimary);
+    const logs = superbill.deprescribingLogs || this.deprescribingLogs();
+    
+    const lines = [
+      `================================================================================`,
+      `CMS REMOTE PHYSIOLOGIC MONITORING (RPM) MONTHLY ATTESTATION NOTE`,
+      `================================================================================`,
+      `PATIENT: ${superbill.patientName}`,
+      `PATIENT ID: ${superbill.patientId}`,
+      `BILLING PERIOD: ${superbill.billingPeriodStart} to ${superbill.billingPeriodEnd}`,
+      `CLAIM REFERENCE: ${superbill.claimId}`,
+      ``,
+      `[1. CMS STATUTORY COMPLIANCE (CPT 99454 - 16-DAY RULE)]`,
+      `• Verified physiologic telemetry transmission days: ${superbill.qualifyingDaysCount} / 30 calendar days.`,
+      `• CMS 16-Day Requirement (42 CFR § 410.78): ${superbill.isCompliant16DayRule ? 'SATISFIED (Eligible for billing)' : 'INSUFFICIENT (Transmissions < 16 days; hold claim)'}.`,
+      ``,
+      `[2. CLINICAL CARE COORDINATION & TIME LOG (CPT 99457 / CPT 99458)]`,
+      `• Cumulative interactive clinical staff / physician time: ${superbill.clinicalMinutesSpent ?? this.clinicalMinutesSpent()} minutes.`,
+      `• Scope of Work: Biometric review, medication posology calibration, vital sign titration, and trajectory assessment.`,
+      ...(logs.length > 0 ? [
+        `• Documented Polypharmacy Deprescribing Interventions (${logs.length} active protocol${logs.length > 1 ? 's' : ''}):`,
+        ...logs.map(log => 
+          `  - [${log.id}] ${log.medication}: ${log.originalDose} → ${log.targetDose} (+${log.minutesAttributed}m credited)\n    Rationale: ${log.clinicalRationale}\n    Target Biometrics: ${log.monitoringParameters.join(', ')}\n    Attested: ${log.timestamp} UTC (${log.clinicianSignOff})`
+        )
+      ] : []),
+      ``,
+      `[3. BILLABLE RPM CPT CODES & REIMBURSEMENT SCHEDULE]`,
+      ...superbill.claimCodes.map(c => 
+        `• CPT ${c.cptCode} (${c.units} unit${c.units > 1 ? 's' : ''}): $${c.totalUsd.toFixed(2)} [${c.isEligible ? 'ELIGIBLE' : 'INELIGIBLE'}] - ${c.description}`
+      ),
+      `• Total Estimated Medicare Reimbursement: $${superbill.totalEstimatedReimbursementUsd.toFixed(2)}`,
+      ``,
+      `[4. ICD-10-CM DIAGNOSTIC GROUNDING]`,
+      `• Primary: ${primaryDiag ? `${primaryDiag.code} - ${primaryDiag.description}` : 'R03.0 - Elevated blood pressure'}`,
+      ...(secondaryDiags.length > 0 ? secondaryDiags.map(d => `• Secondary: ${d.code} - ${d.description}`) : []),
+      ``,
+      `[5. REGULATORY ELECTRONIC SIGNATURE & ATTESTATION]`,
+      `• Standard: FDA 21 CFR Part 11 & NIST SP 800-90A Hardware Attestation Digest`,
+      `• Cryptographic Seal: ${superbill.integritySealSha256}`,
+      `• Attested At: ${superbill.clinicianAttestationTimestamp} UTC`,
+      `================================================================================`
+    ];
+
+    return lines.join('\n');
+  }
+
+  /**
+   * Lightweight reactive summary for consumption by top navigation and chart badges.
+   */
+  readonly rpmSummary = computed(() => {
+    const superbill = this.generateSuperbill();
+    const neededDays = Math.max(0, 16 - superbill.qualifyingDaysCount);
+    return {
+      qualifyingDays: superbill.qualifyingDaysCount,
+      totalDays: 30,
+      isCompliant: superbill.isCompliant16DayRule,
+      totalEstimatedReimbursementUsd: superbill.totalEstimatedReimbursementUsd,
+      clinicalMinutes: superbill.clinicalMinutesSpent ?? this.clinicalMinutesSpent(),
+      neededDays,
+      statusBadge: superbill.isCompliant16DayRule 
+        ? `${superbill.qualifyingDaysCount}/16d ✓` 
+        : `${superbill.qualifyingDaysCount}/16d (${neededDays} needed)`
+    };
+  });
 
   // ── FHIR R4 Claim Serialization ─────────────────────────────────────────────
   public exportFhirR4Claim(superbill: ICmsRpmSuperbill): Record<string, unknown> {

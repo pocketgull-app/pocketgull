@@ -1,0 +1,21 @@
+# PocketGull Obsidian Ghostty Theme
+background = #09090b
+foreground = #f4f4f5
+cursor-color = #14b8a6
+selection-background = #27272a
+palette = 0=#18181b
+palette = 1=#f43f5e
+palette = 2=#10b981
+palette = 3=#f59e0b
+palette = 4=#38bdf8
+palette = 5=#a855f7
+palette = 6=#14b8a6
+palette = 7=#f4f4f5
+palette = 8=#3f3f46
+palette = 9=#fb7185
+palette = 10=#34d399
+palette = 11=#fbbf24
+palette = 12=#60a5fa
+palette = 13=#c084fc
+palette = 14=#2dd4bf
+palette = 15=#ffffff

@@ -10,9 +10,9 @@ describe('RoleDemoLauncherService - Role-Tailored Clinical Demo Suite', () => {
     service = new RoleDemoLauncherService(null, docsService);
   });
 
-  it('1. Provides 5 tailored role-based demo scenarios', () => {
+  it('1. Provides 6 tailored role-based demo scenarios', () => {
     const scenarios = service.getScenarios();
-    expect(scenarios.length).toBe(5);
+    expect(scenarios.length).toBe(6);
 
     const roles = scenarios.map(s => s.roleId);
     expect(roles).toContain('clinician');
@@ -20,6 +20,7 @@ describe('RoleDemoLauncherService - Role-Tailored Clinical Demo Suite', () => {
     expect(roles).toContain('researcher');
     expect(roles).toContain('executive');
     expect(roles).toContain('patient');
+    expect(roles).toContain('chw');
   });
 
   it('2. Launches clinician demo scenario with p001 and rxguard initial tab', () => {
@@ -41,5 +42,13 @@ describe('RoleDemoLauncherService - Role-Tailored Clinical Demo Suite', () => {
     expect(scenario.patientId).toBe('p007');
     expect(scenario.initialActiveTab).toBe('sms');
     expect(scenario.highlightedModules).toContain('SMS Compass Bridge');
+  });
+
+  it('5. Launches community health worker (CHW) demo scenario with p006 and chw suite initial tab', () => {
+    const scenario = service.launchRoleDemo('chw');
+    expect(scenario.patientId).toBe('p006');
+    expect(scenario.initialActiveTab).toBe('chw');
+    expect(scenario.highlightedModules).toContain('Frontline CHW Suite');
+    expect(scenario.highlightedModules).toContain('MUAC Nutrition Band');
   });
 });

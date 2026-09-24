@@ -92,6 +92,19 @@ export class RoleDemoLauncherService {
       highlightedModules: ['SMS Compass Bridge', 'Plain-Language Analogies', 'Spanish Translations', 'Joy & Play Matrix'],
       initialActiveTab: 'sms',
       clinicalNarrative: 'Experience healthcare through the patient’s eyes: communicate with clinicians via everyday SMS text messages, and read medical concepts explained in plain English and Spanish.'
+    },
+
+    chw: {
+      roleId: 'chw',
+      roleTitle: 'Community Health Worker & Frontline Volunteer',
+      roleIcon: '🎒',
+      scenarioName: 'Pediatric Acute Diarrhea & Malnutrition Triage',
+      patientId: 'p006',
+      patientName: 'Homo Sapiens (Male, Pediatric Archetype, 4y)',
+      chiefComplaint: 'Post-rotavirus diarrhea, mild dehydration, MUAC assessment, and respiratory rate screening in rural outreach.',
+      highlightedModules: ['Frontline CHW Suite', 'MUAC Nutrition Band', 'Tap-Tempo Tachypnea Counter', 'WHO Open Formulary'],
+      initialActiveTab: 'chw',
+      clinicalNarrative: 'Step into the field with a Community Health Worker: assess child malnutrition with the interactive MUAC band, calculate tap-tempo breath rates, titrate ORS rehydration, and generate a zero-bandwidth offline QR referral.'
     }
   };
 

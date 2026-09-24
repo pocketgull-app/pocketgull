@@ -138,13 +138,12 @@ export class StorageService {
 
   async saveState(id: string, state: IPatientState): Promise<void> {
     if (!this.isBrowser) return;
-    if (this.isE2e) {
+    if (this.isE2e || !this.hasIndexedDb) {
       const current = this.memDb.get(id) || { state: null, chatHistory: [] };
       current.state = state;
       this.memDb.set(id, current);
       return;
     }
-    if (!this.hasIndexedDb) return;
     try {
       const db = await this.initDB();
       const existing = await this.idbGet(db, this.STORE_NAME, id);
@@ -171,13 +170,12 @@ export class StorageService {
 
   async saveChatHistory(id: string, chatHistory: any[]): Promise<void> {
     if (!this.isBrowser) return;
-    if (this.isE2e) {
+    if (this.isE2e || !this.hasIndexedDb) {
       const current = this.memDb.get(id) || { state: null, chatHistory: [] };
       current.chatHistory = chatHistory;
       this.memDb.set(id, current);
       return;
     }
-    if (!this.hasIndexedDb) return;
     try {
       const db = await this.initDB();
       const existing = await this.idbGet(db, this.STORE_NAME, id);
@@ -203,8 +201,8 @@ export class StorageService {
   }
 
   async loadState(id: string): Promise<{ state: IPatientState, chatHistory: any[] } | null> {
-    if (!this.isBrowser || !this.hasIndexedDb) return null;
-    if (this.isE2e) {
+    if (!this.isBrowser) return null;
+    if (this.isE2e || !this.hasIndexedDb) {
       const data = this.memDb.get(id);
       if (data) return data;
       return null;
@@ -231,8 +229,8 @@ export class StorageService {
 
   // --- Patient Roster Operations ---
   async loadPatients(): Promise<any[]> {
-    if (!this.isBrowser || !this.hasIndexedDb) return [];
-    if (this.isE2e) {
+    if (!this.isBrowser) return [];
+    if (this.isE2e || !this.hasIndexedDb) {
       const roster = this.memDb.get('roster') || [];
       return roster;
     }
@@ -257,7 +255,7 @@ export class StorageService {
 
   async savePatient(patient: any): Promise<void> {
     if (!this.isBrowser) return;
-    if (this.isE2e) {
+    if (this.isE2e || !this.hasIndexedDb) {
       const roster = this.memDb.get('roster') || [];
       const index = roster.findIndex((p: any) => p.id === patient.id);
       if (index !== -1) {
@@ -279,7 +277,7 @@ export class StorageService {
 
   async deletePatient(id: string): Promise<void> {
     if (!this.isBrowser) return;
-    if (this.isE2e) {
+    if (this.isE2e || !this.hasIndexedDb) {
       const roster = this.memDb.get('roster') || [];
       const next = roster.filter((p: any) => p.id !== id);
       this.memDb.set('roster', next);

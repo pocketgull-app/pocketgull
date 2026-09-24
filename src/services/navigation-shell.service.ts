@@ -20,12 +20,47 @@ export class NavigationShellService {
   readonly showComplianceCertificateModal = signal<boolean>(false);
   readonly showCmsSuperbillModal = signal<boolean>(false);
   readonly showTrajectoryReaderModal = signal<boolean>(false);
+  readonly showPosologyModal = signal<boolean>(false);
   readonly showAustereHudModal = signal<boolean>(false);
   readonly showMdcpHubModal = signal<boolean>(false);
   readonly showCommercialHubModal = signal<boolean>(false);
   readonly showRoleDemoModal = signal<boolean>(false);
   readonly showIntimacyVitalityModal = signal<boolean>(false);
   readonly showFederalUswdsPortal = signal<boolean>(false);
+  readonly showArcadeHubModal = signal<boolean>(false);
+  readonly showAtlasModal = signal<boolean>(false);
+  readonly showChwSuiteModal = signal<boolean>(false);
+  readonly showSpecialistReferralModal = signal<boolean>(false);
+  readonly activeGameId = signal<string>('luminaries');
+
+  /** Developer Mode: Gates investor pitch portals, experimental showcases, and auxiliary demos. Defaults to false. */
+  readonly developerMode = signal<boolean>(
+    (() => {
+      try {
+        if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+          return globalThis.localStorage.getItem('pg_developer_mode') === 'true';
+        }
+      } catch {
+        // Fallback for sandboxed environments
+      }
+      return false;
+    })()
+  );
+
+  /**
+   * Toggles developer mode and persists to localStorage.
+   */
+  public toggleDeveloperMode(): void {
+    const next = !this.developerMode();
+    this.developerMode.set(next);
+    try {
+      if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+        globalThis.localStorage.setItem('pg_developer_mode', next ? 'true' : 'false');
+      }
+    } catch {
+      // Fallback
+    }
+  }
 
   /**
    * Switches active main tab.
@@ -61,6 +96,9 @@ export class NavigationShellService {
   public openTrajectoryReader(): void { this.showTrajectoryReaderModal.set(true); }
   public closeTrajectoryReader(): void { this.showTrajectoryReaderModal.set(false); }
 
+  public openPosology(): void { this.showPosologyModal.set(true); }
+  public closePosology(): void { this.showPosologyModal.set(false); }
+
   public openAustereHud(): void { this.showAustereHudModal.set(true); }
   public closeAustereHud(): void { this.showAustereHudModal.set(false); }
 
@@ -78,6 +116,23 @@ export class NavigationShellService {
 
   public openFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(true); }
   public closeFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(false); }
+
+  public openArcadeHub(gameId?: string): void {
+    if (gameId) {
+      this.activeGameId.set(gameId);
+    }
+    this.showArcadeHubModal.set(true);
+  }
+  public closeArcadeHub(): void { this.showArcadeHubModal.set(false); }
+
+  public openAtlas(): void { this.showAtlasModal.set(true); }
+  public closeAtlas(): void { this.showAtlasModal.set(false); }
+
+  public openChwSuite(): void { this.showChwSuiteModal.set(true); }
+  public closeChwSuite(): void { this.showChwSuiteModal.set(false); }
+
+  public openSpecialistReferralHub(): void { this.showSpecialistReferralModal.set(true); }
+  public closeSpecialistReferralHub(): void { this.showSpecialistReferralModal.set(false); }
 
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
@@ -100,5 +155,10 @@ export class NavigationShellService {
     this.showRoleDemoModal.set(false);
     this.showIntimacyVitalityModal.set(false);
     this.showFederalUswdsPortal.set(false);
+    this.showArcadeHubModal.set(false);
+    this.showAtlasModal.set(false);
+    this.showChwSuiteModal.set(false);
+    this.showSpecialistReferralModal.set(false);
   }
 }
+

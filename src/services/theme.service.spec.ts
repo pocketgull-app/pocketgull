@@ -44,4 +44,20 @@ describe('ThemeService (App Themes & Accessibility Cycles)', () => {
     service.cycleTextSizeScale();
     expect(service.textSizeScale()).toBe('large');
   });
+
+  it('4. Toggles and sets Philocardia heart-centered sensory mode', () => {
+    expect(service.isPhilocardiaEnabled()).toBe(false);
+
+    service.togglePhilocardia();
+    expect(service.isPhilocardiaEnabled()).toBe(true);
+
+    service.togglePhilocardia();
+    expect(service.isPhilocardiaEnabled()).toBe(false);
+
+    service.setPhilocardia(true);
+    expect(service.isPhilocardiaEnabled()).toBe(true);
+
+    service.setPhilocardia(false);
+    expect(service.isPhilocardiaEnabled()).toBe(false);
+  });
 });

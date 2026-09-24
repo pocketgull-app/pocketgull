@@ -60,10 +60,10 @@ type VitalTarget = 'hr' | 'bp_sys' | 'bp_dia' | 'temp' | 'spO2';
           <button (click)="adjustValue(5)" class="w-12 h-12 rounded-2xl bg-zinc-800 hover:bg-zinc-700 active:scale-95 text-white font-black text-lg transition cursor-pointer flex items-center justify-center border border-zinc-700 shadow-sm">+5</button>
         </div>
 
-        <!-- Commit & Somatic Grounding Buttons -->
+        <!-- Record & Somatic Grounding Buttons -->
         <div class="flex items-center gap-2 w-full sm:w-auto">
-          <button (click)="commitActiveVital()" class="flex-1 px-5 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-extrabold text-xs uppercase tracking-wider transition cursor-pointer shadow-lg border border-emerald-400 flex items-center justify-center gap-1.5">
-            <span>✅ Commit Vital</span>
+          <button (click)="recordActiveVital()" class="flex-1 px-5 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-extrabold text-xs uppercase tracking-wider transition cursor-pointer shadow-lg border border-emerald-400 flex items-center justify-center gap-1.5">
+            <span>✅ Record Vital</span>
           </button>
           <button (click)="triggerSomaticGrounding()" title="Open Somatic Grounding Box Breathing" class="px-4 py-3.5 rounded-2xl bg-teal-950/80 hover:bg-teal-900 border border-teal-500/50 text-teal-300 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1">
             <span>🧘</span>
@@ -138,7 +138,7 @@ export class VitalsQuickDialHudComponent {
     }
   }
 
-  commitActiveVital() {
+  recordActiveVital() {
     switch (this.activeTarget()) {
       case 'hr':
         this.patientState.updateVital('hr', String(this.tempHr()));
@@ -154,5 +154,10 @@ export class VitalsQuickDialHudComponent {
         this.patientState.updateVital('spO2', `${this.tempSpO2()}%`);
         break;
     }
+  }
+
+  /** Backwards-compatible alias for recordActiveVital */
+  commitActiveVital() {
+    this.recordActiveVital();
   }
 }

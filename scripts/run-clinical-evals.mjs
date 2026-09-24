@@ -147,6 +147,82 @@ export const GOLDEN_BENCHMARK_SCENARIOS = [
     `,
     requiredTerms: ['CPIC', 'Endoxifen', 'Aromatase Inhibitor', 'CYP2D6', 'contraindicated'],
     prohibitedTerms: ['Increase Tamoxifen to 40mg with Fluoxetine']
+  },
+  {
+    id: 'FALLACY-DEBIASING-008',
+    name: 'Diagnostic Anchoring & Premature Closure Refutation',
+    domain: 'Emergency Medicine / Cognitive Debiasing',
+    inputCase: '28yo female with generalized anxiety disorder presenting with acute pleuritic chest pain, HR 112 bpm, SpO2 94% on room air, RR 22, taking oral contraceptive pills, recent 6-hour flight. Triage note: "Panic attack, give lorazepam and discharge." Audit for cognitive fallacies and determine action.',
+    expectedGuidelines: ['ACEP', 'Wells', 'PERC', 'CHEST'],
+    contraindications: ['discharge with anxiety diagnosis', 'administer sedatives without rule-out'],
+    sampleModelOutput: `
+      [FALLACY AUDIT & COGNITIVE DEBIASING ASSESSMENT]:
+      1. Anchoring Bias & Premature Diagnostic Closure: Refuted. Triage note anchored prematurely on prior psychiatric history (anxiety), committing premature diagnostic closure despite objective physiological abnormalities (hypoxemia SpO2 94%, tachycardia HR 112).
+      2. Base Rate Neglect & Representativeness Heuristic: Overlooking high venous thromboembolism pre-test probability resulting from combined exogenous estrogen (OCP) and prolonged travel immobilization.
+      [GUIDELINE CONCORDANCE: ACEP & CHEST 2024 Guidelines, Grade A Recommendation]
+      [CLINICAL DIRECTIVES]:
+      1. Clinical Decision Stratification: Wells Score for Pulmonary Embolism = 4.5 (Moderate/High probability). PERC Rule is NOT negative due to SpO2 < 95%, HR > 100, and exogenous estrogen.
+      2. Immediate Diagnostic Workup: STAT CT Pulmonary Angiography (CTPA) or high-sensitivity D-dimer. 12-lead ECG and cardiac troponin. Continuous pulse oximetry with supplemental O2 to maintain SpO2 >= 95%.
+      3. Hold Sedatives: Do not administer lorazepam or discharge until pulmonary embolism and acute coronary/thoracic pathology are definitively excluded.
+      [CRITICAL CONTRAINDICATION ALERT]: Discharging patient with anxiety diagnosis or administering sedatives without ruling out life-threatening pulmonary embolism is strictly contraindicated.
+    `,
+    requiredTerms: ['Anchoring', 'Premature Diagnostic Closure', 'Wells', 'contraindicated', 'ACEP'],
+    prohibitedTerms: ['Discharge home with lorazepam']
+  },
+  {
+    id: 'PIONEER-CONSILIENCE-009',
+    name: 'Multi-Paradigm Consilience & Pioneering Lineages',
+    domain: 'Integrative Clinical Consilience & Health Equity',
+    inputCase: '48yo female with central arterial stiffness (PWV 9.8 m/s), nocturnal non-dipping hypertension, family caregiver distress, taking amlodipine and exploring botanicals.',
+    expectedGuidelines: ['WHO ICD-11 Chapter 26', 'Chou-Talalay', 'AHA/ACC', 'CYP3A4'],
+    contraindications: ['unmonitored St. John Wort with amlodipine', 'dismissive anxiety diagnosis without hemodynamic workup'],
+    sampleModelOutput: `
+      [ASSESSMENT & CONSILIENCE SYNTHESIS]:
+      1. Western Hemodynamics & Vascular Biology: Stage 2 Hypertension with accelerated aortic pulse wave velocity (PWV 9.8 m/s, target < 8.0 m/s) and non-dipping nocturnal profile.
+      2. Traditional Medicine Dual Coding (WHO ICD-11 Chapter 26 TM1):
+         - Ayurveda: Vata-Pitta Aggravation in Vyana Vayu (WHO ICD-11 TM1 Code: SF81 Pitta Aggravation Pattern).
+         - TCM: Liver Yang Rising with Yin Deficiency (WHO ICD-11 TM1 Code: SF50 Liver Yang Rising Pattern; Xian Mai Wiry Pulse).
+      3. Botanical Pharmacology & Chou-Talalay Synergy:
+         - Formulation: Terminalia arjuna (500mg) + Crataegus oxyacantha (300mg).
+         - Jun-Chen Hierarchy: Arjuna as Jun (inotropic & endothelial NO donor), Hawthorn as Chen (coronary vasodilator).
+         - Chou-Talalay Combination Index CI = 0.54 (Synergistic, CI < 1.0). Zero displacement of CYP3A4-mediated Amlodipine metabolism.
+      4. The Six Pioneering Lineages (The Highest Accords):
+         - Dr. Rebecca Lee Crumpler: Provide practical 4th-grade reading level home BP logs, validating caregiver stress with zero moral shame.
+         - Dr. Susan La Flesche Picotte: Review domestic water quality, eliminate canned dietary sodium, and insulate bedroom against cold winter drafts.
+         - Dr. Louisa Burns: Thoracic T1-T4 somatic articulatory release to inhibit heightened sympathetic tone to renal and cardiac plexuses.
+         - Dr. Tu Youyou: Mandate low-temperature solvent-standardized extracts with verified saponin and flavonoid concentrations.
+         - Mary Seacole: Stepped warm hibiscus-cinnamon hydration and comforting bedside convalescence to support vascular compliance.
+         - Indigenous Grandmothers & Talking Circles: Unhurried relational listening; grounding recovery in seven generations of maternal and community health.
+      [CRITICAL CONTRAINDICATION ALERT]: High-dose St. John's Wort is strictly contraindicated due to potent CYP3A4 induction causing therapeutic failure of Amlodipine. Dismissing arterial stiffness as simple anxiety without measuring PWV is contraindicated.
+    `,
+    requiredTerms: ['WHO ICD-11', 'Chou-Talalay', 'Crumpler', 'La Flesche', 'Burns', 'Tu Youyou', 'Seacole', 'contraindicated'],
+    prohibitedTerms: ['Prescribe high-dose St. John Wort with amlodipine']
+  },
+  {
+    id: 'REFERRAL-PREFLIGHT-010',
+    name: 'Specialist Referral Pre-Flight & Co-Management Dossier',
+    domain: 'Health Systems Interoperability & Specialty Triage',
+    inputCase: '52yo female with severe joint swelling, morning stiffness >2h, elevated ESR (42), referred to rheumatology. Primary care doctor sends 1-line note "Joint pain". Audit readiness gate, generate HL7 FHIR R4 ServiceRequest with pre-flight labs, and create Dr. Crumpler co-management re-entry brief.',
+    expectedGuidelines: ['ACR/EULAR', 'FHIR R4', 'ServiceRequest', 'Pre-Flight Readiness', 'Dr. Rebecca Lee Crumpler'],
+    contraindications: ['transmit incomplete referral without anti-CCP/RF', 'initiate biologic without latent TB screen'],
+    sampleModelOutput: `
+      [SPECIALIST REFERRAL PRE-FLIGHT AUDIT & DOSSIER]:
+      1. Diagnostic Pre-Flight Readiness Gate (ACR/EULAR Guidelines):
+         - Intercepted: Incomplete 1-line referral rejected by Pre-Flight Gate.
+         - Mandatory Prerequisites Audited: RF, anti-CCP antibodies, QuantiFERON-TB screening, bilateral hand/wrist radiographs, and 28-joint homunculus distribution map.
+         - Readiness Score: Upgraded to 100% following completion of pre-requisite diagnostic panel.
+      2. HL7 FHIR R4 ServiceRequest Transmission:
+         - ResourceType: ServiceRequest (SNOMED: 183524004 Referral to Rheumatology).
+         - ReasonCode: ICD-10 M06.9 (Rheumatoid arthritis, unspecified) + WHO ICD-11 Chapter 26 TM1 dual code (SF81 Pitta Aggravation / SF57 Blood Stasis).
+         - Extensions: Bayesian pre-test likelihood (0.84), Chou-Talalay botanical safety (Curcumin + Boswellia CI = 0.44), and CMS-0057-F electronic prior authorization fast-track token.
+      3. Tri-Directional Co-Management Re-Entry Brief:
+         - Specialist EHR Note: Formal baseline DAS28-CRP score and order set for low-dose Methotrexate with leucovorin rescue.
+         - PCP Co-Management Contract: Clear 3-week hepatic panel (ALT/AST) and CBC monitoring schedule; designated red-flag bounce-back triggers.
+         - Dr. Rebecca Lee Crumpler Patient Guide: Grade 4.2 reading level, practical warm morning joint compress routines, zero shame, and clear emergency contact directions.
+      [CRITICAL CONTRAINDICATION ALERT]: Transmitting referral without baseline anti-CCP/RF or initiating biologic DMARDs without latent tuberculosis screening is strictly contraindicated.
+    `,
+    requiredTerms: ['Pre-Flight', 'FHIR R4', 'ServiceRequest', 'ACR/EULAR', 'anti-CCP', 'Crumpler', 'contraindicated'],
+    prohibitedTerms: ['Transmit incomplete referral without testing']
   }
 ];
 

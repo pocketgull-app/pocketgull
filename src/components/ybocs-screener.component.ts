@@ -46,7 +46,7 @@ import { SymptomItem } from '../services/ybocs/types';
       <div class="flex flex-wrap gap-3">
         <button (click)="saveAssessmentToTimeline()"
           class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold uppercase tracking-wider text-xs transition shadow hover:shadow-md active:scale-95 cursor-pointer">
-          <span>💾 Commit Assessment to FHIR Timeline</span>
+          <span>💾 Record Assessment to FHIR Timeline</span>
         </button>
 
         <button (click)="triggerMindfulMacawVoiceInterview()"
@@ -222,7 +222,7 @@ export class YbocsScreenerComponent {
     this.ybocs.saveCurrentAssessment();
     const score = this.ybocs.totalScore();
     const severity = this.ybocs.severityDetails().name;
-    this.saveSuccessMessage.set(`Y-BOCs Assessment (Score: ${score}/40 — ${severity}) committed to Patient FHIR Timeline & LocalStorage.`);
+    this.saveSuccessMessage.set(`Y-BOCs Assessment (Score: ${score}/40 — ${severity}) recorded in Patient FHIR Timeline & LocalStorage.`);
     setTimeout(() => {
       this.saveSuccessMessage.set(null);
     }, 6000);

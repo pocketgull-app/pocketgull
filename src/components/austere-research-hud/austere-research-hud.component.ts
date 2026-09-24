@@ -1,11 +1,13 @@
-import { Component, ChangeDetectionStrategy, inject, signal, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, output, viewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AustereResearchService } from '../../services/austere-research.service';
+import { generate } from 'lean-qr';
 
 @Component({
   selector: 'app-austere-research-hud',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 bg-zinc-950 text-zinc-100 rounded-3xl border border-zinc-800 shadow-2xl font-sans"
@@ -60,6 +62,13 @@ import { AustereResearchService } from '../../services/austere-research.service'
                   id="btn-austere-fhir"
                   class="px-3 py-1.5 text-xs font-medium text-zinc-200 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg transition-colors cursor-pointer">
             📋 {{ showFhirPreview() ? 'Hide FHIR' : 'FHIR R4 JSON' }}
+          </button>
+
+          <button type="button"
+                  (click)="toggleP2pQr()"
+                  id="btn-austere-p2p-qr"
+                  class="px-3 py-1.5 text-xs font-semibold text-teal-300 bg-teal-950/60 hover:bg-teal-900 border border-teal-700/60 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5">
+            <span>📱</span> {{ showP2pQr() ? 'Hide QR' : 'P2P QR Handoff' }}
           </button>
 
           @if (hasCloseButton) {
@@ -227,6 +236,62 @@ import { AustereResearchService } from '../../services/austere-research.service'
         </section>
       }
 
+      <!-- Peer-to-Peer Offline QR Handoff Drawer -->
+      @if (showP2pQr()) {
+        <section class="mt-6 p-5 bg-zinc-900/90 rounded-2xl border border-teal-700/60 animate-in fade-in duration-200">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800">
+            <div>
+              <h3 class="text-xs font-bold text-teal-300 uppercase tracking-wider flex items-center gap-2">
+                <span>📱</span> Peer-to-Peer Offline QR Handoff (Zero Network Required)
+              </h3>
+              <p class="text-[11px] text-zinc-400 mt-0.5">
+                Scan or copy this payload to transfer complete patient state to an adjacent tablet or laptop in air-gapped field deployments.
+              </p>
+            </div>
+            <button type="button"
+                    (click)="copyP2pPayload()"
+                    class="px-2.5 py-1 text-xs font-mono bg-teal-950 hover:bg-teal-900 text-teal-300 rounded border border-teal-800/60 transition cursor-pointer">
+              {{ p2pCopySuccess() ? '✓ Copied' : 'Copy Handoff Code' }}
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+            <!-- QR Display -->
+            <div class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl mx-auto w-fit shadow-lg">
+              <div #p2pQrContainer></div>
+              <span class="text-[10px] text-zinc-700 font-mono mt-1 font-bold">Encrypted Austere P2P Seal</span>
+            </div>
+
+            <!-- Import / Receive Peer Payload -->
+            <div class="space-y-3">
+              <label class="text-xs font-semibold text-zinc-300 block" for="peer-qr-input">
+                Receive from Peer Device (Paste Scanned Code):
+              </label>
+              <textarea id="peer-qr-input"
+                        rows="3"
+                        placeholder="Paste POCKETGULL_AUSTERE_P2P_V1 JSON payload..."
+                        [ngModel]="incomingPeerPayload()"
+                        (ngModelChange)="incomingPeerPayload.set($event)"
+                        class="w-full p-2.5 rounded-xl bg-zinc-950 border border-zinc-700 text-zinc-200 font-mono text-[11px] focus:outline-none focus:border-teal-500"></textarea>
+              <div class="flex items-center gap-2">
+                <button type="button"
+                        (click)="hydratePeerPayload()"
+                        class="px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-mono text-xs font-bold transition cursor-pointer shadow-sm">
+                  Hydrate Patient Record
+                </button>
+                @if (hydrateStatus()) {
+                  <span class="text-xs font-mono"
+                        [class.text-emerald-400]="hydrateSuccess()"
+                        [class.text-rose-400]="!hydrateSuccess()">
+                    {{ hydrateStatus() }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+
       <!-- Footer: Legal Brand Boundary & Non-Device Wellness Notice -->
       <footer class="mt-7 pt-4 border-t border-zinc-800/80 flex flex-wrap justify-between items-center gap-2 text-[11px] text-zinc-500">
         <div>
@@ -245,10 +310,26 @@ export class AustereResearchHudComponent {
 
   hasCloseButton = true;
   showFhirPreview = signal<boolean>(false);
+  showP2pQr = signal<boolean>(false);
   copySuccess = signal<boolean>(false);
+  p2pCopySuccess = signal<boolean>(false);
   fhirJsonString = signal<string>('');
   isSimulatingEdge = signal<boolean>(false);
   offlineSimulationSuccess = signal<boolean>(false);
+
+  incomingPeerPayload = signal<string>('');
+  hydrateStatus = signal<string>('');
+  hydrateSuccess = signal<boolean>(false);
+
+  p2pQrContainer = viewChild<ElementRef<HTMLDivElement>>('p2pQrContainer');
+
+  constructor() {
+    effect(() => {
+      if (this.showP2pQr() && this.p2pQrContainer()) {
+        this.renderP2pQr();
+      }
+    });
+  }
 
   runOfflineEdgeSimulation(): void {
     this.isSimulatingEdge.set(true);
@@ -276,12 +357,58 @@ export class AustereResearchHudComponent {
     }
   }
 
+  toggleP2pQr(): void {
+    this.showP2pQr.update(v => !v);
+  }
+
   async copyFhirJson(): Promise<void> {
     const json = this.service.exportFhirBundleJson();
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       await navigator.clipboard.writeText(json);
       this.copySuccess.set(true);
       setTimeout(() => this.copySuccess.set(false), 2000);
+    }
+  }
+
+  async copyP2pPayload(): Promise<void> {
+    const payload = this.service.generateCompactOfflineQrPayload();
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      await navigator.clipboard.writeText(payload);
+      this.p2pCopySuccess.set(true);
+      setTimeout(() => this.p2pCopySuccess.set(false), 2000);
+    }
+  }
+
+  hydratePeerPayload(): void {
+    const raw = this.incomingPeerPayload().trim();
+    if (!raw) {
+      this.hydrateStatus.set('Error: Empty payload');
+      this.hydrateSuccess.set(false);
+      return;
+    }
+    const ok = this.service.parseOfflineQrPayload(raw);
+    if (ok) {
+      this.hydrateStatus.set('✓ Hydrated successfully into RAM');
+      this.hydrateSuccess.set(true);
+      setTimeout(() => this.hydrateStatus.set(''), 4000);
+    } else {
+      this.hydrateStatus.set('Invalid payload signature');
+      this.hydrateSuccess.set(false);
+    }
+  }
+
+  private renderP2pQr(): void {
+    const container = this.p2pQrContainer()?.nativeElement;
+    if (!container) return;
+
+    try {
+      container.innerHTML = '';
+      const payload = this.service.generateCompactOfflineQrPayload();
+      const code = generate(payload);
+      const dataUrl = code.toDataURL({ scale: 4 });
+      container.innerHTML = `<img src="${dataUrl}" class="w-40 h-40 select-none pointer-events-none" style="image-rendering: pixelated;" alt="Austere P2P Handoff QR Code" />`;
+    } catch (err) {
+      console.warn('[AustereHud] QR render error:', err);
     }
   }
 
@@ -300,3 +427,4 @@ export class AustereResearchHudComponent {
     }
   }
 }
+

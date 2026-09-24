@@ -5,6 +5,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { PatientStateService } from '../../services/patient-state.service';
 import { WebGpuEdgeAiService } from '../../services/webgpu-edge-ai.service';
 import { TeledentistryService } from '../../services/teledentistry.service';
+import { BioRhythmicTypographyService } from '../../services/bio-rhythmic-typography.service';
+import { createGpuVectorLabel3D } from '../../shaders/gpu-vector-typography.shader';
 
 export type BiophysicalTissueSubstrate = 'bone' | 'vascular' | 'dental' | 'skin';
 
@@ -30,6 +32,9 @@ export type BiophysicalTissueSubstrate = 'bone' | 'vascular' | 'dental' | 'skin'
               <h3 class="text-sm font-black uppercase tracking-wider text-amber-200">Genesis Biophysical Substrate Lens</h3>
               <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase bg-amber-500/20 text-amber-300 rounded-full border border-amber-500/40">
                 Edwin Smith PBR Codex
+              </span>
+              <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/40">
+                ⚙️ GPU Vector Type
               </span>
             </div>
             <p class="text-[11px] text-zinc-400 font-sans">
@@ -95,10 +100,10 @@ export type BiophysicalTissueSubstrate = 'bone' | 'vascular' | 'dental' | 'skin'
             <span class="text-zinc-200 font-bold text-right">{{ currentParams().metalness }}</span>
 
             <span class="text-zinc-400">Microgravity $\Delta$BMD:</span>
-            <span class="text-amber-300 font-bold text-right">-{{ bmdResorptionRate() }}% / mo</span>
+            <span class="text-amber-300 font-bold text-right font-biorhythmic-pulse scotopic-anti-fringing tabular-nums">-{{ bmdResorptionRate() }}% / mo</span>
 
             <span class="text-zinc-400">SIBI Inflammatory:</span>
-            <span class="text-rose-400 font-bold text-right">{{ sibiScore() }} / 10</span>
+            <span class="text-rose-400 font-bold text-right font-biorhythmic-pulse scotopic-anti-fringing tabular-nums">{{ sibiScore() }} / 10</span>
           </div>
         </div>
 
@@ -177,12 +182,16 @@ export class GenesisBiophysicalSubstrateComponent implements AfterViewInit, OnDe
 
   readonly currentParams = computed(() => {
     switch (this.activeSubstrate()) {
-      case 'bone': return { roughness: 0.65, metalness: 0.05, color: 0xe6dfd5 };
-      case 'vascular': return { roughness: 0.25, metalness: 0.15, color: 0x991b1b };
-      case 'dental': return { roughness: 0.15, metalness: 0.0, color: 0xf8fafc };
-      case 'skin': return { roughness: 0.45, metalness: 0.0, color: 0xd97706 };
+      case 'bone': return { roughness: 0.65, metalness: 0.05, color: 0xe6dfd5, primaryLabel: 'Cortical Bone Matrix', secondaryLabel: 'Haversian Canal (Trabecular)' };
+      case 'vascular': return { roughness: 0.25, metalness: 0.15, color: 0x991b1b, primaryLabel: 'Endothelial Lumen (72 BPM)', secondaryLabel: 'Vascular Smooth Muscle' };
+      case 'dental': return { roughness: 0.15, metalness: 0.0, color: 0xf8fafc, primaryLabel: 'Enamel Hydroxyapatite', secondaryLabel: 'Dentinal Tubules' };
+      case 'skin': return { roughness: 0.45, metalness: 0.0, color: 0xd97706, primaryLabel: 'Stratum Corneum Barrier', secondaryLabel: 'Dermal Fibroblast Mesh' };
     }
   });
+
+  readonly biorhythm = inject(BioRhythmicTypographyService, { optional: true });
+  private primaryVectorLabel?: ReturnType<typeof createGpuVectorLabel3D>;
+  private secondaryVectorLabel?: ReturnType<typeof createGpuVectorLabel3D>;
 
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
@@ -199,6 +208,12 @@ export class GenesisBiophysicalSubstrateComponent implements AfterViewInit, OnDe
         mat.roughness = params.roughness;
         mat.metalness = params.metalness;
         mat.color.setHex(params.color);
+      }
+      if (this.primaryVectorLabel) {
+        this.primaryVectorLabel.updateText(params.primaryLabel);
+      }
+      if (this.secondaryVectorLabel) {
+        this.secondaryVectorLabel.updateText(params.secondaryLabel);
       }
     });
   }
@@ -271,10 +286,41 @@ export class GenesisBiophysicalSubstrateComponent implements AfterViewInit, OnDe
     this.mesh = new THREE.Mesh(geom, mat);
     this.scene.add(this.mesh);
 
+    // Add GPU Vector Typography 3D Callout Labels
+    this.primaryVectorLabel = createGpuVectorLabel3D(params.primaryLabel, {
+      color: 0xf59e0b,
+      bgColor: 0x09090b,
+      fontSize: 36,
+      scotopicMode: true
+    });
+    this.primaryVectorLabel.mesh.position.set(0, 1.45, 0);
+    this.scene.add(this.primaryVectorLabel.mesh);
+
+    this.secondaryVectorLabel = createGpuVectorLabel3D(params.secondaryLabel, {
+      color: 0x14b8a6,
+      bgColor: 0x09090b,
+      fontSize: 30,
+      scotopicMode: true
+    });
+    this.secondaryVectorLabel.mesh.position.set(0, -1.45, 0);
+    this.scene.add(this.secondaryVectorLabel.mesh);
+
     const animate = () => {
       this.animationFrameId = requestAnimationFrame(animate);
       this.mesh.rotation.y += 0.005;
       this.mesh.rotation.x += 0.002;
+
+      // Keep vector labels camera-facing (billboarded) and pulsating with live vagal cycle
+      const vagalScale = this.biorhythm?.currentBreatheScale() ?? 1.0;
+      if (this.primaryVectorLabel) {
+        this.primaryVectorLabel.mesh.quaternion.copy(this.camera.quaternion);
+        this.primaryVectorLabel.updateVagalScale(vagalScale);
+      }
+      if (this.secondaryVectorLabel) {
+        this.secondaryVectorLabel.mesh.quaternion.copy(this.camera.quaternion);
+        this.secondaryVectorLabel.updateVagalScale(vagalScale);
+      }
+
       this.controls.update();
       this.renderer.render(this.scene, this.camera);
     };
@@ -284,6 +330,14 @@ export class GenesisBiophysicalSubstrateComponent implements AfterViewInit, OnDe
   ngOnDestroy(): void {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
+    }
+    if (this.primaryVectorLabel) {
+      this.primaryVectorLabel.mesh.geometry.dispose();
+      this.primaryVectorLabel.material.dispose();
+    }
+    if (this.secondaryVectorLabel) {
+      this.secondaryVectorLabel.mesh.geometry.dispose();
+      this.secondaryVectorLabel.material.dispose();
     }
     if (this.renderer) {
       this.renderer.dispose();

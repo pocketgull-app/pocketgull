@@ -100,16 +100,57 @@ export class HardwareTelemetryService {
     }
   }
 
+  // Adaptive polling and backoff state
+  private pollingTimeoutId: any = null;
+  private currentIntervalMs = 15000;
+  private static readonly BASE_INTERVAL_MS = 15000;
+  private static readonly MAX_INTERVAL_MS = 120000;
+  private hasLoggedFallback = false;
+  private visibilityHandler: (() => void) | null = null;
+
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       // Fetch hardware telemetry on service initialization
       this.refreshTelemetry();
-      
-      // Periodically refresh telemetry every 15 seconds to monitor local VRAM/CPU loading
-      setInterval(() => {
-        this.refreshTelemetry();
-      }, 15000);
+
+      // Listen to visibility change to pause polling when backgrounded and wake instantly
+      if (typeof document !== 'undefined') {
+        this.visibilityHandler = () => {
+          if (!document.hidden) {
+            // Tab is visible again: reset backoff and refresh immediately if stale
+            this.currentIntervalMs = HardwareTelemetryService.BASE_INTERVAL_MS;
+            this.scheduleNextPoll(100);
+          }
+        };
+        document.addEventListener('visibilitychange', this.visibilityHandler);
+      }
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollingTimeoutId) {
+      clearTimeout(this.pollingTimeoutId);
+      this.pollingTimeoutId = null;
+    }
+    if (this.visibilityHandler && typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+      this.visibilityHandler = null;
+    }
+  }
+
+  private scheduleNextPoll(delayMs: number): void {
+    if (this.pollingTimeoutId) {
+      clearTimeout(this.pollingTimeoutId);
+    }
+    this.pollingTimeoutId = setTimeout(() => {
+      // If tab is currently hidden/backgrounded, skip network fetch to save CPU & battery
+      if (typeof document !== 'undefined' && document.hidden) {
+        // Re-check after base interval
+        this.scheduleNextPoll(HardwareTelemetryService.BASE_INTERVAL_MS);
+        return;
+      }
+      this.refreshTelemetry();
+    }, delayMs);
   }
 
   async refreshTelemetry(): Promise<void> {
@@ -121,8 +162,15 @@ export class HardwareTelemetryService {
       this.telemetry.set(data);
       this.error.set(null);
       this.logTelemetry(data);
+      // Success: reset interval to normal 15s cadence
+      this.currentIntervalMs = HardwareTelemetryService.BASE_INTERVAL_MS;
+      this.hasLoggedFallback = false;
     } catch (e) {
-      console.debug('[HardwareTelemetry] Fetch failed, using client fallback:', (e as Error)?.message);
+      // Log fallback notification only once per disconnected period to eliminate console spam
+      if (!this.hasLoggedFallback) {
+        console.debug('[HardwareTelemetry] Fetch failed, using client fallback:', (e as Error)?.message);
+        this.hasLoggedFallback = true;
+      }
       const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 8;
       const mem = (typeof navigator !== 'undefined' && (navigator as any).deviceMemory) || 16;
       const fallbackData: IHardwareTelemetry = {
@@ -144,8 +192,12 @@ export class HardwareTelemetryService {
       this.telemetry.set(fallbackData);
       this.error.set(null);
       this.logTelemetry(fallbackData);
+      // Exponential backoff: double interval up to MAX_INTERVAL_MS
+      this.currentIntervalMs = Math.min(this.currentIntervalMs * 2, HardwareTelemetryService.MAX_INTERVAL_MS);
     } finally {
       this.isLoading.set(false);
+      // Schedule next polling pass adaptively
+      this.scheduleNextPoll(this.currentIntervalMs);
     }
   }
 }

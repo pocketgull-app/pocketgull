@@ -34,4 +34,17 @@ describe('ClinicalArticlesService - Native GenAI App Engine & Clinical Articles 
     const result = await legacyService.fetchWordPressArticles();
     expect(result.length).toBe(FALLBACK_SEED_ARTICLES.length);
   });
+
+  it('5. Serves Article 107 on Charles Darwin, the Vagal Enigma, and 3B Innovation', () => {
+    service.selectPost('darwin-vagal-enigma-innovation-bending-breaking-blending');
+    const post = service.activePost();
+    expect(post).not.toBeNull();
+    expect(post?.id).toBe(107);
+    expect(post?.title).toContain('Charles Darwin');
+    expect(post?.title).toContain('Bending, Breaking, and Blending');
+    expect(post?.tags).toContain('Bending Breaking Blending');
+    expect(post?.contentHtml).toContain('Down House');
+    expect(post?.contentHtml).toContain('Chagas Disease');
+    expect(post?.contentHtml).toContain('The 3B Engine of Innovation');
+  });
 });

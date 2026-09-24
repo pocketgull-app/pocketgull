@@ -1298,6 +1298,14 @@ def train_dpo_with_huggingface(args: argparse.Namespace, dataset_samples: List[D
     else:
         target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
 
+    import os
+    import gc
+    import time
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+    gc.collect()
+    if use_cuda:
+        torch.cuda.empty_cache()
+
     peft_config = LoraConfig(
         r=args.r,
         lora_alpha=args.alpha,
@@ -1340,6 +1348,32 @@ def train_dpo_with_huggingface(args: argparse.Namespace, dataset_samples: List[D
         dataloader_pin_memory=False,
     )
 
+    from transformers import TrainerCallback
+
+    class DpoThermalCooldownCallback(TrainerCallback):
+        """Intermittent cooling breaks and cache flushes during DPO training."""
+        def __init__(self, cooldown_seconds: int = 45, step_frequency: int = 15):
+            self.cooldown_seconds = cooldown_seconds
+            self.step_frequency = step_frequency
+
+        def on_step_end(self, args, state, control, **kwargs):
+            if state.global_step > 0 and state.global_step % self.step_frequency == 0:
+                logger.info(f"🌬️ [DPO Memory Guard] Step {state.global_step}: Purging VRAM cache and resting {self.cooldown_seconds}s...")
+                gc.collect()
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                time.sleep(self.cooldown_seconds)
+
+        def on_epoch_end(self, args, state, control, **kwargs):
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+    dpo_cooldown_cb = DpoThermalCooldownCallback(
+        cooldown_seconds=args.cooldown_seconds,
+        step_frequency=args.cooldown_steps
+    )
+
     trainer = DPOTrainer(
         model=model,
         ref_model=None,
@@ -1348,6 +1382,7 @@ def train_dpo_with_huggingface(args: argparse.Namespace, dataset_samples: List[D
         eval_dataset=eval_dataset,
         processing_class=tokenizer,
         args=dpo_args,
+        callbacks=[dpo_cooldown_cb] if args.cooldown_seconds > 0 else None,
     )
 
     logger.info(f"Starting DPO Preference fine-tuning (Beta: {args.dpo_beta}, Epochs: {args.epochs})...")

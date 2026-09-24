@@ -148,7 +148,7 @@ export class ClinicalAssessmentsService {
     }));
   }
 
-  commitToTimeline(type: AssessmentType): IAssessmentPayload | null {
+  recordToTimeline(type: AssessmentType): IAssessmentPayload | null {
     const patientMgmt = this.injector.get(PatientManagementService);
     const patientId = patientMgmt.selectedPatientId();
     const patient = patientMgmt.selectedPatient();
@@ -191,5 +191,10 @@ export class ClinicalAssessmentsService {
     this.storage.savePatient(patient);
 
     return payload;
+  }
+
+  /** Backwards-compatible alias for recordToTimeline */
+  commitToTimeline(type: AssessmentType): IAssessmentPayload | null {
+    return this.recordToTimeline(type);
   }
 }

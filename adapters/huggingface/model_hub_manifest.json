@@ -82,5 +82,17 @@
     "name": "PocketGull Edge Lateral Flow & Biomarker Vision Scanner",
     "hub_repo": "philgear/pocketgull-lateral-flow-edge",
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-lateral-flow-edge"
+  },
+  {
+    "id": "pocketgull-circular-posology-1b",
+    "name": "PocketGull Circular Posology & Planetary Health Engine",
+    "hub_repo": "philgear/pocketgull-circular-posology-1b",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-circular-posology-1b"
+  },
+  {
+    "id": "pocketgull-allometric-sfi-1b",
+    "name": "PocketGull SFI Complex Adaptive Systems & Allometric Posology",
+    "hub_repo": "philgear/pocketgull-allometric-sfi-1b",
+    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-allometric-sfi-1b"
   }
 ]

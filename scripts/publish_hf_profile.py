@@ -56,6 +56,12 @@ Architecting **sovereign, zero-egress clinical intelligence engines** and privac
 | [**pocketgull-veteran-nexus-2b**](https://huggingface.co/philgear/pocketgull-veteran-nexus-2b) | Gemma 3 (1B) | VA Community Care Network (CCN) & 38 CFR § 4.87 DBQ Nexus Generator |
 | [**pocketgull-waveform-qrs-1d**](https://huggingface.co/philgear/pocketgull-waveform-qrs-1d) | 1D Dilated CNN | 1D Temporal Dilated Residual CNN for 100-500 Hz Biosignals & Mayer Wave DSP |
 | [**pocketgull-skeptic-cds-4b**](https://huggingface.co/philgear/pocketgull-skeptic-cds-4b) | Gemma 3 (4B) | Falsifiable Clinical Decision Support, Cochrane RoB 2, and H0 Null Testing |
+| [**pocketgull-thermal-posology-1b**](https://huggingface.co/philgear/pocketgull-thermal-posology-1b) | Gemma 3 (1B) | NOAA WBGT Microclimates, Drug-Induced Anhidrosis & Arid Posology |
+| [**pocketgull-lateral-flow-edge**](https://huggingface.co/philgear/pocketgull-lateral-flow-edge) | Edge Densitometry Vision | Zero-Cloud Rapid Lateral Flow & Salivary Immunoassay Vision Scanner |
+| [**pocketgull-circular-posology-1b**](https://huggingface.co/philgear/pocketgull-circular-posology-1b) | Gemma 3 (1B) | FDA SLEP Stability, SIRUM Redistribution & Planetary Health Ecotoxicity |
+| [**pocketgull-allometric-sfi-1b**](https://huggingface.co/philgear/pocketgull-allometric-sfi-1b) | Gemma 3 (1B) | SFI Complex Adaptive Systems, WBE Hydrodynamic Scaling & Critical Slowing Down |
+| [**pocketgull-edge-onnx-recovery**](https://huggingface.co/philgear/pocketgull-edge-onnx-recovery) | Edge MLP (32F) | Sub-Millisecond 30-Day Post-Op Complications & 95% Conformal Coverage |
+| [**pocketgull-steeep-quality**](https://huggingface.co/philgear/pocketgull-steeep-quality) | NAM STEEEP Eval | National Academy of Medicine 6-Dimension Healthcare Quality Scoring |
 
 ---
 

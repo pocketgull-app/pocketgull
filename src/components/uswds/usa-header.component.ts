@@ -27,19 +27,19 @@ export type FederalTabType = 'care-plan' | 'intake' | 'fhir' | 'audit';
         <div class="flex items-center gap-3">
           <!-- Federal Health Emblem -->
           <div class="w-10 h-10 rounded-sm bg-[#005ea2] text-white flex items-center justify-center font-bold text-lg shadow-sm border border-[#1a4480] shrink-0 select-none">
-            🦅
+            🎖️
           </div>
           <div>
             <div class="flex items-center gap-2">
               <span class="text-xs font-bold uppercase tracking-wider text-[#005ea2] dark:text-blue-400 font-mono">
-                U.S. Federal Health Workstation
+                Veteran Health &amp; Community Care Workstation
               </span>
               <span class="px-1.5 py-0.5 rounded-xs text-[10px] font-bold uppercase font-mono bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-300 dark:border-blue-700">
-                USWDS 3.0 • IDEA ACT
+                USWDS 3.0 • VETERAN CARE
               </span>
             </div>
             <h1 class="text-base sm:text-lg font-bold text-zinc-950 dark:text-white tracking-tight m-0">
-              PocketGull Clinical Decision Support (CDS) Edition
+              PocketGull Veteran Health &amp; Clinical Decision Support (CDS) Edition
             </h1>
           </div>
         </div>

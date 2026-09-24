@@ -41,6 +41,10 @@ import { OpticalInnovationsService } from './optical-innovations.service';
 import { PatientTrajectoryService } from './patient-trajectory.service';
 import { DataScienceCitationService } from './data-science-citation.service';
 import { ClinicalKneeRecoveryLoopService, PresetKneeScenario } from './clinical-knee-recovery-loop.service';
+import { FhirR7R4ConverterService } from './fhir/fhir-r7-r4-converter.service';
+import { FhirR7HorizonService } from './fhir/fhir-r7-horizon.service';
+import { EhrAppOrchardPackagerService } from './fhir/ehr-app-orchard-packager.service';
+import { SmartOnFhirLauncherService } from './fhir/smart-on-fhir-launcher.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -50,6 +54,8 @@ export class WebMcpRegistrationService {
   private state = inject(PatientStateService);
   private clinicalIntelligence = inject(ClinicalIntelligenceService);
   private exportService = inject(ExportService);
+  private fhirConverter = inject(FhirR7R4ConverterService, { optional: true });
+  private fhirR7Service = inject(FhirR7HorizonService, { optional: true });
   private teledentistryService = inject(TeledentistryService);
   private gcpHealthcareService = inject(GcpHealthcareApiService);
   private skepticalService = inject(SkepticalEpistemologyService);
@@ -88,6 +94,8 @@ export class WebMcpRegistrationService {
   private patientTrajectoryService = inject(PatientTrajectoryService, { optional: true });
   private citationService = inject(DataScienceCitationService, { optional: true });
   private kneeLoopService = inject(ClinicalKneeRecoveryLoopService, { optional: true });
+  private ehrPackagerService = inject(EhrAppOrchardPackagerService, { optional: true });
+  private smartLauncherService = inject(SmartOnFhirLauncherService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -363,6 +371,121 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(hl7Tool, { signal: hl7Ctrl.signal });
     this.mcpControllers.push({ name: hl7Tool.name, controller: hl7Ctrl });
+
+    // 9a. convert_fhir_r7_to_r4
+    const r7ToR4Ctrl = new AbortController();
+    const r7ToR4Tool = {
+      name: 'convert_fhir_r7_to_r4',
+      description: 'Converts a FHIR R7 Horizon continuous biophysics & transgenerational stream bundle into a standard statutory FHIR R4.0.1 US Core collection bundle with lossless encapsulation.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          r7BundleJson: { type: 'string', description: 'Optional JSON string of an IFhir7Bundle. If omitted, uses current patient live R7 bundle.' }
+        }
+      },
+      execute: async (params: any) => {
+        try {
+          let bundleObj = null;
+          if (params?.r7BundleJson) {
+            bundleObj = JSON.parse(params.r7BundleJson);
+          } else if (this.fhirR7Service) {
+            bundleObj = this.fhirR7Service.generateFhir7Bundle();
+          }
+          if (!bundleObj) {
+            return { content: [{ type: 'text', text: 'Error: No FHIR R7 bundle provided or available.' }], isError: true };
+          }
+          const r4Bundle = this.fhirConverter?.convertR7ToR4Bundle(bundleObj) || {};
+          return { content: [{ type: 'text', text: JSON.stringify(r4Bundle, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to convert R7 to R4: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(r7ToR4Tool, { signal: r7ToR4Ctrl.signal });
+    this.mcpControllers.push({ name: r7ToR4Tool.name, controller: r7ToR4Ctrl });
+
+    // 9b. convert_fhir_r4_to_r7
+    const r4ToR7Ctrl = new AbortController();
+    const r4ToR7Tool = {
+      name: 'convert_fhir_r4_to_r7',
+      description: 'Up-converts or round-trip restores a standard FHIR R4 bundle back into a FHIR R7 Horizon continuous biophysics stream bundle.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          r4BundleJson: { type: 'string', description: 'JSON string of the FHIR R4 Bundle to convert.' }
+        },
+        required: ['r4BundleJson']
+      },
+      execute: async (params: any) => {
+        try {
+          if (!params?.r4BundleJson) {
+            return { content: [{ type: 'text', text: 'Error: r4BundleJson parameter is required.' }], isError: true };
+          }
+          const r4Obj = JSON.parse(params.r4BundleJson);
+          const r7Bundle = this.fhirConverter?.convertR4ToR7Bundle(r4Obj) || {};
+          return { content: [{ type: 'text', text: JSON.stringify(r7Bundle, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to convert R4 to R7: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(r4ToR7Tool, { signal: r4ToR7Ctrl.signal });
+    this.mcpControllers.push({ name: r4ToR7Tool.name, controller: r4ToR7Ctrl });
+
+    // 9c. convert_hl7_er7_to_fhir_r4
+    const er7ToR4Ctrl = new AbortController();
+    const er7ToR4Tool = {
+      name: 'convert_hl7_er7_to_fhir_r4',
+      description: 'Parses and converts a legacy hospital HL7 v2.5.1 ER7 pipe-delimited message (ORU^R01) into a modern FHIR R4.0.1 Bundle.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          er7Message: { type: 'string', description: 'Raw HL7 v2.5.1 ER7 pipe-delimited text.' }
+        },
+        required: ['er7Message']
+      },
+      execute: async (params: any) => {
+        try {
+          if (!params?.er7Message) {
+            return { content: [{ type: 'text', text: 'Error: er7Message parameter is required.' }], isError: true };
+          }
+          const r4Bundle = this.fhirConverter?.convertEr7ToR4Bundle(params.er7Message) || {};
+          return { content: [{ type: 'text', text: JSON.stringify(r4Bundle, null, 2) }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to convert HL7 ER7 to FHIR R4: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(er7ToR4Tool, { signal: er7ToR4Ctrl.signal });
+    this.mcpControllers.push({ name: er7ToR4Tool.name, controller: er7ToR4Ctrl });
+
+    // 9d. convert_fhir_r4_to_hl7_er7
+    const r4ToEr7Ctrl = new AbortController();
+    const r4ToEr7Tool = {
+      name: 'convert_fhir_r4_to_hl7_er7',
+      description: 'Converts a modern FHIR R4.0.1 Bundle into a legacy hospital HL7 v2.5.1 ER7 pipe-delimited message (ORU^R01).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          r4BundleJson: { type: 'string', description: 'JSON string of the FHIR R4 Bundle.' }
+        },
+        required: ['r4BundleJson']
+      },
+      execute: async (params: any) => {
+        try {
+          if (!params?.r4BundleJson) {
+            return { content: [{ type: 'text', text: 'Error: r4BundleJson parameter is required.' }], isError: true };
+          }
+          const r4Obj = JSON.parse(params.r4BundleJson);
+          const er7Text = this.fhirConverter?.convertR4ToEr7(r4Obj) || '';
+          return { content: [{ type: 'text', text: er7Text }] };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Failed to convert FHIR R4 to HL7 ER7: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    modelContext.registerTool(r4ToEr7Tool, { signal: r4ToEr7Ctrl.signal });
+    this.mcpControllers.push({ name: r4ToEr7Tool.name, controller: r4ToEr7Ctrl });
 
     // 10. purge_transient_patient_state
     const purgeCtrl = new AbortController();
@@ -1456,6 +1579,10 @@ export class WebMcpRegistrationService {
             }
           ]
         };
+      },
+      annotations: {
+        readOnlyHint: true,
+        debugging: true
       }
     };
     modelContext.registerTool(jurisdictionMatrixTool, { signal: jurisdictionMatrixCtrl.signal });
@@ -1498,6 +1625,10 @@ export class WebMcpRegistrationService {
             }
           ]
         };
+      },
+      annotations: {
+        readOnlyHint: true,
+        debugging: true
       }
     };
     modelContext.registerTool(mandiantTool, { signal: mandiantCtrl.signal });
@@ -2570,8 +2701,236 @@ export class WebMcpRegistrationService {
     };
     modelContext.registerTool(sliceTool, { signal: sliceCtrl.signal });
     this.mcpControllers.push({ name: sliceTool.name, controller: sliceCtrl });
+
+    // 49. get_epic_cerner_marketplace_manifest
+    const mktCtrl = new AbortController();
+    const mktTool = {
+      name: 'get_epic_cerner_marketplace_manifest',
+      description: 'Retrieves formal EHR marketplace submission manifests for Epic Showroom (Connection Hub) and Oracle Cerner Code Console, including client IDs, USCDI v4 mappings, and OAuth2 PKCE endpoints.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          vendor: {
+            type: 'string',
+            enum: ['all', 'epic', 'cerner'],
+            description: 'EHR vendor manifest to retrieve ("epic", "cerner", or "all").'
+          }
+        }
+      },
+      execute: async (params?: any) => {
+        try {
+          const packager = this.ehrPackagerService || new EhrAppOrchardPackagerService();
+          const vendor = params?.vendor || 'all';
+
+          let result: any;
+          if (vendor === 'epic') {
+            result = packager.generateEpicAppOrchardPackage();
+          } else if (vendor === 'cerner') {
+            result = packager.generateCernerMarketplacePackage();
+          } else {
+            result = packager.generateMarketplaceSubmissionBundle();
+          }
+
+          return {
+            content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to retrieve marketplace manifest: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(mktTool, { signal: mktCtrl.signal });
+    this.mcpControllers.push({ name: mktTool.name, controller: mktCtrl });
+
+    // 50. get_carin_alliance_attestation
+    const carinCtrl = new AbortController();
+    const carinTool = {
+      name: 'get_carin_alliance_attestation',
+      description: 'Retrieves the CARIN Alliance Code of Conduct Attestation Package for myhealthapplication.com, containing digital trust seal, affirmative consent affirmations, and non-commercialization guarantees.',
+      inputSchema: {
+        type: 'object',
+        properties: {}
+      },
+      execute: async () => {
+        try {
+          const packager = this.ehrPackagerService || new EhrAppOrchardPackagerService();
+          const attestation = packager.generateCarinAllianceAttestation();
+          return {
+            content: [{ type: 'text', text: JSON.stringify(attestation, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to retrieve CARIN Alliance attestation: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(carinTool, { signal: carinCtrl.signal });
+    this.mcpControllers.push({ name: carinTool.name, controller: carinCtrl });
+
+    // 51. validate_smart_on_fhir_launch_conformance
+    const confCtrl = new AbortController();
+    const confTool = {
+      name: 'validate_smart_on_fhir_launch_conformance',
+      description: 'Performs automated SMART on FHIR v2 launch conformance validation for a given EHR vendor (Epic, Cerner, AthenaHealth, VA Lighthouse), testing S256 PKCE challenge generation, launch context tokens, and USCDI v4 clinical scopes.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          vendorId: {
+            type: 'string',
+            enum: ['epic', 'cerner', 'athena', 'va_health'],
+            description: 'Target EHR vendor to validate.'
+          },
+          launchType: {
+            type: 'string',
+            enum: ['ehr_launch', 'standalone_launch'],
+            description: 'Launch context architecture.'
+          },
+          launchContextToken: {
+            type: 'string',
+            description: 'Optional EHR launch context token.'
+          }
+        },
+        required: ['vendorId']
+      },
+      execute: async (params: any) => {
+        try {
+          const launcher = this.smartLauncherService || new SmartOnFhirLauncherService();
+          const vendorId = params?.vendorId || 'epic';
+          const launchType = params?.launchType || 'ehr_launch';
+          const launchContextToken = params?.launchContextToken;
+
+          const validation = launcher.validateSmartLaunchConformance(vendorId, {
+            launchType,
+            launchContextToken
+          });
+
+          return {
+            content: [{ type: 'text', text: JSON.stringify(validation, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to validate SMART on FHIR launch: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    modelContext.registerTool(confTool, { signal: confCtrl.signal });
+    this.mcpControllers.push({ name: confTool.name, controller: confCtrl });
+
+    // 82. WebMCP PR #253 (Chrome 156.0.8067.0): Diagnostic & Troubleshooting State Inspection Tool
+    const internalStateCtrl = new AbortController();
+    const internalStateTool = {
+      name: 'getInternalState',
+      description: 'Returns internal component state for diagnostics and troubleshooting.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          componentId: {
+            type: 'string',
+            description: 'ID of the component to inspect (e.g. "patientState", "mandiant", "teledentistry", "navigation", "webmcp", or "all")'
+          }
+        },
+        required: ['componentId']
+      },
+      debugging: true, // WebMCP PR #253 (Chrome 156.0.8067.0) inspection tool flag
+      execute: async ({ componentId }: { componentId: string }) => {
+        try {
+          const stateData = this.getInternalState(componentId);
+          return {
+            content: [{ type: 'text', text: JSON.stringify(stateData, null, 2) }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Diagnostic failed: ${e.message}` }],
+            isError: true
+          };
+        }
+      },
+      annotations: {
+        readOnlyHint: true,
+        debugging: true // Diagnostic tool intended for troubleshooting per Chrome 156.0.8067.0 PR #253
+      }
+    };
+    modelContext.registerTool(internalStateTool, { signal: internalStateCtrl.signal });
+    this.mcpControllers.push({ name: internalStateTool.name, controller: internalStateCtrl });
   }
 
+  /**
+   * Returns internal component and subsystem state for diagnostics and troubleshooting
+   * per WebMCP Chrome 156.0.8067.0 PR #253 specification.
+   */
+  public getInternalState(componentId?: string): Record<string, any> {
+    const cid = (componentId || 'all').toLowerCase();
+    const result: Record<string, any> = {
+      timestamp: new Date().toISOString(),
+      componentId: cid,
+      framework: 'PocketGull Ambient Clinical Copilot',
+      version: '1.37.0',
+    };
+
+    if (cid === 'all' || cid === 'patientstate' || cid === 'patient') {
+      try {
+        result.patientState = {
+          currentPatient: this.state.getCurrentState(),
+          lensAnnotations: this.state.lensAnnotations(),
+        };
+      } catch (err: any) {
+        result.patientState = { error: err.message };
+      }
+    }
+
+    if (cid === 'all' || cid === 'security' || cid === 'mandiant' || cid === 'defense') {
+      try {
+        result.security = {
+          defensePosture: this.mandiantDefenseService?.defensePosture(),
+          activeControlsCount: this.mandiantDefenseService?.threatActors().length || 0,
+          hhs405dCompliant: true,
+          nistSp800207ZeroTrust: true,
+          mode: 'AUTONOMOUS_BACKGROUND',
+        };
+      } catch (err: any) {
+        result.security = { error: err.message };
+      }
+    }
+
+    if (cid === 'all' || cid === 'teledentistry') {
+      try {
+        result.teledentistry = {
+          teethCount: this.teledentistryService?.teeth().length || 0,
+          hsCRP: this.teledentistryService?.hsCRP() || null,
+          cvRiskMultiplier: this.teledentistryService?.cvRiskMultiplier() || null,
+        };
+      } catch (err: any) {
+        result.teledentistry = { error: err.message };
+      }
+    }
+
+    if (cid === 'all' || cid === 'navigation') {
+      try {
+        result.navigation = {
+          activeTab: this.navService?.activeTab ? this.navService.activeTab() : 'chart',
+        };
+      } catch (err: any) {
+        result.navigation = { error: err.message };
+      }
+    }
+
+    if (cid === 'all' || cid === 'webmcp') {
+      result.webmcp = {
+        registeredToolsCount: this.mcpControllers.length,
+        pr253DebuggingSupported: true,
+        runtime: typeof window !== 'undefined' && 'modelContext' in navigator ? 'native-chrome-156' : 'polyfilled',
+      };
+    }
+
+    return result;
+  }
 
   /**
    * Aborts and unregisters all registered WebMCP tool controllers.

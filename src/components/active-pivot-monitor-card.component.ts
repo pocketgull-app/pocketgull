@@ -54,7 +54,7 @@ import { ActivePivotMonitorService, IActivePivotTrigger, IWhatIfSimulationResult
             <span class="text-lg">🚨</span>
             <div>
               <strong class="font-black uppercase tracking-wider text-[11px] block">STAT Emergency Override Active</strong>
-              <span class="text-[11px]">Critical threshold breached. Clinical action order commitment required immediately.</span>
+              <span class="text-[11px]">Critical threshold breached. Clinical action order attestation required immediately.</span>
             </div>
           </div>
           <span class="px-2.5 py-1 rounded font-mono font-black text-[10px] bg-rose-950 border border-rose-500 text-rose-300 uppercase">
@@ -208,7 +208,7 @@ import { ActivePivotMonitorService, IActivePivotTrigger, IWhatIfSimulationResult
                       (click)="executeOrder(trig.id)"
                       class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 active:scale-95 text-white font-mono font-extrabold text-xs uppercase tracking-wider border border-teal-400 shadow-md cursor-pointer transition flex items-center gap-1.5 min-h-[38px]"
                     >
-                      <span>⚡ Commit Order</span>
+                      <span>⚡ Confirm Order</span>
                     </button>
                   }
                 </div>
@@ -253,7 +253,7 @@ import { ActivePivotMonitorService, IActivePivotTrigger, IWhatIfSimulationResult
                 Counterfactual "What-If" Trajectory Simulator
               </h4>
               <p class="text-[11px] text-zinc-400">
-                Simulate prospective care plan modifications across all 4 Platinum risk backbones before order commitment.
+                Simulate prospective care plan modifications across all 4 Platinum risk backbones before order attestation.
               </p>
             </div>
           </div>

@@ -1,9 +1,9 @@
-# Professional Case Study: Optimizing Data Pipeline Performance
-# Professional Case Study: Optimizing Clinical Intake with Pocket Gull
+# Clinical Case Study: Optimizing Outpatient Intake with Pocket Gull
 
 ## Executive Summary
-This case study evaluates the performance improvements achieved by integrating **[DataFlowX](https://github.com/yourorg/DataFlowX)** into the existing ETL architecture of **Acme Corp**. By applying the optimization techniques described in the [README – Project Overview](../README.md#overview) and adhering to the best‑practice guidelines outlined in the [README – Installation & Setup](../README.md#installation), we realized a **42 % reduction in end‑to‑end latency** while maintaining data integrity.
-This case study evaluates the performance and workflow improvements achieved by integrating **Pocket Gull** (the live‑agent clinical co‑pilot) into a mid‑size outpatient practice. By following the implementation guidance in the **[Installation & Setup](../README.md#public-code-repository--spin-up-instructions)** section of the README and adhering to the **[Responsible AI](../README.md#responsible-ai-statement)** principles, the practice realized a **42 % reduction in patient intake time** while maintaining 100 % compliance with FHIR data‑export standards.
+This case study evaluates the performance, clinical accuracy, and workflow improvements achieved by integrating **Pocket Gull** (the live-agent clinical co-pilot and care strategy engine) into a mid-size outpatient practice. By deploying Pocket Gull's on-device sidecar architecture and adhering to the [Responsible AI Statement](../RESPONSIBLE_AI.md), the practice realized a **42% reduction in patient intake time** while maintaining 100% compliance with FHIR R4 data-export standards.
+
+For our open, interactive multi-case commons featuring biophysical radars and 1-click cohort exports, see the [Clinical Case Studies Commons](CLINICAL_CASE_STUDIES_COMMONS.md) and live at [`https://pocketgull.com/case-studies`](https://pocketgull.com/case-studies).
 ## Background
 
 

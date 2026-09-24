@@ -349,6 +349,39 @@ function renderDetail() {
 function runDirectCli(argv) {
   const cmd = argv[0];
   switch (cmd) {
+    case 'ai':
+    case 'models': {
+      const script = new URL('lemonade_engine.mjs', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+      execFile('node', [script, ...argv.slice(1)], (err, stdout, stderr) => {
+        if (stdout) process.stdout.write(stdout);
+        if (stderr) process.stderr.write(stderr);
+      });
+      break;
+    }
+    case 'shortcut':
+    case 'pin': {
+      const script = new URL('create_taskbar_shortcut.ps1', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+      execFile('pwsh', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, ...argv.slice(1)], (err, stdout, stderr) => {
+        if (stdout) process.stdout.write(stdout);
+        if (stderr) process.stderr.write(stderr);
+      });
+      break;
+    }
+    case 'tray':
+    case 'theme':
+    case 'cursor':
+    case 'philocardia':
+    case 'bionic':
+    case 'a11y':
+    case 'control':
+    case 'status': {
+      const script = new URL('pocketgull_controller.mjs', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+      execFile('node', [script, ...argv], (err, stdout, stderr) => {
+        if (stdout) process.stdout.write(stdout);
+        if (stderr) process.stderr.write(stderr);
+      });
+      break;
+    }
     case 'list':
       listPatientsDirect();
       break;
@@ -373,6 +406,12 @@ function runDirectCli(argv) {
     case 'triage':
       triagePatientDirect(argv[1]);
       break;
+    case 'play':
+    case 'game':
+    case 'games':
+    case 'trail':
+      playGameDirect(argv[1] || (cmd === 'trail' ? 'trail' : 'luminaries'));
+      break;
     case 'search':
       searchPubmedDirect(argv.slice(1).join(' '));
       break;
@@ -392,7 +431,20 @@ function showDirectHelp() {
 Usage:
   node scripts/gull.js [command] [args]
 
-Commands:
+Interactive Games & Assistive Quests:
+  \x1b[36mplay [game]\x1b[0m             Launch interactive game (luminaries, quest, shift, osce, flourish, trail)
+  \x1b[36mtrail\x1b[0m                   Launch retro 3-Act Oregon Trail recovery expedition
+
+System & Ergonomics Commands:
+  \x1b[36mtheme <name>\x1b[0m            Switch system/IDE theme (washi, hemp, obsidian, 670, rams)
+  \x1b[36mcursor [scheme]\x1b[0m         Switch 64px cursor scheme (ophthalmic, scotopic, default)
+  \x1b[36mphilocardia [on|off|pace]\x1b[0m Toggle 0.1 Hz vagal respiratory resonance pacer
+  \x1b[36mbionic [on|off|<text>]\x1b[0m   Toggle or test bionic reading saccadic guidance
+  \x1b[36mtray\x1b[0m                    Launch notification area tray daemon on-demand
+  \x1b[36mshortcut [uninstall]\x1b[0m    Create or remove TaskBar, Desktop, and Start Menu shortcuts
+  \x1b[36mstatus\x1b[0m                  Inspect active ergonomics, theme, cursor, and font state
+
+Clinical Diagnostic Commands:
   \x1b[36mlist\x1b[0m                    List all patients in the directory
   \x1b[36mshow <id>\x1b[0m               Show clinical details & vitals (e.g. p001)
   \x1b[36mnudge <id>\x1b[0m              Send biometrics sync trigger to patient device
@@ -785,4 +837,77 @@ function searchPubmedDirect(query) {
       });
     });
   });
+}
+
+function playGameDirect(gameName = 'luminaries') {
+  const g = String(gameName).toLowerCase();
+  
+  if (g === 'trail' || g === 'oregon') {
+    runOregonTrailTerminal();
+    return;
+  }
+
+  const GAME_MAP = {
+    'luminaries': { name: 'Historical Luminaries Clinical Mystery Arena', route: '/?game=luminaries' },
+    'quest': { name: 'Movement & Healing Quest', route: '/?game=quest' },
+    'shift': { name: 'Doctor Shift & Call Duty Simulator', route: '/?game=shift' },
+    'osce': { name: 'OSCE Medical Case Challenge Simulator', route: '/?game=osce' },
+    'flourish': { name: 'Playful Flourishing & Resilience Suite', route: '/?game=flourish' }
+  };
+
+  const target = GAME_MAP[g] || GAME_MAP['luminaries'];
+  const webUrl = `http://localhost:4200${target.route}`;
+  const deepLink = `pocketgull://game/${g}`;
+
+  console.log(`\n\x1b[38;2;45;212;191m⚕ POCKETGULL INTERACTIVE GAME LAUNCHER\x1b[0m`);
+  console.log(`\x1b[2m─────────────────────────────────────────────────────────────────\x1b[0m`);
+  console.log(`Launching: \x1b[1m\x1b[38;2;250;248;242m${target.name}\x1b[0m`);
+  console.log(`Web URL:   \x1b[36m${webUrl}\x1b[0m`);
+  console.log(`Protocol:  \x1b[35m${deepLink}\x1b[0m\n`);
+
+  execFile('explorer.exe', [webUrl], (err) => {
+    if (err) {
+      console.log(`\x1b[33mOpen http://localhost:4200 in your browser to play.\x1b[0m\n`);
+    }
+  });
+}
+
+function runOregonTrailTerminal() {
+  const ANSI_CYAN = '\x1b[38;2;45;212;191m';
+  const ANSI_GOLD = '\x1b[38;2;245;158;11m';
+  const ANSI_GREEN = '\x1b[38;2;16;185;129m';
+  const ANSI_ROSE = '\x1b[38;2;244;63;94m';
+  const ANSI_WASHI = '\x1b[38;2;250;248;242m';
+  const ANSI_SLATE = '\x1b[38;2;113;113;122m';
+  const ANSI_RESET = '\x1b[0m';
+  const ANSI_BOLD = '\x1b[1m';
+  const ANSI_DIM = '\x1b[2m';
+
+  console.log(`\n${ANSI_GOLD}================================================================================${ANSI_RESET}`);
+  console.log(` ${ANSI_BOLD}${ANSI_CYAN}🏕️  THE POCKETGULL RECOVERY TRAIL — 3-ACT RECOVERY EXPEDITION${ANSI_RESET}`);
+  console.log(`${ANSI_GOLD}================================================================================${ANSI_RESET}\n`);
+
+  // Photographic ASCII Halftone Mountain & Forest Landscape
+  console.log(`${ANSI_CYAN}         .                   .                 .              .           .${ANSI_RESET}`);
+  console.log(`${ANSI_CYAN}      .       /\`\\        .         .        /\`\\      .           .        ${ANSI_RESET}`);
+  console.log(`${ANSI_CYAN}   .        /   \\    .       /\`\\         /   \\          .        .    .${ANSI_RESET}`);
+  console.log(`${ANSI_GOLD}        ___/  ▲  \\__________/   \\_______/  ▲  \\_______________________  ${ANSI_RESET}`);
+  console.log(`${ANSI_GOLD}       /  %#*+=-:.  \\  %#*+:  \\  %#*+=-:.  \\ %#*+=-:.  \\ %#*+=-:.     \\ ${ANSI_RESET}`);
+  console.log(`${ANSI_GREEN}      /  /\`\\  /\`\\  /\`\\  /\`\\  /\`\\  /\`\\  /\`\\  /\`\\  /\`\\  /\`\\  /\`\\  /\`\\   \\${ANSI_RESET}`);
+  console.log(`${ANSI_GREEN}     /  /  \\ /  \\ /  \\ /  \\ /  \\ /  \\ /  \\ /  \\ /  \\ /  \\ /  \\ /  \\   \\${ANSI_RESET}`);
+  console.log(`${ANSI_SLATE}  ━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━━${ANSI_RESET}\n`);
+
+  console.log(`  ${ANSI_CYAN}[ACT 1: BASECAMP (DAYS 1–7)]${ANSI_RESET}    Gathering supplies, setting vitals baseline, sleep hygiene.`);
+  console.log(`  ${ANSI_CYAN}[ACT 2: THE PASS (DAYS 8–30)]${ANSI_RESET}   Navigating hurdles, titrating pacing, managing barometric shifts.`);
+  console.log(`  ${ANSI_CYAN}[ACT 3: THE VALLEY (DAYS 31–90)]${ANSI_RESET} Peak vitality, cellular remodeling, long-term flourishing.\n`);
+
+  console.log(`  ${ANSI_GOLD}Photographic Halftone Telemetry:${ANSI_RESET}   [${ANSI_GREEN}@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${ANSI_RESET}] 100% Signal`);
+  console.log(`  ${ANSI_GOLD}Recent Event:${ANSI_RESET} 🌦️ Barometric storm front passed (998 hPa). HRV stable (68 ms). +15% Vitality.`);
+  console.log(`  ${ANSI_GREEN}Trail Guide:${ANSI_RESET}   "Slow your pace at Timberline Ridge. Sip 500mL electrolytes and rest camp."\n`);
+
+  console.log(`  ${ANSI_BOLD}Available Actions:${ANSI_RESET}`);
+  console.log(`    ${ANSI_CYAN}1.${ANSI_RESET} Continue steady trail pace (${ANSI_DIM}0.1 Hz vagal respiratory wave${ANSI_RESET})`);
+  console.log(`    ${ANSI_CYAN}2.${ANSI_RESET} Rest at camp & enable Gamepad haptic rumble pacer (${ANSI_GOLD}gull philocardia pace${ANSI_RESET})`);
+  console.log(`    ${ANSI_CYAN}3.${ANSI_RESET} Inspect FHIR R4 care plan inventory (${ANSI_GOLD}gull export p001${ANSI_RESET})`);
+  console.log(`    ${ANSI_CYAN}4.${ANSI_RESET} Launch full graphical 3D trail arena in browser (${ANSI_GOLD}gull play quest${ANSI_RESET})\n`);
 }

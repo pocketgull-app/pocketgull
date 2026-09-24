@@ -17,7 +17,7 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
       window.localStorage.removeItem('pg_mock_clinician');
     });
     await page.goto('/');
-    await expect(page.locator('.secure-splash-main, app-secure-splash, [role="heading"]').first()).toBeVisible({ timeout: 25000 });
+    await expect(page.locator('.secure-splash-main, [role="heading"]').first()).toBeVisible({ timeout: 25000 });
 
     // 1. HTML lang attribute (WCAG 3.1.1)
     const htmlLang = await page.locator('html').getAttribute('lang');
@@ -77,6 +77,14 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
 
     // Wait for the main viewport to load
     await expect(page.locator('main')).toBeVisible();
+
+    // On mobile viewports (<768px), activate the Analysis tab so app-analysis-report is unhidden
+    const analysisTabBtn = page.locator('button', { hasText: /Analysis/i }).first();
+    if (await analysisTabBtn.isVisible().catch(() => false)) {
+      await analysisTabBtn.click();
+      await page.waitForTimeout(300);
+    }
+
     await expect(page.locator('app-analysis-report')).toBeVisible({ timeout: 10000 });
 
     // 1. Semantic Landmarks (WCAG 2.4.1 / ARIA Landmarks)
@@ -115,8 +123,18 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
     // 4. ARIA Expanded States on Collapsible Panels
     // If there are collapsible sections, check their ARIA or structural tags
     const collapsibleCharts = page.locator('canvas');
-    await expect(collapsibleCharts.first()).toBeVisible({ timeout: 10000 });
-    expect(await collapsibleCharts.count()).toBeGreaterThan(0);
+    if (await collapsibleCharts.first().isVisible().catch(() => false)) {
+      expect(await collapsibleCharts.count()).toBeGreaterThan(0);
+    } else {
+      // On mobile viewports where tabs isolate Chart from Analysis, switch to Chart tab
+      const chartTabBtn = page.locator('button', { hasText: /Chart/i }).first();
+      if (await chartTabBtn.isVisible().catch(() => false)) {
+        await chartTabBtn.click();
+        await page.waitForTimeout(300);
+      }
+      await expect(collapsibleCharts.first()).toBeVisible({ timeout: 10000 });
+      expect(await collapsibleCharts.count()).toBeGreaterThan(0);
+    }
   });
 
   test('memory palace anchoring flow audit', async ({ page }) => {
@@ -166,11 +184,13 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
       window.localStorage.setItem('pg_data_consent_v1', 'true');
     });
     await enterDemoMode(page);
+    await page.evaluate(() => window.scrollTo(0, 0));
 
     // Open the voice assistant panel
     const toggleAgentBtn = page.locator('#tour-voice-agent-trigger, button[aria-label="AI Agent"]').first();
     await expect(toggleAgentBtn).toBeVisible({ timeout: 5000 });
-    await toggleAgentBtn.click();
+    await toggleAgentBtn.dispatchEvent('click');
+    await expect(page.locator('app-voice-assistant')).toBeVisible({ timeout: 10000 });
 
     // Toggle quick prompt shelf if closed
     const shelfToggle = page.locator('app-voice-assistant button', { hasText: /Clinical Quick-Prompts/i }).first();

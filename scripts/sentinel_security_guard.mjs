@@ -33,6 +33,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'api.github.com',
   'clamav.net',
   'www.clamav.net',
+  'jcgt.org',
+  'www.jcgt.org',
   'cerner.com',
   'authorization.cerner.com',
   'fhir-myrecord.cerner.com',
@@ -42,6 +44,7 @@ const APPROVED_EGRESS_DOMAINS = [
   'sandbox-api.va.gov',
   'pocketgull.app',
   'www.pocketgull.app',
+  'font.pocketgull.app',
   'pocketgull.com',
   'www.pocketgull.com',
   'ssa.gov',
@@ -86,6 +89,10 @@ const APPROVED_EGRESS_DOMAINS = [
   'wwwn.cdc.gov',
   'fda.gov',
   'api.fda.gov',
+  'loc.gov',
+  'www.loc.gov',
+  'id.loc.gov',
+  'chroniclingamerica.loc.gov',
   'who.int',
   'ghoapi.azureedge.net',
   'azureedge.net',
@@ -95,6 +102,9 @@ const APPROVED_EGRESS_DOMAINS = [
   'hdl.handle.net',
   'guidelinesforcollaboration.info',
   'zenodo.org',
+  'lpi.oregonstate.edu',
+  'oregonstate.edu',
+  'pay.google.com',
   'clinicaltrials.gov',
   'www.clinicaltrials.gov',
   'trade.gov',
@@ -251,6 +261,20 @@ const APPROVED_EGRESS_DOMAINS = [
   'fonts.googleapis.com',
   'fonts.gstatic.com',
   'w3.org',
+  'khronos.org',
+  'registry.khronos.org',
+  'wikipedia.org',
+  'en.wikipedia.org',
+  'mozilla.org',
+  'developer.mozilla.org',
+  'euclideanspace.com',
+  'www.euclideanspace.com',
+  'gamedev.net',
+  'www.gamedev.net',
+  'rorydriscoll.com',
+  'www.rorydriscoll.com',
+  'russellcottrell.com',
+  'www.russellcottrell.com',
   'meta.com',
   'ai.meta.com',
   'esmatlas.com',
@@ -453,6 +477,27 @@ function auditFile(filePath) {
         severity: 'HIGH',
         message: `De-Alchemization violation: Found performative lore phrase "${match[0]}". Use factual technical terms (e.g. "Encrypted Local Storage", "Long-Term Health Archive").`,
         line: content.substring(0, match.index).split('\n').length,
+      });
+    }
+  }
+
+  // 8. American Medical English Guard: Prohibit Britishisms in user-facing clinical templates & prompts
+  if (
+    !relativePath.includes('sentinel_security_guard') &&
+    !relativePath.includes('node_modules') &&
+    !relativePath.includes('.md') &&
+    (relativePath.startsWith('src/') || relativePath.startsWith('public/')) &&
+    !relativePath.includes('global-jurisdiction-matrix') && // UK jurisdiction profile legitimately references UK statutes
+    !relativePath.includes('clinical-specialty-risk-suite') // Contains WHO guideline citation titles
+  ) {
+    const prohibitedBritishismRegex = /\b(paediatric|diarrhoeal|haemoglobin|anaemia|oedema|dyspnoea)\b/i;
+    const bMatch = prohibitedBritishismRegex.exec(content);
+    if (bMatch) {
+      issues.push({
+        type: 'BRITISHISM_DETECTED',
+        severity: 'MEDIUM',
+        message: `American Medical English violation: Found British spelling "${bMatch[0]}". Use American standard (e.g. pediatric, diarrheal, hemoglobin, anemia, edema, dyspnea).`,
+        line: content.substring(0, bMatch.index).split('\n').length,
       });
     }
   }

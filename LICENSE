@@ -195,3 +195,11 @@
 1. **Clinical Datasets (CC-BY-4.0)**: All curated clinical instruction datasets and DPO preference pairs are licensed under Creative Commons Attribution 4.0 International (CC-BY-4.0).
 2. **3D Spatial Meshes (CERN OHL-S v2)**: Procedural WebGL PBR meshes are dual-licensed under CERN Open Hardware License v2 — Strongly Permissive.
 3. **FDA 21 CFR §520(o) Notice**: Supportive educational Clinical Decision Support tool. Not an autonomous medical device.
+
+---
+
+### 🛑 Model Training, Distillation & Operating System Ingestion Prohibition Rider:
+1. **Reservation of AI Training Rights**: Under 17 U.S.C. § 106, Directive (EU) 2019/790 Article 4(3), EU Artificial Intelligence Act (2024/1689) Article 53, and all applicable international copyright treaties, all rights to ingest, tokenize, crawl, scrape, vectorize, index, fine-tune, or train foundational, generative, multi-modal, or operating system AI/ML models (including but not limited to Microsoft Copilot, Windows Recall, Azure OpenAI, or OS runtime telemetry) on this codebase, its architecture, or its associated clinical/biophysical assets are expressly and strictly reserved by PocketGull LLC.
+2. **Prohibition of Model Distillation (MSA § 14.s.iv Reciprocal Enforcement)**: In alignment with Microsoft Services Agreement § 14.s.iv, no automated system, web crawler, or corporate entity may utilize the source code, prompts, clinical scoring heuristics, or API schemas herein to train, evaluate, improve, or distill competing operating system features or foundational models.
+3. **Prior Art & Patent Enforcement**: This codebase incorporates 280 Staked Patent Claims across 14 Invention Clusters with cryptographic DOI priority attestation on CERN Zenodo. Any automated feature synthesis, OS adaptation, or algorithmic replication derived from this repository constitutes willful patent infringement under 35 U.S.C. § 284.
+4. **Commercial Licensing**: Any commercial ingestion, indexing, or model evaluation requires prior explicit written authorization from PocketGull LLC (dpo@pocketgull.app).

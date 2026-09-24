@@ -1,0 +1,32 @@
+# PocketGull Hypertext 1991 Alacritty Theme
+[colors.primary]
+background = "#ffffff"
+foreground = "#000000"
+
+[colors.cursor]
+text = "#ffffff"
+cursor = "#000000"
+
+[colors.selection]
+text = "#000000"
+background = "#b5d5ff"
+
+[colors.normal]
+black = "#000000"
+red = "#cc0000"
+green = "#008800"
+yellow = "#996600"
+blue = "#0000ee"
+magenta = "#551a8b"
+cyan = "#006699"
+white = "#eeeeee"
+
+[colors.bright]
+black = "#555555"
+red = "#ee0000"
+green = "#00aa00"
+yellow = "#cc8800"
+blue = "#0000ff"
+magenta = "#772299"
+cyan = "#0099cc"
+white = "#ffffff"
