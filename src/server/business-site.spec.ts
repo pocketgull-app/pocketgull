@@ -2,7 +2,13 @@
 // Copyright (c) 2026 PocketGull LLC & Phillip Gear
 
 import { describe, it, expect } from 'vitest';
-import { renderBusinessSiteHtml, getPocketgullWordmarkSvg } from './business-site';
+import {
+  renderBusinessSiteHtml,
+  getPocketgullWordmarkSvg,
+  renderOfacRestrictedHtml,
+  OFAC_SANCTIONED_COUNTRIES,
+  resolveVisitorJurisdiction
+} from './business-site';
 
 describe('Business Site Server-Side Rendering (pocketgull.com)', () => {
   it('renders a valid HTML5 document with complete metadata and schema', () => {
@@ -143,6 +149,57 @@ describe('Business Site Server-Side Rendering (pocketgull.com)', () => {
     expect(svg).toContain('PocketGull Wordmark');
   });
 
+  it('renders the Linus Pauling Institute (OSU) and molecular medicine showcase', () => {
+    const html = renderBusinessSiteHtml();
+    expect(html).toContain('href="#linus-pauling"');
+    expect(html).toContain('id="linus-pauling"');
+    expect(html).toContain('Oregon Scientific Heritage &bull; Linus Pauling Institute (OSU)');
+    expect(html).toContain('The Right Molecules in the Right Amounts.');
+    expect(html).toContain('Linus Pauling &amp; The Orthomolecular Revolution');
+    expect(html).toContain('1949: Molecular Disease');
+    expect(html).toContain('1968: Orthomolecular Medicine');
+    expect(html).toContain('Pauling Protocol (p008)');
+    expect(html).toContain('https://lpi.oregonstate.edu/mic');
+    expect(html).toContain('https://pocketgull.app/?patient=p008');
+  });
+
+  it('renders sovereign geo-adaptive badges and regulatory notices by jurisdiction tier', () => {
+    // 1. Default US
+    const usHtml = renderBusinessSiteHtml({ countryCode: 'US' });
+    expect(usHtml).toContain('US Clinical Domain &bull; HIPAA &sect;164.514 Safe Harbor');
+
+    // 2. Five Eyes (UK, CA, AU, NZ)
+    const fveyHtml = renderBusinessSiteHtml({ countryCode: 'GB' });
+    expect(fveyHtml).toContain('Five Eyes Sovereign Health Accord');
+    expect(fveyHtml).toContain('NHS DTAC (UK)');
+    expect(fveyHtml).toContain('Five Eyes Healthcare Standard');
+
+    // 3. European Union (EU)
+    const euHtml = renderBusinessSiteHtml({ countryCode: 'FR' });
+    expect(euHtml).toContain('European Union Sovereign Territory');
+    expect(euHtml).toContain('EU AI Act Art. 53(1)(c) TDM Reserved');
+    expect(euHtml).toContain('GDPR Cookie-less');
+
+    // 4. Global Research Tier
+    const globalHtml = renderBusinessSiteHtml({ countryCode: 'JP' });
+    expect(globalHtml).toContain('Global Research &amp; Academic Review');
+    expect(globalHtml).toContain('Academic &amp; Research Review Mode');
+
+    // 5. OFAC Restrictive Notice
+    const ofacHtml = renderOfacRestrictedHtml();
+    expect(ofacHtml).toContain('451 &bull; Service Restricted In This Territory');
+    expect(ofacHtml).toContain('OFAC-sanctioned jurisdictions');
+    expect(OFAC_SANCTIONED_COUNTRIES.has('CU')).toBe(true);
+    expect(OFAC_SANCTIONED_COUNTRIES.has('IR')).toBe(true);
+    expect(OFAC_SANCTIONED_COUNTRIES.has('KP')).toBe(true);
+    // 6. Jurisdiction resolver
+    expect(resolveVisitorJurisdiction('US')).toBe('US');
+    expect(resolveVisitorJurisdiction('CA')).toBe('FVEY');
+    expect(resolveVisitorJurisdiction('AU')).toBe('FVEY');
+    expect(resolveVisitorJurisdiction('DE')).toBe('EU');
+    expect(resolveVisitorJurisdiction('BR')).toBe('GLOBAL_RESEARCH');
+  });
+
   it('aligns typeface specimen link with canonical font.pocketgull.app domain', () => {
     const html = renderBusinessSiteHtml();
     expect(html).toContain('href="https://font.pocketgull.app"');
@@ -150,3 +207,5 @@ describe('Business Site Server-Side Rendering (pocketgull.com)', () => {
     expect(html).not.toContain('typeface.pocketgull.app');
   });
 });
+
+

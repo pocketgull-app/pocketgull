@@ -50,7 +50,17 @@ import { APP_VERSION } from './version';
 // @ts-ignore
 import AgonesSDK from '@google-cloud/agones-sdk';
 import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
-import { renderBusinessSiteHtml } from './server/business-site';
+import {
+  renderBusinessSiteHtml,
+  renderOfacRestrictedHtml,
+  OFAC_SANCTIONED_COUNTRIES,
+  resolveVisitorJurisdiction
+} from './server/business-site';
+import {
+  renderCheckoutPortalHtml,
+  generateLicenseReceipt,
+  BILLING_TIERS
+} from './server/billing-portal';
 import { renderArticlesHtml } from './server/articles-site';
 import { FALLBACK_SEED_ARTICLES } from './services/wordpress-articles.service';
 import { renderNantucketCaseStudyHtml } from './server/nantucket-case-study';
@@ -241,10 +251,69 @@ app.use((req, res, next) => {
 // Trust single reverse proxy hop on Google Cloud Run to prevent IP spoofing while enabling secure rate-limiting
 app.set('trust proxy', 1);
 
-// Explicit preview endpoints for business site & case studies
-app.get(['/business', '/preview'], (_req, res) => {
+function extractClientCountry(req: express.Request): string {
+  const headerCountry = req.headers['cf-ipcountry'] || 
+                        req.headers['x-client-geo-country'] || 
+                        req.headers['x-appengine-country'] ||
+                        req.headers['x-country-code'];
+  if (typeof headerCountry === 'string' && headerCountry.length === 2) {
+    return headerCountry.toUpperCase();
+  }
+  return 'US';
+}
+
+// Google Cloud Billing & Monetization Endpoints
+app.get('/api/billing/tiers', (_req, res) => {
+  res.json({ success: true, tiers: BILLING_TIERS });
+});
+
+app.get('/api/billing/checkout', (req, res) => {
+  const tierId = String(req.query['tier'] || 'founder_lifetime');
+  const country = extractClientCountry(req);
+  if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
+    res.status(451).setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(renderOfacRestrictedHtml());
+  }
+
+  // If a dedicated Stripe payment link is configured for this tier, redirect directly
+  const stripeLinkVar = `STRIPE_PAYMENT_LINK_${tierId.toUpperCase()}`;
+  if (process.env[stripeLinkVar]) {
+    return res.redirect(303, process.env[stripeLinkVar] as string);
+  }
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  return res.send(renderBusinessSiteHtml());
+  return res.send(renderCheckoutPortalHtml(tierId, { countryCode: country }));
+});
+
+app.post('/api/billing/checkout', express.json(), (req, res) => {
+  const { tierId, email, name, organization } = req.body || {};
+  if (!email || !name) {
+    return res.status(400).json({ error: 'Missing required purchaser email or name' });
+  }
+
+  const receipt = generateLicenseReceipt(
+    tierId || 'founder_lifetime',
+    String(email).trim(),
+    String(name).trim(),
+    organization ? String(organization).trim() : undefined
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: 'Payment authorized and perpetual license provisioned',
+    receipt
+  });
+});
+
+// Explicit preview endpoints for business site & case studies
+app.get(['/business', '/preview'], (req, res) => {
+  const country = extractClientCountry(req);
+  if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
+    res.status(451).setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(renderOfacRestrictedHtml());
+  }
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderBusinessSiteHtml({ countryCode: country }));
 });
 
 app.get(['/case-studies/nantucket-tick-radar', '/case-studies/nantucket', '/nantucket'], (_req, res) => {
@@ -331,8 +400,13 @@ app.use((req, res, next) => {
     if (staticExts.has(ext)) {
       return next();
     }
+    const country = extractClientCountry(req);
+    if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
+      res.status(451).setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderOfacRestrictedHtml());
+    }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.send(renderBusinessSiteHtml());
+    return res.send(renderBusinessSiteHtml({ countryCode: country }));
   }
 
   // Redirect legacy alias domains to primary app domain pocketgull.app
@@ -1037,9 +1111,14 @@ app.use((req, res, next) => {
   }
 
   if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {
+    const country = extractClientCountry(req);
+    if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
+      res.status(451).setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(renderOfacRestrictedHtml());
+    }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.send(renderBusinessSiteHtml());
+    return res.send(renderBusinessSiteHtml({ countryCode: country }));
   }
 
   if (process.env['SKIP_SSR'] === 'true' || req.query['csr'] === '1') {

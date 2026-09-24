@@ -31,7 +31,80 @@ export function getPocketgullWordmarkSvg(className: string = 'h-8 w-auto text-st
   </svg>`;
 }
 
-export function renderBusinessSiteHtml(): string {
+export type VisitorJurisdictionTier = 'US' | 'FVEY' | 'EU' | 'GLOBAL_RESEARCH';
+
+export interface IBusinessSiteRenderOptions {
+  countryCode?: string;
+  jurisdiction?: VisitorJurisdictionTier;
+}
+
+export const OFAC_SANCTIONED_COUNTRIES = new Set(['CU', 'IR', 'KP', 'SY']);
+
+export function resolveVisitorJurisdiction(countryCode?: string): VisitorJurisdictionTier {
+  if (!countryCode) return 'US';
+  const code = countryCode.toUpperCase().trim();
+  if (code === 'US') return 'US';
+  if (['GB', 'UK', 'CA', 'AU', 'NZ'].includes(code)) return 'FVEY';
+  if (['DE', 'FR', 'NL', 'SE', 'IT', 'ES', 'IE', 'BE', 'AT', 'DK', 'FI', 'PL', 'PT', 'CZ', 'GR', 'RO'].includes(code)) return 'EU';
+  return 'GLOBAL_RESEARCH';
+}
+
+export function renderOfacRestrictedHtml(): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>451 Unavailable For Legal Reasons — PocketGull</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #09090b; color: #f4f4f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 1.5rem; text-align: center;">
+  <div style="max-width: 520px; background: #18181b; border: 1px solid #27272a; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <div style="font-size: 2.5rem; margin-bottom: 1rem;">⚖️</div>
+    <h1 style="font-size: 1.25rem; font-weight: 700; color: #f87171; margin-bottom: 0.75rem;">451 &bull; Service Restricted In This Territory</h1>
+    <p style="font-size: 0.875rem; color: #a1a1aa; line-height: 1.6; margin-bottom: 1.5rem;">
+      PocketGull software distributions and clinical AI telemetry endpoints are legally restricted from deployment in OFAC-sanctioned jurisdictions in strict compliance with U.S. Export Administration Regulations (EAR) and statutory trade sanctions.
+    </p>
+    <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: #71717a;">
+      PocketGull LLC &bull; Oregon Entity 258869891 &bull; Statutory Egress Guard
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+export function renderBusinessSiteHtml(options?: IBusinessSiteRenderOptions): string {
+  const jurisdiction = options?.jurisdiction || resolveVisitorJurisdiction(options?.countryCode);
+
+  let sovereignBadgeHtml = '';
+  let regulatoryNoticeHtml = '';
+
+  if (jurisdiction === 'US') {
+    sovereignBadgeHtml = `<div class="badge" style="background: rgba(20, 184, 166, 0.12); color: var(--teal-light); border: 1px solid rgba(20, 184, 166, 0.3);">
+      <span>🇺🇸</span> US Clinical Domain &bull; HIPAA &sect;164.514 Safe Harbor &bull; FDA 21st Century Cures CDS
+    </div>`;
+  } else if (jurisdiction === 'FVEY') {
+    sovereignBadgeHtml = `<div class="badge" style="background: rgba(59, 130, 246, 0.12); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3);">
+      <span>🌐</span> Five Eyes Sovereign Health Accord &bull; NHS DTAC (UK) &bull; PIPEDA (CA) &bull; TGA SaMD (AU) &bull; NZ HIPC (NZ)
+    </div>`;
+    regulatoryNoticeHtml = `<div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 0.5rem; padding: 0.75rem 1rem; margin-top: 1rem; margin-bottom: 1.5rem; font-size: 0.8125rem; color: #93c5fd;">
+      <strong>Five Eyes Healthcare Standard:</strong> Certified compliant with Five Eyes partner privacy frameworks, local 988/111 emergency vector routing, and regional HL7 FHIR Core baselines.
+    </div>`;
+  } else if (jurisdiction === 'EU') {
+    sovereignBadgeHtml = `<div class="badge" style="background: rgba(168, 85, 247, 0.12); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.3);">
+      <span>🇪🇺</span> European Union Sovereign Territory &bull; EU AI Act Art. 53(1)(c) TDM Reserved &bull; GDPR Cookie-less
+    </div>`;
+    regulatoryNoticeHtml = `<div style="background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 0.5rem; padding: 0.75rem 1rem; margin-top: 1rem; margin-bottom: 1.5rem; font-size: 0.8125rem; color: #d8b4fe;">
+      <strong>EU AI Act &amp; GDPR Sovereignty Notice:</strong> Text and data mining (TDM) rights expressly reserved under EU AI Act Art. 53(1)(c). Zero tracking cookies, zero cloud telemetry harvesting, 100% on-device client execution.
+    </div>`;
+  } else {
+    sovereignBadgeHtml = `<div class="badge" style="background: rgba(245, 158, 11, 0.12); color: var(--amber-light); border: 1px solid rgba(245, 158, 11, 0.3);">
+      <span>🔬</span> Global Research &amp; Academic Review &bull; SFI Complexity Testbed &bull; Non-Device CDS Mode
+    </div>`;
+    regulatoryNoticeHtml = `<div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 0.5rem; padding: 0.75rem 1rem; margin-top: 1rem; margin-bottom: 1.5rem; font-size: 0.8125rem; color: var(--amber-light);">
+      <strong>Academic &amp; Research Review Mode:</strong> Active in your territory for peer-reviewed biophysical education, clinical research collaboration, and SFI complex systems analysis. Direct commercial clinical deployment requires localized pilot clearance.
+    </div>`;
+  }
+
   return `<!DOCTYPE html>
 <html lang="en" class="paper">
 <head>
@@ -689,6 +762,7 @@ export function renderBusinessSiteHtml(): string {
         <a href="#case-studies">Case Studies</a>
         <a href="#condition-thrift">Condition Explorer</a>
         <a href="#clinical-typography">Font Safeguards</a>
+        <a href="#linus-pauling">Linus Pauling</a>
         <a href="javascript:void(0)" onclick="openDocDrill('Babesia microti')" style="color: var(--teal-light);">🔬 Doc Drill</a>
         <a href="#open-source">Open Source</a>
         <a href="#testimonials">Quotes</a>
@@ -713,8 +787,11 @@ export function renderBusinessSiteHtml(): string {
   <main>
     <section class="hero">
       <div class="container">
-        <div class="badge">
-          <span>🧭</span> Living Clinical Trajectories &bull; Zero-Egress Ambient Strategy Engine
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; align-items: center;">
+          <div class="badge">
+            <span>🧭</span> Living Clinical Trajectories &bull; Zero-Egress Ambient Strategy Engine
+          </div>
+          ${sovereignBadgeHtml}
         </div>
 
         <h1>Beyond the 1968 SOAP Note.<br /><span>Living Biophysical Care Strategies.</span></h1>
@@ -1681,6 +1758,97 @@ export function renderBusinessSiteHtml(): string {
       </div>
     </section>
 
+    <!-- Oregon Scientific Heritage: Linus Pauling Institute & Molecular Medicine -->
+    <section id="linus-pauling" class="section" style="background: var(--card-subtle); border-bottom: 1px solid var(--border);">
+      <div class="container">
+        <div class="section-title">
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); color: var(--amber); font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem;">
+            <span>🧬 Oregon Scientific Heritage &bull; Linus Pauling Institute (OSU)</span>
+          </div>
+          <h2>The Right Molecules in the Right Amounts.<br /><span>Linus Pauling &amp; The Orthomolecular Revolution</span></h2>
+          <p>Founded at Oregon State University in Corvallis, the Linus Pauling Institute (LPI) pioneered molecular medicine and established the global gold standard for micronutrient biochemistry. PocketGull translates Pauling’s 1968 orthomolecular thesis into 2026 real-time, on-device biophysical posology—grounded in the peer-reviewed LPI Micronutrient Information Center.</p>
+        </div>
+
+        <div class="grid-3" style="margin-bottom: 2rem;">
+          <div class="feature-card" style="border-color: var(--border);">
+            <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--amber); font-weight: 700; text-transform: uppercase;">1949: Molecular Disease</div>
+            <div style="margin: 0.75rem 0;">
+              <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Sickle Hemoglobin &amp; Conformational Health</h3>
+            </div>
+            <p style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.6;">
+              Pauling’s landmark demonstration that sickle cell anemia is a &ldquo;molecular disease&rdquo; proved that pathology originates from altered molecular geometry. PocketGull extends this foundation into real-time 3D WebGL phase space and receptor docking simulations.
+            </p>
+          </div>
+
+          <div class="feature-card" style="border-color: rgba(20, 184, 166, 0.3);">
+            <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase;">1968: Orthomolecular Medicine</div>
+            <div style="margin: 0.75rem 0;">
+              <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Beyond Static Deficiency RDAs</h3>
+            </div>
+            <p style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.6;">
+              Pauling defined health as providing the optimal molecular concentrations natural to human physiology. PocketGull’s posology engine calibrates individual nutrient saturation against continuous renal clearance (eGFR), thermal strain, and metabolic output.
+            </p>
+          </div>
+
+          <div class="feature-card" style="border-color: var(--border);">
+            <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--amber); font-weight: 700; text-transform: uppercase;">Pauling Protocol (p008)</div>
+            <div style="margin: 0.75rem 0;">
+              <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Endothelial Matrix &amp; Lp(a) Quenching</h3>
+            </div>
+            <p style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.6;">
+              Modeled directly in patient archetype p008: Ascorbate + L-lysine + L-proline matrix stabilization. Protects vascular integrity, stimulates prolyl hydroxylase collagen cross-linking, and inhibits Lipoprotein(a) atherosclerotic plaque binding.
+            </p>
+          </div>
+        </div>
+
+        <!-- The Paradigm Shift: Static RDA vs. Orthomolecular Saturation -->
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem;">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+            <div>
+              <span style="font-size: 0.75rem; font-family: ui-monospace, monospace; font-weight: 700; color: var(--teal); text-transform: uppercase;">The Posology Paradigm Shift</span>
+              <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">Minimum Survival Allowance vs. Lifelong Cellular Resilience</h3>
+            </div>
+            <span style="font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 9999px; background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(20, 184, 166, 0.3); color: var(--teal-light); font-family: ui-monospace, monospace;">
+              Oregon State University MIC Standard
+            </span>
+          </div>
+
+          <div class="grid-2" style="gap: 1.5rem;">
+            <div style="padding: 1rem; background: var(--card-subtle); border-radius: 0.5rem; border: 1px solid var(--border);">
+              <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: #f87171; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem;">Conventional Approach (Static RDA)</div>
+              <ul style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.6; padding-left: 1.25rem;">
+                <li>Designed solely to prevent acute nutritional deficits (scurvy, rickets, beriberi).</li>
+                <li>One-size-fits-all lookup table regardless of acute inflammation, renal clearance, or heat exposure.</li>
+                <li>Treats micronutrients as passive background chemicals rather than active epigenetic cofactors (TET enzymes).</li>
+              </ul>
+            </div>
+
+            <div style="padding: 1rem; background: var(--card-subtle); border-radius: 0.5rem; border: 1.5px solid rgba(20, 184, 166, 0.4);">
+              <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--teal-light); font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem;">Pauling Orthomolecular Standard (PocketGull)</div>
+              <ul style="font-size: 0.8125rem; color: var(--text); line-height: 1.6; padding-left: 1.25rem;">
+                <li>Calibrates dynamic daily saturation for optimal mitochondrial function and vascular longevity.</li>
+                <li>Real-time posology adjustments for high-heat exposome strain, exercise, and metabolic rate.</li>
+                <li>Grounded directly in the Linus Pauling Institute’s peer-reviewed Micronutrient Information Center (MIC).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- External Scientific Sourcing & Patient Archetype CTAs -->
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; align-items: center;">
+          <a href="https://lpi.oregonstate.edu/mic" target="_blank" rel="noopener" class="btn-primary" style="font-size: 0.875rem;">
+            <span>🔬 Linus Pauling Institute Micronutrient Center (OSU) ↗</span>
+          </a>
+          <a href="https://pocketgull.app/?patient=p008" class="btn-secondary" style="font-size: 0.875rem; border-color: rgba(245, 158, 11, 0.4);">
+            <span>🧬 Launch Linus Pauling Archetype (p008) in App &rarr;</span>
+          </a>
+          <button type="button" class="btn-secondary" onclick="openDocDrill('Linus Pauling &amp; Ascorbate Posology')">
+            <span>📖 Open Orthomolecular Doc Drill</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
     <!-- Interactive Plain English Flip Cards -->
     <section class="section" style="background: var(--bg);">
       <div class="container">
@@ -2174,6 +2342,7 @@ export function renderBusinessSiteHtml(): string {
               ✨ Upfront &amp; Lifetime (Save 20%)
             </button>
           </div>
+          ${regulatoryNoticeHtml}
         </div>
 
         <!-- Annual / Upfront Cards (Default) -->
