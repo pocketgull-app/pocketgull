@@ -9,6 +9,8 @@ import { FoodInflationStockoutResilienceService, IInflationStockoutResilienceAud
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { FaithTraditionConductCardComponent } from './shared/faith-tradition-conduct-card.component';
 import { TcmAyurvedicCardComponent } from './shared/tcm-ayurvedic-card.component';
+import { SovereignGuildCommonsCardComponent } from './shared/sovereign-guild-commons-card.component';
+import { TrustedCommonsFederationCardComponent } from './shared/trusted-commons-federation-card.component';
 
 export interface IGeolocationalDestination {
   id: string;
@@ -46,7 +48,14 @@ export interface IGeolocationalDestination {
 @Component({
   selector: 'app-geolocational-health-relocation',
   standalone: true,
-  imports: [CommonModule, PocketGullButtonComponent, FaithTraditionConductCardComponent, TcmAyurvedicCardComponent],
+  imports: [
+    CommonModule, 
+    PocketGullButtonComponent, 
+    FaithTraditionConductCardComponent, 
+    TcmAyurvedicCardComponent,
+    SovereignGuildCommonsCardComponent,
+    TrustedCommonsFederationCardComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-white dark:bg-[#09090b] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 shadow-sm space-y-6">
@@ -178,6 +187,34 @@ export interface IGeolocationalDestination {
                   [class.border-gray-200]="selectedTab() !== 'tcm'"
                   [class.dark:border-zinc-700]="selectedTab() !== 'tcm'">
             🌿 TCM &amp; Ayurveda
+          </button>
+
+          <button (click)="selectedTab.set('commons')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border"
+                  [class.bg-emerald-500]="selectedTab() === 'commons'"
+                  [class.text-white]="selectedTab() === 'commons'"
+                  [class.border-emerald-500]="selectedTab() === 'commons'"
+                  [class.bg-gray-50]="selectedTab() !== 'commons'"
+                  [class.dark:bg-zinc-800]="selectedTab() !== 'commons'"
+                  [class.text-gray-700]="selectedTab() !== 'commons'"
+                  [class.dark:text-zinc-300]="selectedTab() !== 'commons'"
+                  [class.border-gray-200]="selectedTab() !== 'commons'"
+                  [class.dark:border-zinc-700]="selectedTab() !== 'commons'">
+            🏛️ Ostrom Commons &amp; Guild
+          </button>
+
+          <button (click)="selectedTab.set('federation')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border"
+                  [class.bg-emerald-500]="selectedTab() === 'federation'"
+                  [class.text-white]="selectedTab() === 'federation'"
+                  [class.border-emerald-500]="selectedTab() === 'federation'"
+                  [class.bg-gray-50]="selectedTab() !== 'federation'"
+                  [class.dark:bg-zinc-800]="selectedTab() !== 'federation'"
+                  [class.text-gray-700]="selectedTab() !== 'federation'"
+                  [class.dark:text-zinc-300]="selectedTab() !== 'federation'"
+                  [class.border-gray-200]="selectedTab() !== 'federation'"
+                  [class.dark:border-zinc-700]="selectedTab() !== 'federation'">
+            🌐 Trusted Federation Mesh
           </button>
         </div>
       </div>
@@ -647,6 +684,16 @@ export interface IGeolocationalDestination {
         <app-tcm-ayurvedic-card></app-tcm-ayurvedic-card>
       }
 
+      <!-- TAB 9: OSTROM COMMONS GOVERNANCE & GUILD DEFENSE -->
+      @if (selectedTab() === 'commons') {
+        <app-sovereign-guild-commons-card></app-sovereign-guild-commons-card>
+      }
+
+      <!-- TAB 10: PEER-TO-PEER TRUSTED COMMONS FEDERATION MESH -->
+      @if (selectedTab() === 'federation') {
+        <app-trusted-commons-federation-card></app-trusted-commons-federation-card>
+      }
+
       @if (activeProduceRxVoucher(); as voucher) {
         <div class="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-emerald-500/30 rounded-xl p-4 space-y-3">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-500/20 pb-2.5">
@@ -719,7 +766,7 @@ export class GeolocationalHealthRelocationComponent {
   private offlineCompanionService = inject(OfflinePwaFoodshedCompanionService);
   private foodInflationService = inject(FoodInflationStockoutResilienceService);
 
-  readonly selectedTab = signal<'destinations' | 'hobbies' | 'stores' | 'calendar' | 'scanner' | 'inflation' | 'faith' | 'tcm'>('destinations');
+  readonly selectedTab = signal<'destinations' | 'hobbies' | 'stores' | 'calendar' | 'scanner' | 'inflation' | 'faith' | 'tcm' | 'commons' | 'federation'>('destinations');
   readonly prescribedNotice = signal<string>('');
   readonly activeProduceRxVoucher = signal<IFhirProduceRxReferral | null>(null);
 
