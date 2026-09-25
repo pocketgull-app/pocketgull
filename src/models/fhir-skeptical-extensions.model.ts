@@ -145,19 +145,50 @@ export interface IFhirGroundedAssertionExtension {
 }
 
 /**
- * Unified Biophysical Epistemic Falsification Bundle Extension
+ * FHIR R4 Extension: NSF Open Knowledge Network (NSF OKN) Federated Provenance
  */
-export interface IFhirBiophysicalFalsificationExtension {
-  url: 'http://pocketgull.app/fhir/StructureDefinition/biophysical-falsification-suite';
-  extension: (
-    | IFhirProtacHookExtension
-    | IFhirLlpsPhaseBoundaryExtension
-    | IFhirQuantumThermalNoiseExtension
-    | IFhirQuantumDualSpinExtension
-    | IFhirReticularPoreSieveExtension
-    | IFhirCannabinoidMicrotubuleExtension
-  )[];
+export interface IFhirOknProvenanceExtension {
+  url: 'http://pocketgull.app/fhir/StructureDefinition/okn-provenance';
+  extension: [
+    { url: 'is-verified'; valueBoolean: boolean },
+    { url: 'badge-label'; valueString: string },
+    { url: 'participating-agencies'; valueString: string },
+    { url: 'traversed-path-summary'; valueString: string },
+    { url: 'grounded-target-concept'; valueString: string },
+    { url: 'evidence-tier'; valueString: string },
+    { url: 'audit-trail-hash'; valueString: string },
+    { url: 'pmid-or-doi-citation'; valueString: string }
+  ];
 }
+
+/**
+ * Builds a standardized FHIR R4 extension for NSF OKN Federated Cross-Graph Provenance.
+ */
+export function buildFhirOknProvenanceExtension(
+  isVerified: boolean,
+  badgeLabel: string,
+  agencies: string[],
+  pathSummary: string,
+  targetConcept: string,
+  evidenceTier: string,
+  auditHash: string,
+  citation: string = 'https://okn.us'
+): IFhirOknProvenanceExtension {
+  return {
+    url: 'http://pocketgull.app/fhir/StructureDefinition/okn-provenance',
+    extension: [
+      { url: 'is-verified', valueBoolean: isVerified },
+      { url: 'badge-label', valueString: badgeLabel },
+      { url: 'participating-agencies', valueString: agencies.join(' + ') },
+      { url: 'traversed-path-summary', valueString: pathSummary },
+      { url: 'grounded-target-concept', valueString: targetConcept },
+      { url: 'evidence-tier', valueString: evidenceTier },
+      { url: 'audit-trail-hash', valueString: auditHash },
+      { url: 'pmid-or-doi-citation', valueString: citation }
+    ]
+  };
+}
+
 
 /**
  * FHIR R4 Extension: Clinical Fallacy & Cognitive Bias Audit

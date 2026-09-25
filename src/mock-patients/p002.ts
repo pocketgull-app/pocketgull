@@ -212,5 +212,23 @@ export const p002: IPatient = {
       "status": "Reviewed",
       "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/X-ray_of_the_lumbar_spine_%28lateral_view%29.jpg/640px-X-ray_of_the_lumbar_spine_%28lateral_view%29.jpg"
     }
-  ]
+  ],
+  "environmentalIndex": {
+    "aqi": 82,
+    "pm25": "28.4 µg/m³",
+    "ozone": "52 ppb",
+    "pollenDensity": "High",
+    "heatIndex": "78°F",
+    "vulnerabilityWarning": "NOAA valley temperature inversion trapping fine particulates (PM2.5) triggers bronchial hyperreactivity and vagal sensory nerve firing."
+  },
+  "oknProfile": {
+    "isVerified": true,
+    "badgeLabel": "[🏛️ NSF OKN Verified]",
+    "participatingAgencies": ["NOAA", "NIH", "WHO"],
+    "traversedPathSummary": "NOAA Atmospheric Particulate Inversion (NOAA) <-> NIH MeSH D001249 Bronchial Hyperreactivity (NIH) <-> Endocannabinoid Palmitoylethanolamide PEA Mast-Cell Pacing & Non-Opioid Analgesia (NIH/WHO)",
+    "groundedTargetConcept": "Airway Hyperreactivity & Non-Opioid PEA Signaling",
+    "auditTrailHash": "sha256:2f928e1cc170e7b9b0d46811e9f0d01f8e658e4d",
+    "cochraneEvidenceTier": "Level A (Replicated RCTs)",
+    "pmidCitation": "PMID:33673552"
+  }
 };

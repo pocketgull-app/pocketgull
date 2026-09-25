@@ -23,9 +23,10 @@ describe('Universal Clinical Case Studies Hub (/case-studies)', () => {
     expect(html).toContain('Zero Cloud Egress');
   });
 
-  it('renders interactive category filters and all 7 case study cards', () => {
+  it('renders interactive category filters and all 8 case study cards', () => {
     const html = renderCaseStudiesHubHtml();
     expect(html).toContain("filterCases('all', this)");
+    expect(html).toContain("filterCases('federal', this)");
     expect(html).toContain("filterCases('neurology', this)");
     expect(html).toContain("filterCases('cardiometabolic', this)");
     expect(html).toContain("filterCases('autonomic', this)");
@@ -40,6 +41,7 @@ describe('Universal Clinical Case Studies Hub (/case-studies)', () => {
     expect(html).toContain('Marie Curie: Radium Exposure &amp; Marrow Hypoplasia');
     expect(html).toContain('Post-Viral Autonomic Fatigue &amp; PEM Boundary Radar');
     expect(html).toContain('Frida Kahlo: Severe Pelvic Trauma &amp; Central Sensitization');
+    expect(html).toContain('NSF OKN, NIH &amp; WHO Global Health Grounding Radar');
   });
 
   it('renders the 3B Innovation tags (BREAKING, BENDING, BLENDING) on case cards', () => {

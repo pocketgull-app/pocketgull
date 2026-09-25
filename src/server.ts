@@ -68,6 +68,7 @@ import { renderNeuroSanctuaryCaseStudyHtml } from './server/neuro-sanctuary-case
 import { renderCaseStudiesHubHtml } from './server/case-studies-hub';
 import { renderCardiometabolicCaseStudyHtml } from './server/cardiometabolic-case-study';
 import { renderDarwinCaseStudyHtml } from './server/darwin-case-study';
+import { renderOknCaseStudyHtml } from './server/okn-case-study';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
@@ -469,6 +470,9 @@ app.use((req, res, next) => {
     }
     if (req.path === '/case-studies/darwin-vagal-radar' || req.path === '/case-studies/darwin' || req.path === '/darwin') {
       return sendHtmlResponse(res, renderDarwinCaseStudyHtml());
+    }
+    if (req.path === '/case-studies/okn-grounding' || req.path === '/case-studies/okn' || req.path === '/okn-grounding' || req.path === '/okn') {
+      return sendHtmlResponse(res, renderOknCaseStudyHtml());
     }
     const cleanPath = req.path.split('?')[0];
     const ext = extname(cleanPath).toLowerCase();
@@ -1155,6 +1159,12 @@ app.use((req, res, next) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     return res.send(renderDarwinCaseStudyHtml());
+  }
+
+  if (req.path === '/case-studies/okn-grounding' || req.path === '/case-studies/okn' || req.path === '/okn-grounding' || req.path === '/okn') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(renderOknCaseStudyHtml());
   }
 
   if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {

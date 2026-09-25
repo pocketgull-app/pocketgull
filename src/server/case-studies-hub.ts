@@ -527,6 +527,7 @@ export function renderCaseStudiesHubHtml(): string {
         <a href="/case-studies/neuro-sanctuary">MS Sanctuary (#02)</a>
         <a href="/case-studies/cardiometabolic-radar">Cardiometabolic (#03)</a>
         <a href="/case-studies/darwin-vagal-radar">Darwin Vagal (#05)</a>
+        <a href="/case-studies/okn-grounding">OKN Grounding (#08)</a>
         <a href="/business">Business Site</a>
       </nav>
     </div>
@@ -559,7 +560,8 @@ export function renderCaseStudiesHubHtml(): string {
 
       <!-- Specialty Filter Tabs -->
       <div class="filter-bar">
-        <button class="filter-btn active" onclick="filterCases('all', this)">All Studies (7)</button>
+        <button class="filter-btn active" onclick="filterCases('all', this)">All Studies (8)</button>
+        <button class="filter-btn" onclick="filterCases('federal', this)">Federal Grounding &amp; OKN</button>
         <button class="filter-btn" onclick="filterCases('neurology', this)">Neurology &amp; Autoimmune</button>
         <button class="filter-btn" onclick="filterCases('cardiometabolic', this)">Cardiometabolic &amp; Endocrine</button>
         <button class="filter-btn" onclick="filterCases('autonomic', this)">Autonomic &amp; Vagal</button>
@@ -739,6 +741,29 @@ export function renderCaseStudiesHubHtml(): string {
         </div>
       </div>
 
+      <!-- Case Study #08: NSF OKN, NIH & WHO Global Health Grounding Radar -->
+      <div class="case-card" data-category="federal neurology autonomic luminaries">
+        <div>
+          <div class="case-badge-row">
+            <span class="case-num">CASE #08</span>
+            <span class="case-specialty">Federal Grounding &bull; Epistemology</span>
+          </div>
+          <h3 class="case-title">NSF OKN, NIH &amp; WHO Global Health Grounding Radar</h3>
+          <p class="case-desc">
+            Multi-hop federal knowledge graph cross-referencing across NSF OKN (okn.us), NIH MeSH, USGS hydrological datasets, EPA chemical registries, and WHO SDG 3.4 / ICD-11 Chapter 26 (TM1) dual-coding. Eliminates model hallucinations via Bayesian H₀ rejection.
+          </p>
+          <div class="b3-box">
+            <div class="b3-item"><span class="b3-tag breaking">BREAKING</span><span>Dismantles single-agency silos (NIH clinical trials isolated from USGS water contaminants and EPA registries).</span></div>
+            <div class="b3-item"><span class="b3-tag bending">BENDING</span><span>Bends H₀ inference curves via Bayesian priors (BF₁₀ &gt; 100, p &lt; 0.001), capping hallucination risk at 0.0%.</span></div>
+            <div class="b3-item"><span class="b3-tag blending">BLENDING</span><span>Blends multi-agency federal graphs with WHO ICD-11 Chapter 26 into FDA Part 11 SHA-256 sealed FHIR R4.</span></div>
+          </div>
+        </div>
+        <div class="case-footer">
+          <a href="/case-studies/okn-grounding" class="btn-study">Read Case Study &rarr;</a>
+          <button class="btn-outline" onclick="exportSingleCaseFhir('cs08-okn-grounding')">FHIR R4</button>
+        </div>
+      </div>
+
     </section>
   </main>
 
@@ -762,6 +787,7 @@ export function renderCaseStudiesHubHtml(): string {
           <li><a href="/case-studies/neuro-sanctuary">MS Neuro-Sanctuary (#02)</a></li>
           <li><a href="/case-studies/cardiometabolic-radar">Cardiometabolic (#03)</a></li>
           <li><a href="/case-studies/darwin-vagal-radar">Darwin Vagal Enigma (#05)</a></li>
+          <li><a href="/case-studies/okn-grounding">NSF OKN Grounding (#08)</a></li>
           <li><a href="/articles">Clinical Articles Library</a></li>
         </ul>
       </div>
@@ -874,7 +900,7 @@ export function renderCaseStudiesHubHtml(): string {
           profile: ['http://hl7.org/fhir/us/core/StructureDefinition/us-core-bundle'],
           tag: [
             { system: 'https://pocketgull.com/fhir/governance', code: 'HIPAA-SAFE-HARBOR-DEIDENTIFIED' },
-            { system: 'https://pocketgull.com/fhir/cohort-size', code: 'N=19-ARCHETYPES' },
+            { system: 'https://pocketgull.com/fhir/cohort-size', code: 'N=20-ARCHETYPES' },
             { system: 'https://pocketgull.com/fhir/privacy', code: 'LAPLACE-DIFFERENTIAL-PRIVACY-EPSILON-1.0' }
           ]
         },
@@ -891,7 +917,8 @@ export function renderCaseStudiesHubHtml(): string {
                 { title: 'Neurology & Autoimmune', text: { status: 'generated', div: '<div>MS Neuro-Axonal Sanctuary & Biophysical Radar</div>' } },
                 { title: 'Cardiometabolic & Endocrine', text: { status: 'generated', div: '<div>Cardiometabolic & Glycemic Excursion Radar</div>' } },
                 { title: 'Autonomic & Vagal Medicine', text: { status: 'generated', div: '<div>Charles Darwin Post-Beagle Vagal Enigma</div>' } },
-                { title: 'Historical Luminaries', text: { status: 'generated', div: '<div>Curie, Kahlo, Smith, Ramanujan Retrospective Profiles</div>' } }
+                { title: 'Historical Luminaries', text: { status: 'generated', div: '<div>Curie, Kahlo, Smith, Ramanujan Retrospective Profiles</div>' } },
+                { title: 'Federal Knowledge Graph Grounding', text: { status: 'generated', div: '<div>NSF OKN, NIH & WHO Global Health Grounding Radar</div>' } }
               ]
             }
           },

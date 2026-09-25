@@ -109,5 +109,24 @@ export const p008: IPatient = {
       description: "CAC score stable; calcified plaque display zero progression compared to 2022 baseline.",
       status: "Reviewed"
     }
-  ]
+  ],
+  environmentalIndex: {
+    aqi: 32,
+    pm25: "7.8 µg/m³",
+    ozone: "26 ppb",
+    pollenDensity: "Low",
+    heatIndex: "65°F",
+    vulnerabilityWarning: "Low indoor humidity and winter cold stress increasing trans-epidermal water loss and microvascular oxidative load."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["NSF", "NIH", "EPA"],
+    traversedPathSummary: "NSF Molecular Biophysics Protein Folding Grid (NSF) <-> NIH MeSH D000572 Ascorbic Acid Prolyl Hydroxylation (NIH) <-> Lipoprotein(a) Lysine Binding Cleavage & CoQ10 Electron Transport Optimization (NIH/EPA)",
+    groundedTargetConcept: "Apoprotein(a) Neutralization & Orthomolecular Collagen Binding",
+    auditTrailHash: "sha256:3a9108b77c1265fa0912189d2c6812be67123982",
+    cochraneEvidenceTier: "Level B (Cohort / Preliminary)",
+    epaRegistryId: "1759082",
+    pmidCitation: "PMID:14555418"
+  }
 };

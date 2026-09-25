@@ -55,6 +55,24 @@ export const p_marie_curie: IPatient = {
     { id: '3', name: 'CoQ10 (Ubiquinol)', value: '300mg daily (Mitochondrial Protection)' },
     { id: '4', name: 'Specialized Pro-Resolving Mediators (SPMs)', value: '1,000mg BID' }
   ],
+  environmentalIndex: {
+    aqi: 45,
+    pm25: "12.0 µg/m³",
+    ozone: "30 ppb",
+    pollenDensity: "Low",
+    heatIndex: "68°F",
+    vulnerabilityWarning: "High ambient radon daughter isotopes and unshielded alpha/gamma radioactive particle ionization."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["NSF", "NIH"],
+    traversedPathSummary: "Photobiomodulation 660-850nm (NSF) <-> Cytochrome c Oxidase Complex IV (NIH)",
+    groundedTargetConcept: "Cytochrome c Oxidase",
+    auditTrailHash: "sha256:75c6366d3cadbcb6c8d4903e4e47cea0819bf44",
+    cochraneEvidenceTier: "Level A (Replicated RCTs)",
+    pmidCitation: "PMID:28001759"
+  },
   oxidativeStressMarkers: [
     { id: '1', name: '8-hydroxy-2\'-deoxyguanosine (8-OHdG)', value: '18.4 ng/mg Cr (DNA Oxidative Damage)' },
     { id: '2', name: 'Radium-226 Serum Isotope Activity', value: 'Elevated Internal Alpha Emitter' }

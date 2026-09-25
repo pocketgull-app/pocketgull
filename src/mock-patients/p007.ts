@@ -97,5 +97,23 @@ export const p007: IPatient = {
       description: "Estimated fetal weight 4th percentile for 32 weeks (1850g). Amniotic fluid index 14 cm (Normal).",
       status: "Reviewed"
     }
-  ]
+  ],
+  environmentalIndex: {
+    aqi: 75,
+    pm25: "24.2 µg/m³",
+    ozone: "50 ppb",
+    pollenDensity: "Moderate",
+    heatIndex: "92°F",
+    vulnerabilityWarning: "NOAA extreme heat advisory and ambient thermal stress increasing maternal placental vascular resistance and oxidative stress cascade."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["NOAA", "NIH", "WHO"],
+    traversedPathSummary: "NOAA Ambient Heat Stress & Thermal Humidity Index (NOAA) <-> NIH MeSH D011225 Pre-Eclampsia & Gestational Endothelial Dysfunction (NIH) <-> WHO Calcium & Low-Dose Aspirin Preeclampsia Prophylaxis Guideline (WHO)",
+    groundedTargetConcept: "Maternal Hemodynamic Pacing & WHO SDG 3.1 Prophylaxis",
+    auditTrailHash: "sha256:7b1029c4e712a831e5f03918b958c219847120a1",
+    cochraneEvidenceTier: "Level A (Replicated RCTs)",
+    pmidCitation: "PMID:31722428"
+  }
 };

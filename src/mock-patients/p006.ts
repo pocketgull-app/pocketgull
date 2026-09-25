@@ -95,5 +95,24 @@ export const p006: IPatient = {
       description: "Mild peribronchial cuffing; no focal consolidation or pneumothorax.",
       status: "Normal"
     }
-  ]
+  ],
+  environmentalIndex: {
+    aqi: 40,
+    pm25: "9.5 µg/m³",
+    ozone: "28 ppb",
+    pollenDensity: "Low",
+    heatIndex: "70°F",
+    vulnerabilityWarning: "Municipal distribution line particulate turbidity and chlorination byproduct volatility elevating pediatric mucosal permeability and dehydration susceptibility."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["USGS", "NIH", "WHO"],
+    traversedPathSummary: "USGS Municipal Water Quality Sensor Grid (USGS) <-> NIH MeSH D003681 Pediatric Dehydration & Rotaviral Enteritis (NIH) <-> WHO Low-Osmolarity ORS & Zinc Pediatric Rehydration Protocol (WHO)",
+    groundedTargetConcept: "Pediatric Osmolar Stewardship & WHO Essential Rehydration",
+    auditTrailHash: "sha256:9c1248be10ac3b82143714902c6ef84b12389104",
+    cochraneEvidenceTier: "Level A (Replicated RCTs)",
+    watershedOrAquiferSiteId: "USGS-01463500",
+    pmidCitation: "PMID:16524346"
+  }
 };
