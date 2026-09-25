@@ -67,7 +67,7 @@ export interface IEncryptedCycleEnclave {
   isDecrypted: boolean;
   discreetDecoyActive: boolean;
   lastScrubTimestamp: string | null;
-  enclaveSalt: string;
+  enclaveEphemeralEntropy: string;
 }
 
 @Injectable({
@@ -79,7 +79,7 @@ export class ReproductiveAutonomyService {
     isDecrypted: true,
     discreetDecoyActive: false,
     lastScrubTimestamp: null,
-    enclaveSalt: 'local-ephemeral-salt'
+    enclaveEphemeralEntropy: 'client-isolated-scope'
   });
 
   // Selected patient profile traits for CDC MEC evaluation
