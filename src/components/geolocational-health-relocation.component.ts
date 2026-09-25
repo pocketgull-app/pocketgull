@@ -8,6 +8,7 @@ import { OfflinePwaFoodshedCompanionService } from '../services/offline-pwa-food
 import { FoodInflationStockoutResilienceService, IInflationStockoutResilienceAudit, IFoodInflationAlternative, DietaryRestrictionType } from '../services/food-inflation-stockout-resilience.service';
 import { PocketGullButtonComponent } from './shared/pocket-gull-button.component';
 import { FaithTraditionConductCardComponent } from './shared/faith-tradition-conduct-card.component';
+import { TcmAyurvedicCardComponent } from './shared/tcm-ayurvedic-card.component';
 
 export interface IGeolocationalDestination {
   id: string;
@@ -45,7 +46,7 @@ export interface IGeolocationalDestination {
 @Component({
   selector: 'app-geolocational-health-relocation',
   standalone: true,
-  imports: [CommonModule, PocketGullButtonComponent, FaithTraditionConductCardComponent],
+  imports: [CommonModule, PocketGullButtonComponent, FaithTraditionConductCardComponent, TcmAyurvedicCardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-white dark:bg-[#09090b] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 shadow-sm space-y-6">
@@ -163,6 +164,20 @@ export interface IGeolocationalDestination {
                   [class.border-gray-200]="selectedTab() !== 'faith'"
                   [class.dark:border-zinc-700]="selectedTab() !== 'faith'">
             🕯️ Faith &amp; Bioethics
+          </button>
+
+          <button (click)="selectedTab.set('tcm')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border"
+                  [class.bg-emerald-500]="selectedTab() === 'tcm'"
+                  [class.text-white]="selectedTab() === 'tcm'"
+                  [class.border-emerald-500]="selectedTab() === 'tcm'"
+                  [class.bg-gray-50]="selectedTab() !== 'tcm'"
+                  [class.dark:bg-zinc-800]="selectedTab() !== 'tcm'"
+                  [class.text-gray-700]="selectedTab() !== 'tcm'"
+                  [class.dark:text-zinc-300]="selectedTab() !== 'tcm'"
+                  [class.border-gray-200]="selectedTab() !== 'tcm'"
+                  [class.dark:border-zinc-700]="selectedTab() !== 'tcm'">
+            🌿 TCM &amp; Ayurveda
           </button>
         </div>
       </div>
@@ -627,6 +642,11 @@ export interface IGeolocationalDestination {
         <app-faith-tradition-conduct-card></app-faith-tradition-conduct-card>
       }
 
+      <!-- TAB 8: TRADITIONAL CHINESE MEDICINE & AYURVEDA INTEGRATIVE -->
+      @if (selectedTab() === 'tcm') {
+        <app-tcm-ayurvedic-card></app-tcm-ayurvedic-card>
+      }
+
       @if (activeProduceRxVoucher(); as voucher) {
         <div class="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-emerald-500/30 rounded-xl p-4 space-y-3">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-500/20 pb-2.5">
@@ -699,7 +719,7 @@ export class GeolocationalHealthRelocationComponent {
   private offlineCompanionService = inject(OfflinePwaFoodshedCompanionService);
   private foodInflationService = inject(FoodInflationStockoutResilienceService);
 
-  readonly selectedTab = signal<'destinations' | 'hobbies' | 'stores' | 'calendar' | 'scanner' | 'inflation' | 'faith'>('destinations');
+  readonly selectedTab = signal<'destinations' | 'hobbies' | 'stores' | 'calendar' | 'scanner' | 'inflation' | 'faith' | 'tcm'>('destinations');
   readonly prescribedNotice = signal<string>('');
   readonly activeProduceRxVoucher = signal<IFhirProduceRxReferral | null>(null);
 
