@@ -11,6 +11,7 @@ import { FaithTraditionConductCardComponent } from './shared/faith-tradition-con
 import { TcmAyurvedicCardComponent } from './shared/tcm-ayurvedic-card.component';
 import { SovereignGuildCommonsCardComponent } from './shared/sovereign-guild-commons-card.component';
 import { TrustedCommonsFederationCardComponent } from './shared/trusted-commons-federation-card.component';
+import { SocraticVoiceA11yStudioComponent } from './shared/socratic-voice-a11y-studio.component';
 
 export interface IGeolocationalDestination {
   id: string;
@@ -54,7 +55,8 @@ export interface IGeolocationalDestination {
     FaithTraditionConductCardComponent, 
     TcmAyurvedicCardComponent,
     SovereignGuildCommonsCardComponent,
-    TrustedCommonsFederationCardComponent
+    TrustedCommonsFederationCardComponent,
+    SocraticVoiceA11yStudioComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -215,6 +217,20 @@ export interface IGeolocationalDestination {
                   [class.border-gray-200]="selectedTab() !== 'federation'"
                   [class.dark:border-zinc-700]="selectedTab() !== 'federation'">
             🌐 Trusted Federation Mesh
+          </button>
+
+          <button (click)="selectedTab.set('voice')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border"
+                  [class.bg-emerald-500]="selectedTab() === 'voice'"
+                  [class.text-white]="selectedTab() === 'voice'"
+                  [class.border-emerald-500]="selectedTab() === 'voice'"
+                  [class.bg-gray-50]="selectedTab() !== 'voice'"
+                  [class.dark:bg-zinc-800]="selectedTab() !== 'voice'"
+                  [class.text-gray-700]="selectedTab() !== 'voice'"
+                  [class.dark:text-zinc-300]="selectedTab() !== 'voice'"
+                  [class.border-gray-200]="selectedTab() !== 'voice'"
+                  [class.dark:border-zinc-700]="selectedTab() !== 'voice'">
+            🎙️ Socratic Voice A11y
           </button>
         </div>
       </div>
@@ -694,6 +710,11 @@ export interface IGeolocationalDestination {
         <app-trusted-commons-federation-card></app-trusted-commons-federation-card>
       }
 
+      <!-- TAB 11: SOCRATIC CLINICAL VOICE & DEMYSTIFICATION A11Y STUDIO -->
+      @if (selectedTab() === 'voice') {
+        <app-socratic-voice-a11y-studio></app-socratic-voice-a11y-studio>
+      }
+
       @if (activeProduceRxVoucher(); as voucher) {
         <div class="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-emerald-500/30 rounded-xl p-4 space-y-3">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-500/20 pb-2.5">
@@ -766,7 +787,7 @@ export class GeolocationalHealthRelocationComponent {
   private offlineCompanionService = inject(OfflinePwaFoodshedCompanionService);
   private foodInflationService = inject(FoodInflationStockoutResilienceService);
 
-  readonly selectedTab = signal<'destinations' | 'hobbies' | 'stores' | 'calendar' | 'scanner' | 'inflation' | 'faith' | 'tcm' | 'commons' | 'federation'>('destinations');
+  readonly selectedTab = signal<'destinations' | 'hobbies' | 'stores' | 'calendar' | 'scanner' | 'inflation' | 'faith' | 'tcm' | 'commons' | 'federation' | 'voice'>('destinations');
   readonly prescribedNotice = signal<string>('');
   readonly activeProduceRxVoucher = signal<IFhirProduceRxReferral | null>(null);
 
