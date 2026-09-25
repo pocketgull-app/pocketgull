@@ -2,6 +2,8 @@ import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IntimacyRelationshipVitalityService, ICardiacSafetyAssessment, IAdaptivePositioningGuide, IEnergyPacingPlan } from '../services/intimacy-relationship-vitality.service';
+import { CouplesDecisionStudioService, IValuesDimension, DecisionCategory, IPreMortemAnalysis, IFairPlayOwnership } from '../services/couples-decision-studio.service';
+import { SleepVagalFlourishingService } from '../services/sleep-vagal-flourishing.service';
 import { PatientStateService } from '../services/patient-state.service';
 
 @Component({
@@ -23,11 +25,11 @@ import { PatientStateService } from '../services/patient-state.service';
                 Cardiovascular Intimacy Safety & Couples Vitality Studio
               </h3>
               <span class="px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-rose-500/20 text-rose-300 rounded-full border border-rose-500/30">
-                Princeton III & AHA Guidelines
+                Princeton III & Deliberation Architecture
               </span>
             </div>
             <p class="text-xs text-zinc-400">
-              Evidence-based cardiovascular risk stratification, nitrate-PDE5 contraindication checks, couples energy pacing, and adaptive ergonomics.
+              Evidence-based cardiovascular risk stratification, nitrate-PDE5 checks, couples energy pacing, adaptive ergonomics, and joint decision co-regulation.
             </p>
           </div>
         </div>
@@ -55,6 +57,13 @@ import { PatientStateService } from '../services/patient-state.service';
                 [class.text-zinc-300]="activeSubTab() !== 'ergonomics'"
                 class="px-4 py-2 rounded-lg transition cursor-pointer flex items-center gap-1.5">
           <span>🛋️ 3. Adaptive Positioning (Stroke/Joints)</span>
+        </button>
+        <button (click)="activeSubTab.set('decisions')"
+                [class.bg-indigo-500]="activeSubTab() === 'decisions'"
+                [class.text-zinc-950]="activeSubTab() === 'decisions'"
+                [class.text-zinc-300]="activeSubTab() !== 'decisions'"
+                class="px-4 py-2 rounded-lg transition cursor-pointer flex items-center gap-1.5">
+          <span>⚖️ 4. Couples Joint Decisions & Co-Regulation</span>
         </button>
       </div>
 
@@ -256,19 +265,301 @@ import { PatientStateService } from '../services/patient-state.service';
         </div>
       }
 
+      <!-- SUBTAB 4: Couples Joint Decisions & Co-Regulation -->
+      @if (activeSubTab() === 'decisions') {
+        <div class="space-y-6 animate-fadeIn">
+          
+          <!-- Top Co-Regulation & HALT Guard Card -->
+          <div class="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">🧘</span>
+                <div>
+                  <h4 class="text-sm font-black text-indigo-300">Phase 0: Autonomic Co-Regulation & HALT Pre-Flight</h4>
+                  <p class="text-[11px] text-zinc-400">Never deliberate high-stakes life choices in sympathetic fight-or-flight or somatic exhaustion.</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 text-[10px] font-mono font-bold rounded-full border"
+                      [class.bg-emerald-500/20]="reversibilityGate().haltRuleCheckPassed"
+                      [class.text-emerald-300]="reversibilityGate().haltRuleCheckPassed"
+                      [class.border-emerald-500/40]="reversibilityGate().haltRuleCheckPassed"
+                      [class.bg-rose-500/20]="!reversibilityGate().haltRuleCheckPassed"
+                      [class.text-rose-300]="!reversibilityGate().haltRuleCheckPassed"
+                      [class.border-rose-500/40]="!reversibilityGate().haltRuleCheckPassed">
+                  {{ reversibilityGate().autonomicReadiness }}
+                </span>
+              </div>
+            </div>
+
+            <!-- HALT Toggles & Vagal Pacer -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
+                <span class="text-xs font-bold text-zinc-200">🥗 Somatic State (HALT)</span>
+                <label class="flex items-center gap-2 text-[11px] text-zinc-300 cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="isPartnerHungryOrTired" class="rounded text-indigo-500">
+                  <span>Either partner hungry, tired, or depleted?</span>
+                </label>
+                <label class="flex items-center gap-2 text-[11px] text-zinc-300 cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="isHeartRateElevated" class="rounded text-indigo-500">
+                  <span>Heart rate elevated (>85 bpm) or defensive tension?</span>
+                </label>
+              </div>
+
+              <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
+                <span class="text-xs font-bold text-zinc-200">🚪 Reversibility Type (Bezos/Kahneman)</span>
+                <label class="flex items-center gap-2 text-[11px] text-zinc-300 cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="isEasilyReversible" class="rounded text-indigo-500">
+                  <span>Is this easily reversible within 60-90 days? (Type 2)</span>
+                </label>
+                <label class="flex items-center gap-2 text-[11px] text-zinc-300 cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="financialThresholdExceeded" class="rounded text-indigo-500">
+                  <span>Financial commitment exceeds 20% of net savings?</span>
+                </label>
+              </div>
+
+              <div class="p-3 rounded-xl bg-indigo-950/20 border border-indigo-500/30 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-indigo-200">💨 0.10 Hz Mayer Resonance</span>
+                    <span class="text-[10px] font-mono text-indigo-400">6.0 bpm</span>
+                  </div>
+                  <p class="text-[10px] text-zinc-400 mt-1">
+                    Breathe together for 3 minutes (4s Inhale / 6s Exhale) to maximize baroreceptor coherence and drop defensiveness.
+                  </p>
+                </div>
+                <div class="mt-2 text-[11px] font-mono font-bold text-indigo-300">
+                  Co-Regulation Mode: Active
+                </div>
+              </div>
+            </div>
+
+            <!-- Experiment Suggestion -->
+            <div class="p-3 rounded-xl bg-zinc-950/70 border border-zinc-800 flex items-start gap-2.5">
+              <span class="text-sm">🧪</span>
+              <div class="text-[11px] text-zinc-300">
+                <span class="font-bold text-indigo-300">Safe-to-Test 60-Day Low-Stakes Experiment:</span>
+                <span class="ml-1 text-zinc-200">{{ reversibilityGate().safeToTestExperiment }}</span>
+                @if (reversibilityGate().coolingOffPeriodHours > 0) {
+                  <span class="ml-2 font-mono text-amber-400 font-bold">
+                    ⏱️ {{ reversibilityGate().coolingOffPeriodHours }}h Cooling-Off Buffer Mandated
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 1: Shared Values Venn & Alignment Grid -->
+          <div class="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+              <h4 class="text-xs font-mono font-black uppercase text-indigo-400 flex items-center gap-2">
+                <span>🎯 Core Values Alignment & Tension Radar</span>
+              </h4>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold"
+                      [class.text-emerald-400]="valuesAlignment().divergenceLevel === 'HARMONIOUS'"
+                      [class.text-amber-400]="valuesAlignment().divergenceLevel === 'MODERATE_DIVERGENCE'"
+                      [class.text-rose-400]="valuesAlignment().divergenceLevel === 'HIGH_FRICTION_RISK'">
+                  Overall Alignment: {{ valuesAlignment().overallAlignmentPercentage }}%
+                </span>
+                <span class="px-2 py-0.5 text-[9px] font-mono font-bold rounded-full uppercase border border-zinc-700 bg-zinc-800 text-zinc-300">
+                  {{ valuesAlignment().divergenceLevel }}
+                </span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              @for (dim of valuesDimensions; track dim.id) {
+                <div class="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-zinc-200">{{ dim.name }}</span>
+                    <span class="text-[10px] font-mono text-zinc-500">Weight: {{ dim.weight }}x</span>
+                  </div>
+                  <p class="text-[10px] text-zinc-400 line-clamp-1">{{ dim.description }}</p>
+
+                  <div class="grid grid-cols-2 gap-3 pt-1">
+                    <div>
+                      <div class="flex justify-between text-[10px] font-mono text-cyan-400">
+                        <span>Partner A</span>
+                        <span class="font-bold">{{ dim.scorePartnerA }}/10</span>
+                      </div>
+                      <input type="range" min="1" max="10" [(ngModel)]="dim.scorePartnerA" class="w-full h-1 bg-zinc-800 rounded-lg cursor-pointer accent-cyan-500">
+                    </div>
+                    <div>
+                      <div class="flex justify-between text-[10px] font-mono text-rose-400">
+                        <span>Partner B</span>
+                        <span class="font-bold">{{ dim.scorePartnerB }}/10</span>
+                      </div>
+                      <input type="range" min="1" max="10" [(ngModel)]="dim.scorePartnerB" class="w-full h-1 bg-zinc-800 rounded-lg cursor-pointer accent-rose-500">
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+
+            @if (valuesAlignment().recommendations.length > 0) {
+              <div class="p-3 rounded-xl bg-indigo-950/20 border border-indigo-500/20 text-xs space-y-1">
+                <div class="font-bold text-indigo-300 text-[11px]">🧭 Facilitation Directives:</div>
+                <ul class="list-disc list-inside text-zinc-300 text-[11px] space-y-0.5">
+                  @for (rec of valuesAlignment().recommendations; track rec) {
+                    <li>{{ rec }}</li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+
+          <!-- Section 2: Gary Klein Couples Pre-Mortem Simulator -->
+          <div class="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+              <div>
+                <h4 class="text-xs font-mono font-black uppercase text-amber-400 flex items-center gap-2">
+                  <span>🔮 Gary Klein Couples Pre-Mortem Generator</span>
+                </h4>
+                <p class="text-[11px] text-zinc-400 mt-0.5">Project 2 years into the future. Assume the decision failed completely. What broke first?</p>
+              </div>
+
+              <!-- Topic Selector -->
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-mono text-zinc-400">Decision:</span>
+                <select [(ngModel)]="selectedCategory" (ngModelChange)="updatePreMortem()" class="px-2.5 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 text-xs text-white">
+                  <option value="RELOCATION_HOUSING">🏡 Relocation / Housing</option>
+                  <option value="CAREER_PIVOT_EDUCATION">🚀 Career Pivot / Venture</option>
+                  <option value="FINANCIAL_ALLOCATION">💰 Financial Investment / Purchase</option>
+                  <option value="FAMILY_PLANNING_FERTILITY">🍼 Family Planning / Fertility</option>
+                  <option value="ELDER_CARE_SUPPORT">👵 Elder Caregiving Support</option>
+                  <option value="HEALTH_TREATMENT_CHOICE">🩺 Medical Treatment Choice</option>
+                </select>
+              </div>
+            </div>
+
+            @let pm = preMortem();
+            <div class="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 space-y-3">
+              <div class="flex items-start gap-2.5">
+                <span class="text-lg">⚠️</span>
+                <div>
+                  <div class="text-xs font-bold text-amber-200">Simulated Future Breakdown Scenario (Year +{{ pm.projectedFutureYears }}):</div>
+                  <p class="text-xs text-zinc-200 mt-1 italic leading-relaxed">"{{ pm.projectedFailureScenario }}"</p>
+                </div>
+              </div>
+
+              <div class="space-y-2 pt-2 border-t border-amber-500/20">
+                <div class="text-[11px] font-bold text-amber-300">Identified Vulnerabilities & Proactive Safeguards:</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                  @for (rc of pm.rootCauses; track rc.factor) {
+                    <div class="p-3 rounded-lg bg-zinc-950/80 border border-zinc-800 space-y-1">
+                      <div class="flex items-center justify-between text-[10px] font-mono">
+                        <span class="text-zinc-300 font-bold">{{ rc.factor }}</span>
+                        <span class="px-1.5 py-0.5 rounded text-[9px]"
+                              [class.bg-rose-500/20]="rc.likelihood === 'HIGH'"
+                              [class.text-rose-300]="rc.likelihood === 'HIGH'"
+                              [class.bg-amber-500/20]="rc.likelihood === 'MEDIUM'"
+                              [class.text-amber-300]="rc.likelihood === 'MEDIUM'">
+                          {{ rc.likelihood }}
+                        </span>
+                      </div>
+                      <div class="text-[10px] text-zinc-400">
+                        <span class="text-emerald-400 font-semibold">Mitigation:</span> {{ rc.mitigationStrategy }}
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Circuit Breaker -->
+              <div class="p-3 rounded-lg bg-zinc-950 border border-rose-500/30 flex items-start gap-2">
+                <span class="text-sm">🛑</span>
+                <div class="text-[11px] space-y-0.5">
+                  <span class="font-bold text-rose-300">Pre-Agreed Circuit Breaker & Exit Condition:</span>
+                  <p class="text-zinc-300">{{ pm.circuitBreakerCondition }}</p>
+                  <p class="text-[10px] font-mono text-zinc-400">Trigger: {{ pm.contingencyTrigger }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Eve Rodsky "Fair Play" Invisible Cognitive Load Distribution -->
+          <div class="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+              <div>
+                <h4 class="text-xs font-mono font-black uppercase text-emerald-400 flex items-center gap-2">
+                  <span>🃏 Eve Rodsky "Fair Play" Cognitive Load & Invisible Labor Audit</span>
+                </h4>
+                <p class="text-[11px] text-zinc-400 mt-0.5">Separate full ownership into Conception (C), Planning (P), and Execution (E) to eliminate unspoken resentment.</p>
+              </div>
+              <span class="text-[10px] font-mono text-zinc-400">Full Card Ownership = Zero Nagging</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              @for (task of fairPlayTasks; track task.id) {
+                <div class="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-zinc-100">{{ task.domainName }}</span>
+                    <span class="text-[10px] font-mono text-zinc-400">C-P-E Breakdown</span>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-2 text-[10px] font-mono">
+                    <div class="p-2 rounded bg-zinc-900 border border-zinc-800 text-center">
+                      <div class="text-zinc-500">Conception</div>
+                      <select [(ngModel)]="task.conceptionOwner" class="mt-1 w-full bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5 text-xs text-white">
+                        <option value="PARTNER_A">Partner A</option>
+                        <option value="PARTNER_B">Partner B</option>
+                        <option value="SHARED">Shared</option>
+                      </select>
+                    </div>
+                    <div class="p-2 rounded bg-zinc-900 border border-zinc-800 text-center">
+                      <div class="text-zinc-500">Planning</div>
+                      <select [(ngModel)]="task.planningOwner" class="mt-1 w-full bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5 text-xs text-white">
+                        <option value="PARTNER_A">Partner A</option>
+                        <option value="PARTNER_B">Partner B</option>
+                        <option value="SHARED">Shared</option>
+                      </select>
+                    </div>
+                    <div class="p-2 rounded bg-zinc-900 border border-zinc-800 text-center">
+                      <div class="text-zinc-500">Execution</div>
+                      <select [(ngModel)]="task.executionOwner" class="mt-1 w-full bg-zinc-950 border border-zinc-700 rounded px-1 py-0.5 text-xs text-white">
+                        <option value="PARTNER_A">Partner A</option>
+                        <option value="PARTNER_B">Partner B</option>
+                        <option value="SHARED">Shared</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <p class="text-[10px] text-zinc-400 italic">"{{ task.frictionNotes }}"</p>
+                </div>
+              }
+            </div>
+          </div>
+
+        </div>
+      }
+
     </div>
   `
 })
 export class IntimacyRelationshipVitalityComponent {
   private vitalityService = inject(IntimacyRelationshipVitalityService);
+  private decisionStudioService = inject(CouplesDecisionStudioService);
+  private vagalService = inject(SleepVagalFlourishingService, { optional: true });
   private patientState = inject(PatientStateService, { optional: true });
 
-  activeSubTab = signal<'cardiac' | 'pacing' | 'ergonomics'>('cardiac');
+  activeSubTab = signal<'cardiac' | 'pacing' | 'ergonomics' | 'decisions'>('cardiac');
 
+  // Subtab 1 State
   canClimbStairs = true;
   hasRecentEvent = false;
   hasUnstableAngina = false;
   medsInput = 'Atorvastatin 20mg, Lisinopril 10mg';
+
+  // Subtab 4 Decisions State
+  isPartnerHungryOrTired = false;
+  isHeartRateElevated = false;
+  isEasilyReversible = false;
+  financialThresholdExceeded = true;
+  selectedCategory: DecisionCategory = 'RELOCATION_HOUSING';
+
+  valuesDimensions: IValuesDimension[] = this.decisionStudioService.getDefaultValuesDimensions();
+  fairPlayTasks: IFairPlayOwnership[] = this.decisionStudioService.getDefaultFairPlayTasks();
 
   readonly adaptiveGuides = computed<IAdaptivePositioningGuide[]>(() => this.vitalityService.getAdaptiveGuides());
   readonly energyPlans = computed<IEnergyPacingPlan[]>(() => this.vitalityService.getEnergyPlans());
@@ -282,4 +573,36 @@ export class IntimacyRelationshipVitalityComponent {
       medications: meds
     });
   });
+
+  readonly valuesAlignment = computed(() => {
+    return this.decisionStudioService.evaluateValuesAlignment(this.valuesDimensions);
+  });
+
+  readonly reversibilityGate = computed(() => {
+    return this.decisionStudioService.evaluateReversibilityGate({
+      category: this.selectedCategory,
+      isEasilyReversible: this.isEasilyReversible,
+      financialCostThresholdExceeded: this.financialThresholdExceeded,
+      isPartnerHungryOrTired: this.isPartnerHungryOrTired,
+      isHeartRateElevatedOrSympathetic: this.isHeartRateElevated
+    });
+  });
+
+  readonly preMortem = signal<IPreMortemAnalysis>(
+    this.decisionStudioService.generatePreMortem('Primary Life Decision', 'RELOCATION_HOUSING', 2)
+  );
+
+  updatePreMortem(): void {
+    const title = this.selectedCategory === 'RELOCATION_HOUSING' ? 'Relocation & Housing Transition'
+      : this.selectedCategory === 'CAREER_PIVOT_EDUCATION' ? 'Career Pivot / New Venture'
+      : this.selectedCategory === 'FINANCIAL_ALLOCATION' ? 'Major Asset / Capital Allocation'
+      : this.selectedCategory === 'FAMILY_PLANNING_FERTILITY' ? 'Family Expansion & Child Care'
+      : this.selectedCategory === 'ELDER_CARE_SUPPORT' ? 'Elder Caregiving Transitions'
+      : 'Clinical Treatment Choice';
+
+    this.preMortem.set(
+      this.decisionStudioService.generatePreMortem(title, this.selectedCategory, 2)
+    );
+  }
 }
+

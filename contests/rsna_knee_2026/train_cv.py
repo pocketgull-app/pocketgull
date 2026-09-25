@@ -6,6 +6,20 @@ fits 2nd-level Meta-Ensemble Stacker, and runs Nelder-Mead Multi-Threshold Optim
 
 import sys
 import os
+
+# Thermal & power protection for Intel Core i7-14700KF: Cap multi-threaded workers
+os.environ["OMP_NUM_THREADS"] = "8"
+os.environ["OPENBLAS_NUM_THREADS"] = "8"
+os.environ["MKL_NUM_THREADS"] = "8"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "8"
+os.environ["NUMEXPR_NUM_THREADS"] = "8"
+
+try:
+    import pyarrow as pa
+    pa.set_cpu_count(8)
+except Exception:
+    pass
+
 import numpy as np
 import pandas as pd
 from typing import Dict, List, Tuple, Any
@@ -100,31 +114,34 @@ def run_ybocs_high_precision_pipeline(
     oof_stacked = stacker.predict_proba([oof_m1, oof_m2, oof_m3])
     stacked_oof_auc = calculate_macro_auc(Y, oof_stacked)
     
-    # Stage D: Nelder-Mead Multi-Threshold Decision Optimization
+    # Stage D: Nelder-Mead Multi-Threshold Operational Optimization
     print(f"--- Step 4: Optimizing Nelder-Mead Multi-Thresholds (tau_1..tau_12) ---")
-    opt = NelderMeadThresholdOptimizer(num_targets=12)
-    opt_results = opt.fit(oof_stacked, Y)
-    oof_final = opt.transform(oof_stacked)
-    final_oof_auc = calculate_macro_auc(Y, oof_final)
+    opt = NelderMeadThresholdOptimizer(target_names=TARGET_COLS)
+    opt.fit(Y, oof_stacked)
+    
+    # Continuous probabilities are what Kaggle evaluates for ROC-AUC
+    final_oof_auc = calculate_macro_auc(Y, oof_stacked)
     
     # Per-Target Final Breakdown
     target_summary = {}
     for i, col in enumerate(TARGET_COLS):
         raw_s = roc_auc_score(Y[:, i], oof_m1[:, i]) if len(np.unique(Y[:, i])) > 1 else 0.5
-        final_s = roc_auc_score(Y[:, i], oof_final[:, i]) if len(np.unique(Y[:, i])) > 1 else 0.5
+        final_s = roc_auc_score(Y[:, i], oof_stacked[:, i]) if len(np.unique(Y[:, i])) > 1 else 0.5
         target_summary[col] = {
             "raw_base_auc": round(float(raw_s), 4),
-            "final_ybocs_auc": round(float(final_s), 4),
+            "final_stacked_auc": round(float(final_s), 4),
             "total_gain": round(float(final_s - raw_s), 4),
-            "opt_threshold": opt_results["best_thresholds"][col]
+            "opt_decision_threshold": round(float(opt.optimal_thresholds[i]), 4)
         }
         
     return {
         "stage_A_raw_oof_auc": round(float(raw_oof_auc), 4),
         "stage_B_calibrated_oof_auc": round(float(cal_oof_auc), 4),
         "stage_C_stacked_oof_auc": round(float(stacked_oof_auc), 4),
-        "stage_D_final_ybocs_oof_auc": round(float(final_oof_auc), 4),
+        "stage_D_final_kaggle_auc": round(float(final_oof_auc), 4),
         "total_pipeline_gain": round(float(final_oof_auc - raw_oof_auc), 4),
+        "clinical_macro_f1_baseline": round(float(opt.baseline_macro_f1), 4),
+        "clinical_macro_f1_optimized": round(float(opt.optimized_macro_f1), 4),
         "target_summary": target_summary
     }
 
@@ -169,7 +186,8 @@ if __name__ == "__main__":
     print(f"Stage A (Raw Base Model OOF AUC):              {results['stage_A_raw_oof_auc']:.4f}")
     print(f"Stage B (+ Pivot & Pulse Calibration):        {results['stage_B_calibrated_oof_auc']:.4f}")
     print(f"Stage C (+ 2nd-Level Meta-Ensemble Stacker):   {results['stage_C_stacked_oof_auc']:.4f}")
-    print(f"Stage D (+ Nelder-Mead Multi-Thresholds):      {results['stage_D_final_ybocs_oof_auc']:.4f}")
+    print(f"Stage D (Kaggle Continuous Submission AUC):    {results['stage_D_final_kaggle_auc']:.4f}")
+    print(f"Operational Clinical Macro-F1 (Triage Cutoff): {results['clinical_macro_f1_baseline']:.4f} -> {results['clinical_macro_f1_optimized']:.4f}")
     print(f"TOTAL PIPELINE AUC GAIN:                       {results['total_pipeline_gain']:+.4f}")
     print("\n--- Per-Target Y-BOCS Final Scores ---")
     score_df = pd.DataFrame(results["target_summary"]).T

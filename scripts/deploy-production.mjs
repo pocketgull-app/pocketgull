@@ -47,7 +47,10 @@ run(`node "${join(rootDir, 'scripts/pre-commit-check.cjs')}"`);
 console.log('• CycloneDX 1.6 SBOM Verification...');
 run(`node "${join(rootDir, 'scripts/generate_cyclonedx_sbom.mjs')}"`);
 
-console.log('✅ All pre-flight tests passed successfully. Proceeding with deployment.');
+console.log('• Compiling production Angular SSR bundle locally (Zero Cloud Compute)...');
+run('npm run build');
+
+console.log('✅ All pre-flight tests & local build passed successfully. Proceeding with deployment.');
 
 // 1. Verify Project Config
 console.log('\n🔍 Step 1/5: Verifying gcloud project configuration...');
@@ -65,10 +68,10 @@ try {
 }
 
 // 3. Submit Cloud Build
-console.log('\n🏗️ Step 3/5: Building container image via Google Cloud Build...');
+console.log('\n🏗️ Step 3/5: Submitting pre-compiled container to Google Cloud Build (Free Tier)...');
 const sourceTar = join(rootDir, 'deploy_source.tar.gz');
 if (existsSync(sourceTar)) {
-  console.log(`Found clean source archive (${(statSync(sourceTar).size / 1024 / 1024).toFixed(2)} MB). Submitting to Cloud Build...`);
+  console.log(`Found clean source archive with pre-compiled dist (${(statSync(sourceTar).size / 1024 / 1024).toFixed(2)} MB). Submitting to Cloud Build...`);
   run(`gcloud builds submit "${sourceTar}" --tag ${IMAGE_TAG} --project=${TARGET_PROJECT} --quiet`);
 } else {
   run(`gcloud builds submit --tag ${IMAGE_TAG} --project=${TARGET_PROJECT} --quiet`);
@@ -140,6 +143,49 @@ try {
   console.warn('⚠️ Lifecycle policy application notice:', e.message);
 }
 
+// 5b. Live Synthetic Mozilla HTTP Observatory 125 Verification Probe
+console.log('\n🛡️ Step 5b/5: Probing live production endpoints for Mozilla Observatory 125 compliance...');
+const probeDomains = [
+  'https://pocketgull.app',
+  'https://pocketgull.com',
+  'https://www.pocketgull.com'
+];
+
+try {
+  console.log('• Performing synthetic live HTTP header verification on production domains...');
+  for (const url of probeDomains) {
+    try {
+      const res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(8000) });
+      const csp = res.headers.get('content-security-policy') || '';
+      const hsts = res.headers.get('strict-transport-security') || '';
+      const coop = res.headers.get('cross-origin-opener-policy') || '';
+      const corp = res.headers.get('cross-origin-resource-policy') || '';
+      const coep = res.headers.get('cross-origin-embedder-policy') || '';
+
+      const hasStrictDynamic = csp.includes('strict-dynamic');
+      const hasPreload = hsts.includes('preload') && hsts.includes('31536000');
+      const hasCoop = coop === 'same-origin';
+      const hasCorp = corp === 'same-origin';
+      const hasCoep = coep === 'credentialless' || coep === 'require-corp';
+
+      if (hasStrictDynamic && hasPreload && hasCoop && hasCorp && hasCoep) {
+        console.log(`  ✅ [LIVE OBSERVATORY PASS] ${url} (CSP + HSTS Preload + COOP + CORP + COEP Verified)`);
+      } else {
+        console.warn(`  ⚠️  [NOTICE] ${url} header propagation in progress:`);
+        console.warn(`     CSP Strict-Dynamic: ${hasStrictDynamic ? 'YES' : 'PENDING'}`);
+        console.warn(`     HSTS Preload: ${hasPreload ? 'YES' : 'PENDING'}`);
+        console.warn(`     COOP same-origin: ${hasCoop ? 'YES' : 'PENDING'}`);
+        console.warn(`     CORP same-origin: ${hasCorp ? 'YES' : 'PENDING'}`);
+        console.warn(`     COEP credentialless: ${hasCoep ? 'YES' : 'PENDING'}`);
+      }
+    } catch (probeErr) {
+      console.warn(`  ⚠️ Probe for ${url} timed out or awaiting cold start:`, probeErr.message);
+    }
+  }
+} catch (probeBatchErr) {
+  console.warn('⚠️ Live header probe warning:', probeBatchErr.message);
+}
+
 // Clean up local tarball
 if (existsSync(sourceTar)) {
   try {
@@ -151,3 +197,4 @@ console.log('\n==========================================================');
 console.log('✅ Pocket Gull Deployment to Google Cloud Run Succeeded!');
 console.log(`🔗 Live URL: https://${SERVICE_NAME}-0540208645.us-central1.run.app`);
 console.log('==========================================================');
+

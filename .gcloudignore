@@ -3,7 +3,6 @@
 .gcloudignore
 node_modules/
 .angular/
-dist/
 tmp/
 .venv/
 venv/
@@ -61,6 +60,8 @@ sandbox/
 *.h5
 *.hdf5
 *.joblib
+*.map
+lora_*/
 
 # PhysioNet data
 physio*/

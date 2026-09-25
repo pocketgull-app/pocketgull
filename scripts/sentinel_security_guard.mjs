@@ -138,6 +138,14 @@ const APPROVED_EGRESS_DOMAINS = [
   'harvard.edu',
   'hms.harvard.edu',
   'undiagnosed.hms.harvard.edu',
+  'abortionfinder.org',
+  'www.abortionfinder.org',
+  'reprolegalhelpline.org',
+  'www.reprolegalhelpline.org',
+  'fns.usda.gov',
+  'www.fns.usda.gov',
+  'childwelfare.gov',
+  'www.childwelfare.gov',
   'ga4gh.org',
   'www.ga4gh.org',
   'amazon.com',
@@ -488,7 +496,8 @@ function auditFile(filePath) {
     !relativePath.includes('.md') &&
     (relativePath.startsWith('src/') || relativePath.startsWith('public/')) &&
     !relativePath.includes('global-jurisdiction-matrix') && // UK jurisdiction profile legitimately references UK statutes
-    !relativePath.includes('clinical-specialty-risk-suite') // Contains WHO guideline citation titles
+    !relativePath.includes('clinical-specialty-risk-suite') && // Contains WHO guideline citation titles
+    !relativePath.includes('clinical-prompts') // Instruction prompt containing negative rule guidance
   ) {
     const prohibitedBritishismRegex = /\b(paediatric|diarrhoeal|haemoglobin|anaemia|oedema|dyspnoea)\b/i;
     const bMatch = prohibitedBritishismRegex.exec(content);
