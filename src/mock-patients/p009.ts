@@ -122,5 +122,24 @@ export const p009: IPatient = {
       description: '3.4 x 2.8 cm hypoattenuating mass in the pancreatic head causing main pancreatic duct dilation (6mm) and common bile duct cutoff (11mm). No hepatic metastases.',
       status: 'Abnormal'
     }
-  ]
+  ],
+  environmentalIndex: {
+    aqi: 60,
+    pm25: "17.4 µg/m³",
+    ozone: "42 ppb",
+    pollenDensity: "Low",
+    heatIndex: "76°F",
+    vulnerabilityWarning: "EPA Toxics Release Inventory industrial chlorinated hydrocarbons and organophosphate exposures predisposing to chronic acinar inflammation."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["EPA", "NIH", "WHO"],
+    traversedPathSummary: "EPA SRS Toxic Industrial Chemical Registry (EPA) <-> NIH MeSH D010190 Pancreatic Ductal Neoplasms (NIH) <-> PERT Lipase Optimization & WHO Palliative Care Guidelines (WHO)",
+    groundedTargetConcept: "Pancreatic Enzyme Replacement & Anti-Cachectic Cytokine Blunting",
+    auditTrailHash: "sha256:6e1892bf309a12e5c839218128d9c129e4719283",
+    cochraneEvidenceTier: "Level A (Replicated RCTs)",
+    epaRegistryId: "110001928374",
+    pmidCitation: "PMID:30137286"
+  }
 };

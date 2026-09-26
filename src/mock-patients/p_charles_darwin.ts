@@ -39,6 +39,26 @@ export const p_charles_darwin: IPatient = {
     { id: "1", name: "Bismuth Subnitrate", value: "Gastrointestinal soothing" },
     { id: "2", name: "Hydrotherapy (Malvern Water Cure)", value: "Cold compress & spa regimen" }
   ],
+  environmentalIndex: {
+    aqi: 34,
+    pm25: "8.2 µg/m³",
+    ozone: "28 ppb",
+    pollenDensity: "Low",
+    heatIndex: "62°F",
+    vulnerabilityWarning: "Shallow unconfined alluvial well-water runoff with high mineral suspension and suspected xenobiotic percolation."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["USGS", "EPA", "NIH"],
+    traversedPathSummary: "Alluvial Groundwater Aquifer (USGS) <-> PFAS (EPA) <-> PPAR-Alpha / MASLD Steatohepatitis (NIH)",
+    groundedTargetConcept: "Alluvial Groundwater",
+    auditTrailHash: "sha256:db12dfbfea8d711491c11ec67d1c10ce6a89c42",
+    cochraneEvidenceTier: "Level A (Replicated RCTs)",
+    watershedOrAquiferSiteId: "USGS-GW-REG-04",
+    epaRegistryId: "1757057",
+    pmidCitation: "USGS-SIR-2023-5034"
+  },
   biometricHistory: [
     { timestamp: "1882-04-01T08:00:00Z", type: "hr", value: "72" },
     { timestamp: "1882-04-10T08:00:00Z", type: "hr", value: "70" },

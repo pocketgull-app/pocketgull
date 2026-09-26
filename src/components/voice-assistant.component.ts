@@ -27,6 +27,8 @@ import { ActuarialLongevityService } from '../services/actuarial-longevity.servi
 import { SpatialLesionMarkupService } from '../services/spatial-lesion-markup.service';
 import { MdcpDomainService } from '../services/mdcp/mdcp-domain.service';
 import { NavigationShellService } from '../services/navigation-shell.service';
+import { SocraticVoiceDemystifierService, IVoicePersonaProfile } from '../services/socratic-voice-demystifier.service';
+
 
 export interface IChatEntry {
     role: 'user' | 'model';
@@ -154,11 +156,11 @@ export interface IChatEntry {
                 </div>
 
                 <div class="flex items-center gap-1.5 shrink-0">
-                    <!-- Voice Selector Dropdown -->
+                    <!-- Gemini Live Voice Selector Dropdown -->
                     <div class="relative">
                         <button
                             type="button"
-                            (click)="isVoiceMenuOpen.set(!isVoiceMenuOpen())"
+                            (click)="isVoiceMenuOpen.set(!isVoiceMenuOpen()); isSocraticMenuOpen.set(false)"
                             class="flex items-center gap-1 transition-all px-2 py-1 rounded-lg border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/80 hover:bg-gray-100 dark:hover:bg-zinc-700 text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer shadow-xs"
                             title="Select Gemini Live HD Voice">
                             <span>🎙️</span>
@@ -175,6 +177,59 @@ export interface IChatEntry {
                                         @if (live.selectedVoice() === v) { <span class="text-teal-500 font-bold">✓</span> }
                                     </button>
                                 }
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Socratic Persona & Bio-Rhythmic Pacing Options -->
+                    <div class="relative">
+                        <button
+                            type="button"
+                            (click)="isSocraticMenuOpen.set(!isSocraticMenuOpen()); isVoiceMenuOpen.set(false)"
+                            class="flex items-center gap-1 transition-all px-2 py-1 rounded-lg border border-teal-500/30 bg-teal-500/10 hover:bg-teal-500/20 text-[11px] font-mono font-bold text-teal-700 dark:text-teal-300 cursor-pointer shadow-xs"
+                            title="Socratic Companion & Rachel Nabors Pacing Options">
+                            <span>🌿</span>
+                            <span class="hidden md:inline">{{ socraticVoice.activePersona().name.split(' ')[0] }} ({{ socraticVoice.activePersona().speechRate }}x)</span>
+                            <span class="text-[8px] text-teal-500">▼</span>
+                        </button>
+                        @if (isSocraticMenuOpen()) {
+                            <div class="absolute right-0 mt-1 w-64 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-gray-200 dark:border-zinc-800 p-2 z-50 text-xs animate-in fade-in zoom-in-95 space-y-2">
+                                <div class="px-1 py-0.5 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between font-mono text-[10px] text-zinc-500 uppercase tracking-wider">
+                                    <span>Socratic Voice Persona</span>
+                                    <span class="text-teal-600 dark:text-teal-400 font-bold">0.1 Hz Pacing</span>
+                                </div>
+                                <div class="space-y-1">
+                                    @for (p of socraticVoice.personas; track p.id) {
+                                        <button
+                                            type="button"
+                                            (click)="selectSocraticPersona(p.id)"
+                                            class="w-full text-left p-1.5 rounded-lg border text-xs transition cursor-pointer flex flex-col gap-0.5"
+                                            [class.bg-teal-50]="socraticVoice.selectedPersonaId() === p.id"
+                                            [class.dark:bg-teal-950/40]="socraticVoice.selectedPersonaId() === p.id"
+                                            [class.border-teal-500]="socraticVoice.selectedPersonaId() === p.id"
+                                            [class.border-gray-100]="socraticVoice.selectedPersonaId() !== p.id"
+                                            [class.dark:border-zinc-800]="socraticVoice.selectedPersonaId() !== p.id">
+                                            <div class="flex items-center justify-between font-bold text-zinc-800 dark:text-zinc-200 text-[11px]">
+                                                <span>{{ p.name }}</span>
+                                                <span class="font-mono text-[10px] text-teal-600 dark:text-teal-400">{{ p.speechRate }}x</span>
+                                            </div>
+                                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1">{{ p.role }}</span>
+                                        </button>
+                                    }
+                                </div>
+                                <div class="pt-2 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-between px-1">
+                                    <label class="flex items-center gap-1.5 text-[11px] font-mono font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            [checked]="isSocraticDemystifierActive()"
+                                            (change)="isSocraticDemystifierActive.set(!isSocraticDemystifierActive())"
+                                            class="rounded text-teal-600 focus:ring-teal-500 h-3.5 w-3.5">
+                                        <span>Jargon Demystifier</span>
+                                    </label>
+                                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-mono font-bold">
+                                        {{ isSocraticDemystifierActive() ? 'ANALOGIES ON' : 'RAW' }}
+                                    </span>
+                                </div>
                             </div>
                         }
                     </div>
@@ -595,12 +650,24 @@ export interface IChatEntry {
                     <!-- Input & Controls Shelf: SHRINK-0 (Zero Overlap with transcript!) -->
                     <div class="shrink-0 z-20 border-t border-gray-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-[#09090b]/95 backdrop-blur-md p-3 space-y-2">
                         
-                        <!-- Toolbar row: Quick Prompts Toggle, Barge-in Stop, SOAP Note -->
+                        <!-- Toolbar row: Quick Prompts Toggle, Bedside AAC, Barge-in Stop, SOAP Note -->
                         <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500">
-                            <button type="button" (click)="showPromptShelf.set(!showPromptShelf())" class="flex items-center gap-1.5 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer font-bold">
-                                <span>{{ showPromptShelf() ? '▾' : '▸' }}</span>
-                                <span>💡 Clinical Quick-Prompts &amp; MDCP</span>
-                            </button>
+                            <div class="flex items-center gap-3">
+                                <button type="button" (click)="showPromptShelf.set(!showPromptShelf())" class="flex items-center gap-1.5 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer font-bold">
+                                    <span>{{ showPromptShelf() ? '▾' : '▸' }}</span>
+                                    <span>💡 Clinical Quick-Prompts</span>
+                                </button>
+
+                                <button type="button" (click)="showAacShelf.set(!showAacShelf())" 
+                                        class="flex items-center gap-1.5 cursor-pointer font-bold transition"
+                                        [class.text-teal-600]="showAacShelf()"
+                                        [class.dark:text-teal-400]="showAacShelf()"
+                                        [class.hover:text-zinc-800]="!showAacShelf()"
+                                        [class.dark:hover:text-zinc-200]="!showAacShelf()">
+                                    <span>{{ showAacShelf() ? '▾' : '▸' }}</span>
+                                    <span>🏥 Bedside AAC &amp; Pain</span>
+                                </button>
+                            </div>
                             
                             <div class="flex items-center gap-2">
                                 @if (live.isSpeaking()) {
@@ -635,6 +702,51 @@ export interface IChatEntry {
                                     <button type="button" (click)="sendQuickPrompt('Query live ISO/IEEE 11073 medical device communication telemetry.')" class="shrink-0 px-2.5 py-1 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 text-[11px] font-medium text-teal-700 dark:text-teal-300 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900 transition shadow-xs cursor-pointer">
                                         📡 IEEE 11073
                                     </button>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Bedside AAC & Wong-Baker Pain Vocalizer Drawer -->
+                        @if (showAacShelf()) {
+                            <div class="p-2.5 bg-gray-50/90 dark:bg-zinc-900/90 border border-teal-500/20 rounded-xl space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <!-- Wong-Baker FACES Pain Row -->
+                                <div class="space-y-1">
+                                    <div class="flex items-center justify-between text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+                                        <span class="font-bold flex items-center gap-1"><span>😣</span> Wong-Baker FACES Pain Vocalizer</span>
+                                        <span class="text-teal-600 dark:text-teal-400">One-Tap Announce</span>
+                                    </div>
+                                    <div class="grid grid-cols-6 gap-1 font-mono text-xs">
+                                        @for (face of aacFaces; track face.score) {
+                                            <button
+                                                type="button"
+                                                (click)="selectAacFace(face)"
+                                                class="flex flex-col items-center justify-center p-1.5 rounded-lg border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-800/80 hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-950/40 transition cursor-pointer text-center group"
+                                                [title]="face.description">
+                                                <span class="text-lg leading-none group-hover:scale-110 transition-transform">{{ face.emoji }}</span>
+                                                <span class="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 mt-1">{{ face.score }}</span>
+                                                <span class="text-[8px] text-zinc-400 truncate w-full">{{ face.name }}</span>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Bedside Need Tiles -->
+                                <div class="space-y-1 pt-1 border-t border-gray-200/60 dark:border-zinc-800/60">
+                                    <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider font-bold flex items-center gap-1">
+                                        <span>🛏️</span> Immediate Bedside Needs
+                                    </div>
+                                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-1 text-[11px]">
+                                        @for (tile of aacTiles; track tile.id) {
+                                            <button
+                                                type="button"
+                                                (click)="triggerAacTile(tile)"
+                                                class="flex items-center gap-1.5 p-1.5 rounded-lg border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-800/80 hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-950/40 transition cursor-pointer text-left text-zinc-800 dark:text-zinc-200 group"
+                                                [title]="tile.spokenText">
+                                                <span class="text-sm shrink-0 group-hover:scale-110 transition-transform">{{ tile.emoji }}</span>
+                                                <span class="font-medium truncate text-[10px]">{{ tile.title }}</span>
+                                            </button>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -862,16 +974,55 @@ export class VoiceAssistantComponent implements OnDestroy {
     opticalVision = inject(OpticalCameraVisionService);
     mdcpService = inject(MdcpDomainService, { optional: true });
     navShell = inject(NavigationShellService, { optional: true });
+    socraticVoice = inject(SocraticVoiceDemystifierService);
 
     openMdcpHub(): void {
       this.navShell?.openMdcpHub();
     }
 
     isVoiceMenuOpen = signal<boolean>(false);
+    isSocraticMenuOpen = signal<boolean>(false);
+    isSocraticDemystifierActive = signal<boolean>(true);
     showPromptShelf = signal<boolean>(false);
+    showAacShelf = signal<boolean>(false);
     isCopiedToastVisible = signal<boolean>(false);
     readonly availableVoices = ['Aoede', 'Puck', 'Charon', 'Fenrir', 'Kore'] as const;
     protected readonly Math = Math;
+
+    // Wong-Baker FACES pain vocalizer dataset
+    readonly aacFaces = [
+      { score: 0, name: 'No Hurt', description: 'Patient is relaxed, comfortable, smiling.', speechPrompt: 'I am comfortable and have no pain. Pain score zero.', emoji: '😊' },
+      { score: 2, name: 'Hurts Little Bit', description: 'Noticeable mild discomfort.', speechPrompt: 'It hurts just a little bit. Pain score two.', emoji: '🙂' },
+      { score: 4, name: 'Hurts Little More', description: 'Noticeable discomfort, neutral face.', speechPrompt: 'It hurts a little more now. Pain score four.', emoji: '😐' },
+      { score: 6, name: 'Hurts Even More', description: 'Pain is intrusive, furrowed brow.', speechPrompt: 'It hurts even more. It is hard to rest. Pain score six.', emoji: '😟' },
+      { score: 8, name: 'Hurts Whole Lot', description: 'Patient in significant distress.', speechPrompt: 'It hurts a whole lot. I need pain relief. Pain score eight.', emoji: '😣' },
+      { score: 10, name: 'Hurts Worst', description: 'Acute agony. Immediate response required.', speechPrompt: 'This hurts the worst possible. Please help me right away. Pain score ten.', emoji: '😭' }
+    ];
+
+    // Core ICU bedside communication tiles
+    readonly aacTiles = [
+      { id: 'WATER', title: 'Water / Swab', spokenText: 'Could I please have some water, or a mouth swab?', emoji: '💧' },
+      { id: 'PAIN', title: 'Pain Meds', spokenText: "I'm in pain. Could someone please check on my pain medication?", emoji: '💊' },
+      { id: 'COLD', title: 'Warm Blanket', spokenText: "I'm feeling very cold. Could I please have a warm blanket?", emoji: '❄️' },
+      { id: 'WARM', title: 'Fan / Cool', spokenText: "I'm feeling too warm. Could we adjust the blankets or turn on a fan?", emoji: '☀️' },
+      { id: 'REPOSITION', title: 'Reposition Bed', spokenText: 'Could someone please help reposition me, or turn me in bed?', emoji: '🛏️' },
+      { id: 'FAMILY', title: 'Call Nurse / Family', spokenText: 'I would like to see my family, or speak with my nurse, please.', emoji: '👨‍👩‍👦' }
+    ];
+
+    selectSocraticPersona(personaId: string): void {
+      this.socraticVoice.setPersona(personaId);
+      this.isSocraticMenuOpen.set(false);
+    }
+
+    async selectAacFace(face: { score: number; name: string; speechPrompt: string }): Promise<void> {
+      await this.socraticVoice.speakWithVagalPacing(face.speechPrompt);
+      this.sendQuickPrompt(`[BEDSIDE AAC PAIN VOCALIZATION]: Patient reported Wong-Baker FACES pain score of ${face.score}/10 (${face.name}). "${face.speechPrompt}"`);
+    }
+
+    async triggerAacTile(tile: { title: string; spokenText: string }): Promise<void> {
+      await this.socraticVoice.speakWithVagalPacing(tile.spokenText);
+      this.sendQuickPrompt(`[BEDSIDE AAC NEED ANNOUNCEMENT]: ${tile.spokenText}`);
+    }
 
     setVoice(voice: string): void {
       this.live.selectedVoice.set(voice);
@@ -1575,6 +1726,11 @@ Only include a rich-media block when the user explicitly requests visual or rese
         
         let { cleanMd, jsonStr } = this._extractCards(this._liveModelText);
         
+        if (this.isSocraticDemystifierActive()) {
+            const demystified = this.socraticVoice.demystifyText(cleanMd);
+            cleanMd = demystified.processedText;
+        }
+
         let htmlContent = cleanMd;
         const parser = this.markdownService.parser();
         if (parser) { try { htmlContent = (parser as any).parse(cleanMd); } catch (e) { console.debug('[VoiceAssistant] Markdown parse fallback:', (e as Error)?.message); htmlContent = `<p>${cleanMd}</p>`; } }

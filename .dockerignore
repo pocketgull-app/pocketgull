@@ -8,7 +8,6 @@ pocketgull_flutter/build/
 .angular/
 .vite/
 .astro/
-dist/
 build/
 .husky/
 .gcloudignore
@@ -44,3 +43,24 @@ pocketgull_api/venv/
 pocketgull_api/.venv/
 pocketgull_api/.pytest_cache/
 pocketgull_api/__pycache__/
+.venv/
+venv/
+
+# Heavy Machine Learning & Competition Datasets
+contests/
+lora_*/
+python_example_2026/
+scratch/
+typefaces_vault/
+case-studies/
+
+# Mobile Companions (Separate packaging)
+pocketgull_flutter/
+companion-apps/patient_app/
+companion-apps/provider_app/
+companion-apps/neuro_reader_app/
+
+# Source Maps & Archives
+*.map
+*.tar.gz
+*.tgz

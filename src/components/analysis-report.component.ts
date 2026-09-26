@@ -31,21 +31,7 @@ import { MedicalDecoderService } from '../services/medical-decoder.service';
 import { RevealDirective } from '../directives/reveal.directive';
 import { NodeAgentDialogComponent, INodeAgentDialogData } from './node-agent-dialog.component';
 import { ClinicalAssessmentsSuiteComponent } from './clinical-assessments-suite.component';
-import { AssessmentsLensTabComponent } from './analysis-report/assessments-lens-tab.component';
-import { ChronobiologyMatrixLensTabComponent } from './analysis-report/chronobiology-matrix-lens-tab.component';
-import { DiagnosticsLensTabComponent } from './analysis-report/diagnostics-lens-tab.component';
-import { EmtHandoffLensTabComponent } from './analysis-report/emt-handoff-lens-tab.component';
-import { EpigeneticLongevityLensTabComponent } from './analysis-report/epigenetic-longevity-lens-tab.component';
-import { FunctionalMedicineMatrixLensTabComponent } from './analysis-report/functional-medicine-matrix-lens-tab.component';
-import { InterventionsLensTabComponent } from './analysis-report/interventions-lens-tab.component';
-import { MaternalPostpartumLensTabComponent } from './analysis-report/maternal-postpartum-lens-tab.component';
-import { NutritionalBypassLensTabComponent } from './analysis-report/nutritional-bypass-lens-tab.component';
-import { PatientEducationLensTabComponent } from './analysis-report/patient-education-lens-tab.component';
-import { SevenGenerationsStewardshipLensTabComponent } from './analysis-report/seven-generations-stewardship-lens-tab.component';
-import { SocraticEpistemologyLensTabComponent } from './analysis-report/socratic-epistemology-lens-tab.component';
-import { SummaryOverviewLensTabComponent } from './analysis-report/summary-overview-lens-tab.component';
-import { TeledentistrySystemicLensComponent } from './analysis-report/teledentistry-systemic-lens.component';
-import { TriParadigmIntegrativeLensTabComponent } from './analysis-report/tri-paradigm-integrative-lens-tab.component';
+import { ANALYSIS_LENS_TAB_COMPONENTS } from './analysis-report';
 import { ClinicalMenuComponent } from './clinical-menu.component';
 import { KssCognitiveShieldComponent } from './kss-cognitive-shield.component';
 import { CarePlanPrintPreviewComponent } from './care-plan-print-preview.component';
@@ -90,6 +76,7 @@ import { EnvironmentalExposomicsToxicologyComponent } from './environmental-expo
 import { SkepticalEpistemologyHudComponent } from './skeptical-epistemology-hud.component';
 import { AvsEngineService, AvsBitrateTier } from '../services/avs-engine.service';
 import { PositivePsychologyFlourishingHubComponent } from './positive-psychology-flourishing-hub.component';
+import { SleepVagalFlourishingHubComponent } from './sleep-vagal-flourishing-hub.component';
 import { SystemsEquilibriumHudComponent, SystemsNavMode } from './analysis-report/systems-equilibrium-hud.component';
 import { InterSystemCrosstalkCardComponent } from './analysis-report/inter-system-crosstalk-card.component';
 import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precondition-alert-banner.component';
@@ -103,21 +90,8 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
     SystemsEquilibriumHudComponent,
     InterSystemCrosstalkCardComponent,
     PositivePsychologyFlourishingHubComponent,
-    AssessmentsLensTabComponent,
-    ChronobiologyMatrixLensTabComponent,
-    DiagnosticsLensTabComponent,
-    EmtHandoffLensTabComponent,
-    EpigeneticLongevityLensTabComponent,
-    FunctionalMedicineMatrixLensTabComponent,
-    InterventionsLensTabComponent,
-    MaternalPostpartumLensTabComponent,
-    NutritionalBypassLensTabComponent,
-    PatientEducationLensTabComponent,
-    SevenGenerationsStewardshipLensTabComponent,
-    SocraticEpistemologyLensTabComponent,
-    SummaryOverviewLensTabComponent,
-    TeledentistrySystemicLensComponent,
-    TriParadigmIntegrativeLensTabComponent,
+    SleepVagalFlourishingHubComponent,
+    ...ANALYSIS_LENS_TAB_COMPONENTS,
     EnvironmentalExposomicsToxicologyComponent,
     SkepticalEpistemologyHudComponent,
     LocalGemmaStudioComponent,
@@ -621,6 +595,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                 </div>
               </div>
             </div>
+            <app-sleep-vagal-flourishing-hub class="block my-6"></app-sleep-vagal-flourishing-hub>
             <app-chronobiology-matrix-lens-tab class="block my-6"></app-chronobiology-matrix-lens-tab>
           }
 
@@ -654,6 +629,14 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
 
           @if (activeLens() === 'Maternal & Postpartum') {
             <app-maternal-postpartum-lens-tab class="block my-6"></app-maternal-postpartum-lens-tab>
+          }
+
+          @if (activeLens() === "Men's Health & Andrology") {
+            <app-mens-health-lens-tab class="block my-6"></app-mens-health-lens-tab>
+          }
+
+          @if (activeLens() === "Gender-Affirming Care & Transition") {
+            <app-gender-affirming-lens-tab class="block my-6"></app-gender-affirming-lens-tab>
           }
 
           @if (activeLens() === 'Seven Generations Stewardship') {
@@ -2198,6 +2181,8 @@ export class AnalysisReportComponent implements OnDestroy {
     'PhysioNet Telemetry',
     'ASSESSMENTS',
     'Maternal & Postpartum',
+    "Men's Health & Andrology",
+    "Gender-Affirming Care & Transition",
     'Grow-Thyself Education',
     'Epigenetic Longevity',
     'Pre-Conception & Family Health'
@@ -2645,6 +2630,27 @@ export class AnalysisReportComponent implements OnDestroy {
             subtitle: 'Mitochondrial Bio-Energetics, Cytokine Cascades & Mucosal Integrity',
             badges: ['IFM 7-Node Web', 'Inflammatory Burden', 'Gut-Brain Axis Barrier'],
             description: 'Assessing root cause bio-energetics across hepatic biotransformation, mitochondrial ATP coupling, and gut mucosal permeability.'
+          };
+        case 'Maternal & Postpartum':
+          return {
+            title: 'Reproductive Autonomy, Bodily Sovereignty & Perinatal Health',
+            subtitle: 'CDC MEC Contraception, Emergency Timelines & Rotterdam PCOS Triage',
+            badges: ['CDC MEC Guidelines', 'Zero-Egress Enclave', 'LactMed Safety'],
+            description: 'Client-side zero-egress reproductive autonomy, emergency contraception BMI curves, and Rotterdam PCOS / Endometriosis quantitative models.'
+          };
+        case "Men's Health & Andrology":
+          return {
+            title: "Men's Health, Andrology & Endothelial Vitality Engine",
+            subtitle: 'Princeton III Microvascular CAD, IPSS & PSA Biopsy Avoidance Triage',
+            badges: ['Princeton III CAD', 'ISMP Nitrate Hard-Stop', 'PSA Density Biopsy Triage'],
+            description: 'Stratifying cavernosal-to-coronary microvascular risk, IPSS benign prostatic hyperplasia tracking, and PSA density triage.'
+          };
+        case "Gender-Affirming Care & Transition":
+          return {
+            title: 'Gender-Affirming Healthcare & Endocrine Suite',
+            subtitle: 'WPATH SOC8 Targets, Organ Inventory & In Silico Bateman PK Modeling',
+            badges: ['WPATH SOC8 Protocol', 'Bateman 2-Compartment PK', 'Cystatin C eGFR'],
+            description: 'Evidence-based organ inventory assessment ("anatomy over assumption"), 2-compartment GAHT PK simulation, and secondary erythrocytosis safety surveillance.'
           };
         default:
           return {

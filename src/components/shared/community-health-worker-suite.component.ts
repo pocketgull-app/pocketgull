@@ -606,7 +606,7 @@ export interface IDehydrationTriageResult {
           WHO Task-Shifting Standard | MSF Austere Guidelines | Zero-Egress Local Edge
         </div>
         <div class="font-mono text-zinc-400">
-          Universal Free Healthcare Triad • PocketGull
+          Universal Free Healthcare • Sovereignty Health Suite • PocketGull
         </div>
       </footer>
     </div>

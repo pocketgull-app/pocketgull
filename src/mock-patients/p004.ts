@@ -99,5 +99,24 @@ export const p004: IPatient = {
       description: "Left ventricular ejection fraction 52%; mild concentric LV hypertrophy; zero acute ST elevation.",
       status: "Reviewed"
     }
-  ]
+  ],
+  environmentalIndex: {
+    aqi: 65,
+    pm25: "18.8 µg/m³",
+    ozone: "40 ppb",
+    pollenDensity: "Moderate",
+    heatIndex: "85°F",
+    vulnerabilityWarning: "Peatland biomass haze particulate exposure and humidity-trapped aerosolized bio-particulates exacerbating hominid small-airway resistance."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["NSF", "NIH", "USGS"],
+    traversedPathSummary: "NSF OKN Primate Genotype Topologies (NSF) <-> NIH MeSH D000818 Comparative Primate Genomics & Cardiometabolic Resilience (NIH) <-> USGS Geochemical Mineral Baseline (USGS)",
+    groundedTargetConcept: "Comparative Hominid Cardiometabolic & Renal Conservation",
+    auditTrailHash: "sha256:4a028c11e74f85e492b496739a82cd11b0e93ca1",
+    cochraneEvidenceTier: "Level B (Cohort / Preliminary)",
+    watershedOrAquiferSiteId: "USGS-GEO-TROP-02",
+    pmidCitation: "PMID:21270889"
+  }
 };

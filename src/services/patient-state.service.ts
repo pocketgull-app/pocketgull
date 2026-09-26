@@ -454,6 +454,7 @@ export class PatientStateService {
   readonly travelProfile = signal<import('./patient.types').ITravelMedicineProfile | null>(null);
   readonly awareStewardship = signal<import('./patient.types').IWhoAwareClassification[]>([]);
   readonly environmentalIndex = signal<import('./patient.types').IEnvironmentalHealthIndex | null>(null);
+  readonly oknProfile = signal<import('./patient.types').IOknProvenanceProfile | null>(null);
   readonly clinicianRole = signal<'Cardiology' | 'Integrative' | 'Public Health' | 'General'>('General');
   readonly paretoWeights = signal<import('./patient.types').IMlParetoWeights>({ costWeight: 0.33, speedWeight: 0.33, adherenceWeight: 0.34 });
   readonly banditState = signal<import('./patient.types').IMlBanditState>({
@@ -1433,6 +1434,7 @@ export class PatientStateService {
     this.travelProfile.set(state.travelProfile || null);
     this.awareStewardship.set(state.awareStewardship || []);
     this.environmentalIndex.set(state.environmentalIndex || null);
+    this.oknProfile.set(state.oknProfile || state.environmentalIndex?.oknProvenance || null);
     this.autoPrescribeToolsFromPatientData(patient);
   }
 
@@ -1506,6 +1508,7 @@ export class PatientStateService {
             travelProfile: this.travelProfile(),
             awareStewardship: this.awareStewardship(),
             environmentalIndex: this.environmentalIndex(),
+            oknProfile: this.oknProfile(),
         } as any;
   }
 

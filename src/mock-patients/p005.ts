@@ -99,5 +99,24 @@ export const p005: IPatient = {
       description: "Bilateral kidneys display increased cortical echogenicity consistent with chronic parenchymal disease. Concentric LV hypertrophy.",
       status: "Reviewed"
     }
-  ]
+  ],
+  environmentalIndex: {
+    aqi: 50,
+    pm25: "14.1 µg/m³",
+    ozone: "38 ppb",
+    pollenDensity: "Low",
+    heatIndex: "75°F",
+    vulnerabilityWarning: "USGS municipal sodium hardness and high dietary sodium water percolation accelerating systemic vascular stiffening and glomerular hyperfiltration."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["USGS", "NIH", "WHO"],
+    traversedPathSummary: "USGS Sodium & Mineral Aquifer Profile (USGS) <-> NIH MeSH D006973 Essential Hypertension (NIH) <-> SPRINT Target Intensive BP Autoregulation (<120 mmHg) & WHO Essential Nephron-Sparing Benchmark (NIH/WHO)",
+    groundedTargetConcept: "Nephron Sparing & SPRINT Intensive BP Autoregulation",
+    auditTrailHash: "sha256:5e197cb32103fca58f559b329a2df94c8e762c99",
+    cochraneEvidenceTier: "Level A (Replicated RCTs)",
+    watershedOrAquiferSiteId: "USGS-14211720",
+    pmidCitation: "PMID:26551272"
+  }
 };
