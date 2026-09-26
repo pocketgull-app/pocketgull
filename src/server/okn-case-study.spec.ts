@@ -116,4 +116,18 @@ describe('NSF OKN, NIH & WHO Global Health Grounding Radar Case Study (#08)', ()
     expect(html).toContain('Nominative Fair Use &amp; Third-Party Trademark Disclaimers');
     expect(html).toContain('21st Century Cures Act &amp; 45 CFR Part 171');
   });
+
+  it('renders the Tri-Mode Reading Toolbar (Standard, 6th Grade, Bionic) and 3D App link', () => {
+    const html = renderOknCaseStudyHtml();
+    expect(html).toContain('reading-toolbar');
+    expect(html).toContain('btn-level-standard');
+    expect(html).toContain('btn-level-grade6');
+    expect(html).toContain('btn-bionic');
+    expect(html).toContain('https://pocketgull.app');
+    expect(html).toContain('id="content-standard"');
+    expect(html).toContain('id="content-grade6"');
+    expect(html).toContain('id="content-bionic"');
+    expect(html).toContain('setReadingLevel');
+    expect(html).toContain('toggleBionic');
+  });
 });

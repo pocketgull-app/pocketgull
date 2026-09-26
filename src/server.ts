@@ -1132,50 +1132,42 @@ app.use((req, res, next) => {
   const isBusinessPath = req.path === '/business' || req.path === '/enterprise' || req.path === '/app-builder' || req.path === '/portal';
 
   if (req.path === '/case-studies' || req.path === '/case-studies/') {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.send(renderCaseStudiesHubHtml());
+    return sendHtmlResponse(res, renderCaseStudiesHubHtml());
   }
 
   if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.send(renderNantucketCaseStudyHtml());
+    return sendHtmlResponse(res, renderNantucketCaseStudyHtml());
   }
 
   if (req.path === '/case-studies/neuro-sanctuary' || req.path === '/case-studies/ms-radar' || req.path === '/neuro-sanctuary') {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.send(renderNeuroSanctuaryCaseStudyHtml());
+    return sendHtmlResponse(res, renderNeuroSanctuaryCaseStudyHtml());
   }
 
   if (req.path === '/case-studies/cardiometabolic-radar' || req.path === '/case-studies/cardiometabolic' || req.path === '/cardiometabolic') {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.send(renderCardiometabolicCaseStudyHtml());
+    return sendHtmlResponse(res, renderCardiometabolicCaseStudyHtml());
   }
 
   if (req.path === '/case-studies/darwin-vagal-radar' || req.path === '/case-studies/darwin' || req.path === '/darwin') {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.send(renderDarwinCaseStudyHtml());
+    return sendHtmlResponse(res, renderDarwinCaseStudyHtml());
   }
 
   if (req.path === '/case-studies/okn-grounding' || req.path === '/case-studies/okn' || req.path === '/okn-grounding' || req.path === '/okn') {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.send(renderOknCaseStudyHtml());
+    return sendHtmlResponse(res, renderOknCaseStudyHtml());
   }
 
   if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {
     const country = extractClientCountry(req);
     if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
-      res.status(451).setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.send(renderOfacRestrictedHtml());
+      return sendHtmlResponse(res.status(451), renderOfacRestrictedHtml());
     }
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.send(renderBusinessSiteHtml({ countryCode: country }));
+    return sendHtmlResponse(res, renderBusinessSiteHtml({ countryCode: country }));
   }
 
   if (process.env['SKIP_SSR'] === 'true' || req.query['csr'] === '1') {

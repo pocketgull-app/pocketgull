@@ -763,7 +763,7 @@ export function renderBusinessSiteHtml(options?: IBusinessSiteRenderOptions): st
         <a href="#condition-thrift">Condition Explorer</a>
         <a href="#clinical-typography">Font Safeguards</a>
         <a href="#linus-pauling">Linus Pauling</a>
-        <a href="javascript:void(0)" onclick="openDocDrill('Babesia microti')" style="color: var(--teal-light);">🔬 Doc Drill</a>
+        <button type="button" onclick="openDocDrill('Babesia microti')" style="background: none; border: none; font: inherit; cursor: pointer; color: var(--teal-light); padding: 0;">🔬 Doc Drill</button>
         <a href="#open-source">Open Source</a>
         <a href="#testimonials">Quotes</a>
         <a href="#stewardship">Stewardship</a>
@@ -3061,7 +3061,7 @@ ${renderLegalFooterHtml()}
           '<h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin: 0.25rem 0 0.4rem;">' + data.title + '</h3>' +
           '<p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">' + data.subtitle + '</p>' +
         '</div>' +
-        '<button type="button" class="doc-drill-badge" onclick="openDocDrill(\\'' + data.docDrillTerm + '\\')" style="font-size: 0.75rem; padding: 0.4rem 0.75rem;">🔬 Socratic Evidence Focus</button>' +
+        '<button type="button" class="doc-drill-badge" onclick="openDocDrill(&quot;' + data.docDrillTerm + '&quot;)" style="font-size: 0.75rem; padding: 0.4rem 0.75rem;">🔬 Socratic Evidence Focus</button>' +
       '</div>' +
 
       '<div class="grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">' +
@@ -3069,7 +3069,7 @@ ${renderLegalFooterHtml()}
         '<div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">' +
           '<div style="font-size: 0.72rem; font-family: ui-monospace, monospace; color: var(--teal); font-weight: 700; text-transform: uppercase;">Austrian Salutogenic Arc</div>' +
           '<div class="act-card" style="margin: 0; padding: 0.65rem 0.85rem; border-left: 3px solid #64748b;">' +
-            '<div class="act-header" style="color: #64748b;">Act I &bull; Where You\\'ve Been</div>' +
+            '<div class="act-header" style="color: #64748b;">Act I &bull; Where You’ve Been</div>' +
             '<div class="act-body" style="font-size: 0.78rem;">' + data.act1 + '</div>' +
           '</div>' +
           '<div class="act-card" style="margin: 0; padding: 0.65rem 0.85rem; border-left: 3px solid var(--teal);">' +
@@ -3077,7 +3077,7 @@ ${renderLegalFooterHtml()}
             '<div class="act-body" style="font-size: 0.78rem;">' + data.act2 + '</div>' +
           '</div>' +
           '<div class="act-card" style="margin: 0; padding: 0.65rem 0.85rem; border-left: 3px solid var(--amber);">' +
-            '<div class="act-header" style="color: var(--amber);">Act III &bull; Where You\\'re Going</div>' +
+            '<div class="act-header" style="color: var(--amber);">Act III &bull; Where You’re Going</div>' +
             '<div class="act-body" style="font-size: 0.78rem;">' + data.act3 + '</div>' +
           '</div>' +
         '</div>' +
@@ -3170,7 +3170,7 @@ ${renderLegalFooterHtml()}
       },
       'Meadows Leverage L1-9': {
         category: 'SYSTEMS BIOLOGY',
-        summary: 'Donella Meadows\' 12 Leverage Points hierarchy applied to ecological vector transmission and immunological response.',
+        summary: 'Donella Meadows’ 12 Leverage Points hierarchy applied to ecological vector transmission and immunological response.',
         clinicalTrap: 'Treating individual tick bites with antibiotics is Leverage Point 12 (shallow parameter adjustments). Disrupting the reservoir host transmission cycle (Leverage Point 1: Paradigm Change via MIT Mice Against Ticks) solves the crisis at the ecological source.',
         protocol: 'Step 1: Map host reservoirs (Peromyscus leucopus white-footed mice). Step 2: Implement microclimate brush clearing (VPD > 1.2 kPa). Step 3: Support systemic biological disruption rather than endless downstream chemical suppression.',
         evidence: 'Esvelt KM et al. MIT Media Lab (2020); Meadows DH. Thinking in Systems: A Primer (2008).',
@@ -3226,10 +3226,10 @@ ${renderLegalFooterHtml()}
       },
       'Salutogenic 3-Act Trajectory': {
         category: 'CLINICAL EPISTEMOLOGY',
-        summary: 'An Austrian phenomenological framework dividing clinical care encounters into Where You\'ve Been (Trail Traversed), Where You Stand Today (Living Foothold), and Where You\'re Going (Action Horizon).',
+        summary: 'An Austrian phenomenological framework dividing clinical care encounters into Where You’ve Been (Trail Traversed), Where You Stand Today (Living Foothold), and Where You’re Going (Action Horizon).',
         clinicalTrap: 'The 1968 Weed SOAP checklist treats patient encounters as isolated, transactional billing events with static deficit labels that foster clinical fatalism and learned helplessness.',
         protocol: 'Act I: Validate traversed challenges with zero shame or fatalism. Act II: Ground current biometrics in physiological adaptation. Act III: Co-create concrete 30-day vitality milestones and daily restoration rituals.',
-        evidence: 'Antonovsky A. Health, Stress, and Coping (1979); Frankl VE. Man\'s Search for Meaning (1946); ACM SIGCHI Clinical Ergonomics.',
+        evidence: 'Antonovsky A. Health, Stress, and Coping (1979); Frankl VE. Man’s Search for Meaning (1946); ACM SIGCHI Clinical Ergonomics.',
         citations: 'Antonovsky A. Health, Stress, and Coping (1979); Frankl VE. (1946).'
       },
       '0.1 Hz Resonant Pacing': {
@@ -3250,19 +3250,19 @@ ${renderLegalFooterHtml()}
       },
       'ISMP Medication Safety Standard': {
         category: 'PATIENT SAFETY & POSOLOGY',
-        summary: 'Institute for Safe Medication Practices rules: strictly prohibits trailing zeroes (\'5.0 mg\') and mandates leading zeroes (\'0.5 mg\') with slashed-zero (cv08) and curved-l (cv05) typography.',
-        clinicalTrap: '\'5.0 mg\' misread as \'50 mg\' is the #1 typographical cause of 10-fold lethal medication overdose in emergency orders.',
-        protocol: 'Zero trailing decimals: Always write \'5 mg\', never \'5.0 mg\'. Always write \'0.5 mg\', never \'.5 mg\'. Spell out \'micrograms\' or enforce ISO-compliant \'mcg\' notation instead of Greek \'µg\'.',
+        summary: 'Institute for Safe Medication Practices rules: strictly prohibits trailing zeroes ("5.0 mg") and mandates leading zeroes ("0.5 mg") with slashed-zero (cv08) and curved-l (cv05) typography.',
+        clinicalTrap: '"5.0 mg" misread as "50 mg" is the #1 typographical cause of 10-fold lethal medication overdose in emergency orders.',
+        protocol: 'Zero trailing decimals: Always write "5 mg", never "5.0 mg". Always write "0.5 mg", never ".5 mg". Spell out "micrograms" or enforce ISO-compliant "mcg" notation instead of Greek "µg".',
         evidence: 'ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2026); FDA CDER Drug Safety Guidance.',
         citations: 'ISMP Medication Safety Guidelines (2026); FDA 21 CFR Part 201.'
       },
       'Polypharmacy Deprescribing (STOPP/START)': {
         category: 'GERIATRIC POSOLOGY',
-        summary: 'Screening Tool of Older Persons\' Prescriptions (STOPP v3) and Prescribing Cascade Detection (Amlodipine → edema → Furosemide).',
+        summary: 'Screening Tool of Older Persons’ Prescriptions (STOPP v3) and Prescribing Cascade Detection (Amlodipine → edema → Furosemide).',
         clinicalTrap: 'Treating a drug side-effect as a new clinical disease and adding a second medication. Always audit the medication timeline before adding a new drug.',
         protocol: 'Audit medication list against STOPP v3 criteria. Calculate anticholinergic cognitive burden score (ACB). Execute multi-week taper with weekly symptom check-ins.',
-        evidence: 'O\'Mahony D et al. STOPP/START criteria version 3. Eur Geriatr Med 2023.',
-        citations: 'O\'Mahony D et al. Eur Geriatr Med. 2023; AGS Beers Criteria 2023.'
+        evidence: 'O’Mahony D et al. STOPP/START criteria version 3. Eur Geriatr Med 2023.',
+        citations: 'O’Mahony D et al. Eur Geriatr Med. 2023; AGS Beers Criteria 2023.'
       },
       'Chrome Built-in AI & Gemma 4': {
         category: 'EDGE PRIVACY & LLM',
@@ -3448,7 +3448,7 @@ ${renderLegalFooterHtml()}
       } else if (lowerQ.includes('evidence') || lowerQ.includes('study') || lowerQ.includes('trial') || lowerQ.includes('citation') || lowerQ.includes('paper')) {
         answerText = '📊 Evidence Hierarchy & Citations: ' + (data.evidence || data.citations);
       } else {
-        answerText = 'Socratic Synthesis for ' + currentDrillTerm + ': ' + data.summary + ' \n\nKey Takeaway: ' + data.clinicalTrap;
+        answerText = 'Socratic Synthesis for ' + currentDrillTerm + ': ' + data.summary + ' \\n\\nKey Takeaway: ' + data.clinicalTrap;
       }
 
       const p = document.createElement('p');

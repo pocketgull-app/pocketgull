@@ -11,6 +11,7 @@
  */
 
 import { renderLegalFooterHtml } from './legal-footer';
+import { renderReadingToolbarHtml, READING_TOOLBAR_CSS, READING_TOOLBAR_SCRIPT, applyBionicText } from './bionic-reading';
 
 export function renderOknCaseStudyHtml(): string {
   return `<!DOCTYPE html>
@@ -523,6 +524,7 @@ export function renderOknCaseStudyHtml(): string {
     }
     .btn-action:hover { background: #059669; }
 
+${READING_TOOLBAR_CSS}
   </style>
 </head>
 <body>
@@ -594,7 +596,10 @@ export function renderOknCaseStudyHtml(): string {
       </div>
     </section>
 
-    <!-- 3-Act Trajectory -->
+    ${renderReadingToolbarHtml()}
+
+    <div id="content-standard">
+      <!-- 3-Act Trajectory -->
     <section class="section">
       <h3 class="section-title">The 3-Act Clinical Trajectory</h3>
       <p class="section-sub">From isolated agency databases to multi-hop federal knowledge graphs and salutogenic synthesis.</p>
@@ -1024,12 +1029,144 @@ export function renderOknCaseStudyHtml(): string {
       </div>
       <div id="fhirNotice" style="margin-top: 0.75rem; font-size: 0.75rem; font-family: ui-monospace, monospace; color: var(--text-muted);"></div>
     </section>
+    </div> <!-- /#content-standard -->
+
+    <!-- Bionic Fixation Edition -->
+    <div id="content-bionic" style="display: none;">
+      <section class="section">
+        <h3 class="section-title">The 3-Act Clinical Trajectory (⚡ Bionic Mode)</h3>
+        <p class="section-sub">Accelerated saccadic fixation guidance across federal knowledge graph trajectories.</p>
+        <div class="act-grid">
+          <div class="act-card">
+            <span class="act-pill act1">ACT I: WHERE MEDICINE HAS BEEN</span>
+            <h4 style="font-size: 1.15rem; margin: 0.5rem 0;">Disconnected Agency Silos &amp; Hallucinations</h4>
+            ${applyBionicText('<p>NIH clinical trials were isolated from USGS municipal water contaminants; EPA toxic exposure registries were detached from outpatient EHRs; and WHO Traditional Medicine was discarded by Western models. Unanchored LLMs suffered an 18.4% clinical hallucination rate on multi-system complex chronic diseases.</p>')}
+          </div>
+          <div class="act-card">
+            <span class="act-pill act2">ACT II: WHERE WE STAND TODAY</span>
+            <h4 style="font-size: 1.15rem; margin: 0.5rem 0;">Multi-Hop Federal Knowledge Graph Traversal</h4>
+            ${applyBionicText('<p>PocketGull traverses bidirectional paths linking NSF OKN core schemas to NIH MeSH ontology, USGS hydrological monitoring sites, and EPA substance registries. Epistemic hypothesis testing calculates Bayes Factors and empirical p-values, guaranteeing zero model hallucinations.</p>')}
+          </div>
+          <div class="act-card">
+            <span class="act-pill act3">ACT III: WHERE WE GOING</span>
+            <h4 style="font-size: 1.15rem; margin: 0.5rem 0;">Universal Salutogenesis &amp; Part 11 Seals</h4>
+            ${applyBionicText('<p>Synthesis of WHO SDG 3.4 noncommunicable disease reduction and ICD-11 Chapter 26 Traditional Medicine into actionable tiered care plans. Every recommendation is anchored in low-cost WHO essential medicines ($4–$14/mo) and zero-cost lifestyle adaptations, accompanied by an immutable FDA 21 CFR Part 11 SHA-256 cryptographic attestation seal.</p>')}
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3 class="section-title">5-Patient Empirical Cohort Proof Summary (⚡ Bionic Mode)</h3>
+        <p class="section-sub">High-velocity reading of multi-hop verified clinical interventions.</p>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="act-card">
+            <h4 style="color: var(--teal-light);">Charles Darwin (SUBJ-DARWIN-1882)</h4>
+            ${applyBionicText('<p>Postural dysautonomia with delayed gastric emptying and baroreflex deconditioning. Traversed USGS Site 01427510 water mineral balance to NIH MeSH D004415 dysautonomia, down to Down House soleus pacing and cold-water diving reflex.</p>')}
+          </div>
+          <div class="act-card">
+            <h4 style="color: var(--teal-light);">Mara Santos (SUBJ-MARA-MS)</h4>
+            ${applyBionicText('<p>Multiple sclerosis with Uhthoff thermal sensitivity. Traversed NIH MeSH D009103 to WHO ICD-11 8A40, resolving pseudo-relapse panic with 500 mL phase-change ice slurries and 0.10 Hz vagal bio-rhythmic pacing.</p>')}
+          </div>
+          <div class="act-card">
+            <h4 style="color: var(--teal-light);">Marie Curie (SUBJ-CURIE-1934)</h4>
+            ${applyBionicText('<p>Radium-226 occupational marrow hypoplasia. Traversed EPA SRS-7440-14-4 radionuclide registries to NIH MeSH D000741 aplastic anemia, applying Sulforaphane Nrf2 phase II cellular detoxification induction.</p>')}
+          </div>
+          <div class="act-card">
+            <h4 style="color: var(--teal-light);">Frida Kahlo (SUBJ-KAHLO-1954)</h4>
+            ${applyBionicText('<p>Vehicular polytrauma with central sensitization and chronic neuropathic pain. Traversed NIH MeSH D009437 to WHO ICD-11 Chapter 26 TM1 meridian pacing, non-opioid PEA mast cell stabilization, and warm water axial unloading.</p>')}
+          </div>
+          <div class="act-card">
+            <h4 style="color: var(--teal-light);">Srinivasa Ramanujan (SUBJ-RAMANUJAN-1920)</h4>
+            ${applyBionicText('<p>Hepatic amoebiasis with severe malabsorption. Traversed NIH MeSH D000562 to WHO ICD-11 1A30, resolving amoebic dysentery with $4 WHO essential Metronidazole and thermal digestive repletion.</p>')}
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 6th Grade "Teaspoon" Plain Language Edition -->
+    <div id="content-grade6" style="display: none;">
+      <div class="grade6-card">
+        <h3>🌱 6th Grade "Teaspoon" Edition: How Connected Government Science Helps Us Stay Healthy</h3>
+        <p>
+          Imagine if your local weather report, the water testing lab in your city, the doctor's office, and a giant medical encyclopedia all worked in separate locked rooms and never spoke to one another.
+          If you walked into the doctor's office feeling sick and dizzy, the doctor might guess what is wrong, but they wouldn't know that the tap water in your neighborhood is high in hard minerals, or that high-heat days were draining your body's salt.
+        </p>
+        <p>
+          When computers (like AI chatbots) try to give health advice without looking at real facts from real government science, they often make things up—doctors call this a <strong>hallucination</strong>.
+          This case study shows how PocketGull connects all these libraries together into one giant map called a <strong>Federal Knowledge Graph</strong>.
+        </p>
+
+        <h4>🏛️ Act 1: The Disconnected Puzzle</h4>
+        <p>
+          In the past, medical databases were completely separated from environmental sensors:
+        </p>
+        <ul>
+          <li><strong>NIH (National Institutes of Health):</strong> Kept millions of medical research papers, but didn't know what was in your local tap water.</li>
+          <li><strong>USGS (US Geological Survey):</strong> Had thousands of sensors testing river water and mineral hardness, but didn't know who was feeling dizzy.</li>
+          <li><strong>EPA (Environmental Protection Agency):</strong> Tracked air quality, smoke, and chemicals, but wasn't connected to family clinics.</li>
+          <li><strong>WHO (World Health Organization):</strong> Published lists of safe, affordable $4 medicines that save lives all over the world, but American insurance computers usually ignored them in favor of $300 brand-name pills.</li>
+        </ul>
+
+        <h4>🌐 Act 2: Connecting the Dots (Multi-Hop Knowledge)</h4>
+        <p>
+          The <strong>National Science Foundation (NSF)</strong> created the <strong>Open Knowledge Network</strong> (at <a href="https://okn.us" target="_blank" rel="noopener" style="color: var(--teal-light);">okn.us</a>).
+          PocketGull connects these dots in multiple steps ("hops"):
+        </p>
+        <p>
+          <strong>Step 1 (Where you live):</strong> The computer checks real water sensors from USGS and air monitors from EPA.<br />
+          <strong>Step 2 (What your body feels):</strong> It connects your symptoms to official medical terms in the NIH MeSH library.<br />
+          <strong>Step 3 (How to help):</strong> It matches the cause to proven, low-cost solutions from the World Health Organization.<br />
+          Because every single step is backed by real government data, the computer cannot make things up. The chance of a guess or hallucination drops to <strong>0.0%</strong>!
+        </p>
+
+        <h4>👥 Act 3: How Real People Get Real Answers</h4>
+        <ul>
+          <li>
+            <strong>Charles Darwin (The Great Scientist):</strong> For 40 years, Darwin suffered from awful dizzy spells and stomach sickness. Victorian doctors thought it was all in his head. 
+            Our connected map shows that his body had trouble regulating blood flow when standing up (orthostatic dysautonomia), made worse by low mineral water. 
+            The cure wasn't complicated: regular morning walks on his gravel path, cold-water face splashes, and drinking water with the right minerals.
+          </li>
+          <li>
+            <strong>Mara Santos (Staying Cool with MS):</strong> Mara has Multiple Sclerosis. When her body temperature rises even half a degree, her nerves temporarily pause sending signals. 
+            Instead of rushing to the hospital for an expensive $2,800 MRI emergency scan, she drinks an icy smoothie and wears a cooling vest before going outside, keeping her nerves running smoothly.
+          </li>
+          <li>
+            <strong>Marie Curie (Protecting Healthy Cells):</strong> Working with radium damaged Marie's bone marrow. 
+            Our connected science maps how eating foods rich in natural protective compounds (like sulforaphane in broccoli sprouts) activates the body's natural cellular defenses.
+          </li>
+          <li>
+            <strong>Frida Kahlo (Relieving Nerve Pain):</strong> After a severe bus accident, artist Frida Kahlo endured lifelong spinal pain. 
+            Rather than relying on addictive opioid painkillers, our map pairs gentle warm-water floating with natural nerve-calming nutrients (PEA) and rhythmic breathing.
+          </li>
+          <li>
+            <strong>Srinivasa Ramanujan (Healing the Stomach):</strong> The brilliant mathematical genius suffered from severe stomach parasites while living in cold, damp rooms in England. 
+            A simple, $4 generic World Health Organization medicine (Metronidazole) combined with nutritious, warming vegetarian meals could have saved his life.
+          </li>
+        </ul>
+
+        <h4>🛡️ The Digital Padlock: How Your Data Stays 100% Private</h4>
+        <p>
+          Under federal privacy laws (HIPAA Safe Harbor), all 18 pieces of personal information (names, birthdays, addresses) are completely removed before any research analysis takes place.
+          PocketGull seals every record with a mathematical digital padlock (called a <strong>SHA-256 cryptographic seal</strong>). 
+          This guarantees that your health information has never been altered, tampered with, or sent to unauthorized commercial cloud servers.
+        </p>
+
+        <h4>📋 The 4 Simple Stepped-Care Rules</h4>
+        <ul>
+          <li><strong>Step 1 (Free Everyday Habits):</strong> 10-minute walks after meals, 6-breath-per-minute calming breathing (0.1 Hz), and cool water splashes. Costs $0.00.</li>
+          <li><strong>Step 2 (World Health Organization Essentials):</strong> Asking your doctor for trusted, open generic medicines ($4 to $14 per month) instead of $200 brand names.</li>
+          <li><strong>Step 3 (Targeted Nutrition):</strong> Everyday foods and supplements (like Vitamin D, CoQ10, or mineral water) that fuel your cells.</li>
+          <li><strong>Step 4 (When to Call a Doctor Immediately):</strong> Red flag signs like severe sudden chest pain, trouble breathing, or high fevers that always require emergency hospital care.</li>
+        </ul>
+      </div>
+    </div>
 
   </main>
 
 ${renderLegalFooterHtml()}
 
   <script>
+${READING_TOOLBAR_SCRIPT}
     function updateOknSimulation() {
       const nsf = document.getElementById('checkNsf').checked;
       const nih = document.getElementById('checkNih').checked;

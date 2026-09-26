@@ -32,6 +32,21 @@ describe('Articles Site Server-Side Rendering', () => {
     expect(html).toContain('https://pocketgull.com/articles/masters-of-science-fiction-clinical-ai');
   });
 
+  it('renders the Google Cloud Healthcare API & Clinical Models article with tri-mode reading toolbar', () => {
+    const html = renderArticlesHtml('google-healthcare-api-clinical-models');
+    expect(html).toContain('The Digital Vault &amp; The Calibrated Mirror');
+    expect(html).toContain('Google Cloud Healthcare API');
+    expect(html).toContain('Reading Level:');
+    expect(html).toContain('🎓 Standard');
+    expect(html).toContain('🌱 6th Grade');
+    expect(html).toContain('⚡ Bionic Fixation Mode');
+    expect(html).toContain('Interactive 3D App →');
+    expect(html).toContain('id="content-standard"');
+    expect(html).toContain('id="content-grade6"');
+    expect(html).toContain('id="content-bionic"');
+    expect(html).toContain('https://pocketgull.com/articles/google-healthcare-api-clinical-models');
+  });
+
   it('safely handles empty or undefined slugs', () => {
     expect(renderArticlesHtml('')).toContain('Clinical Breakthroughs');
     expect(renderArticlesHtml('   ')).toContain('Clinical Breakthroughs');

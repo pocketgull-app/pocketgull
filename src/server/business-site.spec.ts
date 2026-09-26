@@ -206,6 +206,22 @@ describe('Business Site Server-Side Rendering (pocketgull.com)', () => {
     expect(html).toContain('font.pocketgull.app');
     expect(html).not.toContain('typeface.pocketgull.app');
   });
+
+  it('verifies that all client-side scripts in rendered HTML parse without syntax errors', () => {
+    const vm = require('node:vm');
+    const html = renderBusinessSiteHtml();
+    const scriptRegex = /<script(?![^>]*type=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi;
+    let match;
+    let scriptCount = 0;
+    while ((match = scriptRegex.exec(html)) !== null) {
+      scriptCount++;
+      const code = match[1];
+      expect(() => new vm.Script(code)).not.toThrow();
+    }
+    expect(scriptCount).toBeGreaterThanOrEqual(2);
+    expect(html).not.toContain('href="javascript:');
+  });
 });
+
 
 

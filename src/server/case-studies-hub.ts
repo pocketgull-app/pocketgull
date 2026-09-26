@@ -283,6 +283,82 @@ export function renderCaseStudiesHubHtml(): string {
       font-weight: 600;
     }
 
+    /* Reading Literacy & Universal Accessibility Strip */
+    .reading-literacy-strip {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      border-radius: 0.75rem;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .reading-literacy-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.8125rem;
+      color: #c7d2fe;
+      flex-wrap: wrap;
+    }
+    html.paper .reading-literacy-meta {
+      color: #3730a3;
+    }
+    .reading-badge {
+      background: rgba(99, 102, 241, 0.25);
+      border: 1px solid rgba(99, 102, 241, 0.5);
+      color: #a5b4fc;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      letter-spacing: 0.03em;
+    }
+    html.paper .reading-badge {
+      color: #312e81;
+      background: rgba(99, 102, 241, 0.15);
+    }
+    .reading-pill {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.2rem 0.55rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    html.paper .reading-pill {
+      background: rgba(0, 0, 0, 0.04);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+    .reading-app-link {
+      color: var(--teal-light);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.75rem;
+      margin-left: auto;
+      transition: color 0.15s;
+    }
+    .reading-app-link:hover {
+      text-decoration: underline;
+    }
+    .reading-indicator-tag {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--teal-light);
+      background: var(--teal-glow);
+      border: 1px solid rgba(20, 184, 166, 0.3);
+      padding: 0.15rem 0.5rem;
+      border-radius: 0.25rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.5rem;
+    }
+
     /* Category Filter Tabs */
     .filter-bar {
       display: flex;
@@ -558,6 +634,18 @@ export function renderCaseStudiesHubHtml(): string {
         </div>
       </div>
 
+      <!-- Universal Health Literacy & Tri-Mode Reading Strip -->
+      <div class="reading-literacy-strip">
+        <div class="reading-literacy-meta">
+          <span class="reading-badge">📖 UNIVERSAL HEALTH LITERACY</span>
+          <span>All case studies support tri-mode reading accessibility:</span>
+          <span class="reading-pill">🎓 Standard Clinical</span>
+          <span class="reading-pill">🌱 6th Grade Simple</span>
+          <span class="reading-pill">⚡ Bionic Fixation Mode</span>
+        </div>
+        <a href="https://pocketgull.app/" target="_blank" rel="noopener noreferrer" class="reading-app-link">Interactive 3D App &rarr;</a>
+      </div>
+
       <!-- Specialty Filter Tabs -->
       <div class="filter-bar">
         <button class="filter-btn active" onclick="filterCases('all', this)">All Studies (8)</button>
@@ -580,6 +668,7 @@ export function renderCaseStudiesHubHtml(): string {
             <span class="case-num">CASE #01</span>
             <span class="case-specialty">Infectious &bull; Vector Ecology</span>
           </div>
+          <div class="reading-indicator-tag">📖 🎓 Standard • 🌱 6th Grade • ⚡ Bionic Mode</div>
           <h3 class="case-title">Nantucket Island Tick-Borne Co-Infection Radar</h3>
           <p class="case-desc">
             Early detection of <em>Borrelia burgdorferi</em>, <em>Babesia microti</em>, and <em>Anaplasma phagocytophilum</em>. 
@@ -604,6 +693,7 @@ export function renderCaseStudiesHubHtml(): string {
             <span class="case-num">CASE #02</span>
             <span class="case-specialty">Neurology &bull; Autoimmune</span>
           </div>
+          <div class="reading-indicator-tag">📖 🎓 Standard • 🌱 6th Grade • ⚡ Bionic Mode</div>
           <h3 class="case-title">MS Neuro-Axonal Sanctuary &amp; Biophysical Radar</h3>
           <p class="case-desc">
             Mara Santos: Restoring conduction reserve, Uhthoff cooling thermodynamics (&Delta;T &le; 0.40&deg;C), 
@@ -628,6 +718,7 @@ export function renderCaseStudiesHubHtml(): string {
             <span class="case-num">CASE #03</span>
             <span class="case-specialty">Cardiometabolic &bull; Endocrine</span>
           </div>
+          <div class="reading-indicator-tag">📖 🎓 Standard • 🌱 6th Grade • ⚡ Bionic Mode</div>
           <h3 class="case-title">Cardiometabolic &amp; Glycemic Excursion Radar</h3>
           <p class="case-desc">
             Subject SUBJ-7A2F: Halting the glucotoxicity cascade in early Type 2 Diabetes and vascular stiffness. 
@@ -748,6 +839,7 @@ export function renderCaseStudiesHubHtml(): string {
             <span class="case-num">CASE #08</span>
             <span class="case-specialty">Federal Grounding &bull; Epistemology</span>
           </div>
+          <div class="reading-indicator-tag">📖 🎓 Standard • 🌱 6th Grade • ⚡ Bionic Mode</div>
           <h3 class="case-title">NSF OKN, NIH &amp; WHO Global Health Grounding Radar</h3>
           <p class="case-desc">
             Multi-hop federal knowledge graph cross-referencing across NSF OKN (okn.us), NIH MeSH, USGS hydrological datasets, EPA chemical registries, and WHO SDG 3.4 / ICD-11 Chapter 26 (TM1) dual-coding. Eliminates model hallucinations via Bayesian H₀ rejection.

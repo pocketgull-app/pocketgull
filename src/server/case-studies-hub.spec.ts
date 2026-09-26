@@ -81,5 +81,16 @@ describe('Universal Clinical Case Studies Hub (/case-studies)', () => {
     expect(html).toContain('Amazon.com, Inc');
     expect(html).toContain('Health Level Seven International');
   });
+
+  it('renders the Universal Health Literacy & Tri-Mode Reading accessibility strip and tags', () => {
+    const html = renderCaseStudiesHubHtml();
+    expect(html).toContain('UNIVERSAL HEALTH LITERACY');
+    expect(html).toContain('🎓 Standard Clinical');
+    expect(html).toContain('🌱 6th Grade Simple');
+    expect(html).toContain('⚡ Bionic Fixation Mode');
+    expect(html).toContain('https://pocketgull.app/');
+    expect(html).toContain('class="reading-indicator-tag"');
+    expect(html).toContain('🎓 Standard • 🌱 6th Grade • ⚡ Bionic Mode');
+  });
 });
 
