@@ -6,8 +6,9 @@
 import { FALLBACK_SEED_ARTICLES, IWordPressPost } from '../services/wordpress-articles.service';
 import { renderLegalFooterHtml } from './legal-footer';
 
-function escapeHtml(str: string): string {
-  return str
+function escapeHtml(str?: string): string {
+  if (!str) return '';
+  return String(str)
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
@@ -995,7 +996,7 @@ function renderRestorativeHobbiesSection(post: IWordPressPost): string {
               </div>
               <div style="font-size: 0.75rem; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.5rem;">
                 <strong>Quick Start (10 Mins):</strong> ${escapeHtml(h.starterStep)}
-                ${h.recommendedResource ? `<br /><span style="color: #6ee7b7;">📖 Guide: ${escapeHtml(h.recommendedResource)}</span>` : ''}
+                ${h.recommendedResource ? `<br /><span style="color: #6ee7b7;">📖 Guide: <a href="https://www.amazon.com/s?k=${encodeURIComponent(h.recommendedResource)}&tag=pgdpo-20" target="_blank" rel="noopener noreferrer" style="color: #6ee7b7; text-decoration: underline;">${escapeHtml(h.recommendedResource)} ↗</a></span>` : ''}
               </div>
             </div>
           `).join('')}

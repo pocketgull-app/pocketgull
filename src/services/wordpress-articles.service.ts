@@ -134,6 +134,7 @@ export interface ISupportiveProduct {
   hsaFsaEligible: boolean;
   clinicalContext: string;
   affiliateUrl: string;
+  searchUrl?: string;
 }
 
 export interface IProductAndRxSection {
@@ -797,7 +798,8 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
           price: '$169.99',
           hsaFsaEligible: true,
           clinicalContext: 'FDA 510(k) cleared upper arm oscillometric blood pressure combined with Lead-I EKG to monitor hydraulic filtration pressure and AFib.',
-          affiliateUrl: 'https://www.amazon.com/dp/B07S2CV4N7?tag=pgdpo-20'
+          affiliateUrl: 'https://www.amazon.com/dp/B07S2CV4N7?tag=pgdpo-20',
+          searchUrl: 'https://www.amazon.com/s?k=Omron+Complete+Wireless+Blood+Pressure+EKG&tag=pgdpo-20'
         },
         {
           asin: 'B08F9Y85G6',
@@ -806,7 +808,8 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
           price: '$34.95',
           hsaFsaEligible: true,
           clinicalContext: 'Real-time capillary perfusion index and arterial oxygen saturation monitoring for home cardiopulmonary tracking.',
-          affiliateUrl: 'https://www.amazon.com/dp/B08F9Y85G6?tag=pgdpo-20'
+          affiliateUrl: 'https://www.amazon.com/dp/B08F9Y85G6?tag=pgdpo-20',
+          searchUrl: 'https://www.amazon.com/s?k=Innovo+Deluxe+Fingertip+Pulse+Oximeter&tag=pgdpo-20'
         },
         {
           asin: 'B07B9TL5KY',
@@ -815,7 +818,8 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
           price: '$16.99',
           hsaFsaEligible: true,
           clinicalContext: 'Progressive elastic resistance therapy for low-impact muscle activation, enhancing peripheral glucose uptake without joint impact.',
-          affiliateUrl: 'https://www.amazon.com/dp/B07B9TL5KY?tag=pgdpo-20'
+          affiliateUrl: 'https://www.amazon.com/dp/B07B9TL5KY?tag=pgdpo-20',
+          searchUrl: 'https://www.amazon.com/s?k=TheraBand+Professional+Resistance+Bands+Set&tag=pgdpo-20'
         },
         {
           asin: '1501168058',
@@ -824,7 +828,18 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
           price: '$18.99',
           hsaFsaEligible: false,
           clinicalContext: 'Bibliotherapy exploring neurobiological evidence for nature immersion, cortisol dampening, and parasympathetic nervous system recovery.',
-          affiliateUrl: 'https://www.amazon.com/dp/1501168058?tag=pgdpo-20'
+          affiliateUrl: 'https://www.amazon.com/dp/1501168058?tag=pgdpo-20',
+          searchUrl: 'https://www.amazon.com/s?k=The+Well-Gardened+Mind+Sue+Stuart-Smith&tag=pgdpo-20'
+        },
+        {
+          asin: '0143117467',
+          title: 'Shop Class as Soulcraft: An Inquiry into the Value of Work by Matthew B. Crawford',
+          category: 'books_bibliotherapy',
+          price: '$17.00',
+          hsaFsaEligible: false,
+          clinicalContext: 'Tactile proprioceptive neuro-grounding, physical work psychology & digital screen detox for autonomic renewal.',
+          affiliateUrl: 'https://www.amazon.com/dp/0143117467?tag=pgdpo-20',
+          searchUrl: 'https://www.amazon.com/s?k=Shop+Class+as+Soulcraft+Matthew+Crawford&tag=pgdpo-20'
         }
       ],
       rxBenchmarks: [
@@ -883,7 +898,17 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
         description: 'Slow observational walking through a local park or quiet neighborhood, shifting gaze from near screens to distant horizon panoramas (optic flow). Focusing on identifying bird calls exercises auditory cortical discrimination while lowering heart rate.',
         somaticBenefit: 'Post-prandial soleus muscle activation clears bloodstream glucose excursions by 35% without requiring strenuous cardiovascular strain.',
         starterStep: 'Leave phone on silent in your pocket. Walk for 15 minutes, listening for 3 distinct songbird calls and identifying 2 tree leaf patterns.',
-        recommendedResource: 'Peterson Field Guide to Birds of North America'
+        recommendedResource: 'The Sibley Guide to Birds (2nd Edition) by David Allen Sibley'
+      },
+      {
+        title: 'Tactile Hand Woodworking & Whittling (Proprioceptive Neuro-Grounding)',
+        icon: '🪵',
+        frequency: '1–2 sessions / week (45–60 mins)',
+        vagalResonanceMode: 'Sensorimotor Flow & Screen Detoxification',
+        description: 'Shaping a simple wooden spoon or chamfering edge grain with a hand chisel or whittling knife. The sensory feedback of cutting wood fibers commands total concentration, gently pulling cognitive load away from digital screens.',
+        somaticBenefit: 'Engages tactile proprioception and bilateral manual dexterity, lowering sympathetic tone and stabilizing autonomic heart rhythm.',
+        starterStep: 'Acquire a basswood carving blank and a protective safety glove. Practice smooth, deliberate peeling cuts away from your body.',
+        recommendedResource: 'Shop Class as Soulcraft by Matthew B. Crawford'
       },
       {
         title: 'Resonant Humming & Choral Vocalization',
