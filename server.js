@@ -185,6 +185,19 @@ app.use((req, res, next) => {
     req.path === '/business' ||
     req.path === '/store' ||
     req.path === '/community' ||
+    req.path === '/case-studies' ||
+    req.path.startsWith('/case-studies/') ||
+    req.path === '/articles' ||
+    req.path.startsWith('/articles/') ||
+    req.path === '/nantucket' ||
+    req.path === '/neuro-sanctuary' ||
+    req.path === '/cardiometabolic' ||
+    req.path === '/darwin' ||
+    req.path === '/curie' ||
+    req.path === '/long-covid' ||
+    req.path === '/kahlo' ||
+    req.path === '/okn' ||
+    req.path === '/okn-grounding' ||
     req.query['preview'] === 'business' ||
     /(^|\.)pocketgull\.com$/.test(rawHost);
 

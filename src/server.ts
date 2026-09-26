@@ -1077,6 +1077,7 @@ app.use((req, res, next) => {
     req.path === '/articles' || req.path.startsWith('/articles/') ||
     req.path === '/nantucket' || req.path === '/neuro-sanctuary' ||
     req.path === '/cardiometabolic' || req.path === '/darwin' ||
+    req.path === '/curie' || req.path === '/long-covid' || req.path === '/kahlo' ||
     req.path === '/okn' || req.path === '/okn-grounding'
   ) {
     return res.redirect(301, `https://pocketgull.com${req.url}`);
