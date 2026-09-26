@@ -94,6 +94,65 @@ export interface ILongitudinal3dConfig {
   stages: ILongitudinalOrganStage[];
 }
 
+export interface IWholeFoodsStaple {
+  name: string;
+  category: 'Produce' | 'Pantry' | 'Seafood/Protein' | 'Fermented' | 'Herbs/Spices';
+  benefit: string;
+  sourceNote: string;
+}
+
+export interface IMealSuggestion {
+  mealType: 'Breakfast' | 'Lunch' | 'Dinner' | 'Restorative Snack / Tea';
+  title: string;
+  description: string;
+  ingredients: string[];
+  clinicalMechanism: string;
+  prepTimeMinutes: number;
+}
+
+export interface IMealPlanSection {
+  theme: string;
+  dietaryArchetype: string;
+  meals: IMealSuggestion[];
+  wholeFoodsStaples: IWholeFoodsStaple[];
+}
+
+export interface IAmazonRxBenchmark {
+  genericName: string;
+  brandEquivalent: string;
+  standardRetailBenchmark: string;
+  amazonPharmacyPrice: string;
+  clinicalIndication: string;
+  demarcationNotice: string;
+}
+
+export interface ISupportiveProduct {
+  asin: string;
+  title: string;
+  category: 'medical_device' | 'supplements' | 'ergonomics' | 'books_bibliotherapy' | 'pantry';
+  price: string;
+  hsaFsaEligible: boolean;
+  clinicalContext: string;
+  affiliateUrl: string;
+}
+
+export interface IProductAndRxSection {
+  ftcDisclaimer: string;
+  products: ISupportiveProduct[];
+  rxBenchmarks: IAmazonRxBenchmark[];
+}
+
+export interface IRestorativeHobby {
+  title: string;
+  icon: string;
+  frequency: string;
+  vagalResonanceMode: string;
+  description: string;
+  somaticBenefit: string;
+  starterStep: string;
+  recommendedResource?: string;
+}
+
 export interface IClinicalArticle {
   id: number | string;
   title: string;
@@ -113,6 +172,11 @@ export interface IClinicalArticle {
   historicalPerspective?: IHistoricalPerspective;
   medicalInvention?: IMedicalInvention;
   longitudinal3dConfig?: ILongitudinal3dConfig;
+
+  // Salutogenic Nutrition, Equipment & Restorative Lifestyle Additions
+  mealPlanSection?: IMealPlanSection;
+  productAndRxSection?: IProductAndRxSection;
+  restorativeHobbies?: IRestorativeHobby[];
 }
 
 /** Backwards-compatible alias for legacy references */
@@ -145,7 +209,10 @@ export function createBreakthroughArticleTemplate(partial: Partial<IClinicalArti
     empiricalEvidence: partial.empiricalEvidence,
     historicalPerspective: partial.historicalPerspective,
     medicalInvention: partial.medicalInvention,
-    longitudinal3dConfig: partial.longitudinal3dConfig
+    longitudinal3dConfig: partial.longitudinal3dConfig,
+    mealPlanSection: partial.mealPlanSection,
+    productAndRxSection: partial.productAndRxSection,
+    restorativeHobbies: partial.restorativeHobbies
   };
 }
 
@@ -627,7 +694,208 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
           unmitigatedSummary: 'End-Stage Renal Disease requiring 3x/week dialysis or kidney transplant.'
         }
       ]
-    }
+    },
+    mealPlanSection: {
+      theme: 'Renal-Preserving & Potassium-Rich Endothelial Harvest',
+      dietaryArchetype: 'DASH & Mediterranean Whole Foods Protocol',
+      meals: [
+        {
+          mealType: 'Breakfast',
+          title: 'Steel-Cut Oats with Ground Flax, Blueberries & Ceylon Cinnamon',
+          description: 'Slow-digesting complex beta-glucans with polyphenols to blunt morning glycemic surges and protect renal microvascular endothelium.',
+          ingredients: [
+            '1/2 cup organic steel-cut oats',
+            '1 tbsp organic ground golden flaxseed (Whole Foods 365)',
+            '1/2 cup organic wild blueberries',
+            '1/2 tsp organic Ceylon cinnamon',
+            '1 cup filtered mineral water or unsweetened almond milk'
+          ],
+          clinicalMechanism: 'Beta-glucan soluble fiber sequesters bile acids, reducing systemic inflammation, while Ceylon cinnamon improves insulin sensitivity without cassia coumarin liver burden.',
+          prepTimeMinutes: 15
+        },
+        {
+          mealType: 'Lunch',
+          title: 'Wild Alaskan Sockeye Salmon over Rainbow Chard & Sliced Avocado',
+          description: 'Potassium-dense warm harvest salad featuring omega-3 fatty acids and nitrate-rich leafy greens to promote renal afferent vasodilation.',
+          ingredients: [
+            '5 oz wild-caught Alaskan sockeye salmon fillet (Whole Foods seafood counter)',
+            '2 cups organic rainbow chard, lightly sautéed in extra virgin olive oil',
+            '1/2 ripe Haas avocado (~480 mg potassium)',
+            '1 tbsp extra virgin cold-pressed olive oil (Whole Foods 365 Organic)',
+            '1/2 lemon, freshly squeezed with cracked black pepper'
+          ],
+          clinicalMechanism: 'Marine EPA/DHA suppresses renal thromboxane A2, preserving glomerular capillary compliance, while chard provides natural dietary nitrates for nitric oxide-mediated vasodilation.',
+          prepTimeMinutes: 20
+        },
+        {
+          mealType: 'Dinner',
+          title: 'Golden Turmeric Lentil Stew with Sautéed Shiitake & Steamed Broccoli Sprouts',
+          description: 'Plant-protein stew combining legume fiber with sulforaphane-dense cruciferous sprouts for Nrf2 antioxidant phase II induction.',
+          ingredients: [
+            '3/4 cup cooked brown or green lentils',
+            '1 cup fresh shiitake mushrooms, sliced',
+            '1/2 tsp ground organic turmeric with a pinch of black pepper',
+            '1/4 cup fresh organic broccoli sprouts added raw after plating',
+            '1 tbsp cold-pressed organic pumpkin seed oil'
+          ],
+          clinicalMechanism: 'Replacing animal protein with legume plant protein significantly reduces intraglomerular hyperfiltration (nephron-sparing effect) while sulforaphane stimulates renal Nrf2 cytoprotection.',
+          prepTimeMinutes: 25
+        },
+        {
+          mealType: 'Restorative Snack / Tea',
+          title: 'Cold-Brewed Hibiscus Blossom & Fresh Spearmint Infusion',
+          description: 'Tangy, ruby-red herbal infusion rich in anthocyanins shown in clinical trials to inhibit angiotensin-converting enzyme (ACE) naturally.',
+          ingredients: [
+            '2 tbsp organic dried hibiscus sabdariffa flowers (Whole Foods bulk / tea aisle)',
+            '3 sprigs fresh organic spearmint',
+            '16 oz filtered water, steeped cold for 4 hours'
+          ],
+          clinicalMechanism: 'Hibiscus anthocyanins and organic acids act as mild natural vasorelaxants, lowering systolic blood pressure by an average of 7.2 mmHg in clinical RCTs.',
+          prepTimeMinutes: 5
+        }
+      ],
+      wholeFoodsStaples: [
+        {
+          name: '365 Whole Foods Market Organic Cold-Pressed Extra Virgin Olive Oil',
+          category: 'Pantry',
+          benefit: 'High-polyphenol oleocanthal suppresses systemic vascular inflammation and protects endothelial nitric oxide synthase (eNOS).',
+          sourceNote: 'Whole Foods Market 365 Brand (Certified Organic)'
+        },
+        {
+          name: 'Wild Alaskan Sockeye Salmon Fillets (Fresh / Frozen)',
+          category: 'Seafood/Protein',
+          benefit: 'Bioavailable EPA/DHA omega-3s with natural astaxanthin; zero antibiotics or artificial colorants.',
+          sourceNote: 'Whole Foods Seafood Counter (MSC Certified)'
+        },
+        {
+          name: 'Organic Broccoli Sprouts & Microgreens',
+          category: 'Produce',
+          benefit: 'Contains up to 50x higher sulforaphane glucosinolate density than mature broccoli for renal cellular detoxification.',
+          sourceNote: 'Whole Foods Market Produce Department'
+        },
+        {
+          name: 'Organic Raw Pumpkin & Sprouted Flax Seeds',
+          category: 'Pantry',
+          benefit: 'Rich in dietary magnesium, zinc, and plant lignans that support vascular smooth muscle relaxation.',
+          sourceNote: 'Whole Foods Bulk or 365 Pantry Aisle'
+        },
+        {
+          name: 'Organic Hibiscus Flower Herbal Tea (Caffeine-Free)',
+          category: 'Herbs/Spices',
+          benefit: 'Clinically grounded anthocyanins that promote natural renal endothelial flow and blood pressure soothing.',
+          sourceNote: 'Whole Foods Tea & Botanical Aisle'
+        }
+      ]
+    },
+    productAndRxSection: {
+      ftcDisclaimer: 'As an Amazon Associate and clinical intelligence platform, PocketGull earns from qualifying purchases. Product recommendations and pharmacy benchmarks are supportive evidence-grounded tools, not direct prescriptions.',
+      products: [
+        {
+          asin: 'B07S2CV4N7',
+          title: 'Omron Complete Wireless Upper Arm Blood Pressure + EKG Monitor',
+          category: 'medical_device',
+          price: '$169.99',
+          hsaFsaEligible: true,
+          clinicalContext: 'FDA 510(k) cleared upper arm oscillometric blood pressure combined with Lead-I EKG to monitor hydraulic filtration pressure and AFib.',
+          affiliateUrl: 'https://www.amazon.com/dp/B07S2CV4N7?tag=pgdpo-20'
+        },
+        {
+          asin: 'B08F9Y85G6',
+          title: 'Innovo Deluxe Fingertip Pulse Oximeter with Plethysmograph Waveform',
+          category: 'medical_device',
+          price: '$34.95',
+          hsaFsaEligible: true,
+          clinicalContext: 'Real-time capillary perfusion index and arterial oxygen saturation monitoring for home cardiopulmonary tracking.',
+          affiliateUrl: 'https://www.amazon.com/dp/B08F9Y85G6?tag=pgdpo-20'
+        },
+        {
+          asin: 'B07B9TL5KY',
+          title: 'TheraBand Professional Non-Latex Resistance Bands Set (5-Pack)',
+          category: 'ergonomics',
+          price: '$16.99',
+          hsaFsaEligible: true,
+          clinicalContext: 'Progressive elastic resistance therapy for low-impact muscle activation, enhancing peripheral glucose uptake without joint impact.',
+          affiliateUrl: 'https://www.amazon.com/dp/B07B9TL5KY?tag=pgdpo-20'
+        },
+        {
+          asin: '1501168058',
+          title: 'The Well-Gardened Mind: The Restorative Power of Nature by Sue Stuart-Smith',
+          category: 'books_bibliotherapy',
+          price: '$18.99',
+          hsaFsaEligible: false,
+          clinicalContext: 'Bibliotherapy exploring neurobiological evidence for nature immersion, cortisol dampening, and parasympathetic nervous system recovery.',
+          affiliateUrl: 'https://www.amazon.com/dp/1501168058?tag=pgdpo-20'
+        }
+      ],
+      rxBenchmarks: [
+        {
+          genericName: 'Lisinopril Tablets (10 mg)',
+          brandEquivalent: 'Prinivil / Zestril',
+          standardRetailBenchmark: '$42.00 / month',
+          amazonPharmacyPrice: '$4.00 / month (or $10.00 / 90 days with Prime Rx)',
+          clinicalIndication: 'First-line ACE inhibitor for renal nephron sparing, reduction of intraglomerular pressure, and blood pressure control.',
+          demarcationNotice: 'Requires valid prescription from your licensed physician. Benchmark provided for radical price transparency.'
+        },
+        {
+          genericName: 'Losartan Potassium (50 mg)',
+          brandEquivalent: 'Cozaar',
+          standardRetailBenchmark: '$48.00 / month',
+          amazonPharmacyPrice: '$4.50 / month (or $12.00 / 90 days with Prime Rx)',
+          clinicalIndication: 'Angiotensin Receptor Blocker (ARB) providing renoprotection in hypertension and microalbuminuria.',
+          demarcationNotice: 'Requires valid physician order. Excellent alternative for patients experiencing ACE inhibitor cough.'
+        },
+        {
+          genericName: 'Amlodipine Besylate (5 mg)',
+          brandEquivalent: 'Norvasc',
+          standardRetailBenchmark: '$36.00 / month',
+          amazonPharmacyPrice: '$4.00 / month (or $9.00 / 90 days with Prime Rx)',
+          clinicalIndication: 'Dihydropyridine calcium channel blocker for systemic peripheral arterial relaxation and vascular compliance.',
+          demarcationNotice: 'Requires physician prescription. Benchmark illustrates low direct wholesale cost of essential medicines.'
+        }
+      ]
+    },
+    restorativeHobbies: [
+      {
+        title: 'Horticultural Therapy & Micro-Gardening (Soil Microbiome Sero-Grounding)',
+        icon: '🌱',
+        frequency: '3–4 mornings / week (15–30 mins)',
+        vagalResonanceMode: 'Parasympathetic Reset & Soil Mycobacterium Vaccae Exposure',
+        description: 'Tending container herbs (rosemary, thyme, heirloom cherry tomatoes) on a porch or windowsill. Working with potting soil exposes skin to harmless Mycobacterium vaccae, which stimulates brain cytokine release and elevates serotonergic neurons.',
+        somaticBenefit: 'Lowers baseline salivary cortisol by 28% and delivers direct physical grounding through tactile texture and morning sunlight photon exposure.',
+        starterStep: 'Acquire one terracotta pot, organic soil, and a rosemary start. Spend 10 minutes watering, pinching leaves, and breathing in pinene terpenes every morning.',
+        recommendedResource: 'The Well-Gardened Mind by Dr. Sue Stuart-Smith'
+      },
+      {
+        title: 'Mindful Japanese Suminagashi (Floating Ink) & Watercolor Flow',
+        icon: '🎨',
+        frequency: '2 evenings / week (30–45 mins)',
+        vagalResonanceMode: '0.10 Hz Bio-Rhythmic Flow & Saccadic Calming',
+        description: 'The ancient 12th-century Japanese art of dropping sumi ink onto still water and capturing concentric rings on mulberry paper. Watching organic ink swirls mirrors biophysical fluid dynamics and induces an effortless meditative state.',
+        somaticBenefit: 'Shifts brainwave activity from rapid beta waves (14–30 Hz) to calming alpha waves (8–12 Hz), reducing sympathetic nervous tension and microvascular spasm.',
+        starterStep: 'Fill a wide shallow baking dish with 1 inch of tap water. Touch an ink-dipped fine brush to the water surface and watch the rings expand. Gently blow to create marble patterns, then lay paper on top.',
+        recommendedResource: 'Suminagashi: The Japanese Art of Marbling Paper by Anne Chambers'
+      },
+      {
+        title: 'Nature Observation Walking & Birding (Ecopsychology)',
+        icon: '🪶',
+        frequency: 'Daily (20 mins after meals)',
+        vagalResonanceMode: 'Visual Panoramas & Auditory Frequency Tuning',
+        description: 'Slow observational walking through a local park or quiet neighborhood, shifting gaze from near screens to distant horizon panoramas (optic flow). Focusing on identifying bird calls exercises auditory cortical discrimination while lowering heart rate.',
+        somaticBenefit: 'Post-prandial soleus muscle activation clears bloodstream glucose excursions by 35% without requiring strenuous cardiovascular strain.',
+        starterStep: 'Leave phone on silent in your pocket. Walk for 15 minutes, listening for 3 distinct songbird calls and identifying 2 tree leaf patterns.',
+        recommendedResource: 'Peterson Field Guide to Birds of North America'
+      },
+      {
+        title: 'Resonant Humming & Choral Vocalization',
+        icon: '🎵',
+        frequency: 'Daily (5–10 mins, especially before meals)',
+        vagalResonanceMode: 'Direct Vagus Nerve Mechanical Stimulation',
+        description: 'Slow, deep humming with long extended exhales (inhale for 4 seconds, hum continuously for 8 seconds). The mechanical vibration in the throat directly stimulates the recurrent laryngeal nerve and auricular branches of the vagus nerve.',
+        somaticBenefit: 'Increases heart rate variability (RMSSD) by over 40% and triggers the cholinergic anti-inflammatory pathway, reducing arterial stiffness.',
+        starterStep: 'Sit upright, place hand gently on your collarbone, and hum a low comfortable pitch on every exhale for 5 minutes.',
+        recommendedResource: 'The Healing Power of the Vagus Nerve by Stanley Rosenberg'
+      }
+    ]
   },
   {
     id: 104,

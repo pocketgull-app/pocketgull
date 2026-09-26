@@ -71,4 +71,28 @@ describe('ArticlesReaderComponent', () => {
     expect(post?.empiricalEvidence?.citations[0].doi).toContain('10.');
     expect(post?.empiricalEvidence?.stats.length).toBeGreaterThan(0);
   });
+
+  it('7. Renders Salutogenic Nutrition, Amazon Pharmacy Rx Benchmarks, and Restorative Hobbies', () => {
+    // Select Article 103 (the-100000-dollar-oil-change)
+    component.selectArticle('the-100000-dollar-oil-change');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    // 1. Salutogenic Nutrition & Whole Foods
+    expect(compiled.textContent).toContain('Salutogenic Nutrition');
+    expect(compiled.textContent).toContain('Whole Foods Market 365 Organic Staples');
+    expect(compiled.textContent).toContain('365 Whole Foods Market Organic Cold-Pressed Extra Virgin Olive Oil');
+
+    // 2. Supportive Equipment & Amazon Pharmacy Rx Benchmarks
+    expect(compiled.textContent).toContain('Supportive Tools & Amazon Pharmacy Generic Rx Benchmarks');
+    expect(compiled.textContent).toContain('FTC Affiliate Disclosure:');
+    expect(compiled.textContent).toContain('Lisinopril Tablets');
+    expect(compiled.textContent).toContain('$4.00 / month');
+
+    // 3. Restorative Hobbies
+    expect(compiled.textContent).toContain('Complementary Restorative Hobbies & Salutogenic Pacing');
+    expect(compiled.textContent).toContain('Horticultural Therapy & Micro-Gardening');
+    expect(compiled.textContent).toContain('Mindful Japanese Suminagashi');
+  });
 });

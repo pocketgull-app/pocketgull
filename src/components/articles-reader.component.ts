@@ -103,7 +103,7 @@ import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-sl
           </div>
 
           <div class="space-y-2.5 max-h-[700px] overflow-y-auto pr-1 scrollbar-thin">
-            @for (post of posts(); track post.id) {
+            @for (post of posts(); track post.slug) {
               <div (click)="selectArticle(post.slug)"
                    [class.bg-zinc-900]="activePost()?.slug === post.slug"
                    [class.border-emerald-500]="activePost()?.slug === post.slug"
@@ -423,6 +423,206 @@ import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-sl
                 <div class="p-3.5 rounded-2xl bg-amber-950/20 border border-amber-500/40 text-xs font-sans space-y-1">
                   <strong class="text-amber-300 font-mono text-[11px] block">🛡️ Upstream Prevention Pathway:</strong>
                   <p class="text-zinc-200 leading-relaxed text-[11px]">{{ hp.preventionPathway }}</p>
+                </div>
+              </div>
+            }
+
+            <!-- 8. 🥗 Salutogenic Meal Suggestions & Whole Foods Staples -->
+            @if (article.mealPlanSection; as mp) {
+              <div class="p-5 rounded-3xl bg-zinc-950 border border-emerald-500/30 space-y-4 shadow-xl">
+                <div class="flex items-center gap-3 border-b border-zinc-800 pb-3">
+                  <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-xl shrink-0">
+                    🥗
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider">
+                      Salutogenic Nutrition & Whole Foods Market Grounding
+                    </span>
+                    <h4 class="text-xs sm:text-sm font-bold text-white font-sans">
+                      {{ mp.theme }} ({{ mp.dietaryArchetype }})
+                    </h4>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-sans">
+                  @for (meal of mp.meals; track meal.title) {
+                    <div class="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800 flex flex-col justify-between space-y-2">
+                      <div>
+                        <div class="flex items-center justify-between">
+                          <span class="px-2 py-0.5 text-[9px] font-mono font-bold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            {{ meal.mealType }} • {{ meal.prepTimeMinutes }} min
+                          </span>
+                        </div>
+                        <div class="font-bold text-white text-xs mt-1.5">{{ meal.title }}</div>
+                        <p class="text-[11px] text-zinc-300 leading-relaxed mt-1">{{ meal.description }}</p>
+                        <div class="text-[10px] text-zinc-400 pt-2 border-t border-zinc-800/80 mt-2">
+                          <span class="font-semibold text-zinc-300">Whole Foods Items:</span>
+                          <ul class="list-disc pl-3.5 space-y-0.5 mt-0.5 text-[10px]">
+                            @for (ing of meal.ingredients; track ing) {
+                              <li>{{ ing }}</li>
+                            }
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="text-[10px] text-emerald-400 pt-1.5 border-t border-zinc-800/80 italic">
+                        <strong>Mechanism:</strong> {{ meal.clinicalMechanism }}
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                @if (mp.wholeFoodsStaples && mp.wholeFoodsStaples.length > 0) {
+                  <div class="pt-3 border-t border-zinc-800">
+                    <span class="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider block mb-2">
+                      🛒 Whole Foods Market 365 Organic Staples
+                    </span>
+                    <div class="flex flex-wrap gap-2">
+                      @for (staple of mp.wholeFoodsStaples; track staple.name) {
+                        <div class="px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-[11px] text-emerald-300"
+                             [title]="staple.benefit">
+                          <strong>{{ staple.name }}</strong> ({{ staple.category }})
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- 9. 🛒 Supportive Equipment & Amazon Pharmacy Rx Benchmarks -->
+            @if (article.productAndRxSection; as pr) {
+              <div class="p-5 rounded-3xl bg-zinc-950 border border-sky-500/30 space-y-4 shadow-xl">
+                <div class="flex items-center gap-3 border-b border-zinc-800 pb-3">
+                  <div class="w-10 h-10 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-xl shrink-0">
+                    🛒
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-wider">
+                      Supportive Tools & Amazon Pharmacy Generic Rx Benchmarks
+                    </span>
+                    <h4 class="text-xs sm:text-sm font-bold text-white font-sans">
+                      Radical Price Transparency & HSA/FSA §213(d) Qualified Telemetry
+                    </h4>
+                  </div>
+                </div>
+
+                <!-- Statutory FTC Disclaimer Banner -->
+                <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-200 leading-relaxed font-sans">
+                  ⚖️ <strong>FTC Affiliate Disclosure:</strong> {{ pr.ftcDisclaimer }}
+                </div>
+
+                @if (pr.products && pr.products.length > 0) {
+                  <div class="space-y-2">
+                    <span class="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider block">
+                      📦 Curated Supportive Products & Diagnostics
+                    </span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-sans">
+                      @for (prod of pr.products; track prod.asin) {
+                        <div class="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800 flex flex-col justify-between space-y-2">
+                          <div>
+                            <div class="flex items-center justify-between">
+                              <span class="px-2 py-0.5 text-[9px] font-mono font-bold rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 uppercase">
+                                {{ prod.category }}
+                              </span>
+                              @if (prod.hsaFsaEligible) {
+                                <span class="px-2 py-0.5 text-[9px] font-mono font-bold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                  HSA/FSA §213(d)
+                                </span>
+                              }
+                            </div>
+                            <div class="font-bold text-white text-xs mt-1.5">{{ prod.title }}</div>
+                            <p class="text-[11px] text-zinc-300 leading-relaxed mt-1">{{ prod.clinicalContext }}</p>
+                          </div>
+                          <div class="flex items-center justify-between pt-2 border-t border-zinc-800">
+                            <span class="font-bold text-emerald-400 text-xs">{{ prod.price }}</span>
+                            <a [href]="prod.affiliateUrl" target="_blank" rel="noopener noreferrer"
+                               class="px-2.5 py-1 rounded-lg bg-sky-500 hover:bg-sky-400 text-zinc-950 font-bold text-[10px] transition">
+                              View on Amazon &rarr;
+                            </a>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                @if (pr.rxBenchmarks && pr.rxBenchmarks.length > 0) {
+                  <div class="space-y-2 pt-3 border-t border-zinc-800">
+                    <span class="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider block">
+                      💊 Amazon Pharmacy Generic Rx Benchmarks
+                    </span>
+                    <div class="overflow-x-auto">
+                      <table class="w-full text-left text-xs font-sans border-collapse">
+                        <thead>
+                          <tr class="border-b border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase">
+                            <th class="py-2 pr-3">Medication</th>
+                            <th class="py-2 px-3">Standard Retail</th>
+                            <th class="py-2 px-3">Amazon Pharmacy</th>
+                            <th class="py-2 pl-3">Clinical Indication</th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-zinc-900 text-[11px]">
+                          @for (rx of pr.rxBenchmarks; track rx.genericName) {
+                            <tr>
+                              <td class="py-2.5 pr-3 font-bold text-white">
+                                {{ rx.genericName }}
+                                <span class="block text-[9px] font-mono font-normal text-zinc-400">equiv. {{ rx.brandEquivalent }}</span>
+                              </td>
+                              <td class="py-2.5 px-3 text-zinc-400 line-through">{{ rx.standardRetailBenchmark }}</td>
+                              <td class="py-2.5 px-3 font-bold text-emerald-400">{{ rx.amazonPharmacyPrice }}</td>
+                              <td class="py-2.5 pl-3 text-zinc-300">{{ rx.clinicalIndication }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- 10. 🎨 Complementary Restorative Hobbies & Salutogenic Pacing -->
+            @if (article.restorativeHobbies; as hobbies) {
+              <div class="p-5 rounded-3xl bg-zinc-950 border border-purple-500/30 space-y-4 shadow-xl">
+                <div class="flex items-center gap-3 border-b border-zinc-800 pb-3">
+                  <div class="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-xl shrink-0">
+                    🎨
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-mono font-bold text-purple-400 uppercase tracking-wider">
+                      Complementary Restorative Hobbies & Salutogenic Pacing
+                    </span>
+                    <h4 class="text-xs sm:text-sm font-bold text-white font-sans">
+                      0.10 Hz Bio-Rhythmic Resonance & Somatic Nervous System Soothing
+                    </h4>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-sans">
+                  @for (hobby of hobbies; track hobby.title) {
+                    <div class="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800 flex flex-col justify-between space-y-2">
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <span class="text-xl">{{ hobby.icon }}</span>
+                          <div>
+                            <div class="font-bold text-white text-xs">{{ hobby.title }}</div>
+                            <span class="text-[10px] font-mono text-teal-300">{{ hobby.vagalResonanceMode }}</span>
+                          </div>
+                        </div>
+                        <div class="text-[10px] font-mono text-amber-300 mt-1">⏱️ {{ hobby.frequency }}</div>
+                        <p class="text-[11px] text-zinc-300 leading-relaxed mt-1">{{ hobby.description }}</p>
+                        <div class="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-[10px] text-purple-200 mt-2">
+                          <strong>Somatic Benefit:</strong> {{ hobby.somaticBenefit }}
+                        </div>
+                      </div>
+                      <div class="text-[10px] text-zinc-400 pt-2 border-t border-zinc-800">
+                        <strong class="text-zinc-300">Quick Start:</strong> {{ hobby.starterStep }}
+                        @if (hobby.recommendedResource) {
+                          <div class="text-emerald-400 text-[10px] mt-0.5">📖 {{ hobby.recommendedResource }}</div>
+                        }
+                      </div>
+                    </div>
+                  }
                 </div>
               </div>
             }

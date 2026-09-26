@@ -465,8 +465,113 @@ ${jsonLd}
       border-radius: 1.25rem;
       padding: 1.5rem;
       margin-top: 3rem;
-      font-size: 0.875rem;
+    /* Salutogenic Nutrition, Equipment & Restorative Lifestyle */
+    .salutogenic-section {
+      background: #18181b;
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 1.75rem;
+      margin: 2.5rem 0;
     }
+    .salutogenic-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .salutogenic-header h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .salutogenic-subtitle {
+      font-size: 0.8rem;
+      color: var(--teal-light);
+      font-family: ui-monospace, monospace;
+    }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .salutogenic-card {
+      background: #121215;
+      border: 1px solid var(--border);
+      border-radius: 0.85rem;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .salutogenic-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.3rem;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+    .staples-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .staple-pill {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #a7f3d0;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+    }
+    .ftc-banner {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 0.65rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      color: #fde68a;
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
+    .rx-benchmark-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+    }
+    .rx-benchmark-table th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      background: #1e1e24;
+      color: #d4d4d8;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .rx-benchmark-table td {
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #e4e4e7;
+    }
+    .price-retail {
+      text-decoration: line-through;
+      color: #a1a1aa;
+      font-size: 0.75rem;
+    }
+    .price-amazon {
+      color: #34d399;
+      font-weight: 700;
+    }
+
     footer {
       background: #09090b;
       border-top: 1px solid var(--border);
@@ -601,6 +706,303 @@ function renderArticlesCatalog(): string {
   </main>`;
 }
 
+function renderMealPlanSection(post: IWordPressPost): string {
+  const mp = post.mealPlanSection;
+  if (!mp) {
+    return `
+      <!-- Salutogenic Meals & Whole Foods Market Staples -->
+      <div class="salutogenic-section">
+        <div class="salutogenic-header">
+          <span style="font-size: 1.5rem;">🥗</span>
+          <div>
+            <h3>Salutogenic Nutrition &amp; Whole Foods Market Staples</h3>
+            <div class="salutogenic-subtitle">Anti-Inflammatory Whole Foods Protocol &bull; 365 Organic Grounding</div>
+          </div>
+        </div>
+        <div class="grid-2col">
+          <div class="salutogenic-card">
+            <div>
+              <span class="salutogenic-tag" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">Breakfast &bull; 15 min</span>
+              <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Steel-Cut Oats with Golden Flax &amp; Blueberries</h4>
+              <p style="font-size: 0.85rem; color: #d4d4d8; line-height: 1.5; margin-bottom: 0.5rem;">Slow-digesting beta-glucans with polyphenols to blunt morning glycemic surges and protect microvascular endothelium.</p>
+              <div style="font-size: 0.78rem; color: #a1a1aa;">
+                <strong>Whole Foods Ingredients:</strong> Organic oats, 365 golden flaxseed, wild blueberries, Ceylon cinnamon.
+              </div>
+            </div>
+            <div style="font-size: 0.75rem; color: #6ee7b7; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.5rem; font-style: italic;">
+              <strong>Mechanism:</strong> Soluble fiber binds bile acids; anthocyanins downregulate endothelial adhesion molecules.
+            </div>
+          </div>
+          <div class="salutogenic-card">
+            <div>
+              <span class="salutogenic-tag" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">Dinner &bull; 20 min</span>
+              <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Wild Alaskan Sockeye Salmon &amp; Rainbow Chard</h4>
+              <p style="font-size: 0.85rem; color: #d4d4d8; line-height: 1.5; margin-bottom: 0.5rem;">Marine EPA/DHA paired with nitrate-rich sautéed chard and extra virgin olive oil for arterial compliance.</p>
+              <div style="font-size: 0.78rem; color: #a1a1aa;">
+                <strong>Whole Foods Ingredients:</strong> Fresh wild sockeye salmon, organic rainbow chard, 365 organic EVOO, lemon.
+              </div>
+            </div>
+            <div style="font-size: 0.75rem; color: #6ee7b7; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.5rem; font-style: italic;">
+              <strong>Mechanism:</strong> Resolvins and protectins resolve microvascular inflammation while dietary nitrates enhance eNOS.
+            </div>
+          </div>
+        </div>
+        <div style="font-size: 0.8rem; font-weight: 700; color: #fff; margin-top: 0.75rem;">
+          🛒 Whole Foods Market 365 Organic Staples:
+        </div>
+        <div class="staples-strip">
+          <div class="staple-pill" title="High-polyphenol oleocanthal">365 Organic Cold-Pressed Extra Virgin Olive Oil</div>
+          <div class="staple-pill" title="Wild-caught marine omega-3s">Wild Alaskan Sockeye Salmon</div>
+          <div class="staple-pill" title="Sulforaphane Nrf2 induction">Organic Broccoli Sprouts &amp; Microgreens</div>
+          <div class="staple-pill" title="Magnesium &amp; potassium">Organic Raw Pumpkin &amp; Flax Seeds</div>
+          <div class="staple-pill" title="Natural ACE inhibition">Organic Hibiscus Flower Herbal Tea</div>
+        </div>
+      </div>`;
+  }
+
+  return `
+      <!-- Salutogenic Meals & Whole Foods Market Staples -->
+      <div class="salutogenic-section">
+        <div class="salutogenic-header">
+          <span style="font-size: 1.5rem;">🥗</span>
+          <div>
+            <h3>Salutogenic Nutrition: ${escapeHtml(mp.theme)}</h3>
+            <div class="salutogenic-subtitle">${escapeHtml(mp.dietaryArchetype)} &bull; Whole Foods Market Grounding</div>
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          ${mp.meals.map(m => `
+            <div class="salutogenic-card">
+              <div>
+                <span class="salutogenic-tag" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">${escapeHtml(m.mealType)} &bull; ${m.prepTimeMinutes} min</span>
+                <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">${escapeHtml(m.title)}</h4>
+                <p style="font-size: 0.85rem; color: #d4d4d8; line-height: 1.5; margin-bottom: 0.5rem;">${escapeHtml(m.description)}</p>
+                <div style="font-size: 0.78rem; color: #a1a1aa; margin-bottom: 0.5rem;">
+                  <strong>Whole Foods Ingredients:</strong>
+                  <ul style="padding-left: 1.1rem; margin-top: 0.25rem;">
+                    ${m.ingredients.map(ing => `<li>${escapeHtml(ing)}</li>`).join('')}
+                  </ul>
+                </div>
+              </div>
+              <div style="font-size: 0.75rem; color: #6ee7b7; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.5rem; font-style: italic;">
+                <strong>Mechanism:</strong> ${escapeHtml(m.clinicalMechanism)}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        ${mp.wholeFoodsStaples.length > 0 ? `
+          <div style="font-size: 0.8rem; font-weight: 700; color: #fff; margin-top: 0.75rem;">
+            🛒 Whole Foods Market 365 Organic Staples:
+          </div>
+          <div class="staples-strip">
+            ${mp.wholeFoodsStaples.map(s => `
+              <div class="staple-pill" title="${escapeHtml(s.benefit)}">
+                <strong>${escapeHtml(s.name)}</strong> (${escapeHtml(s.category)})
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>`;
+}
+
+function renderProductAndRxSection(post: IWordPressPost): string {
+  const pr = post.productAndRxSection;
+  const ftcDisclaimer = pr?.ftcDisclaimer || 'As an Amazon Associate and clinical intelligence platform, PocketGull earns from qualifying purchases. Product recommendations and pharmacy benchmarks are supportive evidence-grounded tools, not direct prescriptions.';
+  const products = pr?.products || [
+    {
+      asin: 'B07S2CV4N7',
+      title: 'Omron Complete Wireless Upper Arm Blood Pressure + EKG Monitor',
+      category: 'medical_device' as const,
+      price: '$169.99',
+      hsaFsaEligible: true,
+      clinicalContext: 'FDA 510(k) cleared upper arm oscillometric blood pressure combined with Lead-I EKG to monitor arterial compliance and AFib.',
+      affiliateUrl: 'https://www.amazon.com/dp/B07S2CV4N7?tag=pgdpo-20'
+    },
+    {
+      asin: 'B08F9Y85G6',
+      title: 'Innovo Deluxe Fingertip Pulse Oximeter with Plethysmograph Waveform',
+      category: 'medical_device' as const,
+      price: '$34.95',
+      hsaFsaEligible: true,
+      clinicalContext: 'Real-time capillary perfusion index and arterial oxygen saturation monitoring for home cardiopulmonary tracking.',
+      affiliateUrl: 'https://www.amazon.com/dp/B08F9Y85G6?tag=pgdpo-20'
+    },
+    {
+      asin: '1501168058',
+      title: 'The Well-Gardened Mind: The Restorative Power of Nature by Sue Stuart-Smith',
+      category: 'books_bibliotherapy' as const,
+      price: '$18.99',
+      hsaFsaEligible: false,
+      clinicalContext: 'Bibliotherapy exploring neurobiological evidence for nature immersion, cortisol dampening, and parasympathetic nervous system recovery.',
+      affiliateUrl: 'https://www.amazon.com/dp/1501168058?tag=pgdpo-20'
+    }
+  ];
+
+  const rxBenchmarks = pr?.rxBenchmarks || [
+    {
+      genericName: 'Lisinopril Tablets (10 mg)',
+      brandEquivalent: 'Prinivil / Zestril',
+      standardRetailBenchmark: '$42.00 / month',
+      amazonPharmacyPrice: '$4.00 / month (or $10.00 / 90 days with Prime Rx)',
+      clinicalIndication: 'First-line ACE inhibitor for renal nephron sparing, reduction of intraglomerular pressure, and blood pressure control.',
+      demarcationNotice: 'Requires valid prescription from your licensed physician. Benchmark provided for radical price transparency.'
+    },
+    {
+      genericName: 'Metformin HCl (500 mg)',
+      brandEquivalent: 'Glucophage',
+      standardRetailBenchmark: '$38.00 / month',
+      amazonPharmacyPrice: '$4.00 / month (or $10.00 / 90 days with Prime Rx)',
+      clinicalIndication: 'Biguanide AMPK activator and insulin sensitizer benchmark for glycemic and vascular endothelial protection.',
+      demarcationNotice: 'Requires physician prescription. Benchmark illustrates low direct wholesale cost of essential medicines.'
+    }
+  ];
+
+  return `
+      <!-- Supportive Equipment & Amazon Pharmacy Rx Benchmarks -->
+      <div class="salutogenic-section">
+        <div class="salutogenic-header">
+          <span style="font-size: 1.5rem;">🛒</span>
+          <div>
+            <h3>Supportive Tools &amp; Amazon Pharmacy Generic Rx Benchmarks</h3>
+            <div class="salutogenic-subtitle">Transparent Pricing Benchmarks &bull; HSA/FSA Eligible Devices</div>
+          </div>
+        </div>
+
+        <div class="ftc-banner">
+          ⚖️ <strong>FTC Affiliate Disclosure &amp; Clinical Demarcation:</strong> ${escapeHtml(ftcDisclaimer)}
+        </div>
+
+        <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem;">
+          📦 Curated Supportive Products &amp; Diagnostics (Amazon / HSA Qualified):
+        </div>
+        <div class="grid-2col">
+          ${products.map(p => `
+            <div class="salutogenic-card">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem;">
+                  <span class="salutogenic-tag" style="background: rgba(56, 189, 248, 0.15); color: #7dd3fc;">${escapeHtml(p.category.replace('_', ' '))}</span>
+                  ${p.hsaFsaEligible ? '<span style="font-size: 0.68rem; font-weight: 700; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.15rem 0.4rem; border-radius: 0.2rem;">HSA/FSA §213(d)</span>' : ''}
+                </div>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">${escapeHtml(p.title)}</h4>
+                <p style="font-size: 0.82rem; color: #a1a1aa; line-height: 1.45; margin-bottom: 0.75rem;">${escapeHtml(p.clinicalContext)}</p>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.5rem;">
+                <span style="font-weight: 700; color: #34d399; font-size: 0.95rem;">${escapeHtml(p.price)}</span>
+                <a href="${escapeHtml(p.affiliateUrl)}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="font-size: 0.75rem; padding: 0.3rem 0.75rem;">
+                  View on Amazon &rarr;
+                </a>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-top: 1.5rem; margin-bottom: 0.5rem;">
+          💊 Amazon Pharmacy Generic Rx Benchmarks (Direct Cash vs Retail Markup):
+        </div>
+        <table class="rx-benchmark-table">
+          <thead>
+            <tr>
+              <th>Generic Medication</th>
+              <th>Standard Retail Benchmark</th>
+              <th>Amazon Pharmacy Benchmark</th>
+              <th>Clinical Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rxBenchmarks.map(rx => `
+              <tr>
+                <td><strong>${escapeHtml(rx.genericName)}</strong><br /><span style="font-size: 0.72rem; color: #a1a1aa;">(equiv. ${escapeHtml(rx.brandEquivalent)})</span></td>
+                <td><span class="price-retail">${escapeHtml(rx.standardRetailBenchmark)}</span></td>
+                <td><span class="price-amazon">${escapeHtml(rx.amazonPharmacyPrice)}</span></td>
+                <td style="font-size: 0.75rem; color: #d4d4d8;">${escapeHtml(rx.clinicalIndication)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div style="font-size: 0.7rem; color: #a1a1aa; margin-top: 0.5rem; font-style: italic;">
+          * Prescription medications require a valid physician order. Benchmarks illustrate wholesale cost transparency to prevent financial toxicity.
+        </div>
+      </div>`;
+}
+
+function renderRestorativeHobbiesSection(post: IWordPressPost): string {
+  const hobbies = post.restorativeHobbies || [
+    {
+      title: 'Horticultural Therapy & Micro-Gardening (Soil Microbiome Sero-Grounding)',
+      icon: '🌱',
+      frequency: '3–4 mornings / week (15–30 mins)',
+      vagalResonanceMode: 'Parasympathetic Reset & Soil Mycobacterium Vaccae Exposure',
+      description: 'Tending container herbs (rosemary, thyme, heirloom cherry tomatoes) on a porch or windowsill. Working with potting soil exposes skin to harmless Mycobacterium vaccae, which stimulates brain cytokine release and elevates serotonergic neurons.',
+      somaticBenefit: 'Lowers baseline salivary cortisol by 28% and delivers direct physical grounding through tactile texture and morning sunlight photon exposure.',
+      starterStep: 'Acquire one terracotta pot, organic soil, and a rosemary start. Spend 10 minutes watering, pinching leaves, and breathing in pinene terpenes every morning.',
+      recommendedResource: 'The Well-Gardened Mind by Dr. Sue Stuart-Smith'
+    },
+    {
+      title: 'Mindful Japanese Suminagashi (Floating Ink) & Watercolor Flow',
+      icon: '🎨',
+      frequency: '2 evenings / week (30–45 mins)',
+      vagalResonanceMode: '0.10 Hz Bio-Rhythmic Flow & Saccadic Calming',
+      description: 'The ancient 12th-century Japanese art of dropping sumi ink onto still water and capturing concentric rings on mulberry paper. Watching organic ink swirls mirrors biophysical fluid dynamics and induces an effortless meditative state.',
+      somaticBenefit: 'Shifts brainwave activity from rapid beta waves (14–30 Hz) to calming alpha waves (8–12 Hz), reducing sympathetic nervous tension and microvascular spasm.',
+      starterStep: 'Fill a wide shallow baking dish with 1 inch of tap water. Touch an ink-dipped fine brush to the water surface and watch the rings expand. Gently blow to create marble patterns, then lay paper on top.',
+      recommendedResource: 'Suminagashi: The Japanese Art of Marbling Paper by Anne Chambers'
+    },
+    {
+      title: 'Resonant Humming & Choral Vocalization',
+      icon: '🎵',
+      frequency: 'Daily (5–10 mins, especially before meals)',
+      vagalResonanceMode: 'Direct Vagus Nerve Mechanical Stimulation',
+      description: 'Slow, deep humming with long extended exhales (inhale for 4 seconds, hum continuously for 8 seconds). The mechanical vibration in the throat directly stimulates the recurrent laryngeal nerve and auricular branches of the vagus nerve.',
+      somaticBenefit: 'Increases heart rate variability (RMSSD) by over 40% and triggers the cholinergic anti-inflammatory pathway, reducing arterial stiffness.',
+      starterStep: 'Sit upright, place hand gently on your collarbone, and hum a low comfortable pitch on every exhale for 5 minutes.',
+      recommendedResource: 'The Healing Power of the Vagus Nerve by Stanley Rosenberg'
+    }
+  ];
+
+  return `
+      <!-- Complementary Restorative Hobbies & Salutogenic Modalities -->
+      <div class="salutogenic-section">
+        <div class="salutogenic-header">
+          <span style="font-size: 1.5rem;">🎨</span>
+          <div>
+            <h3>Complementary Restorative Hobbies &amp; Salutogenic Pacing</h3>
+            <div class="salutogenic-subtitle">0.10 Hz Bio-Rhythmic Resonance &bull; Somatic Nervous System Soothing</div>
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          ${hobbies.map(h => `
+            <div class="salutogenic-card">
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                  <span style="font-size: 1.5rem;">${h.icon}</span>
+                  <div>
+                    <h4 style="font-size: 1rem; font-weight: 700; color: #fff;">${escapeHtml(h.title)}</h4>
+                    <span style="font-size: 0.72rem; color: var(--teal-light); font-weight: 600;">${escapeHtml(h.vagalResonanceMode)}</span>
+                  </div>
+                </div>
+                <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 600; margin-bottom: 0.5rem;">
+                  ⏱️ Cadence: ${escapeHtml(h.frequency)}
+                </div>
+                <p style="font-size: 0.85rem; color: #d4d4d8; line-height: 1.5; margin-bottom: 0.5rem;">
+                  ${escapeHtml(h.description)}
+                </p>
+                <div style="font-size: 0.78rem; color: #c4b5fd; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); padding: 0.5rem; border-radius: 0.4rem; margin-bottom: 0.5rem;">
+                  <strong>Somatic Benefit:</strong> ${escapeHtml(h.somaticBenefit)}
+                </div>
+              </div>
+              <div style="font-size: 0.75rem; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.5rem;">
+                <strong>Quick Start (10 Mins):</strong> ${escapeHtml(h.starterStep)}
+                ${h.recommendedResource ? `<br /><span style="color: #6ee7b7;">📖 Guide: ${escapeHtml(h.recommendedResource)}</span>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+}
+
 function renderSingleArticle(post: IWordPressPost): string {
   const bionicHtml = applyBionicText(post.contentHtml);
   const matrix = post.chronologicalActionMatrix;
@@ -733,6 +1135,11 @@ function renderSingleArticle(post: IWordPressPost): string {
           `).join('')}
         </ul>
       </div>` : ''}
+
+      <!-- Salutogenic Lifestyle, Nutrition & Restorative Hobbies -->
+      ${renderMealPlanSection(post)}
+      ${renderProductAndRxSection(post)}
+      ${renderRestorativeHobbiesSection(post)}
 
       <div style="margin-top: 3rem; text-align: center;">
         <a href="/articles" class="btn-secondary" style="margin-right: 0.75rem;">← Back to Articles</a>

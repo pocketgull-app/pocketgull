@@ -52,4 +52,26 @@ describe('Articles Site Server-Side Rendering', () => {
     expect(renderArticlesHtml('   ')).toContain('Clinical Breakthroughs');
     expect(renderArticlesHtml('///')).toContain('Clinical Breakthroughs');
   });
+
+  it('renders salutogenic meal suggestions, Whole Foods staples, Amazon Rx benchmarks, and restorative hobbies', () => {
+    const html = renderArticlesHtml('the-100000-dollar-oil-change');
+    // Salutogenic Nutrition & Whole Foods Staples
+    expect(html).toContain('Salutogenic Nutrition:');
+    expect(html).toContain('Whole Foods Market 365 Organic Staples:');
+    expect(html).toContain('365 Whole Foods Market Organic Cold-Pressed Extra Virgin Olive Oil');
+
+    // Supportive Equipment & Amazon Pharmacy Rx Benchmarks
+    expect(html).toContain('Supportive Tools &amp; Amazon Pharmacy Generic Rx Benchmarks');
+    expect(html).toContain('FTC Affiliate Disclosure &amp; Clinical Demarcation:');
+    expect(html).toContain('As an Amazon Associate and clinical intelligence platform, PocketGull earns from qualifying purchases');
+    expect(html).toContain('View on Amazon &rarr;');
+    expect(html).toContain('Amazon Pharmacy Generic Rx Benchmarks');
+    expect(html).toContain('Lisinopril Tablets');
+
+    // Restorative Hobbies
+    expect(html).toContain('Complementary Restorative Hobbies &amp; Salutogenic Pacing');
+    expect(html).toContain('0.10 Hz Bio-Rhythmic Resonance');
+    expect(html).toContain('Horticultural Therapy &amp; Micro-Gardening');
+    expect(html).toContain('Mindful Japanese Suminagashi');
+  });
 });
