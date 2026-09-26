@@ -49,26 +49,19 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { APP_VERSION } from './version';
 // @ts-ignore
 import AgonesSDK from '@google-cloud/agones-sdk';
-import { sanitizeLogInput, securePathResolve, isValidRedirectUrl } from './utils/security-helper';
 import {
-  renderBusinessSiteHtml,
-  renderOfacRestrictedHtml,
+  sanitizeLogInput,
+  securePathResolve,
+  isValidRedirectUrl,
   OFAC_SANCTIONED_COUNTRIES,
-  resolveVisitorJurisdiction
-} from './server/business-site';
+  renderOfacRestrictedHtml
+} from './utils/security-helper';
 import {
   renderCheckoutPortalHtml,
   generateLicenseReceipt,
   BILLING_TIERS
 } from './server/billing-portal';
-import { renderArticlesHtml } from './server/articles-site';
 import { FALLBACK_SEED_ARTICLES } from './services/wordpress-articles.service';
-import { renderNantucketCaseStudyHtml } from './server/nantucket-case-study';
-import { renderNeuroSanctuaryCaseStudyHtml } from './server/neuro-sanctuary-case-study';
-import { renderCaseStudiesHubHtml } from './server/case-studies-hub';
-import { renderCardiometabolicCaseStudyHtml } from './server/cardiometabolic-case-study';
-import { renderDarwinCaseStudyHtml } from './server/darwin-case-study';
-import { renderOknCaseStudyHtml } from './server/okn-case-study';
 import { supportRouter } from './server/routes/support.routes';
 import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
@@ -395,84 +388,36 @@ app.post('/api/billing/checkout', express.json(), (req, res) => {
   });
 });
 
-// Explicit preview endpoints for business site & case studies
-app.get(['/business', '/preview'], (req, res) => {
-  const country = extractClientCountry(req);
-  if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
-    return sendHtmlResponse(res.status(451), renderOfacRestrictedHtml());
+// Redirect business marketing site & case study routes to dedicated repo portal https://pocketgull.com
+app.use((req, res, next) => {
+  if (
+    req.path === '/case-studies' || req.path.startsWith('/case-studies/') ||
+    req.path === '/articles' || req.path.startsWith('/articles/') ||
+    req.path === '/nantucket' || req.path === '/neuro-sanctuary' ||
+    req.path === '/cardiometabolic' || req.path === '/darwin' ||
+    req.path === '/okn' || req.path === '/okn-grounding' ||
+    req.path === '/business' || req.path === '/preview' ||
+    req.path === '/store' || req.path === '/community'
+  ) {
+    const targetPath = (req.path === '/business' || req.path === '/preview') ? '/' : req.url;
+    return res.redirect(301, `https://pocketgull.com${targetPath}`);
   }
-  return sendHtmlResponse(res, renderBusinessSiteHtml({ countryCode: country }));
+  next();
 });
 
-app.get(['/case-studies/nantucket-tick-radar', '/case-studies/nantucket', '/nantucket'], (_req, res) => {
-  return sendHtmlResponse(res, renderNantucketCaseStudyHtml());
-});
-
-app.get(['/case-studies/neuro-sanctuary', '/case-studies/ms-radar', '/neuro-sanctuary'], (_req, res) => {
-  return sendHtmlResponse(res, renderNeuroSanctuaryCaseStudyHtml());
-});
-
-app.get(['/case-studies', '/case-studies/'], (_req, res) => {
-  return sendHtmlResponse(res, renderCaseStudiesHubHtml());
-});
-
-app.get(['/case-studies/cardiometabolic-radar', '/case-studies/cardiometabolic', '/cardiometabolic'], (_req, res) => {
-  return sendHtmlResponse(res, renderCardiometabolicCaseStudyHtml());
-});
-
-app.get(['/case-studies/darwin-vagal-radar', '/case-studies/darwin', '/darwin'], (_req, res) => {
-  return sendHtmlResponse(res, renderDarwinCaseStudyHtml());
-});
-
-// Primary Business Site Handler for pocketgull.com & www.pocketgull.com
+// Domain router: redirect pocketgull.com traffic to dedicated portal https://pocketgull.com
 app.use((req, res, next) => {
   const xfh = String(req.headers['x-forwarded-host'] || '').toLowerCase();
   const hostHeader = String(req.headers['host'] || '').toLowerCase();
   const hostname = String(req.hostname || '').toLowerCase();
 
-  console.log('[Domain Router Log]', JSON.stringify({
-    url: req.url,
-    xfh,
-    hostHeader,
-    hostname,
-    'x-forwarded-proto': req.headers['x-forwarded-proto'],
-    'user-agent': req.headers['user-agent']
-  }));
-
   const rawHost = (xfh || hostHeader || hostname).split(',')[0].split(':')[0].trim();
 
-  const isBusinessSite =
-    req.path === '/business' ||
-    req.path === '/store' ||
-    req.path === '/community' ||
-    req.query['preview'] === 'business' ||
-    /(^|\.)pocketgull\.com$/.test(rawHost);
+  const isBusinessSite = /(^|\.)pocketgull\.com$/.test(rawHost);
 
   if (isBusinessSite) {
     if (req.path === '/health' || req.path.startsWith('/api/')) {
       return next();
-    }
-    if (req.path === '/articles' || req.path.startsWith('/articles/')) {
-      const slug = req.path.replace(/^\/articles\/?/, '').split('?')[0];
-      return sendHtmlResponse(res, renderArticlesHtml(slug));
-    }
-    if (req.path === '/case-studies' || req.path === '/case-studies/') {
-      return sendHtmlResponse(res, renderCaseStudiesHubHtml());
-    }
-    if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
-      return sendHtmlResponse(res, renderNantucketCaseStudyHtml());
-    }
-    if (req.path === '/case-studies/neuro-sanctuary' || req.path === '/case-studies/ms-radar' || req.path === '/neuro-sanctuary') {
-      return sendHtmlResponse(res, renderNeuroSanctuaryCaseStudyHtml());
-    }
-    if (req.path === '/case-studies/cardiometabolic-radar' || req.path === '/case-studies/cardiometabolic' || req.path === '/cardiometabolic') {
-      return sendHtmlResponse(res, renderCardiometabolicCaseStudyHtml());
-    }
-    if (req.path === '/case-studies/darwin-vagal-radar' || req.path === '/case-studies/darwin' || req.path === '/darwin') {
-      return sendHtmlResponse(res, renderDarwinCaseStudyHtml());
-    }
-    if (req.path === '/case-studies/okn-grounding' || req.path === '/case-studies/okn' || req.path === '/okn-grounding' || req.path === '/okn') {
-      return sendHtmlResponse(res, renderOknCaseStudyHtml());
     }
     const cleanPath = req.path.split('?')[0];
     const ext = extname(cleanPath).toLowerCase();
@@ -480,11 +425,7 @@ app.use((req, res, next) => {
     if (staticExts.has(ext)) {
       return next();
     }
-    const country = extractClientCountry(req);
-    if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
-      return sendHtmlResponse(res.status(451), renderOfacRestrictedHtml());
-    }
-    return sendHtmlResponse(res, renderBusinessSiteHtml({ countryCode: country }));
+    return res.redirect(301, `https://pocketgull.com${req.url === '/business' ? '/' : req.url}`);
   }
 
   // Redirect legacy alias domains to primary app domain pocketgull.app
@@ -653,10 +594,10 @@ app.get('/.well-known/agent.json', manifestRateLimiter, (req: express.Request, r
 const discoveryRouter = createDiscoveryRouter();
 app.use(manifestRateLimiter, discoveryRouter);
 
-// Universal SSR Articles Hub & Breakthrough Inventions Handler
+// Universal SSR Articles Hub & Breakthrough Inventions Handler -> Redirect to pocketgull.com
 app.get(['/articles', '/articles/:slug'], manifestRateLimiter, (req, res) => {
   const slug = (req.params as Record<string, string>)['slug'] || '';
-  return sendHtmlResponse(res, renderArticlesHtml(slug));
+  return res.redirect(301, `https://pocketgull.com/articles${slug ? `/${slug}` : ''}`);
 });
 
 // REST JSON API for Clinical Breakthrough Articles (WordPress-decoupled)
@@ -1126,48 +1067,23 @@ app.use(globalLimiter, (req, res, next) => {
  * Handle all other requests by rendering the Angular application.
  */
 app.use((req, res, next) => {
-  // Host routing: Serve the Vertex Gen AI App Builder Business Site for pocketgull.com
+  // Host routing: redirect business marketing and case studies to dedicated portal https://pocketgull.com
   const cleanHost = (req.hostname || '').toLowerCase();
   const isBusinessDomain = (cleanHost === 'pocketgull.com' || cleanHost === 'www.pocketgull.com');
   const isBusinessPath = req.path === '/business' || req.path === '/enterprise' || req.path === '/app-builder' || req.path === '/portal';
 
-  if (req.path === '/case-studies' || req.path === '/case-studies/') {
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    return sendHtmlResponse(res, renderCaseStudiesHubHtml());
-  }
-
-  if (req.path === '/case-studies/nantucket-tick-radar' || req.path === '/case-studies/nantucket' || req.path === '/nantucket') {
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    return sendHtmlResponse(res, renderNantucketCaseStudyHtml());
-  }
-
-  if (req.path === '/case-studies/neuro-sanctuary' || req.path === '/case-studies/ms-radar' || req.path === '/neuro-sanctuary') {
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    return sendHtmlResponse(res, renderNeuroSanctuaryCaseStudyHtml());
-  }
-
-  if (req.path === '/case-studies/cardiometabolic-radar' || req.path === '/case-studies/cardiometabolic' || req.path === '/cardiometabolic') {
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    return sendHtmlResponse(res, renderCardiometabolicCaseStudyHtml());
-  }
-
-  if (req.path === '/case-studies/darwin-vagal-radar' || req.path === '/case-studies/darwin' || req.path === '/darwin') {
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    return sendHtmlResponse(res, renderDarwinCaseStudyHtml());
-  }
-
-  if (req.path === '/case-studies/okn-grounding' || req.path === '/case-studies/okn' || req.path === '/okn-grounding' || req.path === '/okn') {
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    return sendHtmlResponse(res, renderOknCaseStudyHtml());
+  if (
+    req.path === '/case-studies' || req.path.startsWith('/case-studies/') ||
+    req.path === '/articles' || req.path.startsWith('/articles/') ||
+    req.path === '/nantucket' || req.path === '/neuro-sanctuary' ||
+    req.path === '/cardiometabolic' || req.path === '/darwin' ||
+    req.path === '/okn' || req.path === '/okn-grounding'
+  ) {
+    return res.redirect(301, `https://pocketgull.com${req.url}`);
   }
 
   if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {
-    const country = extractClientCountry(req);
-    if (OFAC_SANCTIONED_COUNTRIES.has(country)) {
-      return sendHtmlResponse(res.status(451), renderOfacRestrictedHtml());
-    }
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    return sendHtmlResponse(res, renderBusinessSiteHtml({ countryCode: country }));
+    return res.redirect(301, `https://pocketgull.com${req.url === '/business' ? '/' : req.url}`);
   }
 
   if (process.env['SKIP_SSR'] === 'true' || req.query['csr'] === '1') {

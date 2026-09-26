@@ -10,7 +10,6 @@ import swaggerUi from 'swagger-ui-express';
 import crypto from 'crypto';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import { renderBusinessSiteHtml } from './src/server/business-site.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -199,7 +198,7 @@ app.use((req, res, next) => {
     if (staticExts.has(ext)) {
       return next();
     }
-    return sendHtmlResponse(res, renderBusinessSiteHtml());
+    return res.redirect(301, `https://pocketgull.com${req.url === '/business' ? '/' : req.url}`);
   }
 
   // Redirect legacy alias domains to primary app domain pocketgull.app
