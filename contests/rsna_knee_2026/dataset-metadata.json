@@ -177,6 +177,22 @@
     {
       "path": "jax_optimal_ensemble_weights.json",
       "description": "Specialized multi-model blend weights for DINOv2, A5 Folds, RadImageNet, and Raptor CoAtNet."
+    },
+    {
+      "path": "asymmetric_loss.py",
+      "description": "PyTorch/NumPy implementation of Asymmetric Loss (ASL) for extreme class imbalance."
+    },
+    {
+      "path": "rsna_parquet_jax_engine.py",
+      "description": "Vectorized JAX + NumPy Bayesian co-occurrence calibration engine."
+    },
+    {
+      "path": "cooccurrence_calibrator.py",
+      "description": "Bayesian co-occurrence prior calibrator and conditional expectation matrix calculator."
+    },
+    {
+      "path": "threshold_optimizer.py",
+      "description": "Nelder-Mead multi-target decision threshold optimizer."
     }
   ]
 }

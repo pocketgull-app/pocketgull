@@ -155,6 +155,22 @@ def generate_dataset_metadata(
         {
             "path": "jax_optimal_ensemble_weights.json",
             "description": "Specialized multi-model blend weights for DINOv2, A5 Folds, RadImageNet, and Raptor CoAtNet."
+        },
+        {
+            "path": "asymmetric_loss.py",
+            "description": "PyTorch/NumPy implementation of Asymmetric Loss (ASL) for extreme class imbalance."
+        },
+        {
+            "path": "rsna_parquet_jax_engine.py",
+            "description": "Vectorized JAX + NumPy Bayesian co-occurrence calibration engine."
+        },
+        {
+            "path": "cooccurrence_calibrator.py",
+            "description": "Bayesian co-occurrence prior calibrator and conditional expectation matrix calculator."
+        },
+        {
+            "path": "threshold_optimizer.py",
+            "description": "Nelder-Mead multi-target decision threshold optimizer."
         }
     ]
 
@@ -183,13 +199,16 @@ def main() -> None:
     parser.add_argument("--slug", default="med-skeptic-dicom-bench", help="Dataset slug identifier")
     parser.add_argument("--title", default="Pocketgull Medical Skeptic DICOM Benchmark", help="Dataset title")
     parser.add_argument("--dataset-dir", default=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "contests", "rsna_knee_2026"), help="Directory containing dataset files")
+    parser.add_argument("--stage-dir", default=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "contests", "rsna_knee_2026", "dataset_staging"), help="Staging directory for clean packaging")
+    parser.add_argument("--message", default="Version 2.0: 3,613-study ground truth cohort, Snappy-compressed Parquet, Nelder-Mead biomechanical priors (+0.00605 Macro-AUC), and JAX calibration engines", help="Version message")
     parser.add_argument("--is-private", action="store_true", help="Mark dataset as private")
     parser.add_argument("--dry-run", action="store_true", help="Validate and write metadata without network calls")
 
     args = parser.parse_args()
 
-    dataset_dir = os.path.abspath(args.dataset_dir)
-    os.makedirs(dataset_dir, exist_ok=True)
+    source_dir = os.path.abspath(args.dataset_dir)
+    stage_dir = os.path.abspath(args.stage_dir)
+    os.makedirs(stage_dir, exist_ok=True)
 
     metadata = generate_dataset_metadata(
         owner=args.owner,
@@ -198,22 +217,56 @@ def main() -> None:
         is_private=args.is_private
     )
 
-    metadata_path = os.path.join(dataset_dir, "dataset-metadata.json")
+    metadata_path = os.path.join(stage_dir, "dataset-metadata.json")
     with open(metadata_path, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2)
+
+    # Also keep a copy in source dir for source control
+    with open(os.path.join(source_dir, "dataset-metadata.json"), "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=2)
 
     print(f"[OK] 10/10 Usability Dataset metadata generated at: {metadata_path}")
     print(f"[INFO] Dataset ID: {args.owner}/{args.slug}")
+
+    # Copy curated files to staging directory
+    curated_files = [
+        "train.csv",
+        "train.parquet",
+        "train_series.csv",
+        "train_labels_gemini.csv",
+        "lemonade_extracted_labels.jsonl",
+        "optimal_biomechanical_priors.json",
+        "jax_cooccurrence_priors.json",
+        "jax_optimal_ensemble_weights.json",
+        "asymmetric_loss.py",
+        "rsna_parquet_jax_engine.py",
+        "cooccurrence_calibrator.py",
+        "threshold_optimizer.py"
+    ]
+
+    for fname in curated_files:
+        src = os.path.join(source_dir, fname)
+        dst = os.path.join(stage_dir, fname)
+        if os.path.exists(src):
+            shutil.copy2(src, dst)
+            size_kb = os.path.getsize(dst) / 1024.0
+            print(f"  [STAGED] {fname} ({size_kb:.1f} KB)")
+        else:
+            print(f"  [WARN] Source file not found: {src}")
 
     if args.dry_run:
         print("[OK] Dry run mode enabled. Skipping API upload.")
         return
 
     import subprocess
-    cmd = ["kaggle", "datasets", "version", "-p", dataset_dir, "-m", "100% Usability 10.0 update with complete data dictionary, provenance, and column schemas", "-r", "zip"]
+    cmd = ["kaggle", "datasets", "version", "-p", stage_dir, "-m", args.message, "-r", "zip"]
+    print(f"[RUNNING] {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True)
-    print(f"[INFO] Dataset version update output: {result.stdout} {result.stderr}")
+    print(f"[INFO] Dataset version update stdout:\n{result.stdout}")
+    if result.stderr:
+        print(f"[INFO] Dataset version update stderr:\n{result.stderr}")
 
 
 if __name__ == "__main__":
     main()
+
