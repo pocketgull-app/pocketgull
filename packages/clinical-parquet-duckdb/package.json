@@ -1,0 +1,47 @@
+{
+  "name": "@pocketgull/clinical-parquet-duckdb",
+  "version": "1.0.0",
+  "description": "Zero-egress FHIR R4 to Snappy-compressed Parquet pipelines with HIPAA Safe Harbor de-identification and DuckDB vectorized SQL analytics.",
+  "author": "Phillip Gear <leads@pocketgull.app> (PocketGull LLC)",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "fhir-r4",
+    "parquet",
+    "duckdb",
+    "columnar",
+    "hipaa-safe-harbor",
+    "zero-egress",
+    "clinical-data-science",
+    "health-informatics",
+    "arrow",
+    "snappy",
+    "loinc",
+    "icd-10",
+    "snomed-ct"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
