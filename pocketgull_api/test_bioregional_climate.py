@@ -1,8 +1,6 @@
 """
 Unit tests for Pocket Gull Bioregional Climate, Foodshed Carbon Drawdown & Biodiversity Engine
 """
-
-import pytest
 from services.bioregional_climate_service import (
     BioregionalClimateInput,
     evaluate_bioregional_climate_model,

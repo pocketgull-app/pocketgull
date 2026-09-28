@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 PocketGull LLC & Phillip Gear
+
 import { describe, it, expect, beforeEach } from 'vitest';
 import { IsmpSafetyGuardService } from './ismp-safety-guard.service';
 
@@ -36,6 +39,10 @@ describe('IsmpSafetyGuardService - ISMP / FDA Pharmacological Safety Suite', () 
   it('4. Formats Look-Alike / Sound-Alike (LASA) drugs with FDA Tall Man Lettering', () => {
     expect(service.formatTallMan('hydralazine')).toBe('hydrALAZINE');
     expect(service.formatTallMan('hydroxyzine')).toBe('hydrOXYzine');
+    expect(service.formatTallMan('vinblastine')).toBe('vinBLAStine');
+    expect(service.formatTallMan('vincristine')).toBe('vinCRIStine');
+    expect(service.formatTallMan('cisplatin')).toBe('CISplatin');
+    expect(service.formatTallMan('carboplatin')).toBe('carboPLATIN');
     expect(service.formatTallMan('prednisone')).toBe('predniSONE');
     expect(service.formatTallMan('prednisolone')).toBe('prednisoLONE');
     expect(service.formatTallMan('losartan')).toBe('loSARtan');
@@ -50,13 +57,14 @@ describe('IsmpSafetyGuardService - ISMP / FDA Pharmacological Safety Suite', () 
     expect(audit.violations.some(v => v.type === 'TRAILING_ZERO')).toBe(true);
     expect(audit.violations.some(v => v.type === 'NAKED_DECIMAL')).toBe(true);
     expect(audit.violations.some(v => v.type === 'ERROR_PRONE_ABBREVIATION')).toBe(true);
+    expect(audit.violations.some(v => v.type === 'LOOK_ALIKE_SOUND_ALIKE')).toBe(true);
     expect(audit.sanitizedText).toContain('hydrALAZINE 25 mg daily with morPHINE sulfate 0.5 mg');
   });
 
   it('6. Normalizes dangerous microgram abbreviations (ug and µg) to mcg', () => {
     const input = 'Administer levothyroxine 50 ug and fentanyl 25 µg IV';
     const output = service.sanitizeClinicalDosage(input);
-    expect(output).toBe('Administer levothyroxine 50 mcg and fentanyl 25 mcg IV');
+    expect(output).toBe('Administer levothyroxine 50 mcg and fentaNYL 25 mcg IV');
   });
 
   it('7. Passes clean prescription orders without false-positive violation flags', () => {
@@ -66,5 +74,40 @@ describe('IsmpSafetyGuardService - ISMP / FDA Pharmacological Safety Suite', () 
     expect(audit.hasViolations).toBe(false);
     expect(audit.isSafe).toBe(true);
     expect(audit.violations.length).toBe(0);
+  });
+
+  it('8. Catches life-critical oncological LASA error: vinBLAStine vs vinCRIStine', () => {
+    const order = 'Initiate chemotherapy with vincristine 1.4 mg/m2 IV weekly';
+    const audit = service.auditPrescription(order);
+
+    expect(audit.hasViolations).toBe(true);
+    const lasaViolation = audit.violations.find(v => v.type === 'LOOK_ALIKE_SOUND_ALIKE');
+    expect(lasaViolation).toBeDefined();
+    expect(lasaViolation?.confusableWith).toBe('vinBLAStine');
+    expect(lasaViolation?.severity).toBe('CRITICAL_SAFETY_DEFECT');
+    expect(lasaViolation?.clinicalDisambiguation).toContain('INTRATHECALLY');
+    expect(audit.sanitizedText).toContain('vinCRIStine');
+  });
+
+  it('9. Disambiguates cardiovascular vs anxiolytic LASA: hydrALAZINE vs hydrOXYzine', () => {
+    const order = 'Administer hydroxyzine 25 mg for bedtime anxiety';
+    const audit = service.auditPrescription(order);
+
+    const lasa = audit.violations.find(v => v.type === 'LOOK_ALIKE_SOUND_ALIKE');
+    expect(lasa).toBeDefined();
+    expect(lasa?.confusableWith).toBe('hydrALAZINE');
+    expect(lasa?.clinicalDisambiguation).toContain('Antihypertensive');
+    expect(audit.sanitizedText).toContain('hydrOXYzine');
+  });
+
+  it('10. Generates complete LASA clinical training deck for medical education', () => {
+    const deck = service.getLasaTrainingDeck();
+    expect(deck.length).toBeGreaterThanOrEqual(10);
+
+    const vincaCard = deck.find(c => c.id === 'lasa-vinblastine-vincristine');
+    expect(vincaCard).toBeDefined();
+    expect(vincaCard?.tallManA).toBe('vinBLAStine');
+    expect(vincaCard?.tallManB).toBe('vinCRIStine');
+    expect(vincaCard?.criticalSafetyWarning).toContain('paralysis');
   });
 });

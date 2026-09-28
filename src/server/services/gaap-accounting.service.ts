@@ -90,9 +90,11 @@ export class GAAPAccountingService {
 
     const netCash = Math.round((amountGrossUsd - stripeFeeUsd) * 100) / 100;
     
-    // Parse revenue split allocation (e.g. 50% Founder / 30% Endowment / 20% Infra)
+    // Parse revenue split allocation (e.g. 85% Programmatic / 10% Infra / 5% Mgmt, or 50/30/20)
     let endowmentShare = 0;
-    if (revenueSplit === '50-30-20') {
+    if (revenueSplit === '85-10-5' || revenueSplit === '85-15') {
+      endowmentShare = Math.round((amountGrossUsd * 0.85) * 100) / 100;
+    } else if (revenueSplit === '50-30-20') {
       endowmentShare = Math.round((amountGrossUsd * 0.30) * 100) / 100;
     } else if (revenueSplit === '70-10-20') {
       endowmentShare = Math.round((amountGrossUsd * 0.10) * 100) / 100;

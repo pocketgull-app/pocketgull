@@ -1,8 +1,18 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ClinicalArticlesService, IClinicalArticle, IActionStage } from '../services/wordpress-articles.service';
+import { 
+  ClinicalArticlesService, 
+  IClinicalArticle, 
+  IActionStage, 
+  IPhysicianDiscussionGuide, 
+  IDoctorDiscussionPrompt, 
+  IArticleTranslation 
+} from '../services/wordpress-articles.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
+import { SocraticMultilingualTranslatorService } from '../services/socratic-multilingual-translator.service';
+import { DocDrillService } from '../services/doc-drill.service';
+import { HtmlExportStrategyService } from '../services/export/html-export-strategy.service';
 import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-slider.component';
 
 @Component({
@@ -65,6 +75,24 @@ import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-sl
                     class="px-2.5 py-1 rounded-lg font-bold transition cursor-pointer text-[11px]">
               🌱 6th Grade
             </button>
+          </div>
+
+          <!-- Language Translation Selector Dropdown -->
+          <div class="flex items-center bg-zinc-900 rounded-xl px-2 py-0.5 border border-zinc-800 gap-1.5 shadow-xs">
+            <span class="text-xs">🌐</span>
+            <select [ngModel]="selectedLanguageCode()"
+                    (ngModelChange)="onLanguageSelect($event)"
+                    aria-label="Select Article Language"
+                    class="bg-transparent text-zinc-200 text-xs font-mono font-bold border-none outline-none cursor-pointer py-1 pr-1">
+              @for (lang of availableLanguages; track lang.code) {
+                <option [value]="lang.code" class="bg-zinc-900 text-zinc-100">
+                  {{ lang.flag }} {{ lang.name }}
+                </option>
+              }
+            </select>
+            @if (isTranslating()) {
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping" title="Translating..."></span>
+            }
           </div>
 
           <!-- Audio Readback Button -->
@@ -136,7 +164,7 @@ import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-sl
         </div>
 
         <!-- Right: Distraction-Free Reader + Breakthrough Framework Sections -->
-        <div class="lg:col-span-8 p-5 sm:p-7 rounded-3xl bg-zinc-900/40 border border-zinc-800 space-y-8">
+        <div class="lg:col-span-8 p-5 sm:p-7 rounded-3xl bg-zinc-900/40 border border-zinc-800 space-y-8" [dir]="isRtl() ? 'rtl' : 'ltr'">
           @if (activePost(); as article) {
             
             <!-- 1. Article Header -->
@@ -157,10 +185,16 @@ import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-sl
                       [class.text-indigo-300]="readingLevel() === 'standard'">
                   {{ readingLevel() === 'grade6' ? '🌱 6th Grade Plain-Language' : '🎓 Clinical Standard' }}
                 </span>
+                @if (selectedLanguageCode() !== 'en') {
+                  <span class="text-zinc-500">•</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                    🌐 {{ selectedLanguageName() }}
+                  </span>
+                }
               </div>
 
               <h2 class="text-xl sm:text-2xl font-black text-white font-sans tracking-tight leading-tight">
-                {{ article.title }}
+                {{ displayTitle() }}
               </h2>
             </div>
 
@@ -388,6 +422,147 @@ import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-sl
                       </div>
                     </div>
                   }
+                </div>
+              </div>
+            }
+
+            <!-- 6. 🩺 Physician Conversation Guide & 1-Page Encounter Brief (Shared Decision-Making) -->
+            @if (article.physicianDiscussionGuide; as pdg) {
+              <div class="p-5 rounded-3xl bg-zinc-950 border border-sky-500/40 space-y-5 shadow-2xl relative overflow-hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-2xl shrink-0 shadow-inner">
+                      🩺
+                    </div>
+                    <div>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <h4 class="text-xs sm:text-sm font-black text-white font-sans tracking-wide">
+                          Physician Conversation Guide &amp; 1-Page Encounter Brief
+                        </h4>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                          Shared Decision-Making (SDM)
+                        </span>
+                      </div>
+                      <p class="text-[11px] text-zinc-400 mt-0.5">
+                        High-yield clinical discussion points, SBAR encounter brief, and diagnostic order inquiries.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Action Toolbar -->
+                  <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+                    <button type="button"
+                            (click)="copyAllDoctorQuestions(pdg)"
+                            class="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-sky-500/40 text-zinc-200 hover:text-white transition cursor-pointer flex items-center gap-1.5 shadow-xs">
+                      <span>{{ isQuestionsCopied() ? '✓' : '📋' }}</span>
+                      <span>{{ isQuestionsCopied() ? 'Questions Copied!' : 'Copy Questions' }}</span>
+                    </button>
+                    <button type="button"
+                            (click)="printClinicianBrief(article)"
+                            class="px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-200 border border-sky-500/40 hover:bg-sky-500/30 transition cursor-pointer flex items-center gap-1.5 font-bold shadow-xs">
+                      <span>🖨️</span>
+                      <span>1-Page Clinician Brief</span>
+                    </button>
+                    <button type="button"
+                            (click)="practiceInDoctorDrill(article)"
+                            class="px-3 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-zinc-950 font-bold transition cursor-pointer flex items-center gap-1.5 shadow-xs">
+                      <span>💬</span>
+                      <span>Practice with AI Doctor</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Specialty & Urgency Meta Badges -->
+                <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+                  <div class="px-2.5 py-1 rounded-xl bg-zinc-900/80 border border-zinc-800 text-zinc-300">
+                    <span class="text-zinc-500">Target Specialty:</span>
+                    <strong class="text-sky-300 ml-1">{{ pdg.recommendedSpecialty }}</strong>
+                  </div>
+                  <div class="px-2.5 py-1 rounded-xl bg-zinc-900/80 border border-zinc-800 text-zinc-300">
+                    <span class="text-zinc-500">Urgency:</span>
+                    <span class="ml-1 font-bold"
+                          [class.text-emerald-400]="pdg.urgencyLevel === 'Routine Next Checkup'"
+                          [class.text-amber-400]="pdg.urgencyLevel === 'Schedule Within 1-2 Weeks'"
+                          [class.text-rose-400]="pdg.urgencyLevel === 'STAT Clinical Evaluation'">
+                      {{ pdg.urgencyLevel }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- 60-Second SBAR Encounter Summary -->
+                <div class="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-2">
+                  <div class="flex items-center justify-between text-[10px] font-mono text-sky-400 font-bold uppercase tracking-wider">
+                    <span>⚡ 60-Second SBAR Clinician Brief (For Your Doctor)</span>
+                    <span class="text-zinc-500">Situation • Background • Assessment • Recommendation</span>
+                  </div>
+                  <p class="text-xs font-mono text-zinc-300 leading-relaxed whitespace-pre-line">
+                    {{ currentTranslation()?.sbarBrief || pdg.clinicalEncounterBrief }}
+                  </p>
+                </div>
+
+                <!-- Proposed Clinical Questions & Lab Inquiries -->
+                <div class="space-y-3">
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block">
+                    💬 Key Questions to Ask in the Exam Room
+                  </span>
+                  <div class="grid grid-cols-1 gap-3">
+                    @for (q of pdg.discussionPrompts; track q.id; let idx = $index) {
+                      <div class="p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700 transition space-y-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                          <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                              Question {{ idx + 1 }} • {{ q.category }}
+                            </span>
+                            @if (q.suggestedOrderOrTest) {
+                              <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                🧪 Proposed: {{ q.suggestedOrderOrTest }}
+                              </span>
+                            }
+                          </div>
+                          <div class="flex items-center gap-1.5 font-mono text-[10px]">
+                            <button type="button"
+                                    (click)="copySingleQuestion(q)"
+                                    class="px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition cursor-pointer">
+                              {{ copiedPromptId() === q.id ? '✓ Copied' : '📋 Copy' }}
+                            </button>
+                            <button type="button"
+                                    (click)="practiceInDoctorDrill(article, q)"
+                                    class="px-2 py-1 rounded bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/30 transition cursor-pointer">
+                              Practice 💬
+                            </button>
+                          </div>
+                        </div>
+
+                        <p class="text-xs sm:text-sm font-bold text-white font-sans leading-snug">
+                          "{{ (currentTranslation()?.doctorQuestions && currentTranslation()!.doctorQuestions![idx]) ? currentTranslation()!.doctorQuestions![idx] : q.question }}"
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs pt-1 border-t border-zinc-800/80">
+                          <div class="text-[11px] text-zinc-300">
+                            <strong class="text-sky-300 font-mono text-[10px]">🔬 Clinical Rationale:</strong>
+                            <p class="mt-0.5 leading-relaxed">{{ q.clinicalRationale }}</p>
+                          </div>
+                          @if (q.whyAskPatientTip) {
+                            <div class="text-[11px] text-zinc-300">
+                              <strong class="text-amber-300 font-mono text-[10px]">💡 Why Ask This:</strong>
+                              <p class="mt-0.5 leading-relaxed">{{ q.whyAskPatientTip }}</p>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Peer-Reviewed Literature Evidence Footer -->
+                <div class="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80 text-xs font-sans text-zinc-300">
+                  <strong class="text-sky-300 font-mono text-[10px] block mb-1">📚 Clinician Evidence Grounding:</strong>
+                  <p class="text-[11px] text-zinc-400 leading-relaxed">{{ pdg.evidenceSummaryForClinician }}</p>
+                </div>
+
+                <!-- Statutory Demarcation Notice -->
+                <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-300 font-sans leading-relaxed">
+                  ⚖️ <strong>Statutory Notice (FDA 21 CFR Part 11 &amp; MSA AI Governance 2026):</strong> {{ pdg.statutoryDisclaimer || 'This guide is a supportive shared decision-making tool grounded in clinical trials. It does not replace professional medical diagnosis or clinical judgment.' }}
                 </div>
               </div>
             }
@@ -650,6 +825,9 @@ import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-sl
 export class ArticlesReaderComponent implements OnInit {
   private articlesService = inject(ClinicalArticlesService);
   private bionicReading = inject(BionicReadingService);
+  public multilingualService = inject(SocraticMultilingualTranslatorService);
+  private docDrill = inject(DocDrillService);
+  private htmlExport = inject(HtmlExportStrategyService);
 
   readonly posts = computed(() => this.articlesService.allPosts());
   readonly isLoading = computed(() => this.articlesService.isLoading());
@@ -660,12 +838,68 @@ export class ArticlesReaderComponent implements OnInit {
   readonly isBionicMode = computed(() => this.bionicReading.isBionicReadingEnabled());
   readonly isSpeaking = signal<boolean>(false);
 
+  // Multilingual Switcher Signals
+  readonly availableLanguages = [
+    { code: 'en', name: 'English', flag: '🇺🇸', dir: 'ltr', voiceLang: 'en-US' },
+    { code: 'es', name: 'Español', flag: '🇲🇽', dir: 'ltr', voiceLang: 'es-MX' },
+    { code: 'zh', name: '中文 (简体)', flag: '🇨🇳', dir: 'ltr', voiceLang: 'zh-CN' },
+    { code: 'hi', name: 'हिन्दी', flag: '🇮🇳', dir: 'ltr', voiceLang: 'hi-IN' },
+    { code: 'ar', name: 'العربية', flag: '🇸🇦', dir: 'rtl', voiceLang: 'ar-SA' },
+    { code: 'tl', name: 'Tagalog', flag: '🇵🇭', dir: 'ltr', voiceLang: 'fil-PH' },
+    { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳', dir: 'ltr', voiceLang: 'vi-VN' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷', dir: 'ltr', voiceLang: 'fr-FR' },
+    { code: 'pt', name: 'Português', flag: '🇧🇷', dir: 'ltr', voiceLang: 'pt-BR' },
+    { code: 'de', name: 'Deutsch', flag: '🇩🇪', dir: 'ltr', voiceLang: 'de-DE' },
+    { code: 'uk', name: 'Українська', flag: '🇺🇦', dir: 'ltr', voiceLang: 'uk-UA' },
+    { code: 'sw', name: 'Kiswahili', flag: '🇰🇪', dir: 'ltr', voiceLang: 'sw-KE' }
+  ];
+
+  readonly selectedLanguageCode = signal<string>('en');
+  readonly isTranslating = signal<boolean>(false);
+  readonly isQuestionsCopied = signal<boolean>(false);
+  readonly copiedPromptId = signal<string | null>(null);
+  readonly dynamicTranslations = signal<Map<string, IArticleTranslation>>(new Map());
+
+  readonly isRtl = computed(() => ['ar', 'he', 'ur', 'fa'].includes(this.selectedLanguageCode()));
+  readonly selectedLanguageName = computed(() => {
+    const found = this.availableLanguages.find(l => l.code === this.selectedLanguageCode());
+    return found ? `${found.flag} ${found.name}` : 'English';
+  });
+
+  readonly currentTranslation = computed<IArticleTranslation | null>(() => {
+    const post = this.activePost();
+    const code = this.selectedLanguageCode();
+    if (!post || code === 'en') return null;
+
+    if (post.translations?.[code]) {
+      return post.translations[code]!;
+    }
+    const cacheKey = `${post.slug}_${code}`;
+    return this.dynamicTranslations().get(cacheKey) || null;
+  });
+
+  readonly displayTitle = computed(() => {
+    return this.currentTranslation()?.title || this.activePost()?.title || '';
+  });
+
+  readonly displayExcerpt = computed(() => {
+    return this.currentTranslation()?.excerpt || this.activePost()?.excerpt || '';
+  });
+
   readonly formattedBody = computed(() => {
     const post = this.activePost();
     if (!post) return '';
+
+    const trans = this.currentTranslation();
     const level = this.readingLevel();
-    const rawHtml = (level === 'grade6' && post.contentGrade6Html) ? post.contentGrade6Html : post.contentHtml;
-    
+
+    let rawHtml = '';
+    if (trans) {
+      rawHtml = (level === 'grade6' && trans.contentGrade6Html) ? trans.contentGrade6Html : trans.contentHtml;
+    } else {
+      rawHtml = (level === 'grade6' && post.contentGrade6Html) ? post.contentGrade6Html : post.contentHtml;
+    }
+
     if (this.isBionicMode()) {
       return this.bionicReading.formatToBionicHtml(rawHtml, 'text-amber-300 font-extrabold');
     }
@@ -685,6 +919,11 @@ export class ArticlesReaderComponent implements OnInit {
   selectArticle(slug: string): void {
     this.stopSpeaking();
     this.articlesService.selectPost(slug);
+    const post = this.activePost();
+    const lang = this.selectedLanguageCode();
+    if (post && lang !== 'en') {
+      this.ensureArticleTranslation(post, lang);
+    }
   }
 
   syncArticles(): void {
@@ -693,6 +932,159 @@ export class ArticlesReaderComponent implements OnInit {
 
   toggleBionic(): void {
     this.bionicReading.toggleBionicReading();
+  }
+
+  async onLanguageSelect(langCode: string): Promise<void> {
+    this.selectedLanguageCode.set(langCode);
+    const post = this.activePost();
+    if (post && langCode !== 'en') {
+      await this.ensureArticleTranslation(post, langCode);
+    }
+  }
+
+  private async ensureArticleTranslation(post: IClinicalArticle, langCode: string): Promise<void> {
+    if (post.translations?.[langCode]) return;
+    const cacheKey = `${post.slug}_${langCode}`;
+    if (this.dynamicTranslations().has(cacheKey)) return;
+
+    this.isTranslating.set(true);
+    try {
+      const res = await this.multilingualService.translateWithAi(post.contentHtml, langCode);
+      const titleRes = this.multilingualService.translateClinicalContent(post.title, langCode);
+      const excerptRes = this.multilingualService.translateClinicalContent(post.excerpt, langCode);
+
+      const newTrans: IArticleTranslation = {
+        title: titleRes.translatedText.replace(/^.+?\]:\s*/, ''),
+        excerpt: excerptRes.translatedText.replace(/^.+?\]:\s*/, ''),
+        contentHtml: res.translatedText
+      };
+
+      this.dynamicTranslations.update(map => {
+        const next = new Map(map);
+        next.set(cacheKey, newTrans);
+        return next;
+      });
+    } catch (e) {
+      console.warn('[ArticlesReader] Dynamic translation error, falling back:', e);
+    } finally {
+      this.isTranslating.set(false);
+    }
+  }
+
+  copyAllDoctorQuestions(guide: IPhysicianDiscussionGuide): void {
+    const text = guide.discussionPrompts.map((p, idx) => 
+      `Question ${idx + 1} (${p.category}):\n"${p.question}"\n• Clinical Rationale: ${p.clinicalRationale}\n${p.suggestedOrderOrTest ? `• Proposed Order: ${p.suggestedOrderOrTest}\n` : ''}`
+    ).join('\n\n');
+    
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text);
+      }
+    } catch {
+      // Fallback
+    }
+    this.isQuestionsCopied.set(true);
+    setTimeout(() => this.isQuestionsCopied.set(false), 2500);
+  }
+
+  copySingleQuestion(prompt: IDoctorDiscussionPrompt): void {
+    const text = `"${prompt.question}"\n• Clinical Rationale: ${prompt.clinicalRationale}${prompt.suggestedOrderOrTest ? `\n• Proposed Order: ${prompt.suggestedOrderOrTest}` : ''}`;
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text);
+      }
+    } catch {
+      // Fallback
+    }
+    this.copiedPromptId.set(prompt.id);
+    setTimeout(() => this.copiedPromptId.set(null), 2000);
+  }
+
+  practiceInDoctorDrill(article: IClinicalArticle, prompt?: IDoctorDiscussionPrompt): void {
+    const context = prompt 
+      ? `Patient Question: "${prompt.question}"\nClinical Rationale: ${prompt.clinicalRationale}\nProposed Order: ${prompt.suggestedOrderOrTest || 'N/A'}`
+      : `Article Topic: ${article.title}\nSBAR Brief: ${article.physicianDiscussionGuide?.clinicalEncounterBrief || ''}`;
+      
+    this.docDrill.openDrill(article.title, {
+      category: article.sno10Category || 'PHYSICIAN CONSULT',
+      persona: 'patient',
+      context
+    });
+  }
+
+  printClinicianBrief(article: IClinicalArticle): void {
+    if (!article.physicianDiscussionGuide) return;
+    const pdg = article.physicianDiscussionGuide;
+    const questionsHtml = pdg.discussionPrompts.map((p, i) => `
+      <div style="margin-bottom: 12px; padding: 10px; background: #f8fafc; border-left: 3px solid #0284c7; border-radius: 4px;">
+        <div style="font-size: 11px; font-weight: 700; color: #0369a1; text-transform: uppercase;">
+          Q${i + 1} • ${p.category} ${p.suggestedOrderOrTest ? `<span style="background: #e0f2fe; padding: 2px 6px; border-radius: 3px; margin-left: 8px;">Order: ${p.suggestedOrderOrTest}</span>` : ''}
+        </div>
+        <div style="font-size: 13px; font-weight: 600; color: #0f172a; margin: 4px 0;">"${p.question}"</div>
+        <div style="font-size: 11px; color: #475569;"><strong>Rationale:</strong> ${p.clinicalRationale}</div>
+      </div>
+    `).join('');
+
+    const citationsHtml = article.empiricalEvidence?.citations?.map(c => `
+      <li style="margin-bottom: 4px; font-size: 11px; color: #334155;">
+        <strong>${c.title}</strong> — <em>${c.journal} (${c.year})</em>. DOI: ${c.doi}
+      </li>
+    `).join('') || '';
+
+    const html = `
+      <div style="max-width: 800px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #0f172a; line-height: 1.5;">
+        <div style="border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h1 style="font-size: 18px; margin: 0; color: #0f172a; font-weight: 800;">Pocket-Gull Physician Encounter Brief</h1>
+            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Shared Decision-Making & Evidence-Grounded Consultation Summary</div>
+          </div>
+          <div style="text-align: right; font-size: 11px; color: #64748b;">
+            <div><strong>Date:</strong> ${new Date().toLocaleDateString()}</div>
+            <div><strong>Target Specialty:</strong> ${pdg.recommendedSpecialty}</div>
+            <div><strong>Urgency:</strong> ${pdg.urgencyLevel}</div>
+          </div>
+        </div>
+
+        <div style="background: #f1f5f9; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px;">
+          <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #475569;">Discussion Grounded In:</div>
+          <div style="font-size: 14px; font-weight: 700; color: #0f172a;">${article.title}</div>
+          <div style="font-size: 11px; color: #64748b;">Category: ${article.sno10Category || 'General Clinical'} • Published on Pocket-Gull Breakthrough Hub</div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h2 style="font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #0369a1; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+            SBAR 60-Second Encounter Summary
+          </h2>
+          <div style="font-size: 12px; color: #334155; line-height: 1.6; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px;">
+            ${(this.currentTranslation()?.sbarBrief || pdg.clinicalEncounterBrief).replace(/\n/g, '<br>')}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h2 style="font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #0369a1; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+            Proposed Clinical Questions & Diagnostic Orders to Consider
+          </h2>
+          ${questionsHtml}
+        </div>
+
+        ${citationsHtml ? `
+          <div style="margin-bottom: 16px;">
+            <h2 style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #475569; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">
+              Peer-Reviewed Literature References
+            </h2>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${citationsHtml}
+            </ul>
+          </div>
+        ` : ''}
+
+        <div style="margin-top: 24px; padding-top: 12px; border-top: 1px solid #cbd5e1; font-size: 10px; color: #64748b; line-height: 1.4;">
+          <strong>Statutory Notice (FDA 21 CFR Part 11 / MSA AI Governance 2026):</strong> This brief is a patient-initiated, evidence-grounded shared decision-making summary. It is not an autonomous clinical diagnostic tool, electronic prescription, or binding order. Final clinical diagnosis, testing, and pharmacological treatment plans remain exclusively under the independent clinical judgment of the licensed treating clinician.
+        </div>
+      </div>
+    `;
+
+    this.htmlExport.printHtmlContent(`${article.title} - Physician Encounter Brief`, html);
   }
 
   speakArticle(): void {
@@ -704,12 +1096,18 @@ export class ArticlesReaderComponent implements OnInit {
     if (!post) return;
 
     window.speechSynthesis.cancel();
-    const cleanText = (this.readingLevel() === 'grade6' && post.contentGrade6Html ? post.contentGrade6Html : post.contentHtml).replace(/<[^>]+>/g, ' ');
-    const textToSpeak = `${post.title}. By ${post.authorName}. ${cleanText}`;
+    const title = this.displayTitle();
+    const cleanText = this.formattedBody().replace(/<[^>]+>/g, ' ');
+    const textToSpeak = `${title}. ${cleanText}`;
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.rate = 0.95;
     utterance.pitch = 1.0;
+
+    const currentLang = this.availableLanguages.find(l => l.code === this.selectedLanguageCode());
+    if (currentLang?.voiceLang) {
+      utterance.lang = currentLang.voiceLang;
+    }
 
     utterance.onstart = () => this.isSpeaking.set(true);
     utterance.onend = () => this.isSpeaking.set(false);

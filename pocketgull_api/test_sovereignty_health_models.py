@@ -1,8 +1,6 @@
 """
 Unit tests for Pocket Gull Sovereignty Health Models Sidecar Service
 """
-
-import pytest
 from services.sovereignty_health_models_service import (
     PcosModelInput,
     evaluate_pcos_model,

@@ -154,6 +154,33 @@ export interface IRestorativeHobby {
   recommendedResource?: string;
 }
 
+export interface IDoctorDiscussionPrompt {
+  id: string;
+  category: 'Diagnostic Lab' | 'Medication Review' | 'Safety Stratification' | 'Differential Diagnosis' | 'Lifestyle Clearance' | 'Diagnostic Screening' | 'Medication Safety' | 'Therapeutic Strategy' | 'Device Calibration' | 'Rhythm Analysis' | 'Protocol & Targets' | 'Biochemical Screening' | 'Sleep Architecture & Apnea' | 'Supplement Posology & Interactions' | 'Data Provenance & Privacy' | 'Calibration & Uncertainty' | 'Human-in-the-Loop';
+  question: string;
+  clinicalRationale: string;
+  suggestedOrderOrTest?: string;
+  whyAskPatientTip?: string;
+}
+
+export interface IPhysicianDiscussionGuide {
+  recommendedSpecialty: string;
+  urgencyLevel: 'Routine Next Checkup' | 'Schedule Within 1-2 Weeks' | 'STAT Clinical Evaluation' | 'Routine Annual / Bi-Annual Checkup' | 'Routine Diagnostic Review' | 'Routine Wellness & Sleep Optimization' | 'Informatics Consultation & EHR Integration';
+  clinicalEncounterBrief: string;
+  discussionPrompts: IDoctorDiscussionPrompt[];
+  evidenceSummaryForClinician?: string;
+  statutoryDisclaimer?: string;
+}
+
+export interface IArticleTranslation {
+  title: string;
+  excerpt: string;
+  contentHtml: string;
+  contentGrade6Html?: string;
+  sbarBrief?: string;
+  doctorQuestions?: string[];
+}
+
 export interface IClinicalArticle {
   id: number | string;
   title: string;
@@ -178,6 +205,12 @@ export interface IClinicalArticle {
   mealPlanSection?: IMealPlanSection;
   productAndRxSection?: IProductAndRxSection;
   restorativeHobbies?: IRestorativeHobby[];
+
+  // Physician Shared Decision-Making & Encounter Brief Additions
+  physicianDiscussionGuide?: IPhysicianDiscussionGuide;
+
+  // Multilingual Translations Edition (Pre-rendered for high-traffic locales)
+  translations?: Partial<Record<string, IArticleTranslation>>;
 }
 
 /** Backwards-compatible alias for legacy references */
@@ -213,7 +246,9 @@ export function createBreakthroughArticleTemplate(partial: Partial<IClinicalArti
     longitudinal3dConfig: partial.longitudinal3dConfig,
     mealPlanSection: partial.mealPlanSection,
     productAndRxSection: partial.productAndRxSection,
-    restorativeHobbies: partial.restorativeHobbies
+    restorativeHobbies: partial.restorativeHobbies,
+    physicianDiscussionGuide: partial.physicianDiscussionGuide,
+    translations: partial.translations
   };
 }
 
@@ -536,6 +571,65 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
           unmitigatedSummary: 'Progressive coronary atherosclerosis and recurrent ischemic events.'
         }
       ]
+    },
+    physicianDiscussionGuide: {
+      recommendedSpecialty: 'Cardiologist / Primary Care Physician (PCP)',
+      urgencyLevel: 'Schedule Within 1-2 Weeks',
+      clinicalEncounterBrief: `SITUATION: Patient recovering from cardiac event/stent placement seeking functional capacity stratification and safety clearance for resuming physical exertion and romantic intimacy.\nBACKGROUND: Princeton Consensus III establishes that climbing 2 flights of stairs (~4 METs) without angina or severe dyspnea indicates safe threshold for sexual activity. Strict 24h-48h separation between nitrates and PDE-5 inhibitors is clinically life-critical.\nASSESSMENT: Patient reports asymptomatic baseline during routine ambulation, desires objective validation (treadmill stress testing vs structured stair calibration), and medication reconciliation.\nRECOMMENDATION: Perform NYHA functional class assessment, review medication bag to exclude concurrent nitrates before considering PDE-5 inhibitors, and order exercise stress ECG if intermediate/high cardiovascular risk.`,
+      discussionPrompts: [
+        {
+          id: 'cv-q1',
+          category: 'Safety Stratification',
+          question: 'Based on the Princeton Consensus III guidelines and my recent recovery, what is my cardiac risk category, and do I need a formal treadmill exercise stress test before increasing physical exertion?',
+          clinicalRationale: 'Determines whether patient is Low Risk (safe for immediate resumption) vs Intermediate/High Risk requiring Bruce protocol stress ECG or cardiology clearance.',
+          suggestedOrderOrTest: 'Exercise Treadmill Stress Test (Bruce Protocol) / 12-Lead Resting ECG',
+          whyAskPatientTip: 'This removes uncertainty and fear, giving you an exact, safe heart rate and exertion ceiling.'
+        },
+        {
+          id: 'cv-q2',
+          category: 'Medication Review',
+          question: 'Can we perform a complete medication audit to confirm I am not taking any sublingual or long-acting nitrates (like nitroglycerin or isosorbide) that would dangerously interact with PDE-5 inhibitors like Viagra or Cialis?',
+          clinicalRationale: 'Co-administration of organic nitrates and PDE-5 inhibitors produces severe, potentially fatal synergistic vasodilation and refractory hypotension (AHA/ACC Class III Harm).',
+          suggestedOrderOrTest: 'Comprehensive Medication Bag Reconciliation',
+          whyAskPatientTip: 'Never guess with heart medications; this explicit check protects you from dangerous blood pressure drops.'
+        },
+        {
+          id: 'cv-q3',
+          category: 'Diagnostic Lab',
+          question: 'Would an updated fasting lipid panel (including ApoB), hs-CRP, and an echocardiogram be indicated to check my left ventricular ejection fraction (LVEF)?',
+          clinicalRationale: 'LVEF < 40% or persistent unstable angina shifts patient into the Princeton III High-Risk category, requiring deferred activity until stabilized.',
+          suggestedOrderOrTest: 'Transthoracic Echocardiogram (TTE) / Fasting Lipid Panel with ApoB',
+          whyAskPatientTip: 'Verifies that your heart muscle is pumping strongly and that vascular inflammation is under tight control.'
+        }
+      ],
+      evidenceSummaryForClinician: 'Princeton Consensus Conference III (Mayo Clin Proc 2022; DOI: 10.1016/j.mayocp.2012.05.010) & AHA/ACC Scientific Statement on Sexual Activity and Cardiovascular Disease (Circulation; DOI: 10.1161/CIR.0b013e3182447787).',
+      statutoryDisclaimer: 'Educational tool for shared decision-making under FDA 21 CFR Part 11 and MSA 2026 AI Governance. Not an autonomous clinical diagnostic order.'
+    },
+    translations: {
+      es: {
+        title: 'La Regla de los 2 Tramos de Escaleras: Seguridad Cardiovascular e Intimidad en Pareja tras un Infarto',
+        excerpt: 'Los cardiólogos se basan en el Consenso de Princeton III: subir con comodidad 2 tramos de escaleras (~4 METs) certifica el umbral seguro para la intimidad.',
+        contentHtml: `<p>Tras un infarto o cirugía cardíaca, la pregunta más común es también la que más pudor genera: <em>¿Cuándo es seguro retomar la intimidad?</em></p><p>Los cardiólogos aplican el <strong>Consenso de Princeton III</strong>. Si puede subir cómodamente <strong>dos tramos de escaleras</strong> sin opresión en el pecho, mareos o falta de aire severa, su corazón rinde a unos <strong>4 METs (Equivalentes Metabólicos)</strong>, la exigencia hemodinámica requerida para la intimidad.</p><p><strong>Seguridad Crítica de Medicamentos:</strong> Nunca combine nitratos recetados (nitroglicerina, isosorbida) con inhibidores de la PDE-5 (Viagra, Cialis). Mantenga al menos 24 a 48 horas de separación para prevenir un colapso hipotensivo grave.</p>`,
+        contentGrade6Html: `<p>Después de un infarto o cirugía del corazón, las parejas quieren saber cuándo es seguro volver a abrazarse y estar juntos.</p><p>Los médicos usan una prueba muy simple llamada la <strong>Regla de los 2 Pisos de Escaleras</strong>: si puedes subir dos pisos sin cansarte demasiado ni sentir dolor en el pecho, tu corazón está listo.</p><p><strong>Aviso Importante de Medicinas:</strong> Nunca mezcles pastillas para el dolor de pecho con pastillas para la intimidad, porque la presión se te puede bajar peligrosamente.</p>`,
+        sbarBrief: `SITUACIÓN: Paciente en recuperación cardíaca que busca estratificación de riesgo según Princeton III y seguridad para retomar la actividad física e íntima.\nANTECEDENTES: El Consenso Princeton III establece que subir 2 tramos de escaleras (~4 METs) sin angina ni disnea grave es el umbral seguro. La separación de 24h-48h entre nitratos e inhibidores PDE-5 es vital.\nEVALUACIÓN: Paciente asintomático en reposo; se busca validación funcional objetiva y conciliación de medicamentos.\nRECOMENDACIÓN: Evaluar clase funcional NYHA, revisar bolsa de fármacos para excluir nitratos antes de recetar PDE-5, y considerar prueba de esfuerzo en banda si el riesgo es intermedio o alto.`,
+        doctorQuestions: [
+          'Según las pautas del Consenso Princeton III, ¿cuál es mi categoría de riesgo cardíaco y necesito una prueba de esfuerzo antes de aumentar mi actividad física?',
+          '¿Podemos revisar todos mis medicamentos para asegurar que no tomo nitratos antes de considerar opciones como Viagra o Cialis?',
+          '¿Sería conveniente un ecocardiograma y un panel de lípidos con ApoB para comprobar la fracción de eyección de mi corazón?'
+        ]
+      },
+      zh: {
+        title: '两层楼梯安全法则：心脏事件后与伴侣保持亲密与心血管安全（普林斯顿III共识）',
+        excerpt: '心脏病专家采用普林斯顿III共识指南：若能从容攀爬两层楼梯（约4 METs），即达到安全恢复亲密关系的体能阈值。',
+        contentHtml: `<p>在经历心肌梗死、支架植入或心脏手术后，伴侣之间最关心却常常难于开口的问题是：<em>何时恢复亲密生活才是安全的？</em></p><p>心血管专科医师采用国际权威的<strong>普林斯顿III共识指南（Princeton Consensus III）</strong>。如果您能够从容步行走上<strong>两层标准楼梯</strong>，期间没有胸部压迫感、严重气促或头晕，说明您的心肌储备已达到约<strong>4个代谢当量（METs）</strong>——这正是恢复亲密生活所需的血液动力学负荷标准。</p><p><strong>关键用药安全警示：</strong> 处方硝酸酯类药物（如硝酸甘油、单硝酸异山梨酯）绝不可与PDE-5抑制剂（西地那非、他达拉非）同时服用。必须严格保持24至48小时的间隔，以防突发致命性顽固性低血压。</p>`,
+        contentGrade6Html: `<p>心脏病康复后，很多家庭都想知道什么时候可以安全恢复日常运动和亲密生活。</p><p>医生有一个简单的测试，叫做<strong>两层楼测试</strong>：如果你能从容走完两层楼梯，不胸闷也不大喘气，就说明你的心脏力量已经足够了。</p><p><strong>重要吃药提醒：</strong> 千万不要把心脏救心药和男科功能药一起吃，否则血压可能会骤降，非常危险。</p>`,
+        sbarBrief: `现状：心脏康复患者寻求普林斯顿III心血管风险分层及恢复体力活动与亲密生活的医学许可。\n背景：普林斯顿III共识确立无症状攀登2层楼（约4 METs）为安全门槛。硝酸酯与PDE-5抑制剂严格保持24-48小时隔离是致命性安全红线。\n评估：患者静息状态稳定，希望获得客观心功能验证（运动平板试验）及用药核对。\n建议：评估NYHA心功能分级，排除硝酸酯类用药隐患，对中高危人群实施Bruce方案负荷心电图。`,
+        doctorQuestions: [
+          '根据普林斯顿III共识指南，我当前的心脏风险分层属于哪一级？在增加剧烈活动前需要做平板运动负荷试验吗？',
+          '能否彻底核对一下我的药袋，确保我服用的药物中没有任何硝酸酯类成分，以免与万艾可或希爱力发生致命危险？',
+          '是否需要复查超声心动图（评估LVEF射血分数）以及包含载脂蛋白B（ApoB）的血脂全套？'
+        ]
+      }
     }
   },
   {
@@ -920,7 +1014,64 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
         starterStep: 'Sit upright, place hand gently on your collarbone, and hum a low comfortable pitch on every exhale for 5 minutes.',
         recommendedResource: 'The Healing Power of the Vagus Nerve by Stanley Rosenberg'
       }
-    ]
+    ],
+    physicianDiscussionGuide: {
+      recommendedSpecialty: 'Primary Care Physician (PCP) / Preventive Nephrologist',
+      urgencyLevel: 'Routine Annual / Bi-Annual Checkup',
+      clinicalEncounterBrief: `SITUATION: Patient requesting preventive renal health evaluation (uACR, eGFR, CMP) and blood pressure optimization to protect functional nephron capillary architecture.\nBACKGROUND: Intraglomerular hydraulic hypertension progressively damages podocyte slit diaphragms, causing microalbuminuria (uACR 30–300 mg/g). Upstream blood pressure control and dietary sodium/potassium optimization slow CKD progression and prevent dialysis.\nASSESSMENT: Patient is asymptomatic, tracks resting home blood pressure, and seeks baseline urine microalbumin screening and medication reconciliation (minimizing nephrotoxic OTC NSAIDs).\nRECOMMENDATION: Order spot urine albumin-to-creatinine ratio (uACR) and comprehensive metabolic panel, calibrate personal BP target per SPRINT/KDIGO criteria, and consider renoprotective ACE-i/ARB or SGLT2 inhibitor if persistent microalbuminuria is detected.`,
+      discussionPrompts: [
+        {
+          id: 'ckd-q1',
+          category: 'Diagnostic Screening',
+          question: 'Can we order a spot Urine Albumin-to-Creatinine Ratio (uACR) alongside my routine blood work to screen for early microscopic protein leakage before filtration numbers decline?',
+          clinicalRationale: 'Serum creatinine and eGFR can remain deceptively normal until up to 50% of renal nephron mass is permanently lost. Spot uACR detects glomerular capillary damage years earlier.',
+          suggestedOrderOrTest: 'Spot Urine Albumin-to-Creatinine Ratio (uACR) / Comprehensive Metabolic Panel (CMP)',
+          whyAskPatientTip: 'Catching micro-albumin leakage early gives you an actionable window to protect your kidneys decades before serious problems develop.'
+        },
+        {
+          id: 'ckd-q2',
+          category: 'Medication Safety',
+          question: 'Based on my blood pressure and kidney filtration numbers, what is my optimal resting blood pressure target (such as systolic < 120–130 mmHg per the SPRINT trial), and should we review my regular pain relievers like ibuprofen or naproxen to protect renal blood flow?',
+          clinicalRationale: 'Chronic or frequent OTC NSAID use constricts the renal afferent arteriole, compounding hypertensive intraglomerular shear and accelerating nephron loss.',
+          suggestedOrderOrTest: 'Comprehensive Medication & OTC Analgesic Audit',
+          whyAskPatientTip: 'Everyday pain relievers can quietly strain kidney filters when taken frequently or with high blood pressure.'
+        },
+        {
+          id: 'ckd-q3',
+          category: 'Therapeutic Strategy',
+          question: 'If my urine albumin shows early microalbuminuria, would an ACE-inhibitor, ARB, or SGLT2 inhibitor be indicated to relieve hydraulic pressure in my kidney filters?',
+          clinicalRationale: 'Renin-angiotensin blockade and SGLT2 inhibitors lower intraglomerular capillary hyperfiltration, slowing progression to End-Stage Renal Disease by 30–40% across clinical RCTs.',
+          suggestedOrderOrTest: 'Renoprotective Pharmacotherapy Assessment',
+          whyAskPatientTip: 'These modern medications act like gentle relief valves, directly shielding kidney capillaries from high pressure.'
+        }
+      ]
+    },
+    translations: {
+      es: {
+        title: 'El Cambio de Aceite de $100,000: Cómo la Prevención Diaria Protege tus Riñones y Ahorra Millones',
+        excerpt: 'Detectar la presión arterial a tiempo y proteger la filtración renal preserva tu independencia y evita costos de diálisis de $100,000 al año.',
+        contentHtml: `<p>Todo mecánico sabe que un filtro de aceite de $40 puede salvarte de un motor destrozado de $10,000. Nuestro cuerpo funciona exactamente bajo los mismos principios mecánicos.</p><p>Cuando la presión arterial está alta, actúa como exceso de presión hidráulica contra los delicados filtros glomerulares de los riñones. Prevenir la insuficiencia renal evita la diálisis, que cuesta más de $90,000 a $100,000 cada año por paciente.</p><blockquote>"Cuando cuidas el motor de tu cuerpo, no solo te salvas del hospital: fortaleces a tu familia y proteges tu futuro."</blockquote>`,
+        contentGrade6Html: `<p>Piensa en el motor de un coche. Si cambias el filtro de aceite a tiempo, evitas que el motor se rompa. ¡Tu cuerpo funciona de la misma manera!</p><p>Tus riñones son como los filtros de aceite de tu sangre. Cuando la presión está alta, empuja con demasiada fuerza contra estos pequeños filtros. Medir tu presión y comer sano protege tus filtros para siempre.</p>`,
+        sbarBrief: `SITUACIÓN: Paciente solicita evaluación preventiva renal (uACR, eGFR) y control de presión arterial.\nANTECEDENTES: La presión alta crónica daña los filtros del riñón (glomérulos). Detectar microalbúmina a tiempo previene la diálisis.\nEVALUACIÓN: Paciente asintomático desea análisis preventivo de orina y revisión de medicamentos antiinflamatorios.\nRECOMENDACIÓN: Solicitar uACR y CMP, definir meta de presión arterial según SPRINT/KDIGO y evaluar medicamentos nefroprotectores.`,
+        doctorQuestions: [
+          '¿Podemos ordenar una prueba de Microalbúmina en Orina (uACR) para detectar a tiempo cualquier fuga de proteína antes de que baje la función renal?',
+          '¿Cuál es mi meta ideal de presión arterial y debemos revisar analgésicos como ibuprofeno o naproxeno para proteger mis riñones?',
+          'Si sale microalbúmina en la orina, ¿estaría indicado un medicamento protector renal como un IECA, ARA o inhibidor SGLT2?'
+        ]
+      },
+      zh: {
+        title: '十万美元的机油保养：日常预防如何拯救健康与经济账本',
+        excerpt: '尽早控制血压并保护肾小球滤过功能，不仅守护个人生活独立，更能避免每年高达十万美元的透析费用。',
+        contentHtml: `<p>每个机械师都知道，一个40美元的机油滤清器可以避免价值一万美元的发动机爆缸。我们的人体器官完全遵循相同的机械流体学原理。</p><p>当血压过高时，它就像过度的液压冲击力，无情地冲击着肾脏精细脆弱的肾小球微血管滤网。预防肾功能衰竭能够避免透析——每位透析患者每年的直接医疗开销超过9万至10万美元。</p><blockquote>“当你悉心保养自己身体的引擎时，你不仅是在远离医院病榻，更是在稳固家庭并修复整个社会的健康根基。”</blockquote>`,
+        contentGrade6Html: `<p>就像汽车需要定期更换机油滤清器一样，你的肾脏就是血液的机油滤清器。</p><p>当血压太高时，血液就会重重地冲击这些细小的滤网。每天保持健康的血压，就能让你的肾脏用上一辈子，不用去医院透析。</p>`,
+        sbarBrief: `现状：患者寻求预防性肾脏健康筛查（uACR、eGFR）与血压优化。\n背景：慢性肾小球高液压导致足细胞受损。早期检测尿微量白蛋白（uACR）是阻断肾衰竭的关键窗口。\n评估：患者无症状，在家规律记录静息血压，希望排查非甾体消炎药（NSAIDs）对肾脏的隐性伤害。\n建议：开具尿微量白蛋白与肌酐比值（uACR）检测，核对药物清单，确立符合SPRINT指南的靶向血压值。`,
+        doctorQuestions: [
+          '我们能否在常规血检之外，加查一项尿微量白蛋白与肌酐比值（uACR），以便在肾功能受损前尽早发现微量蛋白漏出？',
+          '根据SPRINT和KDIGO指南，我的最佳静息血压目标是多少？我平时常备的布洛芬或消炎止痛药是否需要调整以保护肾脏血流？',
+          '如果尿液检查显示存在早期微量蛋白尿，是否有必要使用保护肾脏滤网的普利类/沙坦类药物或SGLT2抑制剂？'
+        ]
+      }
+    }
   },
   {
     id: 104,
@@ -1087,6 +1238,63 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
           unmitigatedSummary: 'Major ischemic stroke or hypertensive dilated cardiomyopathy.'
         }
       ]
+    },
+    physicianDiscussionGuide: {
+      recommendedSpecialty: 'Cardiologist / Primary Care Physician (PCP)',
+      urgencyLevel: 'Routine Diagnostic Review',
+      clinicalEncounterBrief: `SITUATION: Patient presenting home blood pressure logs and portable Lead-I ECG telemetry for clinical calibration, rhythm strip review, and diagnostic reconciliation.\nBACKGROUND: Out-of-office home blood pressure monitoring (HBPM) eliminates white-coat and masked hypertension. Portable Lead-I single-lead ECG strips (e.g. Omron Complete, KardiaMobile) capture paroxysmal Atrial Fibrillation (AFib) that standard 10-second clinic 12-lead ECGs frequently miss.\nASSESSMENT: Patient has acquired an FDA 510(k)-cleared upper arm cuff and rhythm monitor, executed a 7-day morning/evening protocol, and presents averaged readings alongside flagged irregular rhythm strips.\nRECOMMENDATION: Validate patient cuff accuracy against office mercury/aneroid sphygmomanometer, review PDF rhythm strips for P-wave morphology and irregular R-R intervals, and calculate CHA2DS2-VASc stroke risk score if AFib is confirmed.`,
+      discussionPrompts: [
+        {
+          id: 'bp-q1',
+          category: 'Device Calibration',
+          question: 'Can we compare my home upper-arm blood pressure cuff against your clinic sphygmomanometer today to verify its accuracy and confirm I have the correct cuff bladder size for my arm circumference?',
+          clinicalRationale: 'AHA guidelines recommend simultaneous in-office cross-calibration to ensure home cuff variance is within ±5 mmHg and to prevent over/under-treatment caused by cuff mis-sizing.',
+          suggestedOrderOrTest: 'In-Office Blood Pressure Device Cross-Calibration',
+          whyAskPatientTip: 'Verifying your device in the clinic ensures you and your doctor can trust every reading you log at home.'
+        },
+        {
+          id: 'bp-q2',
+          category: 'Rhythm Analysis',
+          question: 'Can you review these home Lead-I ECG rhythm strips I exported from my monitor to check for intermittent Atrial Fibrillation (AFib) or premature atrial contractions (PACs)?',
+          clinicalRationale: 'Paroxysmal AFib carries a 5-fold increased stroke risk. Intermittent home recordings catch brief arrhythmias that 10-second clinic ECGs frequently miss.',
+          suggestedOrderOrTest: 'Clinician Review of Single-Lead Telemetry Tracing / 24-48h Holter Monitor if Symptomatic',
+          whyAskPatientTip: 'Sharing your recorded strips helps catch sneaky heart flutter before it causes serious problems.'
+        },
+        {
+          id: 'bp-q3',
+          category: 'Protocol & Targets',
+          question: 'Based on my 7-day home morning and evening blood pressure average, is my current medication dose optimal, or should we adjust timing (chronotherapy) to protect against early morning blood pressure surges?',
+          clinicalRationale: 'Morning blood pressure surges correlate strongly with acute myocardial infarction and stroke incidence. Adjusting dosing schedules optimizes 24-hour hemodynamic coverage.',
+          suggestedOrderOrTest: 'Ambulatory Blood Pressure Monitoring (ABPM) / Medication Chronotherapy Review',
+          whyAskPatientTip: 'Taking blood pressure medicine at the right time of day gives you maximum protection while you sleep and wake up.'
+        }
+      ]
+    },
+    translations: {
+      es: {
+        title: 'Guía Esencial de Tensiómetros y ECG para el Hogar: Lo que Realmente Importa',
+        excerpt: 'Por qué los manguitos de brazo superan a los de muñeca, cómo el ECG detecta fibrilación auricular silenciosa y cómo usar fondos HSA/FSA.',
+        contentHtml: `<p>Con miles de monitores en el mercado, elegir el correcto puede ser abrumador. Los estudios clínicos demuestran que los <strong>manguitos de brazo</strong> son mucho más precisos que los sensores de muñeca porque miden la presión arterial exactamente al nivel de tu corazón.</p><p>Además, dispositivos modernos con <strong>ECG integrado de 1 derivación</strong> permiten detectar a tiempo la fibrilación auricular (arritmias) antes de que causen un accidente cerebrovascular.</p>`,
+        contentGrade6Html: `<p>¿Quieres medirte la presión en casa? Aquí tienes los mejores consejos:</p><ul><li><strong>Elige un tensiómetro de brazo:</strong> Son mucho más exactos que los de muñeca porque quedan justo a la altura del corazón.</li><li><strong>Descansa 5 minutos:</strong> Siéntate tranquilo con los pies en el suelo antes de medirte.</li><li><strong>Guarda tus números:</strong> Anota tus lecturas de la mañana y de la tarde para enseñárselas a tu médico.</li></ul>`,
+        sbarBrief: `SITUACIÓN: Paciente presenta registros de presión arterial en casa y trazados de ECG para calibración médica.\nANTECEDENTES: La monitorización en el hogar elimina la hipertensión de bata blanca. Los registros portátiles de ECG detectan fibrilación auricular paroxística.\nEVALUACIÓN: Paciente completó protocolo de 7 días con dispositivo autorizado por la FDA.\nRECOMENDACIÓN: Calibrar tensiómetro en consulta, revisar trazados de ECG y optimizar horario de medicación.`,
+        doctorQuestions: [
+          '¿Podemos comparar mi tensiómetro de casa con el del consultorio para verificar que mida con exactitud y que el brazalete sea del tamaño correcto?',
+          '¿Podría revisar estos trazados de ritmo cardíaco (ECG) que exporté desde mi monitor para descartar fibrilación auricular o arritmias?',
+          'Con base en mi promedio de 7 días por la mañana y noche, ¿mi dosis y horario de medicación son los adecuados?'
+        ]
+      },
+      zh: {
+        title: '家用血压计与心电图仪实用指南：真正关键的核心要点',
+        excerpt: '为何上臂式血压计远优于手腕式？单导联ECG如何捕捉隐匿性房颤？以及如何使用医疗储蓄基金（HSA/FSA）。',
+        contentHtml: `<p>市场上健康监测设备琳琅满目，选择时往往令人眼花缭乱。多项临床试验一致表明，<strong>上臂式血压袖带</strong>的测量精度显著高于手腕或手指传感器，因为其气囊位置能够精准与心脏三尖瓣处于同一水平。</p><p>结合了<strong>单导联心电图（ECG）</strong>的先进设备，更能够在日常测量中随时记录心律波形，尽早排查隐匿性心房颤动（房颤），预防突发中风危险。</p>`,
+        contentGrade6Html: `<p>想在家里测血压吗？记住这三条黄金建议：</p><ul><li><strong>选上臂式袖带：</strong> 上臂测血压比手腕准得多，因为正好和心脏平齐。</li><li><strong>静坐五分钟：</strong> 测量前平心静气坐好，双脚踩地，不要说话。</li><li><strong>记录早晚平均值：</strong> 连续测上一周，带着真实的血压记录给医生看。</li></ul>`,
+        sbarBrief: `现状：患者携带家用上臂血压监测记录与单导联ECG心电波形就诊，寻求设备校准与心律审核。\n背景：家庭自测血压（HBPM）可有效排除白大衣高血压。家用单导联心电记录能捕获门诊10秒心电图容易漏诊的阵发性房颤。\n评估：患者完成7天早晚血压监测，并导出可疑不规则心律条带。\n建议：在诊室对家用设备进行比对校准，判读心电条带波形，评估24小时血压昼夜节律及用药时间（时间药理学）。`,
+        doctorQuestions: [
+          '今天能否用诊室的标准水银/专业血压计比对一下我的家用上臂血压仪，看看误差是否在正常范围，并确认袖带尺寸是否合适？',
+          '能否帮我查看一下从家用仪器导出的这几张单导联心电图（ECG）波形，帮我排查是否存在阵发性房颤或早搏？',
+          '根据我连续7天早晚记录的平均血压，我当前的降压药剂量和服药时间（如晨服还是晚服）需要微调吗？'
+        ]
+      }
     }
   },
   {
@@ -1246,6 +1454,63 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
           unmitigatedSummary: 'Clinical onset of Alzheimer’s disease or vascular dementia.'
         }
       ]
+    },
+    physicianDiscussionGuide: {
+      recommendedSpecialty: 'Sleep Specialist / Neurologist / Integrative PCP',
+      urgencyLevel: 'Routine Wellness & Sleep Optimization',
+      clinicalEncounterBrief: `SITUATION: Patient presenting with chronic sleep fragmentation, prolonged sleep latency, and daytime cognitive fatigue seeking evidence-grounded sleep architecture optimization and magnesium posology guidance.\nBACKGROUND: Slow-wave (Delta) sleep is mandatory for glymphatic clearance of beta-amyloid and tau neurotoxins via astrocytic aquaporin-4 (AQP4) water channels. Elemental magnesium acts as an essential cofactor for glutamic acid decarboxylase (GAD) and modulates NMDA/GABA-A receptor balance. Chelated magnesium bisglycinate provides superior central nervous system penetration compared to poorly absorbed magnesium oxide.\nASSESSMENT: Patient tracks sleep quality, experiences daytime brain fog, and seeks clinical validation of magnesium form/dosage and non-pharmacologic sleep hygiene protocols.\nRECOMMENDATION: Assess Epworth Sleepiness Scale (ESS) / Insomnia Severity Index (ISI), screen for obstructive sleep apnea (STOP-BANG), evaluate serum/RBC magnesium levels, and confirm absence of severe renal impairment (eGFR < 30) before endorsing 200–400 mg elemental magnesium bisglycinate at bedtime.`,
+      discussionPrompts: [
+        {
+          id: 'sleep-q1',
+          category: 'Biochemical Screening',
+          question: 'Could we check a Red Blood Cell (RBC) Magnesium level alongside my routine metabolic panel to get a more accurate assessment of my cellular magnesium stores than standard serum tests?',
+          clinicalRationale: 'Less than 1% of total body magnesium resides in serum; standard serum magnesium remains homeostatically buffered even when intracellular tissue reserves are depleted. RBC magnesium provides superior sensitivity.',
+          suggestedOrderOrTest: 'RBC Magnesium / Comprehensive Metabolic Panel (CMP) / TSH',
+          whyAskPatientTip: 'Standard blood tests can miss deep tissue magnesium deficiency; this test checks inside your red blood cells.'
+        },
+        {
+          id: 'sleep-q2',
+          category: 'Sleep Architecture & Apnea',
+          question: 'Given my non-restorative sleep and frequent awakenings, would a formal home sleep apnea test (HSAT) be indicated before relying solely on nutritional supplements?',
+          clinicalRationale: 'Obstructive sleep apnea (OSA) causes nocturnal hypoxemia and sympathetic surges that cannot be resolved with magnesium alone. Ruling out airway obstruction is essential.',
+          suggestedOrderOrTest: 'Home Sleep Apnea Test (HSAT) / STOP-BANG Questionnaire',
+          whyAskPatientTip: 'If your airway partially blocks while sleeping, no vitamin or mineral can fix that—testing your oxygen at night is the safest first step.'
+        },
+        {
+          id: 'sleep-q3',
+          category: 'Supplement Posology & Interactions',
+          question: 'Is taking 200–300 mg of elemental Magnesium Bisglycinate about 60 minutes before bedtime safe given my kidney function and current medications, and will it interfere with any morning drugs like thyroid hormone or antibiotics?',
+          clinicalRationale: 'Magnesium can chelate with oral levothyroxine and fluoroquinolone/tetracycline antibiotics, blunting absorption if not spaced by 4 hours. Renal clearance must also be adequate.',
+          suggestedOrderOrTest: 'Medication Timing & Mineral Interaction Review',
+          whyAskPatientTip: 'Making sure your nighttime supplement doesn’t block your other medications keeps your treatment safe and effective.'
+        }
+      ]
+    },
+    translations: {
+      es: {
+        title: 'La Ciencia de la Arquitectura del Sueño: Glicinato vs. Óxido de Magnesio y Ondas Delta',
+        excerpt: 'Por qué el glicinato de magnesio quelado cruza la barrera hematoencefálica para calmar receptores GABA, mientras el óxido barato solo se absorbe en un 4%.',
+        contentHtml: `<p>No todos los suplementos de magnesio son iguales. La mayoría de multivitamínicos económicos contienen <strong>Óxido de Magnesio</strong>, que tiene una absorción de apenas el <strong>4%</strong> y actúa principalmente como laxante.</p><p>En cambio, el <strong>Bisglicinato de Magnesio</strong> une el mineral al aminoácido glicina, permitiéndole cruzar al cerebro para calmar receptores excitatorios y prolongar el sueño profundo reparador (ondas Delta).</p>`,
+        contentGrade6Html: `<p>¿Te cuesta descansar por las noches? Tu cerebro necesita magnesio para relajarse profundamente.</p><p>Pero ojo: el magnesio barato casi no se absorbe en tu cuerpo. El <strong>glicinato de magnesio</strong> es la mejor opción porque llega directo a calmar tu sistema nervioso sin causar molestias estomacales.</p>`,
+        sbarBrief: `SITUACIÓN: Paciente con sueño fragmentado y fatiga diurna busca optimización de higiene del sueño y dosificación de magnesio.\nANTECEDENTES: El sueño profundo de ondas delta es vital para limpiar toxinas cerebrales (sistema glinfático). El bisglicinato tiene alta biodisponibilidad neuronal.\nEVALUACIÓN: Paciente desea análisis de magnesio intraeritrocitario (RBC) y descargo de apnea.\nRECOMENDACIÓN: Evaluar escala Epworth, descartar apnea con STOP-BANG, verificar función renal y sugerir 200–400 mg de bisglicinato antes de acostarse.`,
+        doctorQuestions: [
+          '¿Podemos solicitar una prueba de Magnesio Intraeritrocitario (RBC) para evaluar con precisión mis depósitos celulares de magnesio?',
+          'Dado mi sueño ligero y despertares frecuentes, ¿conviene realizar un estudio domiciliario de apnea del sueño antes de probar suplementos?',
+          '¿Es seguro para mis riñones y mis medicamentos tomar 200 a 300 mg de Bisglicinato de Magnesio una hora antes de dormir?'
+        ]
+      },
+      zh: {
+        title: '睡眠微观架构的科学：甘氨酸镁对比氧化镁与慢波深度睡眠修复',
+        excerpt: '为何螯合甘氨酸镁能穿透血脑屏障调节GABA受体，而廉价氧化镁生物利用度仅为4%且易致腹泻？',
+        contentHtml: `<p>并非所有镁元素在人体内的吸收效果都是一样的。市面上大多数平价复合维生素中添加的是<strong>氧化镁（Magnesium Oxide）</strong>，其口服生物利用度仅约<strong>4%</strong>，绝大多数未能吸收并在肠道内产生渗透性致泻作用。</p><p>相比之下，<strong>双甘氨酸镁（Magnesium Bisglycinate）</strong>将镁元素与甘氨酸紧密结合。这种结构能顺利穿透血脑屏障，温和下调谷氨酸NMDA兴奋性受体，同时激活镇静性GABA-A受体，从而显著延长大脑清除毒素的关键<strong>慢波（Delta波）深度睡眠</strong>。</p>`,
+        contentGrade6Html: `<p>晚上睡不好、白天昏昏沉沉？你的大脑可能缺少镁元素来放松神经。</p><p>但是要注意：便宜的普通镁大多只能当通便药，吸收率非常低。<strong>甘氨酸镁</strong>才能真正被大脑吸收，帮助你安稳睡到天亮。</p>`,
+        sbarBrief: `现状：患者存在睡眠浅、易醒和白天疲倦，寻求改善慢波深度睡眠及科学补充镁剂。\n背景：慢波（Delta）深睡眠是脑部类淋巴系统清除β-淀粉样蛋白的关键期。甘氨酸镁在中枢神经系统的利用率显著优于氧化镁。\n评估：患者评估睡眠质量，希望检测红细胞镁含量并排除睡眠呼吸暂停。\n建议：评估Epworth嗜睡量表，使用STOP-BANG量表筛查气道阻塞，确认肾功能正常后指导晚间补充200-400mg甘氨酸镁。`,
+        doctorQuestions: [
+          '我们能否在常规血检中加查一项红细胞镁（RBC Magnesium）检测，以更准确地了解我细胞内的镁储备状态？',
+          '鉴于我经常早醒和感觉睡眠不解乏，在补充营养素之前，是否有必要做一次简易的家用睡眠呼吸暂停筛查？',
+          '根据我的肾功能指标和目前正在服用的药物，睡前1小时服用200-300毫克双甘氨酸镁是否安全，是否会影响早晨服用的甲状腺素或其他药物？'
+        ]
+      }
     }
   },
   {
@@ -2361,6 +2626,63 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
           { timepoint: 'Decile 2 (20-40%)', value: 29.4, label: 'Observed: 29.4% (Conformal Bounds Preserved)' },
           { timepoint: 'Decile 3 (40-60%)', value: 51.2, label: 'Observed: 51.2% (Isotonic Alignment)' },
           { timepoint: 'Decile 4 (60-80%)', value: 78.6, label: 'Observed: 78.6% (High-Acuity Precision)' }
+        ]
+      }
+    },
+    physicianDiscussionGuide: {
+      recommendedSpecialty: 'Chief Medical Information Officer (CMIO) / Clinical Informatics Lead / PCP',
+      urgencyLevel: 'Informatics Consultation & EHR Integration',
+      clinicalEncounterBrief: `SITUATION: Patient/Clinician reviewing AI Clinical Decision Support (CDS) outputs and requesting data provenance, calibration transparency, and Google Cloud Healthcare API FHIR/DICOM audit.\nBACKGROUND: FDA 21 CFR Part 11 and ONC HTI-1 mandate algorithmic transparency, Brier score calibration, and Mondrian conformal coverage sets. Black-box uncalibrated predictions risk diagnostic anchor bias.\nASSESSMENT: Clinician verifies that risk scores derive from calibrated models (PhysioNet/NHANES cohorts) with explicit 95% conformal prediction intervals and out-of-distribution abstention safeguards.\nRECOMMENDATION: Integrate FHIR R4 observations into primary EHR, export verifiable cryptographic digest, and enforce mandatory human-in-the-loop attestation before order commitment.`,
+      discussionPrompts: [
+        {
+          id: 'ai-q1',
+          category: 'Data Provenance & Privacy',
+          question: 'Can we confirm that any clinical AI decision support tools used in my care plan adhere to HIPAA Safe Harbor de-identification and open FHIR R4 interoperability rather than proprietary walled gardens?',
+          clinicalRationale: 'Ensures zero unmasked PHI leaves the protected clinical perimeter and guarantees portable chart exchange between Google Cloud Healthcare and Epic/Cerner.',
+          suggestedOrderOrTest: 'FHIR R4 Resource Bundle Export / HIPAA Audit Attestation',
+          whyAskPatientTip: 'You have the right to know your health records are kept completely private and can move freely with you to any hospital.'
+        },
+        {
+          id: 'ai-q2',
+          category: 'Calibration & Uncertainty',
+          question: 'Does this decision support score provide a calibrated probability (with verified Brier score) and an explicit confidence interval showing when the model is uncertain?',
+          clinicalRationale: 'Uncalibrated models output false confidence. Conformal prediction sets provide mathematical coverage guarantees (e.g. 95%) and expand when data is ambiguous.',
+          suggestedOrderOrTest: 'Conformal Prediction Coverage & Brier Calibration Metric Review',
+          whyAskPatientTip: 'A trustworthy AI tool should honestly say "I am not sure" rather than pretending to know everything.'
+        },
+        {
+          id: 'ai-q3',
+          category: 'Human-in-the-Loop',
+          question: 'Can you walk me through your clinical judgment on this AI recommendation and confirm that human physician review is the final deciding factor?',
+          clinicalRationale: 'Under FDA Part 11 and MSA 2026 guidelines, clinical AI is strictly an epistemic mirror. Autonomous care termination or un-gated orders are prohibited.',
+          suggestedOrderOrTest: 'Clinician Attestation of Clinical Decision Support (CDS) Plan',
+          whyAskPatientTip: 'The doctor’s stethoscope, clinical training, and personal care for you will always matter more than any computer algorithm.'
+        }
+      ]
+    },
+    translations: {
+      es: {
+        title: 'La Bóveda Digital y el Espejo Calibrado: Google Cloud Healthcare API e IA Clínica de PocketGull',
+        excerpt: 'Cómo unimos la API de Google Cloud Healthcare (FHIR R4 y DICOM) con conjuntos de datos reales de PhysioNet y predicción conformal para una IA médica sin alucinaciones.',
+        contentHtml: `<p>En la medicina clínica, una alucinación informática no es una simple molestia: es negligencia potencial. PocketGull fue diseñado bajo un principio inquebrantable: <strong>Humildad Epistémica e Infraestructura Soberana</strong>.</p><p>Integrando la API de Google Cloud Healthcare (tiendas FHIR R4 y DICOM) con modelos matemáticos calibrados (puntuación Brier y predicción conformal Mondrian), garantizamos que ningún dato sin anonimizar salga del sistema y que la IA nunca adivine con falsa certeza.</p>`,
+        contentGrade6Html: `<p>¿Alguna vez una computadora te dio una respuesta que parecía muy inteligente pero era inventada? En la salud, eso sería muy peligroso.</p><p>PocketGull guarda tus datos en una bóveda digital segura de Google Cloud y borra tu nombre para proteger tu privacidad. Además, nuestra IA siempre admite cuando no está segura, dejando la decisión final en manos de tu médico.</p>`,
+        sbarBrief: `SITUACIÓN: Consulta sobre gobernanza de IA clínica, estándares FHIR R4 y protección de datos en Google Cloud Healthcare API.\nANTECEDENTES: La FDA y normativas de interoperabilidad exigen transparencia algorítmica y calibración matemática.\nEVALUACIÓN: Se verifica que los modelos operan con intervalos de confianza del 95% y supervisión humana obligatoria.\nRECOMENDACIÓN: Exportar bundle FHIR R4, verificar calibración Brier y rubricar atestación médica.`,
+        doctorQuestions: [
+          '¿Podemos confirmar que las herramientas de IA utilizadas en mi plan de salud cumplen con HIPAA Safe Harbor y el estándar interoperable FHIR R4?',
+          '¿Este puntaje de riesgo proporciona una probabilidad calibrada y un intervalo de confianza que muestre cuándo el modelo tiene dudas?',
+          '¿Podría explicarme su criterio clínico sobre esta sugerencia de la IA y confirmar su revisión médica como decisión definitiva?'
+        ]
+      },
+      zh: {
+        title: '数字保险库与校准之镜：深入探索 Google Cloud Healthcare API 与 PocketGull 临床模型',
+        excerpt: '如何确保我们何时正确、何时出错？了解 PocketGull 如何将 Google Cloud Healthcare API（FHIR R4 与 DICOM）与真实临床数据集融合，构建永不虚构确定性的医疗智能引擎。',
+        contentHtml: `<p>在日常对话中，AI的胡言乱语可能只是个玩笑；但在临床医学中，听起来头头是道的“幻觉”却是灾难性的医疗事故。PocketGull 建立在根本不同的架构原则之上：<strong>认识论谦逊与受监管的云端基础设施</strong>。</p><p>通过原生对接 Google Cloud Healthcare API（FHIR R4 资源仓库与 DICOM 影像仓库），并配合严格的 Brier 评分校准与蒙德里安共形预测（Mondrian Conformal Prediction），我们确保绝无未脱敏的隐私数据外泄，且模型在面临未知分布时主动弃权拒绝妄下结论。</p>`,
+        contentGrade6Html: `<p>电脑有时候会瞎猜答案，但在医院里，电脑绝对不能瞎猜！</p><p>PocketGull 把你的健康档案放在 Google Cloud 超级数字保险库里，用神奇橡皮擦抹去你的名字保护隐私。更重要的是：当电脑不确定时，它会老老实实说“我不确定”，让真正的医生做最终决定。</p>`,
+        sbarBrief: `现状：临床人员/患者探讨临床决策支持（CDS）数据溯源、Brier评分校准及Google Cloud Healthcare API集成。\n背景：FDA 21 CFR Part 11与ONC HTI-1法规要求算法透明度、共形预测覆盖度与人类临床医生强制审核。\n评估：确认诊断风险评分来自校准模型（PhysioNet/NHANES队列），具备95%共形覆盖保证与分布外弃权机制。\n建议：导出标准HL7 FHIR R4资源包，审核置信区间，完成医师签署认证。`,
+        doctorQuestions: [
+          '能否确认我诊疗方案中参考的临床AI决策支持工具严格遵循HIPAA安全港脱敏原则，并支持跨医院通用的开放HL7 FHIR R4标准？',
+          '该辅助诊断评分是否具备校准过的概率（如经过Brier评分验证），并且在数据不明确时能否显示出放宽的不确定度置信区间？',
+          '能否结合您的专业临床经验为我解读此项AI建议，并确认最终由您这位专业医生把关和裁定？'
         ]
       }
     }

@@ -1,8 +1,6 @@
 """
 Unit tests for Pocket Gull Human Flourishing & Co-Regulation Predictive ML Models
 """
-
-import pytest
 from services.flourishing_predictive_models_service import (
     GlymphaticClearanceInput,
     forecast_glymphatic_clearance,

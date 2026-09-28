@@ -1,8 +1,6 @@
 """
 Unit tests for Pocket Gull Agronomic, Soil Science & Grocery Stocking Models
 """
-
-import pytest
 from services.agronomic_nutrition_service import (
     SoilHealthInput,
     evaluate_soil_health_model,

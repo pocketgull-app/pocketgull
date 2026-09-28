@@ -38,18 +38,36 @@ void main() {
 
   final root = findProjectRoot();
   final sep = Platform.pathSeparator;
-  final sourceDir = Directory('$root${sep}public${sep}fonts${sep}google_fonts_submission${sep}ofl${sep}pocketgull');
+
+  // Resolve source directory from pocketgull-typeface or local public/fonts
+  Directory? sourceDir;
+  final candidateSourceDirs = [
+    Directory('$root${sep}..${sep}pocketgull-typeface${sep}fonts'),
+    Directory('$root${sep}..${sep}pocketgull-font${sep}fonts'),
+    Directory('$root${sep}public${sep}fonts'),
+    Directory('$root${sep}public${sep}fonts${sep}google_fonts_submission${sep}ofl${sep}pocketgull'),
+  ];
+
+  for (final dir in candidateSourceDirs) {
+    if (dir.existsSync()) {
+      sourceDir = dir;
+      break;
+    }
+  }
+
+  if (sourceDir == null) {
+    stderr.writeln('❌ Error: Could not locate a valid font source directory.');
+    exit(1);
+  }
+
+  print('📦 Source Directory: ${sourceDir.path}');
 
   final targetDirs = [
     Directory('$root${sep}public${sep}assets${sep}fonts'),
     Directory('$root${sep}public${sep}fonts'),
     Directory('$root${sep}pocketgull_flutter${sep}assets${sep}fonts'),
+    Directory('$root${sep}..${sep}pocketgull-com${sep}public${sep}fonts'),
   ];
-
-  if (!sourceDir.existsSync()) {
-    stderr.writeln('❌ Error: Source directory does not exist: ${sourceDir.path}');
-    exit(1);
-  }
 
   var copiedCount = 0;
   for (final target in targetDirs) {
@@ -59,11 +77,17 @@ void main() {
     for (final fontFile in fontFiles) {
       File? srcFile = File('${sourceDir.path}$sep$fontFile');
       if (!srcFile.existsSync()) {
-        final fallbackSrc = File('$root${sep}public${sep}fonts$sep$fontFile');
-        if (fallbackSrc.existsSync() && target.path != '$root${sep}public${sep}fonts') {
-          srcFile = fallbackSrc;
-        } else if (!fallbackSrc.existsSync()) {
-          srcFile = null;
+        final subFolder = fontFile.endsWith('.woff2') ? 'woff2' : 'ttf';
+        final subFile = File('${sourceDir.path}$sep$subFolder$sep$fontFile');
+        if (subFile.existsSync()) {
+          srcFile = subFile;
+        } else {
+          final fallbackSrc = File('$root${sep}public${sep}fonts$sep$fontFile');
+          if (fallbackSrc.existsSync() && target.path != '$root${sep}public${sep}fonts') {
+            srcFile = fallbackSrc;
+          } else {
+            srcFile = null;
+          }
         }
       }
       if (srcFile != null && srcFile.existsSync()) {

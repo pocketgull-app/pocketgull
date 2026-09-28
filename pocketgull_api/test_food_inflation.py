@@ -1,8 +1,6 @@
 """
 Unit tests for Food Inflation & Dietary Stockout ML Model Service in pocketgull_api.
 """
-
-import pytest
 from services.food_inflation_predictive_model_service import (
     FoodInflationRiskInput,
     FoodInflationRiskOutput,
