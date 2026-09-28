@@ -187,7 +187,7 @@ export interface IChatEntry {
                             type="button"
                             (click)="isSocraticMenuOpen.set(!isSocraticMenuOpen()); isVoiceMenuOpen.set(false)"
                             class="flex items-center gap-1 transition-all px-2 py-1 rounded-lg border border-teal-500/30 bg-teal-500/10 hover:bg-teal-500/20 text-[11px] font-mono font-bold text-teal-700 dark:text-teal-300 cursor-pointer shadow-xs"
-                            title="Socratic Companion & Rachel Nabors Pacing Options">
+                            title="Socratic Companion & Autonomic Vagal Pacing Options">
                             <span>🌿</span>
                             <span class="hidden md:inline">{{ socraticVoice.activePersona().name.split(' ')[0] }} ({{ socraticVoice.activePersona().speechRate }}x)</span>
                             <span class="text-[8px] text-teal-500">▼</span>

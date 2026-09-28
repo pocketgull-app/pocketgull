@@ -44,7 +44,7 @@ export interface IIcuNeedTile {
               </span>
             </h3>
             <p class="text-xs text-gray-500 dark:text-zinc-400">
-              Neural voice scoring, Rachel Nabors parasympathetic pacing (0.88x / 0.93x), Wong-Baker FACES pain vocalizer, and ICU bedside need tiles.
+              Neural voice scoring, autonomic vagal parasympathetic pacing (0.88x / 0.93x), Wong-Baker FACES pain vocalizer, and ICU bedside need tiles.
             </p>
           </div>
         </div>

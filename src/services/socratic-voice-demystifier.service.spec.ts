@@ -8,7 +8,7 @@ describe('SocraticVoiceDemystifierService', () => {
     service = new SocraticVoiceDemystifierService();
   });
 
-  it('1. Initializes default personas and Rachel Nabors parasympathetic calm profile', () => {
+  it('1. Initializes default personas and autonomic parasympathetic calm profile', () => {
     expect(service.personas.length).toBe(4);
     const active = service.activePersona();
     expect(active.id).toBe('persona-parasympathetic-calm');

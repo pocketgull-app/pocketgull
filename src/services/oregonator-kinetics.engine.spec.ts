@@ -32,7 +32,7 @@ describe('OregonatorKineticsEngine (Epstein Nonlinear Chemical Dynamics)', () =>
     expect(state.t).toBeCloseTo(0.5, 4);
   });
 
-  it('3. Computes Rachel Nabors 0.10 Hz bio-rhythmic relaxation curve (4s inhale / 6s exhale)', () => {
+  it('3. Computes 0.10 Hz autonomic bio-rhythmic relaxation curve (4s inhale / 6s exhale)', () => {
     // At t=0s (start of inhale), curve is 0
     const start = computeBioRhythmicRelaxationCurve(0.0, 10.0);
     expect(start).toBeCloseTo(0.0, 2);

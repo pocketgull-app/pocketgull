@@ -55,7 +55,7 @@ console.log(ismpResult.sanitizedText); // "Administer Lisinopril 5mg daily with 
 - **Subjective (S)**: Patient complaints, functional restrictions, sleep disruptions.
 - **Objective (O)**: Physical exam findings, range of motion, and vital signs.
 - **Assessment (A)**: Diagnostic impressions, ICD-10 mapping, kinetic chain evaluation.
-- **Plan (P)**: Therapeutic exercises, Rachel Nabors 0.1 Hz breathing, and ISMP-verified medication regimens.
+- **Plan (P)**: Therapeutic exercises, 0.1 Hz autonomic vagal breathing, and ISMP-verified medication regimens.
 
 ### 2. Socratic Plain-Language Demystifier ("Teaspoon Explanations")
 - **eGFR (Kidney Filter Efficiency)**: Explained as a kitchen coffee filter cleaning water; lower numbers mean hydrating carefully to protect the mesh.

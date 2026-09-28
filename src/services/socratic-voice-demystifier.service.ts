@@ -2,7 +2,7 @@
  * @file socratic-voice-demystifier.service.ts
  * @description Hands-Free Socratic Clinical Voice & Demystification Companion.
  * Implements:
- * 1. Rachel Nabors Parasympathetic Bio-Rhythmic Speech Pacing (0.1 Hz / 10s respiratory cycle cadence).
+ * 1. Autonomic Vagal Parasympathetic Speech Pacing (0.1 Hz / 10s respiratory cycle cadence).
  * 2. Real-Time Medical Jargon Demystification (Socratic analogies replacing terrifying clinical jargon).
  * 3. Full Hands-Free Voice Studio A11y Controls (pitch, rate, respiratory pause intervals, high-contrast captions).
  * 4. Vision-Impaired Elder & Caregiver Hands-Free Continuous Dialog Loop (Web Speech API + Synthesizer).
@@ -42,7 +42,7 @@ export class SocraticVoiceDemystifierService {
   readonly activeDemystifiedText = signal<string>('');
   readonly speechRateMultiplier = signal<number>(0.9); // Calm, deliberate pace
   readonly speechPitch = signal<number>(1.0);
-  readonly vagalRespiratoryPauseMs = signal<number>(650); // Rachel Nabors 0.1 Hz pacing
+  readonly vagalRespiratoryPauseMs = signal<number>(650); // 0.1 Hz vagal pacing
 
   // Voice Personas Catalog
   readonly personas: IVoicePersonaProfile[] = [
@@ -161,7 +161,7 @@ export class SocraticVoiceDemystifierService {
   }
 
   /**
-   * Speaks text using the Web Speech API Synthesizer with Rachel Nabors parasympathetic pacing
+   * Speaks text using the Web Speech API Synthesizer with autonomic vagal parasympathetic pacing
    */
   speakWithVagalPacing(textToSpeak: string): Promise<void> {
     return new Promise((resolve) => {

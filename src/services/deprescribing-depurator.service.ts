@@ -198,7 +198,7 @@ export class DeprescribingDepuratorService {
     } else if (lower.includes('diazepam') || lower.includes('clonazepam') || lower.includes('lorazepam')) {
       // Ashton Benzodiazepine Taper (6 Weeks)
       steps = [
-        { stepNumber: 1, durationDays: 14, dosePercentage: 75, clinicalMonitoringParameter: 'Sleep latency, tremor, and resting pulse', reboundSymptomAlert: 'Mild sleep latency prolongation: integrate 0.1 Hz Rachel Nabors vagal breathing.' },
+        { stepNumber: 1, durationDays: 14, dosePercentage: 75, clinicalMonitoringParameter: 'Sleep latency, tremor, and resting pulse', reboundSymptomAlert: 'Mild sleep latency prolongation: integrate 0.1 Hz autonomic vagal breathing.' },
         { stepNumber: 2, durationDays: 14, dosePercentage: 50, clinicalMonitoringParameter: 'Hamilton Anxiety Rating Scale (HAM-A)', reboundSymptomAlert: 'Autonomic stability confirmation before proceeding.' },
         { stepNumber: 3, durationDays: 14, dosePercentage: 25, clinicalMonitoringParameter: 'Morning cognitive clarity & absence of myoclonus', reboundSymptomAlert: 'Stepwise reduction to zero under clinical supervision.' }
       ];

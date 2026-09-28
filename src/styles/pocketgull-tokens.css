@@ -70,7 +70,7 @@
   --pg-radius-3xl: 1.5rem;
   --pg-radius-full: 9999px;
 
-  /* ⏱️ 7. Ethical Motion & Pacing (Rachel Nabors Parasympathetic Standard) */
+  /* ⏱️ 7. Ethical Motion & Pacing (0.1 Hz Autonomic Vagal Resonance Standard) */
   --pg-ease-out-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --pg-duration-fast: 150ms;
   --pg-duration-normal: 250ms;
@@ -83,7 +83,7 @@
   --font-pocketgull-mono: 'PocketGull Mono', monospace;
   --font-pocketgull-serif: 'PocketGull', serif;
 
-  /* 🧬 9. Live Bio-Rhythmic Variable Font Kinetics (0.1 Hz Rachel Nabors Pacing) */
+  /* 🧬 9. Live Bio-Rhythmic Variable Font Kinetics (0.1 Hz Autonomic Vagal Pacing) */
   --pg-live-wght: 400;
   --pg-live-opsz: 14;
   --pg-live-breathe-scale: 1.0;
@@ -249,7 +249,7 @@
    🧬 Bio-Rhythmic Kinetic Typography & Scotopic Optical Trapping
    ========================================================================== */
 
-/* Living Variable Font Pulse (Rachel Nabors 0.1 Hz Parasympathetic Cycle) */
+/* Living Variable Font Pulse (0.1 Hz Autonomic Vagal Resonance Cycle) */
 .font-biorhythmic-pulse {
   font-variation-settings: 'wght' var(--pg-live-wght, 400), 'opsz' var(--pg-live-opsz, 14);
   transition: font-variation-settings 100ms linear;

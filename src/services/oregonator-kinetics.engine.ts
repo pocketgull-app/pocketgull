@@ -109,7 +109,7 @@ export function integrateOregonatorRk4(
 }
 
 /**
- * Computes an organic relaxation wave (0 to 1) for Rachel Nabors 0.10 Hz bio-rhythmic pacing.
+ * Computes an organic relaxation wave (0 to 1) for 0.10 Hz autonomic vagal bio-rhythmic pacing.
  * Unlike rigid sinusoidal sin(t) curves, the Oregonator limit cycle exhibits an asymmetric
  * neuromuscular expansion (inhale ~4s) followed by a gentle, natural deceleration (exhale ~6s).
  *

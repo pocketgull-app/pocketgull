@@ -1969,7 +1969,7 @@ body[data-kss-tier="alert"]:not(.avs-active) .rounded-2xl {
     from { transform: translateY(32px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
-/* ─── Accessibility: Reduced Motion (Rachel Nabors Guidelines) ─── */
+/* ─── Accessibility: Reduced Motion (WCAG 2.2 §2.3.3 & ISO 9241-171) ─── */
 /* We enforce near-zero duration instead of "none" so that framework JS events (transitionend/animationend) still fire. */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -4273,7 +4273,7 @@ html.philocardia-active.dark .bionic-fixation-anchor {
 }
 
 /* ==========================================================================
-   RACHEL NABORS ETHICAL MOTION & BIO-RHYTHMIC PACING UTILITIES
+   AUTONOMIC VAGAL RESONANCE & BIO-RHYTHMIC PACING UTILITIES (0.1 Hz)
    ========================================================================== */
 
 @keyframes parasympathetic-breath {

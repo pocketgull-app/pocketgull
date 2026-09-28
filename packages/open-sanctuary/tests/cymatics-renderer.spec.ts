@@ -40,7 +40,7 @@ describe('CymaticsRenderer Mathematical Functions', () => {
     expect(symVib).toBeCloseTo(0, 5);
   });
 
-  it('computes 0.1 Hz Rachel Nabors parasympathetic breathing cycle accurately', () => {
+  it('computes 0.1 Hz autonomic vagal parasympathetic breathing cycle accurately', () => {
     const canvas = createMockCanvas();
     const renderer = new CymaticsRenderer(canvas);
 

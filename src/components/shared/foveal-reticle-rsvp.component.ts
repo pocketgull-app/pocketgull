@@ -11,7 +11,7 @@ import { BionicReadingService, IClinicalBionicToken } from '../../services/bioni
   template: `
     @if (isOpen()) {
       <div class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-origami-unfurl font-sans" role="dialog" aria-modal="true" aria-labelledby="foveal-title">
-        <!-- Rachel Nabors 10s Parasympathetic Respiration Ambient Glow -->
+        <!-- 10s Autonomic Vagal Parasympathetic Respiration Ambient Glow -->
         <div class="absolute w-[500px] h-[500px] rounded-full bg-teal-500/15 pointer-events-none animate-vagal-glow"></div>
 
         <div class="relative w-full max-w-2xl bg-zinc-950 text-zinc-100 rounded-2xl shadow-2xl border border-zinc-800 p-5 sm:p-6 flex flex-col gap-4 z-10 overflow-hidden">

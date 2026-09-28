@@ -5,7 +5,7 @@
  * 1. Adaptive Resonant Frequency (RF) solver derived from Lehrer & Vaschillo baroreflex resonance:
  *    f_res \approx 0.10 * (1.0 - 0.04 * (HR_rest - 65)/20) Hz
  * 2. Parasympathetic Expiration Lengthening Ratio (1 : 1.5 Inhale vs Exhale)
- * 3. Real-Time Pacing Cycle Phase Generator for Rachel Nabors 10-second Ethical Motion HUD
+ * 3. Real-Time Pacing Cycle Phase Generator for 10-second Autonomic Vagal Resonance HUD
  * 4. Respiratory Sinus Arrhythmia (RSA) Autonomic Tone Projection
  *
  * Architecture:
@@ -161,7 +161,7 @@ export class ClinicalVagalResonantPacingService {
   }
 
   /**
-   * Evaluates current frame of the 10-second Rachel Nabors parasympathetic cycle
+   * Evaluates current frame of the 10-second autonomic vagal parasympathetic cycle
    */
   private updatePacingFrame(): void {
     const profile = this.pacingProfile();
