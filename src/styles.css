@@ -1318,6 +1318,499 @@ app-body-3d-viewer,
     border-color: rgba(249, 115, 22, 0.25) !important;
 }
 
+/* ─── 1996 Dream Team Athletic Retro Gold & Navy Theme ─── */
+.theme-dream-team {
+    --dream-navy: #060b19;
+    --dream-card: #0c152e;
+    --dream-card-alt: #101c3d;
+    --dream-gold: #f59e0b;
+    --dream-gold-glow: rgba(245, 158, 11, 0.3);
+    --dream-crimson: #ef4444;
+    --dream-court: #d97706;
+}
+
+.theme-dream-team body {
+    background-color: #060b19 !important;
+    background-image: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.06) 0%, transparent 60%),
+                      radial-gradient(circle at 100% 100%, rgba(239, 68, 68, 0.04) 0%, transparent 50%) !important;
+}
+
+.theme-dream-team .bg-white {
+    background-color: #0c152e !important;
+}
+
+.theme-dream-team .dark\:bg-zinc-900,
+.theme-dream-team .dark\:bg-zinc-950 {
+    background-color: #0c152e !important;
+}
+
+.theme-dream-team .dark\:bg-zinc-800 {
+    background-color: #101c3d !important;
+}
+
+.theme-dream-team .border-gray-100,
+.theme-dream-team .dark\:border-zinc-800,
+.theme-dream-team .dark\:border-zinc-700 {
+    border-color: rgba(245, 158, 11, 0.16) !important;
+}
+
+.theme-dream-team .text-gray-900,
+.theme-dream-team .dark\:text-gray-100,
+.theme-dream-team .text-zinc-100,
+.theme-dream-team .dark\:text-zinc-100,
+.theme-dream-team .text-white {
+    color: #f8fafc !important;
+}
+
+.theme-dream-team .text-gray-800,
+.theme-dream-team .dark\:text-gray-200,
+.theme-dream-team .text-zinc-200,
+.theme-dream-team .dark\:text-zinc-200 {
+    color: #e2e8f0 !important;
+}
+
+.theme-dream-team .text-gray-700,
+.theme-dream-team .dark\:text-gray-300,
+.theme-dream-team .text-zinc-300,
+.theme-dream-team .dark\:text-zinc-300 {
+    color: #cbd5e1 !important;
+}
+
+.theme-dream-team .text-gray-600,
+.theme-dream-team .dark\:text-zinc-400,
+.theme-dream-team .text-zinc-400 {
+    color: #94a3b8 !important;
+}
+
+.theme-dream-team ::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.35) !important;
+    border-radius: 4px;
+}
+
+.theme-dream-team ::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 158, 11, 0.6) !important;
+}
+
+.theme-dream-team .transition-all:hover {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.12) !important;
+    border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+/* ─── 1972 Miami Dolphins Perfect Season (17-0) Aqua & Sunburst Orange Theme ─── */
+.theme-dolphins-1972 {
+    --dolphins-teal: #008e97;
+    --dolphins-orange: #fc4c02;
+    --dolphins-navy: #004c64;
+    --dolphins-bg: #031c26;
+    --dolphins-card: #082937;
+    --dolphins-card-alt: #0c3649;
+}
+
+.theme-dolphins-1972 body {
+    background-color: #031c26 !important;
+    background-image: radial-gradient(circle at 50% 0%, rgba(0, 142, 151, 0.12) 0%, transparent 60%),
+                      radial-gradient(circle at 100% 100%, rgba(252, 76, 2, 0.06) 0%, transparent 50%) !important;
+}
+
+.theme-dolphins-1972 .bg-white,
+.theme-dolphins-1972 .dark\:bg-zinc-900,
+.theme-dolphins-1972 .dark\:bg-zinc-950 {
+    background-color: #082937 !important;
+}
+
+.theme-dolphins-1972 .dark\:bg-zinc-800 {
+    background-color: #0c3649 !important;
+}
+
+.theme-dolphins-1972 .border-gray-100,
+.theme-dolphins-1972 .dark\:border-zinc-800,
+.theme-dolphins-1972 .dark\:border-zinc-700 {
+    border-color: rgba(0, 142, 151, 0.22) !important;
+}
+
+.theme-dolphins-1972 .text-gray-900,
+.theme-dolphins-1972 .dark\:text-gray-100,
+.theme-dolphins-1972 .text-zinc-100,
+.theme-dolphins-1972 .dark\:text-zinc-100,
+.theme-dolphins-1972 .text-white {
+    color: #f0fdfa !important;
+}
+
+.theme-dolphins-1972 .text-gray-800,
+.theme-dolphins-1972 .dark\:text-gray-200,
+.theme-dolphins-1972 .text-zinc-200,
+.theme-dolphins-1972 .dark\:text-zinc-200 {
+    color: #ccfbf1 !important;
+}
+
+.theme-dolphins-1972 .text-gray-700,
+.theme-dolphins-1972 .dark\:text-gray-300,
+.theme-dolphins-1972 .text-zinc-300,
+.theme-dolphins-1972 .dark\:text-zinc-300 {
+    color: #99f6e4 !important;
+}
+
+.theme-dolphins-1972 .text-gray-600,
+.theme-dolphins-1972 .dark\:text-zinc-400,
+.theme-dolphins-1972 .text-zinc-400 {
+    color: #5eead4 !important;
+}
+
+.theme-dolphins-1972 ::-webkit-scrollbar-thumb {
+    background: rgba(0, 142, 151, 0.45) !important;
+    border-radius: 4px;
+}
+
+.theme-dolphins-1972 .transition-all:hover {
+    box-shadow: 0 4px 20px rgba(0, 142, 151, 0.18) !important;
+    border-color: rgba(252, 76, 2, 0.4) !important;
+}
+
+/* ─── 1927 New York Yankees "Murderers' Row" Pinstripe Navy & Historic Bronze Theme ─── */
+.theme-yankees-1927 {
+    --yankees-navy: #0c2340;
+    --yankees-card: #09172a;
+    --yankees-card-alt: #0e2038;
+    --yankees-bronze: #c49a45;
+    --yankees-wool: #f8fafc;
+}
+
+.theme-yankees-1927 body {
+    background-color: #050d18 !important;
+    background-image: radial-gradient(circle at 50% 0%, rgba(196, 154, 69, 0.08) 0%, transparent 60%),
+                      repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 32px) !important;
+}
+
+.theme-yankees-1927 .bg-white,
+.theme-yankees-1927 .dark\:bg-zinc-900,
+.theme-yankees-1927 .dark\:bg-zinc-950 {
+    background-color: #09172a !important;
+}
+
+.theme-yankees-1927 .dark\:bg-zinc-800 {
+    background-color: #0e2038 !important;
+}
+
+.theme-yankees-1927 .border-gray-100,
+.theme-yankees-1927 .dark\:border-zinc-800,
+.theme-yankees-1927 .dark\:border-zinc-700 {
+    border-color: rgba(196, 154, 69, 0.2) !important;
+}
+
+.theme-yankees-1927 .text-gray-900,
+.theme-yankees-1927 .dark\:text-gray-100,
+.theme-yankees-1927 .text-zinc-100,
+.theme-yankees-1927 .dark\:text-zinc-100,
+.theme-yankees-1927 .text-white {
+    color: #f8fafc !important;
+}
+
+.theme-yankees-1927 .text-gray-800,
+.theme-yankees-1927 .dark\:text-gray-200,
+.theme-yankees-1927 .text-zinc-200,
+.theme-yankees-1927 .dark\:text-zinc-200 {
+    color: #e2e8f0 !important;
+}
+
+.theme-yankees-1927 .text-gray-700,
+.theme-yankees-1927 .dark\:text-gray-300,
+.theme-yankees-1927 .text-zinc-300,
+.theme-yankees-1927 .dark\:text-zinc-300 {
+    color: #cbd5e1 !important;
+}
+
+.theme-yankees-1927 .text-gray-600,
+.theme-yankees-1927 .dark\:text-zinc-400,
+.theme-yankees-1927 .text-zinc-400 {
+    color: #94a3b8 !important;
+}
+
+.theme-yankees-1927 ::-webkit-scrollbar-thumb {
+    background: rgba(196, 154, 69, 0.4) !important;
+    border-radius: 4px;
+}
+
+.theme-yankees-1927 .transition-all:hover {
+    box-shadow: 0 4px 20px rgba(196, 154, 69, 0.14) !important;
+    border-color: rgba(196, 154, 69, 0.45) !important;
+}
+
+/* ─── 2003-04 Arsenal F.C. "The Invincibles" Cardinal Crimson & Premier Gold Theme ─── */
+.theme-arsenal-invincibles {
+    --arsenal-red: #db0007;
+    --arsenal-darkred: #9c1c24;
+    --arsenal-gold: #e5af3a;
+    --arsenal-card: #14070a;
+    --arsenal-card-alt: #1e0b10;
+}
+
+.theme-arsenal-invincibles body {
+    background-color: #0c0305 !important;
+    background-image: radial-gradient(circle at 50% 0%, rgba(219, 0, 7, 0.1) 0%, transparent 60%),
+                      radial-gradient(circle at 100% 100%, rgba(229, 175, 58, 0.08) 0%, transparent 50%) !important;
+}
+
+.theme-arsenal-invincibles .bg-white,
+.theme-arsenal-invincibles .dark\:bg-zinc-900,
+.theme-arsenal-invincibles .dark\:bg-zinc-950 {
+    background-color: #14070a !important;
+}
+
+.theme-arsenal-invincibles .dark\:bg-zinc-800 {
+    background-color: #1e0b10 !important;
+}
+
+.theme-arsenal-invincibles .border-gray-100,
+.theme-arsenal-invincibles .dark\:border-zinc-800,
+.theme-arsenal-invincibles .dark\:border-zinc-700 {
+    border-color: rgba(229, 175, 58, 0.22) !important;
+}
+
+.theme-arsenal-invincibles .text-gray-900,
+.theme-arsenal-invincibles .dark\:text-gray-100,
+.theme-arsenal-invincibles .text-zinc-100,
+.theme-arsenal-invincibles .dark\:text-zinc-100,
+.theme-arsenal-invincibles .text-white {
+    color: #fffaf7 !important;
+}
+
+.theme-arsenal-invincibles .text-gray-800,
+.theme-arsenal-invincibles .dark\:text-gray-200,
+.theme-arsenal-invincibles .text-zinc-200,
+.theme-arsenal-invincibles .dark\:text-zinc-200 {
+    color: #fde8e8 !important;
+}
+
+.theme-arsenal-invincibles .text-gray-700,
+.theme-arsenal-invincibles .dark\:text-gray-300,
+.theme-arsenal-invincibles .text-zinc-300,
+.theme-arsenal-invincibles .dark\:text-zinc-300 {
+    color: #fbcfe8 !important;
+}
+
+.theme-arsenal-invincibles .text-gray-600,
+.theme-arsenal-invincibles .dark\:text-zinc-400,
+.theme-arsenal-invincibles .text-zinc-400 {
+    color: #f472b6 !important;
+}
+
+.theme-arsenal-invincibles ::-webkit-scrollbar-thumb {
+    background: rgba(229, 175, 58, 0.4) !important;
+    border-radius: 4px;
+}
+
+.theme-arsenal-invincibles .transition-all:hover {
+    box-shadow: 0 4px 20px rgba(219, 0, 7, 0.15) !important;
+    border-color: rgba(229, 175, 58, 0.45) !important;
+}
+
+/* ─── 1976-77 Montreal Canadiens "Bleu-Blanc-Rouge" & Forum Ice Theme ─── */
+.theme-canadiens-1977 {
+    --canadiens-blue: #192168;
+    --canadiens-red: #af1e2d;
+    --canadiens-ice: #e0f2fe;
+    --canadiens-card: #081026;
+    --canadiens-card-alt: #0d1a3c;
+}
+
+.theme-canadiens-1977 body {
+    background-color: #040917 !important;
+    background-image: radial-gradient(circle at 50% 0%, rgba(25, 33, 104, 0.2) 0%, transparent 60%),
+                      radial-gradient(circle at 100% 100%, rgba(175, 30, 45, 0.1) 0%, transparent 50%) !important;
+}
+
+.theme-canadiens-1977 .bg-white,
+.theme-canadiens-1977 .dark\:bg-zinc-900,
+.theme-canadiens-1977 .dark\:bg-zinc-950 {
+    background-color: #081026 !important;
+}
+
+.theme-canadiens-1977 .dark\:bg-zinc-800 {
+    background-color: #0d1a3c !important;
+}
+
+.theme-canadiens-1977 .border-gray-100,
+.theme-canadiens-1977 .dark\:border-zinc-800,
+.theme-canadiens-1977 .dark\:border-zinc-700 {
+    border-color: rgba(175, 30, 45, 0.25) !important;
+}
+
+.theme-canadiens-1977 .text-gray-900,
+.theme-canadiens-1977 .dark\:text-gray-100,
+.theme-canadiens-1977 .text-zinc-100,
+.theme-canadiens-1977 .dark\:text-zinc-100,
+.theme-canadiens-1977 .text-white {
+    color: #f0f9ff !important;
+}
+
+.theme-canadiens-1977 .text-gray-800,
+.theme-canadiens-1977 .dark\:text-gray-200,
+.theme-canadiens-1977 .text-zinc-200,
+.theme-canadiens-1977 .dark\:text-zinc-200 {
+    color: #e0f2fe !important;
+}
+
+.theme-canadiens-1977 .text-gray-700,
+.theme-canadiens-1977 .dark\:text-gray-300,
+.theme-canadiens-1977 .text-zinc-300,
+.theme-canadiens-1977 .dark\:text-zinc-300 {
+    color: #bae6fd !important;
+}
+
+.theme-canadiens-1977 .text-gray-600,
+.theme-canadiens-1977 .dark\:text-zinc-400,
+.theme-canadiens-1977 .text-zinc-400 {
+    color: #7dd3fc !important;
+}
+
+.theme-canadiens-1977 ::-webkit-scrollbar-thumb {
+    background: rgba(175, 30, 45, 0.45) !important;
+    border-radius: 4px;
+}
+
+.theme-canadiens-1977 .transition-all:hover {
+    box-shadow: 0 4px 20px rgba(25, 33, 104, 0.25) !important;
+    border-color: rgba(175, 30, 45, 0.5) !important;
+}
+
+/* ─── 1970 Brazil World Cup "Joga Bonito" Canarinho Gold & Tropical Emerald Theme ─── */
+.theme-brazil-1970 {
+    --brazil-yellow: #f7c800;
+    --brazil-green: #009c3b;
+    --brazil-blue: #002776;
+    --brazil-card: #08170d;
+    --brazil-card-alt: #0e2416;
+}
+
+.theme-brazil-1970 body {
+    background-color: #040c07 !important;
+    background-image: radial-gradient(circle at 50% 0%, rgba(247, 200, 0, 0.1) 0%, transparent 60%),
+                      radial-gradient(circle at 100% 100%, rgba(0, 156, 59, 0.08) 0%, transparent 50%) !important;
+}
+
+.theme-brazil-1970 .bg-white,
+.theme-brazil-1970 .dark\:bg-zinc-900,
+.theme-brazil-1970 .dark\:bg-zinc-950 {
+    background-color: #08170d !important;
+}
+
+.theme-brazil-1970 .dark\:bg-zinc-800 {
+    background-color: #0e2416 !important;
+}
+
+.theme-brazil-1970 .border-gray-100,
+.theme-brazil-1970 .dark\:border-zinc-800,
+.theme-brazil-1970 .dark\:border-zinc-700 {
+    border-color: rgba(247, 200, 0, 0.22) !important;
+}
+
+.theme-brazil-1970 .text-gray-900,
+.theme-brazil-1970 .dark\:text-gray-100,
+.theme-brazil-1970 .text-zinc-100,
+.theme-brazil-1970 .dark\:text-zinc-100,
+.theme-brazil-1970 .text-white {
+    color: #fefce8 !important;
+}
+
+.theme-brazil-1970 .text-gray-800,
+.theme-brazil-1970 .dark\:text-gray-200,
+.theme-brazil-1970 .text-zinc-200,
+.theme-brazil-1970 .dark\:text-zinc-200 {
+    color: #fef08a !important;
+}
+
+.theme-brazil-1970 .text-gray-700,
+.theme-brazil-1970 .dark\:text-gray-300,
+.theme-brazil-1970 .text-zinc-300,
+.theme-brazil-1970 .dark\:text-zinc-300 {
+    color: #bbf7d0 !important;
+}
+
+.theme-brazil-1970 .text-gray-600,
+.theme-brazil-1970 .dark\:text-zinc-400,
+.theme-brazil-1970 .text-zinc-400 {
+    color: #86efac !important;
+}
+
+.theme-brazil-1970 ::-webkit-scrollbar-thumb {
+    background: rgba(247, 200, 0, 0.45) !important;
+    border-radius: 4px;
+}
+
+.theme-brazil-1970 .transition-all:hover {
+    box-shadow: 0 4px 20px rgba(0, 156, 59, 0.2) !important;
+    border-color: rgba(247, 200, 0, 0.5) !important;
+}
+
+/* ─── 2013 New Zealand All Blacks "Silver Fern" Perfect 14-0 Obsidian Theme ─── */
+.theme-all-blacks-2013 {
+    --allblacks-black: #000000;
+    --allblacks-card: #0a0a0a;
+    --allblacks-card-alt: #141414;
+    --allblacks-silver: #e5e7eb;
+    --allblacks-fern: rgba(229, 231, 235, 0.3);
+}
+
+.theme-all-blacks-2013 body {
+    background-color: #000000 !important;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 60%),
+                      radial-gradient(circle at 100% 100%, rgba(229, 231, 235, 0.03) 0%, transparent 50%) !important;
+}
+
+.theme-all-blacks-2013 .bg-white,
+.theme-all-blacks-2013 .dark\:bg-zinc-900,
+.theme-all-blacks-2013 .dark\:bg-zinc-950 {
+    background-color: #0a0a0a !important;
+}
+
+.theme-all-blacks-2013 .dark\:bg-zinc-800 {
+    background-color: #141414 !important;
+}
+
+.theme-all-blacks-2013 .border-gray-100,
+.theme-all-blacks-2013 .dark\:border-zinc-800,
+.theme-all-blacks-2013 .dark\:border-zinc-700 {
+    border-color: rgba(229, 231, 235, 0.18) !important;
+}
+
+.theme-all-blacks-2013 .text-gray-900,
+.theme-all-blacks-2013 .dark\:text-gray-100,
+.theme-all-blacks-2013 .text-zinc-100,
+.theme-all-blacks-2013 .dark\:text-zinc-100,
+.theme-all-blacks-2013 .text-white {
+    color: #ffffff !important;
+}
+
+.theme-all-blacks-2013 .text-gray-800,
+.theme-all-blacks-2013 .dark\:text-gray-200,
+.theme-all-blacks-2013 .text-zinc-200,
+.theme-all-blacks-2013 .dark\:text-zinc-200 {
+    color: #f3f4f6 !important;
+}
+
+.theme-all-blacks-2013 .text-gray-700,
+.theme-all-blacks-2013 .dark\:text-gray-300,
+.theme-all-blacks-2013 .text-zinc-300,
+.theme-all-blacks-2013 .dark\:text-zinc-300 {
+    color: #d1d5db !important;
+}
+
+.theme-all-blacks-2013 .text-gray-600,
+.theme-all-blacks-2013 .dark\:text-zinc-400,
+.theme-all-blacks-2013 .text-zinc-400 {
+    color: #9ca3af !important;
+}
+
+.theme-all-blacks-2013 ::-webkit-scrollbar-thumb {
+    background: rgba(229, 231, 235, 0.3) !important;
+    border-radius: 4px;
+}
+
+.theme-all-blacks-2013 .transition-all:hover {
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(229, 231, 235, 0.4) !important;
+}
+
 /* ─── Y-BOCs Calm Mode Sensory-Safe Styling ─── */
 .theme-calm body {
     background-color: #F5F5F4 !important; /* Soft warm stone-100 */

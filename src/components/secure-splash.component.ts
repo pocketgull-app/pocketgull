@@ -926,9 +926,17 @@ import { BionicReadingService } from '../services/bionic-reading.service';
                             <option value="pool">🌊 Ocean Reflection Pool</option>
                             <option value="mandala">🧘 Sacred Mandala</option>
                             <option value="spark">✨ Spark Mode</option>
-                            <option value="calm">🧘 Serene Calm</option>
-                            <option value="lent">✝️ Lent / Ascetic Reset</option>
+                            <option value="dream-team">🏀 1996 Dream Team</option>
+                            <option value="dolphins-1972">🐬 1972 Miami Dolphins (17-0 Perfect)</option>
+                            <option value="yankees-1927">⚾ 1927 NY Yankees (Murderers' Row)</option>
+                            <option value="arsenal-invincibles">⚽ 2003-04 Arsenal Invincibles</option>
+                            <option value="canadiens-1977">🏒 1976-77 Montreal Canadiens (+216)</option>
+                            <option value="brazil-1970">🇧🇷 1970 Brazil World Cup (Pelé)</option>
+                            <option value="all-blacks-2013">🏉 2013 NZ All Blacks (14-0 Perfect)</option>
                             <option value="curie">🔬 Madame Curie (Radium Lab)</option>
+                            <option value="cern">⚛️ Hypertext 1991</option>
+                            <option value="scotopic">🌑 Scotopic Red Night</option>
+                            <option value="epaper">📖 Reflective Slate E-Paper</option>
                           </select>
                         </div>
 

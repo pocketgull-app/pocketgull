@@ -2,7 +2,7 @@ import { Injectable, signal, effect, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { SecureStorageService } from './secure-storage.service';
 
-export type AppTheme = 'light' | 'dark' | 'system' | 'spark' | 'papercraft' | 'pocketgull-geararts' | 'hemp' | 'rice' | 'construction' | 'white-marble' | 'black-marble' | 'papyrus' | 'pool' | 'mandala' | 'curie' | 'cern' | 'scotopic' | 'epaper';
+export type AppTheme = 'light' | 'dark' | 'system' | 'spark' | 'papercraft' | 'pocketgull-geararts' | 'hemp' | 'rice' | 'construction' | 'white-marble' | 'black-marble' | 'papyrus' | 'pool' | 'mandala' | 'curie' | 'cern' | 'scotopic' | 'epaper' | 'dream-team' | 'dolphins-1972' | 'yankees-1927' | 'arsenal-invincibles' | 'canadiens-1977' | 'brazil-1970' | 'all-blacks-2013';
 
 @Injectable({
   providedIn: 'root'
@@ -178,7 +178,11 @@ export class ThemeService {
       this.isPhilocardiaEnabled.set(true);
     }
 
-    const ALL_THEMES: AppTheme[] = ['light', 'dark', 'system', 'spark', 'papercraft', 'pocketgull-geararts', 'hemp', 'rice', 'construction', 'white-marble', 'black-marble', 'papyrus', 'pool', 'mandala', 'curie', 'cern', 'scotopic', 'epaper'];
+    const ALL_THEMES: AppTheme[] = [
+      'light', 'dark', 'system', 'spark', 'papercraft', 'pocketgull-geararts', 'hemp', 'rice', 'construction',
+      'white-marble', 'black-marble', 'papyrus', 'pool', 'mandala', 'curie', 'cern', 'scotopic', 'epaper',
+      'dream-team', 'dolphins-1972', 'yankees-1927', 'arsenal-invincibles', 'canadiens-1977', 'brazil-1970', 'all-blacks-2013'
+    ];
     const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const urlTheme = urlParams.get('theme') as AppTheme;
     if (urlTheme && ALL_THEMES.includes(urlTheme)) {
@@ -194,7 +198,7 @@ export class ThemeService {
     }
 
     const urlLens = urlParams.get('lens') as any;
-    if (urlLens && ['clinical', 'arborist', 'mechanic', 'gentleman', 'muse'].includes(urlLens)) {
+    if (urlLens && ['clinical', 'arborist', 'mechanic', 'gentleman', 'muse', 'coach', 'socrates'].includes(urlLens)) {
       this.setAnalogyLensMode(urlLens);
     }
 
@@ -216,7 +220,12 @@ export class ThemeService {
         ? window.matchMedia('(prefers-color-scheme: dark)').matches
         : false;
       this.activeTheme.set(isSystemDark ? 'dark' : 'light');
-    } else if (theme === 'spark' || theme === 'black-marble' || theme === 'papyrus' || theme === 'mandala' || theme === 'curie' || theme === 'scotopic' || theme === 'pocketgull-geararts') {
+    } else if (
+      theme === 'spark' || theme === 'black-marble' || theme === 'papyrus' || theme === 'mandala' ||
+      theme === 'curie' || theme === 'scotopic' || theme === 'pocketgull-geararts' || theme === 'dream-team' ||
+      theme === 'dolphins-1972' || theme === 'yankees-1927' || theme === 'arsenal-invincibles' ||
+      theme === 'canadiens-1977' || theme === 'brazil-1970' || theme === 'all-blacks-2013'
+    ) {
       this.activeTheme.set('dark');
     } else if (theme === 'pool') {
       const hour = new Date().getHours();
@@ -233,7 +242,9 @@ export class ThemeService {
     if (typeof document === 'undefined') return;
     
     document.documentElement.classList.remove(
-      'dark', 'theme-spark',
+      'dark', 'theme-spark', 'theme-dream-team',
+      'theme-dolphins-1972', 'theme-yankees-1927', 'theme-arsenal-invincibles',
+      'theme-canadiens-1977', 'theme-brazil-1970', 'theme-all-blacks-2013',
       'papercraft-mode', 'papercraft-hemp', 'papercraft-rice', 'papercraft-construction',
       'theme-white-marble', 'theme-black-marble', 'theme-papyrus',
       'theme-pool', 'theme-pool-light', 'theme-pool-dark',
@@ -317,6 +328,48 @@ export class ThemeService {
       const metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (metaThemeColor) {
         metaThemeColor.setAttribute('content', '#f5f5f0');
+      }
+    } else if (theme === 'dream-team') {
+      document.documentElement.classList.add('dark', 'theme-dream-team');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#0a1128');
+      }
+    } else if (theme === 'dolphins-1972') {
+      document.documentElement.classList.add('dark', 'theme-dolphins-1972');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#004c64');
+      }
+    } else if (theme === 'yankees-1927') {
+      document.documentElement.classList.add('dark', 'theme-yankees-1927');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#07162c');
+      }
+    } else if (theme === 'arsenal-invincibles') {
+      document.documentElement.classList.add('dark', 'theme-arsenal-invincibles');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#180407');
+      }
+    } else if (theme === 'canadiens-1977') {
+      document.documentElement.classList.add('dark', 'theme-canadiens-1977');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#0b122e');
+      }
+    } else if (theme === 'brazil-1970') {
+      document.documentElement.classList.add('dark', 'theme-brazil-1970');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#06130b');
+      }
+    } else if (theme === 'all-blacks-2013') {
+      document.documentElement.classList.add('dark', 'theme-all-blacks-2013');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#000000');
       }
     } else if (resolvedTheme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -510,7 +563,7 @@ export class ThemeService {
   }
 
   public cycleTheme(): void {
-    const themes: AppTheme[] = ['light', 'dark', 'system', 'spark'];
+    const themes: AppTheme[] = ['light', 'dark', 'system', 'spark', 'dream-team'];
     const current = this.currentTheme();
     const currentIndex = themes.indexOf(current);
     const nextTheme = themes[(currentIndex + 1) % themes.length] || 'light';

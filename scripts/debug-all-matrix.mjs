@@ -22,6 +22,12 @@ const THEMES = [
   { name: 'Spark Ember', param: 'spark', icon: '🔥' },
   { name: 'Solfeggio Mandala', param: 'mandala', icon: '🧘' },
   { name: '1996 Dream Team', param: 'dream-team', icon: '🏀' },
+  { name: '1972 Miami Dolphins (17-0)', param: 'dolphins-1972', icon: '🐬' },
+  { name: '1927 NY Yankees Murderers Row', param: 'yankees-1927', icon: '⚾' },
+  { name: '2003-04 Arsenal Invincibles', param: 'arsenal-invincibles', icon: '⚽' },
+  { name: '1976-77 Montreal Canadiens', param: 'canadiens-1977', icon: '🏒' },
+  { name: '1970 Brazil World Cup (Pelé)', param: 'brazil-1970', icon: '🇧🇷' },
+  { name: '2013 NZ All Blacks (14-0)', param: 'all-blacks-2013', icon: '🏉' },
 ];
 
 const PERSONAS = [

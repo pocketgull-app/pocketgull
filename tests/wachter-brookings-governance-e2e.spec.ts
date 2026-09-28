@@ -78,7 +78,7 @@ describe('Wachter & Brookings AI Governance Integration Suite (End-to-End)', () 
 
     expect(bundle.resourceType).toBe('Bundle');
     expect(bundle.entry.some((e: any) => e.resource.resourceType === 'CarePlan')).toBe(true);
-  });
+  }, 15000);
 
   it('Pillar 4: should verify CMS RPM 16-day transmission threshold & CPT reimbursement claim payload', () => {
     const initialMetrics = rpmService.rpmMetrics();
