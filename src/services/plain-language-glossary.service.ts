@@ -119,6 +119,42 @@ export class PlainLanguageGlossaryService {
         plainDefinition: 'Your customized clinical intervention protocol designed like a 1996 Dream Team halftime tactical playbook.',
         simpleAnalogy: 'Like running a flawless 90s fast break: crisp passes, precision execution, and zero turnovers.'
       }
+    ],
+    [
+      'icu handover',
+      {
+        term: 'ICU Handover & Spatial Choreography (F1 Pit Crew Model)',
+        category: 'Western Physiology',
+        plainDefinition: 'A structured, silent-first transition protocol when transferring critical patients from surgery to the ICU, pioneered by Great Ormond Street Hospital and Ferrari/McLaren F1 teams.',
+        simpleAnalogy: 'Like a 2.0-second Formula 1 pit stop: each specialist has an exact spatial zone and silent choreography before the verbal briefing starts, eliminating 40%+ of errors.'
+      }
+    ],
+    [
+      'surgical safety checklist',
+      {
+        term: 'Surgical Safety Time-Out & CRM (Flight 1549 Model)',
+        category: 'Western Physiology',
+        plainDefinition: 'A mandatory pre-incision team pause where hierarchies are flattened so any nurse, tech, or doctor can immediately speak up if something looks wrong.',
+        simpleAnalogy: 'Like Captain Sully’s cockpit Crew Resource Management (CRM): every team member introduces themselves by name so safety overrides rank.'
+      }
+    ],
+    [
+      'medical tiger team',
+      {
+        term: 'Medical Incident Tiger Teams (Apollo 13 Crisis Model)',
+        category: 'Western Physiology',
+        plainDefinition: 'Rapid, un-bureaucratic sub-teams of frontline experts assembled during acute clinical crises to solve life-threatening constraints with existing bedside resources.',
+        simpleAnalogy: 'Like Gene Kranz’s Apollo 13 Mission Control team: building a square CO2 scrubber from round parts on the spot to keep the crew breathing.'
+      }
+    ],
+    [
+      'blameless debrief',
+      {
+        term: 'Blameless M&M Safety Debrief (Blue Angels Safe Room)',
+        category: 'Western Physiology',
+        plainDefinition: 'A psychological safety culture where clinical leaders admit their own mistakes first to focus entirely on system failures and continuous team learning.',
+        simpleAnalogy: 'Like the US Navy Blue Angels stripping away rank in the debrief room: total honesty about mistakes because systemic trust saves lives.'
+      }
     ]
   ]);
 
