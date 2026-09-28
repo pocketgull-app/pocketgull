@@ -26,6 +26,11 @@ from monai_spatial_engine import (
     AnatomicalCompartmentCropper,
     FullBoundaryStratifiedSampler
 )
+from asymmetric_loss import (
+    AsymmetricClinicalGainObjective,
+    BilateralAsymmetryComparator,
+    CLINICAL_SEVERITY_WEIGHTS
+)
 
 # 12 RSNA Knee Target Abnormalities
 TARGET_NAMES = [
@@ -250,3 +255,48 @@ class CompartmentAwareFastMRIPipeline:
         if single_sample:
             return fused[0]
         return fused
+
+    def calibrate_blending_weights_for_clinical_gain(
+        self,
+        global_preds: np.ndarray,
+        compartment_preds: Dict[str, np.ndarray],
+        y_true: np.ndarray,
+        candidate_weights: Optional[List[float]] = None
+    ) -> Dict[str, Any]:
+        """
+        Sweeps compartment fusion weights to identify the optimal alpha maximizing
+        the Asymmetric Clinical Gain Objective G_asym.
+        """
+        candidates = candidate_weights or [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40]
+        gain_obj = AsymmetricClinicalGainObjective()
+
+        best_w = 0.20
+        best_gain = -float('inf')
+        results = []
+
+        for w in candidates:
+            fused = self.blend_compartment_with_global_predictions(
+                global_preds, compartment_preds, compartment_weight=w
+            )
+            net_gain = gain_obj.compute_net_gain(fused, y_true)
+            results.append({'weight': w, 'net_clinical_gain': net_gain})
+            if net_gain > best_gain:
+                best_gain = net_gain
+                best_w = w
+
+        return {
+            'optimal_compartment_weight': best_w,
+            'max_net_clinical_gain': best_gain,
+            'grid_search_results': results
+        }
+
+    def evaluate_bilateral_knee_study(
+        self,
+        left_predictions: Dict[str, float],
+        right_predictions: Dict[str, float]
+    ) -> Dict[str, Any]:
+        """
+        Computes bilateral contralateral asymmetry between Left and Right knee MRI studies.
+        """
+        comparator = BilateralAsymmetryComparator()
+        return comparator.evaluate_bilateral_mri_pair(left_predictions, right_predictions)
