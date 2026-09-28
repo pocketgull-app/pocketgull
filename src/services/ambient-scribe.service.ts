@@ -1,4 +1,11 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { 
+  SocraticDemystifier, 
+  TrajectoryBuilder, 
+  IDemystifiedExplanation, 
+  ISocraticQuestionCard, 
+  IThreeActTrajectory 
+} from '../../packages/open-scribe/src/index';
 
 export interface IScribeDialogueTurn {
   id: string;
@@ -90,6 +97,42 @@ export class AmbientScribeService {
   readonly latestTurn = computed(() => {
     const turns = this.dialogueTurns();
     return turns.length > 0 ? turns[turns.length - 1] : null;
+  });
+
+  readonly fullDialogueText = computed(() => {
+    return this.dialogueTurns().map(t => `${t.speakerName}: ${t.text}`).join(' ');
+  });
+
+  readonly demystifiedJargon = computed<IDemystifiedExplanation[]>(() => {
+    const text = this.fullDialogueText();
+    const soap = this.soapNote();
+    const combined = `${text} ${soap?.assessment.primaryDiagnosis || ''} ${soap?.plan.pharmacotherapy.map(p => p.drug).join(' ') || ''}`;
+    return SocraticDemystifier.demystify(combined);
+  });
+
+  readonly socraticQuestions = computed<ISocraticQuestionCard[]>(() => {
+    const text = this.fullDialogueText();
+    const soap = this.soapNote();
+    const combined = `${text} ${soap?.assessment.primaryDiagnosis || ''} ${soap?.plan.pharmacotherapy.map(p => p.drug).join(' ') || ''}`;
+    return SocraticDemystifier.generateSocraticInquiry(combined);
+  });
+
+  readonly naturalFrequencySummary = computed<string>(() => {
+    return SocraticDemystifier.toNaturalFrequency(92, 100);
+  });
+
+  readonly teaspoonSummary = computed<string>(() => {
+    const text = this.fullDialogueText();
+    return SocraticDemystifier.generateTeaspoonSummary(text);
+  });
+
+  readonly threeActTrajectory = computed<IThreeActTrajectory>(() => {
+    const text = this.fullDialogueText();
+    const soap = this.soapNote();
+    const bp = soap?.objective.vitals.bloodPressure || '120/80';
+    const hr = soap?.objective.vitals.heartRate || 72;
+    const spo2 = soap?.objective.vitals.oxygenSaturation || 98;
+    return TrajectoryBuilder.build(text, { hr, bp, spo2 });
   });
 
   // Pre-configured Clinical Simulation Scenarios
