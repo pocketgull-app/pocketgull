@@ -233,6 +233,7 @@ export class DocsStudyComponent implements OnInit {
     
     { id: 'ai-development-loop', title: 'AI Development Loop', category: 'ai', description: 'Google Genkit flows, ADK InMemoryRunner, multimodal live audio, and safety filter policy.', icon: '🔄', estimatedReadTime: '6 min' },
     { id: 'responsible-ai', title: 'Responsible AI & Safety', category: 'ai', description: 'Clinical CDS safety policy, DANGEROUS_CONTENT OFF rationale, and safety filter boundaries.', icon: '🛡️', estimatedReadTime: '9 min' },
+    { id: 'conformal-machine-learning', title: 'Conformal ML & The Digital Vault', category: 'ai', description: 'Google Cloud Healthcare API, Mondrian conformal prediction, and out-of-distribution abstention.', icon: '🎯', estimatedReadTime: '8 min' },
     { id: 'edge-mobile-integration', title: 'Edge & Mobile Companion Suite', category: 'ai', description: 'Python FastAPI biosignal sidecar, Riverpod Flutter app, and local PubGemma fallback.', icon: '📱', estimatedReadTime: '5 min' },
     
     { id: 'api', title: 'API Specification', category: 'engineering', description: 'OpenAPI REST endpoints, WebSocket live audio protocol, and DICOM/Healthcare proxies.', icon: '🔌', estimatedReadTime: '7 min' },
