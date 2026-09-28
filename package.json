@@ -124,6 +124,7 @@
     "theme:package": "cd packages/pocketgull-theme && npx -y @vscode/vsce package --out ../../dist/pocketgull-theme-1.2.0.vsix --no-dependencies",
     "lint": "node --no-deprecation node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
     "lint:pokayoke": "node --no-deprecation scripts/poka_yoke_type_guard.mjs",
+    "porter:audit": "node --no-deprecation scripts/porters_forces_deployment_guard.mjs",
     "preview": "node --no-deprecation scripts/build-if-missing.cjs && node --no-deprecation dist/server/server.mjs",
     "serve:local": "node --no-deprecation scripts/serve-local.mjs",
     "test:e2e": "node --no-deprecation ./run-playwright.cjs test",

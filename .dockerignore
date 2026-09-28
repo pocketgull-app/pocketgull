@@ -46,19 +46,26 @@ pocketgull_api/__pycache__/
 .venv/
 venv/
 
-# Heavy Machine Learning & Competition Datasets
+# Developer Studios, Authoring Tools & Standalone Packages
+tools/
+scripts/
+packages/
+companion-apps/
+tests/
+e2e/
+
+# Heavy Machine Learning, Competition Datasets & Research
 contests/
 lora_*/
 python_example_2026/
 scratch/
+sandbox/
 typefaces_vault/
 case-studies/
+docs/study/
 
 # Mobile Companions (Separate packaging)
 pocketgull_flutter/
-companion-apps/patient_app/
-companion-apps/provider_app/
-companion-apps/neuro_reader_app/
 
 # Source Maps & Archives
 *.map

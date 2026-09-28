@@ -73,6 +73,9 @@ jobs:
       - name: MSA & AI Services Governance Audit
         run: npm run msa:audit
 
+      - name: Porter's Five Forces Strategic & Deployment Audit
+        run: npm run porter:audit
+
       - name: Generate CycloneDX SBOM (EU CRA Compliance)
         run: npm run sbom
 

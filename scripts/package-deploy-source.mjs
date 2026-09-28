@@ -20,22 +20,16 @@ const projectItems = [
   'index.html',
   'manifest.webmanifest',
   'favicon.svg',
-  'vitest.config.ts',
   'README.md',
   'SECURITY.md',
-  'PROFORMA.md',
-  'CHANGELOG.md',
   '.dockerignore',
   '.gcloudignore',
   'server.js',
   'dist',
-  'src',
-  'packages',
   'public',
-  'docs',
-  'scripts',
-  'pocketgull_api',
-  'companion-apps/avs-therapy'
+  'docs/openapi.json',
+  'companion-apps/avs-therapy/package.json',
+  'pocketgull_api/package.json'
 ].filter(item => fs.existsSync(path.resolve(rootDir, item)));
 
 console.log(`📦 Packaging clean project source files from ${rootDir}:`);
