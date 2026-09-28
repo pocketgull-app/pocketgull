@@ -45,7 +45,7 @@ jobs:
           cache: 'npm'
           
       - name: Install Dependencies
-        run: npm ci --legacy-peer-deps --prefer-offline
+        run: npm ci --legacy-peer-deps
         
       - name: Security Audit
         run: npm audit --json > audit.json || true

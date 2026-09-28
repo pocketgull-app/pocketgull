@@ -62,7 +62,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci --legacy-peer-deps --prefer-offline
+        run: npm ci --legacy-peer-deps
 
       - name: TypeScript Lint (tsc --noEmit)
         run: npm run lint
@@ -151,7 +151,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci --legacy-peer-deps --prefer-offline
+        run: npm ci --legacy-peer-deps
 
       - name: Cache Playwright Browsers
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
