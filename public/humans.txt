@@ -1,15 +1,86 @@
-/* TEAM */
-Author: Pocket Gull AI and The Developer
-Role: Medical AI Strategy
+/*
+           _
+         ('v')   ~ PocketGull
+        //-=- \
+        (\_=_/ )
+         ^^ ^^
+   "We are humans who care about healing."
+*/
 
-/* THANKS */
-Thank you for using Pocket Gull!
-Vielen Dank für die Nutzung von Pocket Gull! 
-Merci d'utiliser Pocket Gull! 
-感谢您使用 Pocket Gull! 
+/* HELLO THERE, FELLOW HUMAN! 👋 */
+Thank you for looking behind the curtain. In an era where the web is increasingly 
+crowded with automated scrapers, synthetic noise, and opaque algorithms, we are 
+genuinely delighted you took the time to read a simple, honest, plain-text file.
 
-/* SITE */
-Last update: 2026
-Standards: HTML5, CSS3, Angular
-Components: TailwindCSS, Three.js
-Software: Google Gemini
+PocketGull is an ambient clinical intelligence engine and medical research portal, 
+crafted with care in the Pacific Northwest. We build quiet, respectful software 
+designed to protect human clinical relationships, not replace them.
+
+
+/* THE HUMANS BEHIND POCKETGULL */
+Founder & Health Informatics Lead: Phillip Gear
+Location: Portland, Oregon, USA
+Roles: Architecture, Systems Biology, Caslon Typography, Nature Photography
+CMS NPI: 1487569752 • ORCID: 0009-0008-1372-5381
+Contact: phil@pocketgull.com
+
+Bedside Partners & Clinicians:
+To the ICU nurses, pediatric intensivists, primary care doctors, and respiratory 
+therapists who test our workflows, critique our time-outs, and remind us every 
+single day that real medicine happens at the bedside—not on a billboard.
+
+The Patients & Caregivers:
+You are the reason we obsess over every decimal point of dosage precision and 
+every millisecond of latency. Healing is vulnerable work, and you deserve tools 
+that honor your dignity and your time.
+
+
+/* OUR AI PAIR PROGRAMMERS & COMPANIONS */
+Collaborator: Google Gemini (3.8 Flash & Pro) & Antigravity
+Role: The tireless, thoughtful late-night pair programmer who helps us test 
+differential equations, verify FHIR schemas, and catch edge cases—while always 
+deferring the final human clinical judgment to real doctors.
+
+
+/* HOW WE CRAFTED THIS APP */
+Philosophy: The Quiet Workshop (Dieter Rams functionalism + Caslon legibility)
+Typography: Hand-chiseled PocketGull font superfamily (1000 UPM grid, ISMP safety)
+Frontend: Standalone Angular 22 with Signals & TailwindCSS
+3D Graphics: Procedural Three.js biophysical skeletal and surface meshes
+Backend: Node.js Express SSR with zero-egress edge execution
+Security: Mozilla HTTP Observatory 125/100 (Grade A+ with per-request nonces)
+Interoperability: HL7® FHIR® R4 Bundle Standard & HIPAA § 164.514 Safe Harbor
+Telemetry: Zero tracking pixels. Zero surveillance cookies. 100% digital sovereignty.
+Power: Hosted with carbon-aware green hosting in Oregon.
+
+
+/* A GENTLE MINDFUL MOMENT FOR YOU 🌿 */
+If you've been sitting at your desk or staring at a glowing screen for a while:
+1. Inhale gently through your nose for 4 seconds.
+2. Hold softly for 2 seconds.
+3. Exhale slowly through slightly parted lips for 6 seconds.
+
+That simple 0.10 Hz respiratory cycle activates your ventral vagal brake, stimulates 
+acetylcholine release across your sinoatrial node, and tells your nervous system: 
+"You are safe, you are doing fine, and you can take things one step at a time."
+
+Also, go drink a tall glass of cool water—your renal glomeruli work hard for you!
+
+
+/* SPECIAL GRATITUDE & HISTORICAL HOMAGE */
+- Captain Chesley Sullenberger & NASA Crew Resource Management pioneers (for proving flat hierarchies save lives)
+- The Great Ormond Street Hospital & Formula 1 pit crews (for showing us how silent spatial handovers stop mistakes)
+- Dr. Tu Youyou & the Project 523 scientists (for bridging ancient botanical steeping with modern allopathic chemistry)
+- Banting, Best, Collip, and Macleod (for showing the world how selfless scientific relays conquer diabetes)
+- Sushruta of Varanasi (c. 600 BCE, for founding the world's first coordinated multi-specialist surgical guild)
+- You, for being human and curious enough to explore this far down.
+
+
+/* GET IN TOUCH */
+Got an idea? Spotted a typo? Want to collaborate on human-centered clinical care?
+Drop us a warm note anytime:
+Email: hello@pocketgull.com
+Web: https://pocketgull.com & https://pocketgull.app
+Location: 101 SW Madison St #1664, Portland, OR 97207, USA
+
+Made with love, gratitude, and a whole lot of freshly brewed tea. ☕
