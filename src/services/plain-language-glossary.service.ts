@@ -155,6 +155,33 @@ export class PlainLanguageGlossaryService {
         plainDefinition: 'A psychological safety culture where clinical leaders admit their own mistakes first to focus entirely on system failures and continuous team learning.',
         simpleAnalogy: 'Like the US Navy Blue Angels stripping away rank in the debrief room: total honesty about mistakes because systemic trust saves lives.'
       }
+    ],
+    [
+      'dhanvantari surgical guild',
+      {
+        term: 'Dhanvantari Surgical Guilds & Sushruta Team (c. 600 BCE)',
+        category: 'Ayurvedic Vedic',
+        plainDefinition: 'Ancient multi-specialist surgical teams where distinct apprentices managed the patient’s vital Dosha stabilization via herbal intoxicants and breathing techniques, while toolmasters orchestrated 120+ specialized instruments for the lead surgeon during complex reconstructions (rhinoplasty and cataracts).',
+        simpleAnalogy: 'The world’s first coordinated surgical theater: dividing trauma management, anesthesia/Dosha stabilization, and surgical instrument passing among dedicated specialists 2,500 years ago.'
+      }
+    ],
+    [
+      'project 523',
+      {
+        term: 'Project 523 & Tu Youyou Team (TCM & Allopathic Integration, 1967)',
+        category: 'Eastern TCM',
+        plainDefinition: 'A 500-scientist collaborative effort spanning 60 laboratories that synthesized 2,000 ancient TCM herbal recipes with modern Allopathic chemistry to discover Artemisinin. When heat distillation degraded sweet wormwood (Qinghao), Dr. Tu Youyou returned to Ge Hong’s 1,600-year-old manual to pioneer cold-ether extraction, saving millions of lives.',
+        simpleAnalogy: 'The ultimate synthesis of ancient herbal wisdom and modern pharmacology: translating 4th-century cold-water steeping into Nobel Prize-winning malaria medicine.'
+      }
+    ],
+    [
+      'toronto insulin team',
+      {
+        term: 'The Toronto Insulin Discovery Team (Division of Scientific Labor, 1921)',
+        category: 'Western Physiology',
+        plainDefinition: 'The definitive model of physiological labor division: Frederick Banting (surgical plumbing of the pancreas), Charles Best (daily blood glucose monitoring), J.B. Collip (biochemical purification of the pancreatic extract to eliminate toxicity), and J.J.R. Macleod (physiological experimental framework).',
+        simpleAnalogy: 'A perfect scientific relay: Banting and Best extracted the raw substance, Collip purified it from toxic impurities, and Macleod structured the human clinical trials that cured fatal diabetic ketoacidosis in months.'
+      }
     ]
   ]);
 
