@@ -28,9 +28,10 @@ import { OnDeviceEmbedderService } from '../services/ai/on-device-embedder.servi
 import { GseExplorerService, IGseDataset } from '../services/gse-explorer.service';
 import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 import { PhysicalGenomicsService } from '../services/physical-genomics.service';
-import { BionicReadingService } from '../services/bionic-reading.service';
 import { ThemeService } from '../services/theme.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
 import { FovealReticleRsvpComponent } from './shared/foveal-reticle-rsvp.component';
+import { DecisionCurveViewerComponent } from './analytics/decision-curve-viewer.component';
 import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
@@ -71,6 +72,7 @@ export interface IPubMedSearchResult {
     GullSquadronShowcaseComponent,
     GullNarrativeDispatchComponent,
     FovealReticleRsvpComponent,
+    DecisionCurveViewerComponent,
     BionicFormatPipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -309,6 +311,16 @@ export interface IPubMedSearchResult {
                     [class.text-gray-500]="searchEngine() !== 'squadron'"
                     [class.dark:text-zinc-400]="searchEngine() !== 'squadron'">
               🪺 Squadron
+            </button>
+            <button (click)="setSearchEngine('dca')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'dca'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'dca'"
+                    [class.text-teal-700]="searchEngine() === 'dca'"
+                    [class.dark:text-teal-300]="searchEngine() === 'dca'"
+                    [class.text-gray-500]="searchEngine() !== 'dca'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'dca'">
+              ⚖️ DCA / Asymmetry
             </button>
           </div>
           <!-- Search Input -->
@@ -731,6 +743,10 @@ export interface IPubMedSearchResult {
           <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
             <app-research-data-dividend></app-research-data-dividend>
           </div>
+        } @else if (searchEngine() === 'dca') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-decision-curve-viewer></app-decision-curve-viewer>
+          </div>
         } @else if (searchEngine() === 'squadron') {
           <div class="p-4 max-w-5xl mx-auto overflow-y-auto space-y-6">
             <app-gull-squadron-showcase></app-gull-squadron-showcase>
@@ -801,7 +817,7 @@ export class ResearchFrameComponent implements OnDestroy {
   readonly isFovealOpen = signal<boolean>(false);
 
   isMobile = signal(false);
-  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist'>('google');
+  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist' | 'dca'>('google');
   searchText = signal<string>('');
 
   readonly activeLensName = computed(() => this.moeRouter?.activeLens() || 'Summary Overview');
@@ -1089,7 +1105,7 @@ export class ResearchFrameComponent implements OnDestroy {
 
 
   // --- Browser Actions ---
-  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist') {
+  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist' | 'dca') {
     this.searchEngine.set(engine);
     if (engine === 'gse') {
       this.gseResults.set(this.gseService.searchGse(this.searchText().trim()));
@@ -1106,6 +1122,7 @@ export class ResearchFrameComponent implements OnDestroy {
       engine !== 'geriatrics' && 
       engine !== 'nutrition' && 
       engine !== 'specialist' && 
+      engine !== 'dca' && 
       this.searchText().trim()
     ) {
       this.search();
