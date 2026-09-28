@@ -56,8 +56,13 @@ def generate_dataset_metadata(
         "Popperian falsifiability ($p < 0.05$), and Socratic evidence literacy.\n\n"
         "## Content & File Structure\n"
         "- `train.csv`: 4,400+ study-level multi-label pathology annotations (ACL, MCL, Meniscus tears, Osteoarthritis, Effusion).\n"
+        "- `train.parquet`: Snappy-compressed zero-copy columnar format containing all 4,400+ study annotations.\n"
         "- `train_series.csv`: DICOM MRI volumetric acquisition parameters, series UIDs, and plane orientations (Sagittal, Coronal, Axial).\n"
         "- `train_labels_gemini.csv`: Gemini 2.5 Flash distilled weak labels with clinical rationale confidence scores.\n"
+        "- `lemonade_extracted_labels.jsonl`: 5,057 AMD GPU local LLM-extracted pathology labels across 3,613 unique patient studies.\n"
+        "- `optimal_biomechanical_priors.json`: Nelder-Mead continuous transfer weights (+0.00605 Macro-AUC gain on 3,613-study cohort).\n"
+        "- `jax_cooccurrence_priors.json`: 12x12 Bayesian conditional expectation co-occurrence probability matrix.\n"
+        "- `jax_optimal_ensemble_weights.json`: Specialized multi-model blend weights for DINOv2, A5 Folds, RadImageNet, and Raptor CoAtNet.\n"
         "- `asymmetric_loss.py`: PyTorch/NumPy implementation of Asymmetric Loss (ASL: gamma_minus=4.0, gamma_plus=1.0).\n\n"
         "## Data Dictionary\n"
         "| Column Name | Data Type | Description |\n"
@@ -130,6 +135,26 @@ def generate_dataset_metadata(
                     {"name": "Effusion", "type": "number", "description": "Weak label probability for Joint Effusion [0.0 - 1.0]"}
                 ]
             }
+        },
+        {
+            "path": "train.parquet",
+            "description": "Zero-copy Snappy-compressed columnar format containing all 4,400+ study annotations."
+        },
+        {
+            "path": "lemonade_extracted_labels.jsonl",
+            "description": "5,057 AMD GPU local LLM-extracted pathology labels across 3,613 unique patient studies."
+        },
+        {
+            "path": "optimal_biomechanical_priors.json",
+            "description": "Nelder-Mead continuous transfer weights (+0.00605 Macro-AUC gain on 3,613-study cohort)."
+        },
+        {
+            "path": "jax_cooccurrence_priors.json",
+            "description": "12x12 Bayesian conditional expectation co-occurrence probability matrix."
+        },
+        {
+            "path": "jax_optimal_ensemble_weights.json",
+            "description": "Specialized multi-model blend weights for DINOv2, A5 Folds, RadImageNet, and Raptor CoAtNet."
         }
     ]
 
