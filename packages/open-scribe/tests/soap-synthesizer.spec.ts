@@ -20,6 +20,8 @@ describe('SoapSynthesizer Suite', () => {
 
     expect(teaspoonNote.friendlyTitle).toBe('Your Personal Care Summary & Vitality Guide');
     expect(teaspoonNote.demystifiedJargon.length).toBe(2);
+    expect(teaspoonNote.socraticQuestions?.length).toBe(2);
+    expect(teaspoonNote.naturalFrequencySummary).toContain('Out of 100 people');
     expect(teaspoonNote.trajectory.act3WhereYoureGoing.roadmap30Day).toBeDefined();
     expect(teaspoonNote.dailyCareChecklist.length).toBe(3);
   });

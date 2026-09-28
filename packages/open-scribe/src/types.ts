@@ -36,6 +36,15 @@ export interface IDemystifiedExplanation {
   plainEnglish: string;
   teaspoonAnalogy: string;
   empoweringAction: string;
+  socraticInquiry?: string;
+  falsifiabilityWarning?: string;
+}
+
+export interface ISocraticQuestionCard {
+  term: string;
+  question: string;
+  rationale: string;
+  suggestedFocusArea: string;
 }
 
 export interface IThreeActTrajectory {
@@ -63,6 +72,8 @@ export interface IPatientTeaspoonNote {
   friendlyTitle: string;
   reassuringSummary: string;
   demystifiedJargon: IDemystifiedExplanation[];
+  socraticQuestions?: ISocraticQuestionCard[];
+  naturalFrequencySummary?: string;
   trajectory: IThreeActTrajectory;
   dailyCareChecklist: string[];
 }

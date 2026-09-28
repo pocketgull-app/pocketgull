@@ -144,6 +144,8 @@ export class SoapSynthesizer {
 
     const demystifiedJargon = SocraticDemystifier.demystify(text);
     const reassuringSummary = SocraticDemystifier.generateTeaspoonSummary(text);
+    const socraticQuestions = SocraticDemystifier.generateSocraticInquiry(text);
+    const naturalFrequencySummary = SocraticDemystifier.toNaturalFrequency(92, 100);
     const trajectory = TrajectoryBuilder.build(text, { hr: 72, bp: '120/78', spo2: 98 });
 
     const checklist: string[] = [
@@ -158,6 +160,8 @@ export class SoapSynthesizer {
       friendlyTitle: 'Your Personal Care Summary & Vitality Guide',
       reassuringSummary,
       demystifiedJargon,
+      socraticQuestions,
+      naturalFrequencySummary,
       trajectory,
       dailyCareChecklist: checklist
     };
