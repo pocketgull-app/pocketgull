@@ -11,6 +11,7 @@
 import { Injectable, signal, computed, inject, PLATFORM_ID, OnDestroy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { VibroacousticHapticService } from './hardware/vibroacoustic-haptic.service';
+import { computeBioRhythmicRelaxationCurve, evaluateCircadianAttractor, ICircadianAttractorState } from './oregonator-kinetics.engine';
 
 export type RespiratoryPhase = 'inhale' | 'hold' | 'exhale' | 'rest';
 
@@ -65,12 +66,21 @@ export class SleepVagalFlourishingService implements OnDestroy {
   readonly phaseProgressPercent = signal<number>(0);
   readonly elapsedCycleSeconds = signal<number>(0);
   readonly completedCycles = signal<number>(0);
+  readonly relaxationCurve = signal<number>(0); // 0 to 1 Oregonator bio-rhythmic relaxation wave
 
   // Timing constants for 0.10 Hz resonance (10 second total cycle)
   readonly inhaleSeconds = 4.0;
   readonly holdSeconds = 0.0;
   readonly exhaleSeconds = 6.0;
   readonly cycleTotalSeconds = 10.0;
+
+  // Oregonator Circadian Nonlinear Attractor State
+  readonly circadianAttractor = computed<ICircadianAttractorState>(() => {
+    const telem = this.vagalTelemetry();
+    const now = new Date();
+    const hourFloat = now.getHours() + now.getMinutes() / 60;
+    return evaluateCircadianAttractor(hourFloat, telem.rmssdEstimateMs, telem.coherenceScorePercent);
+  });
 
   // ==========================================
   // 2. Circadian Lux & Adenosine Prior Inputs
@@ -201,6 +211,10 @@ export class SleepVagalFlourishingService implements OnDestroy {
       const cycleSec = currentSec % this.cycleTotalSeconds;
       this.elapsedCycleSeconds.set(Math.round(cycleSec * 10) / 10);
 
+      // Compute continuous Oregonator bio-rhythmic relaxation wave
+      const organicRelaxation = computeBioRhythmicRelaxationCurve(cycleSec, this.cycleTotalSeconds);
+      this.relaxationCurve.set(Math.round(organicRelaxation * 1000) / 1000);
+
       // Determine phase
       if (cycleSec < this.inhaleSeconds) {
         if (this.currentPhase() !== 'inhale') {
@@ -230,6 +244,7 @@ export class SleepVagalFlourishingService implements OnDestroy {
     this.currentPhase.set('rest');
     this.phaseProgressPercent.set(0);
     this.elapsedCycleSeconds.set(0);
+    this.relaxationCurve.set(0);
     if (this.pacerTimer) {
       clearInterval(this.pacerTimer);
       this.pacerTimer = null;

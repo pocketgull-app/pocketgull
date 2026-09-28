@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SocraticMultilingualTranslatorService, ILanguageSpec } from '../services/socratic-multilingual-translator.service';
@@ -25,7 +25,7 @@ import { SocraticMultilingualTranslatorService, ILanguageSpec } from '../service
           </p>
         </div>
 
-        <!-- Active Region & RTL Indicator -->
+        <!-- Controls: Active Region, RTL Indicator & Close Button -->
         <div class="flex items-center gap-2 font-mono text-xs">
           <span class="px-3 py-1.5 rounded-xl bg-stone-900 border border-stone-800 text-stone-300">
             {{ activeLang().region }}
@@ -39,6 +39,13 @@ import { SocraticMultilingualTranslatorService, ILanguageSpec } from '../service
           >
             {{ translator.isRtl() ? 'RTL Layout' : 'LTR Layout' }}
           </span>
+          <button
+            type="button"
+            (click)="close.emit()"
+            class="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl bg-stone-900 border border-stone-700 text-stone-300 hover:text-white hover:bg-stone-800 flex items-center justify-center font-bold text-sm cursor-pointer transition shadow-xs"
+            aria-label="Close Multilingual Terminal">
+            ✕
+          </button>
         </div>
       </div>
 
@@ -159,6 +166,7 @@ import { SocraticMultilingualTranslatorService, ILanguageSpec } from '../service
 })
 export class SocraticMultilingualTerminalComponent {
   public translator = inject(SocraticMultilingualTranslatorService);
+  close = output<void>();
 
   readonly regions = ['ALL', 'GLOBAL', 'INDIC', 'AFRICAN', 'SOUTHEAST_ASIAN', 'INDIGENOUS_AMERICAN', 'EUROPEAN'] as const;
   readonly selectedRegion = signal<string>('ALL');

@@ -113,18 +113,20 @@ import { CircadianSleepinessService } from '../services/circadian-sleepiness.ser
           <!-- Visual Bio-Pacer Ring -->
           <div class="lg:col-span-1 flex flex-col items-center justify-center p-6 bg-zinc-900/60 rounded-2xl border border-zinc-800 space-y-4">
             <div class="relative w-48 h-48 flex items-center justify-center">
-              <!-- Outer Glow -->
+              <!-- Outer Glow Driven by Oregonator Relaxation Oscillator Wave -->
               <div
-                class="absolute inset-0 rounded-full transition-all duration-300 pointer-events-none"
-                [style.transform]="vagal.currentPhase() === 'inhale' ? 'scale(' + (1 + vagal.phaseProgressPercent() / 250) + ')' : 'scale(' + (1.4 - vagal.phaseProgressPercent() / 350) + ')'"
-                [class.bg-teal-500/20]="vagal.currentPhase() === 'inhale'"
-                [class.bg-indigo-500/20]="vagal.currentPhase() === 'exhale'"
-                [class.bg-zinc-800/20]="vagal.currentPhase() === 'rest'">
+                class="absolute inset-0 rounded-full transition-all duration-150 pointer-events-none"
+                [style.transform]="vagal.isPacerActive() ? 'scale(' + (1.05 + vagal.relaxationCurve() * 0.45) + ')' : 'scale(1.0)'"
+                [style.opacity]="vagal.isPacerActive() ? (0.25 + vagal.relaxationCurve() * 0.5) : 0.15"
+                [class.bg-teal-500]="vagal.currentPhase() === 'inhale'"
+                [class.bg-indigo-500]="vagal.currentPhase() === 'exhale'"
+                [class.bg-zinc-800]="vagal.currentPhase() === 'rest'">
               </div>
 
               <!-- Inner Breathing Sphere -->
               <div
-                class="w-32 h-32 rounded-full flex flex-col items-center justify-center text-center border shadow-2xl transition-all duration-300"
+                class="w-32 h-32 rounded-full flex flex-col items-center justify-center text-center border shadow-2xl transition-all duration-150"
+                [style.transform]="vagal.isPacerActive() ? 'scale(' + (0.92 + vagal.relaxationCurve() * 0.22) + ')' : 'scale(1.0)'"
                 [class.border-teal-400]="vagal.currentPhase() === 'inhale'"
                 [class.bg-teal-950/80]="vagal.currentPhase() === 'inhale'"
                 [class.border-indigo-400]="vagal.currentPhase() === 'exhale'"
@@ -140,7 +142,7 @@ import { CircadianSleepinessService } from '../services/circadian-sleepiness.ser
                 <span class="text-2xl font-black font-mono mt-1 text-white">
                   {{ vagal.elapsedCycleSeconds() }}s
                 </span>
-                <span class="text-[9px] text-zinc-400">0.10 Hz (6 bpm)</span>
+                <span class="text-[9px] text-zinc-400">Oregonator 0.10 Hz</span>
               </div>
             </div>
 
@@ -151,7 +153,7 @@ import { CircadianSleepinessService } from '../services/circadian-sleepiness.ser
             </div>
           </div>
 
-          <!-- Real-Time Autonomic Telemetry Cards -->
+          <!-- Real-Time Autonomic Telemetry Cards & Epstein Limit-Cycle Phase Space -->
           <div class="lg:col-span-2 space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div class="p-3.5 bg-zinc-900/80 rounded-xl border border-zinc-800 space-y-1">
@@ -170,6 +172,40 @@ import { CircadianSleepinessService } from '../services/circadian-sleepiness.ser
                 <span class="text-zinc-400 text-[10px] uppercase font-bold">Glymphatic Readiness</span>
                 <div class="text-sm font-bold font-mono text-emerald-300">{{ vagal.vagalTelemetry().glymphaticClearanceReadiness }}</div>
                 <p class="text-[10px] text-zinc-400">Astroglial water channel (AQP4) slow-wave drainage readiness.</p>
+              </div>
+            </div>
+
+            <!-- Dr. Irving Epstein Oregonator Non-Linear Attractor Trajectory HUD -->
+            <div class="p-3.5 bg-zinc-950 rounded-xl border border-teal-500/20 space-y-2">
+              <div class="flex items-center justify-between text-[11px] font-mono">
+                <span class="text-teal-300 font-bold flex items-center gap-1.5">
+                  <span>⚛️</span> Epstein Limit-Cycle Phase Attractor (Oregonator Kinetics)
+                </span>
+                <span class="px-2 py-0.5 rounded text-[9.5px] uppercase font-bold"
+                      [class.bg-emerald-950]="!vagal.circadianAttractor().isBifurcated"
+                      [class.text-emerald-300]="!vagal.circadianAttractor().isBifurcated"
+                      [class.border-emerald-700]="!vagal.circadianAttractor().isBifurcated"
+                      [class.bg-rose-950]="vagal.circadianAttractor().isBifurcated"
+                      [class.text-rose-300]="vagal.circadianAttractor().isBifurcated"
+                      [class.border-rose-700]="vagal.circadianAttractor().isBifurcated"
+                      class="border">
+                  {{ vagal.circadianAttractor().isBifurcated ? 'Bifurcation Alert (Arrhythmic)' : 'Stable Limit-Cycle Basin' }}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2 text-[10.5px] font-mono text-zinc-300">
+                <div class="p-2 bg-zinc-900/80 rounded border border-zinc-800">
+                  <span class="text-[9px] text-zinc-400 block uppercase">Phase Angle (&theta;)</span>
+                  <span class="text-teal-300 font-bold">{{ vagal.circadianAttractor().phase.toFixed(2) }} rad</span>
+                </div>
+                <div class="p-2 bg-zinc-900/80 rounded border border-zinc-800">
+                  <span class="text-[9px] text-zinc-400 block uppercase">Vagal Brake Ratio</span>
+                  <span class="text-indigo-300 font-bold">{{ (vagal.circadianAttractor().vagalToneRatio * 100).toFixed(0) }}%</span>
+                </div>
+                <div class="p-2 bg-zinc-900/80 rounded border border-zinc-800">
+                  <span class="text-[9px] text-zinc-400 block uppercase">Orbit Coherence</span>
+                  <span class="text-emerald-300 font-bold">{{ vagal.circadianAttractor().coherenceIndex }}%</span>
+                </div>
               </div>
             </div>
 

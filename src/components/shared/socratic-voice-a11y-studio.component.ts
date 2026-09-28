@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, OnInit, OnDestroy }
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SocraticVoiceDemystifierService } from '../../services/socratic-voice-demystifier.service';
+import { CardiometabolicPodcastEngineService } from '../../services/cardiometabolic-podcast-engine.service';
 
 export interface IWongBakerFace {
   score: number;
@@ -79,6 +80,16 @@ export interface IIcuNeedTile {
             class="px-3 py-1.5 rounded-lg transition-all text-gray-700 dark:text-zinc-200"
           >
             ⚙️ Neural Synthesizer Settings
+          </button>
+          <button
+            type="button"
+            (click)="activeSubTab.set('podcast')"
+            [class.bg-white]="activeSubTab() === 'podcast'"
+            [class.dark:bg-zinc-700]="activeSubTab() === 'podcast'"
+            [class.shadow-sm]="activeSubTab() === 'podcast'"
+            class="px-3 py-1.5 rounded-lg transition-all text-gray-700 dark:text-zinc-200"
+          >
+            🎙️ Scientific Podcast &amp; Dialect Studio
           </button>
         </div>
       </div>
@@ -426,12 +437,193 @@ export interface IIcuNeedTile {
           </div>
         </div>
       }
+
+      <!-- TAB 4: SCIENTIFIC PODCAST & DIALECT STUDIO -->
+      @if (activeSubTab() === 'podcast') {
+        <div class="space-y-5">
+          <!-- Podcast Header & Web Audio Acoustic Bar -->
+          <div class="p-4 bg-gray-50 dark:bg-zinc-800/60 border border-teal-500/30 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-600 dark:text-teal-400 text-[10px] font-mono font-bold uppercase tracking-wider mb-1">
+                <span>Web Audio API • Multi-Voice Narrative Arc</span>
+              </div>
+              <h4 class="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <span>The Glycemic Phase Shift &amp; The Soleus Paradox</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 font-mono font-bold">Act {{ podcastEngine.currentSegmentIndex() + 1 }} of {{ podcastEngine.script().length }}</span>
+              </h4>
+              <p class="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
+                Experiencing how physiological discoveries feel when communicated positively, productively, and multi-vocally.
+              </p>
+            </div>
+
+            <!-- Web Audio Master Controls -->
+            <div class="flex items-center gap-3 text-xs font-mono">
+              <label class="flex items-center gap-2 cursor-pointer bg-white dark:bg-zinc-900 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-zinc-700">
+                <input
+                  type="checkbox"
+                  [checked]="podcastEngine.vagalBedActive()"
+                  (change)="podcastEngine.vagalBedActive.set(!podcastEngine.vagalBedActive())"
+                  class="accent-teal-600 rounded cursor-pointer">
+                <span class="text-gray-700 dark:text-zinc-300 text-[11px]">432 Hz Drone</span>
+              </label>
+
+              @if (podcastEngine.isAudioDucked()) {
+                <span class="px-2.5 py-1 rounded-xl bg-teal-500/20 text-teal-800 dark:text-teal-300 border border-teal-500/40 text-[10px] font-bold">
+                  Audio Ducked
+                </span>
+              }
+            </div>
+          </div>
+
+          <!-- Dialect & Voice Casting Matrix -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl space-y-1"
+                 [class.border-teal-500]="podcastEngine.currentSegment().speaker === 'host'">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">🎙️</span>
+                <div class="font-bold text-xs text-gray-900 dark:text-gray-100">Dr. Sarah Carter</div>
+              </div>
+              <div class="text-[10px] font-mono text-teal-600 dark:text-teal-400">Host • en-US (Jenny / Samantha)</div>
+              <p class="text-[11px] text-gray-500 dark:text-zinc-400">Warm, inquisitive, brisk pacing (1.02x).</p>
+            </div>
+
+            <div class="p-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl space-y-1"
+                 [class.border-teal-500]="podcastEngine.currentSegment().speaker === 'investigator'">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">🔬</span>
+                <div class="font-bold text-xs text-gray-900 dark:text-gray-100">Dr. Marc Hamilton</div>
+              </div>
+              <div class="text-[10px] font-mono text-teal-600 dark:text-teal-400">Lead Biologist • en-GB (Scottish / Academic)</div>
+              <p class="text-[11px] text-gray-500 dark:text-zinc-400">Deliberate, grounded, contemplative (0.90x).</p>
+            </div>
+
+            <div class="p-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl space-y-1"
+                 [class.border-teal-500]="podcastEngine.currentSegment().speaker === 'pharmacologist'">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">🛡️</span>
+                <div class="font-bold text-xs text-gray-900 dark:text-gray-100">Clinical Scribe</div>
+              </div>
+              <div class="text-[10px] font-mono text-teal-600 dark:text-teal-400">CDS Guard • en-CA (Clara / Sonia)</div>
+              <p class="text-[11px] text-gray-500 dark:text-zinc-400">Sharp, protective, objective precision (0.98x).</p>
+            </div>
+          </div>
+
+          <!-- Active Spoken Segment Card with Kinetic Word Highlighting -->
+          <div class="p-5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl p-1.5 rounded-lg bg-gray-100 dark:bg-zinc-800">
+                  {{ podcastEngine.currentSegment().avatarEmoji }}
+                </span>
+                <div>
+                  <div class="font-bold text-sm text-gray-900 dark:text-gray-100">
+                    {{ podcastEngine.currentSegment().speakerTitle }}
+                  </div>
+                  <div class="text-[10px] font-mono text-teal-600 dark:text-teal-400">
+                    {{ podcastEngine.currentSegment().accentBadge }}
+                  </div>
+                </div>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-300 font-mono text-[10px] font-bold">
+                💡 {{ podcastEngine.currentSegment().keyTakeaway }}
+              </span>
+            </div>
+
+            <div class="p-4 bg-gray-50 dark:bg-zinc-950 rounded-xl text-sm leading-relaxed text-gray-800 dark:text-zinc-200 border border-gray-100 dark:border-zinc-800/80">
+              &ldquo;{{ podcastEngine.currentSegment().text }}&rdquo;
+            </div>
+
+            @if (podcastEngine.currentWord()) {
+              <div class="text-xs font-mono text-teal-600 dark:text-teal-400 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-teal-500 animate-ping"></span>
+                <span>Active Vocalization: <strong>{{ podcastEngine.currentWord() }}</strong></span>
+              </div>
+            }
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-teal-500 h-full transition-all duration-300"
+                   [style.width.%]="podcastEngine.progressPercentage()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls Toolbar -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div class="flex items-center gap-2">
+              @if (!podcastEngine.isPlaying()) {
+                <button
+                  type="button"
+                  (click)="podcastEngine.startPodcast()"
+                  class="px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer min-h-[44px]">
+                  <span>▶ Play Full Podcast</span>
+                </button>
+              } @else if (podcastEngine.isPaused()) {
+                <button
+                  type="button"
+                  (click)="podcastEngine.resumePodcast()"
+                  class="px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer min-h-[44px]">
+                  <span>▶ Resume</span>
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  (click)="podcastEngine.pausePodcast()"
+                  class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer min-h-[44px]">
+                  <span>⏸ Pause</span>
+                </button>
+              }
+
+              <button
+                type="button"
+                (click)="podcastEngine.stopPodcast()"
+                [disabled]="!podcastEngine.isPlaying() && !podcastEngine.isPaused()"
+                class="px-3.5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 disabled:opacity-40 text-gray-700 dark:text-zinc-300 text-xs font-mono font-bold rounded-xl border border-gray-300 dark:border-zinc-700 transition-all cursor-pointer min-h-[44px]">
+                ⏹ Stop
+              </button>
+
+              <button
+                type="button"
+                (click)="podcastEngine.previousSegment()"
+                [disabled]="podcastEngine.currentSegmentIndex() === 0"
+                class="p-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 disabled:opacity-40 text-gray-700 dark:text-zinc-300 rounded-xl border border-gray-300 dark:border-zinc-700 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Previous podcast act">
+                ⏮
+              </button>
+
+              <button
+                type="button"
+                (click)="podcastEngine.nextSegment()"
+                [disabled]="podcastEngine.currentSegmentIndex() === podcastEngine.script().length - 1"
+                class="p-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 disabled:opacity-40 text-gray-700 dark:text-zinc-300 rounded-xl border border-gray-300 dark:border-zinc-700 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Next podcast act">
+                ⏭
+              </button>
+            </div>
+
+            <!-- Segment Selector Jump Dropdown -->
+            <div class="flex items-center gap-2 text-xs">
+              <span class="text-gray-500 font-medium">Jump to Act:</span>
+              <select
+                (change)="onPodcastActSelect($event)"
+                class="px-3 py-2 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-xl text-xs font-mono text-gray-800 dark:text-zinc-200 cursor-pointer">
+                @for (seg of podcastEngine.script(); track seg.id; let idx = $index) {
+                  <option [value]="idx" [selected]="podcastEngine.currentSegmentIndex() === idx">
+                    Act {{ idx + 1 }}: {{ seg.speakerTitle }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   `
 })
 export class SocraticVoiceA11yStudioComponent implements OnInit, OnDestroy {
   readonly voiceService = inject(SocraticVoiceDemystifierService);
-  readonly activeSubTab = signal<'aac' | 'socratic' | 'settings'>('aac');
+  readonly podcastEngine = inject(CardiometabolicPodcastEngineService);
+  readonly activeSubTab = signal<'aac' | 'socratic' | 'settings' | 'podcast'>('aac');
 
   // Voice synthesizer signals
   readonly detectedVoices = signal<SpeechSynthesisVoice[]>([]);
@@ -484,8 +676,16 @@ export class SocraticVoiceA11yStudioComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.podcastEngine.stopPodcast();
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
+    }
+  }
+
+  onPodcastActSelect(event: Event): void {
+    const val = parseInt((event.target as HTMLSelectElement).value, 10);
+    if (!isNaN(val)) {
+      this.podcastEngine.skipToSegment(val);
     }
   }
 
