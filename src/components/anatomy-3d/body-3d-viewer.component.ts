@@ -25,7 +25,7 @@ import { AvsEngineService } from '../../services/avs-engine.service';
 import { VeoService } from '../../services/veo.service';
 import { ClinicalSpecialtyRiskSuiteService } from '../../services/clinical-specialty-risk-suite.service';
 import { KinesiologyBiomechanicsService, IPrescriptiveRehabPlan } from '../../services/kinesiology-biomechanics.service';
-import { createVesalianWoodcutMaterial, createGhostFresnelMaterial, WoodCutType, SurfaceStyle, getWoodCutTypeCode } from '../../shaders';
+import { createVesalianWoodcutMaterial, createGhostFresnelMaterial, createOregonatorTuringMaterial, WoodCutType, SurfaceStyle, getWoodCutTypeCode } from '../../shaders';
 import { IBodyPartIssue } from '../../services/patient.types';
 
 const PART_NAMES: Record<string, string> = {
@@ -80,7 +80,7 @@ const PART_NAMES: Record<string, string> = {
     'chakra_muladhara': 'Muladhara (Root Earth Base Support Chakra)'
 };
 
-export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost';
+export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing';
 
 @Component({
     selector: 'app-body-3d-viewer',
@@ -143,6 +143,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                   aria-label="3D Anatomical Paradigm Layer Selector"
                   class="min-h-[34px] px-2 py-1 rounded-xs bg-white dark:bg-zinc-900 text-amber-700 dark:text-amber-300 font-bold border border-slate-300 dark:border-zinc-800 text-[10.5px] cursor-pointer outline-none">
             <option value="vesalian_woodcut">🏛️ Smooth Écorché / Vesalian</option>
+            <option value="oregonator_turing">⚛️ Turing Reaction-Diffusion (Oregonator)</option>
             <option value="muscle">🥩 Muscular System</option>
             <option value="skeleton">🦴 Skeletal Architecture</option>
             <option value="organs">🫀 Visceral Organs</option>
@@ -843,10 +844,11 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     protected readonly riskSuite = inject(ClinicalSpecialtyRiskSuiteService, { optional: true });
     protected readonly kinesiologyService = inject(KinesiologyBiomechanicsService, { optional: true });
 
-    // 📜 Vesalian Woodcut & Fresnel Ghost Shader Materials
+    // 📜 Vesalian Woodcut, Fresnel Ghost & Oregonator Turing Materials
     protected vesalianWoodcutMaterial: THREE.ShaderMaterial | null = null;
     protected vesalianBoneWoodcutMaterial: THREE.ShaderMaterial | null = null;
     protected ghostFresnelMaterial: THREE.ShaderMaterial | null = null;
+    protected oregonatorTuringMaterial: THREE.ShaderMaterial | null = null;
 
     readonly activeRehabPlan = computed<IPrescriptiveRehabPlan | null>(() => {
       if (!this.kinesiologyService) return null;
@@ -2419,6 +2421,14 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             cutawayActive: true
         });
 
+        // ⚛️ Dr. Irving Epstein Oregonator & Turing Reaction-Diffusion Shader Material
+        this.oregonatorTuringMaterial = createOregonatorTuringMaterial({
+            baseColor: 0x18181b,
+            activatorColor: 0xf43f5e,
+            inhibitorColor: 0x14b8a6,
+            waveFrequency: 18.0
+        });
+
         // Enhanced Procedural GLSL Shader Material with Myocardial Ischemia & Cerebral Perfusion Lenses
         const molecularMaterial = new THREE.ShaderMaterial({
             uniforms: {
@@ -3564,6 +3574,27 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                     return;
                 }
 
+                if (mode === 'oregonator_turing') {
+                    if (layer === 'skin') {
+                        child.material = this.oregonatorTuringMaterial || baseMaterial;
+                        (child.material as any).opacity = 0.95;
+                        (child.material as any).depthWrite = true;
+                    } else if (layer === 'bone') {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0.35;
+                            baseMaterial.depthWrite = false;
+                        }
+                    } else {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0;
+                            baseMaterial.depthWrite = false;
+                        }
+                    }
+                    return;
+                }
+
                 // Restore base material if returning from custom shader mode
                 if (child.material !== baseMaterial) {
                     child.material = baseMaterial;
@@ -3822,6 +3853,12 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                     if (this.vesalianBoneWoodcutMaterial.uniforms['uSurfaceStyle']) {
                         this.vesalianBoneWoodcutMaterial.uniforms['uSurfaceStyle'].value = this.state.activeSurfaceStyle() === 'ecorche_cast' ? 0.0 : 1.0;
                     }
+                }
+                if (this.oregonatorTuringMaterial && this.oregonatorTuringMaterial.uniforms) {
+                    this.oregonatorTuringMaterial.uniforms['uTime'].value = time;
+                    // Couple with 0.10 Hz parasympathetic respiratory oscillation
+                    const bioBreathe = 0.5 + 0.5 * Math.sin(time * 0.628);
+                    this.oregonatorTuringMaterial.uniforms['uBreatheScale'].value = bioBreathe;
                 }
 
                 // Real-Time Therapeutic Posture Interpolation
