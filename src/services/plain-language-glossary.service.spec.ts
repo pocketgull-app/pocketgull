@@ -42,16 +42,30 @@ describe('PlainLanguageGlossaryService', () => {
     expect(term?.plainDefinition).toContain('Banting');
   });
 
-  it('should retrieve F1 Pit Crew ICU handover translation', () => {
-    const term = service.lookupTerm('icu handover');
+  it('should retrieve Allopathic team mechanistic specialization model', () => {
+    const term = service.lookupTerm('allopathic team');
     expect(term).toBeDefined();
-    expect(term?.term).toContain('F1 Pit Crew Model');
+    expect(term?.term).toContain('Allopathic Team');
+    expect(term?.plainDefinition).toContain('hyper-specialized');
   });
 
-  it('should retrieve Flight 1549 CRM surgical checklist translation', () => {
-    const term = service.lookupTerm('surgical safety checklist');
+  it('should retrieve Integrated care team ecosystem model', () => {
+    const term = service.lookupTerm('integrated care team');
     expect(term).toBeDefined();
-    expect(term?.term).toContain('Flight 1549 Model');
+    expect(term?.term).toContain('Ecosystem Care Network');
+    expect(term?.category).toBe('Eastern TCM');
+  });
+
+  it('should retrieve Organizational Vata, Pitta, and Kapha models', () => {
+    const vata = service.lookupTerm('organizational vata');
+    const pitta = service.lookupTerm('organizational pitta');
+    const kapha = service.lookupTerm('organizational kapha');
+    const tridoshic = service.lookupTerm('tridoshic hospital balance');
+
+    expect(vata?.term).toContain('Flow of Hospital Information');
+    expect(pitta?.term).toContain('Clinical Interventions');
+    expect(kapha?.term).toContain('Institutional Infrastructure');
+    expect(tridoshic?.term).toContain('Tridoshic Organizational Balance');
   });
 
   it('should return undefined for unknown terms', () => {
@@ -61,6 +75,6 @@ describe('PlainLanguageGlossaryService', () => {
 
   it('should return all registered terms', () => {
     const all = service.getAllTerms();
-    expect(all.length).toBeGreaterThanOrEqual(10);
+    expect(all.length).toBeGreaterThanOrEqual(15);
   });
 });

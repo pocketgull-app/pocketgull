@@ -182,6 +182,60 @@ export class PlainLanguageGlossaryService {
         plainDefinition: 'The definitive model of physiological labor division: Frederick Banting (surgical plumbing of the pancreas), Charles Best (daily blood glucose monitoring), J.B. Collip (biochemical purification of the pancreatic extract to eliminate toxicity), and J.J.R. Macleod (physiological experimental framework).',
         simpleAnalogy: 'A perfect scientific relay: Banting and Best extracted the raw substance, Collip purified it from toxic impurities, and Macleod structured the human clinical trials that cured fatal diabetic ketoacidosis in months.'
       }
+    ],
+    [
+      'allopathic team',
+      {
+        term: 'The Allopathic Team (Mechanistic Specialization)',
+        category: 'Western Physiology',
+        plainDefinition: 'Healthcare structured like a complex machine with hyper-specialized departments (Cardiology, Nephrology). Excels at acute crises and surgical trauma where targeted mechanical repair is paramount.',
+        simpleAnalogy: 'Like an F1 pit crew replacing a failing tire at 200 mph: hyper-focused on fixing one mechanical part with flawless precision, but risking blind spots if one specialist’s drug causes undetected liver strain in another.'
+      }
+    ],
+    [
+      'integrated care team',
+      {
+        term: 'The Eastern & Ayurvedic Team (Ecosystem Care Network)',
+        category: 'Eastern TCM',
+        plainDefinition: 'Healthcare organized as an interconnected ecosystem (Qi/Prana flow), mirroring multidisciplinary Tumor Boards where surgeons, oncologists, dietitians, and social workers collaborate around the whole person.',
+        simpleAnalogy: 'Like an interconnected forest ecosystem: understanding that treating the root tumor impacts psychological stamina, gut microbiome, and long-term vitality across the entire network.'
+      }
+    ],
+    [
+      'organizational vata',
+      {
+        term: 'Organizational Vata (The Flow of Hospital Information)',
+        category: 'Ayurvedic Vedic',
+        plainDefinition: 'The movement bio-element in hospital operations: the EHR network, telemetry pagers, and patient handoffs. When imbalanced, communication fractures, charts are delayed, and critical lab values are missed.',
+        simpleAnalogy: 'The hospital’s central nervous system: when clear and fluid, data reaches doctors instantly; when chaotic or hyperactive, signals scatter into communication noise and missed handoffs.'
+      }
+    ],
+    [
+      'organizational pitta',
+      {
+        term: 'Organizational Pitta (Clinical Interventions & Acute Action)',
+        category: 'Ayurvedic Vedic',
+        plainDefinition: 'The metabolic fire of healthcare: surgeons, ER trauma bays, and aggressive pharmacological interventions. When excessively high, it breeds aggressive over-treatment and frontline provider burnout from constant firefighting.',
+        simpleAnalogy: 'The hospital’s operational engine: essential for life-saving rescues, but if run at maximum RPM 24/7 without cooling down, it overheats clinicians and triggers system-wide exhaustion.'
+      }
+    ],
+    [
+      'organizational kapha',
+      {
+        term: 'Organizational Kapha (Institutional Infrastructure & Support)',
+        category: 'Ayurvedic Vedic',
+        plainDefinition: 'The structural earth of the healthcare system: bedside nursing ratios, physical facilities, safety protocols, and HR governance. When imbalanced, the institution becomes sluggish, resistant to change, and trapped in bureaucracy.',
+        simpleAnalogy: 'The hospital’s solid foundation: providing psychological and structural stability, but needing enough agility so heavy protocols don’t paralyze clinical adaptation during acute crises.'
+      }
+    ],
+    [
+      'tridoshic hospital balance',
+      {
+        term: 'Tridoshic Organizational Balance (The Living Hospital Body)',
+        category: 'Ayurvedic Vedic',
+        plainDefinition: 'The optimal healthcare system state: decisive intervention (Pitta), supported by resilient nursing infrastructure (Kapha), harmonized by seamless real-time communication (Vata).',
+        simpleAnalogy: 'A thriving living organism: brilliant surgical reflexes grounded in unwavering bedside support and connected by instantaneous telemetry.'
+      }
     ]
   ]);
 
