@@ -203,6 +203,14 @@
       "url": "http://localhost:4200/?lens=clinical",
       "webRoot": "${workspaceFolder}",
       "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile"
+    },
+    {
+      "name": "Persona Debug: 🦉 Professor Socrates Gull (?lens=socrates)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4200/?lens=socrates",
+      "webRoot": "${workspaceFolder}",
+      "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile"
     }
   ],
   "compounds": [
@@ -218,6 +226,40 @@
       "configurations": [
         "Node: Express Server (Cloud/Healthcare)",
         "Web: Launch Chrome against Localhost"
+      ]
+    },
+    {
+      "name": "Compound: Debug All 7 Personas (Parallel Chrome)",
+      "configurations": [
+        "Persona Debug: 🌳 Sylvan Arborist (?lens=arborist)",
+        "Persona Debug: 🏎️ Garage Mechanic (?lens=mechanic)",
+        "Persona Debug: 🎩 Victorian Gentleman (?lens=gentleman)",
+        "Persona Debug: ✨ Solfeggio Muse (?lens=muse)",
+        "Persona Debug: 🏀 Head Coach Red (?lens=coach)",
+        "Persona Debug: 🔬 Clinical Specialist (?lens=clinical)",
+        "Persona Debug: 🦉 Professor Socrates Gull (?lens=socrates)"
+      ]
+    },
+    {
+      "name": "Compound: Debug All 8 Themes (Parallel Chrome)",
+      "configurations": [
+        "Theme Debug: 🌊 Ocean Pool Float (?theme=pool)",
+        "Theme Debug: 📜 Papyrus Illuminated (?theme=papyrus)",
+        "Theme Debug: 🌾 Rice Papercraft (?theme=rice)",
+        "Theme Debug: 🏛️ White Marble (?theme=white-marble)",
+        "Theme Debug: 🖤 Black Marble (?theme=black-marble)",
+        "Theme Debug: 🔥 Spark Ember (?theme=spark)",
+        "Theme Debug: 🧘 Solfeggio Mandala (?theme=mandala)",
+        "Theme Debug: 🏀 1996 Dream Team (?theme=dream-team)"
+      ]
+    },
+    {
+      "name": "Compound: Full Microservices & Apps (Node + Flutter + Docs)",
+      "configurations": [
+        "Node: Express Server (Offline/Mock)",
+        "Flutter: Patient App (Local API)",
+        "Flutter: Provider App (Local API)",
+        "Web: Launch Docs (Astro Study)"
       ]
     }
   ]
