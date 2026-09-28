@@ -64,3 +64,8 @@ companion-apps/neuro_reader_app/
 *.map
 *.tar.gz
 *.tgz
+
+# Heavy Typography & Desktop Font Binaries (Hosted on https://font.pocketgull.app)
+*.ttf
+public/fonts/*.ttf
+public/brand/

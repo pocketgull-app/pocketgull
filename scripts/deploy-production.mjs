@@ -72,9 +72,9 @@ console.log('\n🏗️ Step 3/5: Submitting pre-compiled container to Google Clo
 const sourceTar = join(rootDir, 'deploy_source.tar.gz');
 if (existsSync(sourceTar)) {
   console.log(`Found clean source archive with pre-compiled dist (${(statSync(sourceTar).size / 1024 / 1024).toFixed(2)} MB). Submitting to Cloud Build...`);
-  run(`gcloud builds submit "${sourceTar}" --tag ${IMAGE_TAG} --project=${TARGET_PROJECT} --quiet`);
+  run(`gcloud builds submit "${sourceTar}" --config=cloudbuild.yaml --project=${TARGET_PROJECT} --quiet`);
 } else {
-  run(`gcloud builds submit --tag ${IMAGE_TAG} --project=${TARGET_PROJECT} --quiet`);
+  run(`gcloud builds submit --config=cloudbuild.yaml --project=${TARGET_PROJECT} --quiet`);
 }
 
 // 3b. Resolve Immutable Digest (OpenSSF / SLSA Standard: Deploy by Immutable Content Digest)

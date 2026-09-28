@@ -4,6 +4,17 @@ name: Deployment Pipeline (Cloud Run)
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'documentation/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'typefaces_vault/**'
+      - 'brand/**'
+      - 'scratch/**'
+      - '.agents/**'
+      - 'packages/pocketgull-theme/**'
   workflow_dispatch:
 
 permissions:

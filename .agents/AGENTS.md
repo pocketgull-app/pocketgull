@@ -61,10 +61,15 @@
 - **Data Serialization**: Anytime patient data (symptoms, history, conditions) is serialized, exported, or passed across API boundaries, the payload MUST strictly conform to the **FHIR R4 Bundle** standard.
 - **Sanitization**: All incoming/outgoing string data must be sanitized using DOMPurify before being stored or rendered to ensure HIPAA-compatible privacy and security.
 
-## GCP Cloud Cost & Storage Lifecycle Standards
+## GCP Cloud Cost, GreenOps & Storage Lifecycle Standards
 - **Cloud Project Target**: All deployments MUST target the `gen-lang-client-0540208645` Google Cloud project.
-- **Cloud Run Scaling**: Ensure all Cloud Run microservices scale to 0 (`minScale: 0`) when idle to eliminate baseline computing charges.
-- **Artifact Registry & GCS Pruning**: Retain a 7-day cleanup policy (`olderThan: 604800s`, `keepCount: 3`) on Artifact Registry repositories (`cloud-run-source-deploy`, `gcr.io`) and GCS source buckets (`gs://run-sources-*`) to cap artifact storage usage at ~2–4 GB ($0.20/mo) and prevent unpruned build accumulation.
+- **Cloud Run Scaling**: Ensure all Cloud Run microservices scale to 0 (`minScale: 0`) when idle to eliminate baseline computing charges and carbon burn.
+- **Artifact Registry & GCS Pruning**: Retain a 7-day cleanup policy (`olderThan: 604800s`, `keepCount: 3`) on Artifact Registry repositories (`cloud-run-source-deploy`, `gcr.io`) and GCS source buckets (`gs://run-sources-*` and `gs://*_cloudbuild`) to cap artifact storage usage at ~2–4 GB ($0.20/mo) and prevent unpruned build accumulation.
+- **Carbon-Aware GreenOps & Deployment Hygiene**:
+  - *Zero-TTF Container Invariant*: Web container images (`pocketgull.app`, `pocketgull.com`) MUST NEVER bundle desktop TTF font files (`*.ttf`, ~121 MB). All typography must prioritize `https://font.pocketgull.app` edge CDN with local WOFF2 fallbacks (~4 MB).
+  - *Cloud Build Docker Layer Caching*: All Cloud Build configurations (`cloudbuild.yaml`) MUST utilize `--cache-from` on `:latest` images to warm the Docker cache, avoiding redundant npm package downloads.
+  - *Local-First Staging & Batching*: Always verify changes locally on `localhost:4200` or `localhost:4001` before deploying. Prohibit single-line continuous deployments; batch editorial and feature releases into consolidated production updates.
+  - *CI/CD Pipeline Concurrency & Path Filters*: All GitHub Actions workflows MUST include `concurrency: group: ... cancel-in-progress: true` and `paths-ignore` for documentation and markdown files to prevent redundant virtual machine execution.
 
 ## Default Node & TypeScript Commands
 - **Strict Requirement**: Always use the explicit project Node module paths for typechecking and builds to prevent PATH resolution mismatches:
@@ -228,6 +233,16 @@ To prevent context window degradation, attention drift, and token exhaustion:
 - **Mandatory Human-in-the-Loop for High-Impact CDS (Sec 14.s.ix.1)**: Autonomous, un-gated decision-making that affects legal status, healthcare treatment plans, life opportunities, or financial standing is strictly prohibited. All AI-generated Clinical Decision Support (CDS) outputs MUST mandate affirmative clinician review and digital cryptographic attestation before order commitment.
 - **Content Credentials & C2PA Provenance Preservation (Sec 14.s.vii)**: Generated media, diagrams, or clinical exports containing C2PA provenance manifests, digital watermarks, or cryptographic content credentials MUST NOT have these signals stripped, obscured, or manipulated.
 - **Clear Health Bot & Medical Device Demarcation (Sec 14.i & Medical Notice)**: Health bot insights, action plans, and wellness summaries MUST be clearly labeled as non-device wellness tools and include the mandatory clinical disclaimer directing users to qualified healthcare providers without replacing professional clinical judgment.
+
+## Library of Congress ISSN / ISSR Serials Governance Standard
+All medical investigations, translational systems biology articles, and peer-reviewed clinical cases published under the PocketGull serials imprint MUST comply with the **U.S. ISSN Center (Library of Congress)** and **ISSN International Centre** statutory serial requirements before publication or deployment:
+1. **Masthead & Key Title Invariance**: The masthead MUST state `PocketGull Journal of Salutogenic Medicine & Systems Biology` with `ISSN: Pending (U.S. Library of Congress)` (or assigned ISSN). Brand typography (`font-brand`) is strictly restricted to the `PocketGull` wordmark.
+2. **Bibliographic Chronology & Sequential Enumeration**: Every article record in `JOURNAL_MAP` MUST include a complete metadata tuple: `volume`, `issue`, structured `articleNumber` (`PG-YYYY-####`), Zenodo/Crossref `doi`, and the complete 4-stage chronological chain (`received` $\to$ `revised` $\to$ `accepted` $\to$ `publishedOnline`).
+3. **IMRaD & ICMJE Epistemic Integrity**: Original clinical investigations MUST provide 4-part Structured Abstracts (`Background`, `Methods`, `Results`, `Conclusions`), $\ge 3$ MeSH terms, formal Popperian hypothesis cards ($H_0$, $H_1$, test statistics, $p$-values, Bayes Factors $BF_{10}$), and 100% mathematical consistency between Abstract and Table 1 endpoints. Active pharmacological agents with FDA Boxed Warnings (e.g. montelukast) MUST detail prospective behavioral surveillance (PSC-17, SDSC) and cessation criteria.
+4. **Publisher Impressum & Author Provenance**: Publisher must state `PocketGull LLC, Portland, OR, USA`. Corresponding authors MUST provide verified ORCID (`0009-0008-1372-5381`), `dpo@pocketgull.app` email, IRB approval statement, and HIPAA §164.514 Safe Harbor de-identification.
+5. **Separation of Scholarly Literature from Design Labs**: The academic reading sequence ($\text{Abstract} \to \text{Hypothesis} \to \text{IMRaD} \to \text{Tables} \to \text{References} \to \text{Disclosures} \to \text{Peer Review}$) MUST proceed without interruption. Interactive glyph loupes, heart pacers, or typography inspection widgets belong strictly in the **Scriptorium** or design annex.
+6. **Automated Pre-Flight Verification**: Every deployment of `pocketgull.com` MUST execute `npm run issn:verify` (`scripts/verify-issn-standards.mjs`) during Step 0 pre-flight checks, asserting that all unique articles pass all 6 ISSN invariants.
+
 ## Fair Play, Radical Transparency & Feature Shipping Invariants
 Every new feature, component, API endpoint, or clinical model shipped in Pocket-Gull MUST satisfy the 5-pillar verification checklist before being marked complete:
 

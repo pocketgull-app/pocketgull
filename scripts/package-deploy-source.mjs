@@ -87,8 +87,11 @@ const excludes = [
   'tests',
   'typefaces_vault',
   '.typefaces_vault',
+  'public/fonts/*.ttf',
   'public/fonts/google_fonts_submission',
+  'public/brand',
   'public/brand/fonts',
+  'case-studies',
   'public/images/screenshots',
   'public/images/workflow',
   'docs/images'

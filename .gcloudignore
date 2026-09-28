@@ -89,3 +89,9 @@ logs/
 .temp/
 .DS_Store
 Thumbbs.db
+
+# Heavy Typography & Desktop Font Binaries (Hosted live on https://font.pocketgull.app — saves 300+ MB)
+*.ttf
+public/fonts/*.ttf
+public/brand/
+typefaces_vault/
