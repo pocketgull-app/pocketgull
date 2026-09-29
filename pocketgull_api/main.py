@@ -180,7 +180,7 @@ async def _load_ml_model() -> None:
             print(f"[ML] Loaded clinical risk model from {_MODEL_PATH}")
             if _METADATA_PATH.exists():
                 try:
-                    with open(_METADATA_PATH, "r", encoding="utf-8") as f:
+                    with _METADATA_PATH.open("r", encoding="utf-8") as f:
                         meta = json.load(f)
                     _safety_threshold = meta.get("optimal_safety_threshold", 0.50)
                     print(f"[ML] Loaded optimal safety decision threshold: {_safety_threshold:.3f}")

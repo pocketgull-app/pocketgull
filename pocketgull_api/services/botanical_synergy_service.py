@@ -191,8 +191,9 @@ class BotanicalSynergyService:
             profile = KNOWN_BOTANICAL_CYP_PROFILES.get(b_name)
             if profile:
                 for cyp_key in ["cyp3a4", "cyp2d6", "cyp2c9", "cyp1a2", "pgp"]:
-                    if cyp_key in profile:
-                        cyp_totals[cyp_key] += profile[cyp_key]
+                    val = profile.get(cyp_key)
+                    if isinstance(val, (int, float)):
+                        cyp_totals[cyp_key] += float(val)
                 if profile.get("serotonergic_risk"):
                     has_serotonergic_herb = True
 
