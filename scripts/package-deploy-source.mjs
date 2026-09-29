@@ -28,9 +28,7 @@ const projectItems = [
   'server.js',
   'dist',
   'public',
-  'docs/openapi.json',
-  'companion-apps/avs-therapy',
-  'pocketgull_api'
+  'docs/openapi.json'
 ].filter(item => fs.existsSync(path.resolve(rootDir, item)));
 
 console.log(`📦 Packaging clean project source files from ${rootDir}:`);
