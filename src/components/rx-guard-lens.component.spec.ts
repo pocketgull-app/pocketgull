@@ -63,4 +63,13 @@ describe('RxGuardLensComponent', () => {
     component.toggleBotanicalSimulation();
     expect(component.simulateBotanicalBlockade()).toBe(true);
   });
+
+  it('should compute NSF OKN PGx and drug depletion provenance path with SHA-256 seal', () => {
+    const okn = component.oknPgxProvenance();
+    expect(okn).toBeTruthy();
+    expect(okn?.participatingAgencies).toContain('NIH');
+    expect(okn?.participatingAgencies).toContain('FDA');
+    expect(okn?.pathDescription).toContain('Warfarin Anticoagulation');
+    expect(okn?.auditTrailHash).toContain('sha256:');
+  });
 });

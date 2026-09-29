@@ -516,8 +516,8 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
                 <p class="text-[12px] text-green-600 dark:text-green-500/80">Patient demographics, historical conditions, and vital logs successfully archived in AWS HealthLake FHIR Store.</p>
               </div>
             </div>
-            <button (click)="showAwsSuccess.set(false)" class="p-1 hover:bg-green-100 dark:hover:bg-green-900/40 rounded transition-colors text-green-700 dark:text-green-400">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <button (click)="showAwsSuccess.set(false)" type="button" aria-label="Dismiss AWS HealthLake sync notification" class="min-h-[44px] min-w-[44px] p-2 hover:bg-green-100 dark:hover:bg-green-900/40 rounded-lg transition-colors text-green-700 dark:text-green-400 flex items-center justify-center touch-manipulation">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
         }
@@ -534,8 +534,8 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
                 <p class="text-[12px] text-red-600 dark:text-red-500/80">{{ errorMsg }}</p>
               </div>
             </div>
-            <button (click)="showAwsError.set(null)" class="p-1 hover:bg-red-100 dark:hover:bg-red-900/40 rounded transition-colors text-red-700 dark:text-red-400">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <button (click)="showAwsError.set(null)" type="button" aria-label="Dismiss AWS HealthLake sync error notification" class="min-h-[44px] min-w-[44px] p-2 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-lg transition-colors text-red-700 dark:text-red-400 flex items-center justify-center touch-manipulation">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
         }

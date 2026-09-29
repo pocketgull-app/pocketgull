@@ -28,6 +28,9 @@ export * from './alpha-stem-viewer.component';
 export * from './electroacupuncture-viewer.component';
 export * from './nih-who-goal-tracker.component';
 export * from './global-health-initiatives-modal.component';
+export * from './global-decad-healing-spectrum.component';
+export * from './who-nih-healing-alignment-hub.component';
+export * from './sowa-rigpa-tree-spatial-viewer.component';
 
 /**
  * Shared Pocketgull UI components array.

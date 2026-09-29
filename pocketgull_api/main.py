@@ -134,6 +134,21 @@ from services.food_inflation_predictive_model_service import (
     FoodInflationRiskOutput,
     evaluate_food_inflation_risk_model,
 )
+from services.actuarial_qaly_service import (
+    ActuarialQalyInput,
+    ActuarialQalyOutput,
+    evaluate_actuarial_qaly_engine,
+)
+from services.exposomics_risk_service import (
+    ExposomicsRiskInput,
+    ExposomicsRiskOutput,
+    evaluate_exposomics_risk_model,
+)
+from services.botanical_synergy_service import (
+    IBotanicalSynergyRequest,
+    IBotanicalSynergyResponse,
+    BotanicalSynergyService,
+)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ML: CLINICAL RISK SCORING (joblib / scikit-learn & JAX / Flax NNX)
@@ -3477,15 +3492,27 @@ async def evaluate_food_inflation_endpoint(payload: FoodInflationRiskInput) -> F
     return evaluate_food_inflation_risk_model(payload)
 
 
+@app.post("/v1/models/longevity/actuarial-qaly", response_model=ActuarialQalyOutput, tags=["Longevity & Actuarial Health"])
+@app.post("/api/models/longevity/actuarial-qaly", response_model=ActuarialQalyOutput, tags=["Longevity & Actuarial Health"])
+@app.post("/api/python/ml/actuarial-qaly", response_model=ActuarialQalyOutput, tags=["Longevity & Actuarial Health"])
+async def evaluate_actuarial_qaly_endpoint(payload: ActuarialQalyInput) -> ActuarialQalyOutput:
+    """Evaluates multi-variable actuarial longevity, epigenetic pace of aging, discounted QALY gains, and healthcare cost dividends."""
+    return evaluate_actuarial_qaly_engine(payload)
 
 
+@app.post("/v1/models/exposomics/pollutant-risk", response_model=ExposomicsRiskOutput, tags=["Planetary Health & Climate"])
+@app.post("/api/models/exposomics/pollutant-risk", response_model=ExposomicsRiskOutput, tags=["Planetary Health & Climate"])
+@app.post("/api/python/exposomics/pollutant-risk", response_model=ExposomicsRiskOutput, tags=["Planetary Health & Climate"])
+async def evaluate_exposomics_risk_endpoint(payload: ExposomicsRiskInput) -> ExposomicsRiskOutput:
+    """Evaluates synergistic PM2.5, Ozone, NO2, and microplastics toxicity with canopy buffering mitigation."""
+    return evaluate_exposomics_risk_model(payload)
 
 
-
-
-
-
-
-
+@app.post("/v1/models/integrative/botanical-synergy", response_model=IBotanicalSynergyResponse, tags=["Integrative Medicine & Botanical Synergy"])
+@app.post("/api/models/integrative/botanical-synergy", response_model=IBotanicalSynergyResponse, tags=["Integrative Medicine & Botanical Synergy"])
+@app.post("/api/python/integrative/botanical-synergy", response_model=IBotanicalSynergyResponse, tags=["Integrative Medicine & Botanical Synergy"])
+async def evaluate_botanical_synergy_endpoint(payload: IBotanicalSynergyRequest) -> IBotanicalSynergyResponse:
+    """Evaluates multi-herb, nutraceutical, and prescription pharmaceutical CYP450 kinetics and bioavailability synergies."""
+    return BotanicalSynergyService.evaluate(payload)
 
 

@@ -1180,8 +1180,9 @@
    ========================================================================= */
 @font-face {
   font-family: 'PocketGull SignWriting';
-  src: local('Noto Sans SignWriting'), local('SignWriting 2010'),
-       url('https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-signwriting@latest/signwriting-400-normal.woff2') format('woff2'),
+  src: local('PocketGull Sign'), local('PocketGull-Sign'),
+       url('https://font.pocketgull.app/fonts/woff2/PocketGull-Sign.woff2') format('woff2'),
+       url('/fonts/PocketGull-Sign.woff2') format('woff2'),
        local('sans-serif');
   font-weight: 400;
   font-style: normal;
@@ -1195,8 +1196,9 @@
 
 @font-face {
   font-family: 'PocketGull';
-  src: local('Noto Sans SignWriting'), local('SignWriting 2010'),
-       url('https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-signwriting@latest/signwriting-400-normal.woff2') format('woff2'),
+  src: local('PocketGull Sign'), local('PocketGull-Sign'),
+       url('https://font.pocketgull.app/fonts/woff2/PocketGull-Sign.woff2') format('woff2'),
+       url('/fonts/PocketGull-Sign.woff2') format('woff2'),
        local('sans-serif');
   font-weight: 400;
   font-style: normal;

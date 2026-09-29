@@ -51,4 +51,18 @@ describe('GeofencedExposomicsRadarComponent Suite', () => {
     expect(emitted?.engine).toBe('pubmed');
     expect(emitted?.query).toContain('Shenandoah');
   });
+
+  it('4. Computes NSF OKN federated grounding path across federal agencies with SHA-256 seal', () => {
+    component.selectedEcoregionId.set('ECO-MIDWEST-PLAINS');
+    fixture.detectChanges();
+
+    const okn = component.oknExposomePath();
+    expect(okn).toBeTruthy();
+    expect(okn?.participatingAgencies).toContain('USGS');
+    expect(okn?.participatingAgencies).toContain('EPA');
+    expect(okn?.participatingAgencies).toContain('NIH');
+    expect(okn?.pathDescription).toContain('Alluvial Groundwater Aquifer (USGS)');
+    expect(okn?.pathDescription).toContain('Perfluorooctanoic Acid');
+    expect(okn?.auditTrailHash).toContain('sha256:');
+  });
 });

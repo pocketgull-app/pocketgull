@@ -16,7 +16,7 @@
 
 import { Router, Request, json } from 'express';
 import crypto from 'node:crypto';
-import { createWriteStream, mkdirSync, existsSync } from 'node:fs';
+import { createWriteStream, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { sanitizeLogInput, securePathResolve } from '../utils/security-helper';
 
@@ -123,19 +123,39 @@ const CONSENTED_DATA_TYPES = [
 ];
 
 // ── Config helpers ────────────────────────────────────────────────────────────
+function getEnvOrLocalFile(key: string): string {
+  if (process.env[key]) return process.env[key]!;
+  try {
+    const envFiles = ['.env.local', '.env'];
+    for (const f of envFiles) {
+      const envPath = securePathResolve(process.cwd(), f);
+      if (existsSync(envPath)) {
+        const content = readFileSync(envPath, 'utf8');
+        const match = content.match(new RegExp(`^\\s*${key}\\s*=\\s*["']?([^"'\\r\\n]+)["']?`, 'm'));
+        if (match && match[1]) {
+          const val = match[1].trim();
+          process.env[key] = val;
+          return val;
+        }
+      }
+    }
+  } catch {}
+  return '';
+}
+
 function getClientId(): string {
-  const id = process.env['GOOGLE_HEALTH_CLIENT_ID'];
+  const id = getEnvOrLocalFile('GOOGLE_HEALTH_CLIENT_ID');
   if (!id) throw new Error('GOOGLE_HEALTH_CLIENT_ID is not set in .env.local');
   return id;
 }
 function getClientSecret(): string {
-  const s = process.env['GOOGLE_HEALTH_CLIENT_SECRET'];
+  const s = getEnvOrLocalFile('GOOGLE_HEALTH_CLIENT_SECRET');
   if (!s) throw new Error('GOOGLE_HEALTH_CLIENT_SECRET is not set in .env.local');
   return s;
 }
 function getRedirectUri(req: Request): string {
   return (
-    process.env['GOOGLE_HEALTH_REDIRECT_URI'] ||
+    getEnvOrLocalFile('GOOGLE_HEALTH_REDIRECT_URI') ||
     `${req.protocol}://${req.get('host')}/api/fitbit/callback`
   );
 }

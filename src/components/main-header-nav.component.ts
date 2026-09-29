@@ -84,17 +84,6 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
           <span>Active Room</span>
         </button>
 
-        <!-- 🎮 Arcade & Quests Trigger (Desktop) -->
-        <button 
-          type="button" 
-          id="btn-arcade-hub-trigger"
-          (click)="navShell?.openArcadeHub()"
-          aria-label="Open PocketGull Arcade & Clinical Quests Hub"
-          class="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-          <span class="text-xs">🎮</span>
-          <span>Arcade Hub</span>
-        </button>
-
         <!-- ⚖️ Clinical Posology & Deprescribing Trigger (Desktop) -->
         <button 
           type="button" 
@@ -147,30 +136,6 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
         </button>
 
         <app-console-integrity-badge class="hidden lg:inline-flex" />
-
-        @if (navShell?.developerMode()) {
-          <!-- 🌟 Experience by Role Demo Trigger (Desktop) -->
-          <button 
-            type="button" 
-            id="btn-role-demo-trigger"
-            (click)="navShell?.openRoleDemo()"
-            aria-label="Experience PocketGull by Clinical Role"
-            class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-            <span class="text-xs">✨</span>
-            <span>Role Demo</span>
-          </button>
-
-          <!-- 💼 Commercialization & Practice Growth Hub Trigger (Desktop) -->
-          <button 
-            type="button" 
-            id="btn-commercial-hub-trigger"
-            (click)="navShell?.openCommercialHub()"
-            aria-label="Open Commercialization & Monetization Hub"
-            class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-            <span class="text-xs">💼</span>
-            <span>Commercial Hub</span>
-          </button>
-        }
 
         <!-- 🏛️ USWDS Federal Health Workstation Trigger (Desktop) -->
         <button 
@@ -374,6 +339,13 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
                       <div>
                         <div>Living Room Ambient</div>
                         <div class="text-[10px] text-zinc-400 font-normal">Dieter Rams Display Mode</div>
+                      </div>
+                    </button>
+                    <button type="button" (click)="navShell?.openCommercialHub(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">💼</span>
+                      <div>
+                        <div>Commercial Hub</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">Practice ROI &amp; Monetization</div>
                       </div>
                     </button>
                     <button type="button" (click)="openTypefaceSite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">

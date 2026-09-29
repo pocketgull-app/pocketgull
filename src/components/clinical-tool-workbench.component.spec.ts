@@ -65,24 +65,24 @@ describe('ClinicalToolWorkbenchComponent Signal & Double-Flip Behavioral Suite',
   });
 
   it('should curate core clinical tabs by default and expand on showExtendedLabs toggle', () => {
-    // Default: only core tabs (7)
+    // Default: only core tabs (9)
     expect(component.showExtendedLabs()).toBe(false);
-    expect(component.visibleTabs().length).toBe(7);
+    expect(component.visibleTabs().length).toBe(9);
     expect(component.visibleTabs().map(t => t.id)).toEqual(
-      expect.arrayContaining(['commercial', 'tools', 'rxguard', 'posology', 'velocity', 'dxradar', 'scribe'])
+      expect.arrayContaining(['commercial', 'decad', 'whonih', 'tools', 'rxguard', 'posology', 'velocity', 'dxradar', 'scribe'])
     );
 
-    // Toggle on: all 28 tabs visible
+    // Toggle on: all 30 tabs visible
     component.showExtendedLabs.set(true);
-    expect(component.visibleTabs().length).toBe(28);
+    expect(component.visibleTabs().length).toBe(30);
 
-    // Toggle off: collapses back to 7
+    // Toggle off: collapses back to 9
     component.showExtendedLabs.set(false);
-    expect(component.visibleTabs().length).toBe(7);
+    expect(component.visibleTabs().length).toBe(9);
 
     // If an extended tab is selected, it is preserved in visibleTabs
     component.activeWorkbenchTab.set('mandarinate');
-    expect(component.visibleTabs().length).toBe(8);
+    expect(component.visibleTabs().length).toBe(10);
     expect(component.visibleTabs().some(t => t.id === 'mandarinate')).toBe(true);
   });
 

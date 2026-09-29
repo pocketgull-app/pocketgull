@@ -7,6 +7,7 @@ const rootDir = path.resolve(__dirname, '..');
 const cleanEnv = {
   ...process.env,
   NODE_ENV: 'production',
+  NODE_OPTIONS: process.env.NODE_OPTIONS || '--max-old-space-size=8192',
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || 'placeholder-key-for-build',
   VITE_PUBLIC_API_URL: process.env.VITE_PUBLIC_API_URL || 'http://127.0.0.1:4000'
 };
@@ -16,7 +17,7 @@ delete cleanEnv.npm_package_json;
 delete cleanEnv.NPM_PREFIX;
 
 console.log('🔤 Downloading Google Fonts and compiling local fonts.css...');
-execSync(`node "${path.resolve(rootDir, 'scripts/download-fonts.js')}"`, {
+execSync(`node --max-old-space-size=8192 "${path.resolve(rootDir, 'scripts/download-fonts.js')}"`, {
   cwd: rootDir,
   env: cleanEnv,
   stdio: 'inherit'
@@ -24,7 +25,7 @@ execSync(`node "${path.resolve(rootDir, 'scripts/download-fonts.js')}"`, {
 console.log('✅ Local font asset pipeline ready.\n');
 
 console.log('🧹 [Zero Agent] Executing Pre-Build Console Integrity & Type Safety Audit...');
-execSync(`node "${path.resolve(rootDir, 'node_modules/typescript/lib/tsc.js')}" -p "${path.resolve(rootDir, 'tsconfig.json')}" --noEmit`, {
+execSync(`node --max-old-space-size=8192 "${path.resolve(rootDir, 'node_modules/typescript/lib/tsc.js')}" -p "${path.resolve(rootDir, 'tsconfig.json')}" --noEmit`, {
   cwd: rootDir,
   env: cleanEnv,
   stdio: 'inherit'
@@ -32,7 +33,7 @@ execSync(`node "${path.resolve(rootDir, 'node_modules/typescript/lib/tsc.js')}" 
 console.log('✅ [Zero Agent] TypeScript & Console Integrity Audit Passed (0 Errors).\n');
 
 console.log('🕯️ [Beacon Agent] Running Sentinel Security & Bundle Budget Pre-Audit...');
-execSync(`node "${path.resolve(rootDir, 'scripts/sentinel_security_guard.mjs')}"`, {
+execSync(`node --max-old-space-size=8192 "${path.resolve(rootDir, 'scripts/sentinel_security_guard.mjs')}"`, {
   cwd: rootDir,
   env: cleanEnv,
   stdio: 'inherit'
@@ -40,7 +41,7 @@ execSync(`node "${path.resolve(rootDir, 'scripts/sentinel_security_guard.mjs')}"
 console.log('✅ [Beacon Agent] Pre-Build Performance & Security Guard Passed.\n');
 
 console.log('Building Angular SSR app...');
-execSync(`node "${path.resolve(rootDir, 'node_modules/@angular/cli/bin/ng.js')}" build`, {
+execSync(`node --max-old-space-size=8192 "${path.resolve(rootDir, 'node_modules/@angular/cli/bin/ng.js')}" build`, {
   cwd: rootDir,
   env: cleanEnv,
   stdio: 'inherit'

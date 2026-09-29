@@ -114,10 +114,10 @@ export interface IChatEntry {
         }
     `],
     template: `
-        <div class="h-full bg-white dark:bg-[#09090b] z-10 flex flex-col no-print w-full spark-theme">
+        <div class="h-full bg-white dark:bg-obsidian z-10 flex flex-col no-print w-full spark-theme">
             
             <!-- Live Multimodal Clinical Consult Cockpit Header -->
-            <div class="flex items-center justify-between px-3.5 py-2.5 shrink-0 z-20 relative bg-white/95 dark:bg-[#09090b]/95 border-b border-gray-200/80 dark:border-zinc-800/80 backdrop-blur-md">
+            <div class="flex items-center justify-between px-3.5 py-2.5 shrink-0 z-20 relative bg-white/95 dark:bg-obsidian/95 border-b border-gray-200/80 dark:border-zinc-800/80 backdrop-blur-md">
                 <div class="flex items-center gap-2 min-w-0">
                     <!-- Live Connection Pulse Status -->
                     <span class="flex h-2.5 w-2.5 relative shrink-0">
@@ -414,12 +414,12 @@ export interface IChatEntry {
 
             <!-- MODE: SELECTION Placeholder -->
             @if (panelMode() === 'selection') {
-                <div class="flex-1 flex flex-col items-center justify-center gap-6 p-8 bg-white dark:bg-[#09090b] w-full"></div>
+                <div class="flex-1 flex flex-col items-center justify-center gap-6 p-8 bg-white dark:bg-obsidian w-full"></div>
             }
 
             <!-- MODE: CHAT -->
             @if (panelMode() === 'chat') {
-                <div class="flex-1 flex flex-col min-h-0 overflow-hidden bg-white dark:bg-[#09090b] w-full relative">
+                <div class="flex-1 flex flex-col min-h-0 overflow-hidden bg-white dark:bg-obsidian w-full relative">
                     
                     <!-- Centerpiece: Agent Avatar & Status (shown when empty) -->
                     @if (chatHistory().length === 0) {
@@ -648,7 +648,7 @@ export interface IChatEntry {
                     </div>
 
                     <!-- Input & Controls Shelf: SHRINK-0 (Zero Overlap with transcript!) -->
-                    <div class="shrink-0 z-20 border-t border-gray-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-[#09090b]/95 backdrop-blur-md p-3 space-y-2">
+                    <div class="shrink-0 z-20 border-t border-gray-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-obsidian/95 backdrop-blur-md p-3 space-y-2">
                         
                         <!-- Toolbar row: Quick Prompts Toggle, Bedside AAC, Barge-in Stop, SOAP Note -->
                         <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500">

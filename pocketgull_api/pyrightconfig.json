@@ -3,14 +3,16 @@
   "venv": ".venv",
   "extraPaths": [
     ".",
-    ".venv/Lib/site-packages"
+    ".venv/Lib/site-packages",
+    "C:/Users/philg/anaconda3/Lib/site-packages"
   ],
   "executionEnvironments": [
     {
       "root": ".",
       "extraPaths": [
         ".",
-        ".venv/Lib/site-packages"
+        ".venv/Lib/site-packages",
+        "C:/Users/philg/anaconda3/Lib/site-packages"
       ]
     }
   ],

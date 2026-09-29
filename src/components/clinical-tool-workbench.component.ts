@@ -25,6 +25,8 @@ import { RolePathwayDocumentationHubComponent } from './role-pathway-documentati
 import { HistoricalLuminariesGameComponent } from './historical-luminaries-game.component';
 import { ClinicalPosologyCalculatorComponent } from './clinical-posology-calculator.component';
 import { ActivePivotMonitorCardComponent } from './active-pivot-monitor-card.component';
+import { GlobalDecadHealingSpectrumComponent } from './shared/global-decad-healing-spectrum.component';
+import { WhoNihHealingAlignmentHubComponent } from './shared/who-nih-healing-alignment-hub.component';
 
 export interface IPatientEducationLens {
   plainLanguageTitle: string;
@@ -77,7 +79,9 @@ export interface IWorkbenchToolStatus {
     RolePathwayDocumentationHubComponent,
     HistoricalLuminariesGameComponent,
     ClinicalPosologyCalculatorComponent,
-    ActivePivotMonitorCardComponent
+    ActivePivotMonitorCardComponent,
+    GlobalDecadHealingSpectrumComponent,
+    WhoNihHealingAlignmentHubComponent
   ],
 
   template: `
@@ -362,6 +366,10 @@ export interface IWorkbenchToolStatus {
         <app-role-pathway-documentation-hub (navigateToTab)="activeWorkbenchTab.set($any($event))" />
       } @else if (activeWorkbenchTab() === 'luminaries') {
         <app-historical-luminaries-game />
+      } @else if (activeWorkbenchTab() === 'decad') {
+        <app-global-decad-healing-spectrum />
+      } @else if (activeWorkbenchTab() === 'whonih') {
+        <app-who-nih-healing-alignment-hub />
       } @else if (activeWorkbenchTab() === 'companion') {
       } @else if (activeWorkbenchTab() === 'tools') {
         <!-- Diagnostics Tools List Grid -->
@@ -396,11 +404,13 @@ export class ClinicalToolWorkbenchComponent {
   private readonly haptics = inject(BioHapticFeedbackService);
 
   readonly showRoleDemoModal = signal(false);
-  readonly activeWorkbenchTab = signal<'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'pivot' | 'posology' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('commercial');
+  readonly activeWorkbenchTab = signal<'commercial' | 'decad' | 'whonih' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'pivot' | 'posology' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'>('commercial');
   readonly intakeDirectiveQuery = signal<string>('');
 
-  readonly workbenchTabs: { id: 'commercial' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'pivot' | 'posology' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
+  readonly workbenchTabs: { id: 'commercial' | 'decad' | 'whonih' | 'jurisdiction' | 'saif' | 'modelStudio' | 'phenopackets' | 'tools' | 'osce' | 'slack' | 'equity' | 'dental' | 'joy' | 'ssa' | 'mandiant' | 'mandarinate' | 'rxguard' | 'pivot' | 'posology' | 'velocity' | 'trials' | 'sms' | 'dxradar' | 'nof1' | 'scribe' | 'presentation' | 'pathwayDocs' | 'luminaries' | 'companion' | 'intimacy' | 'articles'; label: string; icon: string; activeClass: string }[] = [
     { id: 'commercial', label: 'Commercial & Revenue Hub ($299/mo - $3,500)', icon: '💼', activeClass: 'bg-emerald-600 text-white shadow-xs' },
+    { id: 'decad', label: 'Global Decad (10 Systems & 3D Rosetta Crosswalk)', icon: '🌿', activeClass: 'bg-teal-600 text-white shadow-xs' },
+    { id: 'whonih', label: 'WHO & NIH Strategic Goals Alignment Hub', icon: '🏛️', activeClass: 'bg-blue-600 text-white shadow-xs' },
     { id: 'jurisdiction', label: 'Regional Compliance Matrix (US / UK / EU / CA / AU)', icon: '🌐', activeClass: 'bg-indigo-600 text-white shadow-xs' },
     { id: 'saif', label: 'Google SAIF (Secure AI Framework)', icon: '🛡️', activeClass: 'bg-emerald-600 text-white shadow-xs' },
     { id: 'modelStudio', label: 'Clinical Model Studio & LoRA/DPO', icon: '🤖', activeClass: 'bg-purple-600 text-white shadow-xs' },
@@ -432,6 +442,8 @@ export class ClinicalToolWorkbenchComponent {
 
   /** Core Clinical Triad & Bedside Safety Tabs (Prioritized by default) */
   readonly coreTabIds = new Set<string>([
+    'decad',
+    'whonih',
     'posology',
     'rxguard',
     'velocity',

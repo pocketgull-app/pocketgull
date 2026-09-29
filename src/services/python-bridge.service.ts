@@ -50,6 +50,132 @@ export interface IEsmProteomicResult {
   targetAffinityKd_nM: number;
 }
 
+export interface IActuarialQalyRequest {
+  chronological_age: number;
+  vagal_breathing_mins: number;
+  chrono_adherence_pct: number;
+  sleep_efficiency_pct: number;
+  anti_inflammatory_index: number;
+  social_co_regulation_hrs: number;
+  discount_rate_pct?: number;
+}
+
+export interface IActuarialHazardHorizon {
+  years_ahead: number;
+  baseline_hazard_rate: number;
+  optimized_hazard_rate: number;
+  relative_risk_reduction_pct: number;
+  cumulative_survival_prob: number;
+}
+
+export interface IActuarialQalyResponse {
+  chronological_age: number;
+  biological_age: number;
+  age_delta_years: number;
+  epigenetic_pace_of_aging: number;
+  projected_lifespan_gain_years: number;
+  projected_undiscounted_qaly_gain: number;
+  projected_discounted_qaly_gain: number;
+  annual_healthcare_cost_dividend_usd: number;
+  lifetime_actuarial_dividend_usd: number;
+  hazard_horizons: IActuarialHazardHorizon[];
+  epigenetic_markers_calibrated: Record<string, number>;
+  provenance_hash: string;
+  evaluated_at_utc: string;
+}
+
+export interface IExposomicsRiskRequest {
+  pm25_ug_m3: number;
+  pm10_ug_m3: number;
+  ozone_ppb: number;
+  no2_ppb: number;
+  voc_tvoc_ppb: number;
+  microplastics_deposition_rate: number;
+  canopy_cover_pct: number;
+  baseline_asthma_or_copd?: boolean;
+}
+
+export interface IOknCausalChainPayload {
+  participating_agencies: string[];
+  traversed_path_summary: string;
+  grounded_target_concept: string;
+  cochrane_evidence_tier: string;
+  nsf_proto_okn_grant_reference: string;
+  audit_trail_hash: string;
+}
+
+export interface IExposomicsRiskResponse {
+  composite_toxicity_index: number;
+  air_quality_category: string;
+  pulmonary_oxidative_stress_hazard: number;
+  microvascular_endothelial_strain_score: number;
+  canopy_mitigation_buffering_pct: number;
+  effective_inhaled_dose_score: number;
+  recommended_hepa_cadr_cfm: number;
+  protective_interventions: string[];
+  biomarker_vulnerabilities: Record<string, string>;
+  nsf_okn_causal_chain?: IOknCausalChainPayload;
+  provenance_hash: string;
+  evaluated_at_utc: string;
+}
+
+export interface IBotanicalEntry {
+  name: string;
+  dose_mg: number;
+  frequency?: string;
+  standardization_extract_pct?: number;
+}
+
+export interface IMedicationEntry {
+  name: string;
+  dose_mg: number;
+  route?: string;
+}
+
+export interface IBotanicalSynergyRequest {
+  botanicals: IBotanicalEntry[];
+  medications?: IMedicationEntry[];
+  hepatic_impairment_stage?: string;
+  patient_age?: number;
+}
+
+export interface ICypInhibitionScore {
+  isoenzyme: string;
+  net_inhibition_pct: number;
+  status: string;
+}
+
+export interface ISynergyPair {
+  botanical_a: string;
+  botanical_b: string;
+  synergy_type: string;
+  amplification_factor: number;
+  clinical_mechanism: string;
+}
+
+export interface IHerbDrugInteraction {
+  herb: string;
+  drug: string;
+  severity: 'SAFE' | 'ADVISORY' | 'MODERATE_RISK' | 'CONTRAINDICATED';
+  cyp_target: string;
+  mechanism: string;
+  clinical_action: string;
+}
+
+export interface IBotanicalSynergyResponse {
+  composite_interaction_risk_score: number;
+  risk_level: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
+  phenocopy_risk_detected: boolean;
+  estimated_hepatic_clearance_pct: number;
+  cyp_isoenzyme_status: ICypInhibitionScore[];
+  synergy_pairs_detected: ISynergyPair[];
+  herb_drug_interactions: IHerbDrugInteraction[];
+  ismp_safety_alerts: string[];
+  evidence_grounded_recommendations: string[];
+  provenance_hash: string;
+  evaluated_at_utc: string;
+}
+
 /**
  * PythonBridgeService
  *
@@ -621,5 +747,72 @@ export class PythonBridgeService {
       conformationStatus: status,
       targetAffinityKd_nM: affinityKd
     };
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // 8. ACTUARIAL QALY & GEOSPATIAL EXPOSOMICS INTEGRATION
+  // ══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Evaluates multi-horizon actuarial longevity, epigenetic pace of aging, and discounted QALY gains.
+   */
+  async evaluateActuarialQaly(payload: IActuarialQalyRequest): Promise<IActuarialQalyResponse | null> {
+    if (!this.isBrowser) return null;
+
+    try {
+      const resp = await fetch(`${this.BASE}/ml/actuarial-qaly`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!resp.ok) return null;
+      return (await resp.json()) as IActuarialQalyResponse;
+    } catch (err: any) {
+      console.warn('[PythonBridge] evaluateActuarialQaly error, using local computation:', err?.message || err);
+      return null;
+    }
+  }
+
+  /**
+   * Evaluates multi-pollutant environmental toxicology, pulmonary oxidative hazard, and canopy buffering.
+   */
+  async evaluateExposomicsRisk(payload: IExposomicsRiskRequest): Promise<IExposomicsRiskResponse | null> {
+    if (!this.isBrowser) return null;
+
+    try {
+      const resp = await fetch(`${this.BASE}/exposomics/pollutant-risk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!resp.ok) return null;
+      return (await resp.json()) as IExposomicsRiskResponse;
+    } catch (err: any) {
+      console.warn('[PythonBridge] evaluateExposomicsRisk error, using local computation:', err?.message || err);
+      return null;
+    }
+  }
+
+  /**
+   * Evaluates botanical-pharmacotherapy CYP450 kinetics, bioavailability synergies, and phenocopy risk.
+   */
+  async evaluateBotanicalSynergy(payload: IBotanicalSynergyRequest): Promise<IBotanicalSynergyResponse | null> {
+    if (!this.isBrowser) return null;
+
+    try {
+      const resp = await fetch(`${this.BASE}/integrative/botanical-synergy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!resp.ok) return null;
+      return (await resp.json()) as IBotanicalSynergyResponse;
+    } catch (err: any) {
+      console.warn('[PythonBridge] evaluateBotanicalSynergy error, using local computation:', err?.message || err);
+      return null;
+    }
   }
 }

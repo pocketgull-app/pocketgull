@@ -675,9 +675,9 @@ export async function fetchSecretFromSecretManager(secretName: string): Promise<
     if (!envPath.startsWith(rootDir)) continue;
     try {
       const localEnv = fs.readFileSync(envPath, 'utf8');
-      const regex = new RegExp(`${secretName}=["']?([^"'\r\n]+)["']?`);
+      const regex = new RegExp(`^\\s*${secretName}\\s*=\\s*["']?([^"'\\r\\n]+)["']?`, 'm');
       const match = localEnv.match(regex);
-      if (match) {
+      if (match && match[1]) {
         const val = match[1].trim();
         secretCache.set(secretName, val);
         process.env[secretName] = val;
@@ -735,7 +735,9 @@ export async function initializeRuntimeSecrets(): Promise<void> {
     'AWS_HEALTHLAKE_ENDPOINT',
     'ATHENAHEALTH_CLIENT_ID',
     'ORACLE_CERNER_CLIENT_ID',
-    'GOOGLE_HEALTH_CLIENT_SECRET'
+    'GOOGLE_HEALTH_CLIENT_ID',
+    'GOOGLE_HEALTH_CLIENT_SECRET',
+    'GOOGLE_HEALTH_REDIRECT_URI'
   ];
 
   console.log('[Secrets] Initializing runtime Secret Manager client (Zero container secret injections)...');

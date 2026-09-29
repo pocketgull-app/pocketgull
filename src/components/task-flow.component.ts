@@ -14,7 +14,7 @@ import * as DOMPurify from 'dompurify';
   providers: [DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="h-full w-full flex flex-col overflow-hidden relative bg-white dark:bg-[#09090b] rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 transition-all duration-300 hover:shadow-md">
+    <div class="h-full w-full flex flex-col overflow-hidden relative bg-white dark:bg-obsidian rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 transition-all duration-300 hover:shadow-md">
       <!-- Bracket Header -->
       <div class="bg-gray-50/50 dark:bg-zinc-900/50 px-6 py-4 border-b border-gray-100 dark:border-zinc-800 flex justify-between items-start shrink-0">
         <div class="flex items-center gap-4">
@@ -32,8 +32,8 @@ import * as DOMPurify from 'dompurify';
               <button (click)="activeView.set('collab')" [class.text-gray-400]="activeView() !== 'collab'" [class.dark:text-zinc-500]="activeView() !== 'collab'" class="text-base sm:text-xl font-medium text-[#1C1C1C] dark:text-zinc-100 transition-colors hover:text-[#1C1C1C] dark:hover:text-zinc-100 flex items-center gap-2 cursor-pointer">
                 Colleague Chat
                 <span class="flex -space-x-2">
-                  <div class="w-6 h-6 rounded-md bg-blue-100 border-2 border-white dark:border-[#09090b] flex items-center justify-center text-[12px] font-bold text-blue-700 z-20 shadow-sm">SC</div>
-                  <div class="w-6 h-6 rounded-md bg-indigo-100 border-2 border-white dark:border-[#09090b] flex items-center justify-center text-[12px] font-bold text-indigo-700 z-10 shadow-sm">JT</div>
+                  <div class="w-6 h-6 rounded-md bg-blue-100 border-2 border-white dark:border-obsidian flex items-center justify-center text-[12px] font-bold text-blue-700 z-20 shadow-sm">SC</div>
+                  <div class="w-6 h-6 rounded-md bg-indigo-100 border-2 border-white dark:border-obsidian flex items-center justify-center text-[12px] font-bold text-indigo-700 z-10 shadow-sm">JT</div>
                 </span>
               </button>
             </div>
@@ -100,11 +100,11 @@ import * as DOMPurify from 'dompurify';
                           >
                           <label [for]="'task-' + task.id" class="text-sm text-[#1C1C1C] dark:text-zinc-100 flex-1 cursor-pointer" [class.line-through]="task.completed" [class.opacity-50]="task.completed" [innerHTML]="task.formattedText | safeHtml">
                           </label>
-                          <div class="flex items-center gap-1.5 flex-shrink-0">
-                            <button (click)="researchItemText(task.text)" class="text-gray-400 dark:text-zinc-500 hover:text-teal-600 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Search Literature for this Task">
+                          <div class="flex items-center gap-1 flex-shrink-0">
+                            <button (click)="researchItemText(task.text)" type="button" aria-label="Search Literature for this Task" class="min-w-[44px] min-h-[44px] p-2 flex items-center justify-center text-gray-400 dark:text-zinc-500 hover:text-teal-600 dark:hover:text-teal-400 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity rounded-lg touch-manipulation" title="Search Literature for this Task">
                               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             </button>
-                            <button (click)="removeTask(task.id)" class="text-gray-300 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Remove Task">
+                            <button (click)="removeTask(task.id)" type="button" aria-label="Remove Task" class="min-w-[44px] min-h-[44px] p-2 flex items-center justify-center text-gray-300 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity rounded-lg touch-manipulation" title="Remove Task">
                               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
                           </div>
@@ -141,7 +141,7 @@ import * as DOMPurify from 'dompurify';
                           <label [for]="'shop-' + item.id" class="text-sm text-[#1C1C1C] dark:text-zinc-100 flex-1 cursor-pointer" [class.line-through]="item.completed" [class.opacity-50]="item.completed">
                             {{ item.name }}
                           </label>
-                          <button (click)="removeShoppingItem(item.id)" class="text-gray-300 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" title="Remove Item">
+                          <button (click)="removeShoppingItem(item.id)" type="button" aria-label="Remove Item" class="min-w-[44px] min-h-[44px] p-2 flex items-center justify-center text-gray-300 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0 rounded-lg touch-manipulation" title="Remove Item">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                           </button>
                         </div>
@@ -167,11 +167,11 @@ import * as DOMPurify from 'dompurify';
                             <span class="text-[12px] font-bold uppercase tracking-widest text-[#416B1F] dark:text-[#689f38] bg-[#F1F8E9] dark:bg-[#689f38]/10 px-2 py-1 rounded inline-block">
                               {{ note.sourceLens }}
                             </span>
-                            <div class="flex items-center gap-1.5">
-                              <button (click)="researchItemText(note.text)" class="text-gray-400 dark:text-zinc-500 hover:text-teal-600 dark:hover:text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Search Literature for this Note">
+                            <div class="flex items-center gap-1">
+                              <button (click)="researchItemText(note.text)" type="button" aria-label="Search Literature for this Note" class="min-w-[44px] min-h-[44px] p-2 flex items-center justify-center text-gray-400 dark:text-zinc-500 hover:text-teal-600 dark:hover:text-teal-400 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity rounded-lg touch-manipulation" title="Search Literature for this Note">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                               </button>
-                              <button (click)="removeNote(note.id)" class="text-gray-300 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Remove Note">
+                              <button (click)="removeNote(note.id)" type="button" aria-label="Remove Note" class="min-w-[44px] min-h-[44px] p-2 flex items-center justify-center text-gray-300 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity rounded-lg touch-manipulation" title="Remove Note">
                                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                               </button>
                             </div>
@@ -229,7 +229,7 @@ import * as DOMPurify from 'dompurify';
 
       <!-- Add Item Input -->
       @if (activeView() !== 'assessments') {
-        <div class="p-4 bg-white dark:bg-[#09090b] border-t border-gray-100 dark:border-zinc-800 shrink-0 flex flex-col gap-3">
+        <div class="p-4 bg-white dark:bg-obsidian border-t border-gray-100 dark:border-zinc-800 shrink-0 flex flex-col gap-3">
         <label for="taskInputText" class="sr-only">New task or note</label>
         <textarea 
             id="taskInputText"

@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:535afe89-9fb5-46ba-85ed-edb07b8dc338",
+  "serialNumber": "urn:uuid:61497c6c-f00d-4e6e-8565-8402f8341025",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-25T23:45:26.992Z",
+    "timestamp": "2026-09-29T00:10:15.850Z",
     "tools": {
       "components": [
         {
@@ -77,7 +77,7 @@
       "name": "@alloc/quick-lru",
       "version": "5.2.0",
       "purl": "pkg:npm/@alloc%2Fquick-lru@5.2.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -209,26 +209,6 @@
         {
           "alg": "SHA-512",
           "content": "256f9198339e086af371d893b61c3f66560c9ac2379f66a458074e51e73331d9db59fca031c6dfb77afc0fe935b9e7eec5f0212783e04edbc408a843a8b37aee"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@angular/animations",
-      "version": "22.1.7",
-      "purl": "pkg:npm/@angular%2Fanimations@22.1.7",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "b2c7e8e347822d835d0f5ae637560a245a41385e2347b3f026808baa9e56b43f4aceb5da13efcb3e958081f55da42075bf080e3748fa1ce57e4f47bfd2eb8f61"
         }
       ]
     },
@@ -434,26 +414,6 @@
     },
     {
       "type": "library",
-      "name": "@angular/platform-browser-dynamic",
-      "version": "22.1.7",
-      "purl": "pkg:npm/@angular%2Fplatform-browser-dynamic@22.1.7",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "a75d3dda08d1e1907c53787ae0e224cab47cc6eff9c53c1ae55b062e42e181039afbabffece2e1591573acdffb39efa3054eab42de84faaaf48237a8d844c36d"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "@angular/platform-server",
       "version": "22.1.5",
       "purl": "pkg:npm/@angular%2Fplatform-server@22.1.5",
@@ -634,26 +594,6 @@
     },
     {
       "type": "library",
-      "name": "@aws-crypto/crc32",
-      "version": "3.0.0",
-      "purl": "pkg:npm/@aws-crypto%2Fcrc32@3.0.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "2334a0b2bc5472cade8d06cf5629482b2d7a9004f9d84c01eb349a23e337c712212a1e7e6a5744caf23ecfa7ab33b4c22c1d8126c16bb478e9ebfe3fb2bfb774"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "@aws-crypto/sha256-js",
       "version": "5.2.0",
       "purl": "pkg:npm/@aws-crypto%2Fsha256-js@5.2.0",
@@ -669,26 +609,6 @@
         {
           "alg": "SHA-512",
           "content": "145410caeede76ee2e7ef219f8e69d1691c73adf9e49305a61a922e3873e6a48e0eea660f6839078b964efb17ab5262a8c30050a5ac7264f6d31fd07755c8ebc"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@aws-crypto/util",
-      "version": "3.0.0",
-      "purl": "pkg:npm/@aws-crypto%2Futil@3.0.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "d8e265a5e269091e3c082f2bfae2950a1cecf48ba7823f70919ae5f19d38d435845afc881c82d82823cdcc98212ac8af8fe4b798ba3a05573b981373771038eb"
         }
       ]
     },
@@ -1014,46 +934,6 @@
     },
     {
       "type": "library",
-      "name": "@aws-sdk/protocol-http",
-      "version": "3.374.0",
-      "purl": "pkg:npm/@aws-sdk%2Fprotocol-http@3.374.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "f56a5151b20d746ae85771e2659201a09bcbda77685a4dfd39fc315acda8b71072a6925934dd786e0fe5bc2c797bc8201d4b62ec8064e6b6f49ea419e26d39a6"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@aws-sdk/signature-v4",
-      "version": "3.374.0",
-      "purl": "pkg:npm/@aws-sdk%2Fsignature-v4@3.374.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "db12c9bd277371964083496c0cb500b9242e8a1ccad1d73120aed699fb89785ec318a2459a9f5ccd09b3e5fdea883cfa203433be02b533dbed252542b2525bc9"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "@aws-sdk/signature-v4-multi-region",
       "version": "3.996.46",
       "purl": "pkg:npm/@aws-sdk%2Fsignature-v4-multi-region@3.996.46",
@@ -1129,26 +1009,6 @@
         {
           "alg": "SHA-512",
           "content": "2e4c0b2f604b6c2eb034d9b825a1fd99b12a04c74e64272de95018aa174de14d71ad633e7d425011f6c7c10803ca96a93964d1b65936e5a91be5a7ccd0ff0221"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@aws-sdk/util-utf8-browser",
-      "version": "3.259.0",
-      "purl": "pkg:npm/@aws-sdk%2Futil-utf8-browser@3.259.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "52f15afef47e7b5f57a2891917c47315906bc361149105b18815b4c9840086f9370be4151a5d07de8b9c6bc2c306505f40a5f0996de1ba8ff9f47f2bc1bd7027"
         }
       ]
     },
@@ -11054,26 +10914,6 @@
     },
     {
       "type": "library",
-      "name": "@smithy/eventstream-codec",
-      "version": "1.1.0",
-      "purl": "pkg:npm/@smithy%2Feventstream-codec@1.1.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "ded11b51bf2df1a9f6dba8ca07a57f4365d4fc9e77942c02cd42ee04f11a1782634a1f85942329ed39a8804fc08a3e49f43c25b19e15003fc8443b90ff466d33"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "@smithy/fetch-http-handler",
       "version": "5.7.2",
       "purl": "pkg:npm/@smithy%2Ffetch-http-handler@5.7.2",
@@ -11089,26 +10929,6 @@
         {
           "alg": "SHA-512",
           "content": "9d9c964e64a92445e5e95b5654c049bdeffbc75d8366eeac217d73d5af9931a1e541046cf59a6ee8d6d37bf826c585d5469923c720d8a59e60c7620ce9ffd693"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@smithy/is-array-buffer",
-      "version": "1.1.0",
-      "purl": "pkg:npm/@smithy%2Fis-array-buffer@1.1.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "b70a50fe7fb7396649ed9fb1bb8dcc244ae6841fd63bf98c4e7a91e8fc1641286f489fde9b1e5dd4de7d2d0664e99a5301eb915ab73e787864cd3a7d3458cd45"
         }
       ]
     },
@@ -11155,8 +10975,8 @@
     {
       "type": "library",
       "name": "@smithy/protocol-http",
-      "version": "1.2.0",
-      "purl": "pkg:npm/@smithy%2Fprotocol-http@1.2.0",
+      "version": "5.6.2",
+      "purl": "pkg:npm/@smithy%2Fprotocol-http@5.6.2",
       "scope": "required",
       "licenses": [
         {
@@ -11168,27 +10988,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "19f19faee92c8b79d7745a24e51860b4e9d67b97fa06777361f9845c8483fb980019d6b2146a635aee6922a230793b9d32db1edb46c66dcfbb3056574f54dbf1"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@smithy/signature-v4",
-      "version": "1.1.0",
-      "purl": "pkg:npm/@smithy%2Fsignature-v4@1.1.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "7c3a379bb62a5c1b3b9de72239e3cf77f5fd2cf9b940b94331d202e26d47e9d80d2e75df2cc14d23111f3f2a21180f155bd5a7e17f25ca09cf486c436529a9d1"
+          "content": "02c774e0c6b138337a14d63c10f4de08033890f362de30d4023654d18e05f6b1efa4b52bad4a3b28b7311604ad872c05afa7597c8c832c825d6ba8f19954e4e7"
         }
       ]
     },
@@ -11215,26 +11015,6 @@
     {
       "type": "library",
       "name": "@smithy/types",
-      "version": "1.2.0",
-      "purl": "pkg:npm/@smithy%2Ftypes@1.2.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "cf5af4d13bc1a85ddd8786878726bb9f3d4786f0a0e13466c39d5f8ccae1e5da3787e9e04acb6dff22a535b1de6fd43126615b98df0a11549681bd5b46f7c4a0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@smithy/types",
       "version": "4.17.2",
       "purl": "pkg:npm/@smithy%2Ftypes@4.17.2",
       "scope": "required",
@@ -11255,26 +11035,6 @@
     {
       "type": "library",
       "name": "@smithy/util-buffer-from",
-      "version": "1.1.0",
-      "purl": "pkg:npm/@smithy%2Futil-buffer-from@1.1.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "f66e8d5c4d30c3eadae472870878a0db44fe140c310409bb0c877073fefaeee1966d1718ef6d326e03da710341f7a24c388ef156bfc20dade83332a65b86be93"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@smithy/util-buffer-from",
       "version": "2.2.0",
       "purl": "pkg:npm/@smithy%2Futil-buffer-from@2.2.0",
       "scope": "required",
@@ -11289,86 +11049,6 @@
         {
           "alg": "SHA-512",
           "content": "20975605b4dc310e8303481d36187f070acb90347e0035b92abd5a6667789370c817a7b3315e11d8d200993d3cc10277c942bcdad8475a60bf4e72bfc2930c20"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@smithy/util-hex-encoding",
-      "version": "1.1.0",
-      "purl": "pkg:npm/@smithy%2Futil-hex-encoding@1.1.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "ed4b4813d787d2ee35ce907ad09cebd2834243784c25469b31c2915158e6c874d78960c4e2f8d2a8deaa96287bac235e2866e2a12edfff2d898329b841970a16"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@smithy/util-middleware",
-      "version": "1.1.0",
-      "purl": "pkg:npm/@smithy%2Futil-middleware@1.1.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "ea185c91c06a5608d602a2f2dafaa53d9deb7f12c384558498cee82e1d8f386bec8bb8f4b4791b37bc380c586e044c552406c9feaab1a9975163a16eeff39ecd"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@smithy/util-uri-escape",
-      "version": "1.1.0",
-      "purl": "pkg:npm/@smithy%2Futil-uri-escape@1.1.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "fe32ff575c5d551b795e9a7089a114f04b69e561d98fad3d9f4c4c4ee7a1982a9da0e15b21dd4cf9a11e0d666c43ef096c407f049eb29d8d9295898e68ab6df3"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@smithy/util-utf8",
-      "version": "1.1.0",
-      "purl": "pkg:npm/@smithy%2Futil-utf8@1.1.0",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "a7f31857e266aa63f28dd83237653101e6038fd701a828e9d02fcdb135a79e3a19515aa8799e88ad6f75e4bf4200a59510282ff6555019ce2eff2cf6ebf6c8d4"
         }
       ]
     },
@@ -11457,7 +11137,7 @@
       "name": "@tailwindcss/typography",
       "version": "0.5.20",
       "purl": "pkg:npm/@tailwindcss%2Ftypography@0.5.20",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -13597,7 +13277,7 @@
       "name": "any-promise",
       "version": "1.3.0",
       "purl": "pkg:npm/any-promise@1.3.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -13617,7 +13297,7 @@
       "name": "anymatch",
       "version": "3.1.3",
       "purl": "pkg:npm/anymatch@3.1.3",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -13657,7 +13337,7 @@
       "name": "arg",
       "version": "5.0.2",
       "purl": "pkg:npm/arg@5.0.2",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -13957,7 +13637,7 @@
       "name": "autoprefixer",
       "version": "10.5.4",
       "purl": "pkg:npm/autoprefixer@10.5.4",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -14204,7 +13884,7 @@
       "name": "binary-extensions",
       "version": "2.3.0",
       "purl": "pkg:npm/binary-extensions@2.3.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -14544,7 +14224,7 @@
       "name": "camelcase-css",
       "version": "2.0.1",
       "purl": "pkg:npm/camelcase-css@2.0.1",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -15197,7 +14877,7 @@
       "name": "commander",
       "version": "4.1.1",
       "purl": "pkg:npm/commander@4.1.1",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -15684,7 +15364,7 @@
       "name": "cssesc",
       "version": "3.0.0",
       "purl": "pkg:npm/cssesc@3.0.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -16124,7 +15804,7 @@
       "name": "didyoumean",
       "version": "1.2.2",
       "purl": "pkg:npm/didyoumean@1.2.2",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -16184,7 +15864,7 @@
       "name": "dlv",
       "version": "1.1.3",
       "purl": "pkg:npm/dlv@1.1.3",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -18004,7 +17684,7 @@
       "name": "fraction.js",
       "version": "5.3.4",
       "purl": "pkg:npm/fraction.js@5.3.4",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -18144,7 +17824,7 @@
       "name": "fsevents",
       "version": "2.3.2",
       "purl": "pkg:npm/fsevents@2.3.2",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -18564,7 +18244,7 @@
       "name": "glob-parent",
       "version": "6.0.2",
       "purl": "pkg:npm/glob-parent@6.0.2",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -19924,7 +19604,7 @@
       "name": "is-binary-path",
       "version": "2.1.0",
       "purl": "pkg:npm/is-binary-path@2.1.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -20624,7 +20304,7 @@
       "name": "jiti",
       "version": "1.21.7",
       "purl": "pkg:npm/jiti@1.21.7",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -21624,7 +21304,7 @@
       "name": "lilconfig",
       "version": "3.1.3",
       "purl": "pkg:npm/lilconfig@3.1.3",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -21657,7 +21337,7 @@
       "name": "lines-and-columns",
       "version": "1.2.4",
       "purl": "pkg:npm/lines-and-columns@1.2.4",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -23097,7 +22777,7 @@
       "name": "mz",
       "version": "2.7.0",
       "purl": "pkg:npm/mz@2.7.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -23357,7 +23037,7 @@
       "name": "normalize-path",
       "version": "3.0.0",
       "purl": "pkg:npm/normalize-path@3.0.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -24317,7 +23997,7 @@
       "name": "picomatch",
       "version": "2.3.2",
       "purl": "pkg:npm/picomatch@2.3.2",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -24357,7 +24037,7 @@
       "name": "pirates",
       "version": "4.0.7",
       "purl": "pkg:npm/pirates@4.0.7",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -24511,7 +24191,7 @@
       "name": "postcss-import",
       "version": "15.1.0",
       "purl": "pkg:npm/postcss-import@15.1.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -24531,7 +24211,7 @@
       "name": "postcss-js",
       "version": "4.1.0",
       "purl": "pkg:npm/postcss-js@4.1.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -24551,7 +24231,7 @@
       "name": "postcss-load-config",
       "version": "6.0.1",
       "purl": "pkg:npm/postcss-load-config@6.0.1",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -24591,7 +24271,7 @@
       "name": "postcss-nested",
       "version": "6.2.0",
       "purl": "pkg:npm/postcss-nested@6.2.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -24631,7 +24311,7 @@
       "name": "postcss-selector-parser",
       "version": "7.1.6",
       "purl": "pkg:npm/postcss-selector-parser@7.1.6",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -24651,7 +24331,7 @@
       "name": "postcss-value-parser",
       "version": "4.2.0",
       "purl": "pkg:npm/postcss-value-parser@4.2.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -25271,7 +24951,7 @@
       "name": "read-cache",
       "version": "1.0.2",
       "purl": "pkg:npm/read-cache@1.0.2",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -27231,7 +26911,7 @@
       "name": "sucrase",
       "version": "3.35.1",
       "purl": "pkg:npm/sucrase@3.35.1",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -27391,7 +27071,7 @@
       "name": "tailwindcss",
       "version": "3.4.19",
       "purl": "pkg:npm/tailwindcss@3.4.19",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -27511,7 +27191,7 @@
       "name": "thenify",
       "version": "3.3.1",
       "purl": "pkg:npm/thenify@3.3.1",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -27531,7 +27211,7 @@
       "name": "thenify-all",
       "version": "1.6.0",
       "purl": "pkg:npm/thenify-all@1.6.0",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -27951,7 +27631,7 @@
       "name": "ts-interface-checker",
       "version": "0.1.13",
       "purl": "pkg:npm/ts-interface-checker@0.1.13",
-      "scope": "required",
+      "scope": "excluded",
       "licenses": [
         {
           "license": {
@@ -28049,26 +27729,6 @@
     {
       "type": "library",
       "name": "tslib",
-      "version": "1.14.1",
-      "purl": "pkg:npm/tslib@1.14.1",
-      "scope": "required",
-      "licenses": [
-        {
-          "license": {
-            "id": "0BSD"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "5e78b7e4d2b38e032bc1ebf2b074c202bb4b0e93efc9ef3357fd04e04c989f8dcfeffeeabd0c0f87d0469077b06ccba5567b5b8a099c4fbadd5f704da3dc1126"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "tslib",
       "version": "2.8.1",
       "purl": "pkg:npm/tslib@2.8.1",
       "scope": "required",
@@ -28083,6 +27743,26 @@
         {
           "alg": "SHA-512",
           "content": "a0916ef781d06fe29576e49440bef09e99aa9df98bb0e03f9c087a6fa107d30084a0ad3f98f79753a737c0a0d5f373243ae1cf447b525ca294f7d2016b34bfdb"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "tslib",
+      "version": "1.14.1",
+      "purl": "pkg:npm/tslib@1.14.1",
+      "scope": "excluded",
+      "licenses": [
+        {
+          "license": {
+            "id": "0BSD"
+          }
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "5e78b7e4d2b38e032bc1ebf2b074c202bb4b0e93efc9ef3357fd04e04c989f8dcfeffeeabd0c0f87d0469077b06ccba5567b5b8a099c4fbadd5f704da3dc1126"
         }
       ]
     },

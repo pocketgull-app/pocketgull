@@ -86,33 +86,33 @@ export interface IPubMedSearchResult {
          role="dialog"
          aria-modal="true"
          aria-label="Clinical Evidence and Literature Drawer"
-         class="fixed inset-y-0 right-0 z-50 w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl bg-white dark:bg-[#09090b] shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+         class="fixed inset-y-0 right-0 z-50 w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl bg-white dark:bg-obsidian shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
       
       <!-- Drawer Header Bar -->
-      <div class="h-14 px-5 flex items-center justify-between bg-zinc-900 border-b border-zinc-800 shrink-0 select-none font-pocketgull-inter">
-        <div class="flex items-center gap-3">
-          <span class="text-base p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/30">🔬</span>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-teal-400 font-pocketgull-inter text-xs tracking-wide">
+      <div class="h-16 sm:h-14 px-4 sm:px-5 flex items-center justify-between bg-zinc-900 border-b border-zinc-800 shrink-0 select-none font-pocketgull-inter">
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <span class="text-base p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/30 shrink-0">🔬</span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap">
+              <span class="font-bold text-teal-400 font-pocketgull-inter text-xs tracking-wide shrink-0">
                 PocketGull
               </span>
-              <span class="text-xs text-zinc-600">/</span>
-              <h3 class="text-xs font-bold font-pocketgull-inter uppercase tracking-wider text-zinc-200">
-                Evidence &amp; Citation Drawer
+              <span class="text-xs text-zinc-600 hidden sm:inline">/</span>
+              <h3 class="text-xs font-bold font-pocketgull-inter uppercase tracking-wider text-zinc-200 truncate">
+                Evidence Drawer
               </h3>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40 shrink-0">
                 Level A Cochrane
               </span>
             </div>
-            <p class="text-[11px] text-zinc-400 font-sans">Peer-reviewed literature, RoB 2 risk-of-bias, and PubMed evidence grounding</p>
+            <p class="text-[11px] text-zinc-400 font-sans hidden sm:block truncate">Peer-reviewed literature, RoB 2 risk-of-bias, and PubMed evidence grounding</p>
           </div>
         </div>
         <button type="button" 
                 (click)="close()" 
                 aria-label="Close Evidence Drawer"
-                class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer border border-zinc-700 active:scale-95">
-          <span>✕</span> Close
+                class="min-h-[44px] min-w-[44px] px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-mono font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border border-zinc-700 active:scale-95 shrink-0 touch-manipulation">
+          <span>✕</span> <span class="hidden sm:inline">Close</span>
         </button>
       </div>
 
@@ -168,7 +168,7 @@ export interface IPubMedSearchResult {
       </div>
 
       <!-- Toolbar -->
-      <div class="p-3 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-[#09090b]/50 shrink-0">
+      <div class="p-3 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-obsidian/50 shrink-0">
         <div class="flex flex-wrap items-center gap-2 md:flex-nowrap">
           <!-- Search Engine Toggle -->
           <div class="flex flex-wrap items-center bg-gray-200 dark:bg-zinc-800 rounded-md p-0.5 gap-0.5">
@@ -404,7 +404,7 @@ export interface IPubMedSearchResult {
 
       <!-- Bookmarks Bar -->
       @if (bookmarks().length > 0) {
-        <div class="p-2 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-[#09090b]/50 shrink-0 flex items-center gap-2 flex-wrap">
+        <div class="p-2 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-obsidian/50 shrink-0 flex items-center gap-2 flex-wrap">
           @for(bookmark of bookmarks(); track bookmark.url) {
             <div class="group flex items-center">
                 <button (click)="loadUrl(bookmark.url)" 

@@ -17,15 +17,15 @@ interface INotesByPart {
   imports: [CommonModule, PocketGullButtonComponent, PocketGullBadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="h-full flex flex-col bg-white dark:bg-[#09090b]">
+    <div class="h-full flex flex-col bg-white dark:bg-obsidian">
       <!-- Header -->
-      <div class="h-14 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between px-6 bg-white dark:bg-[#09090b] shrink-0">
+      <div class="h-14 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between px-6 bg-white dark:bg-obsidian shrink-0">
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Visit Review</span>
           <span class="text-xs text-gray-300">|</span>
           <span class="text-xs font-semibold text-gray-900 dark:text-zinc-100">{{ visit().date }}</span>
         </div>
-        <button (click)="close()" class="text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200">
+        <button (click)="close()" type="button" aria-label="Close Visit Review" class="min-h-[44px] min-w-[44px] p-2 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors touch-manipulation">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>

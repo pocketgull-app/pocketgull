@@ -8,6 +8,7 @@ import { ThemeService } from '../../services/theme.service';
 import { TypographicAnatomyService } from '../../services/typographic-anatomy.service';
 import { QuadPhilosophyMatrixComponent } from '../shared/quad-philosophy-matrix.component';
 import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-sheet.component';
+import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-healing-spectrum.component';
 
 @Component({
   selector: 'app-body-viewer',
@@ -16,7 +17,8 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
     CommonModule, 
     Body3DViewerComponent, 
     QuadPhilosophyMatrixComponent,
-    InstantBodyCarePlanSheetComponent
+    InstantBodyCarePlanSheetComponent,
+    GlobalDecadHealingSpectrumComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `    
@@ -69,6 +71,14 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'quad'" 
                     class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
               <span>🏛️</span> 4-Way Matrix
+            </button>
+            <button (click)="state.bodyViewerMode.set('decad')" 
+                    [class.bg-teal-800]="state.bodyViewerMode() === 'decad'" 
+                    [class.text-white]="state.bodyViewerMode() === 'decad'" 
+                    [class.text-gray-700]="state.bodyViewerMode() !== 'decad'" 
+                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'decad'" 
+                    class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+              <span>🌿</span> 10-Decad
             </button>
           </div>
 
@@ -276,6 +286,10 @@ import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-shee
         } @else if (state.bodyViewerMode() === 'quad') {
           <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
             <app-quad-philosophy-matrix class="w-full block"></app-quad-philosophy-matrix>
+          </div>
+        } @else if (state.bodyViewerMode() === 'decad') {
+          <div class="w-full h-full flex-1 overflow-y-auto p-4 bg-slate-950/60">
+            <app-global-decad-healing-spectrum class="w-full block"></app-global-decad-healing-spectrum>
           </div>
         } @else {
           <!-- 2D SVG Schematic (Redrawn Holographic Medical Vector Twin) -->

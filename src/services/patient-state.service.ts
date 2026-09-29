@@ -385,7 +385,7 @@ export class PatientStateService {
   readonly requestedResearchQuery = signal<string | null>(null);
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
-  readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular'>('3d');
+  readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular' | 'decad'>('3d');
   readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing'>('skin');
   /** Active rehabilitation condition target for 3D kinematics and ghost mentoring */
   readonly activeRehabCondition = signal<string>('lumbar_pelvic_alignment');
