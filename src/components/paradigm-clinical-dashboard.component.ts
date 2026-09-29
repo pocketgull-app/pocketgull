@@ -4,6 +4,7 @@ import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { RosettaStoneAnatomyComponent } from './anatomy-3d/rosetta-stone-anatomy.component';
 import { ParadigmArbitrationMatrixComponent } from './paradigm-arbitration-matrix.component';
+import { LifeCourseScreeningNavigatorComponent } from './life-course-screening-navigator.component';
 
 export type MedicalParadigmMode = 'western' | 'functional' | 'tcm' | 'ayurveda' | 'chronobiology' | 'blend_all' | 'blend_west_tcm' | 'blend_west_ayurveda' | 'blend_tcm_ayurveda';
 
@@ -20,7 +21,7 @@ export interface IParadigmInfo {
 @Component({
   selector: 'app-paradigm-clinical-dashboard',
   standalone: true,
-  imports: [CommonModule, RosettaStoneAnatomyComponent, ParadigmArbitrationMatrixComponent],
+  imports: [CommonModule, RosettaStoneAnatomyComponent, ParadigmArbitrationMatrixComponent, LifeCourseScreeningNavigatorComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full mb-8 p-6 sm:p-8 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl relative overflow-hidden font-sans pocket-gull-card">
@@ -104,6 +105,37 @@ export interface IParadigmInfo {
       <div class="space-y-6 mb-8 relative z-10 font-sans">
         <app-rosetta-stone-anatomy />
         <app-paradigm-arbitration-matrix />
+      </div>
+
+      <!-- Life-Course Screening & Longevity Roadmap Section -->
+      <div class="mb-8 relative z-10 font-sans">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2.5">
+            <span class="text-xl">🧭</span>
+            <div>
+              <h3 class="text-sm sm:text-base font-extrabold uppercase tracking-tight text-zinc-900 dark:text-zinc-100 font-mono flex items-center gap-2">
+                <span>Life-Course Screening &amp; Longevity Navigator</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-bold uppercase border border-emerald-500/20">
+                  Tri-Paradigm Prevention
+                </span>
+              </h3>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400 font-sans">
+                Evidence-grounded decade screening milestones with ISMP scanxiety defense and transparent generic pricing benchmarks.
+              </p>
+            </div>
+          </div>
+          <button
+            (click)="toggleScreeningNavigator()"
+            class="px-3.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 transition cursor-pointer flex items-center gap-1.5 shrink-0 shadow-sm">
+            <span>{{ showScreeningNavigator() ? 'Hide Roadmap ▲' : 'Open Roadmap ▼' }}</span>
+          </button>
+        </div>
+
+        @if (showScreeningNavigator()) {
+          <div class="animate-in fade-in duration-300">
+            <app-life-course-screening-navigator />
+          </div>
+        }
       </div>
 
       <!-- MULTI-PARADIGM BLEND VIEW (All 3 or Selected Blends) -->
@@ -518,4 +550,10 @@ export class ParadigmClinicalDashboardComponent {
     const patient = this.patientManagement.patients().find(p => p.id === pId);
     return patient ? patient.name : 'Charles Darwin';
   });
+
+  readonly showScreeningNavigator = signal<boolean>(false);
+
+  toggleScreeningNavigator(): void {
+    this.showScreeningNavigator.update(v => !v);
+  }
 }

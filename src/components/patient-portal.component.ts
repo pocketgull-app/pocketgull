@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { Holographic3DAnatomyComponent } from './anatomy-3d/holographic-3d-anatomy.component';
 import { TeledentistryOdontogramComponent } from './teledentistry-odontogram.component';
+import { LifeCourseScreeningNavigatorComponent } from './life-course-screening-navigator.component';
 import { AdkLiveService } from '../services/ai/adk-live.service';
 import { UniversityLeagueService } from '../services/university-league.service';
 import { PublicServiceCorpsService } from '../services/public-service-corps.service';
@@ -17,7 +18,8 @@ import { TransitWellnessGatewayService } from '../services/transit-wellness-gate
   imports: [
     CommonModule,
     Holographic3DAnatomyComponent,
-    TeledentistryOdontogramComponent
+    TeledentistryOdontogramComponent,
+    LifeCourseScreeningNavigatorComponent
   ],
   template: `
     <div class="fixed inset-0 z-[9990] flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans">
@@ -62,6 +64,13 @@ import { TransitWellnessGatewayService } from '../services/transit-wellness-gate
                   [class.text-slate-400]="activeTab() !== 'odontogram'"
                   class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all">
             Oral-Systemic (SIBI)
+          </button>
+          <button (click)="activeTab.set('screening')"
+                  [class.bg-emerald-600]="activeTab() === 'screening'"
+                  [class.text-white]="activeTab() === 'screening'"
+                  [class.text-slate-400]="activeTab() !== 'screening'"
+                  class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
+            <span>🧭 Life-Course Screening</span>
           </button>
           <button (click)="activeTab.set('quests')"
                   [class.bg-emerald-600]="activeTab() === 'quests'"
@@ -140,6 +149,38 @@ import { TransitWellnessGatewayService } from '../services/transit-wellness-gate
                   <p class="text-xs text-slate-400">Coherence Rank #{{ league.currentAffiliation().rank }}</p>
                 </div>
               </div>
+
+              <!-- Life-Course Screening Feature Card -->
+              <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-emerald-950/40 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-2xl text-emerald-400 shrink-0">
+                    🧭
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h3 class="text-base font-bold text-white">Life-Course Screening &amp; Longevity Roadmap</h3>
+                      <span class="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                        Age-Tailored
+                      </span>
+                    </div>
+                    <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                      Explore your decade-specific screening milestones with Tri-Paradigm synthesis (Western + TCM + Ayurveda), 3D quilled art, and a 1-page physician prep sheet.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  (click)="activeTab.set('screening')"
+                  class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-2 shrink-0 cursor-pointer shadow-md">
+                  <span>Open Roadmap</span>
+                  <span>→</span>
+                </button>
+              </div>
+            </div>
+          }
+
+          @case ('screening') {
+            <div class="max-w-6xl mx-auto space-y-6">
+              <app-life-course-screening-navigator></app-life-course-screening-navigator>
             </div>
           }
 
@@ -356,7 +397,7 @@ export class PatientPortalComponent {
   orTools = inject(OrToolsGoalOptimizerService);
   transit = inject(TransitWellnessGatewayService);
 
-  activeTab = signal<'overview' | 'anatomy' | 'odontogram' | 'quests' | 'consult'>('overview');
+  activeTab = signal<'overview' | 'anatomy' | 'odontogram' | 'screening' | 'quests' | 'consult'>('overview');
   showPurgeConfirmation = signal(false);
 
   confirmPurgeState() {
