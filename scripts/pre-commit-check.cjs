@@ -464,6 +464,13 @@ if (!portersPassed) {
   process.exit(1);
 }
 
+// Check 14: Organizational Risk Audit (ORA) Guard
+const oraScript = path.resolve(workspaceRoot, 'scripts/organizational_risk_audit.mjs');
+const oraPassed = runNodeScript(oraScript, [], 'Organizational Risk Audit (ORA) Guard');
+if (!oraPassed) {
+  process.exit(1);
+}
+
 console.log('🎉 All pre-commit validation checks passed successfully. Safe to commit!\n');
 process.exit(0);
 
