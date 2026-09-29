@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:61497c6c-f00d-4e6e-8565-8402f8341025",
+  "serialNumber": "urn:uuid:eee7e244-46c4-47d7-bf58-d3f4739634c6",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-29T00:10:15.850Z",
+    "timestamp": "2026-09-29T04:10:49.052Z",
     "tools": {
       "components": [
         {
@@ -23,9 +23,9 @@
     ],
     "component": {
       "type": "application",
-      "bom-ref": "pkg:npm/pocket-gull@1.38.0",
+      "bom-ref": "pkg:npm/pocket-gull@1.39.0",
       "name": "pocket-gull",
-      "version": "1.38.0",
+      "version": "1.39.0",
       "description": "Insight beneath the surface. Real-time medical Care Plan Strategy and Live AI Consult engine powered by Google Gemini.",
       "licenses": [
         {
@@ -34,7 +34,7 @@
           }
         }
       ],
-      "purl": "pkg:npm/pocket-gull@1.38.0"
+      "purl": "pkg:npm/pocket-gull@1.39.0"
     },
     "properties": [
       {
@@ -415,8 +415,8 @@
     {
       "type": "library",
       "name": "@angular/platform-server",
-      "version": "22.1.5",
-      "purl": "pkg:npm/@angular%2Fplatform-server@22.1.5",
+      "version": "22.2.0",
+      "purl": "pkg:npm/@angular%2Fplatform-server@22.2.0",
       "scope": "required",
       "licenses": [
         {
@@ -428,7 +428,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "bf84f5b81c2c6f1da33633ab1870e9d1455f3983850470016fe5b024b0820f18b65d94fe5da307a52af2abe0ee3be08351fabe392b425b55784f322e2223d5e8"
+          "content": "3e96f466aaf494bb9b016d94be3b0d603ba887e597f1978a76b98431af2a869548c43d542fa08042729295041a6d67ee0903a9873062eeeed07a8b46b136a329"
         }
       ]
     },
@@ -19542,8 +19542,8 @@
     {
       "type": "library",
       "name": "ip-address",
-      "version": "10.5.0",
-      "purl": "pkg:npm/ip-address@10.5.0",
+      "version": "10.7.2",
+      "purl": "pkg:npm/ip-address@10.7.2",
       "scope": "required",
       "licenses": [
         {
@@ -19555,7 +19555,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "4794a754b26681862f7f6176660c120677a5cf91b8ab9031202dbbec60df51a35bad928d00d7010bb447a9861e3e5b337f8901a2556425ab86d198c71c5879e6"
+          "content": "ec7ff68054888adc5cd211b79ce2358254bc40ba3f10704514b93cbc45235d8ff1bb401d2fc8d9f54d48cced8f526d1dd83fe87d070089f6f483a38192df14ef"
         }
       ]
     },
@@ -27949,8 +27949,8 @@
     {
       "type": "library",
       "name": "undici",
-      "version": "8.10.0",
-      "purl": "pkg:npm/undici@8.10.0",
+      "version": "8.11.2",
+      "purl": "pkg:npm/undici@8.11.2",
       "scope": "excluded",
       "licenses": [
         {
@@ -27962,7 +27962,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "1ef96d1ddedabcad77408c3fa0b7b8aa838bca8552a1a7ea2768d83abb4c44191b613df57a2050f0ed1e851299884642304c8b150348003a600960b97c02ef61"
+          "content": "bb8501dbf22b29d53a945c6e9879a6a356b77c240ee6dcd0965468adfa114badedc61ac1ef14e94a7d4f7edc02e2a10790e6aa3fde5f0965b8949cf012bc3385"
         }
       ]
     },

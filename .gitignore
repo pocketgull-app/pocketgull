@@ -372,8 +372,15 @@ src/partners/hidden/
 scripts/.taskbar_state.json
 .pocketgull_a11y.json
 scripts/test_cur_*.ps1
-
-
+_*_env/
+_coat_env/
+_d4_env/
+d4_input/
+diagnostics/
+*.npz
+*receipt.json
+btkd_*.json
 
 # Sandboxing descriptor (local host tooling)
 .sandbox.json
+

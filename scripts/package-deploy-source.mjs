@@ -22,14 +22,15 @@ const projectItems = [
   'favicon.svg',
   'README.md',
   'SECURITY.md',
+  'cloudbuild.yaml',
   '.dockerignore',
   '.gcloudignore',
   'server.js',
   'dist',
   'public',
   'docs/openapi.json',
-  'companion-apps/avs-therapy/package.json',
-  'pocketgull_api/package.json'
+  'companion-apps/avs-therapy',
+  'pocketgull_api'
 ].filter(item => fs.existsSync(path.resolve(rootDir, item)));
 
 console.log(`📦 Packaging clean project source files from ${rootDir}:`);
