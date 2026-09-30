@@ -887,32 +887,12 @@ export class ExportService {
       hour: '2-digit', minute: '2-digit'
     });
 
-    const lensLabels: Record<string, string> = {
-      'Summary Overview': 'Summary Overview',
-      'Functional Protocols': 'Functional Protocols',
-      'Monitoring & Follow-up': 'Monitoring & Follow-up',
-      'Patient Education': 'Patient Education',
-    };
-
-    const lensIcons: Record<string, string> = {
-      'Summary Overview': ClinicalIcons.Assessment,
-      'Functional Protocols': ClinicalIcons.Medication,
-      'Monitoring & Follow-up': ClinicalIcons.FollowUp,
-      'Patient Education': ClinicalIcons.Education,
-    };
-
-    const lensColors: Record<string, string> = {
-      'Summary Overview': '#1C6AFF',
-      'Functional Protocols': '#059669',
-      'Monitoring & Follow-up': '#D97706',
-      'Patient Education': '#7C3AED',
-    };
-
     const isString = typeof data === 'string';
     const report = (!isString && data && typeof data.report === 'object') ? data.report : {};
     const summary = isString ? data : (data?.summary || '');
     const cognitiveLevel = (!isString && data?.cognitiveLevel) || 'standard';
     const language = (!isString && data?.language) || 'English';
+    const options = (!isString && data && (data as any).options) ? (data as any).options : { includeSideBySideComparison: true };
 
     const cognitiveBadgeHtml = (cognitiveLevel !== 'standard' || (language && language.toLowerCase() !== 'english')) ? `
             <div style="margin-bottom: 24px; padding: 12px 18px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px; font-family: monospace; font-size: 9pt; color: #c2410c; display: flex; align-items: center; justify-content: space-between;">
@@ -925,17 +905,17 @@ export class ExportService {
               <span style="font-size: 8pt; background: rgba(234,88,12,0.15); padding: 2px 8px; border-radius: 4px; font-weight: 700;">HEALTH LITERACY EXPORT</span>
             </div>` : '';
 
-    const sectionsHtml = Object.entries(lensLabels).map(([key, label]) => {
-      const content = report[key] || '';
-      if (!content) return '';
-      const color = lensColors[key] || '#1C1C1C';
-      const icon = lensIcons[key] || '';
-      const renderedContent = renderMd(content);
+    const defaultColors = ['#1C6AFF', '#059669', '#D97706', '#7C3AED', '#DB2777', '#2563EB', '#0D9488'];
+    const sectionsHtml = Object.entries(report).map(([key, content], index) => {
+      if (!content || key === 'Summary Overview') return '';
+      const color = defaultColors[index % defaultColors.length];
+      const icon = ClinicalIcons.Assessment; // Fallback icon
+      const renderedContent = renderMd(content as string);
       return `
             <section class="lens-section" style="--accent: ${color}">
                 <div class="lens-header">
                     <span class="lens-icon" style="color: ${color}">${icon}</span>
-                    <h2 class="lens-title">${label}</h2>
+                    <h2 class="lens-title">${key}</h2>
                 </div>
                 <div class="lens-body rams-typography">
                     ${renderedContent}
@@ -943,7 +923,7 @@ export class ExportService {
             </section>`;
     }).join('');
 
-    const sideBySideHtml = `
+    const sideBySideHtml = options.includeSideBySideComparison ? `
             <section class="lens-section" style="--accent: #059669">
                 <div class="lens-header">
                     <h2 class="lens-title">Multimodal Diagnostic Philosophy Side-by-Side Comparison</h2>
@@ -975,7 +955,7 @@ export class ExportService {
                       </tbody>
                     </table>
                 </div>
-            </section>`;
+            </section>` : '';
 
     const summaryHtml = summary ? `
             <section class="lens-section summary-section" style="--accent: #1C1C1C">
@@ -1348,10 +1328,10 @@ export class ExportService {
     <div class="print-bar-actions">
       <button class="btn-close" id="docBtnClose">Close</button>
       <button class="btn-print" id="docBtnPrint">Save as PDF / Print</button>
-      <script>
+      <scr" + "ipt>
         document.getElementById('docBtnClose')?.addEventListener('click', function() { window.close(); });
         document.getElementById('docBtnPrint')?.addEventListener('click', function() { window.print(); });
-      </script>
+      </scr" + "ipt>
     </div>
   </div>
 
@@ -2088,10 +2068,10 @@ export class ExportService {
     <div class="print-bar-actions">
       <button class="btn-close" id="carePlanBtnClose">Close</button>
       <button class="btn-print" id="carePlanBtnPrint">Save as PDF / Print</button>
-      <script>
+      <scr" + "ipt>
         document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
         document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
-      </script>
+      </scr" + "ipt>
     </div>
   </div>
 
@@ -2168,13 +2148,13 @@ export class ExportService {
 
     </div>
   </div>
-  <script>
+  <scr" + "ipt>
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         window.print();
       }, 400);
     });
-  </script>
+  </scr" + "ipt>
 </body>
 </html>`;
 
