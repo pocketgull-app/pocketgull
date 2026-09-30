@@ -2737,7 +2737,7 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
 
       <h3>A. The F1 Pit Crew & Great Ormond Street ICU Handover Protocol</h3>
       <p>When pediatric cardiac surgeons at London's Great Ormond Street Hospital observed the McLaren and Ferrari Formula 1 teams executing a four-wheel tire change and diagnostic adjustment in under 2.5 seconds, they recognized a fundamental truth: <em>high-stakes handoffs require spatial choreography and silent discipline</em>.</p>
-      <p>By restructuring the transfer of post-cardiac surgery infants into the ICU—instituting a <strong>silent-first spatial transition</strong> where physical lines and ventilator connections are verified before verbal briefing begins—they achieved a <strong>42% reduction in technical and information handover omissions</strong> (Catchpole et al., <em>Paediatric Anaesthesia</em>).</p>
+      <p>By restructuring the transfer of post-cardiac surgery infants into the ICU—instituting a <strong>silent-first spatial transition</strong> where physical lines and ventilator connections are verified before verbal briefing begins—they achieved a <strong>42% reduction in technical and information handover omissions</strong> (Catchpole et al., <em>Pediatric Anesthesia</em>).</p>
 
       <h3>B. Flight 1549 Crew Resource Management (CRM) & The CUS Protocol</h3>
       <p>In steep hierarchical environments, junior nurses, medical students, and surgical technicians often observe emerging safety threats but hesitate to challenge a senior attending physician. Borrowing from commercial aviation's Crew Resource Management—exemplified by Captain Chesley Sullenberger during the Miracle on the Hudson—Pocket-Gull reinforces the <strong>CUS Escalation Standard</strong>:</p>
@@ -2776,7 +2776,7 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
         title: 'Establish Silent-First Spatial Handover & Pre-Incision Time-Out',
         action: 'Designate physical workspace zones during acute transfers and institute mandatory first-name CRM roll calls before procedures.',
         physiologicalMechanism: 'Prevents acute cognitive overload, reduces auditory distraction, and eliminates 42% of transfer omission defects.',
-        empiricalProof: 'Paediatric Anaesthesia 2007;17(3):261-72 (Great Ormond Street Hospital & McLaren Racing F1 protocol).',
+        empiricalProof: 'Pediatric Anesthesia 2007;17(3):261-72 (Great Ormond Street Hospital & McLaren Racing F1 protocol).',
         icon: '🏎️'
       },
       shortTerm: {
@@ -2809,7 +2809,7 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
         },
         {
           title: 'Patient handover from surgery to intensive care: using Formula 1 pit-stop and aviation models to improve safety and quality',
-          journal: 'Paediatric Anaesthesia',
+          journal: 'Pediatric Anesthesia',
           year: 2007,
           doi: '10.1111/j.1460-9592.2006.02239.x',
           pmid: '17263740',

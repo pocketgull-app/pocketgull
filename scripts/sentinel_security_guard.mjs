@@ -234,11 +234,9 @@ const APPROVED_EGRESS_DOMAINS = [
   'www.uniprot.org',
   'mediawiki.org',
   'www.mediawiki.org',
-  'huggingface.co',
   'youtube.com',
   'www.youtube.com',
   'youtu.be',
-  'cdn-lfs.huggingface.co',
   'wikimedia.org',
   'upload.wikimedia.org',
   'hooks.slack.com',
@@ -340,7 +338,7 @@ function calculateShannonEntropy(str) {
  * Scan a single file for network egress and secret entropy
  */
 function auditFile(filePath) {
-  const relativePath = path.relative(ROOT_DIR, filePath);
+  const relativePath = path.relative(ROOT_DIR, filePath).replace(/\\/g, '/');
   const issues = [];
   const content = fs.readFileSync(filePath, 'utf-8');
 
@@ -527,7 +525,7 @@ function walkDirectory(dirPath) {
 
   for (const entry of entries) {
     const fullPath = path.join(dirPath, entry.name);
-    const relativePath = path.relative(ROOT_DIR, fullPath);
+    const relativePath = path.relative(ROOT_DIR, fullPath).replace(/\\/g, '/');
 
     if (IGNORE_PATTERNS.some((pattern) => relativePath.includes(pattern))) {
       continue;

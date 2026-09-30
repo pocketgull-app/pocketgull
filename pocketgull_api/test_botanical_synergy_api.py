@@ -2,7 +2,6 @@
 Unit test suite for Botanical Synergy & CYP450 Bio-Equivalence ML Service.
 """
 
-import pytest  # type: ignore
 from fastapi.testclient import TestClient
 from main import app
 from services.botanical_synergy_service import (

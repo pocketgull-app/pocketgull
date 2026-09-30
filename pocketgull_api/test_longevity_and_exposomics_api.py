@@ -2,7 +2,6 @@
 Unit Test Suite for Actuarial QALY & Epigenetic Longevity and Geospatial Exposomics APIs
 """
 
-import pytest  # type: ignore
 from services.actuarial_qaly_service import (
     ActuarialQalyInput,
     ActuarialQalyOutput,
