@@ -252,6 +252,17 @@ After understanding a file:
 
 ---
 
+## Cognitive Triad Standard: DSRP Systems, Oakley Neuroarchitecture & Seligman Agency
+
+- **The Epistemic Triad**:
+  - **DSRP Systems (Cabrera)**: Enforce boundaries/distinctions ($D$), modular part-whole decomposition ($S$), explicit causal feedback loops ($R$), and multi-stakeholder perspectives ($P$, including falsification passes).
+  - **Oakley Neuroarchitecture**: Enforce the 4-slot working memory ceiling (`WM_SLOT_MAX = 4`), 3-step micro-chunk paragraphs (Anchor $\to$ Mechanism/Metaphor $\to$ Boundary), mandatory physical analogies, and interactive "Look-Away" retrieval practice.
+  - **Seligman Positive Psychology**: Reframe learned helplessness by dismantling the 3 Ps (Permanence $\to$ Transience, Pervasiveness $\to$ Specificity, Personalization $\to$ External Feedback), anchoring care plans in character strengths, and concluding with actionable micro-accomplishments.
+- **The Quiet Workshop Voice**: Clinical communication must convey deep warmth, craft-oriented reassurance, and grounded competence—eliminating panic-inducing red-alert language and therapeutic nihilism.
+- **Reference**: Full specification in [OAKLEY_CHUNKING_STANDARD.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/OAKLEY_CHUNKING_STANDARD.md).
+
+---
+
 ## Quick Reference
 
 ```

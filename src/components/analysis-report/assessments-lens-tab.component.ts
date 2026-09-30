@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { YbocsScreenerComponent } from '../ybocs-screener.component';
 import { ClinicalAssessmentsSuiteComponent } from '../clinical-assessments-suite.component';
@@ -26,7 +26,7 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
     <div class="w-full space-y-6">
       <!-- Screener Sub-Lens Tab Selection -->
       <div class="flex gap-2 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 max-w-4xl overflow-x-auto">
-        <button (click)="screenerTab.set('ybocs')"
+        <button type="button" (click)="setScreenerTab('ybocs')"
           data-testid="tab-ybocs-screener"
           [class.bg-white]="screenerTab() === 'ybocs'"
           [class.dark:bg-zinc-800]="screenerTab() === 'ybocs'"
@@ -37,7 +37,7 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
           ⚡ Y-BOCs OCD
         </button>
-        <button (click)="screenerTab.set('suite')"
+        <button type="button" (click)="setScreenerTab('suite')"
           data-testid="tab-clinical-suite"
           [class.bg-white]="screenerTab() === 'suite'"
           [class.dark:bg-zinc-800]="screenerTab() === 'suite'"
@@ -48,7 +48,7 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
           📋 Clinical Suite
         </button>
-        <button (click)="screenerTab.set('venn')"
+        <button type="button" (click)="setScreenerTab('venn')"
           data-testid="tab-venn-matrix"
           [class.bg-white]="screenerTab() === 'venn'"
           [class.dark:bg-zinc-800]="screenerTab() === 'venn'"
@@ -59,7 +59,7 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
           ⭕ Venn Consensus (W∩F∩E)
         </button>
-        <button (click)="screenerTab.set('kaizen')"
+        <button type="button" (click)="setScreenerTab('kaizen')"
           data-testid="tab-kaizen-suite"
           [class.bg-white]="screenerTab() === 'kaizen'"
           [class.dark:bg-zinc-800]="screenerTab() === 'kaizen'"
@@ -70,7 +70,7 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
           📈 Kaizen Optimization (SPC/Pareto)
         </button>
-        <button (click)="screenerTab.set('teledentistry')"
+        <button type="button" (click)="setScreenerTab('teledentistry')"
           data-testid="tab-teledentistry"
           [class.bg-white]="screenerTab() === 'teledentistry'"
           [class.dark:bg-zinc-800]="screenerTab() === 'teledentistry'"
@@ -81,7 +81,7 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
           🦷 Teledentistry (32-Tooth)
         </button>
-        <button (click)="screenerTab.set('intimacy')"
+        <button type="button" (click)="setScreenerTab('intimacy')"
           data-testid="tab-intimacy-vitality"
           [class.bg-white]="screenerTab() === 'intimacy'"
           [class.dark:bg-zinc-800]="screenerTab() === 'intimacy'"
@@ -92,7 +92,7 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
           ❤️ Intimacy Vitality (Princeton III)
         </button>
-        <button (click)="screenerTab.set('suggestions')"
+        <button type="button" (click)="setScreenerTab('suggestions')"
           [class.bg-white]="screenerTab() === 'suggestions'"
           [class.dark:bg-zinc-800]="screenerTab() === 'suggestions'"
           [class.text-indigo-650]="screenerTab() === 'suggestions'"
@@ -147,5 +147,11 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
   `
 })
 export class AssessmentsLensTabComponent {
-  screenerTab = signal<ScreenerSubTab>('ybocs');
+  private cdr = inject(ChangeDetectorRef);
+  screenerTab = signal<ScreenerSubTab>('suite');
+
+  setScreenerTab(tab: ScreenerSubTab): void {
+    this.screenerTab.set(tab);
+    this.cdr.markForCheck();
+  }
 }

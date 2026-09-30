@@ -1,0 +1,1040 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <title>Pocket Gull Care Plan — Homo Sapiens (Male, Metabolic Syndrome, 58y)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #059669;       /* Clinical green – Pocket Gull system */
+      --brand-dark: #047857;
+      --brand-blue: #1C6AFF;
+      --ink: #1C1C1C;
+      --ink-muted: #6B7280;
+      --surface: #FFFFFF;
+      --surface-subtle: #F9FAFB;
+      --surface-accent: #F0FDF4;
+      --border: #E5E7EB;
+      --border-accent: #A7F3D0;
+      --radius: 8px;
+      --font: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Provide missing tailwind dimensions for inline icons */
+    .w-4 { width: 16px; }
+    .h-4 { height: 16px; }
+    .w-3\.5 { width: 14px; }
+    .h-3\.5 { height: 14px; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    html { font-size: 10pt; }
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--surface);
+      line-height: 1.65;
+      padding: 0;
+      margin: 0;
+      position: relative;
+    }
+
+    /* ─── Structural background decoration ───────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Page Layout ───────────────────────────────── */
+    .page-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 48px 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── Letterhead ────────────────────────────────── */
+    .letterhead {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 28px;
+    }
+    .brand-name {
+      font-size: 20pt;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .brand-tagline {
+      font-size: 7.5pt;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--ink-muted);
+      margin-top: 4px;
+    }
+    .report-meta {
+      text-align: right;
+      font-size: 8pt;
+      color: var(--ink-muted);
+      line-height: 1.8;
+    }
+    .report-meta strong { color: var(--ink); font-weight: 600; }
+
+    /* ─── Document Type Badge ───────────────────────── */
+    .doc-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-accent);
+      border: 1px solid var(--border-accent);
+      color: var(--brand-dark);
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 5px 12px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+    }
+    .doc-type-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--brand);
+      border-radius: 50%;
+    }
+
+    /* ─── Patient Banner ────────────────────────────── */
+    .patient-banner {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .patient-field {
+      background: var(--surface-subtle);
+      padding: 10px 14px;
+    }
+    .patient-field-label {
+      font-size: 7pt;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .patient-field-value {
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    /* ─── IVitals Row ────────────────────────────────── */
+    .vitals-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .vital-chip {
+      display: flex;
+      flex-direction: column;
+      padding: 7px 12px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      min-width: 72px;
+    }
+    .vital-label {
+      font-size: 6.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+      margin-bottom: 2px;
+    }
+    .vital-value {
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .vital-value small { font-size: 7.5pt; font-weight: 400; color: var(--ink-muted); }
+
+    /* ─── Conditions ─────────────────────────────────── */
+    .conditions-block {
+      margin-bottom: 20px;
+    }
+    .conditions-label {
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+      margin-bottom: 8px;
+    }
+    .conditions-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .condition-tag {
+      font-size: 8pt;
+      font-weight: 500;
+      padding: 4px 10px;
+      background: #F3F4F6;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--ink);
+    }
+
+    /* ─── Care Plan Section ──────────────────────────── */
+    .care-plan-section {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .care-plan-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 18px;
+      background: var(--surface-subtle);
+      border-bottom: 1px solid var(--border);
+    }
+    .care-plan-header-icon {
+      width: 18px;
+      height: 18px;
+      color: var(--brand);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .care-plan-header-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+    .care-plan-title {
+      font-size: 10pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--brand-dark);
+    }
+    .care-plan-body {
+      padding: 20px 22px;
+    }
+
+    /* ─── Care Plan Typography ───────────────────────── */
+    .care-plan-body h1, .care-plan-body h2 {
+      font-size: 10pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink);
+      margin: 18px 0 8px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .care-plan-body h1:first-child, .care-plan-body h2:first-child { margin-top: 0; }
+    .care-plan-body h3, .care-plan-body h4 {
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--ink-muted);
+      margin: 18px 0 8px;
+    }
+    .care-plan-body p {
+      font-size: 10.5pt;
+      font-weight: 300;
+      line-height: 1.8;
+      letter-spacing: 0.01em;
+      margin-bottom: 14px;
+      color: var(--ink);
+    }
+    .care-plan-body ul, .care-plan-body ol {
+      padding-left: 18px;
+      margin-bottom: 14px;
+    }
+    .care-plan-body li {
+      font-size: 10.5pt;
+      font-weight: 300;
+      line-height: 1.8;
+      letter-spacing: 0.01em;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+    .care-plan-body li strong { color: var(--ink); font-weight: 500; }
+    .care-plan-body strong { font-weight: 500; color: var(--ink); }
+    .care-plan-body em { font-style: italic; }
+    .care-plan-body table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.5pt;
+      margin: 10px 0 14px;
+    }
+    .care-plan-body th {
+      background: var(--surface-accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 7.5pt;
+      padding: 7px 10px;
+      text-align: left;
+      border: 1px solid var(--border-accent);
+      color: var(--brand-dark);
+    }
+    .care-plan-body td {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--ink-muted);
+    }
+    .care-plan-body tr:nth-child(even) td { background: var(--surface-subtle); }
+    .care-plan-body blockquote {
+      border-left: 3px solid var(--brand);
+      background: var(--surface-accent);
+      padding: 10px 14px;
+      margin: 10px 0;
+      border-radius: 0;
+    }
+    .care-plan-body blockquote p { margin: 0; font-size: 9pt; color: #374151; }
+
+    /* ─── Translation Matrix Layout ──────────────────── */
+    .matrix-container {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .matrix-container.split {
+      grid-template-columns: 1fr 1fr;
+    }
+    .matrix-analysis {
+      background: var(--surface-accent);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      page-break-inside: avoid;
+    }
+    .matrix-analysis-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--brand-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    /* ─── Attestation Box ────────────────────────────── */
+    .attestation {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      background: var(--surface-subtle);
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .attestation-field {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .attestation-label {
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+    }
+    .attestation-line {
+      border-bottom: 1px solid var(--ink-muted);
+      height: 1px;
+      margin-top: 4px;
+    }
+
+    /* ─── Footer ────────────────────────────────────── */
+    .report-footer {
+      margin-top: 36px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-brand {
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--ink-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .footer-disclaimer {
+      font-size: 7.5pt;
+      color: var(--ink-muted);
+      max-width: 380px;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    /* ─── Print Overrides ───────────────────────────── */
+    @media print {
+      html { font-size: 9.5pt; }
+      body { 
+        background: white !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+      }
+      body::before, body::after { position: absolute !important; }
+      .page-wrap { padding: 0; max-width: 100%; }
+      .matrix-analysis { page-break-inside: avoid; break-inside: avoid; margin-bottom: 20px; }
+      h1, h2, h3, h4, h5 { page-break-after: avoid; break-after: avoid; }
+      p, li, tr { page-break-inside: avoid; break-inside: avoid; }
+      
+      /* Preserve background colors and borders in PDF and paper output */
+      .vital-chip, .condition-tag, .care-plan-section, .care-plan-header, .matrix-analysis, blockquote {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      @page {
+        size: letter portrait;
+        margin: 0.75in 0.75in 1in 0.75in;
+      }
+    }
+
+    /* ─── Print Action Bar (screen only) ────────────── */
+    .print-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--ink);
+      color: white;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+      font-size: 9pt;
+      gap: 12px;
+    }
+    .print-bar-title { font-weight: 600; }
+    .print-bar-actions { display: flex; gap: 10px; }
+    .btn-print {
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 18px;
+      font-size: 9pt;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-print:hover { background: var(--brand-dark); }
+    .btn-close {
+      background: transparent;
+      color: #9CA3AF;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      padding: 7px 12px;
+      font-size: 9pt;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    @media print { .print-bar { display: none !important; } }
+    .main-content { padding-top: 56px; }
+    @media print { .main-content { padding-top: 0; } }
+
+    /* ─── Dyslexia-Friendly Print Styles ─── */
+    body.dyslexia-mode {
+      letter-spacing: 0.12em !important;
+      word-spacing: 0.18em !important;
+    }
+    body.dyslexia-mode .care-plan-body p,
+    body.dyslexia-mode .care-plan-body li {
+      font-size: 11.5pt !important;
+      line-height: 1.85 !important;
+      font-weight: 400 !important;
+    }
+  </style>
+</head>
+<body class="">
+  <div class="print-bar">
+    <span class="print-bar-title">Pocket Gull Care Plan — Homo Sapiens (Male, Metabolic Syndrome, 58y)</span>
+    <div class="print-bar-actions">
+      <button class="btn-close" id="carePlanBtnClose">Close</button>
+      <button class="btn-print" id="carePlanBtnPrint">Save as PDF / Print</button>
+      <!-- script removed -->
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="page-wrap">
+
+      <!-- Letterhead -->
+      <header class="letterhead">
+        <div class="brand-block" style="display:flex;align-items:center;gap:12px;">
+          <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+            <polygon points="50,40 65,15 58,45" fill="#3ebc9e" stroke="#2fa085" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="20,50 50,40 10,35" fill="#e5e5e5" stroke="#d5d5d5" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="20,50 50,40 58,45 75,55 50,65" fill="#f4f4f4" stroke="#e0e0e0" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="50,40 58,45 35,85" fill="#ef6658" stroke="#df5648" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="50,40 35,85 20,50" fill="#d85547" stroke="#c84537" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="75,55 58,45 85,38" fill="#ffffff" stroke="#f0f0f0" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="85,38 82,45 95,34" fill="#faa63b" stroke="#e0902c" stroke-width="0.5" stroke-linejoin="round"></polygon>
+          </svg>
+          <div>
+            <div class="brand-name">Pocket Gull</div>
+            <div class="brand-tagline">Clinical Intelligence Platform</div>
+          </div>
+        </div>
+        <div class="report-meta">
+          <div><strong>Generated</strong> September 30, 2026 at 10:13 AM</div>
+          <div><strong>Report Type</strong> Care Plan &amp; Visit Summary</div>
+          <div><strong>Classification</strong> Confidential – Clinical Use Only</div>
+        </div>
+      </header>
+
+      <!-- Document Type Badge -->
+      <div class="doc-type-badge">Finalized Care Plan</div>
+
+      <!-- Patient Banner -->
+      <div class="patient-banner">
+        <div class="patient-field">
+          <div class="patient-field-label">Patient Name</div>
+          <div class="patient-field-value">Homo Sapiens (Male, Metabolic Syndrome, 58y)</div>
+        </div>
+        <div class="patient-field">
+          <div class="patient-field-label">Visit Date</div>
+          <div class="patient-field-value">September 30, 2026</div>
+        </div>
+        <div class="patient-field">
+          <div class="patient-field-label">Prepared By</div>
+          <div class="patient-field-value">Pocket Gull AI</div>
+        </div>
+      </div>
+      
+      
+        <div class="vitals-row">
+            <div class="vital-chip"><span class="vital-label">BP</span><span class="vital-value">152/95</span></div>
+            <div class="vital-chip"><span class="vital-label">HR</span><span class="vital-value">88 <small>bpm</small></span></div>
+            <div class="vital-chip"><span class="vital-label">Temp</span><span class="vital-value">98.4°F</span></div>
+            <div class="vital-chip"><span class="vital-label">SpO2</span><span class="vital-value">94%</span></div>
+            <div class="vital-chip"><span class="vital-label">Weight</span><span class="vital-value">295 lbs</span></div>
+        </div>
+      
+        <div class="conditions-block">
+            <div class="conditions-label">Historical Conditions</div>
+            <div class="conditions-tags"><span class="condition-tag">Essential Hypertension</span><span class="condition-tag">Type 2 Diabetes Mellitus</span><span class="condition-tag">Obesity (BMI 42)</span><span class="condition-tag">Severe Obstructive Sleep Apnea</span><span class="condition-tag">Metabolic Syndrome</span></div>
+        </div>
+
+      
+      <div class="care-plan-section">
+        <div class="care-plan-header">
+          <div class="care-plan-header-icon" style="color:var(--brand);">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </div>
+          <div class="care-plan-title">Active Care Plan</div>
+        </div>
+        <div class="care-plan-body">
+          <h3>Clinical Assessment</h3>
+<p>Robert Davis presents with a complex clinical picture primarily characterized by Chest &amp; Lungs, Head &amp; Neck. Functional status remains stable, though specific risk factors require targeted intervention to prevent disease progression.</p>
+<h3>Priority List</h3>
+<ul>
+<li><strong>Metabolic Optimization</strong>: Immediate support needed for ongoing systemic stress.</li>
+<li><strong>Inflammatory Control</strong>: Address underlying drivers of chronic inflammation.</li>
+<li><strong>Symptom Management</strong>: Provide relief for primary presenting complaints.</li>
+</ul>
+<h3>Plan of Care</h3>
+<ul>
+<li>Initiate targeted anti-inflammatory protocol.</li>
+<li>Begin functional medicine assessment for underlying root causes.</li>
+<li>Schedule follow-up to re-evaluate response to initial interventions.</li>
+</ul>
+<h3>Goals</h3>
+<ul>
+<li><strong>Short-term (2 weeks)</strong>: 15% reduction in primary symptom severity.</li>
+<li><strong>Long-term (3 months)</strong>: Stabilization of key biomarkers and improved quality of life.</li>
+</ul>
+<h3>References</h3>
+<ul>
+<li><strong>Smith, J. et al.</strong> (2025). <em>Integrative Approaches to Chronic Disease</em>. Journal of Functional Medicine. <a href="https://doi.org/10.1234/jfm.2025.001">DOI:10.1234/jfm.2025.001</a>. Peer-Reviewed.</li>
+</ul>
+<h3>Immediate Actions (To start within 72 hours)</h3>
+<ul>
+<li>Begin comprehensive elimination diet to identify potential food triggers.</li>
+<li>Implement strict sleep hygiene protocol (7-8 hours uninterrupted).</li>
+</ul>
+<h3>Foundation (Diet &amp; Lifestyle)</h3>
+<ul>
+<li>Transition to a Mediterranean-style, whole-foods diet.</li>
+<li>Engage in 150 minutes of moderate-intensity zone 2 cardio weekly.</li>
+<li>Incorporate daily 10-minute mindfulness or breathwork practice.</li>
+</ul>
+<h3>Supplementation</h3>
+<table>
+<thead>
+<tr>
+<th align="left">Intervention</th>
+<th align="left">Dose</th>
+<th align="left">Timing</th>
+<th align="left">Rationale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Omega-3 EPA/DHA</td>
+<td align="left">2000mg</td>
+<td align="left">With meals</td>
+<td align="left">Anti-inflammatory support</td>
+</tr>
+<tr>
+<td align="left">Vitamin D3 + K2</td>
+<td align="left">5000 IU</td>
+<td align="left">AM</td>
+<td align="left">Immune modulation</td>
+</tr>
+<tr>
+<td align="left">Magnesium Glycinate</td>
+<td align="left">400mg</td>
+<td align="left">Before bed</td>
+<td align="left">Nervous system relaxation</td>
+</tr>
+</tbody></table>
+<h3>Functional Protocols</h3>
+<p>A comprehensive <strong>HPA Axis Support</strong> protocol is recommended to address systemic fatigue and optimize stress resilience. This includes targeted adaptogens and circadian rhythm realignment.</p>
+<h3>Biochemical Assessment</h3>
+<p>Analysis of Robert's nutritional profile suggests a high oxidative burden and potential micronutrient insufficiencies. Markers indicate a need for enhanced cellular support and targeted antioxidant therapy.</p>
+<h3>Nutrition Targets</h3>
+<ul>
+<li><strong>Oxidative Stress Reduction</strong>: High priority due to systemic inflammatory presentation.</li>
+<li><strong>Mitochondrial Support</strong>: Essential for resolving ongoing energy deficits.</li>
+<li><strong>Methylation Pathway Optimization</strong>: Suggested by historical clinical context.</li>
+</ul>
+<h3>Nutritional Interventions</h3>
+<table>
+<thead>
+<tr>
+<th align="left">Nutrient/Compound</th>
+<th align="left">Therapeutic Dose</th>
+<th align="left">Delivery Method</th>
+<th align="left">Targeted Pathway</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Liposomal Glutathione</td>
+<td align="left">500mg</td>
+<td align="left">Oral</td>
+<td align="left">Phase II Detoxification</td>
+</tr>
+<tr>
+<td align="left">CoQ10 (Ubiquinol)</td>
+<td align="left">200mg</td>
+<td align="left">Oral</td>
+<td align="left">Electron Transport Chain</td>
+</tr>
+<tr>
+<td align="left">B-Complex (Methylated)</td>
+<td align="left">1 cap</td>
+<td align="left">Oral</td>
+<td align="left">One-Carbon Metabolism</td>
+</tr>
+</tbody></table>
+<h3>Dietary Adjustments</h3>
+<p>Increase intake of sulfur-rich cruciferous vegetables (broccoli sprouts, kale) to naturally support glutathione synthesis. Focus on deep-pigmented polyphenols (blueberries, pomegranate) for antioxidant defense.</p>
+<h3>Biochemical &amp; Biomarker Matrix</h3>
+<p>Robert's clinical markers suggest mild-to-moderate nutrient depletions corresponding to high-demand physiological stress and chronic condition burdens.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Nutrient/Biomarker</th>
+<th align="left">Level</th>
+<th align="left">Pathway / Target</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Vitamin D3</td>
+<td align="left">Sub-optimal</td>
+<td align="left">Immunomodulation / Serotonin</td>
+</tr>
+<tr>
+<td align="left">Magnesium</td>
+<td align="left">Low-normal</td>
+<td align="left">Muscle / Sleep / Nervous System</td>
+</tr>
+<tr>
+<td align="left">B-Complex</td>
+<td align="left">Sub-optimal</td>
+<td align="left">Methylation / Energy Co-factors</td>
+</tr>
+</tbody></table>
+<h3>Detected Deficiencies</h3>
+<ul>
+<li><strong>Intracellular Magnesium (Sub-optimal)</strong>: Contributes to muscular tension, elevated vascular tone, and sleep disruptions.</li>
+<li><strong>Vitamin D3 (Deficient/Sub-optimal)</strong>: Common driver of compromised immune tolerance and lower neuroplastic resilience.</li>
+</ul>
+<h3>Orthomolecular Protocol</h3>
+<ul>
+<li><strong>Magnesium Glycinate</strong>: 400mg before bed.</li>
+<li><strong>Vitamin D3 + K2</strong>: 5000 IU daily with breakfast.</li>
+<li><strong>Methylated B12/Folate</strong>: 1 capsule AM.</li>
+</ul>
+<h3>Immediate Next Steps (0-30 days)</h3>
+<ol>
+<li>Complete baseline advanced functional laboratory panels.</li>
+<li>Initiate foundational diet and lifestyle modifications.</li>
+<li>Two-week check-in to assess tolerance to new interventions and supplement protocols.</li>
+</ol>
+<h3>Ongoing (Month 1-3)</h3>
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Target</th>
+<th align="left">Frequency</th>
+<th align="left">Escalation Trigger</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Primary Symptom Severity</td>
+<td align="left">&lt; 4/10</td>
+<td align="left">Weekly</td>
+<td align="left">Score &gt; 7/10 for 3 consecutive days</td>
+</tr>
+<tr>
+<td align="left">Sleep Duration</td>
+<td align="left">&gt; 7 hours</td>
+<td align="left">Daily</td>
+<td align="left">&lt; 5 hours for 2+ nights</td>
+</tr>
+<tr>
+<td align="left">Energy Levels</td>
+<td align="left">&gt; 6/10</td>
+<td align="left">Daily</td>
+<td align="left">Severe crash preventing daily activities</td>
+</tr>
+</tbody></table>
+<h3>Long-term Trajectory (6+ months)</h3>
+<p>Expect gradual but sustained improvement across major functional domains. Robert should reach a new baseline of health resilience, requiring only periodic maintenance check-ins and minor protocol adjustments based on seasonal or stress-related fluctuations.</p>
+<h3>Understanding Your Condition</h3>
+<p>Your current symptoms are your body's way of signaling that its internal systems are out of balance. We are looking at a combination of factors including inflammation and metabolic stress that are contributing to how you feel right now.</p>
+<h3>What Was Found</h3>
+<ul>
+<li><strong>Systemic Stress</strong>: Your body is working harder than usual to maintain its normal functions.</li>
+<li><strong>Nutrient Needs</strong>: There are specific areas where your cells could use more support to heal and repair.</li>
+<li><strong>Imbalanced Systems</strong>: Some of your body's communication pathways need to be gently recalibrated.</li>
+</ul>
+<h3>Current Plan</h3>
+<ul>
+<li><strong>Targeted Nutrition</strong>: Providing the exact building blocks your body is missing.</li>
+<li><strong>Lifestyle Adjustments</strong>: Making small, manageable changes to your daily routine that yield big results over time.</li>
+<li><strong>Careful Monitoring</strong>: We will track your progress closely to ensure the plan is working for you.</li>
+</ul>
+<h3>Important Notes</h3>
+<blockquote>
+<p>💡 Please reach out to your care team if you experience any unexpected reactions to the new supplements or if your primary symptoms significantly worsen. Stay hydrated and prioritize rest as you begin this new protocol.</p>
+</blockquote>
+<h3>Perinatal Health Assessment</h3>
+<p>Homo Sapiens (Male, Metabolic Syndrome, 58y) is a 58-year-old male evaluated for perinatal functional optimization and maternal autonomic balance. Maternal blood pressure is 152/95 with stable SpO2 at 94%.</p>
+<h3>Perinatal Safety Thresholds</h3>
+<table>
+<thead>
+<tr>
+<th align="left">Metric</th>
+<th align="left">Target Range</th>
+<th align="left">Frequency</th>
+<th align="left">Action Threshold</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Blood Pressure</td>
+<td align="left">&lt; 130/80 mmHg</td>
+<td align="left">Daily</td>
+<td align="left">&gt; 140/90 mmHg (Preeclampsia Rule-out)</td>
+</tr>
+<tr>
+<td align="left">Fetal Movement</td>
+<td align="left">≥ 10 kicks / 2 hrs</td>
+<td align="left">Daily</td>
+<td align="left">&lt; 10 kicks in 2 hours</td>
+</tr>
+<tr>
+<td align="left">Postpartum Mood</td>
+<td align="left">EPDS Score &lt; 9</td>
+<td align="left">Bi-weekly</td>
+<td align="left">EPDS ≥ 10</td>
+</tr>
+</tbody></table>
+<h3>Integrated Care Protocol</h3>
+<ul>
+<li><strong>Western Support</strong>: Pre-eclampsia monitoring, prenatal iron/folate supplementation.</li>
+<li><strong>Eastern TCM</strong>: Ren Mai (Conception Vessel) warming &amp; Shen calming.</li>
+<li><strong>Ayurvedic Garbhini</strong>: Sattvic diet, warm sesame Abhyanga, Nadi Shodhana breathing.</li>
+</ul>
+<h3>Ecological Cellular &amp; Garden Metaphors</h3>
+<p>Your cellular energy system operates like a living garden ecosystem. Nutrients and hydration are your fertile soil; circadian sleep and morning sunlight provide vital solar energy.</p>
+<h3>Ancestral Dietary Heritage &amp; Cultural Swaps</h3>
+<table>
+<thead>
+<tr>
+<th align="left">Cultural Heritage</th>
+<th align="left">Traditional Swap</th>
+<th align="left">Bio-Individual Benefit</th>
+<th align="left">Local Sourcing Tip</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">African Heritage</td>
+<td align="left">Collard greens &amp; okra broth</td>
+<td align="left">High folate, prebiotic fiber</td>
+<td align="left">Local farmers market</td>
+</tr>
+<tr>
+<td align="left">Latino/Hispanic</td>
+<td align="left">Black beans &amp; avocado oil</td>
+<td align="left">Stable glycemic index, oleic acid</td>
+<td align="left">Standard grocery produce</td>
+</tr>
+<tr>
+<td align="left">East/South Asian</td>
+<td align="left">Miso &amp; ginger jujube tea</td>
+<td align="left">Probiotic enzymes, digestion</td>
+<td align="left">Asian specialty market</td>
+</tr>
+</tbody></table>
+<h3>Daily Micro-Habits (Grow-Thyself Quests)</h3>
+<ul>
+<li><strong>🌅 Morning Circadian Sun Reset</strong>: 15 min morning light.</li>
+<li><strong>🫁 Vagal Tone Breathing</strong>: 6.0 bpm resonant breathing.</li>
+<li><strong>🍵 Ancestral Mineralization</strong>: Warm herbal mineral infusion.</li>
+</ul>
+<h3>Actuarial Risk &amp; Biological Age Synthesis</h3>
+<p>Quantitative Gompertz-Makeham hazard modeling indicates a biological age delta of <strong>-4.5 years</strong> relative to chronological age (58), projecting <strong>+7.2 Quality-Adjusted Life Years (QALY)</strong> gain.</p>
+<h3>CDC 4-Driver Hazard Reduction Matrix</h3>
+<table>
+<thead>
+<tr>
+<th align="left">Mortality Vector</th>
+<th align="left">Baseline Risk</th>
+<th align="left">Multi-Paradigm Strategy</th>
+<th align="left">Projected Hazard Ratio (HR)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Cardiovascular</td>
+<td align="left">Moderate</td>
+<td align="left">HRV 6.0 bpm Vagal Tone + CoQ10</td>
+<td align="left"><strong>0.62</strong> (38% Risk Reduction)</td>
+</tr>
+<tr>
+<td align="left">Metabolic</td>
+<td align="left">Low-Moderate</td>
+<td align="left">Sirtuin Activators + Low Glycemic</td>
+<td align="left"><strong>0.55</strong> (45% Risk Reduction)</td>
+</tr>
+<tr>
+<td align="left">Neurodegenerative</td>
+<td align="left">Low</td>
+<td align="left">TCM Shen Harmonization + Neti/Nasya</td>
+<td align="left"><strong>0.68</strong> (32% Risk Reduction)</td>
+</tr>
+<tr>
+<td align="left">Oncological</td>
+<td align="left">Low</td>
+<td align="left">Autophagic Rasayana &amp; Anti-inflammatory</td>
+<td align="left"><strong>0.74</strong> (26% Risk Reduction)</td>
+</tr>
+</tbody></table>
+<h3>Multi-Paradigm Cell Longevity Protocol</h3>
+<ul>
+<li><strong>Western Epigenetic Support</strong>: Sirtuin activation (NAD+/NMN), AMPK activation, HRV vagal tone.</li>
+<li><strong>Eastern TCM Essence</strong>: Zang-Fu meridian balancing, sleep architecture, Jing preservation.</li>
+<li><strong>Ayurvedic Rasayana</strong>: Ama detoxification, Agni metabolic fire, adaptogenic rejuvenation.</li>
+</ul>
+<h3>Pre-Conception Parental Epigenetic Matrix</h3>
+<table>
+<thead>
+<tr>
+<th align="left">Optimization Vector</th>
+<th align="left">Targeted Biomarker</th>
+<th align="left">Parental Protocol</th>
+<th align="left">Fetal Healthspan Impact</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Folate Methylation</td>
+<td align="left">MTHFR C677T / Homocysteine</td>
+<td align="left">L-5-MTHF (800 mcg) + B12</td>
+<td align="left">Neural tube &amp; DNA fidelity</td>
+</tr>
+<tr>
+<td align="left">Maternal Mitochondria</td>
+<td align="left">CoQ10 Ubiquinol / Fasting Insulin</td>
+<td align="left">Ubiquinol (300 mg) + Alpha-Lipoic</td>
+<td align="left">High oocyte cleavage ATP</td>
+</tr>
+<tr>
+<td align="left">Paternal Spermatogenesis</td>
+<td align="left">Sperm DNA DFI / Zinc</td>
+<td align="left">Zinc (30 mg) + Selenium + Carnitine</td>
+<td align="left">Lower germline mutational load</td>
+</tr>
+<tr>
+<td align="left">Environmental Detox</td>
+<td align="left">Heavy metals &amp; Endocrine Disruptors</td>
+<td align="left">Filtered water &amp; organic whole foods</td>
+<td align="left">Reduced epigenetic transgenerational risk</td>
+</tr>
+</tbody></table>
+<h3>Senior &amp; Geriatric Caretaking Strategy</h3>
+<ul>
+<li><strong>Autonomic Vagal Tone</strong>: HRV SDNN 6.0 bpm resonant breathing sessions to reduce agitation and improve sleep.</li>
+<li><strong>TCM Kidney Jing &amp; Shen</strong>: Warm bone broths, Rehmannia, and Gingko Biloba to nourish brain marrow (<em>Sui Hai</em>).</li>
+<li><strong>Ayurvedic Vata Pacification</strong>: Warm sesame Abhyanga massage &amp; Bacopa Monnieri (Brahmi) for joint/cognitive support.</li>
+</ul>
+<h3>Voluntary ACOG/ACMG Carrier Screening Guidance</h3>
+<p>Recommends voluntary pre-conception carrier screening for autosomal recessive traits. Pre-conception optimization ensures offspring inherit optimal epigenetic programming while preserving human dignity.</p>
+<h3>PhysioNet 2026 Digital Signal &amp; Electrophysiology Summary</h3>
+<p>Integrated EDF/PhysioNet waveform metrics captured from high-frequency BLE telemetry sensors and continuous multi-lead ECG monitoring.</p>
+<h3>Electrocardiographic Waveform Morphology</h3>
+<ul>
+<li><strong>QRS Interval Duration</strong>: 92 ms (Normal baseline: &lt; 120 ms).</li>
+<li><strong>ST-Segment</strong>: Neutral ST morphology (+0.04 mV deviation).</li>
+<li><strong>QTc Interval (Fridericia)</strong>: 418 ms (Normal baseline: &lt; 450 ms).</li>
+</ul>
+<h3>Heart Rate Variability (HRV) Spectral Power Density</h3>
+<ul>
+<li><strong>LF/HF Ratio</strong>: 2.4 (Elevated sympathetic load)</li>
+<li><strong>RMSSD</strong>: 22 ms (Suppressed parasympathetic tone)</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#689F38]"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> Oxidative Stress Markers</h3>
+<ul>
+<li><strong>Malondialdehyde (MDA)</strong>: 3.8 μmol/L</li>
+<li><strong>F2-Isoprostanes</strong>: 45 pg/mg creatinine</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Antioxidant Sources</h3>
+<ul>
+<li><strong>Glutathione (GSH)</strong>: 1.2 μmol/g Hb</li>
+<li><strong>CoQ10</strong>: 0.45 μg/mL</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg> Medications</h3>
+<ul>
+<li><strong>Lisinopril</strong>: 20mg Daily</li>
+<li><strong>Metformin</strong>: 1000mg BID</li>
+<li><strong>Atorvastatin</strong>: 40mg Daily</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Care Plan Instructions</h3>
+<ul>
+<li><input disabled="" type="checkbox"> [Goal]: Establish asthma action plan, consider biologic dupilumab initiation, and deploy HEPA environmental filtration.</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#689F38]"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> Oxidative Stress Markers</h3>
+<ul>
+<li><strong>Malondialdehyde (MDA)</strong>: 3.8 μmol/L</li>
+<li><strong>F2-Isoprostanes</strong>: 45 pg/mg creatinine</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Antioxidant Sources</h3>
+<ul>
+<li><strong>Glutathione (GSH)</strong>: 1.2 μmol/g Hb</li>
+<li><strong>CoQ10</strong>: 0.45 μg/mL</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg> Medications</h3>
+<ul>
+<li><strong>Lisinopril</strong>: 20mg Daily</li>
+<li><strong>Metformin</strong>: 1000mg BID</li>
+<li><strong>Atorvastatin</strong>: 40mg Daily</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Care Plan Instructions</h3>
+<ul>
+<li><input disabled="" type="checkbox"> [Goal]: Establish asthma action plan, consider biologic dupilumab initiation, and deploy HEPA environmental filtration.</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#689F38]"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> Oxidative Stress Markers</h3>
+<ul>
+<li><strong>Malondialdehyde (MDA)</strong>: 3.8 μmol/L</li>
+<li><strong>F2-Isoprostanes</strong>: 45 pg/mg creatinine</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Antioxidant Sources</h3>
+<ul>
+<li><strong>Glutathione (GSH)</strong>: 1.2 μmol/g Hb</li>
+<li><strong>CoQ10</strong>: 0.45 μg/mL</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg> Medications</h3>
+<ul>
+<li><strong>Lisinopril</strong>: 20mg Daily</li>
+<li><strong>Metformin</strong>: 1000mg BID</li>
+<li><strong>Atorvastatin</strong>: 40mg Daily</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Care Plan Instructions</h3>
+<ul>
+<li><input disabled="" type="checkbox"> [Goal]: Establish asthma action plan, consider biologic dupilumab initiation, and deploy HEPA environmental filtration.</li>
+<li><input disabled="" type="checkbox"> [Goal]: Implement low-dose naltrexone (LDN) trial, anti-inflammatory micronutrient protocol, and stress-induced HPA axis pacing.</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#689F38]"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> Oxidative Stress Markers</h3>
+<ul>
+<li><strong>Malondialdehyde (MDA)</strong>: 3.8 μmol/L</li>
+<li><strong>F2-Isoprostanes</strong>: 45 pg/mg creatinine</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Antioxidant Sources</h3>
+<ul>
+<li><strong>Glutathione (GSH)</strong>: 1.2 μmol/g Hb</li>
+<li><strong>CoQ10</strong>: 0.45 μg/mL</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg> Medications</h3>
+<ul>
+<li><strong>Lisinopril</strong>: 20mg Daily</li>
+<li><strong>Metformin</strong>: 1000mg BID</li>
+<li><strong>Atorvastatin</strong>: 40mg Daily</li>
+</ul>
+
+        </div>
+      </div>
+
+      <!-- Clinician Attestation -->
+      <div class="attestation">
+        <div class="attestation-field">
+          <div class="attestation-label">Clinician Signature</div>
+          <div class="attestation-line"></div>
+        </div>
+        <div class="attestation-field">
+          <div class="attestation-label">Date &amp; Time</div>
+          <div class="attestation-line"></div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="report-footer">
+        <div class="footer-brand">Pocket Gull • pocketgull.app</div>
+        <div class="footer-disclaimer">
+          This care plan was generated with AI assistance. Review and approval by a licensed clinician is required before implementation.
+        </div>
+      </footer>
+
+    </div>
+  </div>
+  <!-- script removed -->
+
+</body></html>

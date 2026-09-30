@@ -270,4 +270,18 @@ Every new feature, component, API endpoint, or clinical model shipped in Pocket-
   12. `AUTOMATION_BIAS`: Guarding against uncritical algorithmic deference with mandatory physical exam corroboration.
 - **Respectful Cost Transparency Terminology**: Enforce **"Standard Retail Benchmark"** and **"Estimated Out-of-Pocket Total"** across all cost and pricing views. Strictly prohibit adversarial labels. Position AI as a supportive assistant that amplifies clinician autonomy and frontline Community Health Workers (CHWs).
 
+## Cognitive Triad Standard: DSRP Systems, Oakley Neuroarchitecture & Seligman Agency
+- **The Epistemic Triad Mandate**: All research writing, care plans, clinical decision support (CDS) outputs, and patient consult interfaces MUST integrate:
+  1. **DSRP Systems Thinking (Cabrera)** for Structural Truth: Enforce explicit boundaries/distinctions ($D$), modular part-whole decomposition ($S$), causal biophysical feedbacks ($R$), and multi-stakeholder perspectives ($P$, including falsification passes).
+  2. **Oakley Neuroarchitecture** for Biological Bandwidth: Enforce the 4-slot working memory ceiling (`WM_SLOT_MAX = 4`), 3-step micro-chunk paragraphs (Anchor $\to$ Mechanism/Metaphor $\to$ Boundary), mandatory physical analogies for abstract mathematics/cascades, and interactive "Look-Away" retrieval practice over passive reading.
+  3. **Seligman Positive Psychology** for Voice & Agency: Eliminate learned helplessness by systematically reversing the 3 Ps in all patient interactions:
+     - *Permanence $\to$ Transience*: Reframe flares as temporary physiological feedback loops with clear trajectories.
+     - *Pervasiveness $\to$ Specificity*: Isolate specific affected physiological subsystems from the patient's identity.
+     - *Personalization $\to$ External Biophysical Feedback*: Reframe symptoms as natural biological responses, not personal faults.
+     - *Strengths-Based Micro-Wins (PERMA)*: Anchor care plans to existing character strengths and conclude every consult with an immediate, achievable micro-action.
+- **The Quiet Workshop Voice**: Clinical communication must convey deep warmth, craft-oriented reassurance, and grounded competence—eliminating panic-inducing red-alert language and therapeutic nihilism.
+- **"Tell, Don't Ask" Domain Chunks in Code**: Encapsulate related telemetry and state within services, exposing cohesive computed domain objects (e.g. `perfusionProfile`) rather than leaking multiple raw primitive signals into component templates.
+- **Canonical Specification**: Full details codified in [OAKLEY_CHUNKING_STANDARD.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/OAKLEY_CHUNKING_STANDARD.md).
+
+
 

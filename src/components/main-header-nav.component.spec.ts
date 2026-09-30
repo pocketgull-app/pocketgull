@@ -30,7 +30,9 @@ describe('MainHeaderNavComponent', () => {
       isLiveAgentActive: signal(false), 
       toggleLiveAgent: vi.fn(),
       showActiveRoom: signal(false),
-      toggleActiveRoom: vi.fn()
+      toggleActiveRoom: vi.fn(),
+      isResearchFrameVisible: signal(false),
+      toggleResearchFrame: vi.fn()
     };
     mockTheme = {
       currentTheme: signal('light'),
@@ -108,6 +110,16 @@ describe('MainHeaderNavComponent', () => {
     expect(component.isLangMenuOpen()).toBe(true);
     component.translator.setLanguage('es');
     expect(component.translator.selectedLanguageCode()).toBe('es');
+  });
+
+  it('should toggle Active Room tab and synchronize with navigation shell', () => {
+    component.toggleActiveRoomTab();
+    expect(mockPatientState.toggleActiveRoom).toHaveBeenCalledWith(true);
+  });
+
+  it('should toggle Research tab and synchronize with navigation shell', () => {
+    component.toggleResearchTab();
+    expect(mockPatientState.toggleResearchFrame).toHaveBeenCalledWith(true);
   });
 });
 

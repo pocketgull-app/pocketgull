@@ -9,6 +9,7 @@ import { BleWearablesHudComponent } from '../ble-wearables-hud.component';
 import { PhysioNetAcousticHudComponent } from '../physionet-acoustic-hud.component';
 import { VisualAcuityExamComponent } from '../shared/visual-acuity-exam.component';
 import { StormAnalysisComponent } from '../storm-analysis.component';
+import { MocaSuiteComponent } from '../moca/moca-suite.component';
 
 @Component({
   selector: 'app-biomedical-suite',
@@ -21,7 +22,8 @@ import { StormAnalysisComponent } from '../storm-analysis.component';
     BleWearablesHudComponent,
     PhysioNetAcousticHudComponent,
     VisualAcuityExamComponent,
-    StormAnalysisComponent
+    StormAnalysisComponent,
+    MocaSuiteComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -75,6 +77,11 @@ import { StormAnalysisComponent } from '../storm-analysis.component';
       <!-- Clinical Visual Acuity & Eye Exam Module -->
       <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
         <app-visual-acuity-exam />
+      </div>
+
+      <!-- Montreal Cognitive Assessment (MoCA 30-Point Standard Battery) -->
+      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+        <app-moca-suite />
       </div>
 
       <!-- Teledentistry FDI Odontogram & SIBI Systemic Cross-Talk Section -->

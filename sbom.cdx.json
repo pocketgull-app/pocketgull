@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:60cb02f7-365f-41d5-818f-36c1a3bce6f0",
+  "serialNumber": "urn:uuid:47108c75-39b1-45c8-86e3-9780411ad952",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-29T05:26:43.283Z",
+    "timestamp": "2026-09-30T16:49:52.224Z",
     "tools": {
       "components": [
         {
@@ -14002,8 +14002,8 @@
     {
       "type": "library",
       "name": "brace-expansion",
-      "version": "2.1.4",
-      "purl": "pkg:npm/brace-expansion@2.1.4",
+      "version": "2.1.7",
+      "purl": "pkg:npm/brace-expansion@2.1.7",
       "scope": "required",
       "licenses": [
         {
@@ -14015,7 +14015,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "8467d5ccfc6d85b7f7fb6ca383f441b3ad1c074161a814bfcef755ff8c27e3f0663746cd30c1cf73857f05b1627aa7f54ca0061801e76387928da8c29747f65e"
+          "content": "b996dec3536a7663c34cc27c6a1d72f9bfbd40426b7e45c593745c4d0c375f48d6ff1454bc52ac83509f41d49819d4db5d9584c6d53727771cc6d9dfc35162d2"
         }
       ]
     },
@@ -16422,8 +16422,8 @@
     {
       "type": "library",
       "name": "engine.io",
-      "version": "6.6.9",
-      "purl": "pkg:npm/engine.io@6.6.9",
+      "version": "6.6.11",
+      "purl": "pkg:npm/engine.io@6.6.11",
       "scope": "required",
       "licenses": [
         {
@@ -16435,7 +16435,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "7252a4c380bb9c9db698682855c0a0e95fd6fd3c5d37220e4ebf3d93638d66ef35aaa91d74f1431742d771b0308733c3f038e48910a3cee88ee98f9f9290f8be"
+          "content": "cf7e261a92e863ff3665b917d4ba8630869fdf08d530f2fa8150baf35403aa79b3276eacca723ca80137d8ff9aed46b39a9259f141ab1487806af8117d7cd8ae"
         }
       ]
     },
@@ -17162,8 +17162,8 @@
     {
       "type": "library",
       "name": "fast-uri",
-      "version": "4.1.4",
-      "purl": "pkg:npm/fast-uri@4.1.4",
+      "version": "4.2.1",
+      "purl": "pkg:npm/fast-uri@4.2.1",
       "scope": "required",
       "licenses": [
         {
@@ -17175,7 +17175,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "74e0d7ac8c654bd25276002784850a3a8b0a575a0cb54d95b55c3ced045a1f3ca5e63c4edbdd088b9b4465f09fcdf58d1e2de3296c0149d423d2a232b2175975"
+          "content": "4e61d081ec231ed32ad44e50280d2d384d32798190b36e4a642ff3889a6e6d1b56235e56f767babcf17275639e6415513921c1630fd0843f5de4e79f743e8b0e"
         }
       ]
     },
@@ -20402,8 +20402,8 @@
     {
       "type": "library",
       "name": "js-yaml",
-      "version": "5.3.0",
-      "purl": "pkg:npm/js-yaml@5.3.0",
+      "version": "5.4.2",
+      "purl": "pkg:npm/js-yaml@5.4.2",
       "scope": "required",
       "licenses": [
         {
@@ -20415,7 +20415,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "9aebadb18afe7b6f9ddeb4e0506b25ab9af16c1954cb7709eb522c1da83640d0d057eef35d68e45299802c86a386b94b96b811522ca68fa537cd4aff4cc2bce1"
+          "content": "9be6aabbe2f03b53bab08a2969f8fc1d4565e5a6b0213c1941eff21e93022a369605a03f774ec1fd074c6f7e76f5111fb6253e44c3072f7565b30de138deef5a"
         }
       ]
     },
@@ -28529,8 +28529,8 @@
     {
       "type": "library",
       "name": "webpack-dev-middleware",
-      "version": "8.1.1",
-      "purl": "pkg:npm/webpack-dev-middleware@8.1.1",
+      "version": "8.3.0",
+      "purl": "pkg:npm/webpack-dev-middleware@8.3.0",
       "scope": "excluded",
       "licenses": [
         {
@@ -28542,7 +28542,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "26bc4013f1f03661274e4ce45061c522d1e919a973b842140e27d78630242041d9cc72bf649155a13405e6e6d942581e462adea8b76bda566db6bae6387eb520"
+          "content": "8c534d301dbdba09a4114156f5ca5636a716150370b8c4cc568469295022cffe67877800e31f71e8344f84d1c673f48badeee910ff72ac03c30260af7426e52a"
         }
       ]
     },

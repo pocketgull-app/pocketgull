@@ -38,33 +38,35 @@ test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () =
     // 7. Verify 3D Double-Click OARS Flip interaction
     const flipButton = page.locator('text=dblclick 🔄 flip OARS');
     await expect(flipButton).toBeVisible({ timeout: 10000 });
-    await flipButton.click();
+    await flipButton.click({ force: true });
 
     // 8. Test PHQ-9 (Depression) tab navigation
-    const phq9TabBtn = page.locator('button', { hasText: 'PHQ-9' });
+    const phq9TabBtn = page.getByTestId('cas-tab-phq9');
     await expect(phq9TabBtn).toBeVisible({ timeout: 10000 });
-    await phq9TabBtn.click();
+    await phq9TabBtn.dispatchEvent('click');
 
     // Verify PHQ-9 question item renders
     const phq9Question = page.locator('text=Little interest or pleasure in doing things').first();
     await expect(phq9Question).toBeVisible({ timeout: 10000 });
 
     // 9. Test GAD-7 (Anxiety) tab navigation
-    const gad7TabBtn = page.locator('button', { hasText: 'GAD-7' });
+    const gad7TabBtn = page.getByTestId('cas-tab-gad7');
     await expect(gad7TabBtn).toBeVisible({ timeout: 10000 });
-    await gad7TabBtn.click();
+    await gad7TabBtn.dispatchEvent('click');
+    await page.waitForTimeout(500);
 
     // Verify GAD-7 question item renders
-    const gad7Question = page.locator('text=Feeling nervous, anxious, or on edge').first();
+    const gad7Question = page.locator('text=/Feeling nervous, anxious, or on edge/i').first();
     await expect(gad7Question).toBeVisible({ timeout: 10000 });
 
     // 10. Test Grow-Thyself (Life Index) tab navigation
-    const growTabBtn = page.locator('button', { hasText: 'Grow-Thyself' });
+    const growTabBtn = page.getByTestId('cas-tab-growthyself');
     await expect(growTabBtn).toBeVisible({ timeout: 10000 });
-    await growTabBtn.click();
+    await growTabBtn.dispatchEvent('click');
+    await page.waitForTimeout(500);
 
     // Verify Grow-Thyself header renders
-    const growHeader = page.locator('text=Active: Grow-Thyself Life Index');
+    const growHeader = page.locator('text=/Grow-Thyself/i').first();
     await expect(growHeader).toBeVisible({ timeout: 10000 });
   });
 

@@ -106,6 +106,7 @@ import { IPatient } from '../services/patient.types';
             @for (patient of filteredPatients(); track patient.id) {
               <button 
                 type="button"
+                [attr.data-testid]="'patient-option-' + patient.id"
                 (click)="selectPatient(patient.id)" 
                 class="group w-full text-left px-3.5 py-2.5 text-sm flex items-start gap-3 transition-colors relative border-l-4" 
                 [class.bg-blue-50]="patient.id === patientManagement.selectedPatientId()"

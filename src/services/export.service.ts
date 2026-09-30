@@ -1582,6 +1582,7 @@ export class ExportService {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://font.pocketgull.app/fonts.css" media="all">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1597,7 +1598,7 @@ export class ExportService {
       --border: #E5E7EB;
       --border-accent: #A7F3D0;
       --radius: 8px;
-      --font: 'Inter', system-ui, -apple-system, sans-serif;
+      --font: 'PocketGull', 'Inter', system-ui, -apple-system, sans-serif;
     }
 
     /* Provide missing tailwind dimensions for inline icons */
@@ -1815,6 +1816,7 @@ export class ExportService {
     .care-plan-title {
       font-size: 10pt;
       font-weight: 700;
+      font-family: 'PocketGull Halftone', 'PocketGull', sans-serif;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--brand-dark);
@@ -1827,6 +1829,7 @@ export class ExportService {
     .care-plan-body h1, .care-plan-body h2 {
       font-size: 10pt;
       font-weight: 700;
+      font-family: 'PocketGull Halftone', 'PocketGull', sans-serif;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--ink);
@@ -2062,7 +2065,7 @@ export class ExportService {
     }
   </style>
 </head>
-<body class="${isDyslexia ? 'dyslexia-mode' : ''}">
+<body class="eco-spore-traps ${isDyslexia ? 'dyslexia-mode eco-slow-reading' : ''}">
   <div class="print-bar">
     <span class="print-bar-title">Pocket Gull Care Plan — ${patientName}</span>
     <div class="print-bar-actions">

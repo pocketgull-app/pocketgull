@@ -376,7 +376,8 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
         if (levelLabel) {
           const cogBtn = page.locator(`button:has-text("${levelLabel}")`).first();
           await cogBtn.dispatchEvent('click').catch(() => {});
-          await page.waitForTimeout(1500); // Wait for translation to complete
+          // Wait for translation to complete (could take a few seconds via Gemini API)
+          await page.waitForTimeout(6000); 
           console.log(`  ✓ Translated Care Plan to Cognitive Level: "${pData.cognitiveLevel}"`);
         }
       } else {

@@ -29,14 +29,17 @@ describe('ClinicalAssessmentsService', () => {
   });
 
   it('should calculate MoCA cognitive impairment score and tier', () => {
-    service.setAnswer('moca', 1, 2);
-    service.setAnswer('moca', 2, 2);
+    service.setAnswer('moca', 1, 5);
+    service.setAnswer('moca', 2, 3);
     service.setAnswer('moca', 3, 2);
-    service.setAnswer('moca', 4, 2);
-    service.setAnswer('moca', 5, 2);
-    service.setAnswer('moca', 6, 2);
+    service.setAnswer('moca', 4, 1);
+    service.setAnswer('moca', 5, 3);
+    service.setAnswer('moca', 6, 3);
+    service.setAnswer('moca', 7, 2);
+    service.setAnswer('moca', 8, 5);
+    service.setAnswer('moca', 9, 6);
 
-    expect(service.mocaScore()).toBe(12);
+    expect(service.mocaScore()).toBe(30);
     expect(service.mocaTier().label).toBe('Normal Cognitive Function');
   });
 

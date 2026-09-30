@@ -103,6 +103,7 @@ import { PocketgullArchitectureAtlasComponent } from './components/shared/pocket
 import { CommunityHealthWorkerSuiteComponent } from './components/shared/community-health-worker-suite.component';
 import { SpecialistReferralHubComponent } from './components/specialist-referral-hub.component';
 import { SocraticMultilingualTerminalComponent } from './components/socratic-multilingual-terminal.component';
+import { MocaSuiteComponent } from './components/moca/moca-suite.component';
 
 @Component({
   selector: 'app-root',
@@ -182,7 +183,8 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
     ClinicalCommercialHubComponent,
     RoleDemoModalComponent,
     IntimacyRelationshipVitalityComponent,
-    FederalUswdsPortalComponent
+    FederalUswdsPortalComponent,
+    MocaSuiteComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -616,19 +618,19 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
                   </button>
                 }
                 <div class="flex p-1.5 bg-gray-200 dark:bg-zinc-800 rounded-[10px] w-full border border-gray-300 dark:border-zinc-700/60 shadow-sm">
-                  <button (click)="mobileActiveTab.set('chart')" 
-                          class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
+                  <button (click)="selectMobileTab('chart')" 
+                          class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
                           [class.bg-white]="mobileActiveTab() === 'chart'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'chart'" [class.text-black]="mobileActiveTab() === 'chart'" [class.dark:text-white]="mobileActiveTab() === 'chart'"
                           [class.text-gray-700]="mobileActiveTab() !== 'chart'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'chart'">
                     🩺 Chart
                   </button>
-                  <button (click)="mobileActiveTab.set('analysis')"
-                          class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
+                  <button (click)="selectMobileTab('analysis')"
+                          class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
                           [class.bg-white]="mobileActiveTab() === 'analysis'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'analysis'" [class.text-black]="mobileActiveTab() === 'analysis'" [class.dark:text-white]="mobileActiveTab() === 'analysis'"
                           [class.text-gray-700]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'analysis'">
                     📊 Analysis
                   </button>
-                  <button (click)="mobileActiveTab.set('tasks'); state.toggleActiveRoom(true)"
+                  <button (click)="selectMobileTab('tasks')"
                           data-testid="mobile-tab-room"
                           class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
                           [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
@@ -1471,6 +1473,14 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
       </div>
     }
 
+    <!-- 🧩 Montreal Cognitive Assessment (MoCA 30-Point Battery) Modal -->
+    @if (navShell.showMocaSuiteModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Montreal Cognitive Assessment MoCA Suite">
+        <div class="relative w-full max-w-5xl my-auto">
+          <app-moca-suite (close)="navShell.closeMocaSuite()" />
+        </div>
+      </div>
+    }
 
     <!-- 3D Joint Hologram & Tri-Plane Slicer Modal -->
     @if (showKneeHologramModal()) {
@@ -1580,6 +1590,7 @@ export class AppComponent implements OnDestroy {
   }
 
   public navShell = inject(NavigationShellService);
+  private cdr = inject(ChangeDetectorRef);
   public tour = inject(WalkthroughTourService);
   public readonly petAuditory = inject(PetAuditoryService);
   private readonly stressIntervention = inject(StressInterventionService);
@@ -2060,13 +2071,13 @@ export class AppComponent implements OnDestroy {
     } else {
       displayLevel = `${cog} in ${lang}`;
     }
-    this.selectedReadingLevel.set(displayLevel);
 
     this.translationAnalysis.set('');
     this.translationError.set(null);
 
     if (cog === 'standard' && lang.toLowerCase() === 'english') {
       this.previewText.set(this.originalPreviewText());
+      this.selectedReadingLevel.set(displayLevel);
       return;
     }
 
@@ -2086,6 +2097,7 @@ export class AppComponent implements OnDestroy {
       this.previewText.set(fallback);
       this.translationAnalysis.set(`Cognitive Level: [${cog.toUpperCase()}] • Target Language: [${lang.toUpperCase()}] (Deterministic Local Adapter)`);
     } finally {
+      this.selectedReadingLevel.set(displayLevel);
       this.isTranslating.set(false);
     }
   }
@@ -2290,7 +2302,24 @@ export class AppComponent implements OnDestroy {
 
   goBackToChart(): void {
     this.state.selectPart(null);
-    this.mobileActiveTab.set('chart');
+    this.selectMobileTab('chart');
+  }
+
+  selectMobileTab(tab: 'chart' | 'analysis' | 'tasks'): void {
+    this.mobileActiveTab.set(tab);
+    if (tab === 'tasks') {
+      this.state.toggleActiveRoom(true);
+      this.navShell.selectTab('tasks');
+    } else if (tab === 'analysis') {
+      this.isAnalysisCollapsed.set(false);
+      this.isChartCollapsed.set(true);
+      this.navShell.selectTab('analysis');
+    } else {
+      this.isChartCollapsed.set(false);
+      this.isAnalysisCollapsed.set(false);
+      this.navShell.selectTab('chart');
+    }
+    this.cdr.markForCheck();
   }
 
   isViewingVisitDetails = computed(() => {
@@ -2337,6 +2366,36 @@ export class AppComponent implements OnDestroy {
       const text = this.originalPreviewText();
       untracked(() => {
         this.state.activePatientSummary.set(text || null);
+      });
+    });
+
+    // Reactive synchronization between navShell.activeTab and the workspace view state
+    effect(() => {
+      const tab = this.navShell.activeTab();
+      untracked(() => {
+        if (tab === 'chart') {
+          this.mobileActiveTab.set('chart');
+          this.isChartCollapsed.set(false);
+          this.isAnalysisCollapsed.set(false);
+          this.state.showActiveRoom.set(false);
+          this.state.toggleResearchFrame(false);
+        } else if (tab === 'analysis') {
+          this.mobileActiveTab.set('analysis');
+          this.isAnalysisCollapsed.set(false);
+          this.isChartCollapsed.set(true);
+          this.state.showActiveRoom.set(false);
+          this.state.toggleResearchFrame(false);
+        } else if (tab === 'tasks' || tab === 'intake') {
+          this.mobileActiveTab.set('tasks');
+          this.state.showActiveRoom.set(true);
+        } else if (tab === 'moca') {
+          this.navShell.openMocaSuite();
+        } else if (tab === 'research') {
+          this.state.toggleResearchFrame(true);
+        } else if (tab === 'directory') {
+          this.isDirectoryOpen.set(true);
+        }
+        this.cdr.markForCheck();
       });
     });
 
