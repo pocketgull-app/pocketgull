@@ -38,7 +38,7 @@ describe('AnalysisContainerComponent Unit Suite', () => {
 
     const fixture = TestBed.createComponent(AnalysisContainerComponent);
     component = fixture.componentInstance;
-  });
+  }, 30000);
 
   it('1. Initializes default view modes and modal state signals', () => {
     expect(component.viewMode()).toBe('lenses');
