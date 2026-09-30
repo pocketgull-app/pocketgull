@@ -141,6 +141,7 @@ const SHIFT_ROSTER = [
     paradigms: ['Summary Overview', 'Functional Protocols', 'Global Health & WHO Initiatives'],
     researchQuery: 'cystic fibrosis CFTR modulators pancreatic enzyme replacement therapy',
     cognitiveLevel: 'child' as const,
+    language: 'spanish',
   },
   {
     id: 'p_srinivasa_ramanujan',
@@ -153,6 +154,7 @@ const SHIFT_ROSTER = [
     paradigms: ['Treatment Matrix', 'Global Health & WHO Initiatives', 'Patient Education'],
     researchQuery: 'amebic liver abscess nutritional rehabilitation hepatic recovery',
     cognitiveLevel: 'dyslexia' as const,
+    language: 'german',
   },
 ];
 
@@ -370,13 +372,13 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
       // Select cognitive level inside the modal
       if (pData.cognitiveLevel !== 'standard') {
         let levelLabel = '';
-        if (pData.cognitiveLevel === 'simplified') levelLabel = 'Cognition (Dyslexia-Friendly)';
+        if (pData.cognitiveLevel === 'simplified') levelLabel = 'Simplified Grade 8';
+        if (pData.cognitiveLevel === 'dyslexia') levelLabel = 'Cognition (Dyslexia-Friendly)';
         if (pData.cognitiveLevel === 'child') levelLabel = 'Pediatric (Child)';
         
         if (levelLabel) {
           const cogBtn = page.locator(`button:has-text("${levelLabel}")`).first();
           await cogBtn.dispatchEvent('click').catch(() => {});
-          // Wait for translation to complete (could take a few seconds via Gemini API)
           await page.waitForTimeout(6000); 
           console.log(`  ✓ Translated Care Plan to Cognitive Level: "${pData.cognitiveLevel}"`);
         }
@@ -384,6 +386,16 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
         const cogBtn = page.locator(`button:has-text("Standard")`).last(); // in modal
         await cogBtn.dispatchEvent('click').catch(() => {});
         console.log(`  ✓ Translated Care Plan to Cognitive Level: "standard"`);
+      }
+
+      // Select language translation if specified
+      if ((pData as any).language && (pData as any).language !== 'english') {
+        const langStr = (pData as any).language;
+        const capitalizedLang = langStr.charAt(0).toUpperCase() + langStr.slice(1);
+        const langBtn = page.locator(`button:has-text("${capitalizedLang}")`).first();
+        await langBtn.dispatchEvent('click').catch(() => {});
+        await page.waitForTimeout(6000); 
+        console.log(`  ✓ Translated Care Plan Language to: "${capitalizedLang}"`);
       }
 
       // ── Step 8: Export PDF & HTML Care Plan Snapshots ────────────────────
