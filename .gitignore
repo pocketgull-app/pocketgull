@@ -384,3 +384,13 @@ btkd_*.json
 # Sandboxing descriptor (local host tooling)
 .sandbox.json
 
+# Ephemeral debug, scratch, and hotfix scripts
+fix*.js
+fix*.cjs
+patch*.js
+patch*.cjs
+*.tmp
+*.temp
+scripts/*.log
+scripts/output/
+

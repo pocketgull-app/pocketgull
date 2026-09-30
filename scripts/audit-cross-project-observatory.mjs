@@ -3,12 +3,12 @@
  * 🌐 Cross-Project Mozilla HTTP Observatory Security Auditor
  *
  * Scans all sibling projects and monorepo workspaces across the ecosystem:
- * - c:\Users\philg\Pocketgull\pocketgull
- * - c:\Users\philg\Pocketgull\neuro-bionic-reader
- * - c:\Users\philg\Pocketgull\pg2
- * - c:\Users\philg\Pocketgull\uswds
- * - c:\Users\philg\Pocketgull\pocketgull\companion-apps\avs-therapy
- * - c:\Users\philg\Pocketgull\pocketgull\pocketgull_api
+ * - pocketgull (Core App)
+ * - neuro-bionic-reader
+ * - pg2
+ * - uswds
+ * - companion-apps/avs-therapy
+ * - pocketgull_api
  *
  * Evaluates both static configuration (Express/FastAPI/Firebase/Vercel) and live endpoints.
  */

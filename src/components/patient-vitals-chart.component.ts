@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input, ViewChild, ElementRef, OnChanges, SimpleChanges, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HistoryEntry, IPatientVitals } from '../services/patient.types';
-import { Chart } from 'chart.js/auto';
+import * as echarts from 'echarts';
 
 @Component({
   selector: 'app-patient-vitals-chart',
@@ -12,7 +12,7 @@ import { Chart } from 'chart.js/auto';
     <div class="w-full bg-white border border-gray-100 rounded-xl p-4 shadow-sm mb-4">
       <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4">Longitudinal IVitals</h3>
       <div class="relative w-full h-48">
-         <canvas #chartCanvas></canvas>
+         <div #chartCanvas class="w-full h-full"></div>
          @if (noData) {
             <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-xs text-center bg-gray-50/80 rounded-lg">
                 Not enough historical<br>vitals recorded.
@@ -24,9 +24,9 @@ import { Chart } from 'chart.js/auto';
 })
 export class PatientVitalsChartComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) history!: HistoryEntry[];
-  @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLDivElement>;
 
-  private chart: Chart | null = null;
+  private chart: echarts.ECharts | null = null;
   private platformId = inject(PLATFORM_ID);
   noData = false;
 
@@ -39,7 +39,7 @@ export class PatientVitalsChartComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy() {
     if (this.chart) {
-      this.chart.destroy();
+      this.chart.dispose();
     }
   }
 
@@ -84,7 +84,7 @@ export class PatientVitalsChartComponent implements OnChanges, OnDestroy {
     this.noData = validData.length < 2;
 
     if (this.chart) {
-        this.chart.destroy();
+        this.chart.dispose();
         this.chart = null;
     }
 
@@ -95,85 +95,78 @@ export class PatientVitalsChartComponent implements OnChanges, OnDestroy {
     const sysData = validData.map(dp => dp.sys);
     const diaData = validData.map(dp => dp.dia);
 
-    const ctx = this.chartCanvas.nativeElement.getContext('2d');
-    if (!ctx) return;
+    const dom = this.chartCanvas.nativeElement;
+    if (!dom) return;
 
-    this.chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Weight (lbs)',
-            data: weightData,
-            borderColor: '#3b82f6', // Blueprint Blue
-            backgroundColor: '#3b82f6',
-            yAxisID: 'y',
-            tension: 0.3,
-            borderWidth: 2,
-            pointRadius: 3
-          },
-          {
-            label: 'Systolic BP',
-            data: sysData,
-            borderColor: '#ef4444', // Red
-            backgroundColor: '#ef4444',
-            yAxisID: 'y1',
-            tension: 0.3,
-            borderWidth: 2,
-            pointRadius: 3
-          },
-          {
-            label: 'Diastolic BP',
-            data: diaData,
-            borderColor: '#f87171', // Lighter Red
-            backgroundColor: '#f87171',
-            borderDash: [5, 5],
-            yAxisID: 'y1',
-            tension: 0.3,
-            borderWidth: 2,
-            pointRadius: 3
-          }
-        ]
+    this.chart = echarts.init(dom, null, { renderer: 'svg' });
+
+    const option = {
+      tooltip: {
+        trigger: 'axis',
+        textStyle: { fontFamily: 'Inter' }
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { 
-              display: true, 
-              position: 'top',
-              labels: { boxWidth: 10, usePointStyle: true, font: { size: 10, family: 'Inter' } }
-          },
-          tooltip: {
-               bodyFont: { family: 'Inter' },
-               titleFont: { family: 'Inter' }
-          }
+      legend: {
+        data: ['Weight (lbs)', 'Systolic BP', 'Diastolic BP'],
+        textStyle: { fontFamily: 'Inter', fontSize: 10 },
+        top: 0
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: labels,
+        axisLabel: { fontFamily: 'Inter', fontSize: 9 }
+      },
+      yAxis: [
+        {
+          type: 'value',
+          position: 'left',
+          axisLabel: { fontFamily: 'Inter', fontSize: 9, color: '#3b82f6' },
+          splitLine: { lineStyle: { color: '#f3f4f6' } }
         },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { font: { size: 9, family: 'Inter' } }
-          },
-          y: {
-            type: 'linear',
-            display: true,
-            position: 'left',
-            title: { display: false },
-            grid: { color: '#f3f4f6' }, // Subtle grid
-            ticks: { font: { size: 9, family: 'Inter' }, color: '#3b82f6' }
-          },
-          y1: {
-            type: 'linear',
-            display: true,
-            position: 'right',
-            grid: { drawOnChartArea: false }, // only draw once
-            ticks: { font: { size: 9, family: 'Inter' }, color: '#ef4444' }
-          }
+        {
+          type: 'value',
+          position: 'right',
+          axisLabel: { fontFamily: 'Inter', fontSize: 9, color: '#ef4444' },
+          splitLine: { show: false }
         }
-      }
-    });
+      ],
+      series: [
+        {
+          name: 'Weight (lbs)',
+          type: 'line',
+          yAxisIndex: 0,
+          data: weightData,
+          smooth: 0.3,
+          itemStyle: { color: '#3b82f6' },
+          lineStyle: { width: 2 }
+        },
+        {
+          name: 'Systolic BP',
+          type: 'line',
+          yAxisIndex: 1,
+          data: sysData,
+          smooth: 0.3,
+          itemStyle: { color: '#ef4444' },
+          lineStyle: { width: 2 }
+        },
+        {
+          name: 'Diastolic BP',
+          type: 'line',
+          yAxisIndex: 1,
+          data: diaData,
+          smooth: 0.3,
+          itemStyle: { color: '#f87171' },
+          lineStyle: { width: 2, type: 'dashed' }
+        }
+      ]
+    };
 
+    this.chart.setOption(option);
   }
 }

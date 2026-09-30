@@ -230,6 +230,7 @@ export class PatientDropdownComponent {
     const list = this.patientManagement.patients();
     if (!q) return list;
     return list.filter(p => 
+      p.id.toLowerCase().includes(q) ||
       p.name.toLowerCase().includes(q) ||
       (p.preexistingConditions || []).some(c => c.toLowerCase().includes(q)) ||
       (p.symptoms || []).some(s => s.name.toLowerCase().includes(q)) ||

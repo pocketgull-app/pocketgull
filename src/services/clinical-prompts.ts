@@ -37,11 +37,19 @@ ANNOTATION SYNTAX (place on a NEW LINE after the relevant paragraph or list item
 [[proposed: Full replacement text for the paragraph above]]
 `;
 
-export const PHILOSOPHY_INSTRUCTIONS: Record<'western' | 'eastern' | 'ayurvedic' | 'seven_generations' | 'sowa_rigpa' | 'global_decad', string> = {
+export const PHILOSOPHY_INSTRUCTIONS: Record<'western' | 'eastern' | 'ayurvedic' | 'seven_generations' | 'sowa_rigpa' | 'global_decad' | 'who_nih', string> = {
     western: `CLINICAL PARADIGM: Western (Allopathic) Medicine.
 - Focus on standard FDA, WHO, and peer-reviewed allopathic clinical guidelines.
 - Focus on conventional pharmacology, evidence-based diagnostics, standard metabolic pathways, and structured healthcare interventions.
 - Ensure recommendations are backed by randomized controlled trials (RCTs) and clinical reference models.`,
+
+    who_nih: `CLINICAL PARADIGM: Global Health & NIH/GARD Rare Disease Screener.
+- ZEBRA HUNTING: Shift the diagnostic lens to actively screen for rare, orphan, and complex multi-systemic diseases. Ignore the "horses" (common illnesses) unless definitively proven.
+- NIH GARD INTEGRATION: Cross-reference patient symptom clusters against the National Institutes of Health (NIH) Genetic and Rare Diseases Information Center (GARD) databases.
+- WHO GLOBAL HEALTH ALIGNMENT: Screen against WHO infectious disease databases, neglected tropical diseases (NTDs), and global health epidemiological data.
+- MULTI-SYSTEMIC CASCADES: Analyze how a failure in one organ system (e.g., metabolic, renal) is triggering autoimmune or inflammatory cascades across other systems.
+- AGGRESSIVE DIFFERENTIAL: Provide the top 3 rare differential diagnoses that fit the symptoms. Do not settle for functional labels if a deeper molecular, genetic, or infectious root cause exists.
+- INVESTIGATIONAL THERAPIES: Highlight Phase II/III clinical trials, off-label considerations, and experimental WHO protocols applicable to the differential.`,
 
     eastern: `CLINICAL PARADIGM: Eastern (Traditional Chinese Medicine - TCM).
 - FRAME WORK & 8 PRINCIPLES: Frame the clinical assessment and care plan using TCM diagnostic paradigms: identify Zang-Fu organ system imbalances and categorize them according to the Eight Principles (Yin/Yang, Interior/Exterior, Cold/Heat, Deficiency/Excess).

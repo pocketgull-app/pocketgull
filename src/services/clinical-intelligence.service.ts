@@ -105,7 +105,7 @@ export class ClinicalIntelligenceService {
 
     readonly recentNodes = signal<INodeContext[]>([]);
 
-    readonly lastActivePhilosophy = signal<'western' | 'eastern' | 'ayurvedic' | 'osteopathic' | null>(null);
+    readonly lastActivePhilosophy = signal<'western' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'who_nih' | null>(null);
     readonly lastPatientData = signal<string | null>(null);
 
     /**

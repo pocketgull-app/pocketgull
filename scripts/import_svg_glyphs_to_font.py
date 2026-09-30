@@ -5,7 +5,8 @@ from fontTools.svgLib.path import SVGPath
 from fontTools.pens.transformPen import TransformPen
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 
-font_path = r'c:\Users\philg\Pocketgull\pocketgull\public\fonts\google_fonts_submission\ofl\pocketgull\PocketGull-Bold.ttf'
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+font_path = os.path.join(ROOT_DIR, 'public', 'fonts', 'google_fonts_submission', 'ofl', 'pocketgull', 'PocketGull-Bold.ttf')
 
 svg_paths = {
     'P': "M12.38,78.22l-10.64.54c-1.03.05-1.07-2-1.06-3.25l.07-23.9L0,4.29l15.98-1.9c5.21-.62,11.35-.07,15.69,2.7,7,4.48,7.96,12.52,7.21,20.09-.74,7.47-4.74,12.96-12.61,14.38-4.56.83-9.87.84-14.7.78l.8,37.87ZM23.39,11.92l-12.54-.24.41,20.69,7.03-.13c3.04-.06,6.15-.86,8.02-2.88,4.52-4.89,2.17-17.35-2.92-17.44Z",

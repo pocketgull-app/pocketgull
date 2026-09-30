@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Pocket-Gull Environment & Security Optimization Suite
 .DESCRIPTION
@@ -84,7 +84,7 @@ try {
 }
 
 # Local Node Modules
-$nodeModulesExist = Test-Path "c:\Users\philg\Pocketgull\pocketgull\node_modules"
+$nodeModulesExist = Test-Path (Join-Path $PSScriptRoot "..\node_modules")
 Write-Check -Name "Project node_modules" -Pass $nodeModulesExist -Details $(if ($nodeModulesExist) { "Present" } else { "Run 'npm install'" })
 
 # ---------------------------------------------------------
@@ -92,7 +92,7 @@ Write-Check -Name "Project node_modules" -Pass $nodeModulesExist -Details $(if (
 # ---------------------------------------------------------
 Write-StatusHeader "3. MCP Server Configuration Audit"
 
-$mcpPath = "C:\Users\philg\.gemini\antigravity\mcp_config.json"
+$mcpPath = Join-Path ($env:USERPROFILE) ".gemini\antigravity\mcp_config.json"
 if (Test-Path $mcpPath) {
     try {
         $mcpConfig = Get-Content $mcpPath -Raw | ConvertFrom-Json

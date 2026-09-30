@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, effect, viewChild, ElementRef, OnDestroy, AfterViewInit, output, input, PLATFORM_ID, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -850,6 +851,9 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     protected ghostFresnelMaterial: THREE.ShaderMaterial | null = null;
     protected oregonatorTuringMaterial: THREE.ShaderMaterial | null = null;
 
+    private cascadeTweens: TWEEN.Tween[] = [];
+    private cascadeObjects: THREE.Object3D[] = [];
+
     readonly activeRehabPlan = computed<IPrescriptiveRehabPlan | null>(() => {
       if (!this.kinesiologyService) return null;
       return this.kinesiologyService.getPrescriptivePlan(this.state.activeRehabCondition());
@@ -887,6 +891,59 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
     onRehabCutawayRadiusChange(event: Event): void {
       this.onCutawayRadiusChange(event);
+    }
+
+    public triggerSystemicCascade(sourcePartId: string, targetPartId: string, colorHex: number = 0xff0055) {
+        // 1. Get origin and destination meshes
+        const sourceMesh = this.scene?.getObjectByName(sourcePartId) as THREE.Mesh;
+        const targetMesh = this.scene?.getObjectByName(targetPartId) as THREE.Mesh;
+        
+        if (!sourceMesh || !targetMesh || !this.scene) return;
+
+        const sourcePos = new THREE.Vector3();
+        const targetPos = new THREE.Vector3();
+        sourceMesh.getWorldPosition(sourcePos);
+        targetMesh.getWorldPosition(targetPos);
+
+        // 2. Create Arcing Bezier Curve (Parasympathetic Spatial Arc)
+        const midPoint = sourcePos.clone().lerp(targetPos, 0.5);
+        midPoint.z += 0.4; // Arching outward from the body
+        midPoint.y += 0.2;
+
+        const curve = new THREE.QuadraticBezierCurve3(sourcePos, midPoint, targetPos);
+        const points = curve.getPoints(50);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+        // 3. Glowing Spline Material (WebGL Bloom will catch this)
+        const material = new THREE.LineBasicMaterial({
+            color: colorHex,
+            transparent: true,
+            opacity: 0.6,
+        });
+
+        const splineObject = new THREE.Line(geometry, material);
+        splineObject.name = `cascade_spline_${sourcePartId}_${targetPartId}`;
+        this.scene.add(splineObject);
+        this.cascadeObjects.push(splineObject);
+
+        // 4. Particle Flow Animation (Bio-Rhythmic Pacing - 0.1Hz / 10s cycle or faster for acute events)
+        const particleGeo = new THREE.SphereGeometry(0.02, 8, 8);
+        const particleMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const particle = new THREE.Mesh(particleGeo, particleMat);
+        this.scene.add(particle);
+        this.cascadeObjects.push(particle);
+
+        const tween = new TWEEN.Tween({ t: 0 })
+            .to({ t: 1 }, 3000) // 3 seconds per cycle
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .onUpdate((obj) => {
+                const currentPos = curve.getPoint(obj.t);
+                particle.position.copy(currentPos);
+            })
+            .repeat(Infinity)
+            .start();
+            
+        this.cascadeTweens.push(tween);
     }
 
     onWoodCutTypeSelect(type: WoodCutType): void {
@@ -2068,6 +2125,16 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        // Clean up tweens and cascade meshes
+        this.cascadeTweens.forEach(t => t.stop());
+        this.cascadeObjects.forEach(obj => {
+            if (this.scene) this.scene.remove(obj);
+            if (obj instanceof THREE.Mesh || obj instanceof THREE.Line) {
+                if (obj.geometry) obj.geometry.dispose();
+                if (obj.material) (obj.material as THREE.Material).dispose();
+            }
+        });
+
         if (isPlatformBrowser(this.platformId)) {
             window.removeEventListener('resize', this.handleResize);
             if (this.resizeObserver) {
@@ -2562,9 +2629,12 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
         // Heart Organ Group
         const heartGroup = new THREE.Group();
+        // Move the pivot point (the group position) to the anatomical center of the heart
+        heartGroup.position.set(-0.06, 1.34, 0.04);
+        
         const cardiacMesh = new THREE.Mesh(rSphere(0.09), heartMaterial.clone());
         cardiacMesh.scale.set(1, 1.2, 1);
-        cardiacMesh.position.set(-0.06, 1.34, 0.04);
+        cardiacMesh.position.set(0, 0, 0); // Local to the group
         cardiacMesh.userData['layer'] = 'organ';
         cardiacMesh.userData['organ'] = 'heart';
         cardiacMesh.userData['id'] = 'heart';
@@ -2572,7 +2642,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
         // Ascending Aorta Trunk
         const aortaMesh = new THREE.Mesh(rBone(0.2, 0.025), vascularMaterial.clone());
-        aortaMesh.position.set(-0.04, 1.42, 0.02);
+        aortaMesh.position.set(0.02, 0.08, -0.02); // Local to the group
         aortaMesh.rotation.z = -0.2;
         aortaMesh.userData['layer'] = 'organ';
         aortaMesh.userData['organ'] = 'heart';
@@ -2585,15 +2655,17 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
         // Lungs Organ Group (Left & Right)
         const lungsGroup = new THREE.Group();
+        lungsGroup.position.set(0, 1.32, 0.02); // Set group origin
+
         const leftLung = new THREE.Mesh(rSkin(0.1, 0.25, 0.12), lungMaterial.clone());
-        leftLung.position.set(0.14, 1.32, 0.02);
+        leftLung.position.set(0.14, 0, 0);
         leftLung.userData['layer'] = 'organ';
         leftLung.userData['organ'] = 'lungs';
         leftLung.userData['id'] = 'lungs';
         lungsGroup.add(leftLung);
 
         const rightLung = new THREE.Mesh(rSkin(0.1, 0.25, 0.12), lungMaterial.clone());
-        rightLung.position.set(-0.14, 1.32, 0.02);
+        rightLung.position.set(-0.14, 0, 0);
         rightLung.userData['layer'] = 'organ';
         rightLung.userData['organ'] = 'lungs';
         rightLung.userData['id'] = 'lungs';
@@ -2784,23 +2856,29 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         const group = new THREE.Group();
         group.userData['id'] = id;
 
+        // Set the pivot point to the skin position
+        const baseX = skinPos?.x || 0;
+        const baseY = skinPos?.y || 0;
+        const baseZ = skinPos?.z || 0;
+        group.position.set(baseX, baseY, baseZ);
+
         // 1. Skin Layer
         const meshSkin = new THREE.Mesh(skinGeo, skinMat.clone());
-        this.applyPos(meshSkin, skinPos);
+        this.applyPosRelative(meshSkin, skinPos, baseX, baseY, baseZ);
         meshSkin.userData['layer'] = 'skin';
         meshSkin.userData['id'] = id;
         group.add(meshSkin);
 
         // 2. Muscle Layer
         const meshMuscle = new THREE.Mesh(muscleGeo, muscleMat.clone());
-        this.applyPos(meshMuscle, musclePos);
+        this.applyPosRelative(meshMuscle, musclePos, baseX, baseY, baseZ);
         meshMuscle.userData['layer'] = 'muscle';
         meshMuscle.userData['id'] = id;
         group.add(meshMuscle);
 
         // 3. Bone Layer
         const meshBone = new THREE.Mesh(boneGeo, boneMat.clone());
-        this.applyPos(meshBone, bonePos);
+        this.applyPosRelative(meshBone, bonePos, baseX, baseY, baseZ);
         meshBone.userData['layer'] = 'bone';
         meshBone.userData['id'] = id;
         group.add(meshBone);
@@ -2808,7 +2886,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         // 4. Organ Layer (Optional)
         if (mindGeo && mindMat && mindPos) {
             const meshMind = new THREE.Mesh(mindGeo, mindMat.clone());
-            this.applyPos(meshMind, mindPos);
+            this.applyPosRelative(meshMind, mindPos, baseX, baseY, baseZ);
             meshMind.userData['layer'] = 'organ';
             meshMind.userData['id'] = id;
             group.add(meshMind);
@@ -2817,7 +2895,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         // 5. Molecular Layer (Optional)
         if (molecularGeo && molecularMat && molecularPos) {
             const meshMolecular = new THREE.Mesh(molecularGeo, molecularMat.clone());
-            this.applyPos(meshMolecular, molecularPos);
+            this.applyPosRelative(meshMolecular, molecularPos, baseX, baseY, baseZ);
             meshMolecular.userData['layer'] = 'molecular';
             meshMolecular.userData['id'] = id;
             group.add(meshMolecular);
@@ -2825,6 +2903,14 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
         this.mannequinGroup.add(group);
         this.parts.set(id, group);
+    }
+
+    private applyPosRelative(mesh: THREE.Mesh, pos: any, baseX: number, baseY: number, baseZ: number) {
+        if (!pos) pos = {};
+        mesh.position.set((pos.x || 0) - baseX, (pos.y || 0) - baseY, (pos.z || 0) - baseZ);
+        if (pos.rx) mesh.rotation.x = pos.rx;
+        if (pos.ry) mesh.rotation.y = pos.ry;
+        if (pos.rz) mesh.rotation.z = pos.rz;
     }
 
     private tcmMeridianGroup: THREE.Group | null = null;
@@ -3686,6 +3772,8 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             const animate = () => {
                 if (!this.renderer || !this.scene || !this.camera) return;
                 this.animationFrameId = requestAnimationFrame(animate);
+
+                TWEEN.update(); // CRITICAL for particle flow
 
                 // Skip computation & WebGL draw calls when viewer is scrolled off-screen or tab is backgrounded
                 if (!this.isViewerVisible || (typeof document !== 'undefined' && document.hidden)) {

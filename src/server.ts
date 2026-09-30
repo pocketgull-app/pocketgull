@@ -852,6 +852,13 @@ const apiLimiter = rateLimit({
   message: { error: 'Too many requests. Please try again later.' }
 });
 app.use('/api', apiLimiter);
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  next();
+});
 app.use('/api', express.json({ limit: '100mb' }));
 app.use('/api', express.urlencoded({ limit: '100mb', extended: true }));
 app.use('/docs', apiLimiter);
