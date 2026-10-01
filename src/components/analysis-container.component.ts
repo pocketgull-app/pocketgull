@@ -120,7 +120,7 @@ import { SparseClinicalCanvasComponent } from './sparse-clinical-canvas.componen
                 [class]="viewMode() === 'suites'
                   ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
                   : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
-                <span>🧬 SUITES</span>
+                <span>🧬 DOMAIN SUITES</span>
               </button>
 
               <button type="button" (click)="viewMode.set('canvas')"

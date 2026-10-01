@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/patient_provider.dart';
 import '../models/patient_types.dart';
+import 'sparse_clinical_canvas_widget.dart';
 
 /// Analysis container — philosophy selector + analysis report shell.
 ///
@@ -21,6 +22,7 @@ class _AnalysisContainerWidgetState
     extends ConsumerState<AnalysisContainerWidget> {
   bool _justGenerated = false;
   bool _isLoading = false;
+  bool _showSmoeCanvas = false;
   DateTime? _lastRefreshTime;
 
   void _selectPhilosophy(MedicalPhilosophy philosophy) {
