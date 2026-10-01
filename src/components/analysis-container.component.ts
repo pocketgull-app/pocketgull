@@ -28,6 +28,7 @@ import { LensBiomolecularPhysicsComponent } from './turing/lens-biomolecular-phy
 import { LensPhysicalGenomicsComponent } from './turing/lens-physical-genomics.component';
 import { HobbyDomainCompanionComponent } from './hobby-domain-companion.component';
 import { SparseClinicalCanvasComponent } from './sparse-clinical-canvas.component';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -494,9 +495,10 @@ export class AnalysisContainerComponent {
   gcpHealthcare = inject(GcpHealthcareApiService);
   network = inject(NetworkStateService);
   ClinicalIcons = ClinicalIcons;
+  readonly moeRouter = inject(ClinicalMoERouterService);
 
   isSlidingIn = signal(true);
-  viewMode = signal<'lenses' | 'suites' | 'canvas'>('lenses');
+  readonly viewMode = this.moeRouter.analysisViewMode;
   showSimulatorModal = signal(false);
   showSoapModal = signal(false);
   showEdgeAiModal = signal(false);

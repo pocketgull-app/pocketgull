@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { AnalysisLens } from './clinical-intelligence.service';
 import { PatientStateService } from './patient-state.service';
+import { IPatient } from './patient.types';
 
 export interface IExpertSubnet {
   id: string;
@@ -19,6 +20,38 @@ export interface IGeminiThinkingConfig {
   includeThoughts: boolean;
   /** Human-readable tier name for clinical telemetry HUDs */
   reasoningTier: 'Fast (Low Latency)' | 'Standard (Balanced)' | 'Deep Clinical Synthesis (High Acuity)';
+}
+
+export interface IPatientTriageEvaluation {
+  patient: IPatient;
+  esiLevel: 1 | 2 | 3 | 4 | 5;
+  esiLabel: string;
+  acuityTier: 'STAT Emergency' | 'Emergent Sentinel' | 'Urgent Multi-System' | 'Less Urgent' | 'Non-Urgent Maintenance';
+  news2Score: number;
+  badgeBg: string;
+  badgeText: string;
+  borderClass: string;
+  vitalsSummary: {
+    bp: string;
+    hr: string;
+    spO2: string;
+    temp: string;
+    hasCriticalOutlier: boolean;
+    criticalOutliers: string[];
+  };
+  predictedTopExperts: Array<{
+    id: string;
+    name: string;
+    icon: string;
+    probabilityPercent: number;
+    routingRationale: string;
+  }>;
+  crossAttentionSynapse?: {
+    title: string;
+    mechanism: string;
+  };
+  priorityRationale: string;
+  targetMaxWaitMinutes: number;
 }
 
 export type UiExpertCategory =
@@ -1080,6 +1113,7 @@ export class ClinicalMoERouterService {
   readonly kValue = signal<number>(2); // Top-k (default 2)
   readonly activeScenario = signal<'default' | 'knee_oa' | 'diabetic_neuropathy' | 'acute_vitals'>('default');
   readonly activeShiftPatientId = signal<string | null>(null);
+  readonly analysisViewMode = signal<'canvas' | 'lenses' | 'suites'>('canvas');
 
   /** Active 12-Hour Shift Roster Patient Record */
   readonly activeShiftPatient = computed<IShiftPatientRecord | null>(() => {
@@ -1632,5 +1666,258 @@ ${flow.vitalsSignature.map(v => `- **${v.label}**: ${v.value} [${v.status.toUppe
 - **Cognitive Shield Impact:** **+${flow.resultingRouting.noiseReductionPercent}% noise reduction** (shelving 6 dormant experts to prevent clinical alarm fatigue).
 
 *Synthesis Narrative:* ${flow.clinicalDecisionStory}`;
+  }
+
+  /**
+   * Evaluates an individual patient record into an ESI Level 1-5 Acuity Tier,
+   * calculates NEWS2 early warning score, extracts vital outliers, and pre-computes
+   * the SMoE Top-2 UI Expert slot allocation and Synapse Cross-Attention Bridges.
+   */
+  public evaluatePatientTriage(patient: IPatient): IPatientTriageEvaluation {
+    const vitals = (patient.vitals || {}) as Record<string, string>;
+    const bp = vitals['bp'] || '120/80';
+    const hr = parseFloat(vitals['hr'] || '72');
+    const spO2Str = vitals['spO2'] || '98%';
+    const spO2 = parseFloat(spO2Str.replace('%', '')) || 98;
+    const tempStr = vitals['temp'] || '98.6°F';
+    const temp = parseFloat(tempStr.replace('°F', '').replace('F', '')) || 98.6;
+
+    // Parse Blood Pressure
+    const bpParts = bp.split('/');
+    const sysBp = parseInt(bpParts[0] || '120', 10) || 120;
+
+    const criticalOutliers: string[] = [];
+    if (sysBp >= 170 || sysBp <= 90) criticalOutliers.push(`Systolic BP ${sysBp} mmHg`);
+    if (spO2 < 93) criticalOutliers.push(`SpO2 ${spO2}% (Hypoxemia)`);
+    if (hr >= 115 || hr <= 48) criticalOutliers.push(`Heart Rate ${hr} bpm`);
+    if (temp >= 101.5 || temp <= 95) criticalOutliers.push(`Temperature ${temp}°F`);
+
+    // Calculate NEWS2 Score
+    let news2 = 0;
+    // Respiration / SpO2
+    if (spO2 <= 91) news2 += 3;
+    else if (spO2 <= 93) news2 += 2;
+    else if (spO2 <= 95) news2 += 1;
+    // Systolic BP
+    if (sysBp <= 90 || sysBp >= 220) news2 += 3;
+    else if (sysBp <= 100) news2 += 2;
+    else if (sysBp <= 110) news2 += 1;
+    // Pulse
+    if (hr <= 40 || hr >= 131) news2 += 3;
+    else if (hr >= 111 || hr <= 50) news2 += 2;
+    else if (hr >= 91) news2 += 1;
+    // Temp
+    if (temp <= 95.0) news2 += 3;
+    else if (temp >= 102.4) news2 += 2;
+    else if (temp <= 96.8 || temp >= 100.4) news2 += 1;
+
+    // Conditions and Chief Complaint text
+    const condText = [
+      ...(patient.preexistingConditions || []),
+      patient.patientGoals || '',
+      patient.id,
+      patient.name
+    ].join(' ').toLowerCase();
+
+    // ESI Determination
+    let esiLevel: 1 | 2 | 3 | 4 | 5 = 3;
+    let esiLabel = 'ESI-3 • Urgent Multi-System';
+    let acuityTier: IPatientTriageEvaluation['acuityTier'] = 'Urgent Multi-System';
+    let badgeBg = 'bg-amber-500/20 text-amber-300 border border-amber-500/40';
+    let badgeText = 'text-amber-300';
+    let borderClass = 'border-amber-500/40 hover:border-amber-400';
+    let priorityRationale = 'Requires multi-lens clinical synthesis and stepped-care intervention.';
+    let targetMaxWaitMinutes = 30;
+
+    // Level 1 criteria: Life threatening or severe hypoxemia/shock or radiation/aplastic crisis
+    if (
+      spO2 < 90 ||
+      sysBp <= 85 ||
+      condText.includes('radiation') ||
+      condText.includes('aplastic') ||
+      condText.includes('pancytopenia') ||
+      (condText.includes('ischemic') && spO2 <= 92) ||
+      condText.includes('resuscitation')
+    ) {
+      esiLevel = 1;
+      esiLabel = 'ESI-1 • STAT Resuscitation';
+      acuityTier = 'STAT Emergency';
+      badgeBg = 'bg-red-600/30 text-red-200 border border-red-500 shadow-[0_0_12px_rgba(239,68,68,0.4)] animate-pulse';
+      badgeText = 'text-red-300';
+      borderClass = 'border-red-600/80 hover:border-red-500 shadow-red-950/30';
+      priorityRationale = 'Immediate physician evaluation required; life-threatening metabolic, hemodynamic, or radiolytic compromise.';
+      targetMaxWaitMinutes = 0;
+    }
+    // Level 2 criteria: High risk, severe pain, hypertensive crisis, sentinel case, severe OSA with hypoxia
+    else if (
+      sysBp >= 148 ||
+      criticalOutliers.length > 0 ||
+      condText.includes('trauma') ||
+      condText.includes('polio') ||
+      condText.includes('sentinel') ||
+      condText.includes('severe obstructive sleep apnea') ||
+      condText.includes('intractable pain') ||
+      condText.includes('copd')
+    ) {
+      esiLevel = 2;
+      esiLabel = 'ESI-2 • Emergent Sentinel';
+      acuityTier = 'Emergent Sentinel';
+      badgeBg = 'bg-orange-500/20 text-orange-200 border border-orange-500/50';
+      badgeText = 'text-orange-300';
+      borderClass = 'border-orange-500/60 hover:border-orange-400';
+      priorityRationale = 'High-risk clinical presentation; severe pain, hypertensive stress, or organ system instability.';
+      targetMaxWaitMinutes = 10;
+    }
+    // Level 4 criteria: Focused, single complaint, stable vitals
+    else if (
+      (patient.preexistingConditions || []).length <= 1 &&
+      news2 <= 1 &&
+      !criticalOutliers.length &&
+      (condText.includes('lifestyle') || condText.includes('sprain') || condText.includes('mild'))
+    ) {
+      esiLevel = 4;
+      esiLabel = 'ESI-4 • Less Urgent';
+      acuityTier = 'Less Urgent';
+      badgeBg = 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+      badgeText = 'text-emerald-400';
+      borderClass = 'border-emerald-500/30 hover:border-emerald-400';
+      priorityRationale = 'Single focused diagnostic issue with stable physiological telemetry.';
+      targetMaxWaitMinutes = 60;
+    }
+    // Level 5 criteria: Preventive wellness check
+    else if (
+      patient.id === 'p_default_patient' ||
+      condText.includes('preventive') ||
+      condText.includes('wellness') ||
+      condText.includes('checkup')
+    ) {
+      esiLevel = 5;
+      esiLabel = 'ESI-5 • Non-Urgent';
+      acuityTier = 'Non-Urgent Maintenance';
+      badgeBg = 'bg-zinc-800 text-zinc-300 border border-zinc-700';
+      badgeText = 'text-zinc-400';
+      borderClass = 'border-zinc-800 hover:border-zinc-700';
+      priorityRationale = 'Routine preventive health maintenance; baseline demographic and lifestyle audit.';
+      targetMaxWaitMinutes = 120;
+    }
+
+    // Compute SMoE Expert Gating for this patient
+    const rawScores = REGISTERED_UI_EXPERTS.map(expert => {
+      let score = expert.defaultWeight;
+
+      // Keyword matches
+      let hits = 0;
+      for (const kw of expert.relevanceKeywords) {
+        if (condText.includes(kw)) {
+          hits++;
+        }
+      }
+      if (hits > 0) score += Math.min(3.5, hits * 0.8);
+
+      // Body part issues
+      if (patient.issues) {
+        for (const bp of expert.associatedBodyParts) {
+          if (patient.issues[bp]) score += 2.0;
+        }
+      }
+
+      // Vitals influences
+      if (expert.id === 'edge-ml-hud' && (spO2 < 95 || hr > 90)) score += 1.8;
+      if (expert.id === 'ismp-posology' && (sysBp >= 140 || (patient.medications && patient.medications.length >= 3))) score += 2.2;
+      if (expert.id === 'counterfactual-simulator' && (condText.includes('diabetes') || condText.includes('metabolic') || condText.includes('trajectory'))) score += 2.0;
+      if (expert.id === 'biomolecular-physics' && (condText.includes('radiation') || condText.includes('antibody') || condText.includes('autoimmune') || condText.includes('curie'))) score += 3.5;
+      if (expert.id === 'knee-hologram' && (condText.includes('knee') || condText.includes('joint') || condText.includes('ortho') || condText.includes('bone') || condText.includes('spine') || condText.includes('trauma'))) score += 3.2;
+
+      return { expert, rawScore: score };
+    });
+
+    // Softmax normalization (T = 0.85)
+    const T = 0.85;
+    const maxLogit = Math.max(...rawScores.map(r => r.rawScore));
+    const exps = rawScores.map(r => Math.exp((r.rawScore - maxLogit) / T));
+    const sumExps = exps.reduce((acc, v) => acc + v, 0);
+
+    const ranked = rawScores.map((r, i) => ({
+      expert: r.expert,
+      prob: Math.round((exps[i] / sumExps) * 1000) / 10
+    })).sort((a, b) => b.prob - a.prob);
+
+    const top1 = ranked[0];
+    const top2 = ranked[1];
+
+    const predictedTopExperts = [
+      {
+        id: top1.expert.id,
+        name: top1.expert.name,
+        icon: top1.expert.icon,
+        probabilityPercent: top1.prob,
+        routingRationale: `Primary slot: high affinity for ${top1.expert.category}`
+      },
+      {
+        id: top2.expert.id,
+        name: top2.expert.name,
+        icon: top2.expert.icon,
+        probabilityPercent: top2.prob,
+        routingRationale: `Secondary slot: stepped-care co-activation`
+      }
+    ];
+
+    // Synapse Cross-Attention Bridge Detection
+    let crossAttentionSynapse: IPatientTriageEvaluation['crossAttentionSynapse'];
+    const pairKey = [top1.expert.id, top2.expert.id].sort().join('+');
+    if (pairKey.includes('knee-hologram') && pairKey.includes('counterfactual-simulator')) {
+      crossAttentionSynapse = {
+        title: 'Mechanical ⟷ Kinematic Synapse Bridge',
+        mechanism: 'Joint space narrowing coupling with 6-month mobility trajectory'
+      };
+    } else if (pairKey.includes('ismp-posology') && pairKey.includes('counterfactual-simulator')) {
+      crossAttentionSynapse = {
+        title: 'Metabolic ⟷ Microvascular Synapse Bridge',
+        mechanism: 'Glycemic stabilization co-modeling with posology titration'
+      };
+    } else if (pairKey.includes('biomolecular-physics') && pairKey.includes('ismp-posology')) {
+      crossAttentionSynapse = {
+        title: 'Immunological ⟷ Receptor Pharmacokinetics Bridge',
+        mechanism: 'Receptor affinity kinetics aligned with low-dose micro-titration'
+      };
+    }
+
+    return {
+      patient,
+      esiLevel,
+      esiLabel,
+      acuityTier,
+      news2Score: news2,
+      badgeBg,
+      badgeText,
+      borderClass,
+      vitalsSummary: {
+        bp,
+        hr: `${hr} bpm`,
+        spO2: `${spO2}%`,
+        temp: `${temp}°F`,
+        hasCriticalOutlier: criticalOutliers.length > 0,
+        criticalOutliers
+      },
+      predictedTopExperts,
+      crossAttentionSynapse,
+      priorityRationale,
+      targetMaxWaitMinutes
+    };
+  }
+
+  /**
+   * Evaluates all enrolled patients into a triage ranking, sorted primarily by
+   * Emergency Severity Index (ESI Level 1 to 5) and secondarily by NEWS2 early warning score.
+   */
+  public evaluateAllPatientsTriage(patients: IPatient[]): IPatientTriageEvaluation[] {
+    return patients
+      .map(p => this.evaluatePatientTriage(p))
+      .sort((a, b) => {
+        // Primary sort: ESI Level ascending (1 is most critical, 5 is least)
+        if (a.esiLevel !== b.esiLevel) return a.esiLevel - b.esiLevel;
+        // Secondary sort: NEWS2 descending (higher score is higher risk)
+        return b.news2Score - a.news2Score;
+      });
   }
 }
