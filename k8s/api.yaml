@@ -18,7 +18,7 @@ spec:
         - name: api
           image: pocketgull-api
           ports:
-            - containerPort: 8080
+            - containerPort: 8001
           envFrom:
             - configMapRef:
                 name: pocketgull-config
@@ -55,5 +55,5 @@ spec:
   ports:
     - protocol: TCP
       port: 8080
-      targetPort: 8080
+      targetPort: 8001
   type: ClusterIP

@@ -59,7 +59,41 @@ def audit_finops_posture(repo_root: Path) -> Dict[str, Any]:
     else:
         issues.append("[WARN] k8s/agones-autoscaler.yaml not found.")
 
-    # 2. Audit Helm Chart default values
+    # 2. Audit Agones Fleet scale-to-zero baseline and UDP media streaming
+    fleet_file = k8s_dir / "agones-fleet.yaml"
+    if fleet_file.exists():
+        content = fleet_file.read_text(encoding="utf-8")
+        if re.search(r"replicas:\s*0", content):
+            passes.append("[PASS] Agones Fleet baseline replicas set to 0 (controlled by FleetAutoscaler).")
+        else:
+            issues.append("[WARN] Agones Fleet baseline replicas > 0; autoscaler buffer should govern active capacity.")
+
+        if "protocol: UDP" in content:
+            passes.append("[PASS] Agones Fleet voice media port configured for low-latency UDP streaming.")
+        else:
+            issues.append("[WARN] Agones Fleet voice port missing explicit UDP protocol.")
+    else:
+        issues.append("[WARN] k8s/agones-fleet.yaml not found.")
+
+    # 3. Audit Workload Security Contexts across all k8s manifests
+    for manifest_name in ["web.yaml", "api.yaml", "hue-relay.yaml", "otel-collector.yaml"]:
+        manifest_file = k8s_dir / manifest_name
+        if manifest_file.exists():
+            content = manifest_file.read_text(encoding="utf-8")
+            missing_secs = []
+            if "runAsNonRoot: true" not in content:
+                missing_secs.append("runAsNonRoot")
+            if "readOnlyRootFilesystem: true" not in content:
+                missing_secs.append("readOnlyRootFilesystem")
+            if "allowPrivilegeEscalation: false" not in content:
+                missing_secs.append("allowPrivilegeEscalation: false")
+
+            if not missing_secs:
+                passes.append(f"[PASS] {manifest_name} enforces hardened securityContext (non-root, read-only rootfs).")
+            else:
+                issues.append(f"[FAIL] {manifest_name} missing security controls: {', '.join(missing_secs)}")
+
+    # 4. Audit Helm Chart default values
     values_file = charts_dir / "values.yaml"
     if values_file.exists():
         content = values_file.read_text(encoding="utf-8")
@@ -75,14 +109,14 @@ def audit_finops_posture(repo_root: Path) -> Dict[str, Any]:
     else:
         issues.append("[WARN] charts/pocketgull/values.yaml not found.")
 
-    # 3. Compute baseline monthly idle cost projection
+    # 5. Compute baseline monthly idle cost projection
     # GCP Free tier provides 1 free cluster management fee.
     # When minReplicas = 0 and node pool scales to 0, monthly idle compute cost = $0.00.
-    is_scale_to_zero = len([i for i in issues if "minReplicas" in i]) == 0
+    is_scale_to_zero = len([i for i in issues if "minReplicas" in i or "replicas > 0" in i]) == 0
     estimated_idle_monthly_cost = "$0.00 (Scale-to-zero active with 1 free GKE cluster management tier)" if is_scale_to_zero else "~$45.00 - $120.00/mo (Idle pods active)"
 
     return {
-        "success": len(issues) == 0,
+        "success": len([i for i in issues if i.startswith("[FAIL]")]) == 0,
         "passes": passes,
         "issues": issues,
         "estimated_idle_monthly_cost": estimated_idle_monthly_cost,

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { NanoProvider } from './nano.provider';
 import { AiCacheService } from '../ai-cache.service';
+import { IsmpSafetyGuardService } from '../ismp-safety-guard.service';
 
 describe('NanoProvider', () => {
   let provider: NanoProvider;
@@ -16,6 +17,7 @@ describe('NanoProvider', () => {
     TestBed.configureTestingModule({
       providers: [
         NanoProvider,
+        IsmpSafetyGuardService,
         { provide: AiCacheService, useValue: mockCache }
       ]
     });
@@ -89,5 +91,45 @@ describe('NanoProvider', () => {
     expect(verification.status).toContain('Verified by On-Device Built-in AI');
     expect(verification.issues.length).toBe(1);
     expect(verification.issues[0].suggestedFix).toBe('5 mg');
+  });
+
+  it('7. Catches naked decimals (.5 mg -> 0.5 mg) and dangerous abbreviations with zero egress when window.ai is absent', async () => {
+    (globalThis as any).ai = undefined;
+    const verification = await provider.verifySection(
+      'Medication Order',
+      'Administer .5 mg clonidine QD',
+      'Clinical chart'
+    );
+
+    expect(verification.status).toContain('adjustments identified');
+    expect(verification.issues.length).toBeGreaterThanOrEqual(2);
+
+    const nakedDecimalIssue = verification.issues.find(i => i.claim === '.5 mg');
+    expect(nakedDecimalIssue).toBeDefined();
+    expect(nakedDecimalIssue?.suggestedFix).toBe('0.5 mg');
+
+    const qdIssue = verification.issues.find(i => i.claim === 'QD');
+    expect(qdIssue).toBeDefined();
+    expect(qdIssue?.suggestedFix).toBe('daily');
+  });
+
+  it('8. Flags look-alike/sound-alike (LASA) confusion pairs and recommends FDA Tall Man lettering', async () => {
+    (globalThis as any).ai = undefined;
+    const audit = provider.auditPrescriptionSafety('Start hydralazine 25 mg PO BID for blood pressure');
+
+    expect(audit.hasViolations).toBe(true);
+    expect(audit.tallManApplied).toContain('hydrALAZINE');
+    expect(audit.sanitizedText).toContain('hydrALAZINE');
+
+    const lasaViolation = audit.violations.find(v => v.type === 'LOOK_ALIKE_SOUND_ALIKE');
+    expect(lasaViolation).toBeDefined();
+    expect(lasaViolation?.confusableWith).toBe('hydrOXYzine');
+  });
+
+  it('9. Direct auditPrescriptionSafety returns verified safe audit for clean clinical input', () => {
+    const audit = provider.auditPrescriptionSafety('Give metFORMIN 500 mg daily with dinner');
+    expect(audit.hasViolations).toBe(false);
+    expect(audit.violations.length).toBe(0);
+    expect(audit.isSafe).toBe(true);
   });
 });
