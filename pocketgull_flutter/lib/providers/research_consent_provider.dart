@@ -3,6 +3,9 @@ library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/research_cohort.dart';
+import '../models/sentinel_types.dart';
+import '../models/social_vector.dart';
+import '../services/social_gravitation_service.dart';
 
 class ResearchConsentState {
   final double lifetimeEarningsUsd;
@@ -11,6 +14,9 @@ class ResearchConsentState {
   final List<DividendLedgerEntry> ledger;
   final bool isAuthorized;
   final bool isStreamingTelemetry;
+  final List<SentinelPacket> streamedPackets;
+  final List<SocialVector> socialVectors;
+  final int syncedVectorsCount;
 
   const ResearchConsentState({
     this.lifetimeEarningsUsd = 125.00,
@@ -19,6 +25,9 @@ class ResearchConsentState {
     this.ledger = const [],
     this.isAuthorized = true,
     this.isStreamingTelemetry = true,
+    this.streamedPackets = const [],
+    this.socialVectors = const [],
+    this.syncedVectorsCount = 0,
   });
 
   ResearchConsentState copyWith({
@@ -28,6 +37,9 @@ class ResearchConsentState {
     List<DividendLedgerEntry>? ledger,
     bool? isAuthorized,
     bool? isStreamingTelemetry,
+    List<SentinelPacket>? streamedPackets,
+    List<SocialVector>? socialVectors,
+    int? syncedVectorsCount,
   }) {
     return ResearchConsentState(
       lifetimeEarningsUsd: lifetimeEarningsUsd ?? this.lifetimeEarningsUsd,
@@ -36,6 +48,9 @@ class ResearchConsentState {
       ledger: ledger ?? this.ledger,
       isAuthorized: isAuthorized ?? this.isAuthorized,
       isStreamingTelemetry: isStreamingTelemetry ?? this.isStreamingTelemetry,
+      streamedPackets: streamedPackets ?? this.streamedPackets,
+      socialVectors: socialVectors ?? this.socialVectors,
+      syncedVectorsCount: syncedVectorsCount ?? this.syncedVectorsCount,
     );
   }
 }
@@ -82,7 +97,12 @@ class ResearchConsentNotifier extends StateNotifier<ResearchConsentState> {
       ),
     ];
 
-    state = state.copyWith(cohorts: initialCohorts);
+    state = state.copyWith(
+      cohorts: initialCohorts,
+      streamedPackets: defaultSentinelPackets(),
+      socialVectors: SocialGravitationService.defaultSocialVectors,
+      syncedVectorsCount: SocialGravitationService.defaultSocialVectors.length,
+    );
   }
 
   void toggleCohortEnrollment(String cohortId) {
@@ -115,6 +135,19 @@ class ResearchConsentNotifier extends StateNotifier<ResearchConsentState> {
 
   void toggleTelemetryStream() {
     state = state.copyWith(isStreamingTelemetry: !state.isStreamingTelemetry);
+  }
+
+  void streamSentinelPacket(SentinelPacket packet) {
+    state = state.copyWith(
+      streamedPackets: [...state.streamedPackets, packet],
+    );
+  }
+
+  void syncSocialVector(SocialVector vector) {
+    state = state.copyWith(
+      socialVectors: [...state.socialVectors, vector],
+      syncedVectorsCount: state.syncedVectorsCount + 1,
+    );
   }
 }
 

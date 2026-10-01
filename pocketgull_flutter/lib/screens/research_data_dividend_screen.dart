@@ -137,6 +137,97 @@ class ResearchDataDividendScreen extends ConsumerWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+
+            // Live Telemetry & Sentinel Stream Status
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFF18181B),
+                borderRadius: BorderRadius.circular(12.0),
+                border: Border.all(
+                  color: state.isStreamingTelemetry
+                      ? const Color(0xFF0D9488)
+                      : const Color(0xFF27272A),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            state.isStreamingTelemetry ? Icons.wifi_tethering : Icons.wifi_tethering_off,
+                            color: state.isStreamingTelemetry
+                                ? const Color(0xFF2DD4BF)
+                                : const Color(0xFF71717A),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            state.isStreamingTelemetry
+                                ? 'ENCRYPTED TELEMETRY STREAMING (LIVE)'
+                                : 'TELEMETRY STREAM PAUSED',
+                            style: TextStyle(
+                              color: state.isStreamingTelemetry
+                                  ? const Color(0xFF2DD4BF)
+                                  : const Color(0xFF71717A),
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: state.isStreamingTelemetry
+                              ? const Color(0xFF042F2E)
+                              : const Color(0xFF27272A),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          state.isStreamingTelemetry ? 'ACTIVE' : 'STANDBY',
+                          style: TextStyle(
+                            color: state.isStreamingTelemetry
+                                ? const Color(0xFF2DD4BF)
+                                : const Color(0xFFA1A1AA),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    state.isStreamingTelemetry
+                        ? '${state.streamedPackets.length} Sentinel nodes routing packets • ${state.syncedVectorsCount} social vectors perturbed via Laplace Differential Privacy (ε=0.5).'
+                        : 'Biosignal packet streaming is disabled. No continuous sensor telemetry is egressed.',
+                    style: const TextStyle(
+                      color: Color(0xFFA1A1AA),
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Row(
+                    children: [
+                      Icon(Icons.lock, size: 12, color: Color(0xFF2DD4BF)),
+                      SizedBox(width: 4),
+                      Text(
+                        'Offline Ledger Sealed • Hive Secure Storage (AES-256)',
+                        style: TextStyle(color: Color(0xFF71717A), fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 24),
 
             // Cohort Switchboard
@@ -230,6 +321,65 @@ class ResearchDataDividendScreen extends ConsumerWidget {
                 ),
               );
             }),
+
+            if (state.ledger.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              const Text(
+                'RECENT DIVIDEND TRANSFERS',
+                style: TextStyle(
+                  color: Color(0xFFA1A1AA),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.8,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...state.ledger.map((entry) => Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF18181B),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFF27272A)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              entry.cohortTitle,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              entry.transactionHash,
+                              style: const TextStyle(
+                                color: Color(0xFF71717A),
+                                fontSize: 11,
+                                fontFeatures: [FontFeature.tabularFigures()],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          '+\$${entry.amountUsd.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            color: Color(0xFF2DD4BF),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFeatures: [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+            ],
           ],
         ),
       ),
