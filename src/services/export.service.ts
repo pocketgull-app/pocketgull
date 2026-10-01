@@ -850,21 +850,32 @@ export class ExportService {
    * with inline SVG spectrum gauges. Prevents raw JSON code blocks from leaking into
    * clinical care plan exports and print documents.
    */
-  private transformBiomarkerJsonToClinicalView(content: string): string {
+  /**
+   * Transforms raw biomarker/biochemical JSON arrays (both markdown-fenced and raw unfenced arrays)
+   * into a structured, highly-legible clinical table with status chips and an optometric spectrum
+   * with inline SVG spectrum gauges. Prevents raw JSON code blocks from leaking into
+   * clinical care plan exports and print documents.
+   */
+  public transformBiomarkerJsonToClinicalView(content: string): string {
     if (!content) return '';
 
-    // Matches markdown code blocks containing JSON arrays with biomarker objects
-    const fencedJsonRegex = /```(?:json)?\s*(\[\s*\{\s*"name"[\s\S]*?\}\s*\])\s*```/gi;
-
-    return content.replace(fencedJsonRegex, (_match, jsonStr) => {
+    const renderBiomarkerTable = (jsonStr: string): string | null => {
       try {
-        const parsed = JSON.parse(jsonStr);
-        if (!Array.isArray(parsed) || parsed.length === 0) return _match;
+        let cleanStr = jsonStr.trim();
+        // Relax potential unclosed array or minor trailing comma issues
+        if (cleanStr.startsWith('[') && !cleanStr.endsWith(']')) {
+          const lastCurly = cleanStr.lastIndexOf('}');
+          if (lastCurly !== -1) {
+            cleanStr = cleanStr.substring(0, lastCurly + 1) + ']';
+          }
+        }
+        const parsed = JSON.parse(cleanStr);
+        if (!Array.isArray(parsed) || parsed.length === 0) return null;
 
         const isBiomarkerArray = parsed.some(
           item => item && typeof item === 'object' && item.name && (item.level || item.pathway)
         );
-        if (!isBiomarkerArray) return _match;
+        if (!isBiomarkerArray) return null;
 
         let rowsHtml = '';
         parsed.forEach(item => {
@@ -910,8 +921,7 @@ export class ExportService {
             </tr>`;
         });
 
-        return `
-<div class="biomarker-matrix-export">
+        return `\n<div class="biomarker-matrix-export">
   <div class="biomarker-chart-summary">
     <div class="biomarker-chart-title">🔬 Biochemical &amp; Biomarker Telemetry</div>
     <div class="biomarker-chart-subtitle">Orthomolecular Spectrum &amp; Physiological Pathways</div>
@@ -932,9 +942,25 @@ export class ExportService {
 </div>\n`;
       } catch (e) {
         console.debug('[ExportService] Could not parse biomarker JSON block, rendering raw:', (e as Error)?.message);
-        return _match;
+        return null;
       }
+    };
+
+    // 1. Matches markdown code blocks containing JSON arrays with biomarker objects
+    const fencedJsonRegex = /```(?:json)?\s*(\[\s*\{\s*["']name["'][\s\S]*?\}\s*\])\s*```/gi;
+    let result = content.replace(fencedJsonRegex, (_match, jsonStr) => {
+      const rendered = renderBiomarkerTable(jsonStr);
+      return rendered !== null ? rendered : _match;
     });
+
+    // 2. Matches raw (unfenced) JSON arrays containing biomarker objects
+    const rawJsonRegex = /(?:^|\n)\s*(\[\s*\{\s*["']name["'][\s\S]*?\}\s*\])(?:\s*(?:\n|$))/gi;
+    result = result.replace(rawJsonRegex, (_match, jsonStr) => {
+      const rendered = renderBiomarkerTable(jsonStr);
+      return rendered !== null ? rendered : _match;
+    });
+
+    return result;
   }
 
   private get markdownService(): MarkdownService | null {

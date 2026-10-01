@@ -70,4 +70,67 @@ describe('ExportService FHIR R4 Tri-Paradigm Bundle Suite', () => {
     expect(receipt.verificationUri).toContain('urn:pocketgull:verify:sha256:');
     expect(receipt.summary).toContain('Cryptographically sealed');
   });
+
+  describe('Biomarker Matrix & Care Plan Export Formatting', () => {
+    const sampleBiomarkers = [
+      { name: 'Vitamin D3', level: 'Deficient', pathway: 'Immune Modulation / T-reg / Neuro' },
+      { name: 'Glutathione (GSH)', level: 'Low-normal', pathway: 'Antioxidant / Oligodendrocyte Protection' },
+      { name: 'CoQ10', level: 'Optimal', pathway: 'Mitochondrial Respiration / Axonal Energy' },
+      { name: 'Homocysteine', level: 'Elevated', pathway: 'Cardiovascular / Neurotoxicity' }
+    ];
+
+    it('transforms fenced markdown JSON blocks into clinical tables with chips and SVG spectrums', () => {
+      const markdown = `
+### Biochemical & Biomarker Matrix
+Orthomolecular profile:
+\`\`\`json
+${JSON.stringify(sampleBiomarkers, null, 2)}
+\`\`\`
+Follow-up in 4 weeks.`;
+
+      const result = exportService.transformBiomarkerJsonToClinicalView(markdown);
+
+      expect(result).not.toContain('```json');
+      expect(result).toContain('biomarker-matrix-export');
+      expect(result).toContain('biomarker-chip chip-deficient');
+      expect(result).toContain('biomarker-chip chip-low');
+      expect(result).toContain('biomarker-chip chip-optimal');
+      expect(result).toContain('biomarker-chip chip-high');
+      expect(result).toContain('<svg width="100" height="14"');
+      expect(result).toContain('Vitamin D3');
+      expect(result).toContain('DEFICIENT');
+      expect(result).toContain('Homocysteine');
+      expect(result).toContain('ELEVATED');
+    });
+
+    it('transforms raw unfenced JSON biomarker arrays (Mara Santos pattern) into clinical tables', () => {
+      const rawReport = `
+BIOMARKER MATRIX
+Mara's orthomolecular profile is characteristic of active CNS autoimmune disease:
+[
+{ "name": "Vitamin D3", "level": "Deficient", "pathway": "Immune Modulation / T-reg / Neuro" },
+{ "name": "Glutathione (GSH)", "level": "Low", "pathway": "Antioxidant / Oligodendrocyte Protection" },
+{ "name": "CoQ10", "level": "Low", "pathway": "Mitochondrial Respiration / Axonal Energy" }
+]
+Stepped care instructions follow.`;
+
+      const result = exportService.transformBiomarkerJsonToClinicalView(rawReport);
+
+      expect(result).not.toContain('{ "name": "Vitamin D3"');
+      expect(result).toContain('biomarker-matrix-export');
+      expect(result).toContain('biomarker-chip chip-deficient');
+      expect(result).toContain('Glutathione (GSH)');
+      expect(result).toContain('Stepped care instructions follow.');
+    });
+
+    it('handles empty or non-biomarker content gracefully', () => {
+      expect(exportService.transformBiomarkerJsonToClinicalView('')).toBe('');
+      const standardText = 'Normal clinical notes without any biomarkers.';
+      expect(exportService.transformBiomarkerJsonToClinicalView(standardText)).toBe(standardText);
+
+      const nonBiomarkerJson = '```json\n[{"foo": "bar"}]\n```';
+      expect(exportService.transformBiomarkerJsonToClinicalView(nonBiomarkerJson)).toBe(nonBiomarkerJson);
+    });
+  });
 });
+
