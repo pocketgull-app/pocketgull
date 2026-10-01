@@ -89,11 +89,11 @@ describe('ClinicalMoERouterService', () => {
   describe('Frontend SMoE UI Gating Router', () => {
     it('should compute initial UI gating scores and partition into primary, secondary, and latent', () => {
       const scores = service.uiGatingScores();
-      expect(scores.length).toBe(8); // 8 registered UI experts
+      expect(scores.length).toBe(12); // 12 registered UI experts
       expect(service.primaryUiExpert()).not.toBeNull();
       expect(service.secondaryUiExpert()).not.toBeNull();
-      expect(service.latentUiExperts().length).toBe(6);
-      expect(service.cognitiveNoiseReductionPercent()).toBe(75); // (1 - 2/8) * 100%
+      expect(service.latentUiExperts().length).toBe(10);
+      expect(service.cognitiveNoiseReductionPercent()).toBe(83); // (1 - 2/12) * 100%
     });
 
     it('should route knee-hologram as primary and counterfactual-simulator as secondary in Knee OA scenario', () => {
@@ -142,13 +142,13 @@ describe('ClinicalMoERouterService', () => {
     it('should adjust kValue and update latent shelf size accordingly', () => {
       service.setKValue(3);
       expect(service.kValue()).toBe(3);
-      expect(service.latentUiExperts().length).toBe(5);
-      expect(service.cognitiveNoiseReductionPercent()).toBe(63); // (1 - 3/8) * 100%
+      expect(service.latentUiExperts().length).toBe(9);
+      expect(service.cognitiveNoiseReductionPercent()).toBe(75); // (1 - 3/12) * 100%
 
       service.setKValue(1);
       expect(service.kValue()).toBe(1);
-      expect(service.latentUiExperts().length).toBe(7);
-      expect(service.cognitiveNoiseReductionPercent()).toBe(88); // (1 - 1/8) * 100%
+      expect(service.latentUiExperts().length).toBe(11);
+      expect(service.cognitiveNoiseReductionPercent()).toBe(92); // (1 - 1/12) * 100%
     });
 
     it('should load shift patient and configure targeted expert and vitals', () => {
@@ -164,6 +164,67 @@ describe('ClinicalMoERouterService', () => {
       service.clearOverrides();
       expect(service.activeShiftPatientId()).toBeNull();
       expect(service.activeShiftPatient()).toBeNull();
+    });
+
+    it('should retrieve all 10 clinical shift decision flows and individual patient flows', () => {
+      const allFlows = service.getAllDecisionFlows();
+      expect(allFlows.length).toBe(10);
+
+      const p001Flow = service.getDecisionFlow('p001');
+      expect(p001Flow).not.toBeNull();
+      expect(p001Flow?.patientName).toBe('Homo Sapiens (Male, Metabolic)');
+      expect(p001Flow?.resultingRouting.primaryExpertId).toBe('ismp-posology');
+      expect(p001Flow?.resultingRouting.noiseReductionPercent).toBe(75);
+
+      const curieFlow = service.getDecisionFlow('p_marie_curie');
+      expect(curieFlow).not.toBeNull();
+      expect(curieFlow?.patientName).toBe('Marie Curie');
+      expect(curieFlow?.resultingRouting.primaryExpertId).toBe('biomolecular-physics');
+    });
+
+    it('should track activeDecisionFlow when a shift patient is loaded', () => {
+      expect(service.activeDecisionFlow()).toBeNull();
+
+      service.loadShiftPatient('p002');
+      const flow = service.activeDecisionFlow();
+      expect(flow).not.toBeNull();
+      expect(flow?.patientName).toBe('Homo Sapiens (Female, Asthma)');
+      expect(flow?.resultingRouting.primaryExpertId).toBe('edge-ml-hud');
+      expect(flow?.resultingRouting.secondaryExpertId).toBe('steeep-quality-hud');
+
+      service.clearOverrides();
+      expect(service.activeDecisionFlow()).toBeNull();
+    });
+
+    it('should synthesize rich epistemic explainability text for AI agent and clinician review', () => {
+      const explanation = service.explainDecisionFlow('p_frida_kahlo');
+      expect(explanation).toContain('Frida Kahlo');
+      expect(explanation).toContain('Somatosensory Re-Mapping & Central Sensitization Mitigation Bridge');
+      expect(explanation).toContain('Sparse Gating Softmax Distribution');
+      expect(explanation).toContain('75% noise reduction');
+
+      const nonExistent = service.explainDecisionFlow('unknown_patient_xyz');
+      expect(nonExistent).toContain('No SMoE decision flow profile found');
+    });
+
+    it('should elevate specialist-referral, clinical-trials-matcher, sdoh-navigator, and environmental-exposomics on relevant conversational cues', () => {
+      // 1. Specialist Referral trigger
+      service.setTranscriptQuery('need to refer to a cardiologist for urgent subspecialist consult');
+      expect(service.primaryUiExpert()?.expert.id).toBe('specialist-referral');
+
+      // 2. Clinical Trials trigger
+      service.setTranscriptQuery('looking for an active recruiting clinical trial for orphan disease novel therapy');
+      expect(service.primaryUiExpert()?.expert.id).toBe('clinical-trials-matcher');
+
+      // 3. SDOH Navigator trigger
+      service.setTranscriptQuery('patient experiencing severe food insecurity and housing instability copay difficulty');
+      expect(service.primaryUiExpert()?.expert.id).toBe('sdoh-navigator');
+
+      // 4. Environmental Exposomics trigger
+      service.setTranscriptQuery('wildfire smoke plume causing severe air quality aqi spike and heatwave');
+      expect(service.primaryUiExpert()?.expert.id).toBe('environmental-exposomics');
+
+      service.clearOverrides();
     });
   });
 });

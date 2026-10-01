@@ -28,7 +28,11 @@ export type UiExpertCategory =
   | 'diagnostic-radar'
   | 'ambient-scribe'
   | 'biophysics-genomics'
-  | 'clinical-synthesis';
+  | 'clinical-synthesis'
+  | 'referral-network'
+  | 'clinical-research'
+  | 'social-equity'
+  | 'environmental-exposome';
 
 export interface IUiExpertDefinition {
   id: string;
@@ -44,7 +48,7 @@ export interface IUiExpertDefinition {
   defaultWeight: number;
   computeCostFlops: number;
   cognitiveComplexity: number; // 1 (lightweight) to 5 (dense)
-  telemetrySource: 'Local Edge Wasm' | 'WebGPU Shader' | 'Gemini 3.8 Flash' | 'Gemini 3.8 Pro Deep Think';
+  telemetrySource: 'Local Edge Wasm' | 'WebGPU Shader' | 'Gemini 3.8 Flash' | 'Gemini 3.8 Pro Deep Think' | 'FHIR R4 Directory' | 'ClinicalTrials.gov NIH API' | 'US Census & CMS HRSN' | 'EPA AirNow & NOAA';
 }
 
 export interface IUiGatingScore {
@@ -196,6 +200,70 @@ export const REGISTERED_UI_EXPERTS: IUiExpertDefinition[] = [
     computeCostFlops: 0.35,
     cognitiveComplexity: 3,
     telemetrySource: 'Gemini 3.8 Pro Deep Think'
+  },
+  {
+    id: 'specialist-referral',
+    name: 'Specialist Referral & Co-Management Dossier Hub',
+    shortLabel: 'Specialist Referral',
+    icon: '🏥',
+    category: 'referral-network',
+    description: 'Sub-specialty diagnostic pre-flight gates, SBAR clinical hand-off, and FHIR R4 ServiceRequest generation.',
+    componentTag: 'app-specialist-referral-hub',
+    relevanceKeywords: ['specialist', 'referral', 'cardiologist', 'neurologist', 'endocrinologist', 'rheumatologist', 'consult', 'sbar', 'second opinion', 'hand-off', 'subspecialty', 'doctor', 'network'],
+    associatedBodyParts: [],
+    requiresHighAcuity: false,
+    defaultWeight: 0.15,
+    computeCostFlops: 0.15,
+    cognitiveComplexity: 3,
+    telemetrySource: 'FHIR R4 Directory'
+  },
+  {
+    id: 'clinical-trials-matcher',
+    name: 'TrialFinder: NIH & NCI Active Clinical Trials Matcher',
+    shortLabel: 'Clinical Trials',
+    icon: '🔬',
+    category: 'clinical-research',
+    description: 'Matches active recruiting Phase 2/3 clinical trials within a 25-100 mile radius based on diagnosis, age, and biomarker criteria.',
+    componentTag: 'app-clinical-trials-matcher',
+    relevanceKeywords: ['clinical trial', 'trial', 'investigator', 'study', 'recruiting', 'phase', 'experimental', 'novel therapy', 'orphan disease', 'refractory', 'nih', 'nci', 'biomarker'],
+    associatedBodyParts: [],
+    requiresHighAcuity: false,
+    defaultWeight: 0.14,
+    computeCostFlops: 0.20,
+    cognitiveComplexity: 3,
+    telemetrySource: 'ClinicalTrials.gov NIH API'
+  },
+  {
+    id: 'sdoh-navigator',
+    name: 'Social Determinants of Health (SDOH) & Community Care Navigator',
+    shortLabel: 'SDOH Navigator',
+    icon: '🏘️',
+    category: 'social-equity',
+    description: 'Housing stability, food security, $4 generic pharmacy benchmarks, Produce Rx, and CMS HRSN / PRAPARE closed-loop referrals.',
+    componentTag: 'app-sdoh-navigator',
+    relevanceKeywords: ['sdoh', 'housing', 'food', 'insecurity', 'transportation', 'poverty', 'financial', 'copay', 'assistance', 'z59', 'snap', 'produce rx', 'community health', 'navigator', 'social care'],
+    associatedBodyParts: [],
+    requiresHighAcuity: false,
+    defaultWeight: 0.18,
+    computeCostFlops: 0.10,
+    cognitiveComplexity: 2,
+    telemetrySource: 'US Census & CMS HRSN'
+  },
+  {
+    id: 'environmental-exposomics',
+    name: 'Geofenced Environmental Exposomics & Climate Resilience Radar',
+    shortLabel: 'Environmental Radar',
+    icon: '🗺️',
+    category: 'environmental-exposome',
+    description: 'Real-time EPA AQI, wildfire smoke PM2.5, ambient heatwave thermostability, and micro-climate therapeutic relocation.',
+    componentTag: 'app-geofenced-exposomics-radar',
+    relevanceKeywords: ['environment', 'exposomics', 'aqi', 'air quality', 'wildfire', 'smoke', 'pm2.5', 'heatwave', 'temperature', 'ozone', 'weather', 'climate', 'micro-climate', 'relocation', 'thermostability'],
+    associatedBodyParts: ['lung', 'skin', 'chest'],
+    requiresHighAcuity: false,
+    defaultWeight: 0.16,
+    computeCostFlops: 0.18,
+    cognitiveComplexity: 3,
+    telemetrySource: 'EPA AirNow & NOAA'
   }
 ];
 
@@ -249,6 +317,36 @@ export const CROSS_ATTENTION_BRIDGES: ICrossAttentionBridge[] = [
     clinicalImplication: 'Ambient dictation automatically maps holistic lifestyle recommendations into compliant billing codes.',
     actionableVector: 'Auto-populate Section A & P of SOAP note with validated ICD-10 & CPT codes.',
     benchmarkMetric: '100% FHIR R4 Bundle Syntactic Conformance'
+  },
+  {
+    id: 'bridge-specialist-referral',
+    primaryExpertId: 'specialist-referral',
+    secondaryExpertId: 'soap-generator',
+    title: 'Specialist Pre-Flight Dossier to Ambient Encounter Hand-off',
+    mechanism: 'Auto-extracts diagnostic pre-flight prerequisites into structured SBAR handoff narrative.',
+    clinicalImplication: 'Eliminates lost referrals and guarantees specialist receives complete imaging and lab history.',
+    actionableVector: 'Generate FHIR R4 ServiceRequest bundle and transmit to targeted sub-specialist network.',
+    benchmarkMetric: '100% Pre-Flight Diagnostic Completeness'
+  },
+  {
+    id: 'bridge-trials-posology',
+    primaryExpertId: 'clinical-trials-matcher',
+    secondaryExpertId: 'ismp-posology',
+    title: 'Refractory Disease Clinical Trial Matching & Posology Bridge',
+    mechanism: 'Cross-references failing standard-of-care drug regimens with novel Phase 2/3 mechanism-of-action trials.',
+    clinicalImplication: 'Identifies targeted investigational agents within patient driving radius without treatment delay.',
+    actionableVector: 'Contact local study coordinator at nearby academic medical center with patient eligibility brief.',
+    benchmarkMetric: 'Active Study Site < 50 Miles / Fast-Track Enrollment'
+  },
+  {
+    id: 'bridge-sdoh-posology',
+    primaryExpertId: 'sdoh-navigator',
+    secondaryExpertId: 'ismp-posology',
+    title: 'Socioeconomic Reality & $4 Generic Formulary Co-Titration Bridge',
+    mechanism: 'Aligns clinical pharmacotherapy with patient out-of-pocket reality and grocery accessibility.',
+    clinicalImplication: 'Prevents primary medication abandonment by substituting transparent $4 generics and issuing Produce Rx nutrition vouchers.',
+    actionableVector: 'Prescribe $4 generic metformin/lisinopril benchmark at Walmart/Kroger + SNAP Produce Rx voucher.',
+    benchmarkMetric: '>90% 12-Month Medication Persistence / Zero Copay Shock'
   }
 ];
 
@@ -443,6 +541,520 @@ export const SHIFT_CARE_PLAN_ROSTER: IShiftPatientRecord[] = [
   }
 ];
 
+export interface IVitalSignEntry {
+  label: string;
+  value: string;
+  status: 'normal' | 'warning' | 'alert';
+}
+
+export interface IHeuristicTriggerProfile {
+  matchedKeywords: string[];
+  physiologicalTrigger: string;
+  anatomicalSubstrate: string;
+  diagnosticLensAffinity: string;
+}
+
+export interface IExpertProbabilityFlow {
+  expertId: string;
+  expertLabel: string;
+  probabilityPercent: number;
+  logit: number;
+  isTop1: boolean;
+  isTop2: boolean;
+  routingRationale: string;
+}
+
+export interface IResultingRoutingSummary {
+  primaryExpertId: string;
+  primaryLabel: string;
+  primaryRatio: number;
+  secondaryExpertId: string;
+  secondaryLabel: string;
+  secondaryRatio: number;
+  bridgeTitle: string;
+  bridgeMechanism: string;
+  bridgeActionableVector: string;
+  bridgeBenchmark: string;
+  noiseReductionPercent: number;
+  dormantShelfCount: number;
+}
+
+export interface IPatientDecisionFlow {
+  patientId: string;
+  patientName: string;
+  demographic: string;
+  clinicalDomain: string;
+  chiefComplaint: string;
+  intakeGoal: string;
+  vitalsSignature: IVitalSignEntry[];
+  scannedTriggers: IHeuristicTriggerProfile;
+  gatingProbabilities: IExpertProbabilityFlow[];
+  resultingRouting: IResultingRoutingSummary;
+  clinicalDecisionStory: string;
+}
+
+export const SHIFT_DECISION_FLOW_MAP: Record<string, IPatientDecisionFlow> = {
+  p001: {
+    patientId: 'p001',
+    patientName: 'Homo Sapiens (Male, Metabolic)',
+    demographic: '54y Male, Cardiometabolic & Renal',
+    clinicalDomain: 'Metabolic & Cardiometabolic Medicine',
+    chiefComplaint: 'Difficulty with CPAP compliance (apnea episodes > 15/hr), fasting glucose 145-170 mg/dL, bilateral ankle edema.',
+    intakeGoal: 'Titrate dual GLP-1/GIP co-agonist, achieve HbA1c < 7.0%, and optimize bilevel pressure support.',
+    vitalsSignature: [
+      { label: 'Blood Pressure', value: '138/88 mmHg', status: 'warning' },
+      { label: 'CGM Glucose', value: '162 mg/dL', status: 'alert' },
+      { label: 'Heart Rate', value: '76 bpm', status: 'normal' },
+      { label: 'Apnea-Hypopnea Index', value: '18.4 /hr', status: 'alert' }
+    ],
+    scannedTriggers: {
+      matchedKeywords: ['glucose', 'cgm', 'titrate', 'edema', 'glp-1', 'cpap'],
+      physiologicalTrigger: 'Glycemic hyper-variability + obstructive hypopnea sympathetic surge',
+      anatomicalSubstrate: 'Endothelial microvasculature, pancreatic beta-cells, renal glomeruli',
+      diagnosticLensAffinity: 'Treatment Matrix & Precision Nutrients'
+    },
+    gatingProbabilities: [
+      { expertId: 'ismp-posology', expertLabel: 'ISMP Posology Guard', probabilityPercent: 41.5, logit: 3.8, isTop1: true, isTop2: false, routingRationale: 'High-risk GLP-1/GIP dual titration + renal eGFR dose gating' },
+      { expertId: 'counterfactual-simulator', expertLabel: 'Counterfactual Simulator', probabilityPercent: 28.2, logit: 3.4, isTop1: false, isTop2: true, routingRationale: 'Projected HbA1c trajectory under CPAP compliance vs non-compliance' },
+      { expertId: 'steeep-quality-hud', expertLabel: 'NAM STEEEP Quality Radar', probabilityPercent: 12.0, logit: 2.5, isTop1: false, isTop2: false, routingRationale: 'ADA Standards of Care clinical guideline compliance' },
+      { expertId: 'edge-ml-hud', expertLabel: 'Edge ML Audio Classifier', probabilityPercent: 6.5, logit: 1.9, isTop1: false, isTop2: false, routingRationale: 'Nocturnal snore soundscape analysis' },
+      { expertId: 'analysis-report', expertLabel: 'Multi-Lens Synthesizer', probabilityPercent: 5.2, logit: 1.7, isTop1: false, isTop2: false, routingRationale: 'Metabolic syndrome multi-system summary' },
+      { expertId: 'biomolecular-physics', expertLabel: 'Molecular Biophysics', probabilityPercent: 3.4, logit: 1.3, isTop1: false, isTop2: false, routingRationale: 'Incretin receptor kinetic simulation' },
+      { expertId: 'soap-generator', expertLabel: 'SOAP Note Scribe', probabilityPercent: 2.1, logit: 0.8, isTop1: false, isTop2: false, routingRationale: 'Routine follow-up encounter chart' },
+      { expertId: 'knee-hologram', expertLabel: 'RSNA Knee Hologram', probabilityPercent: 1.1, logit: 0.2, isTop1: false, isTop2: false, routingRationale: 'Low joint disease priority' }
+    ],
+    resultingRouting: {
+      primaryExpertId: 'ismp-posology',
+      primaryLabel: 'ISMP Posology Guard',
+      primaryRatio: 62,
+      secondaryExpertId: 'counterfactual-simulator',
+      secondaryLabel: 'Counterfactual Simulator',
+      secondaryRatio: 38,
+      bridgeTitle: 'In-Silico Glycemic & Microvascular Trajectory Projection',
+      bridgeMechanism: 'Coupling dual incretin receptor titration with overnight AHI reduction to protect renal capillary beds.',
+      bridgeActionableVector: 'Prescribe tirzepatide 5.0mg weekly with 4-week titration ladder, coupled with automated CPAP pressure auto-ramp.',
+      bridgeBenchmark: 'HbA1c < 7.0%, AHI < 5.0/hr, eGFR stabilization',
+      noiseReductionPercent: 75,
+      dormantShelfCount: 6
+    },
+    clinicalDecisionStory: 'The SMoE Router detected critical glycemic instability (CGM 162 mg/dL) coupled with polypharmacy titration cues. The gating network prioritized the ISMP Posology Guard (41.5%) to verify zero trailing zeroes and renal dosing safety, paired with the Counterfactual Simulator (28.2%) to model the 6-month microvascular benefit of nocturnal CPAP adherence.'
+  },
+
+  p002: {
+    patientId: 'p002',
+    patientName: 'Homo Sapiens (Female, Asthma)',
+    demographic: '34y Female, Pulmonary & Exposomics',
+    clinicalDomain: 'Pulmonary & Environmental Exposomics',
+    chiefComplaint: 'Nocturnal wheezing, chest tightness following wildfire PM2.5 smoke exposure, absolute eosinophils 580 cells/uL.',
+    intakeGoal: 'Establish asthma action plan, evaluate biologic Dupilumab candidacy, and deploy HEPA environmental barrier.',
+    vitalsSignature: [
+      { label: 'Pulse Oximetry (SpO2)', value: '93%', status: 'alert' },
+      { label: 'Heart Rate', value: '94 bpm', status: 'warning' },
+      { label: 'Respiratory Rate', value: '22 /min', status: 'alert' },
+      { label: 'Eosinophils', value: '580 /uL', status: 'alert' }
+    ],
+    scannedTriggers: {
+      matchedKeywords: ['wheeze', 'particulate', 'pm2.5', 'wildfire', 'dupilumab', 'eosinophil'],
+      physiologicalTrigger: 'Acoustic expiratory wheeze + environmental particulate airway hyper-reactivity',
+      anatomicalSubstrate: 'Bronchial smooth muscle, ciliated epithelial mucosa, type 2 inflammatory pathway',
+      diagnosticLensAffinity: 'Environmental Exposomics & PhysioNet Telemetry'
+    },
+    gatingProbabilities: [
+      { expertId: 'edge-ml-hud', expertLabel: 'Edge ML Audio Classifier', probabilityPercent: 44.8, logit: 3.9, isTop1: true, isTop2: false, routingRationale: 'Real-time acoustic breath sound wheeze classification & FFT spectrogram' },
+      { expertId: 'steeep-quality-hud', expertLabel: 'NAM STEEEP Quality Radar', probabilityPercent: 26.3, logit: 3.3, isTop1: false, isTop2: true, routingRationale: 'GINA Step 5 guideline adherence & biologic eligibility criteria' },
+      { expertId: 'counterfactual-simulator', expertLabel: 'Counterfactual Simulator', probabilityPercent: 11.2, logit: 2.5, isTop1: false, isTop2: false, routingRationale: 'Particulate exposure reduction simulation' },
+      { expertId: 'ismp-posology', expertLabel: 'ISMP Posology Guard', probabilityPercent: 8.4, logit: 2.1, isTop1: false, isTop2: false, routingRationale: 'Inhaled corticosteroid dosage verification' },
+      { expertId: 'analysis-report', expertLabel: 'Multi-Lens Synthesizer', probabilityPercent: 4.1, logit: 1.4, isTop1: false, isTop2: false, routingRationale: 'Exposomic multi-lens overview' },
+      { expertId: 'biomolecular-physics', expertLabel: 'Molecular Biophysics', probabilityPercent: 2.5, logit: 0.9, isTop1: false, isTop2: false, routingRationale: 'IL-4 / IL-13 receptor binding modeling' },
+      { expertId: 'soap-generator', expertLabel: 'SOAP Note Scribe', probabilityPercent: 1.8, logit: 0.6, isTop1: false, isTop2: false, routingRationale: 'Urgent care pulmonary documentation' },
+      { expertId: 'knee-hologram', expertLabel: 'RSNA Knee Hologram', probabilityPercent: 0.9, logit: 0.1, isTop1: false, isTop2: false, routingRationale: 'No musculoskeletal complaints' }
+    ],
+    resultingRouting: {
+      primaryExpertId: 'edge-ml-hud',
+      primaryLabel: 'Edge ML Audio Classifier',
+      primaryRatio: 64,
+      secondaryExpertId: 'steeep-quality-hud',
+      secondaryLabel: 'NAM STEEEP Quality Radar',
+      secondaryRatio: 36,
+      bridgeTitle: 'Acoustic Respiratory Spectrogram to Biologic Initiation',
+      bridgeMechanism: 'Coupling real-time acoustic wheeze detection with GINA clinical guideline decision trees.',
+      bridgeActionableVector: 'Initiate dupilumab 600mg loading dose followed by 300mg Q2W; deploy true HEPA filtration in bedroom.',
+      bridgeBenchmark: 'Zero nocturnal awakenings, SpO2 >= 97% on room air, FEV1 gain > 250mL',
+      noiseReductionPercent: 75,
+      dormantShelfCount: 6
+    },
+    clinicalDecisionStory: 'Wildfire PM2.5 triggers and acute nocturnal dyspnea elevated acoustic breath-sound analysis to top priority. The SMoE router dispatched the Edge ML Audio Classifier (44.8%) to analyze frequency spectrograms while activating the NAM STEEEP Quality Radar (26.3%) to ensure immediate guideline compliance for biologic initiation.'
+  },
+
+  p003: {
+    patientId: 'p003',
+    patientName: 'Homo Sapiens (Male, Cognitive)',
+    demographic: '71y Male, Neurogeriatrics & Sleep',
+    clinicalDomain: 'Neurogeriatrics & Glymphatic Health',
+    chiefComplaint: 'Progressive short-term memory lapses over 14 months, nocturnal sleep fragmentation, orthostatic lightheadedness.',
+    intakeGoal: 'Perform MoCA screening, optimize slow-wave sleep glymphatic clearance, and protect cerebral perfusion.',
+    vitalsSignature: [
+      { label: 'Blood Pressure', value: '118/74 mmHg', status: 'normal' },
+      { label: 'Heart Rate', value: '68 bpm', status: 'normal' },
+      { label: 'Heart Rate Variability (SDNN)', value: '38 ms', status: 'warning' },
+      { label: 'MoCA Cognitive Score', value: '22 / 30', status: 'alert' }
+    ],
+    scannedTriggers: {
+      matchedKeywords: ['moca', 'memory', 'sleep', 'glymphatic', 'fragmentation', 'recall'],
+      physiologicalTrigger: 'Slow-wave sleep architecture deficit + impaired interstitial amyloid clearance',
+      anatomicalSubstrate: 'Hippocampal CA1/CA3 regions, entorhinal cortex, cerebral aqueduct',
+      diagnosticLensAffinity: 'Chronobiology Matrix & Summary Overview'
+    },
+    gatingProbabilities: [
+      { expertId: 'steeep-quality-hud', expertLabel: 'NAM STEEEP Quality Radar', probabilityPercent: 38.6, logit: 3.7, isTop1: true, isTop2: false, routingRationale: 'Evidence-based cognitive impairment diagnostic workup & rule-out protocols' },
+      { expertId: 'analysis-report', expertLabel: 'Multi-Lens Synthesizer', probabilityPercent: 29.4, logit: 3.4, isTop1: false, isTop2: true, routingRationale: 'Chronobiology matrix & multi-paradigm sleep-neuro axis evaluation' },
+      { expertId: 'counterfactual-simulator', expertLabel: 'Counterfactual Simulator', probabilityPercent: 14.1, logit: 2.7, isTop1: false, isTop2: false, routingRationale: 'Cognitive decline trajectory projection with sleep therapy' },
+      { expertId: 'soap-generator', expertLabel: 'SOAP Note Scribe', probabilityPercent: 7.2, logit: 2.0, isTop1: false, isTop2: false, routingRationale: 'Geriatric cognitive assessment charting' },
+      { expertId: 'edge-ml-hud', expertLabel: 'Edge ML Audio Classifier', probabilityPercent: 4.5, logit: 1.5, isTop1: false, isTop2: false, routingRationale: 'Sleep soundscape acoustic monitoring' },
+      { expertId: 'ismp-posology', expertLabel: 'ISMP Posology Guard', probabilityPercent: 3.1, logit: 1.1, isTop1: false, isTop2: false, routingRationale: 'Beers criteria anticholinergic drug burden screening' },
+      { expertId: 'biomolecular-physics', expertLabel: 'Molecular Biophysics', probabilityPercent: 2.0, logit: 0.7, isTop1: false, isTop2: false, routingRationale: 'Tau protein phosphorylation kinetics' },
+      { expertId: 'knee-hologram', expertLabel: 'RSNA Knee Hologram', probabilityPercent: 1.1, logit: 0.1, isTop1: false, isTop2: false, routingRationale: 'No musculoskeletal focus' }
+    ],
+    resultingRouting: {
+      primaryExpertId: 'steeep-quality-hud',
+      primaryLabel: 'NAM STEEEP Quality Radar',
+      primaryRatio: 58,
+      secondaryExpertId: 'analysis-report',
+      secondaryLabel: 'Multi-Lens Synthesizer',
+      secondaryRatio: 42,
+      bridgeTitle: 'Glymphatic Slow-Wave Pacing & Cognitive Preservation Bridge',
+      bridgeMechanism: 'Optimizing non-REM delta slow-wave sleep to promote convective interstitial waste clearance.',
+      bridgeActionableVector: 'Prescribe magnesium L-threonate 144mg + apigenin 50mg 60 min before bedtime; eliminate blue light after 20:00.',
+      bridgeBenchmark: 'MoCA stabilization >= 24/30, slow-wave sleep percentage > 18%',
+      noiseReductionPercent: 75,
+      dormantShelfCount: 6
+    },
+    clinicalDecisionStory: 'Subtle neuro-cognitive decline (MoCA 22/30) and sleep fragmentation triggered a stepped geriatric evaluation. The SMoE router allocated the NAM STEEEP Quality Radar (38.6%) to verify evidence-based cognitive protocols, while coupling the Multi-Lens Synthesizer (29.4%) to configure the Chronobiology sleep matrix.'
+  },
+
+  p004: {
+    patientId: 'p004',
+    patientName: 'Homo Sapiens (Female, Autoimmune)',
+    demographic: '42y Female, Immunology & Thyroid',
+    clinicalDomain: 'Neuro-Endocrine & Functional Immunology',
+    chiefComplaint: 'Afternoon fatigue crashes, cold intolerance, generalized musculoskeletal tender points, anti-TPO antibodies > 400 IU/mL.',
+    intakeGoal: 'Implement Low-Dose Naltrexone (LDN) trial, anti-inflammatory micronutrient protocol, and HPA axis pacing.',
+    vitalsSignature: [
+      { label: 'Body Temperature', value: '97.2 °F', status: 'warning' },
+      { label: 'Heart Rate', value: '62 bpm', status: 'normal' },
+      { label: 'Blood Pressure', value: '108/68 mmHg', status: 'normal' },
+      { label: 'Anti-TPO Antibodies', value: '> 400 IU/mL', status: 'alert' }
+    ],
+    scannedTriggers: {
+      matchedKeywords: ['tpo', 'thyroid', 'naltrexone', 'autoimmune', 'ldn', 'fatigue'],
+      physiologicalTrigger: 'Cellular molecular mimicry + microglial hyper-activation + HPA axis hypofunction',
+      anatomicalSubstrate: 'Thyroid parenchyma, hypothalamic-pituitary-adrenal axis, central microglial cells',
+      diagnosticLensAffinity: 'Physical Genomics & Functional Protocols'
+    },
+    gatingProbabilities: [
+      { expertId: 'biomolecular-physics', expertLabel: 'Molecular Biophysics', probabilityPercent: 43.1, logit: 3.8, isTop1: true, isTop2: false, routingRationale: 'Immune complex binding kinetics & molecular mimicry structural simulation' },
+      { expertId: 'ismp-posology', expertLabel: 'ISMP Posology Guard', probabilityPercent: 27.5, logit: 3.3, isTop1: false, isTop2: true, routingRationale: 'Low-Dose Naltrexone (LDN) micro-titration posology safety (1.5mg to 4.5mg)' },
+      { expertId: 'counterfactual-simulator', expertLabel: 'Counterfactual Simulator', probabilityPercent: 12.8, logit: 2.6, isTop1: false, isTop2: false, routingRationale: 'Antibody reduction trajectory modeling' },
+      { expertId: 'steeep-quality-hud', expertLabel: 'NAM STEEEP Quality Radar', probabilityPercent: 7.9, logit: 2.1, isTop1: false, isTop2: false, routingRationale: 'Integrative autoimmune care standards' },
+      { expertId: 'analysis-report', expertLabel: 'Multi-Lens Synthesizer', probabilityPercent: 4.2, logit: 1.5, isTop1: false, isTop2: false, routingRationale: 'Functional medicine matrix integration' },
+      { expertId: 'soap-generator', expertLabel: 'SOAP Note Scribe', probabilityPercent: 2.3, logit: 0.9, isTop1: false, isTop2: false, routingRationale: 'Functional endocrinology note' },
+      { expertId: 'edge-ml-hud', expertLabel: 'Edge ML Audio Classifier', probabilityPercent: 1.4, logit: 0.4, isTop1: false, isTop2: false, routingRationale: 'No respiratory/acoustic trigger' },
+      { expertId: 'knee-hologram', expertLabel: 'RSNA Knee Hologram', probabilityPercent: 0.8, logit: -0.2, isTop1: false, isTop2: false, routingRationale: 'Non-articular widespread fibromyalgia' }
+    ],
+    resultingRouting: {
+      primaryExpertId: 'biomolecular-physics',
+      primaryLabel: 'Molecular Biophysics',
+      primaryRatio: 61,
+      secondaryExpertId: 'ismp-posology',
+      secondaryLabel: 'ISMP Posology Guard',
+      secondaryRatio: 39,
+      bridgeTitle: 'Autoimmune Epitope Clearance to Low-Dose Naltrexone Calibration',
+      bridgeMechanism: 'Transient opioid receptor blockade prompts rebound beta-endorphin surge, downregulating TLR4 cytokine signaling.',
+      bridgeActionableVector: 'Compound LDN 1.5mg PO QHS for 14 days, titrating to 3.0mg then 4.5mg; add selenomethionine 200mcg daily.',
+      bridgeBenchmark: 'Anti-TPO reduction > 30%, Morning Energy Index score > 7/10',
+      noiseReductionPercent: 75,
+      dormantShelfCount: 6
+    },
+    clinicalDecisionStory: 'Elevated anti-TPO antibodies and multi-focal fatigue drove the router to activate Molecular Biophysics (43.1%) to evaluate immune complex clearance kinetics, partnered with the ISMP Posology Guard (27.5%) to safely guide Low-Dose Naltrexone (LDN) micro-titration.'
+  },
+
+  p_charles_darwin: {
+    patientId: 'p_charles_darwin',
+    patientName: 'Charles Darwin',
+    demographic: '58y Male, Gastroenterology & Vagal Health',
+    clinicalDomain: 'Complex Chronic Dysautonomia & Gastrointestinal',
+    chiefComplaint: 'Postprandial flatulence, severe dyspepsia, intractable nausea, autonomic orthostatic exhaustion after intellectual work.',
+    intakeGoal: 'Restore vagal tone, modulate gastrointestinal enteric signaling, and rebalance autonomic tone.',
+    vitalsSignature: [
+      { label: 'Resting Heart Rate', value: '82 bpm', status: 'warning' },
+      { label: 'HRV RMSSD', value: '28 ms', status: 'alert' },
+      { label: 'Blood Pressure', value: '112/70 mmHg', status: 'normal' },
+      { label: 'Allostatic Strain Index', value: '7.8 / 10', status: 'alert' }
+    ],
+    scannedTriggers: {
+      matchedKeywords: ['dyspepsia', 'nausea', 'vagus', 'vagal', 'dysautonomia', 'exhaustion'],
+      physiologicalTrigger: 'Postprandial sympathetic dominance + vagal baroreflex suppression + gastroparesis',
+      anatomicalSubstrate: 'Vagus nerve (CN X), celiac ganglion, enteric plexus, gastric fundus',
+      diagnosticLensAffinity: 'Functional Protocols & Treatment Matrix'
+    },
+    gatingProbabilities: [
+      { expertId: 'counterfactual-simulator', expertLabel: 'Counterfactual Simulator', probabilityPercent: 46.2, logit: 3.9, isTop1: true, isTop2: false, routingRationale: 'Vagal HRV bio-pacing trajectory simulation & parasympathetic recovery' },
+      { expertId: 'edge-ml-hud', expertLabel: 'Edge ML Audio Classifier', probabilityPercent: 25.1, logit: 3.3, isTop1: false, isTop2: true, routingRationale: '0.1 Hz resonant audio breathing entrainment & vagal feedback' },
+      { expertId: 'analysis-report', expertLabel: 'Multi-Lens Synthesizer', probabilityPercent: 12.3, logit: 2.6, isTop1: false, isTop2: false, routingRationale: 'Skeptical epistemology & allostatic load analysis' },
+      { expertId: 'steeep-quality-hud', expertLabel: 'NAM STEEEP Quality Radar', probabilityPercent: 7.4, logit: 2.1, isTop1: false, isTop2: false, routingRationale: 'Autonomic testing benchmark alignment' },
+      { expertId: 'soap-generator', expertLabel: 'SOAP Note Scribe', probabilityPercent: 3.8, logit: 1.4, isTop1: false, isTop2: false, routingRationale: 'Chronic dysautonomia longitudinal charting' },
+      { expertId: 'ismp-posology', expertLabel: 'ISMP Posology Guard', probabilityPercent: 2.7, logit: 1.0, isTop1: false, isTop2: false, routingRationale: 'Gentian botanical dosing safety' },
+      { expertId: 'biomolecular-physics', expertLabel: 'Molecular Biophysics', probabilityPercent: 1.6, logit: 0.5, isTop1: false, isTop2: false, routingRationale: 'Enterochromaffin serotonin signaling' },
+      { expertId: 'knee-hologram', expertLabel: 'RSNA Knee Hologram', probabilityPercent: 0.9, logit: -0.1, isTop1: false, isTop2: false, routingRationale: 'No peripheral orthopedic pathology' }
+    ],
+    resultingRouting: {
+      primaryExpertId: 'counterfactual-simulator',
+      primaryLabel: 'Counterfactual Simulator',
+      primaryRatio: 65,
+      secondaryExpertId: 'edge-ml-hud',
+      secondaryLabel: 'Edge ML Audio Classifier',
+      secondaryRatio: 35,
+      bridgeTitle: '0.1 Hz Autonomic Resonant Vagal Coherence Bridge',
+      bridgeMechanism: 'Diaphragmatic pacing at 6 breaths/min stimulates carotid baroreceptors, elevating cardiac vagal efferents.',
+      bridgeActionableVector: 'Prescribe 15 minutes of 0.1 Hz audio-visual resonant breathing post-meals + digestive bitter tincture.',
+      bridgeBenchmark: 'RMSSD HRV gain > 45ms, cessation of postprandial nausea',
+      noiseReductionPercent: 75,
+      dormantShelfCount: 6
+    },
+    clinicalDecisionStory: 'Severe postprandial dysautonomia and vagal depletion triggered an autonomic recovery pathway. The SMoE router selected the Counterfactual Simulator (46.2%) to model vagal pacing outcomes, paired with Edge ML Audio/Bio-Haptics (25.1%) to deliver 0.1 Hz parasympathetic entrainment.'
+  },
+
+  p_frida_kahlo: {
+    patientId: 'p_frida_kahlo',
+    patientName: 'Frida Kahlo',
+    demographic: '47y Female, Neuropathology & Somatosensory',
+    clinicalDomain: 'Neuropathic Pain & Physical Rehabilitation',
+    chiefComplaint: 'Severe central sensitization, burning causalgia, lower extremity allodynia, post-spinal fusion phantom pain.',
+    intakeGoal: 'Implement somatic grounding, multimodal pain modulation, and mirror neuro-visual retraining.',
+    vitalsSignature: [
+      { label: 'Pain Acuity Score', value: '9 / 10', status: 'alert' },
+      { label: 'Heart Rate', value: '88 bpm', status: 'warning' },
+      { label: 'Blood Pressure', value: '132/84 mmHg', status: 'warning' },
+      { label: 'DN4 Neuropathy Score', value: '8 / 10', status: 'alert' }
+    ],
+    scannedTriggers: {
+      matchedKeywords: ['allodynia', 'causalgia', 'phantom', 'sensitization', 'spine', 'dn4'],
+      physiologicalTrigger: 'Dorsal horn microglial wind-up + thalamocortical pain network remodeling',
+      anatomicalSubstrate: 'Spinothalamic tract, primary somatosensory cortex S1, lumbosacral plexus',
+      diagnosticLensAffinity: 'RSNA Knee Abnormality & Summary Overview'
+    },
+    gatingProbabilities: [
+      { expertId: 'soap-generator', expertLabel: 'SOAP Note Scribe', probabilityPercent: 39.5, logit: 3.7, isTop1: true, isTop2: false, routingRationale: 'Complex multi-axial trauma narrative capture & OARS patient perspective' },
+      { expertId: 'knee-hologram', expertLabel: 'RSNA Knee Hologram', probabilityPercent: 31.8, logit: 3.5, isTop1: false, isTop2: true, routingRationale: '3D spatial structural visualization of orthopedic & pelvic trauma vectors' },
+      { expertId: 'counterfactual-simulator', expertLabel: 'Counterfactual Simulator', probabilityPercent: 13.4, logit: 2.6, isTop1: false, isTop2: false, routingRationale: 'Mirror therapy neuroplasticity projection' },
+      { expertId: 'ismp-posology', expertLabel: 'ISMP Posology Guard', probabilityPercent: 7.8, logit: 2.0, isTop1: false, isTop2: false, routingRationale: 'Non-opioid adjuvant titration guard' },
+      { expertId: 'steeep-quality-hud', expertLabel: 'NAM STEEEP Quality Radar', probabilityPercent: 3.7, logit: 1.3, isTop1: false, isTop2: false, routingRationale: 'Chronic pain quality metrics' },
+      { expertId: 'analysis-report', expertLabel: 'Multi-Lens Synthesizer', probabilityPercent: 2.1, logit: 0.7, isTop1: false, isTop2: false, routingRationale: 'Holistic rehabilitation summary' },
+      { expertId: 'biomolecular-physics', expertLabel: 'Molecular Biophysics', probabilityPercent: 1.1, logit: 0.1, isTop1: false, isTop2: false, routingRationale: 'Substance P neurokinin modeling' },
+      { expertId: 'edge-ml-hud', expertLabel: 'Edge ML Audio Classifier', probabilityPercent: 0.6, logit: -0.4, isTop1: false, isTop2: false, routingRationale: 'Low vocal biomarker priority' }
+    ],
+    resultingRouting: {
+      primaryExpertId: 'soap-generator',
+      primaryLabel: 'SOAP Note Scribe',
+      primaryRatio: 56,
+      secondaryExpertId: 'knee-hologram',
+      secondaryLabel: 'RSNA Knee Hologram',
+      secondaryRatio: 44,
+      bridgeTitle: 'Somatosensory Re-Mapping & Central Sensitization Mitigation Bridge',
+      bridgeMechanism: 'Mirror neuro-visual feedback decouples pathological thalamocortical hyper-synchrony, resetting cortical S1 body schema.',
+      bridgeActionableVector: 'Implement 20 min daily progressive mirror feedback; compound topical ketamine/gabapentin/amitriptyline cream.',
+      bridgeBenchmark: 'DN-4 reduction < 4/10, 50% improvement in continuous pain-free standing',
+      noiseReductionPercent: 75,
+      dormantShelfCount: 6
+    },
+    clinicalDecisionStory: 'Profound central sensitization and multi-trauma history elevated empathetic clinical scribing (SOAP Note Scribe 39.5%) to capture subjective trauma dynamics, alongside the 3D Biomechanical/Knee Hologram (31.8%) to spatially inspect pelvic and spinal stabilization loads.'
+  },
+
+  p_marie_curie: {
+    patientId: 'p_marie_curie',
+    patientName: 'Marie Curie',
+    demographic: '66y Female, Hematology & Radiation Toxicology',
+    clinicalDomain: 'Hematology & Radiation Toxicology',
+    chiefComplaint: 'Profound fatigue, petechial hemorrhages on distal arms, normocytic normochromic anemia, chronic cumulative ionizing radiation exposure.',
+    intakeGoal: 'Prevent bone marrow hypoplasia, administer cellular antioxidant scavengers, and institute environmental shielding.',
+    vitalsSignature: [
+      { label: 'Hemoglobin', value: '8.1 g/dL', status: 'alert' },
+      { label: 'Platelet Count', value: '62 x 10^9 /L', status: 'alert' },
+      { label: 'White Blood Cell Count', value: '2.4 x 10^9 /L', status: 'alert' },
+      { label: 'Resting Heart Rate', value: '92 bpm', status: 'warning' }
+    ],
+    scannedTriggers: {
+      matchedKeywords: ['radiation', 'ionizing', 'petechial', 'anemia', 'hypoplasia', 'radium'],
+      physiologicalTrigger: 'Hydroxyl free-radical cascade + chromosomal double-strand DNA scission',
+      anatomicalSubstrate: 'Bone marrow microenvironment, CD34+ hematopoietic progenitors, capillary endothelium',
+      diagnosticLensAffinity: 'Physical Genomics & Environmental Exposomics'
+    },
+    gatingProbabilities: [
+      { expertId: 'biomolecular-physics', expertLabel: 'Molecular Biophysics', probabilityPercent: 48.7, logit: 4.1, isTop1: true, isTop2: false, routingRationale: 'Ionizing radiation radiolytic cleavage kinetics & free radical scavenger modeling' },
+      { expertId: 'steeep-quality-hud', expertLabel: 'NAM STEEEP Quality Radar', probabilityPercent: 24.2, logit: 3.4, isTop1: false, isTop2: true, routingRationale: 'Occupational radiation safety benchmarks & OSHA/IAEA standard protocols' },
+      { expertId: 'ismp-posology', expertLabel: 'ISMP Posology Guard', probabilityPercent: 11.5, logit: 2.6, isTop1: false, isTop2: false, routingRationale: 'N-acetylcysteine & amifostine cytoprotection dosing' },
+      { expertId: 'counterfactual-simulator', expertLabel: 'Counterfactual Simulator', probabilityPercent: 7.8, logit: 2.2, isTop1: false, isTop2: false, routingRationale: 'Marrow cellularity recovery timeline' },
+      { expertId: 'analysis-report', expertLabel: 'Multi-Lens Synthesizer', probabilityPercent: 4.1, logit: 1.6, isTop1: false, isTop2: false, routingRationale: 'Hematology exposomics report' },
+      { expertId: 'soap-generator', expertLabel: 'SOAP Note Scribe', probabilityPercent: 2.0, logit: 0.9, isTop1: false, isTop2: false, routingRationale: 'Occupational disease documentation' },
+      { expertId: 'edge-ml-hud', expertLabel: 'Edge ML Audio Classifier', probabilityPercent: 1.1, logit: 0.3, isTop1: false, isTop2: false, routingRationale: 'No acoustic respiratory findings' },
+      { expertId: 'knee-hologram', expertLabel: 'RSNA Knee Hologram', probabilityPercent: 0.6, logit: -0.3, isTop1: false, isTop2: false, routingRationale: 'No localized articular focus' }
+    ],
+    resultingRouting: {
+      primaryExpertId: 'biomolecular-physics',
+      primaryLabel: 'Molecular Biophysics',
+      primaryRatio: 67,
+      secondaryExpertId: 'steeep-quality-hud',
+      secondaryLabel: 'NAM STEEEP Quality Radar',
+      secondaryRatio: 33,
+      bridgeTitle: 'Radioprotective N-Acetylcysteine & Glutathione Scavenger Bridge',
+      bridgeMechanism: 'Glutathione donors quench reactive oxygen species before secondary DNA strand scission occurs in hematopoietic stem cells.',
+      bridgeActionableVector: 'Prescribe liposomal glutathione 500mg BID + NAC 1200mg BID + environmental radon/gamma containment.',
+      bridgeBenchmark: 'Platelet stabilization > 100k, absolute neutrophil count > 1500 /uL',
+      noiseReductionPercent: 75,
+      dormantShelfCount: 6
+    },
+    clinicalDecisionStory: 'Life-threatening pancytopenia and cumulative radionuclide exposure triggered an urgent biophysical defense. The router mobilized Molecular Biophysics (48.7%) to compute free-radical radiolytic scavenging kinetics, backed by the NAM STEEEP Quality Radar (24.2%) to enforce statutory occupational safety guidelines.'
+  },
+
+  p_edwin_smith_3: {
+    patientId: 'p_edwin_smith_3',
+    patientName: 'Edwin Smith',
+    demographic: '62y Male, Orthopedics & Biomechanics',
+    clinicalDomain: 'Spinal Biomechanics & Osteopathic Ergonomics',
+    chiefComplaint: 'C5-C6 and C6-C7 cervical radiculopathy, thenar muscle atrophy, C6 dermatome numbness, severe paraspinal spasm.',
+    intakeGoal: 'Biomechanical cervical mobilization, postural ergonomic realignment, and neuroforaminal decompression.',
+    vitalsSignature: [
+      { label: 'Neck Disability Index (NDI)', value: '44%', status: 'alert' },
+      { label: 'Blood Pressure', value: '128/78 mmHg', status: 'normal' },
+      { label: 'Grip Strength (Right)', value: '24 kg', status: 'warning' },
+      { label: 'Spurling A Maneuver', value: 'Positive', status: 'alert' }
+    ],
+    scannedTriggers: {
+      matchedKeywords: ['cervical', 'c5-c6', 'radiculopathy', 'thenar', 'decompression', 'ergonomic'],
+      physiologicalTrigger: 'Mechanical neuroforaminal stenosis + C6 root microvascular ischemia',
+      anatomicalSubstrate: 'Cervical intervertebral discs C5-C7, uncinate processes, thenar abductor pollicis brevis',
+      diagnosticLensAffinity: 'RSNA Knee Abnormality & Treatment Matrix'
+    },
+    gatingProbabilities: [
+      { expertId: 'knee-hologram', expertLabel: 'RSNA Knee Hologram', probabilityPercent: 52.3, logit: 4.2, isTop1: true, isTop2: false, routingRationale: '3D structural skeletal biomechanics & neuroforaminal vector raymarching' },
+      { expertId: 'counterfactual-simulator', expertLabel: 'Counterfactual Simulator', probabilityPercent: 26.4, logit: 3.5, isTop1: false, isTop2: true, routingRationale: 'Traction angle & mechanical decompression kinematic simulation' },
+      { expertId: 'analysis-report', expertLabel: 'Multi-Lens Synthesizer', probabilityPercent: 8.9, logit: 2.4, isTop1: false, isTop2: false, routingRationale: 'Surgical vs conservative outcome analysis' },
+      { expertId: 'steeep-quality-hud', expertLabel: 'NAM STEEEP Quality Radar', probabilityPercent: 5.1, logit: 1.8, isTop1: false, isTop2: false, routingRationale: 'NASS cervical spine guidelines' },
+      { expertId: 'soap-generator', expertLabel: 'SOAP Note Scribe', probabilityPercent: 3.4, logit: 1.4, isTop1: false, isTop2: false, routingRationale: 'Physiatry procedural notes' },
+      { expertId: 'ismp-posology', expertLabel: 'ISMP Posology Guard', probabilityPercent: 2.1, logit: 0.9, isTop1: false, isTop2: false, routingRationale: 'Non-steroidal anti-inflammatory safety' },
+      { expertId: 'biomolecular-physics', expertLabel: 'Molecular Biophysics', probabilityPercent: 1.2, logit: 0.3, isTop1: false, isTop2: false, routingRationale: 'Nucleus pulposus hydration modeling' },
+      { expertId: 'edge-ml-hud', expertLabel: 'Edge ML Audio Classifier', probabilityPercent: 0.6, logit: -0.4, isTop1: false, isTop2: false, routingRationale: 'No acoustic pulmonary trigger' }
+    ],
+    resultingRouting: {
+      primaryExpertId: 'knee-hologram',
+      primaryLabel: 'RSNA Knee Hologram',
+      primaryRatio: 66,
+      secondaryExpertId: 'counterfactual-simulator',
+      secondaryLabel: 'Counterfactual Simulator',
+      secondaryRatio: 34,
+      bridgeTitle: 'Vector Cervical Traction & Neuroforaminal Unloading Bridge',
+      bridgeMechanism: 'A 15-degree mechanical flexion traction vector widens the C5-C6 foraminal cross-section by 2.4 mm, relieving nerve root venous congestion.',
+      bridgeActionableVector: 'Prescribe over-the-door pneumatic traction at 12 lbs for 15 min BID, coupled with deep cervical flexor retraining.',
+      bridgeBenchmark: 'NDI reduction to < 20%, complete reversal of thenar paresthesia',
+      noiseReductionPercent: 75,
+      dormantShelfCount: 6
+    },
+    clinicalDecisionStory: 'Cervical radiculopathy with thenar atrophy immediately triggered the 3D Holographic Spatial Engine (52.3%) to inspect disc heights and nerve root apertures, coupled with the Counterfactual Simulator (26.4%) to calculate optimal traction angles for non-surgical neuroforaminal decompression.'
+  },
+
+  p_mara_santos: {
+    patientId: 'p_mara_santos',
+    patientName: 'Mara Santos',
+    demographic: '14y Female, Pediatric Pulmonology',
+    clinicalDomain: 'Pediatric Pulmonology & Rare Disease Genetics',
+    chiefComplaint: 'Cystic Fibrosis (delta-F508 homozygous), viscous mucopurulent sputum, productive morning cough, plateaued growth curve.',
+    intakeGoal: 'Optimize highly effective CFTR modulator therapy, high-frequency chest wall oscillation, and pancreatic enzyme dosing.',
+    vitalsSignature: [
+      { label: 'BMI Percentile', value: '3rd Percentile', status: 'alert' },
+      { label: 'Pulse Oximetry (SpO2)', value: '95%', status: 'warning' },
+      { label: 'Sweat Chloride', value: '98 mmol/L', status: 'alert' },
+      { label: 'FEV1 Percent Predicted', value: '68%', status: 'alert' }
+    ],
+    scannedTriggers: {
+      matchedKeywords: ['cystic', 'fibrosis', 'cftr', 'pancreatic', 'trikafta', 'vest'],
+      physiologicalTrigger: 'Defective CFTR epithelial chloride transport + dehydrated thick mucus plug',
+      anatomicalSubstrate: 'Submucosal bronchial glands, pancreatic ductal epithelium, intestinal crypts',
+      diagnosticLensAffinity: 'Treatment Matrix & Summary Overview'
+    },
+    gatingProbabilities: [
+      { expertId: 'ismp-posology', expertLabel: 'ISMP Posology Guard', probabilityPercent: 45.6, logit: 4.0, isTop1: true, isTop2: false, routingRationale: 'Pediatric weight-adjusted CFTR modulator & high-potency pancreatic enzyme titration' },
+      { expertId: 'steeep-quality-hud', expertLabel: 'NAM STEEEP Quality Radar', probabilityPercent: 28.1, logit: 3.5, isTop1: false, isTop2: true, routingRationale: 'Cystic Fibrosis Foundation pediatric clinical guidelines' },
+      { expertId: 'counterfactual-simulator', expertLabel: 'Counterfactual Simulator', probabilityPercent: 12.3, logit: 2.7, isTop1: false, isTop2: false, routingRationale: 'Weight gain & FEV1 trajectory modeling' },
+      { expertId: 'edge-ml-hud', expertLabel: 'Edge ML Audio Classifier', probabilityPercent: 6.2, logit: 2.0, isTop1: false, isTop2: false, routingRationale: 'Airway clearance sound monitoring' },
+      { expertId: 'analysis-report', expertLabel: 'Multi-Lens Synthesizer', probabilityPercent: 3.8, logit: 1.5, isTop1: false, isTop2: false, routingRationale: 'Pediatric rare disease summary' },
+      { expertId: 'soap-generator', expertLabel: 'SOAP Note Scribe', probabilityPercent: 2.1, logit: 0.9, isTop1: false, isTop2: false, routingRationale: 'Specialist pediatric pulmonology note' },
+      { expertId: 'biomolecular-physics', expertLabel: 'Molecular Biophysics', probabilityPercent: 1.3, logit: 0.4, isTop1: false, isTop2: false, routingRationale: 'CFTR gating conformation analysis' },
+      { expertId: 'knee-hologram', expertLabel: 'RSNA Knee Hologram', probabilityPercent: 0.6, logit: -0.3, isTop1: false, isTop2: false, routingRationale: 'No peripheral joint involvement' }
+    ],
+    resultingRouting: {
+      primaryExpertId: 'ismp-posology',
+      primaryLabel: 'ISMP Posology Guard',
+      primaryRatio: 62,
+      secondaryExpertId: 'steeep-quality-hud',
+      secondaryLabel: 'NAM STEEEP Quality Radar',
+      secondaryRatio: 38,
+      bridgeTitle: 'CFTR Potentiator Kinetic Coupling & High-Calorie Pancrelipase Titration Bridge',
+      bridgeMechanism: 'Elexacaftor/Tezacaftor/Ivacaftor restores cell-surface CFTR channel gating, rehydrating airway surface liquid.',
+      bridgeActionableVector: 'Prescribe weight-based Trikafta (2 morning orange tablets + 1 evening blue tablet with fat-containing meal) + PERT 2500 lipase units/kg/meal.',
+      bridgeBenchmark: 'FEV1 gain > 15%, BMI velocity acceleration above 25th percentile',
+      noiseReductionPercent: 75,
+      dormantShelfCount: 6
+    },
+    clinicalDecisionStory: 'Pediatric Cystic Fibrosis management demands zero-error weight-adjusted posology. The SMoE router dispatched the ISMP Posology Guard (45.6%) to safeguard complex CFTR modulator and enzyme dosing, while the NAM STEEEP Quality Radar (28.1%) anchored adherence to CF Foundation pediatric care guidelines.'
+  },
+
+  p_srinivasa_ramanujan: {
+    patientId: 'p_srinivasa_ramanujan',
+    patientName: 'Srinivasa Ramanujan',
+    demographic: '32y Male, Infectious Disease & Nutrition',
+    clinicalDomain: 'Infectious Hepatology & Nutritional Rehabilitation',
+    chiefComplaint: 'Severe cachexia, right hypochondriac dull pain, remittent pyrexia, history of amebic dysentery with hepatic sequelae.',
+    intakeGoal: 'Eradicate hepatic parasitic infection, initiate aggressive micronutrient re-alimentation, and heal mucosal barrier.',
+    vitalsSignature: [
+      { label: 'Body Weight', value: '49.0 kg', status: 'alert' },
+      { label: 'Body Temperature', value: '99.8 °F', status: 'warning' },
+      { label: 'Serum Albumin', value: '2.8 g/dL', status: 'alert' },
+      { label: 'AST / ALT', value: '84 / 92 U/L', status: 'alert' }
+    ],
+    scannedTriggers: {
+      matchedKeywords: ['cachexia', 'hepatic', 'amebiasis', 'malnutrition', 'hypochondriac', 'micronutrient'],
+      physiologicalTrigger: 'Intestinal mucosal erosion + parasitic hepatic cytolysis + severe protein-calorie wasting',
+      anatomicalSubstrate: 'Right hepatic lobe parenchyma, mesenteric portal circulation, ileal enterocytes',
+      diagnosticLensAffinity: 'Treatment Matrix & Summary Overview'
+    },
+    gatingProbabilities: [
+      { expertId: 'counterfactual-simulator', expertLabel: 'Counterfactual Simulator', probabilityPercent: 42.8, logit: 3.8, isTop1: true, isTop2: false, routingRationale: 'Nutritional re-alimentation weight trajectory & hepatic regeneration modeling' },
+      { expertId: 'analysis-report', expertLabel: 'Multi-Lens Synthesizer', probabilityPercent: 27.9, logit: 3.4, isTop1: false, isTop2: true, routingRationale: 'Integrative Ayurvedic & Western hepatoprotective botanical synthesis' },
+      { expertId: 'ismp-posology', expertLabel: 'ISMP Posology Guard', probabilityPercent: 13.5, logit: 2.7, isTop1: false, isTop2: false, routingRationale: 'Refeeding syndrome electrolyte titration (phosphate, potassium, zinc)' },
+      { expertId: 'steeep-quality-hud', expertLabel: 'NAM STEEEP Quality Radar', probabilityPercent: 7.2, logit: 2.0, isTop1: false, isTop2: false, routingRationale: 'Infectious disease cure benchmarks' },
+      { expertId: 'soap-generator', expertLabel: 'SOAP Note Scribe', probabilityPercent: 4.1, logit: 1.5, isTop1: false, isTop2: false, routingRationale: 'Longitudinal clinical encounter charting' },
+      { expertId: 'biomolecular-physics', expertLabel: 'Molecular Biophysics', probabilityPercent: 2.5, logit: 1.0, isTop1: false, isTop2: false, routingRationale: 'Parasitic protease enzymatic inhibition' },
+      { expertId: 'edge-ml-hud', expertLabel: 'Edge ML Audio Classifier', probabilityPercent: 1.2, logit: 0.3, isTop1: false, isTop2: false, routingRationale: 'No acoustic trigger' },
+      { expertId: 'knee-hologram', expertLabel: 'RSNA Knee Hologram', probabilityPercent: 0.8, logit: -0.1, isTop1: false, isTop2: false, routingRationale: 'No peripheral joint focus' }
+    ],
+    resultingRouting: {
+      primaryExpertId: 'counterfactual-simulator',
+      primaryLabel: 'Counterfactual Simulator',
+      primaryRatio: 60,
+      secondaryExpertId: 'analysis-report',
+      secondaryLabel: 'Multi-Lens Synthesizer',
+      secondaryRatio: 40,
+      bridgeTitle: 'Enteric Mucosal Restoration & Hepatic Regenerative Kinetics Bridge',
+      bridgeMechanism: 'Targeted L-glutamine and zinc carnosine accelerate intestinal epithelial tight-junction repair while silymarin mitigates lipid peroxidation.',
+      bridgeActionableVector: 'Prescribe phased micro-nutrient re-alimentation (B12 1000mcg IM weekly, elemental zinc 30mg, L-glutamine 5g BID, and milk thistle extract).',
+      bridgeBenchmark: 'Weight gain +8kg in 12 weeks, normalization of transaminases (AST/ALT < 35 U/L)',
+      noiseReductionPercent: 75,
+      dormantShelfCount: 6
+    },
+    clinicalDecisionStory: 'Severe cachexia and hepatic amebiasis sequelae required a delicate re-alimentation strategy. The router positioned the Counterfactual Simulator (42.8%) to project re-feeding curves without triggering refeeding electrolyte collapse, while the Multi-Lens Synthesizer (27.9%) orchestrated multi-paradigm hepatic repair protocols.'
+  }
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -474,6 +1086,13 @@ export class ClinicalMoERouterService {
     const id = this.activeShiftPatientId();
     if (!id) return null;
     return SHIFT_CARE_PLAN_ROSTER.find(p => p.id === id) || null;
+  });
+
+  /** Active 12-Hour Shift Decision Flow Profile */
+  readonly activeDecisionFlow = computed<IPatientDecisionFlow | null>(() => {
+    const id = this.activeShiftPatientId();
+    if (!id) return null;
+    return SHIFT_DECISION_FLOW_MAP[id] || null;
   });
 
   /**
@@ -954,5 +1573,64 @@ export class ClinicalMoERouterService {
     this.activeTranscriptQuery.set('');
     this.activeScenario.set('default');
     this.setActiveLens('Summary Overview');
+  }
+
+  /**
+   * Retrieves the structured decision flow for a specific clinical shift patient.
+   */
+  public getDecisionFlow(patientId: string): IPatientDecisionFlow | null {
+    return SHIFT_DECISION_FLOW_MAP[patientId] || null;
+  }
+
+  /**
+   * Returns all 10 clinical shift decision flows.
+   */
+  public getAllDecisionFlows(): IPatientDecisionFlow[] {
+    return Object.values(SHIFT_DECISION_FLOW_MAP);
+  }
+
+  /**
+   * Synthesizes an epistemic explainability briefing for the AI Agent Chat or UI explorer,
+   * detailing the exact mathematical logit weights, temperature Softmax probabilities,
+   * scanned triggers, and Synapse Cross-Attention Bridge.
+   */
+  public explainDecisionFlow(patientId: string): string {
+    const flow = SHIFT_DECISION_FLOW_MAP[patientId];
+    if (!flow) {
+      return `No SMoE decision flow profile found for patient ID: ${patientId}.`;
+    }
+    const top1 = flow.gatingProbabilities.find(p => p.isTop1);
+    const top2 = flow.gatingProbabilities.find(p => p.isTop2);
+    const dormant = flow.gatingProbabilities.filter(p => !p.isTop1 && !p.isTop2);
+
+    return `### 🧠 SMoE Gating Decision Analysis: ${flow.patientName} (${flow.demographic})
+**Clinical Domain:** ${flow.clinicalDomain}
+**Chief Complaint:** ${flow.chiefComplaint}
+**Intake Goal:** ${flow.intakeGoal}
+
+#### 1. Ingested Vitals & Biometric Telemetry
+${flow.vitalsSignature.map(v => `- **${v.label}**: ${v.value} [${v.status.toUpperCase()}]`).join('\n')}
+
+#### 2. Scanned Heuristic Triggers & Neural Keyword Extraction
+- **Matched Cues:** \`${flow.scannedTriggers.matchedKeywords.join('`, `')}\`
+- **Physiological Trigger:** ${flow.scannedTriggers.physiologicalTrigger}
+- **Anatomical Substrate:** ${flow.scannedTriggers.anatomicalSubstrate}
+- **Diagnostic Lens Affinity:** ${flow.scannedTriggers.diagnosticLensAffinity}
+
+#### 3. Sparse Gating Softmax Distribution (Temperature T=0.85)
+- 🥇 **Primary Top-1 Slot:** **${top1?.expertLabel || 'Primary Expert'}** — **${top1?.probabilityPercent || 0}%** (logit: ${top1?.logit ?? 'N/A'})
+  *Rationale:* ${top1?.routingRationale || 'Clinical priority'}
+- 🥈 **Secondary Top-2 Slot:** **${top2?.expertLabel || 'Secondary Expert'}** — **${top2?.probabilityPercent || 0}%** (logit: ${top2?.logit ?? 'N/A'})
+  *Rationale:* ${top2?.routingRationale || 'Stepped-care support'}
+- 💤 **Dormant Shelf (6 Experts Shelved):** ${dormant.map(d => `${d.expertLabel} (${d.probabilityPercent}%)`).join(', ')}
+
+#### 4. Synapse Cross-Attention Bridge Active
+- **Bridge Title:** ${flow.resultingRouting.bridgeTitle}
+- **Mechanism:** ${flow.resultingRouting.bridgeMechanism}
+- **Actionable Vector:** ${flow.resultingRouting.bridgeActionableVector}
+- **Target Clinical Benchmark:** ${flow.resultingRouting.bridgeBenchmark}
+- **Cognitive Shield Impact:** **+${flow.resultingRouting.noiseReductionPercent}% noise reduction** (shelving 6 dormant experts to prevent clinical alarm fatigue).
+
+*Synthesis Narrative:* ${flow.clinicalDecisionStory}`;
   }
 }

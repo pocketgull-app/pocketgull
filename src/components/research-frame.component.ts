@@ -32,6 +32,7 @@ import { ThemeService } from '../services/theme.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
 import { FovealReticleRsvpComponent } from './shared/foveal-reticle-rsvp.component';
 import { DecisionCurveViewerComponent } from './analytics/decision-curve-viewer.component';
+import { SmoeDecisionFlowExplorerComponent } from './smoe-decision-flow-explorer.component';
 import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
@@ -73,6 +74,7 @@ export interface IPubMedSearchResult {
     GullNarrativeDispatchComponent,
     FovealReticleRsvpComponent,
     DecisionCurveViewerComponent,
+    SmoeDecisionFlowExplorerComponent,
     BionicFormatPipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -781,10 +783,18 @@ export interface IPubMedSearchResult {
                     Evidence-grounded care plan artifacts synthesized from clinical intake screeners, cognitive literacy calibrations, and SMoE expert gating targets.
                   </p>
                 </div>
-                <div class="flex items-center gap-2 font-mono text-xs">
+                <div class="flex items-center gap-2 font-mono text-xs flex-wrap">
                   <span class="px-2.5 py-1 rounded-lg bg-zinc-950 border border-zinc-800 text-emerald-400 font-bold">
                     100% De-Identified (HIPAA Safe Harbor)
                   </span>
+                  <button
+                    type="button"
+                    (click)="showDecisionFlowExplorer.set(true)"
+                    class="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 text-xs font-mono transition flex items-center gap-1 cursor-pointer"
+                    title="Open SMoE Gating Network Decision Flow Explorer (All 10 Shift Patients)"
+                  >
+                    <span>🔬</span> Decision Flow Matrix
+                  </button>
                 </div>
               </div>
             </div>
@@ -801,15 +811,15 @@ export interface IPubMedSearchResult {
                             {{ patient.name }}
                           </h4>
                           <span class="text-xs text-zinc-500 font-mono">
-                            ({{ patient.demographic }})
+                            ({{ patient.age }}y, {{ patient.clinicalDomain }})
                           </span>
                         </div>
                         <div class="flex items-center gap-1.5 mt-1 flex-wrap">
                           <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/30">
-                            {{ patient.screener }}
+                            {{ patient.assessmentName }}
                           </span>
                           <span class="px-2 py-0.5 rounded text-[10px] font-mono text-zinc-400 bg-zinc-800 border border-zinc-700">
-                            Grade: {{ patient.readabilityGrade }}
+                            Level: {{ patient.cognitiveLevel }}
                           </span>
                         </div>
                       </div>
@@ -823,12 +833,10 @@ export interface IPubMedSearchResult {
                     </div>
 
                     <div class="mt-2 flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
-                      <span class="text-zinc-500 font-bold uppercase">SMoE Targets:</span>
-                      @for (t of patient.targetExperts; track t) {
-                        <span class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-teal-700 dark:text-teal-300 border border-zinc-200 dark:border-zinc-700">
-                          {{ t }}
-                        </span>
-                      }
+                      <span class="text-zinc-500 font-bold uppercase">SMoE Target:</span>
+                      <span class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-teal-700 dark:text-teal-300 border border-zinc-200 dark:border-zinc-700">
+                        {{ patient.targetExpertId }}
+                      </span>
                     </div>
                   </div>
 
@@ -844,6 +852,14 @@ export interface IPubMedSearchResult {
                     </button>
                     <button
                       type="button"
+                      (click)="openPatientDecisionFlow(patient.id)"
+                      class="px-2.5 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-mono transition flex items-center gap-1 cursor-pointer"
+                      title="Inspect SMoE gating probabilities and Cross-Attention bridge for this patient"
+                    >
+                      <span>🔬</span> Trace
+                    </button>
+                    <button
+                      type="button"
                       (click)="searchShiftPatientResearch(patient)"
                       class="px-2.5 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-mono transition flex items-center gap-1 cursor-pointer"
                       title="Search PubMed / Cochrane evidence for this patient's research query"
@@ -851,7 +867,7 @@ export interface IPubMedSearchResult {
                       <span>🔬</span> Cochrane Search
                     </button>
                     <a
-                      [href]="'/' + patient.carePlanFile"
+                      [href]="'/' + patient.htmlPath"
                       target="_blank"
                       class="px-2.5 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-mono transition flex items-center gap-1"
                       title="Open generated care plan HTML/PDF artifact"
@@ -871,6 +887,15 @@ export interface IPubMedSearchResult {
       </div>
 
     </div>
+
+    <!-- SMoE Decision Flow Explorer Modal -->
+    @if (showDecisionFlowExplorer()) {
+      <app-smoe-decision-flow-explorer
+        [patientId]="selectedFlowPatientId()"
+        (closeModal)="showDecisionFlowExplorer.set(false)"
+        (patientSelected)="routeShiftPatientToMoeById($event)"
+      />
+    }
 
     <!-- FOVEA™ Clinical Speed Reader (600–900 WPM RSVP Reticle) -->
     <app-foveal-reticle-rsvp
@@ -932,6 +957,19 @@ export class ResearchFrameComponent implements OnDestroy {
   searchText = signal<string>('');
 
   readonly shiftRoster = SHIFT_CARE_PLAN_ROSTER;
+  readonly showDecisionFlowExplorer = signal<boolean>(false);
+  readonly selectedFlowPatientId = signal<string | null>(null);
+
+  openPatientDecisionFlow(patientId: string): void {
+    this.selectedFlowPatientId.set(patientId);
+    this.showDecisionFlowExplorer.set(true);
+  }
+
+  routeShiftPatientToMoeById(patientId: string): void {
+    if (this.moeRouter) {
+      this.moeRouter.loadShiftPatient(patientId);
+    }
+  }
 
   routeShiftPatientToMoe(patient: IShiftPatientRecord): void {
     if (this.moeRouter) {

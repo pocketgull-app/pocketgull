@@ -2859,6 +2859,67 @@ export class WebMcpRegistrationService {
     };
     try { modelContext.registerTool(internalStateTool, { signal: internalStateCtrl.signal }); } catch (e) { console.warn("Tool already registered:", internalStateTool.name); }
     this.mcpControllers.push({ name: internalStateTool.name, controller: internalStateCtrl });
+
+    // 59. explain_smoe_gating_decision
+    const smoeExplainCtrl = new AbortController();
+    const smoeExplainTool = {
+      name: 'explain_smoe_gating_decision',
+      description: 'Explains the Sparse Mixture of UI Experts (SMoE) gating network routing decision, Softmax probabilities (T=0.85), scanned heuristic triggers, Top-1/Top-2 slots, and Synapse Cross-Attention Bridge for any clinical shift patient.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string', description: 'Patient ID (e.g. p001, p002, p_charles_darwin, p_mara_santos) or "active" for currently selected patient.' }
+        }
+      },
+      execute: async ({ patientId }: { patientId?: string }) => {
+        try {
+          const pid = patientId && patientId !== 'active' ? patientId : (this.moeRouter.activeShiftPatientId() || 'p001');
+          const explanation = this.moeRouter.explainDecisionFlow(pid);
+          return {
+            content: [{ type: 'text', text: explanation }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to explain SMoE decision flow: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    try { modelContext.registerTool(smoeExplainTool, { signal: smoeExplainCtrl.signal }); } catch (e) { console.warn("Tool already registered:", smoeExplainTool.name); }
+    this.mcpControllers.push({ name: smoeExplainTool.name, controller: smoeExplainCtrl });
+
+    // 60. switch_shift_patient_smoe
+    const smoeSwitchCtrl = new AbortController();
+    const smoeSwitchTool = {
+      name: 'switch_shift_patient_smoe',
+      description: 'Switches the active clinical shift patient in the SMoE adaptive canvas and dispatches their care plan and decision flow.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          patientId: { type: 'string', description: 'Patient ID to activate (e.g. p001, p002, p_charles_darwin, p_frida_kahlo, p_marie_curie, p_edwin_smith_3, p_mara_santos, p_srinivasa_ramanujan).' }
+        },
+        required: ['patientId']
+      },
+      execute: async ({ patientId }: { patientId: string }) => {
+        try {
+          this.ngZone.run(() => {
+            this.moeRouter.loadShiftPatient(patientId);
+          });
+          const patient = this.moeRouter.activeShiftPatient();
+          return {
+            content: [{ type: 'text', text: `Activated clinical shift patient: ${patient?.name || patientId} (${patient?.clinicalDomain || ''}). SMoE canvas successfully routed to Top-1 primary slot: ${this.moeRouter.primaryUiExpert()?.expert.name}.` }]
+          };
+        } catch (e: any) {
+          return {
+            content: [{ type: 'text', text: `Failed to switch shift patient: ${e.message}` }],
+            isError: true
+          };
+        }
+      }
+    };
+    try { modelContext.registerTool(smoeSwitchTool, { signal: smoeSwitchCtrl.signal }); } catch (e) { console.warn("Tool already registered:", smoeSwitchTool.name); }
+    this.mcpControllers.push({ name: smoeSwitchTool.name, controller: smoeSwitchCtrl });
   }
 
   /**

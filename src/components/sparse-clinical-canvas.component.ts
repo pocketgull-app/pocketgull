@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@a
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClinicalMoERouterService, IUiGatingScore, SHIFT_CARE_PLAN_ROSTER } from '../services/clinical-moe-router.service';
+import { PatientStateService } from '../services/patient-state.service';
 import { KneeHologramHudComponent } from './knee-hologram-hud.component';
 import { CounterfactualSimulatorComponent } from './counterfactual-simulator.component';
 import { ClinicalPosologyCalculatorComponent } from './clinical-posology-calculator.component';
@@ -10,6 +11,11 @@ import { SteeepQualityHudComponent } from './steeep-quality-hud/steeep-quality-h
 import { SoapNoteGeneratorComponent } from './soap-note-generator.component';
 import { LensBiomolecularPhysicsComponent } from './turing/lens-biomolecular-physics.component';
 import { AnalysisReportComponent } from './analysis-report.component';
+import { SmoeDecisionFlowExplorerComponent } from './smoe-decision-flow-explorer.component';
+import { SpecialistReferralHubComponent } from './specialist-referral-hub.component';
+import { ClinicalTrialsMatcherComponent } from './clinical-trials-matcher.component';
+import { SdohNavigatorComponent } from './sdoh-navigator.component';
+import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-exposomics-radar.component';
 
 @Component({
   selector: 'app-sparse-clinical-canvas',
@@ -25,7 +31,12 @@ import { AnalysisReportComponent } from './analysis-report.component';
     SteeepQualityHudComponent,
     SoapNoteGeneratorComponent,
     LensBiomolecularPhysicsComponent,
-    AnalysisReportComponent
+    AnalysisReportComponent,
+    SmoeDecisionFlowExplorerComponent,
+    SpecialistReferralHubComponent,
+    ClinicalTrialsMatcherComponent,
+    SdohNavigatorComponent,
+    GeofencedExposomicsRadarComponent
   ],
   template: `
     <div class="flex flex-col flex-1 h-full w-full min-h-0 overflow-y-auto bg-zinc-950 text-zinc-100 font-sans p-3 sm:p-5 gap-4">
@@ -148,7 +159,7 @@ import { AnalysisReportComponent } from './analysis-report.component';
           </div>
 
           <!-- 12-Hour Shift Roster Quick Selector -->
-          <div class="flex items-center gap-1.5 font-mono">
+          <div class="flex items-center gap-1.5 font-mono flex-wrap">
             <span class="text-[10px] uppercase font-bold text-emerald-400 select-none flex items-center gap-1 shrink-0">
               <span>📋</span> SHIFT ROSTER:
             </span>
@@ -162,6 +173,14 @@ import { AnalysisReportComponent } from './analysis-report.component';
                 <option [value]="p.id">{{ p.name }} ({{ p.age }}y, {{ p.clinicalDomain }})</option>
               }
             </select>
+            <button
+              type="button"
+              (click)="showDecisionFlowExplorer.set(true)"
+              class="px-2.5 py-1.5 rounded-lg border border-purple-500/40 bg-purple-950/40 hover:bg-purple-900/60 text-purple-300 text-xs font-mono transition flex items-center gap-1.5 cursor-pointer min-h-[36px]"
+              title="Open SMoE Gating Network Decision Flow Explorer (All 10 Shift Patients)"
+            >
+              <span>🔬</span> Decision Flow
+            </button>
           </div>
 
           <!-- Ambient Conversational Cue Prompt (Doctor-Patient Speech Simulation) -->
@@ -229,14 +248,23 @@ import { AnalysisReportComponent } from './analysis-report.component';
               </div>
             </div>
 
-            <div class="flex items-center gap-2 shrink-0">
-              <a
-                [href]="'/' + patient.htmlPath"
-                target="_blank"
-                class="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-mono transition flex items-center gap-1.5"
+            <div class="flex items-center gap-2 shrink-0 flex-wrap">
+              <button
+                type="button"
+                (click)="showDecisionFlowExplorer.set(true)"
+                class="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-mono transition flex items-center gap-1.5 cursor-pointer"
+                title="Inspect mathematical gating logit and cross-attention breakdown"
               >
-                <span>📄</span> Open Plan Artifact
-              </a>
+                <span>🔬</span> Explore Decision Flow
+              </button>
+              <button
+                type="button"
+                (click)="askAiToExplainFlow(patient.id)"
+                class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-mono transition flex items-center gap-1.5 cursor-pointer"
+                title="Ask AI Agent to explain this SMoE routing decision"
+              >
+                <span>🤖</span> Explain via AI
+              </button>
               <button
                 type="button"
                 (click)="moeRouter.clearOverrides()"
@@ -368,6 +396,18 @@ import { AnalysisReportComponent } from './analysis-report.component';
                 @case ('analysis-report') {
                   <app-analysis-report />
                 }
+                @case ('specialist-referral') {
+                  <app-specialist-referral-hub [embedded]="true" />
+                }
+                @case ('clinical-trials-matcher') {
+                  <app-clinical-trials-matcher />
+                }
+                @case ('sdoh-navigator') {
+                  <app-sdoh-navigator />
+                }
+                @case ('environmental-exposomics') {
+                  <app-geofenced-exposomics-radar />
+                }
                 @default {
                   <app-analysis-report />
                 }
@@ -442,6 +482,18 @@ import { AnalysisReportComponent } from './analysis-report.component';
                 @case ('analysis-report') {
                   <app-analysis-report />
                 }
+                @case ('specialist-referral') {
+                  <app-specialist-referral-hub [embedded]="true" />
+                }
+                @case ('clinical-trials-matcher') {
+                  <app-clinical-trials-matcher />
+                }
+                @case ('sdoh-navigator') {
+                  <app-sdoh-navigator />
+                }
+                @case ('environmental-exposomics') {
+                  <app-geofenced-exposomics-radar />
+                }
                 @default {
                   <app-counterfactual-simulator />
                 }
@@ -494,13 +546,24 @@ import { AnalysisReportComponent } from './analysis-report.component';
           }
         </div>
       </footer>
+
+      @if (showDecisionFlowExplorer()) {
+        <app-smoe-decision-flow-explorer
+          [patientId]="moeRouter.activeShiftPatientId()"
+          (closeModal)="showDecisionFlowExplorer.set(false)"
+          (patientSelected)="moeRouter.loadShiftPatient($event)"
+          (askAi)="askAiToExplainFlow($event)"
+        />
+      }
     </div>
   `
 })
 export class SparseClinicalCanvasComponent {
   readonly moeRouter = inject(ClinicalMoERouterService);
+  readonly patientState = inject(PatientStateService, { optional: true });
   protected readonly Math = Math;
 
+  readonly showDecisionFlowExplorer = signal<boolean>(false);
   readonly primaryExpert = computed(() => this.moeRouter.primaryUiExpert());
   readonly secondaryExpert = computed(() => this.moeRouter.secondaryUiExpert());
   readonly latentExperts = computed(() => this.moeRouter.latentUiExperts());
@@ -527,6 +590,16 @@ export class SparseClinicalCanvasComponent {
       this.moeRouter.clearOverrides();
     } else {
       this.moeRouter.loadShiftPatient(target.value);
+    }
+  }
+
+  askAiToExplainFlow(patientId: string): void {
+    this.showDecisionFlowExplorer.set(false);
+    const flow = this.moeRouter.getDecisionFlow(patientId);
+    const patientName = flow?.patientName || patientId;
+    if (this.patientState) {
+      this.patientState.liveAgentInput.set(`Explain the SMoE gating decision and routing rationale for ${patientName} (${patientId}).`);
+      this.patientState.isLiveAgentActive.set(true);
     }
   }
 }
