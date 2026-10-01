@@ -31,6 +31,14 @@ import {
     createDefaultGroundedClinicalAssertion
 } from '../models/grounded-epistemic-assertion.model';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
+import { OknKnowledgeGraphService } from './okn-knowledge-graph.service';
+import {
+    IWatershedBasin,
+    DEFAULT_WATERSHED_BASINS,
+    IWatershedCdsAdvisory,
+    WatershedTriggerType,
+    categorizeWaterHardness
+} from '../models/watershed-cds-advisory.model';
 
 
 export interface ITranscriptEntry {
@@ -79,8 +87,10 @@ export class ClinicalIntelligenceService {
     readonly coppaShield = inject(CoppaPrivacyShieldService, { optional: true });
     readonly healthcareIntelligence = inject(HealthcareIntelligenceService, { optional: true });
     private skepticalService = inject(SkepticalEpistemologyService, { optional: true }) || new SkepticalEpistemologyService();
+    readonly oknService = inject(OknKnowledgeGraphService, { optional: true }) || new OknKnowledgeGraphService();
 
     readonly activeGroundedAssertion = signal<IGroundedClinicalAssertion | null>(createDefaultGroundedClinicalAssertion());
+    readonly watershedCdsAdvisory = signal<IWatershedCdsAdvisory | null>(null);
 
     public isPediatricMinorActive(): boolean {
         return !!this.coppaShield?.isPediatricContext() || this.rules.hasContext('pediatric_mode');
@@ -176,6 +186,7 @@ export class ClinicalIntelligenceService {
         this.analysisMetrics.set(null);
         this.transcript.set([]);
         this.lastActivePhilosophy.set(null);
+        this.watershedCdsAdvisory.set(null);
     }
 
     public loadArchivedAnalysis(report: Partial<Record<AnalysisLens, string>>) {
@@ -668,6 +679,7 @@ Recommends voluntary pre-conception carrier screening for autosomal recessive tr
 
         // Fetch Vertex AI Search protocols for grounding context if we're not in emergency mode
         const vertexAiGroundingContext = !isEmergency ? await this.fetchClinicalProtocols(patientData) : '';
+        const watershedAdvisory = !isEmergency ? await this.evaluateWatershedCdsAdvisory(patientData) : null;
 
         try {
             const orchestrationPromises = lenses.map(async (lens) => {
@@ -682,6 +694,10 @@ Recommends voluntary pre-conception carrier screening for autosomal recessive tr
                 
                 if (vertexAiGroundingContext) {
                     sysInstruction += vertexAiGroundingContext;
+                }
+                
+                if (watershedAdvisory) {
+                    sysInstruction += `\n\n${watershedAdvisory.directiveContext}`;
                 }
                 
                 const orcidProfile = this.orcid.orcidProfile();
@@ -832,6 +848,14 @@ Feel free to reference their research areas and publications if it supports the 
             context += vertexAiGroundingContext;
         }
 
+        // Watershed-Aware CDS Advisory Grounding
+        if (!isEmergency) {
+            const watershedAdvisory = await this.evaluateWatershedCdsAdvisory(patientData);
+            if (watershedAdvisory) {
+                context += `\n\n${watershedAdvisory.directiveContext}`;
+            }
+        }
+
         await this.ai.startChat(patientData, context);
     }
 
@@ -885,7 +909,15 @@ Feel free to reference their research areas and publications if it supports the 
         this.error.set(null);
 
         try {
-            let response = await this.ai.sendMessage(message);
+            let messageToSend = message;
+            if (!isEmergency) {
+                const advisory = await this.evaluateWatershedCdsAdvisory(message);
+                if (advisory && !this.transcript().some(t => t.text.includes('[WATERSHED EXPOSOME CDS ADVISORY]'))) {
+                    messageToSend = `[CLINICAL DIRECTIVE CONTEXT: ${advisory.directiveContext}]\n\n${message}`;
+                }
+            }
+
+            let response = await this.ai.sendMessage(messageToSend);
             // ── Rules Engine: post-process modifier ─────────────────────────────
             response = this.rules.evaluateOnResponse(response, message);
             this.transcript.update(t => [...t, { role: 'model', text: response }]);
@@ -1313,6 +1345,220 @@ Feel free to reference their research areas and publications if it supports the 
             auditedText: recommendationText,
             suggestedCorrections: suggestions
         };
+    }
+
+    /**
+     * Determines whether the patient presentation or inquiry contains triggers for
+     * joint pain/cartilage remodeling or statin myopathy/SAMS.
+     */
+    public detectWatershedClinicalTriggers(customContext?: string): WatershedTriggerType | null {
+        const textToScan = [
+            customContext || '',
+            this.patientState.reasonForVisit() || '',
+            this.patientState.patientGoals() || '',
+            ...((this.patientState.patientHistory() || []).map(h => `${h.summary || ''}`))
+        ].join(' ').toLowerCase();
+
+        // 1. Joint Pain Triggers
+        const jointKeywords = [
+            'joint', 'knee', 'arthralgia', 'osteoarthritis', 'cartilage', 'stiffness',
+            'crepitus', 'effusion', 'gonarthrosis', 'meniscus', 'patella', 'chondrocyte',
+            'synovial', 'arthritis'
+        ];
+        const hasJointInText = jointKeywords.some(k => textToScan.includes(k));
+
+        const issuesRecord = this.patientState.issues() || {};
+        let hasJointInIssues = false;
+        for (const [bodyPart, issueList] of Object.entries(issuesRecord)) {
+            const bpLower = bodyPart.toLowerCase();
+            if (bpLower.includes('shin') || bpLower.includes('knee') || bpLower.includes('thigh') || bpLower.includes('pelvis') || bpLower.includes('foot')) {
+                hasJointInIssues = true;
+                break;
+            }
+            if (issueList && Array.isArray(issueList)) {
+                for (const iss of issueList) {
+                    const desc = (iss.description || '').toLowerCase();
+                    const name = (iss.name || '').toLowerCase();
+                    const syms = (iss.symptoms || []).map(s => typeof s === 'string' ? s.toLowerCase() : (s.name || '').toLowerCase()).join(' ');
+                    if (jointKeywords.some(k => desc.includes(k) || name.includes(k) || syms.includes(k))) {
+                        hasJointInIssues = true;
+                        break;
+                    }
+                }
+            }
+            if (hasJointInIssues) break;
+        }
+
+        const isJointTriggered = hasJointInText || hasJointInIssues;
+
+        // 2. Statin Myopathy Triggers
+        const statinMedKeywords = [
+            'statin', 'atorvastatin', 'rosuvastatin', 'simvastatin', 'pravastatin',
+            'lovastatin', 'fluvastatin', 'pitavastatin', 'lipitor', 'crestor', 'zocor'
+        ];
+        const meds = (this.patientState.medications() || []).map(m => (m.name || '').toLowerCase());
+        const isOnStatin = meds.some(m => statinMedKeywords.some(k => m.includes(k)));
+
+        const muscleMyopathyKeywords = [
+            'myopathy', 'sams', 'myalgia', 'muscle pain', 'muscle ache', 'muscle weakness',
+            'coq10', 'ubiquinone', 'creatine kinase', 'ck elevation', 'rhabdo', 'cramp'
+        ];
+        const hasStatinKeywordsInText = statinMedKeywords.some(k => textToScan.includes(k));
+        const hasMyopathyKeywordsInText = muscleMyopathyKeywords.some(k => textToScan.includes(k));
+
+        let hasMyopathyInIssues = false;
+        for (const issueList of Object.values(issuesRecord)) {
+            if (issueList && Array.isArray(issueList)) {
+                for (const iss of issueList) {
+                    const desc = (iss.description || '').toLowerCase();
+                    const syms = (iss.symptoms || []).map(s => typeof s === 'string' ? s.toLowerCase() : (s.name || '').toLowerCase()).join(' ');
+                    if (muscleMyopathyKeywords.some(k => desc.includes(k) || syms.includes(k))) {
+                        hasMyopathyInIssues = true;
+                        break;
+                    }
+                }
+            }
+            if (hasMyopathyInIssues) break;
+        }
+
+        const isStatinTriggered = (isOnStatin && (hasMyopathyKeywordsInText || hasMyopathyInIssues)) ||
+            (hasStatinKeywordsInText && hasMyopathyKeywordsInText) ||
+            (isOnStatin && (textToScan.includes('statin') || textToScan.includes('muscle')));
+
+        if (isJointTriggered && isStatinTriggered) return 'both';
+        if (isJointTriggered) return 'joint_pain';
+        if (isStatinTriggered) return 'statin_myopathy';
+        return null;
+    }
+
+    /**
+     * Resolves the active patient watershed basin based on environmental/OKN profiles,
+     * defaulting to Puget Sound / regional baseline if unspecified.
+     */
+    public resolvePatientWatershedBasin(): IWatershedBasin {
+        const env = this.patientState.environmentalIndex();
+        const okn = this.patientState.oknProfile();
+        const siteId = env?.oknProvenance?.watershedOrAquiferSiteId || okn?.watershedOrAquiferSiteId;
+
+        if (siteId) {
+            const matched = DEFAULT_WATERSHED_BASINS.find(b => siteId.includes(b.id) || b.id.includes(siteId));
+            if (matched) return matched;
+        }
+
+        const text = [
+            this.patientState.reasonForVisit() || '',
+            env?.vulnerabilityWarning || '',
+            okn?.traversedPathSummary || ''
+        ].join(' ').toLowerCase();
+
+        if (text.includes('mississippi') || text.includes('minnesota') || text.includes('twin cities')) {
+            return DEFAULT_WATERSHED_BASINS.find(b => b.id === '07010206') || DEFAULT_WATERSHED_BASINS[0];
+        }
+        if (text.includes('delaware') || text.includes('philadelphia')) {
+            return DEFAULT_WATERSHED_BASINS.find(b => b.id === '02040205') || DEFAULT_WATERSHED_BASINS[0];
+        }
+        if (text.includes('cape fear') || text.includes('north carolina') || text.includes('wilmington')) {
+            return DEFAULT_WATERSHED_BASINS.find(b => b.id === '03050106') || DEFAULT_WATERSHED_BASINS[0];
+        }
+        if (text.includes('ohio') || text.includes('louisville') || text.includes('kentucky')) {
+            return DEFAULT_WATERSHED_BASINS.find(b => b.id === '05140201') || DEFAULT_WATERSHED_BASINS[0];
+        }
+
+        return DEFAULT_WATERSHED_BASINS[0];
+    }
+
+    /**
+     * Evaluates the patient state and context against USGS water hardness and EPA UCMR5 contaminant data,
+     * discovering multi-hop federal knowledge graph paths via NSF OKN.
+     */
+    public async evaluateWatershedCdsAdvisory(customContext?: string): Promise<IWatershedCdsAdvisory | null> {
+        const trigger = this.detectWatershedClinicalTriggers(customContext);
+        if (!trigger) {
+            return null;
+        }
+
+        const basin = this.resolvePatientWatershedBasin();
+        const hardnessCategory = categorizeWaterHardness(basin.hardnessCaCO3);
+        const totalPfasPpb = (basin.pfoaNgL + basin.pfosNgL + basin.genxNgL) / 1000.0;
+        const epaMclExceedance = basin.pfoaNgL > 4.0 || basin.pfosNgL > 4.0;
+
+        // Query NSF OKN for multi-hop traversals
+        const traversedPaths: import('../models/okn-knowledge-graph.model').IOknCrossGraphPath[] = [];
+
+        if (trigger === 'joint_pain' || trigger === 'both') {
+            const jointOkn = await this.oknService.queryCrossAgencyGraph('Transgenerational Osteoarthritis');
+            if (jointOkn && jointOkn.connectedPaths.length > 0) {
+                traversedPaths.push(...jointOkn.connectedPaths.slice(0, 2));
+            }
+            const ucmrOkn = await this.oknService.queryCrossAgencyGraph('UCMR5');
+            if (ucmrOkn && ucmrOkn.connectedPaths.length > 0) {
+                const unique = ucmrOkn.connectedPaths.filter(p => !traversedPaths.some(existing => existing.pathId === p.pathId));
+                traversedPaths.push(...unique.slice(0, 1));
+            }
+        }
+
+        if (trigger === 'statin_myopathy' || trigger === 'both') {
+            const statinOkn = await this.oknService.queryCrossAgencyGraph('PFAS');
+            if (statinOkn && statinOkn.connectedPaths.length > 0) {
+                const cypPaths = statinOkn.connectedPaths.filter(p => 
+                    p.nodes.some(n => n.label.includes('Phenoconversion') || n.label.includes('Statin') || n.label.includes('Ubiquinone'))
+                );
+                const toAdd = cypPaths.length > 0 ? cypPaths : statinOkn.connectedPaths;
+                const unique = toAdd.filter(p => !traversedPaths.some(existing => existing.pathId === p.pathId));
+                traversedPaths.push(...unique.slice(0, 2));
+            }
+        }
+
+        // Formulate clinical mechanism
+        let clinicalMechanism = '';
+        if (trigger === 'joint_pain') {
+            clinicalMechanism = `Municipal water in ${basin.name} reflects ${basin.hardnessCaCO3} mg/L CaCO3 (${hardnessCategory}) with total PFAS of ${(basin.pfoaNgL + basin.pfosNgL).toFixed(1)} ng/L (EPA MCL: 4.0 ng/L, ${epaMclExceedance ? 'EXCEEDED' : 'Compliant'}). Fluorinated surfactants uncouple chondrocyte mitochondrial Complex IV (Cytochrome c Oxidase) and upregulate epididymal tsRNA stress fragments during paternal spermatogenesis, accelerating cartilage matrix degradation.`;
+        } else if (trigger === 'statin_myopathy') {
+            clinicalMechanism = `Municipal drinking water with PFAS levels of ${(basin.pfoaNgL + basin.pfosNgL).toFixed(1)} ng/L (${epaMclExceedance ? 'EPA MCL Exceedance' : 'Sub-MCL'}) induces hepatic nuclear receptor activation and Cytochrome P450 phenoconversion. This alters hepatic statin clearance, exacerbating circulating statin acid burden, blocking the mevalonate pathway, and depleting intramitochondrial Ubiquinone (CoQ10) in skeletal myocytes.`;
+        } else {
+            clinicalMechanism = `Dual convergence of ${basin.hardnessCaCO3} mg/L CaCO3 (${hardnessCategory}) water hardness and ${(basin.pfoaNgL + basin.pfosNgL).toFixed(1)} ng/L PFAS: xenobiotic CYP450 phenoconversion amplifies statin myopathy and mitochondrial ubiquinone depletion, while fluorinated surfactant uncoupling of Complex IV accelerates articular cartilage senescence and transgenerational tsRNA stress.`;
+        }
+
+        const triggerSummary = trigger === 'both'
+            ? 'Dual Joint Pain & Statin Myopathy Presentation'
+            : trigger === 'joint_pain'
+                ? 'Articular Cartilage Degeneration & Joint Pain Presentation'
+                : 'Statin-Associated Muscle Symptoms (SAMS) Presentation';
+
+        const antonovskyRemedy = {
+            remedy: basin.remedy,
+            estimatedCost: basin.estCost,
+            manageabilityRationale: `Antonovsky Manageability Invariant: Low-cost point-of-use barrier eliminates >99% of municipal PFAS and heavy metal xenobiotics, while living-water magnesium-bicarbonate remineralization buffers mitochondrial ATP synthesis and protects Complex IV integrity.`,
+            ftcAffiliateDisclosure: `As an Amazon Associate, PocketGull earns from qualifying purchases. Filter recommendations are supportive evidence-grounded wellness tools, not prescriptions.`
+        };
+
+        const directiveContext = `[WATERSHED EXPOSOME CDS ADVISORY]
+TRIGGER: ${triggerSummary}
+MUNICIPAL WATERSHED: ${basin.name} (HUC-8: ${basin.id}, ${basin.state})
+WATER HARDNESS: ${basin.hardnessCaCO3} mg/L CaCO3 [${hardnessCategory}]
+EPA UCMR5 CONTAMINANTS: PFOA ${basin.pfoaNgL} ng/L | PFOS ${basin.pfosNgL} ng/L | GenX ${basin.genxNgL} ng/L (Total PFAS: ${totalPfasPpb.toFixed(3)} ppb, EPA MCL Exceedance: ${epaMclExceedance ? 'YES' : 'NO'})
+NSF OKN TRAVERSED PATHS: ${traversedPaths.map(p => p.pathDescription).join(' || ')}
+CLINICAL MECHANISM: ${clinicalMechanism}
+MANAGEABILITY ACTION: ${antonovskyRemedy.remedy} (${antonovskyRemedy.estimatedCost})
+ANTONOVSKY RATIONALE: ${antonovskyRemedy.manageabilityRationale}
+FTC DISCLOSURE: ${antonovskyRemedy.ftcAffiliateDisclosure}`;
+
+        const advisory: IWatershedCdsAdvisory = {
+            trigger,
+            triggerSummary,
+            basin,
+            hardnessCategory,
+            totalPfasPpb,
+            epaMclExceedance,
+            oknTraversedPaths: traversedPaths,
+            clinicalMechanism,
+            antonovskyRemedy,
+            directiveContext,
+            generatedAt: new Date().toISOString()
+        };
+
+        this.watershedCdsAdvisory.set(advisory);
+        return advisory;
     }
 }
 

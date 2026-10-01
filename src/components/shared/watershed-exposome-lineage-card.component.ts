@@ -1,20 +1,9 @@
 import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FhirBundleFactoryService } from '../../services/fhir/fhir-bundle-factory.service';
+import { IWatershedBasin, DEFAULT_WATERSHED_BASINS } from '../../models/watershed-cds-advisory.model';
 
-export interface IWatershedBasin {
-  id: string;
-  name: string;
-  state: string;
-  hardnessCaCO3: number;
-  pfoaNgL: number;
-  pfosNgL: number;
-  genxNgL: number;
-  microplasticsPerL: number;
-  tier: 'LOW' | 'MODERATE' | 'HIGH' | 'SEVERE';
-  remedy: string;
-  estCost: string;
-}
+export type { IWatershedBasin };
 
 @Component({
   selector: 'app-watershed-exposome-lineage-card',
@@ -342,99 +331,7 @@ export class WatershedExposomeLineageCardComponent {
   decisionThreshold = signal<number>(0.20);
   exportSuccess = signal<boolean>(false);
 
-  basins: IWatershedBasin[] = [
-    {
-      id: '17110019',
-      name: 'Puget Sound / Cedar-Sammamish',
-      state: 'WA',
-      hardnessCaCO3: 34.2,
-      pfoaNgL: 2.1,
-      pfosNgL: 1.8,
-      genxNgL: 0.4,
-      microplasticsPerL: 14.5,
-      tier: 'LOW',
-      remedy: 'NSF-53 Solid Carbon Block Gravity Pitcher',
-      estCost: '$25'
-    },
-    {
-      id: '07010206',
-      name: 'Upper Mississippi / Twin Cities',
-      state: 'MN',
-      hardnessCaCO3: 268.0,
-      pfoaNgL: 14.8,
-      pfosNgL: 18.2,
-      genxNgL: 3.1,
-      microplasticsPerL: 48.0,
-      tier: 'HIGH',
-      remedy: 'Multi-Stage Reverse Osmosis with Remineralization',
-      estCost: '$180'
-    },
-    {
-      id: '02040205',
-      name: 'Delaware River Basin / Philadelphia',
-      state: 'PA-NJ',
-      hardnessCaCO3: 142.0,
-      pfoaNgL: 16.4,
-      pfosNgL: 19.8,
-      genxNgL: 4.5,
-      microplasticsPerL: 58.4,
-      tier: 'HIGH',
-      remedy: 'Point-of-Use Under-Sink Carbon Block + RO',
-      estCost: '$160'
-    },
-    {
-      id: '02050101',
-      name: 'Upper Susquehanna River',
-      state: 'NY-PA',
-      hardnessCaCO3: 128.5,
-      pfoaNgL: 8.6,
-      pfosNgL: 9.2,
-      genxNgL: 1.9,
-      microplasticsPerL: 36.2,
-      tier: 'MODERATE',
-      remedy: 'NSF-53 / NSF-58 Dual Carbon Filter',
-      estCost: '$85'
-    },
-    {
-      id: '14010001',
-      name: 'Colorado River Headwaters',
-      state: 'CO',
-      hardnessCaCO3: 165.0,
-      pfoaNgL: 1.8,
-      pfosNgL: 1.4,
-      genxNgL: 0.2,
-      microplasticsPerL: 8.5,
-      tier: 'LOW',
-      remedy: 'Basic Sediment + Coconut Carbon Filter',
-      estCost: '$20'
-    },
-    {
-      id: '05140201',
-      name: 'Ohio River / Louisville Reach',
-      state: 'KY-IN',
-      hardnessCaCO3: 172.0,
-      pfoaNgL: 22.5,
-      pfosNgL: 28.4,
-      genxNgL: 8.7,
-      microplasticsPerL: 74.0,
-      tier: 'SEVERE',
-      remedy: 'Certified PFAS POU Reverse Osmosis + Remineralization',
-      estCost: '$195'
-    },
-    {
-      id: '03050106',
-      name: 'Cape Fear River Basin / Wilmington',
-      state: 'NC',
-      hardnessCaCO3: 42.0,
-      pfoaNgL: 28.0,
-      pfosNgL: 34.5,
-      genxNgL: 145.0,
-      microplasticsPerL: 52.0,
-      tier: 'SEVERE',
-      remedy: 'High-Rejection Reverse Osmosis + Granular Activated Carbon',
-      estCost: '$220'
-    }
-  ];
+  basins: IWatershedBasin[] = DEFAULT_WATERSHED_BASINS;
 
   selectedBasin = computed(() => {
     return this.basins.find(b => b.id === this.selectedBasinId()) || this.basins[0];
