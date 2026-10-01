@@ -31,6 +31,7 @@ import { SparseClinicalCanvasComponent } from './sparse-clinical-canvas.componen
 import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 import { BedsideInterpreterModalComponent } from './modals/bedside-interpreter-modal.component';
 import { CaregiverCheatSheetModalComponent } from './modals/caregiver-cheat-sheet-modal.component';
+import { DisasterTriageModalComponent } from './modals/disaster-triage-modal.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,7 +60,8 @@ import { CaregiverCheatSheetModalComponent } from './modals/caregiver-cheat-shee
     HobbyDomainCompanionComponent,
     SparseClinicalCanvasComponent,
     BedsideInterpreterModalComponent,
-    CaregiverCheatSheetModalComponent
+    CaregiverCheatSheetModalComponent,
+    DisasterTriageModalComponent
   ],
   template: `
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)] bg-[#F3F4F6] dark:bg-zinc-950">
@@ -221,11 +223,20 @@ import { CaregiverCheatSheetModalComponent } from './modals/caregiver-cheat-shee
                 <span>[👤 CHEAT SHEET]</span>
               </button>
 
+              <!-- Mass Casualty / Disaster Rapid Triage Button -->
+              <button type="button" (click)="showDisasterModal.set(!showDisasterModal())"
+                title="Open Mass Casualty Rapid Disaster Triage Command (START / SALT & Surge Capacity)"
+                [class]="showDisasterModal()
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-rose-400 bg-rose-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-600 hover:text-white transition cursor-pointer'">
+                <span>[🚨 DISASTER]</span>
+              </button>
+
               <!-- Clinical Studio Overflow Dropdown -->
               <div class="relative">
                 <button type="button" (click)="showToolsMenu.set(!showToolsMenu())"
                   title="Clinical Studio &amp; Advanced Analysis Tools"
-                  [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showEdgeAiModal() || showSteeepModal() || showBiophysicsModal() || showInterpreterModal() || showCaregiverModal() || showToolsMenu())
+                  [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showEdgeAiModal() || showSteeepModal() || showBiophysicsModal() || showInterpreterModal() || showCaregiverModal() || showDisasterModal() || showToolsMenu())
                     ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-600 bg-zinc-800 text-zinc-100 transition cursor-pointer'
                     : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
                   <span>STUDIO ▾</span>
@@ -233,6 +244,11 @@ import { CaregiverCheatSheetModalComponent } from './modals/caregiver-cheat-shee
 
                 @if (showToolsMenu()) {
                   <div class="absolute right-0 top-full mt-1 w-56 p-1.5 bg-zinc-950 border border-zinc-800 shadow-2xl z-50 flex flex-col gap-1 text-xs font-mono">
+                    <button (click)="showDisasterModal.set(!showDisasterModal()); showToolsMenu.set(false)"
+                      class="w-full text-left px-3 py-2 text-rose-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      <span>🚨 Disaster Triage (START/SALT)</span>
+                      @if (showDisasterModal()) { <span class="text-rose-400">✓</span> }
+                    </button>
                     <button (click)="showCaregiverModal.set(!showCaregiverModal()); showToolsMenu.set(false)"
                       class="w-full text-left px-3 py-2 text-teal-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
                       <span>👤 Caregiver Action Plan</span>
@@ -490,6 +506,11 @@ import { CaregiverCheatSheetModalComponent } from './modals/caregiver-cheat-shee
     @if (showCaregiverModal()) {
       <app-caregiver-cheat-sheet-modal (close)="showCaregiverModal.set(false)"></app-caregiver-cheat-sheet-modal>
     }
+
+    <!-- Mass Casualty & Disaster Rapid Triage Modal (START / SALT) -->
+    @if (showDisasterModal()) {
+      <app-disaster-triage-modal (close)="showDisasterModal.set(false)"></app-disaster-triage-modal>
+    }
   `,
   styles: [`
     :host { display: block; height: 100%; width: 100%; }
@@ -552,6 +573,7 @@ export class AnalysisContainerComponent {
   showEvaluationHubModal = signal(false);
   showInterpreterModal = signal(false);
   showCaregiverModal = signal(false);
+  showDisasterModal = signal(false);
   showHobbyCompanionModal = signal(false);
   showMyChartModal = signal(false);
   showPedigreeModal = signal(false);
