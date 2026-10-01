@@ -146,4 +146,63 @@ describe('Pocket-Gull Patient Cohort x NSF OKN Epistemic Evaluation', () => {
     console.log('✅ TRIAL COMPLETE: 15/15 Patients Evaluated Across Multi-Agency Knowledge Graphs');
     console.log('='.repeat(82) + '\n');
   });
+
+  it('discovers cross-agency correlations between municipal water quality and pharmaceuticals', async () => {
+    // 1. Inward Chelation: Mineral Hardness -> Ciprofloxacin / Oral Antimicrobial Inactivation
+    const chelationQuery = await oknService.queryCrossAgencyGraph('Ciprofloxacin');
+    expect(chelationQuery.connectedPaths.length).toBeGreaterThan(0);
+    const chelationPath = chelationQuery.connectedPaths.find(p => p.participatingAgencies.includes('USGS') && p.participatingAgencies.includes('NIH'));
+    expect(chelationPath).toBeDefined();
+    console.log('\n[OKN DISCOVERY 1: INWARD DRUG CHELATION]');
+    console.log(`Path: ${chelationPath?.pathDescription}`);
+
+    // 2. Xenobiotic Phenoconversion: PFAS in Groundwater -> CYP450 -> Atorvastatin Toxicity/Failure
+    const pfasQuery = await oknService.queryCrossAgencyGraph('PFAS');
+    expect(pfasQuery.connectedPaths.length).toBeGreaterThan(0);
+    const pfasCypPath = pfasQuery.connectedPaths.find(p => p.nodes.some(n => n.label.includes('Phenoconversion')));
+    expect(pfasCypPath).toBeDefined();
+    console.log('\n[OKN DISCOVERY 2: XENOBIOTIC CYP PHENOCONVERSION]');
+    console.log(`Path: ${pfasCypPath?.pathDescription}`);
+
+    // 3. Egress Recirculation: Wastewater Effluent -> Aquifer -> Environmental Resistome
+    const effluentQuery = await oknService.queryCrossAgencyGraph('Wastewater');
+    expect(effluentQuery.connectedPaths.length).toBeGreaterThan(0);
+    const effluentPath = effluentQuery.connectedPaths[0];
+    console.log('\n[OKN DISCOVERY 3: WATERBORNE PHARMA RESISTOME]');
+    console.log(`Path: ${effluentPath?.pathDescription}`);
+
+    // 4. Salutogenic Protection: Living Water Matrix -> Mitochondrial ATP & MASLD Attenuation
+    const salutogenicQuery = await oknService.queryCrossAgencyGraph('Salutogenic Living Water');
+    expect(salutogenicQuery.connectedPaths.length).toBeGreaterThan(0);
+    const salutogenicPath = salutogenicQuery.connectedPaths[0];
+    console.log('\n[OKN DISCOVERY 4: SALUTOGENIC RESISTANCE RESOURCE]');
+    console.log(`Path: ${salutogenicPath?.pathDescription}`);
+  });
+
+  it('discovers multi-hop transgenerational exposomics paths linking water quality, mitochondrial homoplasmy, pharmaceuticals, and joint phenotypes', async () => {
+    // 1. PFAS -> Cytochrome c Oxidase & Paternal tsRNA Spermatogenesis
+    const pfasExposome = await oknService.queryCrossAgencyGraph('UCMR5');
+    expect(pfasExposome.connectedPaths.length).toBeGreaterThan(0);
+    const pfasMitoPath = pfasExposome.connectedPaths.find(p => p.participatingAgencies.includes('EPA') && p.participatingAgencies.includes('NIH'));
+    expect(pfasMitoPath).toBeDefined();
+    console.log('\n[OKN DISCOVERY 5: EPA PFAS TO MITOCHONDRIAL ELECTRON TRANSPORT & PATERNAL tsRNA]');
+    console.log(`Path: ${pfasMitoPath?.pathDescription}`);
+
+    // 2. Maternal mtDNA Homoplasmy -> Cartilage Protection & WHO Metformin
+    const mtdnaQuery = await oknService.queryCrossAgencyGraph('mtDNA');
+    expect(mtdnaQuery.connectedPaths.length).toBeGreaterThan(0);
+    const mtdnaPath = mtdnaQuery.connectedPaths.find(p => p.nodes.some(n => n.label.includes('Transgenerational Osteoarthritis')));
+    expect(mtdnaPath).toBeDefined();
+    console.log('\n[OKN DISCOVERY 6: MATERNAL mtDNA TO CHONDROCYTE RESILIENCE & METFORMIN]');
+    console.log(`Path: ${mtdnaPath?.pathDescription}`);
+
+    // 3. Clinical Decision Curve Analysis (DCA) Net Benefit & Vickers-Elkin Utility
+    const dcaQuery = await oknService.queryCrossAgencyGraph('Decision Curve Analysis');
+    expect(dcaQuery.connectedPaths.length).toBeGreaterThan(0);
+    const dcaPath = dcaQuery.connectedPaths.find(p => p.participatingAgencies.includes('BMJ') && p.participatingAgencies.includes('NIH'));
+    expect(dcaPath).toBeDefined();
+    console.log('\n[OKN DISCOVERY 7: BMJ DECISION CURVE ANALYSIS TO TRANSGENERATIONAL PHENOTYPE]');
+    console.log(`Path: ${dcaPath?.pathDescription}`);
+  });
 });
+
