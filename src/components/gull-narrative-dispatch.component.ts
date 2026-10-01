@@ -88,9 +88,9 @@ export interface INarrativeStep {
             <span class="flex items-center gap-2">
               <span class="animate-spin">🎶</span> Gull Squadron Health Sea Shanty
             </span>
-            <span class="px-2 py-0.5 rounded bg-[#2AA4A0] text-white">Verse {{ activeAct() }} of 4</span>
+            <span class="px-2 py-0.5 rounded bg-[#0e7490] text-white font-bold">Verse {{ activeAct() }} of 4</span>
           </div>
-          <p class="text-base font-black text-[#EF6658] italic tracking-tight font-serif mt-1">
+          <p class="text-base font-black text-[#b91c1c] italic tracking-tight font-serif mt-1">
             "{{ currentStep()?.shantyVerse }}"
           </p>
         </div>

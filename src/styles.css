@@ -3159,7 +3159,7 @@ html.theme-white-marble h2,
 html.theme-white-marble h3,
 html.theme-white-marble h4,
 html.theme-white-marble h5 {
-  color: #aa771c !important;
+  color: #946414 !important;
 }
 
 html.theme-white-marble .text-gray-550,
@@ -3943,6 +3943,12 @@ html.theme-scotopic .text-zinc-100,
 html.theme-scotopic .text-zinc-200 {
   color: #ff6655 !important;
 }
+html.theme-scotopic .text-gray-600,
+html.theme-scotopic .text-gray-500,
+html.theme-scotopic .text-zinc-400,
+html.theme-scotopic .text-zinc-500 {
+  color: #e05544 !important;
+}
 html.theme-scotopic .border,
 html.theme-scotopic .border-zinc-700,
 html.theme-scotopic .border-zinc-800 {
@@ -4554,14 +4560,22 @@ html.reduce-motion ::after {
   scroll-behavior: auto !important;
 }
 
-/* 4. Keyboard Traversal Focus Visible Rings (Fitts's Law) */
+/* 4. Keyboard Traversal Focus Visible Rings (WCAG 2.2 SC 2.4.13 Focus Appearance >= 3:1) */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid #10b981 !important;
+  outline: 3px solid #047857 !important; /* Emerald-700 on light surfaces: 5.50:1 */
   outline-offset: 2px !important;
+}
+
+html.dark button:focus-visible,
+html.dark a:focus-visible,
+html.dark input:focus-visible,
+html.dark select:focus-visible,
+html.dark textarea:focus-visible {
+  outline-color: #10b981 !important; /* Emerald-500 on dark surfaces: 7.56:1 */
 }
 
 /* 5. Philocardia Mode: Heart-Centered Parasympathetic Resonance & 0.1 Hz Vagal Pacing */

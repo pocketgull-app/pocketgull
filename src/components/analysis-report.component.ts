@@ -906,9 +906,9 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
             <div class="w-8 h-8 border-2 border-zinc-200 dark:border-zinc-800 border-t-zinc-900 dark:border-t-zinc-100 rounded-full animate-spin mb-4"></div>
             <div class="flex flex-col items-center gap-2">
               <div class="flex items-center gap-2">
-                <span class="text-xs uppercase tracking-widest text-[#689F38] dark:text-[#8bc34a] font-bold">{{ activeLens() }}</span>
+                <span class="text-xs uppercase tracking-widest text-[#2e7d32] dark:text-[#8bc34a] font-bold">{{ activeLens() }}</span>
                 @if (intel.isLoading() && isTextEmpty(activeReport())) {
-                  <span class="flex h-1.5 w-1.5 rounded-full bg-[#689F38] dark:bg-[#8bc34a] animate-pulse"></span>
+                  <span class="flex h-1.5 w-1.5 rounded-full bg-[#2e7d32] dark:bg-[#8bc34a] animate-pulse"></span>
                   <span class="text-[12px] uppercase tracking-tighter text-gray-500 dark:text-zinc-400">{{ activeAgentName() }} is synthesizing...</span>
                 }
               </div>
