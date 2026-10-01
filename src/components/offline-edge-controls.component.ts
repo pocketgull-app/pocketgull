@@ -104,17 +104,27 @@ import { NetworkStateService } from '../services/network-state.service';
           <h4 class="text-xs font-mono font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
             <span>🧪</span> Test Local Edge WebAssembly SBAR Synthesis
           </h4>
-          <button (click)="runTestInference()" type="button"
-                  class="px-4 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5">
-            <span>▶️</span> Run Edge Inference Test
-          </button>
+          <div class="flex flex-wrap items-center gap-2">
+            <button (click)="runTestInference()" type="button"
+                    class="px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5">
+              <span>▶️</span> SBAR Synthesis
+            </button>
+            <button (click)="runAcuityClassifierTest()" type="button"
+                    class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5">
+              <span>⚡</span> Acuity Classifier
+            </button>
+            <button (click)="runSoapScribeTest()" type="button"
+                    class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5">
+              <span>🎙️</span> Offline SOAP Scribe
+            </button>
+          </div>
         </div>
 
         @if (testOutput()) {
           <pre class="p-4 bg-zinc-950 rounded-xl border border-zinc-800 font-mono text-xs text-emerald-300 whitespace-pre-wrap leading-relaxed max-h-64 overflow-y-auto">{{ testOutput() }}</pre>
         } @else {
           <p class="text-xs text-zinc-500 font-sans italic">
-            Click 'Run Edge Inference Test' to simulate local in-browser WASM/ONNX clinical report synthesis.
+            Select an edge test button above to simulate local on-device SBAR, Acuity Classification, or SOAP Scribe.
           </p>
         }
       </div>
@@ -139,5 +149,23 @@ export class OfflineEdgeControlsComponent {
     this.testOutput.set('Synthesizing SBAR via local WebAssembly engine...');
     const result = await this.edgeAi.synthesizeOfflineClinicalReport('Routine patient evaluation');
     this.testOutput.set(result);
+  }
+
+  async runAcuityClassifierTest() {
+    this.testOutput.set('Running on-device acuity classifier (Chrome Built-in AI / Gemma 4)...');
+    const res = await this.edgeAi.classifyAcuity('Patient in trauma pod with crushing retrosternal chest pain and shortness of breath.');
+    const formatted = `[ON-DEVICE ACUITY CLASSIFICATION]
+CATEGORY: ${res.category}
+CONFIDENCE: ${(res.confidence * 100).toFixed(0)}%
+ENGINE: ${res.modelEngine} (${res.latencyMs}ms)
+RATIONALE: ${res.rationale}
+ISMP SAFETY: ${res.ismpSafetyAudit.isSafe ? 'VERIFIED SAFE' : 'WARNINGS FOUND'}`;
+    this.testOutput.set(formatted);
+  }
+
+  async runSoapScribeTest() {
+    this.testOutput.set('Structuring dictation into SOAP format with ISMP posology check...');
+    const res = await this.edgeAi.structureVoiceNoteOffline('Patient reports burning lower spine ache after lifting. Order gabapentin 300.0 mg and .5 mg clonazepam at bedtime.');
+    this.testOutput.set(res.formattedNote);
   }
 }
