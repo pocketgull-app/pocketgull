@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/models/patient.dart';
-import 'patient_detail_screen.dart';
+import '../../../../core/services/triage_cache_service.dart';
+import 'triage_command_board.dart';
 
 class ProviderDashboard extends StatefulWidget {
   const ProviderDashboard({super.key});
@@ -25,7 +26,8 @@ class _ProviderDashboardState extends State<ProviderDashboard> {
     setState(() => _isLoading = true);
     final data = await _apiClient.fetchPatients();
     setState(() {
-      _patients = data.map((json) => Patient.fromJson(json)).toList();
+      final loaded = data.map((json) => Patient.fromJson(json)).toList();
+      _patients = loaded.isNotEmpty ? loaded : TriageCacheService.fallbackPatients;
       _isLoading = false;
     });
   }
@@ -35,89 +37,46 @@ class _ProviderDashboardState extends State<ProviderDashboard> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF18181B) : const Color(0xFFFAFAFA);
     final textColor = isDark ? const Color(0xFFF4F4F5) : const Color(0xFF1C1C1C);
-    final subColor = isDark ? const Color(0xFFA1A1AA) : const Color(0xFF71717A);
 
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
     final bool isWatch = screenWidth < 240 || screenHeight < 320;
-    final bool isSmallPhone = screenWidth < 360 || screenHeight < 640;
-
-    final double listPadding = isWatch ? 4.0 : 8.0;
-    final double tileHorizontalPadding = isWatch ? 8.0 : (isSmallPhone ? 16.0 : 24.0);
-    final double tileVerticalPadding = isWatch ? 4.0 : (isSmallPhone ? 6.0 : 8.0);
-    final double titleFontSize = isWatch ? 12.0 : (isSmallPhone ? 14.0 : 16.0);
-    final double subtitleFontSize = isWatch ? 9.0 : (isSmallPhone ? 11.0 : 13.0);
-    final double appBarTitleFontSize = isWatch ? 11.0 : 14.0;
+    final double appBarTitleFontSize = isWatch ? 11.0 : 13.0;
 
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        title: Text('PATIENT DIRECTORY', style: TextStyle(letterSpacing: 2, fontSize: appBarTitleFontSize)),
+        title: Column(
+          children: [
+            Text(
+              'POCKETGULL CLINICAL COMMAND',
+              style: TextStyle(letterSpacing: 1.5, fontSize: appBarTitleFontSize, fontWeight: FontWeight.w900),
+            ),
+            const Text(
+              'ESI Triage Matrix & Sparse MoE Router',
+              style: TextStyle(fontSize: 10, color: Color(0xFF71717A)),
+            ),
+          ],
+        ),
         centerTitle: true,
         backgroundColor: bgColor,
         elevation: 0,
         iconTheme: IconThemeData(color: textColor),
         actions: [
           IconButton(
-            iconSize: isWatch ? 16 : 24,
+            iconSize: isWatch ? 16 : 22,
             icon: const Icon(Icons.refresh),
+            tooltip: 'Sync Live Triage Telemetry',
             onPressed: _loadData,
           )
         ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _patients.isEmpty
-              ? Center(child: Text('No patients found.', style: TextStyle(color: textColor, fontSize: titleFontSize)))
-              : RefreshIndicator(
-                  onRefresh: _loadData,
-                  child: ListView.separated(
-                    padding: EdgeInsets.symmetric(vertical: listPadding),
-                    itemCount: _patients.length,
-                    separatorBuilder: (_, _) => Divider(
-                      height: 1, 
-                      color: isDark ? const Color(0xFF27272A) : const Color(0xFFE4E4E7)
-                    ),
-                    itemBuilder: (context, index) {
-                      final patient = _patients[index];
-                      return ListTile(
-                        leading: Hero(
-                          tag: 'avatar-${patient.id}',
-                          child: CircleAvatar(
-                            backgroundColor: getPatientAvatarColor(patient.id, isDark),
-                            radius: isWatch ? 12 : 20,
-                            child: Text(
-                              getPatientInitials(patient.name),
-                              style: TextStyle(
-                                color: getPatientAvatarTextColor(patient.id, isDark),
-                                fontWeight: FontWeight.bold,
-                                fontSize: isWatch ? 9 : 14,
-                              ),
-                            ),
-                          ),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: tileHorizontalPadding, vertical: tileVerticalPadding),
-                        title: Text(
-                          patient.name,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: titleFontSize, color: textColor),
-                        ),
-                        subtitle: Text(
-                          'Age: ${patient.age} • Last Visit: ${patient.lastVisit}',
-                          style: TextStyle(color: subColor, fontSize: subtitleFontSize),
-                        ),
-                        trailing: Icon(Icons.chevron_right, color: subColor, size: isWatch ? 16 : 24),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => PatientDetailScreen(patient: patient),
-                            ),
-                          ).then((_) => _loadData()); // Refresh on return in case of changes
-                        },
-                      );
-                    },
-                  ),
-                ),
+          : TriageCommandBoard(
+              initialPatients: _patients,
+              onRefresh: _loadData,
+            ),
     );
   }
 }
