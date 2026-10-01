@@ -373,6 +373,32 @@ import { ClinicalMoERouterService, IPatientTriageEvaluation } from '../services/
                       }
                     </div>
                   }
+
+                  <!-- Companion / Proxy & Language Access Ribbons -->
+                  @if (triage.accompaniedBy || triage.languageAccess) {
+                    <div class="flex flex-wrap items-center gap-1.5 pt-1 text-[10px] font-mono">
+                      @if (triage.accompaniedBy) {
+                        <div class="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-800 dark:text-purple-300 border border-purple-500/30 flex items-center gap-1">
+                          <span>👤</span>
+                          <span class="font-bold">With Patient:</span>
+                          <span>{{ triage.accompaniedBy.label }}</span>
+                        </div>
+                      }
+                      @if (triage.languageAccess) {
+                        <div class="px-2 py-0.5 rounded-md border flex items-center gap-1"
+                             [class]="triage.languageAccess.interpreterNeeded 
+                               ? 'bg-amber-500/15 text-amber-900 dark:text-amber-300 border-amber-500/40 font-bold'
+                               : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700/60'">
+                          <span>{{ triage.languageAccess.interpreterNeeded ? '🗣️' : '🌐' }}</span>
+                          @if (triage.languageAccess.interpreterNeeded) {
+                            <span class="font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">Interpreter Required:</span>
+                          }
+                          <span>{{ triage.languageAccess.preferredLanguage }}</span>
+                          <span class="opacity-75 font-normal">({{ triage.languageAccess.modality }})</span>
+                        </div>
+                      }
+                    </div>
+                  }
                 </div>
 
                 <!-- SMoE Dynamic Slot Pre-Allocation Strip -->

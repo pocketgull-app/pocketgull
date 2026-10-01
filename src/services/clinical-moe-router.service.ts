@@ -52,6 +52,15 @@ export interface IPatientTriageEvaluation {
   };
   priorityRationale: string;
   targetMaxWaitMinutes: number;
+  accompaniedBy?: {
+    role: string;
+    label: string;
+  };
+  languageAccess?: {
+    preferredLanguage: string;
+    interpreterNeeded: boolean;
+    modality: 'Certified Medical Interpreter' | 'Video Remote (VRI)' | 'Bilingual Clinician';
+  };
 }
 
 export type UiExpertCategory =
@@ -1882,6 +1891,50 @@ ${flow.vitalsSignature.map(v => `- **${v.label}**: ${v.value} [${v.status.toUppe
       };
     }
 
+    // Infer Companion & Caregiver Presence
+    let accompaniedBy: IPatientTriageEvaluation['accompaniedBy'];
+    if (patient.age < 18 || patient.id === 'p_poms_adolescent') {
+      accompaniedBy = { role: 'PARENT', label: 'Mother (Legal Guardian Attested)' };
+    } else if (patient.age >= 65 || patient.id === 'p003' || patient.id === 'p_loms_elder') {
+      accompaniedBy = { role: 'SPOUSE', label: 'Spouse (Caregiver Proxy & HPOA)' };
+    } else if (patient.id === 'p_frida_kahlo' || condText.includes('trauma') || condText.includes('intractable pain')) {
+      accompaniedBy = { role: 'ADVOCATE', label: 'Family Caregiver & Mobility Aide' };
+    }
+
+    // Infer Language Access & Certified Interpreter Need (§ 1557 ACA Compliance)
+    let languageAccess: IPatientTriageEvaluation['languageAccess'];
+    if (patient.id === 'p_frida_kahlo') {
+      languageAccess = {
+        preferredLanguage: 'Spanish (Español)',
+        interpreterNeeded: true,
+        modality: 'Certified Medical Interpreter'
+      };
+    } else if (patient.id === 'p_mara_santos') {
+      languageAccess = {
+        preferredLanguage: 'Portuguese (Português)',
+        interpreterNeeded: true,
+        modality: 'Video Remote (VRI)'
+      };
+    } else if (patient.id === 'p_srinivasa_ramanujan') {
+      languageAccess = {
+        preferredLanguage: 'Tamil (தமிழ்) / English',
+        interpreterNeeded: false,
+        modality: 'Bilingual Clinician'
+      };
+    } else if (patient.id === 'p_marie_curie') {
+      languageAccess = {
+        preferredLanguage: 'French (Français) / Polish',
+        interpreterNeeded: false,
+        modality: 'Bilingual Clinician'
+      };
+    } else {
+      languageAccess = {
+        preferredLanguage: 'English (US)',
+        interpreterNeeded: false,
+        modality: 'Bilingual Clinician'
+      };
+    }
+
     return {
       patient,
       esiLevel,
@@ -1902,7 +1955,9 @@ ${flow.vitalsSignature.map(v => `- **${v.label}**: ${v.value} [${v.status.toUppe
       predictedTopExperts,
       crossAttentionSynapse,
       priorityRationale,
-      targetMaxWaitMinutes
+      targetMaxWaitMinutes,
+      accompaniedBy,
+      languageAccess
     };
   }
 

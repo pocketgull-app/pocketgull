@@ -34,6 +34,7 @@ import { WalkthroughTourService } from './services/walkthrough-tour.service';
 import { SecureSplashComponent } from './components/secure-splash.component';
 import { SessionStateService } from './services/session-state.service';
 import { RulesEngineService } from './services/rules-engine.service';
+import { ClinicalMoERouterService } from './services/clinical-moe-router.service';
 import { PocketGullInputComponent } from './components/shared/pocket-gull-input.component';
 import { ClinicalCdsDisclaimerBannerComponent } from './components/clinical-cds-disclaimer-banner.component';
 
@@ -222,7 +223,7 @@ import { MocaSuiteComponent } from './components/moca/moca-suite.component';
       
       @if (isDirectoryOpen() || !patientMgmt.selectedPatientId()) {
          @defer (on immediate) {
-           <app-patient-directory></app-patient-directory>
+           <app-patient-directory (closeDirectory)="isDirectoryOpen.set(false)"></app-patient-directory>
          }
       }
 
@@ -360,7 +361,8 @@ import { MocaSuiteComponent } from './components/moca/moca-suite.component';
           (loadDemo)="loadDemoMode()"
           (unlockSession)="handleUnlockSession()"
           (selectAiStudio)="selectKey()"
-          (emergencyBypass)="handleEmergencyBypass()">
+          (emergencyBypass)="handleEmergencyBypass()"
+          (openTriageRoster)="handleOpenTriageRoster()">
         </app-secure-splash>
       } @else {
         @if (state.isEmergencyMode()) {
@@ -1602,6 +1604,7 @@ export class AppComponent implements OnDestroy {
   consentService = inject(ConsentService);
   hardware = inject(HardwareTelemetryService);
   readonly rules = inject(RulesEngineService);
+  readonly moeRouter = inject(ClinicalMoERouterService);
   private aiConfig = inject(AI_CONFIG, { optional: true });
   today = new Date();
   hasApiKey = signal<boolean>(!!this.aiConfig?.apiKey);
@@ -2552,6 +2555,7 @@ export class AppComponent implements OnDestroy {
     this.isDemoMode.set(true);
     this.state.isDemoMode.set(true);
     this.hasApiKey.set(true);
+    this.moeRouter.analysisViewMode.set('canvas');
     // Load demo patient (Charles Darwin – p_charles_darwin)
     this.patientMgmt.selectPatient('p_charles_darwin');
     // Inject pre-baked analysis outputs (no API call) synchronously
@@ -2561,6 +2565,17 @@ export class AppComponent implements OnDestroy {
     this.clinicalIntelligence.loadArchivedAnalysis(darwinReport as Partial<Record<AnalysisLens, string>>);
     this.clinicalIntelligence.lastActivePhilosophy.set('western');
     this.clinicalIntelligence.lastPatientData.set(this.state.getAllDataForPrompt());
+  }
+
+  handleOpenTriageRoster() {
+    this.session.isLocked.set(false);
+    this.session.isOnboardingComplete.set(true);
+    this.isDemoMode.set(true);
+    this.state.isDemoMode.set(true);
+    this.hasApiKey.set(true);
+    this.isDirectoryOpen.set(true);
+    this.patientMgmt.selectedPatientId.set(null);
+    this.moeRouter.analysisViewMode.set('canvas');
   }
 
   handleCaseStudyDeepLink(): void {
