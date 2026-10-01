@@ -264,7 +264,7 @@
       font-size: 7.5pt;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.04em;
       color: var(--ink-muted);
       margin: 18px 0 8px;
     }
@@ -325,6 +325,49 @@
     .care-plan-body blockquote p { margin: 0; font-size: 9pt; color: #374151; }
 
     /* ─── Translation Matrix Layout ──────────────────── */
+        /* ─── Biomarker Matrix Export Styles ─────────────── */
+    .biomarker-matrix-export {
+      margin: 14px 0 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    .biomarker-chart-summary {
+      padding: 10px 14px;
+      background: var(--surface-accent);
+      border-bottom: 1px solid var(--border-accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .biomarker-chart-title {
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--brand-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .biomarker-chart-subtitle {
+      font-size: 7pt;
+      color: var(--ink-muted);
+    }
+    .biomarker-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .chip-deficient { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .chip-low { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .chip-optimal { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .chip-high { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
     .matrix-container {
       display: grid;
       gap: 20px;
@@ -426,6 +469,13 @@
         print-color-adjust: exact !important;
       }
 
+      .care-plan-body h3, .care-plan-body h4, .brand-tagline {
+        letter-spacing: 0.02em !important;
+      }
+      .biomarker-matrix-export, .biomarker-chip {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
       @page {
         size: letter portrait;
         margin: 0.75in 0.75in 1in 0.75in;
@@ -493,10 +543,10 @@
     <div class="print-bar-actions">
       <button class="btn-close" id="carePlanBtnClose">Close</button>
       <button class="btn-print" id="carePlanBtnPrint">Save as PDF / Print</button>
-      <scr" +="" "ipt="">
+      <script>
         document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
         document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
-      </scr">
+      </script>
     </div>
   </div>
 
@@ -696,16 +746,130 @@
 </ul>
 <h3>Biochemical &amp; Biomarker Matrix</h3>
 <p>Mara's orthomolecular profile is characteristic of active CNS autoimmune disease: severe Vitamin D deficiency driving immune dysregulation, depleted glutathione indicating oxidative stress on oligodendrocytes, low CoQ10 impairing mitochondrial respiration in demyelinated axons, and elevated homocysteine suggesting methylation pathway strain.</p>
-<pre><code class="language-json">[
-  { "name": "Vitamin D3", "level": "Deficient", "pathway": "Immune Modulation / T-reg / Neuroprotection" },
-  { "name": "Glutathione (GSH)", "level": "Low", "pathway": "Antioxidant / Oligodendrocyte Protection" },
-  { "name": "CoQ10", "level": "Low", "pathway": "Mitochondrial Respiration / Axonal Energy" },
-  { "name": "Vitamin B12", "level": "Low-normal", "pathway": "Myelin Synthesis / Methylation" },
-  { "name": "Homocysteine", "level": "Elevated", "pathway": "Cardiovascular / Neurotoxicity" },
-  { "name": "Magnesium", "level": "Low", "pathway": "NMDA / Spasticity / Sleep" },
-  { "name": "Zinc", "level": "Low-normal", "pathway": "Immune / Blood-Brain Barrier" }
-]
-</code></pre>
+<div class="biomarker-matrix-export">
+  <div class="biomarker-chart-summary">
+    <div class="biomarker-chart-title">🔬 Biochemical &amp; Biomarker Telemetry</div>
+    <div class="biomarker-chart-subtitle">Orthomolecular Spectrum &amp; Physiological Pathways</div>
+  </div>
+  <table class="biomarker-table" style="width:100%; border-collapse:collapse; margin:0;">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Biomarker</th>
+        <th style="width: 20%;">Clinical Status</th>
+        <th style="width: 35%;">Targeted Pathway</th>
+        <th style="width: 20%;">Telemetry</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Vitamin D3</strong></td>
+        <td><span class="biomarker-chip chip-deficient">DEFICIENT</span></td>
+        <td>Immune Modulation / T-reg / Neuroprotection</td>
+        <td style="vertical-align: middle;">
+          <svg width="100" height="14" viewBox="0 0 100 14" style="display:block;">
+            <rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" />
+            <rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" />
+            <rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" />
+            <rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" />
+            <line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" />
+            <circle cx="12.5" cy="7" r="4.5" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.2" />
+          </svg>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Glutathione (GSH)</strong></td>
+        <td><span class="biomarker-chip chip-deficient">LOW</span></td>
+        <td>Antioxidant / Oligodendrocyte Protection</td>
+        <td style="vertical-align: middle;">
+          <svg width="100" height="14" viewBox="0 0 100 14" style="display:block;">
+            <rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" />
+            <rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" />
+            <rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" />
+            <rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" />
+            <line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" />
+            <circle cx="12.5" cy="7" r="4.5" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.2" />
+          </svg>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>CoQ10</strong></td>
+        <td><span class="biomarker-chip chip-deficient">LOW</span></td>
+        <td>Mitochondrial Respiration / Axonal Energy</td>
+        <td style="vertical-align: middle;">
+          <svg width="100" height="14" viewBox="0 0 100 14" style="display:block;">
+            <rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" />
+            <rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" />
+            <rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" />
+            <rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" />
+            <line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" />
+            <circle cx="12.5" cy="7" r="4.5" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.2" />
+          </svg>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Vitamin B12</strong></td>
+        <td><span class="biomarker-chip chip-low">LOW-NORMAL</span></td>
+        <td>Myelin Synthesis / Methylation</td>
+        <td style="vertical-align: middle;">
+          <svg width="100" height="14" viewBox="0 0 100 14" style="display:block;">
+            <rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" />
+            <rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" />
+            <rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" />
+            <rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" />
+            <line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" />
+            <circle cx="37.5" cy="7" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="1.2" />
+          </svg>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Homocysteine</strong></td>
+        <td><span class="biomarker-chip chip-high">ELEVATED</span></td>
+        <td>Cardiovascular / Neurotoxicity</td>
+        <td style="vertical-align: middle;">
+          <svg width="100" height="14" viewBox="0 0 100 14" style="display:block;">
+            <rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" />
+            <rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" />
+            <rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" />
+            <rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" />
+            <line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" />
+            <circle cx="87.5" cy="7" r="4.5" fill="#7C3AED" stroke="#FFFFFF" stroke-width="1.2" />
+          </svg>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Magnesium</strong></td>
+        <td><span class="biomarker-chip chip-deficient">LOW</span></td>
+        <td>NMDA / Spasticity / Sleep</td>
+        <td style="vertical-align: middle;">
+          <svg width="100" height="14" viewBox="0 0 100 14" style="display:block;">
+            <rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" />
+            <rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" />
+            <rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" />
+            <rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" />
+            <line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" />
+            <circle cx="12.5" cy="7" r="4.5" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.2" />
+          </svg>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Zinc</strong></td>
+        <td><span class="biomarker-chip chip-low">LOW-NORMAL</span></td>
+        <td>Immune / Blood-Brain Barrier</td>
+        <td style="vertical-align: middle;">
+          <svg width="100" height="14" viewBox="0 0 100 14" style="display:block;">
+            <rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" />
+            <rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" />
+            <rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" />
+            <rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" />
+            <line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" />
+            <circle cx="37.5" cy="7" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="1.2" />
+          </svg>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <h3>Detected Deficiencies &amp; MS Relevance</h3>
 <ul>
 <li><strong>Vitamin D3 (Deficient at 18 ng/mL)</strong>: The most important modifiable risk factor in RRMS. Low D3 is associated with higher relapse rates, faster disability accumulation, and increased MRI lesion burden. Target: 60-80 ng/mL.</li>
@@ -1062,12 +1226,12 @@
 
     </div>
   </div>
-  <scr" +="" "ipt="">
-    window.addEventListener('DOMContentLoaded', () =&gt; {
-      setTimeout(() =&gt; {
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
         window.print();
       }, 400);
     });
-  </scr">
+  </script>
 
 </body></html>

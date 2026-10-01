@@ -264,7 +264,7 @@
       font-size: 7.5pt;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.04em;
       color: var(--ink-muted);
       margin: 18px 0 8px;
     }
@@ -325,6 +325,49 @@
     .care-plan-body blockquote p { margin: 0; font-size: 9pt; color: #374151; }
 
     /* ─── Translation Matrix Layout ──────────────────── */
+        /* ─── Biomarker Matrix Export Styles ─────────────── */
+    .biomarker-matrix-export {
+      margin: 14px 0 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    .biomarker-chart-summary {
+      padding: 10px 14px;
+      background: var(--surface-accent);
+      border-bottom: 1px solid var(--border-accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .biomarker-chart-title {
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--brand-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .biomarker-chart-subtitle {
+      font-size: 7pt;
+      color: var(--ink-muted);
+    }
+    .biomarker-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .chip-deficient { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .chip-low { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .chip-optimal { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .chip-high { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
     .matrix-container {
       display: grid;
       gap: 20px;
@@ -426,6 +469,13 @@
         print-color-adjust: exact !important;
       }
 
+      .care-plan-body h3, .care-plan-body h4, .brand-tagline {
+        letter-spacing: 0.02em !important;
+      }
+      .biomarker-matrix-export, .biomarker-chip {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
       @page {
         size: letter portrait;
         margin: 0.75in 0.75in 1in 0.75in;
@@ -493,10 +543,10 @@
     <div class="print-bar-actions">
       <button class="btn-close" id="carePlanBtnClose">Close</button>
       <button class="btn-print" id="carePlanBtnPrint">Save as PDF / Print</button>
-      <scr" +="" "ipt="">
+      <script>
         document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
         document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
-      </scr">
+      </script>
     </div>
   </div>
 
@@ -991,12 +1041,12 @@
 
     </div>
   </div>
-  <scr" +="" "ipt="">
-    window.addEventListener('DOMContentLoaded', () =&gt; {
-      setTimeout(() =&gt; {
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
         window.print();
       }, 400);
     });
-  </scr">
+  </script>
 
 </body></html>
