@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ClinicalMoERouterService, IUiGatingScore } from '../services/clinical-moe-router.service';
+import { ClinicalMoERouterService, IUiGatingScore, SHIFT_CARE_PLAN_ROSTER } from '../services/clinical-moe-router.service';
 import { KneeHologramHudComponent } from './knee-hologram-hud.component';
 import { CounterfactualSimulatorComponent } from './counterfactual-simulator.component';
 import { ClinicalPosologyCalculatorComponent } from './clinical-posology-calculator.component';
@@ -147,6 +147,23 @@ import { AnalysisReportComponent } from './analysis-report.component';
             </button>
           </div>
 
+          <!-- 12-Hour Shift Roster Quick Selector -->
+          <div class="flex items-center gap-1.5 font-mono">
+            <span class="text-[10px] uppercase font-bold text-emerald-400 select-none flex items-center gap-1 shrink-0">
+              <span>📋</span> SHIFT ROSTER:
+            </span>
+            <select
+              [value]="moeRouter.activeShiftPatientId() || ''"
+              (change)="onSelectShiftPatient($event)"
+              class="px-2.5 py-1.5 rounded-lg border border-emerald-500/40 bg-zinc-950 text-emerald-300 hover:border-emerald-400 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-emerald-400 min-h-[36px] cursor-pointer"
+            >
+              <option value="">-- Choose Shift Patient (10 Available) --</option>
+              @for (p of shiftRoster; track p.id) {
+                <option [value]="p.id">{{ p.name }} ({{ p.age }}y, {{ p.clinicalDomain }})</option>
+              }
+            </select>
+          </div>
+
           <!-- Ambient Conversational Cue Prompt (Doctor-Patient Speech Simulation) -->
           <div class="flex items-center gap-2 flex-1 lg:max-w-md">
             <div class="relative w-full">
@@ -173,6 +190,65 @@ import { AnalysisReportComponent } from './analysis-report.component';
           </div>
         </div>
       </header>
+
+      <!-- ================================================================= -->
+      <!-- SHIFT CARE PLAN DOSSIER BANNER (Active when Shift Patient Loaded) -->
+      <!-- ================================================================= -->
+      @if (moeRouter.activeShiftPatient(); as patient) {
+        <div class="rounded-2xl border border-teal-500/40 bg-gradient-to-r from-teal-950/70 via-zinc-900/90 to-emerald-950/70 p-4 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-300 shrink-0">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center text-teal-300 text-lg font-bold shrink-0">
+                📋
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-teal-900/60 text-teal-300 border border-teal-500/30">
+                    12H Shift Care Plan Dossier
+                  </span>
+                  <span class="text-xs font-bold text-zinc-100 font-mono">
+                    {{ patient.name }}
+                  </span>
+                  <span class="text-xs text-zinc-400 font-mono">
+                    ({{ patient.age }}y, {{ patient.clinicalDomain }})
+                  </span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-zinc-800 text-zinc-300 border border-zinc-700">
+                    Readability: {{ patient.cognitiveLevel }}
+                  </span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30">
+                    Screener: {{ patient.assessmentName }}
+                  </span>
+                </div>
+                <p class="text-xs text-zinc-300 mt-1.5 leading-relaxed">
+                  <span class="text-teal-400 font-semibold">Care Plan Goal:</span> {{ patient.intakeGoal }}
+                </p>
+                <div class="flex items-center gap-2 mt-1 text-[11px] text-zinc-400 font-mono flex-wrap">
+                  <span class="text-emerald-400 font-semibold">SMoE Route Target:</span>
+                  <span class="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">{{ patient.targetExpertId }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <a
+                [href]="'/' + patient.htmlPath"
+                target="_blank"
+                class="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-mono transition flex items-center gap-1.5"
+              >
+                <span>📄</span> Open Plan Artifact
+              </a>
+              <button
+                type="button"
+                (click)="moeRouter.clearOverrides()"
+                class="px-2.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs font-mono transition cursor-pointer"
+                title="Clear shift patient"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      }
 
       <!-- ================================================================= -->
       <!-- SYNAPSE CROSS-ATTENTION BRIDGE (Active when Top-2 Cross-Talks)    -->
@@ -442,4 +518,15 @@ export class SparseClinicalCanvasComponent {
     const ratio = this.moeRouter.secondaryViewportRatio();
     return `0 0 ${ratio}%`;
   });
+
+  readonly shiftRoster = SHIFT_CARE_PLAN_ROSTER;
+
+  onSelectShiftPatient(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    if (!target.value) {
+      this.moeRouter.clearOverrides();
+    } else {
+      this.moeRouter.loadShiftPatient(target.value);
+    }
+  }
 }

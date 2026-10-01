@@ -252,6 +252,197 @@ export const CROSS_ATTENTION_BRIDGES: ICrossAttentionBridge[] = [
   }
 ];
 
+export interface IShiftPatientRecord {
+  id: string;
+  name: string;
+  clinicalDomain: string;
+  intakeNote: string;
+  intakeGoal: string;
+  assessmentTab: string;
+  assessmentName: string;
+  paradigms: string[];
+  researchQuery: string;
+  cognitiveLevel: 'standard' | 'simplified' | 'dyslexia' | 'child';
+  pdfPath: string;
+  htmlPath: string;
+  age: string;
+  gender: 'male' | 'female' | 'other';
+  targetExpertId: string;
+}
+
+export const SHIFT_CARE_PLAN_ROSTER: IShiftPatientRecord[] = [
+  {
+    id: 'p001',
+    name: 'Homo Sapiens (Male, Metabolic)',
+    clinicalDomain: 'Metabolic & Cardiometabolic Medicine',
+    intakeNote: 'Patient presents for 6-month metabolic follow-up. Reports ongoing difficulty with CPAP compliance (apnea episodes > 15/hr), fasting glucose fluctuating between 145-170 mg/dL, and bilateral lower extremity edema.',
+    intakeGoal: 'Titrate GLP-1/GIP co-agonist therapy, achieve HbA1c < 7.0%, and optimize CPAP bilevel pressure support.',
+    assessmentTab: 'phq9',
+    assessmentName: 'PHQ-9 (Depression & Metabolic Anhedonia)',
+    paradigms: ['Summary Overview', 'Treatment Matrix', 'Functional Protocols'],
+    researchQuery: 'metabolic syndrome GLP-1 dual agonist renal protection',
+    cognitiveLevel: 'simplified',
+    pdfPath: 'artifacts/shift-care-plans/patient-p001-care-plan.pdf',
+    htmlPath: 'artifacts/shift-care-plans/patient-p001-care-plan.html',
+    age: '54',
+    gender: 'male',
+    targetExpertId: 'ismp-posology'
+  },
+  {
+    id: 'p002',
+    name: 'Homo Sapiens (Female, Asthma)',
+    clinicalDomain: 'Pulmonary & Environmental Exposomics',
+    intakeNote: '34yo female presenting with acute nocturnal wheezing, chest tightness following regional wildfire smoke exposure, and elevated absolute eosinophil count (580 cells/uL).',
+    intakeGoal: 'Establish asthma action plan, consider biologic dupilumab initiation, and deploy HEPA environmental filtration.',
+    assessmentTab: 'ros14',
+    assessmentName: 'ROS-14 (Review of Systems - Pulmonary/Allergy)',
+    paradigms: ['Environmental Exposomics & Toxicology', 'Functional Protocols', 'Monitoring & Follow-up'],
+    researchQuery: 'severe eosinophilic asthma dupilumab particulate matter PM2.5',
+    cognitiveLevel: 'dyslexia',
+    pdfPath: 'artifacts/shift-care-plans/patient-p002-care-plan.pdf',
+    htmlPath: 'artifacts/shift-care-plans/patient-p002-care-plan.html',
+    age: '34',
+    gender: 'female',
+    targetExpertId: 'edge-ml-hud'
+  },
+  {
+    id: 'p003',
+    name: 'Homo Sapiens (Male, Cognitive)',
+    clinicalDomain: 'Neurogeriatrics & Glymphatic Health',
+    intakeNote: '71yo male accompanied by spouse reporting progressive short-term recall difficulties over 14 months, nocturnal sleep fragmentation, and autonomic orthostatic lightheadedness.',
+    intakeGoal: 'Perform MoCA baseline screening, optimize slow-wave sleep glymphatic clearance, and screen for vascular vs neurodegenerative etiology.',
+    assessmentTab: 'moca',
+    assessmentName: 'MoCA (Montreal Cognitive Assessment 30-Point)',
+    paradigms: ['Summary Overview', 'Chronobiology Matrix', 'Skeptical Epistemology & Socratic Audit'],
+    researchQuery: 'glymphatic system slow wave sleep cognitive decline prevention',
+    cognitiveLevel: 'child',
+    pdfPath: 'artifacts/shift-care-plans/patient-p003-care-plan.pdf',
+    htmlPath: 'artifacts/shift-care-plans/patient-p003-care-plan.html',
+    age: '71',
+    gender: 'male',
+    targetExpertId: 'steeep-quality-hud'
+  },
+  {
+    id: 'p004',
+    name: 'Homo Sapiens (Female, Autoimmune)',
+    clinicalDomain: 'Neuro-Endocrine & Functional Immunology',
+    intakeNote: '42yo female presenting with persistent afternoon exhaustion, cold intolerance, widespread fibro-myalgic tenderness, and elevated anti-TPO antibodies (> 400 IU/mL).',
+    intakeGoal: 'Implement low-dose naltrexone (LDN) trial, anti-inflammatory micronutrient protocol, and stress-induced HPA axis pacing.',
+    assessmentTab: 'gad7',
+    assessmentName: 'GAD-7 (Generalized Anxiety Screener)',
+    paradigms: ['Functional Protocols', 'Treatment Matrix', 'Patient Education'],
+    researchQuery: 'hashimoto thyroiditis low dose naltrexone gut permeability',
+    cognitiveLevel: 'standard',
+    pdfPath: 'artifacts/shift-care-plans/patient-p004-care-plan.pdf',
+    htmlPath: 'artifacts/shift-care-plans/patient-p004-care-plan.html',
+    age: '42',
+    gender: 'female',
+    targetExpertId: 'biomolecular-physics'
+  },
+  {
+    id: 'p_charles_darwin',
+    name: 'Charles Darwin',
+    clinicalDomain: 'Complex Chronic Dysautonomia & Gastrointestinal',
+    intakeNote: 'Chronic recurrent postprandial dyspepsia, severe gastric flatulence, persistent nausea, and profound autonomic exhaustion following cognitive exertion.',
+    intakeGoal: 'Restore vagal nerve tone, modulate gastrointestinal enteric signaling, and rebalance sympathetic-parasympathetic tone.',
+    assessmentTab: 'mbi',
+    assessmentName: 'MBI (Allostatic Load & Autonomic Strain)',
+    paradigms: ['Treatment Matrix', 'Functional Protocols', 'Skeptical Epistemology & Socratic Audit'],
+    researchQuery: 'postprandial dysautonomia vagal nerve stimulation gastroparesis',
+    cognitiveLevel: 'simplified',
+    pdfPath: 'artifacts/shift-care-plans/patient-p_charles_darwin-care-plan.pdf',
+    htmlPath: 'artifacts/shift-care-plans/patient-p_charles_darwin-care-plan.html',
+    age: '58',
+    gender: 'male',
+    targetExpertId: 'counterfactual-simulator'
+  },
+  {
+    id: 'p_frida_kahlo',
+    name: 'Frida Kahlo',
+    clinicalDomain: 'Neuropathic Pain & Physical Rehabilitation',
+    intakeNote: 'Severe central sensitization, burning causalgia, allodynia of the right lower extremity following multi-trauma and spinal stabilization surgery.',
+    intakeGoal: 'Implement somatic grounding, multimodal neuropathic pain modulation, and phantom limb mirror neuro-visual retraining.',
+    assessmentTab: 'dn4',
+    assessmentName: 'DN4 (Douleur Neuropathique 4 Questions)',
+    paradigms: ['Summary Overview', 'Treatment Matrix', 'Patient Education'],
+    researchQuery: 'neuropathic pain central sensitization mirror visual feedback',
+    cognitiveLevel: 'standard',
+    pdfPath: 'artifacts/shift-care-plans/patient-p_frida_kahlo-care-plan.pdf',
+    htmlPath: 'artifacts/shift-care-plans/patient-p_frida_kahlo-care-plan.html',
+    age: '47',
+    gender: 'female',
+    targetExpertId: 'soap-generator'
+  },
+  {
+    id: 'p_marie_curie',
+    name: 'Marie Curie',
+    clinicalDomain: 'Hematology & Radiation Toxicology',
+    intakeNote: 'Profound fatigue, petechial hemorrhages on distal forearms, normocytic normochromic anemia, and chronic cumulative ionizing radiation exposure.',
+    intakeGoal: 'Prevent bone marrow hypoplasia, administer cellular antioxidant scavengers, and institute protective environmental shields.',
+    assessmentTab: 'sarcf',
+    assessmentName: 'Sarc-F (Frailty & Musculoskeletal Sarcopenia)',
+    paradigms: ['Environmental Exposomics & Toxicology', 'Monitoring & Follow-up', 'Treatment Matrix'],
+    researchQuery: 'ionizing radiation aplastic anemia hematopoietic stem cell protection',
+    cognitiveLevel: 'simplified',
+    pdfPath: 'artifacts/shift-care-plans/patient-p_marie_curie-care-plan.pdf',
+    htmlPath: 'artifacts/shift-care-plans/patient-p_marie_curie-care-plan.html',
+    age: '66',
+    gender: 'female',
+    targetExpertId: 'biomolecular-physics'
+  },
+  {
+    id: 'p_edwin_smith_3',
+    name: 'Edwin Smith',
+    clinicalDomain: 'Spinal Biomechanics & Osteopathic Ergonomics',
+    intakeNote: 'C5-C6 and C6-C7 radiculopathy with progressive thenar atrophy, intermittent numbness along the C6 dermatome, and severe paraspinal muscle hypertonicity.',
+    intakeGoal: 'Biomechanical cervical mobilization, postural ergonomic realignment, and neuroforaminal decompression.',
+    assessmentTab: 'cvsq',
+    assessmentName: 'CVSQ (Visual-Ergonomic Strain Questionnaire)',
+    paradigms: ['Treatment Matrix', 'Global Health & WHO Initiatives', 'Summary Overview'],
+    researchQuery: 'cervical radiculopathy conservative biomechanical decompression',
+    cognitiveLevel: 'standard',
+    pdfPath: 'artifacts/shift-care-plans/patient-p_edwin_smith_3-care-plan.pdf',
+    htmlPath: 'artifacts/shift-care-plans/patient-p_edwin_smith_3-care-plan.html',
+    age: '62',
+    gender: 'male',
+    targetExpertId: 'knee-hologram'
+  },
+  {
+    id: 'p_mara_santos',
+    name: 'Mara Santos',
+    clinicalDomain: 'Pediatric Pulmonology & Rare Disease Genetics',
+    intakeNote: 'Adolescent female with Cystic Fibrosis (delta-F508 homozygous) presenting with sticky mucopurulent sputum, productive cough, and weight velocity plateauing.',
+    intakeGoal: 'Optimize highly effective CFTR modulator therapy (elexacaftor/tezacaftor/ivacaftor), airway clearance vibrating vest, and high-calorie pancreatic enzyme dosing.',
+    assessmentTab: 'growthyself',
+    assessmentName: 'Grow-Thyself (Pediatric Wellness & Growth Screener)',
+    paradigms: ['Summary Overview', 'Functional Protocols', 'Global Health & WHO Initiatives'],
+    researchQuery: 'cystic fibrosis CFTR modulators pancreatic enzyme replacement therapy',
+    cognitiveLevel: 'child',
+    pdfPath: 'artifacts/shift-care-plans/patient-p_mara_santos-care-plan.pdf',
+    htmlPath: 'artifacts/shift-care-plans/patient-p_mara_santos-care-plan.html',
+    age: '14',
+    gender: 'female',
+    targetExpertId: 'ismp-posology'
+  },
+  {
+    id: 'p_srinivasa_ramanujan',
+    name: 'Srinivasa Ramanujan',
+    clinicalDomain: 'Infectious Hepatology & Nutritional Rehabilitation',
+    intakeNote: 'Severe cachexia, right hypochondriac dull pain, low-grade remittent pyrexia, history of amebic dysentery with secondary hepatic amebiasis.',
+    intakeGoal: 'Eradicate hepatic parasitic infection, initiate aggressive micronutrient re-alimentation (vitamin B12, iron, zinc), and restore intestinal mucosal barrier integrity.',
+    assessmentTab: 'tcm',
+    assessmentName: 'TCM Energetic Screener (Spleen-Liver Disharmony)',
+    paradigms: ['Treatment Matrix', 'Global Health & WHO Initiatives', 'Patient Education'],
+    researchQuery: 'amebic liver abscess nutritional rehabilitation hepatic recovery',
+    cognitiveLevel: 'dyslexia',
+    pdfPath: 'artifacts/shift-care-plans/patient-p_srinivasa_ramanujan-care-plan.pdf',
+    htmlPath: 'artifacts/shift-care-plans/patient-p_srinivasa_ramanujan-care-plan.html',
+    age: '32',
+    gender: 'male',
+    targetExpertId: 'counterfactual-simulator'
+  }
+];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -276,6 +467,14 @@ export class ClinicalMoERouterService {
   readonly activeTranscriptQuery = signal<string>('');
   readonly kValue = signal<number>(2); // Top-k (default 2)
   readonly activeScenario = signal<'default' | 'knee_oa' | 'diabetic_neuropathy' | 'acute_vitals'>('default');
+  readonly activeShiftPatientId = signal<string | null>(null);
+
+  /** Active 12-Hour Shift Roster Patient Record */
+  readonly activeShiftPatient = computed<IShiftPatientRecord | null>(() => {
+    const id = this.activeShiftPatientId();
+    if (!id) return null;
+    return SHIFT_CARE_PLAN_ROSTER.find(p => p.id === id) || null;
+  });
 
   /**
    * Gemini 2.5/3.x Thinking Model Reasoning Budget Configuration.
@@ -695,8 +894,63 @@ export class ClinicalMoERouterService {
     }
   }
 
+  public loadShiftPatient(patientId: string): void {
+    const p = SHIFT_CARE_PLAN_ROSTER.find(item => item.id === patientId);
+    if (!p) return;
+
+    this.activeShiftPatientId.set(patientId);
+    this.pinnedExpertId.set(p.targetExpertId || null);
+    this.activeTranscriptQuery.set(p.intakeNote);
+    this.activeScenario.set('default');
+
+    if (this.patientState) {
+      this.patientState.patientName.set(p.name);
+      this.patientState.patientAge.set(parseInt(p.age, 10) || 0);
+      this.patientState.patientGender.set(p.gender);
+
+      if (p.id === 'p001') {
+        this.patientState.vitals.update(v => ({ ...v, hr: '76', cgmGlucoseMgDl: '162', bp: '138/88' }));
+      } else if (p.id === 'p002') {
+        this.patientState.vitals.update(v => ({ ...v, hr: '94', spO2: '93%', bp: '124/82' }));
+      } else if (p.id === 'p003') {
+        this.patientState.vitals.update(v => ({ ...v, hr: '68', hrv: '38', bp: '118/74' }));
+      } else if (p.id === 'p_charles_darwin') {
+        this.patientState.vitals.update(v => ({ ...v, hr: '82', hrv: '28', bp: '112/70' }));
+      } else if (p.id === 'p_frida_kahlo') {
+        this.patientState.vitals.update(v => ({ ...v, hr: '88', bp: '132/84' }));
+      }
+    }
+
+    if (p.id === 'p001' || p.id === 'p_mara_santos') {
+      this.setActiveLens('Treatment Matrix');
+      this.setDICOMVolumeState(false);
+      this.setAcousticTelemetryState(false);
+    } else if (p.id === 'p002') {
+      this.setActiveLens('PhysioNet Telemetry');
+      this.setAcousticTelemetryState(true);
+      this.setDICOMVolumeState(false);
+    } else if (p.id === 'p003') {
+      this.setActiveLens('Chronobiology Matrix');
+      this.setDICOMVolumeState(false);
+      this.setAcousticTelemetryState(false);
+    } else if (p.id === 'p004' || p.id === 'p_marie_curie') {
+      this.setActiveLens('Physical Genomics');
+      this.setDICOMVolumeState(false);
+      this.setAcousticTelemetryState(false);
+    } else if (p.id === 'p_edwin_smith_3' || p.id === 'p_frida_kahlo') {
+      this.setActiveLens('RSNA Knee Abnormality');
+      this.setDICOMVolumeState(true);
+      this.setAcousticTelemetryState(false);
+    } else {
+      this.setActiveLens('Summary Overview');
+      this.setDICOMVolumeState(false);
+      this.setAcousticTelemetryState(false);
+    }
+  }
+
   public clearOverrides(): void {
     this.pinnedExpertId.set(null);
+    this.activeShiftPatientId.set(null);
     this.activeTranscriptQuery.set('');
     this.activeScenario.set('default');
     this.setActiveLens('Summary Overview');

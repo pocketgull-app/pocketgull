@@ -108,6 +108,7 @@ import { SparseClinicalCanvasComponent } from './sparse-clinical-canvas.componen
 
               <!-- View Mode Switcher: Classic Lenses vs Functional Domain Suites vs SMoE Canvas -->
               <button type="button" (click)="viewMode.set('lenses')"
+                data-testid="toggle-lenses"
                 title="Classic Multi-Lens Clinical Report"
                 [class]="viewMode() === 'lenses'
                   ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
@@ -116,6 +117,7 @@ import { SparseClinicalCanvasComponent } from './sparse-clinical-canvas.componen
               </button>
 
               <button type="button" (click)="viewMode.set('suites')"
+                data-testid="toggle-suites"
                 title="Functional Domain Suites (Paradigm Diff Engine)"
                 [class]="viewMode() === 'suites'
                   ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
@@ -124,6 +126,7 @@ import { SparseClinicalCanvasComponent } from './sparse-clinical-canvas.componen
               </button>
 
               <button type="button" (click)="viewMode.set('canvas')"
+                data-testid="toggle-canvas"
                 title="Sparse Mixture of UI Experts (SMoE) Adaptive Canvas"
                 [class]="viewMode() === 'canvas'
                   ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-emerald-500 text-zinc-950 transition cursor-pointer shadow-md'

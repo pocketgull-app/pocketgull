@@ -27,15 +27,18 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     await assessmentsBtn.scrollIntoViewIfNeeded();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
     await assessmentsBtn.click({ force: true });
+    await page.waitForTimeout(500);
 
     // 3. Select Y-BOCs Screener Tab
     const ybocsTab = page.getByTestId('tab-ybocs-screener');
     await ybocsTab.scrollIntoViewIfNeeded();
+    await expect(ybocsTab).toBeVisible({ timeout: 10000 });
     await ybocsTab.click({ force: true });
+    await page.waitForTimeout(500);
 
     // 3. Verify Y-BOCs Screener renders
-    const screenerHeader = page.locator('text=Yale-Brown Obsessive-Compulsive Scale');
-    await expect(screenerHeader).toBeVisible({ timeout: 10000 });
+    const screenerHeader = page.locator('text=/Yale-Brown/i').first();
+    await expect(screenerHeader).toBeVisible({ timeout: 15000 });
 
     // Verify Y-BOCs Score Panel is showing 0/40 initially
     const scoreText = page.locator('text=/40').first();

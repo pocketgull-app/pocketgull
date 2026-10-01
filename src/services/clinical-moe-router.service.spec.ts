@@ -150,6 +150,21 @@ describe('ClinicalMoERouterService', () => {
       expect(service.latentUiExperts().length).toBe(7);
       expect(service.cognitiveNoiseReductionPercent()).toBe(88); // (1 - 1/8) * 100%
     });
+
+    it('should load shift patient and configure targeted expert and vitals', () => {
+      service.loadShiftPatient('p001');
+      expect(service.activeShiftPatientId()).toBe('p001');
+      expect(service.activeShiftPatient()?.name).toBe('Homo Sapiens (Male, Metabolic)');
+      expect(service.primaryUiExpert()?.expert.id).toBe('ismp-posology');
+
+      service.loadShiftPatient('p_edwin_smith_3');
+      expect(service.activeShiftPatient()?.name).toBe('Edwin Smith');
+      expect(service.primaryUiExpert()?.expert.id).toBe('knee-hologram');
+
+      service.clearOverrides();
+      expect(service.activeShiftPatientId()).toBeNull();
+      expect(service.activeShiftPatient()).toBeNull();
+    });
   });
 });
 

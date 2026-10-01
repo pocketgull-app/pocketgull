@@ -46,4 +46,23 @@ describe('SparseClinicalCanvasComponent', () => {
     expect(component.secondaryExpert()?.expert.id).toBe('counterfactual-simulator');
     expect(component.crossBridge()?.id).toBe('bridge-knee-whatif');
   });
+
+  it('should expose shiftRoster and handle shift patient selection', () => {
+    expect(component.shiftRoster.length).toBe(10);
+
+    const mockEvent = {
+      target: { value: 'p001' }
+    } as unknown as Event;
+
+    component.onSelectShiftPatient(mockEvent);
+    expect(moeRouter.activeShiftPatientId()).toBe('p001');
+    expect(component.primaryExpert()?.expert.id).toBe('ismp-posology');
+
+    const clearEvent = {
+      target: { value: '' }
+    } as unknown as Event;
+
+    component.onSelectShiftPatient(clearEvent);
+    expect(moeRouter.activeShiftPatientId()).toBeNull();
+  });
 });

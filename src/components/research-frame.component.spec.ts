@@ -99,4 +99,31 @@ describe('ResearchFrameComponent Suite', () => {
     moeRouter.activeLens.set('RSNA Knee Abnormality');
     expect(component.contextualRelevanceSummary()).toContain('Kellgren-Lawrence');
   });
+
+  it('6. Supports Shift Care Plans Hub and routes patients to SMoE Canvas', () => {
+    component.setSearchEngine('shift_plans');
+    expect(component.searchEngine()).toBe('shift_plans');
+    expect(component.shiftRoster.length).toBe(10);
+
+    const firstPatient = component.shiftRoster[0];
+    component.routeShiftPatientToMoe(firstPatient);
+
+    expect(moeRouter.activeShiftPatientId()).toBe('p001');
+    expect(moeRouter.primaryUiExpert()?.expert.id).toBe('ismp-posology');
+  });
+
+  it('7. Routes PubMed research takeaways directly to SMoE transcript gating query', () => {
+    component.routeToMoe({
+      id: '12345678',
+      title: 'GLP-1 receptor agonists and renal outcomes',
+      authors: 'Smith et al.',
+      source: 'NEJM',
+      pubdate: '2025',
+      doi: '10.1056/NEJMoa12345',
+      bottomLineTakeaway: 'Reduced microalbuminuria and slowed eGFR decline.'
+    });
+
+    expect(moeRouter.activeTranscriptQuery()).toContain('GLP-1 receptor agonists');
+    expect(moeRouter.activeTranscriptQuery()).toContain('microalbuminuria');
+  });
 });
