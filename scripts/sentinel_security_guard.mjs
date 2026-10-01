@@ -547,6 +547,68 @@ function walkDirectory(dirPath) {
 }
 
 /**
+ * Audit HIPAA Safe Harbor § 164.514 & Differential Privacy Engine invariants
+ */
+function auditHipaaDeIdentificationEngine() {
+  const issues = [];
+  const enginePath = path.join(ROOT_DIR, 'src/services/privacy/de-identification-engine.service.ts');
+  if (!fs.existsSync(enginePath)) {
+    issues.push({
+      type: 'HIPAA_ENGINE_MISSING',
+      severity: 'HIGH',
+      message: 'DeIdentificationEngineService is missing from src/services/privacy/de-identification-engine.service.ts',
+      line: 1,
+    });
+    return issues;
+  }
+
+  const content = fs.readFileSync(enginePath, 'utf8');
+
+  // 1. Verify k-anonymity constant (k >= 8)
+  if (!content.includes('MINIMUM_K_ANONYMITY = 8')) {
+    issues.push({
+      type: 'HIPAA_K_ANONYMITY_VIOLATION',
+      severity: 'HIGH',
+      message: 'DeIdentificationEngineService must enforce MINIMUM_K_ANONYMITY >= 8 for robust k-anonymity.',
+      line: 1,
+    });
+  }
+
+  // 2. Verify prohibition of Math.random() in privacy engine (ignoring comments)
+  const codeWithoutComments = content.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '');
+  if (/Math\.random\(\)/.test(codeWithoutComments)) {
+    issues.push({
+      type: 'NIST_ENTROPY_VIOLATION',
+      severity: 'HIGH',
+      message: 'DeIdentificationEngineService must use NIST SP 800-90A CSPRNG entropy; Math.random() is strictly prohibited.',
+      line: 1,
+    });
+  }
+
+  // 3. Verify Laplace noise & biosignal perturbation implementation
+  if (!content.includes('sampleLaplaceNoise') || !content.includes('perturbBiosignalVector')) {
+    issues.push({
+      type: 'DIFFERENTIAL_PRIVACY_MISSING',
+      severity: 'HIGH',
+      message: 'DeIdentificationEngineService must implement sampleLaplaceNoise and perturbBiosignalVector for continuous telemetry.',
+      line: 1,
+    });
+  }
+
+  // 4. Verify 18 Safe Harbor identifier stripping coverage
+  if (!content.includes('strippedIdentifiersList') || !content.includes('biometricFingerprint') || !content.includes('facePhoto')) {
+    issues.push({
+      type: 'HIPAA_SAFE_HARBOR_INCOMPLETE',
+      severity: 'HIGH',
+      message: 'DeIdentificationEngineService must comprehensively cover all 18 HIPAA Safe Harbor identifier categories.',
+      line: 1,
+    });
+  }
+
+  return issues;
+}
+
+/**
  * Run Sentinel Audit Suite
  */
 function runSentinelGuard() {
@@ -570,6 +632,15 @@ function runSentinelGuard() {
         });
       }
     }
+  }
+
+  // HIPAA § 164.514 Safe Harbor & Differential Privacy Invariant Check
+  const hipaaIssues = auditHipaaDeIdentificationEngine();
+  if (hipaaIssues.length > 0) {
+    allIssues.push({
+      file: 'src/services/privacy/de-identification-engine.service.ts',
+      issues: hipaaIssues,
+    });
   }
 
   console.log(`📊 Scanned ${totalFilesScanned} source files for egress and secret security.`);
