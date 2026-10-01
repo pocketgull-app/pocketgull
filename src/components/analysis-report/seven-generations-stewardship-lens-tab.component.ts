@@ -8,6 +8,7 @@ import { CompassionateNutritionCardComponent } from '../shared/compassionate-nut
 import { CaregiverAdvocacyCardComponent } from '../caregiver-advocacy-card.component';
 import { AgronomicSoilProcurementCardComponent } from '../shared/agronomic-soil-procurement-card.component';
 import { BioregionalClimateFlourishingCardComponent } from '../shared/bioregional-climate-flourishing-card.component';
+import { WatershedExposomeLineageCardComponent } from '../shared/watershed-exposome-lineage-card.component';
 
 @Component({
   selector: 'app-seven-generations-stewardship-lens-tab',
@@ -21,7 +22,8 @@ import { BioregionalClimateFlourishingCardComponent } from '../shared/bioregiona
     CompassionateNutritionCardComponent,
     CaregiverAdvocacyCardComponent,
     AgronomicSoilProcurementCardComponent,
-    BioregionalClimateFlourishingCardComponent
+    BioregionalClimateFlourishingCardComponent,
+    WatershedExposomeLineageCardComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -40,6 +42,9 @@ import { BioregionalClimateFlourishingCardComponent } from '../shared/bioregiona
           </span>
         </div>
       </div>
+
+      <!-- Real-World Watershed Exposomics, Dual Gametes & Decision Curve Analysis (DCA) -->
+      <app-watershed-exposome-lineage-card></app-watershed-exposome-lineage-card>
 
       <!-- Tribal Health Sovereignty, CARE Principles & Indigenous Herbal Codex -->
       <app-tribal-health-sovereignty-card></app-tribal-health-sovereignty-card>
