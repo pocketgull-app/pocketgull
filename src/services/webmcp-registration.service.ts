@@ -134,7 +134,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(sumTool, { signal: sumCtrl.signal });
+    try { modelContext.registerTool(sumTool, { signal: sumCtrl.signal }); } catch (e) { console.warn("Tool already registered:", sumTool.name); }
     this.mcpControllers.push({ name: sumTool.name, controller: sumCtrl });
 
     // 2. translate_clinical_text
@@ -162,7 +162,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(transTool, { signal: transCtrl.signal });
+    try { modelContext.registerTool(transTool, { signal: transCtrl.signal }); } catch (e) { console.warn("Tool already registered:", transTool.name); }
     this.mcpControllers.push({ name: transTool.name, controller: transCtrl });
 
     // 3. get_current_patient_data
@@ -176,7 +176,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(patientData, null, 2) }] };
       }
     };
-    modelContext.registerTool(pdataTool, { signal: pdataCtrl.signal });
+    try { modelContext.registerTool(pdataTool, { signal: pdataCtrl.signal }); } catch (e) { console.warn("Tool already registered:", pdataTool.name); }
     this.mcpControllers.push({ name: pdataTool.name, controller: pdataCtrl });
 
     // 4. navigate_to_body_part
@@ -209,7 +209,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(navTool, { signal: navCtrl.signal });
+    try { modelContext.registerTool(navTool, { signal: navCtrl.signal }); } catch (e) { console.warn("Tool already registered:", navTool.name); }
     this.mcpControllers.push({ name: navTool.name, controller: navCtrl });
 
     // 5. inject_clinical_note
@@ -251,7 +251,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(injectTool, { signal: injectCtrl.signal });
+    try { modelContext.registerTool(injectTool, { signal: injectCtrl.signal }); } catch (e) { console.warn("Tool already registered:", injectTool.name); }
     this.mcpControllers.push({ name: injectTool.name, controller: injectCtrl });
 
     // 6. load_research_url
@@ -278,7 +278,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(loadUrlTool, { signal: loadUrlCtrl.signal });
+    try { modelContext.registerTool(loadUrlTool, { signal: loadUrlCtrl.signal }); } catch (e) { console.warn("Tool already registered:", loadUrlTool.name); }
     this.mcpControllers.push({ name: loadUrlTool.name, controller: loadUrlCtrl });
 
     // 7. add_research_bookmark
@@ -311,7 +311,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(bmkTool, { signal: bmkCtrl.signal });
+    try { modelContext.registerTool(bmkTool, { signal: bmkCtrl.signal }); } catch (e) { console.warn("Tool already registered:", bmkTool.name); }
     this.mcpControllers.push({ name: bmkTool.name, controller: bmkCtrl });
 
     // 8. export_patient_csv_telemetry
@@ -340,7 +340,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(csvTool, { signal: csvCtrl.signal });
+    try { modelContext.registerTool(csvTool, { signal: csvCtrl.signal }); } catch (e) { console.warn("Tool already registered:", csvTool.name); }
     this.mcpControllers.push({ name: csvTool.name, controller: csvCtrl });
 
     // 9. export_patient_hl7v2_message
@@ -369,7 +369,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(hl7Tool, { signal: hl7Ctrl.signal });
+    try { modelContext.registerTool(hl7Tool, { signal: hl7Ctrl.signal }); } catch (e) { console.warn("Tool already registered:", hl7Tool.name); }
     this.mcpControllers.push({ name: hl7Tool.name, controller: hl7Ctrl });
 
     // 9a. convert_fhir_r7_to_r4
@@ -401,7 +401,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(r7ToR4Tool, { signal: r7ToR4Ctrl.signal });
+    try { modelContext.registerTool(r7ToR4Tool, { signal: r7ToR4Ctrl.signal }); } catch (e) { console.warn("Tool already registered:", r7ToR4Tool.name); }
     this.mcpControllers.push({ name: r7ToR4Tool.name, controller: r7ToR4Ctrl });
 
     // 9b. convert_fhir_r4_to_r7
@@ -429,7 +429,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(r4ToR7Tool, { signal: r4ToR7Ctrl.signal });
+    try { modelContext.registerTool(r4ToR7Tool, { signal: r4ToR7Ctrl.signal }); } catch (e) { console.warn("Tool already registered:", r4ToR7Tool.name); }
     this.mcpControllers.push({ name: r4ToR7Tool.name, controller: r4ToR7Ctrl });
 
     // 9c. convert_hl7_er7_to_fhir_r4
@@ -456,7 +456,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(er7ToR4Tool, { signal: er7ToR4Ctrl.signal });
+    try { modelContext.registerTool(er7ToR4Tool, { signal: er7ToR4Ctrl.signal }); } catch (e) { console.warn("Tool already registered:", er7ToR4Tool.name); }
     this.mcpControllers.push({ name: er7ToR4Tool.name, controller: er7ToR4Ctrl });
 
     // 9d. convert_fhir_r4_to_hl7_er7
@@ -484,7 +484,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(r4ToEr7Tool, { signal: r4ToEr7Ctrl.signal });
+    try { modelContext.registerTool(r4ToEr7Tool, { signal: r4ToEr7Ctrl.signal }); } catch (e) { console.warn("Tool already registered:", r4ToEr7Tool.name); }
     this.mcpControllers.push({ name: r4ToEr7Tool.name, controller: r4ToEr7Ctrl });
 
     // 10. purge_transient_patient_state
@@ -505,7 +505,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(purgeTool, { signal: purgeCtrl.signal });
+    try { modelContext.registerTool(purgeTool, { signal: purgeCtrl.signal }); } catch (e) { console.warn("Tool already registered:", purgeTool.name); }
     this.mcpControllers.push({ name: purgeTool.name, controller: purgeCtrl });
 
     // 11. toggle_ephemeral_privacy_mode
@@ -531,7 +531,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(privacyTool, { signal: privacyCtrl.signal });
+    try { modelContext.registerTool(privacyTool, { signal: privacyCtrl.signal }); } catch (e) { console.warn("Tool already registered:", privacyTool.name); }
     this.mcpControllers.push({ name: privacyTool.name, controller: privacyCtrl });
 
     // 12. get_teledentistry_systemic_telemetry
@@ -557,7 +557,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(dentTool, { signal: dentCtrl.signal });
+    try { modelContext.registerTool(dentTool, { signal: dentCtrl.signal }); } catch (e) { console.warn("Tool already registered:", dentTool.name); }
     this.mcpControllers.push({ name: dentTool.name, controller: dentCtrl });
 
     // 13. update_tooth_periodontal_status
@@ -601,7 +601,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(updateToothTool, { signal: updateToothCtrl.signal });
+    try { modelContext.registerTool(updateToothTool, { signal: updateToothCtrl.signal }); } catch (e) { console.warn("Tool already registered:", updateToothTool.name); }
     this.mcpControllers.push({ name: updateToothTool.name, controller: updateToothCtrl });
 
     // 14. export_patient_care_plan_fhir_r4
@@ -620,7 +620,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(fhirExportTool, { signal: fhirExportCtrl.signal });
+    try { modelContext.registerTool(fhirExportTool, { signal: fhirExportCtrl.signal }); } catch (e) { console.warn("Tool already registered:", fhirExportTool.name); }
     this.mcpControllers.push({ name: fhirExportTool.name, controller: fhirExportCtrl });
 
     // 15. trigger_hybrid_fhir_dual_sync
@@ -639,7 +639,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(fhirSyncTool, { signal: fhirSyncCtrl.signal });
+    try { modelContext.registerTool(fhirSyncTool, { signal: fhirSyncCtrl.signal }); } catch (e) { console.warn("Tool already registered:", fhirSyncTool.name); }
     this.mcpControllers.push({ name: fhirSyncTool.name, controller: fhirSyncCtrl });
 
     // 16. calculate_skeptical_falsifiability_score
@@ -663,7 +663,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(skepTool, { signal: skepCtrl.signal });
+    try { modelContext.registerTool(skepTool, { signal: skepCtrl.signal }); } catch (e) { console.warn("Tool already registered:", skepTool.name); }
     this.mcpControllers.push({ name: skepTool.name, controller: skepCtrl });
 
     // 17. set_gemini_thinking_reasoning_budget
@@ -691,7 +691,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(thinkTool, { signal: thinkCtrl.signal });
+    try { modelContext.registerTool(thinkTool, { signal: thinkCtrl.signal }); } catch (e) { console.warn("Tool already registered:", thinkTool.name); }
     this.mcpControllers.push({ name: thinkTool.name, controller: thinkCtrl });
 
     // 16. analyze_systemic_inflammatory_burden
@@ -723,7 +723,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(sibiTool, { signal: sibiCtrl.signal });
+    try { modelContext.registerTool(sibiTool, { signal: sibiCtrl.signal }); } catch (e) { console.warn("Tool already registered:", sibiTool.name); }
     this.mcpControllers.push({ name: sibiTool.name, controller: sibiCtrl });
 
     // 17. assess_cochrane_risk_of_bias
@@ -755,7 +755,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(robTool, { signal: robCtrl.signal });
+    try { modelContext.registerTool(robTool, { signal: robCtrl.signal }); } catch (e) { console.warn("Tool already registered:", robTool.name); }
     this.mcpControllers.push({ name: robTool.name, controller: robCtrl });
 
     // 18. query_biophysical_substrate_params
@@ -781,7 +781,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify({ tissueType: params.tissueType, substrate: data }) }] };
       }
     };
-    modelContext.registerTool(subTool, { signal: subCtrl.signal });
+    try { modelContext.registerTool(subTool, { signal: subCtrl.signal }); } catch (e) { console.warn("Tool already registered:", subTool.name); }
     this.mcpControllers.push({ name: subTool.name, controller: subCtrl });
 
     // 21. evaluate_irmaa_medicare_surcharge_and_ssa44_appeal
@@ -811,7 +811,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
       }
     };
-    modelContext.registerTool(irmaaTool, { signal: irmaaCtrl.signal });
+    try { modelContext.registerTool(irmaaTool, { signal: irmaaCtrl.signal }); } catch (e) { console.warn("Tool already registered:", irmaaTool.name); }
     this.mcpControllers.push({ name: irmaaTool.name, controller: irmaaCtrl });
 
     // 22. evaluate_medicare_billing_and_gfe_eligibility
@@ -848,7 +848,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
       }
     };
-    modelContext.registerTool(billingTool, { signal: billingCtrl.signal });
+    try { modelContext.registerTool(billingTool, { signal: billingCtrl.signal }); } catch (e) { console.warn("Tool already registered:", billingTool.name); }
     this.mcpControllers.push({ name: billingTool.name, controller: billingCtrl });
 
     // 23. evaluate_hedis_quality_measures_and_care_gaps
@@ -886,7 +886,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
       }
     };
-    modelContext.registerTool(hedisTool, { signal: hedisCtrl.signal });
+    try { modelContext.registerTool(hedisTool, { signal: hedisCtrl.signal }); } catch (e) { console.warn("Tool already registered:", hedisTool.name); }
     this.mcpControllers.push({ name: hedisTool.name, controller: hedisCtrl });
 
     // 24. submit_fhir_davinci_prior_authorization_claim
@@ -924,7 +924,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
       }
     };
-    modelContext.registerTool(pasTool, { signal: pasCtrl.signal });
+    try { modelContext.registerTool(pasTool, { signal: pasCtrl.signal }); } catch (e) { console.warn("Tool already registered:", pasTool.name); }
     this.mcpControllers.push({ name: pasTool.name, controller: pasCtrl });
 
     // 25. crosswalk_snomed_ct_to_icd10_and_cpt
@@ -945,7 +945,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
       }
     };
-    modelContext.registerTool(snomedTool, { signal: snomedCtrl.signal });
+    try { modelContext.registerTool(snomedTool, { signal: snomedCtrl.signal }); } catch (e) { console.warn("Tool already registered:", snomedTool.name); }
     this.mcpControllers.push({ name: snomedTool.name, controller: snomedCtrl });
 
     // 26. analyze_webgpu_bio_signal_tremor_and_rppg
@@ -969,7 +969,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
       }
     };
-    modelContext.registerTool(bioSignalTool, { signal: bioSignalCtrl.signal });
+    try { modelContext.registerTool(bioSignalTool, { signal: bioSignalCtrl.signal }); } catch (e) { console.warn("Tool already registered:", bioSignalTool.name); }
     this.mcpControllers.push({ name: bioSignalTool.name, controller: bioSignalCtrl });
 
     // 27. calculate_clinical_game_theory_adherence_incentives
@@ -998,7 +998,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
       }
     };
-    modelContext.registerTool(gameTheoryTool, { signal: gameTheoryCtrl.signal });
+    try { modelContext.registerTool(gameTheoryTool, { signal: gameTheoryCtrl.signal }); } catch (e) { console.warn("Tool already registered:", gameTheoryTool.name); }
     this.mcpControllers.push({ name: gameTheoryTool.name, controller: gameTheoryCtrl });
 
     // 28. prescribe_joy_and_playful_flourishing
@@ -1019,7 +1019,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify({ prescriptions, scorecard }, null, 2) }] };
       }
     };
-    modelContext.registerTool(joyTool, { signal: joyCtrl.signal });
+    try { modelContext.registerTool(joyTool, { signal: joyCtrl.signal }); } catch (e) { console.warn("Tool already registered:", joyTool.name); }
     this.mcpControllers.push({ name: joyTool.name, controller: joyCtrl });
 
     // 29. match_clinical_trials_for_patient_conditions
@@ -1044,7 +1044,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(matches, null, 2) }] };
       }
     };
-    modelContext.registerTool(trialTool, { signal: trialCtrl.signal });
+    try { modelContext.registerTool(trialTool, { signal: trialCtrl.signal }); } catch (e) { console.warn("Tool already registered:", trialTool.name); }
     this.mcpControllers.push({ name: trialTool.name, controller: trialCtrl });
 
     // 30. initiate_smart_on_fhir_ehr_launch
@@ -1074,7 +1074,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
       }
     };
-    modelContext.registerTool(smartLaunchTool, { signal: smartLaunchCtrl.signal });
+    try { modelContext.registerTool(smartLaunchTool, { signal: smartLaunchCtrl.signal }); } catch (e) { console.warn("Tool already registered:", smartLaunchTool.name); }
     this.mcpControllers.push({ name: smartLaunchTool.name, controller: smartLaunchCtrl });
 
     // 31. calculate_medicare_irmaa_and_ssa44_appeals
@@ -1100,7 +1100,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(analysisResult, null, 2) }] };
       }
     };
-    modelContext.registerTool(medicareIrmaaTool, { signal: medicareIrmaaCtrl.signal });
+    try { modelContext.registerTool(medicareIrmaaTool, { signal: medicareIrmaaCtrl.signal }); } catch (e) { console.warn("Tool already registered:", medicareIrmaaTool.name); }
     this.mcpControllers.push({ name: medicareIrmaaTool.name, controller: medicareIrmaaCtrl });
 
     // 32. render_webgpu_3d_organ_digital_twin
@@ -1126,7 +1126,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(frame, null, 2) }] };
       }
     };
-    modelContext.registerTool(twinTool, { signal: twinCtrl.signal });
+    try { modelContext.registerTool(twinTool, { signal: twinCtrl.signal }); } catch (e) { console.warn("Tool already registered:", twinTool.name); }
     this.mcpControllers.push({ name: twinTool.name, controller: twinCtrl });
 
     // 33. guide_user_onboarding_walkthrough
@@ -1156,7 +1156,7 @@ export class WebMcpRegistrationService {
         return { content: [{ type: 'text', text: JSON.stringify(svc.progress(), null, 2) }] };
       }
     };
-    modelContext.registerTool(tourTool, { signal: tourCtrl.signal });
+    try { modelContext.registerTool(tourTool, { signal: tourCtrl.signal }); } catch (e) { console.warn("Tool already registered:", tourTool.name); }
     this.mcpControllers.push({ name: tourTool.name, controller: tourCtrl });
 
     // 34. navigate_user_way_back_home
@@ -1186,7 +1186,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(homeNavTool, { signal: homeNavCtrl.signal });
+    try { modelContext.registerTool(homeNavTool, { signal: homeNavCtrl.signal }); } catch (e) { console.warn("Tool already registered:", homeNavTool.name); }
     this.mcpControllers.push({ name: homeNavTool.name, controller: homeNavCtrl });
 
     // 35. retrieve_helpful_community_and_clinical_lists
@@ -1226,7 +1226,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(listsTool, { signal: listsCtrl.signal });
+    try { modelContext.registerTool(listsTool, { signal: listsCtrl.signal }); } catch (e) { console.warn("Tool already registered:", listsTool.name); }
     this.mcpControllers.push({ name: listsTool.name, controller: listsCtrl });
 
     // 36. translate_clinical_care_plan_multilingual
@@ -1259,7 +1259,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(multiTool, { signal: multiCtrl.signal });
+    try { modelContext.registerTool(multiTool, { signal: multiCtrl.signal }); } catch (e) { console.warn("Tool already registered:", multiTool.name); }
     this.mcpControllers.push({ name: multiTool.name, controller: multiCtrl });
 
     // 37. calculate_who_cdc_health_equity_index
@@ -1304,7 +1304,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(equityTool, { signal: equityCtrl.signal });
+    try { modelContext.registerTool(equityTool, { signal: equityCtrl.signal }); } catch (e) { console.warn("Tool already registered:", equityTool.name); }
     this.mcpControllers.push({ name: equityTool.name, controller: equityCtrl });
 
     // 38. recommend_sustainability_and_eco_health_actions
@@ -1344,7 +1344,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(greenTool, { signal: greenCtrl.signal });
+    try { modelContext.registerTool(greenTool, { signal: greenCtrl.signal }); } catch (e) { console.warn("Tool already registered:", greenTool.name); }
     this.mcpControllers.push({ name: greenTool.name, controller: greenCtrl });
 
     // 39. localize_community_eco_health_hubs
@@ -1385,7 +1385,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(communityEcoTool, { signal: communityEcoCtrl.signal });
+    try { modelContext.registerTool(communityEcoTool, { signal: communityEcoCtrl.signal }); } catch (e) { console.warn("Tool already registered:", communityEcoTool.name); }
     this.mcpControllers.push({ name: communityEcoTool.name, controller: communityEcoCtrl });
 
     // 40. export_complete_fhir_r4_health_sovereignty_bundle
@@ -1443,7 +1443,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(fhirSovereigntyTool, { signal: fhirSovereigntyCtrl.signal });
+    try { modelContext.registerTool(fhirSovereigntyTool, { signal: fhirSovereigntyCtrl.signal }); } catch (e) { console.warn("Tool already registered:", fhirSovereigntyTool.name); }
     this.mcpControllers.push({ name: fhirSovereigntyTool.name, controller: fhirSovereigntyCtrl });
 
     // 40. Open Zen Sanctuary & Parasympathetic Breath Reset
@@ -1478,7 +1478,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(zenSanctuaryTool, { signal: zenSanctuaryCtrl.signal });
+    try { modelContext.registerTool(zenSanctuaryTool, { signal: zenSanctuaryCtrl.signal }); } catch (e) { console.warn("Tool already registered:", zenSanctuaryTool.name); }
     this.mcpControllers.push({ name: zenSanctuaryTool.name, controller: zenSanctuaryCtrl });
 
     // 41. Get Healing Postcards from the Pier
@@ -1509,7 +1509,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(healingPostcardsTool, { signal: healingPostcardsCtrl.signal });
+    try { modelContext.registerTool(healingPostcardsTool, { signal: healingPostcardsCtrl.signal }); } catch (e) { console.warn("Tool already registered:", healingPostcardsTool.name); }
     this.mcpControllers.push({ name: healingPostcardsTool.name, controller: healingPostcardsCtrl });
 
     // 42. Evaluate SSA Disability & Blue Book Listings (20 CFR Part 404 App 1)
@@ -1549,7 +1549,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(ssaDisabilityTool, { signal: ssaDisabilityCtrl.signal });
+    try { modelContext.registerTool(ssaDisabilityTool, { signal: ssaDisabilityCtrl.signal }); } catch (e) { console.warn("Tool already registered:", ssaDisabilityTool.name); }
     this.mcpControllers.push({ name: ssaDisabilityTool.name, controller: ssaDisabilityCtrl });
 
     // 43. Get Jurisdictional Compliance & Regulatory Matrix
@@ -1585,7 +1585,7 @@ export class WebMcpRegistrationService {
         debugging: true
       }
     };
-    modelContext.registerTool(jurisdictionMatrixTool, { signal: jurisdictionMatrixCtrl.signal });
+    try { modelContext.registerTool(jurisdictionMatrixTool, { signal: jurisdictionMatrixCtrl.signal }); } catch (e) { console.warn("Tool already registered:", jurisdictionMatrixTool.name); }
     this.mcpControllers.push({ name: jurisdictionMatrixTool.name, controller: jurisdictionMatrixCtrl });
 
     // 44. Query Mandiant Threat Intelligence & Defense Posture
@@ -1631,7 +1631,7 @@ export class WebMcpRegistrationService {
         debugging: true
       }
     };
-    modelContext.registerTool(mandiantTool, { signal: mandiantCtrl.signal });
+    try { modelContext.registerTool(mandiantTool, { signal: mandiantCtrl.signal }); } catch (e) { console.warn("Tool already registered:", mandiantTool.name); }
     this.mcpControllers.push({ name: mandiantTool.name, controller: mandiantCtrl });
 
     // 45. Administer Clinical Mandarinate Examination & Keju Benchmark
@@ -1674,7 +1674,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(mandarinateTool, { signal: mandarinateCtrl.signal });
+    try { modelContext.registerTool(mandarinateTool, { signal: mandarinateCtrl.signal }); } catch (e) { console.warn("Tool already registered:", mandarinateTool.name); }
     this.mcpControllers.push({ name: mandarinateTool.name, controller: mandarinateCtrl });
     // Tool: generate_ai_branding_package
     const brandPackageCtrl = new AbortController();
@@ -1708,7 +1708,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(brandPackageTool, { signal: brandPackageCtrl.signal });
+    try { modelContext.registerTool(brandPackageTool, { signal: brandPackageCtrl.signal }); } catch (e) { console.warn("Tool already registered:", brandPackageTool.name); }
     this.mcpControllers.push({ name: brandPackageTool.name, controller: brandPackageCtrl });
 
     // 33. Trigger Federated Learning Round (DP + SecAgg)
@@ -1744,7 +1744,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(fedRoundTool, { signal: fedRoundCtrl.signal });
+    try { modelContext.registerTool(fedRoundTool, { signal: fedRoundCtrl.signal }); } catch (e) { console.warn("Tool already registered:", fedRoundTool.name); }
     this.mcpControllers.push({ name: fedRoundTool.name, controller: fedRoundCtrl });
 
     // 34. Verify Evidence Attestation (SHA-256 Merkle Inclusion Proof)
@@ -1786,7 +1786,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(evidenceVerifyTool, { signal: evidenceVerifyCtrl.signal });
+    try { modelContext.registerTool(evidenceVerifyTool, { signal: evidenceVerifyCtrl.signal }); } catch (e) { console.warn("Tool already registered:", evidenceVerifyTool.name); }
     this.mcpControllers.push({ name: evidenceVerifyTool.name, controller: evidenceVerifyCtrl });
 
     // 35. Query Evidence Commons
@@ -1820,7 +1820,7 @@ export class WebMcpRegistrationService {
         };
       }
     };
-    modelContext.registerTool(evidenceQueryTool, { signal: evidenceQueryCtrl.signal });
+    try { modelContext.registerTool(evidenceQueryTool, { signal: evidenceQueryCtrl.signal }); } catch (e) { console.warn("Tool already registered:", evidenceQueryTool.name); }
     this.mcpControllers.push({ name: evidenceQueryTool.name, controller: evidenceQueryCtrl });
 
     // get_staked_patent_claims_summary
@@ -1866,7 +1866,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(ipTool, { signal: ipCtrl.signal });
+    try { modelContext.registerTool(ipTool, { signal: ipCtrl.signal }); } catch (e) { console.warn("Tool already registered:", ipTool.name); }
     this.mcpControllers.push({ name: ipTool.name, controller: ipCtrl });
 
     // 52. evaluate_protac_hook_effect
@@ -1903,7 +1903,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(protacTool, { signal: protacCtrl.signal });
+    try { modelContext.registerTool(protacTool, { signal: protacCtrl.signal }); } catch (e) { console.warn("Tool already registered:", protacTool.name); }
     this.mcpControllers.push({ name: protacTool.name, controller: protacCtrl });
 
     // 53. evaluate_llps_phase_boundary
@@ -1945,7 +1945,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(llpsTool, { signal: llpsCtrl.signal });
+    try { modelContext.registerTool(llpsTool, { signal: llpsCtrl.signal }); } catch (e) { console.warn("Tool already registered:", llpsTool.name); }
     this.mcpControllers.push({ name: llpsTool.name, controller: llpsCtrl });
 
     // 54. evaluate_quantum_thermal_noise
@@ -1982,7 +1982,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(qtnTool, { signal: qtnCtrl.signal });
+    try { modelContext.registerTool(qtnTool, { signal: qtnCtrl.signal }); } catch (e) { console.warn("Tool already registered:", qtnTool.name); }
     this.mcpControllers.push({ name: qtnTool.name, controller: qtnCtrl });
 
     // 55. simulate_cahn_hilliard_llps
@@ -2037,7 +2037,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(chTool, { signal: chCtrl.signal });
+    try { modelContext.registerTool(chTool, { signal: chCtrl.signal }); } catch (e) { console.warn("Tool already registered:", chTool.name); }
     this.mcpControllers.push({ name: chTool.name, controller: chCtrl });
 
     // 56. evaluate_cannabinoid_microtubule_stabilization
@@ -2089,7 +2089,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(cannaTool, { signal: cannaCtrl.signal });
+    try { modelContext.registerTool(cannaTool, { signal: cannaCtrl.signal }); } catch (e) { console.warn("Tool already registered:", cannaTool.name); }
     this.mcpControllers.push({ name: cannaTool.name, controller: cannaCtrl });
 
     // 57. simulate_chromatin_loop_extrusion
@@ -2131,7 +2131,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(loopTool, { signal: loopCtrl.signal });
+    try { modelContext.registerTool(loopTool, { signal: loopCtrl.signal }); } catch (e) { console.warn("Tool already registered:", loopTool.name); }
     this.mcpControllers.push({ name: loopTool.name, controller: loopCtrl });
 
     // 58. compute_transcriptional_condensate_phase
@@ -2162,7 +2162,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(condTool, { signal: condCtrl.signal });
+    try { modelContext.registerTool(condTool, { signal: condCtrl.signal }); } catch (e) { console.warn("Tool already registered:", condTool.name); }
     this.mcpControllers.push({ name: condTool.name, controller: condCtrl });
 
     // 59. evaluate_crispr_r_loop_energetics
@@ -2193,7 +2193,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(crisprTool, { signal: crisprCtrl.signal });
+    try { modelContext.registerTool(crisprTool, { signal: crisprCtrl.signal }); } catch (e) { console.warn("Tool already registered:", crisprTool.name); }
     this.mcpControllers.push({ name: crisprTool.name, controller: crisprCtrl });
 
     // 60. simulate_nucleosome_force_spectroscopy
@@ -2224,7 +2224,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(nucTool, { signal: nucCtrl.signal });
+    try { modelContext.registerTool(nucTool, { signal: nucCtrl.signal }); } catch (e) { console.warn("Tool already registered:", nucTool.name); }
     this.mcpControllers.push({ name: nucTool.name, controller: nucCtrl });
 
     // 61. evaluate_linc_mechanotransduction
@@ -2251,7 +2251,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(lincTool, { signal: lincCtrl.signal });
+    try { modelContext.registerTool(lincTool, { signal: lincCtrl.signal }); } catch (e) { console.warn("Tool already registered:", lincTool.name); }
     this.mcpControllers.push({ name: lincTool.name, controller: lincCtrl });
 
     // -------------------------------------------------------------
@@ -2317,7 +2317,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(scaffoldTool, { signal: scaffoldCtrl.signal });
+    try { modelContext.registerTool(scaffoldTool, { signal: scaffoldCtrl.signal }); } catch (e) { console.warn("Tool already registered:", scaffoldTool.name); }
     this.mcpControllers.push({ name: scaffoldTool.name, controller: scaffoldCtrl });
 
     // 63. configure_optical_therapy
@@ -2401,7 +2401,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(opticalTool, { signal: opticalCtrl.signal });
+    try { modelContext.registerTool(opticalTool, { signal: opticalCtrl.signal }); } catch (e) { console.warn("Tool already registered:", opticalTool.name); }
     this.mcpControllers.push({ name: opticalTool.name, controller: opticalCtrl });
 
     // 64. get_patient_3act_trajectory
@@ -2474,7 +2474,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(trajTool, { signal: trajCtrl.signal });
+    try { modelContext.registerTool(trajTool, { signal: trajCtrl.signal }); } catch (e) { console.warn("Tool already registered:", trajTool.name); }
     this.mcpControllers.push({ name: trajTool.name, controller: trajCtrl });
 
     // 65. get_clinical_evidence_citations
@@ -2546,7 +2546,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(citeTool, { signal: citeCtrl.signal });
+    try { modelContext.registerTool(citeTool, { signal: citeCtrl.signal }); } catch (e) { console.warn("Tool already registered:", citeTool.name); }
     this.mcpControllers.push({ name: citeTool.name, controller: citeCtrl });
 
     // 47. inspect_knee_mri_findings
@@ -2632,7 +2632,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(kneeTool, { signal: kneeCtrl.signal });
+    try { modelContext.registerTool(kneeTool, { signal: kneeCtrl.signal }); } catch (e) { console.warn("Tool already registered:", kneeTool.name); }
     this.mcpControllers.push({ name: kneeTool.name, controller: kneeCtrl });
 
     // 48. set_knee_3d_slicing_plane
@@ -2699,7 +2699,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(sliceTool, { signal: sliceCtrl.signal });
+    try { modelContext.registerTool(sliceTool, { signal: sliceCtrl.signal }); } catch (e) { console.warn("Tool already registered:", sliceTool.name); }
     this.mcpControllers.push({ name: sliceTool.name, controller: sliceCtrl });
 
     // 49. get_epic_cerner_marketplace_manifest
@@ -2742,7 +2742,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(mktTool, { signal: mktCtrl.signal });
+    try { modelContext.registerTool(mktTool, { signal: mktCtrl.signal }); } catch (e) { console.warn("Tool already registered:", mktTool.name); }
     this.mcpControllers.push({ name: mktTool.name, controller: mktCtrl });
 
     // 50. get_carin_alliance_attestation
@@ -2769,7 +2769,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(carinTool, { signal: carinCtrl.signal });
+    try { modelContext.registerTool(carinTool, { signal: carinCtrl.signal }); } catch (e) { console.warn("Tool already registered:", carinTool.name); }
     this.mcpControllers.push({ name: carinTool.name, controller: carinCtrl });
 
     // 51. validate_smart_on_fhir_launch_conformance
@@ -2820,7 +2820,7 @@ export class WebMcpRegistrationService {
         }
       }
     };
-    modelContext.registerTool(confTool, { signal: confCtrl.signal });
+    try { modelContext.registerTool(confTool, { signal: confCtrl.signal }); } catch (e) { console.warn("Tool already registered:", confTool.name); }
     this.mcpControllers.push({ name: confTool.name, controller: confCtrl });
 
     // 82. WebMCP PR #253 (Chrome 156.0.8067.0): Diagnostic & Troubleshooting State Inspection Tool
@@ -2857,7 +2857,7 @@ export class WebMcpRegistrationService {
         debugging: true // Diagnostic tool intended for troubleshooting per Chrome 156.0.8067.0 PR #253
       }
     };
-    modelContext.registerTool(internalStateTool, { signal: internalStateCtrl.signal });
+    try { modelContext.registerTool(internalStateTool, { signal: internalStateCtrl.signal }); } catch (e) { console.warn("Tool already registered:", internalStateTool.name); }
     this.mcpControllers.push({ name: internalStateTool.name, controller: internalStateCtrl });
   }
 

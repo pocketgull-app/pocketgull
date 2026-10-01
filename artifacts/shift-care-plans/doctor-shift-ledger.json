@@ -16,7 +16,7 @@
     "cognitiveLevel": "simplified",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p001-care-plan.pdf",
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p001-care-plan.html",
-    "timestamp": "2026-09-30T17:12:32.632Z",
+    "timestamp": "2026-10-01T04:02:20.702Z",
     "status": "EXPORTED"
   },
   {
@@ -29,13 +29,14 @@
     "assessmentName": "ROS-14 (Review of Systems - Pulmonary/Allergy)",
     "paradigms": [
       "Environmental Exposomics & Toxicology",
-      "Functional Protocols"
+      "Functional Protocols",
+      "Monitoring & Follow-up"
     ],
     "researchQuery": "severe eosinophilic asthma dupilumab particulate matter PM2.5",
     "cognitiveLevel": "dyslexia",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p002-care-plan.pdf",
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p002-care-plan.html",
-    "timestamp": "2026-09-30T17:12:52.923Z",
+    "timestamp": "2026-10-01T04:02:46.843Z",
     "status": "EXPORTED"
   },
   {
@@ -48,13 +49,14 @@
     "assessmentName": "MoCA (Montreal Cognitive Assessment 30-Point)",
     "paradigms": [
       "Summary Overview",
+      "Chronobiology Matrix",
       "Skeptical Epistemology & Socratic Audit"
     ],
     "researchQuery": "glymphatic system slow wave sleep cognitive decline prevention",
     "cognitiveLevel": "child",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p003-care-plan.pdf",
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p003-care-plan.html",
-    "timestamp": "2026-09-30T17:13:05.919Z",
+    "timestamp": "2026-10-01T04:03:06.349Z",
     "status": "EXPORTED"
   },
   {
@@ -67,13 +69,14 @@
     "assessmentName": "GAD-7 (Generalized Anxiety Screener)",
     "paradigms": [
       "Functional Protocols",
-      "Treatment Matrix"
+      "Treatment Matrix",
+      "Patient Education"
     ],
     "researchQuery": "hashimoto thyroiditis low dose naltrexone gut permeability",
     "cognitiveLevel": "standard",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p004-care-plan.pdf",
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p004-care-plan.html",
-    "timestamp": "2026-09-30T17:13:17.953Z",
+    "timestamp": "2026-10-01T04:03:24.979Z",
     "status": "EXPORTED"
   },
   {
@@ -93,7 +96,7 @@
     "cognitiveLevel": "simplified",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_charles_darwin-care-plan.pdf",
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_charles_darwin-care-plan.html",
-    "timestamp": "2026-09-30T17:13:30.282Z",
+    "timestamp": "2026-10-01T04:03:37.287Z",
     "status": "EXPORTED"
   },
   {
@@ -106,13 +109,14 @@
     "assessmentName": "DN4 (Douleur Neuropathique 4 Questions)",
     "paradigms": [
       "Summary Overview",
-      "Treatment Matrix"
+      "Treatment Matrix",
+      "Patient Education"
     ],
     "researchQuery": "neuropathic pain central sensitization mirror visual feedback",
     "cognitiveLevel": "standard",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_frida_kahlo-care-plan.pdf",
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_frida_kahlo-care-plan.html",
-    "timestamp": "2026-09-30T17:13:42.229Z",
+    "timestamp": "2026-10-01T04:03:54.638Z",
     "status": "EXPORTED"
   },
   {
@@ -125,13 +129,14 @@
     "assessmentName": "Sarc-F (Frailty & Musculoskeletal Sarcopenia)",
     "paradigms": [
       "Environmental Exposomics & Toxicology",
+      "Monitoring & Follow-up",
       "Treatment Matrix"
     ],
     "researchQuery": "ionizing radiation aplastic anemia hematopoietic stem cell protection",
     "cognitiveLevel": "simplified",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_marie_curie-care-plan.pdf",
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_marie_curie-care-plan.html",
-    "timestamp": "2026-09-30T17:13:54.626Z",
+    "timestamp": "2026-10-01T04:04:06.893Z",
     "status": "EXPORTED"
   },
   {
@@ -151,7 +156,7 @@
     "cognitiveLevel": "standard",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_edwin_smith_3-care-plan.pdf",
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_edwin_smith_3-care-plan.html",
-    "timestamp": "2026-09-30T17:14:06.431Z",
+    "timestamp": "2026-10-01T04:04:24.254Z",
     "status": "EXPORTED"
   },
   {
@@ -171,7 +176,7 @@
     "cognitiveLevel": "child",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_mara_santos-care-plan.pdf",
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_mara_santos-care-plan.html",
-    "timestamp": "2026-09-30T17:14:19.118Z",
+    "timestamp": "2026-10-01T04:04:36.364Z",
     "status": "EXPORTED"
   },
   {
@@ -184,13 +189,14 @@
     "assessmentName": "TCM Energetic Screener (Spleen-Liver Disharmony)",
     "paradigms": [
       "Treatment Matrix",
-      "Global Health & WHO Initiatives"
+      "Global Health & WHO Initiatives",
+      "Patient Education"
     ],
     "researchQuery": "amebic liver abscess nutritional rehabilitation hepatic recovery",
     "cognitiveLevel": "dyslexia",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_srinivasa_ramanujan-care-plan.pdf",
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_srinivasa_ramanujan-care-plan.html",
-    "timestamp": "2026-09-30T17:14:31.045Z",
+    "timestamp": "2026-10-01T04:05:01.315Z",
     "status": "EXPORTED"
   }
 ]

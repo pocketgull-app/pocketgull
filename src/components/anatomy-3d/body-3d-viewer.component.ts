@@ -2630,7 +2630,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         // Heart Organ Group
         const heartGroup = new THREE.Group();
         // Move the pivot point (the group position) to the anatomical center of the heart
-        heartGroup.position.set(-0.06, 1.34, 0.04);
+        heartGroup.position.set(-0.06, 1.34, 0.00);
         
         const cardiacMesh = new THREE.Mesh(rSphere(0.09), heartMaterial.clone());
         cardiacMesh.scale.set(1, 1.2, 1);

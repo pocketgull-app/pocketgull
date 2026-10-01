@@ -189,15 +189,6 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
       console.log(`[Assessment Planned]: ${pData.assessmentName}`);
 
       // ── Step 1: Select Patient ──────────────────────────────────────────
-      // Switch to Active Room so patient dropdown is visible
-      const headerRoomTabMain = page.locator('#btn-active-room-trigger, [data-testid="header-tab-room"]').first();
-      const mobileRoomTabMain = page.getByTestId('mobile-tab-room').first();
-      if (await headerRoomTabMain.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await headerRoomTabMain.click({ force: true });
-      } else if (await mobileRoomTabMain.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await mobileRoomTabMain.click({ force: true });
-      }
-      await page.waitForTimeout(500);
       await selectPatientById(page, pData.id);
       await page.waitForTimeout(600);
 
@@ -206,16 +197,19 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
       console.log(`[Dropdown Active]:`, dropdownText.slice(0, 40).replace(/\n/g, ' '));
 
       // ── Step 2: Clinical Intake (Record Encounter Note & Goal) ──────────
-      // Switch to Active Room
-      const headerRoomTab = page.locator('#btn-active-room-trigger, [data-testid="header-tab-room"]').first();
-      const mobileRoomTab = page.getByTestId('mobile-tab-room');
+      // Switch to Active Room if not already active
+      const isActiveRoomOpen = await page.locator('#btn-active-room-trigger.bg-teal-600').isVisible().catch(() => false);
+      if (!isActiveRoomOpen) {
+        const headerRoomTab = page.locator('#btn-active-room-trigger, [data-testid="header-tab-room"]').first();
+        const mobileRoomTab = page.getByTestId('mobile-tab-room');
 
-      if (await headerRoomTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await headerRoomTab.click({ force: true });
-      } else if (await mobileRoomTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await mobileRoomTab.click({ force: true });
+        if (await headerRoomTab.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await headerRoomTab.click({ force: true });
+        } else if (await mobileRoomTab.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await mobileRoomTab.click({ force: true });
+        }
+        await page.waitForTimeout(500);
       }
-      await page.waitForTimeout(500);
 
       // Ensure Tasks & Notes view is active
       const tasksNotesBtn = page.locator('app-task-flow button', { hasText: 'Tasks & Notes' }).first();
@@ -285,17 +279,15 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
         await page.waitForTimeout(400);
 
         // Check if Research Frame opened
-        const researchFrame = page.locator('app-research-frame');
-        if (await researchFrame.isVisible({ timeout: 3000 }).catch(() => false)) {
+        const closeDrawerBtn = page.locator('button[aria-label="Close Evidence Drawer"]').first();
+        if (await closeDrawerBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
           console.log(`  ✓ Consulted Research Frame for evidence: "${pData.researchQuery}"`);
-          // Close Research Frame to return
-            const closeDrawerBtn = page.locator('button[aria-label="Close Evidence Drawer"]').first();
-            if (await closeDrawerBtn.isVisible().catch(() => false)) {
-              await closeDrawerBtn.click({ force: true });
-            } else {
-              await page.keyboard.press('Escape');
-            }
-            await page.waitForTimeout(500);
+          await closeDrawerBtn.click({ force: true });
+          await page.waitForTimeout(400);
+        } else {
+          // If close button not found, click trigger again to toggle off
+          await researchFrameTrigger.click({ force: true }).catch(() => {});
+          await page.waitForTimeout(300);
         }
       }
 
@@ -363,8 +355,10 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
       // Finalize the encounter to open the Care Plan Archiver modal
       const finalizeBtn = page.locator('#tour-finalize-btn').first();
       try {
-        await finalizeBtn.dispatchEvent('click');
-        await page.waitForTimeout(1000); // Wait for modal to render
+        if (await finalizeBtn.waitFor({ state: 'attached', timeout: 5000 }).then(()=>true).catch(()=>false)) {
+          await finalizeBtn.dispatchEvent('click');
+          await page.waitForTimeout(1000); // Wait for modal to render
+        }
       } catch (e) {
         console.warn('  ⚠️ Could not click Finalize & Archive');
       }
@@ -378,14 +372,18 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
         
         if (levelLabel) {
           const cogBtn = page.locator(`button:has-text("${levelLabel}")`).first();
-          await cogBtn.dispatchEvent('click').catch(() => {});
-          await page.waitForTimeout(6000); 
-          console.log(`  ✓ Translated Care Plan to Cognitive Level: "${pData.cognitiveLevel}"`);
+          if (await cogBtn.waitFor({ state: 'attached', timeout: 5000 }).then(()=>true).catch(()=>false)) {
+            await cogBtn.dispatchEvent('click').catch(() => {});
+            await page.waitForTimeout(6000); 
+            console.log(`  ✓ Translated Care Plan to Cognitive Level: "${pData.cognitiveLevel}"`);
+          }
         }
       } else {
         const cogBtn = page.locator(`button:has-text("Standard")`).last(); // in modal
-        await cogBtn.dispatchEvent('click').catch(() => {});
-        console.log(`  ✓ Translated Care Plan to Cognitive Level: "standard"`);
+        if (await cogBtn.waitFor({ state: 'attached', timeout: 5000 }).then(()=>true).catch(()=>false)) {
+          await cogBtn.dispatchEvent('click').catch(() => {});
+          console.log(`  ✓ Translated Care Plan to Cognitive Level: "standard"`);
+        }
       }
 
       // Select language translation if specified
@@ -393,9 +391,11 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
         const langStr = (pData as any).language;
         const capitalizedLang = langStr.charAt(0).toUpperCase() + langStr.slice(1);
         const langBtn = page.locator(`button:has-text("${capitalizedLang}")`).first();
-        await langBtn.dispatchEvent('click').catch(() => {});
-        await page.waitForTimeout(6000); 
-        console.log(`  ✓ Translated Care Plan Language to: "${capitalizedLang}"`);
+        if (await langBtn.waitFor({ state: 'attached', timeout: 5000 }).then(()=>true).catch(()=>false)) {
+          await langBtn.dispatchEvent('click').catch(() => {});
+          await page.waitForTimeout(6000); 
+          console.log(`  ✓ Translated Care Plan Language to: "${capitalizedLang}"`);
+        }
       }
 
       // ── Step 8: Export PDF & HTML Care Plan Snapshots ────────────────────
@@ -476,8 +476,15 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
 
       // Close the modal
       const recordToChartBtn = page.locator('button', { hasText: 'Record to Chart' }).first();
-      await recordToChartBtn.dispatchEvent('click').catch(() => {});
-      await page.waitForTimeout(500);
+      if (await recordToChartBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await recordToChartBtn.click({ force: true }).catch(() => {});
+        await page.waitForTimeout(500);
+      }
+      const modalClose = page.locator('.print-medical-chart button[aria-label="Close"], .print-medical-chart button:has-text("Cancel")').first();
+      if (await modalClose.isVisible({ timeout: 500 }).catch(() => false)) {
+        await modalClose.click({ force: true }).catch(() => {});
+        await page.waitForTimeout(400);
+      }
 
       // Save Patient Encounter JSON Record
       const record: IShiftPatientRecord = {

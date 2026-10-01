@@ -92,8 +92,7 @@ MODELS = {
 def generate_modelfile(model_id: str, config: dict) -> str:
     return f"""# 🦙 Ollama Modelfile for {config['title']}
 # Grounded in NIH NLM MedQuAD, WHO mhGAP Guidelines & Level A Clinical Consensus
-# License: Apache-2.0 | Publisher: PocketGull LLC (Phillip Gear / @philgear)
-# HF Repo: https://huggingface.co/{config['adapter_repo']}
+# License: Apache-2.0 | Publisher: PocketGull LLC
 
 FROM {config['base']}
 

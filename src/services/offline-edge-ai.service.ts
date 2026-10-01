@@ -51,7 +51,7 @@ export class OfflineEdgeAiService {
     },
     {
       id: 'smollm2-1.7b-instruct-q4f16',
-      name: 'HuggingFace SmolLM2 (1.7B-Instruct)',
+      name: 'Local Edge SLM (1.7B-Instruct)',
       sizeMb: 980,
       isCached: false,
       type: 'webgpu',

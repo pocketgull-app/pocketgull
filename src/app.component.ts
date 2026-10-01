@@ -97,7 +97,6 @@ import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governanc
 import { ClinicalCommercialHubComponent } from './components/shared/clinical-commercial-hub.component';
 import { RoleDemoModalComponent } from './components/role-demo-modal.component';
 import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
-import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.component';
 import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component';
 import { PocketgullArchitectureAtlasComponent } from './components/shared/pocketgull-architecture-atlas.component';
 import { CommunityHealthWorkerSuiteComponent } from './components/shared/community-health-worker-suite.component';
@@ -183,7 +182,6 @@ import { MocaSuiteComponent } from './components/moca/moca-suite.component';
     ClinicalCommercialHubComponent,
     RoleDemoModalComponent,
     IntimacyRelationshipVitalityComponent,
-    FederalUswdsPortalComponent,
     MocaSuiteComponent
   ],
   providers: [],
@@ -280,10 +278,6 @@ import { MocaSuiteComponent } from './components/moca/moca-suite.component';
         </div>
       }
 
-      <!-- USWDS Federal Health & Clinical Decision Support Workstation Modal -->
-      @if (navShell.showFederalUswdsPortal()) {
-        <app-federal-uswds-portal (closeModal)="navShell.closeFederalUswdsPortal()"></app-federal-uswds-portal>
-      }
 
       <!-- Specialist Referral & Co-Management Dossier Hub Modal -->
       @if (navShell.showSpecialistReferralModal()) {
@@ -2195,7 +2189,7 @@ export class AppComponent implements OnDestroy {
       };
 
       this.export.downloadCarePlanPdf(
-        '',
+        textToPrint,
         p?.name ?? 'Patient',
         {
           bp: vitals.bp || undefined,
@@ -2894,3 +2888,4 @@ export class AppComponent implements OnDestroy {
     document.removeEventListener('mousemove', this.boundDoVoiceColDrag);
   }
 }
+

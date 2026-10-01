@@ -468,42 +468,97 @@ export async function selectPatientByName(page: Page, name: string) {
 
 /** Shared patient selection helper by explicit patient ID */
 export async function selectPatientById(page: Page, patientId: string) {
+  // Dismiss any lingering modals or backdrops that would block header interaction
+  const closeResearch = page.locator('button[aria-label="Close Evidence Drawer"]').first();
+  if (await closeResearch.isVisible({ timeout: 400 }).catch(() => false)) {
+    await closeResearch.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(200);
+  }
+  const modalClose = page.locator('.print-medical-chart button[aria-label="Close"], .print-medical-chart button:has-text("Cancel")').first();
+  if (await modalClose.isVisible({ timeout: 500 }).catch(() => false)) {
+    await modalClose.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(300);
+  }
+
+  // Try direct Angular component invocation if available
+  const switchedViaNg = await page.evaluate((pid) => {
+    const dropdownEl = document.querySelector('app-patient-dropdown') as any;
+    if (dropdownEl && (window as any).ng?.getComponent) {
+      const comp = (window as any).ng.getComponent(dropdownEl);
+      if (comp && typeof comp.selectPatient === 'function') {
+        comp.selectPatient(pid);
+        return true;
+      }
+    }
+    return false;
+  }, patientId).catch(() => false);
+
+  if (switchedViaNg) {
+    await page.waitForTimeout(500);
+    return;
+  }
+
   const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
-  if (await dropdownBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
-    await dropdownBtn.click({ force: true });
-    await page.waitForTimeout(400);
+  if (await dropdownBtn.waitFor({ state: 'attached', timeout: 10000 }).then(() => true).catch(() => false)) {
+    // Check if dropdown is already open
+    let isMenuOpen = await page.locator('app-patient-dropdown [data-testid^="patient-option-"]').first().isVisible().catch(() => false);
+    if (!isMenuOpen) {
+      await dropdownBtn.scrollIntoViewIfNeeded().catch(() => {});
+      await dropdownBtn.click({ force: true });
+      await page.waitForTimeout(400);
+    }
 
     const testIdOption = page.locator(`[data-testid="patient-option-${patientId}"]`).first();
-    if (await testIdOption.isVisible({ timeout: 2000 }).catch(() => false)) {
+    if (await testIdOption.waitFor({ state: 'attached', timeout: 1500 }).then(() => true).catch(() => false)) {
+      await testIdOption.scrollIntoViewIfNeeded().catch(() => {});
       await testIdOption.click({ force: true });
       await page.waitForTimeout(500);
       return;
     }
 
-    const searchInput = page.locator('app-patient-dropdown input[placeholder*="Search"]');
-    if (await searchInput.isVisible().catch(() => false)) {
+    // Try search input to filter the list directly to the requested patient
+    const searchInput = page.locator('app-patient-dropdown input[placeholder*="Search"]').first();
+    if (await searchInput.isVisible({ timeout: 1500 }).catch(() => false)) {
       await searchInput.fill(patientId);
       await searchInput.dispatchEvent('input');
-      await page.waitForTimeout(300);
-      if (await testIdOption.isVisible({ timeout: 1500 }).catch(() => false)) {
+      await page.waitForTimeout(400);
+
+      if (await testIdOption.waitFor({ state: 'attached', timeout: 2000 }).then(() => true).catch(() => false)) {
+        await testIdOption.scrollIntoViewIfNeeded().catch(() => {});
         await testIdOption.click({ force: true });
         await page.waitForTimeout(500);
         return;
       }
+      
+      // Clear search
       await searchInput.fill('');
       await searchInput.dispatchEvent('input');
       await page.waitForTimeout(200);
     }
 
-    const fallback = page.locator('app-patient-dropdown .group\\/list button').first();
-    if (await fallback.isVisible({ timeout: 1000 }).catch(() => false)) {
-      await fallback.click();
-    } else {
-      await page.keyboard.press('Escape').catch(() => {});
+    // If still not clicked, try selecting by matching testid directly in DOM via evaluate
+    const evaluated = await page.evaluate((pid) => {
+      const btn = document.querySelector(`[data-testid="patient-option-${pid}"]`) as HTMLElement;
+      if (btn) {
+        btn.click();
+        return true;
+      }
+      return false;
+    }, patientId).catch(() => false);
+
+    if (evaluated) {
+      await page.waitForTimeout(500);
+      return;
     }
+
+    console.error(`[selectPatientById] FAILED to locate option for patientId: ${patientId}`);
+    await page.keyboard.press('Escape').catch(() => {});
     await page.waitForTimeout(400);
   }
 }
+
+
+
 
 
 

@@ -134,6 +134,7 @@ function getAngularApp(): AngularNodeAppEngine | null {
 }
 
 app.use(compression());
+  app.use((req, res, next) => { console.log('[Incoming]', req.method, req.url); next(); });
 
 const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test');
 const isProd = (process.env['NODE_ENV'] === 'production' || !!process.env['K_SERVICE']) && !isTestingEnv;

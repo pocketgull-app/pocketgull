@@ -26,7 +26,6 @@ export class NavigationShellService {
   readonly showCommercialHubModal = signal<boolean>(false);
   readonly showRoleDemoModal = signal<boolean>(false);
   readonly showIntimacyVitalityModal = signal<boolean>(false);
-  readonly showFederalUswdsPortal = signal<boolean>(false);
   readonly showArcadeHubModal = signal<boolean>(false);
   readonly showAtlasModal = signal<boolean>(false);
   readonly showChwSuiteModal = signal<boolean>(false);
@@ -119,9 +118,6 @@ export class NavigationShellService {
   public openIntimacyVitality(): void { this.showIntimacyVitalityModal.set(true); }
   public closeIntimacyVitality(): void { this.showIntimacyVitalityModal.set(false); }
 
-  public openFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(true); }
-  public closeFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(false); }
-
   public openArcadeHub(gameId?: string): void {
     if (gameId) {
       this.activeGameId.set(gameId);
@@ -175,7 +171,6 @@ export class NavigationShellService {
     this.showCommercialHubModal.set(false);
     this.showRoleDemoModal.set(false);
     this.showIntimacyVitalityModal.set(false);
-    this.showFederalUswdsPortal.set(false);
     this.showArcadeHubModal.set(false);
     this.showAtlasModal.set(false);
     this.showChwSuiteModal.set(false);
