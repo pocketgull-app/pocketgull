@@ -78,7 +78,7 @@ describe('WCAG 2.2 AAA Accessibility & Sensory Settings Certification Suite', ()
     });
   });
 
-  describe('2. All 18 Application Themes WCAG 2.2 AAA Certification', () => {
+  describe('2. All 26 Application Themes WCAG 2.2 AAA Certification', () => {
     const themePalettes = [
       { id: 'light', name: 'Light Parchment', fg: '#1C1C1C', bg: '#FAFAFA', cardBg: '#FFFFFF', heading: '#0F172A' },
       { id: 'dark', name: 'Dark Obsidian', fg: '#F3F4F6', bg: '#111827', cardBg: '#1F2937', heading: '#38BDF8' },
@@ -97,7 +97,15 @@ describe('WCAG 2.2 AAA Accessibility & Sensory Settings Certification Suite', ()
       { id: 'cern', name: 'CERN 1991 Info Classic', fg: '#000000', bg: '#F4F4F0', cardBg: '#FFFFFF', heading: '#000080' },
       { id: 'geararts', name: 'PocketGull GearArts', fg: '#F8FAFC', bg: '#0B0C10', cardBg: '#13151D', heading: '#2DD4BF' },
       { id: 'scotopic', name: 'Scotopic 650nm Red Mode', fg: '#FF6655', bg: '#050000', cardBg: '#0E0202', heading: '#FF2211' },
-      { id: 'epaper', name: 'Disaster Triage E-Paper', fg: '#111111', bg: '#F5F5F0', cardBg: '#FFFFFF', heading: '#000000' }
+      { id: 'epaper', name: 'Disaster Triage E-Paper', fg: '#111111', bg: '#F5F5F0', cardBg: '#FFFFFF', heading: '#000000' },
+      { id: 'dream-team', name: '1996 Dream Team Navy & Gold', fg: '#F8FAFC', bg: '#060B19', cardBg: '#0C152E', heading: '#F59E0B' },
+      { id: 'dolphins-1972', name: '1972 Miami Dolphins Aqua', fg: '#F0FDFA', bg: '#031C26', cardBg: '#082937', heading: '#F0FDFA' },
+      { id: 'yankees-1927', name: '1927 NY Yankees Murderers Row', fg: '#F8FAFC', bg: '#050D18', cardBg: '#09172A', heading: '#C49A45' },
+      { id: 'arsenal-invincibles', name: '2003-04 Arsenal Invincibles', fg: '#FFFAF7', bg: '#0C0305', cardBg: '#14070A', heading: '#E5AF3A' },
+      { id: 'canadiens-1977', name: '1976-77 Montreal Canadiens', fg: '#F0F9FF', bg: '#040917', cardBg: '#081026', heading: '#BAE6FD' },
+      { id: 'brazil-1970', name: '1970 Brazil World Cup Canarinho', fg: '#FEFCE8', bg: '#040C07', cardBg: '#08170D', heading: '#F7C800' },
+      { id: 'all-blacks-2013', name: '2013 All Blacks Silver Fern', fg: '#FFFFFF', bg: '#000000', cardBg: '#0A0A0A', heading: '#E5E7EB' },
+      { id: 'calm', name: 'Y-BOCs Calm Sensory-Safe', fg: '#292524', bg: '#F5F5F4', cardBg: '#FAF9F6', heading: '#44403C' }
     ];
 
     it.each(themePalettes)('Theme "$name" passes strict WCAG 2.2 AAA contrast requirements', (palette) => {
