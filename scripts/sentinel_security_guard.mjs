@@ -168,6 +168,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'www.nice.org.uk',
   'ukrio.org',
   'www.ukrio.org',
+  'hl7.org.uk',
+  'fhir.hl7.org.uk',
   'startalkmedia.com',
   'www.startalkmedia.com',
   'neildegrassetyson.com',
