@@ -6,6 +6,7 @@ import { PatientStateService } from '../../services/patient-state.service';
 import { PatientManagementService } from '../../services/patient-management.service';
 import { ClinicalIntelligenceService } from '../../services/clinical-intelligence.service';
 import { DictationService } from '../../services/dictation.service';
+import { AdkLiveService } from '../../services/ai/adk-live.service';
 
 describe('BedsideInterpreterModalComponent', () => {
   let component: BedsideInterpreterModalComponent;
@@ -13,14 +14,16 @@ describe('BedsideInterpreterModalComponent', () => {
   let mockPatientMgmt: any;
   let mockIntelligence: any;
   let mockDictation: any;
+  let mockAdkLive: any;
 
   beforeEach(() => {
     mockPatientState = {
       getCurrentState: vi.fn().mockReturnValue({}),
-      activePatientProfile: signal({ name: 'Frida Kahlo', age: 47 })
+      activePatientProfile: signal({ name: 'Frida Kahlo', age: 47 }),
+      addClinicalNote: vi.fn()
     };
     mockPatientMgmt = {
-      selectedPatient: signal({ name: 'Frida Kahlo', age: 47 }),
+      selectedPatient: signal({ name: 'Frida Kahlo', age: 47, id: 'p_frida_kahlo' }),
       selectedPatientId: signal('p_frida_kahlo')
     };
     mockIntelligence = {
@@ -32,6 +35,18 @@ describe('BedsideInterpreterModalComponent', () => {
       startListening: vi.fn(),
       stopListening: vi.fn()
     };
+    mockAdkLive = {
+      isConnected: signal(false),
+      isListening: signal(false),
+      volumeLevel: signal(0),
+      latencyMs: signal(140),
+      selectedVoice: signal('Aoede'),
+      connect: vi.fn().mockResolvedValue(undefined),
+      disconnect: vi.fn(),
+      startListening: vi.fn(),
+      stopListening: vi.fn(),
+      simulateLiveStreamResponse: vi.fn()
+    };
 
     const injector = Injector.create({
       providers: [
@@ -39,6 +54,7 @@ describe('BedsideInterpreterModalComponent', () => {
         { provide: PatientManagementService, useValue: mockPatientMgmt },
         { provide: ClinicalIntelligenceService, useValue: mockIntelligence },
         { provide: DictationService, useValue: mockDictation },
+        { provide: AdkLiveService, useValue: mockAdkLive },
         BedsideInterpreterModalComponent
       ]
     });
@@ -94,5 +110,49 @@ describe('BedsideInterpreterModalComponent', () => {
     component.close.subscribe(() => { closed = true; });
     component.close.emit();
     expect(closed).toBe(true);
+  });
+
+  it('6. Toggles live audio stream via AdkLiveService', async () => {
+    component.ngOnInit();
+    expect(mockAdkLive.isConnected()).toBe(false);
+
+    await component.toggleLiveStream();
+    expect(mockAdkLive.connect).toHaveBeenCalled();
+    expect(mockAdkLive.startListening).toHaveBeenCalled();
+
+    // Toggle again to disconnect
+    mockAdkLive.isConnected.set(true);
+    await component.toggleLiveStream();
+    expect(mockAdkLive.disconnect).toHaveBeenCalled();
+  });
+
+  it('7. Escalates to human interpreter and appends clinical note to state', () => {
+    component.ngOnInit();
+    expect(component.humanEscalated()).toBe(false);
+
+    component.escalateToHumanInterpreter();
+    expect(component.humanEscalated()).toBe(true);
+    expect(mockPatientState.addClinicalNote).toHaveBeenCalled();
+    const noteCall = mockPatientState.addClinicalNote.mock.calls[0][0];
+    expect(noteCall.text).toContain('QUALIFIED HUMAN INTERPRETER ESCALATION');
+    expect(noteCall.text).toContain('Frida Kahlo');
+  });
+
+  it('8. Handles live transcript chunks received from AdkLiveService', () => {
+    component.ngOnInit();
+    const initialCount = component.utterances().length;
+
+    // Simulate incoming clinician live audio transcribed chunk
+    component.handleLiveTranscriptChunk('Please describe the severity of your back pain.');
+    expect(component.utterances().length).toBe(initialCount + 1);
+    const last = component.utterances()[component.utterances().length - 1];
+    expect(last.speaker).toBe('clinician');
+    expect(last.clinicalKeywords).toContain('Pain');
+
+    // Simulate incoming patient Spanish audio transcribed chunk
+    component.handleLiveTranscriptChunk('Comprendo perfectamente, doctor. El dolor ha bajado.');
+    expect(component.utterances().length).toBe(initialCount + 2);
+    const lastPatient = component.utterances()[component.utterances().length - 1];
+    expect(lastPatient.speaker).toBe('patient');
   });
 });
