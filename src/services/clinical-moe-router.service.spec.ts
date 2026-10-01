@@ -85,5 +85,71 @@ describe('ClinicalMoERouterService', () => {
     service.setCustomThinkingBudget(null);
     expect(service.currentThinkingConfig().thinkingBudget).toBe(0);
   });
+
+  describe('Frontend SMoE UI Gating Router', () => {
+    it('should compute initial UI gating scores and partition into primary, secondary, and latent', () => {
+      const scores = service.uiGatingScores();
+      expect(scores.length).toBe(8); // 8 registered UI experts
+      expect(service.primaryUiExpert()).not.toBeNull();
+      expect(service.secondaryUiExpert()).not.toBeNull();
+      expect(service.latentUiExperts().length).toBe(6);
+      expect(service.cognitiveNoiseReductionPercent()).toBe(75); // (1 - 2/8) * 100%
+    });
+
+    it('should route knee-hologram as primary and counterfactual-simulator as secondary in Knee OA scenario', () => {
+      service.loadDemoScenario('knee_oa');
+      const primary = service.primaryUiExpert();
+      const secondary = service.secondaryUiExpert();
+
+      expect(primary?.expert.id).toBe('knee-hologram');
+      expect(secondary?.expert.id).toBe('counterfactual-simulator');
+      expect(service.activeLens()).toBe('RSNA Knee Abnormality');
+
+      // Verify Cross-Attention Bridge activation
+      const bridge = service.activeCrossAttentionBridge();
+      expect(bridge).not.toBeNull();
+      expect(bridge?.id).toBe('bridge-knee-whatif');
+      expect(bridge?.benchmarkMetric).toBe('-18% Medial Shear Stress');
+    });
+
+    it('should dynamically calculate Softmax Viewport Proportioning clamped between 55% and 72%', () => {
+      service.loadDemoScenario('knee_oa');
+      const primaryRatio = service.primaryViewportRatio();
+      const secondaryRatio = service.secondaryViewportRatio();
+
+      expect(primaryRatio).toBeGreaterThanOrEqual(55);
+      expect(primaryRatio).toBeLessThanOrEqual(72);
+      expect(primaryRatio + secondaryRatio).toBe(100);
+    });
+
+    it('should dynamically elevate ismp-posology when conversational cue contains medication keywords', () => {
+      service.setTranscriptQuery('need to review metformin dosage and renal clearance');
+      const primary = service.primaryUiExpert();
+      expect(primary?.expert.id).toBe('ismp-posology');
+      expect(primary?.routingRationale).toContain('Conversational cue match');
+    });
+
+    it('should allow clinician to pin an expert with highest priority', () => {
+      service.pinExpert('steeep-quality-hud');
+      const primary = service.primaryUiExpert();
+      expect(primary?.expert.id).toBe('steeep-quality-hud');
+      expect(primary?.routingRationale).toContain('Clinician Manual Pin Override');
+
+      service.clearOverrides();
+      expect(service.pinnedExpertId()).toBeNull();
+    });
+
+    it('should adjust kValue and update latent shelf size accordingly', () => {
+      service.setKValue(3);
+      expect(service.kValue()).toBe(3);
+      expect(service.latentUiExperts().length).toBe(5);
+      expect(service.cognitiveNoiseReductionPercent()).toBe(63); // (1 - 3/8) * 100%
+
+      service.setKValue(1);
+      expect(service.kValue()).toBe(1);
+      expect(service.latentUiExperts().length).toBe(7);
+      expect(service.cognitiveNoiseReductionPercent()).toBe(88); // (1 - 1/8) * 100%
+    });
+  });
 });
 

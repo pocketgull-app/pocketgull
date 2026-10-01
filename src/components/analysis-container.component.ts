@@ -27,6 +27,7 @@ import { SteeepQualityHudComponent } from './steeep-quality-hud/steeep-quality-h
 import { LensBiomolecularPhysicsComponent } from './turing/lens-biomolecular-physics.component';
 import { LensPhysicalGenomicsComponent } from './turing/lens-physical-genomics.component';
 import { HobbyDomainCompanionComponent } from './hobby-domain-companion.component';
+import { SparseClinicalCanvasComponent } from './sparse-clinical-canvas.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,7 +53,8 @@ import { HobbyDomainCompanionComponent } from './hobby-domain-companion.componen
     SteeepQualityHudComponent,
     LensBiomolecularPhysicsComponent,
     LensPhysicalGenomicsComponent,
-    HobbyDomainCompanionComponent
+    HobbyDomainCompanionComponent,
+    SparseClinicalCanvasComponent
   ],
   template: `
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)] bg-[#F3F4F6] dark:bg-zinc-950">
@@ -104,13 +106,29 @@ import { HobbyDomainCompanionComponent } from './hobby-domain-companion.componen
                 <span>AYURVEDIC</span>
               </button>
 
-              <!-- View Mode Switcher: Classic Lenses vs Functional Domain Suites -->
-              <button type="button" (click)="viewMode.set(viewMode() === 'lenses' ? 'suites' : 'lenses')"
-                title="Toggle between Classic Multi-Lens Report and Functional Domain Suites (Paradigm Diff Engine)"
+              <!-- View Mode Switcher: Classic Lenses vs Functional Domain Suites vs SMoE Canvas -->
+              <button type="button" (click)="viewMode.set('lenses')"
+                title="Classic Multi-Lens Clinical Report"
+                [class]="viewMode() === 'lenses'
+                  ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
+                <span>📄 LENSES</span>
+              </button>
+
+              <button type="button" (click)="viewMode.set('suites')"
+                title="Functional Domain Suites (Paradigm Diff Engine)"
                 [class]="viewMode() === 'suites'
-                  ? 'flex items-center gap-1 px-3 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1 px-3 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
-                <span>{{ viewMode() === 'lenses' ? '🧬 DOMAIN SUITES' : '📄 LENSES' }}</span>
+                  ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
+                <span>🧬 SUITES</span>
+              </button>
+
+              <button type="button" (click)="viewMode.set('canvas')"
+                title="Sparse Mixture of UI Experts (SMoE) Adaptive Canvas"
+                [class]="viewMode() === 'canvas'
+                  ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-emerald-500 text-zinc-950 transition cursor-pointer shadow-md'
+                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-emerald-400 hover:text-emerald-300 hover:bg-zinc-850 transition cursor-pointer'">
+                <span>⚡ SMoE CANVAS</span>
               </button>
             </div>
 
@@ -320,6 +338,8 @@ import { HobbyDomainCompanionComponent } from './hobby-domain-companion.componen
             <div class="flex-1 flex flex-col min-h-0 min-w-0 h-full overflow-y-auto relative" [class.slide-in-panel]="isSlidingIn()">
                 @if (state.isEmergencyMode()) {
                   <app-analysis-report class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" #reportRef></app-analysis-report>
+                } @else if (viewMode() === 'canvas') {
+                  <app-sparse-clinical-canvas class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" />
                 } @else if (viewMode() === 'suites') {
                   <app-domain-suites-navigator class="w-full h-auto block overflow-visible" />
                 } @else {
@@ -473,7 +493,7 @@ export class AnalysisContainerComponent {
   ClinicalIcons = ClinicalIcons;
 
   isSlidingIn = signal(true);
-  viewMode = signal<'lenses' | 'suites'>('lenses');
+  viewMode = signal<'lenses' | 'suites' | 'canvas'>('lenses');
   showSimulatorModal = signal(false);
   showSoapModal = signal(false);
   showEdgeAiModal = signal(false);
