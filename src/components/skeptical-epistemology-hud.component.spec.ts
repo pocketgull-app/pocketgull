@@ -89,7 +89,7 @@ describe('SkepticalEpistemologyHudComponent', () => {
 
   it('9. Initializes Fallacy Auditor with default assertion and evaluates base-rate findings', () => {
     expect(component.isFallacyAuditorOpen()).toBe(true);
-    expect(component.allFallacies().length).toBe(12);
+    expect(component.allFallacies().length).toBe(14);
 
     const audit = component.fallacyAuditResult();
     expect(audit).not.toBeNull();
@@ -119,16 +119,18 @@ describe('SkepticalEpistemologyHudComponent', () => {
     expect(postHocAudit?.findings.some(f => f.fallacyId === 'POST_HOC_ERGO_PROPTER_HOC')).toBe(true);
   });
 
-  it('11. Toggles Fallacy Catalog browser and exposes all 12 canonical definitions', () => {
+  it('11. Toggles Fallacy Catalog browser and exposes all 14 canonical definitions', () => {
     expect(component.isFallacyCatalogOpen()).toBe(false);
     component.toggleFallacyCatalog();
     expect(component.isFallacyCatalogOpen()).toBe(true);
 
     const fallacies = component.allFallacies();
-    expect(fallacies.length).toBe(12);
+    expect(fallacies.length).toBe(14);
     expect(fallacies.map(f => f.id)).toContain('BASE_RATE_FALLACY');
     expect(fallacies.map(f => f.id)).toContain('AUTOMATION_BIAS');
     expect(fallacies.map(f => f.id)).toContain('APPEAL_TO_NATURE');
+    expect(fallacies.map(f => f.id)).toContain('DECISION_CURVE_THRESHOLD_FALLACY');
+    expect(fallacies.map(f => f.id)).toContain('IATROGENIC_PANIC_CATASTROPHIZATION');
   });
 });
 
