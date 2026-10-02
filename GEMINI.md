@@ -46,6 +46,8 @@ Pocket-Gull is a real-time medical Care Plan Strategy and Live AI Consult engine
   3. `Sentinel Security & Egress Audit` (`node scripts/sentinel_security_guard.mjs`)
   4. `CycloneDX 1.6 SBOM Verification` (`npm run sbom`)
   5. `Mozilla HTTP Observatory 125 Security Guard` (`npm run observatory:audit`)
+  6. `IEEE P2933™ TIPPSS Cross-Language Parity Guard` (`npm run tippss:audit`)
+  7. `HIPAA §164.514 Safe Harbor PHI Taint Boundary Guard` (`npm run taint:audit`)
   If any test or security check fails, the deployment must immediately abort.
 - **Mozilla HTTP Observatory 125 Standard (Grade A+)**: All web entrypoints (Express, SSR, FastAPI sidecars, custom domains) MUST maintain a score of 125 / 100 on Mozilla HTTP Observatory:
   - **Middleware #1 Rule**: Security headers MUST execute as the very first middleware before any route, domain dispatcher, or static handler to eliminate route short-circuiting.
@@ -139,6 +141,18 @@ export class MetricCardComponent {
   - **Canada**: PIPEDA, Ontario PHIPA, Alberta HIA, FHIR CA Baseline, 988 Suicide Crisis Helpline.
   - **Australia**: Privacy Act 1988 (APPs), My Health Record Act 2012, TGA SaMD, FHIR AU Base, Lifeline 13 11 14.
   - **New Zealand**: Health Information Privacy Code 2020 (HIPC), NZ HISO 10029/10064, FHIR NZ Base, 1737 Need to Talk.
+
+## IEEE P2933™ TIPPSS & Circular IoMT Standard
+- **6-Pillar Statutory Trust**: All connected wearables, IoMT sensors, and bedside kiosks MUST strictly verify IEEE P2933™ Trust, Identity, Privacy, Protection, Safety, and Security before vital ingestion:
+  - *Trust*: Hardware Root of Trust attestation (Titan M2, Apple Secure Enclave, ARM TrustZone).
+  - *Identity*: Non-spoofable cryptographic patient-to-device binding tokens.
+  - *Privacy*: Fine-grained micro-consents per biometric modality; zero-raw-waveform egress by default.
+  - *Protection*: Monotonic hardware counters and RSSI proximity gating (&ge; -85 dBm) preventing wireless relay attacks.
+  - *Safety*: Optical/lead detachment detection and physiological SQI bounds inhibiting erroneous clinical alarms.
+  - *Security*: FDA 21 CFR Part 11 compliant SHA-256 integrity digests stamped on every clinical transaction.
+- **Monorepo Contract Parity (TS &harr; Dart &harr; Python)**: 100% field, type, and unit parity is continuously enforced via `npm run tippss:audit`.
+- **Zero-PHI Taint Boundary**: Outbound data egress to the Python ML sidecar (`pocketgull_api`) MUST be strictly de-identified via `npm run taint:audit` (HIPAA &sect;164.514 Safe Harbor).
+- **Circular Hardware Lifecycle & Anti-Data Landfill**: Protect lithium-ion pouch cells from continuous-charge swelling via the Web Battery API (20%&ndash;80% cycling guidance), decouple replaceable sensors from host displays (+3.0 to +6.5 years lifespan extension), and buffer waveforms at the edge to eliminate 99.5% of raw data egress.
 
 ## Institutional Thin-Client & Multi-Device Resilience Standard
 - **Cross-Form Factor Parity**: Every clinical interface MUST render with zero horizontal blowout and full feature parity across:

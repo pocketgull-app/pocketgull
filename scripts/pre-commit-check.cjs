@@ -471,6 +471,28 @@ if (!oraPassed) {
   process.exit(1);
 }
 
+// Check 15: IEEE P2933™ TIPPSS Cross-Language Schema & Type Parity Guard
+// Check 16: HIPAA §164.514 Safe Harbor PHI Taint Boundary Guard
+let dartAvailable = false;
+try {
+  execSync('dart --version', { stdio: 'ignore', cwd: workspaceRoot, env: cleanEnv });
+  dartAvailable = true;
+} catch (e) {
+  console.warn('⚠️  Dart CLI not detected in environment; skipping Dart contract linters.\n');
+}
+
+if (dartAvailable) {
+  const tippssPassed = runCommand('dart run scripts/tippss_schema_parity.dart', 'IEEE P2933™ TIPPSS Cross-Language Schema Parity Guard');
+  if (!tippssPassed) {
+    process.exit(1);
+  }
+
+  const phiTaintPassed = runCommand('dart run scripts/phi_taint_boundary_linter.dart', 'HIPAA §164.514 Safe Harbor PHI Taint Boundary Guard');
+  if (!phiTaintPassed) {
+    process.exit(1);
+  }
+}
+
 console.log('🎉 All pre-commit validation checks passed successfully. Safe to commit!\n');
 process.exit(0);
 
