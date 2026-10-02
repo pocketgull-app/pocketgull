@@ -2279,7 +2279,7 @@ async def pharmacogenomics_endpoint(req: IGcnPharmacogenomicsRequest) -> IGcnPha
 # ══════════════════════════════════════════════════════════════════════════════
 
 class IPersonaTranslationRequest(BaseModel):
-    patient_name: str = Field(default="Traveler", description="Patient display name")
+    patient_archetype: str = Field(default="Traveler", description="De-identified patient display archetype")
     vitals: str = Field(default="120/80 mmHg", description="Current blood pressure / telemetry string")
     issues: list[str] = Field(default_factory=lambda: ["acute stress"], description="Physiological concerns or symptoms")
     persona: str = Field(default="arborist", description="Persona mode: arborist, mechanic, gentleman, or muse")
@@ -2298,7 +2298,7 @@ class IPersonaTranslationResponse(BaseModel):
 async def translate_persona_endpoint(req: IPersonaTranslationRequest) -> IPersonaTranslationResponse:
     """Translates clinical findings into compassionate health literacy personas."""
     p = req.persona.lower()
-    name = req.patient_name
+    name = req.patient_archetype
     issues_str = ", ".join(req.issues) or "general wellness"
 
     if p == "arborist":

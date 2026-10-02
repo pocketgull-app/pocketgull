@@ -41,9 +41,9 @@ describe('AnalysisContainerComponent Unit Suite', () => {
   }, 30000);
 
   it('1. Initializes default view modes and modal state signals', () => {
-    expect(component.viewMode()).toBe('canvas');
-    component.viewMode.set('lenses');
     expect(component.viewMode()).toBe('lenses');
+    component.viewMode.set('canvas');
+    expect(component.viewMode()).toBe('canvas');
     expect(component.showEdgeAiModal()).toBe(false);
     expect(component.showSteeepModal()).toBe(false);
     expect(component.showSoapModal()).toBe(false);

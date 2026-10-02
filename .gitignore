@@ -162,13 +162,14 @@ model.sav
 trained_models/
 lora_*/
 checkpoint-*/
-pocketgull_api/models/
+pocketgull_api/models/*
 pocketgull_api/*.joblib
 pocketgull_api/*.pkl
 pocketgull_api/*.pt
 !**/lib/models/**
 !**/core/models/**
 !**/src/models/**
+!pocketgull_api/models/*.py
 
 # ------------------------------------------------------------------------------
 # 7. Mobile Suite (Flutter / Dart / Android / iOS)

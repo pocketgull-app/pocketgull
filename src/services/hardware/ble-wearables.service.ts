@@ -1,5 +1,8 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { PatientStateService } from '../patient-state.service';
+import { TippssIngestionGuardService, ITippssTelemetryFrame } from './tippss-ingestion-guard.service';
+import { WaveformEventBufferService } from './waveform-event-buffer.service';
+import { HardwareLifecycleSentinelService } from './hardware-lifecycle-sentinel.service';
 
 type BluetoothRemoteGATTServer = any;
 type BluetoothRemoteGATTCharacteristic = any;
@@ -17,12 +20,16 @@ export interface IWearableDeviceStatus {
 })
 export class BleWearablesService {
   private patientState = inject(PatientStateService);
+  private tippssGuard = inject(TippssIngestionGuardService, { optional: true });
+  readonly waveformBuffer = inject(WaveformEventBufferService, { optional: true });
+  readonly lifecycleSentinel = inject(HardwareLifecycleSentinelService, { optional: true });
+  private packetSequenceNumber = 0;
 
   readonly isSupported = signal<boolean>(typeof navigator !== 'undefined' && 'bluetooth' in (navigator as any));
   readonly isConnected = signal<boolean>(false);
   readonly deviceName = signal<string | null>(null);
   readonly heartRate = signal<number | null>(null);
-  readonly statusMessage = signal<string>('Ready to pair wearable device (Apple Watch / Garmin / Polar)');
+  readonly statusMessage = signal<string>('Ready to pair wearable device (Apple Watch / Garmin / Polar / Pixel Watch 2)');
 
   // --- Real-time PPG / ECG Waveform Telemetry Ring Buffers ---
   readonly ppgWaveform = signal<Array<{ t: number; amplitude: number }>>([]);
@@ -143,11 +150,60 @@ export class BleWearablesService {
   }
 
   /**
-   * Disconnects active BLE device session.
+   * Enrolls Google Pixel Watch 2 with Titan M2 Root of Trust into the TIPPSS registry.
+   */
+  enrollPixelWatch2(patientId: string = 'PATIENT-SELF-01'): void {
+    if (this.tippssGuard) {
+      this.tippssGuard.enrollPixelHardware({
+        pixelWatchUdi: 'FDA-UDI-00840244700018-PIXELWATCH2',
+        pixelPhoneModel: 'Google Pixel Phone (Titan M2)',
+        patientId
+      });
+      this.deviceName.set('Google Pixel Watch 2 (Titan M2)');
+      this.statusMessage.set('Google Pixel Watch 2 enrolled with Titan M2 Root of Trust (IEEE P2933 TIPPSS)');
+    }
+  }
+
+  /**
+   * Enrolls Apple Watch with Apple Secure Enclave Root of Trust into the TIPPSS registry.
+   */
+  enrollAppleWatch(patientId: string = 'PATIENT-SELF-01'): void {
+    if (this.tippssGuard) {
+      this.tippssGuard.enrollAppleWatch({
+        watchUdi: 'FDA-UDI-00194252003348-APPLEWATCH',
+        model: 'Apple Watch Series (Apple Secure Enclave)',
+        patientId
+      });
+      this.deviceName.set('Apple Watch (Secure Enclave)');
+      this.statusMessage.set('Apple Watch enrolled with Apple Secure Enclave Root of Trust (IEEE P2933 TIPPSS)');
+    }
+  }
+
+  /**
+   * Enrolls Garmin Smartwatch with ARM TrustZone Root of Trust into the TIPPSS registry.
+   */
+  enrollGarminWatch(patientId: string = 'PATIENT-SELF-01'): void {
+    if (this.tippssGuard) {
+      this.tippssGuard.enrollGarminWatch({
+        garminUdi: 'FDA-UDI-00753759002231-GARMINWATCH',
+        model: 'Garmin Smartwatch (ARM TrustZone / BLE Broadcast HR)',
+        patientId
+      });
+      this.deviceName.set('Garmin Smartwatch (ARM TrustZone)');
+      this.statusMessage.set('Garmin Watch enrolled with ARM TrustZone Root of Trust (IEEE P2933 TIPPSS)');
+    }
+  }
+
+  /**
+   * Disconnects active BLE device session and executes cryptographic zeroization.
    */
   disconnect(): void {
     if (this.gattServer && this.gattServer.connected) {
       this.gattServer.disconnect();
+    }
+    const currentDevice = this.deviceName() || 'FDA-UDI-00840244700018-PIXELWATCH2';
+    if (this.tippssGuard) {
+      this.tippssGuard.zeroizeSession(currentDevice);
     }
     this.isConnected.set(false);
     this.deviceName.set(null);
@@ -158,6 +214,11 @@ export class BleWearablesService {
   readonly spO2 = signal<number | null>(null);
   readonly temperature = signal<number | null>(null);
   readonly bloodPressure = signal<string | null>(null);
+  readonly currentRssiDbm = signal<number>(-68);
+
+  setSimulatedRssiDbm(rssi: number): void {
+    this.currentRssiDbm.set(rssi);
+  }
 
   /**
    * Scans and connects to standard Bluetooth Low Energy (BLE) Multi-Vitals Sensors (HR, SpO2, Temp, BP).
@@ -236,6 +297,14 @@ export class BleWearablesService {
     }
   }
 
+  private resolveActiveDeviceId(): string {
+    const name = this.deviceName() || '';
+    if (name.includes('Apple')) return 'FDA-UDI-00194252003348-APPLEWATCH';
+    if (name.includes('Garmin')) return 'FDA-UDI-00753759002231-GARMINWATCH';
+    if (name.includes('Polar')) return 'FDA-UDI-00725882001124-POLARH10';
+    return 'FDA-UDI-00840244700018-PIXELWATCH2';
+  }
+
   private handleHeartRateNotification(event: Event): void {
     const target = event.target as BluetoothRemoteGATTCharacteristic;
     if (!target.value) return;
@@ -251,9 +320,47 @@ export class BleWearablesService {
       hr = value.getUint8(1);
     }
 
+    if (this.tippssGuard) {
+      const devId = this.resolveActiveDeviceId();
+
+      const verification = this.tippssGuard.verifyAndSanitize({
+        deviceId: devId,
+        patientId: 'PATIENT-SELF-01',
+        timestampMs: Date.now(),
+        sequenceNumber: ++this.packetSequenceNumber,
+        modality: 'heart_rate',
+        value: hr,
+        signalQualityIndex: 94,
+        leadOffDetected: false,
+        rssiDbm: this.currentRssiDbm()
+      });
+
+      if (!verification.isApproved) {
+        if (verification.isLeadOffArtifact) {
+          this.statusMessage.set('TIPPSS Safety Guard: Sensor lead-off detected. Inhibiting vital update.');
+          this.waveformBuffer?.recordNuisanceAlarmSuppressed(1);
+        } else {
+          this.statusMessage.set(`TIPPSS Ingestion Guard: Rejected (${verification.violationReason})`);
+        }
+        return;
+      }
+
+      if (verification.sanitizedFrame) {
+        this.tippssGuard.triageTelemetryEdgeAnomaly(verification.sanitizedFrame).then(triage => {
+          if (triage.acuity === 'STAT_EMERGENCY' && this.waveformBuffer) {
+            this.waveformBuffer.freezeIncidentSnapshot({
+              triggerReason: `TIPPSS Edge Triage: ${triage.rationale}`,
+              acuity: 'STAT_EMERGENCY',
+              modality: 'ppg'
+            });
+          }
+        });
+      }
+    }
+
     this.heartRate.set(hr);
     this.patientState.updateVital('hr', String(hr));
-    this.statusMessage.set(`Live Wearable HR: ${hr} bpm`);
+    this.statusMessage.set(`Live Wearable HR: ${hr} bpm (TIPPSS Verified)`);
   }
 
   private handleTemperatureNotification(event: Event): void {
@@ -264,10 +371,36 @@ export class BleWearablesService {
     // IEEE 11073-20601 FLOAT format (Exponent in upper byte, Mantissa in lower 3 bytes)
     const tempRaw = value.getFloat32(1, true);
     const tempF = Math.round((tempRaw * 1.8 + 32) * 10) / 10;
+    const tempC = Math.round(tempRaw * 10) / 10;
+
+    if (this.tippssGuard) {
+      const devId = this.resolveActiveDeviceId();
+
+      const verification = this.tippssGuard.verifyAndSanitize({
+        deviceId: devId,
+        patientId: 'PATIENT-SELF-01',
+        timestampMs: Date.now(),
+        sequenceNumber: ++this.packetSequenceNumber,
+        modality: 'temperature',
+        value: tempC,
+        signalQualityIndex: 96,
+        leadOffDetected: false,
+        rssiDbm: this.currentRssiDbm()
+      });
+
+      if (!verification.isApproved) {
+        this.statusMessage.set(`TIPPSS Ingestion Guard: Rejected (${verification.violationReason})`);
+        return;
+      }
+
+      if (verification.sanitizedFrame) {
+        this.tippssGuard.triageTelemetryEdgeAnomaly(verification.sanitizedFrame);
+      }
+    }
 
     this.temperature.set(tempF);
     this.patientState.updateVital('temp', `${tempF}°F`);
-    this.statusMessage.set(`Live Wearable Temp: ${tempF}°F`);
+    this.statusMessage.set(`Live Wearable Temp: ${tempF}°F (TIPPSS Verified)`);
   }
 
   private handleSpO2Notification(event: Event): void {
@@ -277,10 +410,36 @@ export class BleWearablesService {
     const value = target.value;
     // Standard GATT SpO2 SFLOAT parser
     const spO2Val = value.getUint8(1);
+
+    if (this.tippssGuard) {
+      const devId = this.resolveActiveDeviceId();
+
+      const verification = this.tippssGuard.verifyAndSanitize({
+        deviceId: devId,
+        patientId: 'PATIENT-SELF-01',
+        timestampMs: Date.now(),
+        sequenceNumber: ++this.packetSequenceNumber,
+        modality: 'spo2',
+        value: spO2Val,
+        signalQualityIndex: 92,
+        leadOffDetected: false,
+        rssiDbm: this.currentRssiDbm()
+      });
+
+      if (!verification.isApproved) {
+        this.statusMessage.set(`TIPPSS Ingestion Guard: Rejected (${verification.violationReason})`);
+        return;
+      }
+
+      if (verification.sanitizedFrame) {
+        this.tippssGuard.triageTelemetryEdgeAnomaly(verification.sanitizedFrame);
+      }
+    }
+
     if (spO2Val > 50 && spO2Val <= 100) {
       this.spO2.set(spO2Val);
       this.patientState.updateVital('spO2', `${spO2Val}%`);
-      this.statusMessage.set(`Live Wearable SpO2: ${spO2Val}%`);
+      this.statusMessage.set(`Live Wearable SpO2: ${spO2Val}% (TIPPSS Verified)`);
     }
   }
 
@@ -331,6 +490,14 @@ export class BleWearablesService {
       if (ppgBuffer.length > maxPoints) ppgBuffer.shift();
       this.ppgWaveform.set([...ppgBuffer]);
 
+      if (this.waveformBuffer) {
+        this.waveformBuffer.pushSample({
+          timestampMs: now,
+          val: Math.max(0, ppgAmp),
+          modality: 'ppg'
+        });
+      }
+
       // 2. Synthetic ECG Single-Lead P-QRS-T complex calculation
       const ecgPeriod = 50 / (currentHr / 60);
       const ecgPhase = (this.simStep % Math.round(ecgPeriod)) / ecgPeriod;
@@ -357,6 +524,14 @@ export class BleWearablesService {
       ecgBuffer.push({ t: now, uV: ecgMicrovolts });
       if (ecgBuffer.length > maxPoints) ecgBuffer.shift();
       this.ecgWaveform.set([...ecgBuffer]);
+
+      if (this.waveformBuffer) {
+        this.waveformBuffer.pushSample({
+          timestampMs: now,
+          val: ecgMicrovolts,
+          modality: 'ecg'
+        });
+      }
 
       // Dynamic HR update to signals & PatientStateService
       const displayHr = Math.round(currentHr);
