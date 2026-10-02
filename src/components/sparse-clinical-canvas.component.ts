@@ -51,15 +51,15 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
           
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono text-xl font-bold shadow-inner">
-              ⚡
+              🌐
             </div>
             <div>
               <div class="flex items-center gap-2">
                 <h1 class="text-sm sm:text-base font-bold tracking-wide uppercase font-mono text-zinc-100">
-                  Sparse Mixture of UI Experts (SMoE) Canvas
+                  Synoptic Clinical Canvas
                 </h1>
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  Dynamic Top-{{ moeRouter.kValue() }} Gating
+                  Adaptive Top-{{ moeRouter.kValue() }} Specialist Synthesis
                 </span>
               </div>
               <p class="text-xs text-zinc-400 mt-0.5">
@@ -320,7 +320,7 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
       <!-- ================================================================= -->
       <!-- MAIN VIEWPORT: Softmax-Proportioned Top-k Expert Canvas           -->
       <!-- ================================================================= -->
-      <main class="flex-1 flex flex-col lg:flex-row items-stretch gap-4 min-h-0 transition-all duration-500 ease-out">
+      <section role="region" aria-label="Synoptic Clinical Canvas Viewport" class="flex-1 flex flex-col lg:flex-row items-stretch gap-4 min-h-0 transition-all duration-500 ease-out">
         
         <!-- --------------------------------------------------------------- -->
         <!-- PRIMARY EXPERT SLOT (Top-1)                                     -->
@@ -501,7 +501,7 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
             </div>
           </section>
         }
-      </main>
+      </section>
 
       <!-- ================================================================= -->
       <!-- DORMANT EXPERTS SHELF (Latent Experts - Zero Memory Overhead)     -->

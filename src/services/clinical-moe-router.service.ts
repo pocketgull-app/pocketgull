@@ -1122,7 +1122,7 @@ export class ClinicalMoERouterService {
   readonly kValue = signal<number>(2); // Top-k (default 2)
   readonly activeScenario = signal<'default' | 'knee_oa' | 'diabetic_neuropathy' | 'acute_vitals'>('default');
   readonly activeShiftPatientId = signal<string | null>(null);
-  readonly analysisViewMode = signal<'canvas' | 'lenses' | 'suites'>('canvas');
+  readonly analysisViewMode = signal<'canvas' | 'lenses' | 'suites'>('lenses');
 
   /** Active 12-Hour Shift Roster Patient Record */
   readonly activeShiftPatient = computed<IShiftPatientRecord | null>(() => {
